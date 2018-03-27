@@ -70,9 +70,9 @@ export default class Terminator {
     private prepareHttpServer() {
         const server = express();
 
-        server.get(ROUTE_TOPOLOGY_TERMINATE, (req, resp) => {
+        server.get(ROUTE_TOPOLOGY_TERMINATE, async (req, resp) => {
             try {
-                this.handleTerminateRequest(req, resp);
+                await this.handleTerminateRequest(req, resp);
 
                 resp.status(200).send("Topology will be terminated as soon as possible.");
             } catch (e) {
@@ -89,7 +89,7 @@ export default class Terminator {
      * @param {e.Request} req
      * @param {e.Response} resp
      */
-    private handleTerminateRequest(req: Request, resp: Response): void {
+    private async handleTerminateRequest(req: Request, resp: Response): Promise<void> {
         if (!req.params || !req.params.topologyId) {
             throw new Error("Missing topologyId");
         }
@@ -107,6 +107,14 @@ export default class Terminator {
         );
 
         this.requestedTerminations.set(topologyId, headers.getPFHeader(Headers.TOPOLOGY_DELETE_URL));
+
+        const canBeTerminated = await this.canBeTerminated(topologyId);
+        if (!canBeTerminated) {
+            logger.info(
+                "Topology cannot be terminated right now. Waiting for topology processes to be finished.",
+                {topology_id: topologyId},
+            );
+        }
 
         this.tryTerminate(topologyId);
     }
