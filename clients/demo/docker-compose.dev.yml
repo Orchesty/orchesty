@@ -98,6 +98,7 @@ services:
       user: ${DEV_UID}:${DEV_GID}
       command: './dist/src/bin/pipes.js start multi_counter'
       environment:
+        # NODE_ENV: debug
         RABBITMQ_HOST: rabbitmq
         RABBITMQ_PORT: '5672'
         RABBITMQ_USER: guest
