@@ -12,5 +12,5 @@ parameters:
     influx.node_table: bridges
     influx.connector_table: connectors
     influx.monolith_table: monolith
-    influx.rabbit_table: rabbitmq_queue
+    influx.rabbit_table: rabbitmq
     influx.counter_table: processes
