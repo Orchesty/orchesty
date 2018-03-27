@@ -278,7 +278,7 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
         return $channel
             ->publish('', $headers, '', $message->getHeader(self::REPLY_TO))
             ->then(function () use ($message, $headers): void {
-                $this->logger->debug(
+                $this->logger->error(
                     'Published test item error.',
                     array_merge(
                         $this->prepareMessage('', '', $message->getHeader(self::REPLY_TO), $headers),
