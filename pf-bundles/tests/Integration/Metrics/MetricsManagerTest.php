@@ -196,16 +196,20 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
 
         $points = [
             new Point(
-                'pipes_node',
+                'processes',
                 NULL,
                 [
                     MetricsManager::TOPOLOGY => $topology->getId(),
                     MetricsManager::NODE     => $node->getId(),
                 ],
                 [
-                    MetricsManager::WAIT_TIME         => 10,
-                    MetricsManager::NODE_PROCESS_TIME => 10,
-                    MetricsManager::NODE_RESULT_ERROR => 1,
+                    MetricsManager::MAX_WAIT_TIME    => 10,
+                    MetricsManager::MIN_WAIT_TIME    => 2,
+                    MetricsManager::AVG_WAIT_TIME    => 6,
+                    MetricsManager::MAX_PROCESS_TIME => 10,
+                    MetricsManager::MIN_PROCESS_TIME => 2,
+                    MetricsManager::AVG_PROCESS_TIME => 6,
+                    MetricsManager::FAILED_COUNT     => 1,
                 ]
             ),
         ];
@@ -302,16 +306,20 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
         usleep(10);
         $points = [
             new Point(
-                'pipes_node',
+                'processes',
                 NULL,
                 [
-                    MetricsManager::TOPOLOGY          => $topology->getId(),
-                    MetricsManager::NODE              => $node->getId(),
-                    MetricsManager::NODE_RESULT_ERROR => 0,
+                    MetricsManager::TOPOLOGY => $topology->getId(),
+                    MetricsManager::NODE     => $node->getId(),
                 ],
                 [
-                    MetricsManager::WAIT_TIME         => 1,
-                    MetricsManager::NODE_PROCESS_TIME => 1,
+                    MetricsManager::MAX_WAIT_TIME    => 10,
+                    MetricsManager::MIN_WAIT_TIME    => 2,
+                    MetricsManager::AVG_WAIT_TIME    => 6,
+                    MetricsManager::MAX_PROCESS_TIME => 10,
+                    MetricsManager::MIN_PROCESS_TIME => 2,
+                    MetricsManager::AVG_PROCESS_TIME => 6,
+                    MetricsManager::FAILED_COUNT     => 1,
                 ]
             ),
         ];

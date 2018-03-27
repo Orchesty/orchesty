@@ -27,7 +27,7 @@ class KapacitorCommand extends Command
     /**
      *
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('kapacitor:run');
     }
@@ -38,7 +38,7 @@ class KapacitorCommand extends Command
      *
      * @return int|null|void
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
         $output->writeln('Kapacitor start.');
 
