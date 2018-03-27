@@ -3,6 +3,7 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Plugins\PluginSystemAbstract;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth2Interface;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
@@ -12,6 +13,7 @@ use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
+use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\StartingPointHandler;
 
 /**
  * Class SalesforceAppSystem
@@ -30,6 +32,9 @@ class SalesforceAppSystem extends PluginSystemAbstract implements OAuth2Interfac
     private const TOKEN_URL     = 'https://na1.salesforce.com/services/oauth2/token';
     private const API_URL       = 'instance_url';
 
+    private const SYNC_TOPO = 'salesforceapp-sync-subscribers';
+    private const SYNC_NODE = 'signal-event';
+
     /**
      * @var OAuth2Provider
      */
@@ -39,19 +44,26 @@ class SalesforceAppSystem extends PluginSystemAbstract implements OAuth2Interfac
      * @var SalesforceAuthConnector
      */
     private $connector;
+    /**
+     * @var StartingPointHandler
+     */
+    private $pointHandler;
 
     /**
      * SalesforceAppSystem constructor.
      *
      * @param OAuth2Provider          $provider
      * @param SalesforceAuthConnector $connector
+     * @param StartingPointHandler    $pointHandler
      */
-    public function __construct(OAuth2Provider $provider, SalesforceAuthConnector $connector)
+    public function __construct(OAuth2Provider $provider, SalesforceAuthConnector $connector,
+                                StartingPointHandler $pointHandler)
     {
         parent::__construct();
-        $this->cmEvents  = [];
-        $this->provider  = $provider;
-        $this->connector = $connector;
+        $this->cmEvents     = [];
+        $this->provider     = $provider;
+        $this->connector    = $connector;
+        $this->pointHandler = $pointHandler;
     }
 
     /**
@@ -149,6 +161,32 @@ class SalesforceAppSystem extends PluginSystemAbstract implements OAuth2Interfac
         $dto->setHeaders(array_merge($headers, $dto->getHeaders()));
 
         return $dto;
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     * @param array         $data
+     *
+     * @return array
+     * @throws CleverConnectorsException
+     */
+    public function runFilterSync(SystemInstall $systemInstall, array $data): array
+    {
+        $distributionId = $data['distributionId'] ?? NULL;
+
+        if ($distributionId === NULL) {
+            throw new CleverConnectorsException(
+                'Parameter "distributionId" is missing.',
+                CleverConnectorsException::MISSING_DATA
+            );
+        }
+
+        $body = ['param' => $systemInstall->getSystem(), 'user' => $systemInstall->getUser()];
+
+        $systemInstall->setSettings(['sync' => $data]);
+        $this->pointHandler->run(self::SYNC_TOPO, self::SYNC_NODE, json_encode($body));
+
+        return [];
     }
 
     /**
