@@ -105,7 +105,7 @@ class ConsumerCommand extends Command implements LoggerAwareInterface
             try {
                 $this->manager->getClient(TRUE)->connect();
                 $connect = TRUE;
-                $this->logger->debug('RabbitMQ is connected.');
+                $this->logger->info('RabbitMQ is connected.');
             } catch (ClientException $e) {
                 $connect = FALSE;
                 $this->logger->error('RabbitMQ is not connected.', ['exception' => $e]);
