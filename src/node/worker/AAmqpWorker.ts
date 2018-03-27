@@ -159,8 +159,6 @@ abstract class AAmqpWorker implements IWorker {
      * @return {Promise<boolean>}
      */
     public isWorkerReady(): Promise<boolean> {
-        const testCorrelationId = uuid4();
-
         return new Promise((resolve) => {
             const resolveTestFn = (msgs: JobMessage[]) => {
 
@@ -169,9 +167,7 @@ abstract class AAmqpWorker implements IWorker {
                 }
 
                 const msg: JobMessage = msgs[0];
-                if (msg.getCorrelationId() === AAmqpWorker.TEST_ID &&
-                    msg.getResult().code === ResultCode.SUCCESS
-                ) {
+                if (this.isWorkerReadyResponseSuccessful(msg)) {
                     logger.info(`Worker[type'amqp'] worker ready - OK.`, {node_id: this.settings.node_label.node_id});
                     resolve(true);
                 } else {
@@ -186,33 +182,64 @@ abstract class AAmqpWorker implements IWorker {
                 }
             };
 
-            const testHeaders = new Headers();
-            testHeaders.setPFHeader(Headers.CORRELATION_ID, AAmqpWorker.TEST_ID);
-            testHeaders.setPFHeader(Headers.PROCESS_ID, AAmqpWorker.TEST_ID);
-            testHeaders.setPFHeader(Headers.PARENT_ID, "");
-            testHeaders.setPFHeader(Headers.SEQUENCE_ID, "1");
-            testHeaders.setPFHeader(Headers.TOPOLOGY_ID, AAmqpWorker.TEST_ID);
-
-            const jobMsg = new JobMessage(this.settings.node_label, testHeaders.getRaw(), new Buffer(""));
-            const t: IWaiting = { resolveFn: resolveTestFn, message: jobMsg, sequence: 0 };
-            this.waiting.set(testCorrelationId, t);
-
-            logger.info(
-                `Worker[type'amqp'] asking worker if is ready via queue ${this.settings.publish_queue.name}`,
-                {node_id: this.settings.node_label.node_id},
-            );
-
-            this.publisher.sendToQueue(
-                this.settings.publish_queue.name,
-                new Buffer("Is worker ready test message."),
-                {
-                    type: AAmqpWorker.TEST_TYPE,
-                    correlationId: testCorrelationId,
-                    replyTo: this.resultsQueue.name,
-                    headers: jobMsg.getHeaders().getRaw(),
-                },
-            );
+            this.sendReadinessTestMessage(resolveTestFn);
         });
+    }
+
+    /**
+     * Creates test message, stores it's resolve function and send message to rabbitmq
+     *
+     * @param resolveReadinessTestFn
+     */
+    private sendReadinessTestMessage(resolveReadinessTestFn: any) {
+        const testCorrelationId = uuid4();
+
+        const testHeaders = new Headers();
+        testHeaders.setPFHeader(Headers.CORRELATION_ID, AAmqpWorker.TEST_ID);
+        testHeaders.setPFHeader(Headers.PROCESS_ID, AAmqpWorker.TEST_ID);
+        testHeaders.setPFHeader(Headers.PARENT_ID, "");
+        testHeaders.setPFHeader(Headers.SEQUENCE_ID, "1");
+        testHeaders.setPFHeader(Headers.TOPOLOGY_ID, AAmqpWorker.TEST_ID);
+
+        const jobMsg = new JobMessage(this.settings.node_label, testHeaders.getRaw(), new Buffer(""));
+        const t: IWaiting = { resolveFn: resolveReadinessTestFn, message: jobMsg, sequence: 0 };
+        this.waiting.set(testCorrelationId, t);
+
+        logger.info(
+            `Worker[type'amqp'] asking worker if is ready via queue ${this.settings.publish_queue.name}`,
+            {node_id: this.settings.node_label.node_id},
+        );
+
+        this.publisher.sendToQueue(
+            this.settings.publish_queue.name,
+            new Buffer("Is worker ready test message."),
+            {
+                type: AAmqpWorker.TEST_TYPE,
+                correlationId: testCorrelationId,
+                replyTo: this.resultsQueue.name,
+                headers: jobMsg.getHeaders().getRaw(),
+            },
+        );
+    }
+
+    /**
+     * Returns true if worker's response means the worker is ready
+     *
+     * @param {JobMessage} msg
+     * @return {boolean}
+     */
+    private isWorkerReadyResponseSuccessful(msg: JobMessage): boolean {
+        if (msg.getCorrelationId() !== AAmqpWorker.TEST_ID) {
+            return false;
+        }
+
+        if (msg.getResult().code === ResultCode.SUCCESS ||
+            msg.getResult().code === ResultCode.SPLITTER_BATCH_END
+        ) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
