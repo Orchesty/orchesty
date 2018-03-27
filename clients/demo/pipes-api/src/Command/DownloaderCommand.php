@@ -31,6 +31,9 @@ use Throwable;
 class DownloaderCommand extends Command
 {
 
+    /**
+     * @var string
+     */
     protected static $defaultName = 'downloader:run';
 
     /**
@@ -44,7 +47,7 @@ class DownloaderCommand extends Command
      *
      * @return int|null|void
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
         $output->writeln('Downloader start.');
 

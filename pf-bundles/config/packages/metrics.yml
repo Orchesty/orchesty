@@ -9,7 +9,7 @@ parameters:
     influx.user: admin
     influx.password: password
     influx.database: pipes
-    influx.node_table: pipes_node
+    influx.node_table: bridges
     influx.connector_table: connector
     influx.monolith_table: monolith
     influx.rabbit_table: rabbitmq_queue
