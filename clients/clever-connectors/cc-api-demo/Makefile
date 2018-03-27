@@ -2,6 +2,8 @@
 
 DC=docker-compose
 DE=docker-compose exec app
+DP=docker-compose exec app bin/console
+DS=docker-compose exec mariadb
 IMAGE_API_DEMO_FPM=dkr.hanaboso.net/pipes/client-cm/api-demo:latest
 
 .env:
@@ -14,6 +16,15 @@ init: .env
 docker-up-force: .env
 	$(DC) pull
 	$(DC) up -d --force-recreate --remove-orphans
+
+clear-cache-orm:
+	$(DP) orm:clear-cache:metadata
+	$(DP) orm:clear-cache:query
+	$(DP) orm:clear-cache:result
+
+database-create: clear-cache-orm
+	$(DS) /bin/sh -c 'mysql -uroot -proot -e "DROP DATABASE IF EXISTS \`cm-apidemo\`; CREATE DATABASE \`cm-apidemo\`; USE \`cm-apidemo\`;"'
+	$(DP) orm:schema-tool:create
 
 build: .env
 	: Disable dependency symlinking in composer and do a fresh install && \
@@ -43,6 +54,11 @@ phpstan:
 	$(DE) ./vendor/bin/phpstan --memory-limit=200M analyse -c phpstan.neon -l 4 socialMultichannel/
 
 phpunit:
-	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr socialMultichannel/tests/
+	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr socialMultichannel/tests/Unit
 
-test: docker-up-force composer-install codesniffer phpstan phpunit
+phpintegration: database-create
+	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr socialMultichannel/tests/Integration
+
+test: docker-up-force composer-install codesniffer phpstan phpunit phpintegration
+
+fasttest: codesniffer phpstan phpunit phpintegration

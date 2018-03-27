@@ -4,6 +4,8 @@ namespace CleverCore\SocialMultichannel\DI;
 
 use CleverCore\SocialMultichannel\Enums\AdTypeEnum;
 use CleverCore\SocialMultichannel\Enums\AudienceSourceEnum;
+use CleverCore\SocialMultichannel\Models\AdFacade;
+use CleverCore\SocialMultichannel\Models\AdModuleLoader;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Nette\DI\CompilerExtension;
 
@@ -21,6 +23,12 @@ class SocialMultichannelExtension extends CompilerExtension
     public function loadConfiguration(): void
     {
         $builder = $this->getContainerBuilder();
+
+        $builder->addDefinition($this->prefix('ad.module.loader'))
+            ->setFactory(AdModuleLoader::class);
+
+        $builder->addDefinition($this->prefix('ad.facade'))
+            ->setFactory(AdFacade::class);
     }
 
     /**
@@ -46,11 +54,11 @@ class SocialMultichannelExtension extends CompilerExtension
         $connection = $builder->getDefinition('doctrine.default.connection');
         $setup      = $connection->getSetup();
 
-        $setup[0]->arguments[0]['DirectorySourceEnum'] = 'AdTypeEnum';
-        $setup[1]->arguments[0]['DirectorySourceEnum'] = AdTypeEnum::class;
+        $setup[0]->arguments[0]['AdTypeEnum'] = 'AdTypeEnum';
+        $setup[1]->arguments[0]['AdTypeEnum'] = AdTypeEnum::class;
 
-        $setup[0]->arguments[0]['DirectorySourceEnum'] = 'AudienceSourceEnum';
-        $setup[1]->arguments[0]['DirectorySourceEnum'] = AudienceSourceEnum::class;
+        $setup[0]->arguments[0]['AudienceSourceEnum'] = 'AudienceSourceEnum';
+        $setup[1]->arguments[0]['AudienceSourceEnum'] = AudienceSourceEnum::class;
 
         $connection->setSetup($setup);
 

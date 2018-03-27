@@ -6,6 +6,7 @@ use CleverCore\Commons\Traits\IdTrait;
 use CleverCore\SocialMultichannel\Enums\AudienceSourceEnum;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Class Audience
@@ -35,16 +36,16 @@ class Audience
     private $sourceType;
 
     /**
-     * @var string
+     * @var string|null
      *
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=true)
      */
     private $listId;
 
     /**
-     * @var string
+     * @var string|null
      *
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=true)
      */
     private $segmentId;
 
@@ -111,19 +112,19 @@ class Audience
     }
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getListId(): string
+    public function getListId(): ?string
     {
         return $this->listId;
     }
 
     /**
-     * @param string $listId
+     * @param null|string $listId
      *
      * @return Audience
      */
-    public function setListId(string $listId): Audience
+    public function setListId(?string $listId): Audience
     {
         $this->listId = $listId;
 
@@ -131,19 +132,19 @@ class Audience
     }
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getSegmentId(): string
+    public function getSegmentId(): ?string
     {
         return $this->segmentId;
     }
 
     /**
-     * @param string $segmentId
+     * @param null|string $segmentId
      *
      * @return Audience
      */
-    public function setSegmentId(string $segmentId): Audience
+    public function setSegmentId(?string $segmentId): Audience
     {
         $this->segmentId = $segmentId;
 
