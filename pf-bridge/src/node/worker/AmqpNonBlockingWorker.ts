@@ -30,17 +30,6 @@ class AmqpNonBlockingWorker extends AAmqpWorker {
         super(connection, settings);
     }
 
-    // /**
-    //  *
-    //  * @param {JobMessage} msg
-    //  * @return {Promise<JobMessage[]>}
-    //  */
-    // public async processData(msg: JobMessage): Promise<JobMessage[]> {
-    //     await this.counterPublisher.send(this.createMessageCopy(msg), 1);
-    //
-    //     return super.processData(msg);
-    // }
-
     /**
      * Updates the JobMessage object stored in memory
      *
@@ -84,7 +73,6 @@ class AmqpNonBlockingWorker extends AAmqpWorker {
         }
 
         stored.message.setResult(this.getResultFromBatchEnd(msg));
-        // await this.counterPublisher.send(stored.message, 0);
         stored.resolveFn([stored.message]); // Resolves waiting promise
         this.waiting.delete(corrId);
     }
@@ -130,25 +118,6 @@ class AmqpNonBlockingWorker extends AAmqpWorker {
             resultHeaders.getPFHeader(Headers.RESULT_MESSAGE) : "";
 
         return { code: resultCode, message: resultMessage };
-    }
-
-    /**
-     *
-     * @param {JobMessage} msg
-     * @return {JobMessage}
-     */
-    private createMessageCopy(msg: JobMessage): JobMessage {
-        const cloned = new JobMessage(
-            msg.getNodeLabel(),
-            msg.getHeaders().getRaw(),
-            new Buffer("splitter batch end"),
-        );
-        cloned.setResult({
-            code: ResultCode.SUCCESS,
-            message: "Amqp splitter OK",
-        });
-
-        return cloned;
     }
 
 }
