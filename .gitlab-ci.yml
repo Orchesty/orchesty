@@ -58,6 +58,7 @@ limiter-image:
   only:
     - dev
     - master
+    - pip-427
 
 workflow-image:
   stage: stage1
@@ -69,6 +70,7 @@ workflow-image:
   only:
     - dev
     - master
+    - pip-427
 
 topology-api:
   stage: stage1
@@ -105,17 +107,17 @@ topology-generator-test:
     DIR: go/src/hanaboso/topologygenerator
   stage: stage2
 
-#limiter-test:
-#  <<: *go_test
-#  variables:
-#    DIR: clients/clever-connectors/go/src/clever-monitor/limiter
-#  stage: stage2
+limiter-test:
+ <<: *go_test
+ variables:
+   DIR: clients/clever-connectors/go/src/clever-monitor/limiter
+ stage: stage2
 
-#workflow-test:
-#  <<: *go_test
-#  variables:
-#    DIR: clients/clever-connectors/go/src/clever-monitor/workflow
-#  stage: stage2
+workflow-test:
+ <<: *go_test
+ variables:
+   DIR: clients/clever-connectors/go/src/clever-monitor/workflow
+ stage: stage2
 
 pf-bundles-test:
   stage: stage2
