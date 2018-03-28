@@ -75,7 +75,7 @@ class NodeMetrics extends React.Component {
         </div>
         <div className="tile_stats_count">
           <span className="count_top">Queue Depth [msg]</span>
-          <div className="count">{data.queue_depth.min}</div>
+          <div className="count">{data.queue_depth.avg}</div>
           <span className="count_bottom red">Max: {data.queue_depth.max}</span>
         </div>
         <div className="tile_stats_count">
