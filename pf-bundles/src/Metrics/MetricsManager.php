@@ -547,7 +547,7 @@ class MetricsManager implements LoggerAwareInterface
         return [
             self::QUEUE_DEPTH  => [
                 'max' => $queue->getMax(),
-                'min' => $queue->getMin(),
+                'avg' => $queue->getAvg(),
             ],
             self::WAITING_TIME => [
                 'max' => $waiting->getMax(),
