@@ -1,30 +1,33 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\AppBundle\Model\Systems\Impl\Salesforce;
+namespace Tests\Unit\AppBundle\Model\Systems\Impl\SalesforceApp;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Limits\SystemLimitDto;
-use CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\SalesforceSystem;
+use CleverConnectors\AppBundle\Model\Limits\SystemLimitManager;
+use CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp\Connector\SalesforceAuthConnector;
+use CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp\SalesforceAppSystem;
 use DateTime;
 use Exception;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
+use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\StartingPointHandler;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Class SalesforceSystemTest
+ * Class SalesforceAppSystem
  *
- * @package Tests\Unit\AppBundle\Model\Systems\Impl\Salesforce
+ * @package Tests\Unit\AppBundle\Model\Systems\Impl\SalesforceApp
  */
-final class SalesforceSystemTest extends TestCase
+final class SalesforceAppSystemTest extends TestCase
 {
 
     private const ACCESS_TOKEN = 'sdf5sd46';
 
     /**
-     * @var SalesforceSystem|null
+     * @var SalesforceAppSystem|null
      */
     private $system = NULL;
 
@@ -34,7 +37,7 @@ final class SalesforceSystemTest extends TestCase
     private $systemInstall;
 
     /**
-     * @throws Exception
+     *
      */
     public function setUp(): void
     {
@@ -45,12 +48,27 @@ final class SalesforceSystemTest extends TestCase
             $provider = $this->getMockBuilder(OAuth2Provider::class)->disableOriginalConstructor()->getMock();
             $provider->method('authorize')->willReturn(TRUE);
 
-            $this->system = new SalesforceSystem($provider);
+            /** @var SalesforceAuthConnector|MockObject $authConnector */
+            $authConnector = $this->getMockBuilder(SalesforceAuthConnector::class)
+                ->disableOriginalConstructor()
+                ->getMock();
+            $authConnector->method('sendAuthorizeConfirm')->willReturn(TRUE);
+
+            /** @var StartingPointHandler|MockObject $pointHandler */
+            $pointHandler = $this->getMockBuilder(StartingPointHandler::class)->disableOriginalConstructor()->getMock();
+            $pointHandler->method('runWithRequest')->willReturn(TRUE);
+
+            /** @var SystemLimitManager|MockObject $limitManager */
+            $limitManager = $this->getMockBuilder(SystemLimitManager::class)->disableOriginalConstructor()->getMock();
+            $limitManager->method('addSystemLimitToRequestHeaders')->willReturn(TRUE);
+
+            $this->system = new SalesforceAppSystem($provider, $authConnector, $pointHandler, $limitManager);
 
             $this->systemInstall = new SystemInstall();
             $this->systemInstall
                 ->setUser('user123')
                 ->setSystem('sys123')
+                ->setToken('tok123')
                 ->setSettings([
                     'instance_url'               => 'systemUrl',
                     'access_token'               => self::ACCESS_TOKEN,
@@ -104,6 +122,26 @@ final class SalesforceSystemTest extends TestCase
         $this->expectExceptionCode(CleverConnectorsException::MISSING_DATA);
 
         $this->system->saveLimit($this->systemInstall, []);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testRunFilterSync(): void
+    {
+        $data = $this->system->runFilterSync($this->systemInstall, [SalesforceAppSystem::DL_ID => '123456']);
+        self::assertTrue(is_array($data));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testRunFilterSyncFailed(): void
+    {
+        $this->expectException(CleverConnectorsException::class);
+        $this->expectExceptionCode(CleverConnectorsException::MISSING_DATA);
+
+        $this->system->runFilterSync($this->systemInstall, []);
     }
 
 }

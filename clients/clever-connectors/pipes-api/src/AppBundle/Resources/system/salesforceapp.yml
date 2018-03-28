@@ -8,9 +8,17 @@ services:
             - '@hbpf.providers.oauth2_provider'
             - '@hbpf.connector.salesforce_app-auth-connector'
             - '@hbpf.handler.starting_point'
+            - '@cc.system_limit.manager'
         tags: ['%systems%']
 
     hbpf.connector.salesforce_app-auth-connector:
-            class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp\Connector\SalesforceAuthConnector
-            arguments:
-                - '@hbpf.transport.curl_manager'
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp\Connector\SalesforceAuthConnector
+        arguments:
+            - '@hbpf.transport.curl_manager'
+
+    hbpf.connector.salesforce_app-sync-subscribers-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp\Connector\SalesforceAppSyncSubscribersConnector
+        arguments:
+            - '@systems.salesforceapp'
+            - '@hbpf.transport.async_curl_factory'
+            - '@doctrine_mongodb.odm.default_document_manager'
