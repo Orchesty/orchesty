@@ -17,7 +17,8 @@ services:
       - ${DEV_IP}:5120:4444/udp
 
   limiter:
-    image: golang:latest
+    image: cmhanaboso.azurecr.io/devtools/go-build:latest
+    user: ${DEV_UID}:${DEV_GID}
     working_dir: /go/src/clever-monitor/limiter
     volumes:
       - ../:/go/src/clever-monitor
