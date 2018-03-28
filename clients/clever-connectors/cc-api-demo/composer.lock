@@ -317,7 +317,7 @@
             "source": {
                 "type": "git",
                 "url": "ssh://git@gitlab.clevermonitor.com/cleverapp/enum.git",
-                "reference": "c29ec0b5984c0c849450707dd2a53f523e88dfca"
+                "reference": "a0495d2163ab1a516cd2a06f9612c1d38fc2dbc4"
             },
             "require": {
                 "clevercore/datalayer": "dev-develop",
@@ -330,7 +330,7 @@
                 }
             },
             "description": "CleverApp Enum",
-            "time": "2018-03-22T15:16:06+00:00"
+            "time": "2018-03-26T08:12:58+00:00"
         },
         {
             "name": "clevercore/datalayer",
@@ -410,7 +410,7 @@
             "source": {
                 "type": "git",
                 "url": "ssh://git@gitlab.clevermonitor.com/cleverdbschema/app.git",
-                "reference": "a4f00d8f1f7e07b98b6ff84046a32410fad336a3"
+                "reference": "b6f97e2f065bc05adbde9c45f6901d1b9ec62e21"
             },
             "require": {
                 "php": "^7.1"
@@ -422,7 +422,7 @@
                 }
             },
             "description": "CleverDbSchema App",
-            "time": "2018-03-23T07:42:58+00:00"
+            "time": "2018-03-26T12:46:55+00:00"
         },
         {
             "name": "cleverdbschema/auth",
@@ -430,7 +430,7 @@
             "source": {
                 "type": "git",
                 "url": "ssh://git@gitlab.clevermonitor.com/cleverdbschema/auth.git",
-                "reference": "73a676ce306570988eb276b1dcc273446b14c341"
+                "reference": "87aa52fafc15ea2fe30c6a3457ad66c9c708f4ca"
             },
             "require": {
                 "doctrine/data-fixtures": "^1.3",
@@ -445,7 +445,7 @@
                 }
             },
             "description": "CleverDbSchema Auth",
-            "time": "2018-03-23T13:05:14+00:00"
+            "time": "2018-03-27T06:48:39+00:00"
         },
         {
             "name": "cleverextensions/doctrine",
@@ -1064,12 +1064,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/mongodb-odm.git",
-                "reference": "6947e9f4d615d457272012fd118401af72f007ca"
+                "reference": "587912caf5bc8198e1c2a72da387cdb2852867e3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/mongodb-odm/zipball/6947e9f4d615d457272012fd118401af72f007ca",
-                "reference": "6947e9f4d615d457272012fd118401af72f007ca",
+                "url": "https://api.github.com/repos/doctrine/mongodb-odm/zipball/587912caf5bc8198e1c2a72da387cdb2852867e3",
+                "reference": "587912caf5bc8198e1c2a72da387cdb2852867e3",
                 "shasum": ""
             },
             "require": {
@@ -1137,7 +1137,7 @@
                 "odm",
                 "persistence"
             ],
-            "time": "2018-03-22T17:10:25+00:00"
+            "time": "2018-03-25T05:13:30+00:00"
         },
         {
             "name": "doctrine/orm",
@@ -1223,16 +1223,16 @@
         },
         {
             "name": "guzzlehttp/guzzle",
-            "version": "6.3.0",
+            "version": "6.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/guzzle.git",
-                "reference": "f4db5a78a5ea468d4831de7f0bf9d9415e348699"
+                "reference": "68d0ea14d5a3f42a20e87632a5f84931e2709c90"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/f4db5a78a5ea468d4831de7f0bf9d9415e348699",
-                "reference": "f4db5a78a5ea468d4831de7f0bf9d9415e348699",
+                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/68d0ea14d5a3f42a20e87632a5f84931e2709c90",
+                "reference": "68d0ea14d5a3f42a20e87632a5f84931e2709c90",
                 "shasum": ""
             },
             "require": {
@@ -1242,7 +1242,7 @@
             },
             "require-dev": {
                 "ext-curl": "*",
-                "phpunit/phpunit": "^4.0 || ^5.0",
+                "phpunit/phpunit": "^4.8.35 || ^5.7 || ^6.4",
                 "psr/log": "^1.0"
             },
             "suggest": {
@@ -1251,7 +1251,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "6.2-dev"
+                    "dev-master": "6.3-dev"
                 }
             },
             "autoload": {
@@ -1284,7 +1284,7 @@
                 "rest",
                 "web service"
             ],
-            "time": "2017-06-22T18:50:49+00:00"
+            "time": "2018-03-26T16:33:04+00:00"
         },
         {
             "name": "guzzlehttp/promises",
@@ -3387,16 +3387,16 @@
         },
         {
             "name": "tracy/tracy",
-            "version": "v2.4.12",
+            "version": "v2.4.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/tracy.git",
-                "reference": "4182ce7b92f67002509b7fa2fc34bd84deea0b24"
+                "reference": "ead5141731a21cfd0710b092351d923549d2b2ad"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/tracy/zipball/4182ce7b92f67002509b7fa2fc34bd84deea0b24",
-                "reference": "4182ce7b92f67002509b7fa2fc34bd84deea0b24",
+                "url": "https://api.github.com/repos/nette/tracy/zipball/ead5141731a21cfd0710b092351d923549d2b2ad",
+                "reference": "ead5141731a21cfd0710b092351d923549d2b2ad",
                 "shasum": ""
             },
             "require": {
@@ -3448,7 +3448,7 @@
                 "nette",
                 "profiler"
             ],
-            "time": "2018-02-28T00:49:47+00:00"
+            "time": "2018-03-23T17:15:58+00:00"
         },
         {
             "name": "webchemistry/forms-multiplier",
@@ -4495,16 +4495,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "7.0.2",
+            "version": "7.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "e2f8aa21bc54b6ba218bdd4f9e0dac1e9bc3b4e9"
+                "reference": "536f4d853c12d8189963435088e8ff7c0daeab2e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/e2f8aa21bc54b6ba218bdd4f9e0dac1e9bc3b4e9",
-                "reference": "e2f8aa21bc54b6ba218bdd4f9e0dac1e9bc3b4e9",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/536f4d853c12d8189963435088e8ff7c0daeab2e",
+                "reference": "536f4d853c12d8189963435088e8ff7c0daeab2e",
                 "shasum": ""
             },
             "require": {
@@ -4518,7 +4518,7 @@
                 "phar-io/version": "^1.0",
                 "php": "^7.1",
                 "phpspec/prophecy": "^1.7",
-                "phpunit/php-code-coverage": "^6.0",
+                "phpunit/php-code-coverage": "^6.0.1",
                 "phpunit/php-file-iterator": "^1.4.3",
                 "phpunit/php-text-template": "^1.2.1",
                 "phpunit/php-timer": "^2.0",
@@ -4571,7 +4571,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2018-02-26T07:03:12+00:00"
+            "time": "2018-03-26T07:36:48+00:00"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
