@@ -243,12 +243,12 @@ class SalesforceAppSyncSubscribersConnector implements BatchInterface, Connector
      */
     private function createPageContactRequest(int $page, RequestDto $dto, string $where): RequestDto
     {
-        $query = sprintf(
-            'select+CMHB__Email__c,+CMHB__Firstname__c,+CMHB__Lastname__c+from+CMHB__Subscriber__c%s+limit+%s+offset+%s',
-            $where,
-            self::PAGE_LIMIT,
-            self::PAGE_LIMIT * $page
-        );
+        $q = 'select+CMHB__Email__c,+CMHB__Firstname__c,+CMHB__Lastname__c,' .
+            '+CMHB__Distribution_List__r.CMHB__CM_ID__c,+CreatedDate,+LastModifiedDate,+CMHB__Deleted__c' .
+            '+from+CMHB__Subscriber__c%s' .
+            '+limit+%s+offset+%s';
+
+        $query = sprintf($q, $where, self::PAGE_LIMIT, self::PAGE_LIMIT * $page);
         $uri   = new Uri(sprintf(self::QUERY_URL, rtrim($dto->getUri(TRUE), '/'), $query));
 
         return RequestDto::from($dto, $uri);
@@ -285,6 +285,7 @@ class SalesforceAppSyncSubscribersConnector implements BatchInterface, Connector
      */
     private function createUnlockRequest(RequestDto $dto): RequestDto
     {
+        //@TODO ADD correct URL
         $uri = new Uri(sprintf(self::UNLOCK_URL, rtrim($dto->getUri(TRUE), '/'), ''));
 
         return RequestDto::from($dto, $uri);
