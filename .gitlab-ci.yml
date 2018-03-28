@@ -58,7 +58,6 @@ limiter-image:
   only:
     - dev
     - master
-    - pip-427
 
 workflow-image:
   stage: stage1
@@ -70,7 +69,6 @@ workflow-image:
   only:
     - dev
     - master
-    - pip-427
 
 topology-api:
   stage: stage1
