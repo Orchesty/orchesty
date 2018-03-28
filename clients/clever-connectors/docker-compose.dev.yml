@@ -37,7 +37,7 @@ services:
 
     ## BEGIN DEV
     batch-connector:
-        image: dkr.hanaboso.net/pipes/pipes/php-dev:${TAG_PHPDEV}
+        image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
         user: ${DEV_UID}:${DEV_GID}
         environment:
           BACKEND_HOST: ${BACKEND_URL}/
@@ -403,7 +403,9 @@ services:
           - grafana:/var/lib/grafana
 
     influxdb:
-        image: influxdb:1.2-alpine
+        image: influxdb:1.5-alpine
+        environment:
+          - INFLUXDB_DB=pipes
         ports:
           - ${DEV_IP}:8083:8083
           - ${DEV_IP}:8086:8086
@@ -412,6 +414,7 @@ services:
           - influxdb:/var/lib/influxdb
         ## BEGIN DEV
           - ./stack/influxdb.conf:/etc/influxdb/influxdb.conf
+          - ./stack/influxdb/:/docker-entrypoint-initdb.d/
         ## END DEV
         ## BEGIN STAGE
         #configs:
@@ -420,7 +423,7 @@ services:
         ## END STAGE
     
     telegraf:
-        image: telegraf:1.4.2
+        image: telegraf:1.5-alpine
         ## BEGIN DEV
         volumes:
           - ./stack/telegraf.conf:/etc/telegraf/telegraf.conf
@@ -429,6 +432,19 @@ services:
         #configs:
         #  - source: telegraf.conf
         #    target: /etc/telegraf/telegraf.conf
+        ## END STAGE
+
+    kapacitor:
+        image: kapacitor:1.4-alpine
+        ## BEGIN DEV
+        volumes:
+          - ./stack/kapacitor.conf:/etc/kapacitor/kapacitor.conf
+          - ./stack/kapacitor:/root/.kapacitor/load/tasks
+        ## END DEV
+        ## BEGIN STAGE
+        #configs:
+        #  - source: kapacitor.conf
+        #    target: /etc/kapacitor/kapacitor.conf
         ## END STAGE
 
     # Fake Services
