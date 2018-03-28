@@ -7,4 +7,4 @@ if [ "${USER}" == "" ]; then
     exit
 fi
 
-ssh -L27017:localhost:27017 -L5601:localhost:5601 -L 15672:localhost:15672 $USER@cm-swarm01n01
+ssh -L27017:localhost:27017 -L5601:localhost:5601 -L 15672:localhost:15672 -L 54755:localhost:54755 $USER@cm-swarm01n01
