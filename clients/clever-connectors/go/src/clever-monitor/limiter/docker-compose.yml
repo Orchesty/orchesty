@@ -18,6 +18,7 @@ services:
 
   limiter:
     image: cmhanaboso.azurecr.io/devtools/go-build:latest
+    user: ${DEV_UID}:${DEV_GID}
     working_dir: /go/src/clever-monitor/limiter
     volumes:
       - ../:/go/src/clever-monitor

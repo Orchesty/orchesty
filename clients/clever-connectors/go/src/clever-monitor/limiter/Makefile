@@ -34,7 +34,7 @@ docker-compose.ci.yml:
 ci-test: .env
 	# docker-compose pull
 	docker-compose up -d --force-recreate
-	#docker-compose exec -T limiter make install-dep
+	# docker-compose exec -T limiter make install-dep
 	docker-compose exec -T limiter make install-dependencies
 	docker-compose exec -T limiter go test ./...
 	#docker run --rm -e GID=$(shell id -g) -e UID=$(shell id -u) -v ${CURDIR}/..:/go/src/clever-monitor -w /go/src/clever-monitor/limiter cmhanaboso.azurecr.io/devtools/go-build:latest go test ./...
