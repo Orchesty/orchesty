@@ -105,17 +105,17 @@ topology-generator-test:
     DIR: go/src/hanaboso/topologygenerator
   stage: stage2
 
-#limiter-test:
-#  <<: *go_test
-#  variables:
-#    DIR: clients/clever-connectors/go/src/clever-monitor/limiter
-#  stage: stage2
+limiter-test:
+ <<: *go_test
+ variables:
+   DIR: clients/clever-connectors/go/src/clever-monitor/limiter
+ stage: stage2
 
-#workflow-test:
-#  <<: *go_test
-#  variables:
-#    DIR: clients/clever-connectors/go/src/clever-monitor/workflow
-#  stage: stage2
+workflow-test:
+ <<: *go_test
+ variables:
+   DIR: clients/clever-connectors/go/src/clever-monitor/workflow
+ stage: stage2
 
 pf-bundles-test:
   stage: stage2

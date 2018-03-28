@@ -37,7 +37,6 @@ docker-compose.ci.yml:
 
 ci-test: .env
 	docker-compose up -d --force-recreate
-	docker-compose exec -T workflow make install-dep
 	docker-compose exec -T workflow make install-dependencies
 	docker-compose exec -T workflow go test ./...
 
