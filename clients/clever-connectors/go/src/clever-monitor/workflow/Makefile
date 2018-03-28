@@ -37,9 +37,8 @@ docker-compose.ci.yml:
 
 ci-test: .env
 	docker-compose up -d --force-recreate
-	docker-compose exec -T workflow make install-dep
-	docker-compose exec -T workflow make install-dependencies
-	docker-compose exec -T workflow go test ./...
+	docker-compose exec -T limiter make install-dependencies
+	docker-compose exec -T limiter go test ./...
 
 docker-build:
 	cd ../ && docker build --build-arg UID=$(shell id -u) --build-arg GID=$(shell id -u) -t $(DOCKER_SERVICE_NAME):$(DOCKER_DEFAULT_TAG) -t $(DOCKER_REGISTRY)$(DOCKER_SERVICE_NAME):$(DOCKER_DEFAULT_TAG) -f ./$(DOCKER_SERVICE_NAME)/Dockerfile .
