@@ -30,7 +30,7 @@ final class MetricsDto
     /**
      * @var string
      */
-    private $avg = 'n/a';
+    private $avg = '0';
 
     /**
      * @var string

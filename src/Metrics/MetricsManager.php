@@ -567,7 +567,7 @@ class MetricsManager implements LoggerAwareInterface
             self::REQUEST_TIME => [
                 'max' => $request->getMax(),
                 'min' => $request->getMin(),
-                'avg' => $request->getAvg(),
+                'avg' => ($request->getAvg() == 0) ? 'n/a' : $request->getAvg(),
             ],
             self::PROCESS      => [
                 'max'    => $counter->getMax(),
