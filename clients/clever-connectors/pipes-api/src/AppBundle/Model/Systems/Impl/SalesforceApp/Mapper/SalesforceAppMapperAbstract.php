@@ -36,7 +36,7 @@ abstract class SalesforceAppMapperAbstract implements CustomNodeInterface
 
         if (!is_array($data) || !array_key_exists(self::EMAIL, $data) || !array_key_exists(self::LIST, $data)) {
             throw new CleverConnectorsException(
-                'Missing data or required field email',
+                'Missing data or required field CMHB__Email__c or CMHB__CM_ID__c',
                 CleverConnectorsException::MISSING_DATA
             );
         }
@@ -48,7 +48,7 @@ abstract class SalesforceAppMapperAbstract implements CustomNodeInterface
         $subscriber = new CMSubscriber();
         $subscriber
             ->setEmail($data[self::EMAIL])
-            ->setLists($data[self::LIST]);
+            ->setLists([$data[self::LIST]]);
 
         if (array_key_exists(self::FIRSTNAME, $data)) {
             $subscriber->setFirstName($data[self::FIRSTNAME]);
@@ -73,7 +73,10 @@ abstract class SalesforceAppMapperAbstract implements CustomNodeInterface
             !array_key_exists(self::UPDATED, $data) ||
             !array_key_exists(self::DELETED, $data)
         ) {
-            throw new CleverConnectorsException();
+            throw new CleverConnectorsException(
+                'Missing required date fields in data.',
+                CleverConnectorsException::MISSING_DATA
+            );
         }
     }
 

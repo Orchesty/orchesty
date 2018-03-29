@@ -5,11 +5,11 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp\Mapper;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 
 /**
- * Class SalesforceAppCreateMapper
+ * Class SalesforceAppUpdateMapper
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp\Mapper
  */
-class SalesforceAppCreateMapper extends SalesforceAppMapperAbstract
+class SalesforceAppUpdateMapper extends SalesforceAppMapperAbstract
 {
 
     /**
@@ -22,7 +22,7 @@ class SalesforceAppCreateMapper extends SalesforceAppMapperAbstract
     {
         $this->checkData($data);
 
-        if ((bool) $data[self::DELETED] === FALSE && ($data[self::CREATED] === $data[self::UPDATED])) {
+        if ((bool) $data[self::DELETED] === FALSE && ($data[self::CREATED] !== $data[self::UPDATED])) {
             return FALSE;
         }
 
