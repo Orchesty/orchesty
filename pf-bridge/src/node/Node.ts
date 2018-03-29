@@ -2,12 +2,12 @@ import * as express from "express";
 import {IMetrics} from "metrics-sender/dist/lib/metrics/IMetrics";
 import IStoppable from "../IStoppable";
 import logger from "../logger/Logger";
+import {MessageType} from "../message/AMessage";
 import JobMessage from "../message/JobMessage";
 import {ResultCode, ResultCodeGroup} from "../message/ResultCode";
 import IDrain from "./drain/IDrain";
 import IFaucet from "./faucet/IFaucet";
 import IWorker from "./worker/IWorker";
-import {MessageType} from "../message/AMessage";
 
 export enum NODE_STATUS {
     READY = 200,
