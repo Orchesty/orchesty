@@ -48,10 +48,10 @@ class SalesforceAppSyncSubscribersConnector implements BatchInterface, Connector
 
     use LoggerTrait;
 
-    protected const QUERY_URL  = '%s/services/data/v40.0/query?q=%s';
-    protected const UNLOCK_URL = '%s/services/data/v40.0/query?q=%s';
-    protected const PAGE_LIMIT = 50;
-    protected const NODE_NAME  = '';
+    protected const QUERY_URL      = '%s/services/data/v40.0/query?q=%s';
+    protected const SYNC_STATE_URL = '%s/services/data/v40.0/pipes/sync';
+    protected const PAGE_LIMIT     = 50;
+    protected const NODE_NAME      = '';
 
     /**
      * @var SalesforceAppSystem
@@ -156,7 +156,7 @@ class SalesforceAppSyncSubscribersConnector implements BatchInterface, Connector
                 }
             )->then(
                 function ($all) use ($sender, $requestDto, $filterId) {
-                    $this->fetchData($sender, $this->createUnlockRequest($requestDto, $filterId));
+                    $this->fetchData($sender, $this->createSuccessStateRequest($requestDto, (string) $filterId));
 
                     return $all;
                 }
@@ -286,12 +286,13 @@ class SalesforceAppSyncSubscribersConnector implements BatchInterface, Connector
      *
      * @return RequestDto
      */
-    private function createUnlockRequest(RequestDto $dto, string $filterId): RequestDto
+    private function createSuccessStateRequest(RequestDto $dto, string $filterId): RequestDto
     {
-        //@TODO ADD correct URL
-        $uri = new Uri(sprintf(self::UNLOCK_URL, rtrim($dto->getUri(TRUE), '/'), $filterId));
+        $uri     = new Uri(sprintf(self::SYNC_STATE_URL, rtrim($dto->getUri(TRUE), '/')));
+        $request = RequestDto::from($dto, $uri, CurlManager::METHOD_POST);
+        $request->setBody(json_encode([SalesforceAppSystem::FILTER_ID => $filterId]));
 
-        return RequestDto::from($dto, $uri);
+        return $request;
     }
 
     /**
