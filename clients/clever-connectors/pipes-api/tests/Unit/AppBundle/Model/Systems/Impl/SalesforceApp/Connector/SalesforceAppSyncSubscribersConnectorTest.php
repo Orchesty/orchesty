@@ -31,7 +31,7 @@ final class SalesforceAppSyncSubscribersConnectorTest extends TestCase
      */
     public function testProcessBatch(): void
     {
-        $dtoData    = [SalesforceAppSystem::DL_ID => '123'];
+        $dtoData    = [SalesforceAppSystem::DL_ID => '123', SalesforceAppSystem::FILTER_ID => '123'];
         $loop       = Factory::create();
         $processDto = new ProcessDto();
         $processDto
@@ -47,7 +47,7 @@ final class SalesforceAppSyncSubscribersConnectorTest extends TestCase
             function (): void {
                 $this->assertTrue(TRUE);
             },
-            function ($a): void {
+            function (): void {
                 $this->assertTrue(FALSE);
             }
         )->done();
@@ -65,6 +65,26 @@ final class SalesforceAppSyncSubscribersConnectorTest extends TestCase
         $processDto
             ->setHeaders([])
             ->setData(json_encode([]));
+
+        /** @var SalesforceAppSyncSubscribersConnector|MockObject $syncConn */
+        $syncConn = $this->mockSync(TRUE);
+
+        $this->expectException(CleverConnectorsException::class);
+        $this->expectExceptionCode(CleverConnectorsException::MISSING_DATA);
+        $syncConn->processBatch($processDto, $loop, function (): void {
+        });
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testProcessBatchFailed2(): void
+    {
+        $loop       = Factory::create();
+        $processDto = new ProcessDto();
+        $processDto
+            ->setHeaders([])
+            ->setData(json_encode([SalesforceAppSystem::DL_ID => '123']));
 
         /** @var SalesforceAppSyncSubscribersConnector|MockObject $syncConn */
         $syncConn = $this->mockSync(TRUE);

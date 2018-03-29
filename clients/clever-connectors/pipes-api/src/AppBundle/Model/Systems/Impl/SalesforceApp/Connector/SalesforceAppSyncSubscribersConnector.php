@@ -124,10 +124,12 @@ class SalesforceAppSyncSubscribersConnector implements BatchInterface, Connector
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
-        $listId = json_decode($dto->getData(), TRUE)[SalesforceAppSystem::DL_ID] ?? NULL;
-        if ($listId === NULL) {
+        $data     = json_decode($dto->getData(), TRUE);
+        $listId   = $data[SalesforceAppSystem::DL_ID] ?? NULL;
+        $filterId = $data[SalesforceAppSystem::FILTER_ID] ?? NULL;
+        if ($listId === NULL || $filterId === NULL) {
             throw new CleverConnectorsException(
-                'Parameter "distributionId" is missing.',
+                'Parameter "distributionId" or "filterId" is missing.',
                 CleverConnectorsException::MISSING_DATA
             );
         }
@@ -153,8 +155,8 @@ class SalesforceAppSyncSubscribersConnector implements BatchInterface, Connector
                     return all($this->doPageLoop($total, $sender, $callbackItem, $requestDto, $systemInstall, $where));
                 }
             )->then(
-                function ($all) use ($sender, $requestDto) {
-                    $this->fetchData($sender, $this->createUnlockRequest($requestDto));
+                function ($all) use ($sender, $requestDto, $filterId) {
+                    $this->fetchData($sender, $this->createUnlockRequest($requestDto, $filterId));
 
                     return $all;
                 }
@@ -280,13 +282,14 @@ class SalesforceAppSyncSubscribersConnector implements BatchInterface, Connector
 
     /**
      * @param RequestDto $dto
+     * @param string     $filterId
      *
      * @return RequestDto
      */
-    private function createUnlockRequest(RequestDto $dto): RequestDto
+    private function createUnlockRequest(RequestDto $dto, string $filterId): RequestDto
     {
         //@TODO ADD correct URL
-        $uri = new Uri(sprintf(self::UNLOCK_URL, rtrim($dto->getUri(TRUE), '/'), ''));
+        $uri = new Uri(sprintf(self::UNLOCK_URL, rtrim($dto->getUri(TRUE), '/'), $filterId));
 
         return RequestDto::from($dto, $uri);
     }

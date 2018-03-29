@@ -38,7 +38,8 @@ class SalesforceAppSystem implements OAuth2Interface, CMEventSystemInterface
     use CMEventSystemTrait;
     use AuthorizationTrait;
 
-    public const DL_ID = 'distributionId';
+    public const DL_ID     = 'distributionId';
+    public const FILTER_ID = 'filterId';
 
     protected const SWITCH_TOKEN = '';
     protected const SYNC_URL     = '';
@@ -312,10 +313,11 @@ class SalesforceAppSystem implements OAuth2Interface, CMEventSystemInterface
     public function runFilterSync(SystemInstall $systemInstall, array $data): array
     {
         $distributionId = $data[self::DL_ID] ?? NULL;
+        $filterId       = $data[self::FILTER_ID] ?? NULL;
 
-        if ($distributionId === NULL) {
+        if ($distributionId === NULL || $filterId === NULL) {
             throw new CleverConnectorsException(
-                'Parameter "distributionId" is missing.',
+                'Parameter "distributionId" or "filterId" is missing.',
                 CleverConnectorsException::MISSING_DATA
             );
         }

@@ -129,7 +129,10 @@ final class SalesforceAppSystemTest extends TestCase
      */
     public function testRunFilterSync(): void
     {
-        $data = $this->system->runFilterSync($this->systemInstall, [SalesforceAppSystem::DL_ID => '123456']);
+        $data = $this->system->runFilterSync(
+            $this->systemInstall,
+            [SalesforceAppSystem::DL_ID => '123456', SalesforceAppSystem::FILTER_ID => '123456']
+        );
         self::assertTrue(is_array($data));
     }
 
@@ -142,6 +145,17 @@ final class SalesforceAppSystemTest extends TestCase
         $this->expectExceptionCode(CleverConnectorsException::MISSING_DATA);
 
         $this->system->runFilterSync($this->systemInstall, []);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testRunFilterSyncFailed2(): void
+    {
+        $this->expectException(CleverConnectorsException::class);
+        $this->expectExceptionCode(CleverConnectorsException::MISSING_DATA);
+
+        $this->system->runFilterSync($this->systemInstall, [SalesforceAppSystem::DL_ID => '123456']);
     }
 
 }
