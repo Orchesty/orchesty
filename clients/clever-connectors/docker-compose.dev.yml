@@ -351,6 +351,10 @@ services:
         - ${DEV_IP}:6379:6379
         volumes:
         - redis:/data
+        ## BEGIN STAGE
+        #ports:
+        #  - 6379:6379
+        ## END STAGE
 
     # ELK
     elasticsearch:
