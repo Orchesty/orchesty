@@ -49,7 +49,7 @@ class SalesforceAppSyncSubscribersConnector implements BatchInterface, Connector
     use LoggerTrait;
 
     protected const QUERY_URL      = '%s/services/data/v40.0/query?q=%s';
-    protected const SYNC_STATE_URL = '%s/services/data/v40.0/pipes/sync';
+    protected const SYNC_STATE_URL = '%s/services/apexrest/CMHB/pipes/sync';
     protected const PAGE_LIMIT     = 50;
     protected const NODE_NAME      = '';
 

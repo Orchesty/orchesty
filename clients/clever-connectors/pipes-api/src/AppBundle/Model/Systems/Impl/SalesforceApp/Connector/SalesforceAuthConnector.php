@@ -28,7 +28,7 @@ use Throwable;
 class SalesforceAuthConnector implements ConnectorInterface
 {
 
-    private const URL = '%s/services/apexrest/CMHB/pipes';
+    private const URL = '%s/services/apexrest/CMHB/pipes/auth';
 
     /**
      * @var CurlManager
