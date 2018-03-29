@@ -5,9 +5,10 @@ import JobMessage from "../../message/JobMessage";
 import {ResultCode} from "../../message/ResultCode";
 import {IFaucetConfig} from "../../topology/Configurator";
 import {IAmqpFaucetSettings} from "../faucet/AmqpFaucet";
+import AWorker from "./AWorker";
 import IWorker from "./IWorker";
 
-export default class LimiterWorker implements IWorker {
+export default class LimiterWorker extends AWorker {
 
     /**
      *
@@ -19,14 +20,15 @@ export default class LimiterWorker implements IWorker {
         private limiter: ILimiter,
         private worker: IWorker,
         private faucetConfig: IFaucetConfig,
-    ) {}
+    ) {
+        super();
+    }
 
     /**
      * Checks against limiter if the given message can be processed now.
      * If not it postpones this message using limiter.
      *
-     * @param {JobMessage} msg
-     * @return {Promise<JobMessage[]>}
+     * @inheritdoc
      */
     public async processData(msg: JobMessage): Promise<JobMessage[]> {
         const can = await this.limiter.canBeProcessed(msg);
@@ -51,10 +53,7 @@ export default class LimiterWorker implements IWorker {
         return processed;
     }
 
-    /**
-     *
-     * @return {Promise<boolean>}
-     */
+    /** @inheritdoc */
     public async isWorkerReady(): Promise<boolean> {
         try {
             const [ l, w ] = await Promise.all([

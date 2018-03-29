@@ -1,7 +1,7 @@
 import JobMessage from "../../message/JobMessage";
 import {ResultCode} from "../../message/ResultCode";
 import {INodeLabel} from "../../topology/Configurator";
-import IWorker from "./IWorker";
+import AWorker from "./AWorker";
 
 export interface IAppenderWorkerSettings {
     node_label: INodeLabel;
@@ -11,16 +11,21 @@ export interface IAppenderWorkerSettings {
 /**
  * Worker for testing purposes,
  */
-class AppenderWorker implements IWorker {
-
-    constructor(private settings: IAppenderWorkerSettings) {}
+class AppenderWorker extends AWorker {
 
     /**
-     * Appends string given message content
      *
-     * @param {JobMessage} msg
-     * @return {Promise<JobMessage[]>}
+     * @param {IAppenderWorkerSettings} settings
      */
+    constructor(private settings: IAppenderWorkerSettings) {
+        super();
+    }
+
+     /**
+      * Appends suffix from config to the end of message body.
+      *
+      * @inheritdoc
+      */
     public processData(msg: JobMessage): Promise<JobMessage[]> {
         msg.setContent(`${msg.getContent()}${this.settings.suffix}`);
         msg.setResult({code: ResultCode.SUCCESS, message: "Appender worker OK"});
@@ -28,11 +33,7 @@ class AppenderWorker implements IWorker {
         return Promise.resolve([msg]);
     }
 
-    /**
-     * Returns whether the worker is ready or not
-     *
-     * @return {Promise<boolean>}
-     */
+    /** @inheritdoc */
     public isWorkerReady(): Promise<boolean> {
         return Promise.resolve(true);
     }

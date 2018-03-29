@@ -1,21 +1,20 @@
 import JobMessage from "../../message/JobMessage";
 import {ResultCode} from "../../message/ResultCode";
-import IWorker from "./IWorker";
+import AWorker from "./AWorker";
 
 /**
  * Worker for testing purposes to be used in testing topologies.
  *
  * It provides method for retrieving all messages passed to processData function
  */
-class TestCaptureWorker implements IWorker {
+class TestCaptureWorker extends AWorker {
 
     private captured: Array<{body: string, headers: {}}> = [];
 
     /**
      * Returns message as it would be processed, but captures given message
      *
-     * @param {JobMessage} msg
-     * @return {Promise<JobMessage[]>}
+     * @inheritdoc
      */
     public processData(msg: JobMessage): Promise<JobMessage[]> {
         this.captured.push({body: msg.getContent(), headers: msg.getHeaders().getRaw()});
@@ -25,11 +24,7 @@ class TestCaptureWorker implements IWorker {
         return Promise.resolve([msg]);
     }
 
-    /**
-     * Returns whether the worker is ready or not
-     *
-     * @return {Promise<boolean>}
-     */
+    /** @inheritdoc */
     public async isWorkerReady(): Promise<boolean> {
         return true;
     }

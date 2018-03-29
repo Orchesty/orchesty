@@ -3,13 +3,13 @@ import JobMessage from "../../message/JobMessage";
 import {ResultCode} from "../../message/ResultCode";
 import {INodeLabel} from "../../topology/Configurator";
 import Resequencer from "../Resequencer";
-import IWorker from "./IWorker";
+import AWorker from "./AWorker";
 
 export interface IResequencerWorkerSettings {
     node_label: INodeLabel;
 }
 
-class ResequencerWorker implements IWorker {
+class ResequencerWorker extends AWorker {
 
     private resequencer: Resequencer;
 
@@ -18,14 +18,14 @@ class ResequencerWorker implements IWorker {
      * @param {IResequencerWorkerSettings} settings
      */
     constructor(private settings: IResequencerWorkerSettings) {
+        super();
         this.resequencer = new Resequencer(settings.node_label.id);
     }
 
     /**
      * Does not modify message, just marks it as processed
      *
-     * @param {JobMessage} msg
-     * @return {Promise<JobMessage>}
+     * @inheritdoc
      */
     public processData(msg: JobMessage): Promise<JobMessage[]> {
         const sId = msg.getSequenceId();
@@ -45,11 +45,7 @@ class ResequencerWorker implements IWorker {
         return Promise.resolve(bufferedMessages);
     }
 
-    /**
-     * Returns whether the worker is ready or not
-     *
-     * @return {Promise<boolean>}
-     */
+    /** @inheritdoc */
     public isWorkerReady(): Promise<boolean> {
         logger.debug(`Worker[type="resequencer"] isWorkerReady() called. Responding with true.`);
 

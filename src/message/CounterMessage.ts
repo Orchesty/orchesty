@@ -1,5 +1,5 @@
 import {INodeLabel} from "../topology/Configurator";
-import AMessage from "./AMessage";
+import AMessage, {MessageType} from "./AMessage";
 import Headers from "./Headers";
 import IMessage from "./IMessage";
 import {ResultCode, ResultCodeGroup} from "./ResultCode";
@@ -29,6 +29,14 @@ class CounterMessage extends AMessage implements IMessage {
         this.resultMsg = resultMsg;
         this.following = following;
         this.multiplier = multiplier;
+    }
+
+    /**
+     * Returns the message type e.g. process|service
+     * @return {string}
+     */
+    public getType(): string {
+        return MessageType.COUNTER;
     }
 
     /**

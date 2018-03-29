@@ -1,6 +1,12 @@
 import {INodeLabel} from "../topology/Configurator";
 import Headers from "./Headers";
 
+export enum MessageType {
+    COUNTER = "counter",
+    PROCESS = "process",
+    SERVICE = "service",
+}
+
 abstract class AMessage {
 
     protected headers: Headers;

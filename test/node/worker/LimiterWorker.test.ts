@@ -19,6 +19,7 @@ describe("LimiterWorker", () => {
         const workerMock: IWorker = {
             isWorkerReady: async () => false,
             processData: async () => null,
+            processService: async () => null,
         };
 
         const faucetConf: any = { settings: { exchange: {name: "exname"}, routing_key: "rk"}};
@@ -60,6 +61,7 @@ describe("LimiterWorker", () => {
             const workerMock: IWorker = {
                 isWorkerReady: async () => true,
                 processData: async () => null,
+                processService: async () => null,
             };
 
             const faucetConf: any = { settings: { exchange: {name: "exname"}, routing_key: "rk"}};
@@ -95,6 +97,7 @@ describe("LimiterWorker", () => {
             const workerMock: IWorker = {
                 isWorkerReady: async () => true,
                 processData: async () => null,
+                processService: async () => null,
             };
 
             const faucetConf: any = { settings: { exchange: {name: "exname"}, routing_key: "rk"}};

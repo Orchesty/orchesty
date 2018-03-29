@@ -7,6 +7,7 @@ import {ResultCode, ResultCodeGroup} from "../message/ResultCode";
 import IDrain from "./drain/IDrain";
 import IFaucet from "./faucet/IFaucet";
 import IWorker from "./worker/IWorker";
+import {MessageType} from "../message/AMessage";
 
 export enum NODE_STATUS {
     READY = 200,
@@ -81,36 +82,27 @@ class Node implements IStoppable {
      * @return {Promise}
      * @private
      */
-    public open(): Promise<void> {
+    public async open(): Promise<void> {
         this.nodeStatus = NODE_STATUS.READY;
 
         const processFn = async (msgIn: JobMessage): Promise<void> => {
-            try {
-                msgIn.getMeasurement().markWorkerStart();
-                const msgsOut = await this.worker.processData(msgIn);
-
-                msgsOut.forEach((msgOut: JobMessage) => {
-                    msgOut.getMeasurement().markWorkerEnd();
-
-                    // send to following bridge here
-                    this.drain.forward(msgOut);
-
-                    msgOut.getMeasurement().markFinished();
-                    this.sendBridgeMetrics(msgOut);
-                });
-            } catch (err) {
-                logger.error(`Node process failed.`, logger.ctxFromMsg(msgIn, err));
+            if (msgIn.getType() === MessageType.PROCESS) {
+                return await this.handleProcessJobMessage(msgIn);
             }
+
+            if (msgIn.getType() === MessageType.SERVICE) {
+                return await this.handleServiceJobMessage(msgIn);
+            }
+
+            logger.error(`Unknown message type: "${msgIn.getType()}"`, logger.ctxFromMsg(msgIn));
         };
 
-        return this.faucet.open(processFn)
-            .then(() => {
-                logger.debug("Faucet has been opened.", {node_id: this.id});
-            });
+        await this.faucet.open(processFn);
+        logger.debug("Faucet has been opened.", {node_id: this.id});
     }
 
     /**
-     * TODO - safely close worker, drain and http server as well
+     * TODO - safely close worker, drain and http server
      *
      * Stops all node's services
      *
@@ -130,6 +122,48 @@ class Node implements IStoppable {
      */
     public getWorker(): IWorker {
         return this.worker;
+    }
+
+    /**
+     *
+     * @param {JobMessage} msgIn
+     * @return {Promise<void>}
+     */
+    private async handleProcessJobMessage(msgIn: JobMessage): Promise<void> {
+        try {
+            msgIn.getMeasurement().markWorkerStart();
+            const msgsOut = await this.worker.processData(msgIn);
+
+            msgsOut.forEach((msgOut: JobMessage) => {
+                msgOut.getMeasurement().markWorkerEnd();
+
+                // send to following bridge here
+                this.drain.forward(msgOut);
+
+                msgOut.getMeasurement().markFinished();
+                this.sendBridgeMetrics(msgOut);
+            });
+        } catch (err) {
+            logger.error(`Node process message failed.`, logger.ctxFromMsg(msgIn, err));
+        }
+    }
+
+    /**
+     *
+     * @param {JobMessage} msgIn
+     * @return {Promise<void>}
+     */
+    private async handleServiceJobMessage(msgIn: JobMessage): Promise<void> {
+        try {
+            msgIn.getMeasurement().markWorkerStart();
+            const msgOut = await this.worker.processService(msgIn);
+            msgOut.getMeasurement().markWorkerEnd();
+            // TODO - do we really want to send these to counter?
+            this.drain.forward(msgOut);
+            msgOut.getMeasurement().markFinished();
+        } catch (err) {
+            logger.error(`Node service message failed.`, logger.ctxFromMsg(msgIn, err));
+        }
     }
 
     /**

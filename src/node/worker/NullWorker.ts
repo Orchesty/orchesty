@@ -3,25 +3,30 @@ import logger from "../../logger/Logger";
 import JobMessage from "../../message/JobMessage";
 import {ResultCode} from "../../message/ResultCode";
 import {INodeLabel} from "../../topology/Configurator";
-import IWorker from "./IWorker";
+import AWorker from "./AWorker";
 
 export interface INullWorkerSettings {
     node_label: INodeLabel;
 }
 
-class NullWorker implements IWorker {
+class NullWorker extends AWorker {
 
     private agent: http.Agent;
 
+    /**
+     *
+     * @param {INullWorkerSettings} settings
+     */
     constructor(private settings: INullWorkerSettings) {
+        super();
+
         this.agent = new http.Agent({ keepAlive: true, maxSockets: Infinity });
     }
 
     /**
      * Does not modify message, just marks it as processed
      *
-     * @param {JobMessage} msg
-     * @return {Promise<JobMessage[]>}
+     * @inheritdoc
      */
     public processData(msg: JobMessage): Promise<JobMessage[]> {
         logger.debug(
@@ -45,11 +50,7 @@ class NullWorker implements IWorker {
         return Promise.resolve([msg]);
     }
 
-    /**
-     * Returns whether the worker is ready or not
-     *
-     * @return {Promise<boolean>}
-     */
+    /** @inheritdoc */
     public isWorkerReady(): Promise<boolean> {
         logger.debug(`Worker[type="null"] isWorkerReady() called. Responding with true.`);
 
