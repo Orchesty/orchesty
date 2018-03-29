@@ -37,7 +37,7 @@ security:
             pattern: ^/(user_systems/*|systems/*|system/*)
             security: false
         unsecured_starting_point:
-            pattern: ^/(topologies/*/nodes/*/run|api/topologies/*/nodes/*/run|api/topologies/*/nodes/*/run_by_name)
+            pattern: ^/(topologies/[\w-\.]+/nodes/[\w-\.]+/run|topologies/[\w-\.]+/nodes/[\w-\.]+/run_by_id|api/topologies/[\w-\.]+/nodes/[\w-\.]+/run|api/topologies/[\w-\.]+/nodes/[\w-\.]+/run_by_name)
             security: false
         unsecured_connectors:
             pattern: ^/(connector/[\w-\.]+/action|connector/[\w-\.]+/webhook|mapper/[\w-\.]+|xml-parser/[\w-\.]+|custom_node/[\w-\.]+/process)
