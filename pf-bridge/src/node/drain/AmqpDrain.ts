@@ -9,6 +9,7 @@ import CounterPublisher from "./amqp/CounterPublisher";
 import FollowersPublisher from "./amqp/FollowersPublisher";
 import IDrain from "./IDrain";
 import IPartialForwarder from "./IPartialForwarder";
+import {MessageType} from "../../message/AMessage";
 
 export interface IFollower {
     node_id: string;
@@ -81,6 +82,37 @@ class AmqpDrain implements IDrain, IPartialForwarder {
      * @param {JobMessage} message
      */
     public forward(message: JobMessage): void {
+
+        if (message.getType() === MessageType.PROCESS) {
+            this.forwardServiceMessage(message);
+            return;
+        }
+
+        if (message.getType() === MessageType.SERVICE) {
+            this.forwardProcessMessage(message);
+            return;
+        }
+
+        logger.error(`Drain cannot forward unknown message type : "${message.getType()}"`, logger.ctxFromMsg(message));
+    }
+
+    /**
+     * Allows caller to forward single split messages transparently as he wishes
+     * Does not send result to counter
+     *
+     * @param {JobMessage} message
+     * @return {Promise<boolean>}
+     */
+    public forwardPart(message: JobMessage): Promise<void> {
+        return this.followersPublisher.send(message);
+    }
+
+    /**
+     *
+     * @param {JobMessage} message
+     * @return {Promise<void>}
+     */
+    private forwardProcessMessage(message: JobMessage): Promise<void> {
         if (message.getResultGroup() === ResultCodeGroup.NON_STANDARD) {
             this.forwardNonStandard(message);
             return;
@@ -93,17 +125,6 @@ class AmqpDrain implements IDrain, IPartialForwarder {
 
         // On any error
         this.forwardToCounterOnly(message);
-    }
-
-    /**
-     * Allows caller to forward single split messages transparently as he wishes
-     * Does not send result to counter
-     *
-     * @param {JobMessage} message
-     * @return {Promise<boolean>}
-     */
-    public forwardPart(message: JobMessage): Promise<void> {
-        return this.followersPublisher.send(message);
     }
 
     /**
@@ -254,6 +275,20 @@ class AmqpDrain implements IDrain, IPartialForwarder {
             await this.followersPublisher.send(message);
         } catch (e) {
             logger.error("AmqpDrain could not forward message", logger.ctxFromMsg(message, e));
+        }
+    }
+
+    /**
+     *
+     * @param {JobMessage} message
+     * @return {Promise<void>}
+     */
+    private async forwardServiceMessage(message: JobMessage): Promise<void> {
+        try {
+            message.getMeasurement().markFinished();
+            await this.followersPublisher.send(message);
+        } catch (e) {
+            logger.error("AmqpDrain could not forward service  message", logger.ctxFromMsg(message, e));
         }
     }
 
