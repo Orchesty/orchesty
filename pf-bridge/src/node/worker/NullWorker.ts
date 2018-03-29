@@ -24,60 +24,22 @@ class NullWorker implements IWorker {
      * @return {Promise<JobMessage[]>}
      */
     public processData(msg: JobMessage): Promise<JobMessage[]> {
-        logger.debug(`Worker[type="null"] is processing message. Headers: ${JSON.stringify(msg.getHeaders().getRaw())}`);
+        logger.debug(
+            `Worker[type="null"] processing message.`,
+            {
+                correlation_id: msg.getCorrelationId(),
+                node_id: this.settings.node_label.node_id,
+                node_name: this.settings.node_label.node_name,
+                topology_id: this.settings.node_label.topology_id,
+                data : JSON.stringify(msg.getHeaders().getRaw()),
+            },
+        );
 
-        // msg.setResult({code: ResultCode.SUCCESS, message: "Null worker passed message."});
+        msg.setResult({code: ResultCode.SUCCESS, message: "Null worker passed message."});
 
-        // Add some custom logic here for ad-hoc testing
         if (this.settings && this.settings.node_label.node_name.toLowerCase() === "debug") {
-            const data = JSON.parse(msg.getContent());
-
-            // fake splitter
-            if (data.bids && data.asks) {
-                if (Math.random() >= 0.5) {
-                    delete data.bids;
-                } else {
-                    delete data.asks;
-                }
-
-                data.split = true;
-
-                msg.setResult({code: ResultCode.SUCCESS, message: "Fake splitter OK."});
-                msg.setContent(JSON.stringify(data));
-
-                return Promise.resolve([msg]);
-            }
-
-            // fake filter
-            if (data.split && data.split === true) {
-                const id = this.settings.node_label.node_id;
-                const lastChar = id.substr(id.length - 1);
-
-                if (parseInt(lastChar, 10) % 2 === 0) {
-                    if (data.bids) {
-                        msg.setContent("All ok");
-                        msg.setResult({code: ResultCode.SUCCESS, message: "Bids filter OK."});
-                        msg.setContent(JSON.stringify(data));
-                    } else {
-                        msg.setResult({code: ResultCode.DO_NOT_CONTINUE, message: "No bids in data."});
-                        msg.setContent(JSON.stringify(data));
-                    }
-                } else {
-                    if (data.asks) {
-                        msg.setContent("All ok");
-                        msg.setResult({code: ResultCode.SUCCESS, message: "Asks filter OK."});
-                        msg.setContent(JSON.stringify(data));
-                    } else {
-                        msg.setResult({code: ResultCode.DO_NOT_CONTINUE, message: "No asks in data."});
-                        msg.setContent(JSON.stringify(data));
-                    }
-                }
-
-                return Promise.resolve([msg]);
-            }
-
-        } else {
-            msg.setResult({code: ResultCode.SUCCESS, message: "Null worker passed message."});
+            // Add some custom logic here for ad-hoc testing
+            msg.setResult({code: ResultCode.SUCCESS, message: "Debug worker passed message."});
         }
 
         return Promise.resolve([msg]);
