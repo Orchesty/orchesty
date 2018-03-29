@@ -136,10 +136,7 @@ class Node implements IStoppable {
 
             msgsOut.forEach((msgOut: JobMessage) => {
                 msgOut.getMeasurement().markWorkerEnd();
-
-                // send to following bridge here
                 this.drain.forward(msgOut);
-
                 msgOut.getMeasurement().markFinished();
                 this.sendBridgeMetrics(msgOut);
             });
@@ -158,7 +155,6 @@ class Node implements IStoppable {
             msgIn.getMeasurement().markWorkerStart();
             const msgOut = await this.worker.processService(msgIn);
             msgOut.getMeasurement().markWorkerEnd();
-            // TODO - do we really want to send these to counter?
             this.drain.forward(msgOut);
             msgOut.getMeasurement().markFinished();
         } catch (err) {
