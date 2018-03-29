@@ -2,6 +2,7 @@ import { Channel, Message } from "amqplib";
 import {Connection} from "amqplib-plus/dist/lib/Connection";
 import { Consumer as BasicConsumer } from "amqplib-plus/dist/lib/Consumer";
 import logger from "../../../logger/Logger";
+import {MessageType} from "../../../message/AMessage";
 import Headers from "../../../message/Headers";
 import JobMessage from "../../../message/JobMessage";
 import {INodeLabel} from "../../../topology/Configurator";
@@ -28,6 +29,13 @@ class Consumer extends BasicConsumer {
     private node: INodeLabel;
     private processData: FaucetProcessMsgFn;
 
+    /**
+     *
+     * @param {INodeLabel} node
+     * @param {Connection} conn
+     * @param {(ch: Channel) => Promise<any>} channelCb
+     * @param {FaucetProcessMsgFn} processData
+     */
     constructor(
         node: INodeLabel,
         conn: Connection,
@@ -39,14 +47,17 @@ class Consumer extends BasicConsumer {
         this.processData = processData;
     }
 
+    /**
+     * Creates message object from consumed amqp message and passes it to processData function
+     *
+     * @param {Message} amqMsg
+     * @param {Channel} channel
+     */
     public processMessage(amqMsg: Message, channel: Channel): void {
         let inMsg: JobMessage;
-        try {
-            inMsg = new JobMessage(this.node, amqMsg.properties.headers, amqMsg.content);
-            inMsg.getMeasurement().markReceived();
-            inMsg.getMeasurement().setPublished(Consumer.getPublishedTimestamp(inMsg, amqMsg));
-            inMsg.getHeaders().setHeader("content-type", amqMsg.properties.contentType);
 
+        try {
+            inMsg = this.createJobMessage(amqMsg);
             logger.debug(`AmqpFaucet received message.`, logger.ctxFromMsg(inMsg));
         } catch (e) {
             logger.error(`AmqpFaucet dead-lettering message`, {node_id: this.node.id, error: e});
@@ -71,6 +82,34 @@ class Consumer extends BasicConsumer {
                     logger.error(`Could not nack message. Error: ${ackErr}`, logger.ctxFromMsg(inMsg));
                 }
             });
+    }
+
+    private createJobMessage(amqMsg: Message): JobMessage {
+        const msg = new JobMessage(
+            this.node,
+            amqMsg.properties.headers,
+            amqMsg.content,
+            this.getMessageType(amqMsg),
+        );
+
+        msg.getMeasurement().markReceived();
+        msg.getMeasurement().setPublished(Consumer.getPublishedTimestamp(msg, amqMsg));
+        msg.getHeaders().setHeader("content-type", amqMsg.properties.contentType);
+
+        return msg;
+    }
+
+    /**
+     *
+     * @param {Message} amqMsg
+     * @return {MessageType}
+     */
+    private getMessageType(amqMsg: Message): MessageType {
+        if (amqMsg.properties.type === MessageType.SERVICE) {
+            return MessageType.SERVICE;
+        }
+
+        return MessageType.PROCESS;
     }
 
 }

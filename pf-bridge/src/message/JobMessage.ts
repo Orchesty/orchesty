@@ -1,5 +1,5 @@
 import {INodeLabel} from "../topology/Configurator";
-import AMessage from "./AMessage";
+import AMessage, {MessageType} from "./AMessage";
 import Headers from "./Headers";
 import IMessage from "./IMessage";
 import {Measurement} from "./Measurement";
@@ -15,6 +15,7 @@ export interface IResult {
  */
 class JobMessage extends AMessage implements IMessage {
 
+    private type: string;
     private result: IResult;
     private measurement: Measurement;
     private multiplier: number;
@@ -25,20 +26,31 @@ class JobMessage extends AMessage implements IMessage {
      * @param {INodeLabel} node
      * @param {{}} headers
      * @param {Buffer} body
+     * @param {MessageType} type
      */
     constructor(
         node: INodeLabel,
         headers: { [key: string]: string },
         body: Buffer,
+        type?: MessageType,
     ) {
         super(node, headers, body);
 
+        this.type = type ? type : MessageType.PROCESS;
         this.measurement = new Measurement();
         this.multiplier = 1;
         this.forwardSelf = true;
 
         this.headers.removeHeader(Headers.RESULT_CODE);
         this.headers.removeHeader(Headers.RESULT_MESSAGE);
+    }
+
+    /**
+     * Returns the message type e.g. process|service
+     * @return {string}
+     */
+    public getType(): string {
+        return this.type;
     }
 
     /**

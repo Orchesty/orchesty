@@ -9,7 +9,7 @@ import Headers from "../../message/Headers";
 import JobMessage from "../../message/JobMessage";
 import {ResultCode} from "../../message/ResultCode";
 import {INodeLabel} from "../../topology/Configurator";
-import IWorker from "./IWorker";
+import AWorker from "./AWorker";
 
 export interface IAmqpWorkerSettings {
     node_label: INodeLabel;
@@ -28,7 +28,7 @@ export interface IWaiting {
 /**
  * TODO add waiting timeout
  */
-abstract class AAmqpWorker implements IWorker {
+abstract class AAmqpWorker extends AWorker {
 
     public static readonly TEST_TYPE = "test";
     public static readonly TEST_ID = "pipes.worker.amqprpc.test";
@@ -52,6 +52,8 @@ abstract class AAmqpWorker implements IWorker {
         protected connection: Connection,
         protected settings: IAmqpWorkerSettings,
     ) {
+        super();
+
         this.waiting = new Container();
         this.resultsQueue = {
             name: `pipes.${settings.node_label.topology_id}.${settings.node_label.id}_reply`,

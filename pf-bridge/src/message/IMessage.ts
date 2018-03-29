@@ -1,6 +1,7 @@
 
 interface IMessage {
 
+    getType(): string;
     getHeaders(): {};
     getBody(): Buffer;
 

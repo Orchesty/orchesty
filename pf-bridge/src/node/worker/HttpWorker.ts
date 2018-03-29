@@ -6,7 +6,7 @@ import Headers from "../../message/Headers";
 import JobMessage, {IResult} from "../../message/JobMessage";
 import { ResultCode } from "../../message/ResultCode";
 import {INodeLabel} from "../../topology/Configurator";
-import IWorker from "./IWorker";
+import AWorker from "./AWorker";
 
 export interface IHttpWorkerSettings {
     node_label: INodeLabel;
@@ -25,7 +25,7 @@ const DEFAULT_HTTP_TIMEOUT = 60000;
 /**
  * Converts JobMessage to Http request and then converts received Http response back to JobMessage object
  */
-class HttpWorker implements IWorker {
+class HttpWorker extends AWorker {
 
     private timeout: number;
     private agent: http.Agent;
@@ -34,6 +34,8 @@ class HttpWorker implements IWorker {
         protected settings: IHttpWorkerSettings,
         protected metrics: IMetrics,
     ) {
+        super();
+
         this.timeout = DEFAULT_HTTP_TIMEOUT;
         this.agent = new http.Agent({ keepAlive: true, maxSockets: Infinity });
     }
@@ -54,11 +56,7 @@ class HttpWorker implements IWorker {
         this.timeout = timeout;
     }
 
-    /**
-     *
-     * @param {JobMessage} msg
-     * @return {Promise<JobMessage[]>}
-     */
+    /** @inheritdoc */
     public processData(msg: JobMessage): Promise<JobMessage[]> {
         const reqParams: any = this.getJobRequestParams(msg);
 
@@ -108,11 +106,7 @@ class HttpWorker implements IWorker {
         });
     }
 
-    /**
-     * Returns whether the worker is ready or not
-     *
-     * @return {Promise<boolean>}
-     */
+    /** @inheritdoc */
     public isWorkerReady(): Promise<boolean> {
         return new Promise((resolve) => {
             const nodeId = this.settings.node_label.id;

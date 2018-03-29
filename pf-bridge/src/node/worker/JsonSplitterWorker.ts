@@ -5,7 +5,7 @@ import {ResultCode} from "../../message/ResultCode";
 import {INodeLabel} from "../../topology/Configurator";
 import IPartialForwarder from "../drain/IPartialForwarder";
 import Resequencer from "../Resequencer";
-import IWorker from "./IWorker";
+import AWorker from "./AWorker";
 
 export interface IJsonSplitterWorkerSettings {
     node_label: INodeLabel;
@@ -14,7 +14,7 @@ export interface IJsonSplitterWorkerSettings {
 /**
  *
  */
-class JsonSplitterWorker implements IWorker {
+class JsonSplitterWorker extends AWorker {
 
     /**
      *
@@ -24,13 +24,14 @@ class JsonSplitterWorker implements IWorker {
     constructor(
         private settings: IJsonSplitterWorkerSettings,
         private partialForwarder: IPartialForwarder,
-    ) {}
+    ) {
+        super();
+    }
 
     /**
      * Splits the the JSON data in the content into separate messages
      *
-     * @param {JobMessage} msg
-     * @return {Promise<JobMessage[]>}
+     * @inheritdoc
      */
     public processData(msg: JobMessage): Promise<JobMessage[]> {
         let content: any[];
@@ -72,11 +73,7 @@ class JsonSplitterWorker implements IWorker {
             });
     }
 
-    /**
-     * Returns whether the worker is ready or not
-     *
-     * @return {Promise<boolean>}
-     */
+    /** @inheritdoc */
     public isWorkerReady(): Promise<boolean> {
         return Promise.resolve(true);
     }
