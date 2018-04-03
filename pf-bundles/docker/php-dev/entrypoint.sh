@@ -25,6 +25,7 @@ fi
 # Webserver
 if [[ "$@" =~ "php-fpm" ]]; then
 	sudo -E nginx
+	sudo socat -d TCP-LISTEN:9000,reuseaddr,fork,bind=0.0.0.0 UNIX-CLIENT:/var/run/php-fpm.sock &
 fi
 
 exec "$@"
