@@ -1,7 +1,7 @@
 FROM dkr.hanaboso.net/hanaboso/symfony3-base:php-7.2
 
 RUN apt-get update && \
-    apt-get install -y git mc sudo nginx-extras libpng-dev && \
+    apt-get install -y git mc sudo nginx-extras socat libpng-dev && \
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
     composer global require "hirak/prestissimo:^0.3" && \
     pecl install xdebug && \
