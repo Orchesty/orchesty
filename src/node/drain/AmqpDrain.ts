@@ -84,12 +84,12 @@ class AmqpDrain implements IDrain, IPartialForwarder {
     public forward(message: JobMessage): void {
 
         if (message.getType() === MessageType.PROCESS) {
-            this.forwardServiceMessage(message);
+            this.forwardProcessMessage(message);
             return;
         }
 
         if (message.getType() === MessageType.SERVICE) {
-            this.forwardProcessMessage(message);
+            this.forwardServiceMessage(message);
             return;
         }
 
