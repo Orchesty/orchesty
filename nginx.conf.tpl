@@ -74,12 +74,10 @@ http {
 
 	upstream notification-sender-fpm-upstream {
 		server resolve_notification-sender-fpm:9000;
-		keepalive 64;
 	}
 
 	upstream notification-center-fpm-upstream {
 		server resolve_notification-center-fpm:9000;
-		keepalive 64;
 	}
 
 	server {
@@ -134,7 +132,6 @@ http {
 			fastcgi_param SCRIPT_FILENAME /srv/project/public/index.php; # TODO: make non-CM specific
 			fastcgi_param PATH_INFO $path_info;
 			fastcgi_param REQUEST_URI $path_info;
-			fastcgi_keep_conn on;
 			fastcgi_pass notification-sender-fpm-upstream;
 		}
 
@@ -149,7 +146,6 @@ http {
 			fastcgi_param SCRIPT_FILENAME /srv/project/public/index.php; # TODO: make non-CM specific
 			fastcgi_param PATH_INFO $path_info;
 			fastcgi_param REQUEST_URI $path_info;
-			fastcgi_keep_conn on;
 			fastcgi_pass notification-center-fpm-upstream;
 		}
 
