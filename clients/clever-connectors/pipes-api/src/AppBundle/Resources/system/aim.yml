@@ -1,0 +1,9 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    systems.salesforceapp:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Aim\AimSystem
+        arguments:
+            - '@hbpf.handler.starting_point'
+        tags: ['%systems%']
