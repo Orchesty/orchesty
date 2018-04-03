@@ -7,15 +7,16 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Limits\SystemLimitDto;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\ZendeskSystem;
 use DateTime;
+use Exception;
 use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
-use Tests\KernelTestCaseAbstract;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class ZendeskSystemTest
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Zendesk
  */
-final class ZendeskSystemTest extends KernelTestCaseAbstract
+final class ZendeskSystemTest extends TestCase
 {
 
     /**
@@ -64,7 +65,7 @@ final class ZendeskSystemTest extends KernelTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testSaveLimit(): void
     {
@@ -82,7 +83,7 @@ final class ZendeskSystemTest extends KernelTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testSaveLimitFail(): void
     {

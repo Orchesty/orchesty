@@ -70,10 +70,10 @@ class UserMessageGenerator implements BatchInterface, CustomNodeInterface
         SystemLimitManager $systemLimitManager
     )
     {
-        $this->serializer              = $serializer;
-        $this->asyncCommandFactory     = $asyncCommandFactory;
-        $this->logger                  = new NullLogger();
-        $this->systemLimitManager      = $systemLimitManager;
+        $this->serializer          = $serializer;
+        $this->asyncCommandFactory = $asyncCommandFactory;
+        $this->logger              = new NullLogger();
+        $this->systemLimitManager  = $systemLimitManager;
     }
 
     /**
@@ -103,15 +103,16 @@ class UserMessageGenerator implements BatchInterface, CustomNodeInterface
      *
      * @return PromiseInterface
      */
-    private function getSystemKey(array $data): PromiseInterface
+    private function getParams(array $data): PromiseInterface
     {
         $connectorKey = $data['param'] ?? NULL;
+        $user         = $data['user'] ?? NULL;
 
         if ($connectorKey === NULL) {
-            return reject(new InvalidArgumentException('Body has not system key.'));
-        } else {
-            return resolve($connectorKey);
+            return reject(new InvalidArgumentException('Body has no system key.'));
         }
+
+        return resolve(['key' => $connectorKey, 'user' => $user]);
     }
 
     /**
@@ -126,9 +127,9 @@ class UserMessageGenerator implements BatchInterface, CustomNodeInterface
         return $this
             ->parseBody($dto->getData())
             ->then(function (array $data) {
-                return $this->getSystemKey($data);
-            })->then(function (string $systemKey) use ($loop) {
-                return $this->getSystems($loop, $systemKey);
+                return $this->getParams($data);
+            })->then(function (array $params) use ($loop) {
+                return $this->getSystems($loop, $params);
             })->then(function (string $data) {
                 return $this->parseBody($data);
             })->then(function (array $data) use ($callbackItem): Promise {
@@ -184,16 +185,18 @@ class UserMessageGenerator implements BatchInterface, CustomNodeInterface
 
     /**
      * @param LoopInterface $loop
-     * @param string        $systemKey
+     * @param array         $params
      *
      * @return PromiseInterface
      */
-    private function getSystems(LoopInterface $loop, string $systemKey): PromiseInterface
+    private function getSystems(LoopInterface $loop, array $params): PromiseInterface
     {
+        $systemKey = $params['key'];
+        $user      = $params['user'];
         $this->logger->debug(sprintf('Start finding user system for key "%s".', $systemKey));
 
         return $this->asyncCommandFactory
-            ->create($loop, sprintf('react:get-system %s', $systemKey))
+            ->create($loop, sprintf('react:get-system %s %s', $systemKey, $user))
             ->then(NULL, function (Exception $e) use ($systemKey) {
                 $this->logger->error(sprintf('System [id=%s] not found', $systemKey));
 

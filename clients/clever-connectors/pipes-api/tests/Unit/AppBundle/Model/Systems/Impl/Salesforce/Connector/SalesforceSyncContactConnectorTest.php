@@ -14,6 +14,7 @@ use CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\Connector\Salesforc
 use CleverConnectors\AppBundle\Model\Systems\Impl\Salesforce\SalesforceSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Exception;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -33,6 +34,7 @@ final class SalesforceSyncContactConnectorTest extends KernelTestCaseAbstract
 {
 
     /**
+     * @throws Exception
      */
     public function testProcessBatch(): void
     {
@@ -68,6 +70,7 @@ final class SalesforceSyncContactConnectorTest extends KernelTestCaseAbstract
 
     /**
      * @return MockObject|SalesforceSyncContactConnector
+     * @throws Exception
      */
     private function mockSync()
     {
@@ -105,6 +108,7 @@ final class SalesforceSyncContactConnectorTest extends KernelTestCaseAbstract
 
     /**
      * @return MockObject|SalesforceSystem
+     * @throws Exception
      */
     private function mockSystem()
     {

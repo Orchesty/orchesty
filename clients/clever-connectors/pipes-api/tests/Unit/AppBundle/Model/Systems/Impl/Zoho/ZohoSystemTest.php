@@ -4,14 +4,14 @@ namespace Tests\Unit\AppBundle\Model\Systems\Impl\Zoho;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\ZohoSystem;
-use Tests\KernelTestCaseAbstract;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class ZohoSystemTest
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Zoho
  */
-final class ZohoSystemTest extends KernelTestCaseAbstract
+final class ZohoSystemTest extends TestCase
 {
 
     private const SYSTEM_PLAN          = 'system_plan';

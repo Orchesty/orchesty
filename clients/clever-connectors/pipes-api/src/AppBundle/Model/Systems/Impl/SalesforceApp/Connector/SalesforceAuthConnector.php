@@ -28,7 +28,7 @@ use Throwable;
 class SalesforceAuthConnector implements ConnectorInterface
 {
 
-    private const URL = '%s/services/apexrest/CMHB/pipes';
+    private const URL = '%s/services/apexrest/CMHB/pipes/auth';
 
     /**
      * @var CurlManager
@@ -85,6 +85,7 @@ class SalesforceAuthConnector implements ConnectorInterface
      * @param SystemInstall       $systemInstall
      * @param SalesforceAppSystem $system
      *
+     * @throws ConnectorException
      * @throws SystemException
      */
     public function sendAuthorizeConfirm(SystemInstall $systemInstall, SalesforceAppSystem $system): void
@@ -96,7 +97,7 @@ class SalesforceAuthConnector implements ConnectorInterface
         try {
             $this->curl->send($dto);
         } catch (Throwable $t) {
-            throw new SystemException($t->getMessage());
+            throw new ConnectorException($t->getMessage());
         }
     }
 
