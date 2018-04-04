@@ -162,6 +162,7 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
     {
         $this->startMetrics();
 
+        // @todo use class property - array of channels ?
         /** @var Channel|null $replyChannel */
         $replyChannel = NULL;
 
@@ -206,6 +207,7 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
             })->otherwise(function (Throwable $e) use ($replyChannel, $consumerChannel, $message) {
 
                 if ($replyChannel === NULL) {
+                    // @todo create new channel
                     $replyChannel = $consumerChannel;
                 }
 
