@@ -1,7 +1,4 @@
-FROM kapacitor:1.4
+FROM kapacitor:1.4-alpine
 
 COPY ./tasks /root/.kapacitor/load/tasks
-COPY ./entrypoint.sh /pipes/
-ENTRYPOINT ["/pipes/entrypoint.sh"]
-
-CMD ["kapacitord"]
+COPY ./kapacitor.conf /etc/kapacitor/kapacitor.conf

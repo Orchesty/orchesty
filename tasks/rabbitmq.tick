@@ -1,0 +1,32 @@
+dbrp "pipes"."default"
+
+var sample = 5s
+
+var rabbitMqData = stream
+   |from()
+       .database('pipes')
+       .retentionPolicy('default')
+       .measurement('rabbitmq_queue')
+   |window()
+       .period(sample)
+       .every(sample)
+   |groupBy('queue')
+
+var messagesAvg = rabbitMqData
+    |mean('messages')
+        .as('message')
+
+var messagesMax = rabbitMqData
+    |max('messages')
+        .as('message')
+
+messagesAvg
+   |join(messagesMax)
+       .as('avg', 'max')
+   |influxDBOut()
+       .database('pipes')
+       .measurement('rabbitmq')
+       .precision('ms')
+       .retentionPolicy('5s')
+
+
