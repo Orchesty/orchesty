@@ -1,13 +1,9 @@
 .PHONY: init composer-update
 
 DC=docker-compose
-<<<<<<< HEAD
-DE=docker-compose exec app
+DE=docker-compose exec -T app
 DP=docker-compose exec app bin/console
 DS=docker-compose exec mariadb
-=======
-DE=docker-compose exec -T app
->>>>>>> origin/pip-413
 IMAGE_API_DEMO_FPM=dkr.hanaboso.net/pipes/client-cm/api-demo:latest
 
 .env:
@@ -53,7 +49,6 @@ composer-install:
 composer-update:
 	$(DE) composer update --ignore-platform-reqs
 
-
 codesniffer:
 	$(DE) ./vendor/bin/phpcs --standard=./ruleset.xml --colors -p socialMultichannel/
 
@@ -66,14 +61,10 @@ phpunit:
 phpintegration: database-create
 	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr socialMultichannel/tests/Integration
 
-test: docker-up-force composer-install codesniffer phpstan phpunit phpintegration
-
-<<<<<<< HEAD
 fasttest: codesniffer phpstan phpunit phpintegration
-=======
-test: .env docker-up-force composer-install codesniffer phpstan phpunit
+
+test: .env docker-up-force composer-install codesniffer phpstan phpunit phpintegration
 
 docker-compose.ci.yml:
 	# Comment out any port forwarding
 	sed -r 's/^(\s+ports:)$$/#\1/g; s/^(\s+- \$$\{DEV_IP\}.*)$$/#\1/g' docker-compose.yml > docker-compose.ci.yml
->>>>>>> origin/pip-413
