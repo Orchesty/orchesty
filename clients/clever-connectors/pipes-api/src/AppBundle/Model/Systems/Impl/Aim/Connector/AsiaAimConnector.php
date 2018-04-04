@@ -2,6 +2,9 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Aim\Connector;
 
+use CleverConnectors\AppBundle\Model\Systems\Impl\Aim\AimSystem;
+use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
+
 /**
  * Class AsiaAimConnector
  *
@@ -13,11 +16,13 @@ final class AsiaAimConnector extends AimConnectorAbstract
     private const TYPE = 'asia';
 
     /**
-     * @param string $url
+     * @param AimSystem            $system
+     * @param CurlManagerInterface $curl
+     * @param string               $url
      */
-    public function __construct(string $url)
+    public function __construct(AimSystem $system, CurlManagerInterface $curl, string $url)
     {
-        parent::__construct(self::TYPE, $url);
+        parent::__construct($system, $curl, self::TYPE, $url);
     }
 
 }
