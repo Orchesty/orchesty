@@ -13,6 +13,11 @@ use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\StartingPointHandler;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Class AimConnectorAbstractTest
+ *
+ * @package Tests\Unit\AppBundle\Model\Systems\Impl\Aim\Connector
+ */
 final class AimConnectorAbstractTest extends TestCase
 {
 
