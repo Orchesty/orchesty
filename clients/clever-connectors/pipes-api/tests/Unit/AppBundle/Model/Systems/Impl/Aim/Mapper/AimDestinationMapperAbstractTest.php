@@ -6,10 +6,12 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Aim\AimSystem;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Aim\Mapper\AimEuropeMapper;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
-use CleverConnectors\AppBundle\Utils\HeadersUtils;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use PHPUnit\Framework\TestCase;
 
+/**
+ *
+ */
 final class AimDestinationMapperAbstractTest extends TestCase
 {
 

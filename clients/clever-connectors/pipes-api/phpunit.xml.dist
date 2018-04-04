@@ -16,6 +16,8 @@
         <env name="KERNEL_CLASS" value="CleverConnectors\Kernel" />
         <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak"/>
         <env name="BACKEND_HOST" value="127.0.0.5"/>
+        <env name="APP_ENV" value="test"/>
+        <env name="APP_DEBUG" value="1"/>
     </php>
 
     <testsuites>

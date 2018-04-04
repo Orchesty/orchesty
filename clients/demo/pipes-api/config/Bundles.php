@@ -29,7 +29,6 @@ return [
     Symfony\Bundle\TwigBundle\TwigBundle::class                          => ['all' => TRUE],
     Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle::class            => ['all' => TRUE],
     Symfony\Bundle\DebugBundle\DebugBundle::class                        => ['dev' => TRUE, 'test' => TRUE],
-    Symfony\Bundle\WebProfilerBundle\WebProfilerBundle::class            => ['dev' => TRUE, 'test' => TRUE],
     DoctrineMongoDBBundle::class                                         => ['all' => TRUE],
     FOSRestBundle::class                                                 => ['all' => TRUE],
     JMSSerializerBundle::class                                           => ['all' => TRUE],

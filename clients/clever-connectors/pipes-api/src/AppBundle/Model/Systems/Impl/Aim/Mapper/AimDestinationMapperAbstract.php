@@ -57,11 +57,11 @@ abstract class AimDestinationMapperAbstract implements CustomNodeInterface
     }
 
     /**
-     * @param $data
+     * @param array $data
      *
      * @return bool
      */
-    private function shouldSkip($data): bool
+    private function shouldSkip(array $data): bool
     {
         foreach ($data[AimSystem::DATA_KEY_DESTINATIONS] as $dest) {
             if ($dest === $this->destination || $dest === AimSystem::DESTINATION_ALL) {
@@ -71,4 +71,5 @@ abstract class AimDestinationMapperAbstract implements CustomNodeInterface
 
         return TRUE;
     }
+
 }
