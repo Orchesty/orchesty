@@ -57,6 +57,15 @@ logstash-build:
       - dev
       - master
 
+influxdb-build:
+    stage: stage1
+    script:
+      - cd $REPO_ROOT/influxdb
+      - make docker-build docker-push
+    only:
+      - dev
+      - master
+
 limiter-image:
   stage: stage1
   script:

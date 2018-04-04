@@ -299,7 +299,7 @@ services:
 
     # Metrics
     influxdb:
-        image: influxdb:1.5-alpine
+        image: dkr.hanaboso.net/pipes/pipes/influxdb:dev
         environment:
           - INFLUXDB_DB=pipes
         ports:
@@ -308,15 +308,6 @@ services:
           - ${DEV_IP}:8089:8089/udp
         volumes:
           - influxdb:/var/lib/influxdb
-        ## BEGIN DEV
-          - ./stack/influxdb.conf:/etc/influxdb/influxdb.conf
-          - ./stack/influxdb/:/docker-entrypoint-initdb.d/
-        ## END DEV
-        ## BEGIN STAGE
-        #configs:
-        #  - source: influxdb.conf
-        #    target: /etc/influxdb/influxdb.conf
-        ## END STAGE
 
     telegraf:
         image: telegraf:1.5-alpine
@@ -403,8 +394,6 @@ volumes:
 #configs:
 #  logstash.conf:
 #    file: ./stack/logstash.conf
-#  influxdb.conf:
-#    file: ./stack/influxdb.conf
 #  telegraf.conf:
 #    file: ./stack/telegraf.conf
 #  kapacitor.conf:
