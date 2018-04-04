@@ -51,8 +51,11 @@ multi-probe-image:
 logstash-build:
     stage: stage1
     script:
-        - cd $REPO_ROOT/logstash
-        - make docker-build docker-push
+      - cd $REPO_ROOT/logstash
+      - make docker-build docker-push
+    only:
+      - dev
+      - master
 
 limiter-image:
   stage: stage1
@@ -92,6 +95,9 @@ api-demo:
     - cd $DIR
     - make build
     - make push
+  only:
+    - dev
+    - master
 
 # GO LANG
 .go_test: &go_test

@@ -1,7 +1,7 @@
 .PHONY: init composer-update
 
 DC=docker-compose
-DE=docker-compose exec app
+DE=docker-compose exec -T app
 IMAGE_API_DEMO_FPM=dkr.hanaboso.net/pipes/client-cm/api-demo:latest
 
 .env:

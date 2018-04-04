@@ -21,11 +21,9 @@ docker-up-force: .env
 	$(DC) up -d --force-recreate --remove-orphans
 
 composer-install:
-	$(DEC) global require hirak/prestissimo
 	$(DEC) install --ignore-platform-reqs
 
 composer-update:
-	$(DEC) global require hirak/prestissimo
 	$(DEC) update --ignore-platform-reqs
 
 codesniffer:
