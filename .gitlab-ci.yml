@@ -66,6 +66,15 @@ influxdb-build:
       - dev
       - master
 
+kapacitor-build:
+    stage: stage1
+    script:
+      - cd $REPO_ROOT/kapacitor
+      - make docker-build docker-push
+    only:
+      - dev
+      - master
+
 limiter-image:
   stage: stage1
   script:
