@@ -285,6 +285,7 @@ services:
           - MONGO_HOST=mongo
           - MONGO_DATABASE=demo
           - MONGO_COLLECTION=Logs
+          - LS_HEAP_SIZE=0.5g
         #command: --log.level debug
         restart: on-failure
         ## BEGIN DEV
