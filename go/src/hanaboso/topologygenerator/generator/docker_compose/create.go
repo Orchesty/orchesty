@@ -191,6 +191,8 @@ func getEnvironment() map[string]string {
 	environment[RABBITMQ_VHOST] = viper.GetString("environment.rabbitmq-vhost")
 	environment[MULTI_PROBE_HOST] = viper.GetString("environment.multi-probe-host")
 	environment[MULTI_PROBE_PORT] = viper.GetString("environment.multi-probe-port")
+	environment[METRICS_HOST] = viper.GetString("environment.metrics-host")
+	environment[METRICS_PORT] = viper.GetString("environment.metrics-port")
 
 	return environment
 }

@@ -54,6 +54,7 @@ class Pipes implements INodeConfigProvider {
      * @return {Promise<IStoppable[]>}
      */
     public async startMultiBridge(): Promise<IStoppable[]> {
+        logger.debug("debug debug");
         const topo = this.getTopologyConfig(true);
         const proms: Node[] = [];
 
@@ -199,7 +200,7 @@ class Pipes implements INodeConfigProvider {
 
         const splitterPrefix = DIContainer.WORKER_TYPE_SPLITTER;
         const worker: IWorker = (nodeCfg.worker.type.substring(0, splitterPrefix.length) === splitterPrefix) ?
-            this.dic.get(nodeCfg.worker.type)(nodeCfg.worker.settings, drain) :
+            this.dic.get(nodeCfg.worker.type)(nodeCfg.worker.settings, drain, nodeCfg.drain.settings) :
             this.dic.get(nodeCfg.worker.type)(nodeCfg.worker.settings);
 
         const metrics: IMetrics = this.dic.get("metrics")(topo.id, id, metricsOptions.node_measurement);

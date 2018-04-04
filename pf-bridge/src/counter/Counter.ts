@@ -6,6 +6,7 @@ import IStoppable from "../IStoppable";
 import logger from "../logger/Logger";
 import {default as CounterMessage} from "../message/CounterMessage";
 import Headers from "../message/Headers";
+import {ResultCode} from "../message/ResultCode";
 import Terminator from "../terminator/Terminator";
 import {INodeLabel} from "../topology/Configurator";
 import CounterConsumer from "./CounterConsumer";
@@ -183,15 +184,9 @@ export default class Counter implements ICounter, IStoppable {
      */
     private async handleMessage(msg: Message): Promise<any> {
         try {
-            const cm = Counter.createCounterMessage(msg);
+            logger.debug("Counter message received.", {data: JSON.stringify(msg)});
 
-            logger.info(`Counter message received: "${cm.toString()}"`, {
-                topology_id: cm.getTopologyId(),
-                node_id: cm.getNodeId(),
-                correlation_id: cm.getCorrelationId(),
-                process_id: cm.getProcessId(),
-                parent_id: cm.getParentId(),
-            });
+            const cm = Counter.createCounterMessage(msg);
 
             return new Promise((resolve, reject) => {
                 this.distributor.add(cm.getTopologyId(), cm.getProcessId(), {msg: cm, resolve, reject});
@@ -258,7 +253,7 @@ export default class Counter implements ICounter, IStoppable {
 
         if (CounterProcess.isProcessFinished(processInfo)) {
             processInfo.end_timestamp = Date.now();
-            await this.onJobFinished(processInfo);
+            await this.onJobFinished(processInfo, cm);
             await this.storage.remove(topologyId, processId);
             return Promise.resolve();
         } else {
@@ -271,18 +266,42 @@ export default class Counter implements ICounter, IStoppable {
      * Publish message informing that job is completed
      *
      * @param process
+     * @param cm
      */
-    private async onJobFinished(process: ICounterProcessInfo): Promise<void> {
+    private async onJobFinished(process: ICounterProcessInfo, cm: CounterMessage): Promise<void> {
         if (!process) {
-            logger.warn(`Counter onJobFinished received invalid process info data: "${process}"`);
+            logger.error(`Counter onJobFinished received invalid process info data: "${process}"`);
             return;
+        }
+
+        if (process.parent_id !== "") {
+            return await this.evaluateParent(process, cm);
         }
 
         this.publishResult(process);
         this.terminator.tryTerminate(process.topology);
 
-        this.logFinished(process);
         this.sendMetrics(process);
+        this.logFinishedProcess(process);
+    }
+
+    /**
+     *
+     * @param {ICounterProcessInfo} process
+     * @param {CounterMessage} cm
+     * @return {Promise<void>}
+     */
+    private async evaluateParent(process: ICounterProcessInfo, cm: CounterMessage): Promise<void> {
+        // make object copy and change id to fake parental counter message
+        const headers = new Headers(cm.getHeaders().getRaw());
+        headers.setPFHeader(Headers.PARENT_ID, "");
+        headers.setPFHeader(Headers.PROCESS_ID, process.parent_id);
+
+        const result = process.success === true ? ResultCode.SUCCESS : ResultCode.CHILD_PROCESS_ERROR;
+
+        const parentCm = new CounterMessage(cm.getNodeLabel(), headers.getRaw(), result, "sub-process evaluated", 0, 1);
+
+        return await this.updateProcessInfo(parentCm);
     }
 
     /**
@@ -307,20 +326,14 @@ export default class Counter implements ICounter, IStoppable {
         try {
             this.metrics.removeTag("node_id");
             this.metrics.addTag("topology_id", process.topology.split("-")[0]);
-            const metricMsg = await this.metrics.send({
+            await this.metrics.send({
                 counter_process_result: process.ok === process.total,
                 counter_process_duration: process.end_timestamp - process.start_timestamp,
                 counter_process_ok_count: process.ok,
                 counter_process_fail_count: process.nok,
             }, true);
-            logger.debug(`Counter metrics[${metricMsg}].`, {
-                node_id: "counter",
-                correlation_id: process.correlation_id,
-                process_id: process.process_id,
-                topology_id: process.topology,
-            });
         } catch (e) {
-            logger.warn("Unable to send counter metrics.", {
+            logger.error("Unable to send counter metrics.", {
                 error: e,
                 node_id: "counter",
                 correlation_id: process.correlation_id,
@@ -333,14 +346,16 @@ export default class Counter implements ICounter, IStoppable {
      *
      * @param {ICounterProcessInfo} process
      */
-    private logFinished(process: ICounterProcessInfo): void {
+    private logFinishedProcess(process: ICounterProcessInfo): void {
         logger.info(
-            `Counter job evaluated as finished. Status: ${process.success}`,
+            `Finished process [processId='${process.process_id}]', parentId='${process.parent_id}'`,
             {
                 node_id: "counter",
                 correlation_id: process.correlation_id,
                 process_id: process.process_id,
+                parent_id: process.parent_id,
                 topology_id: process.topology,
+                data: JSON.stringify({total: process.total, ok_count: process.ok, nok_count: process.nok}),
             },
         );
     }

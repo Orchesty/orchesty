@@ -104,7 +104,7 @@ class StartingPoint implements LoggerAwareInterface
     {
         return sprintf(
             self::QUEUE_PATTERN,
-            GeneratorUtils::createNormalizedServiceName($topology->getId(), $topology->getName()),
+            $topology->getId(),
             GeneratorUtils::createNormalizedServiceName($node->getId(), $node->getName())
         );
     }

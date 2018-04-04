@@ -16,7 +16,7 @@ security:
             pattern: ^/(api/user/login|api/user/logout|api/user/\w+/activate|api/user/\w+/set_password|api/user/reset_password)
             security: false
         unsecured_starting_point:
-            pattern: ^/(topologies/\w+/nodes/[\w-]+/run|api/topologies/\w+/nodes/[\w-]+/run)
+            pattern: ^/(topologies/[\w-\.]+/nodes/[\w-\.]+/run|api/topologies/[\w-\.]+/nodes/[\w-\.]+/run)
             security: false
         unsecured_connectors:
             pattern: ^/(connector/[\w-\.]+/action|connector/[\w-\.]+/webhook|mapper/[\w-\.]+|xml-parser/[\w-\.]+|custom_node/[\w-\.]+/process)

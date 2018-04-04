@@ -24,7 +24,7 @@
   "homepage": "https://bitbucket.org/HANABOSO/pipes#readme",
   "dependencies": {
     "amqplib": "0.5.1",
-    "amqplib-plus": "0.0.15",
+    "amqplib-plus": "0.0.18",
     "body-parser": "1.17.2",
     "express": "4.14.1",
     "hb-utils": "0.0.4",
@@ -32,7 +32,7 @@
     "mongodb": "2.2.31",
     "moniker": "0.1.2",
     "power-assert": "1.4.4",
-    "redis": "^2.8.0",
+    "redis": "2.8.0",
     "request": "2.79.0",
     "request-promise": "4.2.1",
     "uuid": "3.0.1",

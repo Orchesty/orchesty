@@ -6,7 +6,7 @@ import Headers from "../../message/Headers";
 import JobMessage, {IResult} from "../../message/JobMessage";
 import { ResultCode } from "../../message/ResultCode";
 import {INodeLabel} from "../../topology/Configurator";
-import IWorker from "./IWorker";
+import AWorker from "./AWorker";
 
 export interface IHttpWorkerSettings {
     node_label: INodeLabel;
@@ -25,7 +25,7 @@ const DEFAULT_HTTP_TIMEOUT = 60000;
 /**
  * Converts JobMessage to Http request and then converts received Http response back to JobMessage object
  */
-class HttpWorker implements IWorker {
+class HttpWorker extends AWorker {
 
     private timeout: number;
     private agent: http.Agent;
@@ -34,6 +34,8 @@ class HttpWorker implements IWorker {
         protected settings: IHttpWorkerSettings,
         protected metrics: IMetrics,
     ) {
+        super();
+
         this.timeout = DEFAULT_HTTP_TIMEOUT;
         this.agent = new http.Agent({ keepAlive: true, maxSockets: Infinity });
     }
@@ -54,18 +56,14 @@ class HttpWorker implements IWorker {
         this.timeout = timeout;
     }
 
-    /**
-     *
-     * @param {JobMessage} msg
-     * @return {Promise<JobMessage[]>}
-     */
+    /** @inheritdoc */
     public processData(msg: JobMessage): Promise<JobMessage[]> {
         const reqParams: any = this.getJobRequestParams(msg);
 
         return new Promise((resolve) => {
             Object.assign(reqParams, this.settings.opts);
 
-            logger.info(
+            logger.debug(
                 `Worker[type='http'] sent request to ${reqParams.url}. Headers: ${JSON.stringify(reqParams.headers)}`,
                 logger.ctxFromMsg(msg),
             );
@@ -108,17 +106,13 @@ class HttpWorker implements IWorker {
         });
     }
 
-    /**
-     * Returns whether the worker is ready or not
-     *
-     * @return {Promise<boolean>}
-     */
+    /** @inheritdoc */
     public isWorkerReady(): Promise<boolean> {
         return new Promise((resolve) => {
             const nodeId = this.settings.node_label.id;
             const reqParams = { method: "GET", url: this.getUrl(this.settings.status_path)};
 
-            logger.info(`Worker[type'http'] asking worker if is ready on ${reqParams.url}`, {node_id: nodeId});
+            logger.debug(`Worker[type'http'] asking worker if is ready on ${reqParams.url}`, {node_id: nodeId});
 
             request(reqParams, (err, response) => {
                 if (err) {
@@ -136,7 +130,7 @@ class HttpWorker implements IWorker {
                     return resolve(false);
                 }
 
-                logger.info("Worker[type'http'] ready", { node_id: nodeId });
+                logger.debug("Worker[type'http'] ready", { node_id: nodeId });
 
                 return resolve(true);
             });
@@ -230,7 +224,7 @@ class HttpWorker implements IWorker {
         responseHeaders: Headers,
         result: IResult,
     ) {
-        logger.info("Worker[type='http'] received valid response.", logger.ctxFromMsg(msg));
+        logger.debug("Worker[type='http'] received valid response.", logger.ctxFromMsg(msg));
 
         if (!responseBody) {
             responseBody = "";

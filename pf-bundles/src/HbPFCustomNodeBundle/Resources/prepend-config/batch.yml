@@ -30,6 +30,6 @@ services:
         class: Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchConsumerCallback
         arguments:
             - '@hbpf.custom_nodes.batch_action_callback'
-            - '@hbpf.influxdb_sender'
+            - '@hbpf.influxdb_sender_monolith'
         calls:
             - [setLogger, ['@monolog.logger.rabbit-mq']]

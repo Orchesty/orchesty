@@ -1,9 +1,13 @@
 .PHONY: init composer-update
 
 DC=docker-compose
+<<<<<<< HEAD
 DE=docker-compose exec app
 DP=docker-compose exec app bin/console
 DS=docker-compose exec mariadb
+=======
+DE=docker-compose exec -T app
+>>>>>>> origin/pip-413
 IMAGE_API_DEMO_FPM=dkr.hanaboso.net/pipes/client-cm/api-demo:latest
 
 .env:
@@ -16,6 +20,9 @@ init: .env
 docker-up-force: .env
 	$(DC) pull
 	$(DC) up -d --force-recreate --remove-orphans
+
+docker-down-clean: .env
+	$(DC) down -v
 
 clear-cache-orm:
 	$(DP) orm:clear-cache:metadata
@@ -61,4 +68,12 @@ phpintegration: database-create
 
 test: docker-up-force composer-install codesniffer phpstan phpunit phpintegration
 
+<<<<<<< HEAD
 fasttest: codesniffer phpstan phpunit phpintegration
+=======
+test: .env docker-up-force composer-install codesniffer phpstan phpunit
+
+docker-compose.ci.yml:
+	# Comment out any port forwarding
+	sed -r 's/^(\s+ports:)$$/#\1/g; s/^(\s+- \$$\{DEV_IP\}.*)$$/#\1/g' docker-compose.yml > docker-compose.ci.yml
+>>>>>>> origin/pip-413

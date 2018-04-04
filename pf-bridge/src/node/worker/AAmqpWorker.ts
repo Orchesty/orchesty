@@ -9,7 +9,7 @@ import Headers from "../../message/Headers";
 import JobMessage from "../../message/JobMessage";
 import {ResultCode} from "../../message/ResultCode";
 import {INodeLabel} from "../../topology/Configurator";
-import IWorker from "./IWorker";
+import AWorker from "./AWorker";
 
 export interface IAmqpWorkerSettings {
     node_label: INodeLabel;
@@ -28,7 +28,7 @@ export interface IWaiting {
 /**
  * TODO add waiting timeout
  */
-abstract class AAmqpWorker implements IWorker {
+abstract class AAmqpWorker extends AWorker {
 
     public static readonly TEST_TYPE = "test";
     public static readonly TEST_ID = "pipes.worker.amqprpc.test";
@@ -52,6 +52,8 @@ abstract class AAmqpWorker implements IWorker {
         protected connection: Connection,
         protected settings: IAmqpWorkerSettings,
     ) {
+        super();
+
         this.waiting = new Container();
         this.resultsQueue = {
             name: `pipes.${settings.node_label.topology_id}.${settings.node_label.id}_reply`,
@@ -80,7 +82,7 @@ abstract class AAmqpWorker implements IWorker {
 
         this.resultsConsumer.consume(this.resultsQueue.name, {})
             .then(() => {
-                logger.info(
+                logger.debug(
                     `Worker[type='amqprpc'] consuming ${this.resultsQueue.name}`,
                     { node_id: this.settings.node_label.id},
                 );
@@ -95,6 +97,14 @@ abstract class AAmqpWorker implements IWorker {
      * @param {AmqpMessage} resultMsg
      */
     public abstract onBatchItem(corrId: string, resultMsg: AmqpMessage): Promise<void>;
+
+    /**
+     * Handle the worker's confirmation message informing you about the batch end
+     *
+     * @param {string} corrId
+     * @param {Message} msg
+     */
+    public abstract onBatchEnd(corrId: string, msg: AmqpMessage): void;
 
     /**
      * Accepts message, returns unsatisfied promise, which should be satisfied later
@@ -118,7 +128,7 @@ abstract class AAmqpWorker implements IWorker {
                 headers: headersToSend.getRaw(),
             },
         ).then(() => {
-            logger.info(
+            logger.debug(
                 `Worker[type='amqprpc'] sent request to "${this.settings.publish_queue.name}" queue.`,
                 logger.ctxFromMsg(msg),
             );
@@ -151,8 +161,6 @@ abstract class AAmqpWorker implements IWorker {
      * @return {Promise<boolean>}
      */
     public isWorkerReady(): Promise<boolean> {
-        const testCorrelationId = uuid4();
-
         return new Promise((resolve) => {
             const resolveTestFn = (msgs: JobMessage[]) => {
 
@@ -161,44 +169,79 @@ abstract class AAmqpWorker implements IWorker {
                 }
 
                 const msg: JobMessage = msgs[0];
-                if (msg.getCorrelationId() === AAmqpWorker.TEST_ID &&
-                    msg.getResult().code === ResultCode.SUCCESS
-                ) {
-                    logger.info(`Worker[type'amqp'] worker ready.`, {node_id: this.settings.node_label.node_id});
+                if (this.isWorkerReadyResponseSuccessful(msg)) {
+                    logger.info(`Worker[type'amqp'] worker ready - OK.`, {node_id: this.settings.node_label.node_id});
                     resolve(true);
                 } else {
-                    logger.warn(`Worker[type'amqp'] worker not ready.`, {node_id: this.settings.node_label.node_id});
+                    logger.warn(
+                        `Worker[type'amqp'] worker not ready. Result code=[${msg.getResult().code}]`,
+                        {
+                            node_id: this.settings.node_label.node_id,
+                            data : JSON.stringify(msg.getResult()),
+                        },
+                    );
                     resolve(false);
                 }
             };
 
-            const testHeaders = new Headers();
-            testHeaders.setPFHeader(Headers.CORRELATION_ID, AAmqpWorker.TEST_ID);
-            testHeaders.setPFHeader(Headers.PROCESS_ID, AAmqpWorker.TEST_ID);
-            testHeaders.setPFHeader(Headers.PARENT_ID, "");
-            testHeaders.setPFHeader(Headers.SEQUENCE_ID, "1");
-            testHeaders.setPFHeader(Headers.TOPOLOGY_ID, AAmqpWorker.TEST_ID);
-
-            const jobMsg = new JobMessage(this.settings.node_label, testHeaders.getRaw(), new Buffer(""));
-            const t: IWaiting = { resolveFn: resolveTestFn, message: jobMsg, sequence: 0 };
-            this.waiting.set(testCorrelationId, t);
-
-            logger.info(
-                `Worker[type'amqp'] asking worker if is ready via queue ${this.settings.publish_queue.name}`,
-                {node_id: this.settings.node_label.node_id},
-            );
-
-            this.publisher.sendToQueue(
-                this.settings.publish_queue.name,
-                new Buffer("Is worker ready test message."),
-                {
-                    type: AAmqpWorker.TEST_TYPE,
-                    correlationId: testCorrelationId,
-                    replyTo: this.resultsQueue.name,
-                    headers: jobMsg.getHeaders().getRaw(),
-                },
-            );
+            this.sendReadinessTestMessage(resolveTestFn);
         });
+    }
+
+    /**
+     * Creates test message, stores it's resolve function and send message to rabbitmq
+     *
+     * @param resolveReadinessTestFn
+     */
+    private sendReadinessTestMessage(resolveReadinessTestFn: any) {
+        const testCorrelationId = uuid4();
+
+        const testHeaders = new Headers();
+        testHeaders.setPFHeader(Headers.CORRELATION_ID, AAmqpWorker.TEST_ID);
+        testHeaders.setPFHeader(Headers.PROCESS_ID, AAmqpWorker.TEST_ID);
+        testHeaders.setPFHeader(Headers.PARENT_ID, "");
+        testHeaders.setPFHeader(Headers.SEQUENCE_ID, "1");
+        testHeaders.setPFHeader(Headers.TOPOLOGY_ID, AAmqpWorker.TEST_ID);
+
+        const jobMsg = new JobMessage(this.settings.node_label, testHeaders.getRaw(), new Buffer(""));
+        const t: IWaiting = { resolveFn: resolveReadinessTestFn, message: jobMsg, sequence: 0 };
+        this.waiting.set(testCorrelationId, t);
+
+        logger.debug(
+            `Worker[type'amqp'] asking worker if is ready via queue ${this.settings.publish_queue.name}`,
+            {node_id: this.settings.node_label.node_id},
+        );
+
+        this.publisher.sendToQueue(
+            this.settings.publish_queue.name,
+            new Buffer("Is worker ready test message."),
+            {
+                type: AAmqpWorker.TEST_TYPE,
+                correlationId: testCorrelationId,
+                replyTo: this.resultsQueue.name,
+                headers: jobMsg.getHeaders().getRaw(),
+            },
+        );
+    }
+
+    /**
+     * Returns true if worker's response means the worker is ready
+     *
+     * @param {JobMessage} msg
+     * @return {boolean}
+     */
+    private isWorkerReadyResponseSuccessful(msg: JobMessage): boolean {
+        if (msg.getCorrelationId() !== AAmqpWorker.TEST_ID) {
+            return false;
+        }
+
+        if (msg.getResult().code === ResultCode.SUCCESS ||
+            msg.getResult().code === ResultCode.SPLITTER_BATCH_END
+        ) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -234,37 +277,6 @@ abstract class AAmqpWorker implements IWorker {
                     { node_id: this.settings.node_label.id, correlation_id: corrId },
                 );
         }
-    }
-
-    /**
-     * Resolves the stored promise with populated message
-     * @param {string} corrId
-     * @param {AmqpMessage} msg
-     */
-    private onBatchEnd(corrId: string, msg: AmqpMessage): void {
-        const stored: IWaiting = this.waiting.get(corrId);
-        if (!stored) {
-            logger.warn(`Worker[type='amqprpc'] cannot resolve non-existing waiting promise[corrId=${corrId}]`);
-            return;
-        }
-
-        const resultHeaders = new Headers(msg.properties.headers);
-
-        let resultCode = ResultCode.MISSING_RESULT_CODE;
-        const claimedCode = parseInt(resultHeaders.getPFHeader(Headers.RESULT_CODE), 10);
-        if (claimedCode in ResultCode) {
-            resultCode = claimedCode;
-        }
-
-        const resultMessage = resultHeaders.getPFHeader(Headers.RESULT_MESSAGE) ?
-            resultHeaders.getPFHeader(Headers.RESULT_MESSAGE) : "";
-
-        stored.message.setResult({ code: resultCode, message: resultMessage });
-
-        // Resolves waiting promise
-        stored.resolveFn([stored.message]);
-
-        this.waiting.delete(corrId);
     }
 
     /**

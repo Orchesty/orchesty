@@ -1,6 +1,5 @@
-import logger from "../logger/Logger";
 import {default as CounterMessage} from "../message/CounterMessage";
-import {ResultCode} from "../message/ResultCode";
+import {ResultCode, ResultCodeGroup} from "../message/ResultCode";
 
 interface ICounterLog {
     resultCode: ResultCode;
@@ -12,6 +11,7 @@ export interface ICounterProcessInfo {
     topology: string;
     correlation_id: string;
     process_id: string;
+    parent_id: string;
     total: number;
     ok: number;
     nok: number;
@@ -49,6 +49,7 @@ class CounterProcess {
             topology,
             correlation_id: cm.getCorrelationId(),
             process_id: cm.getProcessId(),
+            parent_id: cm.getParentId(),
             total: 1,
             ok: 0,
             nok: 0,
@@ -67,7 +68,8 @@ class CounterProcess {
      */
     public static updateProcessInfo(processInfo: ICounterProcessInfo, cm: CounterMessage): ICounterProcessInfo {
         if (cm.getResultCode() === ResultCode.SUCCESS ||
-            cm.getResultCode() === ResultCode.DO_NOT_CONTINUE) {
+            cm.getResultGroup() === ResultCodeGroup.NON_STANDARD
+        ) {
             processInfo.ok += 1;
         } else {
             processInfo.nok += 1;

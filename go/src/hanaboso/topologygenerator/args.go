@@ -42,6 +42,8 @@ func parseArgs() {
 		mongoDb                string
 		serviceHost            string
 		servicePort            int
+		metricsHost            string
+		metricsPort            int
 		generatorPath          string
 		generatorMode          string
 		swarmPrefix            string
@@ -68,6 +70,8 @@ func parseArgs() {
 	viper.SetDefault("rabbitmq.vhost", "/")
 	viper.SetDefault("service.host", "0.0.0.0")
 	viper.SetDefault("service.port", 80)
+	viper.SetDefault("metrics.host", "kapacitor")
+	viper.SetDefault("metrics.port", 9100)
 	viper.SetDefault("generator.path", "/opt/srv/topology")
 	viper.SetDefault("generator.mode", "compose")
 	viper.SetDefault("generator.multimode", true)
@@ -83,6 +87,8 @@ func parseArgs() {
 	pflag.StringVar(&mongoDb, "mongo-db", "clever-connectors", "db of mongodb server or define MONGO_DATABASE")
 	pflag.StringVar(&serviceHost, "service-host", "0.0.0.0", "server listen on or define SERVICE_HOST")
 	pflag.IntVar(&servicePort, "service-port", 8080, "server port listen on or define SERVICE_PORT")
+	pflag.StringVar(&metricsHost, "metrics-host", "kapacitor", "address of kapacitor server or define METRICS_HOST")
+	pflag.IntVar(&metricsPort, "metrics-port", 9100, "port of kapacitor or define METRICS_PORT")
 	pflag.StringVar(&generatorPath, "generator-path", "/opt/srv/topology", "path to save generated topology or define GENERATOR_PATH")
 	pflag.StringVar(&generatorMode, "generator-mode", "compose", "generator mode or GENERATOR_MODE")
 	pflag.StringVar(&generatorNetwork, "generator-network", "default", "generator network or GENERATOR_NETWORK")
@@ -123,6 +129,16 @@ func parseArgs() {
 	if os.Getenv("SERVICE_PORT") != "" {
 		servicePort, _ = strconv.Atoi(os.Getenv("SERVICE_PORT"))
 		viper.Set("service.port", servicePort)
+	}
+
+	if os.Getenv("METRICS_HOST") != "" {
+		metricsHost = os.Getenv("METRICS_HOST")
+		viper.Set("metrics.host", metricsHost)
+	}
+
+	if os.Getenv("METRICS_PORT") != "" {
+		metricsPort, _ = strconv.Atoi(os.Getenv("METRICS_PORT"))
+		viper.Set("metrics.port", metricsPort)
 	}
 
 	if os.Getenv("GENERATOR_PATH") != "" {

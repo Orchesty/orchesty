@@ -1,0 +1,15 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    Hanaboso\PipesFramework\HbPFLogsBundle\Controller\:
+        resource: '../../Controller'
+        tags: ['controller.service_arguments']
+
+    Hanaboso\PipesFramework\HbPFLogsBundle\Handler\:
+        resource: '../../Handler'
+
+    Hanaboso\PipesFramework\Logs\:
+        resource: '../../../Logs'

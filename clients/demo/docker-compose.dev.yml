@@ -9,6 +9,31 @@ version: '2'
 
 services:
     ## BEGIN DEV
+    downloader:
+        image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
+        user: ${DEV_UID}:${DEV_GID}
+        environment:
+          BACKEND_HOST: ${BACKEND_URL}/
+          ELASTIC_HOST: elasticsearch
+          ELASTIC_INDEX: 'index'
+        command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console downloader:run'
+        working_dir: /var/www/pipes/clients/demo/pipes-api
+        volumes:
+          - ../../:/var/www/pipes
+          - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
+          - ${HOME}/.composer:/srv/.composer
+    ## END DEV
+    ## BEGIN STAGE
+    #donwlader:
+    #    image: dkr.hanaboso.net/pipes/demo/monolith:${TAG_MONOLITH}
+    #    command: bin/console downloader:run
+    #    environment:
+    #      BACKEND_HOST: ${BACKEND_URL}/
+    #      ELASTIC_HOST: elasticsearch
+    #      ELASTIC_INDEX: 'logstash-2018.01.31'
+    ## END STAGE
+
+    ## BEGIN DEV
     batch:
         image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
         user: ${DEV_UID}:${DEV_GID}
@@ -25,7 +50,7 @@ services:
     ## END DEV
     ## BEGIN STAGE
     #batch:
-    #    image: dkr.hanaboso.net/pipes/client-cm/monolith-fpm:${TAG_MONOLITH}
+    #    image: dkr.hanaboso.net/pipes/demo/monolith:${TAG_MONOLITH}
     #    command: bin/console rabbit-mq:async-consumer batch
     #    environment:
     #      BACKEND_HOST: ${BACKEND_URL}/
@@ -50,7 +75,7 @@ services:
     ## END DEV
     ## BEGIN STAGE
     #status-service:
-    #    image: dkr.hanaboso.net/pipes/client-cm/monolith-fpm:${TAG_MONOLITH}
+    #    image: dkr.hanaboso.net/pipes/demo/monolith:${TAG_MONOLITH}
     #    command: bin/console rabbit-mq:consumer status-service
     #    environment:
     #      BACKEND_HOST: ${BACKEND_URL}/
@@ -73,6 +98,7 @@ services:
       user: ${DEV_UID}:${DEV_GID}
       command: './dist/src/bin/pipes.js start multi_counter'
       environment:
+        # NODE_ENV: debug
         RABBITMQ_HOST: rabbitmq
         RABBITMQ_PORT: '5672'
         RABBITMQ_USER: guest
@@ -82,10 +108,9 @@ services:
         REDIS_PORT: '6379'
         REDIS_PASS: ''
         REDIS_DB: '0'
-        COUNTER_PREFETCH: '100'
-      depends_on:
-        - redis
-        - rabbitmq
+        COUNTER_PREFETCH: '30'
+        METRICS_HOST: 'kapacitor'
+        METRICS_PORT: '9100'
       command: './dist/src/bin/pipes.js start multi_counter'
       ports:
         - ${DEV_IP}:8005:8005
@@ -110,10 +135,11 @@ services:
 
     # PHP Services monolith
     ## BEGIN DEV
-    monolith-fpm:
+    monolith-api:
         image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
         user: ${DEV_UID}:${DEV_GID}
         environment:
+          PHP_WEBROOT: /var/www/pipes/clients/demo/pipes-api/public
           BACKEND_HOST: ${BACKEND_URL}/
           ELASTIC_HOST: elasticsearch
           ELASTIC_INDEX: 'index'
@@ -124,8 +150,8 @@ services:
           - ${HOME}/.composer:/srv/.composer
     ## END DEV
     ## BEGIN STAGE
-    #monolith-fpm:
-    #    image: dkr.hanaboso.net/pipes/client-cm/monolith-fpm:${TAG_MONOLITH}
+    #monolith-api:
+    #    image: dkr.hanaboso.net/pipes/demo/monolith:${TAG_MONOLITH}
     #    environment:
     #      BACKEND_HOST: ${BACKEND_URL}/
     #      ELASTIC_HOST: elasticsearch
@@ -186,7 +212,6 @@ services:
         working_dir: /var/www/pipes/frontend
         environment:
           PHP_WEBROOT: /var/www/pipes/clients/demo/pipes-api/public
-          PHP_APP_INDEX: index.php
           NPM_INSTALL: ${NPM_INSTALL}
           NPM_START: "yes" # webpackserver
         ports:
@@ -198,9 +223,9 @@ services:
           - ./stack/nginx.conf:/etc/nginx/nginx.conf
         # TODO: Use dynamic dns resolution in Nginx instead
         depends_on:
-          - monolith-fpm
+          - monolith-api
           - topology-api
-          - cron-api
+          - notification-sender-fpm
     ## END DEV
     ## BEGIN STAGE
     #    image: dkr.hanaboso.net/pipes/pipes/frontend:${TAG_FRONTEND}
@@ -210,6 +235,7 @@ services:
     #    ports:
     #      - ${PUBLISH_HTTP_PORT}:80
     ## END STAGE
+    # TODO: check if we can move some of these aliases directly to monolith-api
         networks:
           default:
             aliases:
@@ -217,7 +243,6 @@ services:
               - mailer-api
               - ftp-api
               - mapper-api
-              - monolith-api
               - notification-sender-api
 
     stream:
@@ -255,8 +280,13 @@ services:
         - redis:/data
 
     logstash:
-        image: docker.elastic.co/logstash/logstash:5.6.0
-        command: --log.level debug
+        image: dkr.hanaboso.net/pipes/pipes/logstash:dev
+        environment:
+          - MONGO_HOST=mongo
+          - MONGO_DATABASE=demo
+          - MONGO_COLLECTION=Logs
+        #command: --log.level debug
+        restart: on-failure
         ## BEGIN DEV
         volumes:
           - ./stack/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
@@ -269,24 +299,18 @@ services:
 
     # Metrics
     influxdb:
-        image: influxdb:1.2-alpine
+        image: dkr.hanaboso.net/pipes/pipes/influxdb:dev
+        environment:
+          - INFLUXDB_DB=pipes
         ports:
           - ${DEV_IP}:8083:8083
           - ${DEV_IP}:8086:8086
           - ${DEV_IP}:8089:8089/udp
         volumes:
           - influxdb:/var/lib/influxdb
-        ## BEGIN DEV
-          - ./stack/influxdb.conf:/etc/influxdb/influxdb.conf
-        ## END DEV
-        ## BEGIN STAGE
-        #configs:
-        #  - source: influxdb.conf
-        #    target: /etc/influxdb/influxdb.conf
-        ## END STAGE
 
     telegraf:
-        image: telegraf:1.4.2
+        image: telegraf:1.5-alpine
         ## BEGIN DEV
         volumes:
           - ./stack/telegraf.conf:/etc/telegraf/telegraf.conf
@@ -296,6 +320,9 @@ services:
         #  - source: telegraf.conf
         #    target: /etc/telegraf/telegraf.conf
         ## END STAGE
+
+    kapacitor:
+        image: dkr.hanaboso.net/pipes/pipes/kapacitor:dev
 
     notification-sender-fpm:
         image: dkr.hanaboso.net/clever-monitor/clever-notification-sender:master
@@ -357,8 +384,6 @@ volumes:
 #configs:
 #  logstash.conf:
 #    file: ./stack/logstash.conf
-#  influxdb.conf:
-#    file: ./stack/influxdb.conf
 #  telegraf.conf:
 #    file: ./stack/telegraf.conf
 #

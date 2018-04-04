@@ -10,6 +10,37 @@ parameters:
     access_token_refresh_interval: 3600
 
 services:
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        public: false
+
     Demo\Controller\:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
+
+    Demo\:
+        resource: '../src/*'
+        exclude: '../src/{Entity,Migrations,Tests,Kernel.php}'
+
+    hbpf.custom_node.filter-bids:
+        class: Demo\CustomNode\FilterStockExchange
+        public: true
+        arguments:
+            - 'bids'
+
+    hbpf.custom_node.filter-asks:
+        class: Demo\CustomNode\FilterStockExchange
+        public: true
+        arguments:
+            - 'asks'
+
+    hbpf.custom_node.split-file:
+        class: Demo\CustomNode\SplitFileBatch
+        public: true
+
+    hbpf.custom_node.idnes:
+        class: Demo\CustomNode\IdnesConnector
+        public: true
+        arguments:
+            - '@hbpf.transport.curl_manager'

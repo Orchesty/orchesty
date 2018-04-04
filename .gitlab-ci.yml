@@ -48,6 +48,33 @@ multi-probe-image:
     - master
     - ci
 
+logstash-build:
+    stage: stage1
+    script:
+      - cd $REPO_ROOT/logstash
+      - make docker-build docker-push
+    only:
+      - dev
+      - master
+
+influxdb-build:
+    stage: stage1
+    script:
+      - cd $REPO_ROOT/influxdb
+      - make docker-build docker-push
+    only:
+      - dev
+      - master
+
+kapacitor-build:
+    stage: stage1
+    script:
+      - cd $REPO_ROOT/kapacitor
+      - make docker-build docker-push
+    only:
+      - dev
+      - master
+
 limiter-image:
   stage: stage1
   script:
@@ -74,6 +101,18 @@ topology-api:
   stage: stage1
   script:
     - cd go/src/hanaboso/topologygenerator && make docker-push
+  only:
+    - dev
+    - master
+
+api-demo:
+  stage: stage1
+  script:
+    - DIR=clients/clever-connectors/cc-api-demo
+    - skip_unmodified $DIR
+    - cd $DIR
+    - make build
+    - make push
   only:
     - dev
     - master
@@ -137,6 +176,26 @@ cm-pipes-api-test:
     - export COMPOSE_FILE=docker-compose.ci.yml                     # CLEANUP bundles
     - make ${COMPOSE_FILE} test
 
+cc-api-demo-test:
+  stage: stage2
+  script:
+    - DIR=clients/clever-connectors/cc-api-demo
+    - skip_unmodified $DIR
+    - cd $REPO_ROOT/$DIR
+    - export COMPOSE_PROJECT_NAME="p${CI_PIPELINE_ID}-cc-api-demo" # CLEANUP bundles
+    - export COMPOSE_FILE=docker-compose.ci.yml                    # CLEANUP bundles
+    - make ${COMPOSE_FILE} test
+
+demo-pipes-api-test:
+  stage: stage2
+  script:
+    - DIR=clients/demo/pipes-api
+    - skip_unmodified $DIR
+    - cd $REPO_ROOT/$DIR
+    - export COMPOSE_PROJECT_NAME="p${CI_PIPELINE_ID}-demo-pipes-api" # CLEANUP bundles
+    - export COMPOSE_FILE=docker-compose.ci.yml                       # CLEANUP bundles
+    - make ${COMPOSE_FILE} test
+
 pf-bridge-test:
   stage: stage3
   script:
@@ -169,16 +228,6 @@ pf-bridge:
     - skip_unmodified $DIR
     - ${DIR}/build.sh ${CI_BUILD_REF_NAME}
 
-api-demo:
-  stage: stage2
-  script:
-    - DIR=clients/clever-connectors/cc-api-demo
-    - skip_unmodified $DIR
-    - cd $DIR
-    - make build
-    - make push
-
-
 # Client: demo
 
 stage-demo:
@@ -209,6 +258,13 @@ monolith-cm:
   script:
     - ": This job is being run all the time because the most changes happen in its dependencies. Can anyone come up with an optimization?"
     - cd clients/clever-connectors
+    - make build-monolith push-monolith TAG=${CI_BUILD_REF_NAME}
+
+monolith-demo:
+  stage: stage2
+  script:
+    - ": This job is being run all the time because the most changes happen in its dependencies. Can anyone come up with an optimization?"
+    - cd clients/demo
     - make build-monolith push-monolith TAG=${CI_BUILD_REF_NAME}
 
 stage-cm1:
@@ -282,6 +338,18 @@ cleanup:
     - export COMPOSE_PROJECT_NAME=p${CI_PIPELINE_ID}-cm-pipes-api
     - export COMPOSE_FILE=docker-compose.ci.yml
     - make ${COMPOSE_FILE} docker-down-clean || echo "cm-pipes-api cleanup phase failed"
+
+    - ": cc-api-demo-test"
+    - cd $REPO_ROOT/clients/clever-connectors/cc-api-demo
+    - export COMPOSE_PROJECT_NAME=p${CI_PIPELINE_ID}-cc-api-demo
+    - export COMPOSE_FILE=docker-compose.ci.yml
+    - make ${COMPOSE_FILE} docker-down-clean || echo "cc-api-demo cleanup phase failed"
+
+    - ": demo-pipes-api-test"
+    - cd $REPO_ROOT/clients/demo/pipes-api
+    - export COMPOSE_PROJECT_NAME=p${CI_PIPELINE_ID}-demo-pipes-api
+    - export COMPOSE_FILE=docker-compose.ci.yml
+    - make ${COMPOSE_FILE} docker-down-clean || echo "demo-pipes-api cleanup phase failed"
 
     - ": bridge"
     - cd $REPO_ROOT/pf-bridge/test

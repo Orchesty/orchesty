@@ -2,8 +2,9 @@ import {Message as AmqpMessage} from "amqplib";
 import {Connection} from "amqplib-plus/dist/lib/Connection";
 import logger from "../../logger/Logger";
 import Headers from "../../message/Headers";
-import JobMessage from "../../message/JobMessage";
+import JobMessage, {IResult} from "../../message/JobMessage";
 import {ResultCode} from "../../message/ResultCode";
+import {ICounterPublisher} from "../drain/amqp/CounterPublisher";
 import IPartialForwarder from "../drain/IPartialForwarder";
 import AAmqpWorker, {IAmqpWorkerSettings, IWaiting} from "./AAmqpWorker";
 
@@ -18,13 +19,15 @@ class AmqpNonBlockingWorker extends AAmqpWorker {
      * @param {Connection} connection
      * @param {IAmqpWorkerSettings} settings
      * @param {IPartialForwarder} partialForwarder
+     * @param {ICounterPublisher} counterPublisher
      */
     constructor(
         protected connection: Connection,
         protected settings: IAmqpWorkerSettings,
         private partialForwarder: IPartialForwarder,
+        private counterPublisher: ICounterPublisher,
     ) {
-            super(connection, settings);
+        super(connection, settings);
     }
 
     /**
@@ -37,7 +40,6 @@ class AmqpNonBlockingWorker extends AAmqpWorker {
         try {
             const stored: IWaiting = this.waiting.get(corrId);
             stored.sequence++;
-            stored.message.setMultiplier(stored.message.getMultiplier() + 1);
 
             const item = new JobMessage(this.settings.node_label, resultMsg.properties.headers, resultMsg.content);
             item.getMeasurement().copyValues(stored.message.getMeasurement());
@@ -59,6 +61,23 @@ class AmqpNonBlockingWorker extends AAmqpWorker {
     }
 
     /**
+     * Resolves the stored promise with populated message
+     * @param {string} corrId
+     * @param {AmqpMessage} msg
+     */
+    public async onBatchEnd(corrId: string, msg: AmqpMessage): Promise<void> {
+        const stored: IWaiting = this.waiting.get(corrId);
+        if (!stored) {
+            logger.warn(`Worker[type='amqprpc'] cannot resolve non-existing waiting promise[corrId=${corrId}]`);
+            return;
+        }
+
+        stored.message.setResult(this.getResultFromBatchEnd(msg));
+        stored.resolveFn([stored.message]); // Resolves waiting promise
+        this.waiting.delete(corrId);
+    }
+
+    /**
      * Forwards the message to following bridge
      *
      * @param {JobMessage} msg
@@ -66,11 +85,39 @@ class AmqpNonBlockingWorker extends AAmqpWorker {
      */
     private async forwardBatchItem(msg: JobMessage): Promise<void> {
         try {
+            await this.counterPublisher.send(msg);
             await this.partialForwarder.forwardPart(msg);
         } catch (e) {
             logger.warn(`Worker[type='amqprpc'] partial forward failed.`, logger.ctxFromMsg(msg, e));
             return;
         }
+    }
+
+    /**
+     *
+     * @param {Message} batchEndMsg
+     * @return {IResult}
+     */
+    private getResultFromBatchEnd(batchEndMsg: AmqpMessage): IResult {
+        const resultHeaders = new Headers(batchEndMsg.properties.headers);
+
+        let resultCode = ResultCode.MISSING_RESULT_CODE;
+
+        // Check result code validity
+        const claimedCode = parseInt(resultHeaders.getPFHeader(Headers.RESULT_CODE), 10);
+        if (claimedCode in ResultCode) {
+            resultCode = claimedCode;
+        }
+
+        // if result OK, change it to BATCH_END for proper process termination in counter
+        if (resultCode === ResultCode.SUCCESS) {
+            resultCode = ResultCode.SPLITTER_BATCH_END;
+        }
+
+        const resultMessage = resultHeaders.getPFHeader(Headers.RESULT_MESSAGE) ?
+            resultHeaders.getPFHeader(Headers.RESULT_MESSAGE) : "";
+
+        return { code: resultCode, message: resultMessage };
     }
 
 }

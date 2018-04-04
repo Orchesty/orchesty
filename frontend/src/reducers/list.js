@@ -14,10 +14,10 @@ function listReducer(state, action, getElementId) {
       return Object.assign({}, state, {
         state: stateType.SUCCESS,
         items: data.items.map(getElementId),
-        count: data.count,
-        limit: data.limit,
-        offset: data.offset,
-        total: data.total
+        count: typeof data.count === 'string' ? parseInt(data.count) : data.count,
+        limit: typeof data.limit === 'string' ? parseInt(data.limit) : data.limit,
+        offset: typeof data.offset === 'string' ? parseInt(data.offset) : data.offset,
+        total: typeof data.total === 'string' ? parseInt(data.total) : data.total
       });
 
     case types.LIST_ERROR:

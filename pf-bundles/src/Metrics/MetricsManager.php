@@ -12,6 +12,7 @@ namespace Hanaboso\PipesFramework\Metrics;
 use DateTime;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Hanaboso\PipesFramework\Commons\Exception\EnumException;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
@@ -19,6 +20,7 @@ use Hanaboso\PipesFramework\Metrics\Client\ClientInterface;
 use Hanaboso\PipesFramework\Metrics\Dto\MetricsDto;
 use Hanaboso\PipesFramework\Metrics\Enum\MetricsIntervalEnum;
 use Hanaboso\PipesFramework\Metrics\Exception\MetricsException;
+use Hanaboso\PipesFramework\Metrics\Retention\RetentionFactory;
 use Hanaboso\PipesFramework\TopologyGenerator\GeneratorUtils;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
@@ -48,36 +50,51 @@ class MetricsManager implements LoggerAwareInterface
     public const QUEUE    = 'queue';
 
     // METRICS
-    public const WAIT_TIME          = 'bridge_job_waiting_duration';
-    public const NODE_PROCESS_TIME  = 'bridge_job_worker_duration';
-    public const NODE_RESULT_ERROR  = 'bridge_job_result_error';
-    public const CPU_KERNEL_TIME    = 'fpm_cpu_kernel_time';
-    public const REQUEST_TOTAL_TIME = 'sent_request_total_duration';
-    public const MESSAGES           = 'messages';
-    public const PROCESS_DURATION   = 'counter_process_duration';
+    public const AVG_MESSAGES = 'avg.message';
+    public const MAX_MESSAGES = 'max.message';
+
+    public const MAX_WAIT_TIME = 'job_max.waiting';
+    public const MIN_WAIT_TIME = 'job_min.waiting';
+    public const AVG_WAIT_TIME = 'avg_waiting.time';
+
+    public const MAX_PROCESS_TIME = 'job_max.process';
+    public const MIN_PROCESS_TIME = 'job_min.process';
+    public const AVG_PROCESS_TIME = 'avg_process.time';
+
+    public const MAX_TIME = 'max.time';
+    public const MIN_TIME = 'min.time';
+    public const AVG_TIME = 'avg.time';
+
+    public const TOTAL_COUNT  = 'total.count';
+    public const FAILED_COUNT = 'failed.count';
+
+    public const CPU_KERNEL_MIN = 'cpu_min.kernel';
+    public const CPU_KERNEL_MAX = 'cpu_max.kernel';
+    public const CPU_KERNEL_AVG = 'cpu_kernel.avg';
 
     // ALIASES - COUNT
-    private const PROCESSED_COUNT     = 'top_processed_count';
-    private const WAIT_COUNT          = 'wait_count';
-    private const CPU_COUNT           = 'cpu_count';
-    private const REQUEST_COUNT       = 'request_count';
-    private const REQUEST_ERROR_COUNT = 'request_error_count';
-    private const PROCESS_TIME_COUNT  = 'process_time_count';
+    private const PROCESSED_COUNT    = 'top_processed_count';
+    private const WAIT_COUNT         = 'wait_count';
+    private const CPU_COUNT          = 'cpu_count';
+    private const REQUEST_COUNT      = 'request_count';
+    private const PROCESS_TIME_COUNT = 'process_time_count';
+    private const QUEUE_COUNT        = 'queue_count';
 
     // ALIASES - SUM
-    private const PROCESSED_SUM     = 'top_processed_sum';
-    private const WAIT_SUM          = 'wait_sum';
-    private const CPU_SUM           = 'cpu_sum';
-    private const REQUEST_SUM       = 'request_sum';
-    private const REQUEST_ERROR_SUM = 'request_error_sum';
-    private const PROCESS_TIME_SUM  = 'process_time_sum';
+    private const PROCESSED_SUM    = 'top_processed_sum';
+    private const WAIT_SUM         = 'wait_sum';
+    private const CPU_SUM          = 'cpu_sum';
+    private const REQUEST_SUM      = 'request_sum';
+    private const PROCESS_TIME_SUM = 'process_time_sum';
+    private const NODE_ERROR_SUM   = 'request_error_sum';
+    private const NODE_TOTAL_SUM   = 'total_count';
+    private const QUEUE_SUM        = 'QUEUE_SUM';
 
     // ALIASES - MIN
     private const PROCESSED_MIN    = 'top_processed_min';
     private const WAIT_MIN         = 'wait_min';
     private const CPU_MIN          = 'cpu_min';
     private const REQUEST_MIN      = 'request_min';
-    private const QUEUE_MIN        = 'queue_min';
     private const PROCESS_TIME_MIN = 'process_time_min';
 
     // ALIASES - MAX
@@ -119,6 +136,11 @@ class MetricsManager implements LoggerAwareInterface
     private $counterTable;
 
     /**
+     * @var string
+     */
+    private $connectorTable;
+
+    /**
      * @var LoggerInterface
      */
     private $logger;
@@ -132,6 +154,7 @@ class MetricsManager implements LoggerAwareInterface
      * @param string          $fpmTable
      * @param string          $rabbitTable
      * @param string          $counterTable
+     * @param string          $connectorTable
      */
     public function __construct(
         ClientInterface $client,
@@ -139,7 +162,8 @@ class MetricsManager implements LoggerAwareInterface
         string $nodeTable,
         string $fpmTable,
         string $rabbitTable,
-        string $counterTable
+        string $counterTable,
+        string $connectorTable
     )
     {
         $this->client         = $client;
@@ -147,6 +171,7 @@ class MetricsManager implements LoggerAwareInterface
         $this->fpmTable       = $fpmTable;
         $this->rabbitTable    = $rabbitTable;
         $this->counterTable   = $counterTable;
+        $this->connectorTable = $connectorTable;
         $this->nodeRepository = $dm->getRepository(Node::class);
         $this->logger         = new NullLogger();
     }
@@ -200,42 +225,45 @@ class MetricsManager implements LoggerAwareInterface
     {
         $dateFrom = $params['from'] ?? NULL;
         $dateTo   = $params['to'] ?? NULL;
-        $from     = sprintf('%s,%s,%s,%s', $this->nodeTable, $this->fpmTable, $this->rabbitTable, $this->counterTable);
+        $from     = sprintf(
+            '%s,%s,%s,%s',
+            $this->nodeTable,
+            $this->fpmTable,
+            $this->rabbitTable,
+            $this->connectorTable
+        );
 
         $select = self::getCountForSelect([
-            self::NODE_PROCESS_TIME  => self::PROCESSED_COUNT,
-            self::WAIT_TIME          => self::WAIT_COUNT,
-            self::CPU_KERNEL_TIME    => self::CPU_COUNT,
-            self::REQUEST_TOTAL_TIME => self::REQUEST_COUNT,
-            self::NODE_RESULT_ERROR  => self::REQUEST_ERROR_COUNT,
-            self::PROCESS_DURATION   => self::PROCESS_TIME_COUNT,
+            self::AVG_PROCESS_TIME => self::PROCESSED_COUNT,
+            self::AVG_WAIT_TIME    => self::WAIT_COUNT,
+            self::CPU_KERNEL_AVG   => self::CPU_COUNT,
+            self::AVG_TIME         => self::REQUEST_COUNT,
+            self::AVG_MESSAGES     => self::QUEUE_COUNT,
         ]);
         $select = self::addStringSeparator($select);
         $select .= self::getSumForSelect([
-            self::NODE_PROCESS_TIME  => self::PROCESSED_SUM,
-            self::WAIT_TIME          => self::WAIT_SUM,
-            self::CPU_KERNEL_TIME    => self::CPU_SUM,
-            self::REQUEST_TOTAL_TIME => self::REQUEST_SUM,
-            self::NODE_RESULT_ERROR  => self::REQUEST_ERROR_SUM,
-            self::PROCESS_DURATION   => self::PROCESS_TIME_SUM,
+            self::AVG_PROCESS_TIME => self::PROCESSED_SUM,
+            self::AVG_WAIT_TIME    => self::WAIT_SUM,
+            self::CPU_KERNEL_AVG   => self::CPU_SUM,
+            self::AVG_TIME         => self::REQUEST_SUM,
+            self::FAILED_COUNT     => self::NODE_ERROR_SUM,
+            self::TOTAL_COUNT      => self::NODE_TOTAL_SUM,
+            self::AVG_MESSAGES     => self::QUEUE_SUM,
         ]);
         $select = self::addStringSeparator($select);
         $select .= self::getMinForSelect([
-            self::NODE_PROCESS_TIME  => self::PROCESSED_MIN,
-            self::WAIT_TIME          => self::WAIT_MIN,
-            self::CPU_KERNEL_TIME    => self::CPU_MIN,
-            self::REQUEST_TOTAL_TIME => self::REQUEST_MIN,
-            self::MESSAGES           => self::QUEUE_MIN,
-            self::PROCESS_DURATION   => self::PROCESS_TIME_MIN,
+            self::MIN_PROCESS_TIME => self::PROCESSED_MIN,
+            self::MIN_WAIT_TIME    => self::WAIT_MIN,
+            self::CPU_KERNEL_MIN   => self::CPU_MIN,
+            self::MIN_TIME         => self::REQUEST_MIN,
         ]);
         $select = self::addStringSeparator($select);
         $select .= self::getMaxForSelect([
-            self::NODE_PROCESS_TIME  => self::PROCESSED_MAX,
-            self::WAIT_TIME          => self::WAIT_MAX,
-            self::CPU_KERNEL_TIME    => self::CPU_MAX,
-            self::REQUEST_TOTAL_TIME => self::REQUEST_MAX,
-            self::MESSAGES           => self::QUEUE_MAX,
-            self::PROCESS_DURATION   => self::PROCESS_TIME_MAX,
+            self::MAX_PROCESS_TIME => self::PROCESSED_MAX,
+            self::MAX_WAIT_TIME    => self::WAIT_MAX,
+            self::CPU_KERNEL_MAX   => self::CPU_MAX,
+            self::MAX_TIME         => self::REQUEST_MAX,
+            self::MAX_MESSAGES     => self::QUEUE_MAX,
         ]);
 
         $where = [
@@ -259,15 +287,19 @@ class MetricsManager implements LoggerAwareInterface
         $dateTo   = $params['to'] ?? NULL;
         $from     = $this->counterTable;
 
-        $select = self::getCountForSelect([self::PROCESS_DURATION => self::PROCESS_TIME_COUNT]);
+        $select = self::getCountForSelect([self::AVG_TIME => self::PROCESS_TIME_COUNT]);
         $select = self::addStringSeparator($select);
-        $select .= self::getSumForSelect([self::PROCESS_DURATION => self::PROCESS_TIME_SUM]);
+        $select .= self::getSumForSelect([self::AVG_TIME => self::PROCESS_TIME_SUM]);
         $select = self::addStringSeparator($select);
-        $select .= self::getMinForSelect([self::PROCESS_DURATION => self::PROCESS_TIME_MIN]);
+        $select .= self::getMinForSelect([self::MIN_TIME => self::PROCESS_TIME_MIN]);
         $select = self::addStringSeparator($select);
-        $select .= self::getMaxForSelect([self::PROCESS_DURATION => self::PROCESS_TIME_MAX]);
+        $select .= self::getMaxForSelect([self::MAX_TIME => self::PROCESS_TIME_MAX]);
+        $select = self::addStringSeparator($select);
+        $select .= self::getSumForSelect([self::TOTAL_COUNT => self::NODE_TOTAL_SUM]);
+        $select = self::addStringSeparator($select);
+        $select .= self::getSumForSelect([self::FAILED_COUNT => self::NODE_ERROR_SUM]);
 
-        $where = [self::TOPOLOGY => $topology->getId(), self::NODE_RESULT_ERROR => 0];
+        $where = [self::TOPOLOGY => $topology->getId()];
 
         return $this->runQuery($select, $from, $where, NULL, $dateFrom, $dateTo);
     }
@@ -278,6 +310,7 @@ class MetricsManager implements LoggerAwareInterface
      *
      * @return array
      * @throws MetricsException
+     * @throws EnumException
      */
     public function getTopologyRequestCountMetrics(Topology $topology, array $params): array
     {
@@ -339,10 +372,11 @@ class MetricsManager implements LoggerAwareInterface
         }
 
         if ($dateFrom && $dateTo) {
-            $qb->setTimeRange(
-                (new DateTime($dateFrom))->getTimestamp(),
-                (new DateTime($dateTo))->modify('+ 1 Day')->getTimestamp()
-            );
+            $fromDate = new DateTime($dateFrom);
+            $to       = new DateTime($dateTo);
+            $qb
+                ->setTimeRange($fromDate->getTimestamp(), $to->getTimestamp())
+                ->from($this->addRetentionPolicy($from, $fromDate, $to));
         }
         $this->logger->debug('Metrics was selected.', ['Query' => $qb->getQuery()]);
         try {
@@ -418,12 +452,14 @@ class MetricsManager implements LoggerAwareInterface
                     $result[$this->fpmTable][self::CPU_COUNT] ?? '',
                     $result[$this->fpmTable][self::CPU_SUM] ?? ''
                 );
+        }
+        if (isset($result[$this->connectorTable])) {
             $request
-                ->setMin($result[$this->fpmTable][self::REQUEST_MIN] ?? '')
-                ->setMax($result[$this->fpmTable][self::REQUEST_MAX] ?? '')
+                ->setMin($result[$this->connectorTable][self::REQUEST_MIN] ?? '')
+                ->setMax($result[$this->connectorTable][self::REQUEST_MAX] ?? '')
                 ->setAvg(
-                    $result[$this->fpmTable][self::REQUEST_COUNT] ?? '',
-                    $result[$this->fpmTable][self::REQUEST_SUM] ?? ''
+                    $result[$this->connectorTable][self::REQUEST_COUNT] ?? '',
+                    $result[$this->connectorTable][self::REQUEST_SUM] ?? ''
                 );
         }
         if (isset($result[$this->nodeTable])) {
@@ -442,13 +478,17 @@ class MetricsManager implements LoggerAwareInterface
                     $result[$this->nodeTable][self::PROCESSED_SUM] ?? ''
                 );
             $error
-                ->setTotal($result[$this->nodeTable][self::REQUEST_ERROR_COUNT] ?? '')
-                ->setErrors($result[$this->nodeTable][self::REQUEST_ERROR_SUM] ?? '');
+                ->setTotal($result[$this->nodeTable][self::NODE_TOTAL_SUM] ?? '')
+                ->setErrors($result[$this->nodeTable][self::NODE_ERROR_SUM] ?? '');
+
         }
         if (isset($result[$this->rabbitTable])) {
             $queue
-                ->setMin($result[$this->rabbitTable][self::QUEUE_MIN] ?? '')
-                ->setMax($result[$this->rabbitTable][self::QUEUE_MAX] ?? '');
+                ->setMax($result[$this->rabbitTable][self::QUEUE_MAX] ?? '')
+                ->setAvg(
+                    $result[$this->rabbitTable][self::QUEUE_COUNT] ?? '',
+                    $result[$this->rabbitTable][self::QUEUE_SUM] ?? ''
+                );
         }
         if (isset($result[$this->counterTable])) {
             $counter
@@ -458,6 +498,9 @@ class MetricsManager implements LoggerAwareInterface
                     $result[$this->counterTable][self::PROCESS_TIME_COUNT] ?? '',
                     $result[$this->counterTable][self::PROCESS_TIME_SUM] ?? ''
                 );
+            $error
+                ->setTotal($result[$this->counterTable][self::NODE_TOTAL_SUM] ?? '')
+                ->setErrors($result[$this->counterTable][self::NODE_ERROR_SUM] ?? '');
         }
 
         return $this->generateOutput($queue, $waiting, $process, $cpu, $request, $error, $counter);
@@ -504,7 +547,7 @@ class MetricsManager implements LoggerAwareInterface
         return [
             self::QUEUE_DEPTH  => [
                 'max' => $queue->getMax(),
-                'min' => $queue->getMin(),
+                'avg' => $queue->getAvg(),
             ],
             self::WAITING_TIME => [
                 'max' => $waiting->getMax(),
@@ -524,7 +567,7 @@ class MetricsManager implements LoggerAwareInterface
             self::REQUEST_TIME => [
                 'max' => $request->getMax(),
                 'min' => $request->getMin(),
-                'avg' => $request->getAvg(),
+                'avg' => ($request->getAvg() == 0) ? 'n/a' : $request->getAvg(),
             ],
             self::PROCESS      => [
                 'max'    => $counter->getMax(),
@@ -628,6 +671,27 @@ class MetricsManager implements LoggerAwareInterface
         }
 
         return $ret;
+    }
+
+    /**
+     * @param string   $fromTables
+     * @param DateTime $from
+     * @param DateTime $to
+     *
+     * @return string
+     */
+    private function addRetentionPolicy(string $fromTables, DateTime $from, DateTime $to): string
+    {
+        $out = '';
+        foreach (explode(',', $fromTables) as $item) {
+            if (!empty($out)) {
+                $out .= ',';
+            }
+
+            $out .= sprintf('"%s".%s', RetentionFactory::getRetention($from, $to), $item);
+        }
+
+        return $out;
     }
 
 }

@@ -5,9 +5,9 @@ import {counterOptions} from "../../src/config";
 import Configurator, {ITopologyConfig, ITopologyConfigSkeleton} from "../../src/topology/Configurator";
 
 const testTopo: ITopologyConfigSkeleton = {
-    id: "test-topo",
-    topology_id: "test-topo",
-    topology_name: "test-topo",
+    id: "test-topo_id_with_name",
+    topology_id: "test-topo_id",
+    topology_name: "test-topo_name",
     nodes: [
         {
             id: "node_a",
@@ -25,7 +25,7 @@ const testTopo: ITopologyConfigSkeleton = {
                 id: "node_b",
                 node_id: "507f191e810c19729de860ea",
                 node_name: "b",
-                topology_id: "test-topo",
+                topology_id: "test-topo_id",
             },
             worker: { type: "worker.appender", settings: { suffix: "| something"} },
             next: [],
@@ -37,7 +37,7 @@ const expectedTopo: ITopologyConfig = {
     counter: {
         pub: {
             exchange: {
-                name: "pipes.test-topo.events",
+                name: "pipes.test-topo_id.events",
                 options: {},
                 type: "direct",
             },
@@ -49,15 +49,15 @@ const expectedTopo: ITopologyConfig = {
         },
         sub: {
             queue: {
-                name: "pipes.test-topo.counter",
+                name: "pipes.test-topo_id.counter",
                 options: {},
                 prefetch: counterOptions.prefetch,
             },
         },
     },
-    id: "test-topo",
-    topology_id: "test-topo",
-    topology_name: "test-topo",
+    id: "test-topo_id_with_name",
+    topology_id: "test-topo_id",
+    topology_name: "test-topo_name",
     nodes: [
         {
             debug: {
@@ -69,7 +69,7 @@ const expectedTopo: ITopologyConfig = {
                 settings: {
                     counter: {
                         queue: {
-                            name: "pipes.test-topo.counter",
+                            name: "pipes.test-topo_id.counter",
                             options: {},
                         },
                     },
@@ -81,30 +81,30 @@ const expectedTopo: ITopologyConfig = {
                     },
                     faucet: {
                         queue: {
-                            name: "pipes.test-topo.node_a",
+                            name: "pipes.test-topo_id.node_a",
                             options: {},
                         },
                     },
                     followers: [
                         {
                             exchange: {
-                                name: "pipes.test-topo.events",
+                                name: "pipes.test-topo_id.events",
                                 options: {},
                                 type: "direct",
                             },
                             node_id: "node_b",
                             queue: {
-                                name: "pipes.test-topo.node_b",
+                                name: "pipes.test-topo_id.node_b",
                                 options: {},
                             },
-                            routing_key: "test-topo.node_b",
+                            routing_key: "test-topo_id.node_b",
                         },
                     ],
                     node_label: {
                         id: "node_a",
                         node_id: "node_a",
                         node_name: "node_a_unknown",
-                        topology_id: "test-topo",
+                        topology_id: "test-topo_id",
                     },
                 },
                 type: "drain.amqp",
@@ -115,7 +115,7 @@ const expectedTopo: ITopologyConfig = {
                         id: "node_a",
                         node_id: "node_a",
                         node_name: "node_a_unknown",
-                        topology_id: "test-topo",
+                        topology_id: "test-topo_id",
                     },
                     port: 3333,
                 },
@@ -127,7 +127,7 @@ const expectedTopo: ITopologyConfig = {
                 id: "node_a",
                 node_id: "node_a",
                 node_name: "node_a_unknown",
-                topology_id: "test-topo",
+                topology_id: "test-topo_id",
             },
             next: ["node_b"],
             worker: {
@@ -136,7 +136,7 @@ const expectedTopo: ITopologyConfig = {
                         id: "node_a",
                         node_id: "node_a",
                         node_name: "node_a_unknown",
-                        topology_id: "test-topo",
+                        topology_id: "test-topo_id",
                     },
                 },
                 type: "worker.null",
@@ -152,7 +152,7 @@ const expectedTopo: ITopologyConfig = {
                 settings: {
                     counter: {
                         queue: {
-                            name: "pipes.test-topo.counter",
+                            name: "pipes.test-topo_id.counter",
                             options: {},
                         },
                     },
@@ -164,7 +164,7 @@ const expectedTopo: ITopologyConfig = {
                     },
                     faucet: {
                         queue: {
-                            name: "pipes.test-topo.node_b",
+                            name: "pipes.test-topo_id.node_b",
                             options: {},
                         },
                     },
@@ -173,7 +173,7 @@ const expectedTopo: ITopologyConfig = {
                         id: "node_b",
                         node_id: "507f191e810c19729de860ea",
                         node_name: "b",
-                        topology_id: "test-topo",
+                        topology_id: "test-topo_id",
                     },
                 },
                 type: "drain.amqp",
@@ -186,7 +186,7 @@ const expectedTopo: ITopologyConfig = {
                         type: "direct",
                     },
                     exchange: {
-                        name: "pipes.test-topo.events",
+                        name: "pipes.test-topo_id.events",
                         options: {},
                         type: "direct",
                     },
@@ -194,14 +194,14 @@ const expectedTopo: ITopologyConfig = {
                         id: "node_b",
                         node_id: "507f191e810c19729de860ea",
                         node_name: "b",
-                        topology_id: "test-topo",
+                        topology_id: "test-topo_id",
                     },
                     prefetch: 5,
                     queue: {
-                        name: "pipes.test-topo.node_b",
+                        name: "pipes.test-topo_id.node_b",
                         options: {},
                     },
-                    routing_key: "test-topo.node_b",
+                    routing_key: "test-topo_id.node_b",
                 },
                 type: "faucet.amqp",
             },
@@ -211,7 +211,7 @@ const expectedTopo: ITopologyConfig = {
                 id: "node_b",
                 node_id: "507f191e810c19729de860ea",
                 node_name: "b",
-                topology_id: "test-topo",
+                topology_id: "test-topo_id",
             },
             next: [],
             worker: {
@@ -220,7 +220,7 @@ const expectedTopo: ITopologyConfig = {
                         id: "node_b",
                         node_id: "507f191e810c19729de860ea",
                         node_name: "b",
-                        topology_id: "test-topo",
+                        topology_id: "test-topo_id",
                     },
                     suffix: "| something",
                 },

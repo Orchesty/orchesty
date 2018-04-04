@@ -2,6 +2,7 @@ import * as express from "express";
 import {IMetrics} from "metrics-sender/dist/lib/metrics/IMetrics";
 import IStoppable from "../IStoppable";
 import logger from "../logger/Logger";
+import {MessageType} from "../message/AMessage";
 import JobMessage from "../message/JobMessage";
 import {ResultCode, ResultCodeGroup} from "../message/ResultCode";
 import IDrain from "./drain/IDrain";
@@ -81,36 +82,27 @@ class Node implements IStoppable {
      * @return {Promise}
      * @private
      */
-    public open(): Promise<void> {
+    public async open(): Promise<void> {
         this.nodeStatus = NODE_STATUS.READY;
 
         const processFn = async (msgIn: JobMessage): Promise<void> => {
-            try {
-                msgIn.getMeasurement().markWorkerStart();
-                const msgsOut = await this.worker.processData(msgIn);
-
-                msgsOut.forEach((msgOut: JobMessage) => {
-                    msgOut.getMeasurement().markWorkerEnd();
-
-                    // send to following bridge here
-                    this.drain.forward(msgOut);
-
-                    msgOut.getMeasurement().markFinished();
-                    this.sendBridgeMetrics(msgOut);
-                });
-            } catch (err) {
-                logger.error(`Node process failed.`, logger.ctxFromMsg(msgIn, err));
+            if (msgIn.getType() === MessageType.PROCESS) {
+                return await this.handleProcessJobMessage(msgIn);
             }
+
+            if (msgIn.getType() === MessageType.SERVICE) {
+                return await this.handleServiceJobMessage(msgIn);
+            }
+
+            logger.error(`Unknown message type: "${msgIn.getType()}"`, logger.ctxFromMsg(msgIn));
         };
 
-        return this.faucet.open(processFn)
-            .then(() => {
-                logger.info("Faucet has been opened.", {node_id: this.id});
-            });
+        await this.faucet.open(processFn);
+        logger.debug("Faucet has been opened.", {node_id: this.id});
     }
 
     /**
-     * TODO - safely close worker, drain and http server as well
+     * TODO - safely close worker, drain and http server
      *
      * Stops all node's services
      *
@@ -134,26 +126,61 @@ class Node implements IStoppable {
 
     /**
      *
+     * @param {JobMessage} msgIn
+     * @return {Promise<void>}
+     */
+    private async handleProcessJobMessage(msgIn: JobMessage): Promise<void> {
+        try {
+            msgIn.getMeasurement().markWorkerStart();
+            const msgsOut = await this.worker.processData(msgIn);
+
+            msgsOut.forEach((msgOut: JobMessage) => {
+                msgOut.getMeasurement().markWorkerEnd();
+                this.drain.forward(msgOut);
+                msgOut.getMeasurement().markFinished();
+                this.sendBridgeMetrics(msgOut);
+            });
+        } catch (err) {
+            logger.error(`Node process message failed.`, logger.ctxFromMsg(msgIn, err));
+        }
+    }
+
+    /**
+     *
+     * @param {JobMessage} msgIn
+     * @return {Promise<void>}
+     */
+    private async handleServiceJobMessage(msgIn: JobMessage): Promise<void> {
+        try {
+            msgIn.getMeasurement().markWorkerStart();
+            const msgOut = await this.worker.processService(msgIn);
+            msgOut.getMeasurement().markWorkerEnd();
+            this.drain.forward(msgOut);
+            msgOut.getMeasurement().markFinished();
+        } catch (err) {
+            logger.error(`Node service message failed.`, logger.ctxFromMsg(msgIn, err));
+        }
+    }
+
+    /**
+     *
      * @param {JobMessage} msg
      */
     private async sendBridgeMetrics(msg: JobMessage): Promise<void> {
         try {
-            const isSuccess = msg.getResult().code === ResultCode.SUCCESS;
-            const isError = msg.getResultGroup() !== ResultCodeGroup.SUCCESS &&
-                msg.getResultGroup() !== ResultCodeGroup.NON_STANDARD;
+            const isSuccess = msg.getResult().code === ResultCode.SUCCESS ||
+                msg.getResultGroup() === ResultCodeGroup.NON_STANDARD;
 
             const measurements = {
                 bridge_job_waiting_duration: msg.getMeasurement().getWaitingDuration(),
                 bridge_job_worker_duration: msg.getMeasurement().getWorkerDuration(),
                 bridge_job_total_duration: msg.getMeasurement().getNodeTotalDuration(),
-                bridge_job_result_code: msg.getResult().code,
-                bridge_job_result_success: isSuccess ? 1 : 0,
-                bridge_job_result_error: isError ? 1 : 0,
+                bridge_job_result_success: isSuccess ? "true" : "false",
             };
 
             this.metrics.addTag("node_id", msg.getNodeLabel().node_id);
 
-            logger.info(`Sending metrics: ${JSON.stringify(measurements)}`, logger.ctxFromMsg(msg));
+            logger.debug(`Sending metrics: ${JSON.stringify(measurements)}`, logger.ctxFromMsg(msg));
             await this.metrics.send(measurements, false);
         } catch (err) {
             logger.warn("Unable to send metrics", logger.ctxFromMsg(msg, err));

@@ -88,14 +88,22 @@ class CurlSender implements LoggerAwareInterface
             ->then(function (ResponseInterface $response) use ($dto, $startTimes, $info) {
                 $this->logResponse($response, $dto->getDebugInfo());
                 $times = CurlMetricUtils::getTimes($startTimes);
-                CurlMetricUtils::sendCurlMetrics($this->influxSender, $times, (string) $dto->getUri(TRUE),
-                    $info['node_id'][0] ?? NULL);
+                CurlMetricUtils::sendCurlMetrics(
+                    $this->influxSender,
+                    $times,
+                    $info['node_id'][0] ?? NULL,
+                    $info['correlation_id'][0] ?? NULL
+                );
 
                 return resolve($response);
             }, function (Exception $e) use ($dto, $startTimes, $info) {
                 $times = CurlMetricUtils::getTimes($startTimes);
-                CurlMetricUtils::sendCurlMetrics($this->influxSender, $times, (string) $dto->getUri(TRUE),
-                    $info['node_id'][0] ?? NULL);
+                CurlMetricUtils::sendCurlMetrics(
+                    $this->influxSender,
+                    $times,
+                    $info['node_id'][0] ?? NULL,
+                    $info['correlation_id'][0] ?? NULL
+                );
                 if ($e instanceof ResponseException) {
                     $this->logResponse($e->getResponse(), $dto->getDebugInfo());
                 } else {

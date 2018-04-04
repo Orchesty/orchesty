@@ -41,16 +41,32 @@ for (let i = 1; i <= POPULATOR_COUNT; i++) {
     }, Math.floor(i / POPULATOR_BATCH) * POPULATOR_BATCH_TIMEOUT);
 }
 
+// const content = JSON.stringify({
+//     event: "data",
+//     data: JSON.stringify({
+//         bids: [],
+//         asks: [],
+//     }),
+// });
+
+const content = JSON.stringify({
+    bids: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    asks: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    foo: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    bar: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+});
+
 const sendMessage = (i: number) => {
     publisher.sendToQueue(
         inQueue.name,
-        new Buffer("populator test"),
+        new Buffer(content),
         {
             headers: {
                 "pf-correlation-id" : `corr-${i}`,
                 "pf-process-id": `process-${i}`,
                 "pf-parent-id": "",
                 "pf-sequence-id": "1",
+                "pf-topology-id": "topo-id",
             },
         },
     ).then(() => {

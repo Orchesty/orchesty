@@ -83,8 +83,5 @@ docker-compose.ci.yml:
 	# Comment/uncomment DEV/STAGE sections
 	sed -r '/# BEGIN DEV$$/,/# END DEV$$/d; /# BEGIN STAGE$$/,/# END STAGE$$/s/^(\s*)#/\1/g;' -i docker-compose.ci.yml
 
-generate:
-	curl -X POST -H content-type=application/json http://127.0.0.66/api/gateway/test/topology/generate
-
 cache-clear:
 	$(DE_DEV) monolith-api bin/console cache:clear

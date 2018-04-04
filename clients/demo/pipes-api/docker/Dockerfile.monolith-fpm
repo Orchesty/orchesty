@@ -1,0 +1,15 @@
+FROM dkr.hanaboso.net/hanaboso/symfony3-base:latest
+
+RUN apt-get update && \
+    apt-get install -y apt-transport-https && \
+    apt-get clean
+
+ENV APP_ENV=prod
+ENV APP_DEBUG=0
+
+COPY ./ /var/www/html/
+
+RUN mkdir /srv/topology && \
+    chmod 0777 /srv/topology
+
+RUN chown -R www-data:www-data ./var

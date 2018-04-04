@@ -4,3 +4,4 @@ pipes-api/topology/topology.txt
 docker-compose.ci.yml
 /var/
 /vendor/
+docker-compose.yml

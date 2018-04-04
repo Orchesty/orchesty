@@ -7,8 +7,8 @@ import ICounterStorage from "./ICounterStorage";
 export interface IRedisStorageSettings {
     host: string;
     port: number;
-    pass: string;
     db: number;
+    password?: string;
 }
 
 export default class RedisStorage implements ICounterStorage {
@@ -20,12 +20,12 @@ export default class RedisStorage implements ICounterStorage {
      * @param {IRedisStorageSettings} opts
      */
     constructor(opts: IRedisStorageSettings) {
-        this.client = redis.createClient({
-            host: opts.host,
-            port: opts.port,
-            password: opts.pass,
-            db: opts.db,
-        });
+        // Avoid redis client warning when trying to connect with empty password
+        if (opts.password === "") {
+            delete opts.password;
+        }
+
+        this.client = redis.createClient(opts);
 
         this.client.on("error", (err) => {
             logger.error("RedisStorage Error.", {node_id: "redis_storage", error: err});

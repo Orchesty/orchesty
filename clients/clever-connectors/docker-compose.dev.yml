@@ -37,7 +37,7 @@ services:
 
     ## BEGIN DEV
     batch-connector:
-        image: dkr.hanaboso.net/pipes/pipes/php-dev:${TAG_PHPDEV}
+        image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
         user: ${DEV_UID}:${DEV_GID}
         environment:
           BACKEND_HOST: ${BACKEND_URL}/
@@ -407,24 +407,18 @@ services:
           - grafana:/var/lib/grafana
 
     influxdb:
-        image: influxdb:1.2-alpine
+        image: dkr.hanaboso.net/pipes/pipes/influxdb:dev
+        environment:
+          - INFLUXDB_DB=pipes
         ports:
           - ${DEV_IP}:8083:8083
           - ${DEV_IP}:8086:8086
           - ${DEV_IP}:8089:8089/udp
         volumes:
           - influxdb:/var/lib/influxdb
-        ## BEGIN DEV
-          - ./stack/influxdb.conf:/etc/influxdb/influxdb.conf
-        ## END DEV
-        ## BEGIN STAGE
-        #configs:
-        #  - source: influxdb.conf
-        #    target: /etc/influxdb/influxdb.conf
-        ## END STAGE
-    
+
     telegraf:
-        image: telegraf:1.4.2
+        image: telegraf:1.5-alpine
         ## BEGIN DEV
         volumes:
           - ./stack/telegraf.conf:/etc/telegraf/telegraf.conf
@@ -434,6 +428,9 @@ services:
         #  - source: telegraf.conf
         #    target: /etc/telegraf/telegraf.conf
         ## END STAGE
+
+    kapacitor:
+        image: dkr.hanaboso.net/pipes/pipes/kapacitor:dev
 
     # Fake Services
     mailhog:
@@ -567,8 +564,6 @@ volumes:
 #configs:
 #  logstash.conf:
 #    file: ./stack/logstash.conf
-#  influxdb.conf:
-#    file: ./stack/influxdb.conf
 #  telegraf.conf:
 #    file: ./stack/telegraf.conf
 #
