@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 /**
  * Created by PhpStorm.
  * User: venca
@@ -15,6 +16,11 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
+/**
+ * Class IdnesConnector
+ *
+ * @package Demo\CustomNode
+ */
 class IdnesConnector implements CustomNodeInterface
 {
 

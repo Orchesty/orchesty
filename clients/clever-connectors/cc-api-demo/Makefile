@@ -15,6 +15,10 @@ docker-up-force: .env
 	$(DC) pull
 	$(DC) up -d --force-recreate --remove-orphans
 
+
+docker-down-clean: .env
+	$(DC) down -v
+
 build: .env
 	: Disable dependency symlinking in composer and do a fresh install && \
 	rm -rf vendor && \
@@ -45,4 +49,8 @@ phpstan:
 phpunit:
 	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr socialMultichannel/tests/
 
-test: docker-up-force composer-install codesniffer phpstan phpunit
+test: .env docker-up-force composer-install codesniffer phpstan phpunit
+
+docker-compose.ci.yml:
+	# Comment out any port forwarding
+	sed -r 's/^(\s+ports:)$$/#\1/g; s/^(\s+- \$$\{DEV_IP\}.*)$$/#\1/g' docker-compose.yml > docker-compose.ci.yml

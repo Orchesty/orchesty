@@ -41,6 +41,7 @@ class FilterStockExchange implements CustomNodeInterface
      * @param ProcessDto $dto
      *
      * @return ProcessDto
+     * @throws Exception
      */
     public function process(ProcessDto $dto): ProcessDto
     {
@@ -51,7 +52,7 @@ class FilterStockExchange implements CustomNodeInterface
         }
 
         if (mt_rand(1, 10) == 5) {
-            throw new \Exception('My test error exception');
+            throw new Exception('My test error exception');
         }
 
         $dto->setData('');

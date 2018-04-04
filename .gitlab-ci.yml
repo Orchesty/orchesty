@@ -84,6 +84,15 @@ topology-api:
     - dev
     - master
 
+api-demo:
+  stage: stage1
+  script:
+    - DIR=clients/clever-connectors/cc-api-demo
+    - skip_unmodified $DIR
+    - cd $DIR
+    - make build
+    - make push
+
 # GO LANG
 .go_test: &go_test
   script:
@@ -143,6 +152,26 @@ cm-pipes-api-test:
     - export COMPOSE_FILE=docker-compose.ci.yml                     # CLEANUP bundles
     - make ${COMPOSE_FILE} test
 
+cc-api-demo-test:
+  stage: stage2
+  script:
+    - DIR=clients/clever-connectors/cc-api-demo
+    - skip_unmodified $DIR
+    - cd $REPO_ROOT/$DIR
+    - export COMPOSE_PROJECT_NAME="p${CI_PIPELINE_ID}-cc-api-demo" # CLEANUP bundles
+    - export COMPOSE_FILE=docker-compose.ci.yml                    # CLEANUP bundles
+    - make ${COMPOSE_FILE} test
+
+demo-pipes-api-test:
+  stage: stage2
+  script:
+    - DIR=clients/demo/pipes-api
+    - skip_unmodified $DIR
+    - cd $REPO_ROOT/$DIR
+    - export COMPOSE_PROJECT_NAME="p${CI_PIPELINE_ID}-demo-pipes-api" # CLEANUP bundles
+    - export COMPOSE_FILE=docker-compose.ci.yml                       # CLEANUP bundles
+    - make ${COMPOSE_FILE} test
+
 pf-bridge-test:
   stage: stage3
   script:
@@ -174,16 +203,6 @@ pf-bridge:
     - DIR=pf-bridge
     - skip_unmodified $DIR
     - ${DIR}/build.sh ${CI_BUILD_REF_NAME}
-
-api-demo:
-  stage: stage2
-  script:
-    - DIR=clients/clever-connectors/cc-api-demo
-    - skip_unmodified $DIR
-    - cd $DIR
-    - make build
-    - make push
-
 
 # Client: demo
 
@@ -295,6 +314,18 @@ cleanup:
     - export COMPOSE_PROJECT_NAME=p${CI_PIPELINE_ID}-cm-pipes-api
     - export COMPOSE_FILE=docker-compose.ci.yml
     - make ${COMPOSE_FILE} docker-down-clean || echo "cm-pipes-api cleanup phase failed"
+
+    - ": cc-api-demo-test"
+    - cd $REPO_ROOT/clients/clever-connectors/cc-api-demo
+    - export COMPOSE_PROJECT_NAME=p${CI_PIPELINE_ID}-cc-api-demo
+    - export COMPOSE_FILE=docker-compose.ci.yml
+    - make ${COMPOSE_FILE} docker-down-clean || echo "cc-api-demo cleanup phase failed"
+
+    - ": demo-pipes-api-test"
+    - cd $REPO_ROOT/clients/demo/pipes-api
+    - export COMPOSE_PROJECT_NAME=p${CI_PIPELINE_ID}-demo-pipes-api
+    - export COMPOSE_FILE=docker-compose.ci.yml
+    - make ${COMPOSE_FILE} docker-down-clean || echo "demo-pipes-api cleanup phase failed"
 
     - ": bridge"
     - cd $REPO_ROOT/pf-bridge/test
