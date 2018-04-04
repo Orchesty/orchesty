@@ -33,7 +33,7 @@ final class ProcessDto
     /**
      * @var array
      */
-    private $headers;
+    private $headers = [];
 
     /**
      * @return string
