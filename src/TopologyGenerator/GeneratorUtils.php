@@ -95,7 +95,7 @@ class GeneratorUtils
     {
         return sprintf(
             'pipes.%s.%s',
-            self::createNormalizedServiceName($topology->getId(), $topology->getName()),
+            $topology->getId(),
             self::createNormalizedServiceName($node->getId(), $node->getName())
         );
     }

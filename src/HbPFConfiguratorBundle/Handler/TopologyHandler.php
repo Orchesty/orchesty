@@ -90,7 +90,7 @@ class TopologyHandler
     {
         $sort = UriParams::parseOrderBy($orderBy);
         /** @var Topology[] $topologies */
-        $topologies = $this->topologyRepository->findBy([], $sort, $limit, $offset);
+        $topologies = $this->topologyRepository->findBy(['deleted' => FALSE], $sort, $limit, $offset);
 
         $data = [
             'items' => [],

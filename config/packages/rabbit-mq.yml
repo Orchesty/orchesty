@@ -58,6 +58,6 @@ services:
         class: Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchConsumerCallback
         arguments:
             - '@hanaboso.pipes_framework.commons.rabbit_mq.async_demo.batch_demo_callback'
-            - '@hbpf.influxdb_sender'
+            - '@hbpf.influxdb_sender_monolith'
         calls:
             - [setLogger, ['@monolog.logger.rabbit-mq']]

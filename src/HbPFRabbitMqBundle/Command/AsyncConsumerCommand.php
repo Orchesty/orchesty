@@ -227,7 +227,7 @@ class AsyncConsumerCommand extends Command implements LoggerAwareInterface
      */
     private function runAsyncConsumer(LoopInterface $loop, AsyncConsumerAbstract $consumer): void
     {
-        $this->logger->debug(sprintf('Async consumer connected to %s:%s', $this->config['host'], $this->config['port']));
+        $this->logger->info(sprintf('Async consumer connected to %s:%s', $this->config['host'], $this->config['port']));
 
         $this
             ->connection($loop, $consumer)

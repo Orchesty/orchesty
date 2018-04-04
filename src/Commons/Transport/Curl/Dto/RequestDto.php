@@ -165,6 +165,7 @@ class RequestDto
      * @param null|string $method
      *
      * @return RequestDto
+     * @throws CurlException
      */
     public static function from(RequestDto $dto, ?Uri $uri = NULL, ?string $method = NULL): RequestDto
     {

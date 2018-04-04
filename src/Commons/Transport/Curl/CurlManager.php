@@ -113,8 +113,12 @@ class CurlManager implements CurlManagerInterface, LoggerAwareInterface
 
             $psrResponse = $client->send($request, $this->prepareOptions($options));
             $times       = CurlMetricUtils::getTimes($startTimes);
-            CurlMetricUtils::sendCurlMetrics($this->influxSender, $times, $request->getUri()->__toString(),
-                $info['node_id'][0] ?? NULL);
+            CurlMetricUtils::sendCurlMetrics(
+                $this->influxSender,
+                $times,
+                $info['node_id'][0] ?? NULL,
+                $info['correlation_id'][0] ?? NULL
+            );
 
             $response = new ResponseDto(
                 $psrResponse->getStatusCode(),
@@ -133,8 +137,12 @@ class CurlManager implements CurlManagerInterface, LoggerAwareInterface
             unset($psrResponse);
         } catch (RequestException $exception) {
             $times = CurlMetricUtils::getTimes($startTimes);
-            CurlMetricUtils::sendCurlMetrics($this->influxSender, $times, $request->getUri()->__toString(),
-                $info['node_id'][0] ?? NULL);
+            CurlMetricUtils::sendCurlMetrics(
+                $this->influxSender,
+                $times,
+                $info['node_id'][0] ?? NULL,
+                $info['correlation_id'][0] ?? NULL
+            );
             $response = $exception->getResponse();
             $message  = $exception->getMessage();
             if ($response) {
@@ -154,8 +162,8 @@ class CurlManager implements CurlManagerInterface, LoggerAwareInterface
             CurlMetricUtils::sendCurlMetrics(
                 $this->influxSender,
                 $times,
-                $request->getUri()->__toString(),
-                $info['node_id'][0] ?? NULL
+                $info['node_id'][0] ?? NULL,
+                $info['correlation_id'][0] ?? NULL
             );
             $this->logger->error(sprintf('CurlManager::send() failed: %s', $exception->getMessage()));
             throw new CurlException(
