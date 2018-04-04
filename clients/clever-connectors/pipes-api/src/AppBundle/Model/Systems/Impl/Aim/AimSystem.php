@@ -38,11 +38,14 @@ final class AimSystem implements AuthorizationInterface
     public const DESTINATION_ASIA    = 'SYNCHRONIZATION_LOCATION_ASIA';
     public const DESTINATION_EUROPE  = 'SYNCHRONIZATION_LOCATION_EUROPE';
 
-    private const VALID_DESTINATIONS = [
-        'SYNCHRONIZATION_LOCATION_ALL',
-        'SYNCHRONIZATION_LOCATION_AMERICA',
-        'SYNCHRONIZATION_LOCATION_ASIA',
-        'SYNCHRONIZATION_LOCATION_EUROPE',
+    /**
+     * @var array
+     */
+    public $validDestinations = [
+        self::DESTINATION_ALL,
+        self::DESTINATION_AMERICA,
+        self::DESTINATION_ASIA,
+        self::DESTINATION_EUROPE,
     ];
 
     /**
@@ -274,7 +277,7 @@ final class AimSystem implements AuthorizationInterface
         }
 
         foreach ($data['destinations'] as $destination) {
-            if (!in_array($destination, self::VALID_DESTINATIONS)) {
+            if (!in_array($destination, $this->validDestinations)) {
                 throw new CleverConnectorsException(
                     sprintf('Invalid destination "%s"', $destination),
                     CleverConnectorsException::INVALID_DATA

@@ -1,9 +1,41 @@
+parameters:
+    aim:
+        url:
+            america: env(SYSTEM_AIM_AMERICA_URL): ''
+            asia: env(SYSTEM_AIM_ASIA_URL): ''
+            europe: env(SYSTEM_AIM_EUROPE_URL): ''
+
 services:
     _defaults:
         public: '%public.services%'
 
-    systems.salesforceapp:
+    systems.aim:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Aim\AimSystem
         arguments:
             - '@hbpf.handler.starting_point'
         tags: ['%systems%']
+
+    hbpf.connector.aim-america-connector:
+            class: CleverConnectors\AppBundle\Model\Systems\Impl\Aim\Connector\AmericaAimConnector
+            arguments:
+                - '@systems.aim'
+                - '@hbpf.transport.curl_manager'
+                - '%aim.url.america%'
+            calls:
+                - ['setLogger', ['@monolog.logger.notification']]
+    hbpf.connector.aim-asia-connector:
+            class: CleverConnectors\AppBundle\Model\Systems\Impl\Aim\Connector\AsiaAimConnector
+            arguments:
+                - '@systems.aim'
+                - '@hbpf.transport.curl_manager'
+                - '%aim.url.asia%'
+            calls:
+                - ['setLogger', ['@monolog.logger.notification']]
+    hbpf.connector.aim-europe-connector:
+            class: CleverConnectors\AppBundle\Model\Systems\Impl\Aim\Connector\EuropeAimConnector
+            arguments:
+                - '@systems.aim'
+                - '@hbpf.transport.curl_manager'
+                - '%aim.url.europe%'
+            calls:
+                - ['setLogger', ['@monolog.logger.notification']]
