@@ -6,6 +6,7 @@ import Page from 'wrappers/Page';
 import StateComponent from 'wrappers/StateComponent';
 import * as notificationSettingsActions from 'actions/notificationSettingsActions';
 import processes from 'enums/processes';
+import Panel from 'wrappers/Panel';
 
 function mapStateToProps(state, ownProps) {
   const {notificationSettings} = state;
@@ -25,4 +26,4 @@ function mapActionsToProps(dispatch, ownProps){
   }
 }
 
-export default connect(mapStateToProps, mapActionsToProps)(Page(StateComponent(NotificationSettingsForm)));
+export default connect(mapStateToProps, mapActionsToProps)(Page(Panel(StateComponent(NotificationSettingsForm), {title: 'Notification setting'})));

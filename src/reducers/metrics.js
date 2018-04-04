@@ -28,7 +28,8 @@ export default (state = initialState, action) => {
     case types.METRICS_TOPOLOGY_SET_STATE:
       return Object.assign({}, state, {
         topologies: Object.assign({}, state.topologies, {
-          [action.id]: Object.assign({}, state.topologies[action.id], {
+          [action.key]: Object.assign({}, state.topologies[action.id], {
+            id: action.id,
             state: action.state
           })
         })
@@ -42,12 +43,23 @@ export default (state = initialState, action) => {
     case types.METRICS_TOPOLOGY_RECEIVE:
       return Object.assign({}, state, {
         topologies: Object.assign({}, state.topologies, {
-          [action.id]: {
+          [action.key]: {
+            id: action.id,
             state: stateType.SUCCESS,
             items: Object.keys(action.items).filter(key => key != 'topology' && key != 'requests'),
             data: Object.assign({}, action.items.topology, {requests: action.items.requests})
           }
         })
+      });
+
+    case types.METRICS_TOPOLOGY_INVALIDATE:
+      return Object.assign({}, state, {
+        topologies: Object.assign({}, state.topologies, Object.keys(state.topologies).reduce((acc, curr) => {
+          if (state.topologies[curr].id === action.id){
+            acc[curr] = Object.assign({}, state.topologies[curr], {state: stateType.NOT_LOADED});
+          }
+          return acc;
+        }, {}))
       });
 
     case types.METRICS_SET_STATE:

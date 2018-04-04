@@ -92,9 +92,9 @@ class Application{
   }
 
   uploadAndPlay(speed = 1, callback){
-    var elemDiv = document.createElement('div');
+    let elemDiv = document.createElement('div');
     elemDiv.style.cssText = 'top:0px;left:0px;position:absolute;width:250px;height:50px;z-index:100000;background:yellowgreen;';
-    var input = document.createElement('input');
+    let input = document.createElement('input');
     input.type = 'file';
     input.style = 'margin: 10px';
     input.addEventListener('change', (e) => this._openFileAndPlay(elemDiv, e.target.files[0], speed, callback));
@@ -112,7 +112,7 @@ class Application{
   }
 }
 
-var application = null;
+let application = null;
 
 export default store => {
   if (!application){

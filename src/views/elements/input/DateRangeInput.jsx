@@ -12,6 +12,12 @@ const ranges = {
     'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
   };
 
+const rangesMetrics = {
+  'last 1 min': [moment().subtract(1, 'minutes'), moment()],
+  'last 30 min': [moment().subtract(30, 'minutes'), moment()],
+  'last 4 hours': [moment().subtract(4, 'hours'), moment()]
+};
+
 class DateRangeInput extends React.Component {
   constructor(props){
     super(props);
@@ -21,15 +27,18 @@ class DateRangeInput extends React.Component {
   datePickerChanged(e, picker){
     const onChange = this.props.onChange ? this.props.onChange : this.props.input.onChange;
     if (onChange){
-      onChange(picker.startDate.format('L'), picker.endDate.format('L'));
+      onChange(picker.startDate.format(), picker.endDate.format());
+     // onChange(picker.startDate.format('L'), picker.endDate.format('L'));
     }
   }
 
   render() {
     const {label, input, readOnly, meta: {touched, error} = {}, value} = this.props;
-    const valueStr = typeof value == 'object' ? `${value.since} - ${value.till}` : value;
+    const since = moment(value.since);
+    const till = moment(value.till);
+    const valueStr = typeof value == 'object' ? `${since.format('DD.MM.YYYY HH:mm:ss')} - ${till.format('DD.MM.YYYY HH:mm:ss')}` : value;
     return (
-      <DateRangePicker ranges={ranges} opens="left" onApply={this.datePickerChanged} startDate={value ? value.since : undefined} endDate={value ? value.till : undefined}>
+      <DateRangePicker ranges={rangesMetrics} autoUpdateInput={false} locale={{format: 'DD.MM.YYYY HH:mm:ss'}}  timePicker24Hour timePicker timePickerSeconds opens="left" onApply={this.datePickerChanged} startDate={value ? since : undefined} endDate={value ? till : undefined}>
         <input type="text" className={'form-control' + (touched && error ? ' parsley-error' : '')} onChange={()=>{}} value={valueStr} {...input} readOnly={readOnly}/>
       </DateRangePicker>
     );

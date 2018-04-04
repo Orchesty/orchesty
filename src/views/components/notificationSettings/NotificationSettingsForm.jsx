@@ -6,6 +6,8 @@ import {isEmail} from 'rootApp/utils/validations';
 import CheckboxInput from 'elements/input/CheckboxInput';
 import {BasicFormTagsInput} from 'rootApp/views/elements/basicFormInputs';
 
+import './NotificationSettingsForm.less';
+
 function renderLabel(props){
   return <span>{props.input.value}</span>;
 }
@@ -52,7 +54,7 @@ class NotificationSettingsForm extends React.Component {
   render() {
     const {processId} = this.props;
     return (
-      <form onSubmit={this.props.handleSubmit(this.onSubmit)}>
+      <form className="notification-settings" onSubmit={this.props.handleSubmit(this.onSubmit)}>
         <Field name="subscribers" component={BasicFormTagsInput} label="Subscribers" placeholder="Add subscriber" onlyUnique/>
         <FieldArray name="event_settings" component={renderEventSettings} />
         <StateButton type="submit" color="primary" processId={processId} >Save</StateButton>

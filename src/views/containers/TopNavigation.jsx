@@ -1,7 +1,10 @@
 import React from 'react'
 import { connect } from 'react-redux';
 
+import config from 'rootApp/config';
+
 import * as applicationActions from 'actions/applicationActions';
+
 import GeneralSearch from 'components/search/GeneralSearch';
 import TopMainMenu from './TopMainMenu';
 import UserMenu from './UserMenu';
@@ -11,12 +14,19 @@ import './TopNavigation.less';
 class TopNavigation extends React.Component {
   constructor(props) {
     super(props);
+    this.mainPageClick = this.mainPageClick.bind(this);
+  }
+
+  mainPageClick(e){
+    const {openMainPage} = this.props;
+    e.preventDefault();
+    openMainPage();
   }
 
   render() {
     return (
       <div className="top-navigation">
-        <div className="app-name"><i className="fa fa-connectdevelop" /> Pipes</div>
+        <div className="app-name" onClick={this.mainPageClick}><i className="fa fa-connectdevelop" /> Pipes</div>
         <TopMainMenu />
         <div className="middle-content" />
         <GeneralSearch />
@@ -33,7 +43,8 @@ function mapStateToProps(state){
 
 function mapActionsToProps(dispatch){
   return {
-    toggleMainMenu: id => dispatch(applicationActions.toggleMainMenu())
+    toggleMainMenu: id => dispatch(applicationActions.toggleMainMenu()),
+    openMainPage: () => dispatch(applicationActions.openPage(config.params.mainPage))
   }
 }
 

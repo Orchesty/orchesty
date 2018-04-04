@@ -19,7 +19,7 @@ class NodeMetrics extends React.Component {
   }
 
   componentWillReceiveProps(props){
-    if (props.tests !== this.props.tests){
+    if (props.tests !== this.props.tests || props.node !== this.props.node){
       this.sendActions(props);
     }
   }
@@ -53,10 +53,10 @@ class NodeMetrics extends React.Component {
       }
       actions.push({
         type: menuItemType.ACTION,
-        icon: 'fa fa-power-off',
+        icon: 'fa fa-power-off' + (node.enabled ? ' green' : ''),
         caption: node.enabled ? 'Disable' : 'Enable',
         action: () => {
-          updateNode(node._id, {enabled: !node.enabled})
+          updateNode({enabled: !node.enabled})
         }
       });
     }
@@ -75,7 +75,7 @@ class NodeMetrics extends React.Component {
         </div>
         <div className="tile_stats_count">
           <span className="count_top">Queue Depth [msg]</span>
-          <div className="count">{data.queue_depth.min}</div>
+          <div className="count">{data.queue_depth.avg}</div>
           <span className="count_bottom red">Max: {data.queue_depth.max}</span>
         </div>
         <div className="tile_stats_count">
