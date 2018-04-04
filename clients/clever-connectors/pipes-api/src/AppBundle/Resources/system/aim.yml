@@ -1,9 +1,9 @@
 parameters:
     aim:
-        url:
-            america: env(SYSTEM_AIM_AMERICA_URL): ''
-            asia: env(SYSTEM_AIM_ASIA_URL): ''
-            europe: env(SYSTEM_AIM_EUROPE_URL): ''
+        host:
+            america: env(SYSTEM_AIM_AMERICA_HOST): ''
+            asia: env(SYSTEM_AIM_ASIA_HOST): ''
+            europe: env(SYSTEM_AIM_EUROPE_HOST): ''
 
 services:
     _defaults:
@@ -20,7 +20,7 @@ services:
             arguments:
                 - '@systems.aim'
                 - '@hbpf.transport.curl_manager'
-                - '%aim.url.america%'
+                - '%aim.host.america%'
             calls:
                 - ['setLogger', ['@monolog.logger.notification']]
     hbpf.connector.aim-asia-connector:
@@ -28,7 +28,7 @@ services:
             arguments:
                 - '@systems.aim'
                 - '@hbpf.transport.curl_manager'
-                - '%aim.url.asia%'
+                - '%aim.host.asia%'
             calls:
                 - ['setLogger', ['@monolog.logger.notification']]
     hbpf.connector.aim-europe-connector:
@@ -36,7 +36,7 @@ services:
             arguments:
                 - '@systems.aim'
                 - '@hbpf.transport.curl_manager'
-                - '%aim.url.europe%'
+                - '%aim.host.europe%'
             calls:
                 - ['setLogger', ['@monolog.logger.notification']]
 

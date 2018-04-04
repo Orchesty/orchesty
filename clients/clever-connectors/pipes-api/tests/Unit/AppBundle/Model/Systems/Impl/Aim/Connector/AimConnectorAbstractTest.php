@@ -23,6 +23,7 @@ final class AimConnectorAbstractTest extends TestCase
 
     /**
      * @covers \CleverConnectors\AppBundle\Model\Systems\Impl\Aim\Connector\AimConnectorAbstract::getId()
+     * @throws \Exception
      */
     public function testGetId(): void
     {
@@ -54,6 +55,11 @@ final class AimConnectorAbstractTest extends TestCase
 
         $dto = new ProcessDto();
         $dto->addHeader(CMHeaders::createKey(AimSystem::HEADER_ACTION), 'invalid_action');
+        $dto->setData(json_encode([
+            'category' => 'SYNCHRONIZATION_CATEGORY_TEMPLATE',
+            'sku' => '1234567890',
+            'time' => '2010-10-10 10:10:10',
+        ]));
 
         $this->createConnector()->processAction($dto);
 
@@ -64,16 +70,22 @@ final class AimConnectorAbstractTest extends TestCase
      *
      * @throws ConnectorException
      * @throws \Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException
+     * @throws \Exception
      */
     public function testProcessSyncAction(): void
     {
         $dto = new ProcessDto();
         $dto->addHeader(CMHeaders::createKey(AimSystem::HEADER_ACTION), AimSystem::SYNC_ACTION);
+        $dto->setData(json_encode([
+            'category' => 'SYNCHRONIZATION_CATEGORY_TEMPLATE',
+            'sku' => '1234567890',
+            'time' => '2010-10-10 10:10:10',
+        ]));
 
         $result = $this->createConnector()->processAction($dto);
 
         $this->assertSame($dto, $result);
-        $this->assertEquals(['foo' => 'bar'], json_decode($result->getData(), TRUE));
+        $this->assertEquals($this->getExpectedResultData(), json_decode($result->getData(), TRUE));
     }
 
     /**
@@ -81,16 +93,22 @@ final class AimConnectorAbstractTest extends TestCase
      *
      * @throws ConnectorException
      * @throws \Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException
+     * @throws \Exception
      */
     public function testProcessDeleteAction(): void
     {
         $dto = new ProcessDto();
         $dto->addHeader(CMHeaders::createKey(AimSystem::HEADER_ACTION), AimSystem::SYNC_ACTION);
+        $dto->setData(json_encode([
+            'category' => 'SYNCHRONIZATION_CATEGORY_TEMPLATE',
+            'sku' => '1234567890',
+            'time' => '2010-10-10 10:10:10',
+        ]));
 
         $result = $this->createConnector()->processAction($dto);
 
         $this->assertSame($dto, $result);
-        $this->assertEquals(['foo' => 'bar'], json_decode($result->getData(), TRUE));
+        $this->assertEquals($this->getExpectedResultData(), json_decode($result->getData(), TRUE));
     }
 
     /**
@@ -103,9 +121,25 @@ final class AimConnectorAbstractTest extends TestCase
         $aim = new AimSystem($start);
         /** @var CurlManagerInterface|MockObject $curl */
         $curl = $this->getMockBuilder(CurlManagerInterface::class)->getMock();
-        $curl->method('send')->willReturn(new ResponseDto(0, 'OK', json_encode(['foo' => 'bar']), []));
+        $curlResponse = json_encode(['status' => 'Success', 'message' => '']);
+        $curl->method('send')->willReturn(new ResponseDto(0, 'OK', $curlResponse, []));
 
         return new TestAimConnector($aim, $curl, 'test', 'localhost');
+    }
+
+    /**
+     * @return array
+     */
+    private function getExpectedResultData(): array
+    {
+        return [
+            'status' => 'Success',
+            'message' => '',
+            'category' => 'SYNCHRONIZATION_CATEGORY_TEMPLATE',
+            'sku' => '1234567890',
+            'time' => '2010-10-10 10:10:10',
+            'destination' => 'test',
+        ];
     }
     
 }

@@ -87,4 +87,5 @@ final class SyncResultConnector implements ConnectorInterface
 
         return $dto->setData(json_encode($responseBody));
     }
+
 }

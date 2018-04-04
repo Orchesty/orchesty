@@ -13,16 +13,14 @@ use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 final class AsiaAimConnector extends AimConnectorAbstract
 {
 
-    private const TYPE = 'asia';
-
     /**
      * @param AimSystem            $system
      * @param CurlManagerInterface $curl
-     * @param string               $url
+     * @param string               $host
      */
-    public function __construct(AimSystem $system, CurlManagerInterface $curl, string $url)
+    public function __construct(AimSystem $system, CurlManagerInterface $curl, string $host)
     {
-        parent::__construct($system, $curl, self::TYPE, $url);
+        parent::__construct($system, $curl, AimSystem::DESTINATION_ASIA, $host);
     }
 
 }

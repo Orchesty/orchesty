@@ -26,6 +26,9 @@ abstract class AimConnectorAbstract implements ConnectorInterface, LoggerAwareIn
 
     use LoggerTrait;
 
+    private const PATH_UPSERT = '/api/synchronization/saveItem';
+    private const PATH_DELETE = '/api/synchronization/deleteItem/%s/%s';
+
     /**
      * @var AimSystem
      */
@@ -37,29 +40,38 @@ abstract class AimConnectorAbstract implements ConnectorInterface, LoggerAwareIn
     /**
      * @var string
      */
-    private $type;
+    private $destination;
     /**
      * @var string
      */
-    private $url;
+    private $host;
+
+    /**
+     * @var array
+     */
+    private $mandatoryFields = [
+        'category',
+        'sku',
+        'time',
+    ];
 
     /**
      * @param AimSystem            $system
      * @param CurlManagerInterface $curl
-     * @param string               $type
-     * @param string               $url
+     * @param string               $destination
+     * @param string               $host
      */
     public function __construct(
         AimSystem $system,
         CurlManagerInterface $curl,
-        string $type,
-        string $url
+        string $destination,
+        string $host
     )
     {
-        $this->system = $system;
-        $this->curl   = $curl;
-        $this->type   = $type;
-        $this->url    = $url;
+        $this->system      = $system;
+        $this->curl        = $curl;
+        $this->destination = $destination;
+        $this->host        = $host;
     }
 
     /**
@@ -67,7 +79,7 @@ abstract class AimConnectorAbstract implements ConnectorInterface, LoggerAwareIn
      */
     public function getId(): string
     {
-        return 'aim-' . $this->type;
+        return 'aim-' . $this->destination;
     }
 
     /**
@@ -93,13 +105,15 @@ abstract class AimConnectorAbstract implements ConnectorInterface, LoggerAwareIn
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
+        $validData = $this->validateInputData($dto);
+
         $action = $dto->getHeader(CMHeaders::createKey(AimSystem::HEADER_ACTION), NULL);
         switch ($action) {
             case AimSystem::SYNC_ACTION:
-                return $this->actionUpsert($dto);
+                return $this->actionUpsert($dto, $validData);
 
             case AimSystem::DELETE_ACTION:
-                return $this->actionDelete($dto);
+                return $this->actionDelete($dto, $validData);
 
             default:
                 throw new ConnectorException(
@@ -111,36 +125,47 @@ abstract class AimConnectorAbstract implements ConnectorInterface, LoggerAwareIn
 
     /**
      * @param ProcessDto $dto
+     * @param array      $data
      *
      * @return ProcessDto
+     * @throws ConnectorException
      * @throws CurlException
      */
-    private function actionUpsert(ProcessDto $dto): ProcessDto
+    private function actionUpsert(ProcessDto $dto, array $data): ProcessDto
     {
-        return $this->runAction($dto, CurlManager::METHOD_POST);
+        $url = $this->host . self::PATH_UPSERT;
+
+        return $this->runAction($dto, CurlManager::METHOD_POST, $url, $data);
     }
 
     /**
      * @param ProcessDto $dto
+     * @param array      $data
      *
      * @return ProcessDto
+     * @throws ConnectorException
      * @throws CurlException
      */
-    private function actionDelete(ProcessDto $dto): ProcessDto
+    private function actionDelete(ProcessDto $dto, array $data): ProcessDto
     {
-        return $this->runAction($dto, CurlManager::METHOD_DELETE);
+        $url = $this->host . sprintf(self::PATH_DELETE, $data['category'], $data['sku']);
+
+        return $this->runAction($dto, CurlManager::METHOD_DELETE, $url, $data);
     }
 
     /**
      * @param ProcessDto $dto
      * @param string     $method
+     * @param string     $url
+     * @param array      $data
      *
      * @return ProcessDto
+     * @throws ConnectorException
      * @throws CurlException
      */
-    private function runAction(ProcessDto $dto, string $method): ProcessDto
+    private function runAction(ProcessDto $dto, string $method, string $url, array $data): ProcessDto
     {
-        $request = new RequestDto($method, new Uri($this->url));
+        $request = new RequestDto($method, new Uri($url));
         $request->setBody($dto->getData());
         $request->setHeaders([
             'Content-Type' => 'application/json',
@@ -149,12 +174,69 @@ abstract class AimConnectorAbstract implements ConnectorInterface, LoggerAwareIn
 
         try {
             $response     = $this->curl->send($request);
-            $responseBody = json_decode($response->getBody(), TRUE);
+            $responseBody = $this->getResponseData($response->getBody(), $data);
         } catch (CurlException $e) {
             return $this->connectorError($e, $this->system, new SystemInstall(), $dto);
         }
 
         return $dto->setData(json_encode($responseBody));
+    }
+
+    /**
+     * @param ProcessDto $dto
+     *
+     * @return array
+     * @throws ConnectorException
+     */
+    private function validateInputData(ProcessDto $dto): array
+    {
+        $data = json_decode($dto->getData(), TRUE);
+
+        if (!is_array($data)) {
+            throw new ConnectorException('Invalid data.', ConnectorException::INVALID_SETTING);
+        }
+
+        foreach ($this->mandatoryFields as $mf) {
+            if (!array_key_exists($mf, $data)) {
+                throw new ConnectorException(
+                    sprintf('Missing mandatory field "%s"', $mf),
+                    ConnectorException::INVALID_SETTING
+                );
+            }
+        }
+
+        return $data;
+    }
+
+    /**
+     * @param string $responseBody
+     * @param array  $requestData
+     *
+     * @return array
+     * @throws ConnectorException
+     */
+    private function getResponseData(string $responseBody, array $requestData): array
+    {
+        $responseData = json_decode($responseBody, TRUE);
+
+        if (!is_array($responseData) ||
+            !array_key_exists('status', $responseData) ||
+            !array_key_exists('message', $responseData)
+        ) {
+            throw new ConnectorException(
+                sprintf('Aim Connector returned invalid response'),
+                ConnectorException::INVALID_SETTING
+            );
+        }
+
+        return [
+            'status'      => $responseData['status'],
+            'message'     => $responseData['message'],
+            'category'    => $requestData['category'],
+            'sku'         => $requestData['sku'],
+            'time'        => $requestData['time'],
+            'destination' => $this->destination,
+        ];
     }
 
 }
