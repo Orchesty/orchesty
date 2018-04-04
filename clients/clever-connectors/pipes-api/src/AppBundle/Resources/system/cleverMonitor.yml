@@ -71,3 +71,9 @@ services:
             - '%spitter_host%'
         calls:
             - ['setLogger', ['@monolog.logger.notification']]
+
+    hbpf.connector.cleverconnectors-sync-result-connector:
+        class: CleverConnectors\AppBundle\Model\CM\SyncConnector\SyncResultConnector
+        arguments:
+            - '@hbpf.transport.curl_manager'
+            - '%ranger_host%'
