@@ -39,3 +39,12 @@ services:
                 - '%aim.url.europe%'
             calls:
                 - ['setLogger', ['@monolog.logger.notification']]
+
+    hbpf.custom_node.aim-america-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Aim\Mapper\AimAmericaMapper
+
+    hbpf.custom_node.aim-asia-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Aim\Mapper\AimAsiaMapper
+
+    hbpf.custom_node.aim-europe-mapper:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Aim\Mapper\AimEuropeMapper

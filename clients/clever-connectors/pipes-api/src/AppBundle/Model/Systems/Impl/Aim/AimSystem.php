@@ -25,6 +25,8 @@ final class AimSystem implements AuthorizationInterface
     public const HEADER_ACTION      = 'action';
     public const HEADER_DESTINATION = 'destination';
 
+    public const DATA_KEY_DESTINATIONS = 'destinations';
+
     public const SYNC_ACTION = 'sync';
     public const SYNC_TOPO   = 'aim-sync';
     public const SYNC_NODE   = 'signal-event';
@@ -272,11 +274,13 @@ final class AimSystem implements AuthorizationInterface
      */
     private function getDestination(array $data): string
     {
-        if (!array_key_exists('destinations', $data) || count($data['destinations']) === 0) {
-            throw new CleverConnectorsException('Missing destination.', CleverConnectorsException::MISSING_DATA);
+        if (!array_key_exists(self::DATA_KEY_DESTINATIONS, $data) ||
+            count($data[self::DATA_KEY_DESTINATIONS]) === 0
+        ) {
+            throw new CleverConnectorsException('Missing destinations field.', CleverConnectorsException::MISSING_DATA);
         }
 
-        foreach ($data['destinations'] as $destination) {
+        foreach ($data[self::DATA_KEY_DESTINATIONS] as $destination) {
             if (!in_array($destination, $this->validDestinations)) {
                 throw new CleverConnectorsException(
                     sprintf('Invalid destination "%s"', $destination),
@@ -285,7 +289,7 @@ final class AimSystem implements AuthorizationInterface
             }
         }
 
-        return implode(',', $data['destinations']);
+        return implode(',', $data[self::DATA_KEY_DESTINATIONS]);
     }
 
     /**
