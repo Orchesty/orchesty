@@ -57,9 +57,9 @@ abstract class AimConnectorAbstract implements ConnectorInterface, LoggerAwareIn
     )
     {
         $this->system = $system;
-        $this->curl = $curl;
-        $this->type = $type;
-        $this->url  = $url;
+        $this->curl   = $curl;
+        $this->type   = $type;
+        $this->url    = $url;
     }
 
     /**
@@ -142,7 +142,10 @@ abstract class AimConnectorAbstract implements ConnectorInterface, LoggerAwareIn
     {
         $request = new RequestDto($method, new Uri($this->url));
         $request->setBody($dto->getData());
-        $request->setHeaders($dto->getHeaders());
+        $request->setHeaders([
+            'Content-Type' => 'application/json',
+            'Accept'       => 'application/json',
+        ]);
 
         try {
             $response     = $this->curl->send($request);
@@ -150,7 +153,6 @@ abstract class AimConnectorAbstract implements ConnectorInterface, LoggerAwareIn
         } catch (CurlException $e) {
             return $this->connectorError($e, $this->system, new SystemInstall(), $dto);
         }
-        $this->curl->send($request);
 
         return $dto->setData(json_encode($responseBody));
     }
