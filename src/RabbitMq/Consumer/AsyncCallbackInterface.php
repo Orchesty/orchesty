@@ -24,12 +24,12 @@ interface AsyncCallbackInterface
 
     /**
      * @param Message       $message
-     * @param Channel       $channel
+     * @param Channel       $consumerChannel
      * @param Client        $client
      * @param LoopInterface $loop
      *
      * @return mixed
      */
-    public function processMessage(Message $message, Channel $channel, Client $client, LoopInterface $loop);
+    public function processMessage(Message $message, Channel $consumerChannel, Client $client, LoopInterface $loop);
 
 }
