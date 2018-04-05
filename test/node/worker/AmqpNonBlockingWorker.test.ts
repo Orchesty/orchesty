@@ -208,7 +208,7 @@ describe("AmqpNonBlockingWorker", () => {
                     .then(() => {
                         const finalHeaders = JSON.parse(JSON.stringify(msg.properties.headers));
                         finalHeaders["pf-sequence-id"] = 1;
-                        finalHeaders["pf-result-code"] = ResultCode.SUCCESS;
+                        finalHeaders["pf-result-code"] = ResultCode.SPLITTER_BATCH_END;
                         finalHeaders["pf-result-message"] = "everything okay";
 
                         publisher.sendToQueue(
@@ -257,7 +257,7 @@ describe("AmqpNonBlockingWorker", () => {
                 assert.instanceOf(outMsg, JobMessage);
                 assert.equal(outMsg.getMultiplier(), 0);
                 assert.isFalse(outMsg.getForwardSelf());
-                assert.equal(ResultCode.SUCCESS, outMsg.getResult().code);
+                assert.equal(ResultCode.SPLITTER_BATCH_END, outMsg.getResult().code);
                 assert.equal("everything okay", outMsg.getResult().message);
 
                 let i = 1;
