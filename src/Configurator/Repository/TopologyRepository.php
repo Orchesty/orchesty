@@ -71,6 +71,7 @@ class TopologyRepository extends DocumentRepository
     {
         return $this->createQueryBuilder()
             ->field('name')->equals($topologyName)
+            ->field('deleted')->equals(FALSE)
             ->count()
             ->getQuery()->execute();
     }
