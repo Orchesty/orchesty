@@ -7,6 +7,7 @@ use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
@@ -79,13 +80,33 @@ final class SyncResultConnector implements ConnectorInterface
         ]);
 
         try {
-            $response     = $this->curl->send($request);
-            $responseBody = json_decode($response->getBody(), TRUE);
+            $response = $this->curl->send($request);
+            $this->validateResponse($response);
         } catch (CurlException $e) {
             throw new ConnectorException("SyncResultConnector failed.", $e->getCode(), $e);
         }
 
-        return $dto->setData(json_encode($responseBody));
+        return $dto;
+    }
+
+    /**
+     * @param ResponseDto $response
+     *
+     * @throws ConnectorException
+     */
+    private function validateResponse(ResponseDto $response): void
+    {
+        if ($response->getStatusCode() !== 200) {
+            $responseBody = json_decode($response->getBody(), TRUE);
+            throw new ConnectorException(
+                sprintf(
+                    'SyncResult connector failed [statusCode=%s, mesage=%s]',
+                    $response->getStatusCode(),
+                    $responseBody['message'] ?? ''
+                ),
+                ConnectorException::CONNECTOR_FAILED_TO_PROCESS
+            );
+        }
     }
 
 }

@@ -30,7 +30,8 @@ final class SyncResultConnectorTest extends TestCase
     public function testProcessAction(): void
     {
         $dto     = new ProcessDto();
-        $content = json_encode(['message' => 'Success']);
+        $content = json_encode(['foo' => 'bar']);
+        $dto->setData($content);
 
         /** @var CurlManagerInterface|MockObject $curl */
         $curl = $this->getMockBuilder(CurlManagerInterface::class)->getMock();
@@ -42,7 +43,7 @@ final class SyncResultConnectorTest extends TestCase
             ], $req->getHeaders());
             $this->assertEquals($dto->getData(), $req->getBody());
 
-            return new ResponseDto(200, 'OK', $content, []);
+            return new ResponseDto(200, 'OK', json_encode(['message' => 'Success']), []);
         });
 
         $con    = new SyncResultConnector($curl, 'http://ranger-api');
