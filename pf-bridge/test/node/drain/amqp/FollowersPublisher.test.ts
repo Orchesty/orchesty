@@ -96,7 +96,7 @@ describe("FollowersPublisher", () => {
         const outputQueue = fConfig.queue.name;
         const publisher = new FollowersPublisher(conn, settings);
         const msgCorrId = "corrId";
-        const msgProcessId = "123";
+        const msgRootProcessId = "123";
         const msgParentId = "";
         const msgSeqId = 1;
         const msgBody = {data: "test", settings: {}};
@@ -123,33 +123,32 @@ describe("FollowersPublisher", () => {
                 receivedMessages.push(received);
                 // Check if content and headers remain the same
                 assert.deepEqual(msgBody, JSON.parse(received.content.toString()));
-                assert.deepEqual(
-                    received.properties.headers,
-                    {
-                        "pf-correlation-id": msgCorrId,
-                        "pf-process-id": msgProcessId,
-                        "pf-parent-id": msgParentId,
-                        "pf-sequence-id": `${msgSeqId}`,
-                        "pf-node-id": node.node_id,
-                        "pf-node-name": node.node_name,
-                    },
-                );
+
+                const headers = new Headers(received.properties.headers);
+                assert.equal(headers.getPFHeader(Headers.CORRELATION_ID), msgCorrId);
+                assert.equal(headers.getPFHeader(Headers.PARENT_ID), msgRootProcessId);
+                assert.equal(headers.getPFHeader(Headers.SEQUENCE_ID), `${msgSeqId}`);
+                assert.equal(headers.getPFHeader(Headers.NODE_ID), node.node_id);
+                assert.equal(headers.getPFHeader(Headers.NODE_NAME), node.node_name);
+                assert.lengthOf(headers.getPFHeader(Headers.PROCESS_ID), 36); // some auto-generated uuid
+
                 checkEnd();
             },
         );
 
+        // When consumer is ready, call publisher's send method
         consumer.consume(outputQueue, {})
             .then(() => {
                 const headers = new Headers();
                 headers.setPFHeader(Headers.CORRELATION_ID, msgCorrId);
-                headers.setPFHeader(Headers.PROCESS_ID, msgProcessId);
-                headers.setPFHeader(Headers.PARENT_ID, "");
+                headers.setPFHeader(Headers.PROCESS_ID, msgRootProcessId);
+                headers.setPFHeader(Headers.PARENT_ID, msgParentId);
                 headers.setPFHeader(Headers.SEQUENCE_ID, `${msgSeqId}`);
 
                 const msg: JobMessage = new JobMessage(node, headers.getRaw(), new Buffer(JSON.stringify(msgBody)));
                 msg.setResult({ code: ResultCode.SUCCESS, message: ""});
 
-                // This should send 3 messages
+                // This should send 3 messages setting parentId to processId (when splitting into more than 1 followers)
                 publisher.send(msg);
             });
     });
