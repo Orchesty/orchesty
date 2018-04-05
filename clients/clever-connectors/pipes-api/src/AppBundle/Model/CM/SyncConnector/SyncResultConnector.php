@@ -100,7 +100,7 @@ final class SyncResultConnector implements ConnectorInterface
             $responseBody = json_decode($response->getBody(), TRUE);
             throw new ConnectorException(
                 sprintf(
-                    'SyncResult connector failed [statusCode=%s, mesage=%s]',
+                    'SyncResult connector failed [statusCode="%s", message="%s"]',
                     $response->getStatusCode(),
                     $responseBody['message'] ?? ''
                 ),

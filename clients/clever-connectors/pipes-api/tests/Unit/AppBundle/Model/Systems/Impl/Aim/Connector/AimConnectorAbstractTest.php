@@ -122,7 +122,7 @@ final class AimConnectorAbstractTest extends TestCase
         /** @var CurlManagerInterface|MockObject $curl */
         $curl = $this->getMockBuilder(CurlManagerInterface::class)->getMock();
         $curlResponse = json_encode(['status' => 'Success', 'message' => '']);
-        $curl->method('send')->willReturn(new ResponseDto(0, 'OK', $curlResponse, []));
+        $curl->method('send')->willReturn(new ResponseDto(200, 'OK', $curlResponse, []));
 
         return new TestAimConnector($aim, $curl, 'test', 'localhost');
     }

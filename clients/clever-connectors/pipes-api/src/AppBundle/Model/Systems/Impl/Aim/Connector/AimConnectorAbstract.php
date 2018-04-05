@@ -11,6 +11,7 @@ use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
@@ -174,7 +175,7 @@ abstract class AimConnectorAbstract implements ConnectorInterface, LoggerAwareIn
 
         try {
             $response     = $this->curl->send($request);
-            $responseBody = $this->getResponseData($response->getBody(), $data);
+            $responseBody = $this->getResponseData($response, $data);
         } catch (CurlException $e) {
             return $this->connectorError($e, $this->system, new SystemInstall(), $dto);
         }
@@ -209,15 +210,15 @@ abstract class AimConnectorAbstract implements ConnectorInterface, LoggerAwareIn
     }
 
     /**
-     * @param string $responseBody
-     * @param array  $requestData
+     * @param ResponseDto $response
+     * @param array       $requestData
      *
      * @return array
      * @throws ConnectorException
      */
-    private function getResponseData(string $responseBody, array $requestData): array
+    private function getResponseData(ResponseDto $response, array $requestData): array
     {
-        $responseData = json_decode($responseBody, TRUE);
+        $responseData = json_decode($response->getBody(), TRUE);
 
         if (!is_array($responseData) ||
             !array_key_exists('status', $responseData) ||
@@ -225,7 +226,18 @@ abstract class AimConnectorAbstract implements ConnectorInterface, LoggerAwareIn
         ) {
             throw new ConnectorException(
                 sprintf('Aim Connector returned invalid response'),
-                ConnectorException::INVALID_SETTING
+                ConnectorException::CONNECTOR_FAILED_TO_PROCESS
+            );
+        }
+
+        if ($response->getStatusCode() !== 200) {
+            throw new ConnectorException(
+                sprintf(
+                    'SyncResult connector failed [statusCode="%s", message="%s"]',
+                    $response->getStatusCode(),
+                    $responseBody['message'] ?? ''
+                ),
+                ConnectorException::CONNECTOR_FAILED_TO_PROCESS
             );
         }
 
