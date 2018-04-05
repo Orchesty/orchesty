@@ -5,6 +5,7 @@ namespace Hanaboso\PipesFramework\Configurator\Model;
 use Cron\CronExpression;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator;
 use Hanaboso\PipesFramework\Commons\Enum\HandlerEnum;
 use Hanaboso\PipesFramework\Commons\Enum\TopologyStatusEnum;
@@ -66,6 +67,7 @@ class TopologyManager
      *
      * @return Topology
      * @throws TopologyException
+     * @throws MongoDBException
      */
     public function createTopology(array $data): Topology
     {
@@ -91,6 +93,7 @@ class TopologyManager
      *
      * @return Topology
      * @throws TopologyException
+     * @throws MongoDBException
      */
     public function updateTopology(Topology $topology, array $data): Topology
     {
@@ -195,6 +198,7 @@ class TopologyManager
      * @param Topology $topology
      *
      * @return Topology
+     * @throws NodeException
      */
     public function cloneTopology(Topology $topology): Topology
     {
@@ -304,6 +308,7 @@ class TopologyManager
      * @param Schema   $dto
      *
      * @throws TopologyException
+     * @throws NodeException
      */
     private function generateNodes(Topology $topology, Schema $dto): void
     {
@@ -386,6 +391,7 @@ class TopologyManager
      *
      * @return Node
      * @throws TopologyException
+     * @throws NodeException
      */
     private function createNode(
         Topology $topology,
@@ -465,6 +471,7 @@ class TopologyManager
      * @param null|string $cron_params
      *
      * @return Node
+     * @throws NodeException
      */
     private function setNodeAttributes(
         Topology $topology,
@@ -616,6 +623,7 @@ class TopologyManager
      *
      * @return Topology
      * @throws TopologyException
+     * @throws MongoDBException
      */
     private function checkTopologyName(Topology $topology, array $data): Topology
     {
