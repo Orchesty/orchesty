@@ -93,7 +93,7 @@ class CounterPublisher extends Publisher implements ICounterPublisher {
             appId: this.settings.node_label.id,
         };
 
-        logger.info(
+        logger.debug(
             `Counter publisher - sending message. ${JSON.stringify(counterMessage)}`,
             logger.ctxFromMsg(message),
         );
