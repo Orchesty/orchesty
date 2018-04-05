@@ -151,16 +151,20 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
 
     /**
      * @param Message       $message
-     * @param Channel       $channel
+     * @param Channel       $consumerChannel
      * @param Client        $client
      * @param LoopInterface $loop
      *
      * @return mixed
      * @throws Exception
      */
-    public function processMessage(Message $message, Channel $channel, Client $client, LoopInterface $loop)
+    public function processMessage(Message $message, Channel $consumerChannel, Client $client, LoopInterface $loop)
     {
         $this->startMetrics();
+
+        // @todo use class property - array of channels ?
+        /** @var Channel|null $replyChannel */
+        $replyChannel = NULL;
 
         return $this
             ->validate($message)
@@ -175,7 +179,9 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
             ->then(function () use ($client) {
                 return $client->channel();
             })
-            ->then(function (Channel $channel) use ($message): PromiseInterface {
+            ->then(function (Channel $channel) use ($message, &$replyChannel): PromiseInterface {
+                $replyChannel = $channel;
+
                 return $channel
                     ->queueDeclare($message->getHeader(self::REPLY_TO))
                     ->then(function () use ($channel): Channel {
@@ -198,10 +204,16 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
                             ))
                         );
                 }
-            })->otherwise(function (Throwable $e) use ($channel, $message) {
+            })->otherwise(function (Throwable $e) use ($replyChannel, $consumerChannel, $message) {
+
+                if ($replyChannel === NULL) {
+                    // @todo create new channel
+                    $replyChannel = $consumerChannel;
+                }
+
                 return $this
                     ->batchErrorCallback(
-                        $channel,
+                        $replyChannel,
                         $message,
                         new ErrorMessage(2001, $e->getMessage()))
                     ->then(function () use ($e, $message) {
@@ -212,7 +224,13 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
 
                         return reject($e);
                     });
-            })->always(function () use ($message): void {
+            })->always(function () use ($message, &$replyChannel): void {
+
+                if ($replyChannel !== NULL) {
+                    $replyChannel->close();
+                    unset($replyChannel);
+                }
+
                 $this->sendMetrics($message, $this->currentMetrics);
             });
     }
