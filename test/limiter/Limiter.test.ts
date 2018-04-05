@@ -81,7 +81,7 @@ describe("Limiter", () => {
             socket.write("pf-check;someid;ok");
             socket.pipe(socket);
         });
-        positive.listen(1338, "localhost", async () => {
+        positive.listen(1338, "localhost", () => {
             assert.isTrue(positive.listening);
             const tcp = new TcpClient("localhost", 1338);
             const publisher: any = {};
@@ -92,10 +92,11 @@ describe("Limiter", () => {
             msg.getHeaders().setPFHeader(Headers.LIMIT_TIME, "ltime");
             msg.getHeaders().setPFHeader(Headers.LIMIT_VALUE, "lvalue");
 
-            const result = await limiter.canBeProcessed(msg);
-            assert.isTrue(result);
-
-            done();
+            // wait a while until server really ready
+            setTimeout(async () => {
+                assert.isTrue(await limiter.canBeProcessed(msg));
+                done();
+            }, 100);
         });
     });
 
