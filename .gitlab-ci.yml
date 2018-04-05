@@ -117,6 +117,16 @@ api-demo:
     - dev
     - master
 
+pf-bridge:
+  stage: stage1
+  script:
+    - DIR=pf-bridge
+    - skip_unmodified $DIR
+    - ${DIR}/build.sh ${CI_BUILD_REF_NAME}
+  only:
+    - dev
+    - master
+
 # GO LANG
 .go_test: &go_test
   script:
@@ -197,7 +207,7 @@ demo-pipes-api-test:
     - make ${COMPOSE_FILE} test
 
 pf-bridge-test:
-  stage: stage3
+  stage: stage2
   script:
     - DIR=pf-bridge
     - skip_unmodified $DIR
@@ -220,13 +230,6 @@ frontend:
   only:
     - dev
     - master
-
-pf-bridge:
-  stage: stage2
-  script:
-    - DIR=pf-bridge
-    - skip_unmodified $DIR
-    - ${DIR}/build.sh ${CI_BUILD_REF_NAME}
 
 # Client: demo
 
@@ -259,6 +262,9 @@ monolith-cm:
     - ": This job is being run all the time because the most changes happen in its dependencies. Can anyone come up with an optimization?"
     - cd clients/clever-connectors
     - make build-monolith push-monolith TAG=${CI_BUILD_REF_NAME}
+  only:
+    - dev
+    - master
 
 monolith-demo:
   stage: stage2
@@ -266,6 +272,9 @@ monolith-demo:
     - ": This job is being run all the time because the most changes happen in its dependencies. Can anyone come up with an optimization?"
     - cd clients/demo
     - make build-monolith push-monolith TAG=${CI_BUILD_REF_NAME}
+  only:
+    - dev
+    - master
 
 stage-cm1:
   stage: stage3
@@ -391,4 +400,3 @@ cleanup:
     - export COMPOSE_FILE=docker-compose.ci.yml
     - make ${COMPOSE_FILE}
     - docker-compose down -v || echo "topology generator cleanup phase failed"
-    
