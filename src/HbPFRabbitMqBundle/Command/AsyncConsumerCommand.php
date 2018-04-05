@@ -229,7 +229,7 @@ class AsyncConsumerCommand extends Command implements LoggerAwareInterface
     {
         $this->logger->info(sprintf('Async consumer connected to %s:%s', $this->config['host'], $this->config['port']));
 
-        $loop->addTimer(5, function () {
+        $loop->addTimer(5, function (): void {
             gc_collect_cycles();
         });
 
