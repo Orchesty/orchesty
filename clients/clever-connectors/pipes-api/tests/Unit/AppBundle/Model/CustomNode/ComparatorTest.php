@@ -7,6 +7,11 @@ use CleverConnectors\AppBundle\Model\CustomNode\Comparator;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Class ComparatorTest
+ *
+ * @package Tests\Unit\AppBundle\Model\CustomNode
+ */
 final class ComparatorTest extends TestCase
 {
 
@@ -18,7 +23,7 @@ final class ComparatorTest extends TestCase
     /**
      * Creates custom node
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->comparator = new Comparator();
     }
@@ -49,12 +54,24 @@ final class ComparatorTest extends TestCase
         return [
             [
                 [
-                    'src' => [1,2,3,4,5],
-                    'dst' => [4,5,6,7],
+                    'src' => [1, 2, 3, 4, 5],
+                    'dst' => [4, 5, 6, 7],
                 ],
                 [
-                    'create' => [1,2,3],
-                    'delete' => [6,7],
+                    'create' => [1, 2, 3],
+                    'delete' => [6, 7],
+                    'update' => [],
+                ],
+            ],
+            // try bigger arrays
+            [
+                [
+                    'src' => $this->generateSeries(0, 90000),
+                    'dst' => $this->generateSeries(90001, 99999),
+                ],
+                [
+                    'create' => $this->generateSeries(0, 90000),
+                    'delete' => $this->generateSeries(90001, 99999),
                     'update' => [],
                 ],
             ],
@@ -71,39 +88,48 @@ final class ComparatorTest extends TestCase
             ],
             [
                 [
-                    'src' => [['id' => 'a'], ['id' => 'b'], ['id' => 'c']],
-                    'dst' => [['id' => 'c'], ['id' => 'd']],
-                    'settings' => ['id_key' => 'id']
+                    'src'      => [['id' => 'a'], ['id' => 'b'], ['id' => 'c']],
+                    'dst'      => [['id' => 'c'], ['id' => 'd']],
+                    'settings' => ['id_key' => 'id'],
                 ],
                 [
-                    'create' => ['a', 'b'],
-                    'delete' => ['d'],
+                    'create' => [['id' => 'a'], ['id' => 'b']],
+                    'delete' => [['id' => 'd']],
                     'update' => [],
                 ],
             ],
             [
                 [
-                    'src' => [['id' => 'a', 'cid' => 'a'], ['id' => 'b', 'cid' => 'b'], ['id' => 'c', 'cid' => 'c']],
-                    'dst' => [['id' => 'c', 'cid' => 'c'], ['id' => 'd', 'cid' => 'd']],
-                    'settings' => ['id_key' => 'id', 'compare_key' => 'cid']
+                    'src'      => [['id' => 'a', 'foo' => 'bar'], ['id' => 'b'], ['id' => 'c']],
+                    'dst'      => [['id' => 'c', 'loo' => 'doo'], ['id' => 'd', 'baz' => 'bat']],
+                    'settings' => ['id_key' => 'id'],
                 ],
                 [
-                    'create' => ['a', 'b'],
-                    'delete' => ['d'],
+                    'create' => [['id' => 'a', 'foo' => 'bar'], ['id' => 'b']],
+                    'delete' => [['id' => 'd', 'baz' => 'bat']],
                     'update' => [],
                 ],
             ],
-//            [
-//                [
-//                    'src' => $this->generateSeries(1, 9999),
-//                    'dst' => $this->generateSeries(9000, 9999),
-//                ],
-//                [
-//                    'create' => $this->generateSeries(1, 9000),
-//                    'delete' => $this->generateSeries(9000, 9999),
-//                    'update' => [],
-//                ],
-//            ],
+            [
+                [
+                    'src'      => [
+                        ['id' => 'a', 'cid' => 'a', 'email' => 'a@a.a'],
+                        ['id' => 'b', 'cid' => 'b', 'email' => 'b@b.b'],
+                        ['id' => 'c', 'cid' => 'c', 'email' => 'c@c.c'],
+                    ],
+                    'dst'      => [
+                        ['id' => 'b', 'cid' => 'b', 'email' => 'b@b.b'],
+                        ['id' => 'c', 'cid' => 'not-c', 'email' => 'c@c.c'],
+                        ['id' => 'd', 'cid' => 'd', 'email' => 'd@d.d'],
+                    ],
+                    'settings' => ['id_key' => 'id', 'compare_key' => 'cid'],
+                ],
+                [
+                    'create' => [['id' => 'a', 'cid' => 'a', 'email' => 'a@a.a']],
+                    'delete' => [['id' => 'd', 'cid' => 'd', 'email' => 'd@d.d']],
+                    'update' => [['id' => 'c', 'cid' => 'c', 'email' => 'c@c.c']],
+                ],
+            ],
         ];
     }
 
@@ -112,7 +138,6 @@ final class ComparatorTest extends TestCase
      *
      * @param array $data
      * @param bool  $isValid
-     *
      */
     public function testProcessValidateData(array $data, bool $isValid): void
     {
@@ -150,7 +175,7 @@ final class ComparatorTest extends TestCase
      *
      * @return array
      */
-    private function generateSeries(int $start, int $stop, string $key = NULL): array
+    private function generateSeries(int $start, int $stop, ?string $key = NULL): array
     {
         $s = [];
 
@@ -164,5 +189,5 @@ final class ComparatorTest extends TestCase
 
         return $s;
     }
-    
+
 }

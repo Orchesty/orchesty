@@ -68,20 +68,32 @@ final class Comparator implements CustomNodeInterface
     private function prepareData(array $data): array
     {
         $key = $this->getIdKey($data[self::KEY_SETTINGS]);
+
         if ($key !== NULL) {
             $tmp = [];
             foreach ($data[self::KEY_SOURCE] as $srcItem) {
-                $tmp[] = $srcItem[$key];
+                $tmp[$srcItem[$key]] = $srcItem;
             }
 
             $data[self::KEY_SOURCE] = $tmp;
-        }
 
-        $compareKey = $this->getCompareKey($data[self::KEY_SETTINGS]);
-        if ($compareKey !== NULL) {
             $tmp = [];
             foreach ($data[self::KEY_DESTINATION] as $dstItem) {
-                $tmp[] = $dstItem[$compareKey];
+                $tmp[$dstItem[$key]] = $dstItem;
+            }
+
+            $data[self::KEY_DESTINATION] = $tmp;
+        } else {
+            $tmp = [];
+            foreach ($data[self::KEY_SOURCE] as $srcItem) {
+                $tmp[$srcItem] = $srcItem;
+            }
+
+            $data[self::KEY_SOURCE] = $tmp;
+
+            $tmp = [];
+            foreach ($data[self::KEY_DESTINATION] as $dstItem) {
+                $tmp[$dstItem] = $dstItem;
             }
 
             $data[self::KEY_DESTINATION] = $tmp;
@@ -92,18 +104,45 @@ final class Comparator implements CustomNodeInterface
 
     /**
      * @param array $src
-     * @param array $dist
+     * @param array $dst
      * @param array $settings
      *
      * @return array
      */
-    private function compare(array $src, array $dist, array $settings = []): array
+    private function compare(array $src, array $dst, array $settings = []): array
     {
         return [
-            'create' => array_values(array_diff($src, $dist)),
-            'delete' => array_values(array_diff($dist, $src)),
-            'update' => [], // TODO - howto?
+            'create' => array_values(array_diff_key($src, $dst)),
+            'delete' => array_values(array_diff_key($dst, $src)),
+            'update' => $this->compareUpdates($src, $dst, $this->getCompareKey($settings)),
         ];
+    }
+
+    /**
+     * Makes the intersection of $sec and $dst
+     * Finds and returns intersected items that does not have same $compareKey field in $src and $dst
+     *
+     * @param array       $src
+     * @param array       $dst
+     * @param string|null $compareKey
+     *
+     * @return array
+     */
+    private function compareUpdates(array $src, array $dst, ?string $compareKey = NULL): array
+    {
+        $updates = [];
+
+        if ($compareKey === NULL) {
+            return $updates;
+        }
+
+        foreach (array_intersect_key($src, $dst) as $key => $inBoth) {
+            if ($src[$key][$compareKey] !== $dst[$key][$compareKey]) {
+                $updates[] = $src[$key];
+            }
+        }
+
+        return $updates;
     }
 
     /**
@@ -152,7 +191,7 @@ final class Comparator implements CustomNodeInterface
      *
      * @throws CleverConnectorsException
      */
-    private function validateSettings(array $settings)
+    private function validateSettings(array $settings): void
     {
         if ($this->getCompareKey($settings) !== NULL &&
             $this->getIdKey($settings) === NULL
@@ -195,4 +234,5 @@ final class Comparator implements CustomNodeInterface
 
         return NULL;
     }
+
 }
