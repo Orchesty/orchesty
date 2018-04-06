@@ -48,6 +48,22 @@ services:
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
 
+    cc.service_system.controller:
+        class: CleverConnectors\AppBundle\Controller\ServiceSystemController
+        arguments:
+            - '@cc.service_system.handler'
+
+    cc.service_system.handler:
+        class: CleverConnectors\AppBundle\Handler\ServiceSystemHandler
+        arguments:
+            - '@cc.service_system.manager'
+
+    cc.service_system.manager:
+        class: CleverConnectors\AppBundle\Model\Systems\ServiceSystemManager
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@cc.systems.loader'
+
     cc.last_sync.manager:
         class: CleverConnectors\AppBundle\Model\LastSync\LastSyncManager
         arguments:
