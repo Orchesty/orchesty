@@ -7,9 +7,9 @@ use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use Doctrine\ODM\MongoDB\DocumentManager;
 
 /**
- * Class CustomManager
+ * Class ServiceSystemManager
  *
- * @package CleverConnectors\AppBundle\Model\CustomNode
+ * @package CleverConnectors\AppBundle\Model\Systems
  */
 final class ServiceSystemManager
 {
@@ -47,7 +47,7 @@ final class ServiceSystemManager
         $system = $this->systemLoader->getSystem($systemKey);
 
         if (method_exists($system, $action)) {
-            $output = $system->$action(new SystemInstall(), $data);
+            $output = $system->$action($this->createSystemInstall(), $data);
             $this->dm->flush();
 
             return $output;
@@ -57,6 +57,17 @@ final class ServiceSystemManager
             sprintf('Action "%s" does not exist for "%s" system.', $action, $systemKey),
             SystemException::SYSTEM_METHOD_NOT_FOUND
         );
+    }
+
+    /**
+     * @return SystemInstall
+     */
+    private function createSystemInstall(): SystemInstall
+    {
+        $si = new SystemInstall();
+        $si->setUser('unknown');
+
+        return $si;
     }
 
 }

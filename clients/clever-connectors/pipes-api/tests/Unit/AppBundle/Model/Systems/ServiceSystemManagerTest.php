@@ -9,6 +9,7 @@ use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Tests\Integration\AppBundle\Model\Systems\Impl\NullSystem;
 
 /**
  * Class ServiceSystemManagerTest
@@ -25,11 +26,11 @@ final class ServiceSystemManagerTest extends TestCase
      */
     public function testRunCustomSystemAction(): void
     {
-        $system  = new TestSystem();
+        $system  = new NullSystem();
         $manager = $this->createManager($system);
 
         $this->assertEquals(
-            ['foo' => 'bar'],
+            ['foo' => 'bar', 'processed' => TRUE, 'user' => 'unknown'],
             $manager->runCustomSystemAction('test', 'customAction', ['foo' => 'bar'])
         );
     }

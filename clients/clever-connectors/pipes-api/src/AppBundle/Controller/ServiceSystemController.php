@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @package CleverConnectors\AppBundle\Controller
  *
- * @Route(service="cc.custom.controller")
+ * @Route(service="cc.service_system.controller")
  */
 final class ServiceSystemController extends FOSRestController
 {
