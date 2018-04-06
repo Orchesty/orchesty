@@ -74,3 +74,6 @@ services:
         calls:
             - ['setLogger', ['@monolog.logger.notification']]
             - ['setSuffix', ['out']]
+
+    hbpf.custom_node.comparator:
+        class: CleverConnectors\AppBundle\Model\CustomNode\Comparator
