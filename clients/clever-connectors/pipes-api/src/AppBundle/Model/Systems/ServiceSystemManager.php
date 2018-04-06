@@ -1,11 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace CleverConnectors\AppBundle\Model\CustomNode;
+namespace CleverConnectors\AppBundle\Model\Systems;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
-use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
-use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use Doctrine\ODM\MongoDB\DocumentManager;
 
 /**
@@ -13,7 +11,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
  *
  * @package CleverConnectors\AppBundle\Model\CustomNode
  */
-final class CustomManager
+final class ServiceSystemManager
 {
 
     /**

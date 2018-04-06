@@ -2,25 +2,25 @@
 
 namespace CleverConnectors\AppBundle\Handler;
 
-use CleverConnectors\AppBundle\Model\CustomNode\CustomManager;
+use CleverConnectors\AppBundle\Model\Systems\ServiceSystemManager;
 
 /**
  * Class CustomHandler
  *
  * @package CleverConnectors\AppBundle\Handler
  */
-final class CustomHandler
+final class ServiceSystemHandler
 {
 
     /**
-     * @var CustomManager
+     * @var ServiceSystemManager
      */
     private $manager;
 
     /**
-     * @param CustomManager $manager
+     * @param ServiceSystemManager $manager
      */
-    public function __construct(CustomManager $manager)
+    public function __construct(ServiceSystemManager $manager)
     {
         $this->manager = $manager;
     }

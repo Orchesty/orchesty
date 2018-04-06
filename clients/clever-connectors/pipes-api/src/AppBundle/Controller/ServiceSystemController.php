@@ -2,7 +2,7 @@
 
 namespace CleverConnectors\AppBundle\Controller;
 
-use CleverConnectors\AppBundle\Handler\CustomHandler;
+use CleverConnectors\AppBundle\Handler\ServiceSystemHandler;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
@@ -18,20 +18,20 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @Route(service="cc.custom.controller")
  */
-final class CustomController extends FOSRestController
+final class ServiceSystemController extends FOSRestController
 {
 
     use ControllerTrait;
 
     /**
-     * @var CustomHandler
+     * @var ServiceSystemHandler
      */
     private $handler;
 
     /**
-     * @param CustomHandler $handler
+     * @param ServiceSystemHandler $handler
      */
-    public function __construct(CustomHandler $handler)
+    public function __construct(ServiceSystemHandler $handler)
     {
         $this->handler = $handler;
     }
