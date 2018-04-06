@@ -3,7 +3,6 @@
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\SalesforceApp\Mapper;
 
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
-use CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp\Mapper\SalesforceAppMapperAbstract;
 use CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp\Mapper\SalesforceAppUpdateMapper;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Exception;
@@ -24,7 +23,7 @@ final class SalesforceAppUpdateMapperTest extends TestCase
     public function testProcessFailedMail(): void
     {
         $mapper = $this->getMapper();
-        $dto    = $this->getDto();
+        $dto    = $this->getDto(1);
 
         $this->expectException(CleverConnectorsException::class);
         $this->expectExceptionCode(CleverConnectorsException::MISSING_DATA);
@@ -37,7 +36,7 @@ final class SalesforceAppUpdateMapperTest extends TestCase
     public function testProcessFailedList(): void
     {
         $mapper = $this->getMapper();
-        $dto    = $this->getDto([SalesforceAppMapperAbstract::EMAIL => 'aaa@bbb.ccc']);
+        $dto    = $this->getDto(2);
 
         $this->expectException(CleverConnectorsException::class);
         $this->expectExceptionCode(CleverConnectorsException::MISSING_DATA);
@@ -50,10 +49,7 @@ final class SalesforceAppUpdateMapperTest extends TestCase
     public function testProcessFailedCreateDate(): void
     {
         $mapper = $this->getMapper();
-        $dto    = $this->getDto([
-            SalesforceAppMapperAbstract::EMAIL => 'aaa@bbb.ccc',
-            SalesforceAppMapperAbstract::LIST  => '12345679',
-        ]);
+        $dto    = $this->getDto(3);
 
         $this->expectException(CleverConnectorsException::class);
         $this->expectExceptionCode(CleverConnectorsException::MISSING_DATA);
@@ -66,11 +62,7 @@ final class SalesforceAppUpdateMapperTest extends TestCase
     public function testProcessFailedUpdatedDate(): void
     {
         $mapper = $this->getMapper();
-        $dto    = $this->getDto([
-            SalesforceAppMapperAbstract::EMAIL   => 'aaa@bbb.ccc',
-            SalesforceAppMapperAbstract::LIST    => '12345679',
-            SalesforceAppMapperAbstract::CREATED => '2018-02-22T14:18:06.000+0000',
-        ]);
+        $dto    = $this->getDto(4);
 
         $this->expectException(CleverConnectorsException::class);
         $this->expectExceptionCode(CleverConnectorsException::MISSING_DATA);
@@ -83,12 +75,7 @@ final class SalesforceAppUpdateMapperTest extends TestCase
     public function testProcessFailedDeletedDate(): void
     {
         $mapper = $this->getMapper();
-        $dto    = $this->getDto([
-            SalesforceAppMapperAbstract::EMAIL   => 'aaa@bbb.ccc',
-            SalesforceAppMapperAbstract::LIST    => '12345679',
-            SalesforceAppMapperAbstract::CREATED => '2018-02-22T14:18:06.000+0000',
-            SalesforceAppMapperAbstract::UPDATED => '2018-02-22T14:18:06.000+0000',
-        ]);
+        $dto    = $this->getDto(5);
 
         $this->expectException(CleverConnectorsException::class);
         $this->expectExceptionCode(CleverConnectorsException::MISSING_DATA);
@@ -101,13 +88,7 @@ final class SalesforceAppUpdateMapperTest extends TestCase
     public function testProcessSkip(): void
     {
         $mapper = $this->getMapper();
-        $dto    = $this->getDto([
-            SalesforceAppMapperAbstract::EMAIL   => 'aaa@bbb.ccc',
-            SalesforceAppMapperAbstract::LIST    => '12345679',
-            SalesforceAppMapperAbstract::CREATED => '2018-02-22T14:18:06.000+0000',
-            SalesforceAppMapperAbstract::UPDATED => '2018-02-22T14:18:06.000+0000',
-            SalesforceAppMapperAbstract::DELETED => TRUE,
-        ]);
+        $dto    = $this->getDto(6);
 
         $result = $mapper->process($dto);
         self::assertNotEmpty($result->getHeaders());
@@ -121,13 +102,7 @@ final class SalesforceAppUpdateMapperTest extends TestCase
     public function testProcessSkip2(): void
     {
         $mapper = $this->getMapper();
-        $dto    = $this->getDto([
-            SalesforceAppMapperAbstract::EMAIL   => 'aaa@bbb.ccc',
-            SalesforceAppMapperAbstract::LIST    => '12345679',
-            SalesforceAppMapperAbstract::CREATED => '2018-02-22T14:18:06.000+0000',
-            SalesforceAppMapperAbstract::UPDATED => '2018-02-22T14:18:06.000+0000',
-            SalesforceAppMapperAbstract::DELETED => FALSE,
-        ]);
+        $dto    = $this->getDto(7);
 
         $result = $mapper->process($dto);
         self::assertNotEmpty($result->getHeaders());
@@ -141,17 +116,11 @@ final class SalesforceAppUpdateMapperTest extends TestCase
     public function testProcess(): void
     {
         $mapper = $this->getMapper();
-        $dto    = $this->getDto([
-            SalesforceAppMapperAbstract::EMAIL   => 'aaa@bbb.ccc',
-            SalesforceAppMapperAbstract::LIST    => '12345679',
-            SalesforceAppMapperAbstract::CREATED => '2018-02-22T14:18:06.000+0000',
-            SalesforceAppMapperAbstract::UPDATED => '2018-02-22T15:18:06.000+0000',
-            SalesforceAppMapperAbstract::DELETED => FALSE,
-        ]);
+        $dto    = $this->getDto(10);
 
         $result = $mapper->process($dto);
 
-        $expected = '{"email":"aaa@bbb.ccc","reactivate":true,"send_optin":false,"lists":["12345679"]}';
+        $expected = '{"email":"kakin@athenahome.com","reactivate":true,"send_optin":false,"first_name":"Kristen","last_name":"Akin","lists":["b00caeeb-b2fe-79d8-8453-242f09b7c7f7"]}';
         self::assertEmpty($result->getHeaders());
         self::assertEquals($expected, $result->getData());
     }
@@ -171,18 +140,45 @@ final class SalesforceAppUpdateMapperTest extends TestCase
     }
 
     /**
-     * @param array $data
+     * @param int $case
      *
      * @return ProcessDto
      */
-    private function getDto(array $data = []): ProcessDto
+    private function getDto(int $case): ProcessDto
     {
         $dto = new ProcessDto();
         $dto
             ->setHeaders([])
-            ->setData(json_encode($data));
+            ->setData($this->loadData($case));
 
         return $dto;
+    }
+
+    /**
+     * @param int $case
+     *
+     * @return string
+     */
+    private function loadData(int $case): string
+    {
+        switch ($case) {
+            case 1:
+                return file_get_contents(__DIR__ . '/data/mailFailed.json');
+            case 2:
+                return file_get_contents(__DIR__ . '/data/listFailed.json');
+            case 3:
+                return file_get_contents(__DIR__ . '/data/createFailed.json');
+            case 4:
+                return file_get_contents(__DIR__ . '/data/updateFailed.json');
+            case 5:
+                return file_get_contents(__DIR__ . '/data/deleteFailed.json');
+            case 6:
+                return file_get_contents(__DIR__ . '/data/updateSkip.json');
+            case 7:
+                return file_get_contents(__DIR__ . '/data/ok.json');
+            default:
+                return file_get_contents(__DIR__ . '/data/updateOk.json');
+        }
     }
 
 }
