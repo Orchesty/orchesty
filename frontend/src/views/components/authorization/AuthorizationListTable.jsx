@@ -34,7 +34,7 @@ class AuthorizationListTable extends AbstractTable {
       if (editSettings) {
         menuItems.push({
           caption: 'Edit settings',
-          action: () => {editSettings(item.name)}
+          action: () => {editSettings(item.key)}
         });
       }
       if (authorize && item.type != 'base'){

@@ -39,3 +39,7 @@ hb_pf_user:
 hb_pf_metrics:
     resource: "@HbPFMetricsBundle/Controller"
     type: annotation
+
+hb_pf_notification:
+    resource: '@HbPFNotificationBundle'
+    type: annotation

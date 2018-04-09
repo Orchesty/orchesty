@@ -5,6 +5,7 @@ namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller;
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -16,7 +17,36 @@ class AuthorizationController extends FOSRestController
 {
 
     /**
-     * @Route("/authorizations/{authorizationId}/authorize", defaults={}, requirements={"authorizationId": "\w+"})
+     * @Route("/authorizations/{authorizationId}/settings")
+     * @Method({"GET", "OPTIONS"})
+     *
+     * @param string $authorizationId
+     *
+     * @return Response
+     */
+    public function getSettingsAction(string $authorizationId): Response
+    {
+        return $this->forward('HbPFAuthorizationBundle:Authorization:getSettings',
+            ['authorizationId' => $authorizationId]);
+    }
+
+    /**
+     * @Route("/authorizations/{authorizationId}/save_settings")
+     * @Method({"PUT", "OPTIONS"})
+     *
+     * @param Request $request
+     * @param string  $authorizationId
+     *
+     * @return Response
+     */
+    public function saveSettingsAction(Request $request, string $authorizationId): Response
+    {
+        return $this->forward('HbPFAuthorizationBundle:Authorization:saveSettings',
+            ['authorizationId' => $authorizationId, 'query' => $request->query]);
+    }
+
+    /**
+     * @Route("/authorizations/{authorizationId}/authorize")
      * @Method({"POST", "OPTIONS"})
      *
      * @param string $authorizationId
@@ -30,7 +60,7 @@ class AuthorizationController extends FOSRestController
     }
 
     /**
-     * @Route("/authorizations/{authorizationId}/save_token", defaults={}, requirements={"authorizationId": "\w+"})
+     * @Route("/authorizations/{authorizationId}/save_token")
      * @Method({"POST", "OPTIONS"})
      *
      * @param string $authorizationId

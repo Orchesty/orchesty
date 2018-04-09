@@ -24,6 +24,9 @@ security:
         unsecured_generator:
             pattern: ^/api/topology/(generate|run|stop|delete|info)/\w+
             security: false
+        unsecured_notification:
+            pattern: ^/api/notification_settings
+            security: false
         secured_area:
             pattern: ^/
             security: true

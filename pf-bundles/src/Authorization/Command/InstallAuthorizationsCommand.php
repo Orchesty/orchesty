@@ -46,7 +46,7 @@ class InstallAuthorizationsCommand extends Command
     {
         parent::configure();
         $this
-            ->setName('authorization.install')
+            ->setName('authorization:install')
             ->setDescription('Installs all authorizations into db.');
     }
 

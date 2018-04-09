@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesFramework\Authorization\Impl\Magento2;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Exception;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Authorization\Base\AuthorizationAbstract;
 use Hanaboso\PipesFramework\Authorization\Document\Authorization;
@@ -156,8 +157,15 @@ class Magento2Authorization extends AuthorizationAbstract implements Magento2Aut
         ]);
         $this->dm->flush();
 
-        $this->authorization->setToken($this->authorize());
-        $this->dm->flush();
+        try {
+            $this->authorization->setToken($this->authorize());
+            $this->dm->flush();
+        } catch (Exception $e) {
+            throw new AuthorizationException(
+                'Authorization can not be saved!',
+                AuthorizationException::AUTHORIZATION_SERVICE_NOT_FOUND
+            );
+        }
     }
 
     /**

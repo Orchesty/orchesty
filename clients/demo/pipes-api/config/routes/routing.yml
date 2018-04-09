@@ -38,3 +38,7 @@ hb_pf_metrics:
 hb_pf_logs:
     resource: "@HbPFLogsBundle/Controller"
     type: annotation
+
+hb_pf_notification:
+    resource: '@HbPFNotificationBundle'
+    type: annotation

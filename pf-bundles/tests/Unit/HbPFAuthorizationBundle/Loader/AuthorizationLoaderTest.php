@@ -22,7 +22,7 @@ use Tests\PrivateTrait;
  *
  * @package Tests\Unit\HbPFAuthorizationBundle\Loader
  */
-class AuthorizationLoaderTest extends KernelTestCaseAbstract
+final class AuthorizationLoaderTest extends KernelTestCaseAbstract
 {
 
     use PrivateTrait;
@@ -38,11 +38,11 @@ class AuthorizationLoaderTest extends KernelTestCaseAbstract
     protected function setUp(): void
     {
         parent::setUp();
-        $auth = new Authorization('magento2.auth');
+        $auth = new Authorization('magento2_auth');
         $auth->setToken(['password' => 'Password']);
 
         $repo = $this->createMock(AuthorizationRepository::class);
-        $repo->method('getInstalledKeys')->willReturn(['magento2.auth']);
+        $repo->method('getInstalledKeys')->willReturn(['magento2_auth']);
 
         $dm = $this->createMock(DocumentManager::class);
         $dm->method('getRepository')->willReturn($repo);
@@ -82,16 +82,18 @@ class AuthorizationLoaderTest extends KernelTestCaseAbstract
         self::assertNotEmpty($conns);
 
         /** @var array $magento2 */
-        $magento2 = $conns['magento2.auth'];
+        $magento2 = reset($conns);
 
         self::assertArrayHasKey('name', $magento2);
         self::assertArrayHasKey('description', $magento2);
         self::assertArrayHasKey('type', $magento2);
+        self::assertArrayHasKey('key', $magento2);
         self::assertArrayHasKey('is_authorized', $magento2);
 
         self::assertEquals('magento2 Authorization', $magento2['name']);
         self::assertEquals('magento2 Authorization', $magento2['description']);
         self::assertEquals('basic', $magento2['type']);
+        self::assertEquals('magento2_auth', $magento2['key']);
     }
 
 }

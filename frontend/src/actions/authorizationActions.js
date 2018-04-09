@@ -92,7 +92,7 @@ export function needAuthorization(id, force = false){
     const authorization = getState().authorization.elements[id];
     if (!authorization || force){
       dispatch(processActions.startProcess(processes.authorizationLoad(id)));
-      return serverRequest(dispatch, 'GET', `/authorizations/${id}`).then(
+      return serverRequest(dispatch, 'GET', `/authorizations/${id}/settings`).then(
         response => {
           if (response) {
             dispatch(receive(response));
@@ -120,7 +120,7 @@ export function needSettings(id, forced = false){
 export function saveSettings(id, data, silent = false){
   return dispatch => {
     dispatch(processActions.startProcess(processes.authorizationSaveSettings(id)));
-    return serverRequest(dispatch, 'PUT', `/authorizations/${id}/settings`, null, data).then(response => {
+    return serverRequest(dispatch, 'PUT', `/authorizations/${id}/save_settings`, null, data).then(response => {
       if (response){
         if (!silent){
           dispatch(notificationActions.addSuccess('Authorization setting was saved'));

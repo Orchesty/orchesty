@@ -5,7 +5,7 @@ parameters:
     backend_host: 127.0.0.66
     cron_host: 'http://cron-api:5000'
     monolith_host: 'http://php-dev'
-    notification_host: 127.0.0.2
+    notification_host: 'http://notification-sender-api/notification-sender'
     activateLink: '%backend_host%/user/%s/activate'
     access_token_refresh_interval: 3600
 

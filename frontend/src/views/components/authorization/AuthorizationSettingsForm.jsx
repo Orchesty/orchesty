@@ -46,6 +46,13 @@ class AuthorizationSettingsForm extends React.Component {
         <Field name="field1" component={FormTextInput} label="Field 1" />
         <Field name="field2" component={FormTextInput} label="Field 2" />
         <Field name="field3" component={FormTextInput} label="Field 3" />
+
+
+          <p>
+              <span><strong>Readme:</strong></span><br/>
+              {this.props.initialValues.readme}
+          </p>
+
         <button ref={this.setButton} className="hidden" />
       </form>
     );

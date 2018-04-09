@@ -22,7 +22,7 @@ class AuthorizationTest extends DatabaseTestCaseAbstract
         $token = ['token' => 'token'];
         $settings = ['foo' => 'bar', 'baz' => 'bat'];
 
-        $authorization = new Authorization('magento2.auth');
+        $authorization = new Authorization('magento2_auth');
         $authorization->setToken($token);
         $authorization->setSettings($settings);
 
