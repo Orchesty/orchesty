@@ -1,6 +1,7 @@
 dbrp "pipes"."default"
 
-var sample = 5s
+var sample = 30m
+var retention = '30m'
 
 var data = stream
    |from()
@@ -54,4 +55,4 @@ total
         .database('pipes')
         .measurement('processes')
         .precision('ms')
-        .retentionPolicy('5s')
+        .retentionPolicy(retention)
