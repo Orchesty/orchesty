@@ -26,6 +26,8 @@ class TypeEnum extends EnumAbstract
     public const TABLE_PARSER    = 'table_parser';
     public const WEBHOOK         = 'webhook';
     public const XML_PARSER      = 'xml_parser';
+    public const START           = 'start';
+    public const GATEWAY         = 'gateway';
 
     /**
      * @var string[]
@@ -47,6 +49,8 @@ class TypeEnum extends EnumAbstract
         self::TABLE_PARSER    => self::TABLE_PARSER,
         self::WEBHOOK         => self::WEBHOOK,
         self::XML_PARSER      => self::XML_PARSER,
+        self::START           => self::START,
+        self::GATEWAY         => self::GATEWAY,
     ];
 
 }
