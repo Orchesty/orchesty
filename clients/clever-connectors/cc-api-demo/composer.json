@@ -5,7 +5,6 @@
   "version": "0.0.1",
   "autoload": {
     "psr-4": {
-      "CleverCore\\Commons\\": "commonsSrc/",
       "CleverCore\\SocialMultichannel\\": "socialMultichannel/src/"
     }
   },
@@ -23,7 +22,8 @@
     "alcaeus/mongo-php-adapter": "^1.1",
     "kdyby/doctrine": "^3.3",
     "bunny/bunny": "^0.2",
-    "cleverapp/enum": "dev-develop",
+    "cleverapp/enum": "dev-develop#81578eee",
+    "clevercore/commons": "^1.0",
     "clevercore/datalayer": "dev-develop",
     "clevercore/utils": "dev-develop",
     "cleverdbschema/app": "dev-develop",
