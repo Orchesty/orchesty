@@ -109,7 +109,7 @@ PaletteProvider.prototype.getPaletteEntries = function() {
       group: 'tools',
       separator: true
     },
-    'create.start-event': createAction(
+    'create.cron-event': createAction(
       'bpmn:Event', 'events', 'bpmn-icon-start-event-timer', 'Cron', { pipesType: 'cron'}
     ),
     'create.webhook-event': createAction(
@@ -117,6 +117,9 @@ PaletteProvider.prototype.getPaletteEntries = function() {
     ),
     'create.signal-event': createAction(
       'bpmn:Event', 'events', 'bpmn-icon-start-event-escalation', 'Signal', { pipesType: 'signal'}
+    ),
+    'create.start-event': createAction(
+      'bpmn:Event', 'events', 'bpmn-icon-start-event-none', 'Signal', { pipesType: 'start'}
     ),
     'event-separator': {
       group: 'events',
@@ -148,6 +151,13 @@ PaletteProvider.prototype.getPaletteEntries = function() {
     ),
     'create.debug': createAction(
       'bpmn:Task', 'activity', 'bpmn-icon-pipes-debug-node', 'Debug', { pipesType: 'debug'}
+    ),
+    'activity-separator': {
+      group: 'activity',
+      separator: true
+    },
+    'create.gateway': createAction(
+      'bpmn:Gateway', 'gateway', 'bpmn-icon-gateway-none', 'Gateway', { pipesType: 'gateway'}
     )
   });
 
