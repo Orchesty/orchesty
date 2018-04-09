@@ -79,8 +79,9 @@ class AuthorizationLoader
      */
     public function getAllAuthorizations(array $exclude = []): array
     {
-        $list = Yaml::parse(file_get_contents(__DIR__ . '/../Resources/config/authorizations.yml'));
-        $res  = [];
+        $exclude = array_merge($exclude, ['_defaults']);
+        $list    = Yaml::parse(file_get_contents(__DIR__ . '/../Resources/config/authorizations.yml'));
+        $res     = [];
 
         foreach ($list['services'] as $key => $item) {
             $shortened = str_replace(self::AUTHORIZATION_PREFIX . '.', '', $key);
@@ -107,7 +108,7 @@ class AuthorizationLoader
         foreach ($authorizations as $authorization) {
             $authorizationService = $this->getAuthorization($authorization);
 
-            $res[$authorization] = $authorizationService->getInfo($hostname);
+            $res[] = array_merge($authorizationService->getInfo($hostname), ['key' => $authorization]);
         }
 
         return $res;

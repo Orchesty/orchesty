@@ -22,7 +22,7 @@ use Tests\PrivateTrait;
  *
  * @package Tests\Integration\Authorization\Impl\Magento2Old
  */
-class Magento2AuthorizationTest extends DatabaseTestCaseAbstract
+final class Magento2AuthorizationTest extends DatabaseTestCaseAbstract
 {
 
     use PrivateTrait;
@@ -146,7 +146,7 @@ class Magento2AuthorizationTest extends DatabaseTestCaseAbstract
         $curl = $this->createPartialMock(CurlManagerInterface::class, ['send']);
         $curl->method('send')->willReturn($response);
 
-        return new Magento2Authorization($this->dm, $curl, 'magento2.auth', 'Magento2Old auth', 'Magento2Old auth');
+        return new Magento2Authorization($this->dm, $curl, 'magento2_auth', 'Magento2Old auth', 'Magento2Old auth');
     }
 
 }
