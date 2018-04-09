@@ -51,7 +51,6 @@ class SalesforceAppSyncSubscribersConnector implements BatchInterface, Connector
     protected const QUERY_URL      = '%s/services/data/v40.0/query?q=%s';
     protected const SYNC_STATE_URL = '%s/services/apexrest/CMHB/pipes/sync';
     protected const PAGE_LIMIT     = 50;
-    protected const NODE_NAME      = '';
 
     /**
      * @var SalesforceAppSystem

@@ -4,36 +4,41 @@ namespace CleverConnectors\AppBundle\Model\CM\CampaignConnector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\CM\CMAuthorization;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
-use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Traits\LoggerTrait;
-use Doctrine\Common\Persistence\ObjectRepository;
-use Doctrine\ODM\MongoDB\DocumentManager;
+use CleverConnectors\AppBundle\Utils\CMHeaders;
+use CleverConnectors\AppBundle\Utils\CronUtils;
+use Clue\React\Buzz\Message\ResponseException;
+use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
+use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
+use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\NullLogger;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
+use function React\Promise\resolve;
 
 /**
  * Class CMGetCampaignsConnector
  *
  * @package CleverConnectors\AppBundle\Model\CM\CampaignConnector
  */
-class CMGetCampaignsConnector implements BatchInterface, ConnectorInterface, LoggerAwareInterface
+class CMGetCampaignsConnector extends CMAuthorization implements BatchInterface, ConnectorInterface, LoggerAwareInterface
 {
 
     use LoggerTrait;
 
-    protected const QUERY_URL      = '%s/services/data/v40.0/query?q=%s';
-    protected const SYNC_STATE_URL = '%s/services/apexrest/CMHB/pipes/sync';
-    protected const PAGE_LIMIT     = 50;
-    protected const NODE_NAME      = '';
+    protected const QUERY_URL  = '/campaigns/standard/?count=%s&offset=%s';
+    protected const PAGE_LIMIT = 100;
 
     /**
      * @var CurlSenderFactory
@@ -41,20 +46,21 @@ class CMGetCampaignsConnector implements BatchInterface, ConnectorInterface, Log
     private $factory;
 
     /**
-     * @var SystemInstallRepository|ObjectRepository
+     * @var array
      */
-    private $systemInstallRepository;
+    private $secret;
 
     /**
      * SalesforceContactConnectorAbstract constructor.
      *
-     * @param CurlSenderFactory   $factory
+     * @param CurlSenderFactory $factory
+     * @param array             $secret
      */
-    public function __construct(CurlSenderFactory $factory, DocumentManager $dm)
+    public function __construct(CurlSenderFactory $factory, array $secret)
     {
-        $this->factory                 = $factory;
-        $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
-        $this->logger                  = new NullLogger();
+        $this->factory = $factory;
+        $this->secret  = $secret;
+        $this->logger  = new NullLogger();
     }
 
     /**
@@ -62,7 +68,7 @@ class CMGetCampaignsConnector implements BatchInterface, ConnectorInterface, Log
      */
     public function getId(): string
     {
-        return 'salesforceapp-sync-contact-connector';
+        return 'clevermonitors-get-campaigns-connector';
     }
 
     /**
@@ -93,132 +99,60 @@ class CMGetCampaignsConnector implements BatchInterface, ConnectorInterface, Log
      * @param callable      $callbackItem
      *
      * @return PromiseInterface
-     * @throws SystemException
+     *
      * @throws CleverConnectorsException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
-        $data     = json_decode($dto->getData(), TRUE);
+        $sender        = $this->factory->create($loop, $this->secret);
+        $systemInstall = CronUtils::getSystemInstall($dto);
+        $requestDto    = new RequestDto(CurlManager::METHOD_GET, new Uri($this->getBaseUrl()));
+        $requestDto
+            ->setHeaders($this->getAuthorizationHeaders($systemInstall->getUser(), $systemInstall->getToken()))
+            ->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
 
-        $sender        = $this->factory->create($loop);
-        $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
-        $requestDto    = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_GET);
-        $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
+        $promise = $this->getPage($sender, $callbackItem, $requestDto, $systemInstall);
 
-        return $this->fetchData($sender, $this->createCountRequest($requestDto, $where))
-            ->then(
-                function (ResponseInterface $response): int {
-                    return $this->getTotalPages($response);
-                },
-                function (ResponseException $e) use ($systemInstall, $callbackItem) {
-                    $success = $this->batchConnectorError($e, $this->system, $systemInstall, 1);
-
-                    return $callbackItem($success);
-                }
-            )->then(
-                function (int $total) use ($sender, $callbackItem, $requestDto, $systemInstall, $where) {
-                    return all($this->doPageLoop($total, $sender, $callbackItem, $requestDto, $systemInstall, $where));
-                }
-            )->then(
-                function ($all) use ($sender, $requestDto, $filterId) {
-                    $this->fetchData($sender, $this->createSuccessStateRequest($requestDto, (string) $filterId));
-
-                    return $all;
-                }
-            );
+        return $promise;
     }
 
     /**
-     * @param RequestDto $dto
-     * @param string     $where
-     *
-     * @return RequestDto
-     */
-    private function createCountRequest(RequestDto $dto, string $where): RequestDto
-    {
-        $query = sprintf('select+count()+from+CMHB__Subscriber__c%s', $where);
-        $uri   = new Uri(sprintf(static::QUERY_URL, rtrim($dto->getUri(TRUE), '/'), $query));
-
-        return RequestDto::from($dto, $uri);
-    }
-
-    /**
-     * @param ResponseInterface $response
-     *
-     * @return int
-     * @throws SystemException
-     */
-    private function getTotalPages(ResponseInterface $response): int
-    {
-        $data = json_decode($response->getBody()->getContents(), TRUE);
-
-        if (!is_array($data) || !array_key_exists('totalSize', $data)) {
-            throw new SystemException(
-                'SalesforceApp response has no "totalSize" field!',
-                SystemException::MISSING_DATA
-            );
-        }
-
-        $total = (int) ceil($data['totalSize'] / self::PAGE_LIMIT);
-        unset($data);
-
-        return $total;
-    }
-
-    /**
-     * @param int           $total
      * @param CurlSender    $sender
      * @param callable      $callbackItem
-     * @param RequestDto    $dto
+     * @param RequestDto    $requestDto
      * @param SystemInstall $systemInstall
-     * @param string        $where
+     * @param int           $page
      *
-     * @return array
+     * @return PromiseInterface
      */
-    private function doPageLoop(
-        int $total,
+    private function getPage(
         CurlSender $sender,
         callable $callbackItem,
-        RequestDto $dto,
+        RequestDto $requestDto,
         SystemInstall $systemInstall,
-        string $where
-    ): array
+        int $page = 1
+    ): PromiseInterface
     {
-        $requests = [];
-        for ($i = 0; $i < $total; $i++) {
-            $requests[] = $this
-                ->fetchData($sender, $this->createPageContactRequest($i, $dto, $where))
-                ->then(
-                    function (ResponseInterface $response) use ($i): SuccessMessage {
-                        return $this->createSuccessMessage($response, $i);
-                    },
-                    function (ResponseException $e) use ($i, $systemInstall): SuccessMessage {
-                        return $this->batchConnectorError($e, $this->system, $systemInstall, $i + 1);
-                    }
-                )->then($callbackItem, $callbackItem);
-        }
+        $uri        = new Uri(sprintf('%s' . self::QUERY_URL, $this->getBaseUrl(), self::PAGE_LIMIT, $page));
+        $requestDto = RequestDto::from($requestDto, $uri);
 
-        return $requests;
-    }
+        return $this->fetchData($sender, $requestDto)->then(
+            function (ResponseInterface $response) use ($sender, $requestDto, $callbackItem, $page, $systemInstall) {
+                if ($response->getStatusCode() === 200) {
+                    $callbackItem($this->createSuccessMessage($response, $page));
 
-    /**
-     * @param int        $page
-     * @param RequestDto $dto
-     * @param string     $where
-     *
-     * @return RequestDto
-     */
-    private function createPageContactRequest(int $page, RequestDto $dto, string $where): RequestDto
-    {
-        $q = 'select+CMHB__Email__c,+CMHB__Firstname__c,+CMHB__Lastname__c,' .
-            '+CMHB__Distribution_List__r.CMHB__CM_ID__c,+CreatedDate,+LastModifiedDate,+CMHB__Deleted__c' .
-            '+from+CMHB__Subscriber__c%s' .
-            '+limit+%s+offset+%s';
+                    return $this->getPage($sender, $callbackItem, $requestDto, $systemInstall, $page + 1);
+                }
 
-        $query = sprintf($q, $where, self::PAGE_LIMIT, self::PAGE_LIMIT * $page);
-        $uri   = new Uri(sprintf(self::QUERY_URL, rtrim($dto->getUri(TRUE), '/'), $query));
+                return resolve();
+            },
+            function (ResponseException $e) use ($systemInstall, $callbackItem, $page) {
+                $success = $this->batchConnectorError($e, NULL, $systemInstall, $page);
+                $callbackItem($success);
 
-        return RequestDto::from($dto, $uri);
+                return resolve();
+            }
+        );
     }
 
     /**
@@ -231,33 +165,18 @@ class CMGetCampaignsConnector implements BatchInterface, ConnectorInterface, Log
     private function createSuccessMessage(ResponseInterface $response, int $page): SuccessMessage
     {
         $res = json_decode($response->getBody()->getContents(), TRUE);
-        if (is_array($res) && array_key_exists('records', $res)) {
+        if (is_array($res) && !empty($res)) {
             $successMessage = new SuccessMessage($page);
-            $successMessage->setData(json_encode($res['records']));
+            $successMessage->setData(json_encode($res));
             unset($res);
 
             return $successMessage;
         }
 
         throw new SystemException(
-            'Missing [records] key in response data from SalesforceApp.',
+            'Wrong data in response from CleverMonitor.',
             SystemException::MISSING_DATA
         );
-    }
-
-    /**
-     * @param RequestDto $dto
-     * @param string     $filterId
-     *
-     * @return RequestDto
-     */
-    private function createSuccessStateRequest(RequestDto $dto, string $filterId): RequestDto
-    {
-        $uri     = new Uri(sprintf(self::SYNC_STATE_URL, rtrim($dto->getUri(TRUE), '/')));
-        $request = RequestDto::from($dto, $uri, CurlManager::METHOD_POST);
-        $request->setBody(json_encode([SalesforceAppSystem::FILTER_ID => $filterId]));
-
-        return $request;
     }
 
     /**
@@ -271,13 +190,4 @@ class CMGetCampaignsConnector implements BatchInterface, ConnectorInterface, Log
         return $sender->send($request);
     }
 
-    /**
-     * @param CurlException|ResponseException $e
-     *
-     * @return bool
-     */
-    protected function limitReached($e): bool
-    {
-        return Strings::contains($e->getResponse()->getBody()->getContents(), 'REQUEST_LIMIT_EXCEEDED');
-    }
 }

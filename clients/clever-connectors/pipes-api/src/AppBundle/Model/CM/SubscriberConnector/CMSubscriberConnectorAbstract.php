@@ -147,7 +147,7 @@ abstract class CMSubscriberConnectorAbstract extends CMAuthorization implements 
             $email = '/' . $email;
         }
 
-        return sprintf('https://api.dev.clevermonitor.com/v1.2/subscribers/email%s', $email);
+        return sprintf('%s/subscribers/email%s', $this->getBaseUrl(), $email);
     }
 
     /**

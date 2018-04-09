@@ -17,9 +17,8 @@ use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 class CMGetDistributionsConnector extends CMDistributionListAbstract
 {
 
-    private const URL_PART   = '?count=%s&offset=%s';
-    private const LIMIT = 50;
-
+    private const URL_PART = '?count=%s&offset=%s';
+    private const LIMIT    = 50;
 
     /**
      * @return string
@@ -109,7 +108,7 @@ class CMGetDistributionsConnector extends CMDistributionListAbstract
      */
     private function getUrl(int $page = 0): string
     {
-        return sprintf(self::URL. self::URL_PART, self::LIMIT, self::LIMIT * $page);
+        return sprintf('%s/lists' . self::URL_PART, $this->getBaseUrl(), self::LIMIT, self::LIMIT * $page);
     }
 
 }

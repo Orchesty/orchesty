@@ -77,3 +77,9 @@ services:
         arguments:
             - '@hbpf.transport.curl_manager'
             - '%ranger_host%'
+
+    hbpf.connector.clevermonitors-get-campaigns-connector:
+        class: CleverConnectors\AppBundle\Model\CM\CampaignConnector\CMGetCampaignsConnector
+        arguments:
+            - '@hbpf.transport.async_curl_factory'
+            - '%clevermonitor%'
