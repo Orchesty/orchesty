@@ -1,6 +1,7 @@
 dbrp "pipes"."default"
 
 var sample = 5s
+var retention = '5s'
 
 var rabbitMqData = stream
    |from()
@@ -27,6 +28,6 @@ messagesAvg
        .database('pipes')
        .measurement('rabbitmq')
        .precision('ms')
-       .retentionPolicy('5s')
+       .retentionPolicy(retention)
 
 

@@ -1,6 +1,7 @@
 dbrp "pipes"."default"
 
-var sample = 5s
+var sample = 30m
+var retention = '30m'
 
 var monolithData = stream
    |from()
@@ -43,7 +44,7 @@ cpuKernelAvg
        .database('pipes')
        .measurement('monolith')
        .precision('ms')
-       .retentionPolicy('5s')
+       .retentionPolicy(retention)
 
 
 //monolithData

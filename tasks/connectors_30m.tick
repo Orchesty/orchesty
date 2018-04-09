@@ -1,0 +1,45 @@
+dbrp "pipes"."default"
+
+var sample = 30m
+var retention = '30m'
+
+var connectorData = stream
+   |from()
+       .database('pipes')
+       .retentionPolicy('default')
+       .measurement('connectors')
+   |window()
+       .period(sample)
+       .every(sample)
+   |groupBy('node_id')
+
+// Monolith data
+
+var reqAvg = connectorData
+    |mean('sent_request_total_duration')
+        .as('time')
+
+var reqMin = connectorData
+    |min('sent_request_total_duration')
+        .as('time')
+
+var reqMax = connectorData
+    |max('sent_request_total_duration')
+        .as('time')
+
+reqAvg
+   |join(reqMin, reqMax)
+       .as('avg', 'min', 'max')
+   |influxDBOut()
+       .database('pipes')
+       .measurement('connectors')
+       .precision('ms')
+       .retentionPolicy(retention)
+
+
+//monolithData
+//   |groupBy('topology_id', 'node_id', 'correlation_id')
+//   |count('count')
+
+
+

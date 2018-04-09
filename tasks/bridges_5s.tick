@@ -1,6 +1,7 @@
 dbrp "pipes"."default"
 
 var sample = 5s
+var retention = '5s'
 
 var bridgeData = stream
    |from()
@@ -54,7 +55,7 @@ total
        .database('pipes')
        .measurement('bridges')
        .precision('ms')
-       .retentionPolicy('5s')
+       .retentionPolicy(retention)
 
 
 //monolithData

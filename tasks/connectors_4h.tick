@@ -1,6 +1,7 @@
 dbrp "pipes"."default"
 
-var sample = 5s
+var sample = 4h
+var retention = '4h'
 
 var connectorData = stream
    |from()
@@ -33,7 +34,7 @@ reqAvg
        .database('pipes')
        .measurement('connectors')
        .precision('ms')
-       .retentionPolicy('5s')
+       .retentionPolicy(retention)
 
 
 //monolithData

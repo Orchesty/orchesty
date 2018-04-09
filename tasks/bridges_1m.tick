@@ -1,0 +1,66 @@
+dbrp "pipes"."default"
+
+var sample = 1m
+var retention = '1m'
+
+var bridgeData = stream
+   |from()
+       .database('pipes')
+       .retentionPolicy('default')
+       .measurement('pipes_node')
+   |window()
+       .period(sample)
+       .every(sample)
+   |groupBy('topology_id', 'node_id')
+
+// Total Processes
+
+var total = bridgeData
+   |count('bridge_job_result_success')
+
+var totalFailed = bridgeData
+   |where(lambda: "bridge_job_result_success" == FALSE)
+   |count('bridge_job_result_success')
+
+// Bridge data
+
+var waitingTimeAvg = bridgeData
+    |mean('bridge_job_waiting_duration')
+        .as('time')
+
+var timeMin = bridgeData
+    |min('bridge_job_waiting_duration')
+        .as('waiting')
+    |min('bridge_job_total_duration')
+        .as('process')
+    |delete().field('bridge_job_result_success')
+    |delete().field('bridge_job_worker_duration')
+
+var timeMax = bridgeData
+    |max('bridge_job_waiting_duration')
+        .as('waiting')
+    |max('bridge_job_total_duration')
+        .as('process')
+    |delete().field('bridge_job_result_success')
+    |delete().field('bridge_job_worker_duration')
+
+var processTimeAvg = bridgeData
+    |mean('bridge_job_total_duration')
+        .as('time')
+
+total
+   |join(totalFailed, waitingTimeAvg, timeMin, timeMax, processTimeAvg)
+       .as('total', 'failed', 'avg_waiting', 'job_min', 'job_max', 'avg_process')
+   |influxDBOut()
+       .database('pipes')
+       .measurement('bridges')
+       .precision('ms')
+       .retentionPolicy(retention)
+
+
+//monolithData
+//   |groupBy('topology_id', 'node_id', 'correlation_id')
+//   |count('count')
+
+
+
