@@ -40,6 +40,7 @@ class SalesforceAppSystem implements OAuth2Interface, CMEventSystemInterface
 
     public const DL_ID     = 'distributionId';
     public const FILTER_ID = 'filterId';
+    public const API_URL   = 'instance_url';
 
     protected const SWITCH_TOKEN = '';
     protected const SYNC_URL     = '';
@@ -48,7 +49,6 @@ class SalesforceAppSystem implements OAuth2Interface, CMEventSystemInterface
     private const CLIENT_SECRET = '8796280224191647886';
     private const AUTHORIZE_URL = 'https://login.salesforce.com/services/oauth2/authorize';
     private const TOKEN_URL     = 'https://na1.salesforce.com/services/oauth2/token';
-    private const API_URL       = 'instance_url';
 
     private const SYNC_TOPO = 'salesforceapp-sync-subscribers';
     private const SYNC_NODE = 'signal-event';

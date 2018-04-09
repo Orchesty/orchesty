@@ -91,7 +91,9 @@ class SalesforceAppCampaignsMapper implements CustomNodeInterface
             throw new CleverConnectorsException('Data can not be empty', CleverConnectorsException::MISSING_DATA);
         }
 
-        return $dto->setData(json_encode($this->processData($data)));
+        $output['results'] = $this->processData($data);
+
+        return $dto->setData(json_encode($output));
     }
 
     /**

@@ -25,6 +25,15 @@ services:
         calls:
             - ['setLogger', ['@monolog.logger.notification']]
 
+    hbpf.connector.salesforce_app-upsert-campaign-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp\Connector\SalesforceAppUpsertCampaignConnector
+        arguments:
+            - '@systems.salesforceapp'
+            - '@cc.transport.curl.manager'
+            - '@doctrine_mongodb.odm.default_document_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
+
     hbpf.custom_node.salesforce_app-create-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp\Mapper\SalesforceAppCreateMapper
 

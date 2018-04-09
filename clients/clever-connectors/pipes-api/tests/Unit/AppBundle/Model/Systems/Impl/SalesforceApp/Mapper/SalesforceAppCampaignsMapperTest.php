@@ -48,10 +48,13 @@ final class SalesforceAppCampaignsMapperTest extends TestCase
         $data = json_decode($dto->getData(), TRUE);
 
         self::assertNotEmpty($data);
+        self::assertArrayHasKey('results', $data);
+        $data = $data['results'];
+
         self::assertArrayHasKey(0, $data);
         self::assertArrayHasKey(1, $data);
+        $item = $data[1];
 
-        $item = $data[0];
         self::assertArrayHasKey(SalesforceAppCampaignsMapper::NAME, $item);
         self::assertArrayHasKey(SalesforceAppCampaignsMapper::ID, $item);
         self::assertArrayHasKey(SalesforceAppCampaignsMapper::STATUS, $item);
