@@ -89,7 +89,7 @@ final class CMGetCampaignsConnectorTest extends ConnectorTestCaseAbstract
             ->method('fetchData')->will($this->returnCallback(
                 function ($sender, RequestDto $dto) use ($test, $status) {
                     $expt = new RequestDto('GET',
-                        new Uri('https://api.dev.clevermonitor.com/v1.2/campaigns/standard/?count=100&offset=1'));
+                        new Uri('https://api.dev.clevermonitor.com/v1.2/campaigns/standard/?count=100&offset=0'));
                     $expt->setHeaders([
                         'Accept'                => 'application/json',
                         'Content-type'          => 'application/json',
@@ -111,7 +111,7 @@ final class CMGetCampaignsConnectorTest extends ConnectorTestCaseAbstract
                 ->method('fetchData')->will($this->returnCallback(
                     function ($sender, RequestDto $dto) use ($test) {
                         $expt = new RequestDto('GET',
-                            new Uri('https://api.dev.clevermonitor.com/v1.2/campaigns/standard/?count=100&offset=2'));
+                            new Uri('https://api.dev.clevermonitor.com/v1.2/campaigns/standard/?count=100&offset=1'));
                         $expt->setHeaders([
                             'Accept'                => 'application/json',
                             'Content-type'          => 'application/json',

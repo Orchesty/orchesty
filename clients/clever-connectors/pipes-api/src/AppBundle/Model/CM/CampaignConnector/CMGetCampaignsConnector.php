@@ -10,7 +10,6 @@ use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use CleverConnectors\AppBundle\Utils\CronUtils;
 use Clue\React\Buzz\Message\ResponseException;
-use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
@@ -26,7 +25,6 @@ use Psr\Log\LoggerAwareInterface;
 use Psr\Log\NullLogger;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
-use Throwable;
 use function React\Promise\resolve;
 
 /**
@@ -132,7 +130,7 @@ class CMGetCampaignsConnector extends CMAuthorization implements BatchInterface,
         callable $callbackItem,
         RequestDto $requestDto,
         SystemInstall $systemInstall,
-        int $page = 1
+        int $page = 0
     ): PromiseInterface
     {
         $uri        = new Uri(sprintf(self::QUERY_URL, $this->getBaseUrl(), self::PAGE_LIMIT, $page));
@@ -190,11 +188,7 @@ class CMGetCampaignsConnector extends CMAuthorization implements BatchInterface,
      */
     protected function fetchData(CurlSender $sender, RequestDto $request): PromiseInterface
     {
-        try {
-            return $sender->send($request);
-        } catch (Throwable $t) {
-            throw new ResponseException(new Response('500'), $t->getMessage(), 500, $t);
-        }
+        return $sender->send($request);
     }
 
 }
