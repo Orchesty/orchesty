@@ -185,7 +185,7 @@ cm-pipes-api-test:
     - export COMPOSE_PROJECT_NAME="p${CI_PIPELINE_ID}-cm-pipes-api" # CLEANUP bundles
     - export COMPOSE_FILE=docker-compose.ci.yml                     # CLEANUP bundles
     - make ${COMPOSE_FILE} test
-   only:
+  only:
     - master
 
 cc-api-demo-test:
