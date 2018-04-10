@@ -9,12 +9,13 @@ use Nette\Utils\Arrays;
 /**
  * Class TopologySchemaUtils
  *
- * @package CleverConnectors\AppBundle\Utils
+ * @package Hanaboso\PipesFramework\Utils
  */
 class TopologySchemaUtils
 {
 
     private const PROCESS       = 'bpmn:process';
+    private const GATEWAY       = 'bpmn:gateway';
     private const START_EVENT   = 'bpmn:startEvent';
     private const TASK          = 'bpmn:task';
     private const EVENT         = 'bpmn:event';
@@ -28,7 +29,7 @@ class TopologySchemaUtils
     /**
      * @var array
      */
-    private static $handlers = [self::START_EVENT, self::TASK, self::EVENT, self::END_EVENT];
+    private static $handlers = [self::START_EVENT, self::TASK, self::EVENT, self::END_EVENT, self::GATEWAY];
 
     /**
      * @param array $data
