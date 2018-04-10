@@ -9,10 +9,4 @@ declare -A BRANCH_IMAGE_TAG_MAP=(
   # branch: perf
   [FRONTEND_perf]="perf"
 
-  # branch: nim-fixes
-  [MONOLITH_nim-fixes]="nim-fixes"
-  [PHPDEV_nim-fixes]="nim-fixes"
-  [FRONTEND_nim-fixes]="nim-fixes"
-  [NJSBUILD_default]="nim-fixes"
-
 )
