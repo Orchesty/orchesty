@@ -103,6 +103,7 @@ class SalesforceAppUpsertCampaignConnector implements ConnectorInterface, Logger
             $request = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_POST);
             $uri     = new Uri(sprintf(static::URL, rtrim($request->getUri(TRUE), '/')));
             $request = RequestDto::from($request, $uri);
+            $request->setBody($dto->getData());
             $this->curl->send($request);
         } catch (Throwable $t) {
             $this->logError(500, $this->system, $systemInstall);
