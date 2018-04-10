@@ -10,6 +10,7 @@ use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use CleverConnectors\AppBundle\Utils\CronUtils;
 use Clue\React\Buzz\Message\ResponseException;
+use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
@@ -25,6 +26,7 @@ use Psr\Log\LoggerAwareInterface;
 use Psr\Log\NullLogger;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
+use Throwable;
 use function React\Promise\resolve;
 
 /**
@@ -37,7 +39,7 @@ class CMGetCampaignsConnector extends CMAuthorization implements BatchInterface,
 
     use LoggerTrait;
 
-    protected const QUERY_URL  = '/campaigns/standard/?count=%s&offset=%s';
+    protected const QUERY_URL  = '%s/campaigns/standard/?count=%s&offset=%s';
     protected const PAGE_LIMIT = 100;
 
     /**
@@ -133,7 +135,7 @@ class CMGetCampaignsConnector extends CMAuthorization implements BatchInterface,
         int $page = 1
     ): PromiseInterface
     {
-        $uri        = new Uri(sprintf('%s' . self::QUERY_URL, $this->getBaseUrl(), self::PAGE_LIMIT, $page));
+        $uri        = new Uri(sprintf(self::QUERY_URL, $this->getBaseUrl(), self::PAGE_LIMIT, $page));
         $requestDto = RequestDto::from($requestDto, $uri);
 
         return $this->fetchData($sender, $requestDto)->then(
@@ -187,7 +189,11 @@ class CMGetCampaignsConnector extends CMAuthorization implements BatchInterface,
      */
     protected function fetchData(CurlSender $sender, RequestDto $request): PromiseInterface
     {
-        return $sender->send($request);
+        try {
+            return $sender->send($request);
+        } catch (Throwable $t) {
+            throw new ResponseException(new Response('500'), $t->getMessage(), 500, $t);
+        }
     }
 
 }
