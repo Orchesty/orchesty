@@ -32,6 +32,11 @@ services:
     #      BACKEND_HOST: ${BACKEND_URL}/
     #      ELASTIC_HOST: elasticsearch
     #      ELASTIC_INDEX: 'logstash-2018.01.31'
+    #    secrets:
+    #      - source: clevermonitor-ca.pem
+    #        target: /var/www/html/var/secret/ca.crt
+    #      - source: clevermonitor-hanaboso.pem
+    #        target: /var/www/html/var/secret/keypair.pem
     ## END STAGE
 
 
@@ -58,6 +63,11 @@ services:
     #      BACKEND_HOST: ${BACKEND_URL}/
     #      ELASTIC_HOST: elasticsearch
     #      ELASTIC_INDEX: 'logstash-2018.01.31'
+    #    secrets:
+    #      - source: clevermonitor-ca.pem
+    #        target: /var/www/html/var/secret/ca.crt
+    #      - source: clevermonitor-hanaboso.pem
+    #        target: /var/www/html/var/secret/keypair.pem
     ## END STAGE
 
     ## BEGIN DEV
