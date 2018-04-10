@@ -23,8 +23,6 @@ use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 abstract class CMDistributionListAbstract extends CMAuthorization implements ConnectorInterface
 {
 
-    protected const URL = 'https://api.dev.clevermonitor.com/v1.2/lists';
-
     /**
      * @var CurlManagerInterface
      */

@@ -59,17 +59,17 @@ trait LoggerTrait
     }
 
     /**
-     * @param CurlException   $e
-     * @param SystemInterface $system
-     * @param SystemInstall   $systemInstall
-     * @param ProcessDto      $dto
+     * @param CurlException        $e
+     * @param SystemInterface|null $system
+     * @param SystemInstall        $systemInstall
+     * @param ProcessDto           $dto
      *
      * @return ProcessDto
      * @throws CurlException
      */
     protected function connectorError(
         CurlException $e,
-        SystemInterface $system,
+        ?SystemInterface $system = NULL,
         SystemInstall $systemInstall,
         ProcessDto $dto
     ): ProcessDto
@@ -85,16 +85,16 @@ trait LoggerTrait
     }
 
     /**
-     * @param ResponseException $e
-     * @param SystemInterface   $system
-     * @param SystemInstall     $systemInstall
-     * @param int               $i
+     * @param ResponseException    $e
+     * @param SystemInterface|null $system
+     * @param SystemInstall        $systemInstall
+     * @param int                  $i
      *
      * @return SuccessMessage
      */
     protected function batchConnectorError(
         ResponseException $e,
-        SystemInterface $system,
+        ?SystemInterface $system = NULL,
         SystemInstall $systemInstall,
         int $i
     ): SuccessMessage
@@ -123,11 +123,15 @@ trait LoggerTrait
     }
 
     /**
-     * @param int             $status
-     * @param SystemInterface $system
-     * @param SystemInstall   $systemInstall
+     * @param int                  $status
+     * @param SystemInterface|null $system
+     * @param SystemInstall        $systemInstall
      */
-    protected function logError(int $status, SystemInterface $system, SystemInstall $systemInstall): void
+    protected function logError(
+        int $status,
+        ?SystemInterface $system = NULL,
+        SystemInstall $systemInstall
+    ): void
     {
         switch ($status) {
             case 400:
@@ -160,19 +164,23 @@ trait LoggerTrait
     }
 
     /**
-     * @param string          $type
-     * @param SystemInterface $system
-     * @param SystemInstall   $systemInstall
+     * @param string               $type
+     * @param SystemInterface|null $system
+     * @param SystemInstall        $systemInstall
      *
      * @return array
      */
-    public static function getMessage(string $type, SystemInterface $system, SystemInstall $systemInstall): array
+    public static function getMessage(
+        string $type,
+        ?SystemInterface $system = NULL,
+        SystemInstall $systemInstall
+    ): array
     {
         return [
             self::$notificationType => $type,
             self::$guid             => $systemInstall->getUser(),
             self::$token            => $systemInstall->getToken(),
-            self::$systemKey        => $system->getKey(),
+            self::$systemKey        => $system ? $system->getKey() : '',
             self::$systemName       => $system->getName(),
         ];
     }

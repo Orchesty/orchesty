@@ -77,7 +77,7 @@ final class CMGetSubscribersConnectorTest extends KernelTestCaseAbstract
             function (): void {
                 $this->assertTrue(TRUE);
             },
-            function ($data): void {
+            function (): void {
                 $this->assertTrue(FALSE);
             }
         )->done();

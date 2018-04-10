@@ -1,0 +1,67 @@
+[
+  {
+    "campaign_id": "c7e685c3-9b44-2675-31ff-a4aa2e94586d",
+    "html_content": true,
+    "status": 1,
+    "create_time": "2016-05-26T15:23:13+02:00",
+    "source": 2,
+    "title": "My Campaign",
+    "send_from": null,
+    "send_to": null,
+    "statistics": [],
+    "settings": {
+      "subject": "My Campaign",
+      "sender_email": "my.company@example.com",
+      "sender_name": "My Company",
+      "folder_id": "root",
+      "plan_time": null
+    },
+    "lists": [
+      {
+        "list_id": "cec10bc4-6ddb-11e5-b85d-08002789d050",
+        "name": "My List",
+        "subscribers": 0
+      }
+    ]
+  },
+  {
+    "campaign_id": "6c54aff6-e777-3aea-97e8-ca4df3de1dfb",
+    "html_content": true,
+    "status": 1,
+    "create_time": "2016-05-30T12:40:05+02:00",
+    "source": 2,
+    "title": "My Second Campaign",
+    "send_from": null,
+    "send_to": null,
+    "statistics": {
+      "subscribers": 46440,
+      "sent": 46439,
+      "opens": 1966,
+      "opens_unique": 1539,
+      "clicks": 1043,
+      "clicks_unique": 744,
+      "undelivered": 0,
+      "unsubscribed": 0,
+      "spam": 0,
+      "domain": 12,
+      "external_date": null,
+      "external_url": null,
+      "click_rate": 0,
+      "open_rate": 3.31
+    },
+    "settings": {
+      "subject": "My Second Campaign",
+      "sender_email": "my.company@example.com",
+      "sender_name": "My Company",
+      "folder_id": "root",
+      "plan_time": null
+    },
+    "lists": [
+      {
+        "list_id": "cec10bc4-6ddb-11e5-b85d-08002789d050",
+        "name": "My List",
+        "subscribers": 0
+      }
+    ]
+  }
+]

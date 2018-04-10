@@ -62,7 +62,7 @@ class CMCreateDistributionListConnector extends CMDistributionListAbstract
                 CleverConnectorsException::MISSING_DATA
             );
         }
-        $req = new RequestDto(CurlManager::METHOD_POST, new Uri(self::URL));
+        $req = new RequestDto(CurlManager::METHOD_POST, new Uri(sprintf('%s/lists', $this->getBaseUrl())));
         $req
             ->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()))
             ->setHeaders($this->getAuthorizationHeaders($user, $token))

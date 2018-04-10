@@ -33,4 +33,12 @@ abstract class CMAuthorization
         return $headers;
     }
 
+    /**
+     * @return string
+     */
+    protected function getBaseUrl(): string
+    {
+        return 'https://api.dev.clevermonitor.com/v1.2';
+    }
+
 }

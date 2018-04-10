@@ -34,7 +34,7 @@ class CMValidateSubscriberConnector extends CMSubscriberConnectorAbstract
      */
     protected function getUrl(string $email = ''): string
     {
-        return 'https://api.dev.clevermonitor.com/v1.2/validation/email';
+        return sprintf('%s/validation/email', $this->getBaseUrl());
     }
 
 }

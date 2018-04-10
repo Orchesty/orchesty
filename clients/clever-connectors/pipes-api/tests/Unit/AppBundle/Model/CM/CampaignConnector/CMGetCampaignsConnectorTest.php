@@ -1,9 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\AppBundle\Model\Systems\Impl\Basecrm\Connector;
+namespace Tests\Unit\AppBundle\Model\CM\CampaignConnector;
 
-use CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\BasecrmSystem;
-use CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Connector\BasecrmUpdatedContactConnector;
+use CleverConnectors\AppBundle\Model\CM\CampaignConnector\CMGetCampaignsConnector;
 use Exception;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
@@ -18,11 +17,11 @@ use function React\Promise\reject;
 use function React\Promise\resolve;
 
 /**
- * Class BasecrmUpdatedContactConnectorTest
+ * Class CMGetCampaignsConnectorTest
  *
- * @package Tests\Unit\AppBundle\Model\Systems\Impl\Basecrm\Connector
+ * @package Tests\Unit\AppBundle\Model\CM\CampaignConnector
  */
-final class BasecrmUpdatedContactConnectorTest extends ConnectorTestCaseAbstract
+final class CMGetCampaignsConnectorTest extends ConnectorTestCaseAbstract
 {
 
     /**
@@ -62,7 +61,7 @@ final class BasecrmUpdatedContactConnectorTest extends ConnectorTestCaseAbstract
             function (): void {
                 $this->assertTrue(TRUE);
             },
-            function (): void {
+            function ($a): void {
                 $this->assertTrue(FALSE);
             }
         )->done();
@@ -73,18 +72,15 @@ final class BasecrmUpdatedContactConnectorTest extends ConnectorTestCaseAbstract
     /**
      * @param int $status
      *
-     * @return BasecrmUpdatedContactConnector
-     *
+     * @return CMGetCampaignsConnector
      * @throws Exception
      */
-    private function mockResponses(int $status = 200): BasecrmUpdatedContactConnector
+    private function mockResponses(int $status = 200): CMGetCampaignsConnector
     {
-        $sys = new BasecrmSystem();
-
-        /** @var BasecrmUpdatedContactConnector|MockObject $conn */
-        $conn = $this->getMockBuilder(BasecrmUpdatedContactConnector::class)->setConstructorArgs([
-            $sys,
+        /** @var CMGetCampaignsConnector|MockObject $conn */
+        $conn = $this->getMockBuilder(CMGetCampaignsConnector::class)->setConstructorArgs([
             $this->createMock(CurlSenderFactory::class),
+            ['ca' => 'ca', 'cert' => 'cert'],
         ])->setMethods(['fetchData'])->getMock();
 
         $test = $this;
@@ -93,13 +89,11 @@ final class BasecrmUpdatedContactConnectorTest extends ConnectorTestCaseAbstract
             ->method('fetchData')->will($this->returnCallback(
                 function ($sender, RequestDto $dto) use ($test, $status) {
                     $expt = new RequestDto('GET',
-                        new Uri('https://api.getbase.com/v2/sync/gf5h46dg5/queues/main'));
+                        new Uri('https://api.dev.clevermonitor.com/v1.2/campaigns/standard/?count=100&offset=1'));
                     $expt->setHeaders([
                         'Accept'                => 'application/json',
-                        'Content-Type'          => 'application/json',
-                        'User-Agent'            => 'Chrome/58.0.3029.96 Safari/537.36',
-                        'Authorization'         => 'Bearer sdgfd6g465g46f456f',
-                        'X-Basecrm-Device-UUID' => $dto->getHeaders()['X-Basecrm-Device-UUID'],
+                        'Content-type'          => 'application/json',
+                        'X-Api-Key' => $dto->getHeaders()['X-Api-Key'],
                     ]);
 
                     $test->assertEquals($expt, $dto);
@@ -108,7 +102,7 @@ final class BasecrmUpdatedContactConnectorTest extends ConnectorTestCaseAbstract
                         return reject(new Response($status));
                     }
 
-                    return resolve(new Response($status, $expt->getHeaders(), $this->getRequest('syncPage1.json')));
+                    return resolve(new Response($status, $expt->getHeaders(), $this->getRequest('getCampaigns.json')));
                 }
             ));
 
@@ -117,18 +111,16 @@ final class BasecrmUpdatedContactConnectorTest extends ConnectorTestCaseAbstract
                 ->method('fetchData')->will($this->returnCallback(
                     function ($sender, RequestDto $dto) use ($test) {
                         $expt = new RequestDto('GET',
-                            new Uri('https://api.getbase.com/v2/sync/gf5h46dg5/queues/main'));
+                            new Uri('https://api.dev.clevermonitor.com/v1.2/campaigns/standard/?count=100&offset=2'));
                         $expt->setHeaders([
                             'Accept'                => 'application/json',
-                            'Content-Type'          => 'application/json',
-                            'User-Agent'            => 'Chrome/58.0.3029.96 Safari/537.36',
-                            'Authorization'         => 'Bearer sdgfd6g465g46f456f',
-                            'X-Basecrm-Device-UUID' => $dto->getHeaders()['X-Basecrm-Device-UUID'],
+                            'Content-type'          => 'application/json',
+                            'X-Api-Key' => $dto->getHeaders()['X-Api-Key'],
                         ]);
 
                         $test->assertEquals($expt, $dto);
 
-                        return resolve(new Response(200, $expt->getHeaders(), $this->getRequest('syncPage2.json')));
+                        return resolve(new Response(200, $expt->getHeaders(), $this->getRequest('getCampaigns.json')));
                     }
                 ));
 

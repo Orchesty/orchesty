@@ -65,7 +65,7 @@ class CMGetListSubscribersConnector extends CMGetSubscribersConnectorAbstract
     {
         return sprintf(
             '%s/lists/%s/subscribers/?contact_status=1&offset=%s&count=%s',
-            self::BASE_URL,
+            $this->getBaseUrl(),
             $this->listId,
             $offset,
             self::COUNT
