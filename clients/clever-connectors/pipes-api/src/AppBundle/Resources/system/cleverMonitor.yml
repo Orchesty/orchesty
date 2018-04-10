@@ -83,3 +83,5 @@ services:
         arguments:
             - '@hbpf.transport.async_curl_factory'
             - '%clevermonitor%'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
