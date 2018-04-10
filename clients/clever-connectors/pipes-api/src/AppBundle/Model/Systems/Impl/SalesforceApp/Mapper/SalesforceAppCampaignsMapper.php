@@ -23,30 +23,31 @@ use Throwable;
 class SalesforceAppCampaignsMapper implements CustomNodeInterface
 {
 
-    public const TITLE      = 'title';
-    public const CAMPAIGN   = 'campaign_id';
-    public const STATISTICS = 'statistics';
+    public const TITLE    = 'title';
+    public const CAMPAIGN = 'campaign_id';
+    public const CREATE   = 'create_time';
 
-    public const NAME     = 'name';
-    public const ID       = 'external_id';
-    public const STATUS   = 'status';
-    public const SOURCE   = 'source';
-    public const CREATED  = 'create_time';
-    public const FROM     = 'send_from';
-    public const TO       = 'send_to';
-    public const URL      = 'external_url';
-    public const C_RATE   = 'click_rate';
-    public const CLICKS   = 'clicks';
-    public const CLICKS_U = 'clicks_unique';
-    public const DOMAIN   = 'domain';
-    public const O_RATE   = 'open_rate';
-    public const OPENS    = 'opens';
-    public const OPENS_U  = 'opens_unique';
-    public const SENT     = 'sent';
-    public const SPAM     = 'spam';
-    public const SUB      = 'subscribers';
-    public const U_SUB    = 'unsubscribed';
-    public const U_DEL    = 'undelivered';
+    public const STATISTICS = 'statistics';
+    public const NAME       = 'name';
+    public const ID         = 'external_id';
+    public const STATUS     = 'status';
+    public const SOURCE     = 'source';
+    public const CREATED    = 'created_time';
+    public const FROM       = 'send_from';
+    public const TO         = 'send_to';
+    public const URL        = 'external_url';
+    public const C_RATE     = 'click_rate';
+    public const CLICKS     = 'clicks';
+    public const CLICKS_U   = 'clicks_unique';
+    public const DOMAIN     = 'domain';
+    public const O_RATE     = 'open_rate';
+    public const OPENS      = 'opens';
+    public const OPENS_U    = 'opens_unique';
+    public const SENT       = 'sent';
+    public const SPAM       = 'spam';
+    public const SUB        = 'subscribers';
+    public const U_SUB      = 'unsubscribed';
+    public const U_DEL      = 'undelivered';
 
     /**
      * @var array
@@ -111,7 +112,7 @@ class SalesforceAppCampaignsMapper implements CustomNodeInterface
             $this->addRequiredField($out, $item, self::CAMPAIGN, self::ID);
             $this->addRequiredField($out, $item, self::STATUS, NULL, $this->convertEnum(1));
             $this->addRequiredField($out, $item, self::SOURCE, NULL, $this->convertEnum(2));
-            $this->addRequiredField($out, $item, self::CREATED, NULL, $this->convertDate());
+            $this->addRequiredField($out, $item, self::CREATE, self::CREATED, $this->convertDate());
 
             $this->addOptionalField($out, $item, self::FROM, NULL, $this->convertDate());
             $this->addOptionalField($out, $item, self::TO, NULL, $this->convertDate());
