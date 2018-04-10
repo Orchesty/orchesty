@@ -119,7 +119,7 @@ PaletteProvider.prototype.getPaletteEntries = function() {
       'bpmn:Event', 'events', 'bpmn-icon-start-event-escalation', 'Signal', { pipesType: 'signal'}
     ),
     'create.start-event': createAction(
-      'bpmn:Event', 'events', 'bpmn-icon-start-event-none', 'Signal', { pipesType: 'start'}
+      'bpmn:Event', 'events', 'bpmn-icon-start-event-none', 'Start', { pipesType: 'start'}
     ),
     'event-separator': {
       group: 'events',
