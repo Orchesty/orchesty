@@ -31,7 +31,7 @@ class SalesforceAppCampaignsMapper implements CustomNodeInterface
     public const ID       = 'external_id';
     public const STATUS   = 'status';
     public const SOURCE   = 'source';
-    public const CREATED  = 'created_time';
+    public const CREATED  = 'create_time';
     public const FROM     = 'send_from';
     public const TO       = 'send_to';
     public const URL      = 'external_url';
