@@ -20,6 +20,8 @@ const CONNECTOR = "connector"
 const WEBHOOK = "webhook"
 const CUSTOM = "custom"
 const SIGNAL = "signal"
+const START = "start"
+const GATEWAY = "gateway"
 
 func getAmqRpc(node topology.Node) topology.TopologyBridgeWorkerJson {
 	return topology.TopologyBridgeWorkerJson{

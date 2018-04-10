@@ -77,6 +77,10 @@ func getWorkers(n topology.Node) topology.TopologyBridgeWorkerJson {
 		worker = getNull(n)
 	case DEBUG:
 		worker = getNull(n)
+	case START:
+		worker = getNull(n)
+	case GATEWAY:
+		worker = getNull(n)
 	case RESEQUENCER:
 		worker = getResequencer(n)
 	case SPLITTER:
