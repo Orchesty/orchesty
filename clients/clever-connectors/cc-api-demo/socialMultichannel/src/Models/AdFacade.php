@@ -48,7 +48,7 @@ class AdFacade
     public function createAd(Audience $audience, string $type, array $data): Ad
     {
         $module = $this->loader->loadModule(AdTypeEnum::isValid($type));
-        $ad     = $module->createAd($data);
+        $ad     = $module->createAd($data, 'usr'); //TODO Where to conjure up userId ??
 
         $mirr = new AudienceMirror();
         $mirr->setAudienceId($audience->getId())

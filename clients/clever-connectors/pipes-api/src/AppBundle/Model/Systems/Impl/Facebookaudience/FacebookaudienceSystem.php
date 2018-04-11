@@ -41,8 +41,8 @@ class FacebookaudienceSystem implements OAuth2Interface
     public const CREATE_NEW = 'create_new'; // as a key in option list for audiences
     public const ALL        = 'all'; // as a key in option list for source distribution list
 
-    private const APP_ID     = '1449914605304913';
-    private const APP_SECRET = '001b9d466b6f13d242d759cd094dccca';
+    private const APP_ID     = '198640514104383';
+    private const APP_SECRET = '5bef6e7c520de76e128e68c9216e5518';
 
     private const API_URL       = 'https://graph.facebook.com/v2.11';
     private const AUTHORIZE_URL = 'https://www.facebook.com/v2.11/dialog/oauth';

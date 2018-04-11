@@ -1,7 +1,7 @@
 .PHONY: init composer-update
 
 DC=docker-compose
-DE=docker-compose exec -T app
+DE=docker-compose exec app
 DP=docker-compose exec app bin/console
 DS=docker-compose exec mariadb
 IMAGE_API_DEMO_FPM=dkr.hanaboso.net/pipes/client-cm/api-demo:latest
@@ -60,6 +60,9 @@ phpunit:
 
 phpintegration: database-create
 	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr socialMultichannel/tests/Integration
+
+phplive:
+	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr socialMultichannel/tests/Live
 
 fasttest: codesniffer phpstan phpunit phpintegration
 

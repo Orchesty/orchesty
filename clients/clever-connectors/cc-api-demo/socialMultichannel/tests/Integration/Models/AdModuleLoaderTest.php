@@ -5,6 +5,8 @@ namespace Tests\Integration\Models;
 use CleverCore\SocialMultichannel\Enums\AdTypeEnum;
 use CleverCore\SocialMultichannel\Models\AdModuleInterface;
 use CleverCore\SocialMultichannel\Models\AdModuleLoader;
+use CleverCore\SocialMultichannel\Models\AdModules\FacebookAdModule;
+use Exception;
 use LogicException;
 use Nette\DI\MissingServiceException;
 use Tests\ContainerTestCaseAbstract;
@@ -18,20 +20,17 @@ class AdModuleLoaderTest extends ContainerTestCaseAbstract
 {
 
     /**
-     *
+     * @covers AdModuleLoader::loadModule()
      */
     public function testLoadModule(): void
     {
-        $adModule = $this->createMock(AdModuleInterface::class);
-        $this->container->addService('test_module.fb', $adModule);
+        $adModuleLoader = new AdModuleLoader($this->container);
 
-        $adModuleLoader = new AdModuleLoader($this->container, 'test_module');
-
-        $this->assertSame($adModule, $adModuleLoader->loadModule(AdTypeEnum::FB));
+        self::assertInstanceOf(FacebookAdModule::class, $adModuleLoader->loadModule(AdTypeEnum::FB));
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testLoadModuleNotFound(): void
     {
@@ -46,7 +45,7 @@ class AdModuleLoaderTest extends ContainerTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testLoadModuleInvalidType(): void
     {

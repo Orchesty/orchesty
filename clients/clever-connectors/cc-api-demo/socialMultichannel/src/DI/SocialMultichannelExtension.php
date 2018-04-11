@@ -6,6 +6,7 @@ use CleverCore\SocialMultichannel\Enums\AdTypeEnum;
 use CleverCore\SocialMultichannel\Enums\AudienceSourceEnum;
 use CleverCore\SocialMultichannel\Models\AdFacade;
 use CleverCore\SocialMultichannel\Models\AdModuleLoader;
+use CleverCore\SocialMultichannel\Models\AdModules\FacebookAdModule;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Nette\DI\CompilerExtension;
 
@@ -16,6 +17,8 @@ use Nette\DI\CompilerExtension;
  */
 class SocialMultichannelExtension extends CompilerExtension
 {
+
+    public const NAME = 'social_multichannel';
 
     /**
      *
@@ -29,6 +32,13 @@ class SocialMultichannelExtension extends CompilerExtension
 
         $builder->addDefinition($this->prefix('ad.facade'))
             ->setFactory(AdFacade::class);
+
+        $backend = getenv('BASE_URI') ?? '';
+        $modules = [AdTypeEnum::FB => FacebookAdModule::class];
+        foreach ($modules as $key => $module) {
+            $builder->addDefinition($this->prefix(sprintf('module.%s', $key)))
+                ->setFactory($module, [$backend]);
+        }
     }
 
     /**

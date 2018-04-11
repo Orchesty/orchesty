@@ -3,16 +3,17 @@
 namespace Tests\Integration\Models;
 
 use CleverCore\SocialMultichannel\Enums\AdTypeEnum;
-use CleverCore\SocialMultichannel\Models\AdModules\AdModuleAbstract;
+use CleverCore\SocialMultichannel\Models\AdModules\FacebookAdModule;
 
 /**
  * Class TestAdModule
  *
  * @package Tests\Integration\Models
  */
-final class TestAdModule extends AdModuleAbstract
+final class TestAdModule extends FacebookAdModule
 {
 
-    protected const TYPE = AdTypeEnum::FB;
+    protected const TYPE   = AdTypeEnum::FB;
+    protected const SYSTEM = 'fc';
 
 }

@@ -22,6 +22,7 @@
         <env name="NOTIFICATION_BACKEND" value="127.0.0.70" force="true"/>
         <env name="TEMPLATING_BACKEND" value="127.0.0.1" force="true"/>
         <env name="WORKFLOW_BACKEND" value="127.0.0.2" force="true"/>
+        <env name="BASE_URI" value="https://clever-conn1.stage.hanaboso.net/" force="true"/>
     </php>
 
     <testsuites>

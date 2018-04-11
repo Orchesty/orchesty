@@ -13,11 +13,12 @@ interface AdModuleInterface
 {
 
     /**
-     * @param array $data
+     * @param array  $data
+     * @param string $userId
      *
      * @return Ad
      */
-    public function createAd(array $data): Ad;
+    public function createAd(array $data, string $userId): Ad;
 
     /**
      * @param Ad    $ad

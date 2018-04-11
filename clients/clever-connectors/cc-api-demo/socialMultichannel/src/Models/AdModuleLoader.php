@@ -2,6 +2,7 @@
 
 namespace CleverCore\SocialMultichannel\Models;
 
+use CleverCore\SocialMultichannel\DI\SocialMultichannelExtension;
 use CleverCore\SocialMultichannel\Enums\AdTypeEnum;
 use Nette\DI\Container;
 
@@ -46,7 +47,7 @@ class AdModuleLoader
     {
         $type = AdTypeEnum::isValid($type);
 
-        $name = sprintf('%s.%s', $this->prefix, $type);
+        $name = sprintf('%s.%s.%s', SocialMultichannelExtension::NAME, $this->prefix, $type);
 
         /** @var AdModuleInterface $adModule */
         $adModule =  $this->container->getService($name);
