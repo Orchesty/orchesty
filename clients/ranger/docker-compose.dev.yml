@@ -93,11 +93,11 @@ volumes:
 ## BEGIN STAGE
 #volumes:
 #  mariadb:
-#    external: true
-#      name: cm-ranger2-mariadb
+#    external:
+#      name: ${DEPLOYMENT_PREFIX}-mariadb
 #  filestorage:
-#    external: true
-#      name: cm-ranger2-filestorage
+#    external:
+#      name: ${DEPLOYMENT_PREFIX}-filestorage
 #
 #secrets:
 #  clevermonitor-ca.pem:
