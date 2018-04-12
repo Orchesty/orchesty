@@ -1,0 +1,9 @@
+declare -A BRANCH_IMAGE_TAG_MAP=(
+
+  # default tags
+  [RANGER_default]="master"
+  [TEMPLATING_default]="dev"
+  [WORKFLOW_default]="dev"
+  [FILESTORAGE_default]="master"
+
+)
