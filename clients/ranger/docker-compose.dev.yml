@@ -94,10 +94,10 @@ volumes:
 #volumes:
 #  mariadb:
 #    external: true
-#    name: cm-ranger2-mariadb
+#      name: cm-ranger2-mariadb
 #  filestorage:
 #    external: true
-#    name: cm-ranger2-filestorage
+#      name: cm-ranger2-filestorage
 #
 #secrets:
 #  clevermonitor-ca.pem:
