@@ -263,6 +263,12 @@ services:
           - ${DEV_IP}:15672:15672
         volumes:
           - rabbitmq:/var/lib/rabbitmq
+    ## BEGIN STAGE
+    #    deploy:
+    #      resources:
+    #        limits:
+    #          memory: 1G
+    ## END STAGE
 
     # Storage
     mongo:
@@ -271,6 +277,12 @@ services:
           - ${DEV_IP}:27017:27017
         volumes:
           - mongodb:/data/db
+    ## BEGIN STAGE
+    #    deploy:
+    #      resources:
+    #        limits:
+    #          memory: 1G
+    ## END STAGE
 
     redis:
         image: redis:3.2-alpine
@@ -285,7 +297,7 @@ services:
           - MONGO_HOST=mongo
           - MONGO_DATABASE=demo
           - MONGO_COLLECTION=Logs
-          - LS_HEAP_SIZE=0.5g
+          - ES_JAVA_OPTS=-Xms512m -Xmx512m
         #command: --log.level debug
         restart: on-failure
         ## BEGIN DEV
