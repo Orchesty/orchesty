@@ -127,8 +127,8 @@ export function saveSettings(id, data, silent = false){
         }
         dispatch(receiveSettings(id, response));
         dispatch(needAuthorization(id, true));
-        dispatch(processActions.finishProcess(processes.authorizationSaveSettings(id), response));
       }
+      dispatch(processActions.finishProcess(processes.authorizationSaveSettings(id), response));
       return response;
     });
   }

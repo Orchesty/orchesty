@@ -35,6 +35,7 @@ class ListPagination extends React.Component {
               onPageChange={this._pageChange}
               containerClassName="pagination pull-right"
               activeClassName="active"
+              breakLabel={<a>...</a>}
             />
           </div>;
       }
