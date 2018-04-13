@@ -107,19 +107,17 @@ final class AdFacadeTest extends DatabaseTestCaseAbstract
         $curl->expects($this->at(0))
             ->method('send')->willReturnCallback(
                 function (Request $req): ResponseInterface {
-                    self::assertEquals('http://backend/system/fc/user/usr/action/create_ad', $req->getUri());
+                    self::assertEquals('http://backend/system/fc/user/usr/action/createAd', $req->getUri());
                     self::assertEquals([
-                        'id'       => '1',
-                        'settings' => [
-                            'name'               => 'Nae',
-                            'adset_id'           => 'adset',
-                            'status'             => 'PAUSED',
-                            'page_id'            => 'page',
-                            'campaign_objective' => 'LINK_CLICKS',
-                            'ad_data'            => [],
-                            'distribution_list'  => 'crs',
-                        ],
-                        'type'     => 'fb',
+                        'id'                 => '1',
+                        'name'               => 'Nae',
+                        'adset_id'           => 'adset',
+                        'status'             => 'PAUSED',
+                        'page_id'            => 'page',
+                        'campaign_objective' => 'LINK_CLICKS',
+                        'ad_data'            => [],
+                        'distribution_list'  => 'crs',
+                        'type'               => 'fb',
                     ], json_decode($req->getBody()->getContents(), TRUE));
 
                     return new Response();

@@ -20,7 +20,7 @@ abstract class AdModuleAbstract implements AdModuleInterface
     protected const TYPE          = '';
     protected const SYSTEM        = '';
 
-    protected const CREATE_AD_URL = '%s/system/%s/user/%s/action/create_ad';
+    protected const CREATE_AD_URL = '%s/system/%s/user/%s/action/createAd';
 
     /**
      * @var EntityManager
