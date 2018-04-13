@@ -44,9 +44,9 @@ class FacebookaudienceSystem implements OAuth2Interface
     private const APP_ID     = '198640514104383';
     private const APP_SECRET = '5bef6e7c520de76e128e68c9216e5518';
 
-    private const API_URL       = 'https://graph.facebook.com/v2.11';
-    private const AUTHORIZE_URL = 'https://www.facebook.com/v2.11/dialog/oauth';
-    private const TOKEN_URL     = 'https://graph.facebook.com/v2.11/oauth/access_token';
+    private const API_URL       = 'https://graph.facebook.com/v2.12';
+    private const AUTHORIZE_URL = 'https://www.facebook.com/v2.12/dialog/oauth';
+    private const TOKEN_URL     = 'https://graph.facebook.com/v2.12/oauth/access_token';
 
     /**
      * @var array
@@ -207,7 +207,7 @@ class FacebookaudienceSystem implements OAuth2Interface
         $this->continueOnAuthorized($systemInstall);
 
         $headers = [
-            'Content-Type' => 'application/json',
+            'Content-Type' => 'multipart/form-data',
             'Accept'       => 'application/json',
         ];
 

@@ -26,24 +26,26 @@ final class FacebookAdModuleTest extends ContainerTestCaseAbstract
         $mod = $this->container->getService('social_multichannel.module.fb');
 
         $data = [
-            'name'     => 'Namae',
-            'page_id' => 'adset',
-            'distribution_list' => 'list',
-            'ad_data' => [],
-            'billing_event' => 'LINK_CLICKS',
-            'bid_amount'        => 1,
-            'daily_budget'      => 2500,
+            'name'               => 'Namae',
+            'page_id'            => 'adset',
+            'distribution_list'  => 'list',
+            'campaign_objective' => 'LINK_CLICKS',
+            'ad_data'            => [],
+            'billing_event'      => 'LINK_CLICKS',
+            'bid_amount'         => 1,
+            'daily_budget'       => 2500,
         ];
 
         self::assertEquals([
-            'name'     => 'Namae',
-            'page_id' => 'adset',
-            'distribution_list' => 'list',
-            'status'   => 'PAUSED',
-            'ad_data' => [],
-            'billing_event' => 'LINK_CLICKS',
-            'bid_amount'        => 1,
-            'daily_budget'      => 2500,
+            'name'               => 'Namae',
+            'page_id'            => 'adset',
+            'distribution_list'  => 'list',
+            'status'             => 'PAUSED',
+            'ad_data'            => [],
+            'billing_event'      => 'LINK_CLICKS',
+            'campaign_objective' => 'LINK_CLICKS',
+            'bid_amount'         => 1,
+            'daily_budget'       => 2500,
         ], $this->invokeMethod($mod, 'validateData', [$data]));
     }
 
