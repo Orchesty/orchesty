@@ -159,11 +159,13 @@ class Ad
      */
     public function toArray(): array
     {
-        return [
-            'id'       => $this->id,
-            'settings' => $this->getSettings(),
-            'type'     => $this->adType,
-        ];
+        return array_merge(
+            $this->getSettings(),
+            [
+                'id'   => $this->id,
+                'type' => $this->adType,
+            ]
+        );
     }
 
 }

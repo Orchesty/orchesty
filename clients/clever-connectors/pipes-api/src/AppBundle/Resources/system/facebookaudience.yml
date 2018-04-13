@@ -8,6 +8,7 @@ services:
             - '@hbpf.providers.oauth2_provider'
             - '@service_container'
             - '%backend_host%'
+            - '@cc.system_topology.runner'
         tags: ['%systems%']
 
     hbpf.connector.facebookaudience-create-audience-connector:
