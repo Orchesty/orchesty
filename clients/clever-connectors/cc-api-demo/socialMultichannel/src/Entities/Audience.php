@@ -31,7 +31,7 @@ class Audience
     /**
      * @var string
      *
-     * @ORM\Column(type="AudienceSourceEnum")
+     * @ORM\Column(type="AudienceSourceEnum", nullable=true)
      */
     private $sourceType;
 
@@ -92,9 +92,9 @@ class Audience
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getSourceType(): string
+    public function getSourceType(): ?string
     {
         return $this->sourceType;
     }
