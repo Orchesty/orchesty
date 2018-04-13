@@ -42,7 +42,6 @@ class CreateAdTest extends ContainerTestCaseAbstract
                 'access_token'      => 'EAAC0qZAlHZCD8BACWoov11lkXZAOcRzmM33Ct97MRrGDA2tvty0zXQ1pUbl0HdNqInijsECadkwRL7CV2ljGq3QLXZASXNKFKp0ROezQ1EsGMFD2tZCyZAnl2ZCwDii0IoO7ZCQXsyoAcvSMCQvIZC7GvPKbz7Kbe29FzNPENoJvQsntj3oI8CJ9VD0xhsh0bZBCOWR4ZBkc4abrBgUUnrTX6BSkfsJnZCpanRAZD',
                 'title'             => 'adf dfgfsdg',
                 'body'              => 'Hello, adff dfgfsdg',
-                //                'object_url'   => 'https://www.facebook.com/pg/TestDev-448171238945439/about/?entry_point=page_edit_dialog&tab=page_info',
                 'object_story_spec' => json_encode([
                     'link_data' => [
                         'image_hash' => '925e86d2d195a193cb2446c294960ea0',

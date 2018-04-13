@@ -11,6 +11,7 @@ services:
           DEV_UID: ${DEV_UID}
           DEV_GID: ${DEV_GID}
           BACKEND_HOST: ${BACKEND_HOST}
+          AIM_HOST: ${AIM_HOST}
           ELASTIC_HOST: elasticsearch
           ELASTIC_INDEX: index
         volumes:

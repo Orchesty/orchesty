@@ -36,15 +36,25 @@ class FacebookAdModule extends AdModuleAbstract
             );
         }
 
+        // Campaign
+        if (!array_key_exists('campaign_id', $data)
+            && !array_key_exists('campaign_objective', $data)
+        ) {
+            throw new LogicException(
+                'Either [campaign_id] or [campaign_objective] muse be specified.'
+            );
+        }
+
         // AdCreative
         foreach ($data['ad_data'] as $key => $item) {
             // Ad data check
             if (!array_key_exists('description', $data['ad_data'])
-                || !array_key_exists('image_file', $data['ad_data'])
-                || !array_key_exists('link_url', $data['ad_data'])
+                || !array_key_exists('image_content', $data['ad_data'])
+                || !array_key_exists('title', $data['ad_data'])
+                || !array_key_exists('link', $data['ad_data'])
             ) {
                 throw new LogicException(
-                    'For each ad part are required [description, image_file, link_url].'
+                    'For each ad part are required [title, description, image_content, link].'
                 );
             }
         }
@@ -56,7 +66,7 @@ class FacebookAdModule extends AdModuleAbstract
                 || !array_key_exists('daily_budget', $data)
             ) {
                 throw new LogicException(
-                    'Either [adset_id] or [billing_event, bid_amount, daily_budget, optimalization_goal] must be specified.'
+                    'Either [adset_id] or [billing_event, bid_amount, daily_budget] must be specified.'
                 );
             }
         }

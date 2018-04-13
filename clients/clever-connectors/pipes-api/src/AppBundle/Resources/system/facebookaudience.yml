@@ -59,3 +59,40 @@ services:
     hbpf.custom_node.facebookaudience-create-subscribers-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Mapper\FacebookaudienceCreateSubscribersMapper
         arguments:
+
+    # socMultChann conns
+    hbpf.connector.facebookaudience-upload-image-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceImageUploadConnector
+        arguments:
+            - '@systems.facebookaudience'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+
+    hbpf.connector.facebookaudience-create-campaign-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceCreateCampaignConnector
+        arguments:
+            - '@systems.facebookaudience'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+
+    hbpf.connector.facebookaudience-create-adset-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceCreateAdsetConnector
+        arguments:
+            - '@systems.facebookaudience'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+
+    hbpf.connector.facebookaudience-create-ad-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceCreateAdConnector
+        arguments:
+            - '@systems.facebookaudience'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+
+    hbpf.connector.facebookaudience-update-adstate-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceUpdateAdstateConnector
+        arguments:
+            - '@systems.facebookaudience'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+            - '%env(AIM_HOST)%'

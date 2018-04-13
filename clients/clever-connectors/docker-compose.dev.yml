@@ -183,6 +183,7 @@ services:
         environment:
           PHP_WEBROOT: /var/www/pipes/clients/clever-connectors/pipes-api/public
           BACKEND_HOST: ${BACKEND_URL}/
+          AIM_HOST: ${AIM_HOST}/
           ELASTIC_HOST: elasticsearch
           ELASTIC_INDEX: 'index'
         working_dir: /var/www/pipes/clients/clever-connectors/pipes-api

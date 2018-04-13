@@ -48,6 +48,13 @@ class Ad
     private $audience;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private $refId;
+
+    /**
      * @return string
      */
     public function getAudienceMirrorId(): string
@@ -123,6 +130,26 @@ class Ad
     public function setAudience(?Audience $audience): Ad
     {
         $this->audience = $audience;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRefId(): string
+    {
+        return $this->refId;
+    }
+
+    /**
+     * @param string $refId
+     *
+     * @return Ad
+     */
+    public function setRefId(string $refId): Ad
+    {
+        $this->refId = $refId;
 
         return $this;
     }

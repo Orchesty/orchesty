@@ -56,31 +56,34 @@ final class AdFacadeTest extends DatabaseTestCaseAbstract
         /** @var AdFacade $facade */
         $facade = $this->container->getByType(AdFacade::class);
         $ad     = $facade->createAd($aud, AdTypeEnum::FB, [
-            'name'              => 'Nae',
-            'page_id'           => 'page',
-            'ad_data'           => [],
-            'distribution_list' => 'crs',
-            'adset_id'          => 'adset',
+            'name'               => 'Nae',
+            'page_id'            => 'page',
+            'ad_data'            => [],
+            'campaign_objective' => 'LINK_CLICKS',
+            'distribution_list'  => 'crs',
+            'adset_id'           => 'adset',
         ]);
 
         self::assertEquals([
-            'name'              => 'Nae',
-            'page_id'           => 'page',
-            'ad_data'           => [],
-            'distribution_list' => 'crs',
-            'adset_id'          => 'adset',
-            'status'            => 'PAUSED',
+            'name'               => 'Nae',
+            'page_id'            => 'page',
+            'ad_data'            => [],
+            'campaign_objective' => 'LINK_CLICKS',
+            'distribution_list'  => 'crs',
+            'adset_id'           => 'adset',
+            'status'             => 'PAUSED',
         ], $ad->getSettings());
         self::assertEquals(AdTypeEnum::FB, $ad->getAdType());
 
         $facade->updateAd($ad, ['status' => 'ACTIVE']);
         self::assertEquals([
-            'name'              => 'Nae',
-            'page_id'           => 'page',
-            'ad_data'           => [],
-            'distribution_list' => 'crs',
-            'adset_id'          => 'adset',
-            'status'            => 'ACTIVE',
+            'name'               => 'Nae',
+            'page_id'            => 'page',
+            'ad_data'            => [],
+            'campaign_objective' => 'LINK_CLICKS',
+            'distribution_list'  => 'crs',
+            'adset_id'           => 'adset',
+            'status'             => 'ACTIVE',
         ], $ad->getSettings());
 
         self::assertInstanceOf(AudienceMirror::class,
@@ -108,12 +111,13 @@ final class AdFacadeTest extends DatabaseTestCaseAbstract
                     self::assertEquals([
                         'id'       => '1',
                         'settings' => [
-                            'name'              => 'Nae',
-                            'adset_id'          => 'adset',
-                            'status'            => 'PAUSED',
-                            'page_id'           => 'page',
-                            'ad_data'           => [],
-                            'distribution_list' => 'crs',
+                            'name'               => 'Nae',
+                            'adset_id'           => 'adset',
+                            'status'             => 'PAUSED',
+                            'page_id'            => 'page',
+                            'campaign_objective' => 'LINK_CLICKS',
+                            'ad_data'            => [],
+                            'distribution_list'  => 'crs',
                         ],
                         'type'     => 'fb',
                     ], json_decode($req->getBody()->getContents(), TRUE));
