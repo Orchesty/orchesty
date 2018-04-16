@@ -171,7 +171,7 @@ class DownloaderCommand extends Command
     {
         $request = new Request(
             'POST',
-            'http://frontend/topologies/stock-exchange/nodes/split-file/run',
+            'http://frontend/topologies/stock-exchange/nodes/split-file2/run',
             [
                 'Accept'       => 'application/json',
                 'Content-Type' => 'application/json',
