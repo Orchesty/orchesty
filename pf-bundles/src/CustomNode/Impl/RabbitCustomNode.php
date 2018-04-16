@@ -2,6 +2,7 @@
 
 namespace Hanaboso\PipesFramework\CustomNode\Impl;
 
+use Bunny\Channel;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
@@ -21,7 +22,7 @@ use Psr\Log\NullLogger;
  *
  * @package Hanaboso\PipesFramework\CustomNode\Impl
  */
-class RabbitCustomNode implements CustomNodeInterface, LoggerAwareInterface
+abstract class RabbitCustomNode implements CustomNodeInterface, LoggerAwareInterface
 {
 
     /**
@@ -33,6 +34,21 @@ class RabbitCustomNode implements CustomNodeInterface, LoggerAwareInterface
      * @var ObjectRepository|NodeRepository
      */
     private $nodeRepo;
+
+    /**
+     * @var array
+     */
+    private $queues;
+
+    /**
+     * @var string
+     */
+    private $ex;
+
+    /**
+     * @var Channel
+     */
+    private $chann;
 
     /**
      * @var LoggerInterface
@@ -59,14 +75,6 @@ class RabbitCustomNode implements CustomNodeInterface, LoggerAwareInterface
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        $data  = json_decode($dto->getData(), TRUE);
-        $count = intval($data['count'] ?? 10);
-
-        $headers = [];
-        foreach ($dto->getHeaders() as $key => $header) {
-            $headers[$key] = is_array($header) ? reset($header) : $header;
-        }
-
         $topId  = PipesHeaders::get(PipesHeaders::TOPOLOGY_ID, $dto->getHeaders());
         $nodeId = PipesHeaders::get(PipesHeaders::NODE_ID, $dto->getHeaders());
 
@@ -85,21 +93,29 @@ class RabbitCustomNode implements CustomNodeInterface, LoggerAwareInterface
             $chann->queueBind($que, $ex, $que);
         }
 
-        for ($i = 0; $i < $count; $i++) {
-            $msg = sprintf('{"BenchmarkTotal": %s, "BenchmarkNumber": %s}', $count, $i);
-
-            $headers[PipesHeaders::createKey(PipesHeaders::SEQUENCE_ID)] = (string) ($i + 2);
-
-            foreach ($ques as $que) {
-                $chann->publish($msg, $headers, $ex, $que);
-            }
-        }
+        $this->processBatch($dto);
 
         foreach ($ques as $que) {
             $chann->queueUnbind($que, $ex, $que);
         }
 
         return $dto;
+    }
+
+    /**
+     * @param ProcessDto $dto
+     */
+    abstract protected function processBatch(ProcessDto $dto): void;
+
+    /**
+     * @param array $message
+     * @param array $headers
+     */
+    protected function publishMessage(array $message, array $headers): void
+    {
+        foreach ($this->queues as $que) {
+            $this->chann->publish(json_encode($message), $headers, $this->ex, $que);
+        }
     }
 
     /**
