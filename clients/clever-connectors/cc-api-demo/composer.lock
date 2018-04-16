@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "1bc8d4812d2d74e51769faeb724c3b50",
+    "content-hash": "42dfb5441788fb141dc3d766b2e64e70",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -111,7 +111,7 @@
             ],
             "authors": [
                 {
-                    "name": "Aleš Wita",
+                    "name": "Ales Wita",
                     "email": "aleswita+github@gmail.com"
                 }
             ],
@@ -352,7 +352,7 @@
             ],
             "description": "Stream interface for Clever Monitor.",
             "transport-options": {
-                "symlink": true
+                "symlink": false
             }
         },
         {
@@ -361,7 +361,7 @@
             "source": {
                 "type": "git",
                 "url": "ssh://git@gitlab.clevermonitor.com/cleverapp/enum.git",
-                "reference": "81578eee"
+                "reference": "dcd8f493c969588b65925137c456788fbe216bf0"
             },
             "require": {
                 "php": "^7.1"
@@ -373,7 +373,7 @@
                 }
             },
             "description": "CleverApp Enum",
-            "time": "2018-04-04T16:45:43+00:00"
+            "time": "2018-04-13T07:04:51+00:00"
         },
         {
             "name": "clevercore/commons",
@@ -493,7 +493,7 @@
             "source": {
                 "type": "git",
                 "url": "ssh://git@gitlab.clevermonitor.com/cleverdbschema/app.git",
-                "reference": "629469575a0d1ac0f76cd2e1ab75e1f6506b0491"
+                "reference": "80f003011079ef55475a5221a20d8fd50f6f2154"
             },
             "require": {
                 "php": "^7.1"
@@ -505,7 +505,7 @@
                 }
             },
             "description": "CleverDbSchema App",
-            "time": "2018-04-13T01:50:25+00:00"
+            "time": "2018-04-16T08:06:39+00:00"
         },
         {
             "name": "cleverdbschema/auth",
@@ -513,7 +513,7 @@
             "source": {
                 "type": "git",
                 "url": "ssh://git@gitlab.clevermonitor.com/cleverdbschema/auth.git",
-                "reference": "bd972c75f716d577022db10b0f98aee4aafa1dbe"
+                "reference": "7fe041efa76137fa518a689f5fc31b68d87feb34"
             },
             "require": {
                 "doctrine/data-fixtures": "^1.3",
@@ -528,7 +528,7 @@
                 }
             },
             "description": "CleverDbSchema Auth",
-            "time": "2018-04-12T07:50:27+00:00"
+            "time": "2018-04-16T07:56:29+00:00"
         },
         {
             "name": "cleverextensions/doctrine",
@@ -2665,16 +2665,16 @@
         },
         {
             "name": "nette/mail",
-            "version": "v2.4.4",
+            "version": "v2.4.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/mail.git",
-                "reference": "fc651794923e0f44d6bd89afca4a16873c8f269c"
+                "reference": "13312eb627d913f2630018a07a9e40cb7003dc76"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/mail/zipball/fc651794923e0f44d6bd89afca4a16873c8f269c",
-                "reference": "fc651794923e0f44d6bd89afca4a16873c8f269c",
+                "url": "https://api.github.com/repos/nette/mail/zipball/13312eb627d913f2630018a07a9e40cb7003dc76",
+                "reference": "13312eb627d913f2630018a07a9e40cb7003dc76",
                 "shasum": ""
             },
             "require": {
@@ -2729,7 +2729,7 @@
                 "nette",
                 "smtp"
             ],
-            "time": "2017-12-05T11:26:49+00:00"
+            "time": "2018-03-18T16:30:02+00:00"
         },
         {
             "name": "nette/neon",

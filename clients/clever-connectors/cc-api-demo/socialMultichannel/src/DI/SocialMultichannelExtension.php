@@ -3,7 +3,8 @@
 namespace CleverCore\SocialMultichannel\DI;
 
 use CleverCore\SocialMultichannel\Enums\AdTypeEnum;
-use CleverCore\SocialMultichannel\Enums\AudienceSourceEnum;
+use CleverCore\SocialMultichannel\Enums\AdTypeEnumProxy;
+use CleverCore\SocialMultichannel\Enums\AudienceSourceEnumProxy;
 use CleverCore\SocialMultichannel\Handlers\FacebookaudienceHandler;
 use CleverCore\SocialMultichannel\Models\AdFacade;
 use CleverCore\SocialMultichannel\Models\AdModuleLoader;
@@ -69,10 +70,10 @@ class SocialMultichannelExtension extends CompilerExtension
         $setup      = $connection->getSetup();
 
         $setup[0]->arguments[0]['AdTypeEnum'] = 'AdTypeEnum';
-        $setup[1]->arguments[0]['AdTypeEnum'] = AdTypeEnum::class;
+        $setup[1]->arguments[0]['AdTypeEnum'] = AdTypeEnumProxy::class;
 
         $setup[0]->arguments[0]['AudienceSourceEnum'] = 'AudienceSourceEnum';
-        $setup[1]->arguments[0]['AudienceSourceEnum'] = AudienceSourceEnum::class;
+        $setup[1]->arguments[0]['AudienceSourceEnum'] = AudienceSourceEnumProxy::class;
 
         $connection->setSetup($setup);
 
