@@ -32,14 +32,6 @@ services:
         class: Hanaboso\PipesFramework\CustomNode\Impl\Sleep07CustomNode
         arguments:
 
-    hbpf.custom_node.rabbit_node:
-        class: Hanaboso\PipesFramework\CustomNode\Impl\RabbitCustomNode
-        arguments:
-            - '@doctrine_mongodb.odm.default_document_manager'
-            - '@rabbit-mq.producer.test_batch'
-        calls:
-            - ['setLogger', ['@monolog.logger.commons']]
-
     hbpf.custom_node.requestbin:
         class: Hanaboso\PipesFramework\CustomNode\Impl\RequestbinConnector
         arguments:
