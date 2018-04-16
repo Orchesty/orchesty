@@ -38,7 +38,6 @@ services:
     hbpf.custom_node.split-file:
         class: Demo\CustomNode\SplitFileBatch
         public: true
-            - 'asks'
 
     hbpf.custom_node.split-file2:
         class: Demo\CustomNode\SplitFileBatch2
@@ -46,7 +45,6 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@rabbit-mq.producer.test_batch'
         public: true
-            - 'asks'
 
     hbpf.custom_node.idnes:
         class: Demo\CustomNode\IdnesConnector

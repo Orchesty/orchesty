@@ -13,9 +13,11 @@ use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 use Hanaboso\PipesFramework\RabbitMq\Producer\AbstractProducer;
 use Hanaboso\PipesFramework\TopologyGenerator\GeneratorUtils;
+use InvalidArgumentException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use React\Promise\PromiseInterface;
 
 /**
  * Class RabbitCustomNode
@@ -38,15 +40,15 @@ abstract class RabbitCustomNode implements CustomNodeInterface, LoggerAwareInter
     /**
      * @var array
      */
-    private $queues;
+    private $queues = [];
 
     /**
      * @var string
      */
-    private $ex;
+    private $ex = '';
 
     /**
-     * @var Channel
+     * @var Channel|PromiseInterface
      */
     private $chann;
 
@@ -75,29 +77,11 @@ abstract class RabbitCustomNode implements CustomNodeInterface, LoggerAwareInter
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        $topId  = PipesHeaders::get(PipesHeaders::TOPOLOGY_ID, $dto->getHeaders());
-        $nodeId = PipesHeaders::get(PipesHeaders::NODE_ID, $dto->getHeaders());
-
-        $ex    = $this->producer->getExchange();
-        $chann = $this->producer->getManager()->getChannel();
-
-        /** @var Node $node */
-        $node = $this->nodeRepo->find($nodeId);
-        $ques = [];
-
-        /** @var EmbedNode $next */
-        foreach ($node->getNext() as $next) {
-            $que    = GeneratorUtils::generateQueueNameFromStrings($topId, $next->getId(), $next->getName());
-            $ques[] = $que;
-
-            $chann->queueBind($que, $ex, $que);
-        }
-
+        $this->validate($dto);
+        $this->normalizeHeaders($dto);
+        $this->bindChannels($dto);
         $this->processBatch($dto);
-
-        foreach ($ques as $que) {
-            $chann->queueUnbind($que, $ex, $que);
-        }
+        $this->unbindChannels();
 
         return $dto;
     }
@@ -128,6 +112,99 @@ abstract class RabbitCustomNode implements CustomNodeInterface, LoggerAwareInter
     public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
+    }
+
+    /**
+     * -------------------------------------------- HELPERS ------------------------------------------------
+     */
+
+    /**
+     * @param ProcessDto $dto
+     */
+    private function validate(ProcessDto $dto): void
+    {
+        if ($this->isEmpty(PipesHeaders::get(PipesHeaders::NODE_ID, $dto->getHeaders()))) {
+            throw new InvalidArgumentException(
+                sprintf('Missing "%s" in the message header.', PipesHeaders::createKey(PipesHeaders::NODE_ID))
+            );
+        }
+        if ($this->isEmpty(PipesHeaders::get(PipesHeaders::TOPOLOGY_ID, $dto->getHeaders()))) {
+            throw new InvalidArgumentException(
+                sprintf('Missing "%s" in the message header.', PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID))
+            );
+        }
+        if ($this->isEmpty(PipesHeaders::get(PipesHeaders::CORRELATION_ID, $dto->getHeaders()))) {
+            throw new InvalidArgumentException(
+                sprintf('Missing "%s" in the message header.', PipesHeaders::createKey(PipesHeaders::CORRELATION_ID))
+            );
+        }
+        if ($this->isEmpty(PipesHeaders::get(PipesHeaders::PROCESS_ID, $dto->getHeaders()))) {
+            throw new InvalidArgumentException(
+                sprintf('Missing "%s" in the message header.', PipesHeaders::createKey(PipesHeaders::PROCESS_ID))
+            );
+        }
+        if (!array_key_exists(PipesHeaders::createKey(PipesHeaders::PARENT_ID), $dto->getHeaders())) {
+            throw new InvalidArgumentException(
+                sprintf('Missing "%s" in the message header.', PipesHeaders::createKey(PipesHeaders::PARENT_ID))
+            );
+        }
+
+    }
+
+    /**
+     * @param ProcessDto $dto
+     */
+    private function normalizeHeaders(ProcessDto $dto): void
+    {
+        $headers = [];
+        foreach ($dto->getHeaders() as $key => $header) {
+            $headers[$key] = is_array($header) ? reset($header) : $header;
+        }
+        $dto->setHeaders($headers);
+        unset($headers);
+    }
+
+    /**
+     * @param ProcessDto $dto
+     */
+    private function bindChannels(ProcessDto $dto): void
+    {
+        $topId  = PipesHeaders::get(PipesHeaders::TOPOLOGY_ID, $dto->getHeaders());
+        $nodeId = PipesHeaders::get(PipesHeaders::NODE_ID, $dto->getHeaders());
+
+        $this->ex    = $this->producer->getExchange();
+        $this->chann = $this->producer->getManager()->getChannel();
+
+        /** @var Node $node */
+        $node = $this->nodeRepo->find($nodeId);
+
+        /** @var EmbedNode $next */
+        foreach ($node->getNext() as $next) {
+            $que            = GeneratorUtils::generateQueueNameFromStrings($topId, $next->getId(), $next->getName());
+            $this->queues[] = $que;
+
+            $this->chann->queueBind($que, $this->ex, $que);
+        }
+    }
+
+    /**
+     *
+     */
+    private function unbindChannels(): void
+    {
+        foreach ($this->queues as $que) {
+            $this->chann->queueUnbind($que, $this->ex, $que);
+        }
+    }
+
+    /**
+     * @param null|string $value
+     *
+     * @return bool
+     */
+    private function isEmpty(?string $value): bool
+    {
+        return $value === '' || $value === NULL;
     }
 
 }
