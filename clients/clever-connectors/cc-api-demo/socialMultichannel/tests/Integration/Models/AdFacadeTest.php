@@ -58,6 +58,9 @@ final class AdFacadeTest extends DatabaseTestCaseAbstract
         $ad     = $facade->createAd($aud, AdTypeEnum::FB, [
             'name'               => 'Nae',
             'page_id'            => 'page',
+            'type'               => 'fb',
+            'client_id'          => 'cli',
+            'audience_id'        => 'audi',
             'ad_data'            => [],
             'campaign_objective' => 'LINK_CLICKS',
             'distribution_list'  => 'crs',
@@ -65,24 +68,12 @@ final class AdFacadeTest extends DatabaseTestCaseAbstract
         ]);
 
         self::assertEquals([
-            'name'               => 'Nae',
-            'page_id'            => 'page',
-            'ad_data'            => [],
-            'campaign_objective' => 'LINK_CLICKS',
-            'distribution_list'  => 'crs',
-            'adset_id'           => 'adset',
             'status'             => 'PAUSED',
         ], $ad->getSettings());
         self::assertEquals(AdTypeEnum::FB, $ad->getAdType());
 
         $facade->updateAd($ad, ['status' => 'ACTIVE']);
         self::assertEquals([
-            'name'               => 'Nae',
-            'page_id'            => 'page',
-            'ad_data'            => [],
-            'campaign_objective' => 'LINK_CLICKS',
-            'distribution_list'  => 'crs',
-            'adset_id'           => 'adset',
             'status'             => 'ACTIVE',
         ], $ad->getSettings());
 
@@ -107,17 +98,19 @@ final class AdFacadeTest extends DatabaseTestCaseAbstract
         $curl->expects($this->at(0))
             ->method('send')->willReturnCallback(
                 function (Request $req): ResponseInterface {
-                    self::assertEquals('http://backend/system/fc/user/usr/action/createAd', $req->getUri());
+                    self::assertEquals('http://backend/system/fc/user/123/action/createAd', $req->getUri());
                     self::assertEquals([
                         'id'                 => '1',
                         'name'               => 'Nae',
                         'adset_id'           => 'adset',
+                        'audience_id'        => 'audi',
                         'status'             => 'PAUSED',
                         'page_id'            => 'page',
                         'campaign_objective' => 'LINK_CLICKS',
                         'ad_data'            => [],
                         'distribution_list'  => 'crs',
                         'type'               => 'fb',
+                        'client_id'          => 'cli',
                     ], json_decode($req->getBody()->getContents(), TRUE));
 
                     return new Response();

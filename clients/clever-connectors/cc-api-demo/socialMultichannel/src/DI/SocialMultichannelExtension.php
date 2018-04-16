@@ -4,6 +4,7 @@ namespace CleverCore\SocialMultichannel\DI;
 
 use CleverCore\SocialMultichannel\Enums\AdTypeEnum;
 use CleverCore\SocialMultichannel\Enums\AudienceSourceEnum;
+use CleverCore\SocialMultichannel\Handlers\FacebookaudienceHandler;
 use CleverCore\SocialMultichannel\Models\AdFacade;
 use CleverCore\SocialMultichannel\Models\AdModuleLoader;
 use CleverCore\SocialMultichannel\Models\AdModules\FacebookAdModule;
@@ -39,6 +40,9 @@ class SocialMultichannelExtension extends CompilerExtension
             $builder->addDefinition($this->prefix(sprintf('module.%s', $key)))
                 ->setFactory($module, [$backend]);
         }
+
+        $builder->addDefinition($this->prefix('facebookaudience.handler'))
+            ->setFactory(FacebookaudienceHandler::class);
     }
 
     /**

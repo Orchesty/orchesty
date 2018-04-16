@@ -38,7 +38,7 @@ class Ad
      *
      * @ORM\Column(type="string")
      */
-    private $settings;
+    private $settings = '{}';
 
     /**
      * @var Audience|NULL
@@ -48,11 +48,18 @@ class Ad
     private $audience;
 
     /**
-     * @var string
+     * @var string|null
      *
      * @ORM\Column(type="string", nullable=true)
      */
     private $refId;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string")
+     */
+    private $clientId;
 
     /**
      * @return string
@@ -135,21 +142,41 @@ class Ad
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getRefId(): string
+    public function getRefId(): ?string
     {
         return $this->refId;
     }
 
     /**
-     * @param string $refId
+     * @param string|null $refId
      *
      * @return Ad
      */
-    public function setRefId(string $refId): Ad
+    public function setRefId(?string $refId): Ad
     {
         $this->refId = $refId;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getClientId(): string
+    {
+        return $this->clientId;
+    }
+
+    /**
+     * @param string $clientId
+     *
+     * @return Ad
+     */
+    public function setClientId(string $clientId): Ad
+    {
+        $this->clientId = $clientId;
 
         return $this;
     }
@@ -162,8 +189,9 @@ class Ad
         return array_merge(
             $this->getSettings(),
             [
-                'id'   => $this->id,
-                'type' => $this->adType,
+                'id'        => $this->id,
+                'type'      => $this->adType,
+                'client_id' => $this->clientId,
             ]
         );
     }

@@ -20,7 +20,7 @@ use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 class FacebookaudienceUpdateAdstateConnector extends FacebookaudienceConnectorAbstract
 {
 
-    private const URL = '/fb/%s/ad/%s/update/state';
+    private const URL = '/api-demo/fb/%s/ad/%s/update/state';
 
     /**
      * @var string

@@ -79,7 +79,7 @@ final class FacebookaudienceUpdateAdstateConnectorTest extends KernelTestCaseAbs
         $curl->method('send')->willReturnCallback(
             function (RequestDto $dto, array $opt = []): ResponseDto {
                 $expt = new RequestDto('POST',
-                    new Uri(sprintf('https://clever-aim.com/fb/clientId/ad/db_id/update/state', self::ACC)));
+                    new Uri(sprintf('https://clever-aim.com/api-demo/fb/clientId/ad/db_id/update/state', self::ACC)));
                 $expt->setHeaders([
                     'Accept'       => 'application/json',
                     'Content-Type' => 'application/json',

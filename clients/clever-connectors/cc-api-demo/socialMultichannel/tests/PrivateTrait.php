@@ -22,7 +22,16 @@ trait PrivateTrait
     protected function setProperty($object, $propertyName, $value): void
     {
         $reflection = new ReflectionObject($object);
-        $property   = $reflection->getProperty($propertyName);
+
+        do {
+            if ($reflection->hasProperty($propertyName)) {
+                break;
+            }
+
+            $reflection = $reflection->getParentClass();
+        } while ($reflection);
+
+        $property = $reflection->getProperty($propertyName);
         $property->setAccessible(TRUE);
         $property->setValue($object, $value);
     }
@@ -36,7 +45,16 @@ trait PrivateTrait
     protected function getProperty($object, $propertyName)
     {
         $reflection = new ReflectionObject($object);
-        $property   = $reflection->getProperty($propertyName);
+
+        do {
+            if ($reflection->hasProperty($propertyName)) {
+                break;
+            }
+
+            $reflection = $reflection->getParentClass();
+        } while ($reflection);
+
+        $property = $reflection->getProperty($propertyName);
         $property->setAccessible(TRUE);
 
         return $property->getValue($object);
@@ -53,7 +71,16 @@ trait PrivateTrait
     protected function invokeMethod($object, $methodName, array $parameters = [])
     {
         $reflection = new ReflectionClass(get_class($object));
-        $method     = $reflection->getMethod($methodName);
+
+        do {
+            if ($reflection->hasMethod($methodName)) {
+                break;
+            }
+
+            $reflection = $reflection->getParentClass();
+        } while ($reflection);
+
+        $method = $reflection->getMethod($methodName);
         $method->setAccessible(TRUE);
 
         return $method->invokeArgs($object, $parameters);

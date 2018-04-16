@@ -29,9 +29,12 @@ final class InnerRequestUtils
      *
      * @return Request
      */
-    public static function getRequest(SystemInstall $systemInstall, $data): Request
+    public static function getRequest(SystemInstall $systemInstall, $data = NULL): Request
     {
         $request = new Request([], [], [], [], [], [], json_encode($data));
+        if ($data) {
+            $request->setMethod('POST');
+        }
 
         return self::addCMHeaders($systemInstall, $request);
     }

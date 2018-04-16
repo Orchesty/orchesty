@@ -15,10 +15,11 @@ interface AdModuleInterface
     /**
      * @param array  $data
      * @param string $userId
+     * @param string $clientId
      *
      * @return Ad
      */
-    public function createAd(array $data, string $userId): Ad;
+    public function createAd(array $data, string $userId, string $clientId): Ad;
 
     /**
      * @param Ad    $ad
@@ -32,5 +33,12 @@ interface AdModuleInterface
      * @param Ad $ad
      */
     public function deleteAd(Ad $ad): void;
+
+    /**
+     * @param string $clientId
+     *
+     * @return array
+     */
+    public function getUnprocessed(string $clientId): array;
 
 }

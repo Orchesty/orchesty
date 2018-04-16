@@ -10,7 +10,9 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Tests\\": ["socialMultichannel/tests/"]
+      "Tests\\": [
+        "socialMultichannel/tests/"
+      ]
     }
   },
   "require": {
@@ -43,7 +45,8 @@
     "nette/safe-stream": "^2.3",
     "nette/security": "^2.4",
     "nette/utils": "^2.4",
-    "webchemistry/forms-multiplier": "^2.0"
+    "webchemistry/forms-multiplier": "^2.0",
+    "ublaboo/api-router": "^2.0"
   },
   "require-dev": {
     "hanaboso/php-check-utils": "^1.0",

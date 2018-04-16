@@ -48,7 +48,7 @@ class AdFacade
     public function createAd(Audience $audience, string $type, array $data): Ad
     {
         $module = $this->loader->loadModule(AdTypeEnum::isValid($type));
-        $ad     = $module->createAd($data, 'usr'); //TODO Where to conjure up userId ??
+        $ad     = $module->createAd($data, '123', $audience->getClientId()); //TODO Where to conjure up userId ??
 
         $mirr = new AudienceMirror();
         $mirr->setAudienceId($audience->getId())
@@ -58,6 +58,7 @@ class AdFacade
         $this->dm->persist($mirr);
 
         $ad->setAudience($audience)
+            ->setClientId($audience->getClientId())
             ->setAudienceMirrorId($mirr->getId());
         $this->dm->flush();
 
@@ -87,6 +88,19 @@ class AdFacade
         $this->dm->remove($mirr);
         $module->deleteAd($ad);
         $this->dm->flush();
+    }
+
+    /**
+     * @param string $clientId
+     * @param string $type
+     *
+     * @return array
+     */
+    public function getUnprocessed(string $clientId, string $type): array
+    {
+        $module = $this->loader->loadModule(AdTypeEnum::isValid($type));
+
+        return $module->getUnprocessed($clientId);
     }
 
 }

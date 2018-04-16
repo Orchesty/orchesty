@@ -16,11 +16,10 @@ use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\Fac
 use CleverConnectors\AppBundle\Model\Systems\SystemTopologyRunner;
 use CleverConnectors\AppBundle\Model\Systems\Traits\SystemTrait;
 use CleverConnectors\AppBundle\Utils\AuthorizationUtils;
-use CleverConnectors\AppBundle\Utils\CMHeaders;
+use CleverConnectors\AppBundle\Utils\InnerRequestUtils;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use DateTime;
 use DateTimeZone;
-use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
@@ -336,20 +335,15 @@ class FacebookaudienceSystem implements OAuth2Interface
      * @param SystemInstall $systemInstall
      * @param array         $data
      *
-     * @return SystemInstall
+     * @return array
      * @throws CleverConnectorsException
      */
-    public function createAd(SystemInstall $systemInstall, array $data): SystemInstall
+    public function createAd(SystemInstall $systemInstall, array $data): array
     {
-        $req = new Request('POST', '', [
-            CMHeaders::createKey(CMHeaders::TOKEN)      => $systemInstall->getToken(),
-            CMHeaders::createKey(CMHeaders::GUID)       => $systemInstall->getUser(),
-            CMHeaders::createKey(CMHeaders::SYSTEM_KEY) => $this->getName(),
-        ], json_encode($data));
-
+        $req = InnerRequestUtils::getRequest($systemInstall, $data);
         $this->runner->runTopologies(TopologyNameUtils::CREATE_AD, $systemInstall, $this, $req);
 
-        return $systemInstall;
+        return [];
     }
 
     /**

@@ -23,16 +23,28 @@ class FacebookAdModule extends AdModuleAbstract
      *
      * @return array
      */
+    protected function trimSettings(array $data): array
+    {
+        return [
+            'status' => $data['status'],
+        ];
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return array
+     */
     protected function validateData(array $data): array
     {
         // Base data
         if (!array_key_exists('page_id', $data)
             || !array_key_exists('ad_data', $data)
             || !array_key_exists('name', $data)
-            || !array_key_exists('distribution_list', $data)
+            || !array_key_exists('audience_id', $data)
         ) {
             throw new LogicException(
-                'Missing one of required fields [name, page_id, ad_data, distribution_list].'
+                'Missing one of required fields [name, page_id, ad_data, audience_id].'
             );
         }
 
@@ -48,10 +60,10 @@ class FacebookAdModule extends AdModuleAbstract
         // AdCreative
         foreach ($data['ad_data'] as $key => $item) {
             // Ad data check
-            if (!array_key_exists('description', $data['ad_data'])
-                || !array_key_exists('image_content', $data['ad_data'])
-                || !array_key_exists('title', $data['ad_data'])
-                || !array_key_exists('link', $data['ad_data'])
+            if (!array_key_exists('description', $item)
+                || !array_key_exists('image_content', $item)
+                || !array_key_exists('title', $item)
+                || !array_key_exists('link', $item)
             ) {
                 throw new LogicException(
                     'For each ad part are required [title, description, image_content, link].'
