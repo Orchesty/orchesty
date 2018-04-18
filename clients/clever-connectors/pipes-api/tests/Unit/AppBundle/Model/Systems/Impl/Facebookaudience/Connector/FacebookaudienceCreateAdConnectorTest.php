@@ -42,6 +42,7 @@ final class FacebookaudienceCreateAdConnectorTest extends KernelTestCaseAbstract
             'audience_id' => '120330000252930708',
             'adset_id'    => '120330000253677908',
             'client_id'   => 'cli',
+            'mirror_id'   => 'mirr',
             'id'          => 'db_id',
             'ad_data'     => [
                 [
@@ -111,6 +112,7 @@ final class FacebookaudienceCreateAdConnectorTest extends KernelTestCaseAbstract
             'audience_id' => '120330000252930708',
             'adset_id'    => '120330000253677908',
             'client_id'   => 'cli',
+            'mirror_id'   => 'mirr',
             'id'          => 'db_id',
             'ad_data'     => [
                 [

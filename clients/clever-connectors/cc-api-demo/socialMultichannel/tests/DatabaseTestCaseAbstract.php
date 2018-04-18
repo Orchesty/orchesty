@@ -2,8 +2,6 @@
 
 namespace Tests;
 
-use CleverCore\SocialMultichannel\Documents\AudienceMirror;
-use CleverCore\SocialMultichannel\Documents\EmbedSubscriber;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ORM\EntityManager;
 
@@ -49,8 +47,6 @@ abstract class DatabaseTestCaseAbstract extends ContainerTestCaseAbstract
     protected function setUp(): void
     {
         parent::setUp();
-        $this->dm->clear(AudienceMirror::class);
-        $this->dm->clear(EmbedSubscriber::class);
         $this->em->getConnection()->exec('SET FOREIGN_KEY_CHECKS=0;');
         $this->em->getConnection()->exec('TRUNCATE TABLE audience;');
         $this->em->getConnection()->exec('TRUNCATE TABLE ad;');

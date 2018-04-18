@@ -30,6 +30,7 @@ application:
 	errorPresenter: Error
 	mapping:
 		*: App\*Module\Presenters\*Presenter
+		SocialMultichannel: CleverCore\SocialMultichannel\Presenters\*Presenter
 
 session:
 	expiration: 14 days
@@ -95,7 +96,7 @@ services:
 	mapping_form_factory:
 		class: App\Forms\MappingFormFactory
 
-mongo:
+mongo:  # No longer required?
 	uri: mongodb://mongo
 	dbname: cmfile
 	documentsDir:
@@ -114,6 +115,7 @@ console:
 extensions:
 	cc_api: CcApi\Bridges\DI\CcApiExtension
 	- WebChemistry\Forms\Controls\DI\MultiplierExtension
+	commons: CleverCore\Commons\DI\CommonsExtension
 	social_multichannel: CleverCore\SocialMultichannel\DI\SocialMultichannelExtension
 
 	## Mongo

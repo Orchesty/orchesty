@@ -56,6 +56,16 @@ services:
             - '@cc.progress_counter.async_progress_counter_service'
             - '%clevermonitor%'
 
+    hbpf.connector.cleverconnectors-get-list-subscribers-social-connector:
+        class: CleverConnectors\AppBundle\Model\CM\SubscriberConnector\CMGetListSubscribersSocialConnector
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.async_curl_factory'
+            - '@cc.progress_counter.async_progress_counter_service'
+            - '%clevermonitor%'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
+
     hbpf.custom_node.cleverconnectors-benchmark-batch-generator:
         class: CleverConnectors\AppBundle\Model\CM\TestBenchmarkConnector\CMTestBenchmarkBatchGenerator
         calls:

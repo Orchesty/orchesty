@@ -41,10 +41,10 @@ class FacebookAdModule extends AdModuleAbstract
         if (!array_key_exists('page_id', $data)
             || !array_key_exists('ad_data', $data)
             || !array_key_exists('name', $data)
-            || !array_key_exists('audience_id', $data)
+            || !array_key_exists('audience', $data)
         ) {
             throw new LogicException(
-                'Missing one of required fields [name, page_id, ad_data, audience_id].'
+                'Missing one of required fields [name, page_id, ad_data, audience].'
             );
         }
 

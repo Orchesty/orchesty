@@ -4,12 +4,12 @@ namespace Tests\Integration\Models;
 
 use CcApi\Curl\CurlSender;
 use CleverCore\SocialMultichannel\DI\SocialMultichannelExtension;
-use CleverCore\SocialMultichannel\Documents\AudienceMirror;
 use CleverCore\SocialMultichannel\Entities\Ad;
 use CleverCore\SocialMultichannel\Entities\Audience;
 use CleverCore\SocialMultichannel\Enums\AdTypeEnum;
 use CleverCore\SocialMultichannel\Enums\AudienceSourceEnum;
 use CleverCore\SocialMultichannel\Models\AdFacade;
+use CleverCore\SocialMultichannel\Models\PipesSender;
 use Exception;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
@@ -33,6 +33,8 @@ final class AdFacadeTest extends DatabaseTestCaseAbstract
      * @covers AdModuleAbstract::createAd()
      * @covers AdModuleAbstract::updateAd()
      * @covers AdModuleAbstract::deleteAd()
+     * @covers PipesSender::createAd()
+     * @covers PipesSender::deleteAd()
      *
      * @throws Exception
      */
@@ -43,8 +45,7 @@ final class AdFacadeTest extends DatabaseTestCaseAbstract
         }
         $this->container->addService(
             SocialMultichannelExtension::NAME . '.module.fb',
-            new TestAdModule('http://backend/',
-                $this->em, $this->mockCurl())
+            new TestAdModule($this->em, $this->mockSender())
         );
 
         $aud = new Audience();
@@ -58,9 +59,6 @@ final class AdFacadeTest extends DatabaseTestCaseAbstract
         $ad     = $facade->createAd($aud, AdTypeEnum::FB, [
             'name'               => 'Nae',
             'page_id'            => 'page',
-            'type'               => 'fb',
-            'client_id'          => 'cli',
-            'audience_id'        => 'audi',
             'ad_data'            => [],
             'campaign_objective' => 'LINK_CLICKS',
             'distribution_list'  => 'crs',
@@ -68,30 +66,26 @@ final class AdFacadeTest extends DatabaseTestCaseAbstract
         ]);
 
         self::assertEquals([
-            'status'             => 'PAUSED',
+            'status' => 'PAUSED',
         ], $ad->getSettings());
         self::assertEquals(AdTypeEnum::FB, $ad->getAdType());
 
         $facade->updateAd($ad, ['status' => 'ACTIVE']);
         self::assertEquals([
-            'status'             => 'ACTIVE',
+            'status' => 'ACTIVE',
         ], $ad->getSettings());
-
-        self::assertInstanceOf(AudienceMirror::class,
-            $this->dm->find(AudienceMirror::class, $ad->getAudienceMirrorId()));
 
         $id = $ad->getId();
         $facade->deleteAd($ad);
 
         self::assertNull($this->em->find(Ad::class, $id));
-        self::assertNull($this->dm->find(AudienceMirror::class, $ad->getAudienceMirrorId()));
     }
 
     /**
-     * @return CurlSender
+     * @return PipesSender
      * @throws ReflectionException
      */
-    private function mockCurl(): CurlSender
+    private function mockSender(): PipesSender
     {
         /** @var CurlSender|PHPUnit_Framework_MockObject_MockObject $curl */
         $curl = $this->createMock(CurlSender::class);
@@ -103,21 +97,35 @@ final class AdFacadeTest extends DatabaseTestCaseAbstract
                         'id'                 => '1',
                         'name'               => 'Nae',
                         'adset_id'           => 'adset',
-                        'audience_id'        => 'audi',
                         'status'             => 'PAUSED',
                         'page_id'            => 'page',
                         'campaign_objective' => 'LINK_CLICKS',
                         'ad_data'            => [],
                         'distribution_list'  => 'crs',
-                        'type'               => 'fb',
-                        'client_id'          => 'cli',
+                        'audience'           => [
+                            'id'        => '1',
+                            'name'      => 'audi',
+                            'source'    => 'list',
+                            'client_id' => 'cl',
+                        ],
+                    ], json_decode($req->getBody()->getContents(), TRUE));
+
+                    return new Response();
+                }
+            );
+        $curl->expects($this->at(1))
+            ->method('send')->willReturnCallback(
+                function (Request $req): ResponseInterface {
+                    self::assertEquals('http://backend/system/fc/user/123/action/deleteAd', $req->getUri());
+                    self::assertEquals([
+                        'mirror_id' => '',
                     ], json_decode($req->getBody()->getContents(), TRUE));
 
                     return new Response();
                 }
             );
 
-        return $curl;
+        return new PipesSender('http://backend/', $curl);
     }
 
 }

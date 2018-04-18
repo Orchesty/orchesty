@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Presenters;
+namespace CleverCore\SocialMultichannel\Presenters;
 
 use CleverCore\SocialMultichannel\Handlers\FacebookaudienceHandler;
 use Doctrine\ORM\ORMException;
@@ -11,9 +11,9 @@ use Ublaboo\ApiRouter\ApiRoute;
 /**
  * Class FacebookaudiencePresenter
  *
- * @package App\Presenters
+ * @package CleverCore\SocialMultichannel\Presenters
  *
- * @ApiRoute("/")
+ * @ApiRoute("/", presenter="SocialMultichannel:Facebookaudience")
  */
 class FacebookaudiencePresenter extends Presenter
 {
@@ -60,7 +60,7 @@ class FacebookaudiencePresenter extends Presenter
      *
      * @throws AbortException
      */
-    public function actionGetUnprocessed(string $clientId)
+    public function actionGetUnprocessed(string $clientId): void
     {
         $this->sendJsonResponse($this->handler->getUnprocessed($clientId));
     }
@@ -76,5 +76,6 @@ class FacebookaudiencePresenter extends Presenter
         $this->getHttpResponse()->setCode($code);
         $this->sendJson($data);
     }
+
 }
 

@@ -2,6 +2,7 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience;
 
+use CleverConnectors\AppBundle\Document\AudienceMirror;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
@@ -15,11 +16,13 @@ use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\Fac
 use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceGetAudiencesConnector;
 use CleverConnectors\AppBundle\Model\Systems\SystemTopologyRunner;
 use CleverConnectors\AppBundle\Model\Systems\Traits\SystemTrait;
+use CleverConnectors\AppBundle\Repository\AudienceMirrorRepository;
 use CleverConnectors\AppBundle\Utils\AuthorizationUtils;
 use CleverConnectors\AppBundle\Utils\InnerRequestUtils;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use DateTime;
 use DateTimeZone;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
@@ -77,24 +80,32 @@ class FacebookaudienceSystem implements OAuth2Interface
     private $runner;
 
     /**
+     * @var DocumentManager
+     */
+    private $dm;
+
+    /**
      * SalesforceSystem constructor.
      *
      * @param OAuth2Provider       $provider
      * @param ContainerInterface   $container
      * @param string               $backend
      * @param SystemTopologyRunner $runner
+     * @param DocumentManager      $dm
      */
     public function __construct(
         OAuth2Provider $provider,
         ContainerInterface $container,
         string $backend,
-        SystemTopologyRunner $runner
+        SystemTopologyRunner $runner,
+        DocumentManager $dm
     )
     {
         $this->provider  = $provider;
         $this->container = $container;
         $this->backend   = $backend;
         $this->runner    = $runner;
+        $this->dm        = $dm;
     }
 
     /**
@@ -342,6 +353,46 @@ class FacebookaudienceSystem implements OAuth2Interface
     {
         $req = InnerRequestUtils::getRequest($systemInstall, $data);
         $this->runner->runTopologies(TopologyNameUtils::CREATE_AD, $systemInstall, $this, $req);
+
+        return [];
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     * @param array         $data
+     *
+     * @return array
+     */
+    public function deleteAd(SystemInstall $systemInstall, array $data): array
+    {
+
+
+        return [];
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     * @param array         $data
+     *
+     * @return array
+     * @throws CleverConnectorsException
+     */
+    public function createAudience(SystemInstall $systemInstall, array $data): array
+    {
+        /** @var AudienceMirrorRepository $repo */
+        $repo = $this->dm->getRepository(AudienceMirror::class);
+        /** @var AudienceMirror $mirr */
+        $mirr = $repo->getByAudience($data['audience']['id'] ?? '');
+        if (!$mirr) {
+            $data['audience_id'] = $mirr->getSystemAudienceId();
+            $data['mirror_id']   = $mirr->getId();
+            unset($data['audience']);
+
+            return $this->createAd($systemInstall, $data);
+        } else {
+            $req = InnerRequestUtils::getRequest($systemInstall, $data);
+            $this->runner->runTopologies(TopologyNameUtils::CREATE_AUDIENCE, $systemInstall, $this, $req);
+        }
 
         return [];
     }

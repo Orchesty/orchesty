@@ -30,9 +30,10 @@ interface AdModuleInterface
     public function updateAd(Ad $ad, array $data): Ad;
 
     /**
-     * @param Ad $ad
+     * @param Ad     $ad
+     * @param string $userId
      */
-    public function deleteAd(Ad $ad): void;
+    public function deleteAd(Ad $ad, string $userId): void;
 
     /**
      * @param string $clientId

@@ -9,6 +9,8 @@ use CleverCore\SocialMultichannel\Handlers\FacebookaudienceHandler;
 use CleverCore\SocialMultichannel\Models\AdFacade;
 use CleverCore\SocialMultichannel\Models\AdModuleLoader;
 use CleverCore\SocialMultichannel\Models\AdModules\FacebookAdModule;
+use CleverCore\SocialMultichannel\Models\PipesSender;
+use CleverCore\SocialMultichannel\Presenters\FacebookaudiencePresenter;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Nette\DI\CompilerExtension;
 
@@ -32,18 +34,25 @@ class SocialMultichannelExtension extends CompilerExtension
         $builder->addDefinition($this->prefix('ad.module.loader'))
             ->setFactory(AdModuleLoader::class);
 
+        $backend = getenv('BASE_URI') ?? '';
+        $builder->addDefinition($this->prefix('pipes.sender'))
+            ->setFactory(PipesSender::class)
+            ->setArguments([$backend]);
+
         $builder->addDefinition($this->prefix('ad.facade'))
             ->setFactory(AdFacade::class);
 
-        $backend = getenv('BASE_URI') ?? '';
         $modules = [AdTypeEnum::FB => FacebookAdModule::class];
         foreach ($modules as $key => $module) {
             $builder->addDefinition($this->prefix(sprintf('module.%s', $key)))
-                ->setFactory($module, [$backend]);
+                ->setFactory($module);
         }
 
-        $builder->addDefinition($this->prefix('facebookaudience.handler'))
+        $builder->addDefinition($this->prefix('handler'))
             ->setFactory(FacebookaudienceHandler::class);
+
+        $builder->addDefinition($this->prefix('presenter'))
+            ->setFactory(FacebookaudiencePresenter::class);
     }
 
     /**

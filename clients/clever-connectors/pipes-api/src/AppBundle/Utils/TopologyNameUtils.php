@@ -40,10 +40,11 @@ final class TopologyNameUtils
     public const SUBSCRIBE_CONTACT   = 'subscribe-contact';
 
     public const SWITCH_TOKEN = 'switch-token';
-    public const GET_LIMIT = 'get-limit';
+    public const GET_LIMIT    = 'get-limit';
 
     //SocialMultichannel
-    public const CREATE_AD = 'create-ad';
+    public const CREATE_AD       = 'create-ad';
+    public const CREATE_AUDIENCE = 'create-audience';
 
     /**
      * @var array
@@ -70,6 +71,7 @@ final class TopologyNameUtils
         self::SWITCH_TOKEN,
         self::GET_LIMIT,
         self::CREATE_AD,
+        self::CREATE_AUDIENCE,
     ];
 
     /**

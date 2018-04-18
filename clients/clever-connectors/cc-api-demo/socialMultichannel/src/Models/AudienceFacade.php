@@ -2,10 +2,8 @@
 
 namespace CleverCore\SocialMultichannel\Models;
 
-use CleverCore\SocialMultichannel\Documents\AudienceMirror;
+use CcApi\Curl\Exception\CurlException;
 use CleverCore\SocialMultichannel\Entities\Audience;
-use CleverCore\SocialMultichannel\Repositories\AudienceMirrorRepository;
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ORM\EntityManager;
 
 /**
@@ -22,20 +20,20 @@ class AudienceFacade
     private $em;
 
     /**
-     * @var DocumentManager
+     * @var PipesSender
      */
-    private $dm;
+    private $sender;
 
     /**
      * AudienceFacade constructor.
      *
-     * @param EntityManager   $em
-     * @param DocumentManager $dm
+     * @param EntityManager $em
+     * @param PipesSender   $sender
      */
-    public function __construct(EntityManager $em, DocumentManager $dm)
+    public function __construct(EntityManager $em, PipesSender $sender)
     {
-        $this->em = $em;
-        $this->dm = $dm;
+        $this->em     = $em;
+        $this->sender = $sender;
     }
 
     /**
@@ -46,7 +44,7 @@ class AudienceFacade
     public function createAudience(array $data): Audience
     {
         $audience = new Audience();
-        $this->fromArray($audience, $data);
+        $audience = $this->fromArray($audience, $data);
         $this->em->persist($audience);
         $this->em->flush();
 
@@ -63,24 +61,35 @@ class AudienceFacade
     {
         $this->fromArray($audience, $data);
         $this->em->flush();
+
+        return $audience;
     }
 
     /**
      * @param Audience $audience
+     *
+     * @throws CurlException
      */
-    public function deleteAction(Audience $audience): void
+    public function deleteAudience(Audience $audience): void
     {
+        $types = [];
         foreach ($audience->getAds() as $ad) {
             $ad->setSettings([]);
+            if (!in_array($ad->getAdType(), $types)) {
+                $types[] = $ad->getAdType();
+            }
         }
-        /** @var AudienceMirrorRepository $mirrorRepo */
-        $mirrorRepo = $this->dm->getRepository(AudienceMirror::class);
-        foreach ($mirrorRepo->getByAudience($audience) as $mirror) {
-            $this->dm->remove($mirror);
-        }
+        $id = $audience->getId();
         $this->em->remove($audience);
-        $this->dm->flush();
         $this->em->flush();
+
+        $userId = '123'; //TODO UserId
+        foreach ($types as $type) {
+            $this->sender->removeMirror($type, $userId, [
+                'audience_id' => $id,
+            ]);
+        }
+
         $this->runBatchUpdate();
     }
 
@@ -120,11 +129,11 @@ class AudienceFacade
      */
     private function fromArray(Audience $audience, array $data): Audience
     {
-        $audience->setName($data['name']);
-        $audience->setSourceType($data['sourceType']);
-        $audience->setListId($data['listId']);
-        $audience->setClientId($data['clientId']);
-        $audience->setSegmentId($data['segmentId']);
+        $audience->setName($data['name'])
+            ->setClientId($data['clientId'])
+            ->setSourceType($data['sourceType'] ?? NULL)
+            ->setListId($data['listId'] ?? NULL)
+            ->setSegmentId($data['segmentId'] ?? NULL);
 
         return $audience;
     }

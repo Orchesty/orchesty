@@ -2,13 +2,12 @@
 
 namespace CleverCore\SocialMultichannel\Models\AdModules;
 
-use CcApi\Curl\CurlSender;
 use CcApi\Curl\Exception\CurlException;
 use CleverCore\SocialMultichannel\Entities\Ad;
 use CleverCore\SocialMultichannel\Models\AdModuleInterface;
+use CleverCore\SocialMultichannel\Models\PipesSender;
 use CleverCore\SocialMultichannel\Repositories\AdRepository;
 use Doctrine\ORM\EntityManager;
-use GuzzleHttp\Psr7\Request;
 
 /**
  * Class AdModuleAbstract
@@ -22,6 +21,7 @@ abstract class AdModuleAbstract implements AdModuleInterface
     protected const SYSTEM = '';
 
     protected const CREATE_AD_URL = '%s/system/%s/user/%s/action/createAd';
+    protected const DELETE_AD_URL = '%s/system/%s/user/%s/action/deleteAd';
 
     /**
      * @var EntityManager
@@ -29,9 +29,9 @@ abstract class AdModuleAbstract implements AdModuleInterface
     protected $em;
 
     /**
-     * @var CurlSender
+     * @var PipesSender
      */
-    protected $curl;
+    protected $sender;
 
     /**
      * @var string
@@ -41,15 +41,13 @@ abstract class AdModuleAbstract implements AdModuleInterface
     /**
      * AdModuleAbstract constructor.
      *
-     * @param string        $backend
      * @param EntityManager $em
-     * @param CurlSender    $curl
+     * @param PipesSender   $sender
      */
-    public function __construct(string $backend, EntityManager $em, CurlSender $curl)
+    public function __construct(EntityManager $em, PipesSender $sender)
     {
-        $this->em      = $em;
-        $this->curl    = $curl;
-        $this->backend = rtrim($backend, '/');
+        $this->em     = $em;
+        $this->sender = $sender;
     }
 
     /**
@@ -73,7 +71,7 @@ abstract class AdModuleAbstract implements AdModuleInterface
         $this->em->flush();
 
         $data['id'] = $ad->getId();
-        $this->systemAdCreate($data, $userId);
+        $this->sender->createAd(static::SYSTEM, $userId, $data);
 
         return $ad;
     }
@@ -86,23 +84,35 @@ abstract class AdModuleAbstract implements AdModuleInterface
      */
     public function updateAd(Ad $ad, array $data): Ad
     {
-        $adId = $data['ref_id'];
-        unset($data['ref_id']);
+        if (array_key_exists('ref_id', $data)) {
+            $ad->setRefId($data['ref_id']);
+            unset($data['ref_id']);
+        }
+
+        if (array_key_exists('mirr_id', $data)) {
+            $ad->setAudienceMirrorId($data['mirr_id']);
+            unset($data['mirr_id']);
+        }
 
         $ad->setSettings(array_merge($ad->getSettings(), $data));
-        $ad->setRefId($adId);
         $this->em->flush();
 
         return $ad;
     }
 
     /**
-     * @param Ad $ad
+     * @param Ad     $ad
+     * @param string $userId
+     *
+     * @throws CurlException
      */
-    public function deleteAd(Ad $ad): void
+    public function deleteAd(Ad $ad, string $userId): void
     {
         $this->em->remove($ad);
         $this->em->flush();
+        $this->sender->removeMirror(static::SYSTEM, $userId, [
+            'mirror_id' => $ad->getAudienceMirrorId(),
+        ]);
     }
 
     /**
@@ -140,27 +150,6 @@ abstract class AdModuleAbstract implements AdModuleInterface
     protected function trimSettings(array $data): array
     {
         return [];
-    }
-
-    /**
-     * @param array  $data
-     * @param string $userId
-     *
-     * @throws CurlException
-     */
-    protected function systemAdCreate(array $data, string $userId): void
-    {
-        $req = new Request(CurlSender::POST, sprintf(
-            static::CREATE_AD_URL,
-            $this->backend,
-            static::SYSTEM,
-            $userId
-        ), [
-            'Content-Type' => 'application/json',
-            'Accept'       => 'application/json',
-        ], json_encode($data));
-
-        $this->curl->send($req);
     }
 
 }
