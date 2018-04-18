@@ -336,6 +336,7 @@ services:
 
     kapacitor:
         image: dkr.hanaboso.net/pipes/pipes/kapacitor:dev
+        hostname: kapacitor
 
     notification-sender-fpm:
         image: dkr.hanaboso.net/clever-monitor/clever-notification-sender:master
