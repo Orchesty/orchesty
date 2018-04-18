@@ -2,11 +2,10 @@
 
 namespace CleverCore\SocialMultichannel\Models;
 
-use CleverCore\SocialMultichannel\Documents\AudienceMirror;
 use CleverCore\SocialMultichannel\Entities\Ad;
 use CleverCore\SocialMultichannel\Entities\Audience;
 use CleverCore\SocialMultichannel\Enums\AdTypeEnum;
-use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ORM\EntityManager;
 
 /**
  * Class AdFacade
@@ -17,25 +16,25 @@ class AdFacade
 {
 
     /**
-     * @var DocumentManager
-     */
-    private $dm;
-
-    /**
      * @var AdModuleLoader
      */
     private $loader;
 
     /**
+     * @var EntityManager
+     */
+    private $em;
+
+    /**
      * AdFacade constructor.
      *
-     * @param DocumentManager $dm
-     * @param AdModuleLoader  $loader
+     * @param EntityManager  $em
+     * @param AdModuleLoader $loader
      */
-    public function __construct(DocumentManager $dm, AdModuleLoader $loader)
+    public function __construct(EntityManager $em, AdModuleLoader $loader)
     {
-        $this->dm     = $dm;
         $this->loader = $loader;
+        $this->em     = $em;
     }
 
     /**
@@ -47,20 +46,15 @@ class AdFacade
      */
     public function createAd(Audience $audience, string $type, array $data): Ad
     {
+        $data['audience'] = $audience->toArray();
+
         $module = $this->loader->loadModule(AdTypeEnum::isValid($type));
-        $ad     = $module->createAd($data, '123', $audience->getClientId()); //TODO Where to conjure up userId ??
-
-        $mirr = new AudienceMirror();
-        $mirr->setAudienceId($audience->getId())
-            ->setClientId($audience->getClientId())
-            ->setAdsId($ad->getId());
-
-        $this->dm->persist($mirr);
+        //TODO Where to conjure up userId ??
+        $ad = $module->createAd($data, '123', $audience->getClientId());
 
         $ad->setAudience($audience)
-            ->setClientId($audience->getClientId())
-            ->setAudienceMirrorId($mirr->getId());
-        $this->dm->flush();
+            ->setClientId($audience->getClientId());
+        $this->em->flush();
 
         return $ad;
     }
@@ -84,10 +78,8 @@ class AdFacade
     public function deleteAd(Ad $ad): void
     {
         $module = $this->loader->loadModule(AdTypeEnum::isValid($ad->getAdType()));
-        $mirr   = $this->dm->find(AudienceMirror::class, $ad->getAudienceMirrorId());
-        $this->dm->remove($mirr);
-        $module->deleteAd($ad);
-        $this->dm->flush();
+        //TODO Where to conjure up userId ??
+        $module->deleteAd($ad, '123');
     }
 
     /**

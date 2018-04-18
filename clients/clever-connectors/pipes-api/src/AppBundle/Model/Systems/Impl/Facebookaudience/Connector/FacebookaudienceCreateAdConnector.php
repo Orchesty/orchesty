@@ -66,6 +66,7 @@ class FacebookaudienceCreateAdConnector extends FacebookaudienceConnectorAbstrac
             $data = [
                 'ad_id'     => json_decode($res->getBody(), TRUE)['id'],
                 'client_id' => $data['client_id'],
+                'mirror_id' => $data['mirror_id'],
                 'id'        => $data['id'],
             ];
         } catch (CurlException $e) {

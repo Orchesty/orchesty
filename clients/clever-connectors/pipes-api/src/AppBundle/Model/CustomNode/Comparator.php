@@ -15,11 +15,12 @@ use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 final class Comparator implements CustomNodeInterface
 {
 
-    private const KEY_SOURCE           = 'src';
-    private const KEY_DESTINATION      = 'dst';
-    private const KEY_SETTINGS         = 'settings';
-    private const KEY_SETTINGS_ID      = 'id_key';
-    private const KEY_SETTINGS_COMPARE = 'compare_key';
+    public const KEY_SOURCE           = 'src';
+    public const KEY_DESTINATION      = 'dst';
+    public const KEY_SETTINGS         = 'settings';
+    public const KEY_SETTINGS_ID      = 'id_key';
+    public const KEY_SETTINGS_COMPARE = 'compare_key';
+    public const KEY_PASS_DATA        = 'pass_data';
 
     /**
      * @param ProcessDto $dto
@@ -47,6 +48,10 @@ final class Comparator implements CustomNodeInterface
                 $data[self::KEY_DESTINATION],
                 $data[self::KEY_SETTINGS]
             );
+
+            if (array_key_exists(self::KEY_PASS_DATA, $data)) {
+                $out[self::KEY_PASS_DATA] = $data[self::KEY_PASS_DATA];
+            }
         } catch (Exception $e) {
             throw new CleverConnectorsException(
                 'Comparing failed. ' . $e->getMessage(),

@@ -28,8 +28,7 @@ final class FacebookAdModuleTest extends ContainerTestCaseAbstract
         $data = [
             'name'               => 'Namae',
             'page_id'            => 'adset',
-            'audience_id'        => 'audi',
-            'distribution_list'  => 'list',
+            'audience'           => 'list',
             'campaign_objective' => 'LINK_CLICKS',
             'ad_data'            => [],
             'billing_event'      => 'LINK_CLICKS',
@@ -40,8 +39,7 @@ final class FacebookAdModuleTest extends ContainerTestCaseAbstract
         self::assertEquals([
             'name'               => 'Namae',
             'page_id'            => 'adset',
-            'audience_id'        => 'audi',
-            'distribution_list'  => 'list',
+            'audience'           => 'list',
             'status'             => 'PAUSED',
             'ad_data'            => [],
             'billing_event'      => 'LINK_CLICKS',

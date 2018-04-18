@@ -100,13 +100,13 @@ class Audience
     }
 
     /**
-     * @param string $sourceType
+     * @param string|null $sourceType
      *
      * @return Audience
      */
-    public function setSourceType(string $sourceType): Audience
+    public function setSourceType(?string $sourceType): Audience
     {
-        $this->sourceType = AudienceSourceEnum::isValid($sourceType);
+        $this->sourceType = $sourceType ? AudienceSourceEnum::isValid($sourceType) : NULL;
 
         return $this;
     }
@@ -177,6 +177,28 @@ class Audience
     public function getAds(): iterable
     {
         return $this->ads;
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray(): array
+    {
+        $res = [
+            'id' => $this->id,
+            'name' => $this->name,
+            'client_id' => $this->clientId,
+            'source' => $this->sourceType,
+        ];
+
+        if ($this->listId) {
+            $res['list_id'] = $this->listId;
+        }
+        if ($this->segmentId) {
+            $res['segment_id'] = $this->segmentId;
+        }
+
+        return $res;
     }
 
 }

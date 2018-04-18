@@ -23,7 +23,7 @@ final class FacebookaudiencePresenterTest extends ControllerTestCaseAbstract
         $ad = $this->prepAd();
 
         $this->sendJsonRequest(
-            'Facebookaudience',
+            'SocialMultichannel:Facebookaudience',
             'updateAdStatus',
             'POST',
             [

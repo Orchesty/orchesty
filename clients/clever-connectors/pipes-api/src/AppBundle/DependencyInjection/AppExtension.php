@@ -79,6 +79,7 @@ class AppExtension extends Extension implements PrependExtensionInterface
         $loader->load('airtable.yml');
         $loader->load('facebookaudience.yml');
         $loader->load('facebookleads.yml');
+        $loader->load('socialmultichannel.yml');
     }
 
 }

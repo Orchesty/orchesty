@@ -54,13 +54,15 @@ final class ComparatorTest extends TestCase
         return [
             [
                 [
-                    'src' => [1, 2, 3, 4, 5],
-                    'dst' => [4, 5, 6, 7],
+                    'src'       => [1, 2, 3, 4, 5],
+                    'dst'       => [4, 5, 6, 7],
+                    'pass_data' => 'asd',
                 ],
                 [
-                    'create' => [1, 2, 3],
-                    'delete' => [6, 7],
-                    'update' => [],
+                    'create'    => [1, 2, 3],
+                    'delete'    => [6, 7],
+                    'update'    => [],
+                    'pass_data' => 'asd',
                 ],
             ],
             // try bigger arrays

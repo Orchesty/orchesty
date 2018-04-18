@@ -32,7 +32,7 @@ use function React\Promise\resolve;
 abstract class CMGetSubscribersConnectorAbstract extends CMAuthorization implements ConnectorInterface, BatchInterface, LoggerAwareInterface
 {
 
-    protected const COUNT    = 50;
+    protected const COUNT = 50;
 
     /**
      * @var ObjectRepository|SystemInstallRepository
@@ -57,7 +57,7 @@ abstract class CMGetSubscribersConnectorAbstract extends CMAuthorization impleme
     /**
      * @var ProgressCounterService
      */
-    private $counterService;
+    protected $counterService;
 
     /**
      * CMSubscriberConnectorAbstract constructor.
@@ -76,8 +76,8 @@ abstract class CMGetSubscribersConnectorAbstract extends CMAuthorization impleme
     {
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->factory                 = $factory;
-        $this->secret                  = $secret;
         $this->counterService          = $counterService;
+        $this->secret                  = $secret;
     }
 
     /**

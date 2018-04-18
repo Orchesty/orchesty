@@ -9,16 +9,8 @@ services:
             - '@service_container'
             - '%backend_host%'
             - '@cc.system_topology.runner'
-        tags: ['%systems%']
-
-    hbpf.connector.facebookaudience-create-audience-connector:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceCreateAudienceConnector
-        arguments:
-            - '@systems.facebookaudience'
             - '@doctrine_mongodb.odm.default_document_manager'
-            - '@hbpf.transport.curl_manager'
-        calls:
-            - ['setLogger', ['@monolog.logger.notification']]
+        tags: ['%systems%']
 
     hbpf.connector.facebookaudience-create-subscribers-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceCreateSubscribersConnector
@@ -68,6 +60,8 @@ services:
             - '@systems.facebookaudience'
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.facebookaudience-create-campaign-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceCreateCampaignConnector
@@ -75,6 +69,8 @@ services:
             - '@systems.facebookaudience'
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.facebookaudience-create-adset-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceCreateAdsetConnector
@@ -82,6 +78,8 @@ services:
             - '@systems.facebookaudience'
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.facebookaudience-create-ad-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceCreateAdConnector
@@ -89,6 +87,8 @@ services:
             - '@systems.facebookaudience'
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.connector.facebookaudience-update-adstate-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceUpdateAdstateConnector
@@ -97,3 +97,35 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
             - '%env(AIM_HOST)%'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
+
+    hbpf.connector.facebookaudience-update-audience-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceUpdateAudienceConnector
+        arguments:
+            - '@systems.facebookaudience'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
+
+    hbpf.connector.facebook-get-cmsubscribers-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceGetCMListSubscribers
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.async_curl_factory'
+            - '@cc.progress_counter.async_progress_counter_service'
+            - '%clevermonitor%'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
+
+    hbpf.custom_node.facebookaudience-run-createad-action:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceRunCreateAdActionConnector
+        arguments:
+            - '@hbpf.transport.curl_manager'
+            - '@systems.facebookaudience'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '%env(BACKEND_HOST)%'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
+
