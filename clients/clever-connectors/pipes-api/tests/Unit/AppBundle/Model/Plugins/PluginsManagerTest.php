@@ -188,6 +188,30 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
     }
 
     /**
+     * @throws Exception
+     */
+    public function testUninstall(): void
+    {
+        /** @var SystemManager|MockObject $manager */
+        $manager = $this->createMock(SystemManager::class);
+        $manager
+            ->expects($this->once())
+            ->method('uninstallSystem')
+            ->willReturn(TRUE);
+
+        $plug = $this->mockPluginsManager(NULL, NULL, $manager);
+        $req  = new Request();
+        $req->headers->set(PluginHeadersEnum::TOKEN, 'tkn');
+        $req->headers->set(PluginHeadersEnum::GUID, 'usr');
+        $req->headers->set(PluginHeadersEnum::SYSTEM, 'sys');
+        $req->headers->set(PluginHeadersEnum::VERSION, 'ver');
+        $req->request->set('remote_host', 'abc');
+
+        $res = $plug->uninstall($req);
+        self::assertEquals([], $res);
+    }
+
+    /**
      * @covers PluginsManager::check()
      * @covers PluginsManager::systemToArray()
      *

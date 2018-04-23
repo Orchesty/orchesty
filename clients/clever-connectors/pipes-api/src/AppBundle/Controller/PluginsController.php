@@ -60,6 +60,23 @@ class PluginsController extends FOSRestController
     }
 
     /**
+     * @Route("/uninstall")
+     * @Method({"GET"})
+     *
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function uninstallAction(Request $request): Response
+    {
+        try {
+            return $this->getResponse($this->handler->install($request));
+        } catch (Throwable $e) {
+            return $this->processException($e);
+        }
+    }
+
+    /**
      * @Route("/check")
      * @Method({"POST"})
      *

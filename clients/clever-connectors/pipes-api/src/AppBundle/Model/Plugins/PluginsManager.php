@@ -125,6 +125,24 @@ class PluginsManager
     }
 
     /**
+     * @param Request $request
+     *
+     * @return array
+     * @throws SystemException
+     */
+    public function uninstall(Request $request): array
+    {
+        $headers = $request->headers->all();
+
+        $guid   = PluginHeadersEnum::get(PluginHeadersEnum::GUID, $headers);
+        $system = PluginHeadersEnum::get(PluginHeadersEnum::SYSTEM, $headers);
+
+        $this->manager->uninstallSystem($guid, $system);
+
+        return [];
+    }
+
+    /**
      * @param SystemInstall $systemInstall
      * @param Request       $request
      *

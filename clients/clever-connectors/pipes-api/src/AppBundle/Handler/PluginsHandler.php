@@ -57,6 +57,17 @@ class PluginsHandler
      * @param Request $request
      *
      * @return array
+     * @throws SystemException
+     */
+    public function uninstall(Request $request): array
+    {
+        return $this->manager->uninstall($request);
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return array
      * @throws CleverConnectorsException
      * @throws SystemException
      */
