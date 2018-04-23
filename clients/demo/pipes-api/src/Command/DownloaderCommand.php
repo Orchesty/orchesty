@@ -9,9 +9,10 @@
 
 namespace Demo\Command;
 
+use Clue\React\Buzz\Browser;
 use Exception;
-use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
+use Psr\Http\Message\ResponseInterface;
 use Ratchet\Client\Connector;
 use Ratchet\Client\WebSocket;
 use Ratchet\RFC6455\Messaging\MessageInterface;
@@ -65,11 +66,12 @@ class DownloaderCommand extends Command
     private function connect(LoopInterface $loop, OutputInterface $output): void
     {
         $connector = new Connector($loop);
+        $browser   = new Browser($loop);
 
         $uri = 'wss://ws.pusherapp.com/app/de504dc5763aeef9ff52?client=php-ratchet&version=0.0.1&protocol=5';
 
         $connector($uri)
-            ->then(function (WebSocket $ws) use ($loop, $output, $uri): void {
+            ->then(function (WebSocket $ws) use ($loop, $output, $uri, $browser): void {
 
                 $this->heartbeat = $loop->addPeriodicTimer(5, function () use ($ws): void {
                     $ws->send(json_encode([
@@ -77,7 +79,7 @@ class DownloaderCommand extends Command
                     ]));
                 });
 
-                $ws->on('message', function (MessageInterface $json) use ($ws, $output, $uri): void {
+                $ws->on('message', function (MessageInterface $json) use ($ws, $output, $uri, $browser): void {
 
                     $json = (string) $json;
 
@@ -96,10 +98,10 @@ class DownloaderCommand extends Command
                                 'order_book_btceur',
                                 'order_book_xrpusd',
                                 'order_book_xrpeur',
-                                'order_book_xrpbtc',
-                                'order_book_ltcusd',
-                                'order_book_ltceur',
-                                'order_book_ltcbtc',
+                                //'order_book_xrpbtc',
+                                //'order_book_ltcusd',
+                                //'order_book_ltceur',
+                                //'order_book_ltcbtc',
                             ];
                             foreach ($channels as $channel) {
                                 $ws->send(json_encode([
@@ -120,7 +122,7 @@ class DownloaderCommand extends Command
                                     $data['event'],
                                     $data['channel']
                                 ));
-                                $this->sendData($json, $output);
+                                $this->sendData($json, $output, $browser);
                             } else {
                                 $output->writeln(sprintf('Received unknown event: %s', json_encode($data)));
                             }
@@ -166,8 +168,9 @@ class DownloaderCommand extends Command
     /**
      * @param string          $data
      * @param OutputInterface $output
+     * @param Browser         $browser
      */
-    private function sendData(string $data, OutputInterface $output): void
+    private function sendData(string $data, OutputInterface $output, Browser $browser): void
     {
         $request = new Request(
             'POST',
@@ -179,11 +182,7 @@ class DownloaderCommand extends Command
             $data
         );
 
-        $client = new Client();
-
-        try {
-            $response = $client->send($request);
-
+        $browser->send($request)->then(function (ResponseInterface $response) use ($output): void {
             if ($response->getStatusCode() === 200) {
                 $output->writeln('Send success request to pipes.');
             } else {
@@ -192,9 +191,9 @@ class DownloaderCommand extends Command
                     $response->getReasonPhrase()
                 ));
             }
-        } catch (Throwable $e) {
+        }, function (Exception $e) use ($output): void {
             $output->writeln(sprintf('Request Error: %s', $e->getMessage()));
-        }
+        });
     }
 
 }
