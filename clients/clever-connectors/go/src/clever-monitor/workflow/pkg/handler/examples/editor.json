@@ -1,0 +1,19 @@
+{
+  "root": {
+    "id": "root",
+    "parentId": null,
+    "type": "WAIT",
+    "settings": {
+      "wait": 1,
+      "unit": "day"
+    }
+  },
+  "2": {
+    "id": "2",
+    "parentId": "root",
+    "type": "JOIN_DST",
+    "settings": {
+      "sourceId": "1"
+    }
+  }
+}

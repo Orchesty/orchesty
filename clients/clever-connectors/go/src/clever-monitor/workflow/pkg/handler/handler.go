@@ -2,22 +2,20 @@ package handler
 
 import ws "clever-monitor/workflow/pkg/workflowservice"
 
-const (
-	HandleCreate = "create"
-	HandleUpdate = "update"
-	HandleRead   = "read"
-	HandleDelete = "delete"
-)
-
 type ResponseCode int
 
 const (
-	OK ResponseCode = iota
+	OK             ResponseCode = iota
 	InvalidRequest
 	InternalError
 	NotFound
 )
 
 type Handler interface {
-	Handle(method string, in *ws.WorkflowRequest) *ws.WorkflowResponse
+	HandleCreate(in *ws.CreateRequest) *ws.WorkflowResponse
+	HandleUpdate(in *ws.UpdateRequest) *ws.WorkflowResponse
+	HandleDelete(in *ws.DeleteRequest) *ws.WorkflowResponse
+
+	HandleReadEditorConfig(in *ws.ReadRequest) *ws.WorkflowResponse
+	HandleReadWorkflowConfig(in *ws.ReadRequest) *ws.WorkflowResponse
 }

@@ -23,10 +23,8 @@ func NewConfigHandler(storage storage.Finder) *configHandler {
 
 // GetConfig creates WorkflowConfig object from stored json in storage
 func (ch *configHandler) GetConfig(in *ws.WorkflowRequest) *ws.WorkflowConfig {
-	// todo validate id value
 	json, err := ch.storage.Find(in.Id)
 	if err != nil {
-		// todo what to return if not found by id?
 		return &ws.WorkflowConfig{}
 	}
 
@@ -53,6 +51,13 @@ func configToJson(conf *ws.WorkflowConfig) (string, error) {
 // jsonToConfig converts json string into WorkflowCOnfig instance
 func jsonToConfig(json string) (*ws.WorkflowConfig, error){
 	var conf ws.WorkflowConfig
+	err := jsonpb.UnmarshalString(json, &conf)
+
+	return &conf, err
+}
+
+func stringToEditorConfig(json string) (*ws.EditorConfig, error){
+	var conf ws.EditorConfig
 	err := jsonpb.UnmarshalString(json, &conf)
 
 	return &conf, err

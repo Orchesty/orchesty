@@ -19,13 +19,15 @@ install-dependencies:
 proto-gen:
 	# Downloading protofile
 	rm -rf protofiles
-	git clone git@gitlab.hanaboso.net:clever-monitor/protofiles.git
+	# git clone git@gitlab.hanaboso.net:clever-monitor/protofiles.git
+	git clone git@gitlab.clevermonitor.com:hanaboso/protofiles.git
 	rm -rf pkg/workflowservice
 	mkdir pkg/workflowservice
 	cp ./protofiles/protos/workflow/WorkflowService.proto .
 	rm -rf protofiles
 	# Generating structs from proto file
-	# Todo download protoc binary in order to run following command
+	# TODO -  download protoc binary in order to run following command
+	#      - export PATH=$PATH:/Users/kedlas/projects/tools/protoc-3.5.1-osx-x86_64/bin
 	protoc ./WorkflowService.proto --go_out=plugins=grpc:pkg/WorkflowService
 	rm ./WorkflowService.proto
 

@@ -50,54 +50,69 @@ func (s *server) Start() {
 	}
 }
 
-// CreateWorkflow creates new workflow from request
-func (s *server) CreateWorkflow(ctx context.Context, in *ws.WorkflowRequest) (*ws.WorkflowResponse, error) {
-	return s.processWorkflow(in, handler.HandleCreate)
-}
 
-// ReadWorkflow returns content of existing workflow
-func (s *server) ReadWorkflow(ctx context.Context, in *ws.WorkflowRequest) (*ws.WorkflowResponse, error) {
-	return s.processWorkflow(in, handler.HandleRead)
-}
+// TODO - implement logging using middleware
 
-// UpdateWorkflow updates the content of stored workflow
-func (s *server) UpdateWorkflow(ctx context.Context, in *ws.WorkflowRequest) (*ws.WorkflowResponse, error) {
-	return s.processWorkflow(in, handler.HandleUpdate)
-}
+// CreateWorkflow creates new workflow
+func (s *server) CreateWorkflow(ctx context.Context, in *ws.CreateRequest) (*ws.WorkflowResponse, error) {
+	reqId := s.getRequestId("create_workflow")
+	go s.logRequest(reqId)
 
-// DeleteWorkflow removes existing workflow
-func (s *server) DeleteWorkflow(ctx context.Context, in *ws.WorkflowRequest) (*ws.WorkflowResponse, error) {
-	return s.processWorkflow(in, handler.HandleDelete)
-}
-
-// ReadConfig returns hydrated WorkflowConfig from stored workflow
-func (s *server) ReadConfig(ctx context.Context, in *ws.WorkflowRequest) (*ws.WorkflowConfig, error) {
-	return s.processConfig(in)
-}
-
-// processWorkflow calls Handle method and logs request and response
-func (s *server) processWorkflow(in *ws.WorkflowRequest, method string) (*ws.WorkflowResponse, error) {
-	reqId := s.getRequestId(method)
-	go s.logRequest(in, reqId)
-
-	response := s.wfHandler.Handle(method, in)
+	response := s.wfHandler.HandleCreate(in)
 
 	go s.logResponse(response, reqId)
 
 	return response, nil
 }
 
-// processConfig calls configProvider and logs request and response
-func (s *server) processConfig(in *ws.WorkflowRequest) (*ws.WorkflowConfig, error) {
-	reqId := s.getRequestId("config")
-	go s.logRequest(in, reqId)
+// UpdateWorkflow updates the content of stored workflow
+func (s *server) UpdateWorkflow(ctx context.Context, in *ws.UpdateRequest) (*ws.WorkflowResponse, error) {
+	reqId := s.getRequestId("update_workflow")
+	go s.logRequest(reqId)
 
-	config := s.configProvider.GetConfig(in)
+	response := s.wfHandler.HandleUpdate(in)
 
-	go s.logConfig(config, reqId)
+	go s.logResponse(response, reqId)
 
-	return config, nil
+	return response, nil
 }
+
+// DeleteWorkflow removes existing workflow
+func (s *server) DeleteWorkflow(ctx context.Context, in *ws.DeleteRequest) (*ws.WorkflowResponse, error) {
+	reqId := s.getRequestId("delete_workflow")
+	go s.logRequest(reqId)
+
+	response := s.wfHandler.HandleDelete(in)
+
+	go s.logResponse(response, reqId)
+
+	return response, nil
+}
+
+// ReadWorkflow returns content of existing generated workflow
+func (s *server) ReadWorkflow(ctx context.Context, in *ws.ReadRequest) (*ws.WorkflowResponse, error) {
+	reqId := s.getRequestId("read_workflow")
+	go s.logRequest(reqId)
+
+	response := s.wfHandler.HandleReadWorkflowConfig(in)
+
+	go s.logResponse(response, reqId)
+
+	return response, nil
+}
+
+// ReadConfig returns hydrated editor config passed during create/update workflow
+func (s *server) ReadConfig(ctx context.Context, in *ws.ReadRequest) (*ws.WorkflowConfig, error) {
+	reqId := s.getRequestId("read_config")
+	go s.logRequest(reqId)
+
+	response := s.wfHandler.HandleReadEditorConfig(in)
+
+	go s.logResponse(response, reqId)
+
+	return response, nil
+}
+
 
 // getRequestId returns id to be used to pair request and response
 func (s *server) getRequestId(method string) string {
@@ -111,7 +126,7 @@ func (s *server) getRequestId(method string) string {
 }
 
 // logRequest logs request using logger
-func (s *server) logRequest(req *ws.WorkflowRequest, reqId string) {
+func (s *server) logRequest(reqId string) {
 	s.logger.Info("Request received", logger.Context{"reqId": reqId})
 }
 
