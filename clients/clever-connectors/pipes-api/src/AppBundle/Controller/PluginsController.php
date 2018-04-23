@@ -70,7 +70,7 @@ class PluginsController extends FOSRestController
     public function uninstallAction(Request $request): Response
     {
         try {
-            return $this->getResponse($this->handler->install($request));
+            return $this->getResponse($this->handler->uninstall($request));
         } catch (Throwable $e) {
             return $this->processException($e);
         }
