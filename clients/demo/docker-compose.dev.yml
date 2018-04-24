@@ -299,12 +299,12 @@ services:
           - MONGO_COLLECTION=Logs
           - ES_JAVA_OPTS=-Xms512m -Xmx512m
         #command: --log.level debug
-        restart: on-failure
         ## BEGIN DEV
         volumes:
           - ./stack/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
         ## END DEV
         ## BEGIN STAGE
+        #restart: on-failure
         #configs:
         #  - source: logstash.conf
         #    target: /usr/share/logstash/pipeline/logstash.conf
