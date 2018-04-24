@@ -192,6 +192,7 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
         $client->selectDB('test')->drop();
         $client->query('', 'CREATE DATABASE test');
         $client->selectDB('test')->create(new RetentionPolicy('4h', '4h', 1, TRUE));
+        $client->selectDB('test')->create(new RetentionPolicy('5s', '1h', 1, TRUE));
         $database = $this->getClient()->getDatabase('test');
 
         $points = [

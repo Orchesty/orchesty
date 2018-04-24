@@ -376,7 +376,7 @@ class MetricsManager implements LoggerAwareInterface
             $to       = new DateTime($dateTo);
             $qb
                 ->setTimeRange($fromDate->getTimestamp(), $to->getTimestamp())
-                ->from($this->addRetentionPolicy($from, $fromDate, $to));
+                ->from($this->addRetentionPolicy($from, $fromDate, $to, $forGraph));
         }
         $this->logger->debug('Metrics was selected.', ['Query' => $qb->getQuery()]);
         try {
@@ -677,18 +677,25 @@ class MetricsManager implements LoggerAwareInterface
      * @param string   $fromTables
      * @param DateTime $from
      * @param DateTime $to
+     * @param bool     $forGraph
      *
      * @return string
      */
-    private function addRetentionPolicy(string $fromTables, DateTime $from, DateTime $to): string
+    private function addRetentionPolicy(
+        string $fromTables,
+        DateTime $from,
+        DateTime $to,
+        Bool $forGraph = FALSE
+    ): string
     {
-        $out = '';
+        $out       = '';
+        $retention = $forGraph ? RetentionFactory::SEC : RetentionFactory::getRetention($from, $to);
         foreach (explode(',', $fromTables) as $item) {
             if (!empty($out)) {
                 $out .= ',';
             }
 
-            $out .= sprintf('"%s".%s', RetentionFactory::getRetention($from, $to), $item);
+            $out .= sprintf('"%s".%s', $retention, $item);
         }
 
         return $out;
