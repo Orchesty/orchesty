@@ -10,11 +10,11 @@
 namespace Tests\Unit\Authorization\Provider;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Hanaboso\CommonsBundle\Redirect\RedirectInterface;
 use Hanaboso\PipesFramework\Authorization\Document\Authorization;
 use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth1Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth1Provider;
-use Hanaboso\PipesFramework\Commons\Redirect\RedirectInterface;
 use OAuth;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;

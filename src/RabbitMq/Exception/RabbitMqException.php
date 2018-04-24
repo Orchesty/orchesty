@@ -9,7 +9,7 @@
 
 namespace Hanaboso\PipesFramework\RabbitMq\Exception;
 
-use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
+use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 
 /**
  * Class RabbitMqException

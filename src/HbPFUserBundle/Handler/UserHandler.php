@@ -4,8 +4,8 @@ namespace Hanaboso\PipesFramework\HbPFUserBundle\Handler;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ORM\EntityManager;
-use Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator;
-use Hanaboso\PipesFramework\Commons\Utils\ControllerUtils;
+use Hanaboso\CommonsBundle\DatabaseManager\DatabaseManagerLocator;
+use Hanaboso\CommonsBundle\Utils\ControllerUtils;
 use Hanaboso\PipesFramework\HbPFUserBundle\Provider\ResourceProvider;
 use Hanaboso\PipesFramework\User\Entity\UserInterface;
 use Hanaboso\PipesFramework\User\Enum\ResourceEnum;
@@ -151,6 +151,7 @@ class UserHandler implements LogoutSuccessHandlerInterface, EventSubscriberInter
 
     /**
      * @param string $id
+     *PipesFramework\Commons
      *
      * @return UserInterface
      */

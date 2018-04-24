@@ -10,10 +10,10 @@
 namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Hanaboso\CommonsBundle\DatabaseManager\DatabaseManagerLocatorInterface;
 use Hanaboso\PipesFramework\Category\Document\Category;
 use Hanaboso\PipesFramework\Category\Exception\CategoryException;
 use Hanaboso\PipesFramework\Category\Model\CategoryManager;
-use Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocatorInterface;
 
 /**
  * Class CategoryHandler

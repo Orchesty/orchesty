@@ -10,8 +10,8 @@
 namespace Hanaboso\PipesFramework\RabbitMq\Impl\Batch;
 
 use Bunny\Message;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use InvalidArgumentException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;

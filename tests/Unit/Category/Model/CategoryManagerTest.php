@@ -10,10 +10,10 @@
 namespace Tests\Unit\Category\Model;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Hanaboso\CommonsBundle\DatabaseManager\DatabaseManagerLocator;
 use Hanaboso\PipesFramework\Category\Document\Category;
 use Hanaboso\PipesFramework\Category\Model\CategoryManager;
 use Hanaboso\PipesFramework\Category\Repository\CategoryRepository;
-use Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator;
 use PHPUnit_Framework_MockObject_MockObject;
 use Tests\KernelTestCaseAbstract;
 

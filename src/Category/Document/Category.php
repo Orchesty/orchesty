@@ -11,7 +11,7 @@ namespace Hanaboso\PipesFramework\Category\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Index;
-use Hanaboso\PipesFramework\Commons\Traits\Document\IdTrait;
+use Hanaboso\CommonsBundle\Traits\Document\IdTrait;
 
 /**
  * Class Category

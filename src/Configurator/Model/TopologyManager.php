@@ -6,13 +6,13 @@ use Cron\CronExpression;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
-use Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator;
-use Hanaboso\PipesFramework\Commons\Enum\HandlerEnum;
-use Hanaboso\PipesFramework\Commons\Enum\TopologyStatusEnum;
-use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
-use Hanaboso\PipesFramework\Commons\Exception\CronException;
-use Hanaboso\PipesFramework\Commons\Exception\EnumException;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
+use Hanaboso\CommonsBundle\DatabaseManager\DatabaseManagerLocator;
+use Hanaboso\CommonsBundle\Enum\HandlerEnum;
+use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
+use Hanaboso\CommonsBundle\Enum\TypeEnum;
+use Hanaboso\CommonsBundle\Exception\CronException;
+use Hanaboso\CommonsBundle\Exception\EnumException;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
 use Hanaboso\PipesFramework\Configurator\Document\Embed\EmbedNode;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
@@ -526,7 +526,7 @@ class TopologyManager
         }
 
         try {
-            $type = (new TypeEnum($type))->getValue();
+            TypeEnum::isValid($type);
         } catch (EnumException $e) {
             throw new TopologyException(
                 sprintf('Node [%s] type [%s] not exist', $id, $type),

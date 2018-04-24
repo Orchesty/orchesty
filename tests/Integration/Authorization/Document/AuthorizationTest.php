@@ -19,7 +19,7 @@ class AuthorizationTest extends DatabaseTestCaseAbstract
      */
     public function testFlushAndLoad(): void
     {
-        $token = ['token' => 'token'];
+        $token    = ['token' => 'token'];
         $settings = ['foo' => 'bar', 'baz' => 'bat'];
 
         $authorization = new Authorization('magento2_auth');

@@ -2,7 +2,7 @@
 
 namespace Tests\Controller\HbPfCustomNodeBundle\Controller;
 
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\HbPFCustomNodeBundle\Handler\CustomNodeHandler;
 use Tests\ControllerTestCaseAbstract;
 

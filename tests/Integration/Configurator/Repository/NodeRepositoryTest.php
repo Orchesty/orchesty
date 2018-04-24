@@ -2,8 +2,8 @@
 
 namespace Tests\Integration\Configurator\Repository;
 
-use Hanaboso\PipesFramework\Commons\Enum\HandlerEnum;
-use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
+use Hanaboso\CommonsBundle\Enum\HandlerEnum;
+use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Reduction\NodeReduction;

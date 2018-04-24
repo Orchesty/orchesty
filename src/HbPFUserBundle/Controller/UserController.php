@@ -4,8 +4,8 @@ namespace Hanaboso\PipesFramework\HbPFUserBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
+use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\Acl\Exception\AclException;
-use Hanaboso\PipesFramework\Commons\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\HbPFUserBundle\Handler\UserHandler;
 use Hanaboso\PipesFramework\User\Model\Security\SecurityManagerException;
 use Hanaboso\PipesFramework\User\Model\Token\TokenManagerException;

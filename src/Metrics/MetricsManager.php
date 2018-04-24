@@ -12,7 +12,7 @@ namespace Hanaboso\PipesFramework\Metrics;
 use DateTime;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Hanaboso\PipesFramework\Commons\Exception\EnumException;
+use Hanaboso\CommonsBundle\Exception\EnumException;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
@@ -21,7 +21,7 @@ use Hanaboso\PipesFramework\Metrics\Dto\MetricsDto;
 use Hanaboso\PipesFramework\Metrics\Enum\MetricsIntervalEnum;
 use Hanaboso\PipesFramework\Metrics\Exception\MetricsException;
 use Hanaboso\PipesFramework\Metrics\Retention\RetentionFactory;
-use Hanaboso\PipesFramework\TopologyGenerator\GeneratorUtils;
+use Hanaboso\PipesFramework\Utils\GeneratorUtils;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -320,7 +320,7 @@ class MetricsManager implements LoggerAwareInterface
         $dateTo   = $params['to'] ?? NULL;
         $groupBy  = sprintf(
             'TIME(%s)',
-            (new MetricsIntervalEnum($params['interval'] ?? MetricsIntervalEnum::DAY))->getValue()
+            MetricsIntervalEnum::isValid($params['interval'] ?? MetricsIntervalEnum::DAY)
         );
 
         $data['requests'] = $this->runQuery(

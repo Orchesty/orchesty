@@ -22,13 +22,13 @@ doctrine_mongodb:
                 FileDocument:
                     type: annotation
                     is_bundle: false
-                    dir: "%src_dir%/Commons/FileStorage/Document"
-                    prefix: Hanaboso\PipesFramework\Commons\FileStorage\Document
+                    dir: "%kernel.root_dir%/../vendor/hanaboso/commons-bundle/src/FileStorage/Document"
+                    prefix: Hanaboso\CommonsBundle\FileStorage\Document
                 FileMongo:
                     type: annotation
                     is_bundle: false
-                    dir: "%src_dir%/Commons/FileStorage/Driver"
-                    prefix: Hanaboso\PipesFramework\Commons\FileStorage\Driver
+                    dir: "%kernel.root_dir%/../vendor/hanaboso/commons-bundle/src/FileStorage/Driver"
+                    prefix: Hanaboso\CommonsBundle\FileStorage\Driver
                 AclDocument:
                     type: annotation
                     is_bundle: false

@@ -13,10 +13,10 @@ use Bunny\Async\Client;
 use Bunny\Channel;
 use Bunny\Message;
 use Exception;
-use Hanaboso\PipesFramework\Commons\Enum\MetricsEnum;
-use Hanaboso\PipesFramework\Commons\Metrics\InfluxDbSender;
-use Hanaboso\PipesFramework\Commons\Utils\CurlMetricUtils;
-use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
+use Hanaboso\CommonsBundle\Enum\MetricsEnum;
+use Hanaboso\CommonsBundle\Metrics\InfluxDbSender;
+use Hanaboso\CommonsBundle\Utils\CurlMetricUtils;
+use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use Hanaboso\PipesFramework\HbPFRabbitMqBundle\DebugMessageTrait;
 use Hanaboso\PipesFramework\RabbitMq\Consumer\AsyncCallbackInterface;
 use InvalidArgumentException;
@@ -334,7 +334,9 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
      *
      * @return PromiseInterface
      */
-    private function itemCallback(Channel $channel, Message $message, SuccessMessage $successMessage): PromiseInterface
+    private function itemCallback(Channel $channel,
+                                  Message $message,
+                                  SuccessMessage $successMessage): PromiseInterface
     {
         // Limiter
         if (
@@ -422,7 +424,8 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
      *
      * @return PromiseInterface
      */
-    private function batchErrorCallback(Channel $channel, Message $message,
+    private function batchErrorCallback(Channel $channel,
+                                        Message $message,
                                         ErrorMessage $errorMessage): PromiseInterface
     {
         $headers = array_merge($message->headers, [

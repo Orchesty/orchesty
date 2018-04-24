@@ -2,8 +2,8 @@
 
 namespace Hanaboso\PipesFramework\CustomNode\Impl;
 
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
 /**

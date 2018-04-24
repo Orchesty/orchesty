@@ -4,7 +4,7 @@ namespace Hanaboso\PipesFramework\User\Entity;
 
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
-use Hanaboso\PipesFramework\Commons\Traits\Entity\IdTrait;
+use Hanaboso\CommonsBundle\Traits\Entity\IdTrait;
 use LogicException;
 
 /**

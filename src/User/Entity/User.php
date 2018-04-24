@@ -4,7 +4,7 @@ namespace Hanaboso\PipesFramework\User\Entity;
 
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
-use Hanaboso\PipesFramework\Commons\Traits\Entity\DeletedTrait;
+use Hanaboso\CommonsBundle\Traits\Entity\DeletedTrait;
 use Hanaboso\PipesFramework\User\Enum\UserTypeEnum;
 
 /**
@@ -128,8 +128,8 @@ class User extends UserAbstract
     public function toArray(): array
     {
         return [
-            'id'       => $this->getId(),
-            'email'    => $this->getEmail(),
+            'id'    => $this->getId(),
+            'email' => $this->getEmail(),
         ];
     }
 

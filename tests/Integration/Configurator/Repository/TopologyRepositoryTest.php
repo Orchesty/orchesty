@@ -2,8 +2,8 @@
 
 namespace Tests\Integration\Configurator\Repository;
 
+use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
 use Hanaboso\PipesFramework\Category\Document\Category;
-use Hanaboso\PipesFramework\Commons\Enum\TopologyStatusEnum;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Tests\DatabaseTestCaseAbstract;
@@ -102,7 +102,7 @@ final class TopologyRepositoryTest extends DatabaseTestCaseAbstract
     public function testGetTopologiesByCategory(): void
     {
         /** @var TopologyRepository $repo */
-        $repo   = $this->dm->getRepository(Topology::class);
+        $repo     = $this->dm->getRepository(Topology::class);
         $category = new Category();
         $category->setName('test_category');
         $this->dm->persist($category);

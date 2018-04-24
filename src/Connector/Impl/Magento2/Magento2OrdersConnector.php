@@ -9,7 +9,7 @@
 
 namespace Hanaboso\PipesFramework\Connector\Impl\Magento2;
 
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 
 /**
  * Class Magento2OrdersConnector

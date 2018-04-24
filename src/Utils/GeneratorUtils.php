@@ -1,13 +1,6 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: venca
- * Date: 9/6/17
- * Time: 10:56 AM
- */
-
-namespace Hanaboso\PipesFramework\TopologyGenerator;
+namespace Hanaboso\PipesFramework\Utils;
 
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;

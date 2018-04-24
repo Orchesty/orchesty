@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesFramework\HbPFUserBundle\Command;
 
-use Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator;
+use Hanaboso\CommonsBundle\DatabaseManager\DatabaseManagerLocator;
 use Hanaboso\PipesFramework\HbPFUserBundle\Provider\ResourceProvider;
 use Hanaboso\PipesFramework\User\Enum\ResourceEnum;
 use Hanaboso\PipesFramework\User\Repository\Document\UserRepository as OdmRepo;

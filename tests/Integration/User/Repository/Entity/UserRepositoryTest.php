@@ -44,7 +44,7 @@ final class UserRepositoryTest extends DatabaseTestCaseAbstract
      */
     public function testGetUserCount(): void
     {
-        $em = $this->container->get('doctrine.orm.default_entity_manager');
+        $em   = $this->container->get('doctrine.orm.default_entity_manager');
         $user = new User();
         $user
             ->setEmail('eml')

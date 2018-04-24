@@ -7,13 +7,13 @@
  * Time: 8:28
  */
 
-namespace Hanaboso\PipesFramework\TopologyGenerator\Request;
+namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler;
 
 use GuzzleHttp\Psr7\Uri;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
-use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
-use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
+use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 
 /**
  * Class ReqeustHandler

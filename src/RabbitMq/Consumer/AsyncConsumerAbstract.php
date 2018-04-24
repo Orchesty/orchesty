@@ -48,7 +48,10 @@ abstract class AsyncConsumerAbstract extends ConsumerAbstract
      *
      * @return PromiseInterface
      */
-    public function processMessage(Message $message, Channel $channel, Client $client, LoopInterface $loop): PromiseInterface
+    public function processMessage(Message $message,
+                                   Channel $channel,
+                                   Client $client,
+                                   LoopInterface $loop): PromiseInterface
     {
         return $this->callback->processMessage($message, $channel, $client, $loop);
     }

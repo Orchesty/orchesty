@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesFramework\HbPFUserBundle\Exception;
 
-use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
+use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 
 /**
  * Class UserException

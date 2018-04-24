@@ -9,7 +9,7 @@
 
 namespace Hanaboso\PipesFramework\Connector;
 
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 
 /**

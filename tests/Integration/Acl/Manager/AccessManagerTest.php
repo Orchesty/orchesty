@@ -2,6 +2,7 @@
 
 namespace Tests\Integration\Acl\Manager;
 
+use Hanaboso\CommonsBundle\Exception\EnumException;
 use Hanaboso\PipesFramework\Acl\Document\Group;
 use Hanaboso\PipesFramework\Acl\Document\Rule;
 use Hanaboso\PipesFramework\Acl\Dto\GroupDto;
@@ -49,7 +50,7 @@ class AccessManagerTest extends DatabaseTestCaseAbstract
     {
         $user = $this->createUser('resource');
         $this->createRule($user);
-        $this->expect(AclException::INVALID_RESOURCE);
+        $this->expect(EnumException::INVALID_CHOICE, EnumException::class);
         $this->container->get('hbpf.access.manager')->isAllowed('writdde', 'group', $user, NULL);
     }
 
@@ -61,7 +62,7 @@ class AccessManagerTest extends DatabaseTestCaseAbstract
     {
         $user = $this->createUser('resource');
         $this->createRule($user);
-        $this->expect(AclException::INVALID_RESOURCE);
+        $this->expect(EnumException::INVALID_CHOICE, EnumException::class);
         $this->container->get('hbpf.access.manager')->isAllowed('write', 'grosdup', $user, NULL);
     }
 
@@ -500,11 +501,12 @@ class AccessManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @param int $code
+     * @param int    $code
+     * @param string $class
      */
-    private function expect(int $code = AclException::PERMISSION): void
+    private function expect(int $code = AclException::PERMISSION, string $class = AclException::class): void
     {
-        $this->expectException(AclException::class);
+        $this->expectException($class);
         $this->expectExceptionCode($code);
     }
 

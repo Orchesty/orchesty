@@ -12,23 +12,6 @@ services:
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
 
-    hbpf.docker_compose.volume_path_definition_factory:
-        class: Hanaboso\PipesFramework\TopologyGenerator\DockerCompose\VolumePathDefinitionFactory
-        arguments:
-            - '%project_source_path%'
-
-    hbpf.topology_generator.topology_actions_factory:
-        class: Hanaboso\PipesFramework\TopologyGenerator\Actions\TopologyActionsFactory
-        arguments:
-            - '@hbpf.docker.handler.docker_handler'
-            - '@hbpf.rabbit_mq.handler.rabbit_mq_handler'
-            - '@hbpf.docker_compose.volume_path_definition_factory'
-
-    hbpf.topology_generator.request.request_handler:
-        class: Hanaboso\PipesFramework\TopologyGenerator\Request\RequestHandler
-        arguments:
-            - '@hbpf.transport.curl_manager'
-
     hbpf.cron.manager:
         class: Hanaboso\PipesFramework\Configurator\Cron\CronManager
         arguments:
@@ -36,3 +19,8 @@ services:
             - '@hbpf.transport.curl_manager'
             - '%monolith_host%'
             - '%cron_host%'
+
+    hbpf.topology_generator.request.request_handler:
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\RequestHandler
+        arguments:
+            - '@hbpf.transport.curl_manager'

@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesFramework\User\Model\Security;
 
-use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
+use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 
 /**
  * Class SecurityManagerException

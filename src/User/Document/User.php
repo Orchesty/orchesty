@@ -4,7 +4,7 @@ namespace Hanaboso\PipesFramework\User\Document;
 
 use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Hanaboso\PipesFramework\Commons\Traits\Document\DeletedTrait;
+use Hanaboso\CommonsBundle\Traits\Document\DeletedTrait;
 use Hanaboso\PipesFramework\User\Entity\TmpUserInterface;
 use Hanaboso\PipesFramework\User\Entity\UserInterface;
 use Hanaboso\PipesFramework\User\Enum\UserTypeEnum;
@@ -102,8 +102,8 @@ class User extends UserAbstract
     public function toArray(): array
     {
         return [
-            'id'       => $this->getId(),
-            'email'    => $this->getEmail(),
+            'id'    => $this->getId(),
+            'email' => $this->getEmail(),
         ];
     }
 

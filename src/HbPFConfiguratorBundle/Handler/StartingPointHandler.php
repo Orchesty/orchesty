@@ -12,15 +12,14 @@ namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
-use Hanaboso\PipesFramework\Commons\Enum\TopologyStatusEnum;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Event\TopologyEvent;
 use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint;
-use Hanaboso\PipesFramework\TopologyGenerator\Request\RequestHandler;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -66,7 +65,9 @@ class StartingPointHandler
      * @param EventDispatcher|EventDispatcherInterface $dispatcher
      * @param RequestHandler                           $requestHandler
      */
-    public function __construct(DocumentManager $dm, StartingPoint $startingPoint, EventDispatcherInterface $dispatcher,
+    public function __construct(DocumentManager $dm,
+                                StartingPoint $startingPoint,
+                                EventDispatcherInterface $dispatcher,
                                 RequestHandler $requestHandler)
     {
         $this->startingPoint      = $startingPoint;

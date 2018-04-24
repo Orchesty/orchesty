@@ -2,9 +2,9 @@
 
 namespace Tests\Integration\Configurator\Model;
 
-use Hanaboso\PipesFramework\Commons\Enum\HandlerEnum;
-use Hanaboso\PipesFramework\Commons\Enum\TopologyStatusEnum;
-use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
+use Hanaboso\CommonsBundle\Enum\HandlerEnum;
+use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
+use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\PipesFramework\Configurator\Document\Embed\EmbedNode;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;

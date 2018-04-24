@@ -10,12 +10,12 @@
 namespace Hanaboso\PipesFramework\Authorization\Provider;
 
 use Exception;
+use Hanaboso\CommonsBundle\Redirect\RedirectInterface;
+use Hanaboso\CommonsBundle\Utils\Base64;
 use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2DtoInterface;
 use Hanaboso\PipesFramework\Authorization\Utils\ScopeFormatter;
 use Hanaboso\PipesFramework\Authorization\Wrapper\OAuth2Wrapper;
-use Hanaboso\PipesFramework\Commons\Redirect\RedirectInterface;
-use Hanaboso\PipesFramework\Commons\Utils\Base64;
 use Nette\Http\Url;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
@@ -81,7 +81,8 @@ class OAuth2Provider implements OAuth2ProviderInterface, LoggerAwareInterface
      * @param array              $scopes
      * @param string             $separator
      */
-    public function authorize(OAuth2DtoInterface $dto, array $scopes = [],
+    public function authorize(OAuth2DtoInterface $dto,
+                              array $scopes = [],
                               string $separator = ScopeFormatter::COMMA): void
     {
         $client           = $this->createClient($dto);

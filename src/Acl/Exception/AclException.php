@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesFramework\Acl\Exception;
 
-use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
+use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 
 /**
  * Class AclException

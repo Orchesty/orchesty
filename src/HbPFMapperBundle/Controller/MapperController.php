@@ -4,7 +4,7 @@ namespace Hanaboso\PipesFramework\HbPFMapperBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
-use Hanaboso\PipesFramework\Commons\Traits\ControllerTrait;
+use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\HbPFMapperBundle\Exception\MapperException;
 use Hanaboso\PipesFramework\HbPFMapperBundle\Handler\MapperHandler;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;

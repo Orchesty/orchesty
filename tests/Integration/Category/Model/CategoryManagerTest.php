@@ -26,18 +26,17 @@ class CategoryManagerTest extends DatabaseTestCaseAbstract
      */
     public function testManager(): void
     {
-        $manager = $this->container->get('hbpf.configurator.manager.category');
-        $repo = $this->dm->getRepository(Category::class);
+        $manager         = $this->container->get('hbpf.configurator.manager.category');
+        $repo            = $this->dm->getRepository(Category::class);
         $topologyManager = $this->container->get('hbpf.configurator.manager.topology');
 
-
         $dataR1 = [
-            'name' => 'root1',
+            'name'   => 'root1',
             'parent' => NULL,
         ];
 
         $dataR2 = [
-            'name' => 'root2',
+            'name'   => 'root2',
             'parent' => NULL,
         ];
 
@@ -45,19 +44,19 @@ class CategoryManagerTest extends DatabaseTestCaseAbstract
         $categoryR2 = $manager->createCategory($dataR2);
 
         $dataCh1 = [
-            'name' => 'child1',
+            'name'   => 'child1',
             'parent' => $categoryR1->getId(),
         ];
 
-        $dataCh2 = [
-            'name' => 'child2',
+        $dataCh2     = [
+            'name'   => 'child2',
             'parent' => $categoryR2->getId(),
         ];
         $categoryCh1 = $manager->createCategory($dataCh1);
         $categoryCh2 = $manager->createCategory($dataCh2);
 
         $dataCh2Edit = [
-            'name' => 'child2_edited',
+            'name'   => 'child2_edited',
             'parent' => $categoryR1->getId(),
         ];
 
@@ -73,7 +72,6 @@ class CategoryManagerTest extends DatabaseTestCaseAbstract
         self::assertCount(3, $repo->findAll());
         self::assertCount(3, $repo->findBy(['parent' => NULL]));
         self::assertCount(0, $repo->findBy(['parent' => $categoryR2->getId()]));
-
 
         $topology = $topologyManager->createTopology(['name' => 'Topology', 'category' => $categoryCh2->getId()]);
 

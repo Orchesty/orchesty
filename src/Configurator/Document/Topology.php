@@ -4,11 +4,11 @@ namespace Hanaboso\PipesFramework\Configurator\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Index;
-use Hanaboso\PipesFramework\Commons\Enum\StatusEnum;
-use Hanaboso\PipesFramework\Commons\Enum\TopologyStatusEnum;
-use Hanaboso\PipesFramework\Commons\Traits\Document\DeletedTrait;
-use Hanaboso\PipesFramework\Commons\Traits\Document\IdTrait;
-use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
+use Hanaboso\CommonsBundle\Enum\StatusEnum;
+use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
+use Hanaboso\CommonsBundle\Exception\EnumException;
+use Hanaboso\CommonsBundle\Traits\Document\DeletedTrait;
+use Hanaboso\CommonsBundle\Traits\Document\IdTrait;
 use Nette\Utils\Json;
 
 /**
@@ -183,18 +183,11 @@ class Topology
      * @param string $visibility
      *
      * @return Topology
-     * @throws TopologyException
+     * @throws EnumException
      */
     public function setVisibility(string $visibility): Topology
     {
-        if (TopologyStatusEnum::isValid($visibility)) {
-            $this->visibility = $visibility;
-        } else {
-            throw new TopologyException(
-                sprintf('Invalid topology visibility "%s"', $visibility),
-                TopologyException::INVALID_TOPOLOGY_TYPE
-            );
-        }
+        $this->visibility = TopologyStatusEnum::isValid($visibility);
 
         return $this;
     }
@@ -211,10 +204,11 @@ class Topology
      * @param string $status
      *
      * @return Topology
+     * @throws EnumException
      */
     public function setStatus(string $status): Topology
     {
-        $this->status = (new StatusEnum($status))->getValue();
+        $this->status = StatusEnum::isValid($status);
 
         return $this;
     }

@@ -5,11 +5,11 @@ namespace Hanaboso\PipesFramework\Authorization\Impl\Magento2;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
+use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Authorization\Base\AuthorizationAbstract;
 use Hanaboso\PipesFramework\Authorization\Document\Authorization;
 use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
-use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use Nette\Utils\Json;
 
 /**

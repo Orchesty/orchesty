@@ -3,7 +3,7 @@
 namespace Hanaboso\PipesFramework\Configurator\StatusService;
 
 use Bunny\Message;
-use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
+use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 use Hanaboso\PipesFramework\Configurator\Event\ProcessStatusEvent;
 use Hanaboso\PipesFramework\RabbitMq\CallbackStatus;
 use Hanaboso\PipesFramework\RabbitMq\Consumer\SyncCallbackAbstract;

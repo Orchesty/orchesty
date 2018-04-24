@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesFramework\User\Model\Token;
 
-use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
+use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 
 /**
  * Class TokenManagerException

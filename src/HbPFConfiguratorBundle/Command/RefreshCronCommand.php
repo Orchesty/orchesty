@@ -3,9 +3,9 @@
 namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
-use Hanaboso\PipesFramework\Commons\Exception\CronException;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
+use Hanaboso\CommonsBundle\Enum\TypeEnum;
+use Hanaboso\CommonsBundle\Exception\CronException;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Symfony\Component\Console\Command\Command;

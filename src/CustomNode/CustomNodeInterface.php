@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesFramework\CustomNode;
 
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 
 /**
  * Interface CustomNodeInterface
