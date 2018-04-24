@@ -23,3 +23,5 @@ You must add all of your new custom dependencies to Dockerfile where the go get 
 $ make docker-build
 $ make docker-push
 ```
+
+TODO - update readme

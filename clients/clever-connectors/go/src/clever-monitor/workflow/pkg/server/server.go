@@ -55,6 +55,8 @@ func (s *server) Start() {
 
 
 // TODO - implement logging using middleware
+// https://github.com/grpc-ecosystem/go-grpc-middleware/tree/master/logging/zap
+// https://blog.gopheracademy.com/advent-2017/go-grpc-beyond-basics/
 
 // CreateWorkflow creates new workflow
 func (s *server) CreateWorkflow(ctx context.Context, in *ws.CreateRequest) (*ws.WorkflowResponse, error) {

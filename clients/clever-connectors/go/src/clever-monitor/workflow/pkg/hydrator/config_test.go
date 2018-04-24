@@ -1,4 +1,4 @@
-package handler
+package hydrator
 
 import (
 	"testing"
@@ -8,15 +8,15 @@ import (
 )
 
 const (
-	editorExampleFile = "./examples/editor.json"
-	workflowExampleFile = "./examples/workflow.json"
-	workflowGeneratedFile = "./examples/workflow_generated.json"
+	editorExampleFile     = "../../examples/editor.json"
+	workflowExampleFile   = "../../examples/workflow.json"
+	workflowGeneratedFile = "../../examples/workflow_generated.json"
 )
 
 func TestStringToEditorConfig(t *testing.T) {
 	str := getExampleFileJson(t, editorExampleFile)
 
-	conf, err := stringToEditorConfig(str)
+	conf, err := StringToEditorConfig(str)
 	assert.Nil(t, err)
 	assert.Len(t, conf.Items, 3)
 
@@ -31,7 +31,7 @@ func TestStringToEditorConfig(t *testing.T) {
 }
 
 func TestStringToWorkflowConfig(t *testing.T) {
-	conf, err := stringToWorkflowConfig(getExampleFileJson(t, workflowExampleFile))
+	conf, err := StringToWorkflowConfig(getExampleFileJson(t, workflowExampleFile))
 
 	assert.Nil(t, err)
 	assertExampleConfig(t, conf)
@@ -40,7 +40,7 @@ func TestStringToWorkflowConfig(t *testing.T) {
 func TestWorkflowConfigToString(t *testing.T) {
 	config := createWorkflowConfig()
 
-	str, err := workflowConfigToString(config)
+	str, err := WorkflowConfigToString(config)
 	assert.Nil(t, err)
 
 	// check if we generate still same json
@@ -48,7 +48,7 @@ func TestWorkflowConfigToString(t *testing.T) {
 	assert.Equal(t, string(b), str)
 
 	// by hydrating from json we should get config struct with same values as original
-	regenerated, err := stringToWorkflowConfig(str)
+	regenerated, err := StringToWorkflowConfig(str)
 	assert.Nil(t, err)
 	assert.EqualValues(t, config, regenerated)
 }
@@ -81,7 +81,7 @@ func assertExampleConfig(t *testing.T, conf *ws.WorkflowConfig) {
 	assert.Len(t, conf.Filter.NotInTag, 1)
 	assert.Equal(t, "tag", conf.Filter.NotInTag[0])
 	assert.Equal(t, int32(10), conf.Filter.Priority)
-	assert.Equal(t, "variable_name/column_name/etc", conf.Filter.FilteringVariable)
+	assert.Equal(t, []string{"variable_name/column_name/etc"}, conf.Filter.FilteringVariable)
 
 	// Step fields
 	assert.Len(t, conf.Steps, 1)
@@ -117,7 +117,7 @@ func createWorkflowConfig() *ws.WorkflowConfig {
 
 	conf.Filter = &ws.WorkflowConfig_Filter{}
 	conf.Filter.Priority = 1
-	conf.Filter.FilteringVariable = "var"
+	conf.Filter.FilteringVariable = []string{"some var"}
 	conf.Filter.InSegment = []string{"seg1", "seg2"}
 	conf.Filter.NotInSegment = []string{}
 	conf.Filter.InTag = []string{"tag1"}
@@ -155,7 +155,7 @@ func createWorkflowConfig() *ws.WorkflowConfig {
 			},
 		},
 		NextFlow: &ws.WorkflowConfig_Step_NextFlow{
-			Id:   "507f1f77bcf86cd799439022",
+			Id: "507f1f77bcf86cd799439022",
 		},
 	}
 
@@ -180,7 +180,7 @@ func createWorkflowConfig() *ws.WorkflowConfig {
 			},
 		},
 		NextFlow: &ws.WorkflowConfig_Step_NextFlow{
-			Id:   "507f1f77bcf86cd799439033",
+			Id: "507f1f77bcf86cd799439033",
 		},
 	}
 

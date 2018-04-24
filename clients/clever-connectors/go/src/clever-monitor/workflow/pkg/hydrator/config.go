@@ -1,11 +1,11 @@
-package handler
+package hydrator
 
 import (
 	"github.com/golang/protobuf/jsonpb"
 	ws "clever-monitor/workflow/pkg/workflowservice"
 )
 
-func workflowConfigToString(conf *ws.WorkflowConfig) (string, error) {
+func WorkflowConfigToString(conf *ws.WorkflowConfig) (string, error) {
 	marshaler := jsonpb.Marshaler{}
 	str, err := marshaler.MarshalToString(conf)
 	if err != nil {
@@ -15,14 +15,14 @@ func workflowConfigToString(conf *ws.WorkflowConfig) (string, error) {
 	return str, nil
 }
 
-func stringToWorkflowConfig(json string) (*ws.WorkflowConfig, error){
+func StringToWorkflowConfig(json string) (*ws.WorkflowConfig, error){
 	var conf ws.WorkflowConfig
 	err := jsonpb.UnmarshalString(json, &conf)
 
 	return &conf, err
 }
 
-func stringToEditorConfig(json string) (*ws.EditorConfig, error){
+func StringToEditorConfig(json string) (*ws.EditorConfig, error){
 	var conf ws.EditorConfig
 	err := jsonpb.UnmarshalString(json, &conf)
 

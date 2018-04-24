@@ -104,7 +104,7 @@ func createGrpcClient(t *testing.T) (ws.WorkflowServiceClient, *grpc.ClientConn,
 
 // getValidJsonExample returns valid json example in string
 func getValidJsonExample(t *testing.T, file string) string {
-	b, err := ioutil.ReadFile("../pkg/handler/examples/" + file)
+	b, err := ioutil.ReadFile("../examples/" + file)
 	assert.Nil(t, err)
 
 	return string(b)

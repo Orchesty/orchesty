@@ -13,6 +13,7 @@ import (
 const (
 	shouldEndWithError = "aaaaaaaaaaaaaaaaaaaaaaaa"
 	successObjectId    = "5aa228e1922688649d414d84"
+	editorConfigFile   = "../../examples/editor.json"
 )
 
 type storageMock struct{}
@@ -66,9 +67,13 @@ func (s *storageMock) FindAllWorkflowConfigs(editorId string) ([]*storage.Workfl
 	return records, nil
 }
 
-type generatorMock struct {}
+type generatorMock struct{}
 
-func (gen *generatorMock) Generate(editor *ws.EditorConfig) ([]*ws.WorkflowConfig, error) {
+func (gen *generatorMock) Generate(
+	editor *ws.EditorConfig,
+	clientId int,
+	clientGuid string,
+) ([]*ws.WorkflowConfig, error) {
 	var generated []*ws.WorkflowConfig
 
 	return generated, nil
@@ -87,7 +92,7 @@ func TestWorkflowHandler_HandleCreate(t *testing.T) {
 	assert.Equal(t, int32(InvalidRequest), response.Code)
 	assert.Equal(t, messageErrorJsonInvalid, response.Message)
 
-	b, err := ioutil.ReadFile("examples/editor.json")
+	b, err := ioutil.ReadFile(editorConfigFile)
 	assert.Nil(t, err)
 
 	response = handler.HandleCreate(&ws.CreateRequest{Json: string(b)})

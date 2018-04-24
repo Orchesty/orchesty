@@ -10,7 +10,7 @@
     "in_tag": ["tag"],
     "not_in_tag": ["tag"],
     "priority": 10,
-    "filtering_variable":"variable_name/column_name/etc"
+    "filtering_variable":["variable_name/column_name/etc"]
   },
   "steps":
   [{

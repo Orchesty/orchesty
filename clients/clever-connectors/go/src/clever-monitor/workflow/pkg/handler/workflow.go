@@ -6,6 +6,7 @@ import (
 	"clever-monitor/workflow/pkg/generator"
 	ws "clever-monitor/workflow/pkg/workflowservice"
 	"gopkg.in/mgo.v2/bson"
+	"clever-monitor/workflow/pkg/hydrator"
 )
 
 const (
@@ -40,7 +41,7 @@ func (wh *workflowHandler) HandleCreate(in *ws.CreateRequest) *ws.WorkflowRespon
 		return &ws.WorkflowResponse{Code: int32(InvalidRequest), Message: err.Error()}
 	}
 
-	workflowConfigs, err := wh.generator.Generate(editorConf)
+	workflowConfigs, err := wh.generator.Generate(editorConf, int(in.ClientId), in.ClientGuid)
 	if err != nil {
 		return &ws.WorkflowResponse{Code: int32(InternalError), Message: err.Error()}
 	}
@@ -138,7 +139,7 @@ func (wh *workflowHandler) validateEditorConfigJson(json string) (*ws.EditorConf
 		return nil, fmt.Errorf(messageErrorJsonEmpty)
 	}
 
-	e, err := stringToEditorConfig(json)
+	e, err := hydrator.StringToEditorConfig(json)
 	if err != nil {
 		return nil, fmt.Errorf(messageErrorJsonInvalid)
 	}
@@ -149,7 +150,7 @@ func (wh *workflowHandler) validateEditorConfigJson(json string) (*ws.EditorConf
 func convertWorkflowConfigsToStrings(workflowConfigs []*ws.WorkflowConfig) ([]string, error) {
 	var confStrings []string
 	for _, wfConf := range workflowConfigs {
-		str, err := workflowConfigToString(wfConf)
+		str, err := hydrator.WorkflowConfigToString(wfConf)
 
 		if err != nil {
 			return confStrings, fmt.Errorf(
