@@ -4,7 +4,7 @@ namespace CleverConnectors\AppBundle\Model\Limits;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use DateTime;
-use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
+use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 
 /**
  * Class SystemLimitDto

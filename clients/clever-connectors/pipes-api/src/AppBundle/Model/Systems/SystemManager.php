@@ -28,11 +28,11 @@ use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use DateTime;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Hanaboso\PipesFramework\Commons\Exception\EnumException;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
+use Hanaboso\CommonsBundle\Exception\EnumException;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
-use Hanaboso\PipesFramework\TopologyGenerator\Request\RequestHandler;
+use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\RequestHandler;
 
 /**
  * Class SystemManager

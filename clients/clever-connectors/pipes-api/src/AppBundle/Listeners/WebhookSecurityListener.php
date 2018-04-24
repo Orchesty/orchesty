@@ -11,8 +11,8 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
 use GuzzleHttp\Psr7\Uri;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
-use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
+use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -53,9 +53,9 @@ class WebhookSecurityListener implements EventSubscriberInterface
         SystemLimitManager $systemLimitManager
     )
     {
-        $this->repo                    = $dm->getRepository(Webhook::class);
-        $this->curl                    = $curl;
-        $this->systemLimitManager      = $systemLimitManager;
+        $this->repo               = $dm->getRepository(Webhook::class);
+        $this->curl               = $curl;
+        $this->systemLimitManager = $systemLimitManager;
     }
 
     /**

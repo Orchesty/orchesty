@@ -9,7 +9,7 @@ use CleverConnectors\AppBundle\Utils\CMHeaders;
 use CleverConnectors\AppBundle\Utils\DateTimeUtils;
 use DateTime;
 use Doctrine\ODM\MongoDB\DocumentRepository;
-use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
+use Hanaboso\CommonsBundle\Crypt\CryptManager;
 use LogicException;
 use MongoId;
 

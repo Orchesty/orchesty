@@ -3,7 +3,7 @@
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Nutshell\Mapper;
 
 use CleverConnectors\AppBundle\Model\CM\SubscriberConnector\SubscriberObject\CMSubscriber;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Nette\Utils\Json;
 use Tests\ConnectorTestCaseAbstract;
 

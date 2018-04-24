@@ -14,9 +14,9 @@ use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Requester\RequesterTrait;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\PipedriveSystem;
 use GuzzleHttp\Psr7\Uri;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 
 /**
  * Class PipedriveUnsubscribeRequester

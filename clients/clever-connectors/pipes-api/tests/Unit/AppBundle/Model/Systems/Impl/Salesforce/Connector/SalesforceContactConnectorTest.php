@@ -21,10 +21,11 @@ final class SalesforceContactConnectorTest extends KernelTestCaseAbstract
         $conn = $this->container->get('hbpf.connector.salesforce-updated-contact-connector');
 
         $from = new DateTime('-3 days');
-        $to = new DateTime();
+        $to   = new DateTime();
 
         $res = $conn->getTimeQuery($from, $to);
-        self::assertEquals(sprintf(' where LastModifiedDate>%s and LastModifiedDate<=%s', $from->format(DateTime::ISO8601), $to->format(DateTime::ISO8601)), urldecode($res));
+        self::assertEquals(sprintf(' where LastModifiedDate>%s and LastModifiedDate<=%s',
+            $from->format(DateTime::ISO8601), $to->format(DateTime::ISO8601)), urldecode($res));
 
         $res = $conn->getTimeQuery(NULL, $to);
         self::assertEquals(sprintf(' where LastModifiedDate<=%s', $to->format(DateTime::ISO8601)), urldecode($res));

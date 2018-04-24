@@ -9,7 +9,7 @@
 
 namespace Hanaboso\PipesFramework\RabbitMq\Impl\Batch;
 
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
 

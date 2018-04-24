@@ -6,7 +6,7 @@ use CleverConnectors\AppBundle\Document\AudienceMirror;
 use CleverConnectors\AppBundle\Document\EmbedSubscriber;
 use CleverConnectors\AppBundle\Model\CustomNode\Comparator;
 use CleverConnectors\AppBundle\Model\SocialMultichannels\SocialMultichannelUpdateMirrorConnector;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Tests\DatabaseTestCaseAbstract;
 
 /**
@@ -28,10 +28,10 @@ final class SocialMultichannelUpdateMirrorConnectorTest extends DatabaseTestCase
         $dto = new ProcessDto();
         $dto->setData(json_encode([
             Comparator::KEY_PASS_DATA => [
-                'audience' => [
+                'audience'  => [
                     'id' => 'audId',
                 ],
-                'client_id'   => 'cli',
+                'client_id' => 'cli',
             ],
             'create'                  => [
                 'eml1',

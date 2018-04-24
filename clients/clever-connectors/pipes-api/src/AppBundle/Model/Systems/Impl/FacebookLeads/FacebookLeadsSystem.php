@@ -22,9 +22,9 @@ use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
 use CleverConnectors\AppBundle\Model\Systems\Traits\SystemTrait;
 use CleverConnectors\AppBundle\Utils\AuthorizationUtils;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -73,7 +73,7 @@ class FacebookLeadsSystem implements SystemInterface, OAuth2Interface
 
     )
     {
-        $this->provider = $provider;
+        $this->provider  = $provider;
         $this->container = $container;
     }
 

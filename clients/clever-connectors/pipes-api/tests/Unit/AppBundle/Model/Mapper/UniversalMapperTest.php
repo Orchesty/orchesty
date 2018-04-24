@@ -17,7 +17,7 @@ use CleverConnectors\AppBundle\Model\Mapper\UniversalMapper;
 use CleverConnectors\AppBundle\Model\MapTemplate\MapField;
 use CleverConnectors\AppBundle\Model\Systems\Dto\ActionDto;
 use DateTime;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use PHPUnit\Framework\TestCase;
 use Tests\PrivateTrait;
 
@@ -97,7 +97,7 @@ final class UniversalMapperTest extends TestCase
      */
     public function testProcessFieldTypeError(): void
     {
-        $badField = new MapField(TypeEnum::TEXT, new TypeEnum(TypeEnum::TEXT));
+        $badField = new MapField(TypeEnum::TEXT, TypeEnum::TEXT);
 
         $this->setProperty($badField, 'type', 'abc');
 
@@ -121,7 +121,7 @@ final class UniversalMapperTest extends TestCase
      */
     public function testProcessItemTypeError(): void
     {
-        $badField = new MapField(TypeEnum::TEXT, new TypeEnum(TypeEnum::TEXT));
+        $badField = new MapField(TypeEnum::TEXT, TypeEnum::TEXT);
 
         $this->setProperty($badField, 'items', [['abc']]);
 
@@ -393,11 +393,11 @@ final class UniversalMapperTest extends TestCase
             ['eml']
         );
 
-        $mapField = new MapField('inner.inner.key', new TypeEnum(TypeEnum::TEXT));
+        $mapField = new MapField('inner.inner.key', TypeEnum::TEXT);
         $mapField->addItem('string');
         $template->addField($mapField);
 
-        $mapField = new MapField('inner.inner.key2', new TypeEnum(TypeEnum::TEXT));
+        $mapField = new MapField('inner.inner.key2', TypeEnum::TEXT);
         $mapField->addItem('string');
         $template->addField($mapField);
 
@@ -448,22 +448,22 @@ final class UniversalMapperTest extends TestCase
      */
     private function getMap($text = [], $url = [], $date = [], $bool = [], $number = [], $email = []): MapTemplate
     {
-        $textField = new MapField(TypeEnum::TEXT, new TypeEnum(TypeEnum::TEXT));
+        $textField = new MapField(TypeEnum::TEXT, TypeEnum::TEXT);
         $textField = $this->fillItems($textField, $text);
 
-        $urlField = new MapField(TypeEnum::URL, new TypeEnum(TypeEnum::URL));
+        $urlField = new MapField(TypeEnum::URL, TypeEnum::URL);
         $urlField = $this->fillItems($urlField, $url);
 
-        $dateField = new MapField(TypeEnum::DATE, new TypeEnum(TypeEnum::DATE));
+        $dateField = new MapField(TypeEnum::DATE, TypeEnum::DATE);
         $dateField = $this->fillItems($dateField, $date);
 
-        $boolField = new MapField(TypeEnum::BOOL, new TypeEnum(TypeEnum::BOOL));
+        $boolField = new MapField(TypeEnum::BOOL, TypeEnum::BOOL);
         $boolField = $this->fillItems($boolField, $bool);
 
-        $numField = new MapField(TypeEnum::NUMBER, new TypeEnum(TypeEnum::NUMBER));
+        $numField = new MapField(TypeEnum::NUMBER, TypeEnum::NUMBER);
         $numField = $this->fillItems($numField, $number);
 
-        $emlField = new MapField(TypeEnum::EMAIL, new TypeEnum(TypeEnum::EMAIL));
+        $emlField = new MapField(TypeEnum::EMAIL, TypeEnum::EMAIL);
         $emlField = $this->fillItems($emlField, $email);
 
         $actionDto = new ActionDto('action', MapTemplate::DIRECTION_IN);

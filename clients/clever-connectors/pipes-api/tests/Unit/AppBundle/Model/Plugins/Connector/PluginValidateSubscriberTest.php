@@ -4,7 +4,7 @@ namespace Tests\Unit\AppBundle\Model\Plugins\Connector;
 
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Plugins\Connector\PluginCreatedSubscriberConnector;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Tests\KernelTestCaseAbstract;
 
 /**

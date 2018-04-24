@@ -22,7 +22,7 @@ use CleverConnectors\AppBundle\Model\Webhook\Traits\WebhookSystemTrait;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use DateTime;
 use GuzzleHttp\Psr7\Uri;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 
 /**
  * Class ZendeskSystem

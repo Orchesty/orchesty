@@ -15,11 +15,11 @@ use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Clue\React\Buzz\Message\ResponseException;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
-use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Transport\AsyncCurl\CurlSender;
+use Hanaboso\CommonsBundle\Transport\AsyncCurl\CurlSenderFactory;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
@@ -157,7 +157,12 @@ class CMEventActivator implements BatchInterface, CustomNodeInterface, LoggerAwa
         return $this
             ->fetchData($sender, $requester->getRequestDto([RequesterInterface::OBJECT => $event]))
             ->then(
-                function (ResponseInterface $response) use ($requester, $index, $systemInstall, $event, $results
+                function (ResponseInterface $response) use (
+                    $requester,
+                    $index,
+                    $systemInstall,
+                    $event,
+                    $results
                 ): SuccessMessage {
                     $responseDto = $this->createDtoFromResponse($response);
                     $requester->processResponse($responseDto, $systemInstall);

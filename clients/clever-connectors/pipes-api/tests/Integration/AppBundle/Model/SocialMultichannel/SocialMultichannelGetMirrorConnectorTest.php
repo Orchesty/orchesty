@@ -6,7 +6,7 @@ use CleverConnectors\AppBundle\Document\AudienceMirror;
 use CleverConnectors\AppBundle\Document\EmbedSubscriber;
 use CleverConnectors\AppBundle\Model\CustomNode\Comparator;
 use CleverConnectors\AppBundle\Model\SocialMultichannels\SocialMultichannelGetMirrorConnector;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Tests\DatabaseTestCaseAbstract;
 
 /**

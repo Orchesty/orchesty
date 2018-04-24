@@ -3,8 +3,8 @@
 namespace Hanaboso\PipesFramework\Configurator\Model;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator;
-use Hanaboso\PipesFramework\Commons\Enum\HandlerEnum;
+use Hanaboso\CommonsBundle\DatabaseManager\DatabaseManagerLocator;
+use Hanaboso\CommonsBundle\Enum\HandlerEnum;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
 

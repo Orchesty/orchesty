@@ -4,9 +4,9 @@ namespace Tests\Unit\AppBundle\Model\CM\SubscriberConnector;
 
 use CleverConnectors\AppBundle\Model\CM\SubscriberConnector\CMUpdateSubscriberConnector;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
-use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Tests\KernelTestCaseAbstract;
 
 /**

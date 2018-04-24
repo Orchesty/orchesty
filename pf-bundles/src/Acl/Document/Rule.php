@@ -3,9 +3,9 @@
 namespace Hanaboso\PipesFramework\Acl\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Hanaboso\CommonsBundle\Traits\Document\IdTrait;
 use Hanaboso\PipesFramework\Acl\Entity\GroupInterface;
 use Hanaboso\PipesFramework\Acl\Entity\RuleInterface;
-use Hanaboso\PipesFramework\Commons\Traits\Document\IdTrait;
 
 /**
  * Class Rule

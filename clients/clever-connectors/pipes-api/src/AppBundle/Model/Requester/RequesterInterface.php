@@ -10,8 +10,8 @@
 namespace CleverConnectors\AppBundle\Model\Requester;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 
 /**
  * Interface RequesterInterface

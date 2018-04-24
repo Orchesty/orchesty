@@ -3,7 +3,7 @@
 namespace CleverConnectors\AppBundle\Model\Plugins\Connector;
 
 use CleverConnectors\AppBundle\Model\Plugins\PluginSystemAbstract;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 
 /**
  * Class PluginUnsubscribeSubscriberConnector

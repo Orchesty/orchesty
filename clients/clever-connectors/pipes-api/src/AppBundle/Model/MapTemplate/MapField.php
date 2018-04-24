@@ -3,6 +3,7 @@
 namespace CleverConnectors\AppBundle\Model\MapTemplate;
 
 use CleverConnectors\AppBundle\Enum\TypeEnum;
+use Hanaboso\CommonsBundle\Exception\EnumException;
 
 /**
  * Class MapField
@@ -40,15 +41,17 @@ class MapField
     /**
      * MapField constructor.
      *
-     * @param string   $key
-     * @param TypeEnum $type
-     * @param string   $name
+     * @param string $key
+     * @param string $type
+     * @param string $name
+     *
+     * @throws EnumException
      */
-    public function __construct(string $key, TypeEnum $type, string $name = '')
+    public function __construct(string $key, string $type, string $name = '')
     {
         $this->key  = $key;
         $this->name = $name;
-        $this->type = $type->getValue();
+        $this->type = TypeEnum::isValid($type);
     }
 
     /**
@@ -92,13 +95,14 @@ class MapField
     }
 
     /**
-     * @param TypeEnum $type
+     * @param string $type
      *
      * @return MapField
+     * @throws EnumException
      */
-    public function setType(TypeEnum $type): MapField
+    public function setType(string $type): MapField
     {
-        $this->type = $type->getValue();
+        $this->type = TypeEnum::isValid($type);
 
         return $this;
     }
@@ -135,12 +139,13 @@ class MapField
      * @param array $data
      *
      * @return MapField|null
+     * @throws EnumException
      */
     public static function from(array $data): ?MapField
     {
         if (array_key_exists(self::KEY, $data) && array_key_exists(self::TYPE, $data)) {
 
-            $mapField = new MapField($data[self::KEY], new TypeEnum($data[self::TYPE]), $data[self::NAME] ?? '');
+            $mapField = new MapField($data[self::KEY], TypeEnum::isValid($data[self::TYPE]), $data[self::NAME] ?? '');
             if (array_key_exists(self::ITEMS, $data) && is_array($data[self::ITEMS])) {
                 foreach ($data[self::ITEMS] as $item) {
                     $mapField->addItem($item);

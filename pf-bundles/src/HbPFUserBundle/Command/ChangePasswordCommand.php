@@ -4,7 +4,7 @@ namespace Hanaboso\PipesFramework\HbPFUserBundle\Command;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ORM\EntityManager;
-use Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator;
+use Hanaboso\CommonsBundle\DatabaseManager\DatabaseManagerLocator;
 use Hanaboso\PipesFramework\HbPFUserBundle\Provider\ResourceProvider;
 use Hanaboso\PipesFramework\User\Entity\UserInterface;
 use Hanaboso\PipesFramework\User\Enum\ResourceEnum;

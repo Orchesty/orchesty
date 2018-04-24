@@ -4,9 +4,9 @@ namespace Tests\Live\AppBundle\Model\CM;
 
 use CleverConnectors\AppBundle\Model\CM\SubscriberConnector\CMUpdateSubscriberConnector;
 use GuzzleHttp\Client;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlClientFactory;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlClientFactory;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Tests\KernelTestCaseAbstract;
 
 /**

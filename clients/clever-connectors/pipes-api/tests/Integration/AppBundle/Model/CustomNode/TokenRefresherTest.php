@@ -7,7 +7,7 @@ use CleverConnectors\AppBundle\Model\CustomNode\TokenRefresher;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use DateTime;
 use Doctrine\ODM\MongoDB\DocumentRepository;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use MongoDB\BSON\ObjectID;
 use Tests\DatabaseTestCaseAbstract;
 

@@ -13,7 +13,7 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CustomNode\ProgressIncrementer;
 use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
 
@@ -39,7 +39,7 @@ final class ProgressIncrementerTest extends TestCase
             ->expects($this->once())
             ->method('increment')
             ->with('abc');
-        
+
         $dto = new ProcessDto();
         $dto
             ->setData(json_encode(['data' => []]))

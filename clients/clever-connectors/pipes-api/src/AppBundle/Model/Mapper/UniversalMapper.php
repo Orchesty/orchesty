@@ -15,7 +15,7 @@ use CleverConnectors\AppBundle\Model\Mapper\Exception\MapperException;
 use CleverConnectors\AppBundle\Model\MapTemplate\MapField;
 use DateTime;
 use GuzzleHttp\Psr7\Uri;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Throwable;
 
 /**

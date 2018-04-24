@@ -12,9 +12,9 @@ namespace Tests\Live\AppBundle\Model\Systems\Impl\FacebookLeads\Connector;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\FacebookLeadsSystem;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use Hanaboso\CommonsBundle\Crypt\CryptManager;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
-use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Nette\Utils\Json;
@@ -35,7 +35,7 @@ class FacebookGetLeadformConnectorTest extends DatabaseTestCaseAbstract
     {
         $this->markTestSkipped();
         $connector = $this->container->get('hbpf.connector.facebook-get-leadform-connector');
-        $system = $this->container->get('systems.facebookleads');
+        $system    = $this->container->get('systems.facebookleads');
 
         $topology = (new Topology())->setName('Topology');
         $this->persistAndFlush($topology);
@@ -76,7 +76,6 @@ class FacebookGetLeadformConnectorTest extends DatabaseTestCaseAbstract
             CMHeaders::createKey(CMHeaders::GUID)       => 'u_123',
             CMHeaders::createKey(CMHeaders::SYSTEM_KEY) => 's_-666',
         ]);
-
 
         $forms = $connector->getLeadForms($systemInstall, [FacebookLeadsSystem::PAGE_ID => '787114551385792']);
         $this->assertTrue(is_array($forms));

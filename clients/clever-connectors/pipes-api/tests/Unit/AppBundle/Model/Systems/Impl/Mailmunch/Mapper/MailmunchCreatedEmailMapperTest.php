@@ -7,7 +7,7 @@ use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Mailmunch\Mapper\MailmunchCreatedEmailMapper;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use PHPUnit_Framework_MockObject_MockObject;
 use Tests\KernelTestCaseAbstract;
 

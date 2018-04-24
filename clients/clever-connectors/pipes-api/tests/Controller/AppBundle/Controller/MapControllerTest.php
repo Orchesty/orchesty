@@ -41,7 +41,7 @@ final class MapControllerTest extends ControllerTestCaseAbstract
             'direction' => MapTemplate::DIRECTION_IN,
             'fields'    => [
                 [
-                    'key'  => 'abc',
+                    'key'   => 'abc',
                     'name'  => 'abc',
                     'type'  => TypeEnum::TEXT,
                     'items' => ['def', 'ghi'],
@@ -87,7 +87,7 @@ final class MapControllerTest extends ControllerTestCaseAbstract
             'direction' => MapTemplate::DIRECTION_OUT,
             'fields'    => [
                 [
-                    'key'  => 'abc',
+                    'key'   => 'abc',
                     'name'  => 'abc',
                     'type'  => TypeEnum::TEXT,
                     'items' => ['def', 'ghi'],
@@ -95,7 +95,7 @@ final class MapControllerTest extends ControllerTestCaseAbstract
             ],
         ];
 
-        $field = new MapField('aaa', new TypeEnum(TypeEnum::BOOL));
+        $field = new MapField('aaa', TypeEnum::BOOL);
         $field->addItem('bbb');
 
         $map = new MapTemplate();
@@ -134,7 +134,7 @@ final class MapControllerTest extends ControllerTestCaseAbstract
             ->setToken('token12345');
         $this->persistAndFlush($system);
 
-        $field = new MapField('aaa', new TypeEnum(TypeEnum::BOOL));
+        $field = new MapField('aaa', TypeEnum::BOOL);
         $field->addItem('bbb');
 
         $action = TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATE_CONTACT, $system->getSystem());

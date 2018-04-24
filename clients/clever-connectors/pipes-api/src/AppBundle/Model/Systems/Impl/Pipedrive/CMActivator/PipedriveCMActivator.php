@@ -8,7 +8,7 @@ use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Requester\PipedriveCMEventRequester;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Clue\React\Buzz\Message\ResponseException;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Psr\Http\Message\ResponseInterface;
 use React\EventLoop\LoopInterface;
@@ -55,7 +55,12 @@ class PipedriveCMActivator extends CMEventActivator
                     return $this->batchConnectorError($e, $this->getSystem($systemInstall), $systemInstall, 1);
                 })
             ->then(function (array $fields) use (
-                $sender, $requester, $systemInstall, $system, $callbackItem, &$results
+                $sender,
+                $requester,
+                $systemInstall,
+                $system,
+                $callbackItem,
+                &$results
             ) {
                 $requests = [];
                 foreach ($fields as $index => $eventKey) {

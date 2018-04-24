@@ -22,7 +22,7 @@ use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use CleverConnectors\AppBundle\Utils\WebhookUtils;
 use GuzzleHttp\Psr7\Uri;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 
 /**
  * Class NutshellSystem

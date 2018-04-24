@@ -10,10 +10,10 @@
 namespace Hanaboso\PipesFramework\Category\Model;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Hanaboso\CommonsBundle\DatabaseManager\DatabaseManagerLocator;
 use Hanaboso\PipesFramework\Category\Document\Category;
 use Hanaboso\PipesFramework\Category\Exception\CategoryException;
 use Hanaboso\PipesFramework\Category\Repository\CategoryRepository;
-use Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 
@@ -79,7 +79,7 @@ class CategoryManager
     {
         /** @var TopologyRepository $topologyRepository */
         $topologyRepository = $this->dm->getRepository(Topology::class);
-        $topologies = $topologyRepository->getTopologiesByCategory($category);
+        $topologies         = $topologyRepository->getTopologiesByCategory($category);
         if (count($topologies) == 0) {
             /** @var CategoryRepository $categoryRepository */
             $categoryRepository = $this->dm->getRepository(Category::class);
@@ -87,7 +87,8 @@ class CategoryManager
             $this->dm->remove($category);
             $this->dm->flush();
         } else {
-            throw new CategoryException('Category used by topology cannot be remove.', CategoryException::CATEGORY_USED);
+            throw new CategoryException('Category used by topology cannot be remove.',
+                CategoryException::CATEGORY_USED);
         }
     }
 
@@ -115,6 +116,7 @@ class CategoryManager
             }
             $category->setParent($data['parent']);
         }
+
         return $category;
     }
 

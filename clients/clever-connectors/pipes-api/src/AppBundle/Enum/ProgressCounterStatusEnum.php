@@ -9,12 +9,12 @@
 
 namespace CleverConnectors\AppBundle\Enum;
 
-use Hanaboso\PipesFramework\Commons\Enum\EnumAbstract;
+use Hanaboso\CommonsBundle\Enum\EnumAbstract;
 
 /**
  * Class ProgressCounterStatusEnum
  *
- * @package Hanaboso\PipesFramework\Commons\Enum
+ * @package Hanaboso\CommonsBundle\Enum
  */
 class ProgressCounterStatusEnum extends EnumAbstract
 {
@@ -35,15 +35,15 @@ class ProgressCounterStatusEnum extends EnumAbstract
     /**
      * @param bool $state
      *
-     * @return ProgressCounterStatusEnum
+     * @return string
      */
-    public static function from(bool $state): ProgressCounterStatusEnum
+    public static function from(bool $state): string
     {
         if ($state) {
-            return new ProgressCounterStatusEnum(self::SUCCESS);
+            return ProgressCounterStatusEnum::SUCCESS;
         }
 
-        return new ProgressCounterStatusEnum(self::FAILED);
+        return ProgressCounterStatusEnum::FAILED;
     }
 
 }

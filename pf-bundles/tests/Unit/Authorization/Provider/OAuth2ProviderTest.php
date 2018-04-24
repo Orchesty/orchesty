@@ -9,11 +9,11 @@
 
 namespace Tests\Unit\Authorization\Provider;
 
+use Hanaboso\CommonsBundle\Redirect\RedirectInterface;
 use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesFramework\Authorization\Wrapper\OAuth2Wrapper;
-use Hanaboso\PipesFramework\Commons\Redirect\RedirectInterface;
 use League\OAuth2\Client\Token\AccessToken;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;

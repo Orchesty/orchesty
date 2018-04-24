@@ -2,10 +2,10 @@
 
 namespace Tests\Unit\HbPFNotificationBundle\Model;
 
-use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Notification\Exception\NotificationException;
 use Hanaboso\PipesFramework\Notification\Model\NotificationManager;
 use PHPUnit\Framework\MockObject\MockObject;

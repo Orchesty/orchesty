@@ -5,7 +5,7 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use DateTime;
 use GuzzleHttp\Psr7\Uri;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 
 /**

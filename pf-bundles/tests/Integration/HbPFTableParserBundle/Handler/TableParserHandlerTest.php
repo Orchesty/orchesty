@@ -2,8 +2,8 @@
 
 namespace Tests\Integration\HbPFTableParserBundle\Handler;
 
-use Hanaboso\PipesFramework\Commons\FileStorage\Dto\FileContentDto;
-use Hanaboso\PipesFramework\Commons\FileStorage\FileStorage;
+use Hanaboso\CommonsBundle\FileStorage\Dto\FileContentDto;
+use Hanaboso\CommonsBundle\FileStorage\FileStorage;
 use Hanaboso\PipesFramework\HbPFTableParserBundle\Handler\TableParserHandler;
 use Hanaboso\PipesFramework\HbPFTableParserBundle\Handler\TableParserHandlerException;
 use Hanaboso\PipesFramework\Parser\Exception\TableParserException;

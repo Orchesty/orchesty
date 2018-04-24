@@ -28,10 +28,10 @@ use CleverConnectors\AppBundle\Utils\WebhookUtils;
 use DateTime;
 use DateTimeZone;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesFramework\Authorization\Utils\ScopeFormatter;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 
 /**
  * Class HubspotSystem

@@ -29,7 +29,7 @@ final class ServiceSystemManager
      */
     public function __construct(DocumentManager $dm, SystemLoader $systemLoader)
     {
-        $this->dm = $dm;
+        $this->dm           = $dm;
         $this->systemLoader = $systemLoader;
     }
 

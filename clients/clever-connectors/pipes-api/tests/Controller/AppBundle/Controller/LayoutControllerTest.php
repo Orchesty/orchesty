@@ -88,7 +88,7 @@ final class LayoutControllerTest extends ControllerTestCaseAbstract
         $action = TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATE_CONTACT, $system->getSystem());
         $dto    = new ActionDto($action, MapTemplate::DIRECTION_IN);
 
-        $field  = new LayoutField('aaa', new TypeEnum(TypeEnum::BOOL));
+        $field  = new LayoutField('aaa', TypeEnum::BOOL);
         $layout = new DataLayout();
         $layout
             ->setSystemInstall($system)
@@ -133,7 +133,7 @@ final class LayoutControllerTest extends ControllerTestCaseAbstract
         $action = TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATE_CONTACT, $system->getSystem());
         $dto    = new ActionDto($action, MapTemplate::DIRECTION_IN);
 
-        $field  = new LayoutField('aaa', new TypeEnum(TypeEnum::BOOL));
+        $field  = new LayoutField('aaa', TypeEnum::BOOL);
         $layout = new DataLayout();
         $layout
             ->setSystemInstall($system)

@@ -9,10 +9,10 @@ use CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector\ZohoUpdatedCont
 use DateTime;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
-use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
+use Hanaboso\CommonsBundle\Crypt\CryptManager;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Transport\AsyncCurl\CurlSenderFactory;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use PHPUnit\Framework\MockObject\MockObject;
 use React\EventLoop\Factory;
 use Tests\ConnectorTestCaseAbstract;

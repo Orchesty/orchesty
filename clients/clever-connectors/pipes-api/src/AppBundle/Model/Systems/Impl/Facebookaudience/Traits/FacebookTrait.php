@@ -6,8 +6,8 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
 use CleverConnectors\AppBundle\Utils\HeadersUtils;
 use Clue\React\Buzz\Message\ResponseException;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 
 /**

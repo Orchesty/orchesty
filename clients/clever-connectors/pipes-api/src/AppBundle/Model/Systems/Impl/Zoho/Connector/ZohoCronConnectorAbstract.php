@@ -8,9 +8,9 @@ use CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\ZohoSystem;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use CleverConnectors\AppBundle\Utils\CronUtils;
 use DateTime;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Transport\AsyncCurl\CurlSenderFactory;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
 

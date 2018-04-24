@@ -15,6 +15,7 @@ use CleverConnectors\AppBundle\Model\ProgressCounter\Publisher\IProgressPublishe
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Predis\Client;
+use ReflectionException;
 
 /**
  * Class ProgressCounterServiceTest
@@ -35,7 +36,7 @@ class ProgressCounterServiceTest extends TestCase
     protected $progressPublisher;
 
     /**
-     *
+     * @throws ReflectionException
      */
     public function setUp(): void
     {
@@ -87,7 +88,7 @@ class ProgressCounterServiceTest extends TestCase
         $this->progressPublisher->expects($this->once())->method('publish')->willReturn(TRUE);
 
         $processStatus = new ProgressCounterService($this->redis, $this->progressPublisher);
-        $processStatus->setStatus('aEcBuFkS12345', new ProgressCounterStatusEnum(ProgressCounterStatusEnum::FAILED));
+        $processStatus->setStatus('aEcBuFkS12345', ProgressCounterStatusEnum::FAILED);
     }
 
     /**
@@ -111,7 +112,7 @@ class ProgressCounterServiceTest extends TestCase
         $this->progressPublisher->expects($this->once())->method('publish')->willReturn(TRUE);
 
         $processStatus = new ProgressCounterService($this->redis, $this->progressPublisher);
-        $processStatus->setStatus('aEcBuFkS12345', new ProgressCounterStatusEnum(ProgressCounterStatusEnum::SUCCESS));
+        $processStatus->setStatus('aEcBuFkS12345', ProgressCounterStatusEnum::SUCCESS);
     }
 
     /**

@@ -3,7 +3,7 @@
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Quickbooks\Mapper;
 
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Tests\ConnectorTestCaseAbstract;
 
 /**

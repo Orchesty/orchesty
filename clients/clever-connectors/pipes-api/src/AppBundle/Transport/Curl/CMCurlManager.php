@@ -3,9 +3,9 @@
 namespace CleverConnectors\AppBundle\Transport\Curl;
 
 use GuzzleHttp\RequestOptions;
-use Hanaboso\PipesFramework\Commons\Metrics\InfluxDbSender;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlClientFactory;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
+use Hanaboso\CommonsBundle\Metrics\InfluxDbSender;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlClientFactory;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 
 /**
  * Class CMCurlManager

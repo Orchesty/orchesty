@@ -4,7 +4,7 @@ namespace Tests\Unit\AppBundle\Model\CustomNode;
 
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CustomNode\Comparator;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use PHPUnit\Framework\TestCase;
 
 /**

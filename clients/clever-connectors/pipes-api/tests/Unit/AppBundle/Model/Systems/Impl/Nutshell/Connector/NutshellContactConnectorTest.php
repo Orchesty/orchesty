@@ -3,7 +3,7 @@
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Nutshell\Connector;
 
 use CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell\Connector\NutshellUpdatedContactConnector;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Nette\Utils\Json;
 use Tests\ConnectorTestCaseAbstract;
 

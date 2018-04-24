@@ -15,7 +15,7 @@ use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Metrics\Client\MetricsClient;
 use Hanaboso\PipesFramework\Metrics\Enum\MetricsIntervalEnum;
 use Hanaboso\PipesFramework\Metrics\MetricsManager;
-use Hanaboso\PipesFramework\TopologyGenerator\GeneratorUtils;
+use Hanaboso\PipesFramework\Utils\GeneratorUtils;
 use InfluxDB\Database;
 use InfluxDB\Database\RetentionPolicy;
 use InfluxDB\Point;

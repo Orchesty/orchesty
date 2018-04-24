@@ -3,10 +3,10 @@
 namespace CleverConnectors\AppBundle\Document;
 
 use CleverConnectors\AppBundle\Document\Traits\IdTrait;
-use CleverConnectors\AppBundle\Enum\TypeEnum;
 use CleverConnectors\AppBundle\Model\DataLayout\LayoutField;
 use CleverConnectors\AppBundle\Model\Systems\Dto\ActionDto;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Hanaboso\CommonsBundle\Exception\EnumException;
 use Nette\Utils\Json;
 
 /**
@@ -155,11 +155,12 @@ class DataLayout
 
     /**
      * @ODM\PostLoad
+     * @throws EnumException
      */
     public function decode(): void
     {
         foreach (Json::decode($this->jsonFields, TRUE) as $field) {
-            $this->addField(new LayoutField($field['key'], new TypeEnum($field['type'])));
+            $this->addField(new LayoutField($field['key'], $field['type']));
         }
     }
 

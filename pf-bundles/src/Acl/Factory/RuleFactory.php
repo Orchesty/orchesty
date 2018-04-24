@@ -4,12 +4,12 @@ namespace Hanaboso\PipesFramework\Acl\Factory;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ORM\EntityManager;
+use Hanaboso\CommonsBundle\DatabaseManager\DatabaseManagerLocator;
 use Hanaboso\PipesFramework\Acl\Document\Rule as OdmRule;
 use Hanaboso\PipesFramework\Acl\Entity\GroupInterface;
 use Hanaboso\PipesFramework\Acl\Entity\Rule as OrmRule;
 use Hanaboso\PipesFramework\Acl\Entity\RuleInterface;
 use Hanaboso\PipesFramework\Acl\Exception\AclException;
-use Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator;
 
 /**
  * Class RuleFactory
@@ -66,7 +66,9 @@ class RuleFactory
      * @return RuleInterface
      * @throws AclException
      */
-    public static function createRule(string $resource, GroupInterface $group, int $actMask,
+    public static function createRule(string $resource,
+                                      GroupInterface $group,
+                                      int $actMask,
                                       int $propMask): RuleInterface
     {
         if ($group->getType() === GroupInterface::TYPE_ORM) {

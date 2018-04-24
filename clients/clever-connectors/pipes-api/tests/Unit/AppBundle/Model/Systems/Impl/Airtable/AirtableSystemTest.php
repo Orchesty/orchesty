@@ -5,7 +5,7 @@ namespace Tests\Unit\AppBundle\Model\Systems\Impl\Airtable;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Limits\SystemLimitDto;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\AirtableSystem;
-use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
+use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use Tests\KernelTestCaseAbstract;
 
 /**

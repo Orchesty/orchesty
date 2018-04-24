@@ -11,7 +11,7 @@ use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterfa
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
 use CleverConnectors\AppBundle\Model\Systems\Traits\SystemTrait;
 use GuzzleHttp\Psr7\Uri;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 
 /**
  * Class ShoptetSystem

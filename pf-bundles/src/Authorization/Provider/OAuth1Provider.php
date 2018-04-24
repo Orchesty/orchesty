@@ -11,10 +11,10 @@ namespace Hanaboso\PipesFramework\Authorization\Provider;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
+use Hanaboso\CommonsBundle\Redirect\RedirectInterface;
 use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth1DtoInterface;
 use Hanaboso\PipesFramework\Authorization\Utils\ScopeFormatter;
-use Hanaboso\PipesFramework\Commons\Redirect\RedirectInterface;
 use OAuth;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;

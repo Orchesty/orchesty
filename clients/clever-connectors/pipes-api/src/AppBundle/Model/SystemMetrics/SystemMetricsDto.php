@@ -4,7 +4,7 @@ namespace CleverConnectors\AppBundle\Model\SystemMetrics;
 
 use CleverConnectors\AppBundle\Enum\SystemMetricsIntervalEnum;
 use DateTime;
-use Hanaboso\PipesFramework\Commons\Exception\EnumException;
+use Hanaboso\CommonsBundle\Exception\EnumException;
 
 /**
  * Class SystemMetricsDto
@@ -61,7 +61,7 @@ class SystemMetricsDto
         $this->systemKey = $systemKey;
         $this->from      = $from;
         $this->to        = $to;
-        $this->interval  = (new SystemMetricsIntervalEnum($interval ?? SystemMetricsIntervalEnum::DAY))->getValue();
+        $this->interval  = SystemMetricsIntervalEnum::isValid($interval ?? SystemMetricsIntervalEnum::DAY);
         $this->guid      = $guid;
     }
 
@@ -141,7 +141,7 @@ class SystemMetricsDto
      */
     public function setInterval(string $interval): SystemMetricsDto
     {
-        $this->interval = (new SystemMetricsIntervalEnum($interval))->getValue();
+        $this->interval = SystemMetricsIntervalEnum::isValid($interval);
 
         return $this;
     }

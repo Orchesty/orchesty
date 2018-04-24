@@ -5,9 +5,9 @@ namespace Tests\Unit\AppBundle\Model\Systems\Impl\Aim\Connector;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Aim\AimSystem;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Aim\Connector\AimConnectorAbstract;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
-use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\StartingPointHandler;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -46,7 +46,7 @@ final class AimConnectorAbstractTest extends TestCase
      * @covers \CleverConnectors\AppBundle\Model\Systems\Impl\Aim\Connector\AimConnectorAbstract::processAction()
      *
      * @throws ConnectorException
-     * @throws \Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException
+     * @throws \Hanaboso\CommonsBundle\Transport\Curl\CurlException
      */
     public function testProcessInvalidAction(): void
     {
@@ -57,8 +57,8 @@ final class AimConnectorAbstractTest extends TestCase
         $dto->addHeader(CMHeaders::createKey(AimSystem::HEADER_ACTION), 'invalid_action');
         $dto->setData(json_encode([
             'category' => 'SYNCHRONIZATION_CATEGORY_TEMPLATE',
-            'sku' => '1234567890',
-            'time' => '2010-10-10 10:10:10',
+            'sku'      => '1234567890',
+            'time'     => '2010-10-10 10:10:10',
         ]));
 
         $this->createConnector()->processAction($dto);
@@ -69,7 +69,7 @@ final class AimConnectorAbstractTest extends TestCase
      * @covers \CleverConnectors\AppBundle\Model\Systems\Impl\Aim\Connector\AimConnectorAbstract::processAction()
      *
      * @throws ConnectorException
-     * @throws \Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException
+     * @throws \Hanaboso\CommonsBundle\Transport\Curl\CurlException
      * @throws \Exception
      */
     public function testProcessSyncAction(): void
@@ -78,8 +78,8 @@ final class AimConnectorAbstractTest extends TestCase
         $dto->addHeader(CMHeaders::createKey(AimSystem::HEADER_ACTION), AimSystem::SYNC_ACTION);
         $dto->setData(json_encode([
             'category' => 'SYNCHRONIZATION_CATEGORY_TEMPLATE',
-            'sku' => '1234567890',
-            'time' => '2010-10-10 10:10:10',
+            'sku'      => '1234567890',
+            'time'     => '2010-10-10 10:10:10',
         ]));
 
         $result = $this->createConnector()->processAction($dto);
@@ -92,7 +92,7 @@ final class AimConnectorAbstractTest extends TestCase
      * @covers \CleverConnectors\AppBundle\Model\Systems\Impl\Aim\Connector\AimConnectorAbstract::processAction()
      *
      * @throws ConnectorException
-     * @throws \Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException
+     * @throws \Hanaboso\CommonsBundle\Transport\Curl\CurlException
      * @throws \Exception
      */
     public function testProcessDeleteAction(): void
@@ -101,8 +101,8 @@ final class AimConnectorAbstractTest extends TestCase
         $dto->addHeader(CMHeaders::createKey(AimSystem::HEADER_ACTION), AimSystem::SYNC_ACTION);
         $dto->setData(json_encode([
             'category' => 'SYNCHRONIZATION_CATEGORY_TEMPLATE',
-            'sku' => '1234567890',
-            'time' => '2010-10-10 10:10:10',
+            'sku'      => '1234567890',
+            'time'     => '2010-10-10 10:10:10',
         ]));
 
         $result = $this->createConnector()->processAction($dto);
@@ -118,9 +118,9 @@ final class AimConnectorAbstractTest extends TestCase
     {
         /** @var StartingPointHandler|MockObject $start */
         $start = $this->getMockBuilder(StartingPointHandler::class)->disableOriginalConstructor()->getMock();
-        $aim = new AimSystem($start);
+        $aim   = new AimSystem($start);
         /** @var CurlManagerInterface|MockObject $curl */
-        $curl = $this->getMockBuilder(CurlManagerInterface::class)->getMock();
+        $curl         = $this->getMockBuilder(CurlManagerInterface::class)->getMock();
         $curlResponse = json_encode(['status' => 'Success', 'message' => '']);
         $curl->method('send')->willReturn(new ResponseDto(200, 'OK', $curlResponse, []));
 
@@ -133,13 +133,13 @@ final class AimConnectorAbstractTest extends TestCase
     private function getExpectedResultData(): array
     {
         return [
-            'status' => 'Success',
-            'message' => '',
-            'category' => 'SYNCHRONIZATION_CATEGORY_TEMPLATE',
-            'sku' => '1234567890',
-            'time' => '2010-10-10 10:10:10',
+            'status'      => 'Success',
+            'message'     => '',
+            'category'    => 'SYNCHRONIZATION_CATEGORY_TEMPLATE',
+            'sku'         => '1234567890',
+            'time'        => '2010-10-10 10:10:10',
             'destination' => 'test',
         ];
     }
-    
+
 }

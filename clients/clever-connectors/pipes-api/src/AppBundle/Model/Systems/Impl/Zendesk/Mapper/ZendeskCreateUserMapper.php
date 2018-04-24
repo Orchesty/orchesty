@@ -3,7 +3,7 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Mapper;
 
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
 /**

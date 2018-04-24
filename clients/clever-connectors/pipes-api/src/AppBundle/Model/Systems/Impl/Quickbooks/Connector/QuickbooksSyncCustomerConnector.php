@@ -21,10 +21,10 @@ use Clue\React\Buzz\Message\ResponseException;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Transport\AsyncCurl\CurlSenderFactory;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Psr\Http\Message\ResponseInterface;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
@@ -109,7 +109,13 @@ class QuickbooksSyncCustomerConnector extends QuickbooksCustomerConnectorAbstrac
                 return reject();
             }
         )->then(
-            function (int $total) use ($sender, $callbackItem, $requestDto, $processId, $counterService, $systemInstall
+            function (int $total) use (
+                $sender,
+                $callbackItem,
+                $requestDto,
+                $processId,
+                $counterService,
+                $systemInstall
             ) {
                 $counterService->setTotal($processId, $total * self::PAGE_LIMIT);
 

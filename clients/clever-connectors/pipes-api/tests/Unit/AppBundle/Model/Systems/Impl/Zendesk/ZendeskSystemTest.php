@@ -8,7 +8,7 @@ use CleverConnectors\AppBundle\Model\Limits\SystemLimitDto;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\ZendeskSystem;
 use DateTime;
 use Exception;
-use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
+use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use PHPUnit\Framework\TestCase;
 
 /**

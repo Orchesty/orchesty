@@ -10,7 +10,7 @@
 namespace CleverConnectors\AppBundle\Model\Mapper;
 
 use CleverConnectors\AppBundle\Document\MapTemplate;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 
 /**
  * Interface MapperInterface

@@ -5,16 +5,16 @@ namespace CleverConnectors\AppBundle\Handler;
 use CleverConnectors\AppBundle\Document\LastSync;
 use CleverConnectors\AppBundle\Document\Webhook;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemManager;
 use CleverConnectors\AppBundle\Repository\WebhookRepository;
-use Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator;
+use Hanaboso\CommonsBundle\DatabaseManager\DatabaseManagerLocator;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
-use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\GeneratorHandler;
+use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\RequestHandler;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler as HbPFTopologyHandler;
-use Hanaboso\PipesFramework\TopologyGenerator\Request\RequestHandler;
 
 /**
  * Class TopologyHandler
@@ -34,19 +34,17 @@ class TopologyHandler extends HbPFTopologyHandler
      *
      * @param DatabaseManagerLocator $dml
      * @param TopologyManager        $manager
-     * @param GeneratorHandler       $generatorHandler
      * @param SystemManager          $sysManager
      * @param RequestHandler         $requestHandler
      */
     public function __construct(
         DatabaseManagerLocator $dml,
         TopologyManager $manager,
-        GeneratorHandler $generatorHandler,
         SystemManager $sysManager,
         RequestHandler $requestHandler
     )
     {
-        parent::__construct($dml, $manager, $generatorHandler, $requestHandler);
+        parent::__construct($dml, $manager, $requestHandler);
         $this->sysManager = $sysManager;
     }
 
@@ -55,6 +53,7 @@ class TopologyHandler extends HbPFTopologyHandler
      *
      * @return bool
      * @throws CleverConnectorsException
+     * @throws SystemException
      */
     public function deleteTopologyById(string $id): bool
     {
@@ -89,6 +88,7 @@ class TopologyHandler extends HbPFTopologyHandler
      * @param string $topologyName
      *
      * @return bool
+     * @throws SystemException
      */
     public function deleteWebhooksByTopologyName(string $topologyName): bool
     {

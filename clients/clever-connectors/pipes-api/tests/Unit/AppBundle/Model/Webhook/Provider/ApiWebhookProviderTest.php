@@ -15,8 +15,8 @@ use CleverConnectors\AppBundle\Model\Webhook\Provider\ApiWebhookProvider;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Repository\WebhookRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
-use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Tests\Integration\AppBundle\Model\Systems\Impl\NullSystem;
 use Tests\KernelTestCaseAbstract;
 

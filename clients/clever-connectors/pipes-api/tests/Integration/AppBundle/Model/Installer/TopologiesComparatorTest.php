@@ -14,7 +14,7 @@ use CleverConnectors\AppBundle\Model\Installer\Dto\TopologyFile;
 use CleverConnectors\AppBundle\Model\Installer\Dto\UpdateObject;
 use CleverConnectors\AppBundle\Model\Installer\TopologiesComparator;
 use FOS\RestBundle\Decoder\XmlDecoder;
-use Hanaboso\PipesFramework\Commons\Enum\TopologyStatusEnum;
+use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
 use Tests\DatabaseTestCaseAbstract;
@@ -47,7 +47,8 @@ final class TopologiesComparatorTest extends DatabaseTestCaseAbstract
         $topology3
             ->setName('file2')
             ->setRawBpmn($this->load('file2.tplg', FALSE))
-            ->setContentHash(TopologySchemaUtils::getIndexHash(TopologySchemaUtils::getSchemaObject($xmlDecoder->decode($this->load('file2.tplg', FALSE)))))
+            ->setContentHash(TopologySchemaUtils::getIndexHash(TopologySchemaUtils::getSchemaObject($xmlDecoder->decode($this->load('file2.tplg',
+                FALSE)))))
             ->setEnabled(TRUE)
             ->setVisibility(TopologyStatusEnum::PUBLIC);
         $this->dm->persist($topology3);

@@ -4,7 +4,7 @@ namespace CleverConnectors\AppBundle\Handler;
 
 use CleverConnectors\AppBundle\Model\MapTemplate\MapManager;
 use CleverConnectors\AppBundle\Model\Systems\SystemManager;
-use Hanaboso\PipesFramework\Commons\Utils\ControllerUtils;
+use Hanaboso\CommonsBundle\Utils\ControllerUtils;
 
 /**
  * Class MapHandler

@@ -2,8 +2,8 @@
 
 namespace Hanaboso\PipesFramework\ApiGateway\Listener;
 
-use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
-use Hanaboso\PipesFramework\Commons\Traits\ControllerTrait;
+use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
+use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;

@@ -6,7 +6,7 @@ use CleverConnectors\AppBundle\Handler\ServiceSystemHandler;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
-use Hanaboso\PipesFramework\Commons\Traits\ControllerTrait;
+use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

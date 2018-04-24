@@ -2,7 +2,7 @@
 
 namespace Tests\Controller\HbPFTableParserBundle\Controller;
 
-use Hanaboso\PipesFramework\Commons\Exception\FileStorageException;
+use Hanaboso\CommonsBundle\Exception\FileStorageException;
 use Hanaboso\PipesFramework\Parser\Exception\TableParserException;
 use Tests\ControllerTestCaseAbstract;
 
@@ -75,7 +75,7 @@ class ApiControllerTest extends ControllerTestCaseAbstract
     public function testToFromNotFound(): void
     {
         $response = $this->sendPost('/parser/json/to/csv', ['file_id' => '']);
-        $content = $response->content;
+        $content  = $response->content;
 
         $this->assertEquals(500, $response->status);
         $this->assertEquals(FileStorageException::class, $content->type);
@@ -90,7 +90,7 @@ class ApiControllerTest extends ControllerTestCaseAbstract
         $response = $this->sendPost('/parser/json/to/unknown', [
             'file_id' => sprintf('%s/../../../Integration/Parser/data/output-10.json', __DIR__),
         ]);
-        $content = $response->content;
+        $content  = $response->content;
 
         $this->assertEquals(500, $response->status);
         $this->assertEquals(TableParserException::class, $content->type);
@@ -129,7 +129,7 @@ class ApiControllerTest extends ControllerTestCaseAbstract
         $response = $this->sendPost('/parser/json/to/unknown', [
             'file_id' => sprintf('%s/../../../Integration/Parser/data/output-10.json', __DIR__),
         ]);
-        $content = $response->content;
+        $content  = $response->content;
 
         $this->assertEquals(500, $response->status);
         $this->assertEquals(TableParserException::class, $content->type);

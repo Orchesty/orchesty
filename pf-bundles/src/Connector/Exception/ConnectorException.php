@@ -9,7 +9,7 @@
 
 namespace Hanaboso\PipesFramework\Connector\Exception;
 
-use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
+use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 
 /**
  * Class ConnectorException

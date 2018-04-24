@@ -10,7 +10,7 @@
 namespace CleverConnectors\AppBundle\Model\CM\TestRepeaterConnector;
 
 use CleverConnectors\AppBundle\Utils\CMHeaders;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Predis\Client;
 

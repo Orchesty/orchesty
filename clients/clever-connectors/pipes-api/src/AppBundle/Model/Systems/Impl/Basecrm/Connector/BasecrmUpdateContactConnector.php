@@ -6,9 +6,9 @@ use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use GuzzleHttp\Psr7\Uri;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 
 /**
  * Class BasecrmUpdateContactConnector
@@ -57,7 +57,8 @@ class BasecrmUpdateContactConnector extends BasecrmUpdateContactConnectorAbstrac
             $res = $this->curl->send($requestDto);
 
             $body = json_decode($res->getBody(), TRUE);
-            $key  = CleverCustomKeysEnum::getFromType(CMHeaders::get(CMHeaders::CM_EVENT_TYPE, $dto->getHeaders()) ?? '');
+            $key  = CleverCustomKeysEnum::getFromType(CMHeaders::get(CMHeaders::CM_EVENT_TYPE,
+                    $dto->getHeaders()) ?? '');
 
             if (!is_array($body)
                 || !array_key_exists('data', $body)

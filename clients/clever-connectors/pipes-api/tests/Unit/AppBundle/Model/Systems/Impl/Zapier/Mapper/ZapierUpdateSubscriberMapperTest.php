@@ -4,7 +4,7 @@ namespace Tests\Unit\AppBundle\Model\Systems\Impl\Zapier\Mapper;
 
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Zapier\Mapper\ZapierUpdateSubscriberMapper;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Tests\ConnectorTestCaseAbstract;
 
 /**

@@ -4,7 +4,7 @@ namespace CleverConnectors\AppBundle\Model\Systems;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Limits\SystemLimitDto;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 
 /**
  * Interface SystemInterface

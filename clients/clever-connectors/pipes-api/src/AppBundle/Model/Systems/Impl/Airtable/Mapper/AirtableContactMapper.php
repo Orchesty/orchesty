@@ -11,7 +11,7 @@ use CleverConnectors\AppBundle\Model\MapTemplate\MapField;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\AirtableSystem;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Exception;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use LogicException;
 
 /**

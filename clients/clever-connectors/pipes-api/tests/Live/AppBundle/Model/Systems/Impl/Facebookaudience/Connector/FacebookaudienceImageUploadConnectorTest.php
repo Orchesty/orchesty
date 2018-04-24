@@ -8,9 +8,9 @@ use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Facebookaudie
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
 use PHPUnit_Framework_MockObject_MockObject;
 use Tests\KernelTestCaseAbstract;
 

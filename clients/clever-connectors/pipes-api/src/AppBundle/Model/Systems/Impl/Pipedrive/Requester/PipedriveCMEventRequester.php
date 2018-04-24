@@ -11,8 +11,8 @@ use CleverConnectors\AppBundle\Model\Requester\RequesterTrait;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\PipedriveSystem;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 
 /**
  * Class PipedriveCMEventRequester
@@ -50,7 +50,7 @@ final class PipedriveCMEventRequester implements RequesterInterface
     {
         $this->systemInstall = $systemInstall;
         $this->headers       = $headers;
-        $this->dm = $dm;
+        $this->dm            = $dm;
     }
 
     /**

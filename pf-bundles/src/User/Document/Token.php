@@ -4,7 +4,7 @@ namespace Hanaboso\PipesFramework\User\Document;
 
 use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Hanaboso\PipesFramework\Commons\Traits\Document\IdTrait;
+use Hanaboso\CommonsBundle\Traits\Document\IdTrait;
 use Hanaboso\PipesFramework\User\Entity\TmpUserInterface;
 use Hanaboso\PipesFramework\User\Entity\TokenInterface;
 use Hanaboso\PipesFramework\User\Entity\UserInterface;

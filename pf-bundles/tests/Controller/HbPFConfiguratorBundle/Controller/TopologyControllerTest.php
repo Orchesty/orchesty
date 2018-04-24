@@ -2,7 +2,7 @@
 
 namespace Tests\Controller\HbPFConfiguratorBundle\Controller;
 
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler;
@@ -56,7 +56,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     public function testGetTopologyNotFound(): void
     {
         $response = $this->sendGet('/api/topologies/999');
-        $content = $response->content;
+        $content  = $response->content;
 
         self::assertEquals(500, $response->status);
         self::assertEquals(TopologyException::class, $content->type);
@@ -112,7 +112,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             'descr'   => 'Topology 2',
             'enabled' => TRUE,
         ]);
-        $content = $response->content;
+        $content  = $response->content;
 
         self::assertEquals(500, $response->status);
         self::assertEquals(TopologyException::class, $content->type);
@@ -156,7 +156,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             'status'  => $response->getStatusCode(),
             'content' => Json::decode($response->getContent()),
         ];
-        $content = $response->content;
+        $content  = $response->content;
 
         self::assertEquals(500, $response->status);
         self::assertEquals(TopologyException::class, $content->type);
@@ -217,7 +217,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             'status'  => $response->getStatusCode(),
             'content' => Json::decode($response->getContent()),
         ];
-        $content = $response->content;
+        $content  = $response->content;
 
         self::assertEquals(500, $response->status);
         self::assertEquals(TopologyException::class, $content->type);

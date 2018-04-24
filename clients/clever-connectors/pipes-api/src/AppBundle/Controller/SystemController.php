@@ -8,10 +8,10 @@ use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use Exception;
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
-use Hanaboso\PipesFramework\Commons\Exception\EnumException;
-use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
-use Hanaboso\PipesFramework\Commons\Traits\ControllerTrait;
-use Hanaboso\PipesFramework\Commons\Utils\Base64;
+use Hanaboso\CommonsBundle\Exception\EnumException;
+use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
+use Hanaboso\CommonsBundle\Traits\ControllerTrait;
+use Hanaboso\CommonsBundle\Utils\Base64;
 use InvalidArgumentException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -468,7 +468,6 @@ class SystemController extends FOSRestController
             default:
                 $code = 500;
         }
-
 
         return $this->getErrorResponse($e, $code);
     }

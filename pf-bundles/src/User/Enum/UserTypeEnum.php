@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesFramework\User\Enum;
 
-use Hanaboso\PipesFramework\Commons\Enum\EnumAbstract;
+use Hanaboso\CommonsBundle\Enum\EnumAbstract;
 
 /**
  * Class UserTypeEnum

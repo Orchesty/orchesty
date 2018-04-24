@@ -6,10 +6,10 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CustomNode\Comparator;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use GuzzleHttp\Psr7\Uri;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Transport\AsyncCurl\CurlSender;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Psr\Http\Message\ResponseInterface;
 use React\EventLoop\LoopInterface;
@@ -105,7 +105,13 @@ class CMGetListSubscribersSocialConnector extends CMGetSubscribersConnectorAbstr
 
         return $this->fetchData($sender, $requestDto)->then(
             function (ResponseInterface $response) use (
-                $sender, $requestDto, $callbackItem, $page, $processId, $subs, $dto
+                $sender,
+                $requestDto,
+                $callbackItem,
+                $page,
+                $processId,
+                $subs,
+                $dto
             ) {
                 if ($response->getStatusCode() === 200) {
                     $res = json_decode($response->getBody()->getContents(), TRUE);
