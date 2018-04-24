@@ -1858,11 +1858,11 @@
         },
         {
             "name": "hanaboso/pipes-framework",
-            "version": "1.0.19",
+            "version": "1.0.20",
             "dist": {
                 "type": "path",
                 "url": "../../../pf-bundles",
-                "reference": "428ac94999d363cb8ed4574dc36f4b1968eb6fea",
+                "reference": "51f45b14f1ce6db6909374fec0a03c24b796a620",
                 "shasum": null
             },
             "require": {
