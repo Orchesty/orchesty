@@ -78,7 +78,7 @@ class CMGetDistributionsConnector extends CMDistributionListAbstract
         while (TRUE) {
             $res = $this->curl->send(RequestDto::from($req, new Uri($this->getUrl($page++))));
 
-            if ($res->getStatusCode() === 200) {
+            if (in_array($res->getStatusCode(), [200, 204])) {
                 $data = json_decode($res->getBody(), TRUE);
                 if (empty($data)) {
                     break;

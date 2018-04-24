@@ -4,6 +4,7 @@ namespace Tests\Unit\AppBundle\Model\CM\ListConnector;
 
 use CleverConnectors\AppBundle\Model\CM\ListConnector\CMGetDistributionsConnector;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use Exception;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
@@ -17,11 +18,11 @@ use Tests\ConnectorTestCaseAbstract;
  *
  * @package Tests\Unit\AppBundle\Model\CM\ListConnector
  */
-class CMGetDistributionsConnectorTest extends ConnectorTestCaseAbstract
+final class CMGetDistributionsConnectorTest extends ConnectorTestCaseAbstract
 {
 
     /**
-     *
+     * @throws Exception
      */
     public function testGetDistributionArray(): void
     {
@@ -68,6 +69,8 @@ class CMGetDistributionsConnectorTest extends ConnectorTestCaseAbstract
 
     /**
      * @return CurlManagerInterface|MockObject
+     *
+     * @throws Exception
      */
     private function mockCurl()
     {
