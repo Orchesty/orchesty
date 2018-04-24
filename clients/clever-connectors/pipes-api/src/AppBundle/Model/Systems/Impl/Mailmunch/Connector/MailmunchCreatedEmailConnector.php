@@ -3,7 +3,7 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Mailmunch\Connector;
 
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use function GuzzleHttp\Psr7\parse_query;

@@ -240,7 +240,9 @@ class AsyncConsumerCommand extends Command implements LoggerAwareInterface
             })
             ->then(function (Channel $channel) use ($loop, $consumer): void {
                 $channel->consume(
-                    function (Message $message, Channel $channel, Client $client) use ($loop, $consumer
+                    function (Message $message, Channel $channel, Client $client) use (
+                        $loop,
+                        $consumer
                     ): PromiseInterface {
 
                         $this->logger->debug('Message received', $this->prepareBunnyMessage($message));

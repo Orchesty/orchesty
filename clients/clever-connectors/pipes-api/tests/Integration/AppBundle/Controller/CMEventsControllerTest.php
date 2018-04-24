@@ -32,7 +32,7 @@ final class CMEventsControllerTest extends ControllerTestCaseAbstract
             ->method('hardBounceEvent')->willReturn('');
 
         $controller = new CMEventsController($handler);
-        $req = new Request();
+        $req        = new Request();
 
         $res = $controller->createAction($req, 'usr');
         self::assertEquals(200, $res->getStatusCode());

@@ -11,7 +11,7 @@ namespace Demo\CustomNode;
 
 use EmailServiceBundle\Utils\PipesHeaders;
 use Exception;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
 /**

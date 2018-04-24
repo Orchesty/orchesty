@@ -16,7 +16,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use FOS\RestBundle\Decoder\XmlDecoder;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
-use Hanaboso\PipesFramework\TopologyGenerator\Request\RequestHandler;
+use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\RequestHandler;
 use Predis\Client;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;

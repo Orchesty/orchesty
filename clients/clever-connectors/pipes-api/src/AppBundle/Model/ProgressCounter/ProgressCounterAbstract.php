@@ -11,6 +11,7 @@ namespace CleverConnectors\AppBundle\Model\ProgressCounter;
 
 use CleverConnectors\AppBundle\Enum\ProgressCounterStatusEnum;
 use CleverConnectors\AppBundle\Model\ProgressCounter\Publisher\IProgressPublisher;
+use Hanaboso\CommonsBundle\Exception\EnumException;
 use Predis\Client;
 
 /**
@@ -117,16 +118,19 @@ abstract class ProgressCounterAbstract implements ProgressCounterInterface
     }
 
     /**
-     * @param string                    $processId
-     * @param ProgressCounterStatusEnum $status
+     * @param string $processId
+     * @param string $status
+     *
+     * @throws EnumException
      */
-    public function setStatus(string $processId, ProgressCounterStatusEnum $status): void
+    public function setStatus(string $processId, string $status): void
     {
-        $this->redis->hset($this->createKey($processId), self::PROGRESS_COUNTER_STATUS, $status->getValue());
+        $this->redis->hset($this->createKey($processId), self::PROGRESS_COUNTER_STATUS,
+            ProgressCounterStatusEnum::isValid($status));
 
         $this->progressPublisher->publish($this->prepareMessage($processId));
 
-        if ($status->getValue() == ProgressCounterStatusEnum::SUCCESS) {
+        if ($status == ProgressCounterStatusEnum::SUCCESS) {
             $this->garbageData($processId);
         }
     }

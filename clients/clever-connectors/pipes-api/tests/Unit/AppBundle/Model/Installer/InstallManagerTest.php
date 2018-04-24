@@ -16,14 +16,15 @@ use CleverConnectors\AppBundle\Model\Installer\Dto\TopologyFile;
 use CleverConnectors\AppBundle\Model\Installer\Dto\UpdateObject;
 use CleverConnectors\AppBundle\Model\Installer\InstallManager;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
-use Hanaboso\PipesFramework\TopologyGenerator\Request\RequestHandler;
+use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\RequestHandler;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Predis\Client;
+use ReflectionException;
 use Tests\PrivateTrait;
 
 /**
@@ -72,6 +73,7 @@ final class InstallManagerTest extends TestCase
 
     /**
      * @throws CleverConnectorsException
+     * @throws ReflectionException
      */
     public function testMakeInstallEx(): void
     {
@@ -84,11 +86,12 @@ final class InstallManagerTest extends TestCase
     }
 
     /**
-     * @param string        $redisResult
-     * @param null|Topology $savedTopo
-     * @param array         $dirs
+     * @param null|string $redisResult
+     * @param Topology    $savedTopo
+     * @param array       $dirs
      *
      * @return InstallManager
+     * @throws ReflectionException
      */
     private function createManager(
         ?string $redisResult,

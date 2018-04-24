@@ -12,7 +12,7 @@ namespace CleverConnectors\AppBundle\Controller;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use Exception;
 use FOS\RestBundle\Controller\Annotations\Route;
-use Hanaboso\PipesFramework\Commons\Traits\ControllerTrait;
+use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;

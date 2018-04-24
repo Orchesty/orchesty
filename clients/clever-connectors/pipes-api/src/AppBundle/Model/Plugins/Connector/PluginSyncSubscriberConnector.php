@@ -15,11 +15,11 @@ use Clue\React\Buzz\Message\ResponseException;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
-use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Transport\AsyncCurl\CurlSender;
+use Hanaboso\CommonsBundle\Transport\AsyncCurl\CurlSenderFactory;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
@@ -189,7 +189,12 @@ class PluginSyncSubscriberConnector implements ConnectorInterface, BatchInterfac
         $res = $this->fetchData($sender, RequestDto::from($requestDto, $uri))
             ->then(
                 function (ResponseInterface $response) use (
-                    $sender, $requestDto, $callbackItem, $system, $systemInstall, $processId
+                    $sender,
+                    $requestDto,
+                    $callbackItem,
+                    $system,
+                    $systemInstall,
+                    $processId
                 ) {
                     $data = json_decode($response->getBody()->getContents(), TRUE);
 

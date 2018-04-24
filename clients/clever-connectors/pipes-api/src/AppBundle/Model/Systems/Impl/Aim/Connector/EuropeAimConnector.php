@@ -3,7 +3,7 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Aim\Connector;
 
 use CleverConnectors\AppBundle\Model\Systems\Impl\Aim\AimSystem;
-use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
+use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 
 /**
  * Class EuropeAimConnector

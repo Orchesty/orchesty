@@ -3,8 +3,8 @@
 namespace Tests\Live\AppBundle\Model\Systems\Impl\Magento2\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Crypt\CryptManager;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;

@@ -9,7 +9,7 @@
 
 namespace Hanaboso\PipesFramework\HbPFJoinerBundle\Exception;
 
-use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
+use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 
 /**
  * Class JoinerException

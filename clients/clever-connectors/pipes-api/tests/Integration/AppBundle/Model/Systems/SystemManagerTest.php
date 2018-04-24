@@ -6,6 +6,7 @@ use CleverConnectors\AppBundle\Document\DataLayout;
 use CleverConnectors\AppBundle\Document\MapTemplate;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\TypeEnum;
+use CleverConnectors\AppBundle\Exceptions\Exception;
 use CleverConnectors\AppBundle\Model\Systems\Dto\ActionDto;
 use CleverConnectors\AppBundle\Model\Systems\Dto\SystemData;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
@@ -13,10 +14,11 @@ use CleverConnectors\AppBundle\Model\Systems\SystemManager;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use Doctrine\ODM\MongoDB\DocumentRepository;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\CommonsBundle\Exception\EnumException;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
-use Hanaboso\PipesFramework\TopologyGenerator\Request\RequestHandler;
+use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\RequestHandler;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\Integration\AppBundle\Model\Systems\Impl\NullSystem;
 use Tests\PrivateTrait;
@@ -52,7 +54,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testGetSystemsByUserAndGroup(): void
     {
@@ -60,7 +62,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testGetSystemsByUser(): void
     {
@@ -68,7 +70,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testGetSystemsByUserNotFound(): void
     {
@@ -79,7 +81,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testGetSystemsByGroup(): void
     {
@@ -87,7 +89,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testGetSystemsByGroupNotFound(): void
     {
@@ -98,7 +100,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testGetUserSystems(): void
     {
@@ -115,7 +117,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testGetUserSystemsNoSystem(): void
     {
@@ -124,7 +126,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testGetUserSystemsNotFound(): void
     {
@@ -141,7 +143,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testGetUserSystem(): void
     {
@@ -283,7 +285,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testInstallSystem(): void
     {
@@ -295,7 +297,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testInstallSystemNotFound(): void
     {
@@ -306,7 +308,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testUninstallSystem(): void
     {
@@ -350,7 +352,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testUninstallSystemNotFoundUser(): void
     {
@@ -367,7 +369,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testUninstallSystemNotFoundSystem(): void
     {
@@ -384,7 +386,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testSwitchToken(): void
     {
@@ -400,7 +402,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testSwitchTokenNotFoundUser(): void
     {
@@ -417,7 +419,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testSwitchTokenNotFoundSystem(): void
     {
@@ -434,7 +436,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testGetSystemUsers(): void
     {
@@ -470,7 +472,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testGetSystemUsersNotFound(): void
     {
@@ -481,7 +483,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testSetPassword(): void
     {
@@ -498,7 +500,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testGetSystemInstall(): void
     {
@@ -515,7 +517,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testGetSystemInstallFail(): void
     {
@@ -533,7 +535,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testDeleteTopology(): void
     {
@@ -571,7 +573,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testRunCustomAction(): void
     {
@@ -593,7 +595,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testRunCustomActionEx(): void
     {
@@ -609,7 +611,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testSystemCount(): void
     {
@@ -618,12 +620,13 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
+     * @throws EnumException
      */
     public function testGetSystemLists(): void
     {
         $manager = $this->container->get('cc.systems.manager');
-        $res = $manager->getSystemList();
+        $res     = $manager->getSystemList();
 
         self::assertGreaterThanOrEqual(25, count($res));
         self::assertInstanceOf(SystemData::class, $res[11]);

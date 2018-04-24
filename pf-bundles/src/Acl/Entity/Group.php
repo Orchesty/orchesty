@@ -5,7 +5,7 @@ namespace Hanaboso\PipesFramework\Acl\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Hanaboso\PipesFramework\Commons\Traits\Entity\IdTrait;
+use Hanaboso\CommonsBundle\Traits\Entity\IdTrait;
 use Hanaboso\PipesFramework\User\Entity\TmpUser;
 use Hanaboso\PipesFramework\User\Entity\UserInterface;
 

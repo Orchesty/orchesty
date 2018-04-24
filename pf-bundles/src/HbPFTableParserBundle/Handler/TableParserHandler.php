@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesFramework\HbPFTableParserBundle\Handler;
 
-use Hanaboso\PipesFramework\Commons\FileStorage\FileStorage;
+use Hanaboso\CommonsBundle\FileStorage\FileStorage;
 use Hanaboso\PipesFramework\Parser\Exception\TableParserException;
 use Hanaboso\PipesFramework\Parser\TableParser;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;

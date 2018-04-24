@@ -13,9 +13,9 @@ use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
 interface AuthorizationInterface extends SystemInterface
 {
 
-    public const BASIC    = 'basic';
-    public const OAUTH    = 'oauth';
-    public const OAUTH2   = 'oauth2';
+    public const BASIC  = 'basic';
+    public const OAUTH  = 'oauth';
+    public const OAUTH2 = 'oauth2';
 
     public const PASSWORD = 'password';
 

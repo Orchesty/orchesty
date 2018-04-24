@@ -9,10 +9,10 @@
 
 namespace Tests\Integration\Authorization\Impl\Magento2;
 
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesFramework\Authorization\Impl\Magento2\Magento2Authorization;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
-use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
 use PHPUnit_Framework_MockObject_MockObject;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\PrivateTrait;

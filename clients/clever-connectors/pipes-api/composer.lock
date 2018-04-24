@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "d26a53fec2d29a71d07649d31b436ed4",
+    "content-hash": "d5a12fb7a55da250dd1fe16c121f0210",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -653,16 +653,16 @@
         },
         {
             "name": "doctrine/doctrine-bundle",
-            "version": "1.8.1",
+            "version": "1.9.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/DoctrineBundle.git",
-                "reference": "eb6e4fb904a459be28872765ab6e2d246aac7c87"
+                "reference": "703fad32e4c8cbe609caf45a71a1d4266c830f0f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/DoctrineBundle/zipball/eb6e4fb904a459be28872765ab6e2d246aac7c87",
-                "reference": "eb6e4fb904a459be28872765ab6e2d246aac7c87",
+                "url": "https://api.github.com/repos/doctrine/DoctrineBundle/zipball/703fad32e4c8cbe609caf45a71a1d4266c830f0f",
+                "reference": "703fad32e4c8cbe609caf45a71a1d4266c830f0f",
                 "shasum": ""
             },
             "require": {
@@ -673,13 +673,13 @@
                 "symfony/console": "~2.7|~3.0|~4.0",
                 "symfony/dependency-injection": "~2.7|~3.0|~4.0",
                 "symfony/doctrine-bridge": "~2.7|~3.0|~4.0",
-                "symfony/framework-bundle": "~2.7|~3.0|~4.0"
+                "symfony/framework-bundle": "^2.7.22|~3.0|~4.0"
             },
             "conflict": {
                 "symfony/http-foundation": "<2.6"
             },
             "require-dev": {
-                "doctrine/orm": "~2.3",
+                "doctrine/orm": "~2.4",
                 "phpunit/phpunit": "^4.8.36|^5.7|^6.4",
                 "satooshi/php-coveralls": "^1.0",
                 "symfony/phpunit-bridge": "~2.7|~3.0|~4.0",
@@ -734,7 +734,7 @@
                 "orm",
                 "persistence"
             ],
-            "time": "2017-11-24T13:09:19+00:00"
+            "time": "2018-04-19T14:07:39+00:00"
         },
         {
             "name": "doctrine/doctrine-cache-bundle",
@@ -1223,16 +1223,16 @@
         },
         {
             "name": "doctrine/mongodb-odm-bundle",
-            "version": "3.4.2",
+            "version": "3.4.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/DoctrineMongoDBBundle.git",
-                "reference": "2e1790760942ee41d9f3d81f494fa80c8f0712a6"
+                "reference": "b34501eb96bace70ba8e32b67003ab42aecc39eb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/DoctrineMongoDBBundle/zipball/2e1790760942ee41d9f3d81f494fa80c8f0712a6",
-                "reference": "2e1790760942ee41d9f3d81f494fa80c8f0712a6",
+                "url": "https://api.github.com/repos/doctrine/DoctrineMongoDBBundle/zipball/b34501eb96bace70ba8e32b67003ab42aecc39eb",
+                "reference": "b34501eb96bace70ba8e32b67003ab42aecc39eb",
                 "shasum": ""
             },
             "require": {
@@ -1293,7 +1293,7 @@
                 "persistence",
                 "symfony"
             ],
-            "time": "2018-03-22T17:49:16+00:00"
+            "time": "2018-04-19T14:19:24+00:00"
         },
         {
             "name": "doctrine/orm",
@@ -1638,16 +1638,16 @@
         },
         {
             "name": "guzzlehttp/guzzle",
-            "version": "6.3.2",
+            "version": "6.3.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/guzzle.git",
-                "reference": "68d0ea14d5a3f42a20e87632a5f84931e2709c90"
+                "reference": "407b0cb880ace85c9b63c5f9551db498cb2d50ba"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/68d0ea14d5a3f42a20e87632a5f84931e2709c90",
-                "reference": "68d0ea14d5a3f42a20e87632a5f84931e2709c90",
+                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/407b0cb880ace85c9b63c5f9551db498cb2d50ba",
+                "reference": "407b0cb880ace85c9b63c5f9551db498cb2d50ba",
                 "shasum": ""
             },
             "require": {
@@ -1657,7 +1657,7 @@
             },
             "require-dev": {
                 "ext-curl": "*",
-                "phpunit/phpunit": "^4.8.35 || ^5.7 || ^6.4",
+                "phpunit/phpunit": "^4.8.35 || ^5.7 || ^6.4 || ^7.0",
                 "psr/log": "^1.0"
             },
             "suggest": {
@@ -1699,7 +1699,7 @@
                 "rest",
                 "web service"
             ],
-            "time": "2018-03-26T16:33:04+00:00"
+            "time": "2018-04-22T15:46:56+00:00"
         },
         {
             "name": "guzzlehttp/promises",
@@ -1919,6 +1919,60 @@
             "time": "2014-10-12T19:18:40+00:00"
         },
         {
+            "name": "hanaboso/commons-bundle",
+            "version": "1.0.3",
+            "source": {
+                "type": "git",
+                "url": "git@gitlab.hanaboso.net:hanaboso/commons-bundle.git",
+                "reference": "f0e58f118877fb95338c12669a853fb243c4994b"
+            },
+            "require": {
+                "alcaeus/mongo-php-adapter": "^1.1",
+                "clue/buzz-react": "^2.2",
+                "doctrine/doctrine-bundle": "^1.8",
+                "doctrine/doctrine-fixtures-bundle": "^3.0",
+                "doctrine/mongodb-odm-bundle": "^3.4",
+                "doctrine/orm": "^2.6",
+                "guzzlehttp/guzzle": "^6.3",
+                "jms/serializer-bundle": "^2.3",
+                "mongodb/mongodb": "1.2.*",
+                "paragonie/halite": "^4.4",
+                "php": "^7.1.3",
+                "php-http/client-common": "^1.7",
+                "php-http/message": "^1.6",
+                "php-http/socket-client": "^1.4",
+                "phpseclib/phpseclib": "^2.0",
+                "predis/predis": "^1.1",
+                "symfony/intl": "^4.0"
+            },
+            "require-dev": {
+                "friendsofsymfony/rest-bundle": "^2.3",
+                "hanaboso/php-check-utils": "^1.0",
+                "phpunit/phpunit": "^7.0",
+                "sensio/framework-extra-bundle": "^5.1",
+                "snc/redis-bundle": "^2.0",
+                "symfony/browser-kit": "^4.0",
+                "symfony/lts": "^4@dev",
+                "symfony/monolog-bundle": "^3.1",
+                "symfony/skeleton": "^4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Hanaboso\\CommonsBundle\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "proprietary"
+            ],
+            "time": "2018-04-23T08:16:38+00:00"
+        },
+        {
             "name": "hanaboso/email-service-bundle",
             "version": "1.0.1",
             "source": {
@@ -1966,11 +2020,11 @@
         },
         {
             "name": "hanaboso/pipes-framework",
-            "version": "1.0.17",
+            "version": "1.0.19",
             "dist": {
                 "type": "path",
                 "url": "../../../pf-bundles",
-                "reference": "5953e2715a783bbeee82f2434556cc864034014a",
+                "reference": "428ac94999d363cb8ed4574dc36f4b1968eb6fea",
                 "shasum": null
             },
             "require": {
@@ -1983,6 +2037,7 @@
                 "doctrine/orm": "^2.6",
                 "friendsofsymfony/rest-bundle": "^2.3",
                 "guzzlehttp/guzzle": "^6.3",
+                "hanaboso/commons-bundle": "^1.0",
                 "hanaboso/email-service-bundle": "^1.0",
                 "influxdb/influxdb-php": "^1.4",
                 "jms/serializer-bundle": "^2.3",
@@ -4816,16 +4871,16 @@
         },
         {
             "name": "snc/redis-bundle",
-            "version": "2.1.0",
+            "version": "2.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/snc/SncRedisBundle.git",
-                "reference": "e43b593dcdb530aa89ee77c922d76ad88b76dfdd"
+                "reference": "16643230e787684659eb61f97a3adcc28fbd5b71"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/snc/SncRedisBundle/zipball/e43b593dcdb530aa89ee77c922d76ad88b76dfdd",
-                "reference": "e43b593dcdb530aa89ee77c922d76ad88b76dfdd",
+                "url": "https://api.github.com/repos/snc/SncRedisBundle/zipball/16643230e787684659eb61f97a3adcc28fbd5b71",
+                "reference": "16643230e787684659eb61f97a3adcc28fbd5b71",
                 "shasum": ""
             },
             "require": {
@@ -4877,7 +4932,7 @@
                 "redis",
                 "symfony"
             ],
-            "time": "2018-04-06T14:39:25+00:00"
+            "time": "2018-04-23T12:18:52+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -8291,23 +8346,23 @@
         },
         {
             "name": "phpspec/prophecy",
-            "version": "1.7.5",
+            "version": "1.7.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpspec/prophecy.git",
-                "reference": "dfd6be44111a7c41c2e884a336cc4f461b3b2401"
+                "reference": "33a7e3c4fda54e912ff6338c48823bd5c0f0b712"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/dfd6be44111a7c41c2e884a336cc4f461b3b2401",
-                "reference": "dfd6be44111a7c41c2e884a336cc4f461b3b2401",
+                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/33a7e3c4fda54e912ff6338c48823bd5c0f0b712",
+                "reference": "33a7e3c4fda54e912ff6338c48823bd5c0f0b712",
                 "shasum": ""
             },
             "require": {
                 "doctrine/instantiator": "^1.0.2",
                 "php": "^5.3|^7.0",
                 "phpdocumentor/reflection-docblock": "^2.0|^3.0.2|^4.0",
-                "sebastian/comparator": "^1.1|^2.0",
+                "sebastian/comparator": "^1.1|^2.0|^3.0",
                 "sebastian/recursion-context": "^1.0|^2.0|^3.0"
             },
             "require-dev": {
@@ -8350,7 +8405,7 @@
                 "spy",
                 "stub"
             ],
-            "time": "2018-02-19T10:16:54+00:00"
+            "time": "2018-04-18T13:57:24+00:00"
         },
         {
             "name": "phpstan/phpdoc-parser",
@@ -8803,16 +8858,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "7.1.3",
+            "version": "7.1.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "a7834993ddbf4b0ed2c3b2dc1f3b1d093ef910a9"
+                "reference": "6d51299e307dc510149e0b7cd1931dd11770e1cb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/a7834993ddbf4b0ed2c3b2dc1f3b1d093ef910a9",
-                "reference": "a7834993ddbf4b0ed2c3b2dc1f3b1d093ef910a9",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/6d51299e307dc510149e0b7cd1931dd11770e1cb",
+                "reference": "6d51299e307dc510149e0b7cd1931dd11770e1cb",
                 "shasum": ""
             },
             "require": {
@@ -8831,7 +8886,7 @@
                 "phpunit/php-text-template": "^1.2.1",
                 "phpunit/php-timer": "^2.0",
                 "phpunit/phpunit-mock-objects": "^6.1.1",
-                "sebastian/comparator": "^2.1",
+                "sebastian/comparator": "^2.1 || ^3.0",
                 "sebastian/diff": "^3.0",
                 "sebastian/environment": "^3.1",
                 "sebastian/exporter": "^3.1",
@@ -8879,7 +8934,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2018-04-13T02:28:50+00:00"
+            "time": "2018-04-18T13:41:53+00:00"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
@@ -8984,30 +9039,30 @@
         },
         {
             "name": "sebastian/comparator",
-            "version": "2.1.3",
+            "version": "3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/comparator.git",
-                "reference": "34369daee48eafb2651bea869b4b15d75ccc35f9"
+                "reference": "ed5fd2281113729f1ebcc64d101ad66028aeb3d5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/comparator/zipball/34369daee48eafb2651bea869b4b15d75ccc35f9",
-                "reference": "34369daee48eafb2651bea869b4b15d75ccc35f9",
+                "url": "https://api.github.com/repos/sebastianbergmann/comparator/zipball/ed5fd2281113729f1ebcc64d101ad66028aeb3d5",
+                "reference": "ed5fd2281113729f1ebcc64d101ad66028aeb3d5",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.0",
-                "sebastian/diff": "^2.0 || ^3.0",
+                "php": "^7.1",
+                "sebastian/diff": "^3.0",
                 "sebastian/exporter": "^3.1"
             },
             "require-dev": {
-                "phpunit/phpunit": "^6.4"
+                "phpunit/phpunit": "^7.1"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.1.x-dev"
+                    "dev-master": "3.0-dev"
                 }
             },
             "autoload": {
@@ -9044,7 +9099,7 @@
                 "compare",
                 "equality"
             ],
-            "time": "2018-02-01T13:46:46+00:00"
+            "time": "2018-04-18T13:33:00+00:00"
         },
         {
             "name": "sebastian/diff",

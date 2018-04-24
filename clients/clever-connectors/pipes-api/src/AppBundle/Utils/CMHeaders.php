@@ -9,7 +9,7 @@
 
 namespace CleverConnectors\AppBundle\Utils;
 
-use Hanaboso\PipesFramework\Commons\Utils\PipesHeaders;
+use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 
 /**
  * Class CMHeaders

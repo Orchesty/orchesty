@@ -9,7 +9,7 @@
 
 namespace Hanaboso\PipesFramework\HbPFCustomNodeBundle\Handler;
 
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\HbPFCustomNodeBundle\Exception\CustomNodeException;
 use Hanaboso\PipesFramework\HbPFCustomNodeBundle\Loader\CustomNodeLoader;
 

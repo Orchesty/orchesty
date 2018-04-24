@@ -11,9 +11,9 @@ namespace Tests\Live\AppBundle\Model\Systems\Impl\FacebookLeads\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use Hanaboso\CommonsBundle\Crypt\CryptManager;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
-use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Nette\Utils\Json;
@@ -39,7 +39,7 @@ class FacebookGetPageConnectorTest extends DatabaseTestCaseAbstract
         $this->persistAndFlush($topology);
 
         $settings = [
-            OAuth2Provider::ACCESS_TOKEN=> 'EAAUmsI0AZCFEBAEiZBMvJaJFSb1sKJPAOt0LL48tkw5rk052UfNG26kCxae0JROuuwnpHD4s3lR59h3YKNqs1tfz6WwyNPARYPAkwb2BUKqIlqxSCS0GJXPNIxGT9bOsZCB23XCJ1v9moe1xLobXqvX4vqoKkHQSyrqoxYZAGscTYuf1HM3ZCT6Jnpxm6sY1Dc7ClrQRR9gZDZD',
+            OAuth2Provider::ACCESS_TOKEN => 'EAAUmsI0AZCFEBAEiZBMvJaJFSb1sKJPAOt0LL48tkw5rk052UfNG26kCxae0JROuuwnpHD4s3lR59h3YKNqs1tfz6WwyNPARYPAkwb2BUKqIlqxSCS0GJXPNIxGT9bOsZCB23XCJ1v9moe1xLobXqvX4vqoKkHQSyrqoxYZAGscTYuf1HM3ZCT6Jnpxm6sY1Dc7ClrQRR9gZDZD',
         ];
 
         $systemInstall = new SystemInstall();
@@ -74,7 +74,6 @@ class FacebookGetPageConnectorTest extends DatabaseTestCaseAbstract
             CMHeaders::createKey(CMHeaders::GUID)       => 'u_123',
             CMHeaders::createKey(CMHeaders::SYSTEM_KEY) => 's_-666',
         ]);
-
 
         $pages = $connector->getAccounts($systemInstall);
         $this->assertTrue(is_array($pages));

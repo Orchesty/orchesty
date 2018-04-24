@@ -9,8 +9,8 @@ use CleverConnectors\AppBundle\Model\Limits\SystemLimitDto;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use GuzzleHttp\Psr7\Uri;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\StartingPointHandler;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -208,7 +208,7 @@ final class AimSystem implements AuthorizationInterface
      * @param string        $method
      *
      * @return RequestDto
-     * @throws \Hanaboso\PipesFramework\Commons\Transport\Curl\CurlException
+     * @throws \Hanaboso\CommonsBundle\Transport\Curl\CurlException
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {

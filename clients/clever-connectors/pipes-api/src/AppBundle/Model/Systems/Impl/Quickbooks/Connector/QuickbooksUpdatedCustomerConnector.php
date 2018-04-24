@@ -37,12 +37,12 @@ class QuickbooksUpdatedCustomerConnector extends QuickbooksCustomerConnectorAbst
     {
         $since = '';
         if ($times->getStart()) {
-            $time = $times->getStart()->format(DateTime::ATOM);
+            $time  = $times->getStart()->format(DateTime::ATOM);
             $since = sprintf(' AND MetaData.LastUpdatedTime >= \'%s\' AND MetaData.CreateTime < \'%s\'',
                 $time, $time);
         }
 
-        $till  = sprintf(' AND MetaData.LastUpdatedTime < \'%s\'', $times->getEnd()->format(DateTime::ATOM));
+        $till = sprintf(' AND MetaData.LastUpdatedTime < \'%s\'', $times->getEnd()->format(DateTime::ATOM));
 
         return $since . $till;
     }

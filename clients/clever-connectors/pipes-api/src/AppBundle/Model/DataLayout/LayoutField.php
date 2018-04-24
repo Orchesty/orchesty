@@ -3,6 +3,7 @@
 namespace CleverConnectors\AppBundle\Model\DataLayout;
 
 use CleverConnectors\AppBundle\Enum\TypeEnum;
+use Hanaboso\CommonsBundle\Exception\EnumException;
 
 /**
  * Class LayoutField
@@ -25,13 +26,15 @@ class LayoutField
     /**
      * LayoutField constructor.
      *
-     * @param string   $key
-     * @param TypeEnum $type
+     * @param string $key
+     * @param string $type
+     *
+     * @throws EnumException
      */
-    public function __construct(string $key, TypeEnum $type)
+    public function __construct(string $key, string $type)
     {
         $this->key  = $key;
-        $this->type = $type->getValue();
+        $this->type = TypeEnum::isValid($type);
     }
 
     /**

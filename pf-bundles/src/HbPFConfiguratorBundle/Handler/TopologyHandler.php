@@ -4,19 +4,18 @@ namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler;
 
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Hanaboso\PipesFramework\Commons\DatabaseManager\DatabaseManagerLocator;
-use Hanaboso\PipesFramework\Commons\Enum\TopologyStatusEnum;
-use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
-use Hanaboso\PipesFramework\Commons\Transport\CurlManagerInterface;
-use Hanaboso\PipesFramework\Commons\Utils\ControllerUtils;
-use Hanaboso\PipesFramework\Commons\Utils\UriParams;
+use Hanaboso\CommonsBundle\DatabaseManager\DatabaseManagerLocator;
+use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
+use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
+use Hanaboso\CommonsBundle\Utils\ControllerUtils;
+use Hanaboso\CommonsBundle\Utils\UriParams;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
-use Hanaboso\PipesFramework\TopologyGenerator\Request\RequestHandler;
 use Throwable;
 
 /**
@@ -43,11 +42,6 @@ class TopologyHandler
     protected $manager;
 
     /**
-     * @var GeneratorHandler
-     */
-    protected $generatorHandler;
-
-    /**
      * @var CurlManagerInterface
      */
     protected $curlManager;
@@ -62,20 +56,17 @@ class TopologyHandler
      *
      * @param DatabaseManagerLocator $dml
      * @param TopologyManager        $manager
-     * @param GeneratorHandler       $generatorHandler
      * @param RequestHandler         $requestHandler
      */
     public function __construct(
         DatabaseManagerLocator $dml,
         TopologyManager $manager,
-        GeneratorHandler $generatorHandler,
         RequestHandler $requestHandler
     )
     {
         $this->dm                 = $dml->getDm();
         $this->topologyRepository = $this->dm->getRepository(Topology::class);
         $this->manager            = $manager;
-        $this->generatorHandler   = $generatorHandler;
         $this->requestHandler     = $requestHandler;
     }
 

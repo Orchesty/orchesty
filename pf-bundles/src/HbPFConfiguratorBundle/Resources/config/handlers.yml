@@ -7,7 +7,6 @@ services:
         arguments:
             - '@hbpf.database_manager_locator'
             - '@hbpf.configurator.manager.topology'
-            - '@hbpf.handler.generator_handler'
             - '@hbpf.topology_generator.request.request_handler'
 
     hbpf.configurator.handler.node:
@@ -23,16 +22,6 @@ services:
             - '@hbpf.starting_point.starting_point'
             - '@event_dispatcher'
             - '@hbpf.topology_generator.request.request_handler'
-
-    hbpf.handler.generator_handler:
-        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\GeneratorHandler
-        arguments:
-            - '@doctrine_mongodb.odm.default_document_manager'
-            - '%generator_path%'
-            - '%docker_network%'
-            - '@hbpf.topology_generator.topology_actions_factory'
-            - '%deployment_prefix%'
-            - '%topology_mode%'
 
     hbpf.handler.category:
         class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler

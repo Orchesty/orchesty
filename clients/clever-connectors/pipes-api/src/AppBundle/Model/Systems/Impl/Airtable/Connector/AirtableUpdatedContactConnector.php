@@ -10,10 +10,10 @@ use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Clue\React\Buzz\Message\ResponseException;
 use DateTime;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
-use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Transport\AsyncCurl\CurlSender;
+use Hanaboso\CommonsBundle\Transport\AsyncCurl\CurlSenderFactory;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Psr\Http\Message\ResponseInterface;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
@@ -135,7 +135,14 @@ class AirtableUpdatedContactConnector extends AirtableContactConnectorAbstract
 
         return $this->fetchData($sender, RequestDto::from($requestDto, $uri))->then(
             function (ResponseInterface $response) use (
-                $sender, $requestDto, $table, $callbackItem, $page, $from, $view, $systemInstall
+                $sender,
+                $requestDto,
+                $table,
+                $callbackItem,
+                $page,
+                $from,
+                $view,
+                $systemInstall
             ) {
                 $data = json_decode($response->getBody()->getContents(), TRUE);
 

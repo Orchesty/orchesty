@@ -12,7 +12,7 @@ namespace Tests\Unit\AppBundle\Document;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use DateTime;
-use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
+use Hanaboso\CommonsBundle\Crypt\CryptManager;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 

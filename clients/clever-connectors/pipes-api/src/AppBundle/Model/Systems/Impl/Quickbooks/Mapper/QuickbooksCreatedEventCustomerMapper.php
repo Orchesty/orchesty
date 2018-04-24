@@ -2,7 +2,7 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Mapper;
 
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 
 /**
  * Class QuickbooksCreatedEventCustomerMapper

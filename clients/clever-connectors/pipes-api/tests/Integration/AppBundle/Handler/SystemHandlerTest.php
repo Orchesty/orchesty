@@ -6,7 +6,7 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Handler\SystemHandler;
 use CleverConnectors\AppBundle\Model\Systems\SystemManager;
-use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
+use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 use Tests\DatabaseTestCaseAbstract;
 
 /**

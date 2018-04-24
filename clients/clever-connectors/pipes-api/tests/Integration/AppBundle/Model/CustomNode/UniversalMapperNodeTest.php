@@ -12,12 +12,13 @@ namespace Tests\Integration\AppBundle\Model\CustomNode;
 use CleverConnectors\AppBundle\Document\MapTemplate;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\TypeEnum;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\MapTemplate\MapField;
 use CleverConnectors\AppBundle\Model\Systems\Dto\ActionDto;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use DateTime;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Tests\DatabaseTestCaseAbstract;
 
 /**
@@ -139,22 +140,23 @@ final class UniversalMapperNodeTest extends DatabaseTestCaseAbstract
      * @param string        $topologyName
      *
      * @return MapTemplate
+     * @throws CleverConnectorsException
      */
     private function getMap(SystemInstall $systemInstall, string $topologyName): MapTemplate
     {
-        $textField = new MapField(TypeEnum::TEXT, new TypeEnum(TypeEnum::TEXT));
+        $textField = new MapField(TypeEnum::TEXT, TypeEnum::TEXT);
         $textField->addItem('string');
 
-        $urlField = new MapField(TypeEnum::URL, new TypeEnum(TypeEnum::URL));
+        $urlField = new MapField(TypeEnum::URL, TypeEnum::URL);
         $urlField->addItem('uri');
 
-        $dateField = new MapField(TypeEnum::DATE, new TypeEnum(TypeEnum::DATE));
+        $dateField = new MapField(TypeEnum::DATE, TypeEnum::DATE);
         $dateField->addItem('date_from');
 
-        $boolField = new MapField(TypeEnum::BOOL, new TypeEnum(TypeEnum::BOOL));
+        $boolField = new MapField(TypeEnum::BOOL, TypeEnum::BOOL);
         $boolField->addItem('boolean');
 
-        $numField = new MapField(TypeEnum::NUMBER, new TypeEnum(TypeEnum::NUMBER));
+        $numField = new MapField(TypeEnum::NUMBER, TypeEnum::NUMBER);
         $numField->addItem('int');
 
         $actionDto = new ActionDto($topologyName, MapTemplate::DIRECTION_IN);

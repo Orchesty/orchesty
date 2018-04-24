@@ -5,10 +5,10 @@ namespace Hanaboso\PipesFramework\Configurator\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Index;
 use Doctrine\ODM\MongoDB\PersistentCollection;
-use Hanaboso\PipesFramework\Commons\Enum\HandlerEnum;
-use Hanaboso\PipesFramework\Commons\Enum\TypeEnum;
-use Hanaboso\PipesFramework\Commons\Traits\Document\DeletedTrait;
-use Hanaboso\PipesFramework\Commons\Traits\Document\IdTrait;
+use Hanaboso\CommonsBundle\Enum\HandlerEnum;
+use Hanaboso\CommonsBundle\Enum\TypeEnum;
+use Hanaboso\CommonsBundle\Traits\Document\DeletedTrait;
+use Hanaboso\CommonsBundle\Traits\Document\IdTrait;
 use Hanaboso\PipesFramework\Configurator\Document\Embed\EmbedNode;
 use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
 

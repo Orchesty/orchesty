@@ -5,6 +5,6 @@ services:
         public: true
 
     hbpf.commons.session_handler:
-        class: Hanaboso\PipesFramework\Commons\Session\Handler\RedisSessionHandler
+        class: Hanaboso\CommonsBundle\Session\Handler\RedisSessionHandler
         arguments:
             - '@snc_redis.default'

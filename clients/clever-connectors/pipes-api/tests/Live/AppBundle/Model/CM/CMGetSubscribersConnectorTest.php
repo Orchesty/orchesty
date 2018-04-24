@@ -5,10 +5,10 @@ namespace Tests\Live\AppBundle\Model\CM;
 use CleverConnectors\AppBundle\Model\CM\SubscriberConnector\CMGetSubscribersConnector;
 use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use Clue\React\Buzz\Browser;
-use Hanaboso\PipesFramework\Commons\Metrics\InfluxDbSender;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
-use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
+use Hanaboso\CommonsBundle\Metrics\InfluxDbSender;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Transport\AsyncCurl\CurlSender;
+use Hanaboso\CommonsBundle\Transport\AsyncCurl\CurlSenderFactory;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Nette\Utils\Json;
 use PHPUnit_Framework_MockObject_MockObject;
@@ -39,7 +39,7 @@ final class CMGetSubscribersConnectorTest extends KernelTestCaseAbstract
             'pf-system-key' => 'facebookaudience',
         ]);
 
-        $context    = [
+        $context = [
             'verify_peer'      => FALSE,
             'verify_peer_name' => FALSE,
         ];

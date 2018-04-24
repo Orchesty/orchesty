@@ -12,7 +12,7 @@ namespace Tests\Unit\AppBundle\Model\CustomNode;
 use CleverConnectors\AppBundle\Model\Command\AsyncCommandFactory;
 use CleverConnectors\AppBundle\Model\CustomNode\TokenMessageGenerator;
 use Exception;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use JMS\Serializer\Serializer;
 use PHPUnit\Framework\TestCase;

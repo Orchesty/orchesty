@@ -4,13 +4,13 @@ namespace CleverConnectors\AppBundle\Model\DataLayout;
 
 use CleverConnectors\AppBundle\Document\DataLayout;
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Enum\TypeEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\DataLayout\Exceptions\LayoutException;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use CleverConnectors\AppBundle\Model\Systems\Traits\MapTrait;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Hanaboso\CommonsBundle\Exception\EnumException;
 
 /**
  * Class LayoutManager
@@ -89,6 +89,7 @@ class LayoutManager
      *
      * @return DataLayout
      * @throws CleverConnectorsException
+     * @throws EnumException
      * @throws LayoutException
      * @throws SystemException
      */
@@ -120,7 +121,7 @@ class LayoutManager
 
         foreach ($data['fields'] as $field) {
             if (isset($field['key']) && isset($field['type'])) {
-                $dataLayout->addField(new LayoutField($field['key'], new TypeEnum($field['type'])));
+                $dataLayout->addField(new LayoutField($field['key'], $field['type']));
             }
         }
 
@@ -135,6 +136,7 @@ class LayoutManager
      * @param array      $data
      *
      * @return DataLayout
+     * @throws EnumException
      */
     public function updateDataLayout(DataLayout $dataLayout, array $data): DataLayout
     {
@@ -142,7 +144,7 @@ class LayoutManager
             $dataLayout->setFields([]);
             foreach ($data['fields'] as $field) {
                 if (isset($field['key']) && isset($field['type'])) {
-                    $dataLayout->addField(new LayoutField($field['key'], new TypeEnum($field['type'])));
+                    $dataLayout->addField(new LayoutField($field['key'], $field['type']));
                 }
             }
         }

@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesFramework\Configurator\Exception;
 
-use Hanaboso\PipesFramework\Commons\Exception\PipesFrameworkException;
+use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 
 /**
  * Class NodeException

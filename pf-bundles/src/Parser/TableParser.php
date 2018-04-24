@@ -68,7 +68,8 @@ final class TableParser implements TableParserInterface
      *
      * @return string
      */
-    public function parseFromJson(string $path, string $type = TableParserInterface::XLSX,
+    public function parseFromJson(string $path,
+                                  string $type = TableParserInterface::XLSX,
                                   ?bool $hasHeaders = FALSE): string
     {
         $spreadsheet = new Spreadsheet();

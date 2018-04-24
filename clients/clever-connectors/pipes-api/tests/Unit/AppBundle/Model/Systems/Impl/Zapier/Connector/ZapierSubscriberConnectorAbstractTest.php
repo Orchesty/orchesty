@@ -10,7 +10,7 @@
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Zapier\Connector;
 
 use CleverConnectors\AppBundle\Model\Systems\Impl\Zapier\Connector\ZapierSubscriberConnectorAbstract;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Nette\Utils\Json;
 use Tests\ConnectorTestCaseAbstract;
 

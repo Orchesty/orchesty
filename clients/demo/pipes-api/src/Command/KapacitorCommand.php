@@ -9,9 +9,9 @@
 
 namespace Demo\Command;
 
-use Hanaboso\PipesFramework\Commons\Enum\MetricsEnum;
-use Hanaboso\PipesFramework\Commons\Metrics\InfluxDbSender;
-use Hanaboso\PipesFramework\Commons\Metrics\UDPSender;
+use Hanaboso\CommonsBundle\Enum\MetricsEnum;
+use Hanaboso\CommonsBundle\Metrics\InfluxDbSender;
+use Hanaboso\CommonsBundle\Metrics\UDPSender;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

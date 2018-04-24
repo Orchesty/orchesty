@@ -11,7 +11,7 @@ namespace Hanaboso\PipesFramework\HbPFJoinerBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
-use Hanaboso\PipesFramework\Commons\Traits\ControllerTrait;
+use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\HbPFJoinerBundle\Exception\JoinerException;
 use Hanaboso\PipesFramework\HbPFJoinerBundle\Handler\JoinerHandler;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;

@@ -14,7 +14,7 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Utils\CronUtils;
 use CleverConnectors\AppBundle\Utils\Dto\Times;
 use DateTime;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -111,7 +111,7 @@ final class CronUtilsTest extends TestCase
     public function testGetSystemInstallInvalidData(): void
     {
         $dto = new ProcessDto();
-        $dto->setData(json_encode( 123));
+        $dto->setData(json_encode(123));
 
         self::expectException(CleverConnectorsException::class);
         self::expectExceptionCode(CleverConnectorsException::MISSING_DATA);

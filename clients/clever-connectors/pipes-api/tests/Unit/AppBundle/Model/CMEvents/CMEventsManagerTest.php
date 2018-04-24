@@ -49,7 +49,7 @@ final class CMEventsManagerTest extends KernelTestCaseAbstract
         /** @var DocumentManager|PHPUnit_Framework_MockObject_MockObject $dm */
         $dm = $this->createMock(DocumentManager::class);
         $dm->method('getRepository')->willReturn($sysRepo);
-        $loader  = $this->container->get('cc.systems.loader');
+        $loader = $this->container->get('cc.systems.loader');
 
         /** @var SystemLimitManager|MockObject $systemLimitManager */
         $systemLimitManager = $this->createMock(SystemLimitManager::class);
@@ -76,7 +76,7 @@ final class CMEventsManagerTest extends KernelTestCaseAbstract
         $dm = $this->createMock(DocumentManager::class);
         $dm->method('getRepository')->willReturn($sysRepo);
 
-        $loader  = $this->container->get('cc.systems.loader');
+        $loader = $this->container->get('cc.systems.loader');
 
         /** @var SystemLimitManager|MockObject $systemLimitManager */
         $systemLimitManager = $this->createMock(SystemLimitManager::class);

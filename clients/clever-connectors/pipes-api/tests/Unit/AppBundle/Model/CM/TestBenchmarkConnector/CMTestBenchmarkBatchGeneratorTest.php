@@ -3,7 +3,7 @@
 namespace Tests\Unit\AppBundle\Model\CM\TestBenchmarkConnector;
 
 use CleverConnectors\AppBundle\Model\CM\TestBenchmarkConnector\CMTestBenchmarkBatchGenerator;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Nette\Utils\Json;
 use React\EventLoop\Factory;

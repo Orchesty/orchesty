@@ -3,7 +3,7 @@
 namespace Tests\Live\AppBundle\Model\Systems\Impl\Airtable\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;

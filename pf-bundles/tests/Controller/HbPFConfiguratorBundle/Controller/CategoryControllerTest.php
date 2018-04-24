@@ -45,7 +45,7 @@ class CategoryControllerTest extends ControllerTestCaseAbstract
     public function testCreateTopology(): void
     {
         $response = $this->sendPost('/api/categories', [
-            'name'    => 'Test category',
+            'name' => 'Test category',
         ]);
 
         self::assertEquals(200, $response->status);
@@ -61,7 +61,7 @@ class CategoryControllerTest extends ControllerTestCaseAbstract
         $categories = $this->createCategories(2);
 
         $response = $this->sendPut(sprintf('/api/categories/%s', $categories[1]->getId()), [
-            'name'    => 'edited',
+            'name'   => 'edited',
             'parent' => $categories[0]->getId(),
         ]);
 
@@ -77,9 +77,9 @@ class CategoryControllerTest extends ControllerTestCaseAbstract
     public function testUpdateCategoryNotFound(): void
     {
         $response = $this->sendPut(sprintf('/api/categories/999'), [
-            'name'    => 'Category 2',
+            'name' => 'Category 2',
         ]);
-        $content = $response->content;
+        $content  = $response->content;
 
         self::assertEquals(400, $response->status);
         self::assertEquals(CategoryException::class, $content->type);
@@ -98,7 +98,6 @@ class CategoryControllerTest extends ControllerTestCaseAbstract
 
         self::assertEquals(200, $response->status);
     }
-
 
     /**
      * @param int $count

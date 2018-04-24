@@ -9,8 +9,6 @@
 
 namespace CleverConnectors\AppBundle\Model\ProgressCounter;
 
-use CleverConnectors\AppBundle\Enum\ProgressCounterStatusEnum;
-
 /**
  * Interface ProgressCounterInterface
  *
@@ -46,9 +44,9 @@ interface ProgressCounterInterface
     public function increment(string $processId): void;
 
     /**
-     * @param string                    $processId
-     * @param ProgressCounterStatusEnum $status
+     * @param string $processId
+     * @param string $status
      */
-    public function setStatus(string $processId, ProgressCounterStatusEnum $status): void;
+    public function setStatus(string $processId, string $status): void;
 
 }

@@ -5,7 +5,7 @@ namespace CleverConnectors\AppBundle\Document;
 use CleverConnectors\AppBundle\Document\Traits\IdTrait;
 use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Hanaboso\PipesFramework\Commons\Traits\Document\DeletedTrait;
+use Hanaboso\CommonsBundle\Traits\Document\DeletedTrait;
 
 /**
  * Class LastSync

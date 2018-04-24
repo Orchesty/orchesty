@@ -2,7 +2,7 @@
 
 namespace Tests\Controller\HbPFConnectorBundle\Controller;
 
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\HbPFConnectorBundle\Handler\ConnectorHandler;
 use Tests\ControllerTestCaseAbstract;
 

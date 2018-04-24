@@ -11,7 +11,7 @@ namespace Tests\Integration\AppBundle\Model\Systems\TestRepeaterConnector;
 
 use CleverConnectors\AppBundle\Model\CM\TestRepeaterConnector\CMTestRepeaterConnector;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Tests\DatabaseTestCaseAbstract;
 
 /**

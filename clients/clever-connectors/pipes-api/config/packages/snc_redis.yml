@@ -1,8 +1,21 @@
+#snc_redis:
+#    clients:
+#        session:
+#            type: predis
+#            alias: session
+#            dsn: redis://redis/2
+#    session:
+#        client: session
+
 snc_redis:
     clients:
-        session:
+        sessions:
             type: predis
-            alias: session
-            dsn: redis://redis/2
-    session:
-        client: session
+            alias: sessions
+            dsn: "redis://%redis_client_host.default%/10"
+            logging: false
+
+
+parameters:
+    redis_client_host.default: redis
+    redis_client_port.default: 6379

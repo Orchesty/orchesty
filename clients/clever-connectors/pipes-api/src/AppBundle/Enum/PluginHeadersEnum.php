@@ -3,7 +3,7 @@
 namespace CleverConnectors\AppBundle\Enum;
 
 use CleverConnectors\AppBundle\Utils\CMHeaders;
-use Hanaboso\PipesFramework\Commons\Enum\EnumAbstract;
+use Hanaboso\CommonsBundle\Enum\EnumAbstract;
 use LogicException;
 
 /**

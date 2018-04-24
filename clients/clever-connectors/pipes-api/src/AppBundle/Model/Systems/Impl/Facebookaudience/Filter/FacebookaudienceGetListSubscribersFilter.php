@@ -5,7 +5,7 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Filter;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\FacebookaudienceSystem;
 use CleverConnectors\AppBundle\Utils\HeadersUtils;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 
 /**
  * Class FacebookaudienceGetListSubscribersFilter

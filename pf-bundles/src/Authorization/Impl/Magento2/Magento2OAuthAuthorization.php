@@ -245,7 +245,6 @@ class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements M
         return 'Field1 contains connector URL, field2 contains consumer key, field3 contains consumer secret.';
     }
 
-
     /**
      * @return OAuth1Dto
      */

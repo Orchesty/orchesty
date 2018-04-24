@@ -6,9 +6,9 @@ use CleverConnectors\AppBundle\Model\CM\SubscriberConnector\CMGetSubscribersConn
 use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Response;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSender;
-use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Transport\AsyncCurl\CurlSender;
+use Hanaboso\CommonsBundle\Transport\AsyncCurl\CurlSenderFactory;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Nette\Utils\Json;
 use PHPUnit\Framework\MockObject\MockObject;

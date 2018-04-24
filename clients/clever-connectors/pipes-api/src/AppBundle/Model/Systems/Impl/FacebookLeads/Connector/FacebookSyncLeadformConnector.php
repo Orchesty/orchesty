@@ -16,11 +16,11 @@ use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Clue\React\Buzz\Message\ResponseException;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Transport\AsyncCurl\CurlSenderFactory;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
-use Hanaboso\PipesFramework\Commons\Transport\AsyncCurl\CurlSenderFactory;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\CurlManager;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Psr\Http\Message\ResponseInterface;
@@ -80,7 +80,7 @@ class FacebookSyncLeadformConnector extends FacebookLeadConnectorAbstract implem
             urlencode($settings[OAuth2Provider::ACCESS_TOKEN])
         ));
 
-        $promise  = $this->fetchData($sender, RequestDto::from($requestDto, $url))
+        $promise = $this->fetchData($sender, RequestDto::from($requestDto, $url))
             ->then(
                 function (ResponseInterface $response) use ($callbackItem) {
                     return $callbackItem($this->createSuccessMessage($response));

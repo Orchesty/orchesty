@@ -5,7 +5,7 @@ namespace Tests\Unit\AppBundle\Model\Systems\Impl\Airtable\Mapper;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Nette\Utils\Json;
 use Tests\ConnectorTestCaseAbstract;
 
@@ -36,7 +36,7 @@ final class AirtableUpdateContactMapperTest extends ConnectorTestCaseAbstract
         );
 
         $this->assertEquals([
-            '_foreign_id'    => 'abc',
+            '_foreign_id' => 'abc',
             'unsubscribe' => 1,
         ], $response);
     }

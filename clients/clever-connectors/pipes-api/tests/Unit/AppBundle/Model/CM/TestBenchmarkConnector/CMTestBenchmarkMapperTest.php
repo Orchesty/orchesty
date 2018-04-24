@@ -3,7 +3,7 @@
 namespace Tests\Unit\AppBundle\Model\CM\TestBenchmarkConnector;
 
 use CleverConnectors\AppBundle\Model\CM\TestBenchmarkConnector\CMTestBenchmarkMapper;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Tests\KernelTestCaseAbstract;
 
 /**

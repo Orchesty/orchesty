@@ -13,13 +13,14 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Installer\CategoryParser;
 use CleverConnectors\AppBundle\Model\Installer\InstallManager;
 use FOS\RestBundle\Decoder\XmlDecoder;
-use Hanaboso\PipesFramework\Commons\Enum\TopologyStatusEnum;
-use Hanaboso\PipesFramework\Commons\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
-use Hanaboso\PipesFramework\TopologyGenerator\Request\RequestHandler;
+use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\RequestHandler;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Client;
+use ReflectionException;
 use Tests\DatabaseTestCaseAbstract;
 
 /**
@@ -37,6 +38,7 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
 
     /**
      * @throws CleverConnectorsException
+     * @throws ReflectionException
      */
     public function testPrepareInstall(): void
     {
@@ -58,6 +60,7 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
 
     /**
      * @throws CleverConnectorsException
+     * @throws ReflectionException
      */
     public function testMakeInstall(): void
     {
@@ -83,6 +86,7 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
 
     /**
      * @throws CleverConnectorsException
+     * @throws ReflectionException
      */
     public function testMakeInstallEx(): void
     {
@@ -93,6 +97,7 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
 
     /**
      * @return InstallManager
+     * @throws ReflectionException
      */
     private function getManager(): InstallManager
     {
@@ -131,7 +136,8 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
         $topology3
             ->setName('file2')
             ->setRawBpmn($this->load('file2.tplg', FALSE))
-            ->setContentHash(TopologySchemaUtils::getIndexHash(TopologySchemaUtils::getSchemaObject($xmlDecoder->decode($this->load('file2.tplg', FALSE)))))
+            ->setContentHash(TopologySchemaUtils::getIndexHash(TopologySchemaUtils::getSchemaObject($xmlDecoder->decode($this->load('file2.tplg',
+                FALSE)))))
             ->setEnabled(TRUE)
             ->setVisibility(TopologyStatusEnum::PUBLIC);
         $this->dm->persist($topology3);

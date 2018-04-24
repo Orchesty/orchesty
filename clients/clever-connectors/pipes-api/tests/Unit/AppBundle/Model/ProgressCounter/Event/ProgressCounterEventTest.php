@@ -29,10 +29,10 @@ class ProgressCounterEventTest extends TestCase
     {
         $event = new ProgressCounterEvent(
             '1234ABCD',
-            new ProgressCounterStatusEnum(ProgressCounterStatusEnum::SUCCESS)
+            ProgressCounterStatusEnum::SUCCESS
         );
 
-        $this->assertEquals(ProgressCounterStatusEnum::SUCCESS, $event->getStatus()->getValue());
+        $this->assertEquals(ProgressCounterStatusEnum::SUCCESS, $event->getStatus());
         $this->assertEquals('1234ABCD', $event->getProcessId());
     }
 

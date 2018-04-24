@@ -9,7 +9,6 @@
 
 namespace CleverConnectors\AppBundle\Model\ProgressCounter\Event;
 
-use CleverConnectors\AppBundle\Enum\ProgressCounterStatusEnum;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
@@ -28,17 +27,17 @@ class ProgressCounterEvent extends Event
     protected $processId;
 
     /**
-     * @var ProgressCounterStatusEnum
+     * @var string
      */
     protected $status;
 
     /**
      * ProgressCounterEvent constructor.
      *
-     * @param string                    $processId
-     * @param ProgressCounterStatusEnum $status
+     * @param string $processId
+     * @param string $status
      */
-    public function __construct($processId, ProgressCounterStatusEnum $status)
+    public function __construct($processId, string $status)
     {
         $this->processId = $processId;
         $this->status    = $status;
@@ -53,9 +52,9 @@ class ProgressCounterEvent extends Event
     }
 
     /**
-     * @return ProgressCounterStatusEnum
+     * @return string
      */
-    public function getStatus(): ProgressCounterStatusEnum
+    public function getStatus(): string
     {
         return $this->status;
     }

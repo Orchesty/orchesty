@@ -11,7 +11,7 @@ namespace CleverConnectors\AppBundle\Model\CM\TestForwardConnector;
 
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use GuzzleHttp\Exception\ConnectException;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 
 /**

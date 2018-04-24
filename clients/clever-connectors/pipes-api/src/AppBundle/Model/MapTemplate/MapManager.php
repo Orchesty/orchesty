@@ -5,6 +5,7 @@ namespace CleverConnectors\AppBundle\Model\MapTemplate;
 use CleverConnectors\AppBundle\Document\MapTemplate;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use CleverConnectors\AppBundle\Model\Systems\Traits\MapTrait;
 use CleverConnectors\AppBundle\Repository\MapTemplateRepository;
@@ -94,6 +95,7 @@ class MapManager
      *
      * @return MapTemplate
      * @throws CleverConnectorsException
+     * @throws SystemException
      */
     public function create(SystemInstall $systemInstall, array $data): MapTemplate
     {

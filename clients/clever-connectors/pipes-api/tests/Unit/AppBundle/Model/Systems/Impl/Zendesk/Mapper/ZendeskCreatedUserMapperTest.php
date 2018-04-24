@@ -7,7 +7,7 @@ use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Mapper\ZendeskCreatedUserMapper;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Hanaboso\PipesFramework\Commons\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Nette\Utils\Json;
 use PHPUnit_Framework_MockObject_MockObject;
 use Tests\ConnectorTestCaseAbstract;
@@ -40,7 +40,8 @@ final class ZendeskCreatedUserMapperTest extends ConnectorTestCaseAbstract
         $connector = new ZendeskCreatedUserMapper($dm);
 
         $response = Json::decode(
-            $connector->process((new ProcessDto())->setData($this->getRequest('singleItemNewUser.json'))->setHeaders([]))
+            $connector->process((new ProcessDto())->setData($this->getRequest('singleItemNewUser.json'))
+                ->setHeaders([]))
                 ->getData(),
             TRUE
         );
@@ -51,7 +52,7 @@ final class ZendeskCreatedUserMapperTest extends ConnectorTestCaseAbstract
             CleverFieldsEnum::FOREIGN_ID => '115316804773',
             CleverFieldsEnum::REACTIVATE => TRUE,
             CleverFieldsEnum::SEND_OPTIN => FALSE,
-            CleverFieldsEnum::LISTS => ['someList'],
+            CleverFieldsEnum::LISTS      => ['someList'],
         ], $response);
     }
 

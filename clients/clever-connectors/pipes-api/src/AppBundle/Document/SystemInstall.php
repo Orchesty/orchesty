@@ -7,7 +7,7 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use DateTime;
 use DateTimeZone;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Hanaboso\PipesFramework\Commons\Crypt\CryptManager;
+use Hanaboso\CommonsBundle\Crypt\CryptManager;
 use InvalidArgumentException;
 use MongoDate;
 
