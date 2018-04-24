@@ -7,33 +7,53 @@ import (
 	ws "clever-monitor/workflow/pkg/workflowservice"
 )
 
-func TestConfigHandler_JsonToConfig(t *testing.T) {
-	json := getExampleFileJson(t)
+const (
+	editorExampleFile = "./examples/editor.json"
+	workflowExampleFile = "./examples/workflow.json"
+	workflowGeneratedFile = "./examples/workflow_generated.json"
+)
 
-	conf, err := jsonToConfig(json)
+func TestStringToEditorConfig(t *testing.T) {
+	str := getExampleFileJson(t, editorExampleFile)
+
+	conf, err := stringToEditorConfig(str)
+	assert.Nil(t, err)
+	assert.Len(t, conf.Items, 3)
+
+	assert.Equal(t, "root", conf.Items[0].Id)
+	assert.Equal(t, "", conf.Items[0].ParentId)
+
+	assert.Equal(t, "1", conf.Items[1].Id)
+	assert.Equal(t, "root", conf.Items[1].ParentId)
+
+	assert.Equal(t, "2", conf.Items[2].Id)
+	assert.Equal(t, "1", conf.Items[2].ParentId)
+}
+
+func TestStringToWorkflowConfig(t *testing.T) {
+	conf, err := stringToWorkflowConfig(getExampleFileJson(t, workflowExampleFile))
 
 	assert.Nil(t, err)
 	assertExampleConfig(t, conf)
 }
 
-func TestConfigHandler_ConfigToJson(t *testing.T) {
-	config := createConfig()
+func TestWorkflowConfigToString(t *testing.T) {
+	config := createWorkflowConfig()
 
-	str, err := configToJson(config)
+	str, err := workflowConfigToString(config)
 	assert.Nil(t, err)
 
 	// check if we generate still same json
-	b, err := ioutil.ReadFile("./examples/generated.json")
+	b, err := ioutil.ReadFile(workflowGeneratedFile)
 	assert.Equal(t, string(b), str)
 
 	// by hydrating from json we should get config struct with same values as original
-	regenerated, err := jsonToConfig(str)
+	regenerated, err := stringToWorkflowConfig(str)
 	assert.Nil(t, err)
 	assert.EqualValues(t, config, regenerated)
 }
 
-func getExampleFileJson(t *testing.T) string {
-	file := "./examples/example.json"
+func getExampleFileJson(t *testing.T, file string) string {
 	assert.FileExists(t, file)
 
 	b, err := ioutil.ReadFile(file)
@@ -86,7 +106,7 @@ func assertExampleConfig(t *testing.T, conf *ws.WorkflowConfig) {
 	assert.Equal(t, "507f1f77bcf86cd799439022", step.NextFlow.Id)
 }
 
-func createConfig() *ws.WorkflowConfig {
+func createWorkflowConfig() *ws.WorkflowConfig {
 	conf := &ws.WorkflowConfig{}
 
 	conf.Id = "507f1f77bcf86cd799439011"

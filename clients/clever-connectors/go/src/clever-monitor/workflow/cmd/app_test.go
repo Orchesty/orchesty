@@ -44,34 +44,20 @@ func testGrpcMethods(t *testing.T, stopTest chan bool) {
 	client, conn, ctx := createGrpcClient(t)
 	defer conn.Close()
 
-	testWorkflowCRUDMethods(t, client, ctx)
-	testConfigMethods(t, client, ctx)
+	testWorkflowMethods(t, client, ctx)
 
 	stopTest <- true
 }
 
-func testWorkflowCRUDMethods(t *testing.T, client ws.WorkflowServiceClient, ctx context.Context) {
-	id := assertCRUDCreate(t, client, ctx, getValidJsonExample(t, "example.json"))
-	assertCRUDRead(t, client, ctx, id, getValidJsonExample(t, "example.json"))
-	assertCRUDUpdate(t, client, ctx, id, getValidJsonExample(t, "generated.json"))
-	assertCRUDRead(t, client, ctx, id, getValidJsonExample(t, "generated.json"))
-	assertCRUDDelete(t, client, ctx, id)
-	assertCRUDReadFailure(t, client, ctx, id)
+func testWorkflowMethods(t *testing.T, client ws.WorkflowServiceClient, ctx context.Context) {
+	id := assertCreate(t, client, ctx, getValidJsonExample(t, "editor.json"))
+	assertReadEditor(t, client, ctx, id, getValidJsonExample(t, "editor.json"))
+	assertDelete(t, client, ctx, id)
+	assertReadEditorFailure(t, client, ctx, id)
 }
 
-func testConfigMethods(t *testing.T, client ws.WorkflowServiceClient, ctx context.Context) {
-	r, err := client.CreateWorkflow(ctx, &ws.WorkflowRequest{Json: getValidJsonExample(t, "example.json")})
-	assert.Nil(t, err)
-
-	config, err := client.ReadConfig(ctx, &ws.WorkflowRequest{Id: r.Id})
-	assert.Nil(t, err)
-	assert.Equal(t, "507f1f77bcf86cd799439011", config.Id)
-
-	client.DeleteWorkflow(ctx, &ws.WorkflowRequest{Id: r.Id})
-}
-
-func assertCRUDCreate(t *testing.T, client ws.WorkflowServiceClient, ctx context.Context, data string) string {
-	r, err := client.CreateWorkflow(ctx, &ws.WorkflowRequest{Json: data})
+func assertCreate(t *testing.T, client ws.WorkflowServiceClient, ctx context.Context, data string) string {
+	r, err := client.CreateWorkflow(ctx, &ws.CreateRequest{Json: data})
 	assert.Nil(t, err)
 	assert.Equal(t, int32(handler.OK), r.Code)
 	assert.True(t, bson.IsObjectIdHex(r.Id))
@@ -79,29 +65,22 @@ func assertCRUDCreate(t *testing.T, client ws.WorkflowServiceClient, ctx context
 	return r.Id
 }
 
-func assertCRUDRead(t *testing.T, client ws.WorkflowServiceClient, ctx context.Context, id string, expected string) {
-	r, err := client.ReadWorkflow(ctx, &ws.WorkflowRequest{Id: id})
+func assertReadEditor(t *testing.T, client ws.WorkflowServiceClient, ctx context.Context, id string, expected string) {
+	r, err := client.ReadEditorConfig(ctx, &ws.ReadRequest{Id: id})
 	assert.Nil(t, err)
 	assert.Equal(t, int32(handler.OK), r.Code)
 	assert.Equal(t, id, r.Id)
 	assert.Equal(t, expected, r.Json)
 }
 
-func assertCRUDReadFailure(t *testing.T, client ws.WorkflowServiceClient, ctx context.Context, id string) {
-	r, err := client.ReadWorkflow(ctx, &ws.WorkflowRequest{Id: id})
+func assertReadEditorFailure(t *testing.T, client ws.WorkflowServiceClient, ctx context.Context, id string) {
+	r, err := client.ReadEditorConfig(ctx, &ws.ReadRequest{Id: id})
 	assert.Nil(t, err)
 	assert.Equal(t, int32(handler.NotFound), r.Code)
 }
 
-func assertCRUDUpdate(t *testing.T, client ws.WorkflowServiceClient, ctx context.Context, id string, data string) {
-	r, err := client.UpdateWorkflow(ctx, &ws.WorkflowRequest{Id: id, Json: data})
-	assert.Nil(t, err)
-	assert.Equal(t, int32(handler.OK), r.Code)
-	assert.Equal(t, id, r.Id)
-}
-
-func assertCRUDDelete(t *testing.T, client ws.WorkflowServiceClient, ctx context.Context, id string) {
-	r, err := client.DeleteWorkflow(ctx, &ws.WorkflowRequest{Id: id})
+func assertDelete(t *testing.T, client ws.WorkflowServiceClient, ctx context.Context, id string) {
+	r, err := client.DeleteWorkflow(ctx, &ws.DeleteRequest{Id: id})
 	assert.Nil(t, err)
 	assert.Equal(t, int32(handler.OK), r.Code)
 	assert.Equal(t, id, r.Id)

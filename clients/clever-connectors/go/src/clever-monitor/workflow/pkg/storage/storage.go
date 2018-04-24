@@ -7,12 +7,13 @@ type Storage interface {
 }
 
 type Finder interface {
-	FindEditorConfig(id string) (string, error)
-	FindWorkflowConfig(id string) (string, error)
+	FindEditorConfig(id string) (*EditorRecord, error)
+	FindWorkflowConfig(id string) (*WorkflowRecord, error)
+	FindAllWorkflowConfigs(editorId string) ([]*WorkflowRecord, error)
 }
 
 type Creator interface {
-	Create(editorConfig string, workflowConfigs map[string]string) (string, error)
+	Create(editorConfig string, workflowConfigs []string) (string, error)
 }
 
 type Deleter interface {

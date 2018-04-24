@@ -19,12 +19,12 @@ type Mongo struct {
 	session            *mgo.Session
 }
 
-type editorRecord struct {
+type EditorRecord struct {
 	Id   string `bson:"_id,omitempty"`
 	Json string `bson:"json"`
 }
 
-type workflowRecord struct {
+type WorkflowRecord struct {
 	Id       string `bson:"_id,omitempty"`
 	EditorId string `bson:"editor_id,omitempty"`
 	Json     string `bson:"json"`
@@ -33,19 +33,19 @@ type workflowRecord struct {
 // Returns the pointer to newly created mongo storage instance
 func NewMongo(host string, db string, edColl string, wfColl string, logger logger.Logger) (*Mongo) {
 	return &Mongo{
-		host: host,
-		db: db,
-		editorCollection: edColl,
+		host:               host,
+		db:                 db,
+		editorCollection:   edColl,
 		workflowCollection: wfColl,
-		logger: logger,
+		logger:             logger,
 	}
 }
 
 // Create persists new record to mongo storage and returns it's id
-func (s *Mongo) Create(editorConfig string, workflowConfigs map[string]string) (string, error) {
+func (s *Mongo) Create(editorConfig string, workflowConfigs []string) (string, error) {
 	c := s.getActiveSession().DB(s.db).C(s.editorCollection)
 	editorId := bson.NewObjectId().Hex()
-	eRec := editorRecord{
+	eRec := EditorRecord{
 		Id:   editorId,
 		Json: editorConfig,
 	}
@@ -57,7 +57,7 @@ func (s *Mongo) Create(editorConfig string, workflowConfigs map[string]string) (
 
 	c = s.getActiveSession().DB(s.db).C(s.workflowCollection)
 	for _, wf := range workflowConfigs {
-		wfRec := workflowRecord{
+		wfRec := WorkflowRecord{
 			Id:       bson.NewObjectId().Hex(),
 			EditorId: editorId,
 			Json:     wf,
@@ -90,42 +90,34 @@ func (s *Mongo) Delete(id string) (error) {
 }
 
 // FindEditorConfig tries to find up the record in editor collection by it's id
-func (s *Mongo) FindEditorConfig(id string) (string, error) {
-	var record editorRecord
+func (s *Mongo) FindEditorConfig(id string) (*EditorRecord, error) {
+	var record EditorRecord
 
 	c := s.getActiveSession().DB(s.db).C(s.editorCollection)
 	err := c.FindId(id).One(&record)
 
-	if err != nil {
-		return "", err
-	}
-
-	return record.Json, nil
+	return &record, err
 }
 
 // FindWorkflowConfig tries to find up the record in workflow collection by it's id
-func (s *Mongo) FindWorkflowConfig(id string) (string, error) {
-	var record workflowRecord
+func (s *Mongo) FindWorkflowConfig(id string) (*WorkflowRecord, error) {
+	var record WorkflowRecord
 
 	c := s.getActiveSession().DB(s.db).C(s.workflowCollection)
 	err := c.FindId(id).One(&record)
 
-	if err != nil {
-		return "", err
-	}
-
-	return record.Json, nil
+	return &record, err
 }
 
 // FindWorkflowConfig tries to find up the record in workflow collection by it's id
-func (s *Mongo) FindAllWorkflowConfigs(editorId string) ([]workflowRecord, error) {
-	var records []workflowRecord
+func (s *Mongo) FindAllWorkflowConfigs(editorId string) ([]*WorkflowRecord, error) {
+	var records []*WorkflowRecord
 
 	c := s.getActiveSession().DB(s.db).C(s.workflowCollection)
 	err := c.Find(bson.M{"editor_id": editorId}).All(&records)
 
 	if err != nil {
-		return []workflowRecord{}, err
+		return []*WorkflowRecord{}, err
 	}
 
 	return records, nil

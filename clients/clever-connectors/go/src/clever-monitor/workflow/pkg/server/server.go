@@ -17,14 +17,17 @@ const MaxInt = int(^uint(0) >> 1)
 type server struct {
 	addr           string
 	wfHandler      handler.Handler
-	configProvider handler.ConfigProvider
 	logger         logger.Logger
 	requestCount   int
 }
 
 // NewServer creates and returns new server struct instance
-func NewServer(addr string, workflow handler.Handler, config handler.ConfigProvider, l logger.Logger) *server {
-	return &server{addr: addr, wfHandler: workflow, configProvider: config, logger: l}
+func NewServer(addr string, workflow handler.Handler, l logger.Logger) *server {
+	return &server{
+		addr: addr,
+		wfHandler: workflow,
+		logger: l,
+	}
 }
 
 // Start prepares and runs the tcp server with grpc bindings
@@ -65,18 +68,6 @@ func (s *server) CreateWorkflow(ctx context.Context, in *ws.CreateRequest) (*ws.
 	return response, nil
 }
 
-// UpdateWorkflow updates the content of stored workflow
-func (s *server) UpdateWorkflow(ctx context.Context, in *ws.UpdateRequest) (*ws.WorkflowResponse, error) {
-	reqId := s.getRequestId("update_workflow")
-	go s.logRequest(reqId)
-
-	response := s.wfHandler.HandleUpdate(in)
-
-	go s.logResponse(response, reqId)
-
-	return response, nil
-}
-
 // DeleteWorkflow removes existing workflow
 func (s *server) DeleteWorkflow(ctx context.Context, in *ws.DeleteRequest) (*ws.WorkflowResponse, error) {
 	reqId := s.getRequestId("delete_workflow")
@@ -89,20 +80,8 @@ func (s *server) DeleteWorkflow(ctx context.Context, in *ws.DeleteRequest) (*ws.
 	return response, nil
 }
 
-// ReadWorkflow returns content of existing generated workflow
-func (s *server) ReadWorkflow(ctx context.Context, in *ws.ReadRequest) (*ws.WorkflowResponse, error) {
-	reqId := s.getRequestId("read_workflow")
-	go s.logRequest(reqId)
-
-	response := s.wfHandler.HandleReadWorkflowConfig(in)
-
-	go s.logResponse(response, reqId)
-
-	return response, nil
-}
-
-// ReadConfig returns hydrated editor config passed during create/update workflow
-func (s *server) ReadConfig(ctx context.Context, in *ws.ReadRequest) (*ws.WorkflowConfig, error) {
+// ReadEditorConfig returns editor config passed during create/update workflow
+func (s *server) ReadEditorConfig(ctx context.Context, in *ws.ReadRequest) (*ws.WorkflowResponse, error) {
 	reqId := s.getRequestId("read_config")
 	go s.logRequest(reqId)
 
@@ -113,6 +92,29 @@ func (s *server) ReadConfig(ctx context.Context, in *ws.ReadRequest) (*ws.Workfl
 	return response, nil
 }
 
+// ReadWorkflowConfig returns content of existing generated workflow config
+func (s *server) ReadWorkflowConfig(ctx context.Context, in *ws.ReadRequest) (*ws.WorkflowResponse, error) {
+	reqId := s.getRequestId("read_workflow")
+	go s.logRequest(reqId)
+
+	response := s.wfHandler.HandleReadWorkflowConfig(in)
+
+	go s.logResponse(response, reqId)
+
+	return response, nil
+}
+
+// ReadAllWorkflowConfigs returns all generated workflow configs related to single editor config
+func (s *server) ReadAllWorkflowConfigs(ctx context.Context, in *ws.ReadAllRequest) (*ws.WorkflowResponse, error) {
+	reqId := s.getRequestId("read_workflow")
+	go s.logRequest(reqId)
+
+	response := s.wfHandler.HandleReadAllWorkflowConfigs(in)
+
+	go s.logResponse(response, reqId)
+
+	return response, nil
+}
 
 // getRequestId returns id to be used to pair request and response
 func (s *server) getRequestId(method string) string {

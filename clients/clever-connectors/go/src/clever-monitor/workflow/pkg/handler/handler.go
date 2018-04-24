@@ -13,9 +13,13 @@ const (
 
 type Handler interface {
 	HandleCreate(in *ws.CreateRequest) *ws.WorkflowResponse
-	HandleUpdate(in *ws.UpdateRequest) *ws.WorkflowResponse
 	HandleDelete(in *ws.DeleteRequest) *ws.WorkflowResponse
 
+	ConfigReader
+}
+
+type ConfigReader interface {
 	HandleReadEditorConfig(in *ws.ReadRequest) *ws.WorkflowResponse
 	HandleReadWorkflowConfig(in *ws.ReadRequest) *ws.WorkflowResponse
+	HandleReadAllWorkflowConfigs(in *ws.ReadAllRequest) *ws.WorkflowResponse
 }

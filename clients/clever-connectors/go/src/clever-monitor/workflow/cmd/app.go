@@ -10,6 +10,7 @@ import (
 	"clever-monitor/workflow/pkg/storage"
 	"syscall"
 	"os/signal"
+	"clever-monitor/workflow/pkg/generator"
 )
 
 func main() {
@@ -44,15 +45,16 @@ func runGrpcServer() {
 	db := storage.NewMongo(
 		env.GetEnv("MONGO_HOST", "mongodb"),
 		env.GetEnv("MONGO_DB", "workflow"),
-		env.GetEnv("MONGO_COLLECTION", "workflow"),
+		env.GetEnv("MONGO_EDITOR_COLLECTION", "wf_editor"),
+		env.GetEnv("MONGO_WORKFLOW_COLLECTION", "wf_workflow"),
 		logger.GetLogger(),
 	)
 	db.Connect()
 
-	wfHandler := handler.NewWorkflowHandler(db)
-	cHandler := handler.NewConfigHandler(db)
+	wfGenerator := generator.NewWorkflowGenerator()
+	wfHandler := handler.NewWorkflowHandler(db, wfGenerator)
 
-	grpcServer := server.NewServer(addr, wfHandler, cHandler, logger.GetLogger())
+	grpcServer := server.NewServer(addr, wfHandler, logger.GetLogger())
 	go grpcServer.Start()
 }
 

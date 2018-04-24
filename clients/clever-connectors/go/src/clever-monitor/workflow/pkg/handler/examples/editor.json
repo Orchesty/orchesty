@@ -1,19 +1,30 @@
 {
-  "root": {
-    "id": "root",
-    "parentId": null,
-    "type": "WAIT",
-    "settings": {
-      "wait": 1,
-      "unit": "day"
+  "items": [
+    {
+      "id": "root",
+      "parentId": null,
+      "type": "TRIGGER",
+      "settings": {
+        "wait": 1,
+        "unit": "day"
+      }
+    },
+    {
+      "id": "1",
+      "parentId": "root",
+      "type": "WAIT",
+      "settings": {
+        "wait": 1,
+        "unit": "hour"
+      }
+    },
+    {
+      "id": "2",
+      "parentId": "1",
+      "type": "EMAIL",
+      "settings": {
+        "sourceId": "1"
+      }
     }
-  },
-  "2": {
-    "id": "2",
-    "parentId": "root",
-    "type": "JOIN_DST",
-    "settings": {
-      "sourceId": "1"
-    }
-  }
+  ]
 }
