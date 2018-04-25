@@ -116,18 +116,35 @@ services:
     #      BACKEND_HOST: ${BACKEND_URL}/
     ## END STAGE
 
-    notification-center:
-        image: dkr.hanaboso.net/clever-monitor/notification-center:master
+    notification-sender-fpm:
+        image: dkr.hanaboso.net/clever-monitor/clever-notification-sender:master
         ## BEGIN DEV
         environment:
-          - DEV_UID=${DEV_UID}
-          - DEV_GID=${DEV_GID}
-        depends_on:
-          - mongo
-          - redis
-          - mailhog
+            - DEV_UID=${DEV_UID}
+            - DEV_GID=${DEV_GID}
+            - BACKEND_HOST=${BACKEND_URL}
         ## END DEV
+        ## BEGIN STAGE
+        #environment:
+        #    - BACKEND_HOST=${BACKEND_URL}
+        ## END STAGE
+
+    notification-center:
+        image: cmhanaboso.azurecr.io/clever-monitor/notification-center:master
         command: bin/console rabbit_mq:consumer:clever-notification-client
+        environment:
+            - TEMPLATE_HOST=127.0.0.1
+            - RABBIT_HOST=rabbitmq
+            - MONGO_HOST=mongodb
+            - REDIS_HOST=redis
+
+    notification-center-fpm:
+        image: cmhanaboso.azurecr.io/clever-monitor/notification-center:master
+        environment:
+            - TEMPLATE_HOST=127.0.0.1
+            - RABBIT_HOST=rabbitmq
+            - MONGO_HOST=mongodb
+            - REDIS_HOST=redis
 
     multi-probe:
       image: 'dkr.hanaboso.net/pipes/pipes/multi-probe:dev'
@@ -494,27 +511,6 @@ services:
           - ${DEV_IP}:5000:5000
         links:
           - mongo
-
-    notification-sender-fpm:
-        image: dkr.hanaboso.net/clever-monitor/clever-notification-sender:master
-        ## BEGIN DEV
-        environment:
-            - DEV_UID=${DEV_UID}
-            - DEV_GID=${DEV_GID}
-            - BACKEND_HOST=${BACKEND_URL}
-        ## END DEV
-        ## BEGIN STAGE
-        #environment:
-        #    - BACKEND_HOST=${BACKEND_URL}
-        ## END STAGE
-
-    notification-center-fpm:
-        image: dkr.hanaboso.net/clever-monitor/notification-center:master
-        ## BEGIN DEV
-        environment:
-            - DEV_UID=${DEV_UID}
-            - DEV_GID=${DEV_GID}
-        ## END DEV
 
 ## BEGIN DEV
 volumes:
