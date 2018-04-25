@@ -23,7 +23,7 @@ final class CMGetCustomFieldsConnectorTest extends ConnectorTestCaseAbstract
      */
     public function testBatchAction(): void
     {
-        // $this->markTestSkipped('Online test');
+         $this->markTestSkipped('Online test');
 
         $dto = (new ProcessDto())->setHeaders([
             'pf-guid'       => '5a8b121f-a74c-11e7-a177-000d3a20eb16',
@@ -55,6 +55,12 @@ final class CMGetCustomFieldsConnectorTest extends ConnectorTestCaseAbstract
         $curl  = $this->container->get('cc.transport.curl.manager');
         $conn  = new CMGetCustomFieldsConnector($curl);
         $array = $conn->getCustomFieldsArray($dto);
+
+        self::assertTrue(is_array($array));
+        self::assertNotEmpty($array);
+        $item = reset($array);
+        self::assertArrayHasKey(CMGetCustomFieldsConnector::FIELD_ID, $item);
+        self::assertArrayHasKey(CMGetCustomFieldsConnector::NAME, $item);
     }
 
 }

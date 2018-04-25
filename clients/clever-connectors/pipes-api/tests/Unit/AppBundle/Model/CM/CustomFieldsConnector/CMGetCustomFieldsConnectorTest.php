@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\AppBundle\Model\CM\ListConnector;
+namespace Tests\Unit\AppBundle\Model\CM\CustomFieldsConnector;
 
 use CleverConnectors\AppBundle\Model\CM\CustomFieldsConnector\CMGetCustomFieldsConnector;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
@@ -16,7 +16,7 @@ use Tests\ConnectorTestCaseAbstract;
 /**
  * Class CMGetCustomFieldsConnectorTest
  *
- * @package Tests\Unit\AppBundle\Model\CM\ListConnector
+ * @package Tests\Unit\AppBundle\Model\CM\CustomFieldsConnector
  */
 final class CMGetCustomFieldsConnectorTest extends ConnectorTestCaseAbstract
 {
@@ -47,20 +47,12 @@ final class CMGetCustomFieldsConnectorTest extends ConnectorTestCaseAbstract
     private function checkData(array $res): void
     {
         $list1 = [
-            'list_id'     => '5ff42ca6-1965-49ed-97d0-b2b568c88bfd',
-            'name'        => 'Name 1',
-            'note'        => 'Description 1',
-            'subscribers' => 30001,
-            'date_from'   => '2016-01-07T00:00:00+01:00',
-            'parent_id'   => NULL,
+            'field_id' => '852ebeeb-8f5f-8766-32f8-696d943051fb',
+            'name'     => 'Sedadlo',
         ];
         $list2 = [
-            'list_id'     => 'c2d73a4d-b66b-17c3-801e-8769f22e1fc2',
-            'name'        => 'Name 2',
-            'note'        => 'Description 2',
-            'subscribers' => 0,
-            'date_from'   => '2016-01-23T00:00:00+01:00',
-            'parent_id'   => NULL,
+            'field_id' => 'f14b4906-4455-b045-3050-485071d0159d',
+            'name'     => 'Hokejka',
         ];
 
         self::assertEquals($list1, $res[0]);
@@ -87,7 +79,7 @@ final class CMGetCustomFieldsConnectorTest extends ConnectorTestCaseAbstract
                     ]);
                     self::assertEquals($expt, $requestDto);
 
-                    return new ResponseDto(200, '', $this->getRequest('distributions.json'), []);
+                    return new ResponseDto(200, '', $this->getRequest('fields.json'), []);
                 }
             ));
 

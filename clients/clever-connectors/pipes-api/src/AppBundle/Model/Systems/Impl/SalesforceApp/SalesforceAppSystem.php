@@ -5,6 +5,7 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\CM\CustomFieldsConnector\CMGetCustomFieldsConnector;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
 use CleverConnectors\AppBundle\Model\CMEvents\Traits\CMEventSystemTrait;
 use CleverConnectors\AppBundle\Model\Limits\SystemLimitDto;
@@ -16,9 +17,11 @@ use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp\Connector\SalesforceAuthConnector;
 use CleverConnectors\AppBundle\Model\Systems\Traits\SystemTrait;
 use CleverConnectors\AppBundle\Utils\AuthorizationUtils;
+use CleverConnectors\AppBundle\Utils\CMHeaders;
 use CleverConnectors\AppBundle\Utils\InnerRequestUtils;
 use DateTime;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2Dto;
@@ -78,25 +81,33 @@ class SalesforceAppSystem implements OAuth2Interface, CMEventSystemInterface
     private $limitManager;
 
     /**
+     * @var CMGetCustomFieldsConnector
+     */
+    private $fieldsConnector;
+
+    /**
      * SalesforceAppSystem constructor.
      *
-     * @param OAuth2Provider          $provider
-     * @param SalesforceAuthConnector $connector
-     * @param StartingPointHandler    $pointHandler
-     * @param SystemLimitManager      $limitManager
+     * @param OAuth2Provider             $provider
+     * @param SalesforceAuthConnector    $connector
+     * @param StartingPointHandler       $pointHandler
+     * @param SystemLimitManager         $limitManager
+     * @param CMGetCustomFieldsConnector $fieldsConnector
      */
     public function __construct(
         OAuth2Provider $provider,
         SalesforceAuthConnector $connector,
         StartingPointHandler $pointHandler,
-        SystemLimitManager $limitManager
+        SystemLimitManager $limitManager,
+        CMGetCustomFieldsConnector $fieldsConnector
     )
     {
-        $this->cmEvents     = [];
-        $this->provider     = $provider;
-        $this->connector    = $connector;
-        $this->pointHandler = $pointHandler;
-        $this->limitManager = $limitManager;
+        $this->cmEvents        = [];
+        $this->provider        = $provider;
+        $this->connector       = $connector;
+        $this->pointHandler    = $pointHandler;
+        $this->limitManager    = $limitManager;
+        $this->fieldsConnector = $fieldsConnector;
     }
 
     /**
@@ -329,6 +340,26 @@ class SalesforceAppSystem implements OAuth2Interface, CMEventSystemInterface
         $this->pointHandler->runWithRequest($request, self::SYNC_TOPO, self::SYNC_NODE);
 
         return [];
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     * @param array         $data
+     *
+     * @return array
+     * @throws CleverConnectorsException
+     */
+    public function getCustomFields(SystemInstall $systemInstall, array $data): array
+    {
+        $dto = new ProcessDto();
+        $dto
+            ->setData(json_encode($data))
+            ->setHeaders([
+                CMHeaders::createKey(CMHeaders::GUID)  => $systemInstall->getUser(),
+                CMHeaders::createKey(CMHeaders::TOKEN) => $systemInstall->getToken(),
+            ]);
+
+        return $this->fieldsConnector->getCustomFieldsArray($dto);
     }
 
     /**

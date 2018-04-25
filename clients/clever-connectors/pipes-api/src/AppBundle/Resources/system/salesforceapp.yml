@@ -9,6 +9,7 @@ services:
             - '@hbpf.connector.salesforce_app-auth-connector'
             - '@hbpf.handler.starting_point'
             - '@cc.system_limit.manager'
+            - '@hbpf.connector.clevermonitors-get-custom-fields-connector'
         tags: ['%systems%']
 
     hbpf.connector.salesforce_app-auth-connector:

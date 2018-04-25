@@ -4,6 +4,7 @@ namespace Tests\Unit\AppBundle\Model\Systems\Impl\SalesforceApp;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\CM\CustomFieldsConnector\CMGetCustomFieldsConnector;
 use CleverConnectors\AppBundle\Model\Limits\SystemLimitDto;
 use CleverConnectors\AppBundle\Model\Limits\SystemLimitManager;
 use CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp\Connector\SalesforceAuthConnector;
@@ -62,7 +63,19 @@ final class SalesforceAppSystemTest extends TestCase
             $limitManager = $this->getMockBuilder(SystemLimitManager::class)->disableOriginalConstructor()->getMock();
             $limitManager->method('addSystemLimitToRequestHeaders')->willReturn(TRUE);
 
-            $this->system = new SalesforceAppSystem($provider, $authConnector, $pointHandler, $limitManager);
+            /** @var CMGetCustomFieldsConnector|MockObject $fieldConnector */
+            $fieldConnector = $this->getMockBuilder(CMGetCustomFieldsConnector::class)
+                ->disableOriginalConstructor()
+                ->getMock();
+            $fieldConnector->method('getCustomFieldsArray')->willReturn([]);
+
+            $this->system = new SalesforceAppSystem(
+                $provider,
+                $authConnector,
+                $pointHandler,
+                $limitManager,
+                $fieldConnector
+            );
 
             $this->systemInstall = new SystemInstall();
             $this->systemInstall

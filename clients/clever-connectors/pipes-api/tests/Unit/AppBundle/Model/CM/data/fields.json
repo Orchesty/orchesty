@@ -1,0 +1,22 @@
+[
+  {
+    "field_id": "852ebeeb-8f5f-8766-32f8-696d943051fb",
+    "code": "sedadlo",
+    "name": "Sedadlo",
+    "source": 1,
+    "type": 21,
+    "length": 50,
+    "default": null
+  },
+  {
+    "field_id": "f14b4906-4455-b045-3050-485071d0159d",
+    "code": "hokejka",
+    "name": "Hokejka",
+    "source": 1,
+    "type": 1,
+    "length": 10,
+    "min_value": 0,
+    "max_value": 50,
+    "default": 0
+  }
+]

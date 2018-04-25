@@ -10,6 +10,7 @@
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\SalesforceApp\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Model\CM\CustomFieldsConnector\CMGetCustomFieldsConnector;
 use CleverConnectors\AppBundle\Model\Limits\SystemLimitManager;
 use CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp\Connector\SalesforceAppUpsertCampaignConnector;
 use CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp\Connector\SalesforceAuthConnector;
@@ -70,8 +71,6 @@ final class SalesforceAppUpsertCampaignConnectorTest extends TestCase
         $conn->processAction($dto);
     }
 
-
-
     /**
      * --------------------------------------------- HELPERS -------------------------------------------
      */
@@ -110,8 +109,9 @@ final class SalesforceAppUpsertCampaignConnectorTest extends TestCase
         /** @var SystemLimitManager|MockObject $limit */
         $limit = $this->createMock(SystemLimitManager::class);
 
-        $conn = new SalesforceAuthConnector($curl);
-        $sys  = new SalesforceAppSystem($provider, $conn, $handler, $limit);
+        $conn  = new SalesforceAuthConnector($curl);
+        $conn2 = new CMGetCustomFieldsConnector($curl);
+        $sys   = new SalesforceAppSystem($provider, $conn, $handler, $limit, $conn2);
 
         $repo = $this->createMock(SystemInstallRepository::class);
         $repo->method('getSystemInstallFromHeaders')->willReturn($systemInstall);

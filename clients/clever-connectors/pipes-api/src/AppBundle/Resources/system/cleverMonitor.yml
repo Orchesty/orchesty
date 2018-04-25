@@ -95,3 +95,10 @@ services:
             - '%clevermonitor%'
         calls:
             - ['setLogger', ['@monolog.logger.notification']]
+
+    hbpf.connector.clevermonitors-get-custom-fields-connector:
+        class: CleverConnectors\AppBundle\Model\CM\CustomFieldsConnector\CMGetCustomFieldsConnector
+        arguments:
+            - '@cc.transport.curl.manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]

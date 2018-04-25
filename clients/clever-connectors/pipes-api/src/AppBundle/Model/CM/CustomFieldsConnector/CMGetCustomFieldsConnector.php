@@ -29,6 +29,9 @@ class CMGetCustomFieldsConnector extends CMAuthorization implements ConnectorInt
     private const URL_PART = '?source=1&count=%s&offset=%s';
     private const LIMIT    = 50;
 
+    public const FIELD_ID = 'field_id';
+    public const NAME     = 'name';
+
     /**
      * @var CurlManagerInterface
      */
@@ -136,7 +139,7 @@ class CMGetCustomFieldsConnector extends CMAuthorization implements ConnectorInt
             }
         }
 
-        return $lists;
+        return $this->processLists($lists);
     }
 
     /**
@@ -147,6 +150,26 @@ class CMGetCustomFieldsConnector extends CMAuthorization implements ConnectorInt
     private function getUrl(int $page = 0): string
     {
         return sprintf('%s/fields' . self::URL_PART, $this->getBaseUrl(), self::LIMIT, self::LIMIT * $page);
+    }
+
+    /**
+     * @param array $lists
+     *
+     * @return array
+     */
+    private function processLists(array $lists): array
+    {
+        $ret = [];
+        foreach ($lists as $list) {
+            if (array_key_exists(self::FIELD_ID, $list) && array_key_exists(self::NAME, $list)) {
+                $ret[] = [
+                    self::FIELD_ID => $list[self::FIELD_ID],
+                    self::NAME     => $list[self::NAME],
+                ];
+            }
+        }
+
+        return $ret;
     }
 
 }
