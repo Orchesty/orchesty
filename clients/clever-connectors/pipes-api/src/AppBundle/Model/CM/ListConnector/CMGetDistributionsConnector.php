@@ -90,9 +90,8 @@ class CMGetDistributionsConnector extends CMDistributionListAbstract
                 }
             } else {
                 throw new CleverConnectorsException(
-                    sprintf('Request to CM distribution list failed. Code: [%s], Message: [%s].',
-                        $res->getStatusCode(), $res->getBody()
-                    ),
+                    sprintf('Request to CM distribution list failed. Code: [%s], Message: ', $res->getStatusCode())
+                    . $res->getBody(),
                     CleverConnectorsException::REQUEST_FAILED
                 );
             }

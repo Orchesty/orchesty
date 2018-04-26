@@ -117,10 +117,10 @@ class WebhookSecurityListener implements EventSubscriberInterface
             if ($code != 200) {
                 throw new CleverConnectorsException(
                     sprintf(
-                        'User [%s] with token [%s] was not found. || ' . $text,
+                        'User [%s] with token [%s] was not found. || ',
                         $params['userId'],
                         $params['token']
-                    ),
+                    ) . $text,
                     CleverConnectorsException::USER_TOKEN_NOT_EXISTS
                 );
             }
