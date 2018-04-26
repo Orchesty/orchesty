@@ -181,7 +181,7 @@ trait LoggerTrait
             self::$guid             => $systemInstall->getUser(),
             self::$token            => $systemInstall->getToken(),
             self::$systemKey        => $system ? $system->getKey() : '',
-            self::$systemName       => $system->getName(),
+            self::$systemName       => $system ? $system->getName() : '',
         ];
     }
 
