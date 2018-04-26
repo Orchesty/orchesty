@@ -143,7 +143,6 @@ class CMGetCampaignsConnector extends CMAuthorization implements BatchInterface,
 
                     return $this->getPage($sender, $callbackItem, $requestDto, $systemInstall, $page + 1);
                 }
-                $this->logger->info($response->getBody()->getContents());
 
                 return resolve();
             },
