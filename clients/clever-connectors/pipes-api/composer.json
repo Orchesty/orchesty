@@ -15,6 +15,8 @@
   "require": {
     "hanaboso/email-service-bundle": "^1.0",
     "hanaboso/commons-bundle": "^1.0",
+    "hanaboso/user-bundle": "^1.0",
+    "hanaboso/rabbit-mq-bundle": "^1.0",
     "hanaboso/pipes-framework": "^1.0",
     "nelmio/cors-bundle": "^1.5",
     "php": ">=7.1",
@@ -48,6 +50,14 @@
     {
       "type": "git",
       "url": "git@gitlab.hanaboso.net:hanaboso/commons-bundle.git"
+    },
+    {
+      "type": "git",
+      "url": "git@gitlab.hanaboso.net:hanaboso/user-bundle.git"
+    },
+    {
+      "type": "git",
+      "url": "git@gitlab.hanaboso.net:hanaboso/rabbit-mq-bundle.git"
     }
   ]
 }

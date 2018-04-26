@@ -7,7 +7,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 use Hanaboso\PipesFramework\Acl\Document\Group;
 use Hanaboso\PipesFramework\Acl\Document\Rule;
 use Hanaboso\PipesFramework\Acl\Factory\MaskFactory;
-use Hanaboso\PipesFramework\User\Document\User;
+use Hanaboso\UserBundle\Document\User;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Core\Encoder\EncoderFactory;

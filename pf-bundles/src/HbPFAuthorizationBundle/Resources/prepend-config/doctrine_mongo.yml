@@ -1,9 +1,0 @@
-doctrine_mongodb:
-    document_managers:
-        default:
-            mappings:
-                AuthorizationDocument:
-                    type: annotation
-                    is_bundle: false
-                    dir: "%src_dir%/Authorization/Document"
-                    prefix: Hanaboso\PipesFramework\Authorization\Document

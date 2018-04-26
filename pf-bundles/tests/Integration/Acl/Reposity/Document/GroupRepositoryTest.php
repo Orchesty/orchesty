@@ -4,8 +4,8 @@ namespace Tests\Integration\Acl\Reposity\Document;
 
 use Hanaboso\PipesFramework\Acl\Document\Group;
 use Hanaboso\PipesFramework\Acl\Repository\Document\GroupRepository;
-use Hanaboso\PipesFramework\User\Document\User;
-use Hanaboso\PipesFramework\User\Repository\Document\UserRepository;
+use Hanaboso\UserBundle\Document\User;
+use Hanaboso\UserBundle\Repository\Document\UserRepository;
 use Tests\DatabaseTestCaseAbstract;
 
 /**

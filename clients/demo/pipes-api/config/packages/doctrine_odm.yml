@@ -22,4 +22,15 @@ doctrine_mongodb:
     default_database: '%database_name%'
     document_managers:
         default:
-            auto_mapping: true
+            mappings:
+                HbPFUserBundle: ~
+                ConfiguratorDocument:
+                    type: annotation
+                    is_bundle: false
+                    dir: "%kernel.root_dir%/../vendor/hanaboso/pipes-framework/src/Configurator/Document"
+                    prefix: Hanaboso\PipesFramework\Configurator\Document
+                CategoryDocument:
+                    type: annotation
+                    is_bundle: false
+                    dir: "%kernel.root_dir%/../vendor/hanaboso/pipes-framework/src/Category/Document"
+                    prefix: Hanaboso\PipesFramework\Category\Document

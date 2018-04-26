@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesFramework\Acl\Provider;
 
-use Hanaboso\PipesFramework\User\Entity\UserInterface;
+use Hanaboso\UserBundle\Entity\UserInterface;
 
 /**
  * Interface ProviderInterface

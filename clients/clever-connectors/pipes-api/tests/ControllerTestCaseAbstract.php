@@ -3,9 +3,9 @@
 namespace Tests;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Hanaboso\PipesFramework\User\Document\User;
-use Hanaboso\PipesFramework\User\Model\Security\SecurityManager;
-use Hanaboso\PipesFramework\User\Model\Token;
+use Hanaboso\UserBundle\Document\User;
+use Hanaboso\UserBundle\Model\Security\SecurityManager;
+use Hanaboso\UserBundle\Model\Token;
 use Nette\Utils\Json;
 use stdClass;
 use Symfony\Bundle\FrameworkBundle\Client;

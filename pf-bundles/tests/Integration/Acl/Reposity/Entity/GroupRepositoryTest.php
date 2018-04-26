@@ -3,7 +3,7 @@
 namespace Tests\Integration\Acl\Reposity\Entity;
 
 use Hanaboso\PipesFramework\Acl\Entity\Group;
-use Hanaboso\PipesFramework\User\Entity\User;
+use Hanaboso\UserBundle\Entity\User;
 use Tests\DatabaseTestCaseAbstract;
 
 /**

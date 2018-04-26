@@ -23,11 +23,22 @@ doctrine_mongodb:
     document_managers:
         default:
             mappings:
+                HbPFUserBundle: ~
                 CCDocument:
                     type: annotation
                     is_bundle: false
                     dir: "%kernel.root_dir%/../src/AppBundle/Document"
                     prefix: CleverConnectors\AppBundle\Document
+                ConfiguratorDocument:
+                    type: annotation
+                    is_bundle: false
+                    dir: "%kernel.root_dir%/../vendor/hanaboso/pipes-framework/src/Configurator/Document"
+                    prefix: Hanaboso\PipesFramework\Configurator\Document
+                CategoryDocument:
+                    type: annotation
+                    is_bundle: false
+                    dir: "%kernel.root_dir%/../vendor/hanaboso/pipes-framework/src/Category/Document"
+                    prefix: Hanaboso\PipesFramework\Category\Document
             filters:
                 deleted:
                     class: CleverConnectors\AppBundle\Database\DeletedFilter

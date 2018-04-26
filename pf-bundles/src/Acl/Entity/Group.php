@@ -6,8 +6,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Hanaboso\CommonsBundle\Traits\Entity\IdTrait;
-use Hanaboso\PipesFramework\User\Entity\TmpUser;
-use Hanaboso\PipesFramework\User\Entity\UserInterface;
+use Hanaboso\UserBundle\Entity\TmpUser;
+use Hanaboso\UserBundle\Entity\UserInterface;
 
 /**
  * Class Group
@@ -39,7 +39,7 @@ class Group extends EntityAbstract implements GroupInterface
     /**
      * @var UserInterface[]|ArrayCollection|array
      *
-     * @ORM\ManyToMany(targetEntity="Hanaboso\PipesFramework\User\Entity\User")
+     * @ORM\ManyToMany(targetEntity="Hanaboso\UserBundle\Entity\User")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      */
     private $users = [];
@@ -47,7 +47,7 @@ class Group extends EntityAbstract implements GroupInterface
     /**
      * @var UserInterface[]|ArrayCollection|array
      *
-     * @ORM\ManyToMany(targetEntity="Hanaboso\PipesFramework\User\Entity\User")
+     * @ORM\ManyToMany(targetEntity="Hanaboso\UserBundle\Entity\User")
      * @ORM\JoinColumn(name="group_id", referencedColumnName="id", nullable=true)
      * @ORM\JoinTable(name="group_owner")
      */
@@ -56,7 +56,7 @@ class Group extends EntityAbstract implements GroupInterface
     /**
      * @var Collection|TmpUser[]|array
      *
-     * @ORM\ManyToMany(targetEntity="Hanaboso\PipesFramework\User\Entity\TmpUser")
+     * @ORM\ManyToMany(targetEntity="Hanaboso\UserBundle\Entity\TmpUser")
      * @ORM\JoinColumn(name="tmp_user_id", referencedColumnName="id", nullable=true)
      * @ORM\JoinTable(name="group_tmp_user")
      */

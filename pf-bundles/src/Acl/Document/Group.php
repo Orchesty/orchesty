@@ -8,8 +8,8 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Hanaboso\CommonsBundle\Traits\Document\IdTrait;
 use Hanaboso\PipesFramework\Acl\Entity\GroupInterface;
 use Hanaboso\PipesFramework\Acl\Entity\RuleInterface;
-use Hanaboso\PipesFramework\User\Document\TmpUser;
-use Hanaboso\PipesFramework\User\Entity\UserInterface;
+use Hanaboso\UserBundle\Document\TmpUser;
+use Hanaboso\UserBundle\Entity\UserInterface;
 
 /**
  * Class Group
@@ -40,14 +40,14 @@ class Group extends DocumentAbstract implements GroupInterface
     /**
      * @var UserInterface[]|ArrayCollection|array
      *
-     * @ODM\ReferenceMany(targetDocument="Hanaboso\PipesFramework\User\Document\User", strategy="set")
+     * @ODM\ReferenceMany(targetDocument="Hanaboso\UserBundle\Document\User", strategy="set")
      */
     private $users = [];
 
     /**
      * @var Collection|TmpUser[]|array
      *
-     * @ODM\ReferenceMany(targetDocument="Hanaboso\PipesFramework\User\Document\TmpUser", strategy="set")
+     * @ODM\ReferenceMany(targetDocument="Hanaboso\UserBundle\Document\TmpUser", strategy="set")
      */
     private $tmpUsers = [];
 

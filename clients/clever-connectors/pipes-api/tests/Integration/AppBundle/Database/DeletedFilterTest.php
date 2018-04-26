@@ -3,7 +3,7 @@
 namespace Tests\Integration\AppBundle\Database;
 
 use CleverConnectors\AppBundle\Enum\DatabaseFilterEnum;
-use Hanaboso\PipesFramework\User\Document\User;
+use Hanaboso\UserBundle\Document\User;
 use Tests\DatabaseTestCaseAbstract;
 
 /**

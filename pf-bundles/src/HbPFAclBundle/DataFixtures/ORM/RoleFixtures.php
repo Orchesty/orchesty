@@ -7,7 +7,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 use Hanaboso\PipesFramework\Acl\Entity\Group;
 use Hanaboso\PipesFramework\Acl\Entity\Rule;
 use Hanaboso\PipesFramework\Acl\Factory\MaskFactory;
-use Hanaboso\PipesFramework\User\Entity\User;
+use Hanaboso\UserBundle\Entity\User;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Core\Encoder\BCryptPasswordEncoder;

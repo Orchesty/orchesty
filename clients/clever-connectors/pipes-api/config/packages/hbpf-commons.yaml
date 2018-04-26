@@ -75,5 +75,5 @@ services:
         class: Hanaboso\CommonsBundle\DatabaseManager\DatabaseManagerLocator
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
-            - '@doctrine.orm.default_entity_manager'
+            - null
             - '%database_type%'
