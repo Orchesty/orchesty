@@ -3,7 +3,7 @@
 namespace Hanaboso\PipesFramework\Acl\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Hanaboso\PipesFramework\User\Entity\UserInterface;
+use Hanaboso\UserBundle\Entity\UserInterface;
 
 /**
  * Interface GroupInterface

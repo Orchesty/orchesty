@@ -8,7 +8,7 @@ use Hanaboso\PipesFramework\Acl\Document\Rule;
 use Hanaboso\PipesFramework\Acl\Dto\GroupDto;
 use Hanaboso\PipesFramework\Acl\Exception\AclException;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
-use Hanaboso\PipesFramework\User\Document\User;
+use Hanaboso\UserBundle\Document\User;
 use Tests\DatabaseTestCaseAbstract;
 
 /**
@@ -20,8 +20,8 @@ class AccessManagerTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::isAllowed()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::throwPermissionException()
+     * @covers AccessManager::isAllowed()
+     * @covers AccessManager::throwPermissionException()
      */
     public function testWrongObjectArray(): void
     {
@@ -32,7 +32,7 @@ class AccessManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::isAllowed()
+     * @covers AccessManager::isAllowed()
      */
     public function testWrongObjectBool(): void
     {
@@ -43,8 +43,8 @@ class AccessManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::isAllowed()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::checkParams()
+     * @covers AccessManager::isAllowed()
+     * @covers AccessManager::checkParams()
      */
     public function testWrongResourceAction(): void
     {
@@ -55,8 +55,8 @@ class AccessManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::isAllowed()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::checkParams()
+     * @covers AccessManager::isAllowed()
+     * @covers AccessManager::checkParams()
      */
     public function testWrongResourceResource(): void
     {
@@ -67,10 +67,10 @@ class AccessManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::isAllowed()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::checkParams()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::hasRight()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::selectRule()
+     * @covers AccessManager::isAllowed()
+     * @covers AccessManager::checkParams()
+     * @covers AccessManager::hasRight()
+     * @covers AccessManager::selectRule()
      */
     public function testReadPermission(): void
     {
@@ -80,10 +80,10 @@ class AccessManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::isAllowed()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::checkParams()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::hasRight()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::selectRule()
+     * @covers AccessManager::isAllowed()
+     * @covers AccessManager::checkParams()
+     * @covers AccessManager::hasRight()
+     * @covers AccessManager::selectRule()
      */
     public function testReadPermissionNotAllowed(): void
     {
@@ -94,10 +94,10 @@ class AccessManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::isAllowed()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::checkParams()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::hasRight()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::selectRule()
+     * @covers AccessManager::isAllowed()
+     * @covers AccessManager::checkParams()
+     * @covers AccessManager::hasRight()
+     * @covers AccessManager::selectRule()
      */
     public function testWritePermission(): void
     {
@@ -107,10 +107,10 @@ class AccessManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::isAllowed()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::checkParams()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::hasRight()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::selectRule()
+     * @covers AccessManager::isAllowed()
+     * @covers AccessManager::checkParams()
+     * @covers AccessManager::hasRight()
+     * @covers AccessManager::selectRule()
      */
     public function testWritePermissionNotAllowed(): void
     {
@@ -121,10 +121,10 @@ class AccessManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::isAllowed()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::checkParams()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::hasRight()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::selectRule()
+     * @covers AccessManager::isAllowed()
+     * @covers AccessManager::checkParams()
+     * @covers AccessManager::hasRight()
+     * @covers AccessManager::selectRule()
      */
     public function testDeletePermission(): void
     {
@@ -134,10 +134,10 @@ class AccessManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::isAllowed()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::checkParams()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::hasRight()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::selectRule()
+     * @covers AccessManager::isAllowed()
+     * @covers AccessManager::checkParams()
+     * @covers AccessManager::hasRight()
+     * @covers AccessManager::selectRule()
      */
     public function testDeletePermissionNotAllowed(): void
     {
@@ -148,11 +148,11 @@ class AccessManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::isAllowed()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::checkParams()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::hasRight()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::selectRule()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::checkObjectPermission()
+     * @covers AccessManager::isAllowed()
+     * @covers AccessManager::checkParams()
+     * @covers AccessManager::hasRight()
+     * @covers AccessManager::selectRule()
+     * @covers AccessManager::checkObjectPermission()
      */
     public function testObjNonOwnerRight(): void
     {
@@ -167,12 +167,12 @@ class AccessManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::isAllowed()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::checkParams()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::hasRight()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::selectRule()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::checkObjectPermission()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::getObjectById()
+     * @covers AccessManager::isAllowed()
+     * @covers AccessManager::checkParams()
+     * @covers AccessManager::hasRight()
+     * @covers AccessManager::selectRule()
+     * @covers AccessManager::checkObjectPermission()
+     * @covers AccessManager::getObjectById()
      */
     public function testIdNonOwnerRight(): void
     {
@@ -187,12 +187,12 @@ class AccessManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::isAllowed()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::checkParams()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::hasRight()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::selectRule()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::checkObjectPermission()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::getObjectById()
+     * @covers AccessManager::isAllowed()
+     * @covers AccessManager::checkParams()
+     * @covers AccessManager::hasRight()
+     * @covers AccessManager::selectRule()
+     * @covers AccessManager::checkObjectPermission()
+     * @covers AccessManager::getObjectById()
      */
     public function testObjOwnerRight(): void
     {
@@ -207,12 +207,12 @@ class AccessManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::isAllowed()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::checkParams()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::hasRight()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::selectRule()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::checkObjectPermission()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::getObjectById()
+     * @covers AccessManager::isAllowed()
+     * @covers AccessManager::checkParams()
+     * @covers AccessManager::hasRight()
+     * @covers AccessManager::selectRule()
+     * @covers AccessManager::checkObjectPermission()
+     * @covers AccessManager::getObjectById()
      */
     public function testObjWithoutOwnerAllowed(): void
     {
@@ -227,11 +227,11 @@ class AccessManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::isAllowed()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::checkParams()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::hasRight()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::selectRule()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::checkObjectPermission()
+     * @covers AccessManager::isAllowed()
+     * @covers AccessManager::checkParams()
+     * @covers AccessManager::hasRight()
+     * @covers AccessManager::selectRule()
+     * @covers AccessManager::checkObjectPermission()
      */
     public function testObjWithoutOwnerNotAllowed(): void
     {
@@ -244,13 +244,13 @@ class AccessManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::isAllowed()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::checkParams()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::hasRight()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::selectRule()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::checkObjectPermission()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::getObjectById()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::checkGroupLvl()
+     * @covers AccessManager::isAllowed()
+     * @covers AccessManager::checkParams()
+     * @covers AccessManager::hasRight()
+     * @covers AccessManager::selectRule()
+     * @covers AccessManager::checkObjectPermission()
+     * @covers AccessManager::getObjectById()
+     * @covers AccessManager::checkGroupLvl()
      */
     public function testGroupAllowed(): void
     {
@@ -265,12 +265,12 @@ class AccessManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::isAllowed()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::checkParams()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::hasRight()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::selectRule()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::checkObjectPermission()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::checkGroupLvl()
+     * @covers AccessManager::isAllowed()
+     * @covers AccessManager::checkParams()
+     * @covers AccessManager::hasRight()
+     * @covers AccessManager::selectRule()
+     * @covers AccessManager::checkObjectPermission()
+     * @covers AccessManager::checkGroupLvl()
      */
     public function testGroupNotAllowed(): void
     {
@@ -283,12 +283,12 @@ class AccessManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::isAllowed()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::checkParams()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::hasRight()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::selectRule()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::checkObjectPermission()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::hasRightForGroup()
+     * @covers AccessManager::isAllowed()
+     * @covers AccessManager::checkParams()
+     * @covers AccessManager::hasRight()
+     * @covers AccessManager::selectRule()
+     * @covers AccessManager::checkObjectPermission()
+     * @covers AccessManager::hasRightForGroup()
      */
     public function testGroupLvlAllowed(): void
     {
@@ -301,11 +301,11 @@ class AccessManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::isAllowed()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::checkParams()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::selectRule()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::checkObjectPermission()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::hasRightForGroup()
+     * @covers AccessManager::isAllowed()
+     * @covers AccessManager::checkParams()
+     * @covers AccessManager::selectRule()
+     * @covers AccessManager::checkObjectPermission()
+     * @covers AccessManager::hasRightForGroup()
      */
     public function testGroupLvlNotAllowed(): void
     {
@@ -318,11 +318,11 @@ class AccessManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::isAllowed()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::checkParams()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::selectRule()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::checkObjectPermission()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::hasRightForUser()
+     * @covers AccessManager::isAllowed()
+     * @covers AccessManager::checkParams()
+     * @covers AccessManager::selectRule()
+     * @covers AccessManager::checkObjectPermission()
+     * @covers AccessManager::hasRightForUser()
      */
     public function testUserLvlAllowed(): void
     {
@@ -334,11 +334,11 @@ class AccessManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::isAllowed()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::checkParams()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::selectRule()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::checkObjectPermission()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::hasRightForUser()
+     * @covers AccessManager::isAllowed()
+     * @covers AccessManager::checkParams()
+     * @covers AccessManager::selectRule()
+     * @covers AccessManager::checkObjectPermission()
+     * @covers AccessManager::hasRightForUser()
      */
     public function testUserLvlNotAllowed(): void
     {
@@ -350,10 +350,10 @@ class AccessManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::isAllowed()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::checkParams()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::selectRule()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::checkObjectPermission()
+     * @covers AccessManager::isAllowed()
+     * @covers AccessManager::checkParams()
+     * @covers AccessManager::selectRule()
+     * @covers AccessManager::checkObjectPermission()
      */
     public function testClassPermision(): void
     {
@@ -364,8 +364,8 @@ class AccessManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::addGroup()
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::updateGroup()
+     * @covers AccessManager::addGroup()
+     * @covers AccessManager::updateGroup()
      */
     public function testAddAndUpdateGroup(): void
     {
@@ -419,7 +419,7 @@ class AccessManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers Hanaboso\PipesFramework\Acl\Manager\AccessManager::removeGroup()
+     * @covers AccessManager::removeGroup()
      */
     public function testRemoveGroup(): void
     {

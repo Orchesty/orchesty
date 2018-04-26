@@ -6,7 +6,7 @@ use Hanaboso\PipesFramework\Acl\Entity\GroupInterface;
 use Hanaboso\PipesFramework\Acl\Exception\AclException;
 use Hanaboso\PipesFramework\Acl\Factory\MaskFactory;
 use Hanaboso\PipesFramework\Acl\Factory\RuleFactory;
-use Hanaboso\PipesFramework\User\Entity\UserInterface;
+use Hanaboso\UserBundle\Entity\UserInterface;
 
 /**
  * Class GroupDto

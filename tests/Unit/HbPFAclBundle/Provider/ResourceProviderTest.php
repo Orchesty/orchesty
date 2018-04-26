@@ -2,8 +2,8 @@
 
 namespace Tests\Unit\HbPFAclBundle\Provider;
 
-use Hanaboso\PipesFramework\HbPFUserBundle\Exception\UserException;
-use Hanaboso\PipesFramework\HbPFUserBundle\Provider\ResourceProvider;
+use Hanaboso\UserBundle\Exception\UserException;
+use Hanaboso\UserBundle\Provider\ResourceProvider;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 

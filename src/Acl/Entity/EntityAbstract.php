@@ -3,7 +3,7 @@
 namespace Hanaboso\PipesFramework\Acl\Entity;
 
 use Hanaboso\PipesFramework\Acl\Annotation\OwnerAnnotation as OWNER;
-use Hanaboso\PipesFramework\User\Entity\UserInterface;
+use Hanaboso\UserBundle\Entity\UserInterface;
 
 /**
  * Class EntityAbstract

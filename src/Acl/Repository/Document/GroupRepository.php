@@ -5,7 +5,7 @@ namespace Hanaboso\PipesFramework\Acl\Repository\Document;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\Query\Query;
 use Hanaboso\PipesFramework\Acl\Document\Group;
-use Hanaboso\PipesFramework\User\Entity\UserInterface;
+use Hanaboso\UserBundle\Entity\UserInterface;
 
 /**
  * Class GroupRepository

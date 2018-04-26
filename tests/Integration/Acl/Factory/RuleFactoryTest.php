@@ -4,8 +4,8 @@ namespace Tests\Integration\Acl\Factory;
 
 use Hanaboso\PipesFramework\Acl\Document\Group;
 use Hanaboso\PipesFramework\Acl\Document\Rule;
-use Hanaboso\PipesFramework\User\Document\User;
-use Hanaboso\PipesFramework\User\Model\User\Event\UserEvent;
+use Hanaboso\UserBundle\Document\User;
+use Hanaboso\UserBundle\Model\User\Event\UserEvent;
 use Tests\DatabaseTestCaseAbstract;
 
 /**

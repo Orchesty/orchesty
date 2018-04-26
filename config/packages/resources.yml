@@ -1,0 +1,14 @@
+parameters:
+    resource_enum: Hanaboso\PipesFramework\Acl\Enum\ResourceEnum
+
+    db_res:
+        resources:
+            # Add new resources to ResourceEnum class
+            user: Hanaboso\UserBundle\Document\User
+            tmp_user: Hanaboso\UserBundle\Document\TmpUser
+            token: Hanaboso\UserBundle\Document\Token
+            file: Hanaboso\CommonsBundle\FileStorage\Document\File
+            group: Hanaboso\PipesFramework\Acl\Document\Group
+            rule: Hanaboso\PipesFramework\Acl\Document\Rule
+            node: Hanaboso\PipesFramework\Configurator\Document\Node
+            topology: Hanaboso\PipesFramework\Configurator\Document\Topology

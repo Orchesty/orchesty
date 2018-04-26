@@ -5,7 +5,7 @@ namespace Tests\Integration\Acl\Provider\Impl;
 use Hanaboso\PipesFramework\Acl\Document\Group;
 use Hanaboso\PipesFramework\Acl\Document\Rule;
 use Hanaboso\PipesFramework\Acl\Provider\Impl\DatabaseProvider;
-use Hanaboso\PipesFramework\User\Document\User;
+use Hanaboso\UserBundle\Document\User;
 use Tests\DatabaseTestCaseAbstract;
 
 /**

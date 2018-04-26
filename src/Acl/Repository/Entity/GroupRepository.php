@@ -4,7 +4,7 @@ namespace Hanaboso\PipesFramework\Acl\Repository\Entity;
 
 use Doctrine\ORM\EntityRepository;
 use Hanaboso\PipesFramework\Acl\Document\Group;
-use Hanaboso\PipesFramework\User\Entity\UserInterface;
+use Hanaboso\UserBundle\Entity\UserInterface;
 
 /**
  * Class GroupRepository
