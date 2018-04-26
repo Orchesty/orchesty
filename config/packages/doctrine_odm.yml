@@ -20,6 +20,7 @@ doctrine_mongodb:
         default:
             mappings:
                 HbPFUserBundle: ~
+                HbPFAclBundle: ~
                 ConfiguratorDocument:
                     type: annotation
                     is_bundle: false
@@ -45,8 +46,3 @@ doctrine_mongodb:
                     is_bundle: false
                     dir: "%kernel.root_dir%/../vendor/hanaboso/commons-bundle/src/FileStorage/Driver"
                     prefix: Hanaboso\CommonsBundle\FileStorage\Driver
-                AclDocument:
-                    type: annotation
-                    is_bundle: false
-                    dir: "%kernel.root_dir%/Acl/Document"
-                    prefix: Hanaboso\PipesFramework\Acl\Document

@@ -19,10 +19,6 @@ doctrine:
         mappings:
             HbPFCommonsBundle: ~
             HbPFUserBundle: ~
-            AclEntity:
-                type: annotation
-                is_bundle: false
-                dir: "%kernel.root_dir%/Acl/Entity"
-                prefix: Hanaboso\PipesFramework\Acl\Entity
+            HbPFAclBundle: ~
         proxy_dir: "%kernel.cache_dir%/doctrine/orm/Proxies"
         proxy_namespace: Proxies

@@ -4,7 +4,7 @@ use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
 use EmailServiceBundle\EmailServiceBundle;
 use FOS\RestBundle\FOSRestBundle;
 use Hanaboso\CommonsBundle\HbPFCommonsBundle;
-use Hanaboso\PipesFramework\HbPFAclBundle\HbPFAclBundle;
+use Hanaboso\AclBundle\HbPFAclBundle;
 use Hanaboso\PipesFramework\HbPFApiGatewayBundle\HbPFApiGatewayBundle;
 use Hanaboso\PipesFramework\HbPFAuthorizationBundle\HbPFAuthorizationBundle;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\HbPFConfiguratorBundle;

@@ -1,5 +1,5 @@
 parameters:
-    resource_enum: Hanaboso\PipesFramework\Acl\Enum\ResourceEnum
+    resource_enum: Hanaboso\PipesFramework\ResourceEnum
 
     db_res:
         resources:
