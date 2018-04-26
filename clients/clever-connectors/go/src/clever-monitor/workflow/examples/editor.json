@@ -5,25 +5,57 @@
       "parentId": null,
       "type": "TRIGGER",
       "settings": {
-        "wait": 1,
-        "unit": "day"
+        "trigger" : {
+          "event": "contact_add",
+          "event_options": {
+            "manually": true,
+            "batch": true,
+            "web_services": false
+          }
+        }
       }
     },
     {
       "id": "1",
       "parentId": "root",
-      "type": "WAIT",
+      "type": "NOTIFY",
       "settings": {
-        "wait": 1,
-        "unit": "hour"
+        "notify" : {
+          "email": true,
+          "aim": false
+        }
       }
     },
     {
       "id": "2",
       "parentId": "1",
+      "type": "WAIT",
+      "settings": {
+        "wait": {
+          "duration": 1,
+          "unit": "hour"
+        }
+      }
+    },
+    {
+      "id": "3",
+      "parentId": "2",
       "type": "EMAIL",
       "settings": {
-        "sourceId": "1"
+        "email" : {
+          "sender_name": "Tomas Sedlacek",
+          "sender_email": "sedlacek.t@hanaboso.com",
+          "subject": "Some subject",
+          "template_id": "507f1f77bcfaecd7994390ce"
+        }
+      }
+    },
+    {
+      "id": "4",
+      "parentId": "3",
+      "type": "END",
+      "settings": {
+        "end" : {}
       }
     }
   ]

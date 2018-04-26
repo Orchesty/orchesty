@@ -6,24 +6,24 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-const root = "root"
-
 const (
 	typeCondition       = "COND"
 	typeConditionBranch = "COND_BRANCH"
-	typeTrigger         = "TRIGGER"
-	typeWait            = "WAIT"
+	typeDistribute      = "DISTRIBUTE"
 	typeEmail           = "EMAIL"
-	typeNotify          = "NOTIFY"
-	typeJoinSrc         = "JOIN_SRC"
-	typeJoinDst         = "JOIN_DST"
 	typeEmpty           = "EMPTY"
 	typeEnd             = "END"
+	typeJoinDst         = "JOIN_DST"
+	typeJoinSrc         = "JOIN_SRC"
+	typeNotify          = "NOTIFY"
+	typeTrigger         = "TRIGGER"
+	typeWait            = "WAIT"
 )
 
 type composedConfig struct {
-	ec *ws.EditorConfig_EditorConfigItem
-	wfc *ws.WorkflowConfig
+	ec   *ws.EditorConfig_EditorConfigItem
+	wfc  *ws.WorkflowConfig
+	skip bool
 }
 
 type workflowGenerator struct{}
@@ -47,7 +47,9 @@ func (gen *workflowGenerator) Generate(
 			return wfs, fmt.Errorf("unable to generate worflow from editor item '%s'. Error: %s", cc.ec.Id, err)
 		}
 
-		wfs = append(wfs, cfg)
+		if cc.skip == false {
+			wfs = append(wfs, cfg)
+		}
 	}
 
 	return wfs, nil
@@ -60,10 +62,11 @@ func pairConfigs(editor *ws.EditorConfig, clientId int, guid string) []*composed
 		cc := &composedConfig{
 			ec: item,
 			wfc: &ws.WorkflowConfig{
-				Id: bson.NewObjectId().Hex(),
-				ClientId: int32(clientId),
+				Id:         bson.NewObjectId().Hex(),
+				ClientId:   int32(clientId),
 				ClientGuid: guid,
 			},
+			skip: false,
 		}
 
 		pairs = append(pairs, cc)
@@ -73,9 +76,11 @@ func pairConfigs(editor *ws.EditorConfig, clientId int, guid string) []*composed
 }
 
 func generateWorkflowConfig(cc *composedConfig, all []*composedConfig) (*ws.WorkflowConfig, error) {
+	trigger := findTrigger(all)
 
-	cc.wfc.Type = "" // TODO - where to get?
-	cc.wfc.ClientDomain = "" // TODO - where to get?
+	cc.wfc.EditorItemId = cc.ec.Id
+	cc.wfc.Type = trigger.ec.Settings.Trigger.EventOptions.Type
+	cc.wfc.ClientDomain = trigger.ec.Settings.Trigger.EventOptions.ClientDomain
 
 	populateSpecifics(cc, all)
 
@@ -84,13 +89,21 @@ func generateWorkflowConfig(cc *composedConfig, all []*composedConfig) (*ws.Work
 
 func populateSpecifics(cc *composedConfig, all []*composedConfig) error {
 	switch cc.ec.Type {
-	case typeTrigger:
-		return PopulateTrigger(cc, all)
 	case typeCondition:
 		return PopulateCondition(cc, all)
-	default:
-		// return fmt.Errorf("cannot set type specifics to workflow config of type '%s'", cc.ec.Type)
+	case typeDistribute:
 		return PopulateDefault(cc, all)
+	case typeEmail:
+		return PopulateDefault(cc, all)
+	case typeNotify:
+		return PopulateDefault(cc, all)
+	case typeWait:
+		return PopulateWait(cc, all)
+	case typeConditionBranch, typeEmpty, typeEnd, typeJoinDst, typeJoinSrc, typeTrigger:
+		cc.skip = true
+		return PopulateSkip(cc, all)
+	default:
+		return fmt.Errorf("cannot set type specifics to workflow config of type '%s'", cc.ec.Type)
 	}
 }
 
@@ -106,12 +119,32 @@ func findItemById(id string, ec *ws.EditorConfig) *ws.EditorConfig_EditorConfigI
 
 func findRootItem(ec *ws.EditorConfig) *ws.EditorConfig_EditorConfigItem {
 	for _, item := range ec.Items {
-		if item.Id == root {
+		if item.ParentId == "" && item.Type == typeTrigger {
 			return item
 		}
 	}
 
 	return nil
+}
+
+func findTrigger(all []*composedConfig) *composedConfig {
+	triggers := findItemsByType(typeTrigger, all)
+	if len(triggers) > 0 {
+		return triggers[0]
+	}
+
+	return nil
+}
+
+func findItemsByType(desiredType string, all []*composedConfig) []*composedConfig {
+	var matching []*composedConfig
+	for _, cc := range all {
+		if cc.ec.Type == desiredType {
+			matching = append(matching, cc)
+		}
+	}
+
+	return matching
 }
 
 func findChildItems(parent *ws.EditorConfig_EditorConfigItem, all []*composedConfig) []*composedConfig {
@@ -124,4 +157,28 @@ func findChildItems(parent *ws.EditorConfig_EditorConfigItem, all []*composedCon
 	}
 
 	return children
+}
+
+func findFirstChildItem(parent *ws.EditorConfig_EditorConfigItem, all []*composedConfig) *composedConfig {
+	children := findChildItems(parent, all)
+
+	if len(children) > 0 {
+		return children[0]
+	}
+
+	return nil
+}
+
+func findParentItem(child *ws.EditorConfig_EditorConfigItem, all []*composedConfig) *composedConfig {
+	if child.ParentId == "" {
+		return nil
+	}
+
+	for _, item := range all {
+		if item.ec.Id == child.ParentId {
+			return item
+		}
+	}
+
+	return nil
 }

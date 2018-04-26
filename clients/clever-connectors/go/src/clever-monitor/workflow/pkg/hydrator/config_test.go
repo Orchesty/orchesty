@@ -8,17 +8,17 @@ import (
 )
 
 const (
-	editorExampleFile     = "../../examples/editor.json"
-	workflowExampleFile   = "../../examples/workflow.json"
-	workflowGeneratedFile = "../../examples/workflow_generated.json"
+	editorSimpleExampleFile = "../../examples/editor.json"
+	workflowExampleFile     = "../../examples/workflow.json"
+	workflowGeneratedFile   = "../../examples/workflow_generated.json"
 )
 
 func TestStringToEditorConfig(t *testing.T) {
-	str := getExampleFileJson(t, editorExampleFile)
+	str := getExampleFileJson(t, editorSimpleExampleFile)
 
 	conf, err := StringToEditorConfig(str)
 	assert.Nil(t, err)
-	assert.Len(t, conf.Items, 3)
+	assert.Len(t, conf.Items, 5)
 
 	assert.Equal(t, "root", conf.Items[0].Id)
 	assert.Equal(t, "", conf.Items[0].ParentId)
@@ -28,6 +28,12 @@ func TestStringToEditorConfig(t *testing.T) {
 
 	assert.Equal(t, "2", conf.Items[2].Id)
 	assert.Equal(t, "1", conf.Items[2].ParentId)
+
+	assert.Equal(t, "3", conf.Items[3].Id)
+	assert.Equal(t, "2", conf.Items[3].ParentId)
+
+	assert.Equal(t, "4", conf.Items[4].Id)
+	assert.Equal(t, "3", conf.Items[4].ParentId)
 }
 
 func TestStringToWorkflowConfig(t *testing.T) {

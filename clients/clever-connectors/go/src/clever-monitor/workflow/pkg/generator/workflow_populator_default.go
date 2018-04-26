@@ -2,6 +2,7 @@ package generator
 
 import ws "clever-monitor/workflow/pkg/workflowservice"
 
+// TODO - test
 func PopulateDefault(cc *composedConfig, all []*composedConfig) error {
 	// Add step field
 	followers := findChildItems(cc.ec, all)
@@ -10,7 +11,6 @@ func PopulateDefault(cc *composedConfig, all []*composedConfig) error {
 			Condition: "true",
 			NextFlow: &ws.WorkflowConfig_Step_NextFlow{
 				Id: follower.wfc.Id,
-				Wait: int32(0), // TODO - where to get?
 			},
 		}
 

@@ -2,6 +2,7 @@ package generator
 
 import ws "clever-monitor/workflow/pkg/workflowservice"
 
+// TODO - test
 func PopulateCondition(cc *composedConfig, all []*composedConfig) error {
 	filter := &ws.WorkflowConfig_Filter{}
 
