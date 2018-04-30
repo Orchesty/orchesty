@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "4eb6ea5cfb78315b3b199ba28485d9d7",
+    "content-hash": "fc990972ac52d46c0eb7f77467d8b469",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -73,39 +73,32 @@
         },
         {
             "name": "bunny/bunny",
-            "version": "v0.2.4",
+            "version": "v0.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jakubkulhan/bunny.git",
-                "reference": "f81da29e8a279af2b9af80fa041b84497a26ddf8"
+                "reference": "d67bb6d6d2fa5d8e802b7be35a1d0389403491e5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jakubkulhan/bunny/zipball/f81da29e8a279af2b9af80fa041b84497a26ddf8",
-                "reference": "f81da29e8a279af2b9af80fa041b84497a26ddf8",
+                "url": "https://api.github.com/repos/jakubkulhan/bunny/zipball/d67bb6d6d2fa5d8e802b7be35a1d0389403491e5",
+                "reference": "d67bb6d6d2fa5d8e802b7be35a1d0389403491e5",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.4.0",
+                "php": "~7.0",
                 "psr/log": "~1.0",
-                "react/event-loop": "~0.4",
+                "react/event-loop": "^1.0 || ^0.5 || ^0.4",
                 "react/promise": "~2.2"
             },
             "require-dev": {
-                "phpunit/phpunit": "~4.5"
+                "phpunit/phpunit": "~6.5"
             },
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "Bunny\\": [
-                        "src/Bunny/",
-                        "test/Bunny/"
-                    ]
-                },
-                "classmap": [
-                    "src/Bunny/",
-                    "test/Bunny/"
-                ]
+                    "Bunny\\": "src/Bunny/"
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -132,7 +125,7 @@
                 "react-php",
                 "reactphp"
             ],
-            "time": "2016-09-13T18:57:54+00:00"
+            "time": "2018-04-07T07:01:13+00:00"
         },
         {
             "name": "clue/buzz-react",
@@ -1823,11 +1816,11 @@
         },
         {
             "name": "hanaboso/commons-bundle",
-            "version": "1.0.5",
+            "version": "1.0.6",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.hanaboso.net:hanaboso/commons-bundle.git",
-                "reference": "c69bc95aa150bb4355480b5b0cb085a58bc97a25"
+                "reference": "6190cb3193ae3addc8d93d2d4a7018064c009189"
             },
             "require": {
                 "alcaeus/mongo-php-adapter": "^1.1",
@@ -1838,7 +1831,7 @@
                 "doctrine/orm": "^2.6",
                 "guzzlehttp/guzzle": "^6.3",
                 "jms/serializer-bundle": "^2.3",
-                "mongodb/mongodb": "1.2.*",
+                "mongodb/mongodb": "^1.3",
                 "paragonie/halite": "^4.4",
                 "php": "^7.2",
                 "phpseclib/phpseclib": "^2.0",
@@ -1847,12 +1840,12 @@
             "require-dev": {
                 "friendsofsymfony/rest-bundle": "^2.3",
                 "hanaboso/php-check-utils": "^1.0",
-                "phpunit/phpunit": "^7.0",
+                "phpunit/phpunit": "^7.1",
                 "sensio/framework-extra-bundle": "^5.1",
-                "snc/redis-bundle": "^2.0",
+                "snc/redis-bundle": "^2.1",
                 "symfony/browser-kit": "^4.0",
                 "symfony/lts": "^4@dev",
-                "symfony/monolog-bundle": "^3.1",
+                "symfony/monolog-bundle": "^3.2",
                 "symfony/skeleton": "^4.0"
             },
             "type": "library",
@@ -1869,7 +1862,7 @@
             "license": [
                 "proprietary"
             ],
-            "time": "2018-04-26T15:10:48+00:00"
+            "time": "2018-04-30T11:28:17+00:00"
         },
         {
             "name": "hanaboso/email-service-bundle",
@@ -1919,19 +1912,19 @@
         },
         {
             "name": "hanaboso/rabbit-mq-bundle",
-            "version": "1.0.1",
+            "version": "1.0.2",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.hanaboso.net:hanaboso/rabbit-mq-bundle.git",
-                "reference": "06f16a1dcb36f41ebcf62afd7f33623d82a3149c"
+                "reference": "246226999362e162b37dc2fae09bd85fd88eadd8"
             },
             "require": {
-                "bunny/bunny": "^0.2.4",
+                "bunny/bunny": "^0.4",
                 "kdyby/monolog": "^1.3",
                 "nette/di": "^2.4",
                 "nette/neon": "^2.4",
                 "symfony/framework-bundle": "~3.4|~4.0",
-                "symfony/monolog-bundle": "^3.1",
+                "symfony/monolog-bundle": "^3.2",
                 "symfony/yaml": "~3.4|~4.0"
             },
             "require-dev": {
@@ -1951,21 +1944,21 @@
             "license": [
                 "proprietary"
             ],
-            "time": "2018-04-09T10:59:20+00:00"
+            "time": "2018-04-30T11:31:43+00:00"
         },
         {
             "name": "hanaboso/user-bundle",
-            "version": "1.0.7",
+            "version": "1.0.8",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.hanaboso.net:hanaboso/user-bundle.git",
-                "reference": "ee13e42ef2bc0ae9fd85078be52e3bcd8ab8d13c"
+                "reference": "76452fd62b30a0ade9901d92eb163157ead3b314"
             },
             "require": {
                 "hanaboso/commons-bundle": "^1.0",
                 "hanaboso/email-service-bundle": "^1.0",
                 "hanaboso/rabbit-mq-bundle": "^1.0",
-                "php": "^7.1.3",
+                "php": "^7.2",
                 "sensio/framework-extra-bundle": "^5.1",
                 "symfony/framework-bundle": "^4.0",
                 "symfony/security-bundle": "^4.0"
@@ -1974,10 +1967,10 @@
                 "doctrine/orm": "^2.6",
                 "friendsofsymfony/rest-bundle": "^2.3",
                 "hanaboso/php-check-utils": "^1.0",
-                "phpunit/phpunit": "^7.0",
+                "phpunit/phpunit": "^7.1",
                 "symfony/browser-kit": "^4.0",
                 "symfony/lts": "^4@dev",
-                "symfony/monolog-bundle": "^3.1"
+                "symfony/monolog-bundle": "^3.2"
             },
             "type": "library",
             "autoload": {
@@ -1993,7 +1986,7 @@
             "license": [
                 "proprietary"
             ],
-            "time": "2018-04-26T06:48:02+00:00"
+            "time": "2018-04-30T11:34:12+00:00"
         },
         {
             "name": "influxdb/influxdb-php",
@@ -2555,28 +2548,33 @@
         },
         {
             "name": "mongodb/mongodb",
-            "version": "1.2.0",
+            "version": "1.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mongodb/mongo-php-library.git",
-                "reference": "5cffeb33b893b6bb04195b99ddc3955a29252339"
+                "reference": "b9f35916125976533f4b1e67a4a0ee7baf1d3bb9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mongodb/mongo-php-library/zipball/5cffeb33b893b6bb04195b99ddc3955a29252339",
-                "reference": "5cffeb33b893b6bb04195b99ddc3955a29252339",
+                "url": "https://api.github.com/repos/mongodb/mongo-php-library/zipball/b9f35916125976533f4b1e67a4a0ee7baf1d3bb9",
+                "reference": "b9f35916125976533f4b1e67a4a0ee7baf1d3bb9",
                 "shasum": ""
             },
             "require": {
                 "ext-hash": "*",
                 "ext-json": "*",
-                "ext-mongodb": "^1.3.0",
+                "ext-mongodb": "^1.4.0",
                 "php": ">=5.5"
             },
             "require-dev": {
-                "phpunit/phpunit": "^4.8"
+                "phpunit/phpunit": "^4.8.36 || ^6.4"
             },
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.3.x-dev"
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "MongoDB\\": "src/"
@@ -2595,12 +2593,12 @@
                     "email": "jmikola@gmail.com"
                 },
                 {
-                    "name": "Hannes Magnusson",
-                    "email": "bjori@mongodb.com"
-                },
-                {
                     "name": "Derick Rethans",
                     "email": "github@derickrethans.nl"
+                },
+                {
+                    "name": "Katherine Walker",
+                    "email": "katherine.walker@mongodb.com"
                 }
             ],
             "description": "MongoDB driver library",
@@ -2611,7 +2609,7 @@
                 "mongodb",
                 "persistence"
             ],
-            "time": "2017-10-27T19:42:57+00:00"
+            "time": "2018-04-19T17:20:30+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -3785,16 +3783,16 @@
         },
         {
             "name": "phpoffice/phpspreadsheet",
-            "version": "1.1.0",
+            "version": "1.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPOffice/PhpSpreadsheet.git",
-                "reference": "a2771e562e3a17c0d512d2009e38fd628beece90"
+                "reference": "36acc372875c4d894dc093825ce4f62209db5a76"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/a2771e562e3a17c0d512d2009e38fd628beece90",
-                "reference": "a2771e562e3a17c0d512d2009e38fd628beece90",
+                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/36acc372875c4d894dc093825ce4f62209db5a76",
+                "reference": "36acc372875c4d894dc093825ce4f62209db5a76",
                 "shasum": ""
             },
             "require": {
@@ -3824,8 +3822,6 @@
             },
             "suggest": {
                 "dompdf/dompdf": "Option for rendering PDF with PDF Writer",
-                "ext-dom": "Option to read and write HTML files",
-                "ext-gd": "Required for exact column width autocalculation",
                 "jpgraph/jpgraph": "Option for rendering charts, or including charts with PDF or HTML Writers",
                 "mpdf/mpdf": "Option for rendering PDF with PDF Writer",
                 "tecnick.com/tcpdf": "Option for rendering PDF with PDF Writer"
@@ -3838,7 +3834,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "LGPL-2.1"
+                "LGPL-2.1-or-later"
             ],
             "authors": [
                 {
@@ -3869,7 +3865,7 @@
                 "xls",
                 "xlsx"
             ],
-            "time": "2018-01-28T12:37:15+00:00"
+            "time": "2018-04-10T03:53:16+00:00"
         },
         {
             "name": "phpoption/phpoption",
@@ -5489,16 +5485,16 @@
         },
         {
             "name": "symfony/symfony",
-            "version": "v4.0.4",
+            "version": "v4.0.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "927f4f4069b69052f9e002fb287bd52ecfd52aa9"
+                "reference": "b0fcabb5d8dde5d190eceb2be39e3f94cd996765"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/927f4f4069b69052f9e002fb287bd52ecfd52aa9",
-                "reference": "927f4f4069b69052f9e002fb287bd52ecfd52aa9",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/b0fcabb5d8dde5d190eceb2be39e3f94cd996765",
+                "reference": "b0fcabb5d8dde5d190eceb2be39e3f94cd996765",
                 "shasum": ""
             },
             "require": {
@@ -5636,7 +5632,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2018-01-29T13:27:23+00:00"
+            "time": "2018-04-06T16:25:21+00:00"
         },
         {
             "name": "tracy/tracy",
@@ -6811,16 +6807,16 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "6.0.3",
+            "version": "6.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "774a82c0c5da4c1c7701790c262035d235ab7856"
+                "reference": "52187754b0eed0b8159f62a6fa30073327e8c2ca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/774a82c0c5da4c1c7701790c262035d235ab7856",
-                "reference": "774a82c0c5da4c1c7701790c262035d235ab7856",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/52187754b0eed0b8159f62a6fa30073327e8c2ca",
+                "reference": "52187754b0eed0b8159f62a6fa30073327e8c2ca",
                 "shasum": ""
             },
             "require": {
@@ -6870,7 +6866,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2018-04-06T15:39:20+00:00"
+            "time": "2018-04-29T14:59:09+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -7060,16 +7056,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "7.1.4",
+            "version": "7.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "6d51299e307dc510149e0b7cd1931dd11770e1cb"
+                "reference": "ca64dba53b88aba6af32aebc6b388068db95c435"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/6d51299e307dc510149e0b7cd1931dd11770e1cb",
-                "reference": "6d51299e307dc510149e0b7cd1931dd11770e1cb",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/ca64dba53b88aba6af32aebc6b388068db95c435",
+                "reference": "ca64dba53b88aba6af32aebc6b388068db95c435",
                 "shasum": ""
             },
             "require": {
@@ -7088,7 +7084,7 @@
                 "phpunit/php-text-template": "^1.2.1",
                 "phpunit/php-timer": "^2.0",
                 "phpunit/phpunit-mock-objects": "^6.1.1",
-                "sebastian/comparator": "^2.1 || ^3.0",
+                "sebastian/comparator": "^3.0",
                 "sebastian/diff": "^3.0",
                 "sebastian/environment": "^3.1",
                 "sebastian/exporter": "^3.1",
@@ -7136,7 +7132,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2018-04-18T13:41:53+00:00"
+            "time": "2018-04-29T15:09:19+00:00"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
@@ -7947,7 +7943,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=7.1"
+        "php": ">=7.2"
     },
     "platform-dev": []
 }

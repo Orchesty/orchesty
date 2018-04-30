@@ -2,7 +2,7 @@
   "name": "hanaboso/pipes-framework",
   "license": "proprietary",
   "description": "PipesFramework for Symfony",
-  "version": "1.0.22",
+  "version": "1.0.24",
   "autoload": {
     "psr-4": {
       "Hanaboso\\PipesFramework\\": "src/"
@@ -14,51 +14,30 @@
     }
   },
   "require": {
-    "alcaeus/mongo-php-adapter": "^1.1",
-    "clue/buzz-react": "^2.2",
-    "doctrine/doctrine-bundle": "^1.8",
-    "doctrine/doctrine-fixtures-bundle": "^3.0",
-    "doctrine/mongodb-odm-bundle": "^3.4",
-    "doctrine/orm": "^2.6",
+    "php": ">=7.2",
     "friendsofsymfony/rest-bundle": "^2.3",
-    "guzzlehttp/guzzle": "^6.3",
     "hanaboso/commons-bundle": "^1.0",
     "hanaboso/email-service-bundle": "^1.0",
     "hanaboso/user-bundle": "^1.0",
     "influxdb/influxdb-php": "^1.4",
-    "jms/serializer-bundle": "^2.3",
     "league/oauth2-client": "^2.3",
-    "mongodb/mongodb": "1.2.*",
     "mtdowling/cron-expression": "^1.2",
     "nette/http": "^2.4",
     "nette/utils": "^2.4",
-    "paragonie/halite": "^4.4",
-    "php": ">=7.1",
     "php-http/client-common": "^1.7",
     "php-http/message": "^1.6",
     "php-http/socket-client": "^1.4",
-    "phpoffice/phpspreadsheet": "1.1.0",
-    "phpseclib/phpseclib": "^2.0",
-    "predis/predis": "^1.1",
+    "phpoffice/phpspreadsheet": "^1.2.0",
     "ramsey/uuid": "^3.7",
     "sensio/framework-extra-bundle": "^5.1",
     "snc/redis-bundle": "^2.0",
-    "symfony/browser-kit": "^4.0",
-    "symfony/console": "^4.0",
-    "symfony/framework-bundle": "^4.0",
-    "symfony/intl": "^4.0",
     "symfony/lts": "^4@dev",
     "symfony/monolog-bundle": "^3.1",
-    "symfony/security-bundle": "^4.0",
-    "symfony/serializer": "^4.0",
-    "symfony/twig-bundle": "^4.0",
-    "symfony/yaml": "^4.0"
+    "symfony/symfony": "^4.0"
   },
   "require-dev": {
     "hanaboso/php-check-utils": "^1.0",
-    "phpunit/phpunit": "^7.0",
-    "symfony/debug-bundle": "^4.0",
-    "symfony/web-profiler-bundle": "^4.0"
+    "phpunit/phpunit": "^7.1"
   },
   "repositories": [
     {
