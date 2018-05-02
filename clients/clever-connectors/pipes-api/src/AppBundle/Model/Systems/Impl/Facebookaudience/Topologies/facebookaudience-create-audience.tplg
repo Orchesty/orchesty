@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:pipes="http://www.omg.org/spec/Pipes/20100524/MODEL" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="Process_1" isExecutable="false">
+    <bpmn:event id="Event_15ks7z0" pipes:pipesType="signal" name="signal-event">
+      <bpmn:outgoing>SequenceFlow_11ibyn0</bpmn:outgoing>
+    </bpmn:event>
+    <bpmn:task id="Task_1qrehdg" pipes:pipesType="connector" name="facebook-get-cmsubscribers-connector">
+      <bpmn:incoming>SequenceFlow_11ibyn0</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0y1g9nt</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="SequenceFlow_11ibyn0" sourceRef="Event_15ks7z0" targetRef="Task_1qrehdg" />
+    <bpmn:sequenceFlow id="SequenceFlow_0y1g9nt" sourceRef="Task_1qrehdg" targetRef="Task_0cy0vou" />
+    <bpmn:task id="Task_1rb0o82" pipes:pipesType="connector" name="facebookaudience-update-audience-connector">
+      <bpmn:incoming>SequenceFlow_1ypo57m</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0ae1uqs</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_0ohs8m1" pipes:pipesType="custom" name="comparator">
+      <bpmn:incoming>SequenceFlow_0mcx8jw</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1ypo57m</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="SequenceFlow_1ypo57m" sourceRef="Task_0ohs8m1" targetRef="Task_1rb0o82" />
+    <bpmn:task id="Task_0cy0vou" pipes:pipesType="custom" name="socialmultichannel-get-mirror">
+      <bpmn:incoming>SequenceFlow_0y1g9nt</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0mcx8jw</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="SequenceFlow_0mcx8jw" sourceRef="Task_0cy0vou" targetRef="Task_0ohs8m1" />
+    <bpmn:task id="Task_15t1eyl" pipes:pipesType="custom" name="socialmultichannel-update-mirror">
+      <bpmn:incoming>SequenceFlow_0ae1uqs</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0buhkag</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="SequenceFlow_0ae1uqs" sourceRef="Task_1rb0o82" targetRef="Task_15t1eyl" />
+    <bpmn:task id="Task_1b8ko6f" pipes:pipesType="custom" name="facebookaudience-run-createad-action">
+      <bpmn:incoming>SequenceFlow_0buhkag</bpmn:incoming>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="SequenceFlow_0buhkag" sourceRef="Task_15t1eyl" targetRef="Task_1b8ko6f" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1">
+      <bpmndi:BPMNShape id="Event_15ks7z0_di" bpmnElement="Event_15ks7z0">
+        <dc:Bounds x="403" y="397" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="390" y="437" width="62" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_1qrehdg_di" bpmnElement="Task_1qrehdg">
+        <dc:Bounds x="511" y="375" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_11ibyn0_di" bpmnElement="SequenceFlow_11ibyn0">
+        <di:waypoint xsi:type="dc:Point" x="439" y="415" />
+        <di:waypoint xsi:type="dc:Point" x="511" y="415" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="475" y="394" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0y1g9nt_di" bpmnElement="SequenceFlow_0y1g9nt">
+        <di:waypoint xsi:type="dc:Point" x="611" y="415" />
+        <di:waypoint xsi:type="dc:Point" x="677" y="415" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="644" y="394" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Task_1rb0o82_di" bpmnElement="Task_1rb0o82">
+        <dc:Bounds x="1011" y="375" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_0ohs8m1_di" bpmnElement="Task_0ohs8m1">
+        <dc:Bounds x="844" y="375" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1ypo57m_di" bpmnElement="SequenceFlow_1ypo57m">
+        <di:waypoint xsi:type="dc:Point" x="944" y="415" />
+        <di:waypoint xsi:type="dc:Point" x="1011" y="415" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="977.5" y="394" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Task_0cy0vou_di" bpmnElement="Task_0cy0vou">
+        <dc:Bounds x="677" y="375" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0mcx8jw_di" bpmnElement="SequenceFlow_0mcx8jw">
+        <di:waypoint xsi:type="dc:Point" x="777" y="415" />
+        <di:waypoint xsi:type="dc:Point" x="844" y="415" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="810.5" y="394" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Task_15t1eyl_di" bpmnElement="Task_15t1eyl">
+        <dc:Bounds x="1166" y="375" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0ae1uqs_di" bpmnElement="SequenceFlow_0ae1uqs">
+        <di:waypoint xsi:type="dc:Point" x="1111" y="415" />
+        <di:waypoint xsi:type="dc:Point" x="1166" y="415" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1138.5" y="394" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Task_1b8ko6f_di" bpmnElement="Task_1b8ko6f">
+        <dc:Bounds x="1317" y="375" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0buhkag_di" bpmnElement="SequenceFlow_0buhkag">
+        <di:waypoint xsi:type="dc:Point" x="1266" y="415" />
+        <di:waypoint xsi:type="dc:Point" x="1317" y="415" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1291.5" y="394" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

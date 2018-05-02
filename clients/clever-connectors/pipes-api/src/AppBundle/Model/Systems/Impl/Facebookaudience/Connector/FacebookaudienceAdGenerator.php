@@ -108,12 +108,10 @@ class FacebookaudienceAdGenerator implements CustomNodeInterface, BatchInterface
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
         $data = json_decode($dto->getData(), TRUE);
-        if (!array_key_exists('user', $data)
-            || !array_key_exists('token', $data)
-            || !array_key_exists('client_id', $data)
+        if (!array_key_exists('client_id', $data)
         ) {
             throw new CleverConnectorsException(
-                'Missing required field [user, token, client_id].'
+                'Missing required field [client_id].'
             );
         }
 
