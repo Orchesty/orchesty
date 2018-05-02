@@ -15,6 +15,7 @@ services:
         user: ${DEV_UID}:${DEV_GID}
         environment:
           BACKEND_HOST: ${BACKEND_URL}/
+          AIM_HOST: ${AIM_HOST}/
           ELASTIC_HOST: elasticsearch
           ELASTIC_INDEX: 'index'
         command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit-mq:async-consumer batch'

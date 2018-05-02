@@ -3,7 +3,7 @@
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Facebookaudience\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceUpdateAdstateConnector;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceCheckAdConnector;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\FacebookaudienceSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -18,49 +18,71 @@ use PHPUnit_Framework_MockObject_MockObject;
 use Tests\KernelTestCaseAbstract;
 
 /**
- * Class FacebookaudienceUpdateAdstateConnectorTest
+ * Class FacebookaudienceCheckAdConnectorTest
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Facebookaudience\Connector
  */
-final class FacebookaudienceUpdateAdstateConnectorTest extends KernelTestCaseAbstract
+final class FacebookaudienceCheckAdConnectorTest extends KernelTestCaseAbstract
 {
 
-    private const ACC    = '103654000491411';
     private const ACCESS = 'EAAC0qZAlHZCD8BACWoov11lkXZAOcRzmM33Ct97MRrGDA2tvty0zXQ1pUbl0HdNqInijsECadkwRL7CV2ljGq3QLXZASXNKFKp0ROezQ1EsGMFD2tZCyZAnl2ZCwDii0IoO7ZCQXsyoAcvSMCQvIZC7GvPKbz7Kbe29FzNPENoJvQsntj3oI8CJ9VD0xhsh0bZBCOWR4ZBkc4abrBgUUnrTX6BSkfsJnZCpanRAZD';
 
     /**
-     * @covers FacebookaudienceUpdateAdstateConnector::processAction()
+     * @covers FacebookaudienceCheckAdConnector::processAction()
      *
      * @throws Exception
      */
-    public function testConnector(): void
+    public function testProcess(): void
     {
         $data = [
+            'client_id' => 'cli',
             'id'        => 'db_id',
-            'ref_id'     => 'adId',
-            'client_id' => 'clientId',
+            'ref_id'    => 'ad_id',
         ];
+
+        $clb = function (RequestDto $dto, array $options): ResponseDto {
+            $expt = new RequestDto('POST',
+                new Uri(sprintf('https://graph.facebook.com/v2.12/ad_id')));
+            $expt->setHeaders([
+                'Accept'       => 'application/json',
+                'Content-Type' => 'application/json',
+            ])->setBody(json_encode([
+                'fields'       => 'status',
+                'access_token' => self::ACCESS,
+            ]));
+
+            self::assertEquals($expt, $dto);
+
+            return new ResponseDto(200, '', '{"status": "PAUSED"}', []);
+        };
 
         $dto = new ProcessDto();
         $dto->setData(json_encode($data))->setHeaders([]);
 
-        $conn = $this->createConnector();
-        $conn->processAction($dto);
+        $conn = $this->createConnector($clb);
+        $res  = $conn->processAction($dto);
+
+        $body = json_decode($res->getData(), TRUE);
+        self::assertArrayHasKey('status', $body);
+        self::assertEquals('PAUSED', $body['status']);
+        self::assertArrayHasKey('id', $body);
+        self::assertEquals('db_id', $body['id']);
     }
 
     /**
-     * @return FacebookaudienceUpdateAdstateConnector
+     * @param callable $callback
+     *
+     * @return FacebookaudienceCheckAdConnector
      * @throws Exception
      */
-    private function createConnector(): FacebookaudienceUpdateAdstateConnector
+    private function createConnector(callable $callback): FacebookaudienceCheckAdConnector
     {
         /** @var FacebookaudienceSystem $sys */
         $sys = $this->container->get('systems.facebookaudience');
 
         $sysInst = new SystemInstall();
         $sysInst->setSettings([
-            OAuth2Provider::ACCESS_TOKEN       => self::ACCESS,
-            FacebookaudienceSystem::AD_ACCOUNT => self::ACC,
+            OAuth2Provider::ACCESS_TOKEN => self::ACCESS,
         ])
             ->setToken('tkn')
             ->setUser('123')
@@ -76,25 +98,9 @@ final class FacebookaudienceUpdateAdstateConnectorTest extends KernelTestCaseAbs
 
         /** @var CurlManager|PHPUnit_Framework_MockObject_MockObject $curl */
         $curl = $this->createMock(CurlManager::class);
-        $curl->method('send')->willReturnCallback(
-            function (RequestDto $dto, array $opt = []): ResponseDto {
-                $expt = new RequestDto('POST',
-                    new Uri(sprintf('https://clever-aim.com/api-demo/fb/clientId/ad/db_id/update/state', self::ACC)));
-                $expt->setHeaders([
-                    'Accept'       => 'application/json',
-                    'Content-Type' => 'application/json',
-                ])->setBody(json_encode([
-                    'status' => 'PENDING_REVIEW',
-                    'ref_id' => 'adId',
-                ]));
+        $curl->method('send')->willReturnCallback($callback);
 
-                self::assertEquals($expt, $dto);
-
-                return new ResponseDto(200, '', '', []);
-            }
-        );
-
-        return new FacebookaudienceUpdateAdstateConnector($sys, $dm, $curl, 'https://clever-aim.com/');
+        return new FacebookaudienceCheckAdConnector($sys, $dm, $curl);
     }
 
 }

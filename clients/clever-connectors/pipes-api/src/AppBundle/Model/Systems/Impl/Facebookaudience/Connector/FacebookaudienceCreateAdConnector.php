@@ -64,7 +64,7 @@ class FacebookaudienceCreateAdConnector extends FacebookaudienceConnectorAbstrac
         try {
             $res  = $this->manager->send($req, $opt);
             $data = [
-                'ad_id'     => json_decode($res->getBody(), TRUE)['id'],
+                'ref_id'     => json_decode($res->getBody(), TRUE)['id'],
                 'client_id' => $data['client_id'],
                 'mirror_id' => $data['mirror_id'],
                 'id'        => $data['id'],

@@ -1,0 +1,79 @@
+<?php declare(strict_types=1);
+
+namespace Tests\Live\AppBundle\Model\Systems\Impl\Facebookaudience\Connector;
+
+use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceCheckAdConnector;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\FacebookaudienceSystem;
+use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Exception;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
+use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
+use PHPUnit_Framework_MockObject_MockObject;
+use Tests\KernelTestCaseAbstract;
+
+/**
+ * Class FacebookaudienceCheckAdConnectorTest
+ *
+ * @package Tests\Live\AppBundle\Model\Systems\Impl\Facebookaudience\Connector
+ */
+final class FacebookaudienceCheckAdConnectorTest extends KernelTestCaseAbstract
+{
+
+    /**
+     * @covers FacebookaudienceCheckAdConnector::processAction()
+     *
+     * @throws Exception
+     */
+    public function testProcess(): void
+    {
+        $data = [
+            'id'        => 'id',
+            'ref_id'    => '120330000254923708',
+            'client_id' => 'cli',
+        ];
+
+        $dto = new ProcessDto();
+        $dto->setData(json_encode($data))->setHeaders([]);
+
+        $conn = $this->createConnector();
+        $res  = $conn->processAction($dto);
+
+        self::assertArrayHasKey('status', json_decode($res->getData(), TRUE));
+    }
+
+    /**
+     * @return FacebookaudienceCheckAdConnector
+     * @throws Exception
+     */
+    private function createConnector(): FacebookaudienceCheckAdConnector
+    {
+        /** @var FacebookaudienceSystem $sys */
+        $sys = $this->container->get('systems.facebookaudience');
+
+        $sysInst = new SystemInstall();
+        $sysInst->setSettings([
+            OAuth2Provider::ACCESS_TOKEN       => 'EAAC0qZAlHZCD8BACWoov11lkXZAOcRzmM33Ct97MRrGDA2tvty0zXQ1pUbl0HdNqInijsECadkwRL7CV2ljGq3QLXZASXNKFKp0ROezQ1EsGMFD2tZCyZAnl2ZCwDii0IoO7ZCQXsyoAcvSMCQvIZC7GvPKbz7Kbe29FzNPENoJvQsntj3oI8CJ9VD0xhsh0bZBCOWR4ZBkc4abrBgUUnrTX6BSkfsJnZCpanRAZD',
+            FacebookaudienceSystem::AD_ACCOUNT => '103654000491411',
+        ])
+            ->setToken('tkn')
+            ->setUser('123')
+            ->setSystem('facebookaudience');
+
+        /** @var SystemInstallRepository|PHPUnit_Framework_MockObject_MockObject $repo */
+        $repo = $this->createMock(SystemInstallRepository::class);
+        $repo->method('getSystemInstallFromHeaders')->willReturn($sysInst);
+
+        /** @var DocumentManager|PHPUnit_Framework_MockObject_MockObject $dm */
+        $dm = $this->createMock(DocumentManager::class);
+        $dm->method('getRepository')->willReturn($repo);
+
+        /** @var CurlManager $curl */
+        $curl = $this->container->get('hbpf.transport.curl_manager');
+
+        return new FacebookaudienceCheckAdConnector($sys, $dm, $curl);
+    }
+
+}

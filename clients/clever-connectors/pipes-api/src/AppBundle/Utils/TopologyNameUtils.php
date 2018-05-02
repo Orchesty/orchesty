@@ -45,6 +45,7 @@ final class TopologyNameUtils
     //SocialMultichannel
     public const CREATE_AD       = 'create-ad';
     public const CREATE_AUDIENCE = 'create-audience';
+    public const CHECK_STATUS    = 'check-status';
 
     /**
      * @var array
@@ -72,6 +73,7 @@ final class TopologyNameUtils
         self::GET_LIMIT,
         self::CREATE_AD,
         self::CREATE_AUDIENCE,
+        self::CHECK_STATUS,
     ];
 
     /**

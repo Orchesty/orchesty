@@ -192,6 +192,8 @@ class Ad
                 'id'        => $this->id,
                 'type'      => $this->adType,
                 'client_id' => $this->clientId,
+                'ref_id'    => $this->refId,
+                'mirror_id' => $this->audienceMirrorId,
             ]
         );
     }

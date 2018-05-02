@@ -73,8 +73,8 @@ class FacebookaudienceUpdateAdstateConnector extends FacebookaudienceConnectorAb
             'Content-Type' => 'application/json',
             'Accept'       => 'application/json',
         ])->setBody(json_encode([
-            'status' => 'PENDING_REVIEW',
-            'ref_id' => $data['ad_id'],
+            'status' => $data['status'] ?? 'PENDING_REVIEW',
+            'ref_id' => $data['ref_id'],
         ]));
 
         try {

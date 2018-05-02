@@ -125,7 +125,7 @@ abstract class AdModuleAbstract implements AdModuleInterface
         /** @var AdRepository $repo */
         $repo = $this->em->getRepository(Ad::class);
 
-        return $repo->getUnprocessed($clientId, self::TYPE);
+        return $repo->getUnprocessed($clientId, static::TYPE);
     }
 
     /**

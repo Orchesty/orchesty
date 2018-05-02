@@ -129,3 +129,21 @@ services:
         calls:
             - ['setLogger', ['@monolog.logger.notification']]
 
+    hbpf.custom_node.facebookaudience-ad-generator:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceAdGenerator
+        arguments:
+            - '@systems.facebookaudience'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+            - '%env(AIM_HOST)%'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
+
+    hbpf.connector.facebookaudience-check-ad-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceCheckAdConnector
+        arguments:
+            - '@systems.facebookaudience'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
