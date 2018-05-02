@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:pipes="http://www.omg.org/spec/Pipes/20100524/MODEL" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="Process_1" isExecutable="false">
+    <bpmn:event id="Event_0dg7cje" pipes:pipesType="signal" name="signal-event">
+      <bpmn:outgoing>SequenceFlow_1xbksib</bpmn:outgoing>
+    </bpmn:event>
+    <bpmn:task id="Task_0ecie8i" pipes:pipesType="batch" name="facebookaudience-ad-generator">
+      <bpmn:incoming>SequenceFlow_1xbksib</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0k6byc5</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_1tqw9yr" pipes:pipesType="connector" name="facebookaudience-check-ad-connector">
+      <bpmn:incoming>SequenceFlow_0k6byc5</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1m6ykfh</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_1r2z07f" pipes:pipesType="connector" name="facebookaudience-update-adstate-connector">
+      <bpmn:incoming>SequenceFlow_1m6ykfh</bpmn:incoming>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="SequenceFlow_1xbksib" sourceRef="Event_0dg7cje" targetRef="Task_0ecie8i" />
+    <bpmn:sequenceFlow id="SequenceFlow_0k6byc5" sourceRef="Task_0ecie8i" targetRef="Task_1tqw9yr" />
+    <bpmn:sequenceFlow id="SequenceFlow_1m6ykfh" sourceRef="Task_1tqw9yr" targetRef="Task_1r2z07f" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1">
+      <bpmndi:BPMNShape id="Event_0dg7cje_di" bpmnElement="Event_0dg7cje">
+        <dc:Bounds x="376" y="387" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="363" y="427" width="62" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_0ecie8i_di" bpmnElement="Task_0ecie8i">
+        <dc:Bounds x="484" y="365" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_1tqw9yr_di" bpmnElement="Task_1tqw9yr">
+        <dc:Bounds x="640" y="365" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_1r2z07f_di" bpmnElement="Task_1r2z07f">
+        <dc:Bounds x="788" y="365" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1xbksib_di" bpmnElement="SequenceFlow_1xbksib">
+        <di:waypoint xsi:type="dc:Point" x="412" y="405" />
+        <di:waypoint xsi:type="dc:Point" x="484" y="405" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="448" y="384" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0k6byc5_di" bpmnElement="SequenceFlow_0k6byc5">
+        <di:waypoint xsi:type="dc:Point" x="584" y="405" />
+        <di:waypoint xsi:type="dc:Point" x="640" y="405" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="612" y="384" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1m6ykfh_di" bpmnElement="SequenceFlow_1m6ykfh">
+        <di:waypoint xsi:type="dc:Point" x="740" y="405" />
+        <di:waypoint xsi:type="dc:Point" x="788" y="405" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="764" y="384" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

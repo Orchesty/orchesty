@@ -50,7 +50,7 @@ final class FacebookaudiencePresenterTest extends ControllerTestCaseAbstract
         $ad = $this->prepAd();
 
         $res = $this->sendJsonRequest(
-            'Facebookaudience',
+            'SocialMultichannel:Facebookaudience',
             'getUnprocessed',
             'POST',
             ['clientId' => 'cli'],

@@ -55,7 +55,7 @@ final class FacebookaudienceCreateAdConnectorTest extends KernelTestCaseAbstract
         $conn = $this->createConnector();
         $res  = $conn->processAction($dto);
 
-        self::assertArrayHasKey('ad_id', json_decode($res->getData(), TRUE));
+        self::assertArrayHasKey('ref_id', json_decode($res->getData(), TRUE));
     }
 
     /**
@@ -97,7 +97,7 @@ final class FacebookaudienceCreateAdConnectorTest extends KernelTestCaseAbstract
         $conn = $this->createConnector();
         $res  = $conn->processAction($dto);
 
-        self::assertArrayHasKey('ad_id', json_decode($res->getData(), TRUE));
+        self::assertArrayHasKey('ref_id', json_decode($res->getData(), TRUE));
     }
 
     /**

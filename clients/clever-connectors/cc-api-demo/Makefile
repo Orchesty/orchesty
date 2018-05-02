@@ -61,12 +61,15 @@ phpunit:
 phpintegration: database-create
 	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr socialMultichannel/tests/Integration
 
+phpcontroller:
+	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr socialMultichannel/tests/Controller
+
 phplive:
 	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr socialMultichannel/tests/Live
 
-fasttest: codesniffer phpstan phpunit phpintegration
+fasttest: codesniffer phpstan phpunit phpintegration phpcontroller
 
-test: .env docker-up-force composer-install codesniffer phpstan phpunit phpintegration
+test: .env docker-up-force composer-install codesniffer phpstan phpunit phpintegration phpcontroller
 
 docker-compose.ci.yml:
 	# Comment out any port forwarding

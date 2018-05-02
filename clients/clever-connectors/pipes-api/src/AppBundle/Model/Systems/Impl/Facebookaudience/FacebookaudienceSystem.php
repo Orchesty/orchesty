@@ -27,6 +27,7 @@ use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
+use LogicException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -365,7 +366,7 @@ class FacebookaudienceSystem implements OAuth2Interface
      */
     public function deleteAd(SystemInstall $systemInstall, array $data): array
     {
-
+        //TODO
 
         return [];
     }
@@ -393,6 +394,31 @@ class FacebookaudienceSystem implements OAuth2Interface
             $req = InnerRequestUtils::getRequest($systemInstall, $data);
             $this->runner->runTopologies(TopologyNameUtils::CREATE_AUDIENCE, $systemInstall, $this, $req);
         }
+
+        return [];
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     * @param array         $data
+     *
+     * @return array
+     * @throws CleverConnectorsException
+     */
+    public function checkAdStatus(SystemInstall $systemInstall, array $data): array
+    {
+        if (!array_key_exists('client_id', $data)) {
+            throw new LogicException(
+                'Missing required field [client_id].'
+            );
+        }
+
+        $req = InnerRequestUtils::getRequest($systemInstall, [
+            'client_id' => $data['client_id'],
+            'token'     => $systemInstall->getToken(),
+            'user'      => $systemInstall->getUser(),
+        ]);
+        $this->runner->runTopologies(TopologyNameUtils::CHECK_STATUS, $systemInstall, $this, $req);
 
         return [];
     }
