@@ -429,6 +429,20 @@ class FacebookaudienceSystem implements OAuth2Interface
      * @return array
      * @throws CleverConnectorsException
      */
+    public function addEmails(SystemInstall $systemInstall, array $data): array
+    {
+        $this->updateAudience($systemInstall, $data, 'create');
+
+        return [];
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     * @param array         $data
+     *
+     * @return array
+     * @throws CleverConnectorsException
+     */
     public function removeEmails(SystemInstall $systemInstall, array $data): array
     {
         $this->updateAudience($systemInstall, $data, 'delete');
