@@ -59,7 +59,7 @@ class Audience
     /**
      * @var Ad[]|Collection
      *
-     * @ORM\OneToMany(targetEntity="CleverCore\SocialMultichannel\Entities\ad", mappedBy="audience")
+     * @ORM\OneToMany(targetEntity="CleverCore\SocialMultichannel\Entities\Ad", mappedBy="audience")
      */
     private $ads;
 

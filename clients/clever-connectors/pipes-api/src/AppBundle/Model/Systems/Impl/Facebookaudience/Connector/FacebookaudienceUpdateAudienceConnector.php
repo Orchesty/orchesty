@@ -91,12 +91,22 @@ class FacebookaudienceUpdateAudienceConnector extends FacebookaudienceConnectorA
             }
 
             if (!empty($data['create'] ?? [])) {
-                $res  = $this->addUsers($sysInst, $id, $data);
-                $data = $this->unsetErrors($data, 'create', $res);
+                try {
+                    $res  = $this->addUsers($sysInst, $id, $data);
+                    $data = $this->unsetErrors($data, 'create', $res);
+                } catch (CurlException $e) {
+                    $this->logConnectorError($e, $sysInst, $this->system, $dto);
+                    $data['create'] = [];
+                }
             }
             if (!empty($data['delete'] ?? [])) {
-                $res  = $this->removeUsers($sysInst, $id, $data);
-                $data = $this->unsetErrors($data, 'delete', $res);
+                try {
+                    $res  = $this->removeUsers($sysInst, $id, $data);
+                    $data = $this->unsetErrors($data, 'delete', $res);
+                } catch (CurlException $e) {
+                    $this->logConnectorError($e, $sysInst, $this->system, $dto);
+                    $data['delete'] = [];
+                }
             }
 
             $dto->setData(json_encode($data));

@@ -6,6 +6,7 @@ use CleverConnectors\AppBundle\Document\AudienceMirror;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\CustomNode\Comparator;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
 use CleverConnectors\AppBundle\Model\Limits\SystemLimitDto;
@@ -415,10 +416,22 @@ class FacebookaudienceSystem implements OAuth2Interface
 
         $req = InnerRequestUtils::getRequest($systemInstall, [
             'client_id' => $data['client_id'],
-            'token'     => $systemInstall->getToken(),
-            'user'      => $systemInstall->getUser(),
         ]);
         $this->runner->runTopologies(TopologyNameUtils::CHECK_STATUS, $systemInstall, $this, $req);
+
+        return [];
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     * @param array         $data
+     *
+     * @return array
+     * @throws CleverConnectorsException
+     */
+    public function removeEmails(SystemInstall $systemInstall, array $data): array
+    {
+        $this->updateAudience($systemInstall, $data, 'delete');
 
         return [];
     }
@@ -440,6 +453,41 @@ class FacebookaudienceSystem implements OAuth2Interface
         $dto->setCustomAppDependencies($systemInstall->getUser(), $systemInstall->getSystem());
 
         return $dto;
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     * @param array         $data
+     * @param string        $key
+     *
+     * @throws CleverConnectorsException
+     */
+    private function updateAudience(SystemInstall $systemInstall, array $data, string $key): void
+    {
+        if (!array_key_exists('emails', $data)
+            || !array_key_exists('audience_id', $data)
+        ) {
+            throw new LogicException(
+                'Missing one of required fields [emails, audience_id].'
+            );
+        }
+
+        $emls = [];
+        foreach ($data['emails'] as $email) {
+            $emls[] = hash('sha256', $email);
+        }
+
+        $body       = [
+            Comparator::KEY_PASS_DATA => [
+                'audience_id' => $data['audience_id'],
+            ],
+            'create'                  => [],
+            'delete'                  => [],
+        ];
+        $body[$key] = $emls;
+
+        $req = InnerRequestUtils::getRequest($systemInstall, $body);
+        $this->runner->runTopologies(TopologyNameUtils::UPDATE_AUDIENCE, $systemInstall, $this, $req);
     }
 
 }
