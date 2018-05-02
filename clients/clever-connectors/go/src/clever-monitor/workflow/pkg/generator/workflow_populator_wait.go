@@ -1,5 +1,7 @@
 package generator
 
+import ws "clever-monitor/workflow/pkg/workflowservice"
+
 const (
 	hour = "hour"
 	day = "day"
@@ -8,15 +10,21 @@ const (
 	year = "year"
 )
 
-// TODO - test
 func PopulateWait(cc *composedConfig, all []*composedConfig) error {
+	err := PopulateDefault(cc, all)
+	if err != nil {
+		return err
+	}
+
 	inSeconds := convertToSeconds(int(cc.ec.Settings.Wait.Duration), cc.ec.Settings.Wait.Unit)
 
 	for _, step := range cc.wfc.Steps {
-		step.Wait.Duration = int32(inSeconds)
+		step.Wait = &ws.WorkflowConfig_Step_Wait{
+			Duration: int32(inSeconds),
+		}
 	}
 
-	return PopulateDefault(cc, all)
+	return nil
 }
 
 func convertToSeconds(duration int, unit string) int {
@@ -24,15 +32,15 @@ func convertToSeconds(duration int, unit string) int {
 
 	switch unit {
 	case hour:
-		durInSeconds = duration * 60
+		durInSeconds = duration * 3600
 	case day:
-		durInSeconds = duration * 60 * 24
+		durInSeconds = duration * 3600 * 24
 	case week:
-		durInSeconds = duration * 60 * 24 * 7
+		durInSeconds = duration * 3600 * 24 * 7
 	case month:
-		durInSeconds = duration * 60 * 24 * 7 * 30
+		durInSeconds = duration * 3600 * 24 * 7 * 30
 	case year:
-		durInSeconds = duration * 60 * 24 * 7 * 30 * 365
+		durInSeconds = duration * 3600 * 24 * 7 * 30 * 365
 	default:
 		durInSeconds = duration
 	}

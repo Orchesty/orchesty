@@ -93,20 +93,19 @@ func assertExampleConfig(t *testing.T, conf *ws.WorkflowConfig) {
 	assert.Len(t, conf.Steps, 1)
 	step := conf.Steps[0]
 
-	assert.Equal(t, "10<x<30", step.Condition)
+	assert.Equal(t, "some cond", step.Condition)
 	assert.Equal(t, ws.WorkflowConfig_Step_Recommendation_CUSTOM, step.Recommendation.RecommendationType)
 	assert.Equal(t, ws.WorkflowConfig_Step_Segmentation_BOTH, step.Segmentation.SegmentationType)
 
-	assert.Equal(t, "template_id", step.Channels.Email.Template)
-	assert.Equal(t, "dynamic_field", step.Channels.Email.DynamicFields)
-	assert.Equal(t, ws.WorkflowConfig_Step_ChannelMap_NOW, step.Channels.Email.SendTime)
+	assert.Equal(t, "template_id", step.Channels.Email.TemplateId)
+	assert.Equal(t, "subject", step.Channels.Email.Subject)
+	assert.Equal(t, "sender", step.Channels.Email.SenderName)
+	assert.Equal(t, "sender@email.com", step.Channels.Email.SenderEmail)
 
 	assert.Len(t, step.Channels.Actions, 1)
 	action := step.Channels.Actions[0]
 	assert.Equal(t, ws.WorkflowConfig_Step_ChannelMap_Action_LIST, action.ActionFamily)
 	assert.Equal(t, ws.WorkflowConfig_Step_ChannelMap_Action_ADD, action.ActionType)
-	assert.Equal(t, ws.WorkflowConfig_Step_ChannelMap_Action_TRIGGER, action.ActionTime)
-	assert.Equal(t, ws.WorkflowConfig_Step_ChannelMap_Action_EMPTY, action.ActionTrigger)
 	assert.Equal(t, "subject", action.ActionSubject)
 
 	assert.Equal(t, "507f1f77bcf86cd799439022", step.NextFlow.Id)
@@ -130,7 +129,7 @@ func createWorkflowConfig() *ws.WorkflowConfig {
 	conf.Filter.NotInTag = []string{"tag2"}
 
 	stepOne := &ws.WorkflowConfig_Step{
-		Condition: "x>0",
+		Condition: "condition string",
 		Recommendation: &ws.WorkflowConfig_Step_Recommendation{
 			RecommendationType: ws.WorkflowConfig_Step_Recommendation_CUSTOM,
 		},
@@ -139,24 +138,21 @@ func createWorkflowConfig() *ws.WorkflowConfig {
 		},
 		Channels: &ws.WorkflowConfig_Step_ChannelMap{
 			Email: &ws.WorkflowConfig_Step_ChannelMap_Email{
-				Template:      "email_template",
-				DynamicFields: "dyn1, dyn2",
-				SendTime:      ws.WorkflowConfig_Step_ChannelMap_DELAYED,
+				TemplateId:  "template_id",
+				Subject:     "subject",
+				SenderName:  "sender",
+				SenderEmail: "sender@email.com",
 			},
 			Actions: []*ws.WorkflowConfig_Step_ChannelMap_Action{
 				{
 					ActionSubject: "subject",
 					ActionFamily:  ws.WorkflowConfig_Step_ChannelMap_Action_LIST,
-					ActionType:    ws.WorkflowConfig_Step_ChannelMap_Action_UPDATE,
-					ActionTime:    ws.WorkflowConfig_Step_ChannelMap_Action_TRIGGER,
-					ActionTrigger: ws.WorkflowConfig_Step_ChannelMap_Action_CONDITION,
+					ActionType:    ws.WorkflowConfig_Step_ChannelMap_Action_ADD,
 				},
 				{
 					ActionSubject: "another subject",
 					ActionFamily:  ws.WorkflowConfig_Step_ChannelMap_Action_TAG,
-					ActionType:    ws.WorkflowConfig_Step_ChannelMap_Action_ADD,
-					ActionTime:    ws.WorkflowConfig_Step_ChannelMap_Action_NOW,
-					ActionTrigger: ws.WorkflowConfig_Step_ChannelMap_Action_EMPTY,
+					ActionType:    ws.WorkflowConfig_Step_ChannelMap_Action_REMOVE,
 				},
 			},
 		},
@@ -166,7 +162,7 @@ func createWorkflowConfig() *ws.WorkflowConfig {
 	}
 
 	stepTwo := &ws.WorkflowConfig_Step{
-		Condition: "x>0",
+		Condition: "another condition string",
 		Recommendation: &ws.WorkflowConfig_Step_Recommendation{
 			RecommendationType: ws.WorkflowConfig_Step_Recommendation_CUSTOM,
 		},
@@ -175,9 +171,8 @@ func createWorkflowConfig() *ws.WorkflowConfig {
 		},
 		Channels: &ws.WorkflowConfig_Step_ChannelMap{
 			Email: &ws.WorkflowConfig_Step_ChannelMap_Email{
-				Template:      "email_template",
-				DynamicFields: "dyn1, dyn2",
-				SendTime:      ws.WorkflowConfig_Step_ChannelMap_NOW,
+				TemplateId: "email_template",
+				Subject:    "email_subject",
 			},
 			Actions: []*ws.WorkflowConfig_Step_ChannelMap_Action{
 				{

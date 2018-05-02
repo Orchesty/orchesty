@@ -18,8 +18,12 @@ func TestWorkflowGenerator_Generate_SimpleConfig(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Len(t, wfs, 3)
 
-	checkWorkflowOrder(t, wfs)
-	checkGeneratedWorkflowsProperties(t, wfs)
+	checkSequence(t, wfs)
+	checkCommonProperties(t, wfs)
+
+	checkNotifyConfig(t, wfs[0])
+	checkWaitConfig(t, wfs[1])
+	checkEmailConfig(t, wfs[2])
 }
 
 // getValidJsonExample returns valid json example in string
@@ -30,7 +34,7 @@ func getEditorJson(t *testing.T, file string) string {
 	return string(b)
 }
 
-func checkWorkflowOrder(t *testing.T, wfs []*ws.WorkflowConfig) {
+func checkSequence(t *testing.T, wfs []*ws.WorkflowConfig) {
 	// TODO - after rewriting to goroutines the order may change
 	assert.Equal(t, "1", wfs[0].EditorItemId)
 	assert.Len(t, wfs[0].Steps, 1)
@@ -44,7 +48,7 @@ func checkWorkflowOrder(t *testing.T, wfs []*ws.WorkflowConfig) {
 	assert.Len(t, wfs[2].Steps, 0)
 }
 
-func checkGeneratedWorkflowsProperties(t *testing.T, wfs []*ws.WorkflowConfig) {
+func checkCommonProperties(t *testing.T, wfs []*ws.WorkflowConfig) {
 	for _, wf := range wfs {
 		assert.True(t, bson.IsObjectIdHex(wf.Id))
 		assert.Equal(t, 555, int(wf.ClientId))
@@ -54,4 +58,16 @@ func checkGeneratedWorkflowsProperties(t *testing.T, wfs []*ws.WorkflowConfig) {
 			assert.Equal(t, "true", wf.Steps[0].Condition)
 		}
 	}
+}
+
+func checkNotifyConfig(t *testing.T, wf *ws.WorkflowConfig) {
+  // todo
+}
+
+func checkWaitConfig(t *testing.T, wf *ws.WorkflowConfig) {
+	assert.Equal(t, 3600, int(wf.Steps[0].Wait.Duration))
+}
+
+func checkEmailConfig(t *testing.T, wf *ws.WorkflowConfig) {
+  // todo
 }

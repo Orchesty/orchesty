@@ -7,10 +7,10 @@
       "settings": {
         "trigger" : {
           "event": "contact_add",
-          "event_options": {
+          "eventOptions": {
             "manually": true,
             "batch": true,
-            "web_services": false
+            "webServices": false
           }
         }
       }
@@ -43,10 +43,10 @@
       "type": "EMAIL",
       "settings": {
         "email" : {
-          "sender_name": "Tomas Sedlacek",
-          "sender_email": "sedlacek.t@hanaboso.com",
+          "senderName": "Tomas Sedlacek",
+          "senderEmail": "sedlacek.t@hanaboso.com",
           "subject": "Some subject",
-          "template_id": "507f1f77bcfaecd7994390ce"
+          "templateId": "507f1f77bcfaecd7994390ce"
         }
       }
     },
