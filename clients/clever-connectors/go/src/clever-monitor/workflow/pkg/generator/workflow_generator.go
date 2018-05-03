@@ -7,8 +7,8 @@ import (
 )
 
 const (
-	typeCondition       = "COND"
-	typeConditionBranch = "COND_BRANCH"
+	typeCondition       = "CONDITION"
+	typeConditionBranch = "CONDITION_BRANCH"
 	typeDistribute      = "DISTRIBUTE"
 	typeEmail           = "EMAIL"
 	typeEmpty           = "EMPTY"
@@ -91,6 +91,9 @@ func populateSpecifics(cc *composedConfig, all []*composedConfig) error {
 	switch cc.ec.Type {
 	case typeCondition:
 		return PopulateCondition(cc, all)
+	case typeConditionBranch:
+		cc.skip = true
+		return PopulateConditionBranch(cc, all)
 	case typeDistribute:
 		return PopulateDefault(cc, all)
 	case typeEmail:
@@ -99,7 +102,7 @@ func populateSpecifics(cc *composedConfig, all []*composedConfig) error {
 		return PopulateNotify(cc, all)
 	case typeWait:
 		return PopulateWait(cc, all)
-	case typeConditionBranch, typeEmpty, typeEnd, typeJoinDst, typeJoinSrc, typeTrigger:
+	case typeEmpty, typeEnd, typeJoinDst, typeJoinSrc, typeTrigger:
 		cc.skip = true
 		return PopulateSkip(cc, all)
 	default:
@@ -107,9 +110,9 @@ func populateSpecifics(cc *composedConfig, all []*composedConfig) error {
 	}
 }
 
-func findItemById(id string, ec *ws.EditorConfig) *ws.EditorConfig_EditorConfigItem {
-	for _, item := range ec.Items {
-		if item.Id == id {
+func findItemById(id string, all []*composedConfig) *composedConfig {
+	for _, item := range all {
+		if item.wfc.Id == id {
 			return item
 		}
 	}

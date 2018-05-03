@@ -1,12 +1,34 @@
 package generator
 
-import ws "clever-monitor/workflow/pkg/workflowservice/clevermonitor/analytics/protos/workflow"
+import (
+	ws "clever-monitor/workflow/pkg/workflowservice/clevermonitor/analytics/protos/workflow"
+)
 
-// TODO - test
 func PopulateCondition(cc *composedConfig, all []*composedConfig) error {
-	filter := &ws.WorkflowConfig_Filter{}
+	err := PopulateDefault(cc, all)
+	if err != nil {
+		return err
+	}
 
-	cc.wfc.Filter = filter
+	for _, step := range cc.wfc.Steps {
+		step.StepId = findItemById(step.NextFlow.Id, all).wfc.Id
+		step.Conditions = []*ws.WorkflowConfig_Step_Condition{}
 
-	return PopulateDefault(cc, all)
+		// todo - iterate ec
+		// todo - mapa pro operator (napr. "e" => "=" apod)
+
+		//cond := &ws.WorkflowConfig_Step_Condition{
+		//	Variable: cc.ec.Settings.Condition.Conditions[0].Field,
+		//	Condition: fmt.Sprintf(
+		//		"%s %s %s",
+		//		cc.ec.Settings.Condition.Conditions[0].Field,
+		//		cc.ec.Settings.Condition.Conditions[0].Operator,
+		//		cc.ec.Settings.Condition.Conditions[0].Value,
+		//	),
+		//}
+		//
+		//step.Conditions = append(step.Conditions, cond)
+	}
+
+	return nil
 }

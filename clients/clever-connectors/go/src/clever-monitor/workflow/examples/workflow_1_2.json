@@ -1,0 +1,1 @@
+{"id":"5aeb251e92268854ad22cd9c","clientId":555,"clientGuid":"guid","filter":{"inSegments":["some segment","another segment"],"inLists":[]},"steps":[{"stepId":"3","conditions":[],"channels":{"email":{"senderName":"Tomas Sedlacek","senderEmail":"sedlacek.t@hanaboso.com","subject":"Some subject","templateId":"507f1f77bcfaecd7994390ce"}}}],"editorItemId":"3"}
