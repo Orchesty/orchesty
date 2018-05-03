@@ -1,7 +1,7 @@
 package generator
 
 import (
-	ws "clever-monitor/workflow/pkg/workflowservice"
+	ws "clever-monitor/workflow/pkg/workflowservice/clevermonitor/analytics/protos/workflow"
 	"fmt"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -94,9 +94,9 @@ func populateSpecifics(cc *composedConfig, all []*composedConfig) error {
 	case typeDistribute:
 		return PopulateDefault(cc, all)
 	case typeEmail:
-		return PopulateDefault(cc, all)
+		return PopulateEmail(cc, all)
 	case typeNotify:
-		return PopulateDefault(cc, all)
+		return PopulateNotify(cc, all)
 	case typeWait:
 		return PopulateWait(cc, all)
 	case typeConditionBranch, typeEmpty, typeEnd, typeJoinDst, typeJoinSrc, typeTrigger:

@@ -9,7 +9,7 @@ import (
 	"google.golang.org/grpc/reflection"
 	"clever-monitor/utils/logger"
 	"clever-monitor/workflow/pkg/handler"
-	ws "clever-monitor/workflow/pkg/workflowservice"
+	ws "clever-monitor/workflow/pkg/workflowservice/clevermonitor/analytics/protos/workflow"
 	"time"
 )
 

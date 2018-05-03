@@ -4,7 +4,7 @@ import (
 	"testing"
 	"io/ioutil"
 	"github.com/stretchr/testify/assert"
-	ws "clever-monitor/workflow/pkg/workflowservice"
+	ws "clever-monitor/workflow/pkg/workflowservice/clevermonitor/analytics/protos/workflow"
 )
 
 const (

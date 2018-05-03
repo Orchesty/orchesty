@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"github.com/stretchr/testify/assert"
 	"clever-monitor/workflow/pkg/hydrator"
-	ws "clever-monitor/workflow/pkg/workflowservice"
+	ws "clever-monitor/workflow/pkg/workflowservice/clevermonitor/analytics/protos/workflow"
 	"gopkg.in/mgo.v2/bson"
 )
 

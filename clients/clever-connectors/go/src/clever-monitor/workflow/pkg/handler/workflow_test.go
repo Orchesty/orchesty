@@ -3,7 +3,7 @@ package handler
 import (
 	"testing"
 	"github.com/stretchr/testify/assert"
-	ws "clever-monitor/workflow/pkg/workflowservice"
+	ws "clever-monitor/workflow/pkg/workflowservice/clevermonitor/analytics/protos/workflow"
 	"fmt"
 	"io/ioutil"
 	"clever-monitor/workflow/pkg/storage"

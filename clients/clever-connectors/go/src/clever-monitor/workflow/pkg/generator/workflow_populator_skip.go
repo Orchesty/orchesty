@@ -4,7 +4,7 @@ package generator
 func PopulateSkip(cc *composedConfig, all []*composedConfig) error {
 	parent := findParentItem(cc.ec, all)
 	if parent == nil {
-		// root item, we don't need to udpate anything above it
+		// root item, we don't need to update it's parent
 		return nil
 	}
 

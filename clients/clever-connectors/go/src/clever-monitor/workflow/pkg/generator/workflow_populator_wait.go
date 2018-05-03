@@ -1,6 +1,6 @@
 package generator
 
-import ws "clever-monitor/workflow/pkg/workflowservice"
+import ws "clever-monitor/workflow/pkg/workflowservice/clevermonitor/analytics/protos/workflow"
 
 const (
 	hour = "hour"

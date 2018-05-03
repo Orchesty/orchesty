@@ -9,7 +9,7 @@ import (
 	"golang.org/x/net/context"
 	"clever-monitor/utils/env"
 	"google.golang.org/grpc"
-	ws "clever-monitor/workflow/pkg/workflowservice"
+	ws "clever-monitor/workflow/pkg/workflowservice/clevermonitor/analytics/protos/workflow"
 	"clever-monitor/workflow/pkg/handler"
 	"gopkg.in/mgo.v2/bson"
 	"io/ioutil"
