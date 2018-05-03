@@ -529,43 +529,43 @@ volumes:
 #    driver: local
 #    driver_opts:
 #      type: none
-#      device: /mnt/docker-volumes/${DEPLOYMENT_PREFIX}/elasticsearch
+#      device: /srv/persistent-data/${DEPLOYMENT_PREFIX}/elasticsearch
 #      o: bind
 #  grafana:
 #    driver: local
 #    driver_opts:
 #      type: none
-#      device: /mnt/docker-volumes/${DEPLOYMENT_PREFIX}/grafana
+#      device: /srv/persistent-data/${DEPLOYMENT_PREFIX}/grafana
 #      o: bind
 #  influxdb:
 #    driver: local
 #    driver_opts:
 #      type: none
-#      device: /mnt/docker-volumes/${DEPLOYMENT_PREFIX}/influxdb
+#      device: /srv/persistent-data/${DEPLOYMENT_PREFIX}/influxdb
 #      o: bind
 #  mongodb:
 #    driver: local
 #    driver_opts:
 #      type: none
-#      device: /mnt/docker-volumes/${DEPLOYMENT_PREFIX}/mongodb
+#      device: /srv/persistent-data/${DEPLOYMENT_PREFIX}/mongodb
 #      o: bind
 #  mariadb:
 #    driver: local
 #    driver_opts:
 #      type: none
-#      device: /mnt/docker-volumes/${DEPLOYMENT_PREFIX}/mariadb
+#      device: /srv/persistent-data/${DEPLOYMENT_PREFIX}/mariadb
 #      o: bind
 #  rabbitmq:
 #    driver: local
 #    driver_opts:
 #      type: none
-#      device: /mnt/docker-volumes/${DEPLOYMENT_PREFIX}/rabbitmq
+#      device: /srv/persistent-data/${DEPLOYMENT_PREFIX}/rabbitmq
 #      o: bind
 #  redis:
 #    driver: local
 #    driver_opts:
 #      type: none
-#      device: /mnt/docker-volumes/${DEPLOYMENT_PREFIX}/redis
+#      device: /srv/persistent-data/${DEPLOYMENT_PREFIX}/redis
 #      o: bind
 #
 #configs:
