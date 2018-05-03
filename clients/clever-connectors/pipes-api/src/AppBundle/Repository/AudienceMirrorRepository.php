@@ -15,13 +15,17 @@ class AudienceMirrorRepository extends DocumentRepository
 
     /**
      * @param string $audienceId
+     * @param string $type
      *
      * @return AudienceMirror|null
      */
-    public function getByAudience(string $audienceId): ?AudienceMirror
+    public function getByAudience(string $audienceId, string $type): ?AudienceMirror
     {
         /** @var AudienceMirror $mirr */
-        $mirr = $this->findOneBy(['audienceId' => $audienceId]);
+        $mirr = $this->findOneBy([
+            'audienceId' => $audienceId,
+            'type'       => $type,
+        ]);
 
         return $mirr;
     }

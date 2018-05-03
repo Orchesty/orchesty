@@ -20,6 +20,7 @@ use CleverConnectors\AppBundle\Model\Systems\SystemTopologyRunner;
 use CleverConnectors\AppBundle\Model\Systems\Traits\SystemTrait;
 use CleverConnectors\AppBundle\Repository\AudienceMirrorRepository;
 use CleverConnectors\AppBundle\Utils\AuthorizationUtils;
+use CleverConnectors\AppBundle\Utils\CMHeaders;
 use CleverConnectors\AppBundle\Utils\InnerRequestUtils;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use DateTime;
@@ -413,12 +414,35 @@ class FacebookaudienceSystem implements OAuth2Interface
      * @return array
      * @throws CleverConnectorsException
      */
+    public function syncAudience(SystemInstall $systemInstall, array $data): array
+    {
+        if (!array_key_exists('audience', $data)) {
+            throw new LogicException('Missing required field [audience].');
+        }
+
+        $req = InnerRequestUtils::getRequest($systemInstall, $data);
+        $this->runner->runTopologies(TopologyNameUtils::CREATE_AUDIENCE, $systemInstall, $this, $req);
+
+        return [];
+    }
+
+    /**
+     * @param SystemInstall $systemInstall
+     * @param array         $data
+     *
+     * @return array
+     * @throws CleverConnectorsException
+     */
     public function createAudience(SystemInstall $systemInstall, array $data): array
     {
+        if (!array_key_exists('audience', $data)) {
+            throw new LogicException('Missing required field [audience].');
+        }
+
         /** @var AudienceMirrorRepository $repo */
         $repo = $this->dm->getRepository(AudienceMirror::class);
         /** @var AudienceMirror $mirr */
-        $mirr = $repo->getByAudience($data['audience']['id'] ?? '');
+        $mirr = $repo->getByAudience($data['audience']['id'] ?? '', $data['type']);
         if (!$mirr) {
             $data['audience_id'] = $mirr->getSystemAudienceId();
             $data['mirror_id']   = $mirr->getId();
@@ -427,6 +451,9 @@ class FacebookaudienceSystem implements OAuth2Interface
             return $this->createAd($systemInstall, $data);
         } else {
             $req = InnerRequestUtils::getRequest($systemInstall, $data);
+            $req->headers->add([
+                CMHeaders::createKey('createAd') => TRUE,
+            ]);
             $this->runner->runTopologies(TopologyNameUtils::CREATE_AUDIENCE, $systemInstall, $this, $req);
         }
 

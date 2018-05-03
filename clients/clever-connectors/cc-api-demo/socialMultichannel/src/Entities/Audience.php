@@ -192,7 +192,7 @@ class Audience
         ];
 
         if ($this->listId) {
-            $res['list_id'] = $this->listId;
+            $res['distribution_list'] = $this->listId;
         }
         if ($this->segmentId) {
             $res['segment_id'] = $this->segmentId;

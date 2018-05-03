@@ -6,6 +6,7 @@ use CleverConnectors\AppBundle\Document\AudienceMirror;
 use CleverConnectors\AppBundle\Model\CustomNode\Comparator;
 use CleverConnectors\AppBundle\Repository\AudienceMirrorRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Hanaboso\CommonsBundle\Exception\EnumException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
@@ -36,6 +37,7 @@ class SocialMultichannelGetMirrorConnector implements CustomNodeInterface
      * @param ProcessDto $dto
      *
      * @return ProcessDto
+     * @throws EnumException
      */
     public function process(ProcessDto $dto): ProcessDto
     {
@@ -44,11 +46,12 @@ class SocialMultichannelGetMirrorConnector implements CustomNodeInterface
         /** @var AudienceMirrorRepository $repo */
         $repo = $this->dm->getRepository(AudienceMirror::class);
 
-        $mirr = $repo->getByAudience($props['audience']['id']);
+        $mirr = $repo->getByAudience($props['audience']['id'], $props['type']);
         if (!$mirr) {
             $mirr = new AudienceMirror();
             $mirr->setAudienceId($props['audience']['id'])
-                ->setClientId($props['client_id']);
+                ->setClientId($props['client_id'])
+                ->setType($props['type']);
             $this->dm->persist($mirr);
             $this->dm->flush();
         }

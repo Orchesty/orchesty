@@ -84,7 +84,7 @@ class FacebookaudienceUpdateAudienceConnector extends FacebookaudienceConnectorA
 
                 /** @var AudienceMirrorRepository $repo */
                 $repo = $this->dm->getRepository(AudienceMirror::class);
-                $mirr = $repo->getByAudience($props['audience']['id']);
+                $mirr = $repo->getByAudience($props['audience']['id'], $props['type']);
                 $mirr->setSystemAudienceId($id);
                 $this->dm->flush();
                 $data[Comparator::KEY_PASS_DATA]['audience_id'] = $id;

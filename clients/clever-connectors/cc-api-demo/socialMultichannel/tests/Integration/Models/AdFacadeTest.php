@@ -108,6 +108,7 @@ final class AdFacadeTest extends DatabaseTestCaseAbstract
                             'source'    => 'list',
                             'client_id' => 'cl',
                         ],
+                        'type'               => 'fb',
                     ], json_decode($req->getBody()->getContents(), TRUE));
 
                     return new Response();

@@ -145,7 +145,7 @@ class FacebookaudienceAdGenerator implements CustomNodeInterface, BatchInterface
 
         $body = [];
         try {
-            $res = $this->curl->send($req);
+            $res  = $this->curl->send($req);
             $body = json_decode($res->getBody(), TRUE);
         } catch (CurlException $e) {
             $sys = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());

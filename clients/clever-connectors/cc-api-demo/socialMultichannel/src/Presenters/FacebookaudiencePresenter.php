@@ -54,7 +54,7 @@ class FacebookaudiencePresenter extends Presenter
     }
 
     /**
-     * @ApiRoute("/api-demo/fb/<clientId>/ad/unprocessed", method="POST")
+     * @ApiRoute("/api-demo/fb/<clientId>/ad/unprocessed", method="GET")
      *
      * @param string $clientId
      *

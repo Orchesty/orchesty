@@ -70,7 +70,8 @@ abstract class AdModuleAbstract implements AdModuleInterface
         $this->em->persist($ad);
         $this->em->flush();
 
-        $data['id'] = $ad->getId();
+        $data['id']   = $ad->getId();
+        $data['type'] = static::TYPE;
         $this->sender->createAd(static::SYSTEM, $userId, $data);
 
         return $ad;
