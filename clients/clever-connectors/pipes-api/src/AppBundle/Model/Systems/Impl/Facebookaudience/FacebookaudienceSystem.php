@@ -13,8 +13,9 @@ use CleverConnectors\AppBundle\Model\Limits\SystemLimitDto;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth2Interface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
-use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceGetAccountsConnector;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceGetAdBudgetConnector;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceGetAudiencesConnector;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceGetPagesConnector;
 use CleverConnectors\AppBundle\Model\Systems\SystemTopologyRunner;
 use CleverConnectors\AppBundle\Model\Systems\Traits\SystemTrait;
 use CleverConnectors\AppBundle\Repository\AudienceMirrorRepository;
@@ -30,7 +31,6 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use LogicException;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class FacebookaudienceSystem
@@ -68,11 +68,6 @@ class FacebookaudienceSystem implements OAuth2Interface
     private $provider;
 
     /**
-     * @var ContainerInterface
-     */
-    private $container;
-
-    /**
      * @var string
      */
     private $backend;
@@ -88,27 +83,48 @@ class FacebookaudienceSystem implements OAuth2Interface
     private $dm;
 
     /**
+     * @var FacebookaudienceGetAudiencesConnector
+     */
+    private $audienceConnector;
+
+    /**
+     * @var FacebookaudienceGetPagesConnector
+     */
+    private $pageConnector;
+
+    /**
+     * @var FacebookaudienceGetAdBudgetConnector
+     */
+    private $budgetConnector;
+
+    /**
      * SalesforceSystem constructor.
      *
-     * @param OAuth2Provider       $provider
-     * @param ContainerInterface   $container
-     * @param string               $backend
-     * @param SystemTopologyRunner $runner
-     * @param DocumentManager      $dm
+     * @param OAuth2Provider                        $provider
+     * @param string                                $backend
+     * @param SystemTopologyRunner                  $runner
+     * @param DocumentManager                       $dm
+     * @param FacebookaudienceGetAudiencesConnector $audienceConnector
+     * @param FacebookaudienceGetPagesConnector     $pageConnector
+     * @param FacebookaudienceGetAdBudgetConnector  $budgetConnector
      */
     public function __construct(
         OAuth2Provider $provider,
-        ContainerInterface $container,
         string $backend,
         SystemTopologyRunner $runner,
-        DocumentManager $dm
+        DocumentManager $dm,
+        FacebookaudienceGetAudiencesConnector $audienceConnector,
+        FacebookaudienceGetPagesConnector $pageConnector,
+        FacebookaudienceGetAdBudgetConnector $budgetConnector
     )
     {
-        $this->provider  = $provider;
-        $this->container = $container;
-        $this->backend   = $backend;
-        $this->runner    = $runner;
-        $this->dm        = $dm;
+        $this->provider          = $provider;
+        $this->backend           = $backend;
+        $this->runner            = $runner;
+        $this->dm                = $dm;
+        $this->audienceConnector = $audienceConnector;
+        $this->pageConnector     = $pageConnector;
+        $this->budgetConnector   = $budgetConnector;
     }
 
     /**
@@ -296,16 +312,29 @@ class FacebookaudienceSystem implements OAuth2Interface
 
     /**
      * @param SystemInstall $systemInstall
+     * @param array         $data
      *
      * @return array
+     * @throws CleverConnectorsException
+     * @throws CurlException
      * @throws SystemException
      */
-    public function getAccounts(SystemInstall $systemInstall): array
+    public function getAudiences(SystemInstall $systemInstall, array $data): array
     {
-        /** @var FacebookaudienceGetAccountsConnector $connector */
-        $connector = $this->container->get('hbpf.connector.facebookaudience-get-accounts-connector');
+        return $this->audienceConnector->getAudiences($systemInstall);
+    }
 
-        return $connector->getAccounts($systemInstall);
+    /**
+     * @param SystemInstall $systemInstall
+     * @param array         $data
+     *
+     * @return array
+     * @throws CurlException
+     * @throws SystemException
+     */
+    public function getPages(SystemInstall $systemInstall, array $data): array
+    {
+        return $this->pageConnector->getPages($systemInstall);
     }
 
     /**
@@ -314,15 +343,18 @@ class FacebookaudienceSystem implements OAuth2Interface
      *
      * @return array
      * @throws CleverConnectorsException
-     * @throws SystemException
      * @throws CurlException
+     * @throws SystemException
      */
-    public function getAudiences(SystemInstall $systemInstall, array $data): array
+    public function getBudget(SystemInstall $systemInstall, array $data): array
     {
-        /** @var FacebookaudienceGetAudiencesConnector $connector */
-        $connector = $this->container->get('hbpf.connector.facebookaudience-get-audiences-connector');
+        if (!array_key_exists('ad_id', $data)) {
+            throw new LogicException(
+                'Missing required field [ad_id].'
+            );
+        }
 
-        return $connector->getAudiences($systemInstall);
+        return $this->budgetConnector->getAdBudget($systemInstall, $data['ad_id']);
     }
 
     /**

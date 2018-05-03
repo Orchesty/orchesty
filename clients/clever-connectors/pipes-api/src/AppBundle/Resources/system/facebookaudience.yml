@@ -6,10 +6,12 @@ services:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\FacebookaudienceSystem
         arguments:
             - '@hbpf.providers.oauth2_provider'
-            - '@service_container'
             - '%backend_host%'
             - '@cc.system_topology.runner'
             - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.connector.facebookaudience-get-audiences-connector'
+            - '@hbpf.connector.facebookaudience-get-pages-connector'
+            - '@hbpf.connector.facebookaudience-get-adbudget-connector'
         tags: ['%systems%']
 
     hbpf.connector.facebookaudience-create-subscribers-connector:
@@ -53,6 +55,7 @@ services:
             - '@hbpf.transport.curl_manager'
         calls:
             - ['setLogger', ['@monolog.logger.notification']]
+        lazy: true
 
     hbpf.connector.facebookaudience-get-pages-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceGetPagesConnector
@@ -62,6 +65,17 @@ services:
             - '@hbpf.transport.curl_manager'
         calls:
             - ['setLogger', ['@monolog.logger.notification']]
+        lazy: true
+
+    hbpf.connector.facebookaudience-get-adbudget-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceGetAdBudgetConnector
+        arguments:
+            - '@systems.facebookaudience'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
+        lazy: true
 
     hbpf.connector.facebookaudience-upload-image-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceImageUploadConnector
