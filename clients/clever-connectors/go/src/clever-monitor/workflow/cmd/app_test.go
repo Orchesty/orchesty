@@ -9,7 +9,7 @@ import (
 	"golang.org/x/net/context"
 	"clever-monitor/utils/env"
 	"google.golang.org/grpc"
-	ws "clever-monitor/workflow/pkg/workflowservice"
+	ws "clever-monitor/workflow/pkg/workflowservice/clevermonitor/analytics/protos/workflow"
 	"clever-monitor/workflow/pkg/handler"
 	"gopkg.in/mgo.v2/bson"
 	"io/ioutil"
@@ -50,8 +50,8 @@ func testGrpcMethods(t *testing.T, stopTest chan bool) {
 }
 
 func testWorkflowMethods(t *testing.T, client ws.WorkflowServiceClient, ctx context.Context) {
-	id := assertCreate(t, client, ctx, getValidJsonExample(t, "editor.json"))
-	assertReadEditor(t, client, ctx, id, getValidJsonExample(t, "editor.json"))
+	id := assertCreate(t, client, ctx, getValidJsonExample(t, "editor_1.json"))
+	assertReadEditor(t, client, ctx, id, getValidJsonExample(t, "editor_1.json"))
 	assertDelete(t, client, ctx, id)
 	assertReadEditorFailure(t, client, ctx, id)
 }

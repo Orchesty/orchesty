@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"clever-monitor/workflow/pkg/storage"
 	"clever-monitor/workflow/pkg/generator"
-	ws "clever-monitor/workflow/pkg/workflowservice"
+	ws "clever-monitor/workflow/pkg/workflowservice/clevermonitor/analytics/protos/workflow"
 	"gopkg.in/mgo.v2/bson"
 	"clever-monitor/workflow/pkg/hydrator"
 )

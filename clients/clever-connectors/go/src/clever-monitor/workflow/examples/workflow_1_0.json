@@ -1,0 +1,1 @@
+{"id":"5aeb6da59226885fcb4aa471","clientId":555,"clientGuid":"guid","filter":{"inSegments":["some segment","another segment"],"inLists":[]},"steps":[{"stepId":"1","conditions":[],"channels":{"notify":{"email":true}},"nextFlow":{"id":"5aeb6da59226885fcb4aa472"}}],"editorItemId":"1"}

@@ -3,7 +3,7 @@ package handler
 import (
 	"testing"
 	"github.com/stretchr/testify/assert"
-	ws "clever-monitor/workflow/pkg/workflowservice"
+	ws "clever-monitor/workflow/pkg/workflowservice/clevermonitor/analytics/protos/workflow"
 	"fmt"
 	"io/ioutil"
 	"clever-monitor/workflow/pkg/storage"
@@ -13,7 +13,7 @@ import (
 const (
 	shouldEndWithError = "aaaaaaaaaaaaaaaaaaaaaaaa"
 	successObjectId    = "5aa228e1922688649d414d84"
-	editorConfigFile   = "../../examples/editor.json"
+	editorConfigFile   = "../../examples/editor_1.json"
 )
 
 type storageMock struct{}

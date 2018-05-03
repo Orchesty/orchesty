@@ -2,7 +2,7 @@ package server
 
 import (
 	"testing"
-	ws "clever-monitor/workflow/pkg/workflowservice"
+	ws "clever-monitor/workflow/pkg/workflowservice/clevermonitor/analytics/protos/workflow"
 	"clever-monitor/utils/logger"
 	"github.com/stretchr/testify/assert"
 )

@@ -2,7 +2,7 @@ package hydrator
 
 import (
 	"github.com/golang/protobuf/jsonpb"
-	ws "clever-monitor/workflow/pkg/workflowservice"
+	ws "clever-monitor/workflow/pkg/workflowservice/clevermonitor/analytics/protos/workflow"
 )
 
 func WorkflowConfigToString(conf *ws.WorkflowConfig) (string, error) {

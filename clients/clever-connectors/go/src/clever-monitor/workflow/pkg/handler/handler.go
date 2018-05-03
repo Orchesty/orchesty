@@ -1,6 +1,6 @@
 package handler
 
-import ws "clever-monitor/workflow/pkg/workflowservice"
+import ws "clever-monitor/workflow/pkg/workflowservice/clevermonitor/analytics/protos/workflow"
 
 type ResponseCode int
 

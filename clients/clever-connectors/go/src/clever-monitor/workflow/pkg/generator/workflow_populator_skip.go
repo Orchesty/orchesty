@@ -1,18 +1,24 @@
 package generator
 
-// TODO - test
-func PopulateSkip(cc *composedConfig, all []*composedConfig) error {
+// populateSkip links item's parent with item's child in order to item could be safely removed
+func populateSkip(cc *composedConfig, all []*composedConfig) error {
 	parent := findParentItem(cc.ec, all)
 	if parent == nil {
-		// root item, we don't need to udpate anything above it
+		// root item, we don't need to update it's parent
 		return nil
 	}
 
 	child := findFirstChildItem(cc.ec, all)
 	if child == nil {
-		parent.wfc.Steps = nil
+		// item does not have any child
+		for _, parStep := range parent.wfc.Steps {
+			parStep.NextFlow = nil
+		}
+
+		return nil
 	}
 
+	// has parent and has children - link them
 	for _, parStep := range parent.wfc.Steps {
 		parStep.NextFlow.Id = child.wfc.Id
 	}
