@@ -28,10 +28,12 @@ type composedConfig struct {
 
 type workflowGenerator struct{}
 
+// NewWorkflowGenerator returns new instance of WorkflowGenerator
 func NewWorkflowGenerator() *workflowGenerator {
 	return &workflowGenerator{}
 }
 
+// Generate returns the slice of generated workflow config due to given editor config data
 func (gen *workflowGenerator) Generate(
 	editor *ws.EditorConfig,
 	clientId int,
@@ -41,7 +43,7 @@ func (gen *workflowGenerator) Generate(
 
 	var wfs []*ws.WorkflowConfig
 	for _, cc := range pairs {
-		// TODO - run concurrently in goroutines
+		// TODO - try to run concurrently in goroutines
 		cfg, err := generateWorkflowConfig(cc, pairs)
 		if err != nil {
 			return wfs, fmt.Errorf("unable to generate worflow from editor item '%s'. Error: %s", cc.ec.Id, err)
@@ -55,6 +57,8 @@ func (gen *workflowGenerator) Generate(
 	return wfs, nil
 }
 
+// pairConfigs links EditorConfig's node and WorkflowConfig node for easier work
+// It creates simple WorkflowConfig item with generated unique ID
 func pairConfigs(editor *ws.EditorConfig, clientId int, guid string) []*composedConfig {
 	var pairs []*composedConfig
 
@@ -75,6 +79,7 @@ func pairConfigs(editor *ws.EditorConfig, clientId int, guid string) []*composed
 	return pairs
 }
 
+// generateWorkflowConfig fills workflowConfig with real data
 func generateWorkflowConfig(cc *composedConfig, all []*composedConfig) (*ws.WorkflowConfig, error) {
 	trigger := findTrigger(all)
 
@@ -87,29 +92,36 @@ func generateWorkflowConfig(cc *composedConfig, all []*composedConfig) (*ws.Work
 	return cc.wfc, nil
 }
 
+// populateSpecifics decides how to fill workflowConfig's properties due to its type
 func populateSpecifics(cc *composedConfig, all []*composedConfig) error {
 	switch cc.ec.Type {
 	case typeCondition:
-		return PopulateCondition(cc, all)
+		return populateCondition(cc, all)
 	case typeConditionBranch:
-		cc.skip = true
-		return PopulateConditionBranch(cc, all)
+		cc.skip = true // treat specifically byt do not include to output
+		return populateConditionBranch(cc, all)
 	case typeDistribute:
-		return PopulateDefault(cc, all)
+		return populateDefault(cc, all)
 	case typeEmail:
-		return PopulateEmail(cc, all)
+		return populateEmail(cc, all)
+	case typeJoinSrc:
+		panic("join src not implemented yet")
+	case typeJoinDst:
+		panic("join dst not implemented yet")
 	case typeNotify:
-		return PopulateNotify(cc, all)
+		return populateNotify(cc, all)
 	case typeWait:
-		return PopulateWait(cc, all)
-	case typeEmpty, typeEnd, typeJoinDst, typeJoinSrc, typeTrigger:
-		cc.skip = true
-		return PopulateSkip(cc, all)
+		return populateWait(cc, all)
+	case typeEmpty, typeEnd, typeTrigger:
+		cc.skip = true // do not include to output
+		return populateSkip(cc, all)
+
 	default:
 		return fmt.Errorf("cannot set type specifics to workflow config of type '%s'", cc.ec.Type)
 	}
 }
 
+// findItemById tries to find composedConfig by workflowConfig's ID
 func findItemById(id string, all []*composedConfig) *composedConfig {
 	for _, item := range all {
 		if item.wfc.Id == id {
@@ -120,16 +132,7 @@ func findItemById(id string, all []*composedConfig) *composedConfig {
 	return nil
 }
 
-func findRootItem(ec *ws.EditorConfig) *ws.EditorConfig_EditorConfigItem {
-	for _, item := range ec.Items {
-		if item.ParentId == "" && item.Type == typeTrigger {
-			return item
-		}
-	}
-
-	return nil
-}
-
+// findTrigger find the root composedConfig
 func findTrigger(all []*composedConfig) *composedConfig {
 	triggers := findItemsByType(typeTrigger, all)
 	if len(triggers) > 0 {
@@ -139,6 +142,7 @@ func findTrigger(all []*composedConfig) *composedConfig {
 	return nil
 }
 
+// findItemsByType finds all composedConfig by the type
 func findItemsByType(desiredType string, all []*composedConfig) []*composedConfig {
 	var matching []*composedConfig
 	for _, cc := range all {
@@ -150,6 +154,7 @@ func findItemsByType(desiredType string, all []*composedConfig) []*composedConfi
 	return matching
 }
 
+// findChildItems finds all child configs of given composedConfig from provided slice of composedConfigs
 func findChildItems(parent *ws.EditorConfig_EditorConfigItem, all []*composedConfig) []*composedConfig {
 	var children []*composedConfig
 
@@ -162,6 +167,7 @@ func findChildItems(parent *ws.EditorConfig_EditorConfigItem, all []*composedCon
 	return children
 }
 
+// findFirstChildItem returns the first found child item of given composedConfig from provided slice
 func findFirstChildItem(parent *ws.EditorConfig_EditorConfigItem, all []*composedConfig) *composedConfig {
 	children := findChildItems(parent, all)
 
@@ -172,6 +178,7 @@ func findFirstChildItem(parent *ws.EditorConfig_EditorConfigItem, all []*compose
 	return nil
 }
 
+// findParentItem returns parental composedConfig of givend composedConfig if it exists
 func findParentItem(child *ws.EditorConfig_EditorConfigItem, all []*composedConfig) *composedConfig {
 	if child.ParentId == "" {
 		return nil

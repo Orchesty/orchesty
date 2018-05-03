@@ -35,9 +35,9 @@
           "type": "and",
           "conditions": [
             {
-              "field": null,
+              "field": "x",
               "operator": "e",
-              "value": ""
+              "value": "10"
             }
           ]
         }

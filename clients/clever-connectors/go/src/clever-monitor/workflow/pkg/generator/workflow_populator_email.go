@@ -2,8 +2,9 @@ package generator
 
 import ws "clever-monitor/workflow/pkg/workflowservice/clevermonitor/analytics/protos/workflow"
 
-func PopulateEmail(cc *composedConfig, all []*composedConfig) error {
-	err := PopulateDefault(cc, all)
+// populateEmail fills workflowConfig struct with email related values
+func populateEmail(cc *composedConfig, all []*composedConfig) error {
+	err := populateDefault(cc, all)
 	if err != nil {
 		return err
 	}

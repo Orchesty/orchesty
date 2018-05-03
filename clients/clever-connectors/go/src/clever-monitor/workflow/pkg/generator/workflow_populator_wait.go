@@ -10,8 +10,9 @@ const (
 	year = "year"
 )
 
-func PopulateWait(cc *composedConfig, all []*composedConfig) error {
-	err := PopulateDefault(cc, all)
+// populateWait sets the wait type workflowConfig specifics
+func populateWait(cc *composedConfig, all []*composedConfig) error {
+	err := populateDefault(cc, all)
 	if err != nil {
 		return err
 	}
@@ -27,6 +28,7 @@ func PopulateWait(cc *composedConfig, all []*composedConfig) error {
 	return nil
 }
 
+// convertToSeconds converts given values to seconds
 func convertToSeconds(duration int, unit string) int {
 	var durInSeconds int
 

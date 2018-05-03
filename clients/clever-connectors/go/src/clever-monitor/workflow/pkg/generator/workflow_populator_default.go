@@ -2,7 +2,8 @@ package generator
 
 import ws "clever-monitor/workflow/pkg/workflowservice/clevermonitor/analytics/protos/workflow"
 
-func PopulateDefault(cc *composedConfig, all []*composedConfig) error {
+// populateDefault fills default workflow config settings that are common for multiple different config types
+func populateDefault(cc *composedConfig, all []*composedConfig) error {
 	// Set common fields from trigger
 	trigger := findTrigger(all)
 	cc.wfc.Filter = &ws.WorkflowConfig_Filter{}
@@ -12,6 +13,7 @@ func PopulateDefault(cc *composedConfig, all []*composedConfig) error {
 	return populateDefaultSteps(cc, all)
 }
 
+// populateDefaultSteps fills the step slice with correct number of step structs
 func populateDefaultSteps(cc *composedConfig, all []*composedConfig) error {
 	followers := findChildItems(cc.ec, all)
 
@@ -30,6 +32,7 @@ func populateDefaultSteps(cc *composedConfig, all []*composedConfig) error {
 	return nil
 }
 
+// createDefaultStep creates Step struct with default settings
 func createDefaultStep(cc *composedConfig, follower *composedConfig) *ws.WorkflowConfig_Step {
 	step := &ws.WorkflowConfig_Step{
 		StepId: cc.ec.Id,

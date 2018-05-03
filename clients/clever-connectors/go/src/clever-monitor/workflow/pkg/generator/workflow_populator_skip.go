@@ -1,7 +1,7 @@
 package generator
 
-// TODO - test
-func PopulateSkip(cc *composedConfig, all []*composedConfig) error {
+// populateSkip links item's parent with item's child in order to item could be safely removed
+func populateSkip(cc *composedConfig, all []*composedConfig) error {
 	parent := findParentItem(cc.ec, all)
 	if parent == nil {
 		// root item, we don't need to update it's parent
