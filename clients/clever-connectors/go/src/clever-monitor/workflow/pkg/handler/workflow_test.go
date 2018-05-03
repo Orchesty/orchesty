@@ -13,7 +13,7 @@ import (
 const (
 	shouldEndWithError = "aaaaaaaaaaaaaaaaaaaaaaaa"
 	successObjectId    = "5aa228e1922688649d414d84"
-	editorConfigFile   = "../../examples/editor.json"
+	editorConfigFile   = "../../examples/editor_1.json"
 )
 
 type storageMock struct{}

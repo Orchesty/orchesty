@@ -8,19 +8,9 @@
     "in_segment": [
       "hash_segmentu"
     ],
-    "not_in_segment": [
+    "in_": [
       "hash_segmentu"
     ],
-    "in_tag": [
-      "tag"
-    ],
-    "not_in_tag": [
-      "tag"
-    ],
-    "priority": 10,
-    "filtering_variable": [
-      "variable_name/column_name/etc"
-    ]
   },
   "steps": [
     {

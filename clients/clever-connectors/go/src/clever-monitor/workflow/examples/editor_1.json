@@ -11,7 +11,9 @@
             "manually": true,
             "batch": true,
             "webServices": false
-          }
+          },
+          "segments": ["some segment", "another segment"],
+          "lists": []
         }
       }
     },

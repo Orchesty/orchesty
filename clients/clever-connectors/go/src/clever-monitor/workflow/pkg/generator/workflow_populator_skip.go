@@ -10,9 +10,15 @@ func PopulateSkip(cc *composedConfig, all []*composedConfig) error {
 
 	child := findFirstChildItem(cc.ec, all)
 	if child == nil {
-		parent.wfc.Steps = nil
+		// item does not have any child
+		for _, parStep := range parent.wfc.Steps {
+			parStep.NextFlow = nil
+		}
+
+		return nil
 	}
 
+	// has parent and has children - link them
 	for _, parStep := range parent.wfc.Steps {
 		parStep.NextFlow.Id = child.wfc.Id
 	}
