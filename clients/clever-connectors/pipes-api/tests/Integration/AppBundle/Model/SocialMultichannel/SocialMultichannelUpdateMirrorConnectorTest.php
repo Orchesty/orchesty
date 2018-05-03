@@ -4,8 +4,10 @@ namespace Tests\Integration\AppBundle\Model\SocialMultichannel;
 
 use CleverConnectors\AppBundle\Document\AudienceMirror;
 use CleverConnectors\AppBundle\Document\EmbedSubscriber;
+use CleverConnectors\AppBundle\Enum\AdTypeEnum;
 use CleverConnectors\AppBundle\Model\CustomNode\Comparator;
 use CleverConnectors\AppBundle\Model\SocialMultichannels\SocialMultichannelUpdateMirrorConnector;
+use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Tests\DatabaseTestCaseAbstract;
 
@@ -19,6 +21,8 @@ final class SocialMultichannelUpdateMirrorConnectorTest extends DatabaseTestCase
 
     /**
      * @covers SocialMultichannelUpdateMirrorConnector::process()
+     *
+     * @throws Exception
      */
     public function testProcessExisting(): void
     {
@@ -32,6 +36,7 @@ final class SocialMultichannelUpdateMirrorConnectorTest extends DatabaseTestCase
                     'id' => 'audId',
                 ],
                 'client_id' => 'cli',
+                'type'      => AdTypeEnum::FB,
             ],
             'create'                  => [
                 'eml1',
@@ -51,13 +56,16 @@ final class SocialMultichannelUpdateMirrorConnectorTest extends DatabaseTestCase
 
     /**
      * @return AudienceMirror
+     *
+     * @throws Exception
      */
     private function prepData(): AudienceMirror
     {
         $mirr = new AudienceMirror();
         $mirr->addSubscriber(new EmbedSubscriber('eml3'))
             ->addSubscriber(new EmbedSubscriber('eml4'))
-            ->setAudienceId('audId');
+            ->setAudienceId('audId')
+            ->setType(AdTypeEnum::FB);
         $this->persistAndFlush($mirr);
 
         return $mirr;

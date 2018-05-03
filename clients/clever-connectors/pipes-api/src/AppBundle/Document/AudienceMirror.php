@@ -2,8 +2,10 @@
 
 namespace CleverConnectors\AppBundle\Document;
 
+use CleverConnectors\AppBundle\Enum\AdTypeEnum;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\PersistentCollection;
+use Hanaboso\CommonsBundle\Exception\EnumException;
 
 /**
  * Class AudienceMirror
@@ -57,6 +59,13 @@ class AudienceMirror
      * @ODM\Field(type="string", nullable=true)
      */
     private $systemAudienceId = NULL;
+
+    /**
+     * @var string
+     *
+     * @ODM\Field(type="string")
+     */
+    private $type;
 
     /**
      * @return string
@@ -201,6 +210,27 @@ class AudienceMirror
     public function setSystemAudienceId(string $systemAudienceId): AudienceMirror
     {
         $this->systemAudienceId = $systemAudienceId;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param string $type
+     *
+     * @return AudienceMirror
+     * @throws EnumException
+     */
+    public function setType(string $type): AudienceMirror
+    {
+        $this->type = AdTypeEnum::isValid($type);
 
         return $this;
     }

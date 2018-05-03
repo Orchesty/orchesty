@@ -6,6 +6,7 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Traits\LoggerTrait;
+use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
@@ -72,21 +73,23 @@ class FacebookaudienceRunCreateAdActionConnector implements CustomNodeInterface,
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        $data = json_decode($dto->getData(), TRUE);
-        $req  = new RequestDto(CurlManager::METHOD_POST, new Uri(sprintf(
-            $this->backend . self::URL, $data['user_id']
-        )));
-        $req->setHeaders([
-            'Accept'       => 'application/json',
-            'Content-Type' => 'application/json',
-        ])->setBody($dto->getData());
+        if (CMHeaders::get('createAd', $dto->getHeaders())) {
+            $data = json_decode($dto->getData(), TRUE);
+            $req  = new RequestDto(CurlManager::METHOD_POST, new Uri(sprintf(
+                $this->backend . self::URL, $data['user_id']
+            )));
+            $req->setHeaders([
+                'Accept'       => 'application/json',
+                'Content-Type' => 'application/json',
+            ])->setBody($dto->getData());
 
-        try {
-            $this->curl->send($req);
-        } catch (CurlException $e) {
-            /** @var SystemInstallRepository $repo */
-            $repo = $this->dm->getRepository(SystemInstall::class);
-            $this->logError($e->getCode(), $this->system, $repo->getSystemInstallFromHeaders($dto->getHeaders()));
+            try {
+                $this->curl->send($req);
+            } catch (CurlException $e) {
+                /** @var SystemInstallRepository $repo */
+                $repo = $this->dm->getRepository(SystemInstall::class);
+                $this->logError($e->getCode(), $this->system, $repo->getSystemInstallFromHeaders($dto->getHeaders()));
+            }
         }
 
         return $dto;

@@ -4,6 +4,7 @@ namespace Tests\Unit\AppBundle\Model\Systems\Impl\Facebookaudience\Connector;
 
 use CleverConnectors\AppBundle\Document\AudienceMirror;
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Enum\AdTypeEnum;
 use CleverConnectors\AppBundle\Model\CustomNode\Comparator;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceUpdateAudienceConnector;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\FacebookaudienceSystem;
@@ -51,6 +52,7 @@ final class FacebookaudienceUpdateAudienceConnectorTest extends KernelTestCaseAb
                 'client_id'            => 'cli',
                 'audience_description' => 'desc',
                 'audience_id'          => NULL,
+                'type'                 => AdTypeEnum::FB,
             ],
         ];
 

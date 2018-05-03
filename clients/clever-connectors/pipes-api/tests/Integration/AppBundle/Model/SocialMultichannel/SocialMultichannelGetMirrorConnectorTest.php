@@ -4,6 +4,7 @@ namespace Tests\Integration\AppBundle\Model\SocialMultichannel;
 
 use CleverConnectors\AppBundle\Document\AudienceMirror;
 use CleverConnectors\AppBundle\Document\EmbedSubscriber;
+use CleverConnectors\AppBundle\Enum\AdTypeEnum;
 use CleverConnectors\AppBundle\Model\CustomNode\Comparator;
 use CleverConnectors\AppBundle\Model\SocialMultichannels\SocialMultichannelGetMirrorConnector;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
@@ -31,6 +32,7 @@ final class SocialMultichannelGetMirrorConnectorTest extends DatabaseTestCaseAbs
                 'audience'  => [
                     'id' => 'audId',
                 ],
+                'type'      => AdTypeEnum::FB,
                 'client_id' => 'cli',
             ],
         ]));
@@ -54,6 +56,7 @@ final class SocialMultichannelGetMirrorConnectorTest extends DatabaseTestCaseAbs
                 'audience'  => [
                     'id' => 'audId',
                 ],
+                'type'      => AdTypeEnum::FB,
                 'client_id' => 'cli',
             ],
         ]));
@@ -72,7 +75,8 @@ final class SocialMultichannelGetMirrorConnectorTest extends DatabaseTestCaseAbs
         $mirr = new AudienceMirror();
         $mirr->addSubscriber(new EmbedSubscriber('eml1'))
             ->addSubscriber(new EmbedSubscriber('eml2'))
-            ->setAudienceId('audId');
+            ->setAudienceId('audId')
+            ->setType(AdTypeEnum::FB);
         $this->persistAndFlush($mirr);
 
         return $mirr;

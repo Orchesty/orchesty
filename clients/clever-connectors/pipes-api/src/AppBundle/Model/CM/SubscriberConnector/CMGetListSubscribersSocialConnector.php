@@ -63,7 +63,7 @@ class CMGetListSubscribersSocialConnector extends CMGetSubscribersConnectorAbstr
         $this->passData = $data;
         $subs           = [];
 
-        if (array_key_exists('distribution_list', $data)) {
+        if (array_key_exists('distribution_list', $data)) { // TODO other sources
             $this->list = $data['distribution_list'];
 
             $processId = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders()) ?? '';

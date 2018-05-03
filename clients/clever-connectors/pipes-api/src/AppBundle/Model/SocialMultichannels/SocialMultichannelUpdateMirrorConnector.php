@@ -43,7 +43,7 @@ class SocialMultichannelUpdateMirrorConnector implements CustomNodeInterface
         $data = json_decode($dto->getData(), TRUE);
         /** @var AudienceMirrorRepository $repo */
         $repo = $this->dm->getRepository(AudienceMirror::class);
-        $mirr = $repo->getByAudience($data[Comparator::KEY_PASS_DATA]['audience']['id']);
+        $mirr = $repo->getByAudience($data[Comparator::KEY_PASS_DATA]['audience']['id'], $data[Comparator::KEY_PASS_DATA]['type']);
 
         foreach ($data['create'] as $eml) {
             $mirr->addSubscriber(new EmbedSubscriber($eml));
