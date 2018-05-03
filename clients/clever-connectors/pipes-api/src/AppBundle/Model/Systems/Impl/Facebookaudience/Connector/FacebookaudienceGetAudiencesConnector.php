@@ -22,7 +22,7 @@ use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 class FacebookaudienceGetAudiencesConnector extends FacebookaudienceConnectorAbstract
 {
 
-    private const URL = '%s/%s/customaudiences?fields=name&access_token=%s';
+    private const URL = '%s/act_%s/customaudiences?fields=name&access_token=%s';
 
     /**
      * @return string
@@ -56,46 +56,35 @@ class FacebookaudienceGetAudiencesConnector extends FacebookaudienceConnectorAbs
 
     /**
      * @param SystemInstall $systemInstall
-     * @param array         $data
      *
      * @return array
      * @throws CleverConnectorsException
      * @throws CurlException
      * @throws SystemException
      */
-    public function getAudiences(SystemInstall $systemInstall, array $data): array
+    public function getAudiences(SystemInstall $systemInstall): array
     {
-        if (!array_key_exists(FacebookaudienceSystem::AD_ACCOUNT, $data) ||
-            empty($data[FacebookaudienceSystem::AD_ACCOUNT])) {
-
+        $sett = $systemInstall->getSettings();
+        if (!array_key_exists(FacebookaudienceSystem::AD_ACCOUNT, $sett)) {
             throw new CleverConnectorsException(
-                'Missing key "ad_account" in data',
+                'Missing key [ad_account] in settings.',
                 CleverConnectorsException::MISSING_DATA
             );
         }
 
-        $this->system->setSettings($systemInstall, [
-            FacebookaudienceSystem::AD_ACCOUNT => $data[FacebookaudienceSystem::AD_ACCOUNT],
-        ]);
-        $this->dm->flush();
-
-        $res                                     = [];
-        $res[FacebookaudienceSystem::CREATE_NEW] = 'Create New';
-        $requestDto                              = $this->prepareRequestDto($systemInstall, NULL);
+        $res        = [];
+        $requestDto = $this->prepareRequestDto($systemInstall, NULL);
 
         try {
             $response = $this->manager->send($requestDto);
-        } catch (CurlException $e) {
-            $this->logConnectorError($e, $systemInstall, $this->system);
-        }
-
-        if (isset($response) && $response->getStatusCode() == 200) {
-            $data = json_decode($response->getBody(), TRUE);
-            if (array_key_exists('data', $data) && is_array($data) && !empty($data)) {
+            $data     = json_decode($response->getBody(), TRUE);
+            if (!empty($data) && array_key_exists('data', $data) && is_array($data)) {
                 foreach ($data['data'] as $item) {
                     $res[$item['id']] = $item['name'];
                 }
             }
+        } catch (CurlException $e) {
+            $this->logConnectorError($e, $systemInstall, $this->system);
         }
 
         return $res;

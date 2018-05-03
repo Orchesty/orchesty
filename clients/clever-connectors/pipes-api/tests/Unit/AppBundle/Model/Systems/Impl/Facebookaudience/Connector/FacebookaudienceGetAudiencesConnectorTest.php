@@ -8,6 +8,7 @@ use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\Fac
 use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\FacebookaudienceSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Exception;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
@@ -30,6 +31,8 @@ final class FacebookaudienceGetAudiencesConnectorTest extends ConnectorTestCaseA
 
     /**
      * @covers FacebookaudienceGetAudiencesConnector::processAction()
+     *
+     * @throws Exception
      */
     public function testProcessAction(): void
     {
@@ -41,7 +44,7 @@ final class FacebookaudienceGetAudiencesConnectorTest extends ConnectorTestCaseA
             FacebookaudienceSystem::AD_ACCOUNT => 'ad-account-123',
         ]);
 
-        $result = Json::decode($this->getConnectorMock($systemInstall, FALSE)->processAction($dto)->getData(), TRUE);
+        $result = json_decode($this->getConnectorMock($systemInstall, TRUE)->processAction($dto)->getData(), TRUE);
 
         $this->assertEquals([
             'data' => [
@@ -53,6 +56,8 @@ final class FacebookaudienceGetAudiencesConnectorTest extends ConnectorTestCaseA
 
     /**
      * @covers FacebookaudienceGetAudiencesConnector::processAction()
+     *
+     * @throws Exception
      */
     public function testProcessActionLimit(): void
     {
@@ -91,6 +96,8 @@ final class FacebookaudienceGetAudiencesConnectorTest extends ConnectorTestCaseA
 
     /**
      * @covers FacebookaudienceGetAudiencesConnector::processAction()
+     *
+     * @throws Exception
      */
     public function testProcessActionMissingAdAccountId(): void
     {
@@ -98,19 +105,21 @@ final class FacebookaudienceGetAudiencesConnectorTest extends ConnectorTestCaseA
 
         $systemInstall = new SystemInstall();
         $systemInstall->setSettings([
-            OAuth2Provider::ACCESS_TOKEN => 'access-token-123',
+            OAuth2Provider::ACCESS_TOKEN       => 'access-token-123',
         ]);
 
         $this->expectException(CleverConnectorsException::class);
         $this->expectExceptionCode(CleverConnectorsException::MISSING_DATA);
 
-        $this->getConnectorMock($systemInstall, FALSE, FALSE)->processAction($dto);
+        $this->getConnectorMock($systemInstall, FALSE)->processAction($dto);
     }
 
     /**
      * @covers FacebookaudienceGetAudiencesConnector::getAudiences()
+     *
+     * @throws Exception
      */
-    public function testGetAccounts(): void
+    public function testGetAudiences(): void
     {
         $systemInstall = new SystemInstall();
         $systemInstall->setSettings([
@@ -118,23 +127,20 @@ final class FacebookaudienceGetAudiencesConnectorTest extends ConnectorTestCaseA
             FacebookaudienceSystem::AD_ACCOUNT => 'ad-account-123',
         ]);
 
-        $data = [
-            FacebookaudienceSystem::AD_ACCOUNT => 'ad-account-123',
-        ];
-
-        $result = $this->getConnectorMock($systemInstall)->getAudiences($systemInstall, $data);
+        $result = $this->getConnectorMock($systemInstall)->getAudiences($systemInstall);
 
         $this->assertEquals([
-            'create_new' => 'Create New',
-            '123'        => 'name1',
-            '456'        => 'name2',
+            '123' => 'name1',
+            '456' => 'name2',
         ], $result);
     }
 
     /**
      * @covers FacebookaudienceGetAudiencesConnector::getAudiences()
+     *
+     * @throws Exception
      */
-    public function testGetAccountsLimit(): void
+    public function testGetAudiencesLimit(): void
     {
         $systemInstall = new SystemInstall();
         $systemInstall->setSettings([
@@ -143,10 +149,6 @@ final class FacebookaudienceGetAudiencesConnectorTest extends ConnectorTestCaseA
         ]);
         $systemInstall->setUser('user123');
         $systemInstall->setToken('token123');
-
-        $data = [
-            FacebookaudienceSystem::AD_ACCOUNT => 'ad-account-123',
-        ];
 
         /** @var MockObject|CurlManagerInterface $sender */
         $sender = $this->createMock(CurlManagerInterface::class);
@@ -170,28 +172,31 @@ final class FacebookaudienceGetAudiencesConnectorTest extends ConnectorTestCaseA
 
         $this->expectException(CurlException::class);
 
-        $connector->getAudiences($systemInstall, $data);
+        $connector->getAudiences($systemInstall);
     }
 
     /**
      * @covers FacebookaudienceGetAudiencesConnector::getAudiences()
+     *
+     * @throws Exception
      */
     public function testGetAccountsMissingAdAccountId(): void
     {
         $systemInstall = new SystemInstall();
         $systemInstall->setSettings([
-            OAuth2Provider::ACCESS_TOKEN       => 'access-token-123',
-            FacebookaudienceSystem::AD_ACCOUNT => 'ad-account-123',
+            OAuth2Provider::ACCESS_TOKEN => 'access-token-123',
         ]);
 
         $this->expectException(CleverConnectorsException::class);
         $this->expectExceptionCode(CleverConnectorsException::MISSING_DATA);
 
-        $this->getConnectorMock($systemInstall, FALSE, FALSE)->getAudiences($systemInstall, []);
+        $this->getConnectorMock($systemInstall, FALSE)->getAudiences($systemInstall);
     }
 
     /**
      * @covers FacebookaudienceGetAudiencesConnector::getAudiences()
+     *
+     * @throws Exception
      */
     public function testGetAccountsMissingAdAccountId2(): void
     {
@@ -200,28 +205,20 @@ final class FacebookaudienceGetAudiencesConnectorTest extends ConnectorTestCaseA
             OAuth2Provider::ACCESS_TOKEN => 'access-token-123',
         ]);
 
-        $data = [
-            FacebookaudienceSystem::AD_ACCOUNT => 'ad-account-123',
-        ];
-
         $this->expectException(CleverConnectorsException::class);
         $this->expectExceptionCode(CleverConnectorsException::MISSING_DATA);
 
-        $this->getConnectorMock($systemInstall, TRUE, FALSE)->getAudiences($systemInstall, $data);
+        $this->getConnectorMock($systemInstall, FALSE)->getAudiences($systemInstall);
     }
 
     /**
      * @param SystemInstall $systemInstall
-     * @param bool          $save
      * @param bool          $send
      *
      * @return FacebookaudienceGetAudiencesConnector
+     * @throws Exception
      */
-    private function getConnectorMock(
-        SystemInstall $systemInstall,
-        $save = TRUE,
-        $send = TRUE
-    ): FacebookaudienceGetAudiencesConnector
+    private function getConnectorMock(SystemInstall $systemInstall, $send = TRUE): FacebookaudienceGetAudiencesConnector
     {
         /** @var CurlManagerInterface|MockObject $curlManager */
         $curlManager = $this->createMock(CurlManagerInterface::class);
@@ -232,7 +229,7 @@ final class FacebookaudienceGetAudiencesConnectorTest extends ConnectorTestCaseA
                 ->method('send')
                 ->will($this->returnCallback(function (RequestDto $dto, array $options = []) {
                     $this->assertEquals(
-                        new Uri('https://graph.facebook.com/v2.11/ad-account-123/customaudiences?fields=name&access_token=access-token-123'),
+                        new Uri('https://graph.facebook.com/v2.11/act_ad-account-123/customaudiences?fields=name&access_token=access-token-123'),
                         $dto->getUri()
                     );
 
@@ -246,7 +243,7 @@ final class FacebookaudienceGetAudiencesConnectorTest extends ConnectorTestCaseA
         }
 
         return new FacebookaudienceGetAudiencesConnector(
-            $this->getSystemMock($save),
+            $this->getSystemMock(),
             $this->getDmMock($systemInstall),
             $curlManager
         );
@@ -256,6 +253,7 @@ final class FacebookaudienceGetAudiencesConnectorTest extends ConnectorTestCaseA
      * @param SystemInstall $systemInstall
      *
      * @return DocumentManager|MockObject
+     * @throws Exception
      */
     private function getDmMock(SystemInstall $systemInstall)
     {
@@ -270,11 +268,10 @@ final class FacebookaudienceGetAudiencesConnectorTest extends ConnectorTestCaseA
     }
 
     /**
-     * @param bool $save
-     *
      * @return MockObject|FacebookaudienceSystem
+     * @throws Exception
      */
-    private function getSystemMock($save = TRUE)
+    private function getSystemMock()
     {
         $requestDto = (new RequestDto('POST', new Uri('https://graph.facebook.com/v2.11')))
             ->setHeaders([
@@ -285,13 +282,6 @@ final class FacebookaudienceGetAudiencesConnectorTest extends ConnectorTestCaseA
         /** @var MockObject|FacebookaudienceSystem $system */
         $system = $this->createMock(FacebookaudienceSystem::class);
         $system->method('getRequestDto')->willReturn($requestDto);
-
-        if ($save) {
-            $system
-                ->expects($this->at(0))
-                ->method('setSettings')
-                ->willReturn(new SystemInstall());
-        }
 
         return $system;
     }

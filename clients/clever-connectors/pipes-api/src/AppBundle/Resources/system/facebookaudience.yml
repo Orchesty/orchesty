@@ -30,15 +30,6 @@ services:
         calls:
             - ['setLogger', ['@monolog.logger.notification']]
 
-    hbpf.connector.facebookaudience-get-audiences-connector:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceGetAudiencesConnector
-        arguments:
-            - '@systems.facebookaudience'
-            - '@doctrine_mongodb.odm.default_document_manager'
-            - '@hbpf.transport.curl_manager'
-        calls:
-            - ['setLogger', ['@monolog.logger.notification']]
-
     hbpf.custom_node.facebookaudience-get-subscribers-filter:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Filter\FacebookaudienceGetSubscribersFilter
         arguments:
@@ -54,6 +45,15 @@ services:
         arguments:
 
     # socMultChann conns
+    hbpf.connector.facebookaudience-get-audiences-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceGetAudiencesConnector
+        arguments:
+            - '@systems.facebookaudience'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
+
     hbpf.connector.facebookaudience-upload-image-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceImageUploadConnector
         arguments:

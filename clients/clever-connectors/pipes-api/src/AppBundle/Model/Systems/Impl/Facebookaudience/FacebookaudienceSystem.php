@@ -25,6 +25,7 @@ use DateTime;
 use DateTimeZone;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
@@ -314,13 +315,14 @@ class FacebookaudienceSystem implements OAuth2Interface
      * @return array
      * @throws CleverConnectorsException
      * @throws SystemException
+     * @throws CurlException
      */
     public function getAudiences(SystemInstall $systemInstall, array $data): array
     {
         /** @var FacebookaudienceGetAudiencesConnector $connector */
         $connector = $this->container->get('hbpf.connector.facebookaudience-get-audiences-connector');
 
-        return $connector->getAudiences($systemInstall, $data);
+        return $connector->getAudiences($systemInstall);
     }
 
     /**
