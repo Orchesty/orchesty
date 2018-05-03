@@ -23,7 +23,8 @@
     "react/child-process": "^0.5",
     "ruflin/elastica": "^6.0",
     "symfony/serializer": "^4.0",
-    "symfony/translation": "^4.0"
+    "symfony/translation": "^4.0",
+    "ocramius/proxy-manager": "^2.2"
   },
   "require-dev": {
     "hanaboso/php-check-utils": "^1.0",
