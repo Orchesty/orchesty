@@ -54,6 +54,15 @@ services:
         calls:
             - ['setLogger', ['@monolog.logger.notification']]
 
+    hbpf.connector.facebookaudience-get-pages-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceGetPagesConnector
+        arguments:
+            - '@systems.facebookaudience'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
+
     hbpf.connector.facebookaudience-upload-image-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceImageUploadConnector
         arguments:

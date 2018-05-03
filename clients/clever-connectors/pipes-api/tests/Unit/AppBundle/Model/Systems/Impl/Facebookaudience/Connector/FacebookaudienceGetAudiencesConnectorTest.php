@@ -47,10 +47,8 @@ final class FacebookaudienceGetAudiencesConnectorTest extends ConnectorTestCaseA
         $result = json_decode($this->getConnectorMock($systemInstall, TRUE)->processAction($dto)->getData(), TRUE);
 
         $this->assertEquals([
-            'data' => [
-                ['id' => '123', 'name' => 'name1'],
-                ['id' => '456', 'name' => 'name2'],
-            ],
+            '123' => 'name1',
+            '456' => 'name2',
         ], $result);
     }
 
@@ -105,7 +103,7 @@ final class FacebookaudienceGetAudiencesConnectorTest extends ConnectorTestCaseA
 
         $systemInstall = new SystemInstall();
         $systemInstall->setSettings([
-            OAuth2Provider::ACCESS_TOKEN       => 'access-token-123',
+            OAuth2Provider::ACCESS_TOKEN => 'access-token-123',
         ]);
 
         $this->expectException(CleverConnectorsException::class);
@@ -229,7 +227,7 @@ final class FacebookaudienceGetAudiencesConnectorTest extends ConnectorTestCaseA
                 ->method('send')
                 ->will($this->returnCallback(function (RequestDto $dto, array $options = []) {
                     $this->assertEquals(
-                        new Uri('https://graph.facebook.com/v2.11/act_ad-account-123/customaudiences?fields=name&access_token=access-token-123'),
+                        new Uri('https://graph.facebook.com/v2.12/act_ad-account-123/customaudiences?fields=name&access_token=access-token-123'),
                         $dto->getUri()
                     );
 
@@ -273,7 +271,7 @@ final class FacebookaudienceGetAudiencesConnectorTest extends ConnectorTestCaseA
      */
     private function getSystemMock()
     {
-        $requestDto = (new RequestDto('POST', new Uri('https://graph.facebook.com/v2.11')))
+        $requestDto = (new RequestDto('POST', new Uri('https://graph.facebook.com/v2.12')))
             ->setHeaders([
                 'Content-Type' => 'application/json',
                 'Accept'       => 'application/json',
