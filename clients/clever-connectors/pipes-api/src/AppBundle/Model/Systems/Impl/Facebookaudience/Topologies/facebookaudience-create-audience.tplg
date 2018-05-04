@@ -4,12 +4,7 @@
     <bpmn:event id="Event_15ks7z0" pipes:pipesType="signal" name="signal-event">
       <bpmn:outgoing>SequenceFlow_11ibyn0</bpmn:outgoing>
     </bpmn:event>
-    <bpmn:task id="Task_1qrehdg" pipes:pipesType="connector" name="facebook-get-cmsubscribers-connector">
-      <bpmn:incoming>SequenceFlow_11ibyn0</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_0y1g9nt</bpmn:outgoing>
-    </bpmn:task>
-    <bpmn:sequenceFlow id="SequenceFlow_11ibyn0" sourceRef="Event_15ks7z0" targetRef="Task_1qrehdg" />
-    <bpmn:sequenceFlow id="SequenceFlow_0y1g9nt" sourceRef="Task_1qrehdg" targetRef="Task_0cy0vou" />
+    <bpmn:sequenceFlow id="SequenceFlow_11ibyn0" sourceRef="Event_15ks7z0" targetRef="Task_0gigfdm" />
     <bpmn:task id="Task_1rb0o82" pipes:pipesType="connector" name="facebookaudience-update-audience-connector">
       <bpmn:incoming>SequenceFlow_1ypo57m</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0ae1uqs</bpmn:outgoing>
@@ -20,7 +15,7 @@
     </bpmn:task>
     <bpmn:sequenceFlow id="SequenceFlow_1ypo57m" sourceRef="Task_0ohs8m1" targetRef="Task_1rb0o82" />
     <bpmn:task id="Task_0cy0vou" pipes:pipesType="custom" name="socialmultichannel-get-mirror">
-      <bpmn:incoming>SequenceFlow_0y1g9nt</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_0csoauj</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0mcx8jw</bpmn:outgoing>
     </bpmn:task>
     <bpmn:sequenceFlow id="SequenceFlow_0mcx8jw" sourceRef="Task_0cy0vou" targetRef="Task_0ohs8m1" />
@@ -33,6 +28,11 @@
       <bpmn:incoming>SequenceFlow_0buhkag</bpmn:incoming>
     </bpmn:task>
     <bpmn:sequenceFlow id="SequenceFlow_0buhkag" sourceRef="Task_15t1eyl" targetRef="Task_1b8ko6f" />
+    <bpmn:task id="Task_0gigfdm" pipes:pipesType="batch_connector" name="facebook-get-cmsubscribers-connector">
+      <bpmn:incoming>SequenceFlow_11ibyn0</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0csoauj</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="SequenceFlow_0csoauj" sourceRef="Task_0gigfdm" targetRef="Task_0cy0vou" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1">
@@ -42,21 +42,11 @@
           <dc:Bounds x="390" y="437" width="62" height="12" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_1qrehdg_di" bpmnElement="Task_1qrehdg">
-        <dc:Bounds x="511" y="375" width="100" height="80" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_11ibyn0_di" bpmnElement="SequenceFlow_11ibyn0">
         <di:waypoint xsi:type="dc:Point" x="439" y="415" />
-        <di:waypoint xsi:type="dc:Point" x="511" y="415" />
+        <di:waypoint xsi:type="dc:Point" x="510" y="415" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="475" y="394" width="0" height="12" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="SequenceFlow_0y1g9nt_di" bpmnElement="SequenceFlow_0y1g9nt">
-        <di:waypoint xsi:type="dc:Point" x="611" y="415" />
-        <di:waypoint xsi:type="dc:Point" x="677" y="415" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="644" y="394" width="0" height="12" />
+          <dc:Bounds x="429.5" y="394" width="90" height="12" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Task_1rb0o82_di" bpmnElement="Task_1rb0o82">
@@ -100,6 +90,16 @@
         <di:waypoint xsi:type="dc:Point" x="1317" y="415" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1291.5" y="394" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Task_0gigfdm_di" bpmnElement="Task_0gigfdm">
+        <dc:Bounds x="510" y="375" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0csoauj_di" bpmnElement="SequenceFlow_0csoauj">
+        <di:waypoint xsi:type="dc:Point" x="610" y="415" />
+        <di:waypoint xsi:type="dc:Point" x="677" y="415" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="643.5" y="394" width="0" height="12" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>

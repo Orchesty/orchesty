@@ -14,7 +14,7 @@ use GuzzleHttp\Psr7\Request;
 final class PipesSender
 {
 
-    private const CREATE_AD_URL = '%s/system/%s/user/%s/action/createAd';
+    private const CREATE_AD_URL = '%s/system/%s/user/%s/action/createAudience';
     private const DELETE_AD_URL = '%s/system/%s/user/%s/action/deleteAd';
 
     /**
@@ -35,7 +35,7 @@ final class PipesSender
      */
     public function __construct(string $backend, CurlSender $curl)
     {
-        $this->curl = $curl;
+        $this->curl    = $curl;
         $this->backend = rtrim($backend, '/');
     }
 

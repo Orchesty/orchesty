@@ -50,7 +50,7 @@ class AdFacade
 
         $module = $this->loader->loadModule(AdTypeEnum::isValid($type));
         //TODO Where to conjure up userId ??
-        $ad = $module->createAd($data, '123', $audience->getClientId());
+        $ad = $module->createAd($data, 'cli', $audience->getClientId());
 
         $ad->setAudience($audience)
             ->setClientId($audience->getClientId());
@@ -79,7 +79,7 @@ class AdFacade
     {
         $module = $this->loader->loadModule(AdTypeEnum::isValid($ad->getAdType()));
         //TODO Where to conjure up userId ??
-        $module->deleteAd($ad, '123');
+        $module->deleteAd($ad, 'cli');
     }
 
     /**

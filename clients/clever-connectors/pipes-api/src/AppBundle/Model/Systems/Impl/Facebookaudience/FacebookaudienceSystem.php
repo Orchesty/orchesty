@@ -4,6 +4,7 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience;
 
 use CleverConnectors\AppBundle\Document\AudienceMirror;
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Enum\AdTypeEnum;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CustomNode\Comparator;
@@ -13,6 +14,7 @@ use CleverConnectors\AppBundle\Model\Limits\SystemLimitDto;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth2Interface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceDeleteAudienceConnector;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceGetAdBudgetConnector;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceGetAudiencesConnector;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceGetPagesConnector;
@@ -26,6 +28,9 @@ use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use DateTime;
 use DateTimeZone;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentNotFoundException;
+use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
@@ -99,15 +104,21 @@ class FacebookaudienceSystem implements OAuth2Interface
     private $budgetConnector;
 
     /**
+     * @var FacebookaudienceDeleteAudienceConnector
+     */
+    private $deleteAudienceConnector;
+
+    /**
      * SalesforceSystem constructor.
      *
-     * @param OAuth2Provider                        $provider
-     * @param string                                $backend
-     * @param SystemTopologyRunner                  $runner
-     * @param DocumentManager                       $dm
-     * @param FacebookaudienceGetAudiencesConnector $audienceConnector
-     * @param FacebookaudienceGetPagesConnector     $pageConnector
-     * @param FacebookaudienceGetAdBudgetConnector  $budgetConnector
+     * @param OAuth2Provider                          $provider
+     * @param string                                  $backend
+     * @param SystemTopologyRunner                    $runner
+     * @param DocumentManager                         $dm
+     * @param FacebookaudienceGetAudiencesConnector   $audienceConnector
+     * @param FacebookaudienceGetPagesConnector       $pageConnector
+     * @param FacebookaudienceGetAdBudgetConnector    $budgetConnector
+     * @param FacebookaudienceDeleteAudienceConnector $deleteAudienceConnector
      */
     public function __construct(
         OAuth2Provider $provider,
@@ -116,16 +127,18 @@ class FacebookaudienceSystem implements OAuth2Interface
         DocumentManager $dm,
         FacebookaudienceGetAudiencesConnector $audienceConnector,
         FacebookaudienceGetPagesConnector $pageConnector,
-        FacebookaudienceGetAdBudgetConnector $budgetConnector
+        FacebookaudienceGetAdBudgetConnector $budgetConnector,
+        FacebookaudienceDeleteAudienceConnector $deleteAudienceConnector
     )
     {
-        $this->provider          = $provider;
-        $this->backend           = $backend;
-        $this->runner            = $runner;
-        $this->dm                = $dm;
-        $this->audienceConnector = $audienceConnector;
-        $this->pageConnector     = $pageConnector;
-        $this->budgetConnector   = $budgetConnector;
+        $this->provider                = $provider;
+        $this->backend                 = $backend;
+        $this->runner                  = $runner;
+        $this->dm                      = $dm;
+        $this->audienceConnector       = $audienceConnector;
+        $this->pageConnector           = $pageConnector;
+        $this->budgetConnector         = $budgetConnector;
+        $this->deleteAudienceConnector = $deleteAudienceConnector;
     }
 
     /**
@@ -263,6 +276,7 @@ class FacebookaudienceSystem implements OAuth2Interface
      * @param SystemInstall $systemInstall
      *
      * @return array
+     * @throws CleverConnectorsException
      */
     public function getSettingFields(SystemInstall $systemInstall): array
     {
@@ -270,43 +284,13 @@ class FacebookaudienceSystem implements OAuth2Interface
             Field::SELECT,
             self::AD_ACCOUNT,
             'Select FB account',
-            $systemInstall->getSettings()[self::AD_ACCOUNT] ?? '',
+            $this->prepareValue(self::AD_ACCOUNT, $systemInstall->getSettings()),
             TRUE
         );
         $field1->setAction($systemInstall, $this->backend, 'getAccounts');
 
-        $field2 = new Field(
-            Field::SELECT,
-            self::CUSTOM_AUDIENCE,
-            'Select your distribution list in FB',
-            $systemInstall->getSettings()[self::CUSTOM_AUDIENCE] ?? '',
-            TRUE
-        );
-        $field2->setAction($systemInstall, $this->backend, 'getAudiences');
-        $field2->setDependsOn($field1);
-
-        $field3 = new Field(
-            Field::TEXT,
-            self::NEW_LIST,
-            'Create new list',
-            $systemInstall->getSettings()[self::NEW_LIST] ?? ''
-        );
-        $field3->setDependsOn($field2);
-
-        $field4 = new Field(
-            Field::SELECT,
-            SystemInstall::DISTRIBUTION_LIST,
-            'Select source distribution list',
-            $systemInstall->getSettings()[SystemInstall::DISTRIBUTION_LIST] ?? '',
-            TRUE
-        ); // filled by CM
-
         $form = new Form();
-        $form
-            ->addField($field1)
-            ->addField($field2)
-            ->addField($field3)
-            ->addField($field4);
+        $form->addField($field1);
 
         return $form->toArray();
     }
@@ -399,10 +383,38 @@ class FacebookaudienceSystem implements OAuth2Interface
      * @param array         $data
      *
      * @return array
+     * @throws CurlException
+     * @throws SystemException
+     * @throws MappingException
+     * @throws LockException
      */
     public function deleteAd(SystemInstall $systemInstall, array $data): array
     {
-        //TODO
+        $mirr = NULL;
+        /** @var AudienceMirrorRepository $repo */
+        $repo = $this->dm->getRepository(AudienceMirror::class);
+        if (array_key_exists('mirror_id', $data) // Received by AdFacade -> deleteAd
+            && array_key_exists('ad_id', $data)
+        ) {
+            /** @var AudienceMirror $mirr */
+            $mirr = $repo->find($data['mirror_id']);
+            $mirr->removeAdId($data['ad_id']);
+            if (!empty($mirr->getAdsId())) {
+                $mirr = NULL;
+            }
+            $this->dm->flush();
+        } else if (array_key_exists('audience_id', $data)) { // Received by AudienceFacade -> deleteAudience
+            $mirr = $repo->getByAudience($data['audience_id'], AdTypeEnum::FB);
+        }
+
+        if ($mirr) {
+            return [
+                $this->deleteAudienceConnector->deleteAudience(
+                    $systemInstall,
+                    $mirr->getSystemAudienceId(),
+                    $mirr->getId()),
+            ];
+        }
 
         return [];
     }
@@ -443,7 +455,7 @@ class FacebookaudienceSystem implements OAuth2Interface
         $repo = $this->dm->getRepository(AudienceMirror::class);
         /** @var AudienceMirror $mirr */
         $mirr = $repo->getByAudience($data['audience']['id'] ?? '', $data['type']);
-        if (!$mirr) {
+        if ($mirr) {
             $data['audience_id'] = $mirr->getSystemAudienceId();
             $data['mirror_id']   = $mirr->getId();
             unset($data['audience']);
@@ -489,6 +501,7 @@ class FacebookaudienceSystem implements OAuth2Interface
      *
      * @return array
      * @throws CleverConnectorsException
+     * @throws DocumentNotFoundException
      */
     public function addEmails(SystemInstall $systemInstall, array $data): array
     {
@@ -503,6 +516,7 @@ class FacebookaudienceSystem implements OAuth2Interface
      *
      * @return array
      * @throws CleverConnectorsException
+     * @throws DocumentNotFoundException
      */
     public function removeEmails(SystemInstall $systemInstall, array $data): array
     {
@@ -536,6 +550,7 @@ class FacebookaudienceSystem implements OAuth2Interface
      * @param string        $key
      *
      * @throws CleverConnectorsException
+     * @throws DocumentNotFoundException
      */
     private function updateAudience(SystemInstall $systemInstall, array $data, string $key): void
     {
@@ -552,9 +567,22 @@ class FacebookaudienceSystem implements OAuth2Interface
             $emls[] = hash('sha256', $email);
         }
 
+        /** @var AudienceMirrorRepository $repo */
+        $repo = $this->dm->getRepository(AudienceMirror::class);
+        $mirr = $repo->getByAudience($data['audience_id'], AdTypeEnum::FB);
+        if (!$mirr) {
+            throw new DocumentNotFoundException(
+                sprintf('Mirror for audience with id [%s] was not found.', $data['audience_id'])
+            );
+        }
+
         $body       = [
             Comparator::KEY_PASS_DATA => [
-                'audience_id' => $data['audience_id'],
+                'audience_id' => $mirr->getSystemAudienceId(),
+                'audience'    => [
+                    'id' => $data['audience_id'],
+                ],
+                'type'        => AdTypeEnum::FB,
             ],
             'create'                  => [],
             'delete'                  => [],

@@ -58,6 +58,7 @@ class SocialMultichannelGetMirrorConnector implements CustomNodeInterface
 
         $data[Comparator::KEY_DESTINATION]              = $mirr->getSubscribers();
         $data[Comparator::KEY_PASS_DATA]['audience_id'] = $mirr->getSystemAudienceId();
+        $data[Comparator::KEY_PASS_DATA]['mirror_id']   = $mirr->getId();
 
         return $dto->setData(json_encode($data));
     }

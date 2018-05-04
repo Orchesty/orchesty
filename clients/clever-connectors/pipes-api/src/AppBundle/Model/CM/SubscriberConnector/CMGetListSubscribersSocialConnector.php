@@ -63,21 +63,18 @@ class CMGetListSubscribersSocialConnector extends CMGetSubscribersConnectorAbstr
         $this->passData = $data;
         $subs           = [];
 
-        if (array_key_exists('distribution_list', $data)) { // TODO other sources
-            $this->list = $data['distribution_list'];
+        if (array_key_exists('distribution_list', $data['audience'])) {
+            $this->list = $data['audience']['distribution_list'];
 
             $processId = CMHeaders::get(CMHeaders::PROCESS_ID, $dto->getHeaders()) ?? '';
             $req       = new RequestDto(CurlManager::METHOD_GET, new Uri($this->getUrl(0)));
             $req->setHeaders($this->getAuthorizationHeaders($user, $token));
 
-            $promise = $this->getPageSubs($sender, $callbackItem, $req, 1, $dto, $subs, $processId);
-        } else {
-            // Delete complete audience
-            $this->createSuccessMessage($dto, $subs);
-            $promise = resolve();
+            return $promise = $this->getPageSubs($sender, $callbackItem, $req, 1, $dto, $subs, $processId);
         }
+        // TODO other sources (segment, ..?)
 
-        return $promise;
+        return resolve();
     }
 
     /**

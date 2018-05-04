@@ -12,6 +12,7 @@ services:
             - '@hbpf.connector.facebookaudience-get-audiences-connector'
             - '@hbpf.connector.facebookaudience-get-pages-connector'
             - '@hbpf.connector.facebookaudience-get-adbudget-connector'
+            - '@hbpf.connector.facebookaudience-delete-audience-connector'
         tags: ['%systems%']
 
     hbpf.connector.facebookaudience-create-subscribers-connector:
@@ -131,6 +132,16 @@ services:
             - '@hbpf.transport.curl_manager'
         calls:
             - ['setLogger', ['@monolog.logger.notification']]
+
+    hbpf.connector.facebookaudience-delete-audience-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceDeleteAudienceConnector
+        arguments:
+            - '@systems.facebookaudience'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
+        lazy: true
 
     hbpf.connector.facebook-get-cmsubscribers-connector:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceGetCMListSubscribers

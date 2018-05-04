@@ -73,10 +73,10 @@ class FacebookaudienceRunCreateAdActionConnector implements CustomNodeInterface,
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        if (CMHeaders::get('createAd', $dto->getHeaders())) {
+        if (CMHeaders::get('createad', $dto->getHeaders())) {
             $data = json_decode($dto->getData(), TRUE);
             $req  = new RequestDto(CurlManager::METHOD_POST, new Uri(sprintf(
-                $this->backend . self::URL, $data['user_id']
+                $this->backend . self::URL, $data['client_id']
             )));
             $req->setHeaders([
                 'Accept'       => 'application/json',

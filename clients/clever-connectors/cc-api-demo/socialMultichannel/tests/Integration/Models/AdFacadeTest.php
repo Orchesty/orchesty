@@ -92,7 +92,7 @@ final class AdFacadeTest extends DatabaseTestCaseAbstract
         $curl->expects($this->at(0))
             ->method('send')->willReturnCallback(
                 function (Request $req): ResponseInterface {
-                    self::assertEquals('http://backend/system/fc/user/123/action/createAd', $req->getUri());
+                    self::assertEquals('http://backend/system/fc/user/cli/action/createAudience', $req->getUri());
                     self::assertEquals([
                         'id'                 => '1',
                         'name'               => 'Nae',
@@ -117,9 +117,10 @@ final class AdFacadeTest extends DatabaseTestCaseAbstract
         $curl->expects($this->at(1))
             ->method('send')->willReturnCallback(
                 function (Request $req): ResponseInterface {
-                    self::assertEquals('http://backend/system/fc/user/123/action/deleteAd', $req->getUri());
+                    self::assertEquals('http://backend/system/fc/user/cli/action/deleteAd', $req->getUri());
                     self::assertEquals([
                         'mirror_id' => '',
+                        'ad_id'     => '1',
                     ], json_decode($req->getBody()->getContents(), TRUE));
 
                     return new Response();
