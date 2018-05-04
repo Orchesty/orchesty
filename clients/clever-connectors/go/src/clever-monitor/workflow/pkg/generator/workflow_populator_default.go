@@ -1,6 +1,9 @@
 package generator
 
-import ws "clever-monitor/workflow/pkg/workflowservice/clevermonitor/analytics/protos/workflow"
+import (
+	ws "clever-monitor/workflow/pkg/workflowservice/clevermonitor/analytics/protos/workflow"
+	"time"
+)
 
 // populateDefault fills default workflow config settings that are common for multiple different config types
 func populateDefault(cc *composedConfig, all []*composedConfig) error {
@@ -9,6 +12,7 @@ func populateDefault(cc *composedConfig, all []*composedConfig) error {
 	cc.wfc.Filter = &ws.WorkflowConfig_Filter{}
 	cc.wfc.Filter.InSegments = trigger.ec.Settings.Trigger.Segments
 	cc.wfc.Filter.InLists = trigger.ec.Settings.Trigger.Lists
+	cc.wfc.Filter.Priority = int32(time.Now().Unix())
 
 	return populateDefaultSteps(cc, all)
 }

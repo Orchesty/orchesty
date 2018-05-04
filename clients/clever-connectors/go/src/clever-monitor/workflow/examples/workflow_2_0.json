@@ -1,1 +1,0 @@
-{"id":"5aeb6da59226885fcb4aa468","clientId":555,"clientGuid":"guid","filter":{},"steps":[{"stepId":"id2","conditions":[],"channels":{"notify":{"aim":true}},"nextFlow":{"id":"5aeb6da59226885fcb4aa469"}}],"editorItemId":"id2"}
