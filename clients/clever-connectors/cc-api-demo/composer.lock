@@ -1,7 +1,7 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
     "content-hash": "4552d9631c1935916687c7b63e84cf35",
@@ -319,11 +319,11 @@
         },
         {
             "name": "clever-monitor/stream-extension",
-            "version": "1.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "ssh://git@gitlab.clevermonitor.com/hanaboso/stream-extension.git",
-                "reference": "d2926f0b856ef7fe2f4dc7a2c847399bc5095c6b"
+                "reference": "9f38540c8116878b38739a42f6876696940beba9"
             },
             "require": {
                 "guzzlehttp/guzzle": "^6.3",
@@ -348,7 +348,7 @@
                 "proprietary"
             ],
             "description": "Stream interface for Clever Monitor.",
-            "time": "2018-05-03T11:34:55+00:00"
+            "time": "2018-05-04T11:07:33+00:00"
         },
         {
             "name": "cleverapp/enum",
