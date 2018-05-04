@@ -471,7 +471,9 @@ services:
         image: dkr.hanaboso.net/hanaboso/spitter/image:dev
         ports:
             - ${DEV_IP}:8090:80
-        restart: always
+        ## BEGIN STAGE
+        #restart: always
+        ## END STAGE
         environment:
             - NODE_ENV=dev
             - SPITTER_HOST=0.0.0.0
