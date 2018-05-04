@@ -1,1 +1,1 @@
-{"id":"5aeb6da59226885fcb4aa468","clientId":555,"clientGuid":"guid","filter":{},"steps":[{"stepId":"id2","conditions":[],"channels":{"notify":{"aim":true}},"nextFlow":{"id":"5aeb6da59226885fcb4aa469"}}],"editorItemId":"id2"}
+{"id":"5aec4eba92268817ed16de9e","clientId":555,"clientGuid":"guid","filter":{"priority":1525436090},"steps":[{"stepId":"id2","conditions":[],"channels":{"notify":{"aim":true}},"nextFlow":{"id":"5aec4eba92268817ed16de9f"}}],"editorItemId":"id2"}

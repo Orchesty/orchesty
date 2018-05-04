@@ -32,11 +32,11 @@
       "type": "CONDITION",
       "settings": {
         "condition": {
-          "type": "and",
+          "type": "AND",
           "conditions": [
             {
-              "field": "x",
-              "operator": "e",
+              "field": "name",
+              "operator": "eq",
               "value": "10"
             }
           ]
@@ -46,17 +46,17 @@
     {
       "id": "id4",
       "parentId": "id3",
-      "type": "CONDITION_BRANCH",
+      "type": "CONDITION_BRANCH_YES",
       "settings": {
-        "conditionBranch": {}
+        "conditionBranchYes": {}
       }
     },
     {
       "id": "id5",
       "parentId": "id3",
-      "type": "CONDITION_BRANCH",
+      "type": "CONDITION_BRANCH_NO",
       "settings": {
-        "conditionBranch": {}
+        "conditionBranchNo": {}
       }
     },
     {

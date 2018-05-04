@@ -7,17 +7,18 @@ import (
 )
 
 const (
-	typeCondition       = "CONDITION"
-	typeConditionBranch = "CONDITION_BRANCH"
-	typeDistribute      = "DISTRIBUTE"
-	typeEmail           = "EMAIL"
-	typeEmpty           = "EMPTY"
-	typeEnd             = "END"
-	typeJoinDst         = "JOIN_DST"
-	typeJoinSrc         = "JOIN_SRC"
-	typeNotify          = "NOTIFY"
-	typeTrigger         = "TRIGGER"
-	typeWait            = "WAIT"
+	typeCondition          = "CONDITION"
+	typeConditionBranchYes = "CONDITION_BRANCH_YES"
+	typeConditionBranchNo  = "CONDITION_BRANCH_NO"
+	typeDistribute         = "DISTRIBUTE"
+	typeEmail              = "EMAIL"
+	typeEmpty              = "EMPTY"
+	typeEnd                = "END"
+	typeJoinDst            = "JOIN_DST"
+	typeJoinSrc            = "JOIN_SRC"
+	typeNotify             = "NOTIFY"
+	typeTrigger            = "TRIGGER"
+	typeWait               = "WAIT"
 )
 
 type composedConfig struct {
@@ -97,9 +98,12 @@ func populateSpecifics(cc *composedConfig, all []*composedConfig) error {
 	switch cc.ec.Type {
 	case typeCondition:
 		return populateCondition(cc, all)
-	case typeConditionBranch:
+	case typeConditionBranchYes:
 		cc.skip = true // treat specifically byt do not include to output
-		return populateConditionBranch(cc, all)
+		return populateConditionBranch(true, cc, all)
+	case typeConditionBranchNo:
+		cc.skip = true // treat specifically byt do not include to output
+		return populateConditionBranch(false, cc, all)
 	case typeDistribute:
 		return populateDefault(cc, all)
 	case typeEmail:

@@ -1,1 +1,1 @@
-{"id":"5aeb6da59226885fcb4aa472","clientId":555,"clientGuid":"guid","filter":{"inSegments":["some segment","another segment"],"inLists":[]},"steps":[{"stepId":"2","conditions":[],"nextFlow":{"id":"5aeb6da59226885fcb4aa473"},"wait":{"duration":3600}}],"editorItemId":"2"}
+{"id":"5aec4eba92268817ed16dea8","clientId":555,"clientGuid":"guid","filter":{"inSegments":["some segment","another segment"],"inLists":[],"priority":1525436090},"steps":[{"stepId":"2","conditions":[],"nextFlow":{"id":"5aec4eba92268817ed16dea9"},"wait":{"duration":3600}}],"editorItemId":"2"}

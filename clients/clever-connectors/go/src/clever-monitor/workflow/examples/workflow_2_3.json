@@ -1,1 +1,1 @@
-{"id":"5aeb6da59226885fcb4aa46d","clientId":555,"clientGuid":"guid","filter":{},"steps":[{"stepId":"id7","conditions":[],"channels":{"notify":{"email":true,"aim":true}}}],"editorItemId":"id7"}
+{"id":"5aec4eba92268817ed16dea3","clientId":555,"clientGuid":"guid","filter":{"priority":1525436090},"steps":[{"stepId":"id7","conditions":[],"channels":{"notify":{"email":true,"aim":true}}}],"editorItemId":"id7"}
