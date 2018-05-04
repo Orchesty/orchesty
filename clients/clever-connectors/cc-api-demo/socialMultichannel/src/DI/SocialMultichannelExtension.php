@@ -63,7 +63,7 @@ class SocialMultichannelExtension extends CompilerExtension
         $builder = $this->getContainerBuilder();
 
         $builder
-            ->getDefinition('doctrine.default.metadataDriver')
+            ->getDefinition('doctrine.app.metadataDriver')
             ->addSetup('addDriver', [
                 $builder
                     ->addDefinition($this->prefix('entities'))
@@ -75,7 +75,7 @@ class SocialMultichannelExtension extends CompilerExtension
                 mb_substr(__NAMESPACE__, 0, -3),
             ]);
 
-        $connection = $builder->getDefinition('doctrine.default.connection');
+        $connection = $builder->getDefinition('doctrine.app.connection');
         $setup      = $connection->getSetup();
 
         $setup[0]->arguments[0]['AdTypeEnum'] = 'AdTypeEnum';

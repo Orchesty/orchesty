@@ -26,6 +26,9 @@ cc_api:
 	base_uri: ::getenv('BASE_URI')
 	cert: %appDir%/../cert/stage-staff.pem
 
+stream:
+	base_uri: %stream.host%
+
 application:
 	errorPresenter: Error
 	mapping:
@@ -38,13 +41,6 @@ session:
 services:
 	router: App\Router\RouterFactory::createRouter
 	authenticator:  \App\Model\NullAuthenticator
-
-	# STREAM EXTENSION
-	guzzle_client_factory:
-		class: CmStream\GuzzleClientFactory(%stream.host%)
-
-	subscriber:
-		class: CmStream\Subscriber
 
 	# BASE
 	login_form_factory:
@@ -103,10 +99,18 @@ mongo:  # No longer required?
 		- %appDir%/../socialMultichannel/src/Documents
 
 doctrine:
-	host: mariadb
-	user: root
-	password: root
-	dbname: cm-apidemo
+	static:
+		app: []
+	dynamic:
+		app:
+			source:
+				class: App\Doctrine\ConnectionProvider
+				staticSchemaName: app
+			defaults:
+				host: mariadb
+				user: root
+				password: root
+				dbname: cm-apidemo
 
 console:
 	name: 'API DEMO'
@@ -114,6 +118,7 @@ console:
 
 extensions:
 	cc_api: CcApi\Bridges\DI\CcApiExtension
+	stream: CmStream\Bridges\DI\StreamExtension
 	- WebChemistry\Forms\Controls\DI\MultiplierExtension
 	commons: CleverCore\Commons\DI\CommonsExtension
 	social_multichannel: CleverCore\SocialMultichannel\DI\SocialMultichannelExtension
@@ -126,7 +131,7 @@ extensions:
 	console: 'Kdyby\Console\DI\ConsoleExtension'
 	events: 'Kdyby\Events\DI\EventsExtension'
 	annotations: 'Kdyby\Annotations\DI\AnnotationsExtension'
-	doctrine: 'Kdyby\Doctrine\DI\OrmExtension'
+	doctrine: CleverExtensions\Doctrine\DI\Extension
 	apiRouter: Ublaboo\ApiRouter\DI\ApiRouterExtension
 
 apiRouter:
