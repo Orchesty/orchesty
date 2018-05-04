@@ -69,13 +69,19 @@ class FacebookaudienceUpdateAdstateConnector extends FacebookaudienceConnectorAb
             new Uri(sprintf($this->aimUrl . self::URL, $data['client_id'], $data['id']))
         );
         $req->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
+
+        $body = [
+            'status' => $data['status'] ?? 'PENDING_REVIEW',
+            'ref_id' => $data['ref_id'],
+        ];
+        if (array_key_exists('mirror_id', $data)) {
+            $body['mirror_id'] = $data['mirror_id'];
+        }
+
         $req->setHeaders([
             'Content-Type' => 'application/json',
             'Accept'       => 'application/json',
-        ])->setBody(json_encode([
-            'status' => $data['status'] ?? 'PENDING_REVIEW',
-            'ref_id' => $data['ref_id'],
-        ]));
+        ])->setBody(json_encode($body));
 
         try {
             $this->manager->send($req);

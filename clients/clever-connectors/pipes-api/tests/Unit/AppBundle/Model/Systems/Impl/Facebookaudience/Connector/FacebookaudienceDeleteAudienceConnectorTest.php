@@ -3,7 +3,7 @@
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Facebookaudience\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceGetPagesConnector;
+use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceDeleteAudienceConnector;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\FacebookaudienceSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -14,70 +14,65 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
-use Nette\Utils\Json;
 use PHPUnit\Framework\MockObject\MockObject;
 use Tests\ConnectorTestCaseAbstract;
 
 /**
- * Class FacebookaudienceGetPagesConnectorTest
+ * Class FacebookaudienceDeleteAudienceConnectorTest
  *
  * @package Tests\Unit\AppBundle\Model\Systems\Impl\Facebookaudience\Connector
  */
-final class FacebookaudienceGetPagesConnectorTest extends ConnectorTestCaseAbstract
+final class FacebookaudienceDeleteAudienceConnectorTest extends ConnectorTestCaseAbstract
 {
 
     /**
-     * @covers FacebookaudienceGetPagesConnector::processAction()
+     * @covers FacebookaudienceDeleteAudienceConnector::processAction()
      *
      * @throws Exception
      */
     public function testProcessAction(): void
     {
-        $dto = (new ProcessDto())->setHeaders([]);
+        $dto = (new ProcessDto())->setHeaders([])
+            ->setData('{"ref_id":"audienceId"}');
 
         $systemInstall = new SystemInstall();
         $systemInstall->setSettings([
-            OAuth2Provider::ACCESS_TOKEN       => 'access-token-123',
-            FacebookaudienceSystem::AD_ACCOUNT => 'ad-account-123',
+            OAuth2Provider::ACCESS_TOKEN => 'access-token-123',
         ]);
 
         $result = json_decode($this->getConnectorMock($systemInstall, TRUE)->processAction($dto)->getData(), TRUE);
 
         $this->assertEquals([
-            '123' => 'name1',
-            '456' => 'name2',
+            'ref_id' => 'audienceId',
         ], $result);
     }
 
     /**
-     * @covers FacebookaudienceGetPagesConnector::getPages()
+     * @covers FacebookaudienceDeleteAudienceConnector::deleteAudience()
      *
      * @throws Exception
      */
-    public function testGetPages(): void
+    public function testDeleteAudience(): void
     {
         $systemInstall = new SystemInstall();
         $systemInstall->setSettings([
-            OAuth2Provider::ACCESS_TOKEN       => 'access-token-123',
-            FacebookaudienceSystem::AD_ACCOUNT => 'ad-account-123',
+            OAuth2Provider::ACCESS_TOKEN => 'access-token-123',
         ]);
 
-        $result = $this->getConnectorMock($systemInstall)->getPages($systemInstall);
+        $result = $this->getConnectorMock($systemInstall)->deleteAudience($systemInstall, 'audienceId', '123');
 
-        $this->assertEquals([
-            '123' => 'name1',
-            '456' => 'name2',
-        ], $result);
+        self::assertTrue($result);
     }
 
     /**
      * @param SystemInstall $systemInstall
      * @param bool          $send
      *
-     * @return FacebookaudienceGetPagesConnector
+     * @return FacebookaudienceDeleteAudienceConnector
      * @throws Exception
      */
-    private function getConnectorMock(SystemInstall $systemInstall, $send = TRUE): FacebookaudienceGetPagesConnector
+    private function getConnectorMock(SystemInstall $systemInstall,
+                                      $send = TRUE): FacebookaudienceDeleteAudienceConnector
     {
         /** @var CurlManagerInterface|MockObject $curlManager */
         $curlManager = $this->createMock(CurlManagerInterface::class);
@@ -88,20 +83,15 @@ final class FacebookaudienceGetPagesConnectorTest extends ConnectorTestCaseAbstr
                 ->method('send')
                 ->will($this->returnCallback(function (RequestDto $dto, array $options = []) {
                     $this->assertEquals(
-                        new Uri('https://graph.facebook.com/v2.12/me/accounts?type=page&access_token=access-token-123'),
+                        new Uri('https://graph.facebook.com/v2.12/audienceId?access_token=access-token-123'),
                         $dto->getUri()
                     );
 
-                    return new ResponseDto(200, 'OK', Json::encode([
-                        'data' => [
-                            ['id' => '123', 'name' => 'name1'],
-                            ['id' => '456', 'name' => 'name2'],
-                        ],
-                    ]), []);
+                    return new ResponseDto(200, 'OK', '', []);
                 }));
         }
 
-        return new FacebookaudienceGetPagesConnector(
+        return new FacebookaudienceDeleteAudienceConnector(
             $this->getSystemMock(),
             $this->getDmMock($systemInstall),
             $curlManager

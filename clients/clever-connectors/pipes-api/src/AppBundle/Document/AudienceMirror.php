@@ -13,7 +13,6 @@ use Hanaboso\CommonsBundle\Exception\EnumException;
  * @package CleverConnectors\AppBundle\Document
  *
  * @ODM\Document(repositoryClass="CleverConnectors\AppBundle\Repository\AudienceMirrorRepository")
- * @ODM\HasLifecycleCallbacks()
  */
 class AudienceMirror
 {
@@ -33,11 +32,11 @@ class AudienceMirror
     private $audienceId;
 
     /**
-     * @var array|string
+     * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $adsId;
+    private $adsId = '[]';
 
     /**
      * @var string
@@ -96,11 +95,23 @@ class AudienceMirror
     }
 
     /**
-     * @return array|string
+     * @return array
      */
-    public function getAdsId()
+    public function getAdsId(): array
     {
-        return $this->adsId;
+        return json_decode($this->adsId, TRUE);
+    }
+
+    /**
+     * @param array $adsId
+     *
+     * @return AudienceMirror
+     */
+    public function setAdsId(array $adsId): AudienceMirror
+    {
+        $this->adsId = json_encode($adsId);
+
+        return $this;
     }
 
     /**
@@ -110,7 +121,26 @@ class AudienceMirror
      */
     public function addAdId(string $adId): AudienceMirror
     {
-        $this->adsId[] = $adId;
+        $tmp   = $this->getAdsId();
+        $tmp[] = $adId;
+        $this->setAdsId($tmp);
+
+        return $this;
+    }
+
+    /**
+     * @param string $adId
+     *
+     * @return AudienceMirror
+     */
+    public function removeAdId(string $adId): AudienceMirror
+    {
+        $tmp = $this->getAdsId();
+        $key = array_search($adId, $tmp);
+        if ($key !== FALSE) {
+            unset($tmp[$key]);
+            $this->setAdsId($tmp);
+        }
 
         return $this;
     }
@@ -189,7 +219,9 @@ class AudienceMirror
     public function removeSubscriberByEmail(string $email): AudienceMirror
     {
         $index = array_search($email, $this->getSubscribers());
-        $this->removeSubscribeByIndex($index);
+        if (is_int($index)) {
+            $this->removeSubscribeByIndex($index);
+        }
 
         return $this;
     }
@@ -233,22 +265,6 @@ class AudienceMirror
         $this->type = AdTypeEnum::isValid($type);
 
         return $this;
-    }
-
-    /**
-     * @ODM\PreFlush()
-     */
-    public function preFlush(): void
-    {
-        $this->adsId = json_encode($this->adsId);
-    }
-
-    /**
-     * @ODM\PostLoad
-     */
-    public function postLoad(): void
-    {
-        $this->adsId = json_decode($this->adsId, TRUE);
     }
 
 }

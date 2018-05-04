@@ -130,10 +130,10 @@ class AudienceFacade
     private function fromArray(Audience $audience, array $data): Audience
     {
         $audience->setName($data['name'])
-            ->setClientId($data['clientId'])
-            ->setSourceType($data['sourceType'] ?? NULL)
-            ->setListId($data['listId'] ?? NULL)
-            ->setSegmentId($data['segmentId'] ?? NULL);
+            ->setClientId($data['client_id'])
+            ->setSourceType($data['source_type'] ?? NULL)
+            ->setListId($data['distribution_list'] ?? NULL)
+            ->setSegmentId($data['segment_id'] ?? NULL);
 
         return $audience;
     }

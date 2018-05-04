@@ -2,6 +2,7 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector;
 
+use CleverConnectors\AppBundle\Document\AudienceMirror;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\FacebookaudienceSystem;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
@@ -64,11 +65,17 @@ class FacebookaudienceCreateAdConnector extends FacebookaudienceConnectorAbstrac
         try {
             $res  = $this->manager->send($req, $opt);
             $data = [
-                'ref_id'     => json_decode($res->getBody(), TRUE)['id'],
+                'ref_id'    => json_decode($res->getBody(), TRUE)['id'],
                 'client_id' => $data['client_id'],
                 'mirror_id' => $data['mirror_id'],
                 'id'        => $data['id'],
             ];
+
+            $repo = $this->dm->getRepository(AudienceMirror::class);
+            $mirr = $repo->find($data['mirror_id']);
+            $mirr->addAdId($data['id']);
+            $this->dm->flush();
+
         } catch (CurlException $e) {
             $this->logConnectorError($e, $sysInst, $this->system, $dto);
         }

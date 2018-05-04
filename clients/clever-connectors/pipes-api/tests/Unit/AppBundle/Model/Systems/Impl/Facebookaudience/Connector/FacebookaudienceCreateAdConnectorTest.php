@@ -2,9 +2,11 @@
 
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\Facebookaudience\Connector;
 
+use CleverConnectors\AppBundle\Document\AudienceMirror;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector\FacebookaudienceCreateAdConnector;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\FacebookaudienceSystem;
+use CleverConnectors\AppBundle\Repository\AudienceMirrorRepository;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
@@ -14,7 +16,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use Tests\KernelTestCaseAbstract;
 
 /**
@@ -204,15 +206,22 @@ final class FacebookaudienceCreateAdConnectorTest extends KernelTestCaseAbstract
             ->setUser('123')
             ->setSystem('facebookaudience');
 
-        /** @var SystemInstallRepository|PHPUnit_Framework_MockObject_MockObject $repo */
-        $repo = $this->createMock(SystemInstallRepository::class);
-        $repo->method('getSystemInstallFromHeaders')->willReturn($sysInst);
+        /** @var SystemInstallRepository|MockObject $sysRepo */
+        $sysRepo = $this->createMock(SystemInstallRepository::class);
+        $sysRepo->method('getSystemInstallFromHeaders')->willReturn($sysInst);
 
-        /** @var DocumentManager|PHPUnit_Framework_MockObject_MockObject $dm */
+        /** @var AudienceMirrorRepository|MockObject $mirrRepo */
+        $mirrRepo = $this->createMock(AudienceMirrorRepository::class);
+        $mirrRepo->method('find')->willReturn(new AudienceMirror());
+
+        /** @var DocumentManager|MockObject $dm */
         $dm = $this->createMock(DocumentManager::class);
-        $dm->method('getRepository')->willReturn($repo);
+        $dm->expects($this->at(0))
+            ->method('getRepository')->willReturn($sysRepo);
+        $dm->expects($this->at(1))
+            ->method('getRepository')->willReturn($mirrRepo);
 
-        /** @var CurlManager|PHPUnit_Framework_MockObject_MockObject $curl */
+        /** @var CurlManager|MockObject $curl */
         $curl = $this->createMock(CurlManager::class);
         $curl->method('send')->willReturnCallback($callback);
 

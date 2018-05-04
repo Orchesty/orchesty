@@ -20,9 +20,6 @@ abstract class AdModuleAbstract implements AdModuleInterface
     protected const TYPE   = '';
     protected const SYSTEM = '';
 
-    protected const CREATE_AD_URL = '%s/system/%s/user/%s/action/createAd';
-    protected const DELETE_AD_URL = '%s/system/%s/user/%s/action/deleteAd';
-
     /**
      * @var EntityManager
      */
@@ -90,9 +87,9 @@ abstract class AdModuleAbstract implements AdModuleInterface
             unset($data['ref_id']);
         }
 
-        if (array_key_exists('mirr_id', $data)) {
-            $ad->setAudienceMirrorId($data['mirr_id']);
-            unset($data['mirr_id']);
+        if (array_key_exists('mirror_id', $data)) {
+            $ad->setAudienceMirrorId($data['mirror_id']);
+            unset($data['mirror_id']);
         }
 
         $ad->setSettings(array_merge($ad->getSettings(), $data));
@@ -109,10 +106,14 @@ abstract class AdModuleAbstract implements AdModuleInterface
      */
     public function deleteAd(Ad $ad, string $userId): void
     {
+        $adId   = $ad->getId();
+        $mirrId = $ad->getAudienceMirrorId();
+
         $this->em->remove($ad);
         $this->em->flush();
         $this->sender->removeMirror(static::SYSTEM, $userId, [
-            'mirror_id' => $ad->getAudienceMirrorId(),
+            'ad_id'     => $adId,
+            'mirror_id' => $mirrId,
         ]);
     }
 

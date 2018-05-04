@@ -9,14 +9,12 @@ use CleverConnectors\AppBundle\Model\CustomNode\Comparator;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\FacebookaudienceSystem;
 use CleverConnectors\AppBundle\Repository\AudienceMirrorRepository;
-use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
-use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 
 /**
@@ -33,23 +31,11 @@ class FacebookaudienceUpdateAudienceConnector extends FacebookaudienceConnectorA
     private $baseUrl;
 
     /**
-     * FacebookaudienceCreateAudienceConnector constructor.
-     *
-     * @param FacebookaudienceSystem $system
-     * @param DocumentManager        $dm
-     * @param CurlManagerInterface   $manager
-     */
-    public function __construct(FacebookaudienceSystem $system, DocumentManager $dm, CurlManagerInterface $manager)
-    {
-        parent::__construct($system, $dm, $manager);
-    }
-
-    /**
      * @return string
      */
     public function getId(): string
     {
-        return 'facebookaudience-create-audience-connector';
+        return 'facebookaudience-update-audience-connector';
     }
 
     /**

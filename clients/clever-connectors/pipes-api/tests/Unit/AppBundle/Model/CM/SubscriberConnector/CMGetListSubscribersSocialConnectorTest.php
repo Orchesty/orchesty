@@ -40,7 +40,9 @@ final class CMGetListSubscribersSocialConnectorTest extends KernelTestCaseAbstra
             'pf-token'      => '-3*QYg*3H-5+vaez_K7_N-4K1YhCn88k',
             'pf-system-key' => 'neco',
         ])->setData(json_encode([
-            'distribution_list' => 'dist_list',
+            'audience' => [
+                'distribution_list' => 'dist_list',
+            ],
         ]));
 
         $systemInstall = new SystemInstall();
