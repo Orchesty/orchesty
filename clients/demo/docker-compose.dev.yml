@@ -377,23 +377,41 @@ volumes:
 ## BEGIN STAGE
 #volumes:
 #  elasticsearch:
-#    external:
-#      name: ${DEPLOYMENT_PREFIX}-elasticsearch
+#    driver: local
+#    driver_opts:
+#      type: none
+#      device: /srv/persistent-data/${DEPLOYMENT_PREFIX}/elasticsearch
+#      o: bind
 #  grafana:
-#    external:
-#      name: ${DEPLOYMENT_PREFIX}-grafana
+#    driver: local
+#    driver_opts:
+#      type: none
+#      device: /srv/persistent-data/${DEPLOYMENT_PREFIX}/grafana
+#      o: bind
 #  influxdb:
-#    external:
-#      name: ${DEPLOYMENT_PREFIX}-influxdb
+#    driver: local
+#    driver_opts:
+#      type: none
+#      device: /srv/persistent-data/${DEPLOYMENT_PREFIX}/influxdb
+#      o: bind
 #  mongodb:
-#    external:
-#      name: ${DEPLOYMENT_PREFIX}-mongodb
+#    driver: local
+#    driver_opts:
+#      type: none
+#      device: /srv/persistent-data/${DEPLOYMENT_PREFIX}/mongodb
+#      o: bind
 #  rabbitmq:
-#    external:
-#      name: ${DEPLOYMENT_PREFIX}-rabbitmq
+#    driver: local
+#    driver_opts:
+#      type: none
+#      device: /srv/persistent-data/${DEPLOYMENT_PREFIX}/rabbitmq
+#      o: bind
 #  redis:
-#    external:
-#      name: ${DEPLOYMENT_PREFIX}-redis
+#    driver: local
+#    driver_opts:
+#      type: none
+#      device: /srv/persistent-data/${DEPLOYMENT_PREFIX}/redis
+#      o: bind
 #
 #configs:
 #  logstash.conf:
