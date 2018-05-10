@@ -16,11 +16,12 @@
     "ptypes",
     "ptypes/any",
     "ptypes/duration",
+    "ptypes/empty",
     "ptypes/struct",
     "ptypes/timestamp"
   ]
-  revision = "925541529c1fa6821df4e44ce2723319eb2be768"
-  version = "v1.0.0"
+  revision = "b4deda0973fb4c70b50d226b1af49f3da59f5265"
+  version = "v1.1.0"
 
 [[projects]]
   name = "github.com/pmezard/go-difflib"
@@ -122,6 +123,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "a2f08ff4c7bb3fb8857d069558d4aa62228d1e11be24597b477a1ff1f9fefc50"
+  inputs-digest = "ed6c1d308614544e27e9069324e11135af9b52823821c7ff479ee753919c65b1"
   solver-name = "gps-cdcl"
   solver-version = 1
