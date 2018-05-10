@@ -1,33 +1,15 @@
-dbrp "pipes"."default"
+dbrp "pipes"."30m"
 
 var sample = 4h
 var retention = '4h'
 
-var rabbitMqData = stream
-   |from()
-       .database('pipes')
-       .retentionPolicy('default')
-       .measurement('rabbitmq_queue')
-   |window()
+batch
+   |query('SELECT mean("avg.message") as "avg.message", max("max.message") as "max.message" FROM "pipes"."30m"."rabbitmq"')
        .period(sample)
        .every(sample)
-   |groupBy('queue')
-
-var messagesAvg = rabbitMqData
-    |mean('messages')
-        .as('message')
-
-var messagesMax = rabbitMqData
-    |max('messages')
-        .as('message')
-
-messagesAvg
-   |join(messagesMax)
-       .as('avg', 'max')
+       .groupBy('topology_id', 'node_id')
    |influxDBOut()
        .database('pipes')
        .measurement('rabbitmq')
        .precision('ms')
        .retentionPolicy(retention)
-
-

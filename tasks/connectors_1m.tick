@@ -1,45 +1,15 @@
-dbrp "pipes"."default"
+dbrp "pipes"."5s"
 
 var sample = 1m
 var retention = '1m'
 
-var connectorData = stream
-   |from()
-       .database('pipes')
-       .retentionPolicy('default')
-       .measurement('connectors')
-   |window()
+batch
+   |query('SELECT mean("avg.time") as "avg.time",  min("min.time") as "min.time", max("max.time") as "max.time" FROM "pipes"."5s"."connectors"')
        .period(sample)
        .every(sample)
-   |groupBy('node_id')
-
-// Monolith data
-
-var reqAvg = connectorData
-    |mean('sent_request_total_duration')
-        .as('time')
-
-var reqMin = connectorData
-    |min('sent_request_total_duration')
-        .as('time')
-
-var reqMax = connectorData
-    |max('sent_request_total_duration')
-        .as('time')
-
-reqAvg
-   |join(reqMin, reqMax)
-       .as('avg', 'min', 'max')
+       .groupBy('topology_id', 'node_id')
    |influxDBOut()
        .database('pipes')
        .measurement('connectors')
        .precision('ms')
        .retentionPolicy(retention)
-
-
-//monolithData
-//   |groupBy('topology_id', 'node_id', 'correlation_id')
-//   |count('count')
-
-
-
