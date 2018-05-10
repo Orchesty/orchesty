@@ -38,7 +38,7 @@ build: .env
 	done && \
 	: Build the app && \
 	CM_GIT_HOST_KEY='gitlab.clevermonitor.com ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCxUzD8oFotxxZ5Bcgqt5Ahney212m+brZ097F9pemE+TqLuUuObmyLcRMZhrjuZ8CATSPJkbQXrFdLjkD9PxmjOrDomUnodQTzkqOc06uUI2JbQo3R7YOSdTsib4LjkxC3clIXImb0HpqN69IdVK+P75cCclZNsXXiU0VLK8yyLxbF/s9/kAjYSAnzHQVV3k/LicAcXx0yClunZxqhzyRJGtLXJEQBMx+YEIX+W/QLXyhz1bggGyQ53IMysZDtTngvmfSlTSQqdtd9bX6p2Ry54Fy8tXzNOW41IxQRsoxlqjKyZsMmq/8VV6tppE6e3gb6nvB8fHBkUPJ8FVhZepfb'
-	docker-compose run --rm -e COMPOSER=composer.prod.json app sh -c 'echo $${IMAGE_API_DEMO_FPM} >> ~/.ssh/known_hosts && composer install --optimize-autoloader' && \
+	docker-compose run --rm -e COMPOSER=composer.prod.json app sh -c 'echo $${CM_GIT_HOST_KEY} >> ~/.ssh/known_hosts && composer install --optimize-autoloader' && \
 	: Build an app docker image from the artifacts && \
 	docker build --pull -t ${IMAGE_API_DEMO_FPM} .
 
