@@ -114,7 +114,7 @@ api-demo:
     - make build
     - make push
   only:
-    - dev
+#    - dev
     - master
 
 pf-bridge:
