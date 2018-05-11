@@ -4,11 +4,6 @@ import ws "clever-monitor/workflow/pkg/workflowservice/clevermonitor/analytics/p
 
 // populateEmail fills workflowConfig struct with email related values
 func populateEmail(cc *composedConfig, all []*composedConfig) error {
-	err := populateDefault(cc, all)
-	if err != nil {
-		return err
-	}
-
 	for _, step := range cc.wfc.Steps {
 		step.Channels = &ws.WorkflowConfig_Step_ChannelMap{
 			Email: &ws.WorkflowConfig_Step_ChannelMap_Email{

@@ -12,11 +12,6 @@ const (
 
 // populateWait sets the wait type workflowConfig specifics
 func populateWait(cc *composedConfig, all []*composedConfig) error {
-	err := populateDefault(cc, all)
-	if err != nil {
-		return err
-	}
-
 	inSeconds := convertToSeconds(int(cc.ec.Settings.Wait.Duration), cc.ec.Settings.Wait.Unit)
 
 	for _, step := range cc.wfc.Steps {

@@ -1,7 +1,7 @@
 {
   "items": [
     {
-      "id": "1fd5c95a-9b2b-4a21-91de-92aaef2e1b8f",
+      "id": "idroot",
       "parentId": null,
       "type": "TRIGGER",
       "settings": {
@@ -12,8 +12,8 @@
       }
     },
     {
-      "id": "d406ff4e-246b-45fd-b846-7117ba6a4b44",
-      "parentId": "1fd5c95a-9b2b-4a21-91de-92aaef2e1b8f",
+      "id": "idcondition",
+      "parentId": "idroot",
       "type": "CONDITION",
       "settings": {
         "condition": {
@@ -34,24 +34,24 @@
       }
     },
     {
-      "id": "33d2675a-9c82-4072-808b-ebb2524d6bca",
-      "parentId": "d406ff4e-246b-45fd-b846-7117ba6a4b44",
+      "id": "idconditionyes",
+      "parentId": "idcondition",
       "type": "CONDITION_BRANCH_YES",
       "settings": {
         "conditionBranchYes": {}
       }
     },
     {
-      "id": "9a3df87d-e1dc-445d-86f2-b30fb2afe972",
-      "parentId": "d406ff4e-246b-45fd-b846-7117ba6a4b44",
+      "id": "idconditionno",
+      "parentId": "idcondition",
       "type": "CONDITION_BRANCH_NO",
       "settings": {
         "conditionBranchNo": {}
       }
     },
     {
-      "id": "a04efa5c-70b0-4dcd-a2b8-eec17fea0fd0",
-      "parentId": "33d2675a-9c82-4072-808b-ebb2524d6bca",
+      "id": "idnotify",
+      "parentId": "idconditionyes",
       "type": "NOTIFY",
       "settings": {
         "notify": {
@@ -61,32 +61,32 @@
       }
     },
     {
-      "id": "d9338974-0dd2-406a-904d-827237d5d699",
-      "parentId": "9a3df87d-e1dc-445d-86f2-b30fb2afe972",
+      "id": "idjoindst",
+      "parentId": "idconditionno",
       "type": "JOIN_DST",
       "settings": {
-        "joinSource": "6dd7fcfa-db2e-421c-af06-901ddecdcbd8"
+        "joinSource": "idjoinsrc"
       }
     },
     {
-      "id": "6dd7fcfa-db2e-421c-af06-901ddecdcbd8",
-      "parentId": "a04efa5c-70b0-4dcd-a2b8-eec17fea0fd0",
+      "id": "idjoinsrc",
+      "parentId": "idnotify",
       "type": "JOIN_SRC",
       "settings": {
-        "joinDestination": "d9338974-0dd2-406a-904d-827237d5d699"
+        "joinDestination": "idjoindst"
       }
     },
     {
-      "id": "1f32925b-e626-4abb-8b33-a6ce99453074",
-      "parentId": "c3e28e43-be02-4142-b203-3b2e8d10fe9a",
+      "id": "idend",
+      "parentId": "idemail",
       "type": "END",
       "settings": {
         "end": {}
       }
     },
     {
-      "id": "c3e28e43-be02-4142-b203-3b2e8d10fe9a",
-      "parentId": "d9338974-0dd2-406a-904d-827237d5d699",
+      "id": "idemail",
+      "parentId": "idjoindst",
       "type": "EMAIL",
       "settings": {
         "email": {

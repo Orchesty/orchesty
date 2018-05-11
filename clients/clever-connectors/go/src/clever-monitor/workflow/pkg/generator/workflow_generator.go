@@ -40,9 +40,14 @@ func (gen *workflowGenerator) Generate(
 	clientId int,
 	guid string,
 ) ([]*ws.WorkflowConfig, error) {
-	pairs := pairConfigs(editor, clientId, guid)
-
 	var wfs []*ws.WorkflowConfig
+
+	pairs := pairConfigs(editor, clientId, guid)
+	err := populateDefaults(pairs)
+	if err != nil {
+		return wfs, err
+	}
+
 	for _, cc := range pairs {
 		// TODO - try to run concurrently in goroutines
 		cfg, err := generateWorkflowConfig(cc, pairs)
@@ -80,13 +85,27 @@ func pairConfigs(editor *ws.EditorConfig, clientId int, guid string) []*composed
 	return pairs
 }
 
+func populateDefaults(all []*composedConfig) error {
+	for _, cc := range all {
+		err := populateDefault(cc, all)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 // generateWorkflowConfig fills workflowConfig with real data
 func generateWorkflowConfig(cc *composedConfig, all []*composedConfig) (*ws.WorkflowConfig, error) {
 	trigger := findTrigger(all)
 
 	cc.wfc.EditorItemId = cc.ec.Id
-	cc.wfc.Type = trigger.ec.Settings.Trigger.EventOptions.Type
-	cc.wfc.ClientDomain = trigger.ec.Settings.Trigger.EventOptions.ClientDomain
+
+	if trigger.ec.Settings.Trigger != nil && trigger.ec.Settings.Trigger.EventOptions != nil {
+		cc.wfc.Type = trigger.ec.Settings.Trigger.EventOptions.Type
+		cc.wfc.ClientDomain = trigger.ec.Settings.Trigger.EventOptions.ClientDomain
+	}
 
 	populateSpecifics(cc, all)
 
@@ -99,25 +118,27 @@ func populateSpecifics(cc *composedConfig, all []*composedConfig) error {
 	case typeCondition:
 		return populateCondition(cc, all)
 	case typeConditionBranchYes:
-		cc.skip = true // treat specifically byt do not include to output
+		cc.skip = true
 		return populateConditionBranch(true, cc, all)
 	case typeConditionBranchNo:
-		cc.skip = true // treat specifically byt do not include to output
+		cc.skip = true
 		return populateConditionBranch(false, cc, all)
 	case typeDistribute:
-		return populateDefault(cc, all)
+		panic("Distribute type not implemented yet.")
 	case typeEmail:
 		return populateEmail(cc, all)
 	case typeJoinSrc:
-		panic("join src not implemented yet")
+		cc.skip = true
+		return populateJoinSource(cc, all)
 	case typeJoinDst:
-		panic("join dst not implemented yet")
+		cc.skip = true
+		return populateJoinDestination(cc, all)
 	case typeNotify:
 		return populateNotify(cc, all)
 	case typeWait:
 		return populateWait(cc, all)
 	case typeEmpty, typeEnd, typeTrigger:
-		cc.skip = true // do not include to output
+		cc.skip = true
 		return populateSkip(cc, all)
 
 	default:
@@ -129,6 +150,17 @@ func populateSpecifics(cc *composedConfig, all []*composedConfig) error {
 func findItemById(id string, all []*composedConfig) *composedConfig {
 	for _, item := range all {
 		if item.wfc.Id == id {
+			return item
+		}
+	}
+
+	return nil
+}
+
+// findItemByEditorId tries to find composedConfig by editorConfig's ID
+func findItemByEditorId(id string, all []*composedConfig) *composedConfig {
+	for _, item := range all {
+		if item.ec.Id == id {
 			return item
 		}
 	}
