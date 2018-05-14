@@ -8,10 +8,10 @@ import (
 )
 
 // Generate and check workflow configs from given editor config containing condition node
-func TestWorkflowGenerator_Generate_JoinsConfig(t *testing.T) {
+func TestWorkflowGenerator_Generate_Editor3(t *testing.T) {
 	config, err := hydrator.StringToEditorConfig(getEditorJson(t, "editor_3.json"))
 	assert.Nil(t, err)
-	generator := NewWorkflowGenerator()
+	generator := NewRecursiveGenerator()
 
 	wfs, err := generator.Generate(config, 555, "guid")
 	assert.Nil(t, err)
@@ -19,18 +19,27 @@ func TestWorkflowGenerator_Generate_JoinsConfig(t *testing.T) {
 	// Only config for selected items should be generated (some are skipped)
 	assert.Len(t, wfs, 3)
 
-	checkJoinsSequence(t, wfs)
+	checkEditor3Sequence(t, wfs)
 
 	// save output to file in order to be check-able by human
 	saveWorkflowConfigs(t, wfs, "workflow_3")
 }
 
 // check if the configs are ordered properly
-func checkJoinsSequence(t *testing.T, wfs []*ws.WorkflowConfig) {
+func checkEditor3Sequence(t *testing.T, wfs []*ws.WorkflowConfig) {
+	//        CONDITION
+	//       /         \
+	//    NOTIFY   ->   EMAIL
+
 	// condition node
 	assert.Equal(t, "idcondition", wfs[0].EditorItemId)
 	assert.Len(t, wfs[0].Steps, 2)
-	assert.Equal(t, wfs[1].Id, wfs[0].Steps[0].NextFlow.Id) // condition -> notify
+	stepToNotify := wfs[0].Steps[0]
+	assert.Equal(t,"idconditionyes", stepToNotify.StepId)
+	assert.Equal(t, wfs[1].Id, stepToNotify.NextFlow.Id) // condition -> notify
+	stepToEmail := wfs[0].Steps[1]
+	assert.Equal(t,"idconditionno", stepToEmail.StepId)
+	assert.Equal(t, wfs[2].Id, stepToEmail.NextFlow.Id) // condition -> email
 
 	// notify node
 	assert.Equal(t, "idnotify", wfs[1].EditorItemId)

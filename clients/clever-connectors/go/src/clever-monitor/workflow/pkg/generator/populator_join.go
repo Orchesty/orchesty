@@ -9,7 +9,7 @@ func populateJoinSource(cc *composedConfig, all []*composedConfig) error {
 		return fmt.Errorf("unable to find editor config node with id %s", cc.ec.Settings.JoinDestination)
 	}
 
-	joinDstChild := findFirstChildItem(joinDst.ec, all)
+	joinDstChild := findFirstChildItem(joinDst, all)
 	if joinDstChild == nil {
 		populateSkip(cc, all)
 
@@ -17,14 +17,16 @@ func populateJoinSource(cc *composedConfig, all []*composedConfig) error {
 	}
 
 	parent := findParentItem(cc.ec, all)
-	parentalStep, err := findParentalStep(cc, parent)
-	if err != nil {
-		return err;
+	if parent == nil {
+		return fmt.Errorf("unable to find parent for join node")
+	}
+
+	parentalStep := findParentalStep(cc, parent)
+	if parentalStep == nil {
+		return fmt.Errorf("unable to find parental step for join node")
 	}
 
 	parentalStep.NextFlow.Id = joinDstChild.wfc.Id
-
-	// TODO - check if joinSrc can have classic followers and add them to parent
 
 	return nil;
 }

@@ -51,7 +51,7 @@ func runGrpcServer() {
 	)
 	db.Connect()
 
-	wfGenerator := generator.NewWorkflowGenerator()
+	wfGenerator := generator.NewRecursiveGenerator()
 	wfHandler := handler.NewWorkflowHandler(db, wfGenerator)
 
 	grpcServer := server.NewServer(addr, wfHandler, logger.GetLogger())

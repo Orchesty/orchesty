@@ -13,7 +13,7 @@ func TestStringToEditorConfig(t *testing.T) {
 
 	conf, err := StringToEditorConfig(str)
 	assert.Nil(t, err)
-	assert.Len(t, conf.Items, 5)
+	assert.Len(t, conf.Items, 6)
 
 	assert.Equal(t, "root", conf.Items[0].Id)
 	assert.Equal(t, "", conf.Items[0].ParentId)
@@ -29,6 +29,9 @@ func TestStringToEditorConfig(t *testing.T) {
 
 	assert.Equal(t, "4", conf.Items[4].Id)
 	assert.Equal(t, "3", conf.Items[4].ParentId)
+
+	assert.Equal(t, "5", conf.Items[5].Id)
+	assert.Equal(t, "4", conf.Items[5].ParentId)
 }
 
 func getExampleFileJson(t *testing.T, file string) string {

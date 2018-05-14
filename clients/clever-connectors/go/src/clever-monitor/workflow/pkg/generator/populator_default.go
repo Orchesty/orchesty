@@ -19,7 +19,7 @@ func populateDefault(cc *composedConfig, all []*composedConfig) error {
 
 // populateDefaultSteps fills the step slice with correct number of step structs
 func populateDefaultSteps(cc *composedConfig, all []*composedConfig) error {
-	followers := findChildItems(cc.ec, all)
+	followers := findChildItemsByEcId(cc.ec.Id, all)
 
 	if len(followers) == 0 {
 		step := createDefaultStep(cc, nil)

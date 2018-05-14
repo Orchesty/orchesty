@@ -12,16 +12,21 @@ func populateConditionBranch(condType bool, cc *composedConfig, all []*composedC
 		return fmt.Errorf("condition branch should never be the root")
 	}
 
-	relatedStep, err := findParentalStep(cc, parent)
-	if err != nil {
-		return err
+	relatedStep := findParentalStep(cc, parent)
+	if relatedStep == nil {
+		return fmt.Errorf("unable to find parental condition step for condition branch")
 	}
 
+	relatedStep.StepId = cc.ec.Id
 	if condType == false {
+		if relatedStep.ConditionOpt == nil {
+			relatedStep.ConditionOpt = &ws.WorkflowConfig_Step_Option{}
+		}
+
 		relatedStep.ConditionOpt.OptionType = ws.ConditionType_ELSE
 	}
 
-	child := findFirstChildItem(cc.ec, all)
+	child := findFirstChildItem(cc, all)
 	if child == nil {
 		relatedStep.NextFlow = nil
 	} else {
@@ -29,15 +34,4 @@ func populateConditionBranch(condType bool, cc *composedConfig, all []*composedC
 	}
 
 	return nil
-}
-
-// findParentalStep finds corresponding parental Step for current composedConfig
-func findParentalStep(cc *composedConfig, parent *composedConfig) (*ws.WorkflowConfig_Step, error) {
-	for _, parStep := range parent.wfc.Steps {
-		if parStep.NextFlow.Id == cc.wfc.Id {
-			return parStep, nil
-		}
-	}
-
-	return nil, fmt.Errorf("unable to find parental condition step for condition branch")
 }
