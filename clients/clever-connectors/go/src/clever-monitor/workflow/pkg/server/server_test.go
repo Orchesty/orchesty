@@ -53,17 +53,17 @@ func TestServer_ReadEditorConfig(t *testing.T) {
 	assert.Equal(t, "2", response.Id)
 }
 
-func TestServer_ReadWorkflowConfig(t *testing.T) {
-	conf, err := s.ReadWorkflowConfig(nil, &ws.ReadRequest{})
-
-	assert.Nil(t, err)
-	assert.Equal(t, "3", conf.Id)
-}
-
-func TestServer_ReadAllWorkflowConfigs(t *testing.T) {
-	conf, err := s.ReadAllWorkflowConfigs(nil, &ws.ReadAllRequest{})
-
-	assert.Nil(t, err)
-	assert.Equal(t, "4", conf.Id)
-}
+//func TestServer_ReadWorkflowConfig(t *testing.T) {
+//	conf, err := s.ReadWorkflowConfig(nil, &ws.ReadRequest{})
+//
+//	assert.Nil(t, err)
+//	assert.Equal(t, "3", conf.Id)
+//}
+//
+//func TestServer_ReadAllWorkflowConfigs(t *testing.T) {
+//	conf, err := s.ReadAllWorkflowConfigs(nil, &ws.ReadAllRequest{})
+//
+//	assert.Nil(t, err)
+//	assert.Equal(t, "4", conf.Id)
+//}
 

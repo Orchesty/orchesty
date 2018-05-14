@@ -7,16 +7,12 @@ import (
 
 // PopulateCondition populates the workflow config item according to relevant editor config item
 func populateCondition(cc *composedConfig, all []*composedConfig) error {
-	err := populateDefault(cc, all)
-	if err != nil {
-		return err
-	}
-
 	// transform condition fields
 	for _, step := range cc.wfc.Steps {
-		step.StepId = findItemById(step.NextFlow.Id, all).ec.Id
-		step.ConditionOpt = &ws.WorkflowConfig_Step_Option{
-			OptionType: cc.ec.Settings.Condition.Type,
+		if step.ConditionOpt == nil {
+			step.ConditionOpt = &ws.WorkflowConfig_Step_Option{
+				OptionType: cc.ec.Settings.Condition.Type,
+			}
 		}
 		step.Conditions = []*ws.WorkflowConfig_Step_Condition{}
 

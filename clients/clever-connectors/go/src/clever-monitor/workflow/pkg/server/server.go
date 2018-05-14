@@ -11,6 +11,7 @@ import (
 	"clever-monitor/workflow/pkg/handler"
 	ws "clever-monitor/workflow/pkg/workflowservice/clevermonitor/analytics/protos/workflow"
 	"time"
+	"github.com/golang/protobuf/ptypes/empty"
 )
 
 type server struct {
@@ -67,14 +68,23 @@ func (s *server) ReadEditorConfig(ctx context.Context, in *ws.ReadRequest) (*ws.
 	return s.wfHandler.HandleReadEditorConfig(in), nil
 }
 
-// ReadWorkflowConfig returns content of existing generated workflow config
-func (s *server) ReadWorkflowConfig(ctx context.Context, in *ws.ReadRequest) (*ws.WorkflowResponse, error) {
-	return s.wfHandler.HandleReadWorkflowConfig(in), nil
+/**
+ *
+ * Retrieving of generated configs
+ *
+ */
+
+func (s *server) ReadAllWorkflowConfigs(in *empty.Empty, stream ws.WorkflowService_ReadAllWorkflowConfigsServer) error {
+	return nil
+	// return s.wfHandler.HandleReadAllWorkflowConfigs(in), nil
 }
 
-// ReadAllWorkflowConfigs returns all generated workflow configs related to single editor config
-func (s *server) ReadAllWorkflowConfigs(ctx context.Context, in *ws.ReadAllRequest) (*ws.WorkflowResponse, error) {
-	return s.wfHandler.HandleReadAllWorkflowConfigs(in), nil
+func (s *server) ReadWorkflowConfig(in *ws.ConfigRequest, stream ws.WorkflowService_ReadWorkflowConfigServer) error {
+	return nil
+}
+
+func (s *server) ReadActiveWorkflowConfigTypes(in *empty.Empty, stream ws.WorkflowService_ReadActiveWorkflowConfigTypesServer) error {
+	return nil
 }
 
 // logging middleware function

@@ -8,7 +8,7 @@ func populateSkip(cc *composedConfig, all []*composedConfig) error {
 		return nil
 	}
 
-	child := findFirstChildItem(cc.ec, all)
+	child := findFirstChildItem(cc, all)
 	if child == nil {
 		// item does not have any child
 		for _, parStep := range parent.wfc.Steps {
