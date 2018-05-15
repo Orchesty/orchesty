@@ -1,21 +1,14 @@
 FROM dkr.hanaboso.net/hanaboso/symfony3-base:php-7.2
 
-RUN apt-get update && \
-    apt-get install -y apt-transport-https nginx-extras && \
-    apt-get clean
-
 ENV APP_ENV=prod
 ENV APP_DEBUG=0
 
-COPY docker/monolith/nginx.conf /etc/nginx/nginx.conf
-COPY docker/monolith/php-fpm.conf /usr/local/etc/php-fpm.d/zzz-local.conf
 COPY ./ /var/www/html/
 
+# WTF?
 RUN mkdir /srv/topology && \
     chmod 0777 /srv/topology
 
 RUN chown -R www-data:www-data ./var
 
-COPY docker/monolith/entrypoint.sh /entrypoint.sh
-ENTRYPOINT [ "/entrypoint.sh" ]
-CMD [ "php-fpm" ]
+CMD [ "php-w-nginx.sh" ]
