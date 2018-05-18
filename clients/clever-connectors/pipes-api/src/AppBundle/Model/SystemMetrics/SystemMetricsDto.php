@@ -15,9 +15,9 @@ class SystemMetricsDto
 {
 
     /**
-     * @var string
+     * @var array
      */
-    private $systemKey;
+    private $systemKeys;
 
     /**
      * @var DateTime|NULL
@@ -42,7 +42,7 @@ class SystemMetricsDto
     /**
      * SystemMetricsDto constructor.
      *
-     * @param string        $systemKey
+     * @param array         $systemKeys
      * @param DateTime|null $from
      * @param DateTime|null $to
      * @param null|string   $interval
@@ -51,26 +51,38 @@ class SystemMetricsDto
      * @throws EnumException
      */
     public function __construct(
-        string $systemKey,
+        array $systemKeys,
         ?DateTime $from = NULL,
         ?DateTime $to = NULL,
         ?string $interval = NULL,
         ?string $guid = NULL
     )
     {
-        $this->systemKey = $systemKey;
-        $this->from      = $from;
-        $this->to        = $to;
-        $this->interval  = SystemMetricsIntervalEnum::isValid($interval ?? SystemMetricsIntervalEnum::DAY);
-        $this->guid      = $guid;
+        $this->systemKeys = $systemKeys;
+        $this->from       = $from;
+        $this->to         = $to;
+        $this->interval   = SystemMetricsIntervalEnum::isValid($interval ?? SystemMetricsIntervalEnum::DAY);
+        $this->guid       = $guid;
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function getSystemKey(): string
+    public function getSystemKeys(): array
     {
-        return $this->systemKey;
+        return $this->systemKeys;
+    }
+
+    /**
+     * @param array $systemKeys
+     *
+     * @return SystemMetricsDto
+     */
+    public function setSystemKeys(array $systemKeys): SystemMetricsDto
+    {
+        $this->systemKeys = $systemKeys;
+
+        return $this;
     }
 
     /**
@@ -78,9 +90,9 @@ class SystemMetricsDto
      *
      * @return SystemMetricsDto
      */
-    public function setSystemKey(string $systemKey): SystemMetricsDto
+    public function addSystemKey(string $systemKey): SystemMetricsDto
     {
-        $this->systemKey = $systemKey;
+        $this->systemKeys[] = $systemKey;
 
         return $this;
     }

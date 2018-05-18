@@ -20,8 +20,8 @@ interface SystemMetricsInterface
     /**
      * @param SystemMetricsDto $dto
      *
-     * @return int
+     * @return array
      */
-    public function getSystemRequestCount(SystemMetricsDto $dto): int;
+    public function getSystemRequestCount(SystemMetricsDto $dto): array;
 
 }

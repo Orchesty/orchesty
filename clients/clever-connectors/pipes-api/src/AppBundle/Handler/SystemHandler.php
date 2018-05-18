@@ -299,13 +299,30 @@ class SystemHandler
     }
 
     /**
-     * @param string $systemKey
-     * @param array  $data
+     * @param array $body
+     * @param array $data
      *
      * @return array
      * @throws EnumException
      */
-    public function getSystemMetrics(string $systemKey, array $data): array
+    public function getSystemsMetrics(array $body, array $data): array
+    {
+        $systems = $body['systems'] ?? [];
+
+        return [
+            'metrics'  => $this->getSystemMetrics($systems, $data),
+            'requests' => $this->getSystemRequestCount($systems, $data),
+        ];
+    }
+
+    /**
+     * @param array $systemKeys
+     * @param array $data
+     *
+     * @return array
+     * @throws EnumException
+     */
+    public function getSystemMetrics(array $systemKeys, array $data): array
     {
         $from     = isset($data['from']) ? (string) $data['from'] : NULL;
         $to       = isset($data['to']) ? (string) $data['to'] : NULL;
@@ -313,7 +330,7 @@ class SystemHandler
         $interval = isset($data['interval']) ? (string) $data['interval'] : NULL;
 
         return $this->manager->getSystemMetrics(
-            $systemKey,
+            $systemKeys,
             $from ? DateTimeUtils::getUTCDateTime($from) : NULL,
             $to ? DateTimeUtils::getUTCDateTime($to) : NULL,
             $interval,
@@ -322,28 +339,26 @@ class SystemHandler
     }
 
     /**
-     * @param string $systemKey
-     * @param array  $data
+     * @param array $systemKeys
+     * @param array $data
      *
      * @return array
      * @throws EnumException
      */
-    public function getSystemRequestCount(string $systemKey, array $data): array
+    public function getSystemRequestCount(array $systemKeys, array $data): array
     {
         $from     = isset($data['from']) ? (string) $data['from'] : NULL;
         $to       = isset($data['to']) ? (string) $data['to'] : NULL;
         $guid     = isset($data['guid']) ? (string) $data['guid'] : NULL;
         $interval = isset($data['interval']) ? (string) $data['interval'] : NULL;
 
-        return [
-            'count' => $this->manager->getSystemRequestCount(
-                $systemKey,
-                $from ? DateTimeUtils::getUTCDateTime($from) : DateTimeUtils::getUTCDateTime(),
-                $to ? DateTimeUtils::getUTCDateTime($to) : DateTimeUtils::getUTCDateTime(),
-                $interval,
-                $guid
-            ),
-        ];
+        return $this->manager->getSystemRequestCount(
+            $systemKeys,
+            $from ? DateTimeUtils::getUTCDateTime($from) : DateTimeUtils::getUTCDateTime(),
+            $to ? DateTimeUtils::getUTCDateTime($to) : DateTimeUtils::getUTCDateTime(),
+            $interval,
+            $guid
+        );
     }
 
 }

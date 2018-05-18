@@ -666,8 +666,7 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
     {
         $response = $this->sendGet('/system/null.user/metrics');
 
-        $arr = (array) $response->content;
-        self::assertEquals(0, array_keys($arr)[0]);
+        self::assertEquals(200, $response->status);
     }
 
     /**

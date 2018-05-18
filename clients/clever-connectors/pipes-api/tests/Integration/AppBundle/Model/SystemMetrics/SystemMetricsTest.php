@@ -45,32 +45,34 @@ final class SystemMetricsTest extends KernelTestCaseAbstract
     {
         $this->prepareData();
         $this->assertEquals([
-            978307200 => 0,
-            978310800 => 1,
-            978314400 => 0,
-            978318000 => 1,
-            978321600 => 0,
-            978325200 => 1,
-            978328800 => 0,
-            978332400 => 1,
-            978336000 => 0,
-            978339600 => 1,
-            978343200 => 0,
-            978346800 => 1,
-            978350400 => 0,
-            978354000 => 1,
-            978357600 => 0,
-            978361200 => 1,
-            978364800 => 0,
-            978368400 => 1,
-            978372000 => 0,
-            978375600 => 1,
-            978379200 => 0,
-            978382800 => 1,
-            978386400 => 0,
-            978390000 => 1,
+            'system' => [
+                978307200 => 0,
+                978310800 => 1,
+                978314400 => 0,
+                978318000 => 1,
+                978321600 => 0,
+                978325200 => 1,
+                978328800 => 0,
+                978332400 => 1,
+                978336000 => 0,
+                978339600 => 1,
+                978343200 => 0,
+                978346800 => 1,
+                978350400 => 0,
+                978354000 => 1,
+                978357600 => 0,
+                978361200 => 1,
+                978364800 => 0,
+                978368400 => 1,
+                978372000 => 0,
+                978375600 => 1,
+                978379200 => 0,
+                978382800 => 1,
+                978386400 => 0,
+                978390000 => 1,
+            ],
         ], $this->manager->getSystemMetrics(new SystemMetricsDto(
-            'system',
+            ['system'],
             DateTimeUtils::getUTCDateTime('01-01-2001'),
             DateTimeUtils::getUTCDateTime('02-01-2001'),
             SystemMetricsIntervalEnum::HOUR
@@ -83,8 +85,8 @@ final class SystemMetricsTest extends KernelTestCaseAbstract
     public function testGetSystemRequestCount(): void
     {
         $this->prepareData();
-        $this->assertEquals(12, $this->manager->getSystemRequestCount(new SystemMetricsDto(
-            'system',
+        $this->assertEquals(['system' => 12], $this->manager->getSystemRequestCount(new SystemMetricsDto(
+            ['system'],
             DateTimeUtils::getUTCDateTime('01-01-2001'),
             DateTimeUtils::getUTCDateTime('02-01-2001'),
             SystemMetricsIntervalEnum::HOUR

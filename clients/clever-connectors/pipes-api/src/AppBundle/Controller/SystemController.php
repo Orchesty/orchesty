@@ -17,6 +17,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 
 /**
  * Class SystemController
@@ -388,6 +389,25 @@ class SystemController extends FOSRestController
     }
 
     /**
+     * @Route("/systems/metrics")
+     * @Method({"POST", "OPTIONS"})
+     *
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function getSystemsMetricsAction(Request $request): Response
+    {
+        try {
+            $data = $this->handler->getSystemsMetrics($request->request->all(), $request->query->all());
+
+            return $this->getResponse($data);
+        } catch (Throwable $t) {
+            return $this->processException($t);
+        }
+    }
+
+    /**
      * @Route("/system/{system}/metrics")
      * @Method({"GET", "OPTIONS"})
      *
@@ -399,9 +419,9 @@ class SystemController extends FOSRestController
     public function getSystemMetricsAction(Request $request, string $system): Response
     {
         try {
-            $data = $this->handler->getSystemMetrics($system, $request->query->all());
+            $data = $this->handler->getSystemMetrics([$system], $request->query->all());
 
-            return $this->getResponse($data);
+            return $this->getResponse($data[$system] ?? []);
         } catch (SystemException|EnumException $e) {
             return $this->processException($e);
         }
@@ -419,9 +439,9 @@ class SystemController extends FOSRestController
     public function getSystemRequestCountAction(Request $request, string $system): Response
     {
         try {
-            $data = $this->handler->getSystemRequestCount($system, $request->query->all());
+            $data = $this->handler->getSystemRequestCount([$system], $request->query->all())[$system];
 
-            return $this->getResponse($data);
+            return $this->getResponse(['count' => $data]);
         } catch (SystemException|EnumException $e) {
             return $this->processException($e);
         }

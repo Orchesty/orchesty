@@ -5,6 +5,7 @@ namespace CleverConnectors\AppBundle\Model\SystemMetrics;
 use CleverConnectors\AppBundle\Utils\DateTimeUtils;
 use Elastica\Client;
 use Elastica\Request;
+use Exception;
 
 /**
  * Class SystemMetrics
@@ -16,8 +17,8 @@ class SystemMetrics implements SystemMetricsInterface
 
     private const PATH = '%s/limiter/_search';
 
-    private const SYSTEM_METRICS_GROUP_BY = 'group_by_timestamp';
-    private const SYSTEM_REQUEST_GROUP_BY = 'group_by_system-key';
+    private const GROUP_BY_TIMESTAMP  = 'group_by_timestamp';
+    private const GROUP_BY_SYSTEM_KEY = 'group_by_system-key';
 
     /**
      * @var Client
@@ -45,35 +46,46 @@ class SystemMetrics implements SystemMetricsInterface
      * @param SystemMetricsDto $dto
      *
      * @return array
+     * @throws Exception
      */
     public function getSystemMetrics(SystemMetricsDto $dto): array
     {
         $query = [
             'aggs' => [
-                self::SYSTEM_METRICS_GROUP_BY => [
-                    'range' => [
-                        'field'  => 'timestamp',
-                        'ranges' => $this->generateRanges($dto),
+                self::GROUP_BY_SYSTEM_KEY => [
+                    'terms' => [
+                        'field' => 'system-key.keyword',
+                    ],
+                    'aggs'  => [
+                        self::GROUP_BY_TIMESTAMP => [
+                            'range' => [
+                                'field'  => 'timestamp',
+                                'ranges' => $this->generateRanges($dto),
+                            ],
+                        ],
                     ],
                 ],
+
             ],
         ];
 
         $query = json_encode($this->processParameters($dto, $query));
+        $res   = $this->processSystemMetrics($this->client->request($this->getPath(), Request::GET, $query)->getData());
 
-        return $this->processSystemMetrics($this->client->request($this->getPath(), Request::GET, $query)->getData());
+        return $res;
     }
 
     /**
      * @param SystemMetricsDto $dto
      *
-     * @return int
+     * @return array
+     * @throws Exception
      */
-    public function getSystemRequestCount(SystemMetricsDto $dto): int
+    public function getSystemRequestCount(SystemMetricsDto $dto): array
     {
         $query = [
             'aggs' => [
-                self::SYSTEM_REQUEST_GROUP_BY => [
+                self::GROUP_BY_SYSTEM_KEY => [
                     'terms' => [
                         'field' => 'system-key.keyword',
                     ],
@@ -83,9 +95,15 @@ class SystemMetrics implements SystemMetricsInterface
 
         $query = json_encode($this->processParameters($dto, $query));
 
-        return $this->processSystemRequestCount(
+        $res = $this->processSystemRequestCount(
             $this->client->request($this->getPath(), Request::GET, $query)->getData()
         );
+
+        foreach ($dto->getSystemKeys() as $systemKey) {
+            $res[$systemKey] = $res[$systemKey] ?? 0;
+        }
+
+        return $res;
     }
 
     /**
@@ -106,7 +124,7 @@ class SystemMetrics implements SystemMetricsInterface
     {
         $counter = 0;
 
-        $query['query']['bool']['must'][$counter++]['term']['system-key.keyword'] = $dto->getSystemKey();
+        $query['query']['bool']['must'][$counter++]['terms']['system-key.keyword'] = $dto->getSystemKeys();
 
         if ($dto->getFrom()) {
             $query['query']['bool']['must'][$counter]['range']['timestamp']['gte'] = (int) $dto->getFrom()->format('U');
@@ -132,9 +150,13 @@ class SystemMetrics implements SystemMetricsInterface
     {
         $result = [];
 
-        if (isset($data['aggregations'][self::SYSTEM_METRICS_GROUP_BY]['buckets'])) {
-            foreach ($data['aggregations']['group_by_timestamp']['buckets'] as $item) {
-                $result[$item['from']] = $item['doc_count'];
+        if (isset($data['aggregations'][self::GROUP_BY_SYSTEM_KEY]['buckets'])) {
+            foreach ($data['aggregations'][self::GROUP_BY_SYSTEM_KEY]['buckets'] as $system) {
+                if (isset($system[self::GROUP_BY_TIMESTAMP]['buckets'])) {
+                    foreach ($system[self::GROUP_BY_TIMESTAMP]['buckets'] as $item) {
+                        $result[$system['key']][$item['from']] = $item['doc_count'];
+                    }
+                }
             }
         }
 
@@ -144,19 +166,19 @@ class SystemMetrics implements SystemMetricsInterface
     /**
      * @param array $data
      *
-     * @return int
+     * @return array
      */
-    private function processSystemRequestCount(array $data): int
+    private function processSystemRequestCount(array $data): array
     {
         $result = [];
 
-        if (isset($data['aggregations'][self::SYSTEM_REQUEST_GROUP_BY]['buckets'])) {
-            foreach ($data['aggregations']['group_by_system-key']['buckets'] as $item) {
-                $result[] = $item['doc_count'];
+        if (isset($data['aggregations'][self::GROUP_BY_SYSTEM_KEY]['buckets'])) {
+            foreach ($data['aggregations'][self::GROUP_BY_SYSTEM_KEY]['buckets'] as $item) {
+                $result[$item['key']] = $item['doc_count'];
             }
         }
 
-        return $result ? array_values($result)[0] : 0;
+        return $result;
     }
 
     /**

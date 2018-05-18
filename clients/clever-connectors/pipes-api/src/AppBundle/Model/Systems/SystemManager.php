@@ -534,9 +534,9 @@ class SystemManager
                 $system->getName(),
                 $this->systemRepository->getUserCount($system->getKey()),
                 $this->getSystemRequestCount(
-                    $system->getKey(),
+                    [$system->getKey()],
                     DateTimeUtils::getUTCDateTime('-1 month')
-                )
+                )[$system->getKey()]
             );
 
             $res[] = $toArray ? $data->toArray() : $data;
@@ -546,7 +546,7 @@ class SystemManager
     }
 
     /**
-     * @param string        $systemKey
+     * @param array         $systemKeys
      * @param DateTime|null $from
      * @param DateTime|null $to
      * @param null|string   $interval
@@ -556,37 +556,37 @@ class SystemManager
      * @throws EnumException
      */
     public function getSystemMetrics(
-        string $systemKey,
+        array $systemKeys,
         ?DateTime $from = NULL,
         ?DateTime $to = NULL,
         ?string $interval = NULL,
         ?string $guid = NULL
     ): array
     {
-        $dto = new SystemMetricsDto($systemKey, $from, $to, $interval, $guid);
+        $dto = new SystemMetricsDto($systemKeys, $from, $to, $interval, $guid);
 
         return $this->systemMetrics->getSystemMetrics($dto);
     }
 
     /**
-     * @param string        $systemKey
+     * @param array         $systemKeys
      * @param DateTime|null $from
      * @param DateTime|null $to
      * @param null|string   $interval
      * @param null|string   $guid
      *
-     * @return int
+     * @return array
      * @throws EnumException
      */
     public function getSystemRequestCount(
-        string $systemKey,
+        array $systemKeys,
         ?DateTime $from = NULL,
         ?DateTime $to = NULL,
         ?string $interval = NULL,
         ?string $guid = NULL
-    ): int
+    ): array
     {
-        $dto = new SystemMetricsDto($systemKey, $from, $to, $interval, $guid);
+        $dto = new SystemMetricsDto($systemKeys, $from, $to, $interval, $guid);
 
         return $this->systemMetrics->getSystemRequestCount($dto);
     }
