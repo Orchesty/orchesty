@@ -113,6 +113,17 @@ class Users {
             },
         );
 
+        /**
+         * Ping route (quick and dirty, refactor)
+         */
+        app.get(
+            "/ping",
+            (req: express.Request, res: express.Response) => {
+                res.set("content-type", "application/json");
+                res.send(JSON.stringify({result: "pong"}));
+            },
+        );
+
         app.listen(this.serverSettings.port);
 
         logger.info(`Http server listening on port: ${this.serverSettings.port}`);
