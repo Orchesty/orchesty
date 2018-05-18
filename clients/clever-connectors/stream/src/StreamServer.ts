@@ -7,6 +7,7 @@ import {default as Users, IStreamHttpServerSettings} from "./Users";
 
 export interface IStreamServerSettings {
     port: number;
+    origins: string;
     namespace: string;
     subscribeTimeout: number;
     consumer: IStreamConsumerSettings;
@@ -83,7 +84,7 @@ class StreamServer {
             },
         );
 
-        const io = SocketIO(this.settings.port);
+        const io = SocketIO(this.settings.port, {origins : this.settings.origins});
         this.stream = io.of(settings.namespace);
     }
 

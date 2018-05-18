@@ -17,6 +17,27 @@ Subscription is valid only for logged users in the remote system, thus when the 
 send information about this user and allowed groups to Stream server via http. This information is validated during
 subscribe action.
 
+## Configuration ENV parameters:
+- *ENV* - *default* (comment)
+
+
+- STREAM_WS_PORT - 8080 (port the ws server listens to)
+- STREAM_WS_ORIGINS - \*:\* (CORS settings)
+- STREAM_SUBSCRIBE_TIMEOUT - 300000 (5min)
+- STREAM_QUEUE - pipes.stream (the rabbitmq queue the app reads messages from)
+
+ 
+- RABBITMQ_HOST - rabbitmq
+- RABBITMQ_USER - guest
+- RABBITMQ_PASS - guest
+- RABBITMQ_PORT - 5672
+- RABBITMQ_VHOST - /
+- RABBITMQ_HEARTBEAT - 60
+
+
+- STREAM_HTTP_PORT - 3030 (port the http server listens to)
+- STREAM_ROUTE_LOGIN - /login 
+- STREAM_ROUTE_LOGOUT - /logout
 
 ## How to use:
 
