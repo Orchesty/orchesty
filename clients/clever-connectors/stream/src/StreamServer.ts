@@ -1,4 +1,6 @@
 import {Message} from "amqplib";
+import * as express from "express";
+import * as Http from "http";
 import logger from "lib-nodejs/dist/src/logger/Logger";
 import Connection, {IOptions} from "lib-nodejs/dist/src/rabbitmq/Connection";
 import * as SocketIO from "socket.io";
@@ -61,6 +63,7 @@ class StreamServer {
     }
 
     private consumer: StreamConsumer;
+    private server: Http.Server;
     private stream: SocketIO.Namespace;
     private timeouts: { [key: string]: NodeJS.Timer };
 
@@ -84,7 +87,17 @@ class StreamServer {
             },
         );
 
-        const io = SocketIO(this.settings.port, {origins : this.settings.origins});
+        const app = express();
+        this.server = Http.createServer(app);
+        app.get(
+            "/ping",
+            (req: express.Request, res: express.Response) => {
+                res.set("content-type", "application/json");
+                res.send(JSON.stringify({result: "pong"}));
+            },
+        );
+
+        const io = SocketIO(this.server, {origins : this.settings.origins});
         this.stream = io.of(settings.namespace);
     }
 
@@ -111,6 +124,7 @@ class StreamServer {
         });
 
         this.consumer.start();
+        this.server.listen(this.settings.port);
     }
 
     /**
