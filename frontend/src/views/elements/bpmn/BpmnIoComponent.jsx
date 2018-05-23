@@ -13,6 +13,7 @@ import CustomBPMNModeler from './custom-modeler';
 import download from 'utils/download';
 import {menuItemType} from 'rootApp/types';
 import SidebarNodeMetrics from 'rootApp/views/components/metrics/SidebarNodeMetrics';
+import SidebarTopologyMetrics from 'rootApp/views/components/metrics/SidebarTopologyMetrics';
 
 class BpmnIoComponent extends React.Component {
   constructor(props){
@@ -231,7 +232,8 @@ class BpmnIoComponent extends React.Component {
         <div className={'node-box' + (showEditorPropPanel ? '' : ' hidden')}>
           <a href="#" className="close-link" onClick={this.propPanelToggle}><i className="fa fa-times" /></a>
           <div ref={this.setPropertiesElement} className="bpmn-io-properties"/>
-          {topologyId && <SidebarNodeMetrics topologyId={topologyId} schemaId={selectedId} metricsRange={metricsRange} />}
+          {topologyId && selectedId && <SidebarNodeMetrics topologyId={topologyId} schemaId={selectedId} metricsRange={metricsRange} />}
+          {topologyId && !selectedId && <SidebarTopologyMetrics topologyId={topologyId} metricsRange={metricsRange} />}
         </div>
         <input ref={this.setFileInput} className="open-file-dialog" type="file" />
       </div>
