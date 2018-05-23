@@ -3,7 +3,7 @@ parameters:
 
 monolog:
     use_microseconds: false
-    channels: [authorization, commons, connector, ftp, mailer, parser_table, user, rabbit-mq, test, stdout]
+    channels: [authorization, commons, connector, ftp, mailer, parser_table, user, rabbit-mq, rabbit_mq, test, stdout]
     handlers:
         authorization:
             type: service
@@ -45,6 +45,11 @@ monolog:
             id: udp_handler
             level: info
             channels: [rabbit-mq]
+        rabbit_mq:
+            type: service
+            id: udp_handler
+            level: info
+            channels: [rabbit_mq]
 
         # Handler for docker container
         stdout:

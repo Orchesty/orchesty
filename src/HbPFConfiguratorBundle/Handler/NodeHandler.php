@@ -103,6 +103,7 @@ class NodeHandler
             'type'        => $node->getType(),
             'handler'     => $node->getHandler(),
             'enabled'     => $node->isEnabled(),
+            'schema_id'   => $node->getSchemaId(),
         ];
     }
 
