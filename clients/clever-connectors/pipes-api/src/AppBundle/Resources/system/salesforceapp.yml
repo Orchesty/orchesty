@@ -35,14 +35,27 @@ services:
         calls:
             - ['setLogger', ['@monolog.logger.notification']]
 
+    hbpf.connector.salesforce_app-map_fields-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp\Connector\SalesforceAppMapFieldsConnector
+        arguments:
+            - '@hbpf.transport.curl_manager'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@systems.salesforceapp'
+
     hbpf.custom_node.salesforce_app-create-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp\Mapper\SalesforceAppCreateMapper
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
 
     hbpf.custom_node.salesforce_app-update-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp\Mapper\SalesforceAppUpdateMapper
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
 
     hbpf.custom_node.salesforce_app-delete-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp\Mapper\SalesforceAppDeleteMapper
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
 
     hbpf.custom_node.salesforce_app-campaigns-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp\Mapper\SalesforceAppCampaignsMapper

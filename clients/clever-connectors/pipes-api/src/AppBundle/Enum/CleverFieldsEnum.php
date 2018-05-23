@@ -32,6 +32,7 @@ final class CleverFieldsEnum extends EnumAbstract
     public const HARD_BOUNCE   = 'hard_bounce';
     public const PLUGINS_LISTS = 'distribution_list';
     public const SEND_OPTIN    = 'send_optin';
+    public const FIELDS        = 'fields';
 
     /**
      * @var string[]
@@ -48,6 +49,7 @@ final class CleverFieldsEnum extends EnumAbstract
         self::HARD_BOUNCE   => 'hard_bounce',
         self::PLUGINS_LISTS => 'distribution_list',
         self::SEND_OPTIN    => 'send_optin',
+        self::FIELDS        => 'fields',
     ];
 
     /**

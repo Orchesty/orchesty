@@ -2,12 +2,17 @@
 
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\SalesforceApp\Mapper;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp\Mapper\SalesforceAppDeleteMapper;
+use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use ReflectionException;
 
 /**
  * Class SalesforceAppDeleteMapperTest
@@ -117,10 +122,18 @@ final class SalesforceAppDeleteMapperTest extends TestCase
 
     /**
      * @return SalesforceAppDeleteMapper
+     * @throws ReflectionException
      */
     private function getMapper(): SalesforceAppDeleteMapper
     {
-        $mapper = new SalesforceAppDeleteMapper();
+        $repo = $this->createMock(SystemInstallRepository::class);
+        $repo->method('getSystemInstallFromHeaders')->willReturn(new SystemInstall());
+
+        /** @var DocumentManager|MockObject $dm */
+        $dm = $this->createMock(DocumentManager::class);
+        $dm->method('getRepository')->willReturn($repo);
+
+        $mapper = new SalesforceAppDeleteMapper($dm);
 
         return $mapper;
     }

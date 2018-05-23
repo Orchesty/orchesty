@@ -19,6 +19,9 @@ use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 final class CMSubscriber
 {
 
+    private const KEY = 'field_id';
+    private const VAL = 'values';
+
     /**
      * @var string
      */
@@ -53,6 +56,11 @@ final class CMSubscriber
      * @var bool
      */
     private $sendOptin = FALSE;
+
+    /**
+     * @var array
+     */
+    private $customFields = [];
 
     /**
      * @return string
@@ -197,6 +205,30 @@ final class CMSubscriber
     /**
      * @return array
      */
+    public function getCustomFields(): array
+    {
+        return $this->customFields;
+    }
+
+    /**
+     * @param string $key
+     * @param mixed  $val
+     *
+     * @return CMSubscriber
+     */
+    public function addCustomField(string $key, $val): CMSubscriber
+    {
+        $this->customFields[] = [
+            self::KEY => $key,
+            self::VAL => [(string) $val],
+        ];
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
     public function toArray(): array
     {
         $res = [
@@ -219,6 +251,10 @@ final class CMSubscriber
 
         if (!empty($this->lists)) {
             $res[CleverFieldsEnum::LISTS] = $this->lists;
+        }
+
+        if (!empty($this->customFields)) {
+            $res[CleverFieldsEnum::FIELDS] = $this->customFields;
         }
 
         return $res;

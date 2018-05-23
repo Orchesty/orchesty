@@ -2,9 +2,14 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp\Mapper;
 
+use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CM\SubscriberConnector\SubscriberObject\CMSubscriber;
+use CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp\Connector\SalesforceAppMapFieldsConnector;
+use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Utils\HeadersUtils;
+use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
@@ -23,8 +28,26 @@ abstract class SalesforceAppMapperAbstract implements CustomNodeInterface
     public const UPDATED   = 'LastModifiedDate';
     public const CREATED   = 'CreatedDate';
     public const DELETED   = 'CMHB__Deleted__c';
+    public const FIELDS    = 'fields';
+    public const CM_FIELD  = 'CMHB__cmIDField__c';
+    public const ID_CUSTOM = 'CMHB__customIdField__c';
 
-    private const DISTRIBUTION_LIST = 'CMHB__Distribution_List__r';
+    protected const DISTRIBUTION_LIST = 'CMHB__Distribution_List__r';
+
+    /**
+     * @var SystemInstallRepository|ObjectRepository
+     */
+    protected $repo;
+
+    /**
+     * SalesforceAppMapperAbstract constructor.
+     *
+     * @param DocumentManager $dm
+     */
+    public function __construct(DocumentManager $dm)
+    {
+        $this->repo = $dm->getRepository(SystemInstall::class);
+    }
 
     /**
      * @param ProcessDto $dto
@@ -34,8 +57,10 @@ abstract class SalesforceAppMapperAbstract implements CustomNodeInterface
      */
     public function process(ProcessDto $dto): ProcessDto
     {
+        $systemInstall = $this->repo->getSystemInstallFromHeaders($dto->getHeaders());
+
         $data = json_decode($dto->getData(), TRUE);
-        $data = $this->normalizeData($data);
+        $data = $this->normalizeData($data, $systemInstall);
 
         if (!is_array($data) || !array_key_exists(self::EMAIL, $data) || !array_key_exists(self::LIST, $data)) {
             throw new CleverConnectorsException(
@@ -61,6 +86,12 @@ abstract class SalesforceAppMapperAbstract implements CustomNodeInterface
             $subscriber->setLastName($data[self::LASTNAME]);
         }
 
+        if (array_key_exists(self::FIELDS, $data)) {
+            foreach ($data[self::FIELDS] as $key => $field) {
+                $subscriber->addCustomField($key, $field);
+            }
+        }
+
         return $dto->setData(json_encode($subscriber->toArray()));
     }
 
@@ -84,11 +115,12 @@ abstract class SalesforceAppMapperAbstract implements CustomNodeInterface
     }
 
     /**
-     * @param array $data
+     * @param array         $data
+     * @param SystemInstall $systemInstall
      *
      * @return array
      */
-    protected function normalizeData(array $data): array
+    protected function normalizeData(array $data, SystemInstall $systemInstall): array
     {
         $ret = [];
 
@@ -120,7 +152,27 @@ abstract class SalesforceAppMapperAbstract implements CustomNodeInterface
             $ret[self::LIST] = $data[self::DISTRIBUTION_LIST][self::LIST];
         }
 
+        $ret = $this->mapCustomFields($data, $ret, $systemInstall);
+
         return $ret;
+    }
+
+    /**
+     * @param array         $input
+     * @param array         $output
+     * @param SystemInstall $systemInstall
+     *
+     * @return array
+     */
+    protected function mapCustomFields(array $input, array $output, SystemInstall $systemInstall): array
+    {
+        $mapFields = $systemInstall->getSettings()[SalesforceAppMapFieldsConnector::MAP_FIELDS] ?? [];
+
+        foreach ($mapFields as $field) {
+            $output['fields'][$field[self::CM_FIELD]] = $input[$field[self::ID_CUSTOM]] ?? '';
+        }
+
+        return $output;
     }
 
     /**

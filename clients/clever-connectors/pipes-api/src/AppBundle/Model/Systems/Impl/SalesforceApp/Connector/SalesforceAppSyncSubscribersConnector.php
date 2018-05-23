@@ -244,8 +244,14 @@ class SalesforceAppSyncSubscribersConnector implements BatchInterface, Connector
      */
     private function createPageContactRequest(int $page, RequestDto $dto, string $where): RequestDto
     {
+        $customFields = '';
+        for ($i = 1; $i < 11; $i++) {
+            $customFields .= sprintf(',+CMHB__CustomField%s__c', $i);
+        }
+
         $q = 'select+CMHB__Email__c,+CMHB__Firstname__c,+CMHB__Lastname__c,' .
             '+CMHB__Distribution_List__r.CMHB__CM_ID__c,+CreatedDate,+LastModifiedDate,+CMHB__Deleted__c' .
+            $customFields .
             '+from+CMHB__Subscriber__c%s' .
             '+limit+%s+offset+%s';
 
