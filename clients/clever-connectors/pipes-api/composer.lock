@@ -2127,11 +2127,11 @@
         },
         {
             "name": "hanaboso/rabbit-mq-bundle",
-            "version": "1.0.2",
+            "version": "1.0.3",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.hanaboso.net:hanaboso/rabbit-mq-bundle.git",
-                "reference": "246226999362e162b37dc2fae09bd85fd88eadd8"
+                "reference": "66b983fc0f37f0d37e8a0e7f4718728a69f73011"
             },
             "require": {
                 "bunny/bunny": "^0.4",
@@ -2159,7 +2159,7 @@
             "license": [
                 "proprietary"
             ],
-            "time": "2018-04-30T11:31:43+00:00"
+            "time": "2018-05-23T07:23:49+00:00"
         },
         {
             "name": "hanaboso/user-bundle",
@@ -2492,16 +2492,16 @@
         },
         {
             "name": "jms/serializer-bundle",
-            "version": "2.3.1",
+            "version": "2.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/schmittjoh/JMSSerializerBundle.git",
-                "reference": "9dec7ab62248aa97f33cce70c301af15154f8f0b"
+                "reference": "507d2359857226b3188f6de96dae7e33584c1445"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/schmittjoh/JMSSerializerBundle/zipball/9dec7ab62248aa97f33cce70c301af15154f8f0b",
-                "reference": "9dec7ab62248aa97f33cce70c301af15154f8f0b",
+                "url": "https://api.github.com/repos/schmittjoh/JMSSerializerBundle/zipball/507d2359857226b3188f6de96dae7e33584c1445",
+                "reference": "507d2359857226b3188f6de96dae7e33584c1445",
                 "shasum": ""
             },
             "require": {
@@ -2528,7 +2528,7 @@
             "type": "symfony-bundle",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.3-dev"
+                    "dev-master": "2.4-dev"
                 }
             },
             "autoload": {
@@ -2562,7 +2562,7 @@
                 "serialization",
                 "xml"
             ],
-            "time": "2017-12-08T19:49:08+00:00"
+            "time": "2018-05-20T07:28:26+00:00"
         },
         {
             "name": "kdyby/monolog",
@@ -3640,16 +3640,16 @@
         },
         {
             "name": "paragonie/sodium_compat",
-            "version": "v1.6.1",
+            "version": "v1.6.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paragonie/sodium_compat.git",
-                "reference": "9857e17bf9c1464485d8cc804eb13f2bcddc4cf0"
+                "reference": "22f564d068c093c3775552c700553209f9af60f8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paragonie/sodium_compat/zipball/9857e17bf9c1464485d8cc804eb13f2bcddc4cf0",
-                "reference": "9857e17bf9c1464485d8cc804eb13f2bcddc4cf0",
+                "url": "https://api.github.com/repos/paragonie/sodium_compat/zipball/22f564d068c093c3775552c700553209f9af60f8",
+                "reference": "22f564d068c093c3775552c700553209f9af60f8",
                 "shasum": ""
             },
             "require": {
@@ -3718,7 +3718,7 @@
                 "secret-key cryptography",
                 "side-channel resistant"
             ],
-            "time": "2018-03-21T17:08:08+00:00"
+            "time": "2018-05-22T20:15:01+00:00"
         },
         {
             "name": "php-http/client-common",
@@ -5742,6 +5742,61 @@
             "time": "2018-03-05T14:51:36+00:00"
         },
         {
+            "name": "symfony/polyfill-ctype",
+            "version": "v1.8.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/polyfill-ctype.git",
+                "reference": "7cc359f1b7b80fc25ed7796be7d96adc9b354bae"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/polyfill-ctype/zipball/7cc359f1b7b80fc25ed7796be7d96adc9b354bae",
+                "reference": "7cc359f1b7b80fc25ed7796be7d96adc9b354bae",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.8-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Polyfill\\Ctype\\": ""
+                },
+                "files": [
+                    "bootstrap.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                },
+                {
+                    "name": "Gert de Pagter",
+                    "email": "BackEndTea@gmail.com"
+                }
+            ],
+            "description": "Symfony polyfill for ctype functions",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "compatibility",
+                "ctype",
+                "polyfill",
+                "portable"
+            ],
+            "time": "2018-04-30T19:57:29+00:00"
+        },
+        {
             "name": "symfony/polyfill-intl-icu",
             "version": "v1.8.0",
             "source": {
@@ -5977,16 +6032,16 @@
         },
         {
             "name": "symfony/symfony",
-            "version": "v4.0.9",
+            "version": "v4.0.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "98e4187f3f2853f49f7311722ff4b1e4b3e72325"
+                "reference": "bcb589c90106b07718d788521aba8e5ce7bd9f53"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/98e4187f3f2853f49f7311722ff4b1e4b3e72325",
-                "reference": "98e4187f3f2853f49f7311722ff4b1e4b3e72325",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/bcb589c90106b07718d788521aba8e5ce7bd9f53",
+                "reference": "bcb589c90106b07718d788521aba8e5ce7bd9f53",
                 "shasum": ""
             },
             "require": {
@@ -5999,6 +6054,7 @@
                 "psr/link": "^1.0",
                 "psr/log": "~1.0",
                 "psr/simple-cache": "^1.0",
+                "symfony/polyfill-ctype": "~1.8",
                 "symfony/polyfill-intl-icu": "~1.0",
                 "symfony/polyfill-mbstring": "~1.0",
                 "symfony/polyfill-php72": "~1.5",
@@ -6124,7 +6180,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2018-04-30T19:46:30+00:00"
+            "time": "2018-05-21T14:02:48+00:00"
         },
         {
             "name": "tracy/tracy",
