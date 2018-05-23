@@ -308,7 +308,21 @@ git-cm:
     - ssh-add ~/.ssh/bob_the_builder_clevermon
     - clients/clever-connectors/bin/cm-git-sync.sh
 
-###
+git-pf-bundles:
+  stage: stage3
+  when: always
+  only:
+    - dev
+    - master
+    - pf-bundle-export
+  script:
+    - skip_unmodified pf-bundles
+    - rm -rf _tmp_pipes
+    - git clone --mirror git@gitlab.hanaboso.net:pipes/pipes.git _tmp_pipes
+    - cd _tmp_pipes
+    - git filter-branch -f --prune-empty --subdirectory-filter pf-bundles -- -q --all
+    - git remote add dest git@gitlab.hanaboso.net:pipes/pf-bundles.git
+    - git push --mirror dest
 
 cleanup:
   stage: cleanup
