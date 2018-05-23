@@ -1,8 +1,8 @@
 .PHONY: init composer-update
 
 DC=docker-compose
-DE=docker-compose exec app
-DP=docker-compose exec app bin/console
+DE=docker-compose exec -T app
+DP=docker-compose exec -T app bin/console
 DS=docker-compose exec mariadb
 IMAGE_API_DEMO_FPM=dkr.hanaboso.net/pipes/client-cm/api-demo:latest
 
