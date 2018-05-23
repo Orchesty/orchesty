@@ -32,16 +32,16 @@ class TopologyNodeGraphsContainer extends React.Component {
       <div>
         <TopologyMetrics
           topologyId={topologyId}
-          componentKey={`${componentKey}.${topologyId}.metrics`}
+          componentKey={`${componentKey}.topology`}
           metricsRange={metricsRange}
           interval={interval}
           changeMetricsRange={changeMetricsRange}
           changeMetricsInterval={changeMetricsInterval}
         />
-        <ProcessChartPanel requests={metricsList.data.requests} componentKey={`${componentKey}.${topologyId}.process-chart`}/>
-        <ProcessTimeChartPanel keys={nodeNames} values={processTimeValues} componentKey={`${componentKey}.${topologyId}.process-time-chart`}/>
-        <WaitingTimeChartPanel keys={nodeNames} values={waitingTimeValues} componentKey={`${componentKey}.${topologyId}.waiting-time-chart`}/>
-        <QueueDepthChartPanel keys={nodeNames} values={queueDepthValues} componentKey={`${componentKey}.${topologyId}.queue-depth-chart`}/>
+        <ProcessChartPanel requests={metricsList.data.requests} componentKey={`${componentKey}.${topologyId}.process`}/>
+        <ProcessTimeChartPanel keys={nodeNames} values={processTimeValues} componentKey={`${componentKey}.${topologyId}.process-time`}/>
+        <WaitingTimeChartPanel keys={nodeNames} values={waitingTimeValues} componentKey={`${componentKey}.${topologyId}.waiting-time`}/>
+        <QueueDepthChartPanel keys={nodeNames} values={queueDepthValues} componentKey={`${componentKey}.${topologyId}.queue-depth`}/>
       </div>
     );
   }

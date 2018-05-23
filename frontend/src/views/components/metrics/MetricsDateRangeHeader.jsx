@@ -20,9 +20,9 @@ class MetricsDateRangeHeader extends React.Component {
   }
 
   render() {
-    const {interval, metricsRange, changeMetricsRange, changeMetricsInterval} = this.props;
+    const {interval, metricsRange, changeMetricsRange, changeMetricsInterval, last} = this.props;
     return (
-      <div className="metrics-date-range-header">
+      <div className={'metrics-date-range-header' + (last ? ' last' : '')}>
         {changeMetricsInterval && <div className="metrics-interval"><SelectInput value={interval} onChange={this.changeInterval} options={intervalOptions}/></div>}
         <div className="metrics-range">
           <DateRangeInput value={metricsRange} onChange={changeMetricsRange}/>
@@ -32,10 +32,15 @@ class MetricsDateRangeHeader extends React.Component {
   }
 }
 
+MetricsDateRangeHeader.defaultProps = {
+  last: false
+};
+
 MetricsDateRangeHeader.propTypes = {
   metricsRange: PropTypes.object,
   changeMetricsRange: PropTypes.func.isRequired,
-  changeMetricsInterval: PropTypes.func
+  changeMetricsInterval: PropTypes.func,
+  last: PropTypes.bool.isRequired,
 };
 
 export default MetricsDateRangeHeader;

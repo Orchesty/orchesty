@@ -27,8 +27,10 @@ export default (WrappedComponent, parameters) => {
 		constructor(props){
 			super(props);
 			this.setActions = this.setActions.bind(this);
+			this.setPanelActions = this.setPanelActions.bind(this);
       this.state = {
         actions: [],
+	      panelActions: [],
       };
 		}
 
@@ -36,15 +38,20 @@ export default (WrappedComponent, parameters) => {
 		  this.setState({actions});
     }
 
+    setPanelActions(panelActions){
+		  this.setState({panelActions});
+    }
+
 		render() {
-			const {title, subTitle, icon, HeaderComponent, visible, toggleVisible, middleHeader, ...passProps} = this.props;
-			const {actions} = this.state;
-			const allActions = [...actions, {
+			const {title, subTitle, icon, HeaderComponent, visible, toggleVisible, middleHeader, noActions, noHide, ...passProps} = this.props;
+			const {actions, panelActions} = this.state;
+			const allActions = noHide ? [...actions, ...panelActions] : [...actions, ...panelActions, {
 			  icon: 'fa fa-chevron-' + (visible ? 'up' : 'down'),
         caption: visible ? 'Hide' : 'Show',
         action: toggleVisible,
         type: menuItemType.ACTION
       }];
+      const actionProps = noActions ? {} : {setActions: this.setActions};
 			return (
 				<div className={'x_panel' + (visible ? '' : ' closed')}>
 					<div className="x_title">
@@ -52,17 +59,21 @@ export default (WrappedComponent, parameters) => {
 							{subTitle && <small>{subTitle}</small>}
 						</h2>
 						{middleHeader}
-						<ActionIconPanel items={allActions}/>
-            {HeaderComponent && <HeaderComponent {...passProps}/>}
+						{allActions.length > 0 && <ActionIconPanel items={allActions}/>}
+            {HeaderComponent && <HeaderComponent last={allActions.length === 0} {...passProps}/>}
 						<div className="clearfix" />
 					</div>
-					{visible && <div className="x_content"><WrappedComponent {...passProps} setActions={this.setActions}/></div>}
+					{(visible || noHide) && <div className="x_content"><WrappedComponent {...passProps} setPanelActions={this.setPanelActions} {...actionProps}/></div>}
 				</div>
 			);
 		}
 	}
 
-	Panel.defaultProps = {...parameters};
+	Panel.defaultProps = {
+		noActions: false,
+		noHide: false,
+		...parameters
+	};
 
 	Panel.propTypes = {
 		componentKey: PropTypes.string.isRequired,
@@ -70,7 +81,9 @@ export default (WrappedComponent, parameters) => {
 		subTitle: PropTypes.string,
 		icon: PropTypes.string,
 		HeaderComponent: PropTypes.func,
-    toggleVisible: PropTypes.func.isRequired
+    toggleVisible: PropTypes.func.isRequired,
+		noActions: PropTypes.bool.isRequired,
+		noHide: PropTypes.bool.isRequired,
 	};
 
 	Panel.displayName = `Panel(${WrappedComponent.displayName || WrappedComponent.name || 'Component'})`;

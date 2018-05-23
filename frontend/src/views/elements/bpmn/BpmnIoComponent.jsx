@@ -12,13 +12,25 @@ import emptySchema from './empty-schema.bpmn';
 import CustomBPMNModeler from './custom-modeler';
 import download from 'utils/download';
 import {menuItemType} from 'rootApp/types';
+import SidebarNodeMetrics from 'rootApp/views/components/metrics/SidebarNodeMetrics';
 
 class BpmnIoComponent extends React.Component {
   constructor(props){
     super(props);
-    this._self = null;
     this._modeler = null;
     this._changed = false;
+    this._fileInputElement = null;
+    this._canvasBpmnElement = null;
+    this._propertiesElement = null;
+    this.setFileInput = this.setFileInput.bind(this);
+    this.setCanvasElement = this.setCanvasElement.bind(this);
+    this.setPropertiesElement = this.setPropertiesElement.bind(this);
+    this.selectionChanged = this.selectionChanged.bind(this);
+    this.propPanelToggle = this.propPanelToggle.bind(this);
+    this.changed = this.changed.bind(this);
+    this.state = {
+      selectedId: null
+    }
   }
 
   _sendActions(){
@@ -51,7 +63,15 @@ class BpmnIoComponent extends React.Component {
           }
         ]
       }
-    ])
+    ]);
+    this.props.setPanelActions([
+      {
+        type: menuItemType.ACTION,
+        caption: 'Toggle info box',
+        icon: 'fa fa-info dark',
+        action: () => this.props.onPropPanelToggle()
+      },
+    ]);
   }
 
   componentWillMount(){
@@ -59,24 +79,7 @@ class BpmnIoComponent extends React.Component {
   }
 
   componentDidMount() {
-    const parent = ReactDOM.findDOMNode(this);
-    this._modeler = new CustomBPMNModeler({
-      propertiesPanel: {
-        parent: parent.childNodes[1]
-      },
-    });
-    this._modeler.attachTo(parent.childNodes[0]);
-    this.loadXML();
-    this._modeler.get('eventBus').on('commandStack.changed', e => {this.changed()});
-
-    parent.childNodes[2].addEventListener('change', e => {
-      const reader = new FileReader();
-      const file = e.target.files[0];
-      reader.onload = response => {
-        this.openBPMN({file, content: response.target.result});
-      };
-      reader.readAsText(file);
-    })
+    this.createBpmn();
   }
 
   componentWillUnmount(){
@@ -90,11 +93,64 @@ class BpmnIoComponent extends React.Component {
     }
   }
 
+  createBpmn(){
+    this._modeler = new CustomBPMNModeler({
+      propertiesPanel: {
+        parent: this._propertiesElement
+      },
+    });
+    this._modeler.attachTo(this._canvasBpmnElement);
+    this.loadXML();
+    this._modeler.get('eventBus').on('commandStack.changed', this.changed);
+    this._modeler.get('eventBus').on('selection.changed', this.selectionChanged);
+  }
+
+  selectionChanged(event){
+    const {selectedId} = this.state;
+    if (event.newSelection.length > 0) {
+      if (selectedId != event.newSelection[0].id){
+        this.setState({selectedId: event.newSelection[0].id});
+      }
+    } else if (selectedId) {
+      this.setState({selectedId: null});
+    }
+  }
+
+  setFileInput(element){
+    if (element !== this._fileInputElement) {
+      this._fileInputElement = element;
+      if (this._fileInputElement){
+        this._fileInputElement.addEventListener('change', e => {
+          const reader = new FileReader();
+          const file = e.target.files[0];
+          reader.onload = response => {
+            this.openBPMN({file, content: response.target.result});
+          };
+          reader.readAsText(file);
+        });
+      }
+    }
+  }
+
+  setCanvasElement(element){
+    this._canvasBpmnElement = element;
+  }
+
+  setPropertiesElement(element){
+    this._propertiesElement = element;
+  }
+
   changed(){
     if (!this._changed){
       this._changed = true;
       this._sendActions();
     }
+  }
+
+  propPanelToggle(e){
+    const {onPropPanelToggle} = this.props;
+    e.preventDefault();
+    onPropPanelToggle();
   }
 
   loadXML() {
@@ -146,8 +202,9 @@ class BpmnIoComponent extends React.Component {
   }
 
   importBPMN(){
-    const parent = ReactDOM.findDOMNode(this);
-    parent.childNodes[2].click();
+    if (this._fileInputElement){
+      this._fileInputElement.click();
+    }
   }
 
   openBPMN(data){
@@ -166,11 +223,17 @@ class BpmnIoComponent extends React.Component {
   }
 
   render() {
+    const {topologyId, metricsRange, showEditorPropPanel} = this.props;
+    const {selectedId} = this.state;
     return (
       <div ref={self => {this.setSelf(self)}} className="bpmn-io-component">
-        <div className="bpmn-io-canvas"/>
-        <div className="bpmn-io-properties"/>
-        <input className="open-file-dialog" type="file" />
+        <div ref={this.setCanvasElement} className="bpmn-io-canvas"/>
+        <div className={'node-box' + (showEditorPropPanel ? '' : ' hidden')}>
+          <a href="#" className="close-link" onClick={this.propPanelToggle}><i className="fa fa-times" /></a>
+          <div ref={this.setPropertiesElement} className="bpmn-io-properties"/>
+          {topologyId && <SidebarNodeMetrics topologyId={topologyId} schemaId={selectedId} metricsRange={metricsRange} />}
+        </div>
+        <input ref={this.setFileInput} className="open-file-dialog" type="file" />
       </div>
     );
   }
@@ -183,7 +246,12 @@ BpmnIoComponent.propTypes = {
   onError: PropTypes.func.isRequired,
   onImport: PropTypes.func.isRequired,
   setActions: PropTypes.func.isRequired,
-  saveProcessId: PropTypes.string
+  setPanelActions: PropTypes.func.isRequired,
+  saveProcessId: PropTypes.string,
+  topologyId: PropTypes.string,
+  metricsRange: PropTypes.object,
+  onPropPanelToggle: PropTypes.func.isRequired,
+  showEditorPropPanel: PropTypes.bool.isRequired
 };
 
 export default BpmnIoComponent;

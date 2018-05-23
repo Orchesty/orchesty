@@ -1,4 +1,6 @@
 .x_panel {
+  display: flex;
+  flex-direction: column;
 
   .x_title {
     border-bottom: none;
@@ -22,6 +24,10 @@
     .action-icon-panel {
       color: #C5C7CB;
     }
+  }
+
+  .x_content{
+    flex: 1;
   }
 
   &.closed {
