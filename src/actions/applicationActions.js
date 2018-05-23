@@ -6,6 +6,12 @@ export function leftSidebarToggle() {
   }
 }
 
+export function editorPropPanelToggle() {
+  return {
+    type: types.EDITOR_PROP_PANEL_TOGGLE
+  }
+}
+
 export function openPage(key, args = null){
   if (!key){
     throw new Error('openPage action: Missing page key');

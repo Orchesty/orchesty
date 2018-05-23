@@ -6,12 +6,13 @@ import processes from 'rootApp/enums/processes';
 import * as topologyActions from 'rootApp/actions/topologyActions';
 import * as applicationActions from 'rootApp/actions/applicationActions';
 
-import TopologySchema from './TopologySchema';
 import TopologyNodeMetricsContainer from 'components/node/TopologyNodeMetricsContainer';
 import TopologyNodeGraphsContainer from 'components/node/TopologyNodeGraphsContainer';
 
 import './TopologyDetail.less';
 import {menuItemType} from 'rootApp/types';
+import TopologySchemaPanel from './TopologySchemaPanel';
+import TopologySchema from 'rootApp/views/components/topology/TopologySchema';
 
 class TopologyDetail extends React.Component {
   constructor(props) {
@@ -126,16 +127,20 @@ class TopologyDetail extends React.Component {
 
   render() {
     const {topologyId, activeTab, setActions, topology, onChangeTopology, componentKey, metricsRange, interval, pageId} = this.props;
-    const schemaVisible = activeTab == 'schema';
+    const schemaVisible = activeTab === 'schema';
+    const newComponentKey = `${componentKey}.${topologyId}`;
     return (
       <div className="topology-detail">
         <div className="tab-content">
-          {activeTab == 'nodes' && <TopologyNodeMetricsContainer pageId={pageId} topologyId={topologyId} componentKey={componentKey} metricsRange={metricsRange} />}
-          {activeTab == 'graphs' && <TopologyNodeGraphsContainer pageId={pageId} topologyId={topologyId} componentKey={componentKey} metricsRange={metricsRange} interval={interval} />}
+          {activeTab == 'nodes' && <TopologyNodeMetricsContainer pageId={pageId} topologyId={topologyId} componentKey={`${newComponentKey}.metrics`} metricsRange={metricsRange} />}
+          {activeTab == 'graphs' && <TopologyNodeGraphsContainer pageId={pageId} topologyId={topologyId} componentKey={`${newComponentKey}.graphs`} metricsRange={metricsRange} interval={interval} />}
           <div className={'schema-wrapper' + ( schemaVisible ? '' : ' hidden')}>
-            <TopologySchema
+            <TopologySchemaPanel
+              pageId={pageId}
+              componentKey={`${newComponentKey}.schema`}
+              metricsRange={metricsRange}
               schemaId={topologyId}
-              topology={topology}
+              topologyId={topologyId}
               setActions={this.setActions.bind(this, 'schema')}
               onChangeTopology={onChangeTopology}
               visible={schemaVisible}

@@ -9,7 +9,8 @@ const initialState = {
   showSideBar: true,
   modal: null,
   modalData: null,
-  contextMenu: null
+  contextMenu: null,
+  showEditorPropPanel: true,
 };
 
 export default (state = initialState, action) => {
@@ -53,6 +54,11 @@ export default (state = initialState, action) => {
     case types.LEFT_SIDEBAR_TOGGLE:
       return Object.assign({}, state, {
         showSideBar: !state.showSideBar
+      });
+
+    case types.EDITOR_PROP_PANEL_TOGGLE:
+      return Object.assign({}, state, {
+        showEditorPropPanel: !state.showEditorPropPanel
       });
     
     case types.MODAL_OPEN:

@@ -7,6 +7,7 @@ import {stateType} from 'rootApp/types';
 import processes from 'enums/processes';
 import * as topologyActions from 'actions/topologyActions';
 import * as notificationActions from 'actions/notificationActions';
+import * as applicationActions from 'actions/applicationActions';
 
 import SimpleState from 'elements/state/SimpleState';
 import BpmnIoComponent from 'elements/bpmn/BpmnIoComponent';
@@ -59,8 +60,7 @@ class TopologySchema extends React.Component {
   }
 
   render() {
-    const {schema, setActions, topology, addErrorNotification, saveProcessId} = this.props;
-
+    const {schema, setActions, setPanelActions, topology, addErrorNotification, saveProcessId, metricsRange, showEditorPropPanel, onPropPanelToggle} = this.props;
     return (
       <SimpleState state={this.state.state}>
         <BpmnIoComponent
@@ -69,8 +69,13 @@ class TopologySchema extends React.Component {
           onError={addErrorNotification}
           onImport={this.schemaImported}
           setActions={setActions}
+          setPanelActions={setPanelActions}
           onSave={this.save}
           saveProcessId={saveProcessId}
+          topologyId={topology._id}
+          metricsRange={metricsRange}
+          showEditorPropPanel={showEditorPropPanel}
+          onPropPanelToggle={onPropPanelToggle}
         />
       </SimpleState>
     );
@@ -82,18 +87,21 @@ TopologySchema.propTypes = {
   addSuccessNotification: PropTypes.func.isRequired,
   addErrorNotification: PropTypes.func.isRequired,
   setActions: PropTypes.func.isRequired,
+  setPanelActions: PropTypes.func.isRequired,
   schema: PropTypes.string,
   schemaId: PropTypes.string,
   topology: PropTypes.object,
   saveTopologySchema: PropTypes.func.isRequired,
   onChangeTopology: PropTypes.func.isRequired,
   onImport: PropTypes.func,
-  saveProcessId: PropTypes.string
+  saveProcessId: PropTypes.string,
+  metricsRange: PropTypes.object
 };
 
 function mapStateToProps(state, ownProps) {
-  const {topology} = state;
+  const {topology, application} = state;
   return {
+    showEditorPropPanel: application.showEditorPropPanel,
     schema: topology.schemas[ownProps.schemaId],
     saveProcessId: processes.topologySaveScheme(ownProps.schemaId)
   };
@@ -104,7 +112,8 @@ function mapActionsToProps(dispatch, ownProps){
     loadTopologySchema: () => dispatch(topologyActions.loadTopologySchema(ownProps.schemaId, false)),
     addSuccessNotification: message => dispatch(notificationActions.addNotification('success', message)),
     addErrorNotification: error => dispatch(notificationActions.addNotification('error', error)),
-    saveTopologySchema: schema => dispatch(topologyActions.saveTopologySchema(ownProps.schemaId, schema))
+    saveTopologySchema: schema => dispatch(topologyActions.saveTopologySchema(ownProps.schemaId, schema)),
+    onPropPanelToggle: () => dispatch(applicationActions.editorPropPanelToggle())
   }
 }
 

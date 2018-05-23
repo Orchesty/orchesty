@@ -5,6 +5,7 @@ import {connect} from 'react-redux';
 import Panel from 'rootApp/views/wrappers/Panel';
 import DateRangeInput from 'rootApp/views/elements/input/DateRangeInput';
 import MetricsDateRangeHeader from 'rootApp/views/components/metrics/MetricsDateRangeHeader';
+import getTopologyState from 'rootApp/utils/getTopologyState';
 
 class TopologyMetrics extends React.Component {
   constructor(props) {
@@ -31,32 +32,6 @@ class TopologyMetrics extends React.Component {
 }
 
 TopologyMetrics.propTypes = {};
-
-function getTopologyState(topology){
-  if (topology.visibility === 'draft'){
-    return {
-      label: 'default',
-      title: 'Draft'
-    };
-  } else if (topology.visibility === 'public'){
-    if (topology.enabled){
-      return {
-        label: 'success',
-        title: 'Enabled'
-      }
-    } else {
-      return {
-        label: 'warning',
-        title: 'Disabled'
-      }
-    }
-  } else {
-    return {
-      label: 'danger',
-      title: 'Invalid state'
-    }
-  }
-}
 
 function mapStateToProps(state, ownProps){
   const {metrics, topology} = state;

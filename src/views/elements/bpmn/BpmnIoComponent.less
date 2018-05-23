@@ -1,32 +1,66 @@
 @import "../../../../node_modules/bpmn-js-properties-panel/styles/properties.less";
 
-
 .bpmn-io-component{
 
   height: 100%;
 
-  @propertyPanelWidth: 350px;
+  @propertyPanelWidth: 250px;
 
   .bpmn-io-canvas{
-    border: 1px solid #ccc;
     display: inline-block;
-    width: calc(100% ~"-" @propertyPanelWidth);
+    width: 100%;
     height: 100%;
     vertical-align: top;
+    background-color: white;
+
+    .bjs-powered-by{
+      display: none;
+    }
   }
 
-  .bpmn-io-properties{
-    display: inline-block;
-    width: @propertyPanelWidth;
-    height: 100%;
-    vertical-align: top;
-    border: 1px solid #ccc;
-    border-left: none;
-    overflow-y: scroll;
+  .node-box {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    top: 20px;
+    right: 5px;
+    bottom: 20px;
+    background: #F7F7F7;
+    border: 1px solid #e3e3e3;
+    border-radius: 4px;
+    box-shadow: 1px 1px 5px 0 rgba(50, 50, 50, 0.25);
+    padding: 10px;
+    overflow-y: auto;
 
-    .label{
-      color: black;
+    .close-link{
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      z-index: 10;
     }
+
+    .bpmn-io-properties {
+      display: inline-block;
+      width: @propertyPanelWidth;
+      vertical-align: top;
+      border-bottom: 1px solid #ccc;
+      margin-bottom: 15px;
+
+      &:last-child{
+        border-bottom: none;
+        margin-bottom: 0;
+      }
+
+      .label {
+        color: black;
+      }
+    }
+  }
+
+  .node-box-close{
+    position: absolute;
+    top: 0;
+    right: 5px;
   }
 
   .open-file-dialog{
