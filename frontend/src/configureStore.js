@@ -19,6 +19,7 @@ export default function (initialState, composeWithDevTools) {
     ['auth', 'user'],
     ['server', 'apiGateway'],
     ['application', 'showSideBar'],
+    ['application', 'showEditorPropPanel'],
     ['application', 'pages']
   ]);
   const storageMiddleware = storage.createMiddleware(decoratedEngine, [], [
@@ -26,6 +27,7 @@ export default function (initialState, composeWithDevTools) {
     types.USER_LOGOUT,
     types.SERVER_API_GATEWAY_CHANGE,
     types.LEFT_SIDEBAR_TOGGLE,
+    types.EDITOR_PROP_PANEL_TOGGLE,
     types.OPEN_PAGE,
     types.CLOSE_PAGE
   ]);

@@ -27,7 +27,7 @@ class TopologyNodeMetricsContainer extends React.Component {
       <div>
         <TopologyMetrics
           topologyId={topologyId}
-          componentKey={`${componentKey}.${topologyId}`}
+          componentKey={`${componentKey}.topology`}
           metricsRange={metricsRange}
           changeMetricsRange={changeMetricsRange}
         />
