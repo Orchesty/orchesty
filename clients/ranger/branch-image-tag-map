@@ -3,7 +3,8 @@ declare -A BRANCH_IMAGE_TAG_MAP=(
   # default tags
   [RANGER_default]="master"
   [TEMPLATING_default]="dev"
-  [WORKFLOW_default]="dev"
+  [PREVIEW_default]="master"
   [FILESTORAGE_default]="master"
+  [WORKFLOW_default]="master"
 
 )

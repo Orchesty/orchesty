@@ -1,37 +1,8 @@
 ---
 
-## BEGIN DEV
-version: '2'
-## END DEV
-## BEGIN STAGE
-#version: '3.3'
-## END STAGE
+version: '3.4'
 
 services:
-  app:
-    image: dkr.hanaboso.net/clever-monitor/cm-ranger:${TAG_RANGER}
-    environment:
-      - CC_API_BACKEND=monolith-api
-      - CC_NOTIFICATION_BACKEND=notification-sender-api
-      - SYNCHRONIZATION_BACKEND=monolith-api
-      - TEMPLATING_BACKEND=templating-service
-      - WORKFLOW_BACKEND=workflow:50051
-    depends_on:
-      - mariadb
-      - redis
-      - rabbitmq
-  ## BEGIN DEV
-    ports:
-      - ${DEV_IP}:80:80
-  ## END DEV
-  ## BEGIN STAGE
-  #  secrets:
-  #    - source: clevermonitor-ca.pem
-  #      target: /var/www/html/var/secret/ca.crt
-  #    - source: clevermonitor-hanaboso.pem
-  #      target: /var/www/html/var/secret/keypair.pem
-  ## END STAGE
-
   webserver:
     image: tixik/nginx-fake-index:endpoints
     ## BEGIN DEV
@@ -45,19 +16,54 @@ services:
     depends_on:
       - app
 
+  app:
+    image: dkr.hanaboso.net/clever-monitor/cm-ranger:${TAG_RANGER}
+    environment:
+      - CC_API_BACKEND=monolith-api
+      - CC_NOTIFICATION_BACKEND=notification-sender-api # - add correct host
+      - SYNCHRONIZATION_BACKEND=monolith-api  # - add correct host
+      - TEMPLATING_BACKEND=templating-service:8080
+      - WORKFLOW_BACKEND=workflow:50051
+      - CC_CLIENT_BACKEND=127.0.0.1 # Client Service API - add correct host
+      - APP_ENV=dev
+      - OLD_APP=FALSE
+    depends_on:
+      - mariadb
+      - redis
+      - rabbitmq
+  ## BEGIN DEV
+#    ports:
+#      - ${DEV_IP}:80:80
+  ## END DEV
+  ## BEGIN STAGE
+  #  secrets:
+  #    - source: clevermonitor-ca.pem
+  #      target: /var/www/html/var/secret/ca.crt
+  #    - source: clevermonitor-hanaboso.pem
+  #      target: /var/www/html/var/secret/keypair.pem
+  ## END STAGE
+
   templating-service:
     image: cmhanaboso.azurecr.io/clever-monitor/cm-templating-service:${TAG_TEMPLATING}
     environment:
       - REMOTE_STORAGE_ENABLED=true
       - STORAGE_URL=filestorage
       - MONGO_HOST=mongo
+      - RABBITMQ_HOST=aim-test-we-app-1.ext.cm-dns.cloud
+      - STREAM_QUEUE=pipes.stream
     depends_on:
       - mongo
       - rabbitmq
       - filestorage
 
+  preview-generator:
+    image: cmhanaboso.azurecr.io/clever-monitor/cm-preview-generator:${TAG_PREVIEW}
+    environment:
+      - FILE_STORAGE_URL=filestorage/file/
+      - PORT=8080
+
   filestorage:
-    image: dkr.hanaboso.net/clever-monitor/cm-source/cm-filestorage:${TAG_FILESTORAGE}
+    image: cmhanaboso.azurecr.io/clever-monitor/filestorage:${TAG_FILESTORAGE}
     environment:
       - APP_ENV=dev
       - REDIS_HOST=redis
@@ -67,14 +73,13 @@ services:
       - redis
 
   workflow:
-    image: dkr.hanaboso.net/pipes/pipes/workflow:${TAG_WORKFLOW}
+    image: cmhanaboso.azurecr.io/clever-monitor/workflow-config:${TAG_WORKFLOW}
     environment:
       - MONGO_HOST=mongo
-      - LOGSTASH_ENABLED=true
+      - LOGSTASH_ENABLED=false
       - LOGSTASH_PORT=5044
     depends_on:
       - mongo
-      - logstash
 
   mariadb:
     image: mariadb:10.3
@@ -85,9 +90,29 @@ services:
       - mariadb:/var/lib/mysql
 
 ## BEGIN DEV
+  mongo:
+    image: mongo:3.4
+    ports:
+      - ${DEV_IP}:27017:27017
+    volumes:
+      - mongodb:/data/db
+
+  redis:
+    image: redis:3.2-alpine
+    volumes:
+       - redis:/data
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    volumes:
+      - rabbitmq:/var/lib/rabbitmq
+
 volumes:
   mariadb: {}
   filestorage: {}
+  mongodb: {}
+  redis: {}
+  rabbitmq: {}
 ## END DEV
 
 ## BEGIN STAGE

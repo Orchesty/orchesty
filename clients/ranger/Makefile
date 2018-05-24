@@ -1,4 +1,4 @@
-.PHONY: init-dev init-prod generate build-monolith push-monolith
+.PHONY: init-dev
 
 DEV_YML?="docker-compose.dev.yml"
 
@@ -9,7 +9,6 @@ DE_DEVT=docker-compose -f $(DEV_YML) exec
 .env:
 	sed -e "s|{DEV_UID}|$(shell id -u)|g" \
 		-e "s|{DEV_GID}|$(shell id -u)|g" \
-		-e "s|{DOCKER_SOCKET_PATH}|$(shell test -S /var/run/docker-$${USER}.sock && echo /var/run/docker-$${USER}.sock || echo /var/run/docker.sock)|g" \
 		-e "s|{PROJECT_SOURCE_PATH}|$(shell pwd)|g" \
 		.env.dist > .env && \
 	../../build/bin/map-branch-image-tags.sh ./branch-image-tag-map $(shell git rev-parse --symbolic-full-name --abbrev-ref HEAD) >> .env
@@ -22,7 +21,6 @@ init-dev: .env
 	$(DC_DEV) pull
 	rm -rf pipes-api/var/cache/*
 	$(DC_DEV) up -d --force-recreate --remove-orphans
-	$(DE_DEV) monolith-api composer install --ignore-platform-reqs
 
 destroy-dev:
 	$(DC_DEV) down -v
