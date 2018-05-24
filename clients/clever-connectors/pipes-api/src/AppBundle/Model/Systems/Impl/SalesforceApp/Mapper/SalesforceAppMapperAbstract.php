@@ -88,7 +88,7 @@ abstract class SalesforceAppMapperAbstract implements CustomNodeInterface
 
         if (array_key_exists(self::FIELDS, $data)) {
             foreach ($data[self::FIELDS] as $key => $field) {
-                $subscriber->addCustomField($key, $field);
+                $subscriber->addCustomField((string) $key, $field);
             }
         }
 
