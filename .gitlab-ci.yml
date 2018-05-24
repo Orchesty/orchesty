@@ -318,7 +318,7 @@ git-pf-bundles:
   script:
     - skip_unmodified pf-bundles
     - rm -rf _tmp_pipes
-    - git clone --mirror git@gitlab.hanaboso.net:pipes/pipes.git _tmp_pipes
+    - git clone --bare git@gitlab.hanaboso.net:pipes/pipes.git _tmp_pipes
     - cd _tmp_pipes
     - git filter-branch -f --prune-empty --subdirectory-filter pf-bundles -- -q --all
     - git remote add dest git@gitlab.hanaboso.net:pipes/pf-bundles.git
