@@ -22,6 +22,11 @@ interface SystemInterface
     /**
      * @return string
      */
+    public function getUIType(): string;
+
+    /**
+     * @return string
+     */
     public function getKey(): string;
 
     /**

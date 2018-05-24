@@ -4,6 +4,7 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Enum\SystemUITypeEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CM\CustomFieldsConnector\CMGetCustomFieldsConnector;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
@@ -156,6 +157,14 @@ class SalesforceAppSystem implements OAuth2Interface, CMEventSystemInterface
     public function getType(): string
     {
         return SystemTypeEnum::CRON;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUIType(): string
+    {
+        return SystemUITypeEnum::NO_UI;
     }
 
     /**

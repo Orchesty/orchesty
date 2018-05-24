@@ -6,6 +6,8 @@ use CleverConnectors\AppBundle\Document\MapTemplate;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Enum\SystemUITypeEnum;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventObject;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
 use CleverConnectors\AppBundle\Model\CMEvents\Traits\CMEventSystemTrait;
@@ -20,6 +22,7 @@ use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Traits\SystemTrait;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 
 /**
@@ -52,6 +55,8 @@ class AirtableSystem implements AuthorizationInterface, CMEventSystemInterface
 
     /**
      * AirtableSystem constructor.
+     *
+     * @throws CleverConnectorsException
      */
     public function __construct()
     {
@@ -109,6 +114,14 @@ class AirtableSystem implements AuthorizationInterface, CMEventSystemInterface
     /**
      * @return string
      */
+    public function getUIType(): string
+    {
+        return SystemUITypeEnum::MAPPER;
+    }
+
+    /**
+     * @return string
+     */
     public function getKey(): string
     {
         return 'airtable';
@@ -153,6 +166,7 @@ class AirtableSystem implements AuthorizationInterface, CMEventSystemInterface
      *
      * @return RequestDto
      * @throws SystemException
+     * @throws CurlException
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method, $appendQuery = TRUE): RequestDto
     {
@@ -172,6 +186,7 @@ class AirtableSystem implements AuthorizationInterface, CMEventSystemInterface
      * @param SystemInstall $systemInstall
      *
      * @return array
+     * @throws CleverConnectorsException
      */
     public function getSettingFields(SystemInstall $systemInstall): array
     {

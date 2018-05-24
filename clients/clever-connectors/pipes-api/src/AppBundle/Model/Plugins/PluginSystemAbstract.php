@@ -6,6 +6,8 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Enum\PluginHeadersEnum;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Enum\SystemUITypeEnum;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventObject;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
 use CleverConnectors\AppBundle\Model\CMEvents\Traits\CMEventSystemTrait;
@@ -16,9 +18,11 @@ use CleverConnectors\AppBundle\Model\Plugins\Requester\SwitchTokenRequester;
 use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Traits\SystemTrait;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 
@@ -44,6 +48,8 @@ abstract class PluginSystemAbstract implements AuthorizationInterface, CMEventSy
 
     /**
      * PluginSystemAbstract constructor.
+     *
+     * @throws CleverConnectorsException
      */
     public function __construct()
     {
@@ -72,6 +78,14 @@ abstract class PluginSystemAbstract implements AuthorizationInterface, CMEventSy
             $this->getKey())] = TopologyNameUtils::getTopologyName(TopologyNameUtils::SUBSCRIBE_CONTACT, 'plugins');
         $this->topologyNames[TopologyNameUtils::getTopologyName(TopologyNameUtils::SWITCH_TOKEN,
             $this->getKey())] = TopologyNameUtils::getTopologyName(TopologyNameUtils::SWITCH_TOKEN, 'plugins');
+    }
+
+    /**
+     * @return string
+     */
+    public function getUIType(): string
+    {
+        return SystemUITypeEnum::BASIC;
     }
 
     /**
@@ -117,6 +131,8 @@ abstract class PluginSystemAbstract implements AuthorizationInterface, CMEventSy
      * @param string        $method
      *
      * @return RequestDto
+     * @throws SystemException
+     * @throws CurlException
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {
@@ -153,6 +169,7 @@ abstract class PluginSystemAbstract implements AuthorizationInterface, CMEventSy
      * @param SystemInstall $systemInstall
      *
      * @return array
+     * @throws CleverConnectorsException
      */
     public function getSettingFields(SystemInstall $systemInstall): array
     {
@@ -254,6 +271,8 @@ abstract class PluginSystemAbstract implements AuthorizationInterface, CMEventSy
      * @param SystemInstall $systemInstall
      *
      * @return RequesterInterface
+     * @throws CurlException
+     * @throws SystemException
      */
     public function getSwitchTokenRequester(SystemInstall $systemInstall): RequesterInterface
     {

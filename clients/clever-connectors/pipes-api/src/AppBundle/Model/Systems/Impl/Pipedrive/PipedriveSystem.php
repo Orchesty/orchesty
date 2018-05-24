@@ -5,6 +5,7 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Enum\SystemUITypeEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventObject;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
@@ -27,6 +28,7 @@ use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use DateTime;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 
 /**
@@ -58,6 +60,8 @@ class PipedriveSystem implements WebhookSystemInterface, AuthorizationInterface,
      * PipedriveSystem constructor.
      *
      * @param DocumentManager $dm
+     *
+     * @throws CleverConnectorsException
      */
     function __construct(DocumentManager $dm)
     {
@@ -95,6 +99,14 @@ class PipedriveSystem implements WebhookSystemInterface, AuthorizationInterface,
     public function getAuthorizationType(): string
     {
         return self::BASIC;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUIType(): string
+    {
+        return SystemUITypeEnum::BASIC;
     }
 
     /**
@@ -145,6 +157,7 @@ class PipedriveSystem implements WebhookSystemInterface, AuthorizationInterface,
      *
      * @return RequestDto
      * @throws SystemException
+     * @throws CurlException
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method = 'GET'): RequestDto
     {
@@ -173,6 +186,7 @@ class PipedriveSystem implements WebhookSystemInterface, AuthorizationInterface,
      * @param SystemInstall $systemInstall
      *
      * @return RequesterInterface
+     * @throws SystemException
      */
     public function getUnsubscribeRequester(SystemInstall $systemInstall): RequesterInterface
     {
@@ -185,6 +199,7 @@ class PipedriveSystem implements WebhookSystemInterface, AuthorizationInterface,
      * @param SystemInstall $systemInstall
      *
      * @return array
+     * @throws CleverConnectorsException
      */
     public function getSettingFields(SystemInstall $systemInstall): array
     {

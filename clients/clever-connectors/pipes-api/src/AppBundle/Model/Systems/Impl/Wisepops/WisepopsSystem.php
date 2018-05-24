@@ -4,6 +4,8 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Wisepops;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Enum\SystemUITypeEnum;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
 use CleverConnectors\AppBundle\Model\Limits\SystemLimitDto;
@@ -21,6 +23,7 @@ use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use DateTime;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 
 /**
@@ -70,6 +73,14 @@ class WisepopsSystem implements WebhookSystemInterface, AuthorizationInterface
     public function getType(): string
     {
         return SystemTypeEnum::WEBHOOK;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUIType(): string
+    {
+        return SystemUITypeEnum::ADVERT;
     }
 
     /**
@@ -128,6 +139,7 @@ class WisepopsSystem implements WebhookSystemInterface, AuthorizationInterface
      *
      * @return RequestDto
      * @throws SystemException
+     * @throws CurlException
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {
@@ -143,6 +155,7 @@ class WisepopsSystem implements WebhookSystemInterface, AuthorizationInterface
      * @param SystemInstall $systemInstall
      *
      * @return array
+     * @throws CleverConnectorsException
      */
     public function getSettingFields(SystemInstall $systemInstall): array
     {
@@ -201,6 +214,7 @@ class WisepopsSystem implements WebhookSystemInterface, AuthorizationInterface
      *
      * @return array
      * @throws SystemException
+     * @throws CurlException
      */
     public function refreshForms(SystemInstall $systemInstall, array $data = []): array
     {

@@ -21,6 +21,11 @@ final class SystemData
     private $systemName;
 
     /**
+     * @var string
+     */
+    private $systemUIType;
+
+    /**
      * @var int
      */
     private $usersCount;
@@ -35,13 +40,21 @@ final class SystemData
      *
      * @param string $systemKey
      * @param string $systemName
+     * @param string $systemUIType
      * @param int    $userCount
      * @param int    $requestCount
      */
-    public function __construct(string $systemKey, string $systemName, int $userCount, int $requestCount)
+    public function __construct(
+        string $systemKey,
+        string $systemName,
+        string $systemUIType,
+        int $userCount,
+        int $requestCount
+    )
     {
         $this->systemKey     = $systemKey;
         $this->systemName    = $systemName;
+        $this->systemUIType  = $systemUIType;
         $this->usersCount    = $userCount;
         $this->requestsCount = $requestCount;
     }
@@ -60,6 +73,14 @@ final class SystemData
     public function getSystemName(): string
     {
         return $this->systemName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSystemUIType(): string
+    {
+        return $this->systemUIType;
     }
 
     /**
@@ -86,6 +107,7 @@ final class SystemData
         return [
             'system_key'     => $this->systemKey,
             'system_name'    => $this->systemName,
+            'system_ui_type' => $this->systemUIType,
             'users_count'    => $this->usersCount,
             'requests_count' => $this->requestsCount,
         ];

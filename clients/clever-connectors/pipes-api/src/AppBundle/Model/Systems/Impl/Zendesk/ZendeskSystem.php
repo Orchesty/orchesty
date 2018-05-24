@@ -5,6 +5,7 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Enum\SystemUITypeEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventObject;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
@@ -22,6 +23,7 @@ use CleverConnectors\AppBundle\Model\Webhook\Traits\WebhookSystemTrait;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use DateTime;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 
 /**
@@ -50,6 +52,8 @@ class ZendeskSystem implements AuthorizationInterface, CMEventSystemInterface
 
     /**
      * ZendeskSystem constructor.
+     *
+     * @throws CleverConnectorsException
      */
     function __construct()
     {
@@ -71,6 +75,15 @@ class ZendeskSystem implements AuthorizationInterface, CMEventSystemInterface
     {
         return SystemTypeEnum::CRON;
     }
+
+    /**
+     * @return string
+     */
+    public function getUIType(): string
+    {
+        return SystemUITypeEnum::BASIC;
+    }
+
 
     /**
      * @return string
@@ -130,6 +143,7 @@ class ZendeskSystem implements AuthorizationInterface, CMEventSystemInterface
      *
      * @return RequestDto
      * @throws SystemException
+     * @throws CurlException
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {
@@ -146,6 +160,7 @@ class ZendeskSystem implements AuthorizationInterface, CMEventSystemInterface
      * @param SystemInstall $systemInstall
      *
      * @return array
+     * @throws CleverConnectorsException
      */
     public function getSettingFields(SystemInstall $systemInstall): array
     {

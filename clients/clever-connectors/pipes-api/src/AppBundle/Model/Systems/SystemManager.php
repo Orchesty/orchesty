@@ -532,6 +532,7 @@ class SystemManager
             $data = new SystemData(
                 $system->getKey(),
                 $system->getName(),
+                $system->getUIType(),
                 $this->systemRepository->getUserCount($system->getKey()),
                 $this->getSystemRequestCount(
                     [$system->getKey()],

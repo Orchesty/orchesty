@@ -5,6 +5,8 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Enum\SystemUITypeEnum;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventObject;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
 use CleverConnectors\AppBundle\Model\CMEvents\Traits\CMEventSystemTrait;
@@ -14,9 +16,11 @@ use CleverConnectors\AppBundle\Model\Limits\SystemLimitDto;
 use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\AuthorizationInterface;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\Traits\AuthorizationTrait;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Traits\SystemTrait;
 use DateTime;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 
 /**
@@ -39,6 +43,8 @@ class BasecrmSystem implements AuthorizationInterface, CMEventSystemInterface
 
     /**
      * BasecrmSystem constructor.
+     *
+     * @throws CleverConnectorsException
      */
     public function __construct()
     {
@@ -55,6 +61,14 @@ class BasecrmSystem implements AuthorizationInterface, CMEventSystemInterface
     public function getType(): string
     {
         return SystemTypeEnum::CRON;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUIType(): string
+    {
+        return SystemUITypeEnum::BASIC;
     }
 
     /**
@@ -114,6 +128,8 @@ class BasecrmSystem implements AuthorizationInterface, CMEventSystemInterface
      * @param string        $method
      *
      * @return RequestDto
+     * @throws CurlException
+     * @throws SystemException
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {
@@ -130,6 +146,8 @@ class BasecrmSystem implements AuthorizationInterface, CMEventSystemInterface
      * @param string        $method
      *
      * @return RequestDto
+     * @throws CurlException
+     * @throws SystemException
      */
     public function getRequestDtoNonSync(SystemInstall $systemInstall, string $method): RequestDto
     {
@@ -145,6 +163,7 @@ class BasecrmSystem implements AuthorizationInterface, CMEventSystemInterface
      * @param SystemInstall $systemInstall
      *
      * @return array
+     * @throws CleverConnectorsException
      */
     public function getSettingFields(SystemInstall $systemInstall): array
     {

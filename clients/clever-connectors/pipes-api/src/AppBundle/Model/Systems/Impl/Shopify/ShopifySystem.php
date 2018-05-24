@@ -5,6 +5,8 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Shopify;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Enum\SystemUITypeEnum;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventObject;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
 use CleverConnectors\AppBundle\Model\CMEvents\Traits\CMEventSystemTrait;
@@ -24,6 +26,7 @@ use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
 use CleverConnectors\AppBundle\Utils\AuthorizationUtils;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
@@ -64,6 +67,8 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface, CMEventS
      * ShopifySystem constructor.
      *
      * @param OAuth2Provider $provider
+     *
+     * @throws CleverConnectorsException
      */
     function __construct(OAuth2Provider $provider)
     {
@@ -97,6 +102,14 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface, CMEventS
     public function getType(): string
     {
         return SystemTypeEnum::WEBHOOK;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUIType(): string
+    {
+        return SystemUITypeEnum::BASIC;
     }
 
     /**
@@ -182,6 +195,7 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface, CMEventS
      * @param SystemInstall $systemInstall
      *
      * @return array
+     * @throws CleverConnectorsException
      */
     public function getSettingFields(SystemInstall $systemInstall): array
     {
@@ -288,6 +302,7 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface, CMEventS
      *
      * @return RequestDto
      * @throws SystemException
+     * @throws CurlException
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {

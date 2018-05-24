@@ -4,6 +4,8 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Mailmunch;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Enum\SystemUITypeEnum;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Form\Field;
 use CleverConnectors\AppBundle\Model\Form\Form;
 use CleverConnectors\AppBundle\Model\Limits\SystemLimitDto;
@@ -78,6 +80,14 @@ class MailmunchSystem implements WebhookSystemInterface, AuthorizationInterface
     /**
      * @return string
      */
+    public function getUIType(): string
+    {
+        return SystemUITypeEnum::ADVERT;
+    }
+
+    /**
+     * @return string
+     */
     public function getKey(): string
     {
         return 'mailmunch';
@@ -111,6 +121,7 @@ class MailmunchSystem implements WebhookSystemInterface, AuthorizationInterface
      * @param SystemInstall $systemInstall
      *
      * @return array
+     * @throws CleverConnectorsException
      */
     public function getSettingFields(SystemInstall $systemInstall): array
     {

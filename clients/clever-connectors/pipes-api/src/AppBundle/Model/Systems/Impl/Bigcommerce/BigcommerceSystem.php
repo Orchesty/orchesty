@@ -4,6 +4,7 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Enum\SystemUITypeEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventObject;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
@@ -24,6 +25,7 @@ use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use DateTime;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Nette\Utils\Strings;
 
@@ -56,6 +58,8 @@ class BigcommerceSystem implements WebhookSystemInterface, AuthorizationInterfac
 
     /**
      * BigcommerceSystem constructor.
+     *
+     * @throws CleverConnectorsException
      */
     public function __construct()
     {
@@ -108,6 +112,14 @@ class BigcommerceSystem implements WebhookSystemInterface, AuthorizationInterfac
     /**
      * @return string
      */
+    public function getUIType(): string
+    {
+        return SystemUITypeEnum::BASIC;
+    }
+
+    /**
+     * @return string
+     */
     public function getKey(): string
     {
         return 'bigcommerce';
@@ -141,6 +153,7 @@ class BigcommerceSystem implements WebhookSystemInterface, AuthorizationInterfac
      * @param SystemInstall $systemInstall
      *
      * @return array
+     * @throws CleverConnectorsException
      */
     public function getSettingFields(SystemInstall $systemInstall): array
     {
@@ -199,6 +212,7 @@ class BigcommerceSystem implements WebhookSystemInterface, AuthorizationInterfac
      * @param SystemInstall $systemInstall
      *
      * @return RequesterInterface
+     * @throws SystemException
      */
     public function getSubscribeRequester(SystemInstall $systemInstall): RequesterInterface
     {
@@ -211,6 +225,7 @@ class BigcommerceSystem implements WebhookSystemInterface, AuthorizationInterfac
      * @param SystemInstall $systemInstall
      *
      * @return RequesterInterface
+     * @throws SystemException
      */
     public function getUnsubscribeRequester(SystemInstall $systemInstall): RequesterInterface
     {
@@ -225,6 +240,7 @@ class BigcommerceSystem implements WebhookSystemInterface, AuthorizationInterfac
      *
      * @return RequestDto
      * @throws SystemException
+     * @throws CurlException
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {

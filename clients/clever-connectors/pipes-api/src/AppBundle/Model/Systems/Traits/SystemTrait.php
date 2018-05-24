@@ -88,6 +88,7 @@ trait SystemTrait
             'name'        => $this->getName(),
             'description' => $this->getDescription(),
             'type'        => $this->getType(),
+            'ui_type'     => $this->getUIType(),
             'auth_type'   => $this->getAuthorizationType(),
         ];
 

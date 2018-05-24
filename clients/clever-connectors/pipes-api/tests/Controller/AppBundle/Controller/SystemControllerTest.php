@@ -4,6 +4,7 @@ namespace Tests\Controller\AppBundle\Controller;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Enum\SystemUITypeEnum;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use Tests\ControllerTestCaseAbstract;
 
@@ -692,6 +693,7 @@ final class SystemControllerTest extends ControllerTestCaseAbstract
             'key'         => 'null.user.group',
             'name'        => 'NULL',
             'description' => 'Only for testing purposes',
+            'ui_type'     => SystemUITypeEnum::BASIC,
             'auth_type'   => 'oauth2',
         ];
 

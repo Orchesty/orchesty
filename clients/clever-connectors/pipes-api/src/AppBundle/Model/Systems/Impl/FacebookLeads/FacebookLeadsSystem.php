@@ -11,6 +11,8 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Enum\SystemUITypeEnum;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Form\Form;
 use CleverConnectors\AppBundle\Model\Limits\SystemLimitDto;
 use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth2Interface;
@@ -22,6 +24,7 @@ use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
 use CleverConnectors\AppBundle\Model\Systems\Traits\SystemTrait;
 use CleverConnectors\AppBundle\Utils\AuthorizationUtils;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
@@ -140,6 +143,14 @@ class FacebookLeadsSystem implements SystemInterface, OAuth2Interface
     /**
      * @return string
      */
+    public function getUIType(): string
+    {
+        return SystemUITypeEnum::ADVERT;
+    }
+
+    /**
+     * @return string
+     */
     public function getKey(): string
     {
         return 'facebookleads';
@@ -174,6 +185,8 @@ class FacebookLeadsSystem implements SystemInterface, OAuth2Interface
      * @param string        $method
      *
      * @return RequestDto
+     * @throws SystemException
+     * @throws CurlException
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {
@@ -205,6 +218,8 @@ class FacebookLeadsSystem implements SystemInterface, OAuth2Interface
      * @param array         $data
      *
      * @return array
+     * @throws CurlException
+     * @throws CleverConnectorsException
      */
     public function getPages(SystemInstall $systemInstall, array $data): array
     {
@@ -219,6 +234,8 @@ class FacebookLeadsSystem implements SystemInterface, OAuth2Interface
      * @param array         $data
      *
      * @return array
+     * @throws CleverConnectorsException
+     * @throws CurlException
      */
     public function getForms(SystemInstall $systemInstall, array $data): array
     {

@@ -6,6 +6,7 @@ use CleverConnectors\AppBundle\Document\AudienceMirror;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\AdTypeEnum;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Enum\SystemUITypeEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CustomNode\Comparator;
 use CleverConnectors\AppBundle\Model\Form\Field;
@@ -152,6 +153,14 @@ class FacebookaudienceSystem implements OAuth2Interface
     /**
      * @return string
      */
+    public function getUIType(): string
+    {
+        return SystemUITypeEnum::ADVERT;
+    }
+
+    /**
+     * @return string
+     */
     public function getKey(): string
     {
         return 'facebookaudience';
@@ -256,6 +265,7 @@ class FacebookaudienceSystem implements OAuth2Interface
      *
      * @return RequestDto
      * @throws SystemException
+     * @throws CurlException
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {

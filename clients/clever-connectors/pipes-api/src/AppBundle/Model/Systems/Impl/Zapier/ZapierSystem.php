@@ -5,6 +5,8 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Zapier;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Enum\SystemUITypeEnum;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventObject;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
 use CleverConnectors\AppBundle\Model\CMEvents\Traits\CMEventSystemTrait;
@@ -21,6 +23,7 @@ use CleverConnectors\AppBundle\Model\Webhook\WebhookSubscribes;
 use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 
 /**
@@ -41,6 +44,8 @@ class ZapierSystem implements WebhookSystemInterface, AuthorizationInterface, CM
 
     /**
      * ZapierSystem constructor.
+     *
+     * @throws CleverConnectorsException
      */
     public function __construct()
     {
@@ -73,6 +78,14 @@ class ZapierSystem implements WebhookSystemInterface, AuthorizationInterface, CM
     public function getType(): string
     {
         return SystemTypeEnum::UI_WEBHOOK;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUIType(): string
+    {
+        return SystemUITypeEnum::BASIC;
     }
 
     /**
@@ -131,6 +144,7 @@ class ZapierSystem implements WebhookSystemInterface, AuthorizationInterface, CM
      *
      * @return RequestDto
      * @throws SystemException
+     * @throws CurlException
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {
@@ -147,6 +161,7 @@ class ZapierSystem implements WebhookSystemInterface, AuthorizationInterface, CM
      * @param SystemInstall $systemInstall
      *
      * @return array
+     * @throws CleverConnectorsException
      */
     public function getSettingFields(SystemInstall $systemInstall): array
     {

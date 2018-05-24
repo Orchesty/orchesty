@@ -5,6 +5,8 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Enum\SystemUITypeEnum;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventObject;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
 use CleverConnectors\AppBundle\Model\CMEvents\Traits\CMEventSystemTrait;
@@ -22,6 +24,7 @@ use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use CleverConnectors\AppBundle\Utils\WebhookUtils;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 
 /**
@@ -50,6 +53,8 @@ class NutshellSystem implements AuthorizationInterface, CMEventSystemInterface, 
      * NutshellSystem constructor.
      *
      * @param string $url
+     *
+     * @throws CleverConnectorsException
      */
     public function __construct(string $url)
     {
@@ -101,6 +106,14 @@ class NutshellSystem implements AuthorizationInterface, CMEventSystemInterface, 
     /**
      * @return string
      */
+    public function getUIType(): string
+    {
+        return SystemUITypeEnum::BASIC;
+    }
+
+    /**
+     * @return string
+     */
     public function getKey(): string
     {
         return 'nutshell';
@@ -136,6 +149,7 @@ class NutshellSystem implements AuthorizationInterface, CMEventSystemInterface, 
      *
      * @return RequestDto
      * @throws SystemException
+     * @throws CurlException
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {
@@ -156,6 +170,7 @@ class NutshellSystem implements AuthorizationInterface, CMEventSystemInterface, 
      * @param SystemInstall $systemInstall
      *
      * @return array
+     * @throws CleverConnectorsException
      */
     public function getSettingFields(SystemInstall $systemInstall): array
     {

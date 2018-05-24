@@ -4,6 +4,8 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
+use CleverConnectors\AppBundle\Enum\SystemUITypeEnum;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventObject;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
 use CleverConnectors\AppBundle\Model\CMEvents\Traits\CMEventSystemTrait;
@@ -18,6 +20,7 @@ use CleverConnectors\AppBundle\Model\Systems\Traits\SystemTrait;
 use CleverConnectors\AppBundle\Utils\AuthorizationUtils;
 use DateTime;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
@@ -58,6 +61,8 @@ class QuickbooksSystem implements OAuth2Interface, CMEventSystemInterface
      * SalesforceSystem constructor.
      *
      * @param OAuth2Provider $provider
+     *
+     * @throws CleverConnectorsException
      */
     public function __construct(OAuth2Provider $provider)
     {
@@ -79,6 +84,14 @@ class QuickbooksSystem implements OAuth2Interface, CMEventSystemInterface
     public function getType(): string
     {
         return SystemTypeEnum::CRON;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUIType(): string
+    {
+        return SystemUITypeEnum::BASIC;
     }
 
     /**
@@ -178,6 +191,7 @@ class QuickbooksSystem implements OAuth2Interface, CMEventSystemInterface
      *
      * @return RequestDto
      * @throws SystemException
+     * @throws CurlException
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {
@@ -200,6 +214,7 @@ class QuickbooksSystem implements OAuth2Interface, CMEventSystemInterface
      * @param SystemInstall $systemInstall
      *
      * @return array
+     * @throws CleverConnectorsException
      */
     public function getSettingFields(SystemInstall $systemInstall): array
     {

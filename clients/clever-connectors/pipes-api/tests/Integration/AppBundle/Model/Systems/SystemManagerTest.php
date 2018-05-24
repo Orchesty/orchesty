@@ -5,6 +5,7 @@ namespace Tests\Integration\AppBundle\Model\Systems;
 use CleverConnectors\AppBundle\Document\DataLayout;
 use CleverConnectors\AppBundle\Document\MapTemplate;
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Enum\SystemUITypeEnum;
 use CleverConnectors\AppBundle\Enum\TypeEnum;
 use CleverConnectors\AppBundle\Exceptions\Exception;
 use CleverConnectors\AppBundle\Model\Systems\Dto\ActionDto;
@@ -184,6 +185,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
             'name'             => 'NULL',
             'description'      => 'Only for testing purposes',
             'type'             => 'cron',
+            'ui_type'          => SystemUITypeEnum::BASIC,
             'auth_type'        => 'oauth2',
             'authorized'       => FALSE,
             'token'            => 'token',
