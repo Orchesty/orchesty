@@ -4,7 +4,7 @@ var sample = 1m
 var retention = '1m'
 
 batch
-   |query('SELECT mean(avg_process.time) as "avg_process.time", mean(avg_waiting.time) as "avg_waiting.time", count(failed.count) as "failed.count", max(job_max.process) as "job_max.process", max(job_max.waiting) as "job_max.waiting", min(job_min.process) as "job_min.process", min(job_min.waiting) as "job_min.waiting", count(total.count) as "total.count" FROM "pipes"."5s"."bridges"')
+   |query('SELECT mean(avg_process.time) as "avg_process.time", mean(avg_waiting.time) as "avg_waiting.time", sum(failed.count) as "failed.count", max(job_max.process) as "job_max.process", max(job_max.waiting) as "job_max.waiting", min(job_min.process) as "job_min.process", min(job_min.waiting) as "job_min.waiting", sum(total.count) as "total.count" FROM "pipes"."5s"."bridges"')
        .period(sample)
        .every(sample)
        .groupBy('topology_id', 'node_id')

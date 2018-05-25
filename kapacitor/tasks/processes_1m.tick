@@ -4,7 +4,7 @@ var sample = 1m
 var retention = '1m'
 
 batch
-   |query('SELECT mean(avg.time) as "avg.time", count(failed.count) as "failed.count", max(max.time) as "max.time", min(min.time) as "min.time", count(total.count) as "total.count" FROM "pipes"."5s"."processes"')
+   |query('SELECT mean(avg.time) as "avg.time", sum(failed.count) as "failed.count", max(max.time) as "max.time", min(min.time) as "min.time", sum(total.count) as "total.count" FROM "pipes"."5s"."processes"')
        .period(sample)
        .every(sample)
        .groupBy('topology_id', 'node_id')
