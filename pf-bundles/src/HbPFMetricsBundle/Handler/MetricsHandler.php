@@ -10,6 +10,8 @@
 namespace Hanaboso\PipesFramework\HbPFMetricsBundle\Handler;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Metrics\Exception\MetricsException;
@@ -88,6 +90,8 @@ class MetricsHandler
      *
      * @return Topology
      * @throws MetricsException
+     * @throws LockException
+     * @throws MappingException
      */
     private function getTopologyById(string $id): Topology
     {

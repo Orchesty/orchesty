@@ -35,7 +35,7 @@ final class RetentionFactory
         $diff  = $to->diff($from);
         $days  = $diff->d;
         $hours = $diff->h;
-        $mins  = $diff->m;
+        $mins  = $diff->i;
 
         if ($days > 0) {
             return self::FOUR_HOUR;
