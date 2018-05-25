@@ -4,6 +4,7 @@ namespace CleverCore\SocialMultichannel\Models;
 
 use CcApi\Curl\Exception\CurlException;
 use CleverCore\SocialMultichannel\Entities\Audience;
+use CleverCore\SocialMultichannel\Enums\AdTypeEnum;
 use Doctrine\ORM\EntityManager;
 
 /**
@@ -90,15 +91,24 @@ class AudienceFacade
             ]);
         }
 
-        $this->runBatchUpdate();
+        $this->runBatchUpdate([$audience]);
     }
 
     /**
+     * @param Audience[] $audiences
      *
+     * @throws CurlException
      */
-    public function runBatchUpdate(): void
+    public function runBatchUpdate(array $audiences): void
     {
-        // TODO implement
+        $userId = '123'; // TODO: How to get it?
+        foreach ($audiences as $audience) {
+            $systems = $this->getSystemsFromAudience($audience);
+            foreach ($systems as $system) {
+                $data = ['audience' => $audience->toArray()]; // TODO: Is this format right?
+                $this->sender->syncAudience($system !== AdTypeEnum::FB ? $system : 'facebookaudience', $userId, $data);
+            }
+        }
     }
 
     /**
@@ -119,6 +129,24 @@ class AudienceFacade
     public function runDelete(string $adType, string $clientId, string $email): void
     {
         // TODO implement
+    }
+
+    /**
+     * @param Audience $audience
+     *
+     * @return array
+     */
+    private function getSystemsFromAudience(Audience $audience): array
+    {
+        $types = [];
+
+        foreach ($audience->getAds() as $ad) {
+            if (!in_array($ad->getAdType(), $types, TRUE)) {
+                $types[] = $ad->getAdType();
+            }
+        }
+
+        return $types;
     }
 
     /**

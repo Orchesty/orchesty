@@ -11,10 +11,11 @@ use GuzzleHttp\Psr7\Request;
  *
  * @package CleverCore\SocialMultichannel\Models
  */
-final class PipesSender
+class PipesSender
 {
 
     private const CREATE_AD_URL = '%s/system/%s/user/%s/action/createAudience';
+    private const UPDATE_AD_URL = '%s/system/%s/user/%s/action/syncAudience';
     private const DELETE_AD_URL = '%s/system/%s/user/%s/action/deleteAd';
 
     /**
@@ -50,6 +51,28 @@ final class PipesSender
     {
         $req = new Request(CurlSender::POST, sprintf(
             static::CREATE_AD_URL,
+            $this->backend,
+            $system,
+            $userId
+        ), [
+            'Content-Type' => 'application/json',
+            'Accept'       => 'application/json',
+        ], json_encode($data));
+
+        $this->curl->send($req);
+    }
+
+    /**
+     * @param string $system
+     * @param string $userId
+     * @param array  $data
+     *
+     * @throws CurlException
+     */
+    public function syncAudience(string $system, string $userId, array $data): void
+    {
+        $req = new Request(CurlSender::POST, sprintf(
+            static::UPDATE_AD_URL,
             $this->backend,
             $system,
             $userId

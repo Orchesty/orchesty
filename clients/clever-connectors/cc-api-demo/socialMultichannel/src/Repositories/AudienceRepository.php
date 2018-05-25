@@ -3,6 +3,7 @@
 namespace CleverCore\SocialMultichannel\Repositories;
 
 use CleverCore\SocialMultichannel\Entities\Audience;
+use CleverCore\SocialMultichannel\Enums\AudienceSourceEnum;
 use Doctrine\ORM\EntityRepository;
 
 /**
@@ -24,6 +25,26 @@ class AudienceRepository extends EntityRepository
         $audience = $this->findOneBy(['id' => $id]);
 
         return $audience;
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return Audience[]
+     */
+    public function getByList(string $id): array
+    {
+        return $this->findBy(['sourceType' => AudienceSourceEnum::LIST, 'listId' => $id]);
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return Audience[]
+     */
+    public function getBySegment(string $id): array
+    {
+        return $this->findBy(['sourceType' => AudienceSourceEnum::SEGMENT, 'segmentId' => $id]);
     }
 
 }
