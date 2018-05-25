@@ -13,7 +13,6 @@ use Exception;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Metrics\Client\MetricsClient;
-use Hanaboso\PipesFramework\Metrics\Enum\MetricsIntervalEnum;
 use Hanaboso\PipesFramework\Metrics\MetricsManager;
 use Hanaboso\PipesFramework\Utils\GeneratorUtils;
 use InfluxDB\Database;
@@ -101,14 +100,13 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
 
         $manager = $this->getManager();
         $result  = $manager->getTopologyRequestCountMetrics($topo, [
-            'from'     => '-10 day',
-            'to'       => '+10 day',
-            'interval' => MetricsIntervalEnum::DAY,
+            'from' => '-10 day',
+            'to'   => '+10 day',
         ]);
 
         self::assertTrue(is_array($result));
         self::assertCount(5, $result);
-        self::assertCount(21, $result['requests']);
+        self::assertCount(121, $result['requests']);
     }
 
     /**
@@ -191,8 +189,8 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
         $client = $this->getClient()->createClient();
         $client->selectDB('test')->drop();
         $client->query('', 'CREATE DATABASE test');
-        $client->selectDB('test')->create(new RetentionPolicy('4h', '4h', 1, TRUE));
         $client->selectDB('test')->create(new RetentionPolicy('5s', '1h', 1, TRUE));
+        $client->selectDB('test')->create(new RetentionPolicy('4h', '4h', 1, TRUE));
         $database = $this->getClient()->getDatabase('test');
 
         $points = [
