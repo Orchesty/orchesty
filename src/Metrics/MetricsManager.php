@@ -320,7 +320,7 @@ class MetricsManager implements LoggerAwareInterface
         $groupBy  = sprintf('TIME(%s)', RetentionFactory::getRetention(new DateTime($dateFrom), new DateTime($dateTo)));
 
         $data['requests'] = $this->runQuery(
-            'COUNT(*) AS count',
+            sprintf('SUM(%s) AS count', self::TOTAL_COUNT),
             $this->counterTable,
             [sprintf("%s = '%s'", self::TOPOLOGY, $topology->getId())],
             $groupBy,
@@ -512,7 +512,7 @@ class MetricsManager implements LoggerAwareInterface
         $data = [];
         if (isset($series[0]['values'])) {
             foreach ($series[0]['values'] as $item) {
-                $data[(new DateTime($item[0]))->getTimestamp()] = $item[1];
+                $data[(new DateTime($item[0]))->getTimestamp()] = $item[1] ?? 0;
             }
         }
 

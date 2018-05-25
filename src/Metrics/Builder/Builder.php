@@ -66,4 +66,22 @@ class Builder extends InfluxDbBuilder
         return $query;
     }
 
+    /**
+     * Set's the time range to select data from
+     *
+     * @param  int $from
+     * @param  int $to
+     *
+     * @return $this
+     */
+    public function setTimeRange($from, $to)
+    {
+        $fromDate = date('Y-m-d H:i:s', $from);
+        $toDate   = date('Y-m-d H:i:s', $to);
+
+        $this->where([sprintf('time >= \'%s\'', $fromDate), sprintf('time <= \'%s\'', $toDate)]);
+
+        return $this;
+    }
+
 }
