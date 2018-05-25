@@ -29,7 +29,7 @@ class Audience
     private $name;
 
     /**
-     * @var string
+     * @var string|null
      *
      * @ORM\Column(type="AudienceSourceEnum", nullable=true)
      */

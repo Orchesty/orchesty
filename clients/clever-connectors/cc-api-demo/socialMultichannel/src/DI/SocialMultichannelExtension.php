@@ -6,9 +6,11 @@ use CleverCore\SocialMultichannel\Enums\AdTypeEnum;
 use CleverCore\SocialMultichannel\Enums\AdTypeEnumProxy;
 use CleverCore\SocialMultichannel\Enums\AudienceSourceEnumProxy;
 use CleverCore\SocialMultichannel\Handlers\FacebookaudienceHandler;
+use CleverCore\SocialMultichannel\Listeners\AudienceListener;
 use CleverCore\SocialMultichannel\Models\AdFacade;
 use CleverCore\SocialMultichannel\Models\AdModuleLoader;
 use CleverCore\SocialMultichannel\Models\AdModules\FacebookAdModule;
+use CleverCore\SocialMultichannel\Models\AudienceFacade;
 use CleverCore\SocialMultichannel\Models\PipesSender;
 use CleverCore\SocialMultichannel\Presenters\FacebookaudiencePresenter;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
@@ -41,6 +43,13 @@ class SocialMultichannelExtension extends CompilerExtension
 
         $builder->addDefinition($this->prefix('ad.facade'))
             ->setFactory(AdFacade::class);
+
+        $builder->addDefinition($this->prefix('audience.facade'))
+            ->setFactory(AudienceFacade::class);
+
+        $builder->addDefinition($this->prefix('audience.listener'))
+            ->setFactory(AudienceListener::class)
+            ->addTag('kdyby.subscriber');
 
         $modules = [AdTypeEnum::FB => FacebookAdModule::class];
         foreach ($modules as $key => $module) {

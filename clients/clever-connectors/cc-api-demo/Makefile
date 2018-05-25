@@ -1,8 +1,8 @@
 .PHONY: init composer-update
 
 DC=docker-compose
-DE=docker-compose exec -T app
-DP=docker-compose exec -T app bin/console
+DE=docker-compose exec app
+DP=docker-compose exec app bin/console
 DS=docker-compose exec mariadb
 IMAGE_API_DEMO_FPM=dkr.hanaboso.net/pipes/client-cm/api-demo:latest
 
@@ -55,7 +55,7 @@ codesniffer:
 	$(DE) ./vendor/bin/phpcs --standard=./ruleset.xml --colors -p socialMultichannel/
 
 phpstan:
-	$(DE) ./vendor/bin/phpstan --memory-limit=200M analyse -c phpstan.neon -l 4 socialMultichannel/
+	$(DE) ./vendor/bin/phpstan --memory-limit=200M analyse -c phpstan.neon -l 7 socialMultichannel/
 
 phpunit:
 	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr socialMultichannel/tests/Unit

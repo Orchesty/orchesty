@@ -59,7 +59,7 @@ abstract class DatabaseTestCaseAbstract extends ContainerTestCaseAbstract
     protected function persistAndFlushDocument($document): void
     {
         $this->dm->persist($document);
-        $this->dm->flush($document);
+        $this->dm->flush();
     }
 
     /**
@@ -68,7 +68,7 @@ abstract class DatabaseTestCaseAbstract extends ContainerTestCaseAbstract
     protected function persistAndFlushEntity($entity): void
     {
         $this->em->persist($entity);
-        $this->em->flush($entity);
+        $this->em->flush();
     }
 
 }

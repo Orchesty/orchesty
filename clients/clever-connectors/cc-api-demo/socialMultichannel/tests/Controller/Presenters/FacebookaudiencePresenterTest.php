@@ -37,6 +37,7 @@ final class FacebookaudiencePresenterTest extends ControllerTestCaseAbstract
         );
 
         $repo = $this->em->getRepository(Ad::class);
+        /** @var Ad $ad */
         $ad   = $repo->find($ad->getId());
         self::assertEquals('someID', $ad->getRefId());
         self::assertEquals('ACTIVE', $ad->getSettings()['status']);
