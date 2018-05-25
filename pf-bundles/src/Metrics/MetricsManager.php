@@ -18,7 +18,6 @@ use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
 use Hanaboso\PipesFramework\Metrics\Client\ClientInterface;
 use Hanaboso\PipesFramework\Metrics\Dto\MetricsDto;
-use Hanaboso\PipesFramework\Metrics\Enum\MetricsIntervalEnum;
 use Hanaboso\PipesFramework\Metrics\Exception\MetricsException;
 use Hanaboso\PipesFramework\Metrics\Retention\RetentionFactory;
 use Hanaboso\PipesFramework\Utils\GeneratorUtils;
@@ -316,12 +315,9 @@ class MetricsManager implements LoggerAwareInterface
     {
         $data = $this->getTopologyMetrics($topology, $params);
 
-        $dateFrom = $params['from'] ?? NULL;
-        $dateTo   = $params['to'] ?? NULL;
-        $groupBy  = sprintf(
-            'TIME(%s)',
-            MetricsIntervalEnum::isValid($params['interval'] ?? MetricsIntervalEnum::DAY)
-        );
+        $dateFrom = $params['from'] ?? 'now - 1h';
+        $dateTo   = $params['to'] ?? 'now';
+        $groupBy  = sprintf('TIME(%s)', RetentionFactory::getRetention(new DateTime($dateFrom), new DateTime($dateTo)));
 
         $data['requests'] = $this->runQuery(
             'COUNT(*) AS count',
@@ -376,7 +372,7 @@ class MetricsManager implements LoggerAwareInterface
             $to       = new DateTime($dateTo);
             $qb
                 ->setTimeRange($fromDate->getTimestamp(), $to->getTimestamp())
-                ->from($this->addRetentionPolicy($from, $fromDate, $to, $forGraph));
+                ->from($this->addRetentionPolicy($from, $fromDate, $to));
         }
         $this->logger->debug('Metrics was selected.', ['Query' => $qb->getQuery()]);
         try {
@@ -677,19 +673,17 @@ class MetricsManager implements LoggerAwareInterface
      * @param string   $fromTables
      * @param DateTime $from
      * @param DateTime $to
-     * @param bool     $forGraph
      *
      * @return string
      */
     private function addRetentionPolicy(
         string $fromTables,
         DateTime $from,
-        DateTime $to,
-        Bool $forGraph = FALSE
+        DateTime $to
     ): string
     {
         $out       = '';
-        $retention = $forGraph ? RetentionFactory::SEC : RetentionFactory::getRetention($from, $to);
+        $retention = RetentionFactory::getRetention($from, $to);
         foreach (explode(',', $fromTables) as $item) {
             if (!empty($out)) {
                 $out .= ',';
