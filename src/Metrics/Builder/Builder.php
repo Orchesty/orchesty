@@ -79,7 +79,7 @@ class Builder extends InfluxDbBuilder
         $fromDate = date('Y-m-d H:i:s', $from);
         $toDate   = date('Y-m-d H:i:s', $to);
 
-        $this->where([sprintf('time >= \'%s\'', $fromDate), sprintf('time <= \'%s\'', $toDate)]);
+        $this->where([sprintf('time >= \'%s\'', $fromDate), sprintf('time < \'%s\'', $toDate)]);
 
         return $this;
     }
