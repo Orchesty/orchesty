@@ -32,6 +32,7 @@ final class RetentionFactory
      */
     public static function getRetention(DateTime $from, DateTime $to): String
     {
+        $to = $to->modify('-1 second');
         $diff  = $to->diff($from);
         $days  = $diff->d;
         $hours = $diff->h;
