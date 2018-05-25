@@ -15,7 +15,7 @@ const ranges = {
 const rangesMetrics = {
   'last 1 min': [moment().subtract(1, 'minutes'), moment()],
   'last 30 min': [moment().subtract(30, 'minutes'), moment()],
-  'last 4 hours': [moment().subtract(4, 'hours'), moment()]
+  'last 12 hours': [moment().subtract(12, 'hours'), moment()]
 };
 
 class DateRangeInput extends React.Component {

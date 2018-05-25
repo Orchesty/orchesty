@@ -23,7 +23,6 @@ class MetricsDateRangeHeader extends React.Component {
     const {interval, metricsRange, changeMetricsRange, changeMetricsInterval, last} = this.props;
     return (
       <div className={'metrics-date-range-header' + (last ? ' last' : '')}>
-        {changeMetricsInterval && <div className="metrics-interval"><SelectInput value={interval} onChange={this.changeInterval} options={intervalOptions}/></div>}
         <div className="metrics-range">
           <DateRangeInput value={metricsRange} onChange={changeMetricsRange}/>
         </div>
