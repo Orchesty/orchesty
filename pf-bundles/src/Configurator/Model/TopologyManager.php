@@ -355,17 +355,33 @@ class TopologyManager
         $embedNodes = [];
 
         foreach ($dto->getNodes() as $id => $node) {
-            $this->updateNode(
-                $topology,
-                $id,
-                $node['handler'],
-                $nodes,
-                $embedNodes,
-                $node['name'],
-                $node['pipes_type'],
-                $node['cron_time'],
-                $node['cron_params']
-            );
+            try {
+                $this->updateNode(
+                    $topology,
+                    $id,
+                    $node['handler'],
+                    $nodes,
+                    $embedNodes,
+                    $node['name'],
+                    $node['pipes_type'],
+                    $node['cron_time'],
+                    $node['cron_params']
+                );
+            } catch (NodeException $e) {
+                if ($e->getCode() === NodeException::NODE_NOT_FOUND) {
+                    $this->createNode(
+                        $topology,
+                        $id,
+                        $node['handler'],
+                        $nodes,
+                        $embedNodes,
+                        $node['name'],
+                        $node['pipes_type'],
+                        $node['cron_time'],
+                        $node['cron_params']
+                    );
+                }
+            }
         }
 
         foreach ($dto->getSequences() as $source => $targets) {
