@@ -122,7 +122,8 @@ class DownloaderCommand extends Command
                                     $data['event'],
                                     $data['channel']
                                 ));
-                                $this->sendData($json, $output, $browser);
+                                $this->sendData($json, $output, $browser, 'stock-exchange');
+                                $this->sendData($json, $output, $browser, 'demo-topology');
                             } else {
                                 $output->writeln(sprintf('Received unknown event: %s', json_encode($data)));
                             }
@@ -169,12 +170,13 @@ class DownloaderCommand extends Command
      * @param string          $data
      * @param OutputInterface $output
      * @param Browser         $browser
+     * @param string          $topology
      */
-    private function sendData(string $data, OutputInterface $output, Browser $browser): void
+    private function sendData(string $data, OutputInterface $output, Browser $browser, string $topology): void
     {
         $request = new Request(
             'POST',
-            'http://frontend/topologies/stock-exchange/nodes/start/run',
+            'http://frontend/topologies/' . $topology . '/nodes/start/run',
             [
                 'Accept'       => 'application/json',
                 'Content-Type' => 'application/json',
