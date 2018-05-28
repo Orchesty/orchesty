@@ -76,27 +76,27 @@ class NodeMetrics extends React.Component {
         <div className="tile_stats_count">
           <span className="count_top">Queue Depth [msg]</span>
           <div className="count">{data.queue_depth.avg}</div>
-          <span className="count_bottom red">Max: {data.queue_depth.max}</span>
+          <span className="count_bottom blue">Max: {data.queue_depth.max}</span>
         </div>
         <div className="tile_stats_count">
           <span className="count_top">Waiting Time [ms]</span>
           <div className="count">{data.waiting_time.avg}</div>
-          <span className="count_bottom green">Min: {data.waiting_time.min}</span> | <span className="count_bottom red">Max: {data.waiting_time.max}</span>
+          <span className="count_bottom green">Min: {data.waiting_time.min}</span> | <span className="count_bottom blue">Max: {data.waiting_time.max}</span>
         </div>
         <div className="tile_stats_count">
           <span className="count_top">Process Time [ms]</span>
           <div className="count">{data.process_time.avg}</div>
-          <span className="count_bottom green">Min: {data.process_time.min}</span> | <span className="count_bottom red">Max: {data.process_time.max}</span>
+          <span className="count_bottom green">Min: {data.process_time.min}</span> | <span className="count_bottom blue">Max: {data.process_time.max}</span>
         </div>
         <div className="tile_stats_count">
           <span className="count_top">CPU Time</span>
           <div className="count">{data.cpu_time.avg}</div>
-          <span className="count_bottom green">Min: {data.cpu_time.min}</span> | <span className="count_bottom red">Max: {data.cpu_time.max}</span>
+          <span className="count_bottom green">Min: {data.cpu_time.min}</span> | <span className="count_bottom blue">Max: {data.cpu_time.max}</span>
         </div>
         <div className="tile_stats_count">
           <span className="count_top">Request Time [ms]</span>
           <div className="count">{data.request_time.avg}</div>
-          <span className="count_bottom green">Min: {data.request_time.min}</span> | <span className="count_bottom red">Max: {data.request_time.max}</span>
+          <span className="count_bottom green">Min: {data.request_time.min}</span> | <span className="count_bottom blue">Max: {data.request_time.max}</span>
         </div>
       </div>
     );

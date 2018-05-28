@@ -24,7 +24,7 @@ class TopologyMetrics extends React.Component {
         <div className="tile_stats_count">
           <span className="count_top">Average Process Time [ms]</span>
           <div className="count">{data.process_time.avg}</div>
-          <span className="count_bottom green">Min: {data.process_time.min}</span> | <span className="count_bottom red">Max: {data.process_time.max}</span>
+          <span className="count_bottom green">Min: {data.process_time.min}</span> | <span className="count_bottom blue">Max: {data.process_time.max}</span>
         </div>
       </div>
     );
