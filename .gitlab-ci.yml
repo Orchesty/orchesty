@@ -252,7 +252,7 @@ stage-cm1:
     - export DEPLOYMENT_PREFIX=cc-stage1
     - export PUBLISH_HTTP_PORT=6540
     - export BACKEND_URL=https://clever-conn1.stage.hanaboso.net
-    - export DOCKER_HOST=10.18.1.4:2376
+    - export DOCKER_HOST=10.18.2.11:2376
     - export DOCKER_TLS_VERIFY=1
     - docker --host 13.95.149.190:2376 stack deploy --with-registry-auth -c docker-compose.ci.yml ${DEPLOYMENT_PREFIX}
 
