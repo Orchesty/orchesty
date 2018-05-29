@@ -106,7 +106,7 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
 
         self::assertTrue(is_array($result));
         self::assertCount(5, $result);
-        self::assertCount(121, $result['requests']);
+        self::assertCount(117, $result['requests']);
     }
 
     /**
