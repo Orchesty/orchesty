@@ -7,7 +7,7 @@
  * Time: 10:39
  */
 
-namespace Unit\AppBundle\Model\Systems\Impl\SalesforceApp\Connector;
+namespace Tests\Unit\AppBundle\Model\Systems\Impl\SalesforceApp\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp\Connector\SalesforceAppMapFieldsConnector;
@@ -28,7 +28,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * Class SalesforceAppMapFieldsConnectorTest
  *
- * @package Unit\AppBundle\Model\Systems\Impl\SalesforceApp\Connector
+ * @package Tests\Unit\AppBundle\Model\Systems\Impl\SalesforceApp\Connector
  */
 final class SalesforceAppMapFieldsConnectorTest extends TestCase
 {
