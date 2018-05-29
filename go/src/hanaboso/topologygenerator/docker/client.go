@@ -17,6 +17,7 @@ func connect() {
 	cli.ClientVersion()
 
 	if err != nil {
+		log.Fatal(err)
 		panic(model.AppError{Message: err.Error(), Type: model.DOCKER})
 	}
 }
