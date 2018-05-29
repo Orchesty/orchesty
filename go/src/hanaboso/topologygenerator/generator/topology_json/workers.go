@@ -73,7 +73,7 @@ func getHttpWorkerSettings(n topology.Node) topology.TopologyBridgeWorkerSetting
 		ProcessPath:  fmt.Sprintf("/%s", getRoute(n.Type, n.Name)),
 		StatusPath:   fmt.Sprintf("/%s/test", getRoute(n.Type, n.Name)),
 		Method:       "POST",
-		Port:         80,
+		Port:         getPort(n.Type),
 		Secure:       false,
 		Opts:         make([]string, 0),
 		PublishQueue: topology.TopologyBridgeWorkerSettingsQueueJson{},

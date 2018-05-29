@@ -56,6 +56,25 @@ func parseArgs() {
 		rabbitmqPass           string
 		rabbitmqVhost          string
 		projectPath            string
+
+		workerXmlParserHost string
+		workerFtpHost       string
+		workerEmailHost     string
+		workerMapperHost    string
+		workerApiHost       string
+		workerConnectorHost string
+		workerWebhookHost   string
+		workerCustomHost    string
+		workerSignalHost    string
+		workerXmlParserPort int
+		workerFtpPort       int
+		workerEmailPort     int
+		workerMapperPort    int
+		workerApiPort       int
+		workerConnectorPort int
+		workerWebhookPort   int
+		workerCustomPort    int
+		workerSignalPort    int
 	)
 
 	viper.SetDefault("mongodb.host", "localhost")
@@ -80,6 +99,25 @@ func parseArgs() {
 	viper.SetDefault("generator.topology-prefix", "dev")
 	viper.SetDefault("generator.topology-json-path", "/srv/app/topology/topology.json")
 
+	viper.SetDefault("worker.xml_parser.host", "xml-parser-api")
+	viper.SetDefault("worker.ftp.host", "ftp-api")
+	viper.SetDefault("worker.email.host", "mailer-api")
+	viper.SetDefault("worker.mapper.host", "mapper-api")
+	viper.SetDefault("worker.api.host", "monolith-api")
+	viper.SetDefault("worker.connector.host", "monolith-api")
+	viper.SetDefault("worker.webhook.host", "monolith-api")
+	viper.SetDefault("worker.custom.host", "monolith-api")
+	viper.SetDefault("worker.signal.host", "monolith-api")
+	viper.SetDefault("worker.xml_parser.port", 80)
+	viper.SetDefault("worker.ftp.port", 80)
+	viper.SetDefault("worker.email.port", 80)
+	viper.SetDefault("worker.mapper.port", 80)
+	viper.SetDefault("worker.api.port", 80)
+	viper.SetDefault("worker.connector.port", 80)
+	viper.SetDefault("worker.webhook.port", 80)
+	viper.SetDefault("worker.custom.port", 80)
+	viper.SetDefault("worker.signal.port", 80)
+
 	//TODO: refactor
 	// connect to defaults
 	pflag.StringVar(&mongoHost, "mongo-host", "localhost", "address of mongodb server or define MONGO_HOST")
@@ -101,6 +139,25 @@ func parseArgs() {
 	pflag.StringVar(&rabbitmqPass, "rabbitmq-pass", "guest", "pass of rabbitmq server or define RABBITMQ_PASS")
 	pflag.StringVar(&rabbitmqVhost, "rabbitmq-vhost", "/", "vhost of rabbitmq server or define RABBITMQ_VHOST")
 	pflag.StringVar(&projectPath, "project-path", "/", "project path or define PROJECT_SOURCE_PATH")
+
+	pflag.StringVar(&workerXmlParserHost, "worker-xml-parser-host", "xml-parser-api", "worker's xml parser host or define WORKER_XML_PARSER_HOST")
+	pflag.StringVar(&workerFtpHost, "worker-ftp-host", "ftp-api", "worker's ftp host or define WORKER_API_HOST")
+	pflag.StringVar(&workerEmailHost, "worker-email-host", "mailer-api", "worker's mailer host or define WORKER_MAILER_HOST")
+	pflag.StringVar(&workerMapperHost, "worker-mapper-host", "mapper-api", "worker's mapper host or define WORKER_MAPPER_HOST")
+	pflag.StringVar(&workerApiHost, "worker-api-host", "monolith-api", "worker's api host or define WORKER_API_HOST")
+	pflag.StringVar(&workerConnectorHost, "worker-connector-host", "monolith-api", "worker's connector host or define WORKER_CONNECTOR_HOST")
+	pflag.StringVar(&workerWebhookHost, "worker-webhook-host", "monolith-api", "worker's webhook host or define WORKER_WEBHOOK_HOST")
+	pflag.StringVar(&workerCustomHost, "worker-custom-host", "monolith-api", "worker's custom host or define WORKER_CUSTOM_HOST")
+	pflag.StringVar(&workerSignalHost, "worker-signal-host", "monolith-api", "worker's signal host or define WORKER_SIGNAL_HOST")
+	pflag.IntVar(&workerXmlParserPort, "worker-xml-parser-port", 80, "worker's xml parser port or define WORKER_XML_PARSER_PORT")
+	pflag.IntVar(&workerFtpPort, "worker-ftp-port", 80, "worker's ftp port or define WORKER_API_PORT")
+	pflag.IntVar(&workerEmailPort, "worker-email-port", 80, "worker's mailer port or define WORKER_EMAIL_PORT")
+	pflag.IntVar(&workerMapperPort, "worker-mapper-port", 80, "worker's mapper port or define WORKER_MAPPER_PORT")
+	pflag.IntVar(&workerApiPort, "worker-api-port", 80, "worker's api port or define WORKER_API_PORT")
+	pflag.IntVar(&workerConnectorPort, "worker-connector-port", 80, "worker's connector port or define WORKER_CONNECTOR_PORT")
+	pflag.IntVar(&workerWebhookPort, "worker-webhook-port", 80, "worker's webhook port or define WORKER_WEBHOOK_PORT")
+	pflag.IntVar(&workerCustomPort, "worker-custom-port", 80, "worker's custom port or define WORKER_CUSTOM_PORT")
+	pflag.IntVar(&workerSignalPort, "worker-signal-port", 80, "worker's signal port or define WORKER_SIGNAL_PORT")
 
 	pflag.Parse()
 
@@ -194,5 +251,86 @@ func parseArgs() {
 	if os.Getenv("PROJECT_SOURCE_PATH") != "" {
 		projectSourcePath := os.Getenv("PROJECT_SOURCE_PATH")
 		viper.Set("generator.project-path", projectSourcePath)
+	}
+
+	if os.Getenv("WORKER_XML_PARSER_HOST") != "" {
+		viper.Set("worker.xml_parser.host", os.Getenv("WORKER_XML_PARSER_HOST"))
+	}
+
+	if os.Getenv("WORKER_FTP_HOST") != "" {
+		viper.Set("worker.ftp.host", os.Getenv("WORKER_FTP_HOST"))
+	}
+
+	if os.Getenv("WORKER_EMAIL_HOST") != "" {
+		viper.Set("worker.email.host", os.Getenv("WORKER_EMAIL_HOST"))
+	}
+
+	if os.Getenv("WORKER_MAPPER_HOST") != "" {
+		viper.Set("worker.mapper.host", os.Getenv("WORKER_MAPPER_HOST"))
+	}
+
+	if os.Getenv("WORKER_API_HOST") != "" {
+		viper.Set("worker.api.host", os.Getenv("WORKER_API_HOST"))
+	}
+
+	if os.Getenv("WORKER_CONNECTOR_HOST") != "" {
+		viper.Set("worker.connector.host", os.Getenv("WORKER_CONNECTOR_HOST"))
+	}
+
+	if os.Getenv("WORKER_WEBHOOK_HOST") != "" {
+		viper.Set("worker.webhook.host", os.Getenv("WORKER_WEBHOOK_HOST"))
+	}
+
+	if os.Getenv("WORKER_CUSTOM_HOST") != "" {
+		viper.Set("worker.custom.host", os.Getenv("WORKER_CUSTOM_HOST"))
+	}
+
+	if os.Getenv("WORKER_SIGNAL_HOST") != "" {
+		viper.Set("worker.signal.host", os.Getenv("WORKER_SIGNAL_HOST"))
+	}
+
+	if os.Getenv("WORKER_XML_PARSER_PORT") != "" {
+		port, _ := strconv.Atoi(os.Getenv("WORKER_XML_PARSER_PORT"))
+		viper.Set("worker.xml_parser.port", port)
+	}
+
+	if os.Getenv("WORKER_FTP_PORT") != "" {
+		port, _ := strconv.Atoi(os.Getenv("WORKER_FTP_PORT"))
+		viper.Set("worker.ftp.port", port)
+	}
+
+	if os.Getenv("WORKER_EMAIL_PORT") != "" {
+		port, _ := strconv.Atoi(os.Getenv("WORKER_EMAIL_PORT"))
+		viper.Set("worker.email.port", port)
+	}
+
+	if os.Getenv("WORKER_MAPPER_PORT") != "" {
+		port, _ := strconv.Atoi(os.Getenv("WORKER_MAPPER_PORT"))
+		viper.Set("worker.mapper.port", port)
+	}
+
+	if os.Getenv("WORKER_API_PORT") != "" {
+		port, _ := strconv.Atoi(os.Getenv("WORKER_API_PORT"))
+		viper.Set("worker.api.port", port)
+	}
+
+	if os.Getenv("WORKER_CONNECTOR_PORT") != "" {
+		port, _ := strconv.Atoi(os.Getenv("WORKER_CONNECTOR_PORT"))
+		viper.Set("worker.connector.port", port)
+	}
+
+	if os.Getenv("WORKER_WEBHOOK_PORT") != "" {
+		port, _ := strconv.Atoi(os.Getenv("WORKER_WEBHOOK_PORT"))
+		viper.Set("worker.webhook.port", port)
+	}
+
+	if os.Getenv("WORKER_CUSTOM_PORT") != "" {
+		port, _ := strconv.Atoi(os.Getenv("WORKER_CUSTOM_PORT"))
+		viper.Set("worker.custom.port", port)
+	}
+
+	if os.Getenv("WORKER_SIGNAL_PORT") != "" {
+		port, _ := strconv.Atoi(os.Getenv("WORKER_SIGNAL_PORT"))
+		viper.Set("worker.signal.port", port)
 	}
 }

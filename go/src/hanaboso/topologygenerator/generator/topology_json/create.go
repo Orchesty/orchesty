@@ -8,6 +8,7 @@ import (
 	"hanaboso/topologygenerator/model"
 	"hanaboso/utils/servicename"
 	"hanaboso/utils/topology"
+	"github.com/spf13/viper"
 )
 
 const DEFAULTPORT = 8008
@@ -99,28 +100,57 @@ func getHost(nodeType string) string {
 
 	switch nodeType {
 	case XMLPARSER:
-		host = "xml-parser-api"
+		host = viper.GetString("worker.xml_parser.host")
 	case FTP:
-		host = "ftp-api"
+		host = viper.GetString("worker.ftp.host")
 	case EMAIL:
-		host = "mailer-api"
+		host = viper.GetString("worker.email.host")
 	case MAPPER:
-		host = "mapper-api"
+		host = viper.GetString("worker.mapper.host")
 	case API:
-		host = "monolith-api"
+		host = viper.GetString("worker.api.host")
 	case CONNECTOR:
-		host = "monolith-api"
+		host = viper.GetString("worker.connector.host")
 	case WEBHOOK:
-		host = "monolith-api"
+		host = viper.GetString("worker.webhook.host")
 	case CUSTOM:
-		host = "monolith-api"
+		host = viper.GetString("worker.custom.host")
 	case SIGNAL:
-		host = "monolith-api"
+		host = viper.GetString("worker.signal.host")
 	default:
 		panic(model.AppError{"Unknown type for host", model.HTTPWORKER})
 	}
 
 	return host
+}
+
+func getPort(nodeType string) int {
+	var port int
+
+	switch nodeType {
+	case XMLPARSER:
+		port = viper.GetInt("worker.xml_parser.port")
+	case FTP:
+		port = viper.GetInt("worker.ftp.port")
+	case EMAIL:
+		port = viper.GetInt("worker.email.port")
+	case MAPPER:
+		port = viper.GetInt("worker.mapper.port")
+	case API:
+		port = viper.GetInt("worker.api.port")
+	case CONNECTOR:
+		port = viper.GetInt("worker.connector.port")
+	case WEBHOOK:
+		port = viper.GetInt("worker.webhook.port")
+	case CUSTOM:
+		port = viper.GetInt("worker.custom.port")
+	case SIGNAL:
+		port = viper.GetInt("worker.signal.port")
+	default:
+		panic(model.AppError{"Unknown type for port", model.HTTPWORKER})
+	}
+
+	return port
 }
 
 func getRoute(nodeType string, serviceId string) string {
