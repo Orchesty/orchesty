@@ -511,8 +511,15 @@ class MetricsManager implements LoggerAwareInterface
     {
         $data = [];
         if (isset($series[0]['values'])) {
+            $total = count($series[0]['values']);
+            $i     = 1;
             foreach ($series[0]['values'] as $item) {
-                $data[(new DateTime($item[0]))->getTimestamp()] = $item[1] ?? 0;
+                if ($i > ($total - 4) && empty($item[1])) {
+                    break;
+                } else {
+                    $data[(new DateTime($item[0]))->getTimestamp()] = $item[1] ?? 0;
+                }
+                $i++;
             }
         }
 
