@@ -3,6 +3,7 @@ package docker
 import (
 	"context"
 	"hanaboso/topologygenerator/model"
+	"hanaboso/topologygenerator/log"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
@@ -36,6 +37,7 @@ func ContainerList(containerOptions types.ContainerListOptions) []types.Containe
 
 	containers, err := cli.ContainerList(context.Background(), containerOptions)
 	if err != nil {
+		log.Fatal(err)
 		panic(model.AppError{Message: err.Error(), Type: model.DOCKER})
 	}
 
