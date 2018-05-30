@@ -71,5 +71,7 @@ func (h *Swarm) GenerateAction(w http.ResponseWriter, r *http.Request) {
 
 	log.Infof("Swarm GenerateAction: %s", message)
 	requestResponse := response.RequestResponse{Message: message, DockerInfo: containers}
+	log.Infof("Swarm GeneratedAction produced %d containers", len(containers))
 	response.ResponseWithJSON(w, requestResponse.Prepare(), status)
+	log.Infof("Swarm GeneratedAction responding with code: %d", status)
 }

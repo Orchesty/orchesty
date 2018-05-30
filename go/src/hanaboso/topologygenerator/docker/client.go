@@ -7,6 +7,7 @@ import (
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
+	"fmt"
 )
 
 var cli *client.Client
@@ -39,6 +40,7 @@ func ContainerList(containerOptions types.ContainerListOptions) []types.Containe
 	containers, err := cli.ContainerList(context.Background(), containerOptions)
 	if err != nil {
 		log.Fatal(err)
+		fmt.Println(err.Error())
 		panic(model.AppError{Message: err.Error(), Type: model.DOCKER})
 	}
 
