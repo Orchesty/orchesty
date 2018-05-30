@@ -2,6 +2,7 @@ package log
 
 import (
 	"fmt"
+	"hanaboso/utils/env"
 	"hanaboso/utils/logger"
 )
 
@@ -15,15 +16,15 @@ func init() {
 		Sender:    logger.NewStdOutSender(),
 		Formatter: logger.NewLogStashFormatter(logApp),
 	})
-	//log.AddHandler(
-	//	logger.NewLogStashHandler(
-	//		logger.NewUDPSender(
-	//			env.GetEnv("LOGSTASH_HOST", "logstash"),
-	//			env.GetEnv("LOGSTASH_PORT", "5120"),
-	//		),
-	//		logApp,
-	//	),
-	//)
+	log.AddHandler(
+		logger.NewLogStashHandler(
+			logger.NewUDPSender(
+				env.GetEnv("LOGSTASH_HOST", "logstash"),
+				env.GetEnv("LOGSTASH_PORT", "5120"),
+			),
+			logApp,
+		),
+	)
 }
 
 // Info log message
