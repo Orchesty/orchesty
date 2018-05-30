@@ -49,10 +49,10 @@ func Router(routes Routes) *mux.Router {
 func panicHandler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		log.Info("Panic Handler called.")
-
 		defer func() {
 			if r := recover(); r != nil {
+
+				log.Info("Some panic occured.")
 
 				var message string
 
@@ -78,6 +78,8 @@ func panicHandler(next http.Handler) http.Handler {
 		}()
 
 		next.ServeHTTP(w, r)
+
+		log.Info("Going next")
 	})
 }
 
