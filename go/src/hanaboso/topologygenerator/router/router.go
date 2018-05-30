@@ -62,13 +62,14 @@ func panicHandler(next http.Handler) http.Handler {
 					message = r.(error).Error()
 				}
 
+				fmt.Println(r)
+				log.Fatalf("PanicHandler: %s", message)
+
 				r := response.RequestResponse{Message: message, DockerInfo: nil}
 
-				log.Fatalf("PanicHandler: %s", message)
 				respBody, err := json.MarshalIndent(r, "", "  ")
 				if err != nil {
 					log.Fatal(err)
-					fmt.Println(err.Error())
 					// os.Exit(1) // TODO: Really exit?
 				}
 
