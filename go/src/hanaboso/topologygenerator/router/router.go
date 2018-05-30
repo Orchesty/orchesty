@@ -62,8 +62,8 @@ func panicHandler(next http.Handler) http.Handler {
 					message = r.(error).Error()
 				}
 
-				fmt.Println(r)
-				log.Fatalf("PanicHandler: %s", message)
+				fmt.Println(message)
+				log.Infof("PanicHandler: %s", message)
 
 				r := response.RequestResponse{Message: message, DockerInfo: nil}
 
