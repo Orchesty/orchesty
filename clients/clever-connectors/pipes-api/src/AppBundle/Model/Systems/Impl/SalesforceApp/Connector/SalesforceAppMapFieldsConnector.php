@@ -14,21 +14,28 @@ use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp\Mapper\SalesforceAppMapperAbstract;
 use CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp\SalesforceAppSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use CleverConnectors\AppBundle\Utils\HeadersUtils;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
+use Nette\Utils\Strings;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Class SalesforceAppMapFieldsConnector
  *
  * @package CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp\Connector
  */
-class SalesforceAppMapFieldsConnector implements ConnectorInterface
+class SalesforceAppMapFieldsConnector implements ConnectorInterface, LoggerAwareInterface
 {
+
+    use LoggerTrait;
 
     public const MAP_FIELDS = 'mapFields';
 
@@ -67,6 +74,7 @@ class SalesforceAppMapFieldsConnector implements ConnectorInterface
         $this->dm                      = $dm;
         $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->system                  = $system;
+        $this->logger                  = new NullLogger();
     }
 
     /**
@@ -104,7 +112,18 @@ class SalesforceAppMapFieldsConnector implements ConnectorInterface
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
 
         $response = $this->curl->send($requestDto);
-        $data     = $this->parseData($response->getBody());
+
+        if ($response->getStatusCode() !== 200) {
+            $this->logError($response->getStatusCode(), $this->system, $systemInstall);
+
+            if (Strings::contains($response->getBody(), 'REQUEST_LIMIT_EXCEEDED')) {
+                return HeadersUtils::setLimitHeaderToDto($dto);
+            }
+
+            return HeadersUtils::setStopHeaderToDto($dto);
+        }
+
+        $data = $this->parseData($response->getBody());
 
         $settings                   = $systemInstall->getSettings();
         $settings[self::MAP_FIELDS] = $data;

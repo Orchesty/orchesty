@@ -41,6 +41,8 @@ services:
             - '@hbpf.transport.curl_manager'
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@systems.salesforceapp'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]
 
     hbpf.custom_node.salesforce_app-create-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp\Mapper\SalesforceAppCreateMapper
