@@ -7,11 +7,11 @@ import (
 	"hanaboso/topologygenerator/response"
 
 	"net/http"
-	"os"
 	"reflect"
 	"time"
 
 	"github.com/gorilla/mux"
+	"fmt"
 )
 
 type Route struct {
@@ -49,6 +49,8 @@ func Router(routes Routes) *mux.Router {
 func panicHandler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
+		log.Info("Panic Handler called.")
+
 		defer func() {
 			if r := recover(); r != nil {
 
@@ -66,7 +68,8 @@ func panicHandler(next http.Handler) http.Handler {
 				respBody, err := json.MarshalIndent(r, "", "  ")
 				if err != nil {
 					log.Fatal(err)
-					os.Exit(1) // TODO: Really exit?
+					fmt.Println(err.Error())
+					// os.Exit(1) // TODO: Really exit?
 				}
 
 				response.ResponseWithJSON(w, respBody, http.StatusInternalServerError)
