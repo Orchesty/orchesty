@@ -8,6 +8,8 @@ import JobMessage from "../../../message/JobMessage";
 import {INodeLabel} from "../../../topology/Configurator";
 import {FaucetProcessMsgFn} from "../IFaucet";
 
+const NACK_TIMEOUT = 5000;
+
 class Consumer extends BasicConsumer {
 
     /**
@@ -77,7 +79,9 @@ class Consumer extends BasicConsumer {
             .catch((error: Error) => {
                 try {
                     logger.error(`AmqpFaucet requeue message`, logger.ctxFromMsg(inMsg, error));
-                    channel.nack(amqMsg); // requeue due to processing error
+                    setTimeout(() => {
+                        channel.nack(amqMsg); // requeue due to processing error with delay
+                    }, NACK_TIMEOUT);
                 } catch (ackErr) {
                     logger.error(`Could not nack message. Error: ${ackErr}`, logger.ctxFromMsg(inMsg));
                 }

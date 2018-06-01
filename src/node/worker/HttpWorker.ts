@@ -60,7 +60,7 @@ class HttpWorker extends AWorker {
     public processData(msg: JobMessage): Promise<JobMessage[]> {
         const reqParams: any = this.getJobRequestParams(msg);
 
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             Object.assign(reqParams, this.settings.opts);
 
             logger.debug(
@@ -72,12 +72,12 @@ class HttpWorker extends AWorker {
 
                 if (err) {
                     this.onRequestError(msg, reqParams, err);
-                    return resolve([msg]);
+                    return reject([msg]);
                 }
 
                 if (!response.statusCode || response.statusCode !== 200) {
                     this.onInvalidStatusCode(msg, reqParams, response.statusCode, body);
-                    return resolve([msg]);
+                    return reject([msg]);
                 }
 
                 const responseHeaders: any = response.headers;

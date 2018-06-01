@@ -142,6 +142,8 @@ class Node implements IStoppable {
             });
         } catch (err) {
             logger.error(`Node process message failed.`, logger.ctxFromMsg(msgIn, err));
+
+            throw err;
         }
     }
 
