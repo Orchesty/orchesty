@@ -103,7 +103,7 @@ function createHttpWorker(port: number, processPath: string, host: string = "loc
     }, metricsMock);
 }
 
-describe.skip("HttpWorker", () => {
+describe("HttpWorker", () => {
     it("should convert JobMessage to http request, receive response and set message result", () => {
         const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName", topology_id: "topoId"};
         const headers = new Headers();
@@ -138,9 +138,9 @@ describe.skip("HttpWorker", () => {
         const worker = createHttpWorker(4020, "/invalid-status-code");
 
         return worker.processData(msg)
-            .then((outMsgs: JobMessage[]) => {
-                assert.lengthOf(outMsgs, 1);
-                const outMsg: JobMessage = outMsgs[0];
+            .catch((err) => {
+                assert.lengthOf(err, 1);
+                const outMsg: JobMessage = err[0];
 
                 assert.equal(outMsg.getResult().code, ResultCode.HTTP_ERROR);
                 assert.equal(outMsg.getContent(), JSON.stringify({ val: "original" }));
@@ -180,9 +180,9 @@ describe.skip("HttpWorker", () => {
         const worker = createHttpWorker(4020, "/non-existing");
 
         return worker.processData(msg)
-            .then((outMsgs: JobMessage[]) => {
-                assert.lengthOf(outMsgs, 1);
-                const outMsg: JobMessage = outMsgs[0];
+            .catch((err) => {
+                assert.lengthOf(err, 1);
+                const outMsg: JobMessage = err[0];
 
                 assert.equal(outMsg.getResult().code, ResultCode.HTTP_ERROR);
                 assert.equal(outMsg.getContent(), JSON.stringify({ val: "original" }));
@@ -203,9 +203,9 @@ describe.skip("HttpWorker", () => {
         worker.setTimeout(5);
 
         return worker.processData(msg)
-            .then((outMsgs: JobMessage[]) => {
-                assert.lengthOf(outMsgs, 1);
-                const outMsg: JobMessage = outMsgs[0];
+            .catch((err) => {
+                assert.lengthOf(err, 1);
+                const outMsg: JobMessage = err[0];
 
                 assert.equal(outMsg.getResult().code, ResultCode.REPEAT);
                 assert.equal(outMsg.getContent(), JSON.stringify({ val: "original" }));
@@ -306,9 +306,9 @@ describe.skip("HttpWorker", () => {
         const worker = createHttpWorker(4020, "/non-existing", "nonexistinghost");
 
         return worker.processData(msg)
-            .then((outMsgs: JobMessage[]) => {
-                assert.lengthOf(outMsgs, 1);
-                const outMsg: JobMessage = outMsgs[0];
+            .catch((err) => {
+                assert.lengthOf(err, 1);
+                const outMsg: JobMessage = err[0];
 
                 assert.equal(outMsg.getResult().code, ResultCode.HTTP_ERROR);
                 assert.equal(outMsg.getContent(), JSON.stringify({ val: "original" }));
