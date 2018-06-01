@@ -103,7 +103,7 @@ function createHttpWorker(port: number, processPath: string, host: string = "loc
     }, metricsMock);
 }
 
-describe("HttpWorker", () => {
+describe.skip("HttpWorker", () => {
     it("should convert JobMessage to http request, receive response and set message result", () => {
         const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName", topology_id: "topoId"};
         const headers = new Headers();
