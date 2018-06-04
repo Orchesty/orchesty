@@ -107,9 +107,11 @@ class MongoDbStorage
      */
     private function createNodeQuery(Collection $collection, string $nodeId): Query
     {
+        $nodeId = explode('-', $nodeId);
+
         return $collection
             ->createQueryBuilder()
-            ->field('_id')->equals(new ObjectId($nodeId))
+            ->field('_id')->equals(new ObjectId($nodeId[0]))
             ->getQuery();
     }
 
