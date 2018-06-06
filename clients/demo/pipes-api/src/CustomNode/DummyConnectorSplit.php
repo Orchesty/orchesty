@@ -19,7 +19,7 @@ use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
  *
  * @package Demo\CustomNode
  */
-class DummyConnector implements CustomNodeInterface
+class DummyConnectorSplit implements CustomNodeInterface
 {
 
     /**
