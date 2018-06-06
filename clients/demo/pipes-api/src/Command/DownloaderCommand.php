@@ -124,7 +124,7 @@ class DownloaderCommand extends Command
                                 ));
                                 $this->sendData($json, $output, $browser, 'stock-exchange');
                                 $this->sendData($json, $output, $browser, 'demo-topology');
-                                $this->sendData($json, $output, $browser, 'insurance-process');
+                                $this->sendData($json, $output, $browser, 'shipping-process');
                             } else {
                                 $output->writeln(sprintf('Received unknown event: %s', json_encode($data)));
                             }
