@@ -51,3 +51,35 @@ services:
         public: true
         arguments:
             - '@hbpf.transport.curl_manager'
+
+    hbpf.custom_node.package:
+        class: Demo\CustomNode\DummyConnector
+        public: true
+
+    hbpf.custom_node.pick-area:
+        class: Demo\CustomNode\DummyConnector
+        public: true
+
+    hbpf.custom_node.customer-notify:
+        class: Demo\CustomNode\DummyConnector
+        public: true
+
+    hbpf.custom_node.check-insurance:
+        class: Demo\CustomNode\DummyConnectorSplit
+        public: true
+
+    hbpf.custom_node.take-out-extra-insurance:
+        class: Demo\CustomNode\DummyConnector
+        public: true
+
+    hbpf.custom_node.print-label:
+        class: Demo\CustomNode\DummyConnector
+        public: true
+
+    hbpf.custom_node.fill-in-form:
+        class: Demo\CustomNode\DummyConnectorSplit
+        public: true
+
+    hbpf.custom_node.request-carrier:
+        class: Demo\CustomNode\DummyConnector
+        public: true
