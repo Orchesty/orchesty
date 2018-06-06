@@ -68,7 +68,7 @@ services:
         class: Demo\CustomNode\DummyConnectorSplit
         public: true
 
-    hbpf.custom_node.take-out-extra-insurance:
+    hbpf.custom_node.extra-insurance:
         class: Demo\CustomNode\DummyConnector
         public: true
 
