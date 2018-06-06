@@ -494,27 +494,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
      * @throws TopologyException
      * @throws NodeException
      */
-    public function testSaveTopologySchemaTypeNotFound(): void
-    {
-        $topology = (new Topology())
-            ->setName('Topology')
-            ->setDescr('Topology');
-        $this->persistAndFlush($topology);
-
-        $topologyManager = $this->container->get('hbpf.configurator.manager.topology');
-
-        $this->expectException(TopologyException::class);
-        $this->expectExceptionCode(TopologyException::TOPOLOGY_NODE_TYPE_NOT_FOUND);
-
-        $schema = $this->getSchema('schema.json');
-        unset($schema['bpmn:process']['bpmn:startEvent']['@pipes:pipesType']);
-        $topologyManager->saveTopologySchema($topology, '', $schema);
-    }
-
-    /**
-     * @throws TopologyException
-     * @throws NodeException
-     */
     public function testSaveTopologySchemaTypeNotExist(): void
     {
         $topology = (new Topology())
