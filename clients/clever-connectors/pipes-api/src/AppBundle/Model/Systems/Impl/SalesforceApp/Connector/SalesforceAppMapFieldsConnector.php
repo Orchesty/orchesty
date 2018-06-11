@@ -19,6 +19,7 @@ use CleverConnectors\AppBundle\Utils\CMHeaders;
 use CleverConnectors\AppBundle\Utils\HeadersUtils;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
@@ -110,6 +111,8 @@ class SalesforceAppMapFieldsConnector implements ConnectorInterface, LoggerAware
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
         $requestDto    = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_GET);
         $requestDto->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
+        $url        = new Uri(sprintf(self::SYNC_STATE_URL, rtrim($requestDto->getUri(TRUE), '/')));
+        $requestDto = $requestDto::from($requestDto, $url);
 
         $response = $this->curl->send($requestDto);
 
