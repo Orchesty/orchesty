@@ -81,6 +81,13 @@ services:
     depends_on:
       - mongo
 
+  links-storage:
+    image: cmhanaboso.azurecr.io/clever-monitor/links:master
+    environment:
+      - MONGO_HOST=mongo
+    depends_on:
+      - mongo
+
   mariadb:
     image: mariadb:10.3
     command: "mysqld --innodb_flush_method=nosync"
