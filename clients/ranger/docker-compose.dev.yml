@@ -3,18 +3,14 @@
 version: '3.4'
 
 services:
+  ## BEGIN DEV
   webserver:
     image: tixik/nginx-fake-index:endpoints
-    ## BEGIN DEV
     ports:
       - ${DEV_IP}:81:80
-    ## END DEV
-    ## BEGIN STAGE
-    #ports:
-    #  - ${PUBLISH_HTTP_PORT}:80
-    ## END STAGE
     depends_on:
       - app
+  ## END DEV
 
   app-ui:
     image: cmhanaboso.azurecr.io/hanaboso/ranger-ui:dev
@@ -44,11 +40,9 @@ services:
       - mariadb
       - redis
       - rabbitmq
-  ## BEGIN DEV
-#    ports:
-#      - ${DEV_IP}:80:80
-  ## END DEV
   ## BEGIN STAGE
+  #  ports:
+  #    - ${PUBLISH_HTTP_PORT}:80
   #  secrets:
   #    - source: clevermonitor-ca.pem
   #      target: /var/www/html/var/secret/ca.crt
