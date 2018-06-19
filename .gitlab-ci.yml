@@ -293,6 +293,7 @@ stage-ranger2:
     - source <(../../build/bin/map-branch-image-tags.sh ./branch-image-tag-map ${CI_BUILD_REF_NAME} -e)
     - export DEPLOYMENT_PREFIX=cm-ranger2
     - export PUBLISH_HTTP_PORT=6543
+    - export PUBLISH_HTTP_PORT_UI=6544
     - export BACKEND_URL=https://cm-ranger2.stage.hanaboso.net
     - export DOCKER_HOST=192.168.10.31:2376
     - export DOCKER_TLS_VERIFY=1

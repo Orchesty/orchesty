@@ -7,11 +7,24 @@ services:
     image: tixik/nginx-fake-index:endpoints
     ## BEGIN DEV
     ports:
-      - ${DEV_IP}:80:80
+      - ${DEV_IP}:81:80
     ## END DEV
     ## BEGIN STAGE
     #ports:
     #  - ${PUBLISH_HTTP_PORT}:80
+    ## END STAGE
+    depends_on:
+      - app
+
+  app-ui:
+    image: cmhanaboso.azurecr.io/hanaboso/ranger-ui:dev
+    ## BEGIN DEV
+    ports:
+      - ${DEV_IP}:80:80
+    ## END DEV
+    ## BEGIN STAGE
+    #ports:
+    #  - ${PUBLISH_HTTP_PORT_UI}:80
     ## END STAGE
     depends_on:
       - app
