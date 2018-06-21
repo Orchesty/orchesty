@@ -26,7 +26,7 @@ services:
       - app
 
   app:
-    image: dkr.hanaboso.net/clever-monitor/cm-ranger:${TAG_RANGER}
+    image: cmhanaboso.azurecr.io/clever-monitor/cm-ranger:${TAG_RANGER}
     environment:
       - CC_API_BACKEND=monolith-api
       - CC_NOTIFICATION_BACKEND=notification-sender-api # - add correct host
