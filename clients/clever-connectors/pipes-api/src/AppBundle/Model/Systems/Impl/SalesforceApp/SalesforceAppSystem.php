@@ -205,7 +205,7 @@ class SalesforceAppSystem implements OAuth2Interface, CMEventSystemInterface
     {
         $dto   = $this->createDto($systemInstall);
         $token = $this->provider->getAccessToken($dto, $data);
-        $systemInstall->setExpires(NULL);
+        $systemInstall->setExpires(new DateTime('now + 12 hours'));
 
         $systemInstall = $this->setSettings($systemInstall, $token);
 
@@ -223,6 +223,7 @@ class SalesforceAppSystem implements OAuth2Interface, CMEventSystemInterface
     {
         $dto   = $this->createDto($systemInstall);
         $token = $this->provider->refreshAccessToken($dto, $systemInstall->getSettings());
+        $systemInstall->setExpires(new DateTime('now + 12 hours'));
 
         return $this->setSettings($systemInstall, $token);
     }
