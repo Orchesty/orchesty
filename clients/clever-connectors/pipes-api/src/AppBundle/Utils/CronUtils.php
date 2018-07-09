@@ -74,7 +74,7 @@ final class CronUtils
      */
     public static function getTimes(LastSync $lastSync): Times
     {
-        $start = $lastSync ? $lastSync->getTimestamp() : NULL;
+        $start = $lastSync->getTimestamp();
         $end   = new DateTime('now');
 
         return new Times($start, $end);

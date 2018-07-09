@@ -10,6 +10,7 @@
 namespace Hanaboso\PipesFramework\Category\Repository;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\PipesFramework\Category\Document\Category;
 
 /**
@@ -22,6 +23,8 @@ class CategoryRepository extends DocumentRepository
 
     /**
      * @param Category $category
+     *
+     * @throws MongoDBException
      */
     public function childrenLevelUp(Category $category): void
     {

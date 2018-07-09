@@ -19,6 +19,7 @@ use Ratchet\RFC6455\Messaging\MessageInterface;
 use React\EventLoop\Factory;
 use React\EventLoop\LoopInterface;
 use React\EventLoop\TimerInterface;
+use React\Promise\ExtendedPromiseInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -70,7 +71,8 @@ class DownloaderCommand extends Command
 
         $uri = 'wss://ws.pusherapp.com/app/de504dc5763aeef9ff52?client=php-ratchet&version=0.0.1&protocol=5';
 
-        $connector($uri)
+        /** @var ExtendedPromiseInterface $promise */
+        $promise = $connector($uri)
             ->then(function (WebSocket $ws) use ($loop, $output, $uri, $browser): void {
 
                 $this->heartbeat = $loop->addPeriodicTimer(5, function () use ($ws): void {
@@ -148,10 +150,11 @@ class DownloaderCommand extends Command
                     });
                 });
 
-            })
-            ->otherwise(function (Throwable $e) use ($output): void {
-                $output->writeln(sprintf('Connection error: %s', $e->getMessage()));
             });
+
+        $promise->otherwise(function (Throwable $e) use ($output): void {
+            $output->writeln(sprintf('Connection error: %s', $e->getMessage()));
+        });
     }
 
     /**

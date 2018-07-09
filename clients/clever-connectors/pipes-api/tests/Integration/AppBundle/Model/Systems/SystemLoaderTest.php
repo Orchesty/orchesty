@@ -27,7 +27,7 @@ final class SystemLoaderTest extends KernelTestCaseAbstract
     protected function setUp(): void
     {
         parent::setUp();
-        $this->loader = $this->container->get('cc.systems.loader');
+        $this->loader = $this->ownContainer->get('cc.systems.loader');
     }
 
     /**

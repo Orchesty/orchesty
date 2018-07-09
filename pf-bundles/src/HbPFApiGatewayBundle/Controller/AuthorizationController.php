@@ -2,11 +2,10 @@
 
 namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller;
 
-use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * Class AuthorizationController
@@ -17,8 +16,7 @@ class AuthorizationController extends FOSRestController
 {
 
     /**
-     * @Route("/authorizations/{authorizationId}/settings")
-     * @Method({"GET", "OPTIONS"})
+     * @Route("/authorizations/{authorizationId}/settings", methods={"GET", "OPTIONS"})
      *
      * @param string $authorizationId
      *
@@ -31,8 +29,7 @@ class AuthorizationController extends FOSRestController
     }
 
     /**
-     * @Route("/authorizations/{authorizationId}/save_settings")
-     * @Method({"PUT", "OPTIONS"})
+     * @Route("/authorizations/{authorizationId}/save_settings", methods={"PUT", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $authorizationId
@@ -46,8 +43,7 @@ class AuthorizationController extends FOSRestController
     }
 
     /**
-     * @Route("/authorizations/{authorizationId}/authorize")
-     * @Method({"POST", "OPTIONS"})
+     * @Route("/authorizations/{authorizationId}/authorize", methods={"POST", "OPTIONS"})
      *
      * @param string $authorizationId
      *
@@ -60,8 +56,7 @@ class AuthorizationController extends FOSRestController
     }
 
     /**
-     * @Route("/authorizations/{authorizationId}/save_token")
-     * @Method({"POST", "OPTIONS"})
+     * @Route("/authorizations/{authorizationId}/save_token", methods={"POST", "OPTIONS"})
      *
      * @param string $authorizationId
      *
@@ -74,8 +69,7 @@ class AuthorizationController extends FOSRestController
     }
 
     /**
-     * @Route("/authorizations")
-     * @Method({"GET", "OPTIONS"})
+     * @Route("/authorizations", methods={"GET", "OPTIONS"})
      *
      * @return Response
      */

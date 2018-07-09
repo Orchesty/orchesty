@@ -3,6 +3,7 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\ShopifySystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Traits\LoggerTrait;
@@ -88,6 +89,7 @@ class ShopifyUpdateCustomerConnector implements ConnectorInterface, LoggerAwareI
      *
      * @return ProcessDto
      * @throws CurlException
+     * @throws SystemException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {

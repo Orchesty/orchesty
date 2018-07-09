@@ -2,8 +2,10 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector;
 
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\LastSync\LastSyncManager;
 use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\ZohoSystem;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use CleverConnectors\AppBundle\Utils\CronUtils;
@@ -52,6 +54,8 @@ abstract class ZohoCronConnectorAbstract extends ZohoContactBatchConnectorAbstra
      * @param callable      $callbackItem
      *
      * @return PromiseInterface
+     * @throws CleverConnectorsException
+     * @throws SystemException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {

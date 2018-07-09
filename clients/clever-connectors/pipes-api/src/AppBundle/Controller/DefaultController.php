@@ -4,16 +4,13 @@ namespace CleverConnectors\AppBundle\Controller;
 
 use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * Class DefaultController
  *
  * @package CleverConnectors\AppBundle\Controller
- *
- * @Route(service="cc.default.controller")
  */
 class DefaultController extends FOSRestController
 {
@@ -21,8 +18,7 @@ class DefaultController extends FOSRestController
     use ControllerTrait;
 
     /**
-     * @Route("/")
-     * @Method("GET")
+     * @Route("/", methods={"GET"})
      *
      * @return Response
      */

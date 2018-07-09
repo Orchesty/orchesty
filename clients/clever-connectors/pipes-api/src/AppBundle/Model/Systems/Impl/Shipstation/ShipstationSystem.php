@@ -15,7 +15,6 @@ use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Traits\SystemTrait;
 use DateTime;
 use GuzzleHttp\Psr7\Uri;
-use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 
 /**
@@ -107,7 +106,6 @@ class ShipstationSystem implements AuthorizationInterface
      *
      * @return RequestDto
      * @throws SystemException
-     * @throws CurlException
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {

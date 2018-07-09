@@ -7,9 +7,6 @@ fos_rest:
             - { path: '^/api', priorities: ['json'] }
             - { path: '^/', priorities: ['json'] }
 
-    body_converter:
-        enabled: true
-
     body_listener:
         decoders:
             json: fos_rest.decoder.json

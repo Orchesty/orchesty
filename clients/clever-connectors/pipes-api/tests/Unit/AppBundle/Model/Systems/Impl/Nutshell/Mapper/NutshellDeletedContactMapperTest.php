@@ -21,7 +21,7 @@ final class NutshellDeletedContactMapperTest extends ConnectorTestCaseAbstract
      */
     public function testProcess(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.nutshell-deleted-contact-mapper');
+        $connector = $this->ownContainer->get('hbpf.custom_node.nutshell-deleted-contact-mapper');
         $data      = Json::decode(str_replace(
             '"create"',
             '"delete"',
@@ -50,7 +50,7 @@ final class NutshellDeletedContactMapperTest extends ConnectorTestCaseAbstract
      */
     public function testProcessInvalid(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.nutshell-deleted-contact-mapper');
+        $connector = $this->ownContainer->get('hbpf.custom_node.nutshell-deleted-contact-mapper');
 
         $dto = $connector->process(
             (new ProcessDto())->setData(

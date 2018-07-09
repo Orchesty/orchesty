@@ -19,7 +19,7 @@ final class ShopifyCreateCustomerMapperTest extends DatabaseTestCaseAbstract
      */
     public function testMapper(): void
     {
-        $mapper = $this->container->get('hbpf.custom_node.shopify-create-customer-mapper');
+        $mapper = $this->ownContainer->get('hbpf.custom_node.shopify-create-customer-mapper');
 
         $dto = new ProcessDto();
         $dto->setData(json_encode([

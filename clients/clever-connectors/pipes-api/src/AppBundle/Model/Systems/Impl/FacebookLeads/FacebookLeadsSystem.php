@@ -186,7 +186,6 @@ class FacebookLeadsSystem implements SystemInterface, OAuth2Interface
      *
      * @return RequestDto
      * @throws SystemException
-     * @throws CurlException
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {
@@ -220,6 +219,7 @@ class FacebookLeadsSystem implements SystemInterface, OAuth2Interface
      * @return array
      * @throws CurlException
      * @throws CleverConnectorsException
+     * @throws SystemException
      */
     public function getPages(SystemInstall $systemInstall, array $data): array
     {
@@ -236,6 +236,7 @@ class FacebookLeadsSystem implements SystemInterface, OAuth2Interface
      * @return array
      * @throws CleverConnectorsException
      * @throws CurlException
+     * @throws SystemException
      */
     public function getForms(SystemInstall $systemInstall, array $data): array
     {

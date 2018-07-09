@@ -3,10 +3,10 @@
 namespace CleverConnectors\AppBundle\Model\Systems;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
@@ -79,7 +79,7 @@ class SystemTopologyRunner implements LoggerAwareInterface
      * @param bool            $service
      *
      * @return array
-     * @throws CleverConnectorsException
+     * @throws MongoDBException
      */
     public function runTopologies(
         string $topology,

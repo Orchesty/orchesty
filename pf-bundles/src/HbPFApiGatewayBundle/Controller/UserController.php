@@ -2,10 +2,9 @@
 
 namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller;
 
-use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * Class UserController
@@ -16,8 +15,7 @@ class UserController extends FOSRestController
 {
 
     /**
-     * @Route("/user/login")
-     * @Method({"POST", "OPTIONS"})
+     * @Route("/user/login", methods={"POST", "OPTIONS"})
      *
      * @return Response
      */
@@ -27,8 +25,7 @@ class UserController extends FOSRestController
     }
 
     /**
-     * @Route("/user/logout")
-     * @Method({"POST", "OPTIONS"})
+     * @Route("/user/logout", methods={"POST", "OPTIONS"})
      *
      * @return Response
      */
@@ -38,8 +35,7 @@ class UserController extends FOSRestController
     }
 
     /**
-     * @Route("/user/register")
-     * @Method({"POST", "OPTIONS"})
+     * @Route("/user/register", methods={"POST", "OPTIONS"})
      *
      * @return Response
      */
@@ -49,8 +45,7 @@ class UserController extends FOSRestController
     }
 
     /**
-     * @Route("/user/{token}/activate", requirements={"token": "\w+"})
-     * @Method({"POST", "OPTIONS"})
+     * @Route("/user/{token}/activate", requirements={"token": "\w+"}, methods={"POST", "OPTIONS"})
      *
      * @param string $token
      *
@@ -62,8 +57,7 @@ class UserController extends FOSRestController
     }
 
     /**
-     * @Route("/user/{token}/set_password", requirements={"token": "\w+"})
-     * @Method({"POST", "OPTIONS"})
+     * @Route("/user/{token}/set_password", requirements={"token": "\w+"}, methods={"POST", "OPTIONS"})
      *
      * @param string $token
      *
@@ -75,8 +69,7 @@ class UserController extends FOSRestController
     }
 
     /**
-     * @Route("/user/change_password")
-     * @Method({"POST", "OPTIONS"})
+     * @Route("/user/change_password", methods={"POST", "OPTIONS"})
      *
      * @return Response
      */
@@ -86,8 +79,7 @@ class UserController extends FOSRestController
     }
 
     /**
-     * @Route("/user/reset_password")
-     * @Method({"POST", "OPTIONS"})
+     * @Route("/user/reset_password", methods={"POST", "OPTIONS"})
      *
      * @return Response
      */
@@ -97,8 +89,7 @@ class UserController extends FOSRestController
     }
 
     /**
-     * @Route("/user/{id}/delete")
-     * @Method({"DELETE", "OPTIONS"})
+     * @Route("/user/{id}/delete", methods={"DELETE", "OPTIONS"})
      *
      * @param string $id
      *

@@ -29,7 +29,6 @@ use CleverConnectors\AppBundle\Utils\AuthorizationUtils;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use DateTime;
 use GuzzleHttp\Psr7\Uri;
-use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
@@ -201,7 +200,6 @@ class SalesforceSystem implements OAuth2Interface, CMEventSystemInterface
      *
      * @return RequestDto
      * @throws SystemException
-     * @throws CurlException
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {

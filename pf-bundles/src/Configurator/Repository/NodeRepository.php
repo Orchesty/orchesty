@@ -57,7 +57,7 @@ class NodeRepository extends DocumentRepository
      */
     public function getStartingNode(Topology $topology): Node
     {
-        /** @var Node $node */
+        /** @var Node|null $node */
         $node = $this->createQueryBuilder()
             ->field('topology')->equals($topology->getId())
             ->field('type')->equals(TypeEnum::SIGNAL)

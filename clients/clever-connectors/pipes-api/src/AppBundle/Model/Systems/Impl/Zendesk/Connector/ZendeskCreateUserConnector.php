@@ -3,7 +3,6 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\ZendeskSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
@@ -89,7 +88,6 @@ class ZendeskCreateUserConnector implements ConnectorInterface, LoggerAwareInter
      * @param ProcessDto $dto
      *
      * @return ProcessDto
-     * @throws CleverConnectorsException
      * @throws CurlException
      * @throws SystemException
      */

@@ -22,7 +22,7 @@ final class ShopifyUpdateCustomerMapperTest extends DatabaseTestCaseAbstract
      */
     public function testMapper(): void
     {
-        $mapper = $this->container->get('hbpf.custom_node.shopify-update-customer-mapper');
+        $mapper = $this->ownContainer->get('hbpf.custom_node.shopify-update-customer-mapper');
 
         $dto = new ProcessDto();
         $dto->setData(json_encode([

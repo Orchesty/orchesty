@@ -84,7 +84,7 @@ final class ZohoDeletedContactConnectorTest extends ConnectorTestCaseAbstract
         $processCounter->method('setTotal')->willReturn(TRUE);
 
         $conn = $this->getMockBuilder(ZohoDeletedContactConnector::class)->setConstructorArgs([
-            $this->container->get('systems.zoho'),
+            $this->ownContainer->get('systems.zoho'),
             $this->createMock(CurlSenderFactory::class),
             $this->mockLastSync(),
             $processCounter,

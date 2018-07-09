@@ -73,7 +73,6 @@ class CMTestBenchmarkSpitterConnector implements ConnectorInterface, LoggerAware
      * @param ProcessDto $dto
      *
      * @return ProcessDto
-     * @throws ConnectorException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {

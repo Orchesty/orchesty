@@ -27,7 +27,7 @@ final class CMTestRepeaterConnectorTest extends DatabaseTestCaseAbstract
      */
     public function testProcess(): void
     {
-        $reddis = $this->container->get('snc_redis.default');
+        $reddis = $this->ownContainer->get('snc_redis.default');
         $conn   = new CMTestRepeaterConnector($reddis);
 
         $dto = new ProcessDto();

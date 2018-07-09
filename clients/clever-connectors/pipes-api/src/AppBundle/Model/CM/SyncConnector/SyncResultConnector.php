@@ -68,7 +68,6 @@ final class SyncResultConnector implements ConnectorInterface
      *
      * @return ProcessDto
      * @throws ConnectorException
-     * @throws CurlException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {

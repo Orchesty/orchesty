@@ -31,7 +31,7 @@ final class CMEventsManagerTest extends KernelTestCaseAbstract
         $this->expectExceptionCode(CleverConnectorsException::INVALID_ENUM_VALUE);
 
         /** @var CMEventsManager $mana */
-        $mana = $this->container->get('cc.events.manager');
+        $mana = $this->ownContainer->get('cc.events.manager');
         $mana->runEvent(new Request(), '', '');
     }
 
@@ -49,7 +49,7 @@ final class CMEventsManagerTest extends KernelTestCaseAbstract
         /** @var DocumentManager|PHPUnit_Framework_MockObject_MockObject $dm */
         $dm = $this->createMock(DocumentManager::class);
         $dm->method('getRepository')->willReturn($sysRepo);
-        $loader = $this->container->get('cc.systems.loader');
+        $loader = $this->ownContainer->get('cc.systems.loader');
 
         /** @var SystemLimitManager|MockObject $systemLimitManager */
         $systemLimitManager = $this->createMock(SystemLimitManager::class);
@@ -76,7 +76,7 @@ final class CMEventsManagerTest extends KernelTestCaseAbstract
         $dm = $this->createMock(DocumentManager::class);
         $dm->method('getRepository')->willReturn($sysRepo);
 
-        $loader = $this->container->get('cc.systems.loader');
+        $loader = $this->ownContainer->get('cc.systems.loader');
 
         /** @var SystemLimitManager|MockObject $systemLimitManager */
         $systemLimitManager = $this->createMock(SystemLimitManager::class);
@@ -105,7 +105,7 @@ final class CMEventsManagerTest extends KernelTestCaseAbstract
             'settings'                       => [],
         ];
 
-        $loader = $this->container->get('cc.systems.loader');
+        $loader = $this->ownContainer->get('cc.systems.loader');
 
         /** @var SystemLimitManager|MockObject $systemLimitManager */
         $systemLimitManager = $this->createMock(SystemLimitManager::class);
@@ -135,7 +135,7 @@ final class CMEventsManagerTest extends KernelTestCaseAbstract
         $systemInstall = (new SystemInstall())->setUser('usr')->setSystem('null.user')->setToken('tok');
         $data          = [SystemInstall::EVENT_HARD_BOUNCE => TRUE, 'settings' => []];
 
-        $loader = $this->container->get('cc.systems.loader');
+        $loader = $this->ownContainer->get('cc.systems.loader');
 
         /** @var SystemLimitManager|MockObject $systemLimitManager */
         $systemLimitManager = $this->createMock(SystemLimitManager::class);

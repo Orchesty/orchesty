@@ -19,7 +19,7 @@ final class ZohoDeletedContactMapperTest extends ConnectorTestCaseAbstract
      */
     public function testProcess(): void
     {
-        $node = $this->container->get('hbpf.custom_node.zoho-deleted-contact-mapper');
+        $node = $this->ownContainer->get('hbpf.custom_node.zoho-deleted-contact-mapper');
 
         $response = json_decode(
             $node->process((new ProcessDto())->setData($this->getRequest('singleDeletedContactId.json')))

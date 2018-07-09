@@ -9,6 +9,7 @@ use Clue\React\Buzz\Message\ResponseException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Trait FacebookTrait
@@ -83,9 +84,10 @@ trait FacebookTrait
         bool $throw = TRUE
     ): ?int
     {
+        /** @var ResponseInterface|NULL $response */
         $response = $exception->getResponse();
 
-        if (isset($response)) {
+        if (!empty($response)) {
             $httpCode = $response->getStatusCode();
             if ($response->getStatusCode() == 400) {
                 $data      = json_decode($response->getBody()->getContents(), TRUE);

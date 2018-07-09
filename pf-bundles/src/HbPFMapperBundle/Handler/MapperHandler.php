@@ -2,6 +2,7 @@
 
 namespace Hanaboso\PipesFramework\HbPFMapperBundle\Handler;
 
+use Hanaboso\PipesFramework\HbPFMapperBundle\Exception\MapperException;
 use Hanaboso\PipesFramework\HbPFMapperBundle\Loader\MapperLoader;
 
 /**
@@ -32,6 +33,7 @@ class MapperHandler
      * @param array  $data
      *
      * @return array
+     * @throws MapperException
      */
     public function process(string $id, array $data): array
     {
@@ -43,6 +45,7 @@ class MapperHandler
      * @param array  $data
      *
      * @return array
+     * @throws MapperException
      */
     public function processTest(string $id, array $data): array
     {

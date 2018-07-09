@@ -7,6 +7,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\Index;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use Hanaboso\CommonsBundle\Enum\HandlerEnum;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
+use Hanaboso\CommonsBundle\Exception\EnumException;
 use Hanaboso\CommonsBundle\Traits\Document\DeletedTrait;
 use Hanaboso\CommonsBundle\Traits\Document\IdTrait;
 use Hanaboso\PipesFramework\Configurator\Document\Embed\EmbedNode;
@@ -194,6 +195,7 @@ class Node
      *
      * @return Node
      * @throws NodeException
+     * @throws EnumException
      */
     public function setType(string $type): Node
     {
@@ -222,6 +224,7 @@ class Node
      *
      * @return Node
      * @throws NodeException
+     * @throws EnumException
      */
     public function setHandler(string $handler): Node
     {

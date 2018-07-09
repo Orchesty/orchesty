@@ -52,7 +52,7 @@ final class UniversalMapperNodeTest extends DatabaseTestCaseAbstract
             ->setData(json_encode($data))
             ->setHeaders($this->getHeaders($topologyName));
 
-        $mapper = $this->container->get('hbpf.custom_node.universal-mapper');
+        $mapper = $this->ownContainer->get('hbpf.custom_node.universal-mapper');
         $dto    = $mapper->process($dto);
         $data   = json_decode($dto->getData(), TRUE);
 
@@ -93,7 +93,7 @@ final class UniversalMapperNodeTest extends DatabaseTestCaseAbstract
             ->setData(json_encode($data))
             ->setHeaders($this->getHeaders($topologyName));
 
-        $mapper = $this->container->get('hbpf.custom_node.universal-mapper');
+        $mapper = $this->ownContainer->get('hbpf.custom_node.universal-mapper');
 
         $processedDto = $mapper->process($dto);
         self::assertEquals($dto, $processedDto);

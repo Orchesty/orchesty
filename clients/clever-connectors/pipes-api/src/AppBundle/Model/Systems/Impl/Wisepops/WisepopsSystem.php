@@ -139,7 +139,6 @@ class WisepopsSystem implements WebhookSystemInterface, AuthorizationInterface
      *
      * @return RequestDto
      * @throws SystemException
-     * @throws CurlException
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {

@@ -80,7 +80,6 @@ abstract class PluginSubscriberConnectorAbstract implements ConnectorInterface, 
      * @param ProcessDto $dto
      *
      * @return ProcessDto
-     * @throws CleverConnectorsException
      * @throws CurlException
      * @throws SystemException
      */

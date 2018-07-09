@@ -4,12 +4,16 @@ namespace Hanaboso\PipesFramework\Parser;
 
 use Hanaboso\PipesFramework\Parser\Exception\TableParserException;
 use Nette\Utils\Json;
+use Nette\Utils\JsonException;
 use Nette\Utils\Strings;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Reader\Exception as ReaderException;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
+use PhpOffice\PhpSpreadsheet\Writer\Exception as WriterException;
 use PhpOffice\PhpSpreadsheet\Writer\Html;
 use PhpOffice\PhpSpreadsheet\Writer\IWriter;
 use PhpOffice\PhpSpreadsheet\Writer\Ods;
@@ -29,6 +33,8 @@ final class TableParser implements TableParserInterface
      * @param bool|null $hasHeaders
      *
      * @return string
+     * @throws Exception
+     * @throws ReaderException
      */
     public function parseToJson(string $path, ?bool $hasHeaders = FALSE): string
     {
@@ -67,6 +73,10 @@ final class TableParser implements TableParserInterface
      * @param bool|null $hasHeaders
      *
      * @return string
+     * @throws Exception
+     * @throws TableParserException
+     * @throws JsonException
+     * @throws WriterException
      */
     public function parseFromJson(string $path,
                                   string $type = TableParserInterface::XLSX,
@@ -105,6 +115,7 @@ final class TableParser implements TableParserInterface
      * @param int       $row
      *
      * @return string|null
+     * @throws Exception
      */
     private function getTrimmedCellValue(Worksheet $worksheet, int $column, int $row): ?string
     {
@@ -121,6 +132,8 @@ final class TableParser implements TableParserInterface
      * @param int       $column
      * @param int       $row
      * @param string    $value
+     *
+     * @throws Exception
      */
     private function setCellValue(Worksheet $worksheet, int $column, int $row, string $value): void
     {

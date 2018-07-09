@@ -48,6 +48,7 @@ class PluginsSecurityListener implements EventSubscriberInterface
      * @param FilterControllerEvent $ev
      *
      * @throws CleverConnectorsException
+     * @throws Exception
      */
     public function checkSecurity(FilterControllerEvent $ev): void
     {

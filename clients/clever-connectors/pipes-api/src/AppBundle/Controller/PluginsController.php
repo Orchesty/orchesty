@@ -9,18 +9,15 @@ use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use LogicException;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 use Throwable;
 
 /**
  * Class PluginsController
  *
  * @package CleverConnectors\AppBundle\Controller
- *
- * @Route(service="cc_plugins.plugins.controller")
  */
 class PluginsController extends FOSRestController
 {
@@ -43,8 +40,7 @@ class PluginsController extends FOSRestController
     }
 
     /**
-     * @Route("/install")
-     * @Method({"POST"})
+     * @Route("/install", methods={"POST"})
      *
      * @param Request $request
      *
@@ -60,8 +56,7 @@ class PluginsController extends FOSRestController
     }
 
     /**
-     * @Route("/uninstall")
-     * @Method({"GET"})
+     * @Route("/uninstall", methods={"GET"})
      *
      * @param Request $request
      *
@@ -77,8 +72,7 @@ class PluginsController extends FOSRestController
     }
 
     /**
-     * @Route("/check")
-     * @Method({"POST"})
+     * @Route("/check", methods={"POST"})
      *
      * @param Request $request
      *
@@ -94,8 +88,7 @@ class PluginsController extends FOSRestController
     }
 
     /**
-     * @Route("/subscriber/create")
-     * @Method({"POST"})
+     * @Route("/subscriber/create", methods={"POST"})
      *
      * @param Request $request
      *
@@ -113,8 +106,7 @@ class PluginsController extends FOSRestController
     }
 
     /**
-     * @Route("/subscriber/update")
-     * @Method({"POST"})
+     * @Route("/subscriber/update", methods={"POST"})
      *
      * @param Request $request
      *
@@ -132,8 +124,7 @@ class PluginsController extends FOSRestController
     }
 
     /**
-     * @Route("/subscriber/delete")
-     * @Method({"POST"})
+     * @Route("/subscriber/delete", methods={"POST"})
      *
      * @param Request $request
      *
@@ -151,8 +142,7 @@ class PluginsController extends FOSRestController
     }
 
     /**
-     * @Route("/get-distribution-list")
-     * @Method({"GET"})
+     * @Route("/get-distribution-list", methods={"GET"})
      *
      * @param Request $request
      *
@@ -168,8 +158,7 @@ class PluginsController extends FOSRestController
     }
 
     /**
-     * @Route("/create-distribution-list")
-     * @Method({"POST"})
+     * @Route("/create-distribution-list", methods={"POST"})
      *
      * @param Request $request
      *
@@ -185,8 +174,7 @@ class PluginsController extends FOSRestController
     }
 
     /**
-     * @Route("/subscriber/validate")
-     * @Method({"POST"})
+     * @Route("/subscriber/validate", methods={"POST"})
      *
      * @param Request $request
      *

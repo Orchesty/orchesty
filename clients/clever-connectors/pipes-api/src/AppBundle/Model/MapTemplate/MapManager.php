@@ -11,6 +11,9 @@ use CleverConnectors\AppBundle\Model\Systems\Traits\MapTrait;
 use CleverConnectors\AppBundle\Repository\MapTemplateRepository;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Hanaboso\CommonsBundle\Exception\EnumException;
 
 /**
  * Class MapManager
@@ -55,10 +58,12 @@ class MapManager
      *
      * @return MapTemplate
      * @throws CleverConnectorsException
+     * @throws LockException
+     * @throws MappingException
      */
     public function get(string $id): MapTemplate
     {
-        /** @var MapTemplate $mapTemplate */
+        /** @var MapTemplate|null $mapTemplate */
         $mapTemplate = $this->mapTemplateRepository->find($id);
 
         if (!$mapTemplate) {
@@ -96,6 +101,7 @@ class MapManager
      * @return MapTemplate
      * @throws CleverConnectorsException
      * @throws SystemException
+     * @throws EnumException
      */
     public function create(SystemInstall $systemInstall, array $data): MapTemplate
     {
@@ -126,6 +132,7 @@ class MapManager
      * @param array       $data
      *
      * @return MapTemplate
+     * @throws EnumException
      */
     public function update(MapTemplate $mapTemplate, array $data): MapTemplate
     {
@@ -150,6 +157,7 @@ class MapManager
      * @param array       $data
      *
      * @return MapTemplate
+     * @throws EnumException
      */
     private function fillMapTemplate(MapTemplate $mapTemplate, array $data): MapTemplate
     {
@@ -168,6 +176,7 @@ class MapManager
      * @param array       $data
      *
      * @return MapTemplate
+     * @throws EnumException
      */
     private function addMapField(MapTemplate $mapTemplate, array $data): MapTemplate
     {

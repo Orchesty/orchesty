@@ -22,7 +22,7 @@ final class AirtableUpdateContactMapperTest extends ConnectorTestCaseAbstract
      */
     public function testProcessEvent(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.airtable-update-contact-mapper');
+        $connector = $this->ownContainer->get('hbpf.custom_node.airtable-update-contact-mapper');
 
         $response = Json::decode($connector->process(
             (new ProcessDto())
@@ -46,7 +46,7 @@ final class AirtableUpdateContactMapperTest extends ConnectorTestCaseAbstract
      */
     public function testProcessEventBadRequest(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.airtable-update-contact-mapper');
+        $connector = $this->ownContainer->get('hbpf.custom_node.airtable-update-contact-mapper');
 
         $this->expectException(CleverConnectorsException::class);
         $this->expectExceptionCode(CleverConnectorsException::MISSING_DATA);

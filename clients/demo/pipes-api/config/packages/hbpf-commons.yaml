@@ -19,7 +19,6 @@ services:
     ##########################
     #        Metrics         #
     ##########################
-
     hbpf.system_metrics_listener:
         class: Hanaboso\CommonsBundle\Listener\SystemMetricsListener
         arguments:
@@ -37,6 +36,18 @@ services:
             - '%kapacitor.port%'
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
+
+    hbpf.influxdb_sender_connector:
+            class: Hanaboso\CommonsBundle\Metrics\InfluxDbSender
+            arguments:
+                - '@udp_metrics_sender'
+                - '%influx.connector_table%'
+
+    hbpf.influxdb_sender_monolith:
+        class: Hanaboso\CommonsBundle\Metrics\InfluxDbSender
+        arguments:
+            - '@udp_metrics_sender'
+            - '%influx.monolith_table%'
 
 
     ##########################

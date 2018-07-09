@@ -18,7 +18,7 @@ final class ProgressCounterListenerTest extends KernelTestCaseAbstract
      */
     public function testMissingData(): void
     {
-        $prov = $this->container->get('cc.progress_counter.listener');
+        $prov = $this->ownContainer->get('cc.progress_counter.listener');
         $prov->updateStatus(new ProcessStatusEvent('123456', FALSE));
     }
 

@@ -75,6 +75,7 @@ class ShoptetSyncCustomerConnector implements ConnectorInterface, BatchInterface
      * @param callable      $callbackItem
      *
      * @return PromiseInterface
+     * @throws SystemException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {

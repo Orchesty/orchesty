@@ -37,8 +37,8 @@ class ZendeskUpdatedUserConnector extends ZendeskUserConnectorAbstract
      * @param callable      $callbackItem
      *
      * @return PromiseInterface
-     * @throws SystemException
      * @throws CleverConnectorsException
+     * @throws SystemException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {

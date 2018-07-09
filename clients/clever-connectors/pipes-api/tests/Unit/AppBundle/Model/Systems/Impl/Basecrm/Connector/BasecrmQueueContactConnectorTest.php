@@ -159,7 +159,7 @@ final class BasecrmQueueContactConnectorTest extends ConnectorTestCaseAbstract
             ));
 
         return new BasecrmQueueContactConnector(
-            $this->container->get('systems.basecrm'),
+            $this->ownContainer->get('systems.basecrm'),
             $this->mockDM(),
             $curl
         );

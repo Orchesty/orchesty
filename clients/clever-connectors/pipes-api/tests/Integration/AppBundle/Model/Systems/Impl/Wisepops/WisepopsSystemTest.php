@@ -24,7 +24,7 @@ final class WisepopsSystemTest extends DatabaseTestCaseAbstract
             ->setToken('Token');
         $this->persistAndFlush($systemInstall);
 
-        $manager = $this->container->get('cc.systems.manager');
+        $manager = $this->ownContainer->get('cc.systems.manager');
         $manager->runCustomAction('wisepops', 'User', 'saveCustomForm', ['key' => 'value']);
 
         $this->dm->clear();

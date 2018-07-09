@@ -49,7 +49,7 @@ class SplitFileBatch implements BatchInterface, CustomNodeInterface
 
             return resolve()
                 ->then(function () use ($data) {
-                    return (new SuccessMessage(0))->setData(json_encode($data));
+                    return (new SuccessMessage(0))->setData((string) json_encode($data));
                 })
                 ->then($callbackItem);
         }
@@ -65,6 +65,7 @@ class SplitFileBatch implements BatchInterface, CustomNodeInterface
     public function process(ProcessDto $dto): ProcessDto
     {
         // TODO: Implement process() method.
+        return $dto;
     }
 
 }

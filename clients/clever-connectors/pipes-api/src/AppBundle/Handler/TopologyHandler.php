@@ -57,7 +57,7 @@ class TopologyHandler extends HbPFTopologyHandler
      */
     public function deleteTopologyById(string $id): bool
     {
-        /** @var Topology $topology */
+        /** @var Topology|null $topology */
         $topology = $this->dm->getRepository(Topology::class)->findOneBy(['id' => $id]);
         if (!$topology) {
             throw new CleverConnectorsException(

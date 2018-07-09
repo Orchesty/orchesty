@@ -19,7 +19,7 @@ final class ShipstationCreatedCustomerMapperTest extends ConnectorTestCaseAbstra
      */
     public function testProcess(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.shipstation-created-customer-mapper');
+        $connector = $this->ownContainer->get('hbpf.custom_node.shipstation-created-customer-mapper');
 
         $response = Json::decode($connector->process($this->prepareConnectorProcessDto([
             'api_key'    => '3c836ae775da4c1e9c8d1263245c15c4',
@@ -41,7 +41,7 @@ final class ShipstationCreatedCustomerMapperTest extends ConnectorTestCaseAbstra
      */
     public function testProcessList(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.shipstation-created-customer-mapper');
+        $connector = $this->ownContainer->get('hbpf.custom_node.shipstation-created-customer-mapper');
 
         $response = Json::decode($connector->process($this->prepareConnectorProcessDto([
             'api_key'    => '3c836ae775da4c1e9c8d1263245c15c4',

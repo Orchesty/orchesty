@@ -67,6 +67,7 @@ class ZohoSyncContactConnector extends ZohoContactBatchConnectorAbstract
      * @param callable      $callbackItem
      *
      * @return PromiseInterface
+     * @throws SystemException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {

@@ -171,7 +171,7 @@ final class ZohoGetContactConnectorTest extends ConnectorTestCaseAbstract
 
                 return new ResponseDto($status, 'OK', $this->getRequest('getSingleContact.json'), []);
             }));
-        $system = $this->container->get('systems.zoho');
+        $system = $this->ownContainer->get('systems.zoho');
 
         return new ZohoGetContactConnector($system, $documentManager, $curlManager);
     }

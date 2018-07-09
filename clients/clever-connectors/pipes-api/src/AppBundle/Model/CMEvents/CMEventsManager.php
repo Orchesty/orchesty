@@ -22,6 +22,7 @@ use CleverConnectors\AppBundle\Utils\InnerRequestUtils;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Psr\Log\LoggerAwareInterface;
@@ -105,6 +106,7 @@ class CMEventsManager implements LoggerAwareInterface
      *
      * @throws CleverConnectorsException
      * @throws SystemException
+     * @throws MongoDBException
      */
     public function runEvent(Request $request, string $userId, string $event): void
     {
@@ -150,8 +152,8 @@ class CMEventsManager implements LoggerAwareInterface
      * @param array         $data
      *
      * @return SystemInstall
-     * @throws CleverConnectorsException
      * @throws SystemException
+     * @throws MongoDBException
      */
     public function saveEventsForSystemInstall(
         SystemInstall $systemInstall,

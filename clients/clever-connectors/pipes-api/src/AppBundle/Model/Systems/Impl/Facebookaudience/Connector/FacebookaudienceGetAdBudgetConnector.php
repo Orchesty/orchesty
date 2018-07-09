@@ -42,7 +42,6 @@ class FacebookaudienceGetAdBudgetConnector extends FacebookaudienceConnectorAbst
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
-        $res           = [];
         $data          = json_decode($dto->getData(), TRUE);
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
 

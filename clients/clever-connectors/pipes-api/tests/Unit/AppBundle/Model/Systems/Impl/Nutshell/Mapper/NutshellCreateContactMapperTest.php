@@ -20,7 +20,7 @@ final class NutshellCreateContactMapperTest extends ConnectorTestCaseAbstract
      */
     public function testProcess(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.nutshell-create-contact-mapper');
+        $connector = $this->ownContainer->get('hbpf.custom_node.nutshell-create-contact-mapper');
 
         $response = Json::decode($connector->process((new ProcessDto())->setData(Json::encode(
             (new CMSubscriber())

@@ -20,7 +20,7 @@ final class NutshellUpdateContactMapperTest extends ConnectorTestCaseAbstract
      */
     public function testProcess(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.nutshell-update-contact-mapper');
+        $connector = $this->ownContainer->get('hbpf.custom_node.nutshell-update-contact-mapper');
 
         $response = Json::decode($connector->process((new ProcessDto())->setData(Json::encode([
             CleverFieldsEnum::FOREIGN_ID => 1,

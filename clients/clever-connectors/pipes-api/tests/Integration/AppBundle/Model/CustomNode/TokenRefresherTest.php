@@ -36,7 +36,7 @@ final class TokenRefresherTest extends DatabaseTestCaseAbstract
     {
         parent::setUp();
 
-        $this->node = $this->container->get('hbpf.custom_node.token-refresher');
+        $this->node = $this->ownContainer->get('hbpf.custom_node.token-refresher');
         $this->repo = $this->dm->getRepository(SystemInstall::class);
     }
 

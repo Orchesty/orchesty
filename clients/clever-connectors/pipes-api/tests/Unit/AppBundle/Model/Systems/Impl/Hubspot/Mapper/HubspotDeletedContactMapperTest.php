@@ -164,7 +164,7 @@ final class HubspotDeletedContactMapperTest extends ConnectorTestCaseAbstract
     private function getMapper(): HubspotDeletedContactMapper
     {
         if (!$this->mapper) {
-            return $this->container->get('hbpf.custom_node.hubspot-deleted-contact-mapper');
+            return $this->ownContainer->get('hbpf.custom_node.hubspot-deleted-contact-mapper');
         }
 
         return $this->mapper;

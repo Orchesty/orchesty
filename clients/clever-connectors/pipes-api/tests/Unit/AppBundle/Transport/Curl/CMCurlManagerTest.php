@@ -6,7 +6,6 @@ use CleverConnectors\AppBundle\Transport\Curl\CMCurlManager;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
-use Hanaboso\CommonsBundle\Metrics\InfluxDbSender;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlClientFactory;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
@@ -43,10 +42,7 @@ final class CMCurlManagerTest extends TestCase
 
         $requestDto = new RequestDto(CMCurlManager::METHOD_GET, new Uri('http://example.com'));
 
-        /** @var InfluxDbSender $influx */
-        $influx = $this->createMock(InfluxDbSender::class);
-
-        $curlManager = new CMCurlManager($curlClientFactory, $influx, ['cert' => '', 'ca' => '']);
+        $curlManager = new CMCurlManager($curlClientFactory, ['cert' => '', 'ca' => '']);
         $result      = $curlManager->send($requestDto);
 
         $this->assertInstanceOf(ResponseDto::class, $result);
@@ -61,12 +57,9 @@ final class CMCurlManagerTest extends TestCase
      */
     public function testSendFail(): void
     {
-        /** @var InfluxDbSender $influx */
-        $influx = $this->createMock(InfluxDbSender::class);
-
         $this->expectException(CurlException::class);
         $requestDto  = new RequestDto(CMCurlManager::METHOD_GET, new Uri('http://example.com'));
-        $curlManager = new CMCurlManager(new CurlClientFactory(), $influx, []);
+        $curlManager = new CMCurlManager(new CurlClientFactory(), []);
         $curlManager->send($requestDto, ['headers' => 123]);
     }
 
@@ -107,10 +100,7 @@ final class CMCurlManagerTest extends TestCase
         $method     = $reflection->getMethod('prepareOptions');
         $method->setAccessible(TRUE);
 
-        /** @var InfluxDbSender $influx */
-        $influx = $this->createMock(InfluxDbSender::class);
-
-        $curlManager = new CMCurlManager(new CurlClientFactory(), $influx, $secret);
+        $curlManager = new CMCurlManager(new CurlClientFactory(), $secret);
         $res         = $method->invokeArgs($curlManager, ['options' => $anotherParam]);
 
         $this->assertEquals(

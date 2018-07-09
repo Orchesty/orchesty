@@ -22,7 +22,7 @@ final class HubspotUpdateContactMapperTest extends DatabaseTestCaseAbstract
      */
     public function testMapper(): void
     {
-        $mapper = $this->container->get('hbpf.custom_node.hubspot-update-contact-mapper');
+        $mapper = $this->ownContainer->get('hbpf.custom_node.hubspot-update-contact-mapper');
 
         $dto = new ProcessDto();
         $dto->setData(json_encode([

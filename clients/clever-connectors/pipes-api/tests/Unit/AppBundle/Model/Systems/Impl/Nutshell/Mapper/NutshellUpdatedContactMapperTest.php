@@ -21,7 +21,7 @@ final class NutshellUpdatedContactMapperTest extends ConnectorTestCaseAbstract
      */
     public function testProcess(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.nutshell-updated-contact-mapper');
+        $connector = $this->ownContainer->get('hbpf.custom_node.nutshell-updated-contact-mapper');
         $data      = Json::decode(str_replace(
             '"create"',
             '"update"',
@@ -50,7 +50,7 @@ final class NutshellUpdatedContactMapperTest extends ConnectorTestCaseAbstract
      */
     public function testProcessInvalid(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.nutshell-updated-contact-mapper');
+        $connector = $this->ownContainer->get('hbpf.custom_node.nutshell-updated-contact-mapper');
 
         $dto = $connector->process(
             (new ProcessDto())->setData(

@@ -21,7 +21,7 @@ final class FacebookaudienceCreateSubscribersMapperTest extends ConnectorTestCas
      */
     public function testProcess(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.facebookaudience-create-subscribers-mapper');
+        $connector = $this->ownContainer->get('hbpf.custom_node.facebookaudience-create-subscribers-mapper');
 
         $data = [
             ['email' => 'aaa@bbb.com'],
@@ -49,7 +49,7 @@ final class FacebookaudienceCreateSubscribersMapperTest extends ConnectorTestCas
      */
     public function testProcessMissingData(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.facebookaudience-create-subscribers-mapper');
+        $connector = $this->ownContainer->get('hbpf.custom_node.facebookaudience-create-subscribers-mapper');
 
         $dto = new ProcessDto();
         $dto->setData(Json::encode([]));

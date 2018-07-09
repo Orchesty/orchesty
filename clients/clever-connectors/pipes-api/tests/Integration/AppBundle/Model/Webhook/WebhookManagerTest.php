@@ -32,16 +32,16 @@ final class WebhookManagerTest extends DatabaseTestCaseAbstract
      */
     public function testSubscribe(): void
     {
-        $oauth2 = $this->container->get('hbpf.providers.oauth2_provider');
+        $oauth2 = $this->ownContainer->get('hbpf.providers.oauth2_provider');
         $system = $this->getMockBuilder(NullSystem::class)
             ->setMethods(['getType'])
             ->setConstructorArgs([
                 $oauth2,
             ])->getMock();
         $system->method('getType')->willReturn(SystemTypeEnum::UI_WEBHOOK);
-        $webhook = $this->container->get('cc.webhook.manager');
+        $webhook = $this->ownContainer->get('cc.webhook.manager');
 
-        $this->container->get('cc.systems.manager')->installSystem('someUser', 'null.user.group', 'token');
+        $this->ownContainer->get('cc.systems.manager')->installSystem('someUser', 'null.user.group', 'token');
 
         // Subscribe
         $webhook->subscribe($system, 'someUser', 'token');

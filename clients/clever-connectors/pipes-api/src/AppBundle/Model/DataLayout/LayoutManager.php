@@ -10,6 +10,8 @@ use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use CleverConnectors\AppBundle\Model\Systems\Traits\MapTrait;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Hanaboso\CommonsBundle\Exception\EnumException;
 
 /**
@@ -49,10 +51,12 @@ class LayoutManager
      *
      * @return DataLayout
      * @throws CleverConnectorsException
+     * @throws LockException
+     * @throws MappingException
      */
     public function get(string $id): DataLayout
     {
-        /** @var DataLayout $layout */
+        /** @var DataLayout|null $layout */
         $layout = $this->dm->getRepository(DataLayout::class)->find($id);
 
         if (!$layout) {

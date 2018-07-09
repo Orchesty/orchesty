@@ -10,6 +10,7 @@
 namespace Hanaboso\PipesFramework\RabbitMq\Producer;
 
 use Bunny\Exception\BunnyException;
+use Exception;
 use Hanaboso\PipesFramework\HbPFRabbitMqBundle\ContentTypes;
 use Hanaboso\PipesFramework\HbPFRabbitMqBundle\DebugMessageTrait;
 use Hanaboso\PipesFramework\RabbitMq\BunnyManager;
@@ -145,6 +146,7 @@ class AbstractProducer implements LoggerAwareInterface
      * @param mixed $message
      *
      * @return array
+     * @throws Exception
      */
     public function beforeSerializer($message): array
     {
@@ -176,6 +178,7 @@ class AbstractProducer implements LoggerAwareInterface
      * @param array       $headers
      *
      * @return void
+     * @throws Exception
      */
     public function publish($message, ?string $routingKey = NULL, array $headers = []): void
     {

@@ -2,13 +2,14 @@
 
 namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller;
 
-use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
+use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Throwable;
 
 /**
  * Class NodeController
@@ -36,8 +37,7 @@ class NodeController extends FOSRestController
     }
 
     /**
-     * @Route("/topologies/{id}/nodes", defaults={}, requirements={"id": "\w+"})
-     * @Method({"GET", "OPTIONS"})
+     * @Route("/topologies/{id}/nodes", defaults={}, requirements={"id": "\w+"}, methods={"GET", "OPTIONS"})
      *
      * @param string $id
      *
@@ -51,8 +51,7 @@ class NodeController extends FOSRestController
     }
 
     /**
-     * @Route("/nodes/{id}", defaults={}, requirements={"id": "\w+"})
-     * @Method({"GET", "OPTIONS"})
+     * @Route("/nodes/{id}", defaults={}, requirements={"id": "\w+"}, methods={"GET", "OPTIONS"})
      *
      * @param string $id
      *
@@ -60,14 +59,19 @@ class NodeController extends FOSRestController
      */
     public function getNodeAction(string $id): Response
     {
-        $data = $this->nodeHandler->getNode($id);
+        try {
+            $data = $this->nodeHandler->getNode($id);
 
-        return $this->getResponse($data);
+            return $this->getResponse($data);
+        } catch (NodeException $e) {
+            return $this->getErrorResponse($e, 400);
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
+        }
     }
 
     /**
-     * @Route("/nodes/{id}/{request}", defaults={}, requirements={"id": "\w+"})
-     * @Method({"PATCH", "OPTIONS"})
+     * @Route("/nodes/{id}/{request}", defaults={}, requirements={"id": "\w+"}, methods={"PATCH", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $id
@@ -76,9 +80,13 @@ class NodeController extends FOSRestController
      */
     public function updateNodeAction(Request $request, string $id): Response
     {
-        $data = $this->nodeHandler->updateNode($id, $request->request->all());
+        try {
+            $data = $this->nodeHandler->updateNode($id, $request->request->all());
 
-        return $this->getResponse($data);
+            return $this->getResponse($data);
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
+        }
     }
 
 }

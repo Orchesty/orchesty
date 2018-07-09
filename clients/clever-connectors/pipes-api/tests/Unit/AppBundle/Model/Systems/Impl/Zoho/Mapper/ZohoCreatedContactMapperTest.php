@@ -19,7 +19,7 @@ final class ZohoCreatedContactMapperTest extends ConnectorTestCaseAbstract
      */
     public function testProcess(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.zoho-created-contact-mapper');
+        $connector = $this->ownContainer->get('hbpf.custom_node.zoho-created-contact-mapper');
 
         $response = Json::decode($connector->process($this->prepareConnectorProcessDto([
             'auth_token' => '05361930f1c8c009d9a1e30e07b23126',
@@ -40,7 +40,7 @@ final class ZohoCreatedContactMapperTest extends ConnectorTestCaseAbstract
      */
     public function testProcessWithList(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.zoho-created-contact-mapper');
+        $connector = $this->ownContainer->get('hbpf.custom_node.zoho-created-contact-mapper');
 
         $response = Json::decode($connector->process($this->prepareConnectorProcessDto([
             'auth_token' => '05361930f1c8c009d9a1e30e07b23126',

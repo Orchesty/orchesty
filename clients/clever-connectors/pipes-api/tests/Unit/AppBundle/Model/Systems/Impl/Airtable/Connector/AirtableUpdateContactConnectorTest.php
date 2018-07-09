@@ -33,7 +33,7 @@ final class AirtableUpdateContactConnectorTest extends KernelTestCaseAbstract
         $dto = new ProcessDto();
         $dto->setHeaders([])->setData('{}');
 
-        $conn = $this->container->get('hbpf.connector.airtable-update-contact-connector');
+        $conn = $this->ownContainer->get('hbpf.connector.airtable-update-contact-connector');
 
         $this->expectException(CleverConnectorsException::class);
         $this->expectExceptionMessage('Missing data or required field id.');

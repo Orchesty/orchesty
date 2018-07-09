@@ -4,6 +4,7 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Hubspot\Mapper;
 
 use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 
@@ -19,6 +20,7 @@ class HubspotUpdateContactMapper extends HubspotMapperAbstract
      * @param ProcessDto $dto
      *
      * @return ProcessDto
+     * @throws CleverConnectorsException
      */
     public function process(ProcessDto $dto): ProcessDto
     {

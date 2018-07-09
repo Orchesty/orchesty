@@ -30,7 +30,7 @@ final class MapManagerTest extends DatabaseTestCaseAbstract
     public function setUp(): void
     {
         $this->dm->getConnection()->dropDatabase('clever-connectors');
-        $this->manager = $this->container->get('cc.map_template.manager');
+        $this->manager = $this->ownContainer->get('cc.map_template.manager');
     }
 
     /**

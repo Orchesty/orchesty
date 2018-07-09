@@ -22,7 +22,7 @@ services:
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
 
-    cc.webhook.controller:
+    CleverConnectors\AppBundle\Controller\WebhookController:
         class: CleverConnectors\AppBundle\Controller\WebhookController
         arguments:
             - '@hbpf.handler.starting_point'

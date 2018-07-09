@@ -33,7 +33,7 @@ final class PipedriveCreatePersonConnectorTest extends KernelTestCaseAbstract
     public function testProcessEvent(): void
     {
         $conn = new PipedriveCreatePersonConnector(
-            $this->container->get('systems.pipedrive'),
+            $this->ownContainer->get('systems.pipedrive'),
             $this->mockCurl(),
             $this->mockDm()
         );
@@ -58,7 +58,7 @@ final class PipedriveCreatePersonConnectorTest extends KernelTestCaseAbstract
     public function testConnectorLimit(): void
     {
         $conn = new PipedriveCreatePersonConnector(
-            $this->container->get('systems.pipedrive'),
+            $this->ownContainer->get('systems.pipedrive'),
             $this->mockCurl(429),
             $this->mockDm()
         );
@@ -78,7 +78,7 @@ final class PipedriveCreatePersonConnectorTest extends KernelTestCaseAbstract
     public function testConnectorError(): void
     {
         $conn = new PipedriveCreatePersonConnector(
-            $this->container->get('systems.pipedrive'),
+            $this->ownContainer->get('systems.pipedrive'),
             $this->mockCurl(404),
             $this->mockDm()
         );

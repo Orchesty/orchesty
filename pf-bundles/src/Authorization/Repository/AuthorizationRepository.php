@@ -10,6 +10,7 @@
 namespace Hanaboso\PipesFramework\Authorization\Repository;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ODM\MongoDB\MongoDBException;
 
 /**
  * Class AuthorizationRepository
@@ -21,6 +22,7 @@ class AuthorizationRepository extends DocumentRepository
 
     /**
      * @return string[]
+     * @throws MongoDBException
      */
     public function getInstalledKeys(): array
     {

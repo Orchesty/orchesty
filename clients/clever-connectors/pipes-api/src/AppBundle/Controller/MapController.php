@@ -5,22 +5,19 @@ namespace CleverConnectors\AppBundle\Controller;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Handler\MapHandler;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
-use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use LogicException;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 use Throwable;
 
 /**
  * Class MapController
  *
  * @package CleverConnectors\AppBundle\Controller
- *
- * @Route(service="cc.map_template.controller")
  */
 class MapController extends FOSRestController
 {
@@ -43,8 +40,7 @@ class MapController extends FOSRestController
     }
 
     /**
-     * @Route("map/user/{userId}/system/{systemKey}")
-     * @Method({"POST", "OPTIONS"})
+     * @Route("map/user/{userId}/system/{systemKey}", methods={"POST", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $userId
@@ -62,8 +58,7 @@ class MapController extends FOSRestController
     }
 
     /**
-     * @Route("map/{id}/user/{userId}/system/{systemKey}")
-     * @Method({"PUT", "OPTIONS"})
+     * @Route("map/{id}/user/{userId}/system/{systemKey}", methods={"PUT", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $id
@@ -82,8 +77,7 @@ class MapController extends FOSRestController
     }
 
     /**
-     * @Route("map/{id}/user/{userId}/system/{systemKey}")
-     * @Method({"DELETE", "OPTIONS"})
+     * @Route("map/{id}/user/{userId}/system/{systemKey}", methods={"DELETE", "OPTIONS"})
      *
      * @param string $id
      * @param string $userId

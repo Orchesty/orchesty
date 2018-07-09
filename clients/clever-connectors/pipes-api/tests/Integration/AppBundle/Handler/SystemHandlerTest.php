@@ -22,7 +22,7 @@ final class SystemHandlerTest extends DatabaseTestCaseAbstract
      */
     public function testInstallSystem(): void
     {
-        $dm = $this->container->get('doctrine_mongodb.odm.default_document_manager');
+        $dm = $this->ownContainer->get('doctrine_mongodb.odm.default_document_manager');
 
         $manager = $this->getMockBuilder(SystemManager::class)->disableOriginalConstructor()->getMock();
         $manager->method('installSystem')->willReturn(new SystemInstall());
@@ -46,7 +46,7 @@ final class SystemHandlerTest extends DatabaseTestCaseAbstract
      */
     public function testInstallSystemMissingToken(): void
     {
-        $handler = $this->container->get('cc.systems.handler');
+        $handler = $this->ownContainer->get('cc.systems.handler');
         $this->expectException(PipesFrameworkException::class);
         $this->expectExceptionCode(PipesFrameworkException::REQUIRED_PARAMETER_NOT_FOUND);
         $handler->installSystem('', '', []);

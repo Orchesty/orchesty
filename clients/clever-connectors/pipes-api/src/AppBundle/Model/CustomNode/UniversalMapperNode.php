@@ -12,6 +12,7 @@ namespace CleverConnectors\AppBundle\Model\CustomNode;
 use CleverConnectors\AppBundle\Document\MapTemplate;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Mapper\UniversalMapper;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use CleverConnectors\AppBundle\Repository\MapTemplateRepository;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
@@ -127,6 +128,7 @@ class UniversalMapperNode implements CustomNodeInterface, LoggerAwareInterface
      * @param ProcessDto $dto
      *
      * @return MapTemplate|null
+     * @throws SystemException
      */
     protected function getMapTemplate(ProcessDto $dto): ?MapTemplate
     {

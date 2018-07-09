@@ -50,7 +50,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
     protected function setUp(): void
     {
         parent::setUp();
-        $this->manager    = $this->container->get('cc.systems.manager');
+        $this->manager    = $this->ownContainer->get('cc.systems.manager');
         $this->repository = $this->dm->getRepository(SystemInstall::class);
     }
 
@@ -156,7 +156,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
 
         $action = TopologyNameUtils::getTopologyName(TopologyNameUtils::UPDATED_SUBSCRIBERS, $system->getSystem());
 
-        $dataLayoutManager = $this->container->get('cc.layout.manager');
+        $dataLayoutManager = $this->ownContainer->get('cc.layout.manager');
         $datalayout        = $dataLayoutManager->createDataLayout($system, [
             'action' => $action,
             'fields' => [
@@ -166,7 +166,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
             ],
         ]);
 
-        $mapTemplateManager = $this->container->get('cc.map_template.manager');
+        $mapTemplateManager = $this->ownContainer->get('cc.map_template.manager');
         $map                = $mapTemplateManager->create($system, [
             'action'    => $action,
             'direction' => MapTemplate::DIRECTION_IN,
@@ -541,7 +541,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
      */
     public function testDeleteTopology(): void
     {
-        $manager = $this->container->get('cc.systems.manager');
+        $manager = $this->ownContainer->get('cc.systems.manager');
 
         $top = new Topology();
         $top->setName('ttop');
@@ -585,7 +585,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
             ->setUser('123');
         $this->persistAndFlush($sysInstall);
 
-        $manager = $this->container->get('cc.systems.manager');
+        $manager = $this->ownContainer->get('cc.systems.manager');
         $result  = $manager->runCustomAction('null.user.group', '123', 'customAction', []);
 
         self::assertTrue(is_array($result));
@@ -607,7 +607,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
             ->setUser('123');
         $this->persistAndFlush($sysInstall);
 
-        $manager = $this->container->get('cc.systems.manager');
+        $manager = $this->ownContainer->get('cc.systems.manager');
         $this->expectException(SystemException::class);
         $manager->runCustomAction('null.user.group', '123', 'nonExistAction', []);
     }
@@ -617,7 +617,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
      */
     public function testSystemCount(): void
     {
-        $manager = $this->container->get('cc.systems.manager');
+        $manager = $this->ownContainer->get('cc.systems.manager');
         self::assertGreaterThanOrEqual(25, $manager->getSystemCount());
     }
 
@@ -627,7 +627,7 @@ final class SystemManagerTest extends DatabaseTestCaseAbstract
      */
     public function testGetSystemLists(): void
     {
-        $manager = $this->container->get('cc.systems.manager');
+        $manager = $this->ownContainer->get('cc.systems.manager');
         $res     = $manager->getSystemList();
 
         self::assertGreaterThanOrEqual(25, count($res));

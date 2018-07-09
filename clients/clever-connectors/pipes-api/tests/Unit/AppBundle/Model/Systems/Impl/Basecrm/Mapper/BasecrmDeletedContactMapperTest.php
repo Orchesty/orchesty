@@ -20,7 +20,7 @@ final class BasecrmDeletedContactMapperTest extends ConnectorTestCaseAbstract
      */
     public function testMapper(): void
     {
-        $node = $this->container->get('hbpf.custom_node.basecrm-deleted-contact-mapper');
+        $node = $this->ownContainer->get('hbpf.custom_node.basecrm-deleted-contact-mapper');
 
         $response = Json::decode($node->process(
             (new ProcessDto())->setData(

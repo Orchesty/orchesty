@@ -21,7 +21,7 @@ final class SalesforceDeletedContactMapperTest extends ConnectorTestCaseAbstract
      */
     public function testProcessEvent(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.salesforce-deleted-contact-mapper');
+        $connector = $this->ownContainer->get('hbpf.custom_node.salesforce-deleted-contact-mapper');
 
         $response = Json::decode($connector->process(
             (new ProcessDto())->setData($this->getRequest('SalesforceDeletedContactMapper.json')))->getData(),
@@ -41,7 +41,7 @@ final class SalesforceDeletedContactMapperTest extends ConnectorTestCaseAbstract
      */
     public function testProcessEventBadRequest(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.salesforce-deleted-contact-mapper');
+        $connector = $this->ownContainer->get('hbpf.custom_node.salesforce-deleted-contact-mapper');
 
         $this->expectException(CleverConnectorsException::class);
         $this->expectExceptionCode(CleverConnectorsException::MISSING_DATA);

@@ -19,7 +19,7 @@ final class BigcommerceCreatedCustomerMapperTest extends ConnectorTestCaseAbstra
      */
     public function testProcess(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.bigcommerce-created-customer-mapper');
+        $connector = $this->ownContainer->get('hbpf.custom_node.bigcommerce-created-customer-mapper');
 
         $response = Json::decode($connector->process($this->prepareConnectorProcessDto([
             'store_id'     => 'noos7j71hh',
@@ -42,7 +42,7 @@ final class BigcommerceCreatedCustomerMapperTest extends ConnectorTestCaseAbstra
      */
     public function testProcessList(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.bigcommerce-created-customer-mapper');
+        $connector = $this->ownContainer->get('hbpf.custom_node.bigcommerce-created-customer-mapper');
 
         $response = Json::decode($connector->process($this->prepareConnectorProcessDto([
             'store_id'     => 'noos7j71hh',

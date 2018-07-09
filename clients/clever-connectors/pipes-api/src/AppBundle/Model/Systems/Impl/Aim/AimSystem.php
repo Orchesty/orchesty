@@ -217,7 +217,6 @@ final class AimSystem implements AuthorizationInterface
      * @param string        $method
      *
      * @return RequestDto
-     * @throws \Hanaboso\CommonsBundle\Transport\Curl\CurlException
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {

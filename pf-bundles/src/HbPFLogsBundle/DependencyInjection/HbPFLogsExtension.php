@@ -2,6 +2,7 @@
 
 namespace Hanaboso\PipesFramework\HbPFLogsBundle\DependencyInjection;
 
+use Exception;
 use Hanaboso\PipesFramework\HbPFLogsBundle\HbPFLogsBundle;
 use RuntimeException;
 use Symfony\Component\Config\FileLocator;
@@ -41,6 +42,8 @@ class HbPFLogsExtension extends Extension implements PrependExtensionInterface
     /**
      * @param array            $configs
      * @param ContainerBuilder $container
+     *
+     * @throws Exception
      */
     public function load(array $configs, ContainerBuilder $container): void
     {

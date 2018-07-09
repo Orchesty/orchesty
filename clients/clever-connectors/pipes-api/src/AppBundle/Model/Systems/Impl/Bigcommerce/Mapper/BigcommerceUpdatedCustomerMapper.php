@@ -2,6 +2,7 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\Mapper;
 
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 
 /**
@@ -16,6 +17,7 @@ class BigcommerceUpdatedCustomerMapper extends BigcommerceCustomerMapperAbstract
      * @param ProcessDto $dto
      *
      * @return ProcessDto
+     * @throws CleverConnectorsException
      */
     public function process(ProcessDto $dto): ProcessDto
     {

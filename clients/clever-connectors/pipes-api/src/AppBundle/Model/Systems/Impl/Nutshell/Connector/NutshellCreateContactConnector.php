@@ -4,6 +4,7 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Nutshell\NutshellSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Traits\LoggerTrait;
@@ -74,6 +75,7 @@ class NutshellCreateContactConnector implements ConnectorInterface, LoggerAwareI
      * @return ProcessDto
      * @throws CleverConnectorsException
      * @throws CurlException
+     * @throws SystemException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {

@@ -9,11 +9,10 @@
 
 namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller;
 
-use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * Class StartingPointController
@@ -24,8 +23,7 @@ class StartingPointController extends FOSRestController
 {
 
     /**
-     * @Route("/topologies/{topologyId}/nodes/{nodeId}/run")
-     * @Method({"POST"})
+     * @Route("/topologies/{topologyId}/nodes/{nodeId}/run", methods={"POST"})
      *
      * @param string $topologyId
      * @param string $nodeId
@@ -39,8 +37,7 @@ class StartingPointController extends FOSRestController
     }
 
     /**
-     * @Route("/topologies/{topologyName}/nodes/{nodeName}/run_by_name")
-     * @Method({"POST"})
+     * @Route("/topologies/{topologyName}/nodes/{nodeName}/run_by_name", methods={"POST"})
      *
      * @param Request $request
      * @param string  $topologyName
@@ -55,8 +52,7 @@ class StartingPointController extends FOSRestController
     }
 
     /**
-     * @Route("/topologies/{topologyId}/test")
-     * @Method({"GET"})
+     * @Route("/topologies/{topologyId}/test", methods={"GET"})
      *
      * @param string $topologyId
      *

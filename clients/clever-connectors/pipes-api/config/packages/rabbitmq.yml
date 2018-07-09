@@ -1,4 +1,5 @@
 parameters:
+    rabbit_host: rabbitmq
     rabbitmq.host: rabbitmq
     rabbitmq.port: 5672
     rabbitmq.vhost: /

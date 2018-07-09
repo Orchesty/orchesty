@@ -3,6 +3,8 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\BigcommerceSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Traits\LoggerTrait;
@@ -95,6 +97,9 @@ class BigcommerceGetStoreConnector implements ConnectorInterface, LoggerAwareInt
      * @param ProcessDto $dto
      *
      * @return ProcessDto
+     * @throws CurlException
+     * @throws CleverConnectorsException
+     * @throws SystemException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {

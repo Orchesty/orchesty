@@ -3,7 +3,6 @@
 namespace CleverConnectors\AppBundle\Model\Limits;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
 use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
@@ -15,6 +14,7 @@ use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use DateTime;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Symfony\Component\HttpFoundation\HeaderBag;
 
@@ -73,7 +73,7 @@ class SystemLimitManager
      * @param SystemInstall|null   $systemInstall
      *
      * @throws SystemException
-     * @throws CleverConnectorsException
+     * @throws MongoDBException
      */
     public function addSystemLimitToRequestHeaders(
         HeaderBag $headers,
@@ -103,7 +103,7 @@ class SystemLimitManager
      * @param SuccessMessage $successMessage
      *
      * @throws SystemException
-     * @throws CleverConnectorsException
+     * @throws MongoDBException
      */
     public function addSystemLimitToSuccessMessage(SuccessMessage $successMessage): void
     {
@@ -129,7 +129,7 @@ class SystemLimitManager
      * @param SystemInterface     $system
      * @param SystemInstall       $systemInstall
      *
-     * @throws CleverConnectorsException
+     * @throws MongoDBException
      */
     private function checkLimitRefresh(
         ?SystemLimitDto $dto,

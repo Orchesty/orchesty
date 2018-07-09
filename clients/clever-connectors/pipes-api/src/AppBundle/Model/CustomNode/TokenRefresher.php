@@ -7,6 +7,8 @@ use CleverConnectors\AppBundle\Model\Systems\Authorizations\OAuth2Interface;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
@@ -45,6 +47,8 @@ class TokenRefresher implements CustomNodeInterface
      *
      * @return ProcessDto
      * @throws SystemException
+     * @throws LockException
+     * @throws MappingException
      */
     public function process(ProcessDto $dto): ProcessDto
     {

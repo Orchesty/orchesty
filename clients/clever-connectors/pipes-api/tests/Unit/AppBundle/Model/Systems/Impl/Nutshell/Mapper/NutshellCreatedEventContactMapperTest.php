@@ -19,7 +19,7 @@ final class NutshellCreatedEventContactMapperTest extends ConnectorTestCaseAbstr
      */
     public function testProcess(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.nutshell-created-event-contact-mapper');
+        $connector = $this->ownContainer->get('hbpf.custom_node.nutshell-created-event-contact-mapper');
 
         $response = Json::decode($connector->process($this->prepareConnectorProcessDto([
             'username' => 'nutshell@mailinator.com',
@@ -41,7 +41,7 @@ final class NutshellCreatedEventContactMapperTest extends ConnectorTestCaseAbstr
      */
     public function testProcessWithList(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.nutshell-created-event-contact-mapper');
+        $connector = $this->ownContainer->get('hbpf.custom_node.nutshell-created-event-contact-mapper');
 
         $response = Json::decode($connector->process($this->prepareConnectorProcessDto([
             'username' => 'nutshell@mailinator.com',

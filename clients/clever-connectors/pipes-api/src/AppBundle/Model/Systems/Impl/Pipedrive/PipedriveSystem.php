@@ -28,7 +28,6 @@ use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use DateTime;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
-use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 
 /**
@@ -157,7 +156,6 @@ class PipedriveSystem implements WebhookSystemInterface, AuthorizationInterface,
      *
      * @return RequestDto
      * @throws SystemException
-     * @throws CurlException
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method = 'GET'): RequestDto
     {

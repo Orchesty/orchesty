@@ -99,14 +99,12 @@ trait LoggerTrait
         int $i
     ): SuccessMessage
     {
-        if ($e->getResponse()) {
-            if ($this->limitReached($e)) {
-                $successMessage = new SuccessMessage($i);
+        if ($this->limitReached($e)) {
+            $successMessage = new SuccessMessage($i);
 
-                return HeadersUtils::setLimitHeaderToMessage($successMessage);
-            }
-            $this->logError($e->getResponse()->getStatusCode(), $system, $systemInstall);
+            return HeadersUtils::setLimitHeaderToMessage($successMessage);
         }
+        $this->logError($e->getResponse()->getStatusCode(), $system, $systemInstall);
 
         throw $e;
     }

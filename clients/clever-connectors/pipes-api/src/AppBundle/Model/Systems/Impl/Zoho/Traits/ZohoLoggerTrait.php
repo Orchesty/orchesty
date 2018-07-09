@@ -94,8 +94,6 @@ trait ZohoLoggerTrait
      * @param int             $status
      * @param SystemInterface $system
      * @param SystemInstall   $systemInstall
-     *
-     * @throws CleverConnectorsException
      */
     protected function logError(int $status, SystemInterface $system, SystemInstall $systemInstall): void
     {

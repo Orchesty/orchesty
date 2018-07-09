@@ -9,14 +9,13 @@
 
 namespace Hanaboso\PipesFramework\HbPFJoinerBundle\Controller;
 
-use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\HbPFJoinerBundle\Exception\JoinerException;
 use Hanaboso\PipesFramework\HbPFJoinerBundle\Handler\JoinerHandler;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * Class JoinerController
@@ -44,8 +43,7 @@ class JoinerController extends FOSRestController
     }
 
     /**
-     * @Route("/joiner/{joinerId}/join", defaults={}, requirements={"joinerId": "\w+"})
-     * @Method({"POST", "OPTIONS"})
+     * @Route("/joiner/{joinerId}/join", defaults={}, requirements={"joinerId": "\w+"}, methods={"POST", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $joinerId
@@ -64,8 +62,7 @@ class JoinerController extends FOSRestController
     }
 
     /**
-     * @Route("/joiner/{joinerId}/join/test", defaults={}, requirements={"joinerId": "\w+"})
-     * @Method({"POST", "OPTIONS"})
+     * @Route("/joiner/{joinerId}/join/test", defaults={}, requirements={"joinerId": "\w+"}, methods={"POST", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $joinerId

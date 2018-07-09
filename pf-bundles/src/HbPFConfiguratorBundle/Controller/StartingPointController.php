@@ -9,13 +9,12 @@
 
 namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller;
 
-use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\StartingPointHandler;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 use Throwable;
 
 /**
@@ -44,8 +43,7 @@ class StartingPointController extends FOSRestController
     }
 
     /**
-     * @Route("/topologies/{topologyName}/nodes/{nodeName}/run")
-     * @Method({"POST"})
+     * @Route("/topologies/{topologyName}/nodes/{nodeName}/run", methods={"POST"})
      *
      * @param Request $request
      * @param string  $topologyName
@@ -65,8 +63,7 @@ class StartingPointController extends FOSRestController
     }
 
     /**
-     * @Route("/topologies/{topologyId}/nodes/{nodeId}/run_by_id")
-     * @Method({"POST"})
+     * @Route("/topologies/{topologyId}/nodes/{nodeId}/run_by_id", methods={"POST"})
      *
      * @param Request $request
      * @param string  $topologyId
@@ -86,8 +83,7 @@ class StartingPointController extends FOSRestController
     }
 
     /**
-     * @Route("/topologies/{topologyId}/test")
-     * @Method({"GET"})
+     * @Route("/topologies/{topologyId}/test", methods={"GET"})
      *
      * @param string $topologyId
      *
@@ -95,9 +91,13 @@ class StartingPointController extends FOSRestController
      */
     public function testAction(string $topologyId): Response
     {
-        $data = $this->startingPointHandler->runTest($topologyId);
+        try {
+            $data = $this->startingPointHandler->runTest($topologyId);
 
-        return $this->getResponse($data, 200, ['Content-Type' => 'application/json']);
+            return $this->getResponse($data, 200, ['Content-Type' => 'application/json']);
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
+        }
     }
 
 }

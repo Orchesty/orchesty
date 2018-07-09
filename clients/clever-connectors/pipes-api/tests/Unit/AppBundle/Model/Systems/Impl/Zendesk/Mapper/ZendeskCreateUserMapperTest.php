@@ -19,7 +19,7 @@ final class ZendeskCreateUserMapperTest extends DatabaseTestCaseAbstract
      */
     public function testMapper(): void
     {
-        $mapper = $this->container->get('hbpf.custom_node.zendesk-create-user-mapper');
+        $mapper = $this->ownContainer->get('hbpf.custom_node.zendesk-create-user-mapper');
 
         $dto = new ProcessDto();
         $dto->setData(json_encode([

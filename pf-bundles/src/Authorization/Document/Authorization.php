@@ -10,6 +10,7 @@
 namespace Hanaboso\PipesFramework\Authorization\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Hanaboso\CommonsBundle\Crypt\CryptException;
 use Hanaboso\CommonsBundle\Crypt\CryptManager;
 use Hanaboso\CommonsBundle\Traits\Document\IdTrait;
 
@@ -130,6 +131,7 @@ class Authorization
 
     /**
      * @ODM\PreFlush
+     * @throws CryptException
      */
     public function preFlushEncrypt(): void
     {
@@ -139,6 +141,7 @@ class Authorization
 
     /**
      * @ODM\PostLoad
+     * @throws CryptException
      */
     public function postLoadDecrypt(): void
     {

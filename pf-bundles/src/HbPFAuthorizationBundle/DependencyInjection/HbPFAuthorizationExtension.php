@@ -2,6 +2,8 @@
 
 namespace Hanaboso\PipesFramework\HbPFAuthorizationBundle\DependencyInjection;
 
+use Exception;
+use InvalidArgumentException;
 use RuntimeException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -36,7 +38,8 @@ class HbPFAuthorizationExtension extends Extension implements PrependExtensionIn
      * @param array            $configs   An array of configuration values
      * @param ContainerBuilder $container A ContainerBuilder instance
      *
-     * @throws \InvalidArgumentException When provided tag is not defined in this extension
+     * @throws InvalidArgumentException When provided tag is not defined in this extension
+     * @throws Exception
      */
     public function load(array $configs, ContainerBuilder $container): void
     {

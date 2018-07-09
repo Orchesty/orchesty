@@ -12,6 +12,7 @@ namespace CleverConnectors\AppBundle\Model\ProgressCounter\Listener;
 use CleverConnectors\AppBundle\Model\ProgressCounter\Event\ProgressCounterEvent;
 use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterAbstract;
 use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterTrait;
+use Hanaboso\CommonsBundle\Exception\EnumException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -64,6 +65,8 @@ class ProgressCounterListener implements EventSubscriberInterface
 
     /**
      * @param ProgressCounterEvent $event
+     *
+     * @throws EnumException
      */
     public function onProgressSetStatus(ProgressCounterEvent $event): void
     {

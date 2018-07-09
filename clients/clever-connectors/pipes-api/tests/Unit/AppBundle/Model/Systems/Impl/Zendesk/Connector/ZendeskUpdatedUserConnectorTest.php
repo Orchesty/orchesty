@@ -119,7 +119,7 @@ final class ZendeskUpdatedUserConnectorTest extends ConnectorTestCaseAbstract
         $processCounter->method('setTotal')->willReturn(TRUE);
 
         $conn = $this->getMockBuilder(ZendeskUpdatedUserConnector::class)->setConstructorArgs([
-            $this->container->get('systems.zendesk'),
+            $this->ownContainer->get('systems.zendesk'),
             $this->mockLastSync(),
             $this->createMock(CurlSenderFactory::class),
             $this->mockDm(),

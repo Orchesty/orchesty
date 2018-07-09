@@ -15,6 +15,7 @@ use Hanaboso\PipesFramework\Authorization\Document\Authorization;
 use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth1Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth1Provider;
+use OAuthException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -110,6 +111,7 @@ class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements M
      *
      * @return array
      * @throws AuthorizationException
+     * @throws OAuthException
      */
     public function getHeaders(string $method, string $url): array
     {
@@ -143,8 +145,6 @@ class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements M
 
     /**
      * @return string[]
-     *
-     * @throws AuthorizationException
      */
     public function getSettings(): array
     {
@@ -194,6 +194,9 @@ class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements M
 
     /**
      * @param string[] $data
+     *
+     * @throws AuthorizationException
+     * @throws OAuthException
      */
     public function saveToken(array $data): void
     {
@@ -222,7 +225,8 @@ class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements M
     }
 
     /**
-     *
+     * @throws AuthorizationException
+     * @throws OAuthException
      */
     public function authorize(): void
     {

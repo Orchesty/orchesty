@@ -32,7 +32,7 @@ final class PluginSubscribeSubscriberConnectorTest extends KernelTestCaseAbstrac
         $conn = new PluginSubscribeSubscriberConnector(
             $this->mockDm(),
             $this->mockCurl(),
-            $this->container->get('cc.systems.loader')
+            $this->ownContainer->get('cc.systems.loader')
         );
 
         $dto = new ProcessDto();

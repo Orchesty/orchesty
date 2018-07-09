@@ -7,6 +7,8 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
@@ -38,6 +40,8 @@ class FacebookaudienceDeleteAudienceConnector extends FacebookaudienceConnectorA
      * @return ProcessDto
      * @throws CleverConnectorsException
      * @throws CurlException
+     * @throws LockException
+     * @throws MappingException
      * @throws SystemException
      */
     public function processAction(ProcessDto $dto): ProcessDto
@@ -72,6 +76,8 @@ class FacebookaudienceDeleteAudienceConnector extends FacebookaudienceConnectorA
      *
      * @return bool
      * @throws CurlException
+     * @throws LockException
+     * @throws MappingException
      * @throws SystemException
      */
     public function deleteAudience(SystemInstall $systemInstall, string $audienceId, string $mirrorId): bool
@@ -92,6 +98,9 @@ class FacebookaudienceDeleteAudienceConnector extends FacebookaudienceConnectorA
 
     /**
      * @param string $mirrorId
+     *
+     * @throws LockException
+     * @throws MappingException
      */
     private function removeMirror(string $mirrorId): void
     {

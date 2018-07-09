@@ -19,7 +19,7 @@ final class BasecrmUpdatedContactMapperTest extends ConnectorTestCaseAbstract
      */
     public function testMapper(): void
     {
-        $node = $this->container->get('hbpf.custom_node.basecrm-updated-contact-mapper');
+        $node = $this->ownContainer->get('hbpf.custom_node.basecrm-updated-contact-mapper');
 
         $response = Json::decode($node->process(
             (new ProcessDto())->setData(

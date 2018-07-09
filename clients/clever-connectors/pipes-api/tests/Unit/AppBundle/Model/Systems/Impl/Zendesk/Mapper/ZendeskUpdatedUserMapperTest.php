@@ -20,7 +20,7 @@ final class ZendeskUpdatedUserMapperTest extends ConnectorTestCaseAbstract
      */
     public function testProcessEvent(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.zendesk-updated-user-mapper');
+        $connector = $this->ownContainer->get('hbpf.custom_node.zendesk-updated-user-mapper');
 
         $response = Json::decode(
             $connector->process((new ProcessDto())->setData($this->getRequest('singleItemSync.json')))

@@ -3,6 +3,7 @@
 namespace CleverConnectors\AppBundle\Model\CM\TestNotificationConnector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Bigcommerce\BigcommerceSystem;
 use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
@@ -23,6 +24,7 @@ class CMTestNotificationConnector implements CustomNodeInterface, LoggerAwareInt
      * @param ProcessDto $dto
      *
      * @return ProcessDto
+     * @throws CleverConnectorsException
      */
     public function process(ProcessDto $dto): ProcessDto
     {

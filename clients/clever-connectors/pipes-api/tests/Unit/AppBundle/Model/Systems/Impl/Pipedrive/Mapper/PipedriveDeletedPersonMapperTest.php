@@ -20,7 +20,7 @@ final class PipedriveDeletedPersonMapperTest extends ConnectorTestCaseAbstract
      */
     public function testProcessEvent(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.pipedrive-deleted-person-mapper');
+        $connector = $this->ownContainer->get('hbpf.custom_node.pipedrive-deleted-person-mapper');
 
         $response = Json::decode(
             $connector->process((new ProcessDto())->setData($this->getRequest('personDeleteWebhook.json')))

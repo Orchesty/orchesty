@@ -13,7 +13,7 @@ class ResourceEnum extends AclResourceEnum
 {
 
     public const NODE     = 'node';
-    public const TOPOLOGY = 'node';
+    public const TOPOLOGY = 'topology';
 
     /**
      * @var string[]

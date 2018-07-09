@@ -27,7 +27,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     /**
      * @var ContainerInterface
      */
-    protected $container;
+    protected $ownContainer;
 
     /**
      * @var Client
@@ -61,10 +61,10 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     {
         parent::__construct($name, $data, $dataName);
         self::bootKernel();
-        $this->container    = self::$kernel->getContainer();
-        $this->dm           = $this->container->get('doctrine_mongodb.odm.default_document_manager');
-        $this->session      = $this->container->get('session');
-        $this->tokenStorage = $this->container->get('security.token_storage');
+        $this->ownContainer = self::$kernel->getContainer();
+        $this->dm           = $this->ownContainer->get('doctrine_mongodb.odm.default_document_manager');
+        $this->session      = $this->ownContainer->get('session');
+        $this->tokenStorage = $this->ownContainer->get('security.token_storage');
     }
 
     /**

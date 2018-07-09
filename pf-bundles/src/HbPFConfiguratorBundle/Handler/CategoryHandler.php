@@ -10,6 +10,7 @@
 namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\CommonsBundle\DatabaseManager\DatabaseManagerLocatorInterface;
 use Hanaboso\PipesFramework\Category\Document\Category;
 use Hanaboso\PipesFramework\Category\Exception\CategoryException;
@@ -71,6 +72,7 @@ class CategoryHandler
      * @param array $data
      *
      * @return array
+     * @throws CategoryException
      */
     public function createCategory(array $data): array
     {
@@ -84,6 +86,7 @@ class CategoryHandler
      * @param array  $data
      *
      * @return array
+     * @throws CategoryException
      */
     public function updateCategory(string $id, array $data): array
     {
@@ -98,6 +101,8 @@ class CategoryHandler
      * @param string $id
      *
      * @return array
+     * @throws CategoryException
+     * @throws MongoDBException
      */
     public function deleteCategory(string $id): array
     {

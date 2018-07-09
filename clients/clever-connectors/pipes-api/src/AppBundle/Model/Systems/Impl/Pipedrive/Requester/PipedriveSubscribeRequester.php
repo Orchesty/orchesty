@@ -69,6 +69,7 @@ final class PipedriveSubscribeRequester implements RequesterInterface
      * @param array $data
      *
      * @return RequestDto
+     * @throws CleverConnectorsException
      */
     public function getRequestDto(array $data): RequestDto
     {

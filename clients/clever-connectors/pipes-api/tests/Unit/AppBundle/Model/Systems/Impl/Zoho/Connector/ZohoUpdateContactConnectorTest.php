@@ -152,7 +152,7 @@ final class ZohoUpdateContactConnectorTest extends ConnectorTestCaseAbstract
 
                 return new ResponseDto(200, 'OK', $this->getRequest('updateContact.json'), []);
             }));
-        $system = $this->container->get('systems.zoho');
+        $system = $this->ownContainer->get('systems.zoho');
 
         return new ZohoUpdateContactConnector($system, $documentManager, $curlManager);
     }

@@ -38,6 +38,8 @@ class WebhookManager
      * @param string                 $userId
      * @param string                 $token
      * @param bool                   $isUpdate
+     *
+     * @throws SystemException
      */
     public function subscribe(WebhookSystemInterface $system, string $userId, string $token, $isUpdate = FALSE): void
     {
@@ -49,6 +51,8 @@ class WebhookManager
     /**
      * @param WebhookSystemInterface $system
      * @param string                 $userId
+     *
+     * @throws SystemException
      */
     public function unsubscribe(WebhookSystemInterface $system, string $userId): void
     {
@@ -60,6 +64,8 @@ class WebhookManager
      * @param WebhookSystemInterface $system
      * @param string                 $userId
      * @param string                 $token
+     *
+     * @throws SystemException
      */
     public function update(WebhookSystemInterface $system, string $userId, string $token): void
     {

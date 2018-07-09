@@ -34,7 +34,7 @@ final class BasecrmAcknowledgeContactConnectorTest extends ConnectorTestCaseAbst
     {
         $conn = new BasecrmAcknowledgeContactConnector(
             $this->mockCurl(),
-            $this->container->get('systems.basecrm'),
+            $this->ownContainer->get('systems.basecrm'),
             $this->mockDm()
         );
 
@@ -53,7 +53,7 @@ final class BasecrmAcknowledgeContactConnectorTest extends ConnectorTestCaseAbst
     {
         $conn = new BasecrmAcknowledgeContactConnector(
             $this->mockCurl(429),
-            $this->container->get('systems.basecrm'),
+            $this->ownContainer->get('systems.basecrm'),
             $this->mockDm()
         );
 
@@ -74,7 +74,7 @@ final class BasecrmAcknowledgeContactConnectorTest extends ConnectorTestCaseAbst
     {
         $conn = new BasecrmAcknowledgeContactConnector(
             $this->mockCurl(404),
-            $this->container->get('systems.basecrm'),
+            $this->ownContainer->get('systems.basecrm'),
             $this->mockDm()
         );
 

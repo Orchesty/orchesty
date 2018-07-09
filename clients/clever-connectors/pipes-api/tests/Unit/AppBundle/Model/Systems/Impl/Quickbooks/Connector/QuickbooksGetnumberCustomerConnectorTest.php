@@ -45,7 +45,7 @@ final class QuickbooksGetnumberCustomerConnectorTest extends ConnectorTestCaseAb
 
         $conn = new QuickbooksGetnumberCustomerConnector(
             $this->mockDm(),
-            $this->container->get('systems.quickbooks'),
+            $this->ownContainer->get('systems.quickbooks'),
             $this->mockCurl()
         );
 

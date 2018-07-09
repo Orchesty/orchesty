@@ -21,6 +21,7 @@ use CleverConnectors\AppBundle\Utils\AuthorizationUtils;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use CleverConnectors\AppBundle\Utils\InnerRequestUtils;
 use DateTime;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
@@ -330,6 +331,7 @@ class SalesforceAppSystem implements OAuth2Interface, CMEventSystemInterface
      * @return array
      * @throws CleverConnectorsException
      * @throws SystemException
+     * @throws MongoDBException
      */
     public function runFilterSync(SystemInstall $systemInstall, array $data): array
     {

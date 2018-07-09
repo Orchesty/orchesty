@@ -19,7 +19,7 @@ final class QuickbooksCreatedEventCustomerMapperTest extends ConnectorTestCaseAb
      */
     public function testMapper(): void
     {
-        $mapper = $this->container->get('hbpf.custom_node.quickbooks-created-event-customer-mapper');
+        $mapper = $this->ownContainer->get('hbpf.custom_node.quickbooks-created-event-customer-mapper');
 
         $dto = new ProcessDto();
         $dto->setData(json_encode([

@@ -45,7 +45,7 @@ final class BasecrmCreateContactConnectorTest extends ConnectorTestCaseAbstract
         ];
 
         $conn = new BasecrmCreateContactConnector(
-            $this->container->get('systems.basecrm'),
+            $this->ownContainer->get('systems.basecrm'),
             $this->mockDm(),
             $this->mockCurl($data)
         );
@@ -61,7 +61,7 @@ final class BasecrmCreateContactConnectorTest extends ConnectorTestCaseAbstract
     public function testLimit(): void
     {
         $conn = new BasecrmCreateContactConnector(
-            $this->container->get('systems.basecrm'),
+            $this->ownContainer->get('systems.basecrm'),
             $this->mockDm(),
             $this->mockCurl([], 429)
         );
@@ -82,7 +82,7 @@ final class BasecrmCreateContactConnectorTest extends ConnectorTestCaseAbstract
     public function testUnexpectedError(): void
     {
         $conn = new BasecrmCreateContactConnector(
-            $this->container->get('systems.basecrm'),
+            $this->ownContainer->get('systems.basecrm'),
             $this->mockDm(),
             $this->mockCurl([], 404)
         );

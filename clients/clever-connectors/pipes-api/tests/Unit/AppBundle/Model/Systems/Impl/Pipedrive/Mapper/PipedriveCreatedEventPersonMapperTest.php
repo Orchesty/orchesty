@@ -20,7 +20,7 @@ final class PipedriveCreatedEventPersonMapperTest extends ConnectorTestCaseAbstr
      */
     public function testProcessEvent(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.pipedrive-created-event-person-mapper');
+        $connector = $this->ownContainer->get('hbpf.custom_node.pipedrive-created-event-person-mapper');
 
         $response = Json::decode(
             $connector->process((new ProcessDto())->setData($this->getRequest('personCreated.json')))

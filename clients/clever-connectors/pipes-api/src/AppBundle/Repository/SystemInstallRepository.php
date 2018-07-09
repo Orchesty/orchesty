@@ -8,6 +8,7 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use CleverConnectors\AppBundle\Utils\DateTimeUtils;
 use DateTime;
+use Doctrine\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Hanaboso\CommonsBundle\Crypt\CryptManager;
 use LogicException;
@@ -31,13 +32,14 @@ class SystemInstallRepository extends DocumentRepository
     public function getSystemInstallByEvent(string $event, string $userId): array
     {
         SystemInstall::checkEvent($event);
+        /** @var Cursor|null $systemInstalls */
         $systemInstalls = $this->createQueryBuilder()
             ->field($event)->equals(TRUE)
             ->field('user')->equals($userId)
-            ->getQuery()->execute()->toArray(FALSE);
+            ->getQuery()->execute();
 
         if (!empty($systemInstalls)) {
-            return $systemInstalls;
+            return $systemInstalls->toArray(TRUE);
         }
 
         return [];
@@ -92,7 +94,7 @@ class SystemInstallRepository extends DocumentRepository
     public function getSystemInstall(string $user, string $token, string $systemKey): SystemInstall
     {
         $this->getDocumentManager()->clear(SystemInstall::class);
-        /** @var SystemInstall $ret */
+        /** @var SystemInstall|null $ret */
         $ret = $this->createQueryBuilder()
             ->field('user')->equals($user)
             ->field('token')->equals($token)
@@ -124,7 +126,7 @@ class SystemInstallRepository extends DocumentRepository
     public function saveSystemInstall(SystemInstall $systemInstall): void
     {
         $expires = !$systemInstall->getExpires() ? NULL : $systemInstall->getExpires()->format(DateTime::W3C);
-        $created = !$systemInstall->getCreated() ? NULL : $systemInstall->getCreated()->format(DateTime::W3C);
+        $created = $systemInstall->getCreated()->format(DateTime::W3C);
         $sync    = !$systemInstall->getSynchronizedTime() ? NULL : $systemInstall->getSynchronizedTime()
             ->format(DateTime::W3C);
 

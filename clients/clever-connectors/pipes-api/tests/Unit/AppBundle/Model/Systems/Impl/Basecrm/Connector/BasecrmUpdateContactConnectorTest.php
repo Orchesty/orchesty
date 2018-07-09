@@ -51,7 +51,7 @@ final class BasecrmUpdateContactConnectorTest extends ConnectorTestCaseAbstract
         ]));
 
         $conn = new BasecrmUpdateContactConnector(
-            $this->container->get('systems.basecrm'),
+            $this->ownContainer->get('systems.basecrm'),
             $this->mockDm(),
             $this->mockCurl($data)
         );
@@ -81,7 +81,7 @@ final class BasecrmUpdateContactConnectorTest extends ConnectorTestCaseAbstract
         ]));
 
         $conn = new BasecrmUpdateContactConnector(
-            $this->container->get('systems.basecrm'),
+            $this->ownContainer->get('systems.basecrm'),
             $this->mockDm(),
             $this->mockCurl($data, 429)
         );
@@ -113,7 +113,7 @@ final class BasecrmUpdateContactConnectorTest extends ConnectorTestCaseAbstract
         ]));
 
         $conn = new BasecrmUpdateContactConnector(
-            $this->container->get('systems.basecrm'),
+            $this->ownContainer->get('systems.basecrm'),
             $this->mockDm(),
             $this->mockCurl($data, 404)
         );

@@ -47,7 +47,7 @@ final class PipedriveUpdatePersonConnectorTest extends ConnectorTestCaseAbstract
     public function testProcessEvent(): void
     {
         $conn = new PipedriveUpdatePersonConnector(
-            $this->container->get('systems.pipedrive'),
+            $this->ownContainer->get('systems.pipedrive'),
             $this->mockCurl(),
             $this->dmMock
         );
@@ -71,7 +71,7 @@ final class PipedriveUpdatePersonConnectorTest extends ConnectorTestCaseAbstract
     public function testConnectorLimit(): void
     {
         $conn = new PipedriveUpdatePersonConnector(
-            $this->container->get('systems.pipedrive'),
+            $this->ownContainer->get('systems.pipedrive'),
             $this->mockCurl(429),
             $this->dmMock
         );
@@ -97,7 +97,7 @@ final class PipedriveUpdatePersonConnectorTest extends ConnectorTestCaseAbstract
     public function testConnectorError(): void
     {
         $conn = new PipedriveUpdatePersonConnector(
-            $this->container->get('systems.pipedrive'),
+            $this->ownContainer->get('systems.pipedrive'),
             $this->mockCurl(400),
             $this->dmMock
         );

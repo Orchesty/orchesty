@@ -32,7 +32,7 @@ final class PluginUnsubscribeSubscriberConnectorTest extends KernelTestCaseAbstr
         $conn = new PluginUnsubscribeSubscriberConnector(
             $this->mockDm(),
             $this->mockCurl(),
-            $this->container->get('cc.systems.loader')
+            $this->ownContainer->get('cc.systems.loader')
         );
 
         $dto = new ProcessDto();

@@ -42,6 +42,7 @@ class CustomNodeHandler
      * @param array  $headers
      *
      * @return ProcessDto
+     * @throws CustomNodeException
      */
     public function process(string $nodeId, $data, array $headers): ProcessDto
     {

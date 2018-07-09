@@ -41,21 +41,21 @@ final class EventListenerTest extends DatabaseTestCaseAbstract
 
         $this->dm->flush();
 
-        $oauth2 = $this->container->get('hbpf.providers.oauth2_provider');
+        $oauth2 = $this->ownContainer->get('hbpf.providers.oauth2_provider');
         $system = $this->getMockBuilder(NullSystem::class)
             ->setMethods(['getType'])
             ->setConstructorArgs([
                 $oauth2,
             ])->getMock();
         $system->method('getType')->willReturn(SystemTypeEnum::UI_WEBHOOK);
-        $this->container->set('systems.null.user.group', $system);
+        $this->ownContainer->set('systems.null.user.group', $system);
 
         $curl = $this->getMockBuilder(CurlManagerInterface::class)->disableOriginalConstructor()->getMock();
         $curl->method('send')->willReturn(new ResponseDto(200, '', '', []));
 
-        $this->container->set('hbpf.transport.curl_manager', $curl);
+        $this->ownContainer->set('hbpf.transport.curl_manager', $curl);
 
-        $dispatcher = $this->container->get('event_dispatcher');
+        $dispatcher = $this->ownContainer->get('event_dispatcher');
 
         self::assertNotEmpty($this->dm->getRepository(Webhook::class)->findBy(['_id' => $web->getId()]));
         $dispatcher->dispatch(TopologyEvent::EVENT, new TopologyEvent('ttop'));

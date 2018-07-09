@@ -32,6 +32,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
@@ -265,7 +266,6 @@ class FacebookaudienceSystem implements OAuth2Interface
      *
      * @return RequestDto
      * @throws SystemException
-     * @throws CurlException
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {
@@ -378,7 +378,7 @@ class FacebookaudienceSystem implements OAuth2Interface
      * @param array         $data
      *
      * @return array
-     * @throws CleverConnectorsException
+     * @throws MongoDBException
      */
     public function createAd(SystemInstall $systemInstall, array $data): array
     {
@@ -434,7 +434,7 @@ class FacebookaudienceSystem implements OAuth2Interface
      * @param array         $data
      *
      * @return array
-     * @throws CleverConnectorsException
+     * @throws MongoDBException
      */
     public function syncAudience(SystemInstall $systemInstall, array $data): array
     {
@@ -453,7 +453,7 @@ class FacebookaudienceSystem implements OAuth2Interface
      * @param array         $data
      *
      * @return array
-     * @throws CleverConnectorsException
+     * @throws MongoDBException
      */
     public function createAudience(SystemInstall $systemInstall, array $data): array
     {
@@ -463,7 +463,7 @@ class FacebookaudienceSystem implements OAuth2Interface
 
         /** @var AudienceMirrorRepository $repo */
         $repo = $this->dm->getRepository(AudienceMirror::class);
-        /** @var AudienceMirror $mirr */
+        /** @var AudienceMirror|null $mirr */
         $mirr = $repo->getByAudience($data['audience']['id'] ?? '', $data['type']);
         if ($mirr) {
             $data['audience_id'] = $mirr->getSystemAudienceId();
@@ -487,7 +487,7 @@ class FacebookaudienceSystem implements OAuth2Interface
      * @param array         $data
      *
      * @return array
-     * @throws CleverConnectorsException
+     * @throws MongoDBException
      */
     public function checkAdStatus(SystemInstall $systemInstall, array $data): array
     {
@@ -510,8 +510,8 @@ class FacebookaudienceSystem implements OAuth2Interface
      * @param array         $data
      *
      * @return array
-     * @throws CleverConnectorsException
      * @throws DocumentNotFoundException
+     * @throws MongoDBException
      */
     public function addEmails(SystemInstall $systemInstall, array $data): array
     {
@@ -525,8 +525,8 @@ class FacebookaudienceSystem implements OAuth2Interface
      * @param array         $data
      *
      * @return array
-     * @throws CleverConnectorsException
      * @throws DocumentNotFoundException
+     * @throws MongoDBException
      */
     public function removeEmails(SystemInstall $systemInstall, array $data): array
     {
@@ -559,8 +559,8 @@ class FacebookaudienceSystem implements OAuth2Interface
      * @param array         $data
      * @param string        $key
      *
-     * @throws CleverConnectorsException
      * @throws DocumentNotFoundException
+     * @throws MongoDBException
      */
     private function updateAudience(SystemInstall $systemInstall, array $data, string $key): void
     {

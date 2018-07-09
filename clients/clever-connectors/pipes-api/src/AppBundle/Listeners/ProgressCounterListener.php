@@ -4,6 +4,7 @@ namespace CleverConnectors\AppBundle\Listeners;
 
 use CleverConnectors\AppBundle\Enum\ProgressCounterStatusEnum;
 use CleverConnectors\AppBundle\Model\ProgressCounter\ProgressCounterService;
+use Hanaboso\CommonsBundle\Exception\EnumException;
 use Hanaboso\PipesFramework\Configurator\Event\ProcessStatusEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -32,6 +33,8 @@ class ProgressCounterListener implements EventSubscriberInterface
 
     /**
      * @param ProcessStatusEvent $ev
+     *
+     * @throws EnumException
      */
     public function updateStatus(ProcessStatusEvent $ev): void
     {

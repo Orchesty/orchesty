@@ -2,6 +2,7 @@
 
 namespace Hanaboso\PipesFramework\HbPFCustomNodeBundle\DependencyInjection;
 
+use Exception;
 use RuntimeException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -21,6 +22,8 @@ class HbPFCustomNodeExtension extends Extension implements PrependExtensionInter
      * Allow an extension to prepend the extension configurations.
      *
      * @param ContainerBuilder $container
+     *
+     * @throws Exception
      */
     public function prepend(ContainerBuilder $container): void
     {
@@ -35,6 +38,8 @@ class HbPFCustomNodeExtension extends Extension implements PrependExtensionInter
     /**
      * @param array            $configs
      * @param ContainerBuilder $container
+     *
+     * @throws Exception
      */
     public function load(array $configs, ContainerBuilder $container): void
     {

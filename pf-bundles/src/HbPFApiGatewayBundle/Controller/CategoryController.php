@@ -2,11 +2,10 @@
 
 namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller;
 
-use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * Class CategoryController
@@ -17,9 +16,7 @@ class CategoryController extends FOSRestController
 {
 
     /**
-     * @Route("/categories")
-     * @Method({"GET", "OPTIONS"})
-     *
+     * @Route("/categories", methods={"GET", "OPTIONS"})
      * @param Request $request
      *
      * @return Response
@@ -30,8 +27,7 @@ class CategoryController extends FOSRestController
     }
 
     /**
-     * @Route("/categories")
-     * @Method({"POST", "OPTIONS"})
+     * @Route("/categories", methods={"POST", "OPTIONS"})
      *
      * @return Response
      */
@@ -41,8 +37,7 @@ class CategoryController extends FOSRestController
     }
 
     /**
-     * @Route("/categories/{id}", defaults={}, requirements={"id": "\w+"})
-     * @Method({"PUT", "PATCH", "OPTIONS"})
+     * @Route("/categories/{id}", defaults={}, requirements={"id": "\w+"}, methods={"PUT", "PATCH", "OPTIONS"})
      *
      * @param string $id
      *
@@ -54,8 +49,7 @@ class CategoryController extends FOSRestController
     }
 
     /**
-     * @Route("/categories/{id}", defaults={}, requirements={"id": "\w+"})
-     * @Method({"DELETE", "OPTIONS"})
+     * @Route("/categories/{id}", defaults={}, requirements={"id": "\w+"}, methods={"DELETE", "OPTIONS"})
      *
      * @param string $id
      *

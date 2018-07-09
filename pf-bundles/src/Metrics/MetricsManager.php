@@ -12,7 +12,6 @@ namespace Hanaboso\PipesFramework\Metrics;
 use DateTime;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Hanaboso\CommonsBundle\Exception\EnumException;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
@@ -309,7 +308,6 @@ class MetricsManager implements LoggerAwareInterface
      *
      * @return array
      * @throws MetricsException
-     * @throws EnumException
      */
     public function getTopologyRequestCountMetrics(Topology $topology, array $params): array
     {

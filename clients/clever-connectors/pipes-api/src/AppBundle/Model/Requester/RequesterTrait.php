@@ -67,6 +67,7 @@ trait RequesterTrait
      * @param array $data
      *
      * @return CMEventObject
+     * @throws CleverConnectorsException
      */
     public function getCMEventObject(array $data): CMEventObject
     {

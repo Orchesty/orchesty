@@ -2,8 +2,14 @@
 
 namespace CleverConnectors\AppBundle\Handler;
 
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\DataLayout\Exceptions\LayoutException;
 use CleverConnectors\AppBundle\Model\DataLayout\LayoutManager;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemManager;
+use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Hanaboso\CommonsBundle\Exception\EnumException;
 use Hanaboso\CommonsBundle\Utils\ControllerUtils;
 
 /**
@@ -42,6 +48,10 @@ class LayoutHandler
      * @param array  $data
      *
      * @return array
+     * @throws CleverConnectorsException
+     * @throws LayoutException
+     * @throws SystemException
+     * @throws EnumException
      */
     public function create(string $user, string $system, array $data): array
     {
@@ -61,6 +71,11 @@ class LayoutHandler
      * @param array  $data
      *
      * @return array
+     * @throws CleverConnectorsException
+     * @throws EnumException
+     * @throws SystemException
+     * @throws LockException
+     * @throws MappingException
      */
     public function update(string $id, string $user, string $system, array $data): array
     {
@@ -77,6 +92,11 @@ class LayoutHandler
      * @param string $id
      * @param string $user
      * @param string $system
+     *
+     * @throws CleverConnectorsException
+     * @throws LockException
+     * @throws MappingException
+     * @throws SystemException
      */
     public function delete(string $id, string $user, string $system): void
     {

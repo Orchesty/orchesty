@@ -41,7 +41,6 @@ class FacebookaudienceGetPagesConnector extends FacebookaudienceConnectorAbstrac
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
-        $res           = [];
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
         $req           = $this->prepareRequestDto($systemInstall, $dto);
 

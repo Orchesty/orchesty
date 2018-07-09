@@ -39,7 +39,7 @@ final class PluginSyncSubscriberConnectorTest extends ConnectorTestCaseAbstract
             $this->mockDm(),
             $this->mockCurl(),
             $counter,
-            $this->container->get('cc.systems.loader')
+            $this->ownContainer->get('cc.systems.loader')
         );
 
         $loop = Factory::create();

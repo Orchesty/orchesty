@@ -2,6 +2,7 @@
 
 namespace Hanaboso\PipesFramework\HbPFTableParserBundle\DependencyInjection;
 
+use Exception;
 use RuntimeException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -32,6 +33,8 @@ class HbPFTableParserExtension extends Extension implements PrependExtensionInte
     /**
      * @param array            $configs
      * @param ContainerBuilder $container
+     *
+     * @throws Exception
      */
     public function load(array $configs, ContainerBuilder $container): void
     {

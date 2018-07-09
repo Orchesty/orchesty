@@ -9,13 +9,14 @@
 
 namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller;
 
-use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
+use Hanaboso\PipesFramework\Category\Exception\CategoryException;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Throwable;
 
 /**
  * Class CategoryController
@@ -43,8 +44,7 @@ class CategoryController extends FOSRestController
     }
 
     /**
-     * @Route("/categories")
-     * @Method({"GET", "OPTIONS"})
+     * @Route("/categories", methods={"GET", "OPTIONS"})
      *
      * @return Response
      */
@@ -56,8 +56,7 @@ class CategoryController extends FOSRestController
     }
 
     /**
-     * @Route("/categories")
-     * @Method({"POST", "OPTIONS"})
+     * @Route("/categories", methods={"POST", "OPTIONS"})
      *
      * @param Request $request
      *
@@ -65,14 +64,17 @@ class CategoryController extends FOSRestController
      */
     public function createCategoryAction(Request $request): Response
     {
-        $data = $this->categoryHandler->createCategory($request->request->all());
+        try {
+            $data = $this->categoryHandler->createCategory($request->request->all());
 
-        return $this->getResponse($data);
+            return $this->getResponse($data);
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
+        }
     }
 
     /**
-     * @Route("/categories/{id}", defaults={}, requirements={"id": "\w+"})
-     * @Method({"PUT", "PATCH", "OPTIONS"})
+     * @Route("/categories/{id}", defaults={}, requirements={"id": "\w+"}, methods={"PUT", "PATCH", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $id
@@ -81,14 +83,19 @@ class CategoryController extends FOSRestController
      */
     public function updateCategoryAction(Request $request, string $id): Response
     {
-        $data = $this->categoryHandler->updateCategory($id, $request->request->all());
+        try {
+            $data = $this->categoryHandler->updateCategory($id, $request->request->all());
 
-        return $this->getResponse($data);
+            return $this->getResponse($data);
+        } catch (CategoryException $e) {
+            return $this->getErrorResponse($e, 400);
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
+        }
     }
 
     /**
-     * @Route("/categories/{id}", defaults={}, requirements={"id": "\w+"})
-     * @Method({"DELETE", "OPTIONS"})
+     * @Route("/categories/{id}", defaults={}, requirements={"id": "\w+"}, methods={"DELETE", "OPTIONS"})
      *
      * @param string $id
      *
@@ -96,9 +103,13 @@ class CategoryController extends FOSRestController
      */
     public function deleteCategoryAction(string $id): Response
     {
-        $data = $this->categoryHandler->deleteCategory($id);
+        try {
+            $data = $this->categoryHandler->deleteCategory($id);
 
-        return $this->getResponse($data);
+            return $this->getResponse($data);
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
+        }
     }
 
 }

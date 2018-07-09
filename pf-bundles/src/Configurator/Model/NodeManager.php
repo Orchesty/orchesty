@@ -5,6 +5,7 @@ namespace Hanaboso\PipesFramework\Configurator\Model;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\CommonsBundle\DatabaseManager\DatabaseManagerLocator;
 use Hanaboso\CommonsBundle\Enum\HandlerEnum;
+use Hanaboso\CommonsBundle\Exception\EnumException;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
 
@@ -37,6 +38,7 @@ class NodeManager
      *
      * @return Node
      * @throws NodeException
+     * @throws EnumException
      */
     public function updateNode(Node $node, array $data): Node
     {

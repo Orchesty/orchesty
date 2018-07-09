@@ -31,7 +31,7 @@ final class ShopifyCreateCustomerConnectorTest extends ConnectorTestCaseAbstract
     public function testConnector(): void
     {
         $conn = new ShopifyCreateCustomerConnector(
-            $this->container->get('systems.shopify'),
+            $this->ownContainer->get('systems.shopify'),
             $this->mockDm(),
             $this->mockCurl(function (RequestDto $requestDto): ResponseDto {
                 $expt = new RequestDto('POST', new Uri('https://hbpf.myshopify.com/admin/customers.json'));
@@ -71,7 +71,7 @@ final class ShopifyCreateCustomerConnectorTest extends ConnectorTestCaseAbstract
         $this->expectExceptionCode(CurlException::REQUEST_FAILED);
 
         $conn = new ShopifyCreateCustomerConnector(
-            $this->container->get('systems.shopify'),
+            $this->ownContainer->get('systems.shopify'),
             $this->mockDm(),
             $this->mockCurl(function (RequestDto $requestDto): void {
                 $expt = new RequestDto('POST', new Uri('https://hbpf.myshopify.com/admin/customers.json'));
@@ -110,7 +110,7 @@ final class ShopifyCreateCustomerConnectorTest extends ConnectorTestCaseAbstract
     public function testConnectorWithLimiter(): void
     {
         $conn = new ShopifyCreateCustomerConnector(
-            $this->container->get('systems.shopify'),
+            $this->ownContainer->get('systems.shopify'),
             $this->mockDm(),
             $this->mockCurl(function (RequestDto $requestDto): void {
                 $expt = new RequestDto('POST', new Uri('https://hbpf.myshopify.com/admin/customers.json'));

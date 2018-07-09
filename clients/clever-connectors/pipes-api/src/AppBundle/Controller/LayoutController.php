@@ -6,22 +6,19 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Handler\LayoutHandler;
 use CleverConnectors\AppBundle\Model\DataLayout\Exceptions\LayoutException;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
-use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use LogicException;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 use Throwable;
 
 /**
  * Class LayoutController
  *
  * @package CleverConnectors\AppBundle\Controller
- *
- * @Route(service="cc.layout.controller")
  */
 class LayoutController extends FOSRestController
 {
@@ -44,8 +41,7 @@ class LayoutController extends FOSRestController
     }
 
     /**
-     * @Route("layout/user/{userId}/system/{systemKey}")
-     * @Method({"POST", "OPTIONS"})
+     * @Route("layout/user/{userId}/system/{systemKey}", methods={"POST", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $userId
@@ -63,8 +59,7 @@ class LayoutController extends FOSRestController
     }
 
     /**
-     * @Route("layout/{id}/user/{userId}/system/{systemKey}")
-     * @Method({"PUT", "OPTIONS"})
+     * @Route("layout/{id}/user/{userId}/system/{systemKey}", methods={"PUT", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $id
@@ -83,8 +78,7 @@ class LayoutController extends FOSRestController
     }
 
     /**
-     * @Route("layout/{id}/user/{userId}/system/{systemKey}")
-     * @Method({"DELETE", "OPTIONS"})
+     * @Route("layout/{id}/user/{userId}/system/{systemKey}", methods={"DELETE", "OPTIONS"})
      *
      * @param string $id
      * @param string $userId

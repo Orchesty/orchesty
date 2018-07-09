@@ -4,19 +4,16 @@ namespace CleverConnectors\AppBundle\Controller;
 
 use CleverConnectors\AppBundle\Handler\ServiceSystemHandler;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
-use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * Class SyncController
  *
  * @package CleverConnectors\AppBundle\Controller
- *
- * @Route(service="cc.service_system.controller")
  */
 final class ServiceSystemController extends FOSRestController
 {
@@ -37,8 +34,7 @@ final class ServiceSystemController extends FOSRestController
     }
 
     /**
-     * @Route("/system/{system}/action/{action}")
-     * @Method({"GET", "POST","OPTIONS"})
+     * @Route("/system/{system}/action/{action}", methods={"GET", "POST", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $system

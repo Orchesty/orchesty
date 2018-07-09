@@ -25,7 +25,6 @@ use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use DateTime;
 use GuzzleHttp\Psr7\Uri;
-use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Nette\Utils\Strings;
 
@@ -240,7 +239,6 @@ class BigcommerceSystem implements WebhookSystemInterface, AuthorizationInterfac
      *
      * @return RequestDto
      * @throws SystemException
-     * @throws CurlException
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {

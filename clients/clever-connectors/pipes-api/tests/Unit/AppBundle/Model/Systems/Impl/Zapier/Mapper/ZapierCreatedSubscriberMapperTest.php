@@ -26,7 +26,7 @@ class ZapierCreatedSubscriberMapperTest extends ConnectorTestCaseAbstract
      */
     public function testProcess(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.zapier-created-subscriber-mapper');
+        $connector = $this->ownContainer->get('hbpf.custom_node.zapier-created-subscriber-mapper');
         $response  = Json::decode($connector->process($this->prepareConnectorProcessDto([
             'username' => 'nutshell@mailinator.com',
             'api_key'  => '967b1f7b321e6305d18e6656a650c32420aba98d',
@@ -47,7 +47,7 @@ class ZapierCreatedSubscriberMapperTest extends ConnectorTestCaseAbstract
      */
     public function testProcessList(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.zapier-created-subscriber-mapper');
+        $connector = $this->ownContainer->get('hbpf.custom_node.zapier-created-subscriber-mapper');
         $response  = Json::decode($connector->process($this->prepareConnectorProcessDto([
             'username' => 'nutshell@mailinator.com',
             'api_key'  => '967b1f7b321e6305d18e6656a650c32420aba98d',

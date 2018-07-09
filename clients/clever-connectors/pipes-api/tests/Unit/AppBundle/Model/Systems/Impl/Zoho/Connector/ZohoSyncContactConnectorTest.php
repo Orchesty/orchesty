@@ -79,7 +79,7 @@ final class ZohoSyncContactConnectorTest extends ConnectorTestCaseAbstract
         $processCounter->method('setTotal')->willReturn(TRUE);
 
         $conn = $this->getMockBuilder(ZohoSyncContactConnector::class)->setConstructorArgs([
-            $this->container->get('systems.zoho'),
+            $this->ownContainer->get('systems.zoho'),
             $this->createMock(CurlSenderFactory::class),
             $this->mockDM(),
             $processCounter,

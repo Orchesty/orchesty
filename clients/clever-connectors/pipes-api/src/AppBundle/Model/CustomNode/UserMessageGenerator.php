@@ -11,7 +11,9 @@ namespace CleverConnectors\AppBundle\Model\CustomNode;
 
 use CleverConnectors\AppBundle\Model\Command\AsyncCommandFactory;
 use CleverConnectors\AppBundle\Model\Limits\SystemLimitManager;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
@@ -149,6 +151,8 @@ class UserMessageGenerator implements BatchInterface, CustomNodeInterface
      * @param int   $i
      *
      * @return PromiseInterface
+     * @throws SystemException
+     * @throws MongoDBException
      */
     public function prepareData(array $item, int $i): PromiseInterface
     {
@@ -172,6 +176,8 @@ class UserMessageGenerator implements BatchInterface, CustomNodeInterface
      * @param callable $itemCallback
      *
      * @return PromiseInterface
+     * @throws SystemException
+     * @throws MongoDBException
      */
     private function processItem(array $item, int $i, callable $itemCallback): PromiseInterface
     {

@@ -33,7 +33,7 @@ final class AsyncCommandFactoryTest extends KernelTestCaseAbstract
      */
     public function setUp(): void
     {
-        $this->projectDir = $this->container->getParameter('kernel.project_dir');
+        $this->projectDir = $this->ownContainer->getParameter('kernel.project_dir');
     }
 
     /**

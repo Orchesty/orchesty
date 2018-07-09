@@ -70,7 +70,7 @@ final class PipedriveSyncPersonConnectorTest extends ConnectorTestCaseAbstract
         $processCounter->method('setTotal')->willReturn(TRUE);
 
         $conn = $this->getMockBuilder(PipedriveSyncPersonConnector::class)->setConstructorArgs([
-            $this->container->get('systems.pipedrive'),
+            $this->ownContainer->get('systems.pipedrive'),
             $this->mockDm(),
             $this->createMock(CurlSenderFactory::class),
             $processCounter,

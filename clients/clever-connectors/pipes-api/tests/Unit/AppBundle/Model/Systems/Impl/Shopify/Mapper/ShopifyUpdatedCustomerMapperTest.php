@@ -21,7 +21,7 @@ final class ShopifyUpdatedCustomerMapperTest extends ConnectorTestCaseAbstract
      */
     public function testProcess(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.shopify-updated-customer-mapper');
+        $connector = $this->ownContainer->get('hbpf.custom_node.shopify-updated-customer-mapper');
 
         $response = Json::decode(
             $connector->process((new ProcessDto())->setData($this->getRequest('ShopifyUpdatedCustomerMapper.json')))

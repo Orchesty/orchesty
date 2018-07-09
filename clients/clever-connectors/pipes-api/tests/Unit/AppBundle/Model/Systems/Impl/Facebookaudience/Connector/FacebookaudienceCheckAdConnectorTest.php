@@ -78,7 +78,7 @@ final class FacebookaudienceCheckAdConnectorTest extends KernelTestCaseAbstract
     private function createConnector(callable $callback): FacebookaudienceCheckAdConnector
     {
         /** @var FacebookaudienceSystem $sys */
-        $sys = $this->container->get('systems.facebookaudience');
+        $sys = $this->ownContainer->get('systems.facebookaudience');
 
         $sysInst = new SystemInstall();
         $sysInst->setSettings([

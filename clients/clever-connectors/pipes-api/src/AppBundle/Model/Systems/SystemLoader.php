@@ -148,6 +148,7 @@ class SystemLoader
      * @param string $group
      *
      * @return array
+     * @throws SystemException
      */
     private function getSystemsByUserAndGroup(string $user, string $group): array
     {

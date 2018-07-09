@@ -86,6 +86,7 @@ class ZapierCreateSubscriberConnector implements ConnectorInterface, LoggerAware
      *
      * @return ProcessDto
      * @throws ConnectorException
+     * @throws CurlException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {

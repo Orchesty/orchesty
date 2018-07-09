@@ -35,7 +35,7 @@ final class QuickbooksCreateCustomerConnectorTest extends KernelTestCaseAbstract
     {
         $conn = new QuickbooksCreateCustomerConnector(
             $this->mockDm(),
-            $this->container->get('systems.quickbooks'),
+            $this->ownContainer->get('systems.quickbooks'),
             $this->mockCurl()
         );
 
@@ -62,7 +62,7 @@ final class QuickbooksCreateCustomerConnectorTest extends KernelTestCaseAbstract
     {
         $conn = new QuickbooksCreateCustomerConnector(
             $this->mockDm(),
-            $this->container->get('systems.quickbooks'),
+            $this->ownContainer->get('systems.quickbooks'),
             $this->mockCurl(400)
         );
 
@@ -89,7 +89,7 @@ final class QuickbooksCreateCustomerConnectorTest extends KernelTestCaseAbstract
     {
         $conn = new QuickbooksCreateCustomerConnector(
             $this->mockDm(),
-            $this->container->get('systems.quickbooks'),
+            $this->ownContainer->get('systems.quickbooks'),
             $this->mockCurl(429)
         );
 
@@ -118,7 +118,7 @@ final class QuickbooksCreateCustomerConnectorTest extends KernelTestCaseAbstract
     {
         $conn = new QuickbooksCreateCustomerConnector(
             $this->mockDm(),
-            $this->container->get('systems.quickbooks'),
+            $this->ownContainer->get('systems.quickbooks'),
             $this->mockCurl(400)
         );
 

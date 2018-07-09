@@ -4,6 +4,7 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Shopify\Mapper;
 
 use CleverConnectors\AppBundle\Enum\CleverCustomKeysEnum;
 use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
@@ -20,6 +21,7 @@ class ShopifyUpdateCustomerMapper implements CustomNodeInterface
      * @param ProcessDto $dto
      *
      * @return ProcessDto
+     * @throws CleverConnectorsException
      */
     public function process(ProcessDto $dto): ProcessDto
     {

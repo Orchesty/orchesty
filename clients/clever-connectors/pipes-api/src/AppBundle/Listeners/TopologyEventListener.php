@@ -3,6 +3,7 @@
 namespace CleverConnectors\AppBundle\Listeners;
 
 use CleverConnectors\AppBundle\Handler\TopologyHandler;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use Hanaboso\PipesFramework\Configurator\Event\TopologyEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -31,6 +32,8 @@ class TopologyEventListener implements EventSubscriberInterface
 
     /**
      * @param TopologyEvent $event
+     *
+     * @throws SystemException
      */
     public function unsubscribeWebhooks(TopologyEvent $event): void
     {

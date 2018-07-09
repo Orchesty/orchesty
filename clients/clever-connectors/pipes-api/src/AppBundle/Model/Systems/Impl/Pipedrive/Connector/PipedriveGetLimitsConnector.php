@@ -3,6 +3,8 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\PipedriveSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Traits\LoggerTrait;
@@ -96,6 +98,9 @@ class PipedriveGetLimitsConnector implements ConnectorInterface, LoggerAwareInte
      * @param ProcessDto $dto
      *
      * @return ProcessDto
+     * @throws CurlException
+     * @throws CleverConnectorsException
+     * @throws SystemException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {

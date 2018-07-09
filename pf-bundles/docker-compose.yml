@@ -48,7 +48,7 @@ services:
       - ${DEV_IP}:8025:8025
 
   mongo:
-      image: mongo:latest
+      image: mongo:3.6
       ports:
         - ${DEV_IP}:27017:27017
       volumes:

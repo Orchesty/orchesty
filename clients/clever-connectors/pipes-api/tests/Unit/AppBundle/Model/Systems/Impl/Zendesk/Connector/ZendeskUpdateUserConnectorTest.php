@@ -40,7 +40,7 @@ final class ZendeskUpdateUserConnectorTest extends ConnectorTestCaseAbstract
     {
         $this->auth = base64_encode('eml@eml.com/token:smToken');
         $conn       = new ZendeskUpdateUserConnector(
-            $this->container->get('systems.zendesk'),
+            $this->ownContainer->get('systems.zendesk'),
             $this->mockDm(),
             $this->mockCurl()
         );
@@ -69,7 +69,7 @@ final class ZendeskUpdateUserConnectorTest extends ConnectorTestCaseAbstract
     {
         $this->auth = base64_encode('eml@eml.com/token:smToken');
         $conn       = new ZendeskUpdateUserConnector(
-            $this->container->get('systems.zendesk'),
+            $this->ownContainer->get('systems.zendesk'),
             $this->mockDm(),
             $this->mockCurl(429)
         );
@@ -94,7 +94,7 @@ final class ZendeskUpdateUserConnectorTest extends ConnectorTestCaseAbstract
     {
         $this->auth = base64_encode('eml@eml.com/token:smToken');
         $conn       = new ZendeskUpdateUserConnector(
-            $this->container->get('systems.zendesk'),
+            $this->ownContainer->get('systems.zendesk'),
             $this->mockDm(),
             $this->mockCurl(400)
         );

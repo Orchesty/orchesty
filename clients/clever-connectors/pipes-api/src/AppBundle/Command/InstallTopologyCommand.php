@@ -9,6 +9,7 @@
 
 namespace CleverConnectors\AppBundle\Command;
 
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Installer\InstallManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
@@ -61,6 +62,8 @@ class InstallTopologyCommand extends Command
     /**
      * @param InputInterface  $input
      * @param OutputInterface $output
+     *
+     * @throws CleverConnectorsException
      */
     protected function execute(InputInterface $input, OutputInterface $output): void
     {

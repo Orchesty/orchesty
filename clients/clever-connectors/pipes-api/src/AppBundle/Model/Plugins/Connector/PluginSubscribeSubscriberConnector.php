@@ -2,6 +2,7 @@
 
 namespace CleverConnectors\AppBundle\Model\Plugins\Connector;
 
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Plugins\PluginSystemAbstract;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 
@@ -36,6 +37,7 @@ class PluginSubscribeSubscriberConnector extends PluginSubscriberConnectorAbstra
      * @param ProcessDto           $dto
      *
      * @return string
+     * @throws CleverConnectorsException
      */
     protected function getUri(PluginSystemAbstract $system, ProcessDto $dto): string
     {

@@ -90,6 +90,7 @@ class BasecrmQueueContactConnector implements ConnectorInterface, LoggerAwareInt
      * @return ProcessDto
      * @throws SystemException
      * @throws CleverConnectorsException
+     * @throws CurlException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {

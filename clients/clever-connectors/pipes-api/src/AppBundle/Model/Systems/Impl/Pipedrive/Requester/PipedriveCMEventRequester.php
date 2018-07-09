@@ -57,6 +57,7 @@ final class PipedriveCMEventRequester implements RequesterInterface
      * @param array $data
      *
      * @return RequestDto
+     * @throws CleverConnectorsException
      */
     public function getRequestDto(array $data): RequestDto
     {
@@ -110,6 +111,7 @@ final class PipedriveCMEventRequester implements RequesterInterface
 
     /**
      * @return RequestDto
+     * @throws CleverConnectorsException
      */
     public function getListRequestDto(): RequestDto
     {

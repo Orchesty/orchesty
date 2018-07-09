@@ -11,6 +11,7 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\FacebookLeadsSystem;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -66,6 +67,7 @@ class FacebookGetLeadformConnector extends FacebookLeadConnectorAbstract
      * @return ProcessDto
      * @throws CurlException
      * @throws CleverConnectorsException
+     * @throws SystemException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
@@ -88,6 +90,7 @@ class FacebookGetLeadformConnector extends FacebookLeadConnectorAbstract
      * @return array
      * @throws CleverConnectorsException
      * @throws CurlException
+     * @throws SystemException
      */
     public function getLeadForms(SystemInstall $systemInstall, array $data): array
     {
@@ -161,6 +164,7 @@ class FacebookGetLeadformConnector extends FacebookLeadConnectorAbstract
      * @return string
      * @throws CleverConnectorsException
      * @throws CurlException
+     * @throws SystemException
      */
     private function getPageAccessToken(SystemInstall $systemInstall, string $pageId): string
     {
@@ -214,6 +218,7 @@ class FacebookGetLeadformConnector extends FacebookLeadConnectorAbstract
      * @return RequestDto
      * @throws CleverConnectorsException
      * @throws CurlException
+     * @throws SystemException
      */
     private function prepareRequestDto(SystemInstall $systemInstall, ?ProcessDto $dto = NULL): RequestDto
     {

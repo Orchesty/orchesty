@@ -2,6 +2,7 @@
 
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\CMActivator;
 
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventActivator;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
@@ -30,6 +31,7 @@ class PipedriveCMActivator extends CMEventActivator
      *
      * @return PromiseInterface
      * @throws SystemException
+     * @throws CleverConnectorsException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {

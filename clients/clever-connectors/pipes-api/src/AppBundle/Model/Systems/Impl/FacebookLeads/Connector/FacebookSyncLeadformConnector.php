@@ -64,6 +64,7 @@ class FacebookSyncLeadformConnector extends FacebookLeadConnectorAbstract implem
      * @param callable      $callbackItem
      *
      * @return PromiseInterface
+     * @throws SystemException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {

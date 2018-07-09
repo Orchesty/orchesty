@@ -37,7 +37,7 @@ final class LayoutManagerTest extends DatabaseTestCaseAbstract
     protected function setUp(): void
     {
         parent::setUp();
-        $this->manager    = $this->container->get('cc.layout.manager');
+        $this->manager    = $this->ownContainer->get('cc.layout.manager');
         $this->repository = $this->dm->getRepository(DataLayout::class);
     }
 

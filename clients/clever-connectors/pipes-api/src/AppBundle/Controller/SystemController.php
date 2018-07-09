@@ -6,25 +6,22 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Handler\SystemHandler;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use Exception;
-use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\CommonsBundle\Exception\EnumException;
 use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\CommonsBundle\Utils\Base64;
 use InvalidArgumentException;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 use Throwable;
 
 /**
  * Class SystemController
  *
  * @package CleverConnectors\AppBundle\Controller
- *
- * @Route(service="cc.systems.controller")
  */
 class SystemController extends FOSRestController
 {
@@ -47,8 +44,7 @@ class SystemController extends FOSRestController
     }
 
     /**
-     * @Route("/systems/count")
-     * @Method({"GET", "OPTIONS"})
+     * @Route("/systems/count", methods={"GET", "OPTIONS"})
      *
      * @return Response
      */
@@ -64,8 +60,7 @@ class SystemController extends FOSRestController
     }
 
     /**
-     * @Route("/systems/list")
-     * @Method({"GET", "OPTIONS"})
+     * @Route("/systems/list", methods={"GET", "OPTIONS"})
      *
      * @return Response
      */
@@ -81,8 +76,7 @@ class SystemController extends FOSRestController
     }
 
     /**
-     * @Route("/systems/{systemKey}")
-     * @Method({"GET", "OPTIONS"})
+     * @Route("/systems/{systemKey}", methods={"GET", "OPTIONS"})
      *
      * @param string $systemKey
      *
@@ -98,8 +92,7 @@ class SystemController extends FOSRestController
     }
 
     /**
-     * @Route("/systems")
-     * @Method({"GET", "OPTIONS"})
+     * @Route("/systems", methods={"GET", "OPTIONS"})
      *
      * @param Request $request
      *
@@ -118,8 +111,7 @@ class SystemController extends FOSRestController
     }
 
     /**
-     * @Route("/user_systems/user/{userId}")
-     * @Method({"GET", "OPTIONS"})
+     * @Route("/user_systems/user/{userId}", methods={"GET", "OPTIONS"})
      *
      * @param string $userId
      *
@@ -135,8 +127,7 @@ class SystemController extends FOSRestController
     }
 
     /**
-     * @Route("/user_systems/user/{userId}/system/{systemKey}")
-     * @Method({"GET", "OPTIONS"})
+     * @Route("/user_systems/user/{userId}/system/{systemKey}", methods={"GET", "OPTIONS"})
      *
      * @param string $userId
      * @param string $systemKey
@@ -153,8 +144,7 @@ class SystemController extends FOSRestController
     }
 
     /**
-     * @Route("/user_systems/user/{userId}/system/{systemKey}/install")
-     * @Method({"POST", "OPTIONS"})
+     * @Route("/user_systems/user/{userId}/system/{systemKey}/install", methods={"POST", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $userId
@@ -167,14 +157,13 @@ class SystemController extends FOSRestController
         try {
             return $this->getResponse($this->handler->installSystem($userId, $systemKey, $request->request->all()),
                 200);
-        } catch (SystemException | CleverConnectorsException | PipesFrameworkException $e) {
+        } catch (SystemException | CleverConnectorsException $e) {
             return $this->processException($e);
         }
     }
 
     /**
-     * @Route("/user_systems/user/{userId}/system/{systemKey}/settings")
-     * @Method({"POST", "OPTIONS"})
+     * @Route("/user_systems/user/{userId}/system/{systemKey}/settings", methods={"POST", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $userId
@@ -189,14 +178,13 @@ class SystemController extends FOSRestController
                 $this->handler->saveSystemSettings($userId, $systemKey, $request->request->all()),
                 200
             );
-        } catch (SystemException|CleverConnectorsException $e) {
+        } catch (SystemException | Throwable $e) {
             return $this->processException($e);
         }
     }
 
     /**
-     * @Route("/user_systems/user/{userId}/system/{systemKey}/uninstall")
-     * @Method({"GET", "OPTIONS"})
+     * @Route("/user_systems/user/{userId}/system/{systemKey}/uninstall", methods={"GET", "OPTIONS"})
      *
      * @param string $userId
      * @param string $systemKey
@@ -213,8 +201,7 @@ class SystemController extends FOSRestController
     }
 
     /**
-     * @Route("/user_systems/user/{userId}/system/{systemKey}/switch_token")
-     * @Method({"PUT", "OPTIONS"})
+     * @Route("/user_systems/user/{userId}/system/{systemKey}/switch_token", methods={"PUT", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $userId
@@ -226,14 +213,13 @@ class SystemController extends FOSRestController
     {
         try {
             return $this->getResponse($this->handler->switchToken($userId, $systemKey, $request->request->all()), 200);
-        } catch (SystemException | PipesFrameworkException | CleverConnectorsException $e) {
+        } catch (SystemException | Throwable $e) {
             return $this->processException($e);
         }
     }
 
     /**
-     * @Route("/user_systems/user/{userId}/system/{systemKey}/sync")
-     * @Method({"GET", "OPTIONS"})
+     * @Route("/user_systems/user/{userId}/system/{systemKey}/sync", methods={"GET", "OPTIONS"})
      *
      * @param string $userId
      * @param string $systemKey
@@ -244,14 +230,13 @@ class SystemController extends FOSRestController
     {
         try {
             return $this->getResponse($this->handler->synchronizeSubscriptions($userId, $systemKey), 202);
-        } catch (SystemException|CleverConnectorsException $e) {
+        } catch (SystemException | Throwable $e) {
             return $this->processException($e);
         }
     }
 
     /**
-     * @Route("/user_systems/user/{userId}/system/{systemKey}/set_password")
-     * @Method({"PUT", "OPTIONS"})
+     * @Route("/user_systems/user/{userId}/system/{systemKey}/set_password", methods={"PUT", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $userId
@@ -263,14 +248,13 @@ class SystemController extends FOSRestController
     {
         try {
             return $this->getResponse($this->handler->setPassword($userId, $systemKey, $request->request->all()), 200);
-        } catch (SystemException | PipesFrameworkException $e) {
+        } catch (SystemException $e) {
             return $this->processException($e);
         }
     }
 
     /**
-     * @Route("/user_systems/user/{userId}/system/{systemKey}/authorize")
-     * @Method({"GET", "OPTIONS"})
+     * @Route("/user_systems/user/{userId}/system/{systemKey}/authorize", methods={"GET", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $userId
@@ -296,8 +280,7 @@ class SystemController extends FOSRestController
     }
 
     /**
-     * @Route("/user_systems/user/{userId}/system/{systemKey}/saveToken")
-     * @Method({"GET", "OPTIONS"})
+     * @Route("/user_systems/user/{userId}/system/{systemKey}/saveToken", methods={"GET", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $userId
@@ -317,8 +300,7 @@ class SystemController extends FOSRestController
     }
 
     /**
-     * @Route("/user_systems/saveToken")
-     * @Method({"GET", "OPTIONS"})
+     * @Route("/user_systems/saveToken", methods={"GET", "OPTIONS"})
      *
      * @param Request $request
      *
@@ -342,8 +324,7 @@ class SystemController extends FOSRestController
     }
 
     /**
-     * @Route("/system/{system}/user/{user}/action/{action}")
-     * @Method({"GET", "POST","OPTIONS"})
+     * @Route("/system/{system}/user/{user}/action/{action}", methods={"GET", "POST", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $system
@@ -365,8 +346,7 @@ class SystemController extends FOSRestController
     }
 
     /**
-     * @Route("/system/{system}/users")
-     * @Method({"GET", "OPTIONS"})
+     * @Route("/system/{system}/users", methods={"GET", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $system
@@ -389,8 +369,7 @@ class SystemController extends FOSRestController
     }
 
     /**
-     * @Route("/systems/metrics")
-     * @Method({"POST", "OPTIONS"})
+     * @Route("/systems/metrics", methods={"POST", "OPTIONS"})
      *
      * @param Request $request
      *
@@ -408,8 +387,7 @@ class SystemController extends FOSRestController
     }
 
     /**
-     * @Route("/system/{system}/metrics")
-     * @Method({"GET", "OPTIONS"})
+     * @Route("/system/{system}/metrics", methods={"GET", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $system
@@ -422,14 +400,13 @@ class SystemController extends FOSRestController
             $data = $this->handler->getSystemMetrics([$system], $request->query->all());
 
             return $this->getResponse($data[$system] ?? []);
-        } catch (SystemException|EnumException $e) {
+        } catch (EnumException $e) {
             return $this->processException($e);
         }
     }
 
     /**
-     * @Route("/system/{system}/request_count")
-     * @Method({"GET", "OPTIONS"})
+     * @Route("/system/{system}/request_count", methods={"GET", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $system
@@ -442,7 +419,7 @@ class SystemController extends FOSRestController
             $data = $this->handler->getSystemRequestCount([$system], $request->query->all())[$system];
 
             return $this->getResponse(['count' => $data]);
-        } catch (SystemException|EnumException $e) {
+        } catch (EnumException $e) {
             return $this->processException($e);
         }
     }

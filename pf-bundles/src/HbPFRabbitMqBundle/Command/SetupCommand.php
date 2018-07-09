@@ -2,6 +2,7 @@
 
 namespace Hanaboso\PipesFramework\HbPFRabbitMqBundle\Command;
 
+use Exception;
 use Hanaboso\PipesFramework\RabbitMq\BunnyManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -44,6 +45,7 @@ class SetupCommand extends Command
      * @param OutputInterface $output
      *
      * @return void
+     * @throws Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output): void
     {

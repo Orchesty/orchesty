@@ -6,9 +6,11 @@ use CleverConnectors\AppBundle\Controller\WebhookController;
 use CleverConnectors\AppBundle\Document\Webhook;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Limits\SystemLimitManager;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
@@ -62,6 +64,8 @@ class WebhookSecurityListener implements EventSubscriberInterface
      * @param FilterControllerEvent $ev
      *
      * @throws CleverConnectorsException
+     * @throws SystemException
+     * @throws MongoDBException
      */
     public function checkSecurity(FilterControllerEvent $ev): void
     {
@@ -79,7 +83,7 @@ class WebhookSecurityListener implements EventSubscriberInterface
                 'userId'       => $req->attributes->get('userId'),
             ];
 
-            /** @var Webhook $res */
+            /** @var Webhook|null $res */
             $res = $this->repo->findOneBy([
                 'nodeName'     => $params['nodeName'],
                 'topologyName' => $params['topologyName'],

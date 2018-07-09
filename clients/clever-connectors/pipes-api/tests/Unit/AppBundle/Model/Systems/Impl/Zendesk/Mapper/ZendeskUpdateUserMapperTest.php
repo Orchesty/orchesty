@@ -22,7 +22,7 @@ final class ZendeskUpdateUserMapperTest extends DatabaseTestCaseAbstract
      */
     public function testMapper(): void
     {
-        $mapper = $this->container->get('hbpf.custom_node.zendesk-update-user-mapper');
+        $mapper = $this->ownContainer->get('hbpf.custom_node.zendesk-update-user-mapper');
 
         $dto = new ProcessDto();
         $dto->setData(json_encode([

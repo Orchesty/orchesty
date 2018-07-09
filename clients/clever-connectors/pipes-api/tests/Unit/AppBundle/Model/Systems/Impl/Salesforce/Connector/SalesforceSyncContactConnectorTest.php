@@ -91,7 +91,7 @@ final class SalesforceSyncContactConnectorTest extends KernelTestCaseAbstract
         $syncConn = $this->getMockBuilder(SalesforceSyncContactConnector::class)
             ->setMethods(['fetchData'])
             ->setConstructorArgs([
-                $this->mockSystem(), $this->container->get('cc.last_sync.manager'), $sender, $dm, $processCounter,
+                $this->mockSystem(), $this->ownContainer->get('cc.last_sync.manager'), $sender, $dm, $processCounter,
             ])
             ->getMock();
 

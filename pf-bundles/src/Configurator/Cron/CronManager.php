@@ -150,6 +150,7 @@ class CronManager
      *
      * @return ResponseDto
      * @throws CronException
+     * @throws CurlException
      */
     public function delete(Node $node): ResponseDto
     {

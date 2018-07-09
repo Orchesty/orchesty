@@ -34,8 +34,8 @@ final class SystemMetricsTest extends KernelTestCaseAbstract
     protected function setUp(): void
     {
         parent::setUp();
-        $this->client  = $this->container->get('cc.elastica.client');
-        $this->manager = $this->container->get('cc.system_metrics.manager');
+        $this->client  = $this->ownContainer->get('cc.elastica.client');
+        $this->manager = $this->ownContainer->get('cc.system_metrics.manager');
     }
 
     /**

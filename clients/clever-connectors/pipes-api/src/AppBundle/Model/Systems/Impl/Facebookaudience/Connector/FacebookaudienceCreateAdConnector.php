@@ -6,6 +6,8 @@ use CleverConnectors\AppBundle\Document\AudienceMirror;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\FacebookaudienceSystem;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
+use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
@@ -33,6 +35,8 @@ class FacebookaudienceCreateAdConnector extends FacebookaudienceConnectorAbstrac
      * @return ProcessDto
      * @throws CurlException
      * @throws SystemException
+     * @throws LockException
+     * @throws MappingException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {

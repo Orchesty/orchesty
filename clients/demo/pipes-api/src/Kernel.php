@@ -9,6 +9,7 @@
 
 namespace Demo;
 
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -60,7 +61,7 @@ class Kernel extends BaseKernel
      * @param ContainerBuilder $container
      * @param LoaderInterface  $loader
      *
-     * @throws \Exception
+     * @throws Exception
      */
     protected function configureContainer(ContainerBuilder $container, LoaderInterface $loader): void
     {
@@ -76,8 +77,6 @@ class Kernel extends BaseKernel
 
     /**
      * @param RouteCollectionBuilder $routes
-     *
-     * @throws \Symfony\Component\Config\Exception\FileLoaderLoadException
      */
     protected function configureRoutes(RouteCollectionBuilder $routes): void
     {

@@ -30,7 +30,7 @@ final class HubspotCreateContactConnectorTest extends ConnectorTestCaseAbstract
     public function testConnector(): void
     {
         $conn = new HubspotCreateContactConnector(
-            $this->container->get('systems.hubspot'),
+            $this->ownContainer->get('systems.hubspot'),
             $this->mockDm(),
             $this->mockCurl()
         );
@@ -90,7 +90,7 @@ final class HubspotCreateContactConnectorTest extends ConnectorTestCaseAbstract
                 throw new CurlException('', CurlException::REQUEST_FAILED, NULL, new Response(429));
             });
 
-        $conn = new HubspotCreateContactConnector($this->container->get('systems.hubspot'), $this->mockDm(), $sender);
+        $conn = new HubspotCreateContactConnector($this->ownContainer->get('systems.hubspot'), $this->mockDm(), $sender);
         $data = $conn->processAction($processDto);
 
         $this->assertEquals(1004, $data->getHeader('pf-result-code'));

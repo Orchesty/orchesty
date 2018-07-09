@@ -369,7 +369,7 @@ final class PluginsManagerTest extends KernelTestCaseAbstract
         $createdListConn = $this->createMock(CMCreateDistributionListConnector::class);
         $createdListConn->method('createList')->willReturn([]);
 
-        $loader = $this->container->get('cc.systems.loader');
+        $loader = $this->ownContainer->get('cc.systems.loader');
 
         return new PluginsManager($dm, $manager, $loader, $distConn, $systemTopologyRunner, $createdListConn);
     }

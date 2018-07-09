@@ -14,17 +14,15 @@ use CleverConnectors\AppBundle\Handler\CMEventsHandler;
 use Exception;
 use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Throwable;
 
 /**
  * Class CMEventController
  *
  * @package CleverConnectors\AppBundle\Controller
- *
- * @Route(service="cc.events.controller")
  */
 class CMEventsController extends FOSRestController
 {
@@ -47,8 +45,7 @@ class CMEventsController extends FOSRestController
     }
 
     /**
-     * @Route("/event/user/{userId}/create")
-     * @Method("POST")
+     * @Route("/event/user/{userId}/create", methods={"POST"})
      *
      * @param Request $request
      * @param string  $userId
@@ -59,7 +56,7 @@ class CMEventsController extends FOSRestController
     {
         try {
             $this->handler->createEvent($request, $userId);
-        } catch (CleverConnectorsException $e) {
+        } catch (CleverConnectorsException | Throwable $e) {
             return $this->processException($e);
         }
 
@@ -67,8 +64,7 @@ class CMEventsController extends FOSRestController
     }
 
     /**
-     * @Route("/event/user/{userId}/unsubscribe")
-     * @Method("POST")
+     * @Route("/event/user/{userId}/unsubscribe", methods={"POST"})
      *
      * @param Request $request
      * @param string  $userId
@@ -79,7 +75,7 @@ class CMEventsController extends FOSRestController
     {
         try {
             $this->handler->unsubscribeEvent($request, $userId);
-        } catch (CleverConnectorsException $e) {
+        } catch (CleverConnectorsException | Throwable $e) {
             return $this->processException($e);
         }
 
@@ -87,8 +83,7 @@ class CMEventsController extends FOSRestController
     }
 
     /**
-     * @Route("/event/user/{userId}/hard_bounce")
-     * @Method("POST")
+     * @Route("/event/user/{userId}/hard_bounce", methods={"POST"})
      *
      * @param Request $request
      * @param string  $userId
@@ -99,7 +94,7 @@ class CMEventsController extends FOSRestController
     {
         try {
             $this->handler->hardBounceEvent($request, $userId);
-        } catch (CleverConnectorsException $e) {
+        } catch (CleverConnectorsException | Throwable $e) {
             return $this->processException($e);
         }
 
@@ -107,8 +102,7 @@ class CMEventsController extends FOSRestController
     }
 
     /**
-     * @Route("/event/user/{userId}/subscribe")
-     * @Method("POST")
+     * @Route("/event/user/{userId}/subscribe", methods={"POST"})
      *
      * @param Request $request
      * @param string  $userId
@@ -119,7 +113,7 @@ class CMEventsController extends FOSRestController
     {
         try {
             $this->handler->subscribeEvent($request, $userId);
-        } catch (CleverConnectorsException $e) {
+        } catch (CleverConnectorsException| Throwable $e) {
             return $this->processException($e);
         }
 

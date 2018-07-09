@@ -3,6 +3,7 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Basecrm\BasecrmSystem;
 use CleverConnectors\AppBundle\Traits\LoggerTrait;
@@ -73,6 +74,8 @@ class BasecrmUpdatedContactConnector implements ConnectorInterface, BatchInterfa
      * @param callable      $callbackItem
      *
      * @return PromiseInterface
+     * @throws SystemException
+     * @throws CleverConnectorsException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {

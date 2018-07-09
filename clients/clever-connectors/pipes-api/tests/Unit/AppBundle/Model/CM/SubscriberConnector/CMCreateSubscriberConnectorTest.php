@@ -44,7 +44,7 @@ final class CMCreateSubscriberConnectorTest extends KernelTestCaseAbstract
      */
     public function testCMConnectorsMissingGuid(): void
     {
-        $conn = $this->container->get('hbpf.connector.cleverconnectors-create-subscriptions-connector');
+        $conn = $this->ownContainer->get('hbpf.connector.cleverconnectors-create-subscriptions-connector');
         $this->expectException(CleverConnectorsException::class);
         $this->expectExceptionCode(CleverConnectorsException::MISSING_DATA);
         $conn->processAction((new ProcessDto())->setHeaders(['token' => 'token']));
@@ -55,7 +55,7 @@ final class CMCreateSubscriberConnectorTest extends KernelTestCaseAbstract
      */
     public function testCMConnectorsMissingToken(): void
     {
-        $conn = $this->container->get('hbpf.connector.cleverconnectors-create-subscriptions-connector');
+        $conn = $this->ownContainer->get('hbpf.connector.cleverconnectors-create-subscriptions-connector');
         $this->expectException(CleverConnectorsException::class);
         $this->expectExceptionCode(CleverConnectorsException::MISSING_DATA);
         $conn->processAction((new ProcessDto())->setHeaders(['guis' => 'guid']));

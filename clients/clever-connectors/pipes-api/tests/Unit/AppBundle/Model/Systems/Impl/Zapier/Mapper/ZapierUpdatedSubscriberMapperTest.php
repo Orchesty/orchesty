@@ -26,7 +26,7 @@ class ZapierUpdatedSubscriberMapperTest extends ConnectorTestCaseAbstract
      */
     public function testProcess(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.zapier-updated-subscriber-mapper');
+        $connector = $this->ownContainer->get('hbpf.custom_node.zapier-updated-subscriber-mapper');
         $response  = Json::decode($connector->process($this->prepareConnectorProcessDto([
             'user'  => 'User',
             'token' => 'Token',

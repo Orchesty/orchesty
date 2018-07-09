@@ -7,7 +7,6 @@ use CleverConnectors\AppBundle\Document\LastSync;
 use CleverConnectors\AppBundle\Document\MapTemplate;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Enum\SystemTypeEnum;
-use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventsManager;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventSystemInterface;
 use CleverConnectors\AppBundle\Model\DataLayout\LayoutManager;
@@ -28,6 +27,7 @@ use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use DateTime;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\CommonsBundle\Exception\EnumException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
@@ -321,7 +321,7 @@ class SystemManager
      *
      * @return SystemInstall
      * @throws SystemException
-     * @throws CleverConnectorsException
+     * @throws MongoDBException
      */
     public function saveSystemSettings(string $user, string $systemKey, array $data): SystemInstall
     {
@@ -345,8 +345,8 @@ class SystemManager
      * @param string $token
      *
      * @return SystemInstall
-     * @throws CleverConnectorsException
      * @throws SystemException
+     * @throws MongoDBException
      */
     public function switchToken(string $user, string $system, string $token): SystemInstall
     {
@@ -366,8 +366,8 @@ class SystemManager
      * @param string $system
      *
      * @return int
-     * @throws CleverConnectorsException
      * @throws SystemException
+     * @throws MongoDBException
      */
     public function synchronizeSubscriptions(string $user, string $system): int
     {
@@ -601,8 +601,8 @@ class SystemManager
      * @param SystemInstall   $systemInstall
      * @param array           $data
      *
-     * @throws CleverConnectorsException
      * @throws SystemException
+     * @throws MongoDBException
      */
     protected function activateEvents(SystemInterface $system, SystemInstall $systemInstall, array &$data): void
     {
@@ -666,8 +666,8 @@ class SystemManager
      * @param array  $data
      *
      * @return array
-     * @throws CleverConnectorsException
      * @throws SystemException
+     * @throws MongoDBException
      */
     private function runTopologies(string $user, string $system, string $topology, array $data): array
     {
@@ -685,8 +685,8 @@ class SystemManager
      * @param SystemInstall $systemInstall
      * @param string        $token
      *
-     * @throws CleverConnectorsException
      * @throws SystemException
+     * @throws MongoDBException
      */
     private function runSwitchTokenTopologies(SystemInstall $systemInstall, string $token): void
     {

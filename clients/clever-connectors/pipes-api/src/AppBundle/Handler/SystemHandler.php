@@ -9,6 +9,7 @@ use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemManager;
 use CleverConnectors\AppBundle\Utils\DateTimeUtils;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\CommonsBundle\Exception\EnumException;
 use Hanaboso\CommonsBundle\Utils\ControllerUtils;
 
@@ -133,7 +134,7 @@ class SystemHandler
      *
      * @return array
      * @throws SystemException
-     * @throws CleverConnectorsException
+     * @throws MongoDBException
      */
     public function saveSystemSettings(string $user, string $system, array $data): array
     {
@@ -162,8 +163,8 @@ class SystemHandler
      * @param array  $data
      *
      * @return array
-     * @throws CleverConnectorsException
      * @throws SystemException
+     * @throws MongoDBException
      */
     public function switchToken(string $user, string $system, array $data): array
     {
@@ -178,8 +179,8 @@ class SystemHandler
      * @param string $system
      *
      * @return array
-     * @throws CleverConnectorsException
      * @throws SystemException
+     * @throws MongoDBException
      */
     public function synchronizeSubscriptions(string $user, string $system): array
     {

@@ -20,7 +20,7 @@ final class ZendeskCreatedEventUserMapperTest extends ConnectorTestCaseAbstract
      */
     public function testProcessEvent(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.zendesk-created-event-user-mapper');
+        $connector = $this->ownContainer->get('hbpf.custom_node.zendesk-created-event-user-mapper');
 
         $response = Json::decode(
             $connector->process((new ProcessDto())->setData($this->getRequest('createdUser.json')))

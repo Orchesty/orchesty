@@ -106,10 +106,10 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
         $requestHandler->method('runTopology')->willReturn(new ResponseDto(200, '', '', []));
         $requestHandler->method('deleteTopology')->willReturn(new ResponseDto(200, '', '', []));
 
-        $this->redis     = $this->container->get('snc_redis.default');
-        $topologyManager = $this->container->get('hbpf.configurator.manager.topology');
+        $this->redis     = $this->ownContainer->get('snc_redis.default');
+        $topologyManager = $this->ownContainer->get('hbpf.configurator.manager.topology');
         $dir             = sprintf('%s/data', __DIR__);
-        $categoryManager = $this->container->get('hbpf.configurator.manager.category');
+        $categoryManager = $this->ownContainer->get('hbpf.configurator.manager.category');
         $categoryParser  = new CategoryParser($this->dm, $categoryManager);
         $categoryParser->addRoot('systems', $dir);
 

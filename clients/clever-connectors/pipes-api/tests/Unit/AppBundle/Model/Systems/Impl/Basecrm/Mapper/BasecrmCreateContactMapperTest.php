@@ -28,7 +28,7 @@ final class BasecrmCreateContactMapperTest extends KernelTestCaseAbstract
         $dto = new ProcessDto();
         $dto->setData(json_encode($data));
 
-        $conn = $this->container->get('hbpf.custom_node.basecrm-create-contact-mapper');
+        $conn = $this->ownContainer->get('hbpf.custom_node.basecrm-create-contact-mapper');
         $res  = $conn->process($dto);
 
         $expt = [

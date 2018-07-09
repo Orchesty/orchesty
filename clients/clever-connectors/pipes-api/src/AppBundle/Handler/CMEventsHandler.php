@@ -12,6 +12,8 @@ namespace CleverConnectors\AppBundle\Handler;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventsManager;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -42,6 +44,8 @@ class CMEventsHandler
      * @param string  $userId
      *
      * @throws CleverConnectorsException
+     * @throws SystemException
+     * @throws MongoDBException
      */
     public function createEvent(Request $request, string $userId): void
     {
@@ -53,6 +57,8 @@ class CMEventsHandler
      * @param string  $userId
      *
      * @throws CleverConnectorsException
+     * @throws SystemException
+     * @throws MongoDBException
      */
     public function unsubscribeEvent(Request $request, string $userId): void
     {
@@ -64,6 +70,8 @@ class CMEventsHandler
      * @param string  $userId
      *
      * @throws CleverConnectorsException
+     * @throws SystemException
+     * @throws MongoDBException
      */
     public function hardBounceEvent(Request $request, string $userId): void
     {
@@ -75,6 +83,8 @@ class CMEventsHandler
      * @param string  $userId
      *
      * @throws CleverConnectorsException
+     * @throws SystemException
+     * @throws MongoDBException
      */
     public function subscribeEvent(Request $request, string $userId): void
     {

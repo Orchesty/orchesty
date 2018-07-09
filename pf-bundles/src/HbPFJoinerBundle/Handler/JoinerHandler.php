@@ -40,6 +40,7 @@ class JoinerHandler
      * @param array  $data
      *
      * @return array
+     * @throws JoinerException
      */
     public function processJoiner(string $joinerId, array $data): array
     {

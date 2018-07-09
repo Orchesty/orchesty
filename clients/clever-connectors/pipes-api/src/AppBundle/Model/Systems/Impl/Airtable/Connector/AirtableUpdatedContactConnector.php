@@ -90,7 +90,7 @@ class AirtableUpdatedContactConnector extends AirtableContactConnectorAbstract
                     $from = DateTime::createFromFormat(self::DATE_FORMAT, $form[AirtableSystem::LAST_SYNC]);
                 } else {
                     $lastSync = $this->lastSyncManager->getLastSync($systemInstall, $dto->getHeaders());
-                    $from     = $lastSync ? $lastSync->getTimestamp() : NULL;
+                    $from     = $lastSync->getTimestamp();
                 }
 
                 break;

@@ -9,6 +9,7 @@
 
 namespace Hanaboso\PipesFramework\HbPFRabbitMqBundle\DependencyInjection;
 
+use Exception;
 use InvalidArgumentException;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
@@ -227,6 +228,7 @@ class RabbitMqExtension extends Extension implements ConfigurationInterface, Pre
      *
      * @return void
      * @throws InvalidArgumentException When provided tag is not defined in this extension
+     * @throws Exception
      */
     public function load(array $configs, ContainerBuilder $container): void
     {
@@ -240,6 +242,8 @@ class RabbitMqExtension extends Extension implements ConfigurationInterface, Pre
      * Allow an extension to prepend the extension configurations.
      *
      * @param ContainerBuilder $container
+     *
+     * @throws Exception
      */
     public function prepend(ContainerBuilder $container): void
     {

@@ -31,7 +31,7 @@ final class BasecrmUpdateContactMapperTest extends KernelTestCaseAbstract
             CMHeaders::createKey(CMHeaders::CM_EVENT_TYPE) => SystemInstall::EVENT_HARD_BOUNCE,
         ])->setData(json_encode($data));
 
-        $res = $this->container->get('hbpf.custom_node.basecrm-update-contact-mapper')->process($dto);
+        $res = $this->ownContainer->get('hbpf.custom_node.basecrm-update-contact-mapper')->process($dto);
         self::assertEquals(json_encode([
             'data' => [
                 'custom_fields' => [

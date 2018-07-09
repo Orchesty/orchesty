@@ -19,7 +19,7 @@ final class HubspotCreateContactMapperTest extends DatabaseTestCaseAbstract
      */
     public function testMapper(): void
     {
-        $mapper = $this->container->get('hbpf.custom_node.hubspot-create-contact-mapper');
+        $mapper = $this->ownContainer->get('hbpf.custom_node.hubspot-create-contact-mapper');
 
         $dto = new ProcessDto();
         $dto->setData(json_encode([

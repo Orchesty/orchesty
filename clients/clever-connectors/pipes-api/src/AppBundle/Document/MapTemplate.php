@@ -7,6 +7,7 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\MapTemplate\MapField;
 use CleverConnectors\AppBundle\Model\Systems\Dto\ActionDto;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Hanaboso\CommonsBundle\Exception\EnumException;
 use Nette\Utils\Json;
 
 /**
@@ -196,6 +197,7 @@ class MapTemplate
 
     /**
      * @ODM\PostLoad()
+     * @throws EnumException
      */
     public function decode(): void
     {

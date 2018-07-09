@@ -11,7 +11,6 @@ namespace CleverConnectors\AppBundle\Controller;
 
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use Exception;
-use FOS\RestBundle\Controller\Annotations\Route;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -22,7 +21,6 @@ use Symfony\Component\Routing\Exception\MethodNotAllowedException;
  * Class ExceptionController
  *
  * @package CleverConnectors\AppBundle\Controller
- * @Route(service="cc.exception.controller")
  */
 class ExceptionController
 {

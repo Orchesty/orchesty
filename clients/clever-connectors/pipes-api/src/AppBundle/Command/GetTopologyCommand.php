@@ -78,7 +78,7 @@ class GetTopologyCommand extends Command implements LoggerAwareInterface
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         try {
-            /** @var Node $node */
+            /** @var Node|null $node */
             $node = $this->dm->getRepository(Node::class)->find($input->getArgument('node-id'));
 
             if (!$node) {

@@ -26,7 +26,6 @@ return [
     Doctrine\Bundle\DoctrineCacheBundle\DoctrineCacheBundle::class       => ['all' => TRUE],
     Doctrine\Bundle\DoctrineBundle\DoctrineBundle::class                 => ['all' => TRUE],
     Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle::class         => ['all' => TRUE],
-    Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle::class => ['all' => TRUE],
     Symfony\Bundle\MonologBundle\MonologBundle::class                    => ['all' => TRUE],
     Symfony\Bundle\TwigBundle\TwigBundle::class                          => ['all' => TRUE],
     Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle::class            => ['all' => TRUE],

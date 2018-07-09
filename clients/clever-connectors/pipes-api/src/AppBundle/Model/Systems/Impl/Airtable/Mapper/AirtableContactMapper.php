@@ -8,9 +8,11 @@ use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use CleverConnectors\AppBundle\Model\CustomNode\UniversalMapperNode;
 use CleverConnectors\AppBundle\Model\Mapper\UniversalMapper;
 use CleverConnectors\AppBundle\Model\MapTemplate\MapField;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Airtable\AirtableSystem;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Exception;
+use Hanaboso\CommonsBundle\Exception\EnumException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use LogicException;
 
@@ -123,6 +125,8 @@ class AirtableContactMapper extends UniversalMapperNode
      * @param ProcessDto $dto
      *
      * @return MapTemplate|null
+     * @throws SystemException
+     * @throws EnumException
      */
     protected function getMapTemplate(ProcessDto $dto): ?MapTemplate
     {

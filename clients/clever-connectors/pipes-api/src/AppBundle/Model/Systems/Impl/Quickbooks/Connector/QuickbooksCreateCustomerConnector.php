@@ -3,6 +3,7 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\Mapper\QuickbooksCreateCustomerMapper;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Quickbooks\QuickbooksSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
@@ -93,6 +94,7 @@ class QuickbooksCreateCustomerConnector implements ConnectorInterface, LoggerAwa
      *
      * @return ProcessDto
      * @throws CurlException
+     * @throws SystemException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {

@@ -78,7 +78,7 @@ class CMEventActivatorTest extends KernelTestCaseAbstract
         /** @var SystemManager|MockObject $manager */
         $manager = $this->createMock(SystemManager::class);
         $manager->expects($this->once())
-            ->method('getSystem')->willReturn($this->container->get('systems.null.user.group'));
+            ->method('getSystem')->willReturn($this->ownContainer->get('systems.null.user.group'));
 
         return $manager;
     }

@@ -9,8 +9,11 @@
 
 namespace Hanaboso\PipesFramework\HbPFAuthorizationBundle\Handler;
 
+use Doctrine\ODM\MongoDB\MongoDBException;
+use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 use Hanaboso\CommonsBundle\Utils\ControllerUtils;
 use Hanaboso\PipesFramework\Authorization\Base\OAuthAuthorizationInterface;
+use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesFramework\HbPFAuthorizationBundle\Loader\AuthorizationLoader;
 
 /**
@@ -38,6 +41,8 @@ class AuthorizationHandler
 
     /**
      * @param string $authId
+     *
+     * @throws AuthorizationException
      */
     public function authorize(string $authId): void
     {
@@ -51,6 +56,9 @@ class AuthorizationHandler
     /**
      * @param array  $data
      * @param string $authId
+     *
+     * @throws AuthorizationException
+     * @throws PipesFrameworkException
      */
     public function saveSettings(array $data, string $authId): void
     {
@@ -63,6 +71,7 @@ class AuthorizationHandler
      * @param string $authId
      *
      * @return array
+     * @throws AuthorizationException
      */
     public function getSettings(string $authId): array
     {
@@ -72,6 +81,8 @@ class AuthorizationHandler
     /**
      * @param array  $data
      * @param string $authId
+     *
+     * @throws AuthorizationException
      */
     public function saveToken(array $data, string $authId): void
     {
@@ -86,6 +97,8 @@ class AuthorizationHandler
      * @param string $hostname
      *
      * @return array
+     * @throws AuthorizationException
+     * @throws MongoDBException
      */
     public function getAuthInfo(string $hostname): array
     {

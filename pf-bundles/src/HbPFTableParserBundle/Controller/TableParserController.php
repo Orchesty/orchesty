@@ -2,16 +2,16 @@
 
 namespace Hanaboso\PipesFramework\HbPFTableParserBundle\Controller;
 
-use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\CommonsBundle\Exception\FileStorageException;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\HbPFTableParserBundle\Handler\TableParserHandler;
 use Hanaboso\PipesFramework\HbPFTableParserBundle\Handler\TableParserHandlerException;
 use Hanaboso\PipesFramework\Parser\Exception\TableParserException;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Throwable;
 
 /**
  * Class ApiController
@@ -39,8 +39,7 @@ class TableParserController extends FOSRestController
     }
 
     /**
-     * @Route("/parser/{type}/to/json", requirements={"type": "\w+"})
-     * @Method("POST")
+     * @Route("/parser/{type}/to/json", requirements={"type": "\w+"}, methods={"POST"})
      *
      * @param Request $request
      *
@@ -50,14 +49,13 @@ class TableParserController extends FOSRestController
     {
         try {
             return $this->getResponse($this->tableParserHandler->parseToJson($request->request->all()));
-        } catch (TableParserHandlerException | FileStorageException $e) {
+        } catch (TableParserHandlerException | FileStorageException | Throwable $e) {
             return $this->getErrorResponse($e);
         }
     }
 
     /**
-     * @Route("/parser/{type}/to/json/test", requirements={"type": "\w+"})
-     * @Method("POST")
+     * @Route("/parser/{type}/to/json/test", requirements={"type": "\w+"}, methods={"POST"})
      *
      * @return Response
      */
@@ -65,14 +63,13 @@ class TableParserController extends FOSRestController
     {
         try {
             return $this->getResponse($this->tableParserHandler->parseToJsonTest());
-        } catch (TableParserHandlerException | FileStorageException $e) {
+        } catch (Throwable $e) {
             return $this->getErrorResponse($e);
         }
     }
 
     /**
-     * @Route("/parser/json/to/{type}", requirements={"type": "\w+"})
-     * @Method("POST")
+     * @Route("/parser/json/to/{type}", requirements={"type": "\w+"}, methods={"POST"})
      *
      * @param Request $request
      * @param string  $type
@@ -83,14 +80,13 @@ class TableParserController extends FOSRestController
     {
         try {
             return $this->getResponse($this->tableParserHandler->parseFromJson($type, $request->request->all()));
-        } catch (TableParserHandlerException | TableParserException | FileStorageException $e) {
+        } catch (TableParserHandlerException | TableParserException | FileStorageException | Throwable $e) {
             return $this->getErrorResponse($e);
         }
     }
 
     /**
-     * @Route("/parser/json/to/{type}/test", requirements={"type": "\w+"})
-     * @Method("POST")
+     * @Route("/parser/json/to/{type}/test", requirements={"type": "\w+"}, methods={"POST"})
      *
      * @param string $type
      *
@@ -100,7 +96,7 @@ class TableParserController extends FOSRestController
     {
         try {
             return $this->getResponse($this->tableParserHandler->parseFromJsonTest($type));
-        } catch (TableParserHandlerException | TableParserException | FileStorageException $e) {
+        } catch (TableParserException $e) {
             return $this->getErrorResponse($e);
         }
     }

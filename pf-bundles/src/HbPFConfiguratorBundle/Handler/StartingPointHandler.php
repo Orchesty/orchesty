@@ -122,7 +122,7 @@ class StartingPointHandler
      */
     public function getTopology(string $topologyId): Topology
     {
-        /** @var Topology $topology */
+        /** @var Topology|null $topology */
         $topology = $this->topologyRepository->find($topologyId);
 
         if (!$topology) {
@@ -140,7 +140,7 @@ class StartingPointHandler
      */
     public function getNode(string $nodeId): Node
     {
-        /** @var Node $node */
+        /** @var Node|null $node */
         $node = $this->nodeRepository->find($nodeId);
 
         if (!$node) {

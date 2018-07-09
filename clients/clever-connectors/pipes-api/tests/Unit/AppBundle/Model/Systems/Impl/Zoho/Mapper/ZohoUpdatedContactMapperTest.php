@@ -22,7 +22,7 @@ final class ZohoUpdatedContactMapperTest extends ConnectorTestCaseAbstract
      */
     public function testProcess(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.zoho-updated-contact-mapper');
+        $connector = $this->ownContainer->get('hbpf.custom_node.zoho-updated-contact-mapper');
         $data      = Json::decode(Strings::replace(
             $this->getRequest('singleContact.json'),
             '#2017-10-18 09:49:57#',
@@ -50,7 +50,7 @@ final class ZohoUpdatedContactMapperTest extends ConnectorTestCaseAbstract
      */
     public function testProcessInvalid(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.zoho-updated-contact-mapper');
+        $connector = $this->ownContainer->get('hbpf.custom_node.zoho-updated-contact-mapper');
 
         $dto = $connector->process(
             (new ProcessDto())->setData(

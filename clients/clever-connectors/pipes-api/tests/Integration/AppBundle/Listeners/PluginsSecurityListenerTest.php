@@ -29,8 +29,8 @@ final class PluginsSecurityListenerTest extends DatabaseTestCaseAbstract
         $this->persistAndFlush($sys);
 
         $listener = new PluginsSecurityListener(
-            $this->container->get('cc.plugins.security_manager'),
-            $this->container->get('cc.transport.curl.manager')
+            $this->ownContainer->get('cc.plugins.security_manager'),
+            $this->ownContainer->get('cc.transport.curl.manager')
         );
 
         $request = new Request();
@@ -41,7 +41,7 @@ final class PluginsSecurityListenerTest extends DatabaseTestCaseAbstract
         /** @var FilterControllerEvent|PHPUnit_Framework_MockObject_MockObject $ev */
         $ev = $this->createMock(FilterControllerEvent::class);
         $ev->method('getController')->willReturn([
-            $this->container->get('cc_plugins.plugins.controller'), 'checkEvent',
+            $this->ownContainer->get('CleverConnectors\AppBundle\Controller\PluginsController'), 'checkEvent',
         ]);
         $ev->method('getRequest')->willReturn($request);
 
@@ -58,8 +58,8 @@ final class PluginsSecurityListenerTest extends DatabaseTestCaseAbstract
         $this->persistAndFlush($sys);
 
         $listener = new PluginsSecurityListener(
-            $this->container->get('cc.plugins.security_manager'),
-            $this->container->get('cc.transport.curl.manager')
+            $this->ownContainer->get('cc.plugins.security_manager'),
+            $this->ownContainer->get('cc.transport.curl.manager')
         );
 
         $request = new Request();
@@ -70,7 +70,7 @@ final class PluginsSecurityListenerTest extends DatabaseTestCaseAbstract
         /** @var FilterControllerEvent|PHPUnit_Framework_MockObject_MockObject $ev */
         $ev = $this->createMock(FilterControllerEvent::class);
         $ev->method('getController')->willReturn([
-            $this->container->get('cc_plugins.plugins.controller'), 'checkEvent',
+            $this->ownContainer->get('CleverConnectors\AppBundle\Controller\PluginsController'), 'checkEvent',
         ]);
         $ev->method('getRequest')->willReturn($request);
 

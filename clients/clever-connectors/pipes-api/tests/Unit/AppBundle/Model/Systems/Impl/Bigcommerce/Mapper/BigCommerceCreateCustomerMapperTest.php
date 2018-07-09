@@ -19,7 +19,7 @@ final class BigCommerceCreateCustomerMapperTest extends KernelTestCaseAbstract
      */
     public function testMapper(): void
     {
-        $mapper = $this->container->get('hbpf.custom_node.bigcommerce-create-customer-mapper');
+        $mapper = $this->ownContainer->get('hbpf.custom_node.bigcommerce-create-customer-mapper');
 
         $dto = new ProcessDto();
         $dto->setData(json_encode([

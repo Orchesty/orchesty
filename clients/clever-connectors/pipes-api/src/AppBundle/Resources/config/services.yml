@@ -1,8 +1,10 @@
 services:
     _defaults:
+        autoconfigure: true
+        autowire: false
         public: '%public.services%'
 
-    cc.systems.controller:
+    CleverConnectors\AppBundle\Controller\SystemController:
         class: CleverConnectors\AppBundle\Controller\SystemController
         arguments:
             - '@cc.systems.handler'
@@ -48,7 +50,7 @@ services:
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
 
-    cc.service_system.controller:
+    CleverConnectors\AppBundle\Controller\ServiceSystemController:
         class: CleverConnectors\AppBundle\Controller\ServiceSystemController
         arguments:
             - '@cc.service_system.handler'
@@ -69,7 +71,7 @@ services:
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
 
-    cc.events.controller:
+    CleverConnectors\AppBundle\Controller\CMEventsController:
         class: CleverConnectors\AppBundle\Controller\CMEventsController
         arguments:
             - "@cc.events.handler"
@@ -111,7 +113,7 @@ services:
             - '@snc_redis.default'
             - '@cc.progress_counter.async_publisher'
 
-    cc_plugins.plugins.controller:
+    CleverConnectors\AppBundle\Controller\PluginsController:
         class: CleverConnectors\AppBundle\Controller\PluginsController
         arguments:
             - '@cc.plugins.handler'
@@ -141,7 +143,6 @@ services:
         class: CleverConnectors\AppBundle\Transport\Curl\CMCurlManager
         arguments:
             - '@hbpf.transport.curl_client_factory'
-            - '@hbpf.influxdb_sender_connector'
             - '%clevermonitor%'
 
     cc.install.manager:
@@ -156,7 +157,7 @@ services:
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
 
-    cc.layout.controller:
+    CleverConnectors\AppBundle\Controller\LayoutController:
         class: CleverConnectors\AppBundle\Controller\LayoutController
         arguments:
             - '@cc.layout.handler'
@@ -173,7 +174,7 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@cc.systems.loader'
 
-    cc.map_template.controller:
+    CleverConnectors\AppBundle\Controller\MapController:
         class: CleverConnectors\AppBundle\Controller\MapController
         arguments:
             - '@cc.map_template.handler'
@@ -212,5 +213,5 @@ services:
             - '@cc.elastica.client'
             - '%elastic_index%'
 
-    cc.default.controller:
+    CleverConnectors\AppBundle\Controller\DefaultController:
         class: CleverConnectors\AppBundle\Controller\DefaultController

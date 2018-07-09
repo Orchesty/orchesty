@@ -74,7 +74,7 @@ final class FacebookaudienceUpdateAudienceConnectorTest extends KernelTestCaseAb
     private function createConnector(): FacebookaudienceUpdateAudienceConnector
     {
         /** @var FacebookaudienceSystem $sys */
-        $sys = $this->container->get('systems.facebookaudience');
+        $sys = $this->ownContainer->get('systems.facebookaudience');
 
         $sysInst = new SystemInstall();
         $sysInst->setSettings([

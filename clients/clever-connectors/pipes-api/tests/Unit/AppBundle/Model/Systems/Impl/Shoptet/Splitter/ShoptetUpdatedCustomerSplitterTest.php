@@ -26,7 +26,7 @@ final class ShoptetUpdatedCustomerSplitterTest extends ConnectorTestCaseAbstract
      */
     public function testProcessBatch2Accounts(): void
     {
-        $splitter = $this->container->get('hbpf.custom_node.shoptet-updated-customer-splitter');
+        $splitter = $this->ownContainer->get('hbpf.custom_node.shoptet-updated-customer-splitter');
         $loop     = Factory::create();
 
         $this->i  = 0;
@@ -63,7 +63,7 @@ final class ShoptetUpdatedCustomerSplitterTest extends ConnectorTestCaseAbstract
      */
     public function testProcessBatch1Account(): void
     {
-        $splitter = $this->container->get('hbpf.custom_node.shoptet-updated-customer-splitter');
+        $splitter = $this->ownContainer->get('hbpf.custom_node.shoptet-updated-customer-splitter');
         $loop     = Factory::create();
 
         $this->i  = 0;
@@ -100,7 +100,7 @@ final class ShoptetUpdatedCustomerSplitterTest extends ConnectorTestCaseAbstract
      */
     public function testProcessBatchMoreCustomers(): void
     {
-        $splitter = $this->container->get('hbpf.custom_node.shoptet-updated-customer-splitter');
+        $splitter = $this->ownContainer->get('hbpf.custom_node.shoptet-updated-customer-splitter');
         $loop     = Factory::create();
 
         $this->i  = 0;

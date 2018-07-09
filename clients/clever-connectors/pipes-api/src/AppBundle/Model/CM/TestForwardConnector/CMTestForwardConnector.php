@@ -35,6 +35,7 @@ class CMTestForwardConnector implements ConnectorInterface
      *
      * @return ProcessDto
      * @throws ConnectException
+     * @throws CleverConnectorsException
      */
     public function processEvent(ProcessDto $dto): ProcessDto
     {
@@ -46,6 +47,7 @@ class CMTestForwardConnector implements ConnectorInterface
      *
      * @return ProcessDto
      * @throws ConnectException
+     * @throws CleverConnectorsException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {

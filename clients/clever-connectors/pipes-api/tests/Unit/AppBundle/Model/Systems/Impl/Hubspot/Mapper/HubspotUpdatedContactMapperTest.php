@@ -168,7 +168,7 @@ final class HubspotUpdatedContactMapperTest extends ConnectorTestCaseAbstract
     private function getMapper(): HubspotUpdatedContactMapper
     {
         if (!$this->mapper) {
-            return $this->container->get('hbpf.custom_node.hubspot-updated-contact-mapper');
+            return $this->ownContainer->get('hbpf.custom_node.hubspot-updated-contact-mapper');
         }
 
         return $this->mapper;

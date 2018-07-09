@@ -54,7 +54,7 @@ final class FacebookaudienceRunCreateAdActionConnectorTest extends KernelTestCas
     private function createConnector(): FacebookaudienceRunCreateAdActionConnector
     {
         /** @var FacebookaudienceSystem $sys */
-        $sys = $this->container->get('systems.facebookaudience');
+        $sys = $this->ownContainer->get('systems.facebookaudience');
 
         $sysInst = new SystemInstall();
         $sysInst->setSettings([

@@ -9,6 +9,7 @@
 
 namespace Hanaboso\PipesFramework\Authorization\Command;
 
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\PipesFramework\HbPFAuthorizationBundle\Loader\AuthorizationLoader;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -53,6 +54,8 @@ class InstallAuthorizationsCommand extends Command
     /**
      * @param InputInterface  $input
      * @param OutputInterface $output
+     *
+     * @throws MongoDBException
      */
     protected function execute(InputInterface $input, OutputInterface $output): void
     {

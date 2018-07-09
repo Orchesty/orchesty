@@ -20,7 +20,6 @@ use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Traits\SystemTrait;
 use DateTime;
 use GuzzleHttp\Psr7\Uri;
-use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 
 /**
@@ -128,7 +127,6 @@ class BasecrmSystem implements AuthorizationInterface, CMEventSystemInterface
      * @param string        $method
      *
      * @return RequestDto
-     * @throws CurlException
      * @throws SystemException
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
@@ -146,7 +144,6 @@ class BasecrmSystem implements AuthorizationInterface, CMEventSystemInterface
      * @param string        $method
      *
      * @return RequestDto
-     * @throws CurlException
      * @throws SystemException
      */
     public function getRequestDtoNonSync(SystemInstall $systemInstall, string $method): RequestDto

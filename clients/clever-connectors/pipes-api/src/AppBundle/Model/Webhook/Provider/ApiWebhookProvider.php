@@ -99,6 +99,8 @@ class ApiWebhookProvider implements WebhookProviderInterface, LoggerAwareInterfa
      * @param string                 $userId
      * @param string                 $token
      * @param bool                   $isUpdate
+     *
+     * @throws SystemException
      */
     public function subscribe(WebhookSystemInterface $system, string $userId, string $token, $isUpdate = FALSE): void
     {
@@ -132,6 +134,8 @@ class ApiWebhookProvider implements WebhookProviderInterface, LoggerAwareInterfa
     /**
      * @param WebhookSystemInterface $system
      * @param string                 $userId
+     *
+     * @throws SystemException
      */
     public function unsubscribe(WebhookSystemInterface $system, string $userId): void
     {
@@ -160,6 +164,8 @@ class ApiWebhookProvider implements WebhookProviderInterface, LoggerAwareInterfa
      * @param WebhookSystemInterface $system
      * @param string                 $userId
      * @param string                 $token
+     *
+     * @throws SystemException
      */
     public function update(WebhookSystemInterface $system, string $userId, string $token): void
     {
@@ -195,7 +201,7 @@ class ApiWebhookProvider implements WebhookProviderInterface, LoggerAwareInterfa
      */
     private function getSystemInstall(string $systemKey, string $userId): SystemInstall
     {
-        /** @var SystemInstall $systemInstall */
+        /** @var SystemInstall|null $systemInstall */
         $systemInstall = $this->systemRepository->findOneBy([
             'system' => $systemKey,
             'user'   => $userId,

@@ -34,7 +34,7 @@ final class ApiWebhookProviderTest extends KernelTestCaseAbstract
     public function testSubscribe(): void
     {
         $provider = $this->mockProvider();
-        $oauth2   = $this->container->get('hbpf.providers.oauth2_provider');
+        $oauth2   = $this->ownContainer->get('hbpf.providers.oauth2_provider');
         $system   = new NullSystem($oauth2);
         $provider->subscribe($system, '123', '456');
     }
@@ -45,7 +45,7 @@ final class ApiWebhookProviderTest extends KernelTestCaseAbstract
     public function testUnSubscribe(): void
     {
         $provider = $this->mockProvider();
-        $oauth2   = $this->container->get('hbpf.providers.oauth2_provider');
+        $oauth2   = $this->ownContainer->get('hbpf.providers.oauth2_provider');
         $system   = new NullSystem($oauth2);
         $provider->unsubscribe($system, '123');
     }
@@ -56,7 +56,7 @@ final class ApiWebhookProviderTest extends KernelTestCaseAbstract
     public function testUpdate(): void
     {
         $provider = $this->mockProvider();
-        $oauth2   = $this->container->get('hbpf.providers.oauth2_provider');
+        $oauth2   = $this->ownContainer->get('hbpf.providers.oauth2_provider');
         $system   = new NullSystem($oauth2);
         $provider->update($system, '123', '456');
     }

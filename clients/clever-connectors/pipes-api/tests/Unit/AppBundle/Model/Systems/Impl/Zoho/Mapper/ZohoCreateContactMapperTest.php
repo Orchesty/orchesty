@@ -21,7 +21,7 @@ final class ZohoCreateContactMapperTest extends ConnectorTestCaseAbstract
      */
     public function testProcessEvent(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.zoho-create-contact-mapper');
+        $connector = $this->ownContainer->get('hbpf.custom_node.zoho-create-contact-mapper');
 
         $response = Json::decode($connector->process((new ProcessDto())->setData(Json::encode(
             (new CMSubscriber())
@@ -41,7 +41,7 @@ final class ZohoCreateContactMapperTest extends ConnectorTestCaseAbstract
      */
     public function testProcessEventBadRequest(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.zoho-create-contact-mapper');
+        $connector = $this->ownContainer->get('hbpf.custom_node.zoho-create-contact-mapper');
 
         $this->expectException(CleverConnectorsException::class);
         $this->expectExceptionCode(CleverConnectorsException::MISSING_DATA);

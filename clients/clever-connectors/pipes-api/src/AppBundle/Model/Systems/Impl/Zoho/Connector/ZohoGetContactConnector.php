@@ -4,6 +4,7 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Connector;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
+use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\Traits\ZohoLoggerTrait;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Zoho\ZohoSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
@@ -12,7 +13,6 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
@@ -74,7 +74,7 @@ class ZohoGetContactConnector implements ConnectorInterface, LoggerAwareInterfac
      *
      * @return ProcessDto
      * @throws CleverConnectorsException
-     * @throws CurlException
+     * @throws SystemException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {

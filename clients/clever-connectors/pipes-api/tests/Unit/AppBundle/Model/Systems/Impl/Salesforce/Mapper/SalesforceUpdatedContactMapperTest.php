@@ -21,7 +21,7 @@ final class SalesforceUpdatedContactMapperTest extends ConnectorTestCaseAbstract
      */
     public function testProcessEvent(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.salesforce-updated-contact-mapper');
+        $connector = $this->ownContainer->get('hbpf.custom_node.salesforce-updated-contact-mapper');
 
         $response = Json::decode($connector->process(
             (new ProcessDto())->setData($this->getRequest('SalesforceUpdatedContactMapper.json')))->getData(),
@@ -43,7 +43,7 @@ final class SalesforceUpdatedContactMapperTest extends ConnectorTestCaseAbstract
      */
     public function testProcessEventBadRequest(): void
     {
-        $connector = $this->container->get('hbpf.custom_node.salesforce-updated-contact-mapper');
+        $connector = $this->ownContainer->get('hbpf.custom_node.salesforce-updated-contact-mapper');
 
         $this->expectException(CleverConnectorsException::class);
         $this->expectExceptionCode(CleverConnectorsException::MISSING_DATA);

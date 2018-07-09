@@ -18,7 +18,7 @@ final class SalesforceContactConnectorTest extends KernelTestCaseAbstract
      */
     public function testGetTimeQuery(): void
     {
-        $conn = $this->container->get('hbpf.connector.salesforce-updated-contact-connector');
+        $conn = $this->ownContainer->get('hbpf.connector.salesforce-updated-contact-connector');
 
         $from = new DateTime('-3 days');
         $to   = new DateTime();
