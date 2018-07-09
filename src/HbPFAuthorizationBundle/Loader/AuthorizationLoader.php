@@ -10,6 +10,7 @@
 namespace Hanaboso\PipesFramework\HbPFAuthorizationBundle\Loader;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\PipesFramework\Authorization\Base\AuthorizationInterface;
 use Hanaboso\PipesFramework\Authorization\Document\Authorization;
 use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
@@ -99,6 +100,8 @@ class AuthorizationLoader
      * @param string $hostname
      *
      * @return array
+     * @throws AuthorizationException
+     * @throws MongoDBException
      */
     public function getAllAuthorizationsInfo(string $hostname): array
     {
@@ -115,7 +118,7 @@ class AuthorizationLoader
     }
 
     /**
-     *
+     * @throws MongoDBException
      */
     public function installAllAuthorizations(): void
     {
@@ -132,6 +135,7 @@ class AuthorizationLoader
 
     /**
      * @return string[]
+     * @throws MongoDBException
      */
     private function getInstalled(): array
     {

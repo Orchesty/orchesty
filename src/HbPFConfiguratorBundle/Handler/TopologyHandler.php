@@ -4,9 +4,12 @@ namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler;
 
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\CommonsBundle\DatabaseManager\DatabaseManagerLocator;
 use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
+use Hanaboso\CommonsBundle\Exception\EnumException;
 use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\CommonsBundle\Utils\ControllerUtils;
@@ -16,6 +19,7 @@ use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
+use Nette\Utils\JsonException;
 use Throwable;
 
 /**
@@ -76,6 +80,7 @@ class TopologyHandler
      * @param null $orderBy
      *
      * @return array
+     * @throws MongoDBException
      */
     public function getTopologies(?int $limit = NULL, ?int $offset = NULL, $orderBy = NULL): array
     {
@@ -116,6 +121,7 @@ class TopologyHandler
      *
      * @return array
      * @throws PipesFrameworkException
+     * @throws MongoDBException
      */
     public function createTopology(array $data): array
     {
@@ -133,6 +139,7 @@ class TopologyHandler
      *
      * @return array
      * @throws TopologyException
+     * @throws MongoDBException
      */
     public function updateTopology(string $id, array $data): array
     {
@@ -159,7 +166,10 @@ class TopologyHandler
      * @param array  $data
      *
      * @return string[]
+     * @throws NodeException
      * @throws TopologyException
+     * @throws EnumException
+     * @throws JsonException
      */
     public function saveTopologySchema(string $id, string $content, array $data): array
     {
@@ -174,6 +184,7 @@ class TopologyHandler
      *
      * @return ResponseDto
      * @throws TopologyException
+     * @throws EnumException
      */
     public function publishTopology(string $id): ResponseDto
     {
@@ -212,8 +223,10 @@ class TopologyHandler
      * @param string $id
      *
      * @return string[]
-     * @throws TopologyException
+     * @throws EnumException
+     * @throws JsonException
      * @throws NodeException
+     * @throws TopologyException
      */
     public function cloneTopology(string $id): array
     {
@@ -228,6 +241,7 @@ class TopologyHandler
      *
      * @return ResponseDto
      * @throws TopologyException
+     * @throws CurlException
      */
     public function deleteTopology(string $id): ResponseDto
     {
@@ -270,7 +284,7 @@ class TopologyHandler
      */
     private function getTopologyById(string $id): Topology
     {
-        /** @var Topology $res */
+        /** @var Topology|null $res */
         $res = $this->dm->getRepository(Topology::class)->findOneBy(['id' => $id]);
 
         if (!$res) {

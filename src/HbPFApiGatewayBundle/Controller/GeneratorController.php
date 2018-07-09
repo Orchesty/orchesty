@@ -9,10 +9,9 @@
 
 namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller;
 
-use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * Class GeneratorController
@@ -23,8 +22,7 @@ class GeneratorController extends FOSRestController
 {
 
     /**
-     * @Route("/topology/generate/{id}")
-     * @Method({"GET"})
+     * @Route("/topology/generate/{id}", methods={"GET"})
      *
      * @param string $id
      *
@@ -39,8 +37,7 @@ class GeneratorController extends FOSRestController
     }
 
     /**
-     * @Route("/topology/run/{id}")
-     * @Method({"GET"})
+     * @Route("/topology/run/{id}", methods={"GET"})
      *
      * @param string $id
      *
@@ -55,8 +52,7 @@ class GeneratorController extends FOSRestController
     }
 
     /**
-     * @Route("/topology/stop/{id}")
-     * @Method({"GET"})
+     * @Route("/topology/stop/{id}", methods={"GET"})
      *
      * @param string $id
      *
@@ -71,8 +67,7 @@ class GeneratorController extends FOSRestController
     }
 
     /**
-     * @Route("/topology/delete/{id}")
-     * @Method({"GET"})
+     * @Route("/topology/delete/{id}", methods={"GET"})
      *
      * @param string $id
      *
@@ -87,8 +82,7 @@ class GeneratorController extends FOSRestController
     }
 
     /**
-     * @Route("/topology/info/{id}")
-     * @Method({"GET"})
+     * @Route("/topology/info/{id}", methods={"GET"})
      *
      * @param string $id
      *

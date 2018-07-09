@@ -9,7 +9,9 @@
 
 namespace Hanaboso\PipesFramework\Connector\Impl\Magento2;
 
+use GuzzleHttp\Exception\GuzzleException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 
 /**
  * Class Magento2OrdersConnector
@@ -23,6 +25,8 @@ class Magento2OrdersConnector extends Magento2Base
      * @param ProcessDto $dto
      *
      * @return ProcessDto
+     * @throws GuzzleException
+     * @throws CurlException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {

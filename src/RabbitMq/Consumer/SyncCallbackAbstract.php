@@ -11,6 +11,7 @@ namespace Hanaboso\PipesFramework\RabbitMq\Consumer;
 
 use Bunny\Channel;
 use Bunny\Message;
+use Exception;
 use Hanaboso\PipesFramework\HbPFRabbitMqBundle\DebugMessageTrait;
 use Hanaboso\PipesFramework\RabbitMq\CallbackStatus;
 use Hanaboso\PipesFramework\RabbitMq\Exception\RabbitMqException;
@@ -54,6 +55,7 @@ abstract class SyncCallbackAbstract implements LoggerAwareInterface
      *
      * @return CallbackStatus
      * @throws RabbitMqException
+     * @throws Exception
      */
     final public function handleMessage($data, Message $message, Channel $channel): CallbackStatus
     {

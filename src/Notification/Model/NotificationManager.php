@@ -3,12 +3,14 @@
 namespace Hanaboso\PipesFramework\Notification\Model;
 
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Notification\Exception\NotificationException;
 use Nette\Utils\Json;
+use Nette\Utils\JsonException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -55,6 +57,7 @@ class NotificationManager implements LoggerAwareInterface
     /**
      * @return ResponseDto
      * @throws NotificationException
+     * @throws CurlException
      */
     public function getSettings(): ResponseDto
     {
@@ -67,7 +70,9 @@ class NotificationManager implements LoggerAwareInterface
      * @param array $data
      *
      * @return ResponseDto
+     * @throws CurlException
      * @throws NotificationException
+     * @throws JsonException
      */
     public function updateSettings(array $data): ResponseDto
     {

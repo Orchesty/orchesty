@@ -2,12 +2,11 @@
 
 namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller;
 
-use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\ControllerTrait;
 use FOS\RestBundle\Controller\FOSRestController;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * Class TopologyController
@@ -20,8 +19,7 @@ class TopologyController extends FOSRestController
     use ControllerTrait;
 
     /**
-     * @Route("/topologies")
-     * @Method({"GET", "OPTIONS"})
+     * @Route("/topologies", methods={"GET", "OPTIONS"})
      *
      * @param Request $request
      *
@@ -33,8 +31,7 @@ class TopologyController extends FOSRestController
     }
 
     /**
-     * @Route("/topologies/{id}", defaults={}, requirements={"id": "\w+"})
-     * @Method({"GET", "OPTIONS"})
+     * @Route("/topologies/{id}", defaults={}, requirements={"id": "\w+"}, methods={"GET", "OPTIONS"})
      *
      * @param string $id
      *
@@ -46,8 +43,7 @@ class TopologyController extends FOSRestController
     }
 
     /**
-     * @Route("/topologies")
-     * @Method({"POST"})
+     * @Route("/topologies", methods={"POST"})
      *
      * @return Response
      */
@@ -57,8 +53,7 @@ class TopologyController extends FOSRestController
     }
 
     /**
-     * @Route("/topologies/{id}", defaults={}, requirements={"id": "\w+"})
-     * @Method({"PUT", "PATCH", "OPTIONS"})
+     * @Route("/topologies/{id}", defaults={}, requirements={"id": "\w+"}, methods={"PUT", "PATCH", "OPTIONS"})
      *
      * @param string $id
      *
@@ -70,8 +65,7 @@ class TopologyController extends FOSRestController
     }
 
     /**
-     * @Route("/topologies/{id}/schema.bpmn", defaults={"_format"="xml"}, requirements={"id": "\w+"})
-     * @Method({"GET", "OPTIONS"})
+     * @Route("/topologies/{id}/schema.bpmn", defaults={"_format"="xml"}, requirements={"id": "\w+"}, methods={"GET", "OPTIONS"})
      *
      * @param string $id
      *
@@ -83,8 +77,7 @@ class TopologyController extends FOSRestController
     }
 
     /**
-     * @Route("/topologies/{id}/schema.bpmn", defaults={"_format"="xml"}, requirements={"id": "\w+"})
-     * @Method({"PUT", "OPTIONS"})
+     * @Route("/topologies/{id}/schema.bpmn", defaults={"_format"="xml"}, requirements={"id": "\w+"}, methods={"PUT", "OPTIONS"})
      *
      * @param string $id
      *
@@ -96,8 +89,7 @@ class TopologyController extends FOSRestController
     }
 
     /**
-     * @Route("/topologies/{id}/publish", defaults={}, requirements={"id": "\w+"})
-     * @Method({"POST", "OPTIONS"})
+     * @Route("/topologies/{id}/publish", defaults={}, requirements={"id": "\w+"}, methods={"POST", "OPTIONS"})
      *
      * @param string $id
      *
@@ -109,8 +101,7 @@ class TopologyController extends FOSRestController
     }
 
     /**
-     * @Route("/topologies/{id}/clone", defaults={}, requirements={"id": "\w+"})
-     * @Method({"POST", "OPTIONS"})
+     * @Route("/topologies/{id}/clone", defaults={}, requirements={"id": "\w+"}, methods={"POST", "OPTIONS"})
      *
      * @param string $id
      *
@@ -122,8 +113,7 @@ class TopologyController extends FOSRestController
     }
 
     /**
-     * @Route("/topologies/{id}", defaults={}, requirements={"id": "\w+"})
-     * @Method({"DELETE", "OPTIONS"})
+     * @Route("/topologies/{id}", defaults={}, requirements={"id": "\w+"}, methods={"DELETE", "OPTIONS"})
      *
      * @param string $id
      *

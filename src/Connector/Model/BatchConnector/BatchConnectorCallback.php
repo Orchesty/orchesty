@@ -9,6 +9,7 @@
 
 namespace Hanaboso\PipesFramework\Connector\Model\BatchConnector;
 
+use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Hanaboso\PipesFramework\HbPFConnectorBundle\Loader\ConnectorLoader;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchActionAbstract;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
@@ -42,6 +43,7 @@ class BatchConnectorCallback extends BatchActionAbstract
      * @param string $id
      *
      * @return BatchInterface
+     * @throws ConnectorException
      */
     public function getBatchService(string $id): BatchInterface
     {

@@ -9,6 +9,7 @@
 
 namespace Hanaboso\PipesFramework\CustomNode\Model\Batch;
 
+use Hanaboso\PipesFramework\HbPFCustomNodeBundle\Exception\CustomNodeException;
 use Hanaboso\PipesFramework\HbPFCustomNodeBundle\Loader\CustomNodeLoader;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchActionAbstract;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
@@ -42,6 +43,7 @@ class BatchActionCallback extends BatchActionAbstract
      * @param string $id
      *
      * @return BatchInterface
+     * @throws CustomNodeException
      */
     public function getBatchService(string $id): BatchInterface
     {

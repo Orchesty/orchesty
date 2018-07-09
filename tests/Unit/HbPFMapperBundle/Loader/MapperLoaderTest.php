@@ -26,7 +26,7 @@ class MapperLoaderTest extends KernelTestCaseAbstract
     protected function setUp(): void
     {
         parent::setUp();
-        $this->mapperLoader = $this->container->get('hbpf.mapper.loader.mapper');
+        $this->mapperLoader = $this->ownContainer->get('hbpf.mapper.loader.mapper');
     }
 
     /**

@@ -10,7 +10,6 @@
 namespace Hanaboso\PipesFramework\HbPFCustomNodeBundle\Controller;
 
 use Exception;
-use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\CommonsBundle\Utils\ControllerUtils;
@@ -18,9 +17,9 @@ use Hanaboso\PipesFramework\HbPFCustomNodeBundle\Handler\CustomNodeHandler;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 use Throwable;
 
 /**
@@ -55,8 +54,7 @@ class CustomNodeController extends FOSRestController implements LoggerAwareInter
     }
 
     /**
-     * @Route("/custom_node/{nodeId}/process")
-     * @Method({"POST", "OPTIONS"})
+     * @Route("/custom_node/{nodeId}/process", methods={"POST", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $nodeId
@@ -77,8 +75,7 @@ class CustomNodeController extends FOSRestController implements LoggerAwareInter
     }
 
     /**
-     * @Route("/custom_node/{nodeId}/process/test")
-     * @Method({"GET", "OPTIONS"})
+     * @Route("/custom_node/{nodeId}/process/test", methods={"GET", "OPTIONS"})
      *
      * @param string $nodeId
      *
@@ -98,8 +95,6 @@ class CustomNodeController extends FOSRestController implements LoggerAwareInter
     }
 
     /**
-     * @required
-     *
      * @param LoggerInterface $logger
      */
     public function setLogger(LoggerInterface $logger): void

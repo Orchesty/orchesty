@@ -10,6 +10,7 @@
 namespace Hanaboso\PipesFramework\RabbitMq\Impl\Repeater;
 
 use Bunny\Message;
+use Exception;
 use Hanaboso\PipesFramework\HbPFRabbitMqBundle\DebugMessageTrait;
 use Hanaboso\PipesFramework\RabbitMq\CallbackStatus;
 use Hanaboso\PipesFramework\RabbitMq\Consumer\SyncCallbackAbstract;
@@ -46,6 +47,7 @@ class RepeaterCallback extends SyncCallbackAbstract
      * @param Message $message
      *
      * @return CallbackStatus
+     * @throws Exception
      */
     function handle($data, Message $message): CallbackStatus
     {

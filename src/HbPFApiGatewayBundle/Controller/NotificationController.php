@@ -2,11 +2,9 @@
 
 namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller;
 
-use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * Class NotificationController
@@ -17,27 +15,21 @@ class NotificationController extends FOSRestController
 {
 
     /**
-     * @Route("/notification_settings")
-     * @Method({"GET", "OPTIONS"})
-     *
-     * @param Request $request
+     * @Route("/notification_settings", methods={"GET", "OPTIONS"})
      *
      * @return Response
      */
-    public function getSettingsAction(Request $request): Response
+    public function getSettingsAction(): Response
     {
         return $this->forward('HbPFNotificationBundle:Notification:getSettings');
     }
 
     /**
-     * @Route("/notification_settings")
-     * @Method({"PUT", "OPTIONS"})
-     *
-     * @param Request $request
+     * @Route("/notification_settings", methods={"PUT", "OPTIONS"})
      *
      * @return Response
      */
-    public function updateSettingsAction(Request $request): Response
+    public function updateSettingsAction(): Response
     {
         return $this->forward('HbPFNotificationBundle:Notification:updateSettings');
     }

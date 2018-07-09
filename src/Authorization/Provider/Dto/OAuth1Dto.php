@@ -113,7 +113,7 @@ final class OAuth1Dto implements OAuth1DtoInterface
      */
     public function getToken(): array
     {
-        return $this->authorization ? $this->authorization->getToken() : [];
+        return $this->authorization->getToken();
     }
 
 }

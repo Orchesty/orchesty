@@ -9,21 +9,19 @@
 
 namespace Hanaboso\PipesFramework\HbPFMetricsBundle\Controller;
 
-use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 use Throwable;
 
 /**
  * Class MetricsController
  *
  * @package Hanaboso\PipesFramework\HbPFMetricsBundle\Controller
- * @Route(service="hbpf.metrics.controller.metrics")
  */
 class MetricsController extends FOSRestController
 {
@@ -46,8 +44,7 @@ class MetricsController extends FOSRestController
     }
 
     /**
-     * @Route("/metrics/topology/{topologyId}")
-     * @Method({"GET", "OPTIONS"})
+     * @Route("/metrics/topology/{topologyId}", methods={"GET", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $topologyId
@@ -68,8 +65,7 @@ class MetricsController extends FOSRestController
     }
 
     /**
-     * @Route("/metrics/topology/{topologyId}/node/{nodeId}")
-     * @Method({"GET", "OPTIONS"})
+     * @Route("/metrics/topology/{topologyId}/node/{nodeId}", methods={"GET", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $topologyId
@@ -91,8 +87,7 @@ class MetricsController extends FOSRestController
     }
 
     /**
-     * @Route("/metrics/topology/{topologyId}/requests")
-     * @Method({"GET", "OPTIONS"})
+     * @Route("/metrics/topology/{topologyId}/requests", methods={"GET", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $topologyId

@@ -10,6 +10,7 @@
 namespace Hanaboso\PipesFramework\Category\Model;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\CommonsBundle\DatabaseManager\DatabaseManagerLocator;
 use Hanaboso\PipesFramework\Category\Document\Category;
 use Hanaboso\PipesFramework\Category\Exception\CategoryException;
@@ -74,6 +75,7 @@ class CategoryManager
      * @param Category $category
      *
      * @throws CategoryException
+     * @throws MongoDBException
      */
     public function deleteCategory(Category $category): void
     {

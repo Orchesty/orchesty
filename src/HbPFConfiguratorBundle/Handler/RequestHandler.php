@@ -10,6 +10,7 @@
 namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler;
 
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
@@ -67,6 +68,7 @@ class RequestHandler
      * @param string $topologyId
      *
      * @return ResponseDto
+     * @throws CurlException
      */
     public function generateTopology(string $topologyId): ResponseDto
     {
@@ -82,6 +84,7 @@ class RequestHandler
      * @param string $topologyId
      *
      * @return ResponseDto
+     * @throws CurlException
      */
     public function runTopology(string $topologyId): ResponseDto
     {
@@ -97,6 +100,7 @@ class RequestHandler
      * @param string $topologyId
      *
      * @return ResponseDto
+     * @throws CurlException
      */
     public function deleteTopology(string $topologyId): ResponseDto
     {
@@ -117,6 +121,7 @@ class RequestHandler
      * @param string $topologyId
      *
      * @return ResponseDto
+     * @throws CurlException
      */
     public function infoTopology(string $topologyId): ResponseDto
     {

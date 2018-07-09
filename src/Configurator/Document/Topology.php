@@ -10,6 +10,7 @@ use Hanaboso\CommonsBundle\Exception\EnumException;
 use Hanaboso\CommonsBundle\Traits\Document\DeletedTrait;
 use Hanaboso\CommonsBundle\Traits\Document\IdTrait;
 use Nette\Utils\Json;
+use Nette\Utils\JsonException;
 
 /**
  * Class Topology
@@ -235,6 +236,7 @@ class Topology
 
     /**
      * @return array
+     * @throws JsonException
      */
     public function getBpmn(): array
     {
@@ -245,6 +247,7 @@ class Topology
      * @param array $bpmn
      *
      * @return Topology
+     * @throws JsonException
      */
     public function setBpmn(array $bpmn): Topology
     {

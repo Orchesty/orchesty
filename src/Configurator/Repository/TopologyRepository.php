@@ -52,7 +52,7 @@ class TopologyRepository extends DocumentRepository
      */
     public function getMaxVersion(string $name): int
     {
-        /** @var Topology $result */
+        /** @var Topology|null $result */
         $result = $this->createQueryBuilder()
             ->field('name')->equals($name)
             ->sort('version', 'DESC')

@@ -4,7 +4,10 @@ namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler;
 
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Hanaboso\CommonsBundle\DatabaseManager\DatabaseManagerLocator;
+use Hanaboso\CommonsBundle\Exception\EnumException;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
 use Hanaboso\PipesFramework\Configurator\Model\NodeManager;
@@ -67,6 +70,8 @@ class NodeHandler
      * @param string $id
      *
      * @return array
+     * @throws LockException
+     * @throws MappingException
      * @throws NodeException
      */
     public function getNode(string $id): array
@@ -79,7 +84,10 @@ class NodeHandler
      * @param array  $data
      *
      * @return array
+     * @throws LockException
+     * @throws MappingException
      * @throws NodeException
+     * @throws EnumException
      */
     public function updateNode(string $id, array $data): array
     {
@@ -112,10 +120,12 @@ class NodeHandler
      *
      * @return Node
      * @throws NodeException
+     * @throws LockException
+     * @throws MappingException
      */
     private function getNodeById(string $id): Node
     {
-        /** @var Node $res */
+        /** @var Node|null $res */
         $res = $this->nodeRepository->find($id);
 
         if (!$res) {

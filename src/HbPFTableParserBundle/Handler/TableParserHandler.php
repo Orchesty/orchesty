@@ -2,10 +2,15 @@
 
 namespace Hanaboso\PipesFramework\HbPFTableParserBundle\Handler;
 
+use Hanaboso\CommonsBundle\Exception\FileStorageException;
 use Hanaboso\CommonsBundle\FileStorage\FileStorage;
 use Hanaboso\PipesFramework\Parser\Exception\TableParserException;
 use Hanaboso\PipesFramework\Parser\TableParser;
+use Nette\Utils\JsonException;
+use PhpOffice\PhpSpreadsheet\Exception;
+use PhpOffice\PhpSpreadsheet\Reader\Exception as ReaderException;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Exception as WriterException;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
@@ -42,6 +47,10 @@ class TableParserHandler
      * @param array $data
      *
      * @return string
+     * @throws TableParserHandlerException
+     * @throws Exception
+     * @throws ReaderException
+     * @throws FileStorageException
      */
     public function parseToJson(array $data): string
     {
@@ -58,17 +67,9 @@ class TableParserHandler
     }
 
     /**
-     * @throws TableParserHandlerException
      */
     public function parseToJsonTest(): bool
     {
-        if (!$this->tableParser) {
-            throw new TableParserException(
-                'Table parser not exists',
-                TableParserException::PARSER_NOT_EXISTS
-            );
-        }
-
         return TRUE;
     }
 
@@ -77,6 +78,12 @@ class TableParserHandler
      * @param array  $data
      *
      * @return string
+     * @throws Exception
+     * @throws TableParserException
+     * @throws TableParserHandlerException
+     * @throws JsonException
+     * @throws WriterException
+     * @throws FileStorageException
      */
     public function parseFromJson(string $type, array $data): string
     {
@@ -112,6 +119,7 @@ class TableParserHandler
      *
      * @return string
      * @throws TableParserHandlerException
+     * @throws FileStorageException
      */
     private function getFile(array $data, bool &$is_tmp, ?Filesystem $fs = NULL): string
     {

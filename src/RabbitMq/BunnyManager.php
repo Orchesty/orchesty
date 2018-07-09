@@ -41,7 +41,7 @@ class BunnyManager
     private $channel = NULL;
 
     /**
-     * @var Channel|\React\Promise\PromiseInterface
+     * @var Channel|\React\Promise\PromiseInterface|null
      */
     private $transactionalChannel;
 
@@ -107,6 +107,7 @@ class BunnyManager
 
     /**
      * @return Channel|\React\Promise\PromiseInterface
+     * @throws Exception
      */
     public function createChannel()
     {
@@ -119,6 +120,7 @@ class BunnyManager
 
     /**
      * @return Channel|\React\Promise\PromiseInterface
+     * @throws Exception
      */
     public function getChannel()
     {
@@ -132,8 +134,9 @@ class BunnyManager
     /**
      * create/return transactional channel, where messages need to be commited
      *
-     * @throws BunnyException
      * @return Channel|\React\Promise\PromiseInterface
+     * @throws BunnyException
+     * @throws Exception
      */
     public function getTransactionalChannel()
     {
@@ -153,6 +156,7 @@ class BunnyManager
 
     /**
      * @return void
+     * @throws Exception
      */
     public function setUp(): void
     {

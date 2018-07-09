@@ -32,7 +32,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     /**
      * @var ContainerInterface
      */
-    protected $container;
+    protected $ownContainer;
 
     /**
      * @var DocumentManager
@@ -65,9 +65,9 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     {
         parent::__construct($name, $data, $dataName);
         self::bootKernel();
-        $this->container = self::$kernel->getContainer();
-        $this->dm        = $this->container->get('doctrine_mongodb.odm.default_document_manager');
-        $this->encoder   = new BCryptPasswordEncoder(12);
+        $this->ownContainer = self::$kernel->getContainer();
+        $this->dm           = $this->ownContainer->get('doctrine_mongodb.odm.default_document_manager');
+        $this->encoder      = new BCryptPasswordEncoder(12);
     }
 
     /**
@@ -100,7 +100,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
      */
     protected function loginUser(string $username, string $password): User
     {
-        $this->session      = $this->container->get('session');
+        $this->session      = $this->ownContainer->get('session');
         $this->tokenStorage = $this->client->getContainer()->get('security.token_storage');
         $this->session->invalidate();
         $this->session->start();

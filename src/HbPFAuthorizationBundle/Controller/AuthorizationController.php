@@ -2,16 +2,16 @@
 
 namespace Hanaboso\PipesFramework\HbPFAuthorizationBundle\Controller;
 
-use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesFramework\HbPFAuthorizationBundle\Handler\AuthorizationHandler;
 use InvalidArgumentException;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Throwable;
 
 /**
  * Class AuthorizationController
@@ -39,8 +39,7 @@ class AuthorizationController extends FOSRestController
     }
 
     /**
-     * @Route("/authorizations/{authorizationId}/authorize")
-     * @Method({"GET", "POST", "OPTIONS"})
+     * @Route("/authorizations/{authorizationId}/authorize", methods={"GET", "POST", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $authorizationId
@@ -59,8 +58,7 @@ class AuthorizationController extends FOSRestController
     }
 
     /**
-     * @Route("/authorizations/{authorizationId}/settings")
-     * @Method({"GET", "OPTIONS"})
+     * @Route("/authorizations/{authorizationId}/settings", methods={"GET", "OPTIONS"})
      *
      * @param string $authorizationId
      *
@@ -76,8 +74,7 @@ class AuthorizationController extends FOSRestController
     }
 
     /**
-     * @Route("/authorizations/{authorizationId}/save_settings")
-     * @Method({"PUT", "OPTIONS"})
+     * @Route("/authorizations/{authorizationId}/save_settings", methods={"PUT", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $authorizationId
@@ -90,14 +87,13 @@ class AuthorizationController extends FOSRestController
             $this->authorizationHandler->saveSettings($request->request->all(), $authorizationId);
 
             return $this->getResponse([]);
-        } catch (AuthorizationException $e) {
+        } catch (AuthorizationException | Throwable $e) {
             return $this->getErrorResponse($e);
         }
     }
 
     /**
-     * @Route("/authorizations/{authorizationId}/save_token")
-     * @Method({"POST", "OPTIONS"})
+     * @Route("/authorizations/{authorizationId}/save_token", methods={"POST", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $authorizationId
@@ -110,14 +106,13 @@ class AuthorizationController extends FOSRestController
             $this->authorizationHandler->saveToken($request->request->all(), $authorizationId);
 
             return new RedirectResponse($this->container->getParameter('frontend_host') . '/close-me.html');
-        } catch (AuthorizationException $e) {
+        } catch (AuthorizationException | Throwable $e) {
             return $this->getErrorResponse($e);
         }
     }
 
     /**
-     * @Route("/authorizations")
-     * @Method({"GET", "OPTIONS"})
+     * @Route("/authorizations", methods={"GET", "OPTIONS"})
      *
      * @param Request $request
      *
@@ -125,7 +120,11 @@ class AuthorizationController extends FOSRestController
      */
     public function getAuthorizationsAction(Request $request): Response
     {
-        return $this->getResponse($this->authorizationHandler->getAuthInfo($request->getSchemeAndHttpHost()));
+        try {
+            return $this->getResponse($this->authorizationHandler->getAuthInfo($request->getSchemeAndHttpHost()));
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
+        }
     }
 
 }

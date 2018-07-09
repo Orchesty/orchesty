@@ -52,6 +52,9 @@ class MetricsHandler
      * @param array  $params
      *
      * @return array
+     * @throws LockException
+     * @throws MappingException
+     * @throws MetricsException
      */
     public function getTopologyMetrics(string $topologyId, array $params): array
     {
@@ -64,6 +67,9 @@ class MetricsHandler
      * @param array  $params
      *
      * @return array
+     * @throws LockException
+     * @throws MappingException
+     * @throws MetricsException
      */
     public function getNodeMetrics(string $topologyId, string $nodeId, array $params): array
     {
@@ -79,6 +85,9 @@ class MetricsHandler
      * @param array  $params
      *
      * @return array
+     * @throws LockException
+     * @throws MappingException
+     * @throws MetricsException
      */
     public function getRequestsCountMetrics(string $topologyId, array $params): array
     {
@@ -95,7 +104,7 @@ class MetricsHandler
      */
     private function getTopologyById(string $id): Topology
     {
-        /** @var Topology $topology */
+        /** @var Topology|null $topology */
         $topology = $this->dm->getRepository(Topology::class)->find($id);
 
         if (!$topology) {
@@ -117,7 +126,7 @@ class MetricsHandler
      */
     private function getNodeByTopologyAndNodeId(string $topologyId, string $nodeId): Node
     {
-        /** @var Node $node */
+        /** @var Node|null $node */
         $node = $this->dm->getRepository(Node::class)->findBy(['id' => $nodeId, 'topology' => $topologyId]);
 
         if (!$node) {

@@ -2,6 +2,8 @@
 
 namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\DependencyInjection;
 
+use Exception;
+use InvalidArgumentException;
 use RuntimeException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -21,6 +23,8 @@ class HbPFConfiguratorExtension extends Extension implements PrependExtensionInt
      * Allow an extension to prepend the extension configurations.
      *
      * @param ContainerBuilder $container
+     *
+     * @throws Exception
      */
     public function prepend(ContainerBuilder $container): void
     {
@@ -47,7 +51,8 @@ class HbPFConfiguratorExtension extends Extension implements PrependExtensionInt
      * @param array            $configs   An array of configuration values
      * @param ContainerBuilder $container A ContainerBuilder instance
      *
-     * @throws \InvalidArgumentException When provided tag is not defined in this extension
+     * @throws InvalidArgumentException When provided tag is not defined in this extension
+     * @throws Exception
      */
     public function load(array $configs, ContainerBuilder $container): void
     {

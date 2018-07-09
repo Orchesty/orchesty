@@ -10,7 +10,6 @@
 namespace Hanaboso\PipesFramework\HbPFConnectorBundle\Controller;
 
 use Exception;
-use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\CommonsBundle\Utils\ControllerUtils;
@@ -18,9 +17,9 @@ use Hanaboso\PipesFramework\HbPFConnectorBundle\Handler\ConnectorHandler;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 use Throwable;
 
 /**
@@ -56,8 +55,7 @@ class ConnectorController extends FOSRestController implements LoggerAwareInterf
     }
 
     /**
-     * @Route("/connector/{id}/webhook")
-     * @Method({"POST", "OPTIONS"})
+     * @Route("/connector/{id}/webhook", methods={"POST", "OPTIONS"})
      *
      * @param string  $id
      * @param Request $request
@@ -78,8 +76,7 @@ class ConnectorController extends FOSRestController implements LoggerAwareInterf
     }
 
     /**
-     * @Route("/connector/{id}/webhook/test")
-     * @Method({"GET", "OPTIONS"})
+     * @Route("/connector/{id}/webhook/test", methods={"GET", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $id
@@ -100,8 +97,7 @@ class ConnectorController extends FOSRestController implements LoggerAwareInterf
     }
 
     /**
-     * @Route("/connector/{id}/action")
-     * @Method({"POST", "OPTIONS"})
+     * @Route("/connector/{id}/action", methods={"POST", "OPTIONS"})
      *
      * @param string  $id
      * @param Request $request
@@ -122,8 +118,7 @@ class ConnectorController extends FOSRestController implements LoggerAwareInterf
     }
 
     /**
-     * @Route("/connector/{id}/action/test")
-     * @Method({"GET", "OPTIONS"})
+     * @Route("/connector/{id}/action/test", methods={"GET", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $id
@@ -144,8 +139,6 @@ class ConnectorController extends FOSRestController implements LoggerAwareInterf
     }
 
     /**
-     * @required
-     *
      * @param LoggerInterface $logger
      *
      * @return void

@@ -17,6 +17,7 @@ use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Enum\MetricsEnum;
 use Hanaboso\CommonsBundle\Metrics\InfluxDbSender;
 use Hanaboso\CommonsBundle\Metrics\SystemMetrics;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
@@ -288,7 +289,7 @@ class StartingPoint implements LoggerAwareInterface
         ]);
 
         // Publish messages
-        $this->publishInitializeCounterProcess($channel, self::createCounterQueueName(), $headers, $node);
+        $this->publishInitializeCounterProcess($channel, self::createCounterQueueName(), $headers);
         $this->publishProcessMessage($channel, self::createQueueName($topology, $node), $headers, $content);
         $this->sendMetrics($currentMetrics, $correlation_id, $topology, $node);
     }
@@ -298,6 +299,7 @@ class StartingPoint implements LoggerAwareInterface
      *
      * @return array
      * @throws StartingPointException
+     * @throws CurlException
      */
     public function runTest(Topology $topology): array
     {
@@ -334,13 +336,11 @@ class StartingPoint implements LoggerAwareInterface
      * @param Channel $channel
      * @param string  $queue
      * @param Headers $headers
-     * @param Node    $node
      */
     private function publishInitializeCounterProcess(
         Channel $channel,
         string $queue,
-        Headers $headers,
-        Node $node
+        Headers $headers
     ): void
     {
         $content = [

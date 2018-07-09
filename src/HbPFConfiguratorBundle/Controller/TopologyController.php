@@ -2,16 +2,14 @@
 
 namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller;
 
-use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
-use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
-use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Throwable;
 
 /**
  * Class TopologyController
@@ -39,8 +37,7 @@ class TopologyController extends FOSRestController
     }
 
     /**
-     * @Route("/topologies")
-     * @Method({"GET", "OPTIONS"})
+     * @Route("/topologies", methods={"GET", "OPTIONS"})
      *
      * @param mixed $query
      *
@@ -48,20 +45,23 @@ class TopologyController extends FOSRestController
      */
     public function getTopologiesAction($query): Response
     {
-        $limit  = $query->get('limit');
-        $offset = $query->get('offset');
-        $data   = $this->topologyHandler->getTopologies(
-            isset($limit) ? (int) $limit : NULL,
-            isset($offset) ? (int) $offset : NULL,
-            $query->get('order_by')
-        );
+        try {
+            $limit  = $query->get('limit');
+            $offset = $query->get('offset');
+            $data   = $this->topologyHandler->getTopologies(
+                isset($limit) ? (int) $limit : NULL,
+                isset($offset) ? (int) $offset : NULL,
+                $query->get('order_by')
+            );
 
-        return $this->getResponse($data);
+            return $this->getResponse($data);
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
+        }
     }
 
     /**
-     * @Route("/topologies/{id}", defaults={}, requirements={"id": "\w+"})
-     * @Method({"GET", "OPTIONS"})
+     * @Route("/topologies/{id}", defaults={}, requirements={"id": "\w+"}, methods={"GET", "OPTIONS"})
      *
      * @param string $id
      *
@@ -78,26 +78,23 @@ class TopologyController extends FOSRestController
     }
 
     /**
-     * @Route("/topologies", requirements={"id": "\w+"})
-     * @Method({"POST"})
+     * @Route("/topologies", requirements={"id": "\w+"}, methods={"POST"})
      *
      * @param Request $request
      *
      * @return Response
-     * @throws PipesFrameworkException
      */
     public function createTopologyAction(Request $request): Response
     {
         try {
             return $this->getResponse($this->topologyHandler->createTopology($request->request->all()));
-        } catch (TopologyException $e) {
+        } catch (Throwable $e) {
             return $this->getErrorResponse($e);
         }
     }
 
     /**
-     * @Route("/topologies/{id}", defaults={}, requirements={"id": "\w+"})
-     * @Method({"PUT", "PATCH", "OPTIONS"})
+     * @Route("/topologies/{id}", defaults={}, requirements={"id": "\w+"}, methods={"PUT", "PATCH", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $id
@@ -108,14 +105,13 @@ class TopologyController extends FOSRestController
     {
         try {
             return $this->getResponse($this->topologyHandler->updateTopology($id, $request->request->all()));
-        } catch (TopologyException $e) {
+        } catch (TopologyException | Throwable $e) {
             return $this->getErrorResponse($e);
         }
     }
 
     /**
-     * @Route("/topologies/{id}/schema.bpmn", defaults={"_format"="xml"}, requirements={"id": "\w+"})
-     * @Method({"GET", "OPTIONS"})
+     * @Route("/topologies/{id}/schema.bpmn", defaults={"_format"="xml"}, requirements={"id": "\w+"}, methods={"GET", "OPTIONS"})
      *
      * @param string $id
      *
@@ -134,8 +130,7 @@ class TopologyController extends FOSRestController
     }
 
     /**
-     * @Route("/topologies/{id}/schema.bpmn", defaults={"_format"="xml"}, requirements={"id": "\w+"})
-     * @Method({"PUT", "OPTIONS"})
+     * @Route("/topologies/{id}/schema.bpmn", defaults={"_format"="xml"}, requirements={"id": "\w+"}, methods={"PUT", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $id
@@ -153,7 +148,7 @@ class TopologyController extends FOSRestController
                 $content,
                 $request->request->all()
             ));
-        } catch (TopologyException $e) {
+        } catch (TopologyException | Throwable $e) {
             return $this->getErrorResponse($e,
                 in_array($e->getCode(), [
                     TopologyException::TOPOLOGY_NODE_NAME_NOT_FOUND,
@@ -166,52 +161,57 @@ class TopologyController extends FOSRestController
     }
 
     /**
-     * @Route("/topologies/{id}/publish", defaults={}, requirements={"id": "\w+"})
-     * @Method({"POST", "OPTIONS"})
+     * @Route("/topologies/{id}/publish", defaults={}, requirements={"id": "\w+"}, methods={"POST", "OPTIONS"})
      *
      * @param string $id
      *
      * @return Response
-     * @throws TopologyException
      */
     public function publishTopologyAction(string $id): Response
     {
-        $res = $this->topologyHandler->publishTopology($id);
+        try {
+            $res = $this->topologyHandler->publishTopology($id);
 
-        return $this->getResponse($res->getBody(), $res->getStatusCode());
+            return $this->getResponse($res->getBody(), $res->getStatusCode());
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
+        }
     }
 
     /**
-     * @Route("/topologies/{id}/clone", defaults={}, requirements={"id": "\w+"})
-     * @Method({"POST", "OPTIONS"})
+     * @Route("/topologies/{id}/clone", defaults={}, requirements={"id": "\w+"}, methods={"POST", "OPTIONS"})
      *
      * @param string $id
      *
      * @return Response
-     * @throws TopologyException
-     * @throws NodeException
      */
     public function cloneTopologyAction(string $id): Response
     {
-        $data = $this->topologyHandler->cloneTopology($id);
+        try {
+            $data = $this->topologyHandler->cloneTopology($id);
 
-        return $this->getResponse($data);
+            return $this->getResponse($data);
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
+        }
     }
 
     /**
-     * @Route("/topologies/{id}", defaults={}, requirements={"id": "\w+"})
-     * @Method({"DELETE", "OPTIONS"})
+     * @Route("/topologies/{id}", defaults={}, requirements={"id": "\w+"}, methods={"DELETE", "OPTIONS"})
      *
      * @param string $id
      *
      * @return Response
-     * @throws TopologyException
      */
     public function deleteTopologyAction(string $id): Response
     {
-        $res = $this->topologyHandler->deleteTopology($id);
+        try {
+            $res = $this->topologyHandler->deleteTopology($id);
 
-        return $this->getResponse($res->getBody(), $res->getStatusCode());
+            return $this->getResponse($res->getBody(), $res->getStatusCode());
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
+        }
     }
 
 }

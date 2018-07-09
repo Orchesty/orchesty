@@ -10,9 +10,11 @@ use Bunny\Message;
 use Bunny\Protocol\MethodBasicQosOkFrame;
 use Bunny\Protocol\MethodQueueBindOkFrame;
 use Bunny\Protocol\MethodQueueDeclareOkFrame;
+use Exception;
 use Hanaboso\PipesFramework\HbPFRabbitMqBundle\ContentTypes;
 use Hanaboso\PipesFramework\RabbitMq\BunnyManager;
 use Hanaboso\PipesFramework\RabbitMq\Consumer\BaseSyncConsumerAbstract;
+use Hanaboso\PipesFramework\RabbitMq\Exception\RabbitMqException;
 use Hanaboso\PipesFramework\RabbitMq\Serializers\IMessageSerializer;
 use InvalidArgumentException;
 use Psr\Log\LoggerAwareInterface;
@@ -94,7 +96,7 @@ class ConsumerCommand extends Command implements LoggerAwareInterface
     }
 
     /**
-     *
+     * @throws Exception
      */
     private function reconnect(): void
     {
@@ -119,6 +121,7 @@ class ConsumerCommand extends Command implements LoggerAwareInterface
      * @param OutputInterface $output
      *
      * @return void
+     * @throws Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output): void
     {
@@ -146,6 +149,7 @@ class ConsumerCommand extends Command implements LoggerAwareInterface
         $consumer     = $this->consumers[$consumerName];
         $maxMessages  = PHP_INT_MAX;
         $maxSeconds   = PHP_INT_MAX;
+        /** @var array<string|null> $calledSetUps */
         $calledSetUps = [];
         $tickMethod   = NULL;
         $tickSeconds  = NULL;
@@ -202,35 +206,20 @@ class ConsumerCommand extends Command implements LoggerAwareInterface
         }
 
         if ($consumer->getTickMethod()) {
-            if ($tickMethod) {
-                if ($consumer->getTickMethod() !== $tickMethod) {
-                    throw new BunnyException(
-                        "Only single tick method is supported - " . get_class($consumer) . "."
-                    );
-                }
-
-                if ($consumer->getTickSeconds() !== $tickSeconds) {
-                    throw new BunnyException(
-                        "Only single tick seconds is supported - " . get_class($consumer) . "."
-                    );
-                }
-
-            } else {
-                if (!$consumer->getTickSeconds()) {
-                    throw new BunnyException(
-                        "If you specify 'tickMethod', you have to specify 'tickSeconds' - " . get_class($consumer) . "."
-                    );
-                }
-
-                if (!method_exists($consumer, $consumer->getTickMethod())) {
-                    throw new BunnyException(
-                        sprintf('Tick method %s::%s does not exist.', get_class($consumer), $consumer->getTickMethod())
-                    );
-                }
-
-                $tickMethod  = $consumer->getTickMethod();
-                $tickSeconds = $consumer->getTickSeconds();
+            if (!$consumer->getTickSeconds()) {
+                throw new BunnyException(
+                    "If you specify 'tickMethod', you have to specify 'tickSeconds' - " . get_class($consumer) . "."
+                );
             }
+
+            if (!method_exists($consumer, $consumer->getTickMethod())) {
+                throw new BunnyException(
+                    sprintf('Tick method %s::%s does not exist.', get_class($consumer), $consumer->getTickMethod())
+                );
+            }
+
+            $tickMethod  = $consumer->getTickMethod();
+            $tickSeconds = $consumer->getTickSeconds();
         }
 
         $channel->consume(
@@ -265,6 +254,7 @@ class ConsumerCommand extends Command implements LoggerAwareInterface
      * @param Client                   $client
      *
      * @return void
+     * @throws RabbitMqException
      */
     public function handleMessage(
         BaseSyncConsumerAbstract $consumer,

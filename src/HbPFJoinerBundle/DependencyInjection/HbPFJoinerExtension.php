@@ -2,6 +2,7 @@
 
 namespace Hanaboso\PipesFramework\HbPFJoinerBundle\DependencyInjection;
 
+use Exception;
 use RuntimeException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -32,6 +33,8 @@ class HbPFJoinerExtension extends Extension implements PrependExtensionInterface
     /**
      * @param array            $configs
      * @param ContainerBuilder $container
+     *
+     * @throws Exception
      */
     public function load(array $configs, ContainerBuilder $container): void
     {

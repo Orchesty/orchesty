@@ -2,21 +2,19 @@
 
 namespace Hanaboso\PipesFramework\HbPFNotificationBundle\Controller;
 
-use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\HbPFNotificationBundle\Handler\NotificationHandler;
 use Hanaboso\PipesFramework\Notification\Exception\NotificationException;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Throwable;
 
 /**
  * Class NotificationController
  *
  * @package Hanaboso\PipesFramework\HbPFNotificationBundle\Controller
- *
- * @Route(service="hbpf.notification.controller.notification")
  */
 class NotificationController extends FOSRestController
 {
@@ -39,8 +37,7 @@ class NotificationController extends FOSRestController
     }
 
     /**
-     * @Route("/notification_settings")
-     * @Method({"GET", "OPTIONS"})
+     * @Route("/notification_settings", methods={"GET", "OPTIONS"})
      *
      * @return Response
      */
@@ -48,14 +45,13 @@ class NotificationController extends FOSRestController
     {
         try {
             return $this->getResponse($this->notificationHandler->getSettings());
-        } catch (NotificationException $e) {
+        } catch (NotificationException | Throwable $e) {
             return $this->getErrorResponse($e);
         }
     }
 
     /**
-     * @Route("/notification_settings")
-     * @Method({"PUT", "OPTIONS"})
+     * @Route("/notification_settings", methods={"PUT", "OPTIONS"})
      *
      * @param Request $request
      *
@@ -65,7 +61,7 @@ class NotificationController extends FOSRestController
     {
         try {
             return $this->getResponse($this->notificationHandler->updateSettings($request->request->all()));
-        } catch (NotificationException $e) {
+        } catch (NotificationException | Throwable $e) {
             return $this->getErrorResponse($e);
         }
     }

@@ -5,6 +5,9 @@ namespace Hanaboso\PipesFramework\CustomNode\Impl;
 use Bunny\Channel;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use Hanaboso\PipesFramework\Configurator\Document\Embed\EmbedNode;
@@ -74,6 +77,8 @@ abstract class RabbitCustomNode implements CustomNodeInterface, LoggerAwareInter
      * @param ProcessDto $dto
      *
      * @return ProcessDto
+     * @throws LockException
+     * @throws MappingException
      */
     public function process(ProcessDto $dto): ProcessDto
     {
@@ -166,6 +171,10 @@ abstract class RabbitCustomNode implements CustomNodeInterface, LoggerAwareInter
 
     /**
      * @param ProcessDto $dto
+     *
+     * @throws LockException
+     * @throws MappingException
+     * @throws Exception
      */
     private function bindChannels(ProcessDto $dto): void
     {

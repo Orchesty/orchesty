@@ -9,6 +9,7 @@
 
 namespace Hanaboso\PipesFramework\RabbitMq\Handler;
 
+use Exception;
 use Hanaboso\PipesFramework\RabbitMq\BunnyManager;
 
 /**
@@ -38,6 +39,7 @@ class RabbitMqHandler
      * @param array $queues
      *
      * @return bool
+     * @throws Exception
      */
     public function deleteQueues(array $queues): bool
     {
@@ -53,6 +55,7 @@ class RabbitMqHandler
      * @param string $exchange
      *
      * @return bool
+     * @throws Exception
      */
     public function deleteExchange(string $exchange): bool
     {

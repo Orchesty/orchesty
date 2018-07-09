@@ -16,6 +16,7 @@ use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth1DtoInterface;
 use Hanaboso\PipesFramework\Authorization\Utils\ScopeFormatter;
 use OAuth;
+use OAuthException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -82,6 +83,7 @@ class OAuth1Provider implements OAuth1ProviderInterface, LoggerAwareInterface
      * @param array              $scopes
      *
      * @throws AuthorizationException
+     * @throws OAuthException
      */
     public function authorize(
         OAuth1DtoInterface $dto,
@@ -117,6 +119,7 @@ class OAuth1Provider implements OAuth1ProviderInterface, LoggerAwareInterface
      *
      * @return array
      * @throws AuthorizationException
+     * @throws OAuthException
      */
     public function getAccessToken(OAuth1DtoInterface $dto, array $request, string $accessTokenUrl): array
     {
@@ -149,6 +152,7 @@ class OAuth1Provider implements OAuth1ProviderInterface, LoggerAwareInterface
      *
      * @return string
      * @throws AuthorizationException
+     * @throws OAuthException
      */
     public function getAuthorizeHeader(OAuth1DtoInterface $dto, string $method, string $url): string
     {
@@ -171,6 +175,7 @@ class OAuth1Provider implements OAuth1ProviderInterface, LoggerAwareInterface
      * @param OAuth1DtoInterface $dto
      *
      * @return OAuth
+     * @throws OAuthException
      */
     protected function createClient(OAuth1DtoInterface $dto): OAuth
     {

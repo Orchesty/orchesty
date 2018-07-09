@@ -2,10 +2,9 @@
 
 namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller;
 
-use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * Class ConnectorController
@@ -16,8 +15,7 @@ class ConnectorController extends FOSRestController
 {
 
     /**
-     * @Route("/connector/{id}/webhook", defaults={}, requirements={"id": "[\w-]+"})
-     * @Method({"POST", "OPTIONS"})
+     * @Route("/connector/{id}/webhook", defaults={}, requirements={"id": "[\w-]+"}, methods={"POST", "OPTIONS"})
      *
      * @param string $id
      *
@@ -31,8 +29,7 @@ class ConnectorController extends FOSRestController
     }
 
     /**
-     * @Route("/connector/{id}/action", defaults={}, requirements={"id": "[\w-]+"})
-     * @Method({"POST", "OPTIONS"})
+     * @Route("/connector/{id}/action", defaults={}, requirements={"id": "[\w-]+"}, methods={"POST", "OPTIONS"})
      *
      * @param string $id
      *

@@ -5,12 +5,12 @@ namespace Hanaboso\PipesFramework\Authorization\Impl\Magento2;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Authorization\Base\AuthorizationAbstract;
 use Hanaboso\PipesFramework\Authorization\Document\Authorization;
 use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
-use Nette\Utils\Json;
 
 /**
  * Class Magento2Authorization
@@ -78,6 +78,7 @@ class Magento2Authorization extends AuthorizationAbstract implements Magento2Aut
      *
      * @return array
      * @throws AuthorizationException
+     * @throws CurlException
      */
     public function getHeaders(string $method, string $url): array
     {
@@ -110,8 +111,6 @@ class Magento2Authorization extends AuthorizationAbstract implements Magento2Aut
 
     /**
      * @return string[]
-     *
-     * @throws AuthorizationException
      */
     public function getSettings(): array
     {
@@ -179,6 +178,7 @@ class Magento2Authorization extends AuthorizationAbstract implements Magento2Aut
     /**
      * @return array
      * @throws AuthorizationException
+     * @throws CurlException
      */
     private function authorize(): array
     {
@@ -199,7 +199,7 @@ class Magento2Authorization extends AuthorizationAbstract implements Magento2Aut
                 sprintf('{"username":"%s", "password":"%s"}', $settings[self::USERNAME], $settings[self::PASSWORD])
             );
 
-        return Json::decode($this->curl->send($dto)->getBody(), Json::FORCE_ARRAY);
+        return json_decode($this->curl->send($dto)->getBody(), TRUE);
     }
 
     /**

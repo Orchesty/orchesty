@@ -49,7 +49,7 @@ final class AuthorizationLoaderTest extends KernelTestCaseAbstract
         $dm->method('persist')->willReturn(NULL);
         $dm->method('flush')->willReturn(NULL);
 
-        $this->loader = new AuthorizationLoader($this->container, $dm);
+        $this->loader = new AuthorizationLoader($this->ownContainer, $dm);
     }
 
     /**

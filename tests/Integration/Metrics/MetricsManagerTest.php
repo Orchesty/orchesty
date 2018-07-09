@@ -148,10 +148,10 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
      */
     private function getClient(): MetricsClient
     {
-        $host = $this->container->getParameter('influx.host');
-        $port = $this->container->getParameter('influx.api_port');
-        $user = $this->container->getParameter('influx.user');
-        $pass = $this->container->getParameter('influx.password');
+        $host = $this->ownContainer->getParameter('influx.host');
+        $port = $this->ownContainer->getParameter('influx.api_port');
+        $user = $this->ownContainer->getParameter('influx.user');
+        $pass = $this->ownContainer->getParameter('influx.password');
 
         return new MetricsClient($host, $port, $user, $pass, 'test');
     }
@@ -161,11 +161,11 @@ final class MetricsManagerTest extends KernelTestCaseAbstract
      */
     private function getManager(): MetricsManager
     {
-        $nodeTable    = $this->container->getParameter('influx.node_table');
-        $fpmTable     = $this->container->getParameter('influx.monolith_table');
-        $connTable    = $this->container->getParameter('influx.connector_table');
-        $rabbitTable  = $this->container->getParameter('influx.rabbit_table');
-        $counterTable = $this->container->getParameter('influx.counter_table');
+        $nodeTable    = $this->ownContainer->getParameter('influx.node_table');
+        $fpmTable     = $this->ownContainer->getParameter('influx.monolith_table');
+        $connTable    = $this->ownContainer->getParameter('influx.connector_table');
+        $rabbitTable  = $this->ownContainer->getParameter('influx.rabbit_table');
+        $counterTable = $this->ownContainer->getParameter('influx.counter_table');
 
         return new MetricsManager(
             $this->getClient(),

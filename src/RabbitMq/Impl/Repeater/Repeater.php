@@ -10,6 +10,7 @@
 namespace Hanaboso\PipesFramework\RabbitMq\Impl\Repeater;
 
 use Bunny\Message;
+use Exception;
 use Hanaboso\PipesFramework\RabbitMq\Producer\AbstractProducer;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
@@ -80,6 +81,7 @@ class Repeater implements LoggerAwareInterface
      * @param Message $message
      *
      * @return bool
+     * @throws Exception
      */
     public function add(Message $message): bool
     {

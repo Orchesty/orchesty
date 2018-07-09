@@ -32,7 +32,7 @@ class ConnectorLoaderTest extends KernelTestCaseAbstract
     protected function setUp(): void
     {
         parent::setUp();
-        $this->loader = $this->container->get('hbpf.loader.connector');
+        $this->loader = $this->ownContainer->get('hbpf.loader.connector');
     }
 
     /**

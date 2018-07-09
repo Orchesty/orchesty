@@ -2,10 +2,9 @@
 
 namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller;
 
-use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * Class NodeController
@@ -16,8 +15,7 @@ class NodeController extends FOSRestController
 {
 
     /**
-     * @Route("/topologies/{id}/nodes", defaults={}, requirements={"id": "\w+"})
-     * @Method({"GET", "OPTIONS"})
+     * @Route("/topologies/{id}/nodes", defaults={}, requirements={"id": "\w+"}, methods={"GET", "OPTIONS"})
      *
      * @param string $id
      *
@@ -29,8 +27,7 @@ class NodeController extends FOSRestController
     }
 
     /**
-     * @Route("/nodes/{id}", defaults={}, requirements={"id": "\w+"})
-     * @Method({"GET", "OPTIONS"})
+     * @Route("/nodes/{id}", defaults={}, requirements={"id": "\w+"}, methods={"GET", "OPTIONS"})
      *
      * @param string $id
      *
@@ -42,8 +39,7 @@ class NodeController extends FOSRestController
     }
 
     /**
-     * @Route("/nodes/{id}", defaults={}, requirements={"id": "\w+"})
-     * @Method({"PATCH", "OPTIONS"})
+     * @Route("/nodes/{id}", defaults={}, requirements={"id": "\w+"}, methods={"PATCH", "OPTIONS"})
      *
      * @param string $id
      *

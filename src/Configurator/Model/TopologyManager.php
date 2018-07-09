@@ -22,6 +22,7 @@ use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\Utils\Dto\Schema;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
+use Nette\Utils\JsonException;
 use Nette\Utils\Strings;
 
 /**
@@ -112,6 +113,8 @@ class TopologyManager
      * @return Topology
      * @throws NodeException
      * @throws TopologyException
+     * @throws JsonException
+     * @throws EnumException
      */
     public function saveTopologySchema(Topology $topology, string $content, array $data): Topology
     {
@@ -155,6 +158,7 @@ class TopologyManager
      *
      * @return Topology
      * @throws TopologyException
+     * @throws EnumException
      */
     public function publishTopology(Topology $topology): Topology
     {
@@ -177,6 +181,7 @@ class TopologyManager
      *
      * @return Topology
      * @throws TopologyException
+     * @throws EnumException
      */
     public function unPublishTopology(Topology $topology): Topology
     {
@@ -199,6 +204,8 @@ class TopologyManager
      *
      * @return Topology
      * @throws NodeException
+     * @throws EnumException
+     * @throws JsonException
      */
     public function cloneTopology(Topology $topology): Topology
     {
@@ -271,6 +278,7 @@ class TopologyManager
      * @param Topology $topology
      *
      * @return Topology
+     * @throws JsonException
      */
     private function cloneTopologyShallow(Topology $topology): Topology
     {
@@ -309,6 +317,7 @@ class TopologyManager
      *
      * @throws TopologyException
      * @throws NodeException
+     * @throws EnumException
      */
     private function generateNodes(Topology $topology, Schema $dto): void
     {
@@ -346,6 +355,7 @@ class TopologyManager
      *
      * @throws NodeException
      * @throws TopologyException
+     * @throws EnumException
      */
     private function updateNodes(Topology $topology, Schema $dto): void
     {
@@ -408,6 +418,7 @@ class TopologyManager
      * @return Node
      * @throws TopologyException
      * @throws NodeException
+     * @throws EnumException
      */
     private function createNode(
         Topology $topology,
@@ -450,6 +461,7 @@ class TopologyManager
      * @return Node
      * @throws NodeException
      * @throws TopologyException
+     * @throws EnumException
      */
     private function updateNode(
         Topology $topology,
@@ -488,6 +500,7 @@ class TopologyManager
      *
      * @return Node
      * @throws NodeException
+     * @throws EnumException
      */
     private function setNodeAttributes(
         Topology $topology,
@@ -567,7 +580,7 @@ class TopologyManager
      */
     private function getNodeBySchemaId(Topology $topology, string $schemaId): Node
     {
-        /** @var Node $node */
+        /** @var Node|null $node */
         $node = $this->dm->getRepository(Node::class)->findOneBy([
             'topology' => $topology->getId(),
             'schemaId' => $schemaId,

@@ -195,6 +195,7 @@ class OAuth2Provider implements OAuth2ProviderInterface, LoggerAwareInterface
      * @param array              $data
      *
      * @return array
+     * @throws AuthorizationException
      */
     private function getTokenByGrant(OAuth2DtoInterface $dto, string $grant, array $data = []): array
     {
