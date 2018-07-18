@@ -40,7 +40,7 @@ class DummyExceptionConnector implements CustomNodeInterface
     /**
      * @throws Exception
      */
-    private function throwDummyException()
+    private function throwDummyException(): void
     {
         $words    = ['Lorem', 'ipsumdolor', 'sit', 'amet', 'consectetur', 'adipiscing', 'elit'];
         $wordsCnt = rand(3, 6);
@@ -52,4 +52,5 @@ class DummyExceptionConnector implements CustomNodeInterface
 
         throw new Exception(ucfirst(strtolower($text)) . 'exception');
     }
+
 }
