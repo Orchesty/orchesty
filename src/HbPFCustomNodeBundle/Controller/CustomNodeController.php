@@ -101,6 +101,8 @@ class CustomNodeController extends FOSRestController implements LoggerAwareInter
 
     /**
      * @param LoggerInterface $logger
+     *
+     * @required
      */
     public function setLogger(LoggerInterface $logger): void
     {
