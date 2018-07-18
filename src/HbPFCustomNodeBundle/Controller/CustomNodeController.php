@@ -71,7 +71,7 @@ class CustomNodeController extends FOSRestController implements LoggerAwareInter
         } catch (CustomNodeException $e) {
             $this->logger->error($e->getMessage(), ['exception' => $e]);
 
-            return $this->getErrorResponse($e, 400, ControllerUtils::createHeaders([], $e));
+            return $this->getErrorResponse($e, 200, ControllerUtils::createHeaders([], $e));
         } catch (Exception|Throwable $e) {
             $this->logger->error($e->getMessage(), ['exception' => $e]);
 
