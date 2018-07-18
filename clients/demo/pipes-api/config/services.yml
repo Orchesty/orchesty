@@ -83,3 +83,7 @@ services:
     hbpf.custom_node.request-carrier:
         class: Demo\CustomNode\DummyConnector
         public: true
+
+    hbpf.custom_node.dummy-exception:
+        class: Demo\CustomNode\DummyExceptionConnector
+        public: true
