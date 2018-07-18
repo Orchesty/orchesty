@@ -12,6 +12,7 @@ namespace Demo\CustomNode;
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
+use Hanaboso\PipesFramework\HbPFCustomNodeBundle\Exception\CustomNodeException;
 
 /**
  * Class IdnesConnector
@@ -50,7 +51,7 @@ class DummyExceptionConnector implements CustomNodeInterface
             $text .= $words[rand(0, 6)] . ' ';
         }
 
-        throw new Exception(ucfirst(strtolower($text)) . 'exception');
+        throw new CustomNodeException(ucfirst(strtolower($text)) . 'exception');
     }
 
 }

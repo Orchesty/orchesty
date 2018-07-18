@@ -13,6 +13,7 @@ use EmailServiceBundle\Utils\PipesHeaders;
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
+use Hanaboso\PipesFramework\HbPFCustomNodeBundle\Exception\CustomNodeException;
 
 /**
  * Class FilterBid
@@ -52,7 +53,7 @@ class FilterStockExchange implements CustomNodeInterface
         }
 
         if (mt_rand(1, 10) == 5) {
-            throw new Exception('My test error exception');
+            throw new CustomNodeException('My test error exception');
         }
 
         $dto->setData('');

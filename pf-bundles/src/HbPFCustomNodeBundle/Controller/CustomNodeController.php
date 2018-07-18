@@ -13,6 +13,7 @@ use Exception;
 use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\CommonsBundle\Utils\ControllerUtils;
+use Hanaboso\PipesFramework\HbPFCustomNodeBundle\Exception\CustomNodeException;
 use Hanaboso\PipesFramework\HbPFCustomNodeBundle\Handler\CustomNodeHandler;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
@@ -67,6 +68,10 @@ class CustomNodeController extends FOSRestController implements LoggerAwareInter
             $data = $this->handler->process($nodeId, (string) $request->getContent(), $request->headers->all());
 
             return $this->getResponse($data->getData(), 200, ControllerUtils::createHeaders($data->getHeaders()));
+        } catch (CustomNodeException $e) {
+            $this->logger->error($e->getMessage(), ['exception' => $e]);
+
+            return $this->getErrorResponse($e, 400, ControllerUtils::createHeaders([], $e));
         } catch (Exception|Throwable $e) {
             $this->logger->error($e->getMessage(), ['exception' => $e]);
 
