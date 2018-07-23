@@ -61,3 +61,14 @@ services:
 
     hbpf.custom_node.salesforce_app-campaigns-mapper:
         class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp\Mapper\SalesforceAppCampaignsMapper
+
+
+    ####
+    # SF - hack
+    ####
+    hbpf.connector.salesforceapp-cleverconnectors-create-subscriptions-connector:
+        class: CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp\CM\SalesforceAppCreateSubscriberConnector
+        arguments:
+            - '@cc.transport.curl.manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.notification']]

@@ -112,9 +112,8 @@ final class SalesforceAppCreateMapperTest extends TestCase
         $dto    = $this->getDto(7);
 
         $result = $mapper->process($dto);
-        self::assertNotEmpty($result->getHeaders());
-        self::assertArrayHasKey(CMHeaders::createKey(CMHeaders::RESULT_CODE), $result->getHeaders());
-        self::assertEquals($result->getHeaders()[CMHeaders::createKey(CMHeaders::RESULT_CODE)], 1003);
+        self::assertEmpty($result->getHeaders());
+        self::assertArrayNotHasKey(CMHeaders::createKey(CMHeaders::RESULT_CODE), $result->getHeaders());
     }
 
     /**

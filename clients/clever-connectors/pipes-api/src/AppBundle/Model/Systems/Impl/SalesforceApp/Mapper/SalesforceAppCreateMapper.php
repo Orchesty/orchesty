@@ -26,6 +26,10 @@ class SalesforceAppCreateMapper extends SalesforceAppMapperAbstract
             return FALSE;
         }
 
+        if ((bool) $data[self::DELETED] === FALSE && ($data[self::CREATED] !== $data[self::UPDATED])) {
+            return FALSE;
+        }
+
         return TRUE;
     }
 

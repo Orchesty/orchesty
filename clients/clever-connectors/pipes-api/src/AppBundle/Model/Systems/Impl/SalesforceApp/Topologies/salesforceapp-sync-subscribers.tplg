@@ -20,7 +20,7 @@
       <bpmn:incoming>SequenceFlow_1oyy4vn</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0nj2v89</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:task id="Task_1nmaujp" pipes:pipesType="connector" name="cleverconnectors-create-subscriptions-connector">
+    <bpmn:task id="Task_1nmaujp" pipes:pipesType="connector" name="salesforceapp-cleverconnectors-create-subscriptions-connector">
       <bpmn:incoming>SequenceFlow_005mazh</bpmn:incoming>
     </bpmn:task>
     <bpmn:task id="Task_1o0m5gk" pipes:pipesType="connector" name="cleverconnectors-update-subscriptions-connector">
