@@ -1,12 +1,10 @@
 services:
     _defaults:
-        autowire: true
-        autoconfigure: true
-        public: false
-        bind:
-            $connectorHandler: '@hbpf.handler.connector'
-            $logger: '@monolog.logger.commons'
+        public: '%public.services%'
 
-    Hanaboso\PipesFramework\HbPFConnectorBundle\Controller\:
-        resource: '../../Controller'
-        tags: ['controller.service_arguments']
+    Hanaboso\PipesFramework\HbPFConnectorBundle\Controller\ConnectorController:
+        class: Hanaboso\PipesFramework\HbPFConnectorBundle\Controller\ConnectorController
+        arguments:
+            - '@hbpf.handler.connector'
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]
