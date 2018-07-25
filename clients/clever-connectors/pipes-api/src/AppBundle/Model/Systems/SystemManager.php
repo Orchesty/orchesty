@@ -213,7 +213,6 @@ class SystemManager
         $this->systemLoader->getSystem($system);
         $offset = --$page * $limit;
 
-        /** @var SystemInstall[] $systems */
         if (is_null($synchronized)) {
             $systems = $this->systemRepository->findBy(['system' => $system], NULL, $limit, $offset);
         } else {
@@ -226,6 +225,7 @@ class SystemManager
         }
         $users = [];
 
+        /** @var SystemInstall $systemInstall */
         foreach ($systems as $systemInstall) {
             $users[] = $systemInstall->getUser();
         }

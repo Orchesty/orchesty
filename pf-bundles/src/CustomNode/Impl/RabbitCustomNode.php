@@ -204,6 +204,8 @@ abstract class RabbitCustomNode implements CustomNodeInterface, LoggerAwareInter
         foreach ($this->queues as $que) {
             $this->chann->queueUnbind($que, $this->ex, $que);
         }
+
+        $this->queues = [];
     }
 
     /**
