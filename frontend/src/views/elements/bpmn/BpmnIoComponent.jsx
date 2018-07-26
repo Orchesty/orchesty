@@ -1,6 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types';
-import ReactDOM from 'react-dom';
+import {connect} from 'react-redux';
+import * as metricsActions from 'actions/metricsActions';
+import * as nodeActions from 'actions/nodeActions';
+import StateComponent from 'wrappers/StateComponent';
+import stateMerge from 'utils/stateMerge';
+import {stateType} from 'rootApp/types';
 
 import 'diagram-js/assets/diagram-js.css';
 import 'bpmn-js/assets/bpmn-font/css/bpmn-embedded.css';
@@ -95,6 +100,8 @@ class BpmnIoComponent extends React.Component {
   }
 
   createBpmn(){
+    const {metrics} = this.props;
+
     this._modeler = new CustomBPMNModeler({
       propertiesPanel: {
         parent: this._propertiesElement
@@ -104,6 +111,24 @@ class BpmnIoComponent extends React.Component {
     this.loadXML();
     this._modeler.get('eventBus').on('commandStack.changed', this.changed);
     this._modeler.get('eventBus').on('selection.changed', this.selectionChanged);
+
+    this._modeler.get('eventBus').on('shape.added', (event) => {
+        let element = event.element;
+
+        if (element.labelTarget || !element.businessObject.$instanceOf('bpmn:FlowNode')) {
+            return;
+        }
+
+	    const errors = metrics[element.id].data.process.errors > 0 ? metrics[element.id].data.process.errors : '';
+
+        this._modeler.get('overlays').add(element, 'bubbles', {
+            position: {
+                top: -25,
+                right: 10
+            },
+            html: '<div><span class="badge badge-error" title="Failed processes">' + errors + '</span></div>'
+        });
+    });
   }
 
   selectionChanged(event){
@@ -253,7 +278,58 @@ BpmnIoComponent.propTypes = {
   topologyId: PropTypes.string,
   metricsRange: PropTypes.object,
   onPropPanelToggle: PropTypes.func.isRequired,
-  showEditorPropPanel: PropTypes.bool.isRequired
+  showEditorPropPanel: PropTypes.bool.isRequired,
+  nodesMetrics: PropTypes.object
 };
 
-export default BpmnIoComponent;
+
+function mapStateToProps(state, ownProps){
+	const {node, metrics} = state;
+
+	let nodesMetrics = {};
+
+	const nodeList = node.lists['@topology-' + ownProps.topologyId]; // kvuli success | ma items s nody
+
+	const topologyKey = ownProps.metricsRange ? `${ownProps.topologyId}[${ownProps.metricsRange.since}-${ownProps.metricsRange.till}]` : ownProps.topologyId;
+	const topologyMetricsElement = metrics.topologies[topologyKey];
+
+	if (topologyMetricsElement && topologyMetricsElement.state === 'success')
+    {
+	    topologyMetricsElement.items.forEach((nodeId) => {
+		    const nodeKey = ownProps.metricsRange ? `${nodeId}[${ownProps.metricsRange.since}-${ownProps.metricsRange.till}]` : nodeId;
+		    const nodeSchemaId = Object.values(node.elements).filter(node => node.topology_id=== ownProps.topologyId && node._id === nodeId);
+
+		    if (nodeSchemaId.length > 0) {
+			    nodesMetrics[nodeSchemaId[0].schema_id] = metrics.elements[nodeKey];
+		    }
+	    });
+    }
+
+	return {
+		state: stateMerge([nodeList && nodeList.state, topologyMetricsElement && topologyMetricsElement.state]),
+		metrics: nodesMetrics,
+		node: node
+	}
+}
+
+function mapActionsToProps(dispatch, ownProps){
+	const needNodeList = forced => dispatch(nodeActions.needNodesForTopology(ownProps.topologyId, forced));
+	const needMetricsList = forced => dispatch(metricsActions.needTopologyMetrics(ownProps.topologyId, ownProps.metricsRange, forced));
+	return {
+		needNodeList,
+		needMetricsList,
+		notLoadedCallback: () => {
+			needNodeList(false);
+			needMetricsList(false);
+		}
+	}
+}
+
+const BpmnIoComponentConnected = connect(mapStateToProps, mapActionsToProps)(StateComponent(BpmnIoComponent));
+
+BpmnIoComponentConnected.propTypes = {
+	topologyId: PropTypes.string.isRequired,
+	metricsRange: PropTypes.object
+};
+
+export default BpmnIoComponentConnected;

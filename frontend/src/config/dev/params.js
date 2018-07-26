@@ -1,3 +1,4 @@
 export default {
-  allowChangeServer: true
+  allowChangeServer: true,
+  urlPrefix: '/ui'
 }
