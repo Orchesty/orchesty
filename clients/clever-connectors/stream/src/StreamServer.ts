@@ -108,6 +108,8 @@ class StreamServer {
 
         this.stream.on("connection", (socket: SocketIO.Socket) => {
 
+            logger.info(`WS Connection opened ${JSON.stringify(this.settings)}`);
+
             socket.on(STREAM_EVENTS.SUBSCRIBE, (data: ISubscribeData) => {
                 logger.info(`Subscribe socket request ${socket.id}. Data: ${JSON.stringify(data)}`);
                 this.subscribe(socket, data);
