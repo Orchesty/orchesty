@@ -123,6 +123,10 @@ class StreamServer {
             socket.on("disconnect", (reason) => {
                 logger.info(`Disconnect socket ${socket.id}. Reason: ${reason}`);
             });
+
+            socket.on("error", (error) => {
+                logger.info(`WS error ${socket.id}. Error: ${error.message}`);
+            });
         });
 
         this.consumer.start();
