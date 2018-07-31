@@ -11,7 +11,6 @@ namespace CleverConnectors\AppBundle\Controller;
 
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Handler\CMEventsHandler;
-use Exception;
 use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Symfony\Component\HttpFoundation\Request;
@@ -121,11 +120,11 @@ class CMEventsController extends FOSRestController
     }
 
     /**
-     * @param Exception $e
+     * @param Throwable $e
      *
      * @return Response
      */
-    private function processException(Exception $e): Response
+    private function processException(Throwable $e): Response
     {
         $code = 500;
 

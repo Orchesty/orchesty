@@ -13,7 +13,6 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Limits\SystemLimitManager;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
-use CleverConnectors\AppBundle\Model\Systems\SystemInterface;
 use CleverConnectors\AppBundle\Model\Systems\SystemLoader;
 use CleverConnectors\AppBundle\Model\Systems\SystemTopologyRunner;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
@@ -160,7 +159,7 @@ class CMEventsManager implements LoggerAwareInterface
         array &$data
     ): SystemInstall
     {
-        /** @var SystemInterface|CMEventSystemInterface $system */
+        /** @var CMEventSystemInterface $system */
         $system  = $this->loader->getSystem($systemInstall->getSystem());
         $changed = $this->getChanges($system, $systemInstall, $data);
 

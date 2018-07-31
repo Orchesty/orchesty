@@ -16,6 +16,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use FOS\RestBundle\Decoder\XmlDecoder;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
+use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\RequestHandler;
 use Predis\Client;
 use Psr\Log\LoggerAwareInterface;
@@ -96,12 +97,14 @@ class InstallManager implements LoggerAwareInterface
         array $dirs
     )
     {
-        $this->dm              = $dm;
+        $this->dm = $dm;
+        /** @var TopologyRepository $repo */
+        $repo                  = $dm->getRepository(Topology::class);
         $this->client          = $client;
         $this->topologyManager = $topologyManager;
         $this->requestHandler  = $requestHandler;
         $this->categoryParser  = $categoryParser;
-        $this->comparator      = new TopologiesComparator($dm->getRepository(Topology::class), $dirs);
+        $this->comparator      = new TopologiesComparator($repo, $dirs);
         $this->xml             = new XmlDecoder();
         $this->logger          = new NullLogger();
     }

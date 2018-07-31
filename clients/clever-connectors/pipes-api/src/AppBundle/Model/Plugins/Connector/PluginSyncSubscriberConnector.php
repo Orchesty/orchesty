@@ -18,6 +18,7 @@ use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\AsyncCurl\CurlSender;
 use Hanaboso\CommonsBundle\Transport\AsyncCurl\CurlSenderFactory;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
@@ -99,6 +100,7 @@ class PluginSyncSubscriberConnector implements ConnectorInterface, BatchInterfac
      *
      * @return PromiseInterface
      * @throws SystemException
+     * @throws CurlException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
@@ -175,6 +177,7 @@ class PluginSyncSubscriberConnector implements ConnectorInterface, BatchInterfac
      * @param string               $processId
      *
      * @return PromiseInterface
+     * @throws CurlException
      */
     private function getFirstPage(
         CurlSender $sender,
@@ -234,6 +237,7 @@ class PluginSyncSubscriberConnector implements ConnectorInterface, BatchInterfac
      * @param int                  $total
      *
      * @return PromiseInterface
+     * @throws CurlException
      */
     private function getPages(
         CurlSender $sender,
@@ -252,7 +256,7 @@ class PluginSyncSubscriberConnector implements ConnectorInterface, BatchInterfac
             $requests[] = $this->fetchData($sender, RequestDto::from($requestDto, $uri))
                 ->then(
                     function (ResponseInterface $response) use ($i): SuccessMessage {
-                        return $this->createSuccessMessage(json_decode($response, TRUE), $i);
+                        return $this->createSuccessMessage(json_decode((string) $response->getBody(), TRUE), $i);
                     },
                     function (ResponseException $e) use ($system, $systemInstall, $i): SuccessMessage {
                         return $this->batchConnectorError($e, $system, $systemInstall, $i);

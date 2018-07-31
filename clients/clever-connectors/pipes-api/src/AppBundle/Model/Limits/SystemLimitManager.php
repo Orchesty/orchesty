@@ -93,9 +93,9 @@ class SystemLimitManager
         if ($dto) {
             $headers->set(CMHeaders::createKey(SystemLimitDto::LIMIT_KEY_HEADER), $dto->getLimitKey());
             $headers->set(CMHeaders::createKey(SystemLimitDto::LIMIT_LAST_UPDATE),
-                $dto->getLastUpdate() ? $dto->getLastUpdate()->getTimestamp() : NULL);
-            $headers->set(CMHeaders::createKey(SystemLimitDto::LIMIT_TIME_HEADER), $dto->getLimitTime());
-            $headers->set(CMHeaders::createKey(SystemLimitDto::LIMIT_VALUE_HEADER), $dto->getLimitValue());
+                $dto->getLastUpdate() ? (string) $dto->getLastUpdate()->getTimestamp() : '');
+            $headers->set(CMHeaders::createKey(SystemLimitDto::LIMIT_TIME_HEADER), (string) $dto->getLimitTime());
+            $headers->set(CMHeaders::createKey(SystemLimitDto::LIMIT_VALUE_HEADER), (string) $dto->getLimitValue());
         }
     }
 

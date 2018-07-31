@@ -133,11 +133,12 @@ class FacebookaudienceUpdateAudienceConnector extends FacebookaudienceConnectorA
      * @param array         $data
      *
      * @return ResponseDto
+     * @throws CurlException
      */
     private function addUsers(SystemInstall $sysInst, string $audienceId, array $data): ResponseDto
     {
         $req = new RequestDto(CurlManager::METHOD_POST,
-            new Uri(new Uri(sprintf('%s/%s/users', $this->baseUrl, $audienceId)))
+            new Uri(sprintf('%s/%s/users', $this->baseUrl, $audienceId))
         );
         $req->setHeaders($this->getHeaders());
 
@@ -160,11 +161,12 @@ class FacebookaudienceUpdateAudienceConnector extends FacebookaudienceConnectorA
      * @param array         $data
      *
      * @return ResponseDto
+     * @throws CurlException
      */
     private function removeUsers(SystemInstall $sysInst, string $audienceId, array $data): ResponseDto
     {
         $req = new RequestDto(CurlManager::METHOD_DELETE,
-            new Uri(new Uri(sprintf('%s/%s/users', $this->baseUrl, $audienceId)))
+            new Uri(sprintf('%s/%s/users', $this->baseUrl, $audienceId))
         );
         $req->setHeaders($this->getHeaders());
 
