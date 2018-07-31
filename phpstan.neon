@@ -1,6 +1,8 @@
 parameters:
 	ignoreErrors:
 		- '#Cannot call method toArray\(\) on iterable<Hanaboso\\PipesFramework\\Configurator\\Document\\Embed\\EmbedNode>.#'
+		- '#Parameter \#2 \$auth_session_handle of method OAuth::getAccessToken\(\) expects string, null given.#'
+		- '#Call to function method_exists\(\) with string *#'
 
 includes:
 	- vendor/phpstan/phpstan-doctrine/extension.neon

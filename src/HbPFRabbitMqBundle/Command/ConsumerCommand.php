@@ -146,9 +146,9 @@ class ConsumerCommand extends Command implements LoggerAwareInterface
         $channel = $this->manager->getChannel();
 
         /** @var BaseSyncConsumerAbstract $consumer */
-        $consumer     = $this->consumers[$consumerName];
-        $maxMessages  = PHP_INT_MAX;
-        $maxSeconds   = PHP_INT_MAX;
+        $consumer    = $this->consumers[$consumerName];
+        $maxMessages = PHP_INT_MAX;
+        $maxSeconds  = PHP_INT_MAX;
         /** @var array<string|null> $calledSetUps */
         $calledSetUps = [];
         $tickMethod   = NULL;
@@ -180,7 +180,6 @@ class ConsumerCommand extends Command implements LoggerAwareInterface
 
         $serializer = NULL;
         if ($consumer->getSerializer()) {
-            /** @var IMessageSerializer $metaClassName */
             $metaClassName = $consumer->getSerializer();
 
             if (!class_exists($metaClassName)) {
@@ -191,6 +190,7 @@ class ConsumerCommand extends Command implements LoggerAwareInterface
                 throw new BunnyException(sprintf('Method %s::getInstance() does not exist.', $metaClassName));
             }
 
+            /** @var mixed $metaClassName */
             $serializer = $metaClassName::getInstance();
         }
 

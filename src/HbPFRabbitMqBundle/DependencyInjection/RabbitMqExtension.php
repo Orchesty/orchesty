@@ -45,6 +45,7 @@ class RabbitMqExtension extends Extension implements ConfigurationInterface, Pre
     {
         $treeBuilder = new TreeBuilder();
 
+        /** @var ArrayNodeDefinition $rootNode */
         $rootNode = $treeBuilder->root("rabbit-mq");
 
         $rootNode = $this->getConnectionConfig($rootNode);
