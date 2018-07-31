@@ -142,7 +142,7 @@ class RabbitMqCompilerPass implements CompilerPassInterface
             ]);
             $definition->setPublic(TRUE);
 
-            if (array_key_exists(LoggerAwareInterface::class, class_implements($value['class']) ?: [])) {
+            if (array_key_exists(LoggerAwareInterface::class, class_implements($value['class']) ?? [])) {
                 $definition->addMethodCall('setLogger', [
                     new Reference('monolog.logger.rabbit-mq', ContainerInterface::IGNORE_ON_INVALID_REFERENCE),
                 ]);
@@ -182,7 +182,7 @@ class RabbitMqCompilerPass implements CompilerPassInterface
                 $value['max_seconds'],
             ]);
 
-            if (array_key_exists(LoggerAwareInterface::class, class_implements($value['class']) ?: [])) {
+            if (array_key_exists(LoggerAwareInterface::class, class_implements($value['class']) ?? [])) {
                 $definition->addMethodCall('setLogger', [
                     new Reference('monolog.logger.rabbit-mq', ContainerInterface::IGNORE_ON_INVALID_REFERENCE),
                 ]);

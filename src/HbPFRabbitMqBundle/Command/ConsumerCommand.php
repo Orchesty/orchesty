@@ -154,8 +154,8 @@ class ConsumerCommand extends Command implements LoggerAwareInterface
         $tickMethod   = NULL;
         $tickSeconds  = NULL;
 
-        $maxMessages = min($maxMessages, $consumer->getMaxMessages() ?: PHP_INT_MAX);
-        $maxSeconds  = min($maxSeconds, $consumer->getMaxSeconds() ?: PHP_INT_MAX);
+        $maxMessages = min($maxMessages, $consumer->getMaxMessages() ?? PHP_INT_MAX);
+        $maxSeconds  = min($maxSeconds, $consumer->getMaxSeconds() ?? PHP_INT_MAX);
 
         if (empty($consumer->getQueue())) {
             $queueOk = $channel->queueDeclare("", FALSE, FALSE, TRUE);
@@ -238,7 +238,7 @@ class ConsumerCommand extends Command implements LoggerAwareInterface
         $startTime = microtime(TRUE);
 
         while (microtime(TRUE) < $startTime + $maxSeconds && $this->messages < $maxMessages) {
-            $channel->getClient()->run($tickSeconds ?: $maxSeconds);
+            $channel->getClient()->run($tickSeconds ?? $maxSeconds);
             if ($tickMethod) {
                 $consumer->{$tickMethod}($channel, $channel->getClient());
             }
