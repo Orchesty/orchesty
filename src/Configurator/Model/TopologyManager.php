@@ -113,7 +113,6 @@ class TopologyManager
      * @return Topology
      * @throws NodeException
      * @throws TopologyException
-     * @throws JsonException
      * @throws EnumException
      */
     public function saveTopologySchema(Topology $topology, string $content, array $data): Topology
@@ -278,7 +277,6 @@ class TopologyManager
      * @param Topology $topology
      *
      * @return Topology
-     * @throws JsonException
      */
     private function cloneTopologyShallow(Topology $topology): Topology
     {
