@@ -7,7 +7,6 @@ use CleverConnectors\AppBundle\Model\DataLayout\LayoutField;
 use CleverConnectors\AppBundle\Model\Systems\Dto\ActionDto;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Hanaboso\CommonsBundle\Exception\EnumException;
-use Nette\Utils\Json;
 
 /**
  * Class DataLayout
@@ -150,7 +149,7 @@ class DataLayout
         foreach ($this->fields as $field) {
             $fields[] = $field->toArray();
         }
-        $this->jsonFields = Json::encode($fields, TRUE);
+        $this->jsonFields = json_encode($fields);
     }
 
     /**
@@ -159,7 +158,7 @@ class DataLayout
      */
     public function decode(): void
     {
-        foreach (Json::decode($this->jsonFields, TRUE) as $field) {
+        foreach (json_decode($this->jsonFields, TRUE) as $field) {
             $this->addField(new LayoutField($field['key'], $field['type']));
         }
     }

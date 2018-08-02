@@ -17,6 +17,7 @@ use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
@@ -86,6 +87,7 @@ abstract class CMSubscriberConnectorAbstract extends CMAuthorization implements 
      * @return ProcessDto
      * @throws CleverConnectorsException
      * @throws ConnectorException
+     * @throws CurlException
      */
     public function processCMAction(ProcessDto $dto, string $method, array $statusCode, string $email = ''): ProcessDto
     {

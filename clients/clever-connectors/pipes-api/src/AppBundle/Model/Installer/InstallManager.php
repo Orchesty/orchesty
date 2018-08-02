@@ -13,8 +13,13 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Installer\Dto\CompareResultDto;
 use CleverConnectors\AppBundle\Model\Installer\Dto\UpdateObject;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use FOS\RestBundle\Decoder\XmlDecoder;
+use Hanaboso\CommonsBundle\Exception\EnumException;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
+use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
+use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\RequestHandler;
@@ -129,6 +134,8 @@ class InstallManager implements LoggerAwareInterface
      *
      * @return array
      * @throws CleverConnectorsException
+     * @throws MongoDBException
+     * @throws TopologyException
      */
     public function prepareInstall(bool $makeCreate, bool $makeUpdate, bool $makeDelete, bool $force = FALSE): array
     {
@@ -282,6 +289,11 @@ class InstallManager implements LoggerAwareInterface
      * @param string   $content
      *
      * @return Topology
+     * @throws MongoDBException
+     * @throws EnumException
+     * @throws CurlException
+     * @throws NodeException
+     * @throws TopologyException
      */
     private function makeRunnable(Topology $topology, string $content): Topology
     {
@@ -296,6 +308,10 @@ class InstallManager implements LoggerAwareInterface
 
     /**
      * @param Topology $topology
+     *
+     * @throws CurlException
+     * @throws MongoDBException
+     * @throws TopologyException
      */
     private function makeDeletable(Topology $topology): void
     {

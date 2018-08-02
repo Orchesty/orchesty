@@ -24,6 +24,7 @@ use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\AsyncCurl\CurlSender;
 use Hanaboso\CommonsBundle\Transport\AsyncCurl\CurlSenderFactory;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
@@ -113,6 +114,7 @@ abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, Co
      * @return PromiseInterface
      * @throws SystemException
      * @throws CleverConnectorsException
+     * @throws CurlException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
@@ -191,6 +193,7 @@ abstract class QuickbooksCustomerConnectorAbstract implements BatchInterface, Co
      * @param SystemInstall $systemInstall
      *
      * @return array
+     * @throws CurlException
      */
     protected function doPageLoop(
         int $total,

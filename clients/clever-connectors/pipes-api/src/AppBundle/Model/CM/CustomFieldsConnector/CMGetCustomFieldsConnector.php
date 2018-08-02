@@ -8,6 +8,7 @@ use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
@@ -74,6 +75,7 @@ class CMGetCustomFieldsConnector extends CMAuthorization implements ConnectorInt
      *
      * @return ProcessDto
      * @throws CleverConnectorsException
+     * @throws CurlException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
@@ -87,6 +89,7 @@ class CMGetCustomFieldsConnector extends CMAuthorization implements ConnectorInt
      *
      * @return array
      * @throws CleverConnectorsException
+     * @throws CurlException
      */
     public function getCustomFieldsArray(ProcessDto $dto): array
     {
@@ -111,6 +114,7 @@ class CMGetCustomFieldsConnector extends CMAuthorization implements ConnectorInt
      *
      * @return array
      * @throws CleverConnectorsException
+     * @throws CurlException
      */
     private function getLists(RequestDto $req): array
     {

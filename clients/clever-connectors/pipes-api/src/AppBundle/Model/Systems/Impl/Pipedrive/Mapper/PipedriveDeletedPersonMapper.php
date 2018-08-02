@@ -6,7 +6,6 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CM\SubscriberConnector\SubscriberObject\CMSubscriber;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
-use Nette\Utils\Json;
 
 /**
  * Class PipedriveDeletedPersonMapper
@@ -24,7 +23,7 @@ class PipedriveDeletedPersonMapper implements CustomNodeInterface
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        $data = Json::decode($dto->getData(), TRUE);
+        $data = json_decode($dto->getData(), TRUE);
 
         if (!array_key_exists('previous', $data)
             || !array_key_exists('email', $data['previous'])) {
@@ -44,7 +43,7 @@ class PipedriveDeletedPersonMapper implements CustomNodeInterface
             $obj->setForeignId($data['id']);
         }
 
-        return $dto->setData(Json::encode($obj->toArray()));
+        return $dto->setData(json_encode($obj->toArray()));
     }
 
 }

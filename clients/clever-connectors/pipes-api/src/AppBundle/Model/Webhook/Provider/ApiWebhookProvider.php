@@ -20,6 +20,7 @@ use CleverConnectors\AppBundle\Repository\WebhookRepository;
 use CleverConnectors\AppBundle\Utils\WebhookUtils;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
@@ -136,6 +137,7 @@ class ApiWebhookProvider implements WebhookProviderInterface, LoggerAwareInterfa
      * @param string                 $userId
      *
      * @throws SystemException
+     * @throws MongoDBException
      */
     public function unsubscribe(WebhookSystemInterface $system, string $userId): void
     {
@@ -166,6 +168,7 @@ class ApiWebhookProvider implements WebhookProviderInterface, LoggerAwareInterfa
      * @param string                 $token
      *
      * @throws SystemException
+     * @throws MongoDBException
      */
     public function update(WebhookSystemInterface $system, string $userId, string $token): void
     {

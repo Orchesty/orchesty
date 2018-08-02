@@ -10,6 +10,7 @@
 namespace CleverConnectors\AppBundle\Model\ProgressCounter\Publisher;
 
 use Bunny\Client;
+use Exception;
 use Hanaboso\PipesFramework\RabbitMq\BunnyManager;
 
 /**
@@ -41,6 +42,7 @@ class AsyncPublisher implements IProgressPublisher
 
     /**
      * @return Client
+     * @throws Exception
      */
     private function getClient(): Client
     {
@@ -52,6 +54,8 @@ class AsyncPublisher implements IProgressPublisher
 
     /**
      * @param array $data
+     *
+     * @throws Exception
      */
     public function publish(array $data): void
     {

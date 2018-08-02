@@ -16,6 +16,7 @@ use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -89,6 +90,7 @@ class PluginsManager
      * @return array
      * @throws SystemException
      * @throws CleverConnectorsException
+     * @throws CurlException
      */
     public function install(Request $request): array
     {
@@ -224,6 +226,7 @@ class PluginsManager
      *
      * @return array
      * @throws CleverConnectorsException
+     * @throws CurlException
      */
     public function getDistributionLists(array $headers): array
     {
@@ -242,6 +245,7 @@ class PluginsManager
      *
      * @return array
      * @throws CleverConnectorsException
+     * @throws CurlException
      */
     public function createDistributionList(array $headers, string $body): array
     {

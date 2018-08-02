@@ -7,6 +7,7 @@ use CleverConnectors\AppBundle\Enum\PluginHeadersEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Requester\RequesterTrait;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 
@@ -39,6 +40,7 @@ class SwitchTokenRequester implements RequesterInterface
      * @param array $data
      *
      * @return RequestDto
+     * @throws CurlException
      */
     public function getRequestDto(array $data): RequestDto
     {

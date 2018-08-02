@@ -6,6 +6,7 @@ use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Document\Webhook;
 use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ODM\MongoDB\MongoDBException;
 
 /**
  * Class WebhookRepository
@@ -45,6 +46,7 @@ class WebhookRepository extends DocumentRepository
      * @param string $topologyName
      *
      * @return array
+     * @throws MongoDBException
      */
     public function getWebhooks(string $topologyName): array
     {
@@ -67,6 +69,7 @@ class WebhookRepository extends DocumentRepository
      * @param SystemInstall $systemInstall
      *
      * @return array|Webhook[]
+     * @throws MongoDBException
      */
     public function getWebhooksForUnsubscribe(SystemInstall $systemInstall): array
     {

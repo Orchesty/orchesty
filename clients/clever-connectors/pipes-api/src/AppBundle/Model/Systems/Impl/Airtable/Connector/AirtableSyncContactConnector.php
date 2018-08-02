@@ -13,6 +13,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\AsyncCurl\CurlSender;
 use Hanaboso\CommonsBundle\Transport\AsyncCurl\CurlSenderFactory;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Psr\Http\Message\ResponseInterface;
 use React\EventLoop\LoopInterface;
@@ -69,6 +70,7 @@ class AirtableSyncContactConnector extends AirtableContactConnectorAbstract
      *
      * @return PromiseInterface
      * @throws SystemException
+     * @throws CurlException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
@@ -101,6 +103,7 @@ class AirtableSyncContactConnector extends AirtableContactConnectorAbstract
      * @param SystemInstall $systemInstall
      *
      * @return PromiseInterface
+     * @throws CurlException
      */
     protected function getPage(
         CurlSender $sender,

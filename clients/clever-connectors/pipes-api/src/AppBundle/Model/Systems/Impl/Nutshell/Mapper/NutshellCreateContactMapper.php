@@ -6,7 +6,6 @@ use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
-use Nette\Utils\Json;
 
 /**
  * Class NutshellCreateContactMapper
@@ -24,7 +23,7 @@ class NutshellCreateContactMapper implements CustomNodeInterface
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        $data = Json::decode($dto->getData(), TRUE);
+        $data = json_decode($dto->getData(), TRUE);
 
         if (!is_array($data) || !array_key_exists(CleverFieldsEnum::EMAIL, $data)) {
             throw new CleverConnectorsException(
@@ -33,7 +32,7 @@ class NutshellCreateContactMapper implements CustomNodeInterface
             );
         }
 
-        return $dto->setData(Json::encode([
+        return $dto->setData(json_encode([
             'jsonrpc' => '2.0',
             'id'      => 'contact',
             'method'  => 'newContact',

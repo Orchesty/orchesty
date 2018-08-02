@@ -17,6 +17,7 @@ use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\AsyncCurl\CurlSender;
 use Hanaboso\CommonsBundle\Transport\AsyncCurl\CurlSenderFactory;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
@@ -99,6 +100,7 @@ class PipedriveSyncPersonConnector implements ConnectorInterface, BatchInterface
      *
      * @return PromiseInterface
      * @throws SystemException
+     * @throws CurlException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
@@ -164,6 +166,7 @@ class PipedriveSyncPersonConnector implements ConnectorInterface, BatchInterface
      * @param SystemInstall $systemInstall
      *
      * @return PromiseInterface
+     * @throws CurlException
      */
     private function getPersonsPage(
         CurlSender $sender,

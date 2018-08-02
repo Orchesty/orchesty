@@ -22,6 +22,7 @@ use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Traits\SystemTrait;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 
@@ -131,6 +132,7 @@ abstract class PluginSystemAbstract implements AuthorizationInterface, CMEventSy
      *
      * @return RequestDto
      * @throws SystemException
+     * @throws CurlException
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {
@@ -270,6 +272,7 @@ abstract class PluginSystemAbstract implements AuthorizationInterface, CMEventSy
      *
      * @return RequesterInterface
      * @throws SystemException
+     * @throws CurlException
      */
     public function getSwitchTokenRequester(SystemInstall $systemInstall): RequesterInterface
     {

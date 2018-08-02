@@ -4,6 +4,7 @@ namespace CleverConnectors\AppBundle\Model\CM\TestBenchmarkConnector;
 
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
@@ -73,6 +74,7 @@ class CMTestBenchmarkSpitterConnector implements ConnectorInterface, LoggerAware
      * @param ProcessDto $dto
      *
      * @return ProcessDto
+     * @throws CurlException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {

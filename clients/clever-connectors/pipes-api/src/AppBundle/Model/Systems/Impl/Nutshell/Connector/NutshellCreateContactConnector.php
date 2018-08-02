@@ -17,7 +17,6 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
-use Nette\Utils\Json;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\NullLogger;
 
@@ -79,7 +78,7 @@ class NutshellCreateContactConnector implements ConnectorInterface, LoggerAwareI
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
-        $data = Json::decode($dto->getData(), TRUE);
+        $data = json_decode($dto->getData(), TRUE);
 
         if (!is_array($data) || !isset($data['params']['contact']['email'][0])) {
             throw new CleverConnectorsException(

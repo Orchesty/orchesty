@@ -7,9 +7,11 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use DateTime;
 use DateTimeZone;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Hanaboso\CommonsBundle\Crypt\CryptException;
 use Hanaboso\CommonsBundle\Crypt\CryptManager;
 use InvalidArgumentException;
 use MongoDate;
+use Throwable;
 
 /**
  * Class SystemInstall
@@ -418,6 +420,7 @@ class SystemInstall
      * Encrypts settings field before saving to storage
      *
      * @ODM\PreFlush
+     * @throws CryptException
      */
     public function encrypt(): void
     {
@@ -428,6 +431,7 @@ class SystemInstall
      * Decrypts settings field when loading from storage
      *
      * @ODM\PostLoad
+     * @throws CryptException
      */
     public function decrypt(): void
     {
@@ -504,6 +508,7 @@ class SystemInstall
      * @param array $data
      *
      * @return SystemInstall
+     * @throws CleverConnectorsException
      */
     public static function from(array $data): SystemInstall
     {
@@ -530,7 +535,11 @@ class SystemInstall
             ->setSettings([]);
 
         if (isset($data[self::ENCRYPTED_SETTINGS])) {
-            $systemInstall->setSettings(CryptManager::decrypt($data[self::ENCRYPTED_SETTINGS]));
+            try {
+                $systemInstall->setSettings(CryptManager::decrypt($data[self::ENCRYPTED_SETTINGS]));
+            } catch (Throwable $t) {
+                throw new CleverConnectorsException($t->getMessage(), $t->getCode(), $t->getPrevious());
+            }
         }
 
         $synchronizedTime = self::prepareDate($data, self::SYNCHRONIZED_TIME);

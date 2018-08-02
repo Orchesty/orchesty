@@ -30,7 +30,9 @@ use CleverConnectors\AppBundle\Utils\WebhookUtils;
 use DateTime;
 use DateTimeZone;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
+use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesFramework\Authorization\Utils\ScopeFormatter;
@@ -194,6 +196,7 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface, CMEventS
      * @param array         $data
      *
      * @return SystemInstall
+     * @throws AuthorizationException
      */
     public function saveToken(SystemInstall $systemInstall, array $data): SystemInstall
     {
@@ -213,6 +216,7 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface, CMEventS
      *
      * @return SystemInstall
      * @throws SystemException
+     * @throws AuthorizationException
      */
     public function refreshToken(SystemInstall $systemInstall): SystemInstall
     {
@@ -236,6 +240,7 @@ class HubspotSystem implements WebhookSystemInterface, OAuth2Interface, CMEventS
      *
      * @return RequestDto
      * @throws SystemException
+     * @throws CurlException
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {

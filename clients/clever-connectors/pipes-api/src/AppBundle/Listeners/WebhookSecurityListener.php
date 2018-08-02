@@ -13,8 +13,10 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
+use Hanaboso\PipesFramework\Configurator\Exception\StartingPointException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -66,6 +68,8 @@ class WebhookSecurityListener implements EventSubscriberInterface
      * @throws CleverConnectorsException
      * @throws SystemException
      * @throws MongoDBException
+     * @throws CurlException
+     * @throws StartingPointException
      */
     public function checkSecurity(FilterControllerEvent $ev): void
     {

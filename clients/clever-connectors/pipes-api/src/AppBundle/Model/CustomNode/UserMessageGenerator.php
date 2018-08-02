@@ -16,6 +16,7 @@ use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\PipesFramework\Configurator\Exception\StartingPointException;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
@@ -153,6 +154,7 @@ class UserMessageGenerator implements BatchInterface, CustomNodeInterface
      * @return PromiseInterface
      * @throws SystemException
      * @throws MongoDBException
+     * @throws StartingPointException
      */
     public function prepareData(array $item, int $i): PromiseInterface
     {
@@ -178,6 +180,7 @@ class UserMessageGenerator implements BatchInterface, CustomNodeInterface
      * @return PromiseInterface
      * @throws SystemException
      * @throws MongoDBException
+     * @throws StartingPointException
      */
     private function processItem(array $item, int $i, callable $itemCallback): PromiseInterface
     {

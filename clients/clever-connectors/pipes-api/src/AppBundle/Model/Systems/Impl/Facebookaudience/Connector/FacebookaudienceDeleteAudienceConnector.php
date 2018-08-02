@@ -117,6 +117,7 @@ class FacebookaudienceDeleteAudienceConnector extends FacebookaudienceConnectorA
      *
      * @return RequestDto
      * @throws SystemException
+     * @throws CurlException
      */
     private function prepareRequestDto(
         SystemInstall $systemInstall,

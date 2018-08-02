@@ -10,7 +10,6 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
-use Nette\Utils\Json;
 
 /**
  * Class BigcommerceCustomerMapperAbstract
@@ -51,7 +50,7 @@ abstract class BigcommerceCustomerMapperAbstract implements CustomNodeInterface
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        $data = Json::decode($dto->getData(), TRUE);
+        $data = json_decode($dto->getData(), TRUE);
         if (!array_key_exists('email', $data)) {
             throw new CleverConnectorsException(
                 'Missing required email field in data.',
@@ -83,7 +82,7 @@ abstract class BigcommerceCustomerMapperAbstract implements CustomNodeInterface
             $subscriber->setForeignId($data['id']);
         }
 
-        return $dto->setData(Json::encode($subscriber->toArray()));
+        return $dto->setData(json_encode($subscriber->toArray()));
     }
 
 }

@@ -9,6 +9,7 @@
 
 namespace CleverConnectors\AppBundle\Model\ProgressCounter\Publisher;
 
+use Exception;
 use Hanaboso\PipesFramework\RabbitMq\Producer\AbstractProducer;
 
 /**
@@ -36,6 +37,8 @@ class SyncPublisher implements IProgressPublisher
 
     /**
      * @param array $data
+     *
+     * @throws Exception
      */
     public function publish(array $data): void
     {

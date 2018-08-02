@@ -6,7 +6,6 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CM\SubscriberConnector\SubscriberObject\CMSubscriber;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
-use Nette\Utils\Json;
 
 /**
  * Class BigcommerceDeletedCustomerMapper
@@ -24,7 +23,7 @@ class BigcommerceDeletedCustomerMapper implements CustomNodeInterface
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        $data = Json::decode($dto->getData(), TRUE);
+        $data = json_decode($dto->getData(), TRUE);
         if (!array_key_exists('id', $data)) {
             throw new CleverConnectorsException(
                 'Missing required id field in data.',
@@ -39,7 +38,7 @@ class BigcommerceDeletedCustomerMapper implements CustomNodeInterface
             ->setEmail((string) $data['id'])
             ->setReactivate(FALSE);
 
-        return $dto->setData(Json::encode($subscriber->toArray()));
+        return $dto->setData(json_encode($subscriber->toArray()));
     }
 
 }

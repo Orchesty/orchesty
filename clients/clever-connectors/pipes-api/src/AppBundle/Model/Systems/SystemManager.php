@@ -29,9 +29,11 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\CommonsBundle\Exception\EnumException;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
+use Hanaboso\PipesFramework\Configurator\Exception\StartingPointException;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\RequestHandler;
 
 /**
@@ -322,6 +324,7 @@ class SystemManager
      * @return SystemInstall
      * @throws SystemException
      * @throws MongoDBException
+     * @throws StartingPointException
      */
     public function saveSystemSettings(string $user, string $systemKey, array $data): SystemInstall
     {
@@ -347,6 +350,7 @@ class SystemManager
      * @return SystemInstall
      * @throws SystemException
      * @throws MongoDBException
+     * @throws StartingPointException
      */
     public function switchToken(string $user, string $system, string $token): SystemInstall
     {
@@ -368,6 +372,7 @@ class SystemManager
      * @return int
      * @throws SystemException
      * @throws MongoDBException
+     * @throws StartingPointException
      */
     public function synchronizeSubscriptions(string $user, string $system): int
     {
@@ -447,6 +452,7 @@ class SystemManager
      * @param LastSync[]    $syncs
      *
      * @throws SystemException
+     * @throws CurlException
      */
     public function deleteTopology(
         ?Topology $topology = NULL,
@@ -521,6 +527,7 @@ class SystemManager
      * @return array
      * @throws EnumException
      * @throws SystemException
+     * @throws MongoDBException
      */
     public function getSystemList(bool $toArray = FALSE): array
     {
@@ -603,6 +610,7 @@ class SystemManager
      *
      * @throws SystemException
      * @throws MongoDBException
+     * @throws StartingPointException
      */
     protected function activateEvents(SystemInterface $system, SystemInstall $systemInstall, array &$data): void
     {
@@ -668,6 +676,7 @@ class SystemManager
      * @return array
      * @throws SystemException
      * @throws MongoDBException
+     * @throws StartingPointException
      */
     private function runTopologies(string $user, string $system, string $topology, array $data): array
     {
@@ -687,6 +696,7 @@ class SystemManager
      *
      * @throws SystemException
      * @throws MongoDBException
+     * @throws StartingPointException
      */
     private function runSwitchTokenTopologies(SystemInstall $systemInstall, string $token): void
     {

@@ -36,8 +36,10 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
+use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
+use Hanaboso\PipesFramework\Configurator\Exception\StartingPointException;
 use LogicException;
 
 /**
@@ -234,6 +236,7 @@ class FacebookaudienceSystem implements OAuth2Interface
      * @param array         $data
      *
      * @return SystemInstall
+     * @throws AuthorizationException
      */
     public function saveToken(SystemInstall $systemInstall, array $data): SystemInstall
     {
@@ -251,6 +254,7 @@ class FacebookaudienceSystem implements OAuth2Interface
      * @param SystemInstall $systemInstall
      *
      * @return SystemInstall
+     * @throws AuthorizationException
      */
     public function refreshToken(SystemInstall $systemInstall): SystemInstall
     {
@@ -266,6 +270,7 @@ class FacebookaudienceSystem implements OAuth2Interface
      *
      * @return RequestDto
      * @throws SystemException
+     * @throws CurlException
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {
@@ -379,6 +384,7 @@ class FacebookaudienceSystem implements OAuth2Interface
      *
      * @return array
      * @throws MongoDBException
+     * @throws StartingPointException
      */
     public function createAd(SystemInstall $systemInstall, array $data): array
     {
@@ -435,6 +441,7 @@ class FacebookaudienceSystem implements OAuth2Interface
      *
      * @return array
      * @throws MongoDBException
+     * @throws StartingPointException
      */
     public function syncAudience(SystemInstall $systemInstall, array $data): array
     {
@@ -454,6 +461,7 @@ class FacebookaudienceSystem implements OAuth2Interface
      *
      * @return array
      * @throws MongoDBException
+     * @throws StartingPointException
      */
     public function createAudience(SystemInstall $systemInstall, array $data): array
     {
@@ -488,6 +496,7 @@ class FacebookaudienceSystem implements OAuth2Interface
      *
      * @return array
      * @throws MongoDBException
+     * @throws StartingPointException
      */
     public function checkAdStatus(SystemInstall $systemInstall, array $data): array
     {
@@ -512,6 +521,7 @@ class FacebookaudienceSystem implements OAuth2Interface
      * @return array
      * @throws DocumentNotFoundException
      * @throws MongoDBException
+     * @throws StartingPointException
      */
     public function addEmails(SystemInstall $systemInstall, array $data): array
     {
@@ -527,6 +537,7 @@ class FacebookaudienceSystem implements OAuth2Interface
      * @return array
      * @throws DocumentNotFoundException
      * @throws MongoDBException
+     * @throws StartingPointException
      */
     public function removeEmails(SystemInstall $systemInstall, array $data): array
     {
@@ -561,6 +572,7 @@ class FacebookaudienceSystem implements OAuth2Interface
      *
      * @throws DocumentNotFoundException
      * @throws MongoDBException
+     * @throws StartingPointException
      */
     private function updateAudience(SystemInstall $systemInstall, array $data, string $key): void
     {

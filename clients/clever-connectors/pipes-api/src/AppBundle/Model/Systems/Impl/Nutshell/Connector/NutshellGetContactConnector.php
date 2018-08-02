@@ -18,7 +18,6 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
-use Nette\Utils\Json;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\NullLogger;
 
@@ -80,7 +79,7 @@ class NutshellGetContactConnector implements ConnectorInterface, LoggerAwareInte
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
-        $data = Json::decode($dto->getData(), TRUE);
+        $data = json_decode($dto->getData(), TRUE);
 
         if (!is_array($data) || !isset($data[CleverFieldsEnum::FOREIGN_ID])) {
             throw new CleverConnectorsException(
@@ -91,7 +90,7 @@ class NutshellGetContactConnector implements ConnectorInterface, LoggerAwareInte
 
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
         $requestDto    = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_POST);
-        $requestDto->setBody(Json::encode([
+        $requestDto->setBody(json_encode([
             'jsonrpc' => '2.0',
             'id'      => 'email',
             'method'  => 'getContact',
@@ -102,7 +101,7 @@ class NutshellGetContactConnector implements ConnectorInterface, LoggerAwareInte
 
         try {
             $response  = $this->manager->send($requestDto);
-            $innerData = Json::decode($response->getBody(), TRUE);
+            $innerData = json_decode($response->getBody(), TRUE);
 
             if (!is_array($innerData) || !isset($innerData['result']['rev'])) {
                 throw new CleverConnectorsException(
@@ -111,7 +110,7 @@ class NutshellGetContactConnector implements ConnectorInterface, LoggerAwareInte
                 );
             }
 
-            $dto->setData(Json::encode(array_merge($innerData,
+            $dto->setData(json_encode(array_merge($innerData,
                 [CleverFieldsEnum::FOREIGN_ID => $data[CleverFieldsEnum::FOREIGN_ID]]
             )));
         } catch (CurlException $e) {

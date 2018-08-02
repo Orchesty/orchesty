@@ -10,6 +10,7 @@ use CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\Requester\PipedriveC
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Clue\React\Buzz\Message\ResponseException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Psr\Http\Message\ResponseInterface;
 use React\EventLoop\LoopInterface;
@@ -32,6 +33,7 @@ class PipedriveCMActivator extends CMEventActivator
      * @return PromiseInterface
      * @throws SystemException
      * @throws CleverConnectorsException
+     * @throws CurlException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {

@@ -22,7 +22,6 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
-use Nette\Utils\Json;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\NullLogger;
@@ -123,6 +122,7 @@ class BigcommerceSyncCustomerConnector implements BatchInterface, ConnectorInter
      *
      * @return PromiseInterface
      * @throws SystemException
+     * @throws CurlException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
@@ -175,7 +175,7 @@ class BigcommerceSyncCustomerConnector implements BatchInterface, ConnectorInter
      */
     protected function getTotalPages(ResponseInterface $response): int
     {
-        $data = Json::decode($response->getBody()->getContents(), TRUE);
+        $data = json_decode($response->getBody()->getContents(), TRUE);
 
         if (!is_array($data) || !array_key_exists('count', $data)) {
             throw new SystemException(
@@ -208,6 +208,7 @@ class BigcommerceSyncCustomerConnector implements BatchInterface, ConnectorInter
      * @param SystemInstall $systemInstall
      *
      * @return array
+     * @throws CurlException
      */
     private function doPageLoop(
         int $total,
@@ -245,10 +246,10 @@ class BigcommerceSyncCustomerConnector implements BatchInterface, ConnectorInter
      */
     private function createSuccessMessage(ResponseInterface $response, int $i): SuccessMessage
     {
-        $data = Json::decode($response->getBody()->getContents(), TRUE);
+        $data = json_decode($response->getBody()->getContents(), TRUE);
 
         if (is_array($data)) {
-            $successMessage = (new SuccessMessage($i))->setData(Json::encode($data));
+            $successMessage = (new SuccessMessage($i))->setData(json_encode($data));
             unset($data);
 
             return $successMessage;

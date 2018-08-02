@@ -12,8 +12,10 @@ namespace CleverConnectors\AppBundle\Model\Installer;
 use CleverConnectors\AppBundle\Model\Installer\Dto\CompareResultDto;
 use CleverConnectors\AppBundle\Model\Installer\Dto\TopologyFile;
 use CleverConnectors\AppBundle\Model\Installer\Dto\UpdateObject;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use FOS\RestBundle\Decoder\XmlDecoder;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
+use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
 use Symfony\Component\Finder\SplFileInfo;
@@ -50,6 +52,8 @@ class TopologiesComparator
 
     /**
      * @return CompareResultDto
+     * @throws MongoDBException
+     * @throws TopologyException
      */
     public function compare(): CompareResultDto
     {
@@ -98,6 +102,7 @@ class TopologiesComparator
      * @param SplFileInfo $file
      *
      * @return bool
+     * @throws TopologyException
      */
     private function isEqual(Topology $topology, SplFileInfo $file): bool
     {

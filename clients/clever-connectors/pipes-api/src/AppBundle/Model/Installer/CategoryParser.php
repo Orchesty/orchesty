@@ -13,6 +13,7 @@ use CleverConnectors\AppBundle\Model\Installer\Dto\TopologyFile;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Category\Document\Category;
+use Hanaboso\PipesFramework\Category\Exception\CategoryException;
 use Hanaboso\PipesFramework\Category\Model\CategoryManager;
 use Hanaboso\PipesFramework\Category\Repository\CategoryRepository;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
@@ -146,6 +147,8 @@ class CategoryParser
     /**
      * @param Topology     $topology
      * @param TopologyFile $file
+     *
+     * @throws CategoryException
      */
     public function classifyTopology(Topology $topology, TopologyFile $file): void
     {
@@ -324,6 +327,7 @@ class CategoryParser
      * @param string $parent
      *
      * @return Category
+     * @throws CategoryException
      */
     private function createCategory(string $name, string $parent): Category
     {

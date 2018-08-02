@@ -11,7 +11,9 @@ use CleverConnectors\AppBundle\Utils\DateTimeUtils;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\CommonsBundle\Exception\EnumException;
+use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 use Hanaboso\CommonsBundle\Utils\ControllerUtils;
+use Hanaboso\PipesFramework\Configurator\Exception\StartingPointException;
 
 /**
  * Class SystemHandler
@@ -110,6 +112,7 @@ class SystemHandler
      * @return array
      * @throws CleverConnectorsException
      * @throws SystemException
+     * @throws PipesFrameworkException
      */
     public function installSystem(string $user, string $system, array $data): array
     {
@@ -135,6 +138,7 @@ class SystemHandler
      * @return array
      * @throws SystemException
      * @throws MongoDBException
+     * @throws StartingPointException
      */
     public function saveSystemSettings(string $user, string $system, array $data): array
     {
@@ -163,8 +167,10 @@ class SystemHandler
      * @param array  $data
      *
      * @return array
-     * @throws SystemException
      * @throws MongoDBException
+     * @throws PipesFrameworkException
+     * @throws SystemException
+     * @throws StartingPointException
      */
     public function switchToken(string $user, string $system, array $data): array
     {
@@ -181,6 +187,7 @@ class SystemHandler
      * @return array
      * @throws SystemException
      * @throws MongoDBException
+     * @throws StartingPointException
      */
     public function synchronizeSubscriptions(string $user, string $system): array
     {
@@ -196,6 +203,7 @@ class SystemHandler
      *
      * @return array
      * @throws SystemException
+     * @throws PipesFrameworkException
      */
     public function setPassword(string $user, string $system, array $data): array
     {
@@ -293,6 +301,7 @@ class SystemHandler
      * @return array
      * @throws EnumException
      * @throws SystemException
+     * @throws MongoDBException
      */
     public function getSystemList(): array
     {

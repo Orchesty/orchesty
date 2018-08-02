@@ -11,6 +11,8 @@ namespace CleverConnectors\AppBundle\Command;
 
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Installer\InstallManager;
+use Doctrine\ODM\MongoDB\MongoDBException;
+use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
@@ -64,6 +66,8 @@ class InstallTopologyCommand extends Command
      * @param OutputInterface $output
      *
      * @throws CleverConnectorsException
+     * @throws MongoDBException
+     * @throws TopologyException
      */
     protected function execute(InputInterface $input, OutputInterface $output): void
     {

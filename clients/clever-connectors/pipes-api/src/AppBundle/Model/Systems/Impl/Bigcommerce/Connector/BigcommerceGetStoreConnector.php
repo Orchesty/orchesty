@@ -19,7 +19,6 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
-use Nette\Utils\Json;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\NullLogger;
 
@@ -111,7 +110,7 @@ class BigcommerceGetStoreConnector implements ConnectorInterface, LoggerAwareInt
             $response = $this->manager->send($requestDto->setUri(
                 new Uri(sprintf($requestDto->getUri(TRUE) . self::STORE_URL))
             ));
-            $this->system->saveLimit($systemInstall, Json::decode($response->getBody(), TRUE));
+            $this->system->saveLimit($systemInstall, json_decode($response->getBody(), TRUE));
             $this->dm->flush();
         } catch (CurlException $e) {
             return $this->connectorError($e, $this->system, $systemInstall, $dto);

@@ -71,6 +71,8 @@ class SystemController extends FOSRestController
             return $this->getResponse($data);
         } catch (SystemException|EnumException $e) {
             return $this->processException($e);
+        } catch (Throwable $e) {
+            return $this->processException($e);
         }
     }
 
@@ -157,6 +159,8 @@ class SystemController extends FOSRestController
             return $this->getResponse($this->handler->installSystem($userId, $systemKey, $request->request->all()),
                 200);
         } catch (SystemException | CleverConnectorsException $e) {
+            return $this->processException($e);
+        } catch (Throwable $e) {
             return $this->processException($e);
         }
     }
@@ -248,6 +252,8 @@ class SystemController extends FOSRestController
         try {
             return $this->getResponse($this->handler->setPassword($userId, $systemKey, $request->request->all()), 200);
         } catch (SystemException $e) {
+            return $this->processException($e);
+        } catch (Throwable $e) {
             return $this->processException($e);
         }
     }

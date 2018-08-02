@@ -6,7 +6,6 @@ use CleverConnectors\AppBundle\Enum\CleverFieldsEnum;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
-use Nette\Utils\Json;
 
 /**
  * Class FacebookaudienceCreateSubscribersMapper
@@ -24,7 +23,7 @@ class FacebookaudienceCreateSubscribersMapper implements CustomNodeInterface
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        $data = Json::decode($dto->getData(), TRUE);
+        $data = json_decode($dto->getData(), TRUE);
 
         if (!is_array($data) || empty($data)) {
             throw new CleverConnectorsException('Missing data', CleverConnectorsException::MISSING_DATA);
@@ -37,7 +36,7 @@ class FacebookaudienceCreateSubscribersMapper implements CustomNodeInterface
             }
         }
 
-        return $dto->setData(Json::encode([
+        return $dto->setData(json_encode([
             'payload' => [
                 'schema' => 'EMAIL_SHA256',
                 'data'   => $hashedEmails,

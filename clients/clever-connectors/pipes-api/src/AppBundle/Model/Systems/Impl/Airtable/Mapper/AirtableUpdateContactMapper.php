@@ -7,7 +7,6 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
-use Nette\Utils\Json;
 
 /**
  * Class AirtableUpdateContactMapper
@@ -25,7 +24,7 @@ class AirtableUpdateContactMapper implements CustomNodeInterface
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        $data = Json::decode($dto->getData(), TRUE);
+        $data = json_decode($dto->getData(), TRUE);
 
         if (!is_array($data) || !array_key_exists(CleverFieldsEnum::FOREIGN_ID, $data)) {
             throw new CleverConnectorsException(
@@ -40,7 +39,7 @@ class AirtableUpdateContactMapper implements CustomNodeInterface
 
         $data[$eventKey] = 1;
 
-        return $dto->setData(Json::encode($data));
+        return $dto->setData(json_encode($data));
     }
 
 }

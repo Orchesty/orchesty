@@ -23,11 +23,15 @@ use CleverConnectors\AppBundle\Utils\InnerRequestUtils;
 use DateTime;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
+use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
+use Hanaboso\PipesFramework\Configurator\Exception\StartingPointException;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\StartingPointHandler;
 
@@ -201,6 +205,8 @@ class SalesforceAppSystem implements OAuth2Interface, CMEventSystemInterface
      * @return SystemInstall
      * @throws SystemException
      * @throws ConnectorException
+     * @throws AuthorizationException
+     * @throws CurlException
      */
     public function saveToken(SystemInstall $systemInstall, array $data): SystemInstall
     {
@@ -219,6 +225,7 @@ class SalesforceAppSystem implements OAuth2Interface, CMEventSystemInterface
      * @param SystemInstall $systemInstall
      *
      * @return SystemInstall
+     * @throws AuthorizationException
      */
     public function refreshToken(SystemInstall $systemInstall): SystemInstall
     {
@@ -235,6 +242,7 @@ class SalesforceAppSystem implements OAuth2Interface, CMEventSystemInterface
      *
      * @return RequestDto
      * @throws SystemException
+     * @throws CurlException
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {
@@ -330,8 +338,10 @@ class SalesforceAppSystem implements OAuth2Interface, CMEventSystemInterface
      *
      * @return array
      * @throws CleverConnectorsException
-     * @throws SystemException
      * @throws MongoDBException
+     * @throws SystemException
+     * @throws PipesFrameworkException
+     * @throws StartingPointException
      */
     public function runFilterSync(SystemInstall $systemInstall, array $data): array
     {
@@ -360,6 +370,7 @@ class SalesforceAppSystem implements OAuth2Interface, CMEventSystemInterface
      *
      * @return array
      * @throws CleverConnectorsException
+     * @throws CurlException
      */
     public function getCustomFields(SystemInstall $systemInstall, array $data): array
     {

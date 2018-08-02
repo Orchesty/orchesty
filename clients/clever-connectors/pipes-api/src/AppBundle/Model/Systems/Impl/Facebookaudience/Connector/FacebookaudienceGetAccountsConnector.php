@@ -87,6 +87,7 @@ class FacebookaudienceGetAccountsConnector extends FacebookaudienceConnectorAbst
      *
      * @return RequestDto
      * @throws SystemException
+     * @throws CurlException
      */
     private function prepareRequestDto(SystemInstall $systemInstall, ?ProcessDto $dto = NULL): RequestDto
     {

@@ -26,6 +26,7 @@ use CleverConnectors\AppBundle\Utils\AuthorizationUtils;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
+use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -112,6 +113,7 @@ class FacebookLeadsSystem implements SystemInterface, OAuth2Interface
      * @param array         $data
      *
      * @return SystemInstall
+     * @throws AuthorizationException
      */
     public function saveToken(SystemInstall $systemInstall, array $data): SystemInstall
     {
@@ -186,6 +188,7 @@ class FacebookLeadsSystem implements SystemInterface, OAuth2Interface
      *
      * @return RequestDto
      * @throws SystemException
+     * @throws CurlException
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {

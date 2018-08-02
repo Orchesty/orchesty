@@ -21,7 +21,6 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
-use Nette\Utils\Json;
 use Nette\Utils\Strings;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\NullLogger;
@@ -86,7 +85,7 @@ class SalesforceUpdateContactConnector implements ConnectorInterface, LoggerAwar
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
-        $data = Json::decode($dto->getData(), TRUE);
+        $data = json_decode($dto->getData(), TRUE);
 
         if (!is_array($data) || !array_key_exists(CleverFieldsEnum::FOREIGN_ID, $data)) {
             throw new CleverConnectorsException(
@@ -101,7 +100,7 @@ class SalesforceUpdateContactConnector implements ConnectorInterface, LoggerAwar
         $requestDto    = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_PATCH);
         $requestDto
             ->setUri(new Uri(sprintf(self::URL, $requestDto->getUri(), $data[CleverFieldsEnum::FOREIGN_ID])))
-            ->setBody(Json::encode([sprintf('%s__c', CleverCustomKeysEnum::getFromType($eventType)) => 1]))
+            ->setBody(json_encode([sprintf('%s__c', CleverCustomKeysEnum::getFromType($eventType)) => 1]))
             ->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
 
         try {

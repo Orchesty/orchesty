@@ -8,6 +8,7 @@ use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
@@ -70,6 +71,7 @@ class FacebookaudienceRunCreateAdActionConnector implements CustomNodeInterface,
      * @param ProcessDto $dto
      *
      * @return ProcessDto
+     * @throws CurlException
      */
     public function process(ProcessDto $dto): ProcessDto
     {
@@ -85,7 +87,7 @@ class FacebookaudienceRunCreateAdActionConnector implements CustomNodeInterface,
 
             try {
                 $this->curl->send($req);
-            } catch (CurlException $e) {
+            } catch (CurlException | GuzzleException $e) {
                 /** @var SystemInstallRepository $repo */
                 $repo = $this->dm->getRepository(SystemInstall::class);
                 $this->logError($e->getCode(), $this->system, $repo->getSystemInstallFromHeaders($dto->getHeaders()));

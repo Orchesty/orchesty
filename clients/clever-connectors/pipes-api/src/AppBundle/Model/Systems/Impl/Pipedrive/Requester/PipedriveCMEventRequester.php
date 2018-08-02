@@ -11,6 +11,7 @@ use CleverConnectors\AppBundle\Model\Requester\RequesterTrait;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Pipedrive\PipedriveSystem;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 
@@ -58,6 +59,7 @@ final class PipedriveCMEventRequester implements RequesterInterface
      *
      * @return RequestDto
      * @throws CleverConnectorsException
+     * @throws CurlException
      */
     public function getRequestDto(array $data): RequestDto
     {
@@ -112,6 +114,7 @@ final class PipedriveCMEventRequester implements RequesterInterface
     /**
      * @return RequestDto
      * @throws CleverConnectorsException
+     * @throws CurlException
      */
     public function getListRequestDto(): RequestDto
     {

@@ -24,6 +24,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
+use Hanaboso\PipesFramework\Configurator\Exception\StartingPointException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -106,6 +107,7 @@ class CMEventsManager implements LoggerAwareInterface
      * @throws CleverConnectorsException
      * @throws SystemException
      * @throws MongoDBException
+     * @throws StartingPointException
      */
     public function runEvent(Request $request, string $userId, string $event): void
     {
@@ -153,6 +155,7 @@ class CMEventsManager implements LoggerAwareInterface
      * @return SystemInstall
      * @throws SystemException
      * @throws MongoDBException
+     * @throws StartingPointException
      */
     public function saveEventsForSystemInstall(
         SystemInstall $systemInstall,

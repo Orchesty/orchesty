@@ -109,6 +109,7 @@ class FacebookaudienceUpdateAudienceConnector extends FacebookaudienceConnectorA
      * @param array         $data
      *
      * @return ResponseDto
+     * @throws CurlException
      */
     private function createAudience(RequestDto $req, SystemInstall $sysInst, array $data): ResponseDto
     {

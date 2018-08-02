@@ -10,9 +10,11 @@ use CleverConnectors\AppBundle\Utils\DateTimeUtils;
 use DateTime;
 use Doctrine\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\CommonsBundle\Crypt\CryptManager;
 use LogicException;
 use MongoId;
+use Throwable;
 
 /**
  * Class SystemInstallRepository
@@ -28,6 +30,7 @@ class SystemInstallRepository extends DocumentRepository
      *
      * @return SystemInstall[]
      * @throws CleverConnectorsException
+     * @throws MongoDBException
      */
     public function getSystemInstallByEvent(string $event, string $userId): array
     {
@@ -130,32 +133,37 @@ class SystemInstallRepository extends DocumentRepository
         $sync    = !$systemInstall->getSynchronizedTime() ? NULL : $systemInstall->getSynchronizedTime()
             ->format(DateTime::W3C);
 
-        $this->getDocumentManager()
-            ->getDocumentCollection(SystemInstall::class)
-            ->update(
-                ['_id' => new MongoId($systemInstall->getId())],
-                [
-                    SystemInstall::USER               => $systemInstall->getUser(),
-                    SystemInstall::TOKEN              => $systemInstall->getToken(),
-                    SystemInstall::SYSTEM             => $systemInstall->getSystem(),
-                    SystemInstall::EXPIRES            => $expires,
-                    SystemInstall::SYNCHRONIZED       => $systemInstall->isSynchronized(),
-                    SystemInstall::SYNCHRONIZED_TIME  => $sync,
-                    SystemInstall::CREATED            => $created,
-                    SystemInstall::ENCRYPTED_SETTINGS => CryptManager::encrypt($systemInstall->getSettings()),
-                    SystemInstall::EVENT_CREATE       => $systemInstall->isEventCreate(),
-                    SystemInstall::EVENT_UNSUBSCRIBE  => $systemInstall->isEventUnsubscribe(),
-                    SystemInstall::EVENT_HARD_BOUNCE  => $systemInstall->isEventHardBounce(),
-                    SystemInstall::EVENT_SUBSCRIBE    => $systemInstall->isEventSubscribe(),
-                    SystemInstall::PLUGIN_VERSION     => $systemInstall->getPluginVersion(),
-                ]
-            );
+        try {
+            $this->getDocumentManager()
+                ->getDocumentCollection(SystemInstall::class)
+                ->update(
+                    ['_id' => new MongoId($systemInstall->getId())],
+                    [
+                        SystemInstall::USER               => $systemInstall->getUser(),
+                        SystemInstall::TOKEN              => $systemInstall->getToken(),
+                        SystemInstall::SYSTEM             => $systemInstall->getSystem(),
+                        SystemInstall::EXPIRES            => $expires,
+                        SystemInstall::SYNCHRONIZED       => $systemInstall->isSynchronized(),
+                        SystemInstall::SYNCHRONIZED_TIME  => $sync,
+                        SystemInstall::CREATED            => $created,
+                        SystemInstall::ENCRYPTED_SETTINGS => CryptManager::encrypt($systemInstall->getSettings()),
+                        SystemInstall::EVENT_CREATE       => $systemInstall->isEventCreate(),
+                        SystemInstall::EVENT_UNSUBSCRIBE  => $systemInstall->isEventUnsubscribe(),
+                        SystemInstall::EVENT_HARD_BOUNCE  => $systemInstall->isEventHardBounce(),
+                        SystemInstall::EVENT_SUBSCRIBE    => $systemInstall->isEventSubscribe(),
+                        SystemInstall::PLUGIN_VERSION     => $systemInstall->getPluginVersion(),
+                    ]
+                );
+        } catch (Throwable $t) {
+            throw new LogicException($t->getMessage(), $t->getCode(), $t->getPrevious());
+        }
     }
 
     /**
      * @param DateTime $dateTime
      *
      * @return array
+     * @throws MongoDBException
      */
     public function findBeforeExpiration(DateTime $dateTime): array
     {
@@ -174,6 +182,7 @@ class SystemInstallRepository extends DocumentRepository
      * @param string $systemKey
      *
      * @return int
+     * @throws MongoDBException
      */
     public function getUserCount(string $systemKey): int
     {

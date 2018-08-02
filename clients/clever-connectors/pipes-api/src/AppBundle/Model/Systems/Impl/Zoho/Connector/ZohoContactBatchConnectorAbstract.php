@@ -12,6 +12,7 @@ use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\AsyncCurl\CurlSender;
 use Hanaboso\CommonsBundle\Transport\AsyncCurl\CurlSenderFactory;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
@@ -111,6 +112,7 @@ abstract class ZohoContactBatchConnectorAbstract implements ConnectorInterface, 
      * @param null|string   $processId
      *
      * @return PromiseInterface
+     * @throws CurlException
      */
     protected function getPage(
         CurlSender $sender,

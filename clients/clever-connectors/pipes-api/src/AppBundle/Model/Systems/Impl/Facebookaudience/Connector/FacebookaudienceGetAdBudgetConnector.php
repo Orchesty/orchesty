@@ -92,6 +92,7 @@ class FacebookaudienceGetAdBudgetConnector extends FacebookaudienceConnectorAbst
      *
      * @return array
      * @throws SystemException
+     * @throws CurlException
      */
     private function fetchInsights(SystemInstall $systemInstall, string $adId, ?ProcessDto $dto = NULL): array
     {
@@ -121,6 +122,7 @@ class FacebookaudienceGetAdBudgetConnector extends FacebookaudienceConnectorAbst
      * @return array
      * @throws CleverConnectorsException
      * @throws SystemException
+     * @throws CurlException
      */
     private function fetchAdset(SystemInstall $systemInstall, array $data, ?ProcessDto $dto = NULL): array
     {

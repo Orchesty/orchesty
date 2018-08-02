@@ -23,6 +23,7 @@ use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\AsyncCurl\CurlSender;
 use Hanaboso\CommonsBundle\Transport\AsyncCurl\CurlSenderFactory;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
@@ -127,6 +128,7 @@ class ShopifySyncCustomerConnector implements BatchInterface, ConnectorInterface
      *
      * @return PromiseInterface
      * @throws SystemException
+     * @throws CurlException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
@@ -199,6 +201,7 @@ class ShopifySyncCustomerConnector implements BatchInterface, ConnectorInterface
      * @param SystemInstall $systemInstall
      *
      * @return array
+     * @throws CurlException
      */
     private function doPageLoop(
         int $total,

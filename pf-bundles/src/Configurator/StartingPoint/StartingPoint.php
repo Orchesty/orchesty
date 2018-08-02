@@ -12,7 +12,6 @@ namespace Hanaboso\PipesFramework\Configurator\StartingPoint;
 use Bunny\Channel;
 use DateTime;
 use DateTimeZone;
-use Exception;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Enum\MetricsEnum;
 use Hanaboso\CommonsBundle\Metrics\InfluxDbSender;
@@ -35,6 +34,7 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Request;
+use Throwable;
 
 /**
  * Class StartingPoint
@@ -136,7 +136,7 @@ class StartingPoint implements LoggerAwareInterface
      * @param Node     $node
      *
      * @return bool
-     * @throws Exception
+     * @throws StartingPointException
      */
     public function validateTopology(Topology $topology, Node $node): bool
     {
@@ -176,14 +176,13 @@ class StartingPoint implements LoggerAwareInterface
      * @param array    $requestHeaders
      *
      * @return Headers
+     * @throws StartingPointException
      */
     public function createHeaders(Topology $topology, array $requestHeaders = []): Headers
     {
         $headers = new Headers();
         $headers
-            ->addHeader(PipesHeaders::createKey(PipesHeaders::PROCESS_ID), Uuid::uuid4()->toString())
             ->addHeader(PipesHeaders::createKey(PipesHeaders::PARENT_ID), '')
-            ->addHeader(PipesHeaders::createKey(PipesHeaders::CORRELATION_ID), Uuid::uuid4()->toString())
             ->addHeader(PipesHeaders::createKey(PipesHeaders::SEQUENCE_ID), '1')
             ->addHeader(PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID), $topology->getId())
             ->addHeader(PipesHeaders::createKey(PipesHeaders::TOPOLOGY_NAME), $topology->getName())
@@ -193,6 +192,14 @@ class StartingPoint implements LoggerAwareInterface
                 PipesHeaders::createKey(PipesHeaders::TIMESTAMP),
                 (string) SystemMetrics::getCurrentTimestamp()
             );
+
+        try {
+            $headers
+                ->addHeader(PipesHeaders::createKey(PipesHeaders::PROCESS_ID), Uuid::uuid4()->toString())
+                ->addHeader(PipesHeaders::createKey(PipesHeaders::CORRELATION_ID), Uuid::uuid4()->toString());
+        } catch (Throwable $t) {
+            throw new StartingPointException($t->getMessage(), $t->getCode(), $t->getPrevious());
+        }
 
         foreach (PipesHeaders::clear($requestHeaders) as $key => $value) {
             $headers->addHeader($key, (string) $value[0]);
@@ -232,7 +239,7 @@ class StartingPoint implements LoggerAwareInterface
      * @param Topology $topology
      * @param Node     $node
      *
-     * @throws Exception
+     * @throws StartingPointException
      */
     public function runWithRequest(Request $request, Topology $topology, Node $node): void
     {
@@ -250,7 +257,7 @@ class StartingPoint implements LoggerAwareInterface
      * @param Node        $node
      * @param null|string $body
      *
-     * @throws Exception
+     * @throws StartingPointException
      */
     public function run(Topology $topology, Node $node, ?string $body = NULL): void
     {
@@ -263,18 +270,22 @@ class StartingPoint implements LoggerAwareInterface
      * @param Headers  $headers
      * @param string   $content
      *
-     * @throws Exception
+     * @throws StartingPointException
      */
     protected function runTopology(Topology $topology, Node $node, Headers $headers, string $content = ''): void
     {
         $currentMetrics = $this->startMetrics();
         $this->validateTopology($topology, $node);
 
-        // Create channel and queues
-        /** @var Channel $channel */
-        $channel = $this->bunnyManager->getChannel();
-        $channel->queueDeclare(self::createQueueName($topology, $node), FALSE, TRUE);
-        $channel->queueDeclare(self::createCounterQueueName(), FALSE, TRUE);
+        try {
+            // Create channel and queues
+            /** @var Channel $channel */
+            $channel = $this->bunnyManager->getChannel();
+            $channel->queueDeclare(self::createQueueName($topology, $node), FALSE, TRUE);
+            $channel->queueDeclare(self::createCounterQueueName(), FALSE, TRUE);
+        } catch (Throwable $t) {
+            throw  new StartingPointException($t->getMessage(), $t->getCode(), $t->getPrevious());
+        }
 
         $correlation_id = PipesHeaders::get(PipesHeaders::CORRELATION_ID, $headers->getHeaders());
         $this->logger->debug('Starting point info message', [

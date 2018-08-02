@@ -6,7 +6,6 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
-use Nette\Utils\Json;
 
 /**
  * Class NutshellUpdatedContactConnector
@@ -46,7 +45,7 @@ class NutshellUpdatedContactConnector implements ConnectorInterface
      */
     public function processEvent(ProcessDto $dto): ProcessDto
     {
-        $data = Json::decode($dto->getData(), TRUE);
+        $data = json_decode($dto->getData(), TRUE);
         if (!is_array($data)
             || !isset($data['events'][0]['payloadType'])
             || !isset($data['events'][0]['action'])

@@ -19,14 +19,18 @@ use CleverConnectors\AppBundle\Utils\CMHeaders;
 use CleverConnectors\AppBundle\Utils\HeadersUtils;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Nette\Utils\Strings;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\NullLogger;
+use Throwable;
 
 /**
  * Class SalesforceAppMapFieldsConnector
@@ -105,6 +109,7 @@ class SalesforceAppMapFieldsConnector implements ConnectorInterface, LoggerAware
      *
      * @return ProcessDto
      * @throws SystemException
+     * @throws CurlException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
@@ -114,7 +119,11 @@ class SalesforceAppMapFieldsConnector implements ConnectorInterface, LoggerAware
         $url        = new Uri(sprintf(self::SYNC_STATE_URL, rtrim($requestDto->getUri(TRUE), '/')));
         $requestDto = $requestDto::from($requestDto, $url);
 
-        $response = $this->curl->send($requestDto);
+        try {
+            $response = $this->curl->send($requestDto);
+        } catch (Throwable | GuzzleException $e) {
+            $response = new Response(500, [], $e->getMessage());
+        }
 
         if ($response->getStatusCode() !== 200) {
             $this->logError($response->getStatusCode(), $this->system, $systemInstall);

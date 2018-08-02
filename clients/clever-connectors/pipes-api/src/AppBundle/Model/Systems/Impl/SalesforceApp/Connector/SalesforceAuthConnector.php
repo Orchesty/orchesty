@@ -12,8 +12,10 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp\Connector;
 use CleverConnectors\AppBundle\Document\SystemInstall;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp\SalesforceAppSystem;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
@@ -87,6 +89,7 @@ class SalesforceAuthConnector implements ConnectorInterface
      *
      * @throws ConnectorException
      * @throws SystemException
+     * @throws CurlException
      */
     public function sendAuthorizeConfirm(SystemInstall $systemInstall, SalesforceAppSystem $system): void
     {
@@ -96,7 +99,7 @@ class SalesforceAuthConnector implements ConnectorInterface
 
         try {
             $this->curl->send($dto);
-        } catch (Throwable $t) {
+        } catch (Throwable | GuzzleException $t) {
             throw new ConnectorException($t->getMessage());
         }
     }

@@ -15,6 +15,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\AsyncCurl\CurlSenderFactory;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Psr\Http\Message\ResponseInterface;
 use React\EventLoop\LoopInterface;
@@ -68,6 +69,7 @@ class ShipstationSyncCustomerConnector extends ShipstationCustomerConnectorAbstr
      *
      * @return PromiseInterface
      * @throws SystemException
+     * @throws CurlException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
@@ -105,6 +107,7 @@ class ShipstationSyncCustomerConnector extends ShipstationCustomerConnectorAbstr
      * @param RequestDto $dto
      *
      * @return RequestDto
+     * @throws CurlException
      */
     protected function createPageContactRequest(int $page, RequestDto $dto): RequestDto
     {

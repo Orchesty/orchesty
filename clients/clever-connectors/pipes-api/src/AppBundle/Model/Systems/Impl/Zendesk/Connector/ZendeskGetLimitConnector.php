@@ -122,6 +122,7 @@ class ZendeskGetLimitConnector implements ConnectorInterface, LoggerAwareInterfa
      *
      * @return RequestDto
      * @throws SystemException
+     * @throws CurlException
      */
     private function prepareRequestDto(SystemInstall $systemInstall): RequestDto
     {

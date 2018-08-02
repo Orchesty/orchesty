@@ -26,3 +26,5 @@ services:
         class: CleverConnectors\AppBundle\Controller\WebhookController
         arguments:
             - '@hbpf.handler.starting_point'
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]

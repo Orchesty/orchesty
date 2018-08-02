@@ -11,7 +11,6 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
-use Nette\Utils\Json;
 use Nette\Utils\Strings;
 
 /**
@@ -54,7 +53,7 @@ abstract class NutshellContactMapperAbstract implements CustomNodeInterface
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        $data = Json::decode($dto->getData(), TRUE);
+        $data = json_decode($dto->getData(), TRUE);
 
         if (!isset($data['payloads'][0]['emails'][0]['value'])) {
             throw new CleverConnectorsException(
@@ -93,7 +92,7 @@ abstract class NutshellContactMapperAbstract implements CustomNodeInterface
             $subscriber->setForeignId(explode('-', $data['payloads'][0]['id'])[0]);
         }
 
-        return $dto->setData(Json::encode($subscriber->toArray()));
+        return $dto->setData(json_encode($subscriber->toArray()));
     }
 
     /**
@@ -104,7 +103,7 @@ abstract class NutshellContactMapperAbstract implements CustomNodeInterface
      */
     protected function processSync(ProcessDto $dto): ProcessDto
     {
-        $data = Json::decode($dto->getData(), TRUE);
+        $data = json_decode($dto->getData(), TRUE);
         if (!isset($data['result']['email']['--primary'])) {
             throw new CleverConnectorsException(
                 'Missing required email field in data.',
@@ -136,7 +135,7 @@ abstract class NutshellContactMapperAbstract implements CustomNodeInterface
             $subscriber->setForeignId($data['result']['id']);
         }
 
-        return $dto->setData(Json::encode($subscriber->toArray()));
+        return $dto->setData(json_encode($subscriber->toArray()));
     }
 
     /**
@@ -147,7 +146,7 @@ abstract class NutshellContactMapperAbstract implements CustomNodeInterface
      */
     protected function getNeededAction(ProcessDto $dto, string $action): ProcessDto
     {
-        $data = Json::decode($dto->getData(), TRUE);
+        $data = json_decode($dto->getData(), TRUE);
 
         if ($data['events'][0]['payloadType'] !== 'contacts' || $data['events'][0]['action'] !== $action) {
             return HeadersUtils::setStopHeaderToDto($dto, sprintf(

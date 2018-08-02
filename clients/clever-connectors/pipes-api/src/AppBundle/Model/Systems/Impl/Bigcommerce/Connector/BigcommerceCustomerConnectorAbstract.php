@@ -6,7 +6,6 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
-use Nette\Utils\Json;
 
 /**
  * Class BigcommerceCustomerConnectorAbstract
@@ -38,7 +37,7 @@ abstract class BigcommerceCustomerConnectorAbstract implements ConnectorInterfac
      */
     public function processEvent(ProcessDto $dto): ProcessDto
     {
-        $data = Json::decode($dto->getData(), TRUE);
+        $data = json_decode($dto->getData(), TRUE);
 
         if (!is_array($data) || !isset($data['data']['id'])) {
             throw new CleverConnectorsException(

@@ -13,6 +13,7 @@ use CleverConnectors\AppBundle\Utils\CronUtils;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\CommonsBundle\Crypt\CryptException;
 use Hanaboso\CommonsBundle\Crypt\CryptManager;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
@@ -97,7 +98,11 @@ class BasecrmQueueContactConnector implements ConnectorInterface, LoggerAwareInt
         $systemInstall = CronUtils::getSystemInstall($dto);
 
         if (empty($systemInstall->getSettings()[BasecrmSystem::QUE_ID]) ?? '') {
-            $this->createQueue($dto, $systemInstall);
+            try {
+                $this->createQueue($dto, $systemInstall);
+            } catch (CryptException $e) {
+                throw new CleverConnectorsException($e->getMessage(), $e->getCode(), $e->getPrevious());
+            }
         }
 
         return $dto;
@@ -109,6 +114,7 @@ class BasecrmQueueContactConnector implements ConnectorInterface, LoggerAwareInt
      *
      * @throws CurlException
      * @throws SystemException
+     * @throws CryptException
      */
     private function createQueue(ProcessDto $processDto, SystemInstall $systemInstall): void
     {

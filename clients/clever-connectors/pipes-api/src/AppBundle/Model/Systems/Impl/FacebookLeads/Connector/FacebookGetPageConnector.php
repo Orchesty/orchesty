@@ -15,6 +15,7 @@ use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\FacebookLeadsSystem;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
@@ -76,7 +77,7 @@ class FacebookGetPageConnector extends FacebookLeadConnectorAbstract
 
         try {
             $response = $this->curlManager->send($requestDto);
-        } catch (CurlException $e) {
+        } catch (CurlException | GuzzleException $e) {
             return $this->logConnectorError($e, $systemInstall, $this->system, $dto);
         }
 
@@ -97,7 +98,7 @@ class FacebookGetPageConnector extends FacebookLeadConnectorAbstract
 
         try {
             $response = $this->curlManager->send($requestDto);
-        } catch (CurlException $e) {
+        } catch (CurlException | GuzzleException $e) {
             $this->logConnectorError($e, $systemInstall, $this->system);
         }
 
@@ -122,6 +123,7 @@ class FacebookGetPageConnector extends FacebookLeadConnectorAbstract
      *
      * @return RequestDto
      * @throws SystemException
+     * @throws CurlException
      */
     private function prepareRequestDto(SystemInstall $systemInstall, ?ProcessDto $dto = NULL): RequestDto
     {

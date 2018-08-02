@@ -3,6 +3,7 @@
 namespace CleverConnectors\AppBundle\Model\Systems\Impl\Facebookaudience\Connector;
 
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 
@@ -23,6 +24,7 @@ trait FacebookPaginatorTrait
      * @param RequestDto $req
      *
      * @return array
+     * @throws CurlException
      */
     public function loopThroughPages(RequestDto $req): array
     {
@@ -59,6 +61,7 @@ trait FacebookPaginatorTrait
      * @param RequestDto $req
      *
      * @return array
+     * @throws CurlException
      */
     protected function fetchPage(RequestDto $req): array
     {

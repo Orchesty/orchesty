@@ -15,11 +15,11 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
-use Nette\Utils\Json;
 use Psr\Log\LoggerAwareInterface;
 
 /**
@@ -77,11 +77,12 @@ class ZohoUpdateContactConnector implements ConnectorInterface, LoggerAwareInter
      * @return ProcessDto
      * @throws CleverConnectorsException
      * @throws SystemException
+     * @throws CurlException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
 
-        $data = Json::decode($dto->getData(), TRUE);
+        $data = json_decode($dto->getData(), TRUE);
 
         if (!is_array($data) || !array_key_exists(CleverFieldsEnum::FOREIGN_ID, $data)) {
             throw new CleverConnectorsException(
@@ -108,7 +109,7 @@ class ZohoUpdateContactConnector implements ConnectorInterface, LoggerAwareInter
             ->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
 
         $response  = $this->manager->send($requestDto);
-        $innerData = Json::decode($response->getBody(), TRUE);
+        $innerData = json_decode($response->getBody(), TRUE);
 
         if (array_key_exists('error', $innerData['response'])) {
             $status = intval($innerData['response']['error']['code']) ?? 400;

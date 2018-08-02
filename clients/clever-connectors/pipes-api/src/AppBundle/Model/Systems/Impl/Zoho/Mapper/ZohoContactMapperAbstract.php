@@ -11,7 +11,6 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
-use Nette\Utils\Json;
 
 /**
  * Class ZohoContactMapperAbstract
@@ -114,7 +113,7 @@ abstract class ZohoContactMapperAbstract implements CustomNodeInterface
      */
     protected function getNeededAction(ProcessDto $dto): ProcessDto
     {
-        $data = Json::decode($dto->getData(), TRUE);
+        $data = json_decode($dto->getData(), TRUE);
 
         foreach ($data['FL'] as $value) {
             if ($value['val'] === 'Created Time') {

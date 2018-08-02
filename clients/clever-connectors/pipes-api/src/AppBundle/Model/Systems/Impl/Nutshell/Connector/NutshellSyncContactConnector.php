@@ -16,6 +16,7 @@ use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\AsyncCurl\CurlSender;
 use Hanaboso\CommonsBundle\Transport\AsyncCurl\CurlSenderFactory;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
@@ -121,6 +122,7 @@ class NutshellSyncContactConnector implements BatchInterface, ConnectorInterface
      *
      * @return PromiseInterface
      * @throws SystemException
+     * @throws CurlException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
@@ -160,6 +162,7 @@ class NutshellSyncContactConnector implements BatchInterface, ConnectorInterface
      * @param SystemInstall $systemInstall
      *
      * @return PromiseInterface
+     * @throws CurlException
      */
     private function getPage(
         CurlSender $sender,
@@ -187,7 +190,7 @@ class NutshellSyncContactConnector implements BatchInterface, ConnectorInterface
                 $processId,
                 $systemInstall
             ) {
-                $data = Json::decode($response->getBody()->getContents(), TRUE);
+                $data = json_decode($response->getBody()->getContents(), TRUE);
                 if (isset($data['result']) && count($data['result']) > 0) {
                     return all($this->doPageLoop(
                         $sender,
@@ -247,6 +250,7 @@ class NutshellSyncContactConnector implements BatchInterface, ConnectorInterface
      * @param SystemInstall $systemInstall
      *
      * @return array
+     * @throws CurlException
      */
     private function doPageLoop(
         CurlSender $sender,
@@ -291,7 +295,7 @@ class NutshellSyncContactConnector implements BatchInterface, ConnectorInterface
     {
         if (is_array($data)) {
             $successMessage = new SuccessMessage($i);
-            $successMessage->setData(Json::encode($data));
+            $successMessage->setData(json_encode($data));
             unset($data);
 
             return $successMessage;

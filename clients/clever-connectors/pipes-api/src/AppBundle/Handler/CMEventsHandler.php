@@ -14,6 +14,7 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CMEvents\CMEventsManager;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use Doctrine\ODM\MongoDB\MongoDBException;
+use Hanaboso\PipesFramework\Configurator\Exception\StartingPointException;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -46,6 +47,7 @@ class CMEventsHandler
      * @throws CleverConnectorsException
      * @throws SystemException
      * @throws MongoDBException
+     * @throws StartingPointException
      */
     public function createEvent(Request $request, string $userId): void
     {
@@ -59,6 +61,7 @@ class CMEventsHandler
      * @throws CleverConnectorsException
      * @throws SystemException
      * @throws MongoDBException
+     * @throws StartingPointException
      */
     public function unsubscribeEvent(Request $request, string $userId): void
     {
@@ -72,6 +75,7 @@ class CMEventsHandler
      * @throws CleverConnectorsException
      * @throws SystemException
      * @throws MongoDBException
+     * @throws StartingPointException
      */
     public function hardBounceEvent(Request $request, string $userId): void
     {
@@ -85,6 +89,7 @@ class CMEventsHandler
      * @throws CleverConnectorsException
      * @throws SystemException
      * @throws MongoDBException
+     * @throws StartingPointException
      */
     public function subscribeEvent(Request $request, string $userId): void
     {

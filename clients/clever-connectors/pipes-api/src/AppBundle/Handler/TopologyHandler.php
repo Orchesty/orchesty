@@ -8,7 +8,9 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\SystemManager;
 use CleverConnectors\AppBundle\Repository\WebhookRepository;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\CommonsBundle\DatabaseManager\DatabaseManagerLocator;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
@@ -54,6 +56,8 @@ class TopologyHandler extends HbPFTopologyHandler
      * @return bool
      * @throws CleverConnectorsException
      * @throws SystemException
+     * @throws MongoDBException
+     * @throws CurlException
      */
     public function deleteTopologyById(string $id): bool
     {
@@ -89,6 +93,8 @@ class TopologyHandler extends HbPFTopologyHandler
      *
      * @return bool
      * @throws SystemException
+     * @throws MongoDBException
+     * @throws CurlException
      */
     public function deleteWebhooksByTopologyName(string $topologyName): bool
     {
@@ -106,6 +112,7 @@ class TopologyHandler extends HbPFTopologyHandler
      * @param string $topologyName
      *
      * @return array
+     * @throws MongoDBException
      */
     private function getWebhooks(string $topologyName): array
     {

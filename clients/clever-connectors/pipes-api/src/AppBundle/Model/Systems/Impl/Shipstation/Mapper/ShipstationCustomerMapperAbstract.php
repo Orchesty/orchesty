@@ -10,7 +10,6 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
-use Nette\Utils\Json;
 use Nette\Utils\Strings;
 
 /**
@@ -52,7 +51,7 @@ class ShipstationCustomerMapperAbstract implements CustomNodeInterface
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        $data = Json::decode($dto->getData(), TRUE);
+        $data = json_decode($dto->getData(), TRUE);
 
         if (!array_key_exists('email', $data)) {
             throw new CleverConnectorsException(
@@ -88,7 +87,7 @@ class ShipstationCustomerMapperAbstract implements CustomNodeInterface
             $subscriber->setForeignId($data['customerId']);
         }
 
-        return $dto->setData(Json::encode($subscriber->toArray()));
+        return $dto->setData(json_encode($subscriber->toArray()));
     }
 
 }

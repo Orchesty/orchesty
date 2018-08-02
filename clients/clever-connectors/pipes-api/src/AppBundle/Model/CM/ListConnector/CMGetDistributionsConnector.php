@@ -6,6 +6,7 @@ use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 
@@ -33,6 +34,7 @@ class CMGetDistributionsConnector extends CMDistributionListAbstract
      *
      * @return ProcessDto
      * @throws CleverConnectorsException
+     * @throws CurlException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
@@ -46,6 +48,7 @@ class CMGetDistributionsConnector extends CMDistributionListAbstract
      *
      * @return array
      * @throws CleverConnectorsException
+     * @throws CurlException
      */
     public function getDistributionsArray(ProcessDto $dto): array
     {
@@ -70,6 +73,7 @@ class CMGetDistributionsConnector extends CMDistributionListAbstract
      *
      * @return array
      * @throws CleverConnectorsException
+     * @throws CurlException
      */
     private function getLists(RequestDto $req): array
     {

@@ -11,7 +11,6 @@ use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
-use Nette\Utils\Json;
 
 /**
  * Class FacebookaudienceCreateSubscribersConnector
@@ -41,7 +40,7 @@ class FacebookaudienceCreateSubscribersConnector extends FacebookaudienceConnect
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
-        $data = Json::decode($dto->getData(), TRUE);
+        $data = json_decode($dto->getData(), TRUE);
 
         if (!is_array($data) || !array_key_exists('payload', $data) || !array_key_exists('data', $data['payload'])) {
             throw new CleverConnectorsException(

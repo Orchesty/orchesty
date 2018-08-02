@@ -11,12 +11,17 @@ namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler;
 
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Exception;
+use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
+use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Event\TopologyEvent;
+use Hanaboso\PipesFramework\Configurator\Exception\StartingPointException;
 use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint;
@@ -81,7 +86,8 @@ class StartingPointHandler
      * @param string $topologyName
      *
      * @return Topology[]
-     * @throws Exception
+     * @throws PipesFrameworkException
+     * @throws MongoDBException
      */
     public function getTopologies(string $topologyName): array
     {
@@ -89,7 +95,7 @@ class StartingPointHandler
 
         if (empty($topologies)) {
             $this->dispatcher->dispatch(TopologyEvent::EVENT, new TopologyEvent($topologyName));
-            throw new Exception(sprintf('The topology[name=%s] does not exist.', $topologyName));
+            throw new PipesFrameworkException(sprintf('The topology[name=%s] does not exist.', $topologyName));
         }
 
         return $topologies;
@@ -100,7 +106,7 @@ class StartingPointHandler
      * @param Topology $topology
      *
      * @return Node
-     * @throws Exception
+     * @throws PipesFrameworkException
      */
     public function getNodeByName(string $nodeName, Topology $topology): Node
     {
@@ -108,7 +114,7 @@ class StartingPointHandler
 
         if (empty($node)) {
             $this->dispatcher->dispatch(TopologyEvent::EVENT, new TopologyEvent($topology->getName()));
-            throw new Exception(sprintf('The node[name=%s] does not exist.', $nodeName));
+            throw new PipesFrameworkException(sprintf('The node[name=%s] does not exist.', $nodeName));
         }
 
         return $node;
@@ -118,7 +124,9 @@ class StartingPointHandler
      * @param string $topologyId
      *
      * @return Topology
-     * @throws Exception
+     * @throws PipesFrameworkException
+     * @throws LockException
+     * @throws MappingException
      */
     public function getTopology(string $topologyId): Topology
     {
@@ -126,7 +134,7 @@ class StartingPointHandler
         $topology = $this->topologyRepository->find($topologyId);
 
         if (!$topology) {
-            throw new Exception(sprintf('The topology[id=%s] does not exist.', $topologyId));
+            throw new PipesFrameworkException(sprintf('The topology[id=%s] does not exist.', $topologyId));
         }
 
         return $topology;
@@ -136,7 +144,9 @@ class StartingPointHandler
      * @param string $nodeId
      *
      * @return Node
-     * @throws Exception
+     * @throws LockException
+     * @throws MappingException
+     * @throws PipesFrameworkException
      */
     public function getNode(string $nodeId): Node
     {
@@ -144,7 +154,7 @@ class StartingPointHandler
         $node = $this->nodeRepository->find($nodeId);
 
         if (!$node) {
-            throw new Exception(sprintf('The node[id=%s] does not exist.', $nodeId));
+            throw new PipesFrameworkException(sprintf('The node[id=%s] does not exist.', $nodeId));
         }
 
         return $node;
@@ -155,7 +165,9 @@ class StartingPointHandler
      * @param string  $topologyName
      * @param string  $nodeName
      *
-     * @throws Exception
+     * @throws MongoDBException
+     * @throws PipesFrameworkException
+     * @throws StartingPointException
      */
     public function runWithRequest(Request $request, string $topologyName, string $nodeName): void
     {
@@ -171,7 +183,10 @@ class StartingPointHandler
      * @param string  $topologyId
      * @param string  $nodeId
      *
-     * @throws Exception
+     * @throws LockException
+     * @throws MappingException
+     * @throws PipesFrameworkException
+     * @throws StartingPointException
      */
     public function runWithRequestById(Request $request, string $topologyId, string $nodeId): void
     {
@@ -183,7 +198,9 @@ class StartingPointHandler
      * @param string      $nodeName
      * @param string|null $body
      *
-     * @throws Exception
+     * @throws MongoDBException
+     * @throws PipesFrameworkException
+     * @throws StartingPointException
      */
     public function run(string $topologyName, string $nodeName, ?string $body = NULL): void
     {
@@ -197,7 +214,11 @@ class StartingPointHandler
      * @param string $topologyId
      *
      * @return array
-     * @throws Exception
+     * @throws LockException
+     * @throws MappingException
+     * @throws PipesFrameworkException
+     * @throws CurlException
+     * @throws StartingPointException
      */
     public function runTest(string $topologyId): array
     {

@@ -19,7 +19,6 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
-use Nette\Utils\Json;
 use Nette\Utils\Strings;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\NullLogger;
@@ -114,7 +113,7 @@ class SalesforceGetLimitConnector implements ConnectorInterface, LoggerAwareInte
             return $this->connectorError($e, $this->system, $systemInstall, $dto);
         }
 
-        $body = Json::decode($response->getBody(), TRUE);
+        $body = json_decode($response->getBody(), TRUE);
         $this->system->saveLimit($systemInstall, $body);
         $this->dm->flush();
 
@@ -136,6 +135,7 @@ class SalesforceGetLimitConnector implements ConnectorInterface, LoggerAwareInte
      *
      * @return RequestDto
      * @throws SystemException
+     * @throws CurlException
      */
     private function prepareRequestDto(SystemInstall $systemInstall): RequestDto
     {

@@ -4,6 +4,7 @@ namespace CleverConnectors\AppBundle\Model\CM\SubscriberConnector;
 
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 
@@ -21,6 +22,7 @@ class CMValidateSubscriberConnector extends CMSubscriberConnectorAbstract
      * @return ProcessDto
      * @throws CleverConnectorsException
      * @throws ConnectorException
+     * @throws CurlException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {

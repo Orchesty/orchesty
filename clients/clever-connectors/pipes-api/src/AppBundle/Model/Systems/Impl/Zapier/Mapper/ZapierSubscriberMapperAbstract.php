@@ -16,7 +16,6 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
-use Nette\Utils\Json;
 
 /**
  * Class ZapierSubscriberMapperAbstract
@@ -56,7 +55,7 @@ class ZapierSubscriberMapperAbstract implements CustomNodeInterface
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        $data = Json::decode($dto->getData(), TRUE);
+        $data = json_decode($dto->getData(), TRUE);
 
         $subscriber = (new CMSubscriber())
             ->setEmail($data['email']);
@@ -82,7 +81,7 @@ class ZapierSubscriberMapperAbstract implements CustomNodeInterface
             $subscriber->setForeignId($data['id']);
         }
 
-        return $dto->setData(Json::encode($subscriber->toArray()));
+        return $dto->setData(json_encode($subscriber->toArray()));
     }
 
 }

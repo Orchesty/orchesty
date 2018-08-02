@@ -11,7 +11,6 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
-use Nette\Utils\Json;
 
 /**
  * Class SalesforceContactMapperAbstract
@@ -49,7 +48,7 @@ abstract class SalesforceContactMapperAbstract implements CustomNodeInterface
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        $data = Json::decode($dto->getData(), TRUE);
+        $data = json_decode($dto->getData(), TRUE);
 
         if (!is_array($data) || !array_key_exists('Email', $data)) {
             throw new CleverConnectorsException(
@@ -82,7 +81,7 @@ abstract class SalesforceContactMapperAbstract implements CustomNodeInterface
             $subscriber->setLists([$sett[SystemInstall::SELECT_LIST] ?? NULL]);
         }
 
-        return $dto->setData(Json::encode($subscriber->toArray()));
+        return $dto->setData(json_encode($subscriber->toArray()));
     }
 
     /**

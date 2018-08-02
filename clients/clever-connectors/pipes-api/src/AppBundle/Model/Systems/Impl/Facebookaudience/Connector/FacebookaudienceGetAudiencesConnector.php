@@ -85,6 +85,7 @@ class FacebookaudienceGetAudiencesConnector extends FacebookaudienceConnectorAbs
      * @return RequestDto
      * @throws CleverConnectorsException
      * @throws SystemException
+     * @throws CurlException
      */
     private function prepareRequestDto(SystemInstall $systemInstall, ?ProcessDto $dto = NULL): RequestDto
     {

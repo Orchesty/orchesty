@@ -2,6 +2,7 @@
 
 namespace CleverConnectors\AppBundle\DependencyInjection;
 
+use Exception;
 use RuntimeException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -21,6 +22,8 @@ class AppExtension extends Extension implements PrependExtensionInterface
      * Allow an extension to prepend the extension configurations.
      *
      * @param ContainerBuilder $container
+     *
+     * @throws Exception
      */
     public function prepend(ContainerBuilder $container): void
     {
@@ -35,6 +38,8 @@ class AppExtension extends Extension implements PrependExtensionInterface
     /**
      * @param array            $configs
      * @param ContainerBuilder $container
+     *
+     * @throws Exception
      */
     public function load(array $configs, ContainerBuilder $container): void
     {

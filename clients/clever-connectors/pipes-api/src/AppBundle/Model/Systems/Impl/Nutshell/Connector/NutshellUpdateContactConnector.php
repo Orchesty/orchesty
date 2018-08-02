@@ -18,7 +18,6 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
-use Nette\Utils\Json;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\NullLogger;
 
@@ -80,7 +79,7 @@ class NutshellUpdateContactConnector implements ConnectorInterface, LoggerAwareI
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
-        $data = Json::decode($dto->getData(), TRUE);
+        $data = json_decode($dto->getData(), TRUE);
 
         if (!is_array($data)
             || !isset($data['params']['contactId'])
@@ -100,7 +99,7 @@ class NutshellUpdateContactConnector implements ConnectorInterface, LoggerAwareI
         $data['params']['contact']['customFields'] = [CleverCustomKeysEnum::getFromType($eventType) => 1];
 
         $requestDto = $this->system->getRequestDto($systemInstall, CurlManager::METHOD_POST);
-        $requestDto->setBody(Json::encode($data))->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
+        $requestDto->setBody(json_encode($data))->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
 
         try {
             $response = $this->manager->send($requestDto);

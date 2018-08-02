@@ -8,6 +8,7 @@ use CleverConnectors\AppBundle\Model\Requester\RequesterInterface;
 use CleverConnectors\AppBundle\Model\Requester\RequesterTrait;
 use CleverConnectors\AppBundle\Model\Systems\Impl\Zendesk\ZendeskSystem;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 
@@ -48,6 +49,7 @@ class ZendeskCmEventRequester implements RequesterInterface
      *
      * @return RequestDto
      * @throws CleverConnectorsException
+     * @throws CurlException
      */
     public function getRequestDto(array $data): RequestDto
     {

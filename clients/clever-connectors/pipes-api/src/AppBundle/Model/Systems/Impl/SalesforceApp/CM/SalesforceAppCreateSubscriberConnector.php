@@ -12,6 +12,7 @@ namespace CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp\CM;
 use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\CM\SubscriberConnector\CMSubscriberConnectorAbstract;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 
@@ -29,6 +30,7 @@ class SalesforceAppCreateSubscriberConnector extends CMSubscriberConnectorAbstra
      * @return ProcessDto
      * @throws CleverConnectorsException
      * @throws ConnectorException
+     * @throws CurlException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {

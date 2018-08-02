@@ -26,7 +26,9 @@ use CleverConnectors\AppBundle\Model\Webhook\WebhookSystemInterface;
 use CleverConnectors\AppBundle\Utils\AuthorizationUtils;
 use CleverConnectors\AppBundle\Utils\TopologyNameUtils;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
+use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 
@@ -262,6 +264,7 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface, CMEventS
      * @param array         $data
      *
      * @return SystemInstall
+     * @throws AuthorizationException
      */
     public function saveToken(SystemInstall $systemInstall, array $data): SystemInstall
     {
@@ -278,6 +281,7 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface, CMEventS
      *
      * @return SystemInstall
      * @throws SystemException
+     * @throws AuthorizationException
      */
     public function refreshToken(SystemInstall $systemInstall): SystemInstall
     {
@@ -301,6 +305,7 @@ class ShopifySystem implements WebhookSystemInterface, OAuth2Interface, CMEventS
      *
      * @return RequestDto
      * @throws SystemException
+     * @throws CurlException
      */
     public function getRequestDto(SystemInstall $systemInstall, string $method): RequestDto
     {

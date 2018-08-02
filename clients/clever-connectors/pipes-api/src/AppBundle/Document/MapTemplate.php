@@ -8,7 +8,6 @@ use CleverConnectors\AppBundle\Model\MapTemplate\MapField;
 use CleverConnectors\AppBundle\Model\Systems\Dto\ActionDto;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Hanaboso\CommonsBundle\Exception\EnumException;
-use Nette\Utils\Json;
 
 /**
  * Class MapTemplate
@@ -192,7 +191,7 @@ class MapTemplate
         foreach ($this->fields as $field) {
             $fields[] = $field->toArray();
         }
-        $this->jsonFields = Json::encode($fields);
+        $this->jsonFields = json_encode($fields);
     }
 
     /**
@@ -201,7 +200,7 @@ class MapTemplate
      */
     public function decode(): void
     {
-        foreach (Json::decode($this->jsonFields, TRUE) as $field) {
+        foreach (json_decode($this->jsonFields, TRUE) as $field) {
             $mapField = MapField::from($field);
             if ($mapField) {
                 $this->addField($mapField);

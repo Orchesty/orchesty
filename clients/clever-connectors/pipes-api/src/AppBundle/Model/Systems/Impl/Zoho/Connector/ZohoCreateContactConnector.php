@@ -13,11 +13,11 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
-use Nette\Utils\Json;
 use Nette\Utils\Strings;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\NullLogger;
@@ -78,10 +78,11 @@ class ZohoCreateContactConnector implements ConnectorInterface, LoggerAwareInter
      * @return ProcessDto
      * @throws CleverConnectorsException
      * @throws SystemException
+     * @throws CurlException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
-        $data = Json::decode($dto->getData(), TRUE);
+        $data = json_decode($dto->getData(), TRUE);
 
         if (!is_array($data) || !array_key_exists('xml', $data) || !Strings::contains($data['xml'], 'Email')) {
             throw new CleverConnectorsException(
@@ -98,7 +99,7 @@ class ZohoCreateContactConnector implements ConnectorInterface, LoggerAwareInter
             ->setDebugInfo(CMHeaders::debugInfo($dto->getHeaders()));
 
         $response  = $this->manager->send($requestDto);
-        $innerData = Json::decode($response->getBody(), TRUE);
+        $innerData = json_decode($response->getBody(), TRUE);
 
         if (!array_key_exists('response', $innerData)) {
             throw new CleverConnectorsException(
@@ -119,7 +120,7 @@ class ZohoCreateContactConnector implements ConnectorInterface, LoggerAwareInter
                 );
             }
 
-            $dto->setData(Json::encode(['id' => $innerData['response']['result']['recorddetail']['FL'][0]['content']]));
+            $dto->setData(json_encode(['id' => $innerData['response']['result']['recorddetail']['FL'][0]['content']]));
         }
 
         return $dto;

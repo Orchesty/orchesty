@@ -4,6 +4,8 @@ namespace CleverConnectors\AppBundle\Listeners;
 
 use CleverConnectors\AppBundle\Handler\TopologyHandler;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
+use Doctrine\ODM\MongoDB\MongoDBException;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Configurator\Event\TopologyEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -34,6 +36,8 @@ class TopologyEventListener implements EventSubscriberInterface
      * @param TopologyEvent $event
      *
      * @throws SystemException
+     * @throws MongoDBException
+     * @throws CurlException
      */
     public function unsubscribeWebhooks(TopologyEvent $event): void
     {

@@ -116,6 +116,7 @@ abstract class SalesforceContactConnectorAbstract implements BatchInterface, Con
      * @param string     $timeQuery
      *
      * @return RequestDto
+     * @throws CurlException
      */
     protected function createCountRequest(RequestDto $dto, string $timeQuery = ''): RequestDto
     {

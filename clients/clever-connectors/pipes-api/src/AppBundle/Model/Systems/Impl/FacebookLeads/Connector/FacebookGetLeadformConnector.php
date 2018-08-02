@@ -15,6 +15,7 @@ use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\FacebookLeads\FacebookLeadsSystem;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
@@ -76,7 +77,7 @@ class FacebookGetLeadformConnector extends FacebookLeadConnectorAbstract
 
         try {
             $response = $this->curlManager->send($requestDto);
-        } catch (CurlException $e) {
+        } catch (CurlException | GuzzleException $e) {
             return $this->logConnectorError($e, $systemInstall, $this->system, $dto);
         }
 
@@ -114,7 +115,7 @@ class FacebookGetLeadformConnector extends FacebookLeadConnectorAbstract
 
         try {
             $response = $this->curlManager->send($requestDto);
-        } catch (CurlException $e) {
+        } catch (CurlException | GuzzleException $e) {
             $this->logConnectorError($e, $systemInstall, $this->system);
         }
 
@@ -176,7 +177,7 @@ class FacebookGetLeadformConnector extends FacebookLeadConnectorAbstract
 
         try {
             $response = $this->curlManager->send(RequestDto::from($requestDto, $url));
-        } catch (CurlException $e) {
+        } catch (CurlException | GuzzleException $e) {
             $this->logConnectorError($e, $systemInstall, $this->system);
         }
 

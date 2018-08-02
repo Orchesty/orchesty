@@ -12,6 +12,7 @@ use CleverConnectors\AppBundle\Utils\CronUtils;
 use DateTime;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\AsyncCurl\CurlSenderFactory;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
@@ -56,6 +57,7 @@ abstract class ZohoCronConnectorAbstract extends ZohoContactBatchConnectorAbstra
      * @return PromiseInterface
      * @throws CleverConnectorsException
      * @throws SystemException
+     * @throws CurlException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {

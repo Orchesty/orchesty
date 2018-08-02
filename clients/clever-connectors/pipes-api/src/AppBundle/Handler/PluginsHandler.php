@@ -9,6 +9,7 @@ use CleverConnectors\AppBundle\Model\Plugins\PluginsSecurityManager;
 use CleverConnectors\AppBundle\Model\Systems\Exceptions\SystemException;
 use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Exception;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -47,6 +48,7 @@ class PluginsHandler
      * @return array
      * @throws SystemException
      * @throws CleverConnectorsException
+     * @throws CurlException
      */
     public function install(Request $request): array
     {
@@ -133,6 +135,7 @@ class PluginsHandler
      *
      * @return array
      * @throws CleverConnectorsException
+     * @throws CurlException
      */
     public function getDistributionLists(Request $request): array
     {
@@ -144,6 +147,7 @@ class PluginsHandler
      *
      * @return array
      * @throws CleverConnectorsException
+     * @throws CurlException
      */
     public function createDistributionList(Request $request): array
     {

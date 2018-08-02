@@ -15,6 +15,7 @@ use DateTime;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
+use Hanaboso\PipesFramework\Configurator\Exception\StartingPointException;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
 use Symfony\Component\HttpFoundation\HeaderBag;
 
@@ -74,6 +75,7 @@ class SystemLimitManager
      *
      * @throws SystemException
      * @throws MongoDBException
+     * @throws StartingPointException
      */
     public function addSystemLimitToRequestHeaders(
         HeaderBag $headers,
@@ -104,6 +106,7 @@ class SystemLimitManager
      *
      * @throws SystemException
      * @throws MongoDBException
+     * @throws StartingPointException
      */
     public function addSystemLimitToSuccessMessage(SuccessMessage $successMessage): void
     {
@@ -130,6 +133,7 @@ class SystemLimitManager
      * @param SystemInstall       $systemInstall
      *
      * @throws MongoDBException
+     * @throws StartingPointException
      */
     private function checkLimitRefresh(
         ?SystemLimitDto $dto,

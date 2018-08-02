@@ -9,6 +9,7 @@ use CleverConnectors\AppBundle\Model\Systems\SystemManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Hanaboso\CommonsBundle\Exception\EnumException;
+use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 use Hanaboso\CommonsBundle\Utils\ControllerUtils;
 
 /**
@@ -50,6 +51,7 @@ class MapHandler
      * @throws CleverConnectorsException
      * @throws SystemException
      * @throws EnumException
+     * @throws PipesFrameworkException
      */
     public function create(string $user, string $system, array $data): array
     {
@@ -74,6 +76,7 @@ class MapHandler
      * @throws SystemException
      * @throws LockException
      * @throws MappingException
+     * @throws PipesFrameworkException
      */
     public function update(string $id, string $user, string $system, array $data): array
     {

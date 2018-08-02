@@ -9,8 +9,6 @@ use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
 use Hanaboso\CommonsBundle\Exception\EnumException;
 use Hanaboso\CommonsBundle\Traits\Document\DeletedTrait;
 use Hanaboso\CommonsBundle\Traits\Document\IdTrait;
-use Nette\Utils\Json;
-use Nette\Utils\JsonException;
 
 /**
  * Class Topology
@@ -236,22 +234,20 @@ class Topology
 
     /**
      * @return array
-     * @throws JsonException
      */
     public function getBpmn(): array
     {
-        return $this->bpmn ? Json::decode($this->bpmn, Json::FORCE_ARRAY) : [];
+        return $this->bpmn ? json_decode($this->bpmn, TRUE) : [];
     }
 
     /**
      * @param array $bpmn
      *
      * @return Topology
-     * @throws JsonException
      */
     public function setBpmn(array $bpmn): Topology
     {
-        $this->bpmn = Json::encode($bpmn);
+        $this->bpmn = json_encode($bpmn);
 
         return $this;
     }

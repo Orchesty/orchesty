@@ -120,6 +120,7 @@ class SalesforceAppSyncSubscribersConnector implements BatchInterface, Connector
      * @return PromiseInterface
      * @throws SystemException
      * @throws CleverConnectorsException
+     * @throws CurlException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
@@ -167,6 +168,7 @@ class SalesforceAppSyncSubscribersConnector implements BatchInterface, Connector
      * @param string     $where
      *
      * @return RequestDto
+     * @throws CurlException
      */
     private function createCountRequest(RequestDto $dto, string $where): RequestDto
     {
@@ -208,6 +210,7 @@ class SalesforceAppSyncSubscribersConnector implements BatchInterface, Connector
      * @param string        $where
      *
      * @return array
+     * @throws CurlException
      */
     private function doPageLoop(
         int $total,
@@ -241,6 +244,7 @@ class SalesforceAppSyncSubscribersConnector implements BatchInterface, Connector
      * @param string     $where
      *
      * @return RequestDto
+     * @throws CurlException
      */
     private function createPageContactRequest(int $page, RequestDto $dto, string $where): RequestDto
     {
@@ -290,6 +294,7 @@ class SalesforceAppSyncSubscribersConnector implements BatchInterface, Connector
      * @param string     $filterId
      *
      * @return RequestDto
+     * @throws CurlException
      */
     private function createSuccessStateRequest(RequestDto $dto, string $filterId): RequestDto
     {

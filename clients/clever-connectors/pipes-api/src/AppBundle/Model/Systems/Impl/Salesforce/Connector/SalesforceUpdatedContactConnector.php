@@ -16,6 +16,7 @@ use CleverConnectors\AppBundle\Utils\CronUtils;
 use Clue\React\Buzz\Message\ResponseException;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Psr\Http\Message\ResponseInterface;
@@ -47,6 +48,7 @@ class SalesforceUpdatedContactConnector extends SalesforceContactConnectorAbstra
      * @return PromiseInterface
      * @throws CleverConnectorsException
      * @throws SystemException
+     * @throws CurlException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
@@ -93,6 +95,7 @@ class SalesforceUpdatedContactConnector extends SalesforceContactConnectorAbstra
      * @param RequestDto $dto
      *
      * @return RequestDto
+     * @throws CurlException
      */
     protected function createPageContactRequest(int $page, string $timeQuery, RequestDto $dto): RequestDto
     {

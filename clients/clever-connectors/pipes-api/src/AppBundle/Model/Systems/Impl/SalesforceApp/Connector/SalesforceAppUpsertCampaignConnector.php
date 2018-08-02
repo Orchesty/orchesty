@@ -15,6 +15,7 @@ use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
@@ -53,6 +54,11 @@ class SalesforceAppUpsertCampaignConnector implements ConnectorInterface, Logger
     private $systemInstallRepository;
 
     /**
+     * @var DocumentManager
+     */
+    private $dm;
+
+    /**
      * SalesforceAuthConnector constructor.
      *
      * @param SalesforceAppSystem $system
@@ -63,8 +69,9 @@ class SalesforceAppUpsertCampaignConnector implements ConnectorInterface, Logger
     {
         $this->curl                    = $curl;
         $this->system                  = $system;
-        $this->systemInstallRepository = $dm->getRepository(SystemInstall::class);
         $this->logger                  = new NullLogger();
+        $this->dm                      = $dm;
+        $this->systemInstallRepository = $this->dm->getRepository(SystemInstall::class);
     }
 
     /**
@@ -97,6 +104,7 @@ class SalesforceAppUpsertCampaignConnector implements ConnectorInterface, Logger
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
+        $this->dm->clear(SystemInstall::class);
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
 
         try {
@@ -105,7 +113,7 @@ class SalesforceAppUpsertCampaignConnector implements ConnectorInterface, Logger
             $request = RequestDto::from($request, $uri);
             $request->setBody($dto->getData());
             $this->curl->send($request);
-        } catch (Throwable $t) {
+        } catch (Throwable | GuzzleException $t) {
             $this->logError(500, $this->system, $systemInstall);
             throw new ConnectorException($t->getMessage());
         }
