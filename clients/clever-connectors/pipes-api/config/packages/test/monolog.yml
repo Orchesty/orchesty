@@ -1,2 +1,13 @@
 parameters:
     stdout_path: "%kernel.logs_dir%/stdout_%kernel.environment%.log"
+
+monolog:
+    handlers:
+        # Handler for docker container
+        stdout:
+            type:  stream
+            path:  "%stdout_path%"
+            level: info
+            formatter: logstash_formatter
+            max_files: 10
+            channels: '!php'

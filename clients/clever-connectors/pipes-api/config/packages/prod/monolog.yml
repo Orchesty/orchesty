@@ -1,0 +1,7 @@
+monolog:
+    handlers:
+        # Handler for docker container
+        stdout:
+            type: stream
+            path: "php://stdout"
+            level: warning

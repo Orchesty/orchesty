@@ -5,6 +5,10 @@ monolog:
             path: '%kernel.logs_dir%/%kernel.environment%.log'
             level: debug
             channels: ['!event']
+        stdout:
+            type: stream
+            path: "php://stdout"
+            level: info
         console:
             type: console
             process_psr_3_messages: false

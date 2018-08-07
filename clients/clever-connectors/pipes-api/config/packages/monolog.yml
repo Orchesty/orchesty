@@ -61,15 +61,6 @@ monolog:
             level: info
             channels: [rabbit_mq]
 
-        # Handler for docker container
-        stdout:
-            type:  stream
-            path:  "%stdout_path%"
-            level: info
-            formatter: logstash_formatter
-            max_files: 10
-            channels: '!php'
-
 services:
     _defaults:
         public: '%public.services%'
