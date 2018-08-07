@@ -15,13 +15,13 @@ use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
 use CleverConnectors\AppBundle\Traits\LoggerTrait;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
+use Nette\Utils\Strings;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\NullLogger;
 use Throwable;
@@ -104,7 +104,6 @@ class SalesforceAppUpsertCampaignConnector implements ConnectorInterface, Logger
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
-        $this->dm->clear(SystemInstall::class);
         $systemInstall = $this->systemInstallRepository->getSystemInstallFromHeaders($dto->getHeaders());
 
         try {
@@ -113,9 +112,11 @@ class SalesforceAppUpsertCampaignConnector implements ConnectorInterface, Logger
             $request = RequestDto::from($request, $uri);
             $request->setBody($dto->getData());
             $this->curl->send($request);
-        } catch (Throwable | GuzzleException $t) {
+        } catch (Throwable $t) {
             $this->logError(500, $this->system, $systemInstall);
-            throw new ConnectorException($t->getMessage());
+            if (!Strings::contains($t->getMessage(), 'INVALID_SESSION_ID')) {
+                throw new ConnectorException($t->getMessage());
+            }
         }
 
         return $dto;
