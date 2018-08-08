@@ -16,6 +16,7 @@ use CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp\Connector\Salesf
 use CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp\Connector\SalesforceAuthConnector;
 use CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp\SalesforceAppSystem;
 use CleverConnectors\AppBundle\Repository\SystemInstallRepository;
+use CleverConnectors\AppBundle\Utils\CMHeaders;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
@@ -67,8 +68,8 @@ final class SalesforceAppUpsertCampaignConnectorTest extends TestCase
         $dto  = $this->getDto();
         $conn = $this->getConnector(TRUE);
 
-        $this->expectException(ConnectorException::class);
-        $conn->processAction($dto);
+        $dto = $conn->processAction($dto);
+        self::assertArrayHasKey(CMHeaders::createKey(CMHeaders::RESULT_CODE), $dto->getHeaders());
     }
 
     /**
@@ -100,7 +101,7 @@ final class SalesforceAppUpsertCampaignConnectorTest extends TestCase
         /** @var CurlManager|MockObject $curl */
         $curl = $this->createMock(CurlManager::class);
         if ($withCurlError) {
-            $curl->method('send')->willThrowException(new CurlException(''));
+            $curl->method('send')->willThrowException(new CurlException('INVALID_SESSION_ID'));
         }
 
         /** @var StartingPointHandler|MockObject $handler */
