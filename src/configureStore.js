@@ -57,7 +57,7 @@ export default function (initialState, composeWithDevTools) {
         resolve(store)
       }
     ).catch(
-      () => {reject('Loading stored data failed.')}
+      (err) => {console.log(err); reject('Loading stored data failed.')}
     );
   });
   

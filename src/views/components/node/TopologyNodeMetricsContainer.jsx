@@ -45,13 +45,20 @@ TopologyNodeMetricsContainer.propTypes = {
 
 function mapStateToProps(state, ownProps){
   const {node, metrics, topology} = state;
-  const key = ownProps.metricsRange ? `${ownProps.topologyId}[${ownProps.metricsRange.since}-${ownProps.metricsRange.till}]` : ownProps.topologyId;
+  let metricsRange = ownProps.metricsRange;
+  let key = metricsRange ? `${ownProps.topologyId}[${metricsRange.since}-${metricsRange.till}]` : ownProps.topologyId;
+  let metricsList = metrics.topologies[key];
+  if ((!metricsList || metricsList.state === stateType.LOADING || metricsList.state === stateType.NOT_LOADED) && ownProps.altMetricsRange) {
+    metricsRange = ownProps.altMetricsRange;
+    key = `${ownProps.topologyId}[${metricsRange.since}-${metricsRange.till}]`;
+    metricsList = metrics.topologies[key];
+  }
   const nodeList = node.lists['@topology-' + ownProps.topologyId];
-  const metricsList = metrics.topologies[key];
   const topologyElement = topology.elements[ownProps.topologyId];
   return {
     state: stateMerge([nodeList && nodeList.state, metricsList && metricsList.state, topologyElement ? stateType.SUCCESS : stateType.LOADING]),
-    nodeList
+    nodeList,
+    metricsRange
   }
 }
 
