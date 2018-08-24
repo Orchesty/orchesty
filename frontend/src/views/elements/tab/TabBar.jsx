@@ -19,17 +19,20 @@ class TabBar extends React.Component {
   componentDidMount(){
     this._intervalId = setInterval(() => {
       if (this._self){
-        const maxBottom = this._self.getClientRects()[0].bottom + 1;
-        const children = this._self.childNodes;
-        let maxIndex = null;
-        for (let i = 0, solved = false; i < children.length && !solved; i++){
-          const child = children[i];
-          if (child.getClientRects()[0].bottom > maxBottom){
-            solved = true;
-            maxIndex = i;
+        const rects = this._self.getClientRects()[0];
+        if (rects) {
+          const maxBottom = rects.bottom + 1;
+          const children = this._self.childNodes;
+          let maxIndex = null;
+          for (let i = 0, solved = false; i < children.length && !solved; i++) {
+            const child = children[i];
+            if (child.getClientRects()[0].bottom > maxBottom) {
+              solved = true;
+              maxIndex = i;
+            }
           }
+          this.setState({maxIndex});
         }
-        this.setState({maxIndex});
       }
     }, 333);
   }

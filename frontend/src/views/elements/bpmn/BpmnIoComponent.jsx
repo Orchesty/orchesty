@@ -116,17 +116,17 @@ class BpmnIoComponent extends React.Component {
         let element = event.element;
 
         if (element.labelTarget || !element.businessObject.$instanceOf('bpmn:FlowNode')) {
-            return;
+          return;
         }
 
-	    const errors = metrics[element.id].data.process.errors > 0 ? metrics[element.id].data.process.errors : '';
+        const errors = metrics[element.id] && metrics[element.id].data.process.errors > 0 ? metrics[element.id].data.process.errors : '';
 
         this._modeler.get('overlays').add(element, 'bubbles', {
-            position: {
-                top: -25,
-                right: 10
-            },
-            html: '<div><span class="badge badge-error" title="Failed processes">' + errors + '</span></div>'
+          position: {
+            top: -25,
+            right: 10
+          },
+          html: '<div><span class="badge badge-error" title="Failed processes">' + errors + '</span></div>'
         });
     });
   }
@@ -306,7 +306,6 @@ function mapStateToProps(state, ownProps){
     }
 
 	return {
-		state: stateMerge([nodeList && nodeList.state, topologyMetricsElement && topologyMetricsElement.state]),
 		metrics: nodesMetrics,
 		node: node
 	}
@@ -325,7 +324,7 @@ function mapActionsToProps(dispatch, ownProps){
 	}
 }
 
-const BpmnIoComponentConnected = connect(mapStateToProps, mapActionsToProps)(StateComponent(BpmnIoComponent));
+const BpmnIoComponentConnected = connect(mapStateToProps, mapActionsToProps)(BpmnIoComponent);
 
 BpmnIoComponentConnected.propTypes = {
 	topologyId: PropTypes.string.isRequired,

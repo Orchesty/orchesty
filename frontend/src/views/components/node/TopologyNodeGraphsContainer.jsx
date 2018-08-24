@@ -21,8 +21,13 @@ class TopologyNodeGraphsContainer extends React.Component {
     super(props);
   }
 
+  componentDidUpdate() {
+    const {needLoad, refresh} = this.props;
+    needLoad && refresh();
+  }
+
   render() {
-    const {componentKey, topologyId, changeMetricsRange, changeMetricsInterval, metricsRange, interval, metricsList, nodeElements, suffix, metricsElements} = this.props;
+    const {componentKey, topologyId, changeMetricsRange, changeMetricsInterval, metricsRange, altMetricsRange, interval, metricsList, nodeElements, suffix, metricsElements} = this.props;
     const nodeNames = metricsList.items.map(id => nodeElements[id].name);
     const nodeMetrics = metricsList.items.map(id => metricsElements[id + suffix].data);
     const processTimeValues = nodeMetrics.map(metrics => metrics.process_time.avg);
@@ -51,28 +56,40 @@ TopologyNodeGraphsContainer.propTypes = {};
 
 function mapStateToProps(state, ownProps){
   const {node, metrics, topology} = state;
-  const suffix = `[${ownProps.interval}]` + (ownProps.metricsRange ? `[${ownProps.metricsRange.since}-${ownProps.metricsRange.till}]` : '');
-  const key = `${ownProps.topologyId}` + suffix;
+  let metricsRange = ownProps.metricsRange;
+  let suffix = `[${ownProps.interval}]` + (metricsRange ? `[${metricsRange.since}-${metricsRange.till}]` : '');
+  let key = `${ownProps.topologyId}` + suffix;
+  let metricsList = metrics.topologies[key];
+  const needLoad = !metricsList;
+  if ((!metricsList || metricsList.state === stateType.LOADING || metricsList.state === stateType.NOT_LOADED) && ownProps.altMetricsRange) {
+    metricsRange = ownProps.altMetricsRange;
+    suffix = `[${ownProps.interval}]` + (metricsRange ? `[${metricsRange.since}-${metricsRange.till}]` : '');
+    key = `${ownProps.topologyId}` + suffix;
+    metricsList = metrics.topologies[key];
+  }
   const nodeList = node.lists['@topology-' + ownProps.topologyId];
-  const metricsList = metrics.topologies[key];
   const topologyElement = topology.elements[ownProps.topologyId];
   return {
     state: stateMerge([nodeList && nodeList.state, metricsList && metricsList.state, topologyElement ? stateType.SUCCESS : stateType.LOADING]),
     metricsList,
     nodeElements: node.elements,
     suffix,
-    metricsElements: metrics.elements
+    metricsElements: metrics.elements,
+    metricsRange,
+    needLoad,
   };
 }
 
 function mapActionsToProps(dispatch, ownProps){
   const needNodeList = forced => dispatch(nodeActions.needNodesForTopology(ownProps.topologyId, forced));
   const needMetricsList = forced => dispatch(metricsActions.needTopologyMetricsWithRequests(ownProps.topologyId, ownProps.interval, ownProps.metricsRange, forced));
+  const notLoadedCallback = () => {
+    needNodeList(false);
+    needMetricsList(false);
+  };
   return {
-    notLoadedCallback: () => {
-      needNodeList(false);
-      needMetricsList(false);
-    },
+    notLoadedCallback,
+    refresh: notLoadedCallback,
     changeMetricsRange: (since, till) => dispatch(applicationActions.setPageArgs(ownProps.pageId, {metricsRange: {since, till}})),
     changeMetricsInterval: interval => dispatch(applicationActions.setPageArgs(ownProps.pageId, {interval}))
   }

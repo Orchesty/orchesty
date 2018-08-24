@@ -22,7 +22,24 @@ class TopologyDetail extends React.Component {
       nodes: null,
       schema: null,
       nodeMetrics: null
-    }
+    };
+    this.rangeIntervalId = null;
+  }
+
+  componentDidMount() {
+    this.rangeIntervalId = setInterval(() => {
+      const {metricsRange, changeMetricsRange} = this.props;
+      if (metricsRange) {
+        const newSince = (new Date((new Date(metricsRange.since)).getTime() + 10000)).toISOString();
+        const newTill = (new Date((new Date(metricsRange.till)).getTime() + 10000)).toISOString();
+        changeMetricsRange(newSince, newTill, metricsRange.since, metricsRange.till);
+      }
+    }, 10000)
+  }
+
+  componentWillUnmount() {
+    this.rangeIntervalId && clearInterval(this.rangeIntervalId);
+    this.rangeIntervalId = null;
   }
 
   componentWillMount(){
@@ -126,14 +143,14 @@ class TopologyDetail extends React.Component {
   }
 
   render() {
-    const {topologyId, activeTab, setActions, topology, onChangeTopology, componentKey, metricsRange, interval, pageId} = this.props;
+    const {topologyId, activeTab, setActions, topology, onChangeTopology, componentKey, metricsRange, altMetricsRange, interval, pageId} = this.props;
     const schemaVisible = activeTab === 'schema';
     const newComponentKey = `${componentKey}.${topologyId}`;
     return (
       <div className="topology-detail">
         <div className="tab-content">
-          {activeTab == 'nodes' && <TopologyNodeMetricsContainer pageId={pageId} topologyId={topologyId} componentKey={`${newComponentKey}.metrics`} metricsRange={metricsRange} />}
-          {activeTab == 'graphs' && <TopologyNodeGraphsContainer pageId={pageId} topologyId={topologyId} componentKey={`${newComponentKey}.graphs`} metricsRange={metricsRange} interval={interval} />}
+          {activeTab == 'nodes' && <TopologyNodeMetricsContainer pageId={pageId} topologyId={topologyId} componentKey={`${newComponentKey}.metrics`} metricsRange={metricsRange} altMetricsRange={altMetricsRange} />}
+          {activeTab == 'graphs' && <TopologyNodeGraphsContainer pageId={pageId} topologyId={topologyId} componentKey={`${newComponentKey}.graphs`} metricsRange={metricsRange} altMetricsRange={altMetricsRange} interval={interval} />}
           <div className={'schema-wrapper' + ( schemaVisible ? '' : ' hidden')}>
             <TopologySchemaPanel
               pageId={pageId}
@@ -166,7 +183,9 @@ TopologyDetail.propTypes = {
   onChangeTab: PropTypes.func.isRequired,
   setActions: PropTypes.func.isRequired,
   onChangeTopology: PropTypes.func.isRequired,
-  testTopology: PropTypes.func
+  testTopology: PropTypes.func,
+  altMetricsRange: PropTypes.object,
+  metricsRange: PropTypes.object,
 };
 
 function mapStateToProps(state, ownProps) {
@@ -192,7 +211,11 @@ function mapActionsToProps(dispatch, ownProps){
       }
     }),
     topologyDelete: () => dispatch(applicationActions.openModal('topology_delete_dialog', {topologyId, redirectToList: true})),
-    publish: () => dispatch(topologyActions.publishTopology(topologyId))
+    publish: () => dispatch(topologyActions.publishTopology(topologyId)),
+    changeMetricsRange: (since, till, altSince, altTill) => dispatch(applicationActions.setPageArgs(ownProps.pageId, {
+      metricsRange: {since, till},
+      altMetricsRange: altSince && altTill ? {since: altSince, till: altTill} : null
+    }))
   }
 }
 
