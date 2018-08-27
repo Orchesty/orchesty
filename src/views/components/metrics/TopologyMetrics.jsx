@@ -14,12 +14,19 @@ class TopologyMetrics extends React.Component {
 
   render() {
     const {metrics: {data}} = this.props;
+
+	let errorColor = 'green';
+
+	if (data.process.errors > 0) {
+	  errorColor = 'red';
+	}
+
     return (
       <div className="node-metrics tile_count">
         <div className="tile_stats_count">
           <span className="count_top">Total Processes</span>
           <div className="count">{data.process.total}</div>
-          <span className="count_bottom red">Failed: {data.process.errors}</span>
+          <span className={'count_bottom ' + errorColor}>Failed: {data.process.errors}</span>
         </div>
         <div className="tile_stats_count">
           <span className="count_top">Average Process Time [ms]</span>
