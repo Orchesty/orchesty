@@ -27,14 +27,15 @@ class TopologyDetail extends React.Component {
   }
 
   componentDidMount() {
+    const refreshInterval = 5000;
     this.rangeIntervalId = setInterval(() => {
       const {metricsRange, changeMetricsRange} = this.props;
       if (metricsRange) {
-        const newSince = (new Date((new Date(metricsRange.since)).getTime() + 10000)).toISOString();
-        const newTill = (new Date((new Date(metricsRange.till)).getTime() + 10000)).toISOString();
+        const newSince = (new Date((new Date(metricsRange.since)).getTime() + refreshInterval)).toISOString();
+        const newTill = (new Date((new Date(metricsRange.till)).getTime() + refreshInterval)).toISOString();
         changeMetricsRange(newSince, newTill, metricsRange.since, metricsRange.till);
       }
-    }, 10000)
+    }, refreshInterval);
   }
 
   componentWillUnmount() {
