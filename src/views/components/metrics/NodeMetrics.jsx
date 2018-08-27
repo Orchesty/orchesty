@@ -78,7 +78,7 @@ class NodeMetrics extends React.Component {
         <div className="tile_stats_count">
           <span className="count_top">Total Processes</span>
           <div className="count">{data.process.total}</div>
-          <span className="count_bottom {errorColor}">Failed: {data.process.errors}</span>
+          <span className={'count_bottom ' + errorColor}>Failed: {data.process.errors}</span>
         </div>
         <div className="tile_stats_count">
           <span className="count_top">Queue Depth [msg]</span>
