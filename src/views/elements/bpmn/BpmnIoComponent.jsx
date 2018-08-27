@@ -119,7 +119,11 @@ class BpmnIoComponent extends React.Component {
             return;
         }
 
-	    const errors = metrics[element.id].data.process.errors > 0 ? metrics[element.id].data.process.errors : '';
+	    let errors = '';
+
+        if (metrics[element.id] && metrics[element.id].data.process.errors > 0) {
+	        errors = metrics[element.id].data.process.errors;
+        }
 
         this._modeler.get('overlays').add(element, 'bubbles', {
             position: {
