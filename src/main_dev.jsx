@@ -31,6 +31,6 @@ configureStore(initialState, composeWithDevTools).then(store => {
   };
 
   render(App);
-});
+}).catch(err => {console.error(err)});
 
 
