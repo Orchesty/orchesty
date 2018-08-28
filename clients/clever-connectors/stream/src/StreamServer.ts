@@ -128,6 +128,11 @@ class StreamServer {
             socket.on("error", (error) => {
                 logger.info(`WS error ${socket.id}. Error: ${error.message}`);
             });
+
+            socket.on("disconnecting", (reason) => {
+                logger.info(`disconnecting socket ${socket.id}. Reason: ${reason}`);
+            });
+
         });
 
         this.consumer.start();

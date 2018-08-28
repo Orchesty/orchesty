@@ -14,7 +14,8 @@ rm -rf node_modules
 
 # Image build
 REGISTRY_PREFIX=dkr.hanaboso.net/pipes/pipes
-IMAGE=${REGISTRY_PREFIX}/stream:${TAG}
+CM_REGISTRY_PREFIX=cmhanaboso.azurecr.io/clever-monitor/stream
+IMAGE=${CM_REGISTRY_PREFIX}/stream:${TAG}
 BUILD_IMAGE=${REGISTRY_PREFIX}/nodejs-build:dev
 
 docker pull ${BUILD_IMAGE}
