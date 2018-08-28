@@ -97,6 +97,7 @@ class StreamServer {
             },
         );
 
+        logger.info(`Starting WS server on port ${this.settings.port}, allowed origins ${this.settings.origins}`);
         const io = SocketIO(this.server, {origins : this.settings.origins});
         this.stream = io.of(settings.namespace);
     }

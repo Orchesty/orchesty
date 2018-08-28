@@ -81,6 +81,8 @@ class Users {
         app.post(
             this.serverSettings.routes.login,
             (req: express.Request, res: express.Response) => {
+                logger.info(`Login request received. Data: ${JSON.stringify(req.body)}`);
+
                 res.set("content-type", "application/json");
 
                 try {
@@ -100,6 +102,8 @@ class Users {
         app.post(
             this.serverSettings.routes.logout,
             (req: express.Request, res: express.Response) => {
+                logger.info(`Logout request received. Data: ${JSON.stringify(req.body)}`);
+
                 res.set("content-type", "application/json");
 
                 try {
