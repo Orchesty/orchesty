@@ -37,6 +37,14 @@ class TopologyDetail extends React.Component {
           changeMetricsRange(newSince, newTill, metricsRange.since, metricsRange.till);
         }
       }, refreshInterval);
+    }else{
+	    this.rangeIntervalId = setInterval(() => {
+		    if (metricsRange) {
+			    const newSince = (new Date((new Date(metricsRange.since)).getTime() + refreshInterval)).toISOString();
+			    const newTill = (new Date((new Date(metricsRange.till)).getTime() + refreshInterval)).toISOString();
+			    changeMetricsRange(newSince, newTill, metricsRange.since, metricsRange.till);
+		    }
+	    }, refreshInterval);
     }
   }
 
