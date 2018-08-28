@@ -29,14 +29,14 @@ class TopologyDetail extends React.Component {
   componentDidMount() {
     const refreshInterval = 5000;
     const { metricsRange, changeMetricsRange, activeTab } = this.props;
-    if (activeTab != 'schema') {
+    if (activeTab == 'schema') {
       this.rangeIntervalId = setInterval(() => {
         if (metricsRange) {
-          const newSince = (new Date((new Date(metricsRange.since)).getTime() + refreshInterval)).toISOString();
-          const newTill = (new Date((new Date(metricsRange.till)).getTime() + refreshInterval)).toISOString();
+          const newSince = (new Date((new Date(metricsRange.since)).getTime())).toISOString();
+          const newTill = (new Date((new Date(metricsRange.till)).getTime())).toISOString();
           changeMetricsRange(newSince, newTill, metricsRange.since, metricsRange.till);
         }
-      }, refreshInterval);
+      });
     }else{
 	    this.rangeIntervalId = setInterval(() => {
 		    if (metricsRange) {
