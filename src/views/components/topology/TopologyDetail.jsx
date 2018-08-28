@@ -28,14 +28,16 @@ class TopologyDetail extends React.Component {
 
   componentDidMount() {
     const refreshInterval = 5000;
-    this.rangeIntervalId = setInterval(() => {
-      const {metricsRange, changeMetricsRange} = this.props;
-      if (metricsRange) {
-        const newSince = (new Date((new Date(metricsRange.since)).getTime() + refreshInterval)).toISOString();
-        const newTill = (new Date((new Date(metricsRange.till)).getTime() + refreshInterval)).toISOString();
-        changeMetricsRange(newSince, newTill, metricsRange.since, metricsRange.till);
-      }
-    }, refreshInterval);
+    const { metricsRange, changeMetricsRange, activeTab } = this.props;
+    if (activeTab != 'schema') {
+      this.rangeIntervalId = setInterval(() => {
+        if (metricsRange) {
+          const newSince = (new Date((new Date(metricsRange.since)).getTime() + refreshInterval)).toISOString();
+          const newTill = (new Date((new Date(metricsRange.till)).getTime() + refreshInterval)).toISOString();
+          changeMetricsRange(newSince, newTill, metricsRange.since, metricsRange.till);
+        }
+      }, refreshInterval);
+    }
   }
 
   componentWillUnmount() {
