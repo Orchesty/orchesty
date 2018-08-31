@@ -245,7 +245,7 @@ class RabbitMqCompilerPass implements CompilerPassInterface
             [
                 'host'       => $config["host"],
                 'port'       => $config["port"],
-                'vhost'      => $config["vhost"],
+                'path'       => $config["vhost"],
                 'user'       => $config["user"],
                 'password'   => $config["password"],
                 'heartbeat'  => $config["heartbeat"],
