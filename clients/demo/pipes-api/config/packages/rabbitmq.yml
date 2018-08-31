@@ -5,3 +5,4 @@ parameters:
     rabbitmq.vhost: /
     rabbitmq.user: guest
     rabbitmq.password: guest
+    rabbitmq.persistent: true

@@ -5,6 +5,7 @@ rabbit-mq:
     user: '%rabbitmq.user%'          # default: guest
     password: '%rabbitmq.password%'  # default: guest
     heartbeat: 120
+    persistent: true
 
     exchanges:
         change:

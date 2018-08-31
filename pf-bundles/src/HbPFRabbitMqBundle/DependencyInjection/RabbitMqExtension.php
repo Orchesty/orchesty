@@ -71,6 +71,7 @@ class RabbitMqExtension extends Extension implements ConfigurationInterface, Pre
         $rootNode->children()->scalarNode("user")->defaultValue("guest");
         $rootNode->children()->scalarNode("password")->defaultValue("guest");
         $rootNode->children()->scalarNode("heartbeat")->defaultValue(60);
+        $rootNode->children()->scalarNode("persistent")->defaultValue(FALSE);
 
         return $rootNode;
     }

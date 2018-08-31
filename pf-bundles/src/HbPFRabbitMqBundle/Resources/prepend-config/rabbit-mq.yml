@@ -1,9 +1,10 @@
 rabbit-mq:
-    host: '%rabbitmq.host%'          # default: 127.0.0.1
-    port: '%rabbitmq.port%'          # default: 5672
-    vhost: '%rabbitmq.vhost%'        # default: /
-    user: '%rabbitmq.user%'          # default: guest
-    password: '%rabbitmq.password%'  # default: guest
+    host: '%rabbitmq.host%'             # default: 127.0.0.1
+    port: '%rabbitmq.port%'             # default: 5672
+    vhost: '%rabbitmq.vhost%'           # default: /
+    user: '%rabbitmq.user%'             # default: guest
+    password: '%rabbitmq.password%'     # default: guest
+    persistent: '%rabbitmq.persistent%' # default: false
 
     # make heartbeat as long as longest message processing time in any consumer might take
     heartbeat: 120 # in seconds = 2 minutes, default: 60 seconds

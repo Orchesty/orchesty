@@ -243,12 +243,13 @@ class RabbitMqCompilerPass implements CompilerPassInterface
 
         $clientDefinition = new Definition('%rabbit-mq.bunny-client%', [
             [
-                'host'      => $config["host"],
-                'port'      => $config["port"],
-                'vhost'     => $config["vhost"],
-                'user'      => $config["user"],
-                'password'  => $config["password"],
-                'heartbeat' => $config["heartbeat"],
+                'host'       => $config["host"],
+                'port'       => $config["port"],
+                'vhost'      => $config["vhost"],
+                'user'       => $config["user"],
+                'password'   => $config["password"],
+                'heartbeat'  => $config["heartbeat"],
+                'persistent' => $config["persistent"],
             ],
         ]);
         $clientDefinition->setPublic(TRUE);
