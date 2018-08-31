@@ -6,6 +6,7 @@ parameters:
     rabbitmq.vhost: /
     rabbitmq.user: guest
     rabbitmq.password: guest
+    rabbitmq.persistent: false
 
 #DEMO
 rabbit-mq:
