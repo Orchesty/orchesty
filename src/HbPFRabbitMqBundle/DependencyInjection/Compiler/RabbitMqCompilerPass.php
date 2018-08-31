@@ -245,11 +245,12 @@ class RabbitMqCompilerPass implements CompilerPassInterface
             [
                 'host'       => $config["host"],
                 'port'       => $config["port"],
-                'path'       => $config["vhost"],
+                'vhost'      => $config["vhost"],
                 'user'       => $config["user"],
                 'password'   => $config["password"],
                 'heartbeat'  => $config["heartbeat"],
                 'persistent' => $config["persistent"],
+                'path'       => $config["vhost"],
             ],
         ]);
         $clientDefinition->setPublic(TRUE);
