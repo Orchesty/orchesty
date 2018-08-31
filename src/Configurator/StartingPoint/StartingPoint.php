@@ -281,8 +281,8 @@ class StartingPoint implements LoggerAwareInterface
             // Create channel and queues
             /** @var Channel $channel */
             $channel = $this->bunnyManager->getChannel();
-            $channel->queueDeclare(self::createQueueName($topology, $node), FALSE, TRUE);
-            $channel->queueDeclare(self::createCounterQueueName(), FALSE, TRUE);
+            //$channel->queueDeclare(self::createQueueName($topology, $node), FALSE, TRUE);
+            //$channel->queueDeclare(self::createCounterQueueName(), FALSE, TRUE);
         } catch (Throwable $t) {
             throw  new StartingPointException($t->getMessage(), $t->getCode(), $t->getPrevious());
         }
