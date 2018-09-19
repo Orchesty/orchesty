@@ -53,7 +53,6 @@ abstract class SalesforceAppMapperAbstract implements CustomNodeInterface
      * @param ProcessDto $dto
      *
      * @return ProcessDto
-     * @throws CleverConnectorsException
      */
     public function process(ProcessDto $dto): ProcessDto
     {
@@ -63,13 +62,16 @@ abstract class SalesforceAppMapperAbstract implements CustomNodeInterface
         $data = $this->normalizeData($data, $systemInstall);
 
         if (!is_array($data) || !array_key_exists(self::EMAIL, $data) || !array_key_exists(self::LIST, $data)) {
-            throw new CleverConnectorsException(
-                'Missing data or required field CMHB__Email__c or CMHB__CM_ID__c',
-                CleverConnectorsException::MISSING_DATA
-            );
+            HeadersUtils::setStopHeaderToDto($dto, 'Missing data or required field CMHB__Email__c or CMHB__CM_ID__c');
+
+            return $dto;
         }
 
-        if ($this->isSkippable($data)) {
+        try {
+            if ($this->isSkippable($data)) {
+                return HeadersUtils::setStopHeaderToDto($dto);
+            }
+        } catch (CleverConnectorsException $e) {
             return HeadersUtils::setStopHeaderToDto($dto);
         }
 
@@ -179,6 +181,7 @@ abstract class SalesforceAppMapperAbstract implements CustomNodeInterface
      * @param array $data
      *
      * @return bool
+     * @throws CleverConnectorsException
      */
     abstract protected function isSkippable(array $data): bool;
 

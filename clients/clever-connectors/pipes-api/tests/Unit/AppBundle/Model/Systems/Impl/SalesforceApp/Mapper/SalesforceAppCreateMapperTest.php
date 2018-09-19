@@ -3,7 +3,6 @@
 namespace Tests\Unit\AppBundle\Model\Systems\Impl\SalesforceApp\Mapper;
 
 use CleverConnectors\AppBundle\Document\SystemInstall;
-use CleverConnectors\AppBundle\Exceptions\CleverConnectorsException;
 use CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp\Connector\SalesforceAppMapFieldsConnector;
 use CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp\Mapper\SalesforceAppCreateMapper;
 use CleverConnectors\AppBundle\Model\Systems\Impl\SalesforceApp\Mapper\SalesforceAppMapperAbstract;
@@ -32,9 +31,8 @@ final class SalesforceAppCreateMapperTest extends TestCase
         $mapper = $this->getMapper();
         $dto    = $this->getDto(1);
 
-        $this->expectException(CleverConnectorsException::class);
-        $this->expectExceptionCode(CleverConnectorsException::MISSING_DATA);
-        $mapper->process($dto);
+        $dto = $mapper->process($dto);
+        self::assertEquals(1003, $dto->getHeaders()[CMHeaders::createKey(CMHeaders::RESULT_CODE)]);
     }
 
     /**
@@ -45,9 +43,8 @@ final class SalesforceAppCreateMapperTest extends TestCase
         $mapper = $this->getMapper();
         $dto    = $this->getDto(2);
 
-        $this->expectException(CleverConnectorsException::class);
-        $this->expectExceptionCode(CleverConnectorsException::MISSING_DATA);
-        $mapper->process($dto);
+        $dto = $mapper->process($dto);
+        self::assertEquals(1003, $dto->getHeaders()[CMHeaders::createKey(CMHeaders::RESULT_CODE)]);
     }
 
     /**
@@ -58,9 +55,8 @@ final class SalesforceAppCreateMapperTest extends TestCase
         $mapper = $this->getMapper();
         $dto    = $this->getDto(3);
 
-        $this->expectException(CleverConnectorsException::class);
-        $this->expectExceptionCode(CleverConnectorsException::MISSING_DATA);
-        $mapper->process($dto);
+        $dto = $mapper->process($dto);
+        self::assertEquals(1003, $dto->getHeaders()[CMHeaders::createKey(CMHeaders::RESULT_CODE)]);
     }
 
     /**
@@ -71,9 +67,8 @@ final class SalesforceAppCreateMapperTest extends TestCase
         $mapper = $this->getMapper();
         $dto    = $this->getDto(4);
 
-        $this->expectException(CleverConnectorsException::class);
-        $this->expectExceptionCode(CleverConnectorsException::MISSING_DATA);
-        $mapper->process($dto);
+        $dto = $mapper->process($dto);
+        self::assertEquals(1003, $dto->getHeaders()[CMHeaders::createKey(CMHeaders::RESULT_CODE)]);
     }
 
     /**
@@ -84,9 +79,8 @@ final class SalesforceAppCreateMapperTest extends TestCase
         $mapper = $this->getMapper();
         $dto    = $this->getDto(5);
 
-        $this->expectException(CleverConnectorsException::class);
-        $this->expectExceptionCode(CleverConnectorsException::MISSING_DATA);
-        $mapper->process($dto);
+        $dto = $mapper->process($dto);
+        self::assertEquals(1003, $dto->getHeaders()[CMHeaders::createKey(CMHeaders::RESULT_CODE)]);
     }
 
     /**
