@@ -48,10 +48,23 @@ class ZohoSystem implements AuthorizationInterface, CMEventSystemInterface
     private const PLAN_ULTIMATE     = 'ultimate';
 
     private const PLANS = [
-        self::PLAN_STANDARD     => 'STANDARD',
-        self::PLAN_PROFESSIONAL => 'PROFESSIONAL',
-        self::PLAN_ENTERPRISE   => 'ENTERPRISE',
-        self::PLAN_ULTIMATE     => 'ULTIMATE',
+        [
+            'key'   => self::PLAN_STANDARD,
+            'value' => 'STANDARD',
+        ],
+        [
+            'key'   => self::PLAN_PROFESSIONAL,
+            'value' => 'PROFESSIONAL',
+        ],
+        [
+            'key'   => self::PLAN_ENTERPRISE,
+            'value' => 'ENTERPRISE',
+
+        ],
+        [
+            'key'   => self::PLAN_ULTIMATE,
+            'value' => 'ULTIMATE',
+        ],
     ];
 
     /**
