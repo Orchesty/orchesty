@@ -87,3 +87,5 @@ services:
     hbpf.custom_node.dummy-exception:
         class: Demo\CustomNode\DummyExceptionConnector
         public: true
+        calls:
+            - ['setLogger', ['monolog.logger.connector']]

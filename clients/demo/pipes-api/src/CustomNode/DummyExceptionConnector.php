@@ -11,16 +11,33 @@ namespace Demo\CustomNode;
 
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 use Hanaboso\PipesFramework\HbPFCustomNodeBundle\Exception\CustomNodeException;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Class IdnesConnector
  *
  * @package Demo\CustomNode
  */
-class DummyExceptionConnector implements CustomNodeInterface
+class DummyExceptionConnector implements CustomNodeInterface, LoggerAwareInterface
 {
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
+     * DummyExceptionConnector constructor.
+     */
+    public function __construct()
+    {
+        $this->logger = new NullLogger();
+    }
 
     /**
      * @param ProcessDto $dto
@@ -32,7 +49,13 @@ class DummyExceptionConnector implements CustomNodeInterface
     public function process(ProcessDto $dto): ProcessDto
     {
         if (mt_rand(1, 10) == 5) {
-            $this->throwDummyException();
+            try {
+                $this->throwDummyException();
+            } catch (Exception $e) {
+                $this->logger->error($e->getMessage(), ['Exception' => $e]);
+
+                $dto->addHeader(PipesHeaders::createKey(PipesHeaders::RESULT_CODE), "1003");
+            }
         }
 
         return $dto;
@@ -52,6 +75,20 @@ class DummyExceptionConnector implements CustomNodeInterface
         }
 
         throw new CustomNodeException(ucfirst(strtolower($text)) . 'exception');
+    }
+
+    /**
+     * Sets a logger instance on the object.
+     *
+     * @param LoggerInterface $logger
+     *
+     * @return DummyExceptionConnector
+     */
+    public function setLogger(LoggerInterface $logger): DummyExceptionConnector
+    {
+        $this->logger = $logger;
+
+        return $this;
     }
 
 }
