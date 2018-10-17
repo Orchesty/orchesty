@@ -1,5 +1,0 @@
-#!/usr/bin/env php
-<?php
-
-$container = require __DIR__ . '/../app/bootstrapCli.php';
-$container->getByType(Kdyby\Console\Application::class)->run();

@@ -1,3 +1,0 @@
-parameters:
-	ws:
-		host: http://127.0.0.44:8080/stream

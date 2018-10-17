@@ -1,8 +1,0 @@
-services:
-    _defaults:
-        public: '%public.services%'
-
-    systems.prestashop:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Prestashop\PrestashopSystem
-        arguments:
-        tags: ['%systems%']

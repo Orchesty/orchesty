@@ -1,8 +1,0 @@
-services:
-    _defaults:
-        public: '%public.services%'
-
-    systems.magento2:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Magento2\Magento2System
-        arguments:
-        tags: ['%systems%']
