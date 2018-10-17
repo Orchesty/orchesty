@@ -57,9 +57,8 @@ class ConnectorHandler
     {
         /** @var ConnectorInterface $conn */
         $conn = $this->loader->getConnector($id);
-        $res  = $this->connManager->processEvent($conn, $request);
 
-        return $res;
+        return $this->connManager->processEvent($conn, $request);
     }
 
     /**
@@ -85,9 +84,8 @@ class ConnectorHandler
     {
         /** @var ConnectorInterface $conn */
         $conn = $this->loader->getConnector($id);
-        $res  = $this->connManager->processAction($conn, $request);
 
-        return $res;
+        return $this->connManager->processAction($conn, $request);
     }
 
 }

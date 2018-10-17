@@ -320,9 +320,7 @@ class StartingPoint implements LoggerAwareInterface
         $responseDto = $this->curlManager->send($requestDto);
 
         if ($responseDto->getStatusCode() === 200) {
-            $data = json_decode($responseDto->getBody(), TRUE);
-
-            return $data;
+            return json_decode($responseDto->getBody(), TRUE);
         } else {
             throw new StartingPointException(sprintf('Request error: %s', $responseDto->getReasonPhrase()));
         }

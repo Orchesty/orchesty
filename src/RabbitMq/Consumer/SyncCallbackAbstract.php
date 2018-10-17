@@ -59,6 +59,7 @@ abstract class SyncCallbackAbstract implements LoggerAwareInterface
      */
     final public function handleMessage($data, Message $message, Channel $channel): CallbackStatus
     {
+        $channel;
         $result         = $this->handle($data, $message);
         $prepareMessage = $this->prepareMessage(
             '',

@@ -19,14 +19,7 @@ use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 class RabbitMqException extends PipesFrameworkException
 {
 
-    /**
-     * @var int
-     */
-    public const MISSING_CALLBACK_DEFINITION = 1;
-
-    /**
-     * @var int
-     */
+    public const MISSING_CALLBACK_DEFINITION  = 1;
     public const UNKNOWN_CALLBACK_STATUS_CODE = 10;
 
 }

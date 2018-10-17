@@ -59,10 +59,9 @@ class RabbitMqHandler
      */
     public function deleteExchange(string $exchange): bool
     {
-        $ch     = $this->bunnyManager->getChannel();
-        $result = $ch->exchangeDelete($exchange);
+        $ch = $this->bunnyManager->getChannel();
 
-        return $result ? TRUE : FALSE;
+        return (bool) $ch->exchangeDelete($exchange);
     }
 
 }

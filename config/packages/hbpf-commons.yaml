@@ -89,3 +89,17 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@doctrine.orm.default_entity_manager'
             - '%database_type%'
+
+    ##########################
+    #      ACL Provider      #
+    ##########################
+
+    hbpf.acl.provider:
+        class: Hanaboso\AclBundle\Provider\Impl\AclProvider
+        arguments:
+        - '@hbpf.database_manager_locator'
+        - '@hbpf.user.provider.resource'
+        - '%resource_enum%'
+        - '%acl_use_cache%'
+        - '%redis_host%'
+        - '%redis_port%'

@@ -32,6 +32,10 @@ class DemoBatchAction implements BatchInterface
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
+        $dto;
+        $loop;
+        $callbackItem;
+
         return resolve();
     }
 

@@ -105,6 +105,7 @@ class BaseSyncConsumerAbstractTest extends TestCase
                         public function get(): void
                         {
                         }
+
                     }, 'get',
                 ],
                 NULL,

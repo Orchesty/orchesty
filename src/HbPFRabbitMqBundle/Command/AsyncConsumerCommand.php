@@ -98,6 +98,8 @@ class AsyncConsumerCommand extends Command implements LoggerAwareInterface
      */
     protected function execute(InputInterface $input, OutputInterface $output): void
     {
+        $output;
+
         $consumerName = strtolower($input->getArgument("consumer-name"));
 
         if (!isset($this->asyncConsumers[$consumerName])) {
@@ -115,7 +117,7 @@ class AsyncConsumerCommand extends Command implements LoggerAwareInterface
         sleep($this->timer);
 
         if ($this->timer < 10) {
-            $this->timer = $this->timer + 2;
+            $this->timer += 2;
 
             if ($this->timer > 10) {
                 $this->timer = 10;

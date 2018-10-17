@@ -29,13 +29,9 @@ class DemoCallback extends SyncCallbackAbstract
      */
     function handle($data, Message $message): CallbackStatus
     {
-        if (empty($data)) {
+        $message;
 
-            return new CallbackStatus(CallbackStatus::RESEND);
-        } else {
-
-            return new CallbackStatus(CallbackStatus::SUCCESS);
-        }
+        return new CallbackStatus(empty($data) ? CallbackStatus::RESEND : CallbackStatus::SUCCESS);
     }
 
 }
