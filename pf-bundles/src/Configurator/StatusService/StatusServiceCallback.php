@@ -44,6 +44,8 @@ class StatusServiceCallback extends SyncCallbackAbstract
      */
     function handle($data, Message $message): CallbackStatus
     {
+        $message;
+
         if (!isset($data['process_id'])) {
             throw new PipesFrameworkException(
                 'Missing message\'s content in StatusServiceCallback [process_id].',

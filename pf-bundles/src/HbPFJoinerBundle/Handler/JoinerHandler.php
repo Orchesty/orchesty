@@ -45,9 +45,8 @@ class JoinerHandler
     public function processJoiner(string $joinerId, array $data): array
     {
         $joiner = $this->loader->get($joinerId);
-        $res    = $joiner->process($data['data'], $data['count']);
 
-        return $res;
+        return $joiner->process($data['data'], $data['count']);
     }
 
     /**

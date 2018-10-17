@@ -61,6 +61,8 @@ class RefreshCronCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): void
     {
+        $input;
+
         /** @var Node[] $nodes */
         $nodes = $this->dm->getRepository(Node::class)->findBy(['type' => TypeEnum::CRON]);
         $output->write(sprintf('Refreshing %s CRONs:', count($nodes)));

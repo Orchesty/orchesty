@@ -128,6 +128,7 @@ class OAuth2Provider implements OAuth2ProviderInterface, LoggerAwareInterface
             [self::REFRESH_TOKEN => $oldRefreshToken]
         );
 
+        $opts = [];
         if (!isset($accessToken[self::REFRESH_TOKEN])) {
             $opts[self::REFRESH_TOKEN]     = $oldRefreshToken;
             $opts[self::ACCESS_TOKEN]      = $accessToken[self::ACCESS_TOKEN] ?? NULL;

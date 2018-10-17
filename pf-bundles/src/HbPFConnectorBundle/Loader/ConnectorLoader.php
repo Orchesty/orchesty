@@ -72,7 +72,7 @@ class ConnectorLoader
         $list = Yaml::parse(file_get_contents(__DIR__ . '/../Resources/config/connectors.yml'));
         $res  = [];
 
-        foreach ($list['services'] as $key => $item) {
+        foreach (array_keys($list['services']) as $key) {
             $shortened = str_replace(self::CONNECTOR_PREFIX . '.', '', $key);
             if (in_array($shortened, $exclude)) {
                 unset($exclude[$shortened]);

@@ -56,6 +56,8 @@ final class NotificationManagerTest extends KernelTestCaseAbstract
         $this->expectExceptionMessageRegExp('#Notification API failed: .+#');
 
         $this->getManager(function (RequestDto $request): void {
+            $request;
+
             throw new NotificationException(
                 'Client error: `GET http://example.com/notification_settings` resulted in a `404 Not Found` response: Response',
                 CurlException::REQUEST_FAILED

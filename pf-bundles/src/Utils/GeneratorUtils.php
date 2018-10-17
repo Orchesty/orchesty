@@ -62,7 +62,7 @@ class GeneratorUtils
                 $pieces[] = substr($item, 0, 3);
             }
             $i++;
-        };
+        }
 
         return substr(implode('-', $pieces), 0, 63);
     }

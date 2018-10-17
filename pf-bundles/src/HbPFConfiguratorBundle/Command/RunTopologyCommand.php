@@ -63,6 +63,8 @@ class RunTopologyCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): void
     {
+        $output;
+
         $this->handler->run(
             $input->getArgument('topology_name'),
             $input->getArgument('node_name'),
