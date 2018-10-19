@@ -1,6 +1,7 @@
 import {AssertionPublisher} from "amqplib-plus/dist/lib/AssertPublisher";
 import {IMetrics} from "metrics-sender/dist/lib/metrics/IMetrics";
 import logger from "../../logger/Logger";
+import {MessageType} from "../../message/AMessage";
 import Headers from "../../message/Headers";
 import JobMessage from "../../message/JobMessage";
 import {ResultCode, ResultCodeGroup} from "../../message/ResultCode";
@@ -9,7 +10,6 @@ import CounterPublisher from "./amqp/CounterPublisher";
 import FollowersPublisher from "./amqp/FollowersPublisher";
 import IDrain from "./IDrain";
 import IPartialForwarder from "./IPartialForwarder";
-import {MessageType} from "../../message/AMessage";
 
 export interface IFollower {
     node_id: string;
@@ -27,6 +27,7 @@ export interface IFollower {
 
 export interface IAmqpDrainSettings {
     node_label: INodeLabel;
+    persistent: boolean;
     counter: {
         queue: {
             name: string,
@@ -227,7 +228,10 @@ class AmqpDrain implements IDrain, IPartialForwarder {
 
         // Set the queue name where to repeat the message and send it to repeater
         message.getHeaders().setPFHeader(Headers.REPEAT_QUEUE, this.settings.faucet.queue.name);
-        this.nonStandardPublisher.sendToQueue(repeaterQ, message.getBody(), {headers: message.getHeaders().getRaw()});
+        this.nonStandardPublisher.sendToQueue(repeaterQ, message.getBody(), {
+            headers: message.getHeaders().getRaw(),
+            persistent: this.settings.persistent,
+        });
     }
 
     /**
@@ -245,7 +249,10 @@ class AmqpDrain implements IDrain, IPartialForwarder {
             return this.forward(message);
         }
 
-        this.nonStandardPublisher.sendToQueue(q, message.getBody(), {headers: message.getHeaders().getRaw()});
+        this.nonStandardPublisher.sendToQueue(q, message.getBody(), {
+            headers: message.getHeaders().getRaw(),
+            persistent: this.settings.persistent,
+        });
     }
 
     /**
