@@ -7,6 +7,7 @@ import {Publisher} from "amqplib-plus/dist/lib/Publisher";
 import {SimpleConsumer} from "amqplib-plus/dist/lib/SimpleConsumer";
 import * as config from "../../src/config";
 import {redisStorageOptions} from "../../src/config";
+import {persistentMode} from "../../src/config";
 import {ICounterProcessInfo} from "../../src/counter/CounterProcess";
 import RedisStorage from "../../src/counter/storage/RedisStorage";
 import {ResultCode} from "../../src/message/ResultCode";
@@ -155,7 +156,7 @@ describe("Linear topology with splitter test", () => {
                 amqpConn,
                 (ch: Channel) => {
                     return new Promise((resolve) => {
-                        ch.assertQueue(firstQueue, {})
+                        ch.assertQueue(firstQueue, { durable: persistentMode })
                             .then(() => {
                                 return ch.purgeQueue(firstQueue);
                             })

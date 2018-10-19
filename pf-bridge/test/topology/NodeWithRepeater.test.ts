@@ -8,6 +8,7 @@ import {SimpleConsumer} from "amqplib-plus/dist/lib/SimpleConsumer";
 import * as bodyParser from "body-parser";
 import * as express from "express";
 import * as config from "../../src/config";
+import {persistentMode} from "../../src/config";
 import {ICounterProcessInfo} from "../../src/counter/CounterProcess";
 import Headers from "../../src/message/Headers";
 import {ResultCode} from "../../src/message/ResultCode";
@@ -137,7 +138,7 @@ describe("Node with repeater test", () => {
             // Prepares function for evaluation of test end
             const counterResultQueue = {
                 name: "node-with-repeater-counter-result",
-                options: {},
+                options: { durable: persistentMode },
             };
             const resultConsumer = new SimpleConsumer(
                 amqpConn,
@@ -178,7 +179,7 @@ describe("Node with repeater test", () => {
                 amqpConn,
                 (ch: Channel) => {
                     return new Promise((resolve) => {
-                        ch.assertQueue(firstQueue, {})
+                        ch.assertQueue(firstQueue, { durable: persistentMode })
                             .then(() => {
                                 return ch.purgeQueue(firstQueue);
                             })

@@ -5,7 +5,7 @@ import {Channel, Message} from "amqplib";
 import {Connection} from "amqplib-plus/dist/lib/Connection";
 import {Publisher} from "amqplib-plus/dist/lib/Publisher";
 import {SimpleConsumer} from "amqplib-plus/dist/lib/SimpleConsumer";
-import {amqpConnectionOptions, mongoStorageOptions} from "../../src/config";
+import {amqpConnectionOptions, mongoStorageOptions, persistentMode} from "../../src/config";
 import Headers from "../../src/message/Headers";
 import Repeater, {IRepeaterSettings} from "../../src/repeater/Repeater";
 import MongoMessageStorage from "../../src/repeater/storage/MongoMessageStorage";
@@ -15,7 +15,7 @@ const conn = new Connection(amqpConnectionOptions);
 describe("Repeater", () => {
     it("should consume message and publish it after repeat interval", (done) => {
         const settings: IRepeaterSettings = {
-            input: { queue: { name: "repeater_a", options: {} } },
+            input: { queue: { name: "repeater_a", options: { durable: persistentMode } } },
             check_timeout: 1000,
         };
         const outputQueue = "repeater_a_output";
@@ -51,7 +51,7 @@ describe("Repeater", () => {
             conn,
             (ch: Channel) => {
                 return new Promise((resolve) => {
-                    ch.assertQueue(outputQueue)
+                    ch.assertQueue(outputQueue, { durable: persistentMode })
                         .then(() => {
                             return ch.purgeQueue(outputQueue);
                         }).then(() => {

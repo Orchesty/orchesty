@@ -1,7 +1,7 @@
 import { assert } from "chai";
 import "mocha";
 
-import {counterOptions} from "../../src/config";
+import {counterOptions, persistentMode} from "../../src/config";
 import Configurator, {ITopologyConfig, ITopologyConfigSkeleton} from "../../src/topology/Configurator";
 
 const testTopo: ITopologyConfigSkeleton = {
@@ -43,14 +43,18 @@ const expectedTopo: ITopologyConfig = {
             },
             queue: {
                 name: "pipes.results",
-                options: {},
+                options: {
+                    durable: persistentMode,
+                },
             },
             routing_key: "process_finished",
         },
         sub: {
             queue: {
                 name: "pipes.test-topo_id.counter",
-                options: {},
+                options: {
+                    durable: persistentMode,
+                },
                 prefetch: counterOptions.prefetch,
             },
         },
@@ -70,19 +74,25 @@ const expectedTopo: ITopologyConfig = {
                     counter: {
                         queue: {
                             name: "pipes.test-topo_id.counter",
-                            options: {},
+                            options: {
+                                durable: persistentMode,
+                            },
                         },
                     },
                     repeater: {
                         queue: {
                             name: "pipes.repeater",
-                            options: {},
+                            options: {
+                                durable: persistentMode,
+                            },
                         },
                     },
                     faucet: {
                         queue: {
                             name: "pipes.test-topo_id.node_a",
-                            options: {},
+                            options: {
+                                durable: persistentMode,
+                            },
                         },
                     },
                     followers: [
@@ -95,7 +105,9 @@ const expectedTopo: ITopologyConfig = {
                             node_id: "node_b",
                             queue: {
                                 name: "pipes.test-topo_id.node_b",
-                                options: {},
+                                options: {
+                                    durable: persistentMode,
+                                },
                             },
                             routing_key: "test-topo_id.node_b",
                         },
@@ -153,19 +165,25 @@ const expectedTopo: ITopologyConfig = {
                     counter: {
                         queue: {
                             name: "pipes.test-topo_id.counter",
-                            options: {},
+                            options: {
+                                durable: persistentMode,
+                            },
                         },
                     },
                     repeater: {
                         queue: {
                             name: "pipes.repeater",
-                            options: {},
+                            options: {
+                                durable: persistentMode,
+                            },
                         },
                     },
                     faucet: {
                         queue: {
                             name: "pipes.test-topo_id.node_b",
-                            options: {},
+                            options: {
+                                durable: persistentMode,
+                            },
                         },
                     },
                     followers: [],
@@ -199,7 +217,9 @@ const expectedTopo: ITopologyConfig = {
                     prefetch: 5,
                     queue: {
                         name: "pipes.test-topo_id.node_b",
-                        options: {},
+                        options: {
+                            durable: persistentMode,
+                        },
                     },
                     routing_key: "test-topo_id.node_b",
                 },

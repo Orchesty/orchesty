@@ -3,7 +3,7 @@ import {Connection} from "amqplib-plus/dist/lib/Connection";
 import {Container} from "hb-utils/dist/lib/Container";
 import {Metrics} from "metrics-sender/dist/lib/metrics/Metrics";
 import {
-    amqpConnectionOptions, limiterOptions, metricsOptions, multiProbeOptions, redisStorageOptions,
+    amqpConnectionOptions, limiterOptions, metricsOptions, multiProbeOptions, persistentMode, redisStorageOptions,
     topologyTerminatorOptions,
 } from "./config";
 import RedisStorage from "./counter/storage/RedisStorage";
@@ -96,7 +96,7 @@ class DIContainer extends Container {
             const assertionPub = new AssertionPublisher(
                 this.get("amqp.connection"),
                 () => Promise.resolve(),
-                {},
+                { durable: persistentMode },
             );
             const metrics = this.get("metrics")(
                 settings.node_label.topology_id,
