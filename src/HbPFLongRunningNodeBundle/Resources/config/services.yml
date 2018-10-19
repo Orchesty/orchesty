@@ -6,3 +6,10 @@ services:
         class: Hanaboso\PipesFramework\HbPFLongRunningNodeBundle\Loader\LongRunningNodeLoader
         arguments:
             - '@service_container'
+
+    hbpf.listener.long_running:
+        class: Hanaboso\PipesFramework\HbPFLongRunningNodeBundle\Listener\LongRunningNodeListener
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+        tags:
+            - { name: kernel.event_subscriber }
