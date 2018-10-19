@@ -1,4 +1,4 @@
-import {amqpFaucetOptions, counterOptions, persistentMode, repeaterOptions} from "../config";
+import {amqpFaucetOptions, counterOptions, persistentMessages, persistentMode, repeaterOptions} from "../config";
 import { ICounterSettings } from "../counter/Counter";
 import {IAmqpDrainSettings} from "../node/drain/AmqpDrain";
 import {IAmqpFaucetSettings} from "../node/faucet/AmqpFaucet";
@@ -292,6 +292,7 @@ class Configurator {
         const followers = node.next || [];
         const settings: IAmqpDrainSettings = {
             node_label: node.label,
+            persistent: persistentMessages,
             counter: {
                 queue: {
                     name: isMulti ? "pipes.multi-counter" : `pipes.${topoId}.counter`,

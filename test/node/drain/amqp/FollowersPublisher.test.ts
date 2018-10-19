@@ -4,7 +4,7 @@ import "mocha";
 import {Channel, Message} from "amqplib";
 import {Connection} from "amqplib-plus/dist/lib/Connection";
 import {SimpleConsumer} from "amqplib-plus/dist/lib/SimpleConsumer";
-import {amqpConnectionOptions} from "../../../../src/config";
+import {amqpConnectionOptions, persistentMessages} from "../../../../src/config";
 import Headers from "../../../../src/message/Headers";
 import JobMessage from "../../../../src/message/JobMessage";
 import {ResultCode} from "../../../../src/message/ResultCode";
@@ -20,6 +20,7 @@ const settings: IAmqpDrainSettings = {
         node_name: "counter",
         topology_id: "topoId",
     },
+    persistent: persistentMessages,
     counter: {
         queue: {
             name: "test-drain-counter",

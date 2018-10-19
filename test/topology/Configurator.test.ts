@@ -1,7 +1,7 @@
 import { assert } from "chai";
 import "mocha";
 
-import {counterOptions, persistentMode} from "../../src/config";
+import {counterOptions, persistentMessages, persistentMode} from "../../src/config";
 import Configurator, {ITopologyConfig, ITopologyConfigSkeleton} from "../../src/topology/Configurator";
 
 const testTopo: ITopologyConfigSkeleton = {
@@ -71,6 +71,7 @@ const expectedTopo: ITopologyConfig = {
             },
             drain: {
                 settings: {
+                    persistent: persistentMessages,
                     counter: {
                         queue: {
                             name: "pipes.test-topo_id.counter",
@@ -162,6 +163,7 @@ const expectedTopo: ITopologyConfig = {
             },
             drain: {
                 settings: {
+                    persistent: persistentMessages,
                     counter: {
                         queue: {
                             name: "pipes.test-topo_id.counter",
