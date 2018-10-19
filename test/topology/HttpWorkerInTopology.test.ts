@@ -8,7 +8,7 @@ import {SimpleConsumer} from "amqplib-plus/dist/lib/SimpleConsumer";
 import * as bodyParser from "body-parser";
 import * as express from "express";
 import {TimeUtils} from "hb-utils/dist/lib/TimeUtils";
-import {persistentMode} from "../../src/config";
+import {persistentQueues} from "../../src/config";
 import * as config from "../../src/config";
 import {ICounterProcessInfo} from "../../src/counter/CounterProcess";
 import Headers from "../../src/message/Headers";
@@ -127,7 +127,7 @@ describe("Topology with HttpWorker Node", () => {
         const publisher = new Publisher(
             amqpConn,
             async (ch: Channel) => {
-                await ch.assertQueue(firstQueue, { durable: persistentMode });
+                await ch.assertQueue(firstQueue, { durable: persistentQueues });
                 await ch.purgeQueue(firstQueue);
             },
         );

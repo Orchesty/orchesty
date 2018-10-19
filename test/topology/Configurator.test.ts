@@ -1,7 +1,7 @@
 import { assert } from "chai";
 import "mocha";
 
-import {counterOptions, persistentMessages, persistentMode} from "../../src/config";
+import {counterOptions, persistentMessages, persistentQueues} from "../../src/config";
 import Configurator, {ITopologyConfig, ITopologyConfigSkeleton} from "../../src/topology/Configurator";
 
 const testTopo: ITopologyConfigSkeleton = {
@@ -44,7 +44,7 @@ const expectedTopo: ITopologyConfig = {
             queue: {
                 name: "pipes.results",
                 options: {
-                    durable: persistentMode,
+                    durable: persistentQueues,
                 },
             },
             routing_key: "process_finished",
@@ -53,7 +53,7 @@ const expectedTopo: ITopologyConfig = {
             queue: {
                 name: "pipes.test-topo_id.counter",
                 options: {
-                    durable: persistentMode,
+                    durable: persistentQueues,
                 },
                 prefetch: counterOptions.prefetch,
             },
@@ -76,7 +76,7 @@ const expectedTopo: ITopologyConfig = {
                         queue: {
                             name: "pipes.test-topo_id.counter",
                             options: {
-                                durable: persistentMode,
+                                durable: persistentQueues,
                             },
                         },
                     },
@@ -84,7 +84,7 @@ const expectedTopo: ITopologyConfig = {
                         queue: {
                             name: "pipes.repeater",
                             options: {
-                                durable: persistentMode,
+                                durable: persistentQueues,
                             },
                         },
                     },
@@ -92,7 +92,7 @@ const expectedTopo: ITopologyConfig = {
                         queue: {
                             name: "pipes.test-topo_id.node_a",
                             options: {
-                                durable: persistentMode,
+                                durable: persistentQueues,
                             },
                         },
                     },
@@ -107,7 +107,7 @@ const expectedTopo: ITopologyConfig = {
                             queue: {
                                 name: "pipes.test-topo_id.node_b",
                                 options: {
-                                    durable: persistentMode,
+                                    durable: persistentQueues,
                                 },
                             },
                             routing_key: "test-topo_id.node_b",
@@ -168,7 +168,7 @@ const expectedTopo: ITopologyConfig = {
                         queue: {
                             name: "pipes.test-topo_id.counter",
                             options: {
-                                durable: persistentMode,
+                                durable: persistentQueues,
                             },
                         },
                     },
@@ -176,7 +176,7 @@ const expectedTopo: ITopologyConfig = {
                         queue: {
                             name: "pipes.repeater",
                             options: {
-                                durable: persistentMode,
+                                durable: persistentQueues,
                             },
                         },
                     },
@@ -184,7 +184,7 @@ const expectedTopo: ITopologyConfig = {
                         queue: {
                             name: "pipes.test-topo_id.node_b",
                             options: {
-                                durable: persistentMode,
+                                durable: persistentQueues,
                             },
                         },
                     },
@@ -220,7 +220,7 @@ const expectedTopo: ITopologyConfig = {
                     queue: {
                         name: "pipes.test-topo_id.node_b",
                         options: {
-                            durable: persistentMode,
+                            durable: persistentQueues,
                         },
                     },
                     routing_key: "test-topo_id.node_b",

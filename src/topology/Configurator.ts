@@ -1,4 +1,4 @@
-import {amqpFaucetOptions, counterOptions, persistentMessages, persistentMode, repeaterOptions} from "../config";
+import {amqpFaucetOptions, counterOptions, persistentMessages, persistentQueues, repeaterOptions} from "../config";
 import { ICounterSettings } from "../counter/Counter";
 import {IAmqpDrainSettings} from "../node/drain/AmqpDrain";
 import {IAmqpFaucetSettings} from "../node/faucet/AmqpFaucet";
@@ -92,7 +92,7 @@ class Configurator {
                         name: "pipes.multi-counter",
                         prefetch: counterOptions.prefetch,
                         options: {
-                            durable: persistentMode,
+                            durable: persistentQueues,
                         },
                     },
                 },
@@ -106,7 +106,7 @@ class Configurator {
                     queue: {
                         name: "pipes.results",
                         options: {
-                            durable: persistentMode,
+                            durable: persistentQueues,
                         },
                     },
                 },
@@ -119,7 +119,7 @@ class Configurator {
                     name: `pipes.${topoId}.counter`,
                     prefetch: counterOptions.prefetch,
                     options: {
-                        durable: persistentMode,
+                        durable: persistentQueues,
                     },
                 },
             },
@@ -133,7 +133,7 @@ class Configurator {
                 queue: {
                     name: "pipes.results",
                     options: {
-                        durable: persistentMode,
+                        durable: persistentQueues,
                     },
                 },
             },
@@ -264,7 +264,7 @@ class Configurator {
             queue: {
                 name: `pipes.${topoId}.${node.id}`,
                 options: {
-                    durable: persistentMode,
+                    durable: persistentQueues,
                 },
             },
             prefetch: amqpFaucetOptions.prefetch,
@@ -297,7 +297,7 @@ class Configurator {
                 queue: {
                     name: isMulti ? "pipes.multi-counter" : `pipes.${topoId}.counter`,
                     options: {
-                        durable: persistentMode,
+                        durable: persistentQueues,
                     },
                 },
             },
@@ -305,7 +305,7 @@ class Configurator {
                 queue: {
                     name: repeaterOptions.input.queue.name || `pipes.repeater`,
                     options: repeaterOptions.input.queue.options || {
-                        durable: persistentMode,
+                        durable: persistentQueues,
                     },
                 },
             },
@@ -326,7 +326,7 @@ class Configurator {
                     queue: {
                         name: `pipes.${topoId}.${nextNode}`,
                         options: {
-                            durable: persistentMode,
+                            durable: persistentQueues,
                         },
                     },
                     routing_key: `${topoId}.${nextNode}`,
