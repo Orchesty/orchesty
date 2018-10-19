@@ -8,7 +8,7 @@ import {SimpleConsumer} from "amqplib-plus/dist/lib/SimpleConsumer";
 import * as bodyParser from "body-parser";
 import * as express from "express";
 import * as config from "../../src/config";
-import {persistentMode} from "../../src/config";
+import {persistentQueues} from "../../src/config";
 import {ICounterProcessInfo} from "../../src/counter/CounterProcess";
 import Headers from "../../src/message/Headers";
 import {ResultCode} from "../../src/message/ResultCode";
@@ -170,7 +170,7 @@ describe("Linear Topology test", () => {
                 amqpConn,
                 (ch: Channel) => {
                     return new Promise((resolve) => {
-                        ch.assertQueue(firstQueue, { durable: persistentMode })
+                        ch.assertQueue(firstQueue, { durable: persistentQueues })
                             .then(() => {
                                 return ch.purgeQueue(firstQueue);
                             })

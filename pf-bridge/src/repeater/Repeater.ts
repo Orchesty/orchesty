@@ -3,7 +3,7 @@ import {AssertionPublisher} from "amqplib-plus/dist/lib/AssertPublisher";
 import {Connection, createChannelCallback} from "amqplib-plus/dist/lib/Connection";
 import {SimpleConsumer} from "amqplib-plus/dist/lib/SimpleConsumer";
 import {ObjectUtils} from "hb-utils/dist/lib/ObjectUtils";
-import {persistentMode} from "../config";
+import {persistentQueues} from "../config";
 import IStoppable from "../IStoppable";
 import Headers from "../message/Headers";
 import logger from "./../logger/Logger";
@@ -176,7 +176,7 @@ class Repeater implements IStoppable {
                 return Promise.resolve();
             },
             {
-                durable: persistentMode,
+                durable: persistentQueues,
             },
         );
     }

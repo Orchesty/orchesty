@@ -6,7 +6,7 @@ import {Connection} from "amqplib-plus/dist/lib/Connection";
 import {Publisher} from "amqplib-plus/dist/lib/Publisher";
 import {SimpleConsumer} from "amqplib-plus/dist/lib/SimpleConsumer";
 import {Replies} from "amqplib/properties";
-import {amqpConnectionOptions, persistentMode, redisStorageOptions} from "../../src/config";
+import {amqpConnectionOptions, persistentQueues, redisStorageOptions} from "../../src/config";
 import {default as Counter, ICounterSettings} from "../../src/counter/Counter";
 import {ICounterProcessInfo} from "../../src/counter/CounterProcess";
 import Distributor from "../../src/counter/distributor/Distributor";
@@ -328,7 +328,7 @@ function runCounterTest(counter: Counter, testOutputQueue: any, done: any) {
     const publisher = new Publisher(conn, preparePublisher);
     const prepareConsumer = (ch: Channel): Promise<void> => {
         return new Promise((resolve) => {
-            ch.assertQueue(testOutputQueue.name, { durable: persistentMode })
+            ch.assertQueue(testOutputQueue.name, { durable: persistentQueues })
                 .then((q: Replies.AssertQueue) => {
                     return ch.bindQueue(
                         q.queue,

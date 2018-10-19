@@ -11,7 +11,7 @@ if (process.env.NODE_ENV === "test") {
 }
 
 // enable persistent mode until it is not disabled
-export const persistentMode: boolean = !(process.env.PERSISTENT_QUEUES === "false"); // default true
+export const persistentQueues: boolean = !(process.env.PERSISTENT_QUEUES === "false"); // default true
 export const persistentMessages: boolean = !(process.env.PERSISTENT_MESSAGES === "false"); // default true
 
 export const amqpConnectionOptions: IConnectionOptions = {
@@ -45,7 +45,7 @@ export const repeaterOptions: IRepeaterSettings = {
         queue: {
             name: process.env.REPEATER_INPUT_QUEUE || "pipes.repeater",
             options: {
-                durable: persistentMode,
+                durable: persistentQueues,
             },
         },
     },
