@@ -14,7 +14,7 @@ class MessageDto
 {
 
     /**
-     * @var string
+     * @var string|null
      */
     private $docId;
 
@@ -63,15 +63,12 @@ class MessageDto
     {
         $this->data          = $data;
         $this->headers       = $headers;
-        $this->nodeId        = PipesHeaders::get(PipesHeaders::createKey(PipesHeaders::NODE_ID), $headers);
-        $this->topologyId    = PipesHeaders::get(PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID), $headers);
-        $this->processId     = PipesHeaders::get(PipesHeaders::createKey(PipesHeaders::PROCESS_ID), $headers);
-        $this->docId = PipesHeaders::get(
-            PipesHeaders::createKey(LongRunningNodeData::DOCUMENT_ID_HEADER), $headers);
-        $this->parentProcess = PipesHeaders::get(
-            PipesHeaders::createKey(LongRunningNodeData::PARENT_PROCESS_HEADER), $headers);
-        $this->updatedBy     = PipesHeaders::get(
-            PipesHeaders::createKey(LongRunningNodeData::UPDATED_BY_HEADER), $headers);
+        $this->nodeId        = PipesHeaders::get(PipesHeaders::NODE_ID, $headers);
+        $this->topologyId    = PipesHeaders::get(PipesHeaders::TOPOLOGY_ID, $headers);
+        $this->processId     = PipesHeaders::get(PipesHeaders::PROCESS_ID, $headers);
+        $this->docId         = PipesHeaders::get(LongRunningNodeData::DOCUMENT_ID_HEADER, $headers);
+        $this->parentProcess = PipesHeaders::get(LongRunningNodeData::PARENT_PROCESS_HEADER, $headers);
+        $this->updatedBy     = PipesHeaders::get(LongRunningNodeData::UPDATED_BY_HEADER, $headers);
     }
 
     /**
@@ -115,9 +112,9 @@ class MessageDto
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getDocId(): string
+    public function getDocId(): ?string
     {
         return $this->docId;
     }

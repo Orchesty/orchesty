@@ -13,3 +13,18 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
         tags:
             - { name: kernel.event_subscriber }
+
+    hbpf.manager.long_running:
+        class: Hanaboso\PipesFramework\LongRunningNode\Model\LongRunningNodeManager
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.starting_point.long_running:
+        class: Hanaboso\PipesFramework\LongRunningNode\Model\LongRunningNodeStartingPoint
+        arguments:
+            - '@rabbit-mq.manager'
+            - '@hbpf.transport.curl_manager'
+            - '@hbpf.influxdb_sender_monolith'
+            - '@hbpf.manager.long_running'
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]

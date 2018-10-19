@@ -31,6 +31,9 @@ class HbPFLongRunningNodeExtension extends Extension implements PrependExtension
         if (!$container->hasExtension('hb_pf_commons')) {
             throw new RuntimeException('You must register HbPFCommonsBundle before.');
         }
+        if (!$container->hasExtension('hb_pf_configurator')) {
+            throw new RuntimeException('You must register HbPFConfiguratorBundle before.');
+        }
     }
 
     /**
