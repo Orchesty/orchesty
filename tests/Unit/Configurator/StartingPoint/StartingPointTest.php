@@ -173,7 +173,7 @@ final class StartingPointTest extends TestCase
         $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager, $this->influxDb);
         $headers       = $startingPoint->createHeaders($topology);
 
-        $this->assertCount(9, $headers->getHeaders());
+        $this->assertCount(10, $headers->getHeaders());
         $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'process-id', $headers->getHeaders());
         $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'parent-id', $headers->getHeaders());
         $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'correlation-id', $headers->getHeaders());
@@ -182,6 +182,35 @@ final class StartingPointTest extends TestCase
         $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'topology-name', $headers->getHeaders());
         $this->assertArrayHasKey('content-type', $headers->getHeaders());
         $this->assertArrayHasKey('timestamp', $headers->getHeaders());
+        $this->assertArrayHasKey('delivery-mode', $headers->getHeaders());
+        $this->assertSame(1, $headers->getHeaders()['delivery-mode']);
+        $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'published-timestamp', $headers->getHeaders());
+    }
+
+    /**
+     * @covers StartingPoint::createHeaders()
+     */
+    public function testCreateHeadersDurableMessage(): void
+    {
+        /** @var Topology|MockObject $topology */
+        $topology = $this->createMock(Topology::class);
+        $topology->method('getId')->willReturn('13');
+        $topology->method('getName')->willReturn('name');
+        $startingPoint = new StartingPoint($this->bunnyManager, $this->curlManager, $this->influxDb);
+        $startingPoint->setDurableMessage(TRUE);
+        $headers = $startingPoint->createHeaders($topology);
+
+        $this->assertCount(10, $headers->getHeaders());
+        $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'process-id', $headers->getHeaders());
+        $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'parent-id', $headers->getHeaders());
+        $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'correlation-id', $headers->getHeaders());
+        $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'sequence-id', $headers->getHeaders());
+        $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'topology-id', $headers->getHeaders());
+        $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'topology-name', $headers->getHeaders());
+        $this->assertArrayHasKey('content-type', $headers->getHeaders());
+        $this->assertArrayHasKey('timestamp', $headers->getHeaders());
+        $this->assertArrayHasKey('delivery-mode', $headers->getHeaders());
+        $this->assertSame(2, $headers->getHeaders()['delivery-mode']);
         $this->assertArrayHasKey(PipesHeaders::PF_PREFIX . 'published-timestamp', $headers->getHeaders());
     }
 

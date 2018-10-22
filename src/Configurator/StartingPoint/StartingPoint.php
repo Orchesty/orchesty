@@ -73,6 +73,16 @@ class StartingPoint implements LoggerAwareInterface
     private $logger;
 
     /**
+     * @var bool
+     */
+    private $durableQueue = FALSE;
+
+    /**
+     * @var bool
+     */
+    private $durableMessage = FALSE;
+
+    /**
      * StartingPoint constructor.
      *
      * @param BunnyManager         $bunnyManager
@@ -93,6 +103,22 @@ class StartingPoint implements LoggerAwareInterface
     public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
+    }
+
+    /**
+     * @param bool $durableQueue
+     */
+    public function setDurableQueue(bool $durableQueue): void
+    {
+        $this->durableQueue = $durableQueue;
+    }
+
+    /**
+     * @param bool $durableMessage
+     */
+    public function setDurableMessage(bool $durableMessage): void
+    {
+        $this->durableMessage = $durableMessage;
     }
 
     /**
@@ -188,6 +214,7 @@ class StartingPoint implements LoggerAwareInterface
             ->addHeader(PipesHeaders::createKey(PipesHeaders::TOPOLOGY_NAME), $topology->getName())
             ->addHeader('content-type', $requestHeaders['content-type'][0] ?? 'application/json')
             ->addHeader('timestamp', new DateTime('now', new DateTimeZone('UTC')))
+            ->addHeader('delivery-mode', $this->durableMessage ? 2 : 1)
             ->addHeader(
                 PipesHeaders::createKey(PipesHeaders::TIMESTAMP),
                 (string) SystemMetrics::getCurrentTimestamp()
@@ -281,8 +308,8 @@ class StartingPoint implements LoggerAwareInterface
             // Create channel and queues
             /** @var Channel $channel */
             $channel = $this->bunnyManager->getChannel();
-            //$channel->queueDeclare(self::createQueueName($topology, $node), FALSE, TRUE);
-            //$channel->queueDeclare(self::createCounterQueueName(), FALSE, TRUE);
+            $channel->queueDeclare(self::createQueueName($topology, $node), FALSE, $this->durableQueue);
+            $channel->queueDeclare(self::createCounterQueueName(), FALSE, $this->durableQueue);
         } catch (Throwable $t) {
             throw  new StartingPointException($t->getMessage(), $t->getCode(), $t->getPrevious());
         }
