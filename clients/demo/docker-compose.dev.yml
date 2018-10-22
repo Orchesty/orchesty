@@ -98,7 +98,6 @@ services:
     multi-counter:
       image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
       user: ${DEV_UID}:${DEV_GID}
-      command: './dist/src/bin/pipes.js start multi_counter'
       environment:
         # NODE_ENV: debug
         RABBITMQ_HOST: rabbitmq
@@ -158,7 +157,6 @@ services:
     #      BACKEND_HOST: ${BACKEND_URL}/
     #      ELASTIC_HOST: elasticsearch
     #      ELASTIC_INDEX: 'logstash-2018.01.31'
-    #      PHP_FPM_MAX_REQUESTS: 5000
     #    secrets:
     #      - source: clevermonitor-ca.pem
     #        target: /var/www/html/var/secret/ca.crt

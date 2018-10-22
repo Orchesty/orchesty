@@ -11,4 +11,7 @@ RUN mkdir /srv/topology && \
 
 RUN chown -R www-data:www-data ./var
 
+ENV PHP_FPM_MAX_CHILDREN 10
+ENV PHP_FPM_MAX_REQUESTS 500
+
 CMD [ "php-w-nginx.sh" ]
