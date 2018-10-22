@@ -88,4 +88,4 @@ services:
         class: Demo\CustomNode\DummyExceptionConnector
         public: true
         calls:
-            - ['setLogger', ['monolog.logger.connector']]
+            - ['setLogger', ['@monolog.logger.connector']]
