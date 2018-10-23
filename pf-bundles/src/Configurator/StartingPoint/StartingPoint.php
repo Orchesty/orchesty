@@ -75,7 +75,7 @@ class StartingPoint implements LoggerAwareInterface
     /**
      * @var bool
      */
-    private $durableQueue = FALSE;
+    private $durableQueue = TRUE;
 
     /**
      * @var bool
