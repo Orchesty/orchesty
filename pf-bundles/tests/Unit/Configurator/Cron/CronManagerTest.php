@@ -231,6 +231,8 @@ final class CronManagerTest extends KernelTestCaseAbstract
         $this->expectExceptionMessageRegExp('#Cron API failed: .+#');
 
         $this->getManager(function (RequestDto $request): void {
+            $request;
+
             throw new CurlException(
                 'Client error: `GET http://example.com/cron-api/create` resulted in a `406 Not Acceptable` response: Response',
                 CurlException::REQUEST_FAILED

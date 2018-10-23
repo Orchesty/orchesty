@@ -27,7 +27,7 @@ class HbPFTableParserExtension extends Extension implements PrependExtensionInte
     {
         if (!$container->hasExtension('hb_pf_commons')) {
             throw new RuntimeException('You must register HbPFCommonsBundle before.');
-        };
+        }
     }
 
     /**

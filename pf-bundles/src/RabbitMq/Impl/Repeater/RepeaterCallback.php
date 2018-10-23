@@ -51,6 +51,8 @@ class RepeaterCallback extends SyncCallbackAbstract
      */
     function handle($data, Message $message): CallbackStatus
     {
+        $data;
+
         if (!Repeater::validRepeaterMessage($message)) {
             return new CallbackStatus(CallbackStatus::SUCCESS);
         }

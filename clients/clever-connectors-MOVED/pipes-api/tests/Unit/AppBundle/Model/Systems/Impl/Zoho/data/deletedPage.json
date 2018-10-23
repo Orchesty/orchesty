@@ -1,8 +1,0 @@
-{
-  "response": {
-    "result": {
-      "DeletedIDs": "85896000000078215,85896000000078217"
-    },
-    "uri": "/crm/private/json/Contacts/getDeletedRecordIds"
-  }
-}

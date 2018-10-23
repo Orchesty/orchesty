@@ -17,20 +17,9 @@ namespace Hanaboso\PipesFramework\RabbitMq;
 final class CallbackStatus
 {
 
-    /**
-     * @var int
-     */
     public const SUCCESS = 1;
-
-    /**
-     * @var int
-     */
-    public const FAILED = 2;
-
-    /**
-     * @var int
-     */
-    public const RESEND = 3;
+    public const FAILED  = 2;
+    public const RESEND  = 3;
 
     /**
      * @var int|null

@@ -198,6 +198,7 @@ class MetricsManager implements LoggerAwareInterface
     public function getTopologyMetrics(Topology $topology, array $params): array
     {
         $data                                = $this->getTopologyProcessTimeMetrics($topology, $params)['process'];
+        $res = [];
         $res['topology'][self::PROCESS_TIME] = ['min' => $data['min'], 'avg' => $data['avg'], 'max' => $data['max']];
         unset($data['min'], $data['avg'], $data['max']);
         $res['topology']['process'] = $data;
@@ -568,7 +569,7 @@ class MetricsManager implements LoggerAwareInterface
             self::REQUEST_TIME => [
                 'max' => $request->getMax(),
                 'min' => $request->getMin(),
-                'avg' => ($request->getAvg() == 0) ? 'n/a' : $request->getAvg(),
+                'avg' => $request->getAvg() == 0 ? 'n/a' : $request->getAvg(),
             ],
             self::PROCESS      => [
                 'max'    => $counter->getMax(),

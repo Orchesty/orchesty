@@ -24,30 +24,12 @@ use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 class RequestHandler
 {
 
-    /**
-     * @var string
-     */
-    protected const GENERATOR_TOPOLOGY_URL = 'http://topology-api:80/api/topology/generate/{id}';
-
-    /**
-     * @var string
-     */
-    protected const RUN_TOPOLOGY_URL = 'http://topology-api:80/api/topology/run/{id}';
-
-    /**
-     * @var string
-     */
-    public const DELETE_TOPOLOGY_URL = 'http://topology-api:80/api/topology/delete/{id}';
-
-    /**
-     * @var string
-     */
+    public const DELETE_TOPOLOGY_URL    = 'http://topology-api:80/api/topology/delete/{id}';
     public const TERMINATE_TOPOLOGY_URL = 'http://multi-counter-api:8005/topology/terminate/{id}';
+    public const INFO_TOPOLOGY_URL      = 'http://topology-api:80/api/topology/info/{id}';
 
-    /**
-     * @var string
-     */
-    public const INFO_TOPOLOGY_URL = 'http://topology-api:80/api/topology/info/{id}';
+    protected const RUN_TOPOLOGY_URL       = 'http://topology-api:80/api/topology/run/{id}';
+    protected const GENERATOR_TOPOLOGY_URL = 'http://topology-api:80/api/topology/generate/{id}';
 
     /**
      * @var CurlManagerInterface
@@ -73,11 +55,9 @@ class RequestHandler
     public function generateTopology(string $topologyId): ResponseDto
     {
         $uri = $this->getUrl($topologyId, self::GENERATOR_TOPOLOGY_URL);
+        $dto = new RequestDto('GET', new Uri($uri));
 
-        $dto      = new RequestDto('GET', new Uri($uri));
-        $response = $this->curlManager->send($dto);
-
-        return $response;
+        return $this->curlManager->send($dto);
     }
 
     /**
@@ -89,11 +69,9 @@ class RequestHandler
     public function runTopology(string $topologyId): ResponseDto
     {
         $uri = $this->getUrl($topologyId, self::RUN_TOPOLOGY_URL);
+        $dto = new RequestDto('GET', new Uri($uri));
 
-        $dto      = new RequestDto('GET', new Uri($uri));
-        $response = $this->curlManager->send($dto);
-
-        return $response;
+        return $this->curlManager->send($dto);
     }
 
     /**
@@ -112,9 +90,7 @@ class RequestHandler
             PipesHeaders::createKey(PipesHeaders::TOPOLOGY_DELETE_URL) => $uri,
         ]);
 
-        $response = $this->curlManager->send($dto);
-
-        return $response;
+        return $this->curlManager->send($dto);
     }
 
     /**
@@ -126,11 +102,9 @@ class RequestHandler
     public function infoTopology(string $topologyId): ResponseDto
     {
         $uri = $this->getUrl($topologyId, self::INFO_TOPOLOGY_URL);
+        $dto = new RequestDto('GET', new Uri($uri));
 
-        $dto      = new RequestDto('GET', new Uri($uri));
-        $response = $this->curlManager->send($dto);
-
-        return $response;
+        return $this->curlManager->send($dto);
     }
 
     /**

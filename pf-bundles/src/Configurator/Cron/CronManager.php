@@ -279,6 +279,7 @@ class CronManager
     private function processNodes(array $nodes, array $exclude = []): string
     {
         $processedNodes = [];
+        $processedNode  = [];
 
         foreach ($nodes as $node) {
             if ($node->getCron()) {

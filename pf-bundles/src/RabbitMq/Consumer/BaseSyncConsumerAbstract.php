@@ -78,6 +78,8 @@ abstract class BaseSyncConsumerAbstract extends SyncConsumerAbstract
      */
     protected function handleResult(CallbackStatus $result, Message $message, Channel $channel): void
     {
+        $result;
+
         if (!$this->isNoAck()) {
             $channel->ack($message);
         }

@@ -70,6 +70,8 @@ abstract class AuthorizationAbstract implements AuthorizationInterface
      */
     public function getInfo(string $hostname): array
     {
+        $hostname;
+
         return [
             'name'          => $this->config[self::NAME],
             'description'   => $this->config[self::DESCRIPTION],

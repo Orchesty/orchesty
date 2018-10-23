@@ -1,8 +1,0 @@
-services:
-    _defaults:
-        public: '%public.services%'
-
-    systems.shopware:
-        class: CleverConnectors\AppBundle\Model\Systems\Impl\Shopware\ShopwareSystem
-        arguments:
-        tags: ['%systems%']
