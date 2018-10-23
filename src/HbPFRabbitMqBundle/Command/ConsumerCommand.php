@@ -125,6 +125,7 @@ class ConsumerCommand extends Command implements LoggerAwareInterface
      */
     protected function execute(InputInterface $input, OutputInterface $output): void
     {
+        $output;
         $consumerName = strtolower($input->getArgument("consumer-name"));
 
         if (!isset($this->consumers[$consumerName])) {

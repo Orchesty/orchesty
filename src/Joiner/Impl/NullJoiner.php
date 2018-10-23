@@ -24,6 +24,7 @@ class NullJoiner extends JoinerAbstract
      */
     public function save(array $data): void
     {
+        $data;
     }
 
     /**
@@ -33,6 +34,8 @@ class NullJoiner extends JoinerAbstract
      */
     public function isDataComplete(int $count): bool
     {
+        $count;
+
         return TRUE;
     }
 

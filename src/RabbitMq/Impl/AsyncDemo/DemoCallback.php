@@ -39,6 +39,7 @@ class DemoCallback implements BatchActionInterface
      */
     public function batchAction(Message $message, LoopInterface $loop, callable $itemCallBack): PromiseInterface
     {
+        $message;
         $browser = new Browser($loop);
 
         $requests = [];
@@ -68,6 +69,8 @@ class DemoCallback implements BatchActionInterface
      */
     public function getBatchService(string $id): BatchInterface
     {
+        $id;
+
         return new DemoBatchAction();
     }
 

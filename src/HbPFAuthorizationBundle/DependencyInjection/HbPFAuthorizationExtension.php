@@ -29,7 +29,7 @@ class HbPFAuthorizationExtension extends Extension implements PrependExtensionIn
 
         if (!$container->hasExtension('hb_pf_commons')) {
             throw new RuntimeException('You must register HbPFCommonsBundle before.');
-        };
+        }
     }
 
     /**

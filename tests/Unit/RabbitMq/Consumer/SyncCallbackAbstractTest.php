@@ -125,8 +125,12 @@ class SyncCallbackAbstractTest extends TestCase
              */
             function handle($data, Message $message): CallbackStatus
             {
+                $data;
+                $message;
+
                 return new CallbackStatus($this->callbackStatus);
             }
+
         };
 
         if ($repeater) {

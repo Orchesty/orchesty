@@ -52,7 +52,8 @@ class CategoryManagerTest extends DatabaseTestCaseAbstract
             'name'   => 'child2',
             'parent' => $categoryR2->getId(),
         ];
-        $categoryCh1 = $manager->createCategory($dataCh1);
+
+        $manager->createCategory($dataCh1);
         $categoryCh2 = $manager->createCategory($dataCh2);
 
         $dataCh2Edit = [
@@ -73,7 +74,7 @@ class CategoryManagerTest extends DatabaseTestCaseAbstract
         self::assertCount(3, $repo->findBy(['parent' => NULL]));
         self::assertCount(0, $repo->findBy(['parent' => $categoryR2->getId()]));
 
-        $topology = $topologyManager->createTopology(['name' => 'Topology', 'category' => $categoryCh2->getId()]);
+        $topologyManager->createTopology(['name' => 'Topology', 'category' => $categoryCh2->getId()]);
 
         $this->expectException(CategoryException::class);
         $this->expectExceptionCode(CategoryException::CATEGORY_USED);

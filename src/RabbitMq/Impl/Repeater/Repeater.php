@@ -24,24 +24,9 @@ use Psr\Log\NullLogger;
 class Repeater implements LoggerAwareInterface
 {
 
-    /**
-     * @var int
-     */
-    public const MAX_HOP_FIELD = 'max_hop';
-
-    /**
-     * @var int
-     */
-    public const CURRENT_HOP_FIELD = 'current_hop';
-
-    /**
-     * @var string
-     */
-    public const DESTINATION_EXCHANGE = 'repeater_destination_exchange';
-
-    /**
-     * @var string
-     */
+    public const MAX_HOP_FIELD           = 'max_hop';
+    public const CURRENT_HOP_FIELD       = 'current_hop';
+    public const DESTINATION_EXCHANGE    = 'repeater_destination_exchange';
     public const DESTINATION_ROUTING_KEY = 'repeater_destination_rk';
 
     /**
@@ -125,13 +110,8 @@ class Repeater implements LoggerAwareInterface
      */
     public static function validRepeaterMessage(Message $message): bool
     {
-        if (
-            $message->hasHeader(self::DESTINATION_ROUTING_KEY) &&
-            $message->hasHeader(self::DESTINATION_EXCHANGE)) {
-            return TRUE;
-        }
-
-        return FALSE;
+        return $message->hasHeader(self::DESTINATION_ROUTING_KEY)
+            && $message->hasHeader(self::DESTINATION_EXCHANGE);
     }
 
     /**
