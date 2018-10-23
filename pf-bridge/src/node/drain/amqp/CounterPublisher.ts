@@ -9,6 +9,7 @@ import {INodeLabel} from "../../../topology/Configurator";
 
 export interface ICounterPublisherSettings {
     node_label: INodeLabel;
+    persistent: boolean;
     counter: {
         queue: {
             name: string;
@@ -91,6 +92,7 @@ class CounterPublisher extends Publisher implements ICounterPublisher {
             type: "counter_message",
             timestamp: Date.now(),
             appId: this.settings.node_label.id,
+            persistent: this.settings.persistent,
         };
 
         logger.debug(

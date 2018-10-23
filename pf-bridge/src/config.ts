@@ -10,6 +10,10 @@ if (process.env.NODE_ENV === "test") {
     process.env.REPEATER_CHECK_TIMEOUT = "500";
 }
 
+// enable persistent mode until it is not disabled
+export const persistentQueues: boolean = !(process.env.PERSISTENT_QUEUES === "false"); // default true
+export const persistentMessages: boolean = !(process.env.PERSISTENT_MESSAGES === "false"); // default true
+
 export const amqpConnectionOptions: IConnectionOptions = {
     host: process.env.RABBITMQ_HOST || "rabbitmq",
     user: process.env.RABBITMQ_USER || "guest",
@@ -20,7 +24,7 @@ export const amqpConnectionOptions: IConnectionOptions = {
 };
 
 export const amqpFaucetOptions = {
-    prefetch: parseInt(process.env.FAUCET_PREFETCH, 10) || 1,
+    prefetch: parseInt(process.env.FAUCET_PREFETCH, 10) || 5,
     dead_letter_exchange: { name: "pipes.dead-letter", type: "direct", options: {} },
 };
 
@@ -40,7 +44,9 @@ export const repeaterOptions: IRepeaterSettings = {
     input: {
         queue: {
             name: process.env.REPEATER_INPUT_QUEUE || "pipes.repeater",
-            options: {},
+            options: {
+                durable: persistentQueues,
+            },
         },
     },
     check_timeout: parseInt(process.env.REPEATER_CHECK_TIMEOUT, 10) || 5 * 1000,

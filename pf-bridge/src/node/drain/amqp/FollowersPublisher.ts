@@ -96,6 +96,7 @@ class FollowersPublisher extends Publisher {
                 type: "job_message",
                 timestamp: Date.now(),
                 appId: this.settings.node_label.id,
+                persistent: this.settings.persistent,
             };
 
             const prom = this.publish(

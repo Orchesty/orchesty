@@ -3,6 +3,7 @@ import "mocha";
 
 import {AssertionPublisher} from "amqplib-plus/dist/lib/AssertPublisher";
 import * as mock from "ts-mockito";
+import {persistentMessages} from "../../../src/config";
 import Headers from "../../../src/message/Headers";
 import JobMessage from "../../../src/message/JobMessage";
 import {ResultCode} from "../../../src/message/ResultCode";
@@ -24,6 +25,7 @@ const settings: IAmqpDrainSettings = {
         node_name: "test",
         topology_id: "topoId",
     },
+    persistent: persistentMessages,
     counter: {
         queue: {
             name: "test-amqpdrain-counter",

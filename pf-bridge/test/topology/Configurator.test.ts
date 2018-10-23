@@ -1,7 +1,7 @@
 import { assert } from "chai";
 import "mocha";
 
-import {counterOptions} from "../../src/config";
+import {counterOptions, persistentMessages, persistentQueues} from "../../src/config";
 import Configurator, {ITopologyConfig, ITopologyConfigSkeleton} from "../../src/topology/Configurator";
 
 const testTopo: ITopologyConfigSkeleton = {
@@ -43,14 +43,18 @@ const expectedTopo: ITopologyConfig = {
             },
             queue: {
                 name: "pipes.results",
-                options: {},
+                options: {
+                    durable: persistentQueues,
+                },
             },
             routing_key: "process_finished",
         },
         sub: {
             queue: {
                 name: "pipes.test-topo_id.counter",
-                options: {},
+                options: {
+                    durable: persistentQueues,
+                },
                 prefetch: counterOptions.prefetch,
             },
         },
@@ -67,22 +71,29 @@ const expectedTopo: ITopologyConfig = {
             },
             drain: {
                 settings: {
+                    persistent: persistentMessages,
                     counter: {
                         queue: {
                             name: "pipes.test-topo_id.counter",
-                            options: {},
+                            options: {
+                                durable: persistentQueues,
+                            },
                         },
                     },
                     repeater: {
                         queue: {
                             name: "pipes.repeater",
-                            options: {},
+                            options: {
+                                durable: persistentQueues,
+                            },
                         },
                     },
                     faucet: {
                         queue: {
                             name: "pipes.test-topo_id.node_a",
-                            options: {},
+                            options: {
+                                durable: persistentQueues,
+                            },
                         },
                     },
                     followers: [
@@ -95,7 +106,9 @@ const expectedTopo: ITopologyConfig = {
                             node_id: "node_b",
                             queue: {
                                 name: "pipes.test-topo_id.node_b",
-                                options: {},
+                                options: {
+                                    durable: persistentQueues,
+                                },
                             },
                             routing_key: "test-topo_id.node_b",
                         },
@@ -150,22 +163,29 @@ const expectedTopo: ITopologyConfig = {
             },
             drain: {
                 settings: {
+                    persistent: persistentMessages,
                     counter: {
                         queue: {
                             name: "pipes.test-topo_id.counter",
-                            options: {},
+                            options: {
+                                durable: persistentQueues,
+                            },
                         },
                     },
                     repeater: {
                         queue: {
                             name: "pipes.repeater",
-                            options: {},
+                            options: {
+                                durable: persistentQueues,
+                            },
                         },
                     },
                     faucet: {
                         queue: {
                             name: "pipes.test-topo_id.node_b",
-                            options: {},
+                            options: {
+                                durable: persistentQueues,
+                            },
                         },
                     },
                     followers: [],
@@ -199,7 +219,9 @@ const expectedTopo: ITopologyConfig = {
                     prefetch: 5,
                     queue: {
                         name: "pipes.test-topo_id.node_b",
-                        options: {},
+                        options: {
+                            durable: persistentQueues,
+                        },
                     },
                     routing_key: "test-topo_id.node_b",
                 },
