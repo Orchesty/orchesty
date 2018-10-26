@@ -28,14 +28,14 @@ class TopologyDetail extends React.Component {
 
   componentDidMount() {
     const refreshInterval = 5000;
-    const { metricsRange, changeMetricsRange } = this.props;
-	    this.rangeIntervalId = setInterval(() => {
-		    if (metricsRange) {
-			    const newSince = (new Date((new Date(metricsRange.since)).getTime() + refreshInterval)).toISOString();
-			    const newTill = (new Date((new Date(metricsRange.till)).getTime() + refreshInterval)).toISOString();
-			    changeMetricsRange(newSince, newTill, metricsRange.since, metricsRange.till);
-		    }
-	    }, refreshInterval);
+    this.rangeIntervalId = setInterval(() => {
+      const { metricsRange, changeMetricsRange } = this.props;
+      if (metricsRange) {
+        const newSince = (new Date((new Date(metricsRange.since)).getTime() + refreshInterval)).toISOString();
+        const newTill = (new Date((new Date(metricsRange.till)).getTime() + refreshInterval)).toISOString();
+        changeMetricsRange(newSince, newTill, metricsRange.since, metricsRange.till);
+      }
+    }, refreshInterval);
   }
 
   componentWillUnmount() {
@@ -150,8 +150,8 @@ class TopologyDetail extends React.Component {
     return (
       <div className="topology-detail">
         <div className="tab-content">
-          {activeTab == 'nodes' && <TopologyNodeMetricsContainer pageId={pageId} topologyId={topologyId} componentKey={`${newComponentKey}.metrics`} metricsRange={metricsRange} altMetricsRange={altMetricsRange} />}
-          {activeTab == 'graphs' && <TopologyNodeGraphsContainer pageId={pageId} topologyId={topologyId} componentKey={`${newComponentKey}.graphs`} metricsRange={metricsRange} altMetricsRange={altMetricsRange} interval={interval} />}
+          {activeTab === 'nodes' && <TopologyNodeMetricsContainer pageId={pageId} topologyId={topologyId} componentKey={`${newComponentKey}.metrics`} metricsRange={metricsRange} altMetricsRange={altMetricsRange} />}
+          {activeTab === 'graphs' && <TopologyNodeGraphsContainer pageId={pageId} topologyId={topologyId} componentKey={`${newComponentKey}.graphs`} metricsRange={metricsRange} altMetricsRange={altMetricsRange} interval={interval} />}
           <div className={'schema-wrapper' + ( schemaVisible ? '' : ' hidden')}>
             <TopologySchemaPanel
               pageId={pageId}
