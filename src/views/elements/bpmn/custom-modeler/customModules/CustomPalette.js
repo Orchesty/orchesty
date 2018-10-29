@@ -152,6 +152,9 @@ PaletteProvider.prototype.getPaletteEntries = function() {
     'create.debug': createAction(
       'bpmn:Task', 'activity', 'bpmn-icon-pipes-debug-node', 'Debug', { pipesType: 'debug'}
     ),
+    'create.user': createAction(
+      'bpmn:Task', 'activity', 'bpmn-icon-user', 'User task', { pipesType: 'user'}
+    ),
     'activity-separator': {
       group: 'activity',
       separator: true
