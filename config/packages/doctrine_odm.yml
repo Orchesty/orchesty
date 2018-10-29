@@ -46,3 +46,8 @@ doctrine_mongodb:
                     is_bundle: false
                     dir: "%kernel.root_dir%/../vendor/hanaboso/commons-bundle/src/FileStorage/Driver"
                     prefix: Hanaboso\CommonsBundle\FileStorage\Driver
+                LongRunningNodeDocument:
+                    type: annotation
+                    is_bundle: false
+                    dir: "%kernel.root_dir%/LongRunningNode/Document"
+                    prefix: Hanaboso\PipesFramework\LongRunningNode\Document
