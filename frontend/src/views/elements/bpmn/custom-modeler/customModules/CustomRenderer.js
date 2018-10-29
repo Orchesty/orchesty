@@ -177,6 +177,9 @@ function CustomRenderer(eventBus, styles, pathMap, canvas) {
         case 'xml_parser':
         case 'table_parser':
             return this.bpmnRenderer.handlers['bpmn:ScriptTask'](parentGfx, element);
+
+	    case 'user':
+		    return this.bpmnRenderer.handlers['bpmn:UserTask'](parentGfx, element);
     }
   };
 
