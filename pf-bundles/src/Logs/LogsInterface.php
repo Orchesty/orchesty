@@ -9,6 +9,8 @@
 
 namespace Hanaboso\PipesFramework\Logs;
 
+use Hanaboso\MongoDataGrid\GridRequestDto;
+
 /**
  * Interface LogsInterface
  *
@@ -18,11 +20,10 @@ interface LogsInterface
 {
 
     /**
-     * @param string $limit
-     * @param string $offset
+     * @param GridRequestDto $dto
      *
      * @return array
      */
-    public function getData(string $limit, string $offset): array;
+    public function getData(GridRequestDto $dto): array;
 
 }

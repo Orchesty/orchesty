@@ -11,6 +11,7 @@ namespace Hanaboso\PipesFramework\HbPFLogsBundle\Controller;
 
 use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
+use Hanaboso\MongoDataGrid\GridRequestDto;
 use Hanaboso\PipesFramework\HbPFLogsBundle\Handler\LogsHandler;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -51,12 +52,7 @@ class LogsController extends FOSRestController
      */
     public function getDataForTableAction(Request $request): Response
     {
-        $data = $this->logsHandler->getData(
-            $request->query->get('limit', "20"),
-            $request->query->get('offset', "0")
-        );
-
-        return new JsonResponse($data);
+        return new JsonResponse($this->logsHandler->getData(new GridRequestDto($request->headers->all())));
     }
 
 }

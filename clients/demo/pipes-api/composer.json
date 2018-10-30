@@ -54,6 +54,10 @@
     {
       "type": "git",
       "url": "git@gitlab.hanaboso.net:hanaboso/rabbit-mq-bundle.git"
+    },
+    {
+      "type": "git",
+      "url": "git@gitlab.hanaboso.net:hanaboso/MongoDataGrid.git"
     }
   ]
 }

@@ -39,3 +39,8 @@ doctrine_mongodb:
                     is_bundle: false
                     dir: "%kernel.root_dir%/../vendor/hanaboso/pipes-framework/src/Authorization/Document"
                     prefix: Hanaboso\PipesFramework\Authorization\Document
+                LogsDocument:
+                    type: annotation
+                    is_bundle: false
+                    dir: "%kernel.root_dir%/../vendor/hanaboso/pipes-framework/src/Logs/Document"
+                    prefix: Hanaboso\PipesFramework\Logs\Document

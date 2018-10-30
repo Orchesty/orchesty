@@ -9,6 +9,7 @@
 
 namespace Hanaboso\PipesFramework\HbPFLogsBundle\Handler;
 
+use Hanaboso\MongoDataGrid\GridRequestDto;
 use Hanaboso\PipesFramework\Logs\LogsInterface;
 
 /**
@@ -35,14 +36,13 @@ class LogsHandler
     }
 
     /**
-     * @param string $limit
-     * @param string $offset
+     * @param GridRequestDto $dto
      *
      * @return array
      */
-    public function getData(string $limit, string $offset): array
+    public function getData(GridRequestDto $dto): array
     {
-        return $this->logs->getData($limit, $offset);
+        return $this->logs->getData($dto);
     }
 
 }
