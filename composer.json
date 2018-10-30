@@ -2,7 +2,7 @@
   "name": "hanaboso/pipes-framework",
   "license": "proprietary",
   "description": "PipesFramework for Symfony",
-  "version": "1.0.26",
+  "version": "1.0.27",
   "autoload": {
     "psr-4": {
       "Hanaboso\\PipesFramework\\": "src/"
@@ -15,21 +15,25 @@
   },
   "require": {
     "php": ">=7.2",
-    "friendsofsymfony/rest-bundle": "^2.3",
+    "ext-json": "*",
+    "ext-mongodb": "*",
+    "ext-oauth": "*",
+    "friendsofsymfony/rest-bundle": "^2.4",
     "hanaboso/acl-bundle": "^1.0",
     "hanaboso/commons-bundle": "^1.0",
     "hanaboso/email-service-bundle": "^1.0",
+    "hanaboso/mongo-data-grid": "^1.0",
     "hanaboso/user-bundle": "^1.0",
     "influxdb/influxdb-php": "^1.14",
     "league/oauth2-client": "^2.3",
     "mtdowling/cron-expression": "^1.2",
     "nette/http": "^2.4",
     "nette/utils": "^2.5",
-    "php-http/client-common": "^1.7",
-    "php-http/message": "^1.6",
+    "php-http/client-common": "^1.8",
+    "php-http/message": "^1.7",
     "php-http/socket-client": "^1.4",
-    "phpoffice/phpspreadsheet": "^1.2.0",
-    "ramsey/uuid": "^3.7",
+    "phpoffice/phpspreadsheet": "^1.5",
+    "ramsey/uuid": "^3.8",
     "snc/redis-bundle": "^2.1",
     "symfony/monolog-bundle": "^3.3",
     "symfony/symfony": "^4.1"
@@ -57,6 +61,10 @@
     {
       "type": "git",
       "url": "git@gitlab.hanaboso.net:hanaboso/acl-bundle.git"
+    },
+    {
+      "type": "git",
+      "url": "git@gitlab.hanaboso.net:hanaboso/MongoDataGrid.git"
     }
   ]
 }

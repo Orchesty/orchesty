@@ -11,9 +11,10 @@ namespace Hanaboso\PipesFramework\HbPFLogsBundle\DependencyInjection\Compiler;
 
 use Hanaboso\PipesFramework\HbPFLogsBundle\HbPFLogsBundle;
 use Hanaboso\PipesFramework\Logs\ElasticLogs;
+use Hanaboso\PipesFramework\Logs\LogsFilter;
 use Hanaboso\PipesFramework\Logs\LogsInterface;
 use Hanaboso\PipesFramework\Logs\MongoDbLogs;
-use Hanaboso\PipesFramework\Logs\MongoDbStorage;
+use Hanaboso\PipesFramework\Logs\StartingPointsFilter;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -37,11 +38,10 @@ class LogsCompilerPass implements CompilerPassInterface
 
         if ($config['type'] == 'mongodb') {
 
-            $mongoDbStorage = new Definition(MongoDbStorage::class, [
-                $container->getDefinition('doctrine_mongodb.odm.default_document_manager'),
-                $config['storage_name'],
-            ]);
-            $mongoDb        = new Definition(MongoDbLogs::class, [$mongoDbStorage]);
+            $dm                   = $container->getDefinition('doctrine_mongodb.odm.default_document_manager');
+            $logsFilter           = new Definition(LogsFilter::class, [$dm]);
+            $startingPointsFilter = new Definition(StartingPointsFilter::class, [$dm]);
+            $mongoDb              = new Definition(MongoDbLogs::class, [$dm, $logsFilter, $startingPointsFilter]);
 
             $container->setDefinition(LogsInterface::class, $mongoDb);
         }

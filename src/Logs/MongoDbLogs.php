@@ -9,6 +9,15 @@
 
 namespace Hanaboso\PipesFramework\Logs;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\MongoDBException;
+use Hanaboso\MongoDataGrid\Exception\GridException;
+use Hanaboso\MongoDataGrid\GridRequestDto;
+use Hanaboso\PipesFramework\Configurator\Document\Node;
+use MongoDB\BSON\ObjectId;
+use MongoDB\Driver\Exception\InvalidArgumentException;
+use MongoException;
+
 /**
  * Class MongoDbLogs
  *
@@ -17,93 +26,161 @@ namespace Hanaboso\PipesFramework\Logs;
 class MongoDbLogs implements LogsInterface
 {
 
+    private const CORRELATION_ID = 'correlation_id';
+    private const TOPOLOGY_ID    = 'topology_id';
+    private const TOPOLOGY_NAME  = 'topology_name';
+    private const NODE_ID        = 'node_id';
+    private const NODE_NAME      = 'node_name';
+    private const PIPES          = 'pipes';
+
+    private const SEVERITY = 'severity';
+    private const MESSAGE  = 'message';
+    private const TYPE     = 'type';
+
+    private const LIMIT = 1000;
+
     /**
-     * @var MongoDbStorage
+     * @var DocumentManager
      */
-    private $mongoDbStorage;
+    private $dm;
+
+    /**
+     * @var LogsFilter
+     */
+    private $filter;
+
+    /**
+     * @var StartingPointsFilter
+     */
+    private $startingPointsFilter;
 
     /**
      * MongoDbLogs constructor.
      *
-     * @param MongoDbStorage $mongoDbStorage
+     * @param DocumentManager      $dm
+     * @param LogsFilter           $filter
+     * @param StartingPointsFilter $startingPointsFilter
      */
-    public function __construct(MongoDbStorage $mongoDbStorage)
+    public function __construct(DocumentManager $dm, LogsFilter $filter, StartingPointsFilter $startingPointsFilter)
     {
-        $this->mongoDbStorage = $mongoDbStorage;
+        $this->dm                   = $dm;
+        $this->filter               = $filter;
+        $this->startingPointsFilter = $startingPointsFilter;
     }
 
     /**
-     * @param array $data
+     * @param GridRequestDto $dto
      *
      * @return array
+     * @throws MongoDBException
+     * @throws GridException
+     * @throws MongoException
      */
-    private function prepareStartingPointItems(array $data): array
+    public function getData(GridRequestDto $dto): array
     {
-        $result = [];
+        $data           = $this->filter->getData($dto)->toArray();
+        $result         = [];
+        $correlationIds = [];
+
         foreach ($data as $item) {
-            $result[$item['pipes']['correlation_id']] = $item;
+            $pipes = $item[self::PIPES] ?? [];
+
+            $result[] = [
+                'id'                 => array_key_exists('_id', $item) ? (string) $item['_id'] : '',
+                self::SEVERITY       => $pipes[self::SEVERITY] ?? '',
+                self::MESSAGE        => $item[self::MESSAGE] ?? '',
+                self::TYPE           => $pipes[self::TYPE] ?? '',
+                self::CORRELATION_ID => $pipes[self::CORRELATION_ID] ?? '',
+                self::TOPOLOGY_ID    => $pipes[self::TOPOLOGY_ID] ?? '',
+                self::TOPOLOGY_NAME  => $pipes[self::TOPOLOGY_NAME] ?? '',
+                self::NODE_ID        => $pipes[self::NODE_ID] ?? '',
+                self::NODE_NAME      => $pipes[self::NODE_NAME] ?? '',
+                'timestamp'          => str_replace('"', '', $item['@timestamp'] ?? ''),
+            ];
+
+            $correlationId = $this->getNonEmptyValue($pipes, self::CORRELATION_ID);
+
+            if ($correlationId) {
+                $correlationIds[] = $correlationId;
+            }
+        }
+
+        $innerDto = new GridRequestDto(['limit' => self::LIMIT]);
+        $innerDto->setAdditionalFilters([self::CORRELATION_ID => $correlationIds]);
+
+        $result = $this->processStartingPoints($innerDto, $result);
+        $count  = $dto->getParamsForHeader()['total'];
+
+        return [
+            'limit'  => $dto->getLimit(),
+            'offset' => ((int) ($dto->getPage() ?? 1) - 1) * $dto->getLimit(),
+            'count'  => count($result),
+            'total'  => $count >= self::LIMIT ? self::LIMIT : $count,
+            'items'  => $result,
+        ];
+    }
+
+    /**
+     * @param GridRequestDto $dto
+     * @param array          $result
+     *
+     * @return array
+     * @throws GridException
+     * @throws MongoDBException
+     * @throws MongoException
+     */
+    private function processStartingPoints(GridRequestDto $dto, array $result): array
+    {
+        $data        = $this->startingPointsFilter->getData($dto)->toArray();
+        $innerResult = [];
+
+        foreach ($data as $item) {
+            $innerResult[$item[self::PIPES][self::CORRELATION_ID]] = $item;
+        }
+
+        foreach ($result as $key => $item) {
+            $correlationId = $this->getNonEmptyValue($item, self::CORRELATION_ID);
+            $nodeId        = $this->getNonEmptyValue($item, self::NODE_ID);
+
+            if ($correlationId && $this->getNonEmptyValue($innerResult, $correlationId)) {
+                $result[$key][self::TOPOLOGY_ID]   = $innerResult[$correlationId][self::PIPES][self::TOPOLOGY_ID];
+                $result[$key][self::TOPOLOGY_NAME] = $innerResult[$correlationId][self::PIPES][self::TOPOLOGY_NAME];
+            }
+
+            if ($nodeId) {
+                $result[$key][self::NODE_NAME] = $this->getNodeName($nodeId);
+            }
         }
 
         return $result;
     }
 
     /**
-     * @param string $limit
-     * @param string $offset
+     * @param string $nodeId
      *
-     * @return array
+     * @return string
      */
-    public function getData(string $limit, string $offset): array
+    private function getNodeName(string $nodeId): string
     {
-        $logsQuery = $this->mongoDbStorage->getLogsQuery($limit, $offset);
+        try {
+            /** @var Node|NULL $node */
+            $node = $this->dm->getRepository(Node::class)->findOneBy(['_id' => new ObjectId(explode('-', $nodeId)[0])]);
 
-        $correlationIds = [];
-        $result         = [];
-        foreach ($logsQuery->toArray() as $item) {
-            $pipes    = $item['pipes'] ?? [];
-            $result[] = [
-                'id'             => array_key_exists('_id', $item) ? (string) $item['_id'] : '',
-                'severity'       => $pipes['severity'] ?? '',
-                'message'        => $item['message'] ?? '',
-                'type'           => $pipes['type'] ?? '',
-                'correlation_id' => $pipes['correlation_id'] ?? '',
-                'topology_id'    => $pipes['topology_id'] ?? '',
-                'topology_name'  => $pipes['topology_name'] ?? '',
-                'node_id'        => $pipes['node_id'] ?? '',
-                'node_name'      => $pipes['node_name'] ?? '',
-                'timestamp'      => str_replace('"', '', $item['@timestamp'] ?? ''),
-            ];
-
-            if (array_key_exists('correlation_id', $pipes) && $pipes['correlation_id'] != '') {
-                $correlationIds[] = $pipes['correlation_id'];
-            }
+            return $node ? $node->getName() : '';
+        } catch (InvalidArgumentException $e) {
+            return '';
         }
+    }
 
-        $startingPointData = $this->prepareStartingPointItems(
-            $this->mongoDbStorage->getStartingPointQuery($correlationIds)->toArray()
-        );
-
-        foreach ($result as $key => $item) {
-            if (array_key_exists('correlation_id', $item) && $item['correlation_id'] != '') {
-                if (array_key_exists($item['correlation_id'], $startingPointData)) {
-                    $result[$key]['topology_id']   = $startingPointData[$item['correlation_id']]['pipes']['topology_id'];
-                    $result[$key]['topology_name'] = $startingPointData[$item['correlation_id']]['pipes']['topology_name'];
-                }
-            }
-            if (array_key_exists('node_id', $item) && $item['node_id'] != '') {
-                $result[$key]['node_name'] = $this->mongoDbStorage->getNodeData($item['node_id'])['name'] ?? '';
-            }
-        }
-
-        $count = $logsQuery->count();
-
-        return [
-            'limit'  => $limit,
-            'offset' => $offset,
-            'count'  => (string) $logsQuery->count(TRUE),
-            'total'  => $count >= 1000 ? (string) 1000 : (string) $count,
-            'items'  => $result,
-        ];
+    /**
+     * @param array  $data
+     * @param string $property
+     *
+     * @return array|string|NULL
+     */
+    private function getNonEmptyValue(array $data, string $property)
+    {
+        return array_key_exists($property, $data) && $data[$property] !== '' ? $data[$property] : NULL;
     }
 
 }
