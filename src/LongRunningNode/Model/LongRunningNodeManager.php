@@ -45,21 +45,25 @@ class LongRunningNodeManager
 
         if (!$doc) {
             $doc = new LongRunningNodeData();
-            $doc->setNodeId($dto->getNodeId())
-                ->setTopologyId($dto->getTopologyId())
-                ->setProcessId($dto->getProcessId());
-            if ($dto->getParentProcess()) {
-                $doc->setParentProcess($dto->getParentProcess());
-            }
-            if ($dto->getUpdatedBy()) {
-                $doc->setUpdatedBy($dto->getUpdatedBy());
-            }
-
             $this->dm->persist($doc);
+        } else {
+            $auditLogs = array_merge($doc->getAuditLogs(), $auditLogs);
         }
-        $doc->setAuditLogs($auditLogs)
+
+
+        $doc->setNodeId($dto->getNodeId())
+            ->setTopologyId($dto->getTopologyId())
+            ->setProcessId($dto->getProcessId())
+            ->setAuditLogs($auditLogs)
             ->setData($dto->getData())
             ->setHeaders($dto->getHeaders());
+
+        if ($dto->getParentProcess()) {
+            $doc->setParentProcess($dto->getParentProcess());
+        }
+        if ($dto->getUpdatedBy()) {
+            $doc->setUpdatedBy($dto->getUpdatedBy());
+        }
 
         $this->dm->flush();
 
