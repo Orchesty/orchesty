@@ -2,8 +2,10 @@ import React from 'react'
 import PropTypes from 'prop-types';
 import AbstractTable from 'components/AbstractTable';
 import StateComponent from 'wrappers/StateComponent';
-
+import SortTh from 'elements/table/SortTh';
 import './LogListTable.less';
+import ListPagination from 'elements/table/ListPagination';
+import LogListFilter from 'components/log/LogListFilter';
 
 class LogListTable extends AbstractTable {
   constructor(props) {
@@ -15,14 +17,15 @@ class LogListTable extends AbstractTable {
   }
 
   _renderHead(){
+    const {list: {sort}, listChangeSort} = this.props;
     return (
-      <tr>
-        <th className="no-wrap">Time</th>
-        <th className="no-wrap">Severity</th>
-        <th>Message</th>
-        <th className="no-wrap">Topology name</th>
-        <th className="no-wrap">Node name</th>
-      </tr>
+        <tr>
+          <SortTh className="no-wrap" name="timestamp" state={sort} onChangeSort={listChangeSort}>Time</SortTh>
+          <SortTh className="no-wrap" name="severity" state={sort} onChangeSort={listChangeSort}>Severity</SortTh>
+          <SortTh name="message" state={sort} onChangeSort={listChangeSort}>Message</SortTh>
+          <SortTh name="topology_name" className="no-wrap" state={sort} onChangeSort={listChangeSort}>Topology name</SortTh>
+          <SortTh name="node_name" className="no-wrap" state={sort} onChangeSort={listChangeSort}>Node name</SortTh>
+        </tr>
     );
   }
 
@@ -40,6 +43,30 @@ class LogListTable extends AbstractTable {
         </tr>
       )
     }) : null;
+  }
+
+  render() {
+    const {list, listChangePage, listChangeFilter} = this.props;
+    let rows = this._renderRows();
+    if (!rows){
+      rows = <tr><td colSpan={5}>No items</td></tr>;
+    }
+    return (
+      <div className={this.getClassName()}>
+        <div className="table-wrapper">
+          {listChangeFilter && <LogListFilter filter={list.filter} changeFilter={listChangeFilter} />}
+          <table className="table table-hover">
+            <thead>
+              {this._renderHead()}
+            </thead>
+            <tbody>
+              {rows}
+            </tbody>
+          </table>
+        </div>
+        <ListPagination list={list} onPageChange={listChangePage} />
+      </div>
+    );
   }
 }
 

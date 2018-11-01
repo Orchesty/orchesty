@@ -91,10 +91,9 @@ export function rawRequestJSONReceive(dispatch, method, relUrl, queries, options
     });
 }
 
-export default (dispatch, method, relUrl, queries, data) => {
-  let headers = {
-    Accept: 'application/json'
-  };
+export default (dispatch, method, relUrl, queries, data, headers = {}) => {
+  headers['Accept'] = 'application/json';
+
   let options = {
     method: method,
     headers: headers,

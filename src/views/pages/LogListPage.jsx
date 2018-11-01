@@ -22,7 +22,9 @@ function mapActionsToProps(dispatch, ownProps){
   return {
     needList,
     notLoadedCallback: needList,
-    listChangePage: (page) => dispatch(logActions.logListChangePage(ownProps.componentKey, page))
+    listChangePage: (page) => dispatch(logActions.logListChangePage(ownProps.componentKey, page)),
+    listChangeSort: (sort) => dispatch(logActions.logListChangeSort(ownProps.componentKey, sort)),
+    listChangeFilter: (filter) => dispatch(logActions.logListChangeFilter(ownProps.componentKey, filter)),
   }
 }
 
