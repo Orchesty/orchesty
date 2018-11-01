@@ -9,6 +9,8 @@
 
 namespace Hanaboso\PipesFramework\Logs;
 
+use Hanaboso\MongoDataGrid\GridRequestDto;
+
 /**
  * Class ElasticLogs
  *
@@ -18,16 +20,15 @@ class ElasticLogs implements LogsInterface
 {
 
     /**
-     * @param string $limit
-     * @param string $offset
+     * @param GridRequestDto $dto
      *
      * @return array
      */
-    public function getData(string $limit, string $offset): array
+    public function getData(GridRequestDto $dto): array
     {
         return [
-            'limit'  => $limit,
-            'offset' => $offset,
+            'limit'  => $dto->getLimit(),
+            'offset' => ((int) ($dto->getPage() ?? 1) - 1) * $dto->getLimit(),
             'count'  => "0",
             'total'  => "0",
             'items'  => [],
