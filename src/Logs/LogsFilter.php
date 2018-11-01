@@ -44,7 +44,7 @@ final class LogsFilter extends GridFilterAbstract
     /**
      * @var array
      */
-    protected $searchableCols = [
+    protected $orderCols = [
         Logs::ID         => Logs::MONGO_ID,
         Logs::TIMESTAMP  => Logs::TIMESTAMP,
         Logs::MESSAGE    => Logs::MESSAGE,
@@ -60,7 +60,7 @@ final class LogsFilter extends GridFilterAbstract
     /**
      * @var array
      */
-    protected $orderCols = [
+    protected $searchableCols = [
         Logs::MESSAGE,
         'correlation_id',
         'topology_id',
@@ -89,8 +89,7 @@ final class LogsFilter extends GridFilterAbstract
                 Logs::PIPES_NODE_ID,
                 Logs::PIPES_NODE_NAME,
             ])
-            ->field(Logs::PIPES_SEVERITY)->in(self::SEVERITY)
-            ->sort(Logs::MONGO_ID, 'DESC');
+            ->field(Logs::PIPES_SEVERITY)->in(self::SEVERITY);
     }
 
     /**
