@@ -14,6 +14,7 @@ final class LongRunningNodeException extends PipesFrameworkException
 
     private const OFFSET = 2700;
 
-    public const LONG_RUNNING_SERVICE_NOT_FOUND = self::OFFSET + 1;
+    public const LONG_RUNNING_SERVICE_NOT_FOUND  = self::OFFSET + 1;
+    public const LONG_RUNNING_DOCUMENT_NOT_FOUND = self::OFFSET + 2;
 
 }
