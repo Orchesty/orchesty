@@ -23,6 +23,13 @@ class LongRunningNodeData
 
     use IdTrait;
 
+    public const PARENT_PROCESS_HEADER = 'parent-process-id';
+    public const CREATED_HEADER        = 'created';
+    public const UPDATED_HEADER        = 'updated';
+    public const UPDATED_BY_HEADER     = 'updated-by';
+    public const AUDIT_LOGS_HEADER     = 'audit-logs';
+    public const DOCUMENT_ID_HEADER    = 'doc-id';
+
     /**
      * @var string
      *
@@ -377,14 +384,16 @@ class LongRunningNodeData
             ->setHeaders($dto->getHeaders())
             ->setTopologyId((string) $dto->getHeader(PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID), ''))
             ->setNodeId((string) $dto->getHeader(PipesHeaders::createKey(PipesHeaders::NODE_ID), ''))
-            ->setParentProcess((string) $dto->getHeader(PipesHeaders::createKey('parent-process-id'), ''))
+            ->setParentProcess((string) $dto->getHeader(PipesHeaders::createKey(self::PARENT_PROCESS_HEADER), ''))
             ->setProcessId((string) $dto->getHeader(PipesHeaders::createKey(PipesHeaders::PROCESS_ID), ''))
             ->setCreated(
-                new DateTime((string) $dto->getHeader(PipesHeaders::createKey('created'), ''), new DateTimeZone('UTC')))
+                new DateTime((string) $dto->getHeader(PipesHeaders::createKey(self::CREATED_HEADER), ''),
+                    new DateTimeZone('UTC')))
             ->setUpdated(
-                new DateTime((string) $dto->getHeader(PipesHeaders::createKey('updated'), ''), new DateTimeZone('UTC')))
-            ->setUpdatedBy((string) $dto->getHeader(PipesHeaders::createKey('updated-by'), ''))
-            ->setAuditLogs(json_decode($dto->getHeader(PipesHeaders::createKey('audit-logs'), '{}'), TRUE));
+                new DateTime((string) $dto->getHeader(PipesHeaders::createKey(self::UPDATED_HEADER), ''),
+                    new DateTimeZone('UTC')))
+            ->setUpdatedBy((string) $dto->getHeader(PipesHeaders::createKey(self::UPDATED_BY_HEADER), ''))
+            ->setAuditLogs(json_decode($dto->getHeader(PipesHeaders::createKey(self::AUDIT_LOGS_HEADER), '{}'), TRUE));
 
         return $ent;
     }
