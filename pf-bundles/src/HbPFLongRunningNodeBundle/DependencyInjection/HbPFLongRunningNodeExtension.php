@@ -34,6 +34,11 @@ class HbPFLongRunningNodeExtension extends Extension implements PrependExtension
         if (!$container->hasExtension('hb_pf_configurator')) {
             throw new RuntimeException('You must register HbPFConfiguratorBundle before.');
         }
+
+        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/prepend-config'));
+        $loader->load('rabbitmq.yml');
+
+        $container->setParameter('src_dir', __DIR__ . '/../..');
     }
 
     /**

@@ -1,0 +1,21 @@
+rabbit-mq:
+    queues:
+        pipes.results:
+            durable: true
+
+    consumers:
+        long-running-node:
+            class: Hanaboso\PipesFramework\LongRunningNode\Consumer\LongRunningNodeConsumer
+            queue: pipes.results
+            serializer: Hanaboso\PipesFramework\RabbitMq\Serializers\JsonSerializer
+            callback: hanaboso.pipes_framework.commons.status_service.status_service_callback
+            prefetch_count: 100
+
+services:
+    hanaboso.pipes_framework.long_running_node.callback:
+        class: Hanaboso\PipesFramework\LongRunningNode\Consumer\LongRunningNodeCallback
+        arguments:
+            - '@hbpf.manager.long_running'
+            - '@hbpf.loader.long_running'
+        calls:
+            - [setRepeater, ['@hanaboso.pipes_framework.commons.rabbit_mq.repeater.repeater']]
