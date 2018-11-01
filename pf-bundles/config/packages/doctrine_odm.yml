@@ -51,3 +51,8 @@ doctrine_mongodb:
                     is_bundle: false
                     dir: "%kernel.root_dir%/LongRunningNode/Document"
                     prefix: Hanaboso\PipesFramework\LongRunningNode\Document
+                LogsDocument:
+                    type: annotation
+                    is_bundle: false
+                    dir: "%kernel.root_dir%/Logs/Document"
+                    prefix: Hanaboso\PipesFramework\Logs\Document

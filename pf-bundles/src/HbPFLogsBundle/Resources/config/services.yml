@@ -13,3 +13,7 @@ services:
 
     Hanaboso\PipesFramework\Logs\:
         resource: '../../../Logs'
+
+    mongodb.logs:
+        alias: Hanaboso\PipesFramework\Logs\MongoDbLogs
+        public: true
