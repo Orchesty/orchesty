@@ -91,10 +91,6 @@ final class LongRunningDataStartingPointTest extends DatabaseTestCaseAbstract
                     'pf-process-id'          => $tmp['pf-process-id'],
                     'pf-correlation-id'      => $tmp['pf-correlation-id'],
                     'pf-doc-id'              => $tmp['pf-doc-id'],
-                    'pf-updated-by'          => 'usr',
-                    'pf-audit-logs'          => ['log'],
-                    'pf-updated'             => $tmp['pf-updated'],
-                    'pf-created'             => $tmp['pf-created'],
                     'delivery-mode'          => 1,
                 ], $headers->getHeaders());
             }

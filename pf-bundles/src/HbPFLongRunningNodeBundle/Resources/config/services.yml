@@ -28,3 +28,16 @@ services:
             - '@hbpf.manager.long_running'
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
+
+    hbpf.handler.long_running:
+        class: Hanaboso\PipesFramework\HbPFLongRunningNodeBundle\Handler\LongRunningNodeHandler
+        arguments:
+            - '@hbpf.starting_point.long_running'
+            - '@hbpf.handler.starting_point'
+            - '@hbpf.loader.long_running'
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    Hanaboso\PipesFramework\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController:
+        class: Hanaboso\PipesFramework\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController
+        arguments:
+            - '@hbpf.handler.long_running'

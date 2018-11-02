@@ -4,8 +4,8 @@ namespace Hanaboso\PipesFramework\LongRunningNode\Model;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\LongRunningNode\Document\LongRunningNodeData;
+use Hanaboso\PipesFramework\LongRunningNode\Enum\StateEnum;
 use Hanaboso\PipesFramework\LongRunningNode\Exception\LongRunningNodeException;
-use Hanaboso\PipesFramework\LongRunningNode\Repository\LongRunningNodeDataRepository;
 
 /**
  * Class LongRunningNodeManager
@@ -31,43 +31,28 @@ class LongRunningNodeManager
     }
 
     /**
-     * @param MessageDto $dto
-     * @param array      $auditLogs
+     * @param LongRunningNodeData $doc
      *
      * @return LongRunningNodeData
      */
-    public function saveDocument(MessageDto $dto, array $auditLogs): LongRunningNodeData
+    public function saveDocument(LongRunningNodeData $doc): LongRunningNodeData
     {
-        /** @var LongRunningNodeDataRepository $repo */
-        $repo = $this->dm->getRepository(LongRunningNodeData::class);
-        /** @var LongRunningNodeData|null $doc */
-        $doc  = $repo->findOneBy(['id' => $dto->getDocId()]);
+        $copy = $this->getDocument($doc->getTopologyId(), $doc->getNodeId(), $doc->getProcessId());
 
-        if (!$doc) {
-            $doc = new LongRunningNodeData();
-            $this->dm->persist($doc);
+        if ($copy) {
+            $copy->setAuditLogs(array_merge($copy->getAuditLogs(), $doc->getAuditLogs()))
+                ->setData($doc->getData())
+                ->setHeaders($doc->getHeaders())
+                ->setParentProcess($doc->getParentProcess())
+                ->setState(StateEnum::PENDING)
+                ->setUpdatedBy($doc->getUpdatedBy());
         } else {
-            $auditLogs = array_merge($doc->getAuditLogs(), $auditLogs);
+            $copy = $doc;
+            $this->dm->persist($copy);
         }
-
-
-        $doc->setNodeId($dto->getNodeId())
-            ->setTopologyId($dto->getTopologyId())
-            ->setProcessId($dto->getProcessId())
-            ->setAuditLogs($auditLogs)
-            ->setData($dto->getData())
-            ->setHeaders($dto->getHeaders());
-
-        if ($dto->getParentProcess()) {
-            $doc->setParentProcess($dto->getParentProcess());
-        }
-        if ($dto->getUpdatedBy()) {
-            $doc->setUpdatedBy($dto->getUpdatedBy());
-        }
-
         $this->dm->flush();
 
-        return $doc;
+        return $copy;
     }
 
     /**
@@ -75,10 +60,10 @@ class LongRunningNodeManager
      * @param string      $nodeId
      * @param null|string $token
      *
-     * @return LongRunningNodeData
+     * @return LongRunningNodeData|null
      * @throws LongRunningNodeException
      */
-    public function getDocument(string $topologyId, string $nodeId, ?string $token = NULL): LongRunningNodeData
+    public function getDocument(string $topologyId, string $nodeId, ?string $token = NULL): ?LongRunningNodeData
     {
         $filter = [
             'topologyId' => $topologyId,
@@ -88,19 +73,7 @@ class LongRunningNodeManager
             $filter['processId'] = $token;
         }
 
-        /** @var LongRunningNodeData|null $doc */
-        $doc = $this->dm->getRepository(LongRunningNodeData::class)->findOneBy($filter);
-        if (!$doc) {
-            throw new LongRunningNodeException(
-                sprintf('LongRunningData document not found for TopologyId [%s], NodeId [%s]%s',
-                    $topologyId, $nodeId,
-                    $token ? sprintf(' ProcessId [%s]', $token) : ''
-                ),
-                LongRunningNodeException::LONG_RUNNING_DOCUMENT_NOT_FOUND
-            );
-        }
-
-        return $doc;
+        return $this->dm->getRepository(LongRunningNodeData::class)->findOneBy($filter);
     }
 
 }
