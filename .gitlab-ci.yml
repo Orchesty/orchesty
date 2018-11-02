@@ -83,18 +83,6 @@ topology-api:
     - dev
     - master
 
-api-demo:
-  stage: stage1
-  script:
-    - DIR=clients/clever-connectors/cc-api-demo
-    - skip_unmodified $DIR
-    - cd $DIR
-    - make build
-    - make push
-  only:
-#    - dev
-    - master
-
 pf-bridge:
   stage: stage1
   script:
@@ -142,26 +130,6 @@ pf-bundles-test:
     - export COMPOSE_FILE=docker-compose.ci.yml                # CLEANUP bundles
     - make ${COMPOSE_FILE} docker-up-force composer-install test
 
-cm-pipes-api-test:
-  stage: stage2
-  script:
-    - DIR=clients/clever-connectors/pipes-api
-    - skip_unmodified $DIR
-    - cd $REPO_ROOT/$DIR
-    - export COMPOSE_PROJECT_NAME="p${CI_PIPELINE_ID}-cm-pipes-api" # CLEANUP bundles
-    - export COMPOSE_FILE=docker-compose.ci.yml                     # CLEANUP bundles
-    - make ${COMPOSE_FILE} test
-
-#cc-api-demo-test:
-#  stage: stage2
-#  script:
-#    - DIR=clients/clever-connectors/cc-api-demo
-#    - skip_unmodified $DIR
-#    - cd $REPO_ROOT/$DIR
-#    - export COMPOSE_PROJECT_NAME="p${CI_PIPELINE_ID}-cc-api-demo" # CLEANUP bundles
-#    - export COMPOSE_FILE=docker-compose.ci.yml                    # CLEANUP bundles
-#    - make ${COMPOSE_FILE} test
-
 demo-pipes-api-test:
   stage: stage2
   script:
@@ -198,7 +166,6 @@ frontend:
     - master
 
 # Client: demo
-
 stage-demo:
   stage: stage3
   when: manual
@@ -221,17 +188,6 @@ stage-demo:
 
 
 # Client: Clever Monitor
-
-monolith-cm:
-  stage: stage2
-  script:
-    - ": This job is being run all the time because the most changes happen in its dependencies. Can anyone come up with an optimization?"
-    - cd clients/clever-connectors
-    - make build-monolith push-monolith TAG=${CI_BUILD_REF_NAME}
-  only:
-    - dev
-    - master
-
 monolith-demo:
   stage: stage2
   script:
@@ -241,48 +197,6 @@ monolith-demo:
   only:
     - dev
     - master
-
-stage-cm1:
-  stage: stage3
-  when: manual
-  script:
-    - cd clients/clever-connectors
-    - make docker-compose.ci.yml
-    - source <(../../build/bin/map-branch-image-tags.sh ./branch-image-tag-map ${CI_BUILD_REF_NAME} -e)
-    - export DEPLOYMENT_PREFIX=cc-stage1
-    - export PUBLISH_HTTP_PORT=6540
-    - export BACKEND_URL=https://clever-conn1.stage.hanaboso.net
-    - export DOCKER_HOST=swarm01n01:2376
-    - export DOCKER_TLS_VERIFY=1
-    - docker --host 52.232.61.10:2376 stack deploy --with-registry-auth -c docker-compose.ci.yml ${DEPLOYMENT_PREFIX}
-
-stage-cm2:
-  stage: stage3
-  when: manual
-  script:
-    - cd clients/clever-connectors
-    - make docker-compose.ci.yml
-    - source <(../../build/bin/map-branch-image-tags.sh ./branch-image-tag-map ${CI_BUILD_REF_NAME} -e)
-    - export DEPLOYMENT_PREFIX=cc-stage2
-    - export PUBLISH_HTTP_PORT=6541
-    - export BACKEND_URL=https://clever-conn2.stage.hanaboso.net
-    - export DOCKER_HOST=192.168.10.31:2376
-    - export DOCKER_TLS_VERIFY=1
-    - docker stack deploy --with-registry-auth -c docker-compose.ci.yml ${DEPLOYMENT_PREFIX}
-
-stage-cm3:
-  stage: stage3
-  when: manual
-  script:
-    - cd clients/clever-connectors
-    - make docker-compose.ci.yml
-    - source <(../../build/bin/map-branch-image-tags.sh ./branch-image-tag-map ${CI_BUILD_REF_NAME} -e)
-    - export DEPLOYMENT_PREFIX=cc-stage3
-    - export PUBLISH_HTTP_PORT=6542
-    - export BACKEND_URL=https://clever-conn3.stage.hanaboso.net
-    - export DOCKER_HOST=192.168.10.31:2376
-    - export DOCKER_TLS_VERIFY=1
-    - docker stack deploy --with-registry-auth -c docker-compose.ci.yml ${DEPLOYMENT_PREFIX}
 
 stage-ranger2:
   stage: stage3
@@ -299,15 +213,6 @@ stage-ranger2:
     - export DOCKER_TLS_VERIFY=1
     - export EXTERNAL_NETWORK=cc-stage2_default
     - docker stack deploy --with-registry-auth -c docker-compose.ci.yml ${DEPLOYMENT_PREFIX}
-
-git-cm:
-  stage: stage3
-  only:
-    - dev
-    - cm-git-test
-  script:
-    - ssh-add ~/.ssh/bob_the_builder_clevermon
-    - clients/clever-connectors/bin/cm-git-sync.sh
 
 git-pf-bundles:
   stage: stage3
@@ -337,18 +242,6 @@ cleanup:
     - export COMPOSE_PROJECT_NAME=p${CI_PIPELINE_ID}-bundles
     - export COMPOSE_FILE=docker-compose.ci.yml
     - make ${COMPOSE_FILE} docker-down-clean || echo "bundles cleanup phase failed"
-
-    - ": cm-pipes-api-test"
-    - cd $REPO_ROOT/clients/clever-connectors/pipes-api
-    - export COMPOSE_PROJECT_NAME=p${CI_PIPELINE_ID}-cm-pipes-api
-    - export COMPOSE_FILE=docker-compose.ci.yml
-    - make ${COMPOSE_FILE} docker-down-clean || echo "cm-pipes-api cleanup phase failed"
-
-    - ": cc-api-demo-test"
-    - cd $REPO_ROOT/clients/clever-connectors/cc-api-demo
-    - export COMPOSE_PROJECT_NAME=p${CI_PIPELINE_ID}-cc-api-demo
-    - export COMPOSE_FILE=docker-compose.ci.yml
-    - make ${COMPOSE_FILE} docker-down-clean || echo "cc-api-demo cleanup phase failed"
 
     - ": demo-pipes-api-test"
     - cd $REPO_ROOT/clients/demo/pipes-api
