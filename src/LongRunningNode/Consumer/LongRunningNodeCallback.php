@@ -3,7 +3,6 @@
 namespace Hanaboso\PipesFramework\LongRunningNode\Consumer;
 
 use Bunny\Message;
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use Hanaboso\PipesFramework\HbPFLongRunningNodeBundle\Loader\LongRunningNodeLoader;
 use Hanaboso\PipesFramework\LongRunningNode\Model\LongRunningNodeManager;
@@ -30,27 +29,19 @@ class LongRunningNodeCallback extends SyncCallbackAbstract
     private $loader;
 
     /**
-     * @var DocumentManager
-     */
-    private $dm;
-
-    /**
      * LongRunningNodeCallback constructor.
      *
      * @param LongRunningNodeManager $manager
      * @param LongRunningNodeLoader  $loader
-     * @param DocumentManager        $dm
      */
     public function __construct(
         LongRunningNodeManager $manager,
-        LongRunningNodeLoader $loader,
-        DocumentManager $dm
+        LongRunningNodeLoader $loader
     )
     {
         parent::__construct();
         $this->manager = $manager;
         $this->loader  = $loader;
-        $this->dm      = $dm;
     }
 
     /**
@@ -63,14 +54,10 @@ class LongRunningNodeCallback extends SyncCallbackAbstract
     {
         $data;
         try {
-            $doc  = $this->manager->getDocument(
-                $message->getHeader(PipesHeaders::TOPOLOGY_ID),
-                $message->getHeader(PipesHeaders::NODE_ID),
-                $message->getHeader(PipesHeaders::PROCESS_ID, NULL)
-            );
             $serv = $this->loader->getLongRunningNode($message->getHeader(PipesHeaders::NODE_NAME));
-            $serv->beforeAction($doc, $doc->toProcessDto());
-            $this->dm->flush();
+
+            $doc = $serv->beforeAction($message);
+            $this->manager->saveDocument($doc);
 
             return new CallbackStatus(CallbackStatus::SUCCESS);
         } catch (Throwable $e) {
