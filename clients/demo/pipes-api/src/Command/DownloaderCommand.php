@@ -51,6 +51,7 @@ class DownloaderCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): void
     {
+        $input;
         $output->writeln('Downloader start.');
 
         $loop = Factory::create();

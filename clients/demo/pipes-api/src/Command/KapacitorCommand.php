@@ -40,6 +40,7 @@ class KapacitorCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): void
     {
+        $input;
         $output->writeln('Kapacitor start.');
 
         $sender = new InfluxDbSender(new UDPSender('kapacitor', 9100), 'test');

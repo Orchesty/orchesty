@@ -35,6 +35,7 @@ class SplitFileBatch implements BatchInterface, CustomNodeInterface
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
+        $loop;
         $data = json_decode($dto->getData(), TRUE);
 
         if (array_key_exists('data', $data)) {
@@ -64,7 +65,6 @@ class SplitFileBatch implements BatchInterface, CustomNodeInterface
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        // TODO: Implement process() method.
         return $dto;
     }
 
