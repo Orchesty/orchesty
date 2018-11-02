@@ -10,6 +10,7 @@ use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Exception\StartingPointException;
 use Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint;
 use Hanaboso\PipesFramework\LongRunningNode\Document\LongRunningNodeData;
+use Hanaboso\PipesFramework\LongRunningNode\Exception\LongRunningNodeException;
 use Hanaboso\PipesFramework\RabbitMq\BunnyManager;
 
 /**
@@ -48,22 +49,20 @@ class LongRunningNodeStartingPoint extends StartingPoint
      * @param Topology    $topology
      * @param Node        $node
      * @param null|string $body
+     * @param null|string $token
      *
      * @throws StartingPointException
+     * @throws LongRunningNodeException
      */
-    public function run(Topology $topology, Node $node, ?string $body = NULL): void
+    public function run(Topology $topology, Node $node, ?string $body = NULL, ?string $token = NULL): void
     {
-        $doc     = $this->nodeManager->getDocument($topology->getId(), $node->getId());
-        $headers = $this->createHeaders($topology);
-        $headers->addHeader(PipesHeaders::createKey(LongRunningNodeData::DOCUMENT_ID_HEADER), $doc->getId());
-        $headers->addHeader(PipesHeaders::createKey(LongRunningNodeData::UPDATED_BY_HEADER), $doc->getUpdatedBy());
-        $headers->addHeader(PipesHeaders::createKey(LongRunningNodeData::AUDIT_LOGS_HEADER), $doc->getAuditLogs());
-        $headers->addHeader(PipesHeaders::createKey(LongRunningNodeData::UPDATED_HEADER),
-            $doc->getUpdated()->format('Y-m-d H:i:s'));
-        $headers->addHeader(PipesHeaders::createKey(LongRunningNodeData::CREATED_HEADER),
-            $doc->getCreated()->format('Y-m-d H:i:s'));
+        $doc = $this->nodeManager->getDocument($topology->getId(), $node->getId(), $token);
+        if ($doc) {
+            $headers = $this->createHeaders($topology);
+            $headers->addHeader(PipesHeaders::createKey(LongRunningNodeData::DOCUMENT_ID_HEADER), $doc->getId());
 
-        $this->runTopology($topology, $node, $headers, $this->createBody($body));
+            $this->runTopology($topology, $node, $headers, $this->createBody($body));
+        }
     }
 
 }
