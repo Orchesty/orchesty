@@ -2,6 +2,7 @@
 
 namespace Hanaboso\PipesFramework\LongRunningNode\Model;
 
+use Bunny\Message;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\LongRunningNode\Document\LongRunningNodeData;
 
@@ -19,19 +20,18 @@ interface LongRunningNodeInterface
     public function getId(): string;
 
     /**
-     * @param LongRunningNodeData $data
-     * @param ProcessDto          $dto
+     * @param Message $message
      *
-     * @return ProcessDto
+     * @return LongRunningNodeData
      */
-    public function beforeAction(LongRunningNodeData $data, ProcessDto $dto): ProcessDto;
+    public function beforeAction(Message $message): LongRunningNodeData;
 
     /**
      * @param LongRunningNodeData $data
-     * @param ProcessDto          $dto
+     * @param string              $requestData
      *
      * @return ProcessDto
      */
-    public function afterAction(LongRunningNodeData $data, ProcessDto $dto): ProcessDto;
+    public function afterAction(LongRunningNodeData $data, string $requestData): ProcessDto;
 
 }

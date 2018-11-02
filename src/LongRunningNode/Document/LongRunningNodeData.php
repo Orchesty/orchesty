@@ -2,6 +2,7 @@
 
 namespace Hanaboso\PipesFramework\LongRunningNode\Document;
 
+use Bunny\Message;
 use DateTime;
 use DateTimeZone;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -24,8 +25,6 @@ class LongRunningNodeData
     use IdTrait;
 
     public const PARENT_PROCESS_HEADER = 'parent-process-id';
-    public const CREATED_HEADER        = 'created';
-    public const UPDATED_HEADER        = 'updated';
     public const UPDATED_BY_HEADER     = 'updated-by';
     public const AUDIT_LOGS_HEADER     = 'audit-logs';
     public const DOCUMENT_ID_HEADER    = 'doc-id';
@@ -45,9 +44,9 @@ class LongRunningNodeData
     private $nodeId;
 
     /**
-     * @var string
+     * @var string|null
      *
-     * @ODM\Field(type="string")
+     * @ODM\Field(type="string", nullable=true)
      */
     private $parentProcess;
 
@@ -94,9 +93,9 @@ class LongRunningNodeData
     private $updated;
 
     /**
-     * @var string
+     * @var string|null
      *
-     * @ODM\Field(type="string")
+     * @ODM\Field(type="string", nullable=true)
      */
     private $updatedBy;
 
@@ -156,19 +155,19 @@ class LongRunningNodeData
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getParentProcess(): string
+    public function getParentProcess(): ?string
     {
         return $this->parentProcess;
     }
 
     /**
-     * @param string $parentProcess
+     * @param string|null $parentProcess
      *
      * @return LongRunningNodeData
      */
-    public function setParentProcess(string $parentProcess): LongRunningNodeData
+    public function setParentProcess(?string $parentProcess): LongRunningNodeData
     {
         $this->parentProcess = $parentProcess;
 
@@ -296,19 +295,19 @@ class LongRunningNodeData
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getUpdatedBy(): string
+    public function getUpdatedBy(): ?string
     {
         return $this->updatedBy;
     }
 
     /**
-     * @param string $updatedBy
+     * @param string|null $updatedBy
      *
      * @return LongRunningNodeData
      */
-    public function setUpdatedBy(string $updatedBy): LongRunningNodeData
+    public function setUpdatedBy(?string $updatedBy): LongRunningNodeData
     {
         $this->updatedBy = $updatedBy;
 
@@ -373,29 +372,44 @@ class LongRunningNodeData
     }
 
     /**
-     * @param ProcessDto $dto
+     * @param Message $message
      *
      * @return LongRunningNodeData
      */
-    public static function fromProcessDto(ProcessDto $dto): LongRunningNodeData
+    public static function fromMessage(Message $message): LongRunningNodeData
     {
         $ent = new LongRunningNodeData();
-        $ent->setData($dto->getData())
-            ->setHeaders($dto->getHeaders())
-            ->setTopologyId((string) $dto->getHeader(PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID), ''))
-            ->setNodeId((string) $dto->getHeader(PipesHeaders::createKey(PipesHeaders::NODE_ID), ''))
-            ->setParentProcess((string) $dto->getHeader(PipesHeaders::createKey(self::PARENT_PROCESS_HEADER), ''))
-            ->setProcessId((string) $dto->getHeader(PipesHeaders::createKey(PipesHeaders::PROCESS_ID), ''))
-            ->setCreated(
-                new DateTime((string) $dto->getHeader(PipesHeaders::createKey(self::CREATED_HEADER), ''),
-                    new DateTimeZone('UTC')))
-            ->setUpdated(
-                new DateTime((string) $dto->getHeader(PipesHeaders::createKey(self::UPDATED_HEADER), ''),
-                    new DateTimeZone('UTC')))
-            ->setUpdatedBy((string) $dto->getHeader(PipesHeaders::createKey(self::UPDATED_BY_HEADER), ''))
-            ->setAuditLogs(json_decode($dto->getHeader(PipesHeaders::createKey(self::AUDIT_LOGS_HEADER), '{}'), TRUE));
+        $ent->setData($message->content)
+            ->setHeaders($message->headers)
+            ->setTopologyId((string) $message->getHeader(PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID), ''))
+            ->setNodeId((string) $message->getHeader(PipesHeaders::createKey(PipesHeaders::NODE_ID), ''))
+            ->setParentProcess((string) $message->getHeader(PipesHeaders::createKey(self::PARENT_PROCESS_HEADER), ''))
+            ->setProcessId((string) $message->getHeader(PipesHeaders::createKey(PipesHeaders::PROCESS_ID), ''))
+            ->setUpdatedBy((string) $message->getHeader(PipesHeaders::createKey(self::UPDATED_BY_HEADER), ''))
+            ->setAuditLogs(json_decode($message->getHeader(PipesHeaders::createKey(self::AUDIT_LOGS_HEADER), '{}'),
+                TRUE));
 
         return $ent;
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return [
+            'topology_id'    => $this->topologyId,
+            'node_id'        => $this->nodeId,
+            'parent_process' => $this->parentProcess,
+            'process_id'     => $this->processId,
+            'state'          => $this->state,
+            'data'           => $this->data,
+            'headers'        => $this->headers,
+            'created'        => $this->created->format('Y-m-d H:i:s'),
+            'updated'        => $this->updated->format('Y-m-d H:i:s'),
+            'updated_by'     => $this->updatedBy,
+            'audit_logs'     => $this->auditLogs,
+        ];
     }
 
 }

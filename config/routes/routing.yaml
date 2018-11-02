@@ -46,3 +46,7 @@ hb_pf_notification:
 hb_pf_logs:
     resource: '@HbPFLogsBundle'
     type: annotation
+
+hb_pf_long_running:
+    resource: '@HbPFLongRunningNodeBundle'
+    type: annotation
