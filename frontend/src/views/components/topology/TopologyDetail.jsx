@@ -12,7 +12,7 @@ import TopologyNodeGraphsContainer from 'components/node/TopologyNodeGraphsConta
 import './TopologyDetail.less';
 import {menuItemType} from 'rootApp/types';
 import TopologySchemaPanel from './TopologySchemaPanel';
-import TopologySchema from 'rootApp/views/components/topology/TopologySchema';
+import config from 'rootApp/config';
 
 class TopologyDetail extends React.Component {
   constructor(props) {
@@ -27,15 +27,17 @@ class TopologyDetail extends React.Component {
   }
 
   componentDidMount() {
-    const refreshInterval = 5000;
-    this.rangeIntervalId = setInterval(() => {
-      const { metricsRange, changeMetricsRange } = this.props;
-      if (metricsRange) {
-        const newSince = (new Date((new Date(metricsRange.since)).getTime() + refreshInterval)).toISOString();
-        const newTill = (new Date((new Date(metricsRange.till)).getTime() + refreshInterval)).toISOString();
-        changeMetricsRange(newSince, newTill, metricsRange.since, metricsRange.till);
-      }
-    }, refreshInterval);
+    const {metricsRefreshInterval} = config.params;
+    if (config.params.metricsRefreshInterval) {
+      this.rangeIntervalId = setInterval(() => {
+        const {metricsRange, changeMetricsRange} = this.props;
+        if (metricsRange) {
+          const newSince = (new Date((new Date(metricsRange.since)).getTime() + metricsRefreshInterval)).toISOString();
+          const newTill = (new Date((new Date(metricsRange.till)).getTime() + metricsRefreshInterval)).toISOString();
+          changeMetricsRange(newSince, newTill, metricsRange.since, metricsRange.till);
+        }
+      }, metricsRefreshInterval);
+    }
   }
 
   componentWillUnmount() {
