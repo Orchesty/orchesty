@@ -5,6 +5,10 @@ monolog:
     use_microseconds: false
     channels: [webhook_systems, notification, authorization, commons, connector, ftp, mailer, parser_table, user, rabbit-mq, rabbit_mq, test, stdout]
     handlers:
+        main:
+            type: service
+            id: udp_handler
+            level: warning
         webhook_systems:
             type: service
             id: udp_handler
