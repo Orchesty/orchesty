@@ -5,6 +5,10 @@ monolog:
     use_microseconds: false
     channels: [authorization, commons, connector, ftp, mailer, parser_table, user, rabbit-mq, rabbit_mq, test, stdout]
     handlers:
+        main:
+            type: service
+            id: udp_handler
+            level: warning
         authorization:
             type: service
             id: udp_handler
