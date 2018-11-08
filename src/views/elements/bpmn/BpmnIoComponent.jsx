@@ -19,6 +19,7 @@ import download from 'utils/download';
 import {menuItemType} from 'rootApp/types';
 import SidebarNodeMetrics from 'rootApp/views/components/metrics/SidebarNodeMetrics';
 import SidebarTopologyMetrics from 'rootApp/views/components/metrics/SidebarTopologyMetrics';
+import serverRequest from 'services/apiGatewayServer';
 
 class BpmnIoComponent extends React.Component {
   constructor(props){
@@ -119,6 +120,17 @@ class BpmnIoComponent extends React.Component {
           return;
         }
 
+      if (element.businessObject.pipesType === 'user') {
+        serverRequest(() => {}, 'GET', '/longRunning/topology/asd/node/test/getTasks', null).then(response => {
+          this._modeler.get('overlays').add(element, 'bubbles', {
+            position: { top: -25, right: 10 },
+            html: '<div><span class="badge" title="Failed processes">' + response.length + '</span></div>'
+          });
+        });
+
+          return;
+      }
+
 	    let errors = '';
 
         if (metrics[element.id] && metrics[element.id].data.process.errors > 0) {
@@ -126,10 +138,7 @@ class BpmnIoComponent extends React.Component {
         }
 
         this._modeler.get('overlays').add(element, 'bubbles', {
-          position: {
-            top: -25,
-            right: 10
-          },
+          position: { top: -25, right: 10 },
           html: '<div><span class="badge badge-error" title="Failed processes">' + errors + '</span></div>'
         });
     });
