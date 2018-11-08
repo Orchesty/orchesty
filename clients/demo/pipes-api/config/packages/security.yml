@@ -18,6 +18,9 @@ security:
         unsecured_starting_point:
             pattern: ^/(topologies/[\w-\.]+/nodes/[\w-\.]+/run|api/topologies/[\w-\.]+/nodes/[\w-\.]+/run)
             security: false
+        unsecured_long_running:
+            pattern: ^/(longRunning/*|api/longRunning/*)
+            security: false
         unsecured_connectors:
             pattern: ^/(connector/[\w-\.]+/action|connector/[\w-\.]+/webhook|mapper/[\w-\.]+|xml-parser/[\w-\.]+|custom_node/[\w-\.]+/process)
             security: false

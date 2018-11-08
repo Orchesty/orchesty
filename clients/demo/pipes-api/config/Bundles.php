@@ -10,6 +10,7 @@ use Hanaboso\PipesFramework\HbPFConfiguratorBundle\HbPFConfiguratorBundle;
 use Hanaboso\PipesFramework\HbPFConnectorBundle\HbPFConnectorBundle;
 use Hanaboso\PipesFramework\HbPFCustomNodeBundle\HbPFCustomNodeBundle;
 use Hanaboso\PipesFramework\HbPFLogsBundle\HbPFLogsBundle;
+use Hanaboso\PipesFramework\HbPFLongRunningNodeBundle\HbPFLongRunningNodeBundle;
 use Hanaboso\PipesFramework\HbPFMapperBundle\HbPFMapperBundle;
 use Hanaboso\PipesFramework\HbPFMetricsBundle\HbPFMetricsBundle;
 use Hanaboso\PipesFramework\HbPFNotificationBundle\HbPFNotificationBundle;
@@ -21,33 +22,34 @@ use RabbitMqBundle\RabbitMqBundle;
 use Snc\RedisBundle\SncRedisBundle;
 
 return [
-    Symfony\Bundle\FrameworkBundle\FrameworkBundle::class                => ['all' => TRUE],
-    Symfony\Bundle\SecurityBundle\SecurityBundle::class                  => ['all' => TRUE],
-    Doctrine\Bundle\DoctrineCacheBundle\DoctrineCacheBundle::class       => ['all' => TRUE],
-    Doctrine\Bundle\DoctrineBundle\DoctrineBundle::class                 => ['all' => TRUE],
-    Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle::class         => ['all' => TRUE],
-    Symfony\Bundle\MonologBundle\MonologBundle::class                    => ['all' => TRUE],
-    Symfony\Bundle\TwigBundle\TwigBundle::class                          => ['all' => TRUE],
-    Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle::class            => ['all' => TRUE],
-    Symfony\Bundle\DebugBundle\DebugBundle::class                        => ['dev' => TRUE, 'test' => TRUE],
-    DoctrineMongoDBBundle::class                                         => ['all' => TRUE],
-    FOSRestBundle::class                                                 => ['all' => TRUE],
-    JMSSerializerBundle::class                                           => ['all' => TRUE],
-    NelmioCorsBundle::class                                              => ['all' => TRUE],
-    SncRedisBundle::class                                                => ['all' => TRUE],
+    Symfony\Bundle\FrameworkBundle\FrameworkBundle::class          => ['all' => TRUE],
+    Symfony\Bundle\SecurityBundle\SecurityBundle::class            => ['all' => TRUE],
+    Doctrine\Bundle\DoctrineCacheBundle\DoctrineCacheBundle::class => ['all' => TRUE],
+    Doctrine\Bundle\DoctrineBundle\DoctrineBundle::class           => ['all' => TRUE],
+    Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle::class   => ['all' => TRUE],
+    Symfony\Bundle\MonologBundle\MonologBundle::class              => ['all' => TRUE],
+    Symfony\Bundle\TwigBundle\TwigBundle::class                    => ['all' => TRUE],
+    Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle::class      => ['all' => TRUE],
+    Symfony\Bundle\DebugBundle\DebugBundle::class                  => ['dev' => TRUE, 'test' => TRUE],
+    DoctrineMongoDBBundle::class                                   => ['all' => TRUE],
+    FOSRestBundle::class                                           => ['all' => TRUE],
+    JMSSerializerBundle::class                                     => ['all' => TRUE],
+    NelmioCorsBundle::class                                        => ['all' => TRUE],
+    SncRedisBundle::class                                          => ['all' => TRUE],
 
-    HbPFApiGatewayBundle::class    => ['all' => TRUE],
-    HbPFAuthorizationBundle::class => ['all' => TRUE],
-    HbPFConfiguratorBundle::class  => ['all' => TRUE],
-    HbPFCommonsBundle::class       => ['all' => TRUE],
-    HbPFConnectorBundle::class     => ['all' => TRUE],
-    HbPFCustomNodeBundle::class    => ['all' => TRUE],
-    HbPFMapperBundle::class        => ['all' => TRUE],
-    HbPFMetricsBundle::class       => ['all' => TRUE],
-    HbPFUserBundle::class          => ['all' => TRUE],
-    HbPFRabbitMqBundle::class      => ['all' => TRUE],
-    RabbitMqBundle::class          => ['all' => TRUE],
-    EmailServiceBundle::class      => ['all' => TRUE],
-    HbPFLogsBundle::class          => ['all' => TRUE],
-    HbPFNotificationBundle::class  => ['all' => TRUE],
+    HbPFApiGatewayBundle::class      => ['all' => TRUE],
+    HbPFAuthorizationBundle::class   => ['all' => TRUE],
+    HbPFConfiguratorBundle::class    => ['all' => TRUE],
+    HbPFCommonsBundle::class         => ['all' => TRUE],
+    HbPFConnectorBundle::class       => ['all' => TRUE],
+    HbPFCustomNodeBundle::class      => ['all' => TRUE],
+    HbPFMapperBundle::class          => ['all' => TRUE],
+    HbPFMetricsBundle::class         => ['all' => TRUE],
+    HbPFUserBundle::class            => ['all' => TRUE],
+    HbPFRabbitMqBundle::class        => ['all' => TRUE],
+    RabbitMqBundle::class            => ['all' => TRUE],
+    EmailServiceBundle::class        => ['all' => TRUE],
+    HbPFLogsBundle::class            => ['all' => TRUE],
+    HbPFNotificationBundle::class    => ['all' => TRUE],
+    HbPFLongRunningNodeBundle::class => ['all' => TRUE],
 ];
