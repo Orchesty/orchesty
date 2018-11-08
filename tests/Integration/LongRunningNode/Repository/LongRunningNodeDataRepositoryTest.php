@@ -1,0 +1,50 @@
+<?php declare(strict_types=1);
+
+namespace Tests\Integration\LongRunningNode\Repository;
+
+use Exception;
+use Hanaboso\PipesFramework\LongRunningNode\Document\LongRunningNodeData;
+use Hanaboso\PipesFramework\LongRunningNode\Repository\LongRunningNodeDataRepository;
+use Tests\DatabaseTestCaseAbstract;
+
+/**
+ * Class LongRunningNodeDataRepositoryTest
+ *
+ * @package Tests\Integration\LongRunningNode\Repository
+ */
+final class LongRunningNodeDataRepositoryTest extends DatabaseTestCaseAbstract
+{
+
+    /**
+     * @covers LongRunningNodeDataRepository::getGroupStats()
+     *
+     * @throws Exception
+     */
+    public function testGroupStats(): void
+    {
+        $this->prepData();
+        /** @var LongRunningNodeDataRepository $repo */
+        $repo = $this->dm->getRepository(LongRunningNodeData::class);
+        $res = $repo->getGroupStats('topo');
+        self::assertEquals([
+             'node0' => 2,
+             'node1' => 1,
+        ], $res);
+    }
+
+    /**
+     *
+     */
+    private function prepData(): void
+    {
+        for ($i = 0; $i < 4; $i++) {
+            $tmp = new LongRunningNodeData();
+            $tmp->setTopologyId($i < 3 ? 'topo' : 'asd')
+                ->setNodeId('node' . ($i % 2));
+            $this->dm->persist($tmp);
+        }
+
+        $this->dm->flush();
+    }
+
+}
