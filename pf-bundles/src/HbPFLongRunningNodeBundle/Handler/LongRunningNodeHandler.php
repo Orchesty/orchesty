@@ -77,7 +77,7 @@ class LongRunningNodeHandler
     public function run(string $topologyName, string $nodeName, array $data, ?string $token = NULL): array
     {
         $topos = $this->handler->getTopologies($topologyName);
-        $c = 0;
+        $c     = 0;
         foreach ($topos as $topo) {
             $node = $this->handler->getNodeByName($nodeName, $topo);
             $this->startingPoint->run($topo, $node, json_encode($data), $token);
@@ -135,8 +135,9 @@ class LongRunningNodeHandler
      */
     public function getTasks(string $topologyId, ?string $nodeId = NULL): array
     {
-        $repo = $this->dm->getRepository(LongRunningNodeData::class);
+        $repo   = $this->dm->getRepository(LongRunningNodeData::class);
         $filter = ['topologyId' => $topologyId];
+
         if ($nodeId) {
             $filter['nodeId'] = $nodeId;
         }
