@@ -18,6 +18,9 @@ security:
         unsecured_starting_point:
             pattern: ^/(topologies/*|api/topologies/*|node/*|api/node/*)
             security: false
+        unsecured_long_running:
+            pattern: ^/(longRunning/*|api/longRunning/*)
+            security: false
         unsecured_connectors:
             pattern: ^/(authorizations/*|api/authorizations/*|connector/*|api/connector/*|webhook/*|api/webhook/*|mapper/*|api/mapper/*|mailer/*|api/mailer/*|custom_node/*|api/custom_node/*|parser/*|api/parser/*|joiner/*|api/joiner/*)
             security: false

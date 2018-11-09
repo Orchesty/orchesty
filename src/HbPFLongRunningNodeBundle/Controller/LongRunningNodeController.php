@@ -15,8 +15,6 @@ use Throwable;
  * Class LongRunningNodeController
  *
  * @package Hanaboso\PipesFramework\HbPFLongRunningNodeBundle\Controller
- *
- * @Route("/longRunning")
  */
 class LongRunningNodeController extends FOSRestController
 {
@@ -39,8 +37,8 @@ class LongRunningNodeController extends FOSRestController
     }
 
     /**
-     * @Route("/run/topology/{topoName}/node/{nodeName}", methods={"GET", "POST", "OPTIONS"})
-     * @Route("/run/topology/{topoName}/node/{nodeName}/token/{token}", methods={"GET", "POST", "OPTIONS"})
+     * @Route("/longRunning/run/topology/{topoName}/node/{nodeName}", methods={"GET", "POST", "OPTIONS"})
+     * @Route("/longRunning/run/topology/{topoName}/node/{nodeName}/token/{token}", methods={"GET", "POST", "OPTIONS"})
      *
      * @param Request     $request
      * @param string      $topoName
@@ -61,7 +59,7 @@ class LongRunningNodeController extends FOSRestController
     }
 
     /**
-     * @Route("/{nodeId}/process", methods={"POST", "OPTIONS"})
+     * @Route("/longRunning/{nodeId}/process", methods={"POST", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $nodeId
@@ -80,7 +78,7 @@ class LongRunningNodeController extends FOSRestController
     }
 
     /**
-     * @Route("/{nodeId}/process/test", methods={"POST", "OPTIONS"})
+     * @Route("/longRunning/{nodeId}/process/test", methods={"POST", "OPTIONS"})
      *
      * @param string $nodeId
      *
@@ -98,7 +96,7 @@ class LongRunningNodeController extends FOSRestController
     }
 
     /**
-     * @Route("/topology/{topo}/getTasks", methods={"GET", "OPTIONS"})
+     * @Route("/longRunning/topology/{topo}/getTasks", methods={"GET", "OPTIONS"})
      *
      * @param string $topo
      *
@@ -114,7 +112,7 @@ class LongRunningNodeController extends FOSRestController
     }
 
     /**
-     * @Route("/topology/{topo}/node/{node}/getTasks", methods={"GET", "OPTIONS"})
+     * @Route("/longRunning/topology/{topo}/node/{node}/getTasks", methods={"GET", "OPTIONS"})
      *
      * @param string $topo
      * @param string $node
