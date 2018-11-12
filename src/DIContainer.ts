@@ -30,6 +30,7 @@ import UppercaseWorker from "./node/worker/UppercaseWorker";
 import MultiProbeConnector from "./probe/MultiProbeConnector";
 import Terminator from "./terminator/Terminator";
 import INodeConfigProvider from "./topology/INodeConfigProvider";
+import LongRunningWorker, {ILongRunningWorkerSettings} from "./node/worker/LongRunningWorker";
 
 class DIContainer extends Container {
 
@@ -149,6 +150,15 @@ class DIContainer extends Container {
         });
         this.set(`${wPrefix}.uppercase`, (settings: {}) => {
             return new UppercaseWorker();
+        });
+        this.set(`${wPrefix}.long_running`, (settings: ILongRunningWorkerSettings) => {
+            const metrics = this.get("metrics")(
+                settings.node_label.topology_id,
+                settings.node_label.id,
+                metricsOptions.node_measurement,
+            );
+
+            return new LongRunningWorker(settings, this.get("amqp.connection"), metrics);
         });
 
         // Splitter workers

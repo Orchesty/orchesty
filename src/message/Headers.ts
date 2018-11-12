@@ -41,6 +41,7 @@ class Headers {
     // Other headers
     public static readonly PUBLISHED_TIMESTAMP = "published-timestamp";
     public static readonly CONTENT_TYPE = "content-type";
+    public static readonly DOCUMENT_ID = "doc-id";
 
     public static readonly HEADERS_WHITELIST = [
         Headers.CONTENT_TYPE,
