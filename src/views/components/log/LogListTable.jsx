@@ -21,11 +21,13 @@ class LogListTable extends AbstractTable {
     const {list: {sort}, listChangeSort} = this.props;
     return (
         <tr>
-          <SortTh className="no-wrap" name="timestamp" state={sort} onChangeSort={listChangeSort}>Time</SortTh>
-          <SortTh className="no-wrap" name="severity" state={sort} onChangeSort={listChangeSort}>Severity</SortTh>
+          <SortTh name="timestamp" className="no-wrap" state={sort} onChangeSort={listChangeSort}>Time</SortTh>
+          <SortTh name="severity" className="no-wrap" state={sort} onChangeSort={listChangeSort}>Severity</SortTh>
+          <SortTh name="topology_id" className="no-wrap" state={sort} onChangeSort={listChangeSort}>Topology&nbsp;ID</SortTh>
+          <SortTh name="topology_name" className="no-wrap" state={sort} onChangeSort={listChangeSort}>Topology&nbsp;name</SortTh>
+          <SortTh name="node_id" className="no-wrap" state={sort} onChangeSort={listChangeSort}>Node&nbsp;ID</SortTh>
+          <SortTh name="node_name" className="no-wrap" state={sort} onChangeSort={listChangeSort}>Node&nbsp;name</SortTh>
           <SortTh name="message" state={sort} onChangeSort={listChangeSort}>Message</SortTh>
-          <SortTh name="topology_name" className="no-wrap" state={sort} onChangeSort={listChangeSort}>Topology name</SortTh>
-          <SortTh name="node_name" className="no-wrap" state={sort} onChangeSort={listChangeSort}>Node name</SortTh>
         </tr>
     );
   }
@@ -38,9 +40,11 @@ class LogListTable extends AbstractTable {
         <tr key={item.id}>
           <td className="no-wrap"><Moment format="DD. MM. YYYY HH:mm:ss">{item.time}</Moment></td>
           <td className="no-wrap">{item.severity}</td>
-          <td>{item.message}</td>
+          <td className="no-wrap">{item.topology_id}</td>
           <td className="no-wrap">{item.topology_name}</td>
+          <td className="no-wrap">{item.node_id}</td>
           <td className="no-wrap">{item.node_name}</td>
+          <td>{item.message}</td>
         </tr>
       )
     }) : null;
