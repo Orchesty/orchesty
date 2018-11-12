@@ -89,3 +89,7 @@ services:
         public: true
         calls:
             - ['setLogger', ['@monolog.logger.connector']]
+
+    hbpf.long_running.dummy:
+        class: Demo\LongRunningNode\DummyHumanTask
+        public: true

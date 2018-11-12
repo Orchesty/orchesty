@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types';
+import Moment from 'react-moment';
 import AbstractTable from 'components/AbstractTable';
 import StateComponent from 'wrappers/StateComponent';
 import SortTh from 'elements/table/SortTh';
@@ -35,7 +36,7 @@ class LogListTable extends AbstractTable {
       const item = elements[id];
       return (
         <tr key={item.id}>
-          <td className="no-wrap">{item.time.toLocaleString()}</td>
+          <td className="no-wrap"><Moment format="DD. MM. YYYY HH:mm:ss">{item.time}</Moment></td>
           <td className="no-wrap">{item.severity}</td>
           <td>{item.message}</td>
           <td className="no-wrap">{item.topology_name}</td>

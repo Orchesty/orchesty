@@ -14,6 +14,11 @@ services:
         tags:
             - { name: kernel.event_subscriber }
 
+    hbpf.filter.long_running:
+        class: Hanaboso\PipesFramework\LongRunningNode\Model\LongRunningNodeFilter
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+
     hbpf.manager.long_running:
         class: Hanaboso\PipesFramework\LongRunningNode\Model\LongRunningNodeManager
         arguments:
@@ -35,6 +40,7 @@ services:
             - '@hbpf.starting_point.long_running'
             - '@hbpf.handler.starting_point'
             - '@hbpf.loader.long_running'
+            - '@hbpf.filter.long_running'
             - '@doctrine_mongodb.odm.default_document_manager'
 
     Hanaboso\PipesFramework\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController:

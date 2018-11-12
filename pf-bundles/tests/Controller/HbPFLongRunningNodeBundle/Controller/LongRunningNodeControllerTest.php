@@ -76,8 +76,8 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
     {
         for ($i = 0; $i < 3; $i++) {
             $doc = new LongRunningNodeData();
-            $doc->setTopologyId($i < 2 ? 'topo' : 'anotherTopo')
-                ->setNodeId('node' . $i);
+            $doc->setTopologyName($i < 2 ? 'topo' : 'anotherTopo')
+                ->setNodeName('node' . $i);
             $this->dm->persist($doc);
         }
         $this->dm->flush();
@@ -85,12 +85,12 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
         $this->sendGet('/longRunning/topology/topo/getTasks');
         $res = $this->client->getResponse();
         self::assertEquals(200, $res->getStatusCode());
-        self::assertEquals(2, count(json_decode($res->getContent(), TRUE)));
+        self::assertEquals(2, count(json_decode($res->getContent(), TRUE)['items']));
 
         $this->sendGet('/longRunning/topology/topo/node/node0/getTasks');
         $res = $this->client->getResponse();
         self::assertEquals(200, $res->getStatusCode());
-        self::assertEquals(1, count(json_decode($res->getContent(), TRUE)));
+        self::assertEquals(1, count(json_decode($res->getContent(), TRUE)['items']));
     }
 
 }

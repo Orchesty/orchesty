@@ -28,9 +28,9 @@ final class LongRunningNodeManagerTest extends DatabaseTestCaseAbstract
         $manager = $this->ownContainer->get('hbpf.manager.long_running');
         $doc     = new LongRunningNodeData();
         $doc->setProcessId('proc')
-            ->setNodeId('node')
+            ->setNodeName('node')
             ->setAuditLogs(['audit1', 'audit2'])
-            ->setTopologyId('topo')
+            ->setTopologyName('topo')
             ->setParentProcess('parent')
             ->setData('data')
             ->setHeaders(['head']);
@@ -43,8 +43,8 @@ final class LongRunningNodeManagerTest extends DatabaseTestCaseAbstract
         self::assertEquals('proc', $doc->getProcessId());
         self::assertEquals('parent', $doc->getParentProcess());
         self::assertEquals(['head'], $doc->getHeaders());
-        self::assertEquals('node', $doc->getNodeId());
-        self::assertEquals('topo', $doc->getTopologyId());
+        self::assertEquals('node', $doc->getNodeName());
+        self::assertEquals('topo', $doc->getTopologyName());
 
         $headers                                                                   = [];
         $headers[PipesHeaders::createKey(LongRunningNodeData::DOCUMENT_ID_HEADER)] = $doc->getid();
@@ -52,9 +52,9 @@ final class LongRunningNodeManagerTest extends DatabaseTestCaseAbstract
 
         $doc = new LongRunningNodeData();
         $doc->setProcessId('proc')
-            ->setNodeId('node')
+            ->setNodeName('node')
             ->setAuditLogs(['audit3'])
-            ->setTopologyId('topo')
+            ->setTopologyName('topo')
             ->setParentProcess('parent')
             ->setData('data2')
             ->setHeaders(['head2']);
@@ -68,8 +68,8 @@ final class LongRunningNodeManagerTest extends DatabaseTestCaseAbstract
         self::assertEquals(['audit1', 'audit2', 'audit3'], $doc->getAuditLogs());
         self::assertEquals('data2', $doc->getData());
         self::assertEquals('proc', $doc->getProcessId());
-        self::assertEquals('node', $doc->getNodeId());
-        self::assertEquals('topo', $doc->getTopologyId());
+        self::assertEquals('node', $doc->getNodeName());
+        self::assertEquals('topo', $doc->getTopologyName());
 
         self::assertNotNull($manager->getDocument('topo', 'node'));
         self::assertNotNull($manager->getDocument('topo', 'node', 'proc'));

@@ -20,15 +20,15 @@ class LongRunningNodeController extends FOSRestController
      * @Route("/longRunning/run/topology/{topoName}/node/{nodeName}/token/{token}", methods={"POST", "GET", "OPTIONS"})
      *
      * @param Request     $request
-     * @param string      $topologyId
-     * @param string      $nodeId
+     * @param string      $topoName
+     * @param string      $nodeName
      * @param null|string $token
      *
      * @return Response
      */
-    public function runTokenAction(Request $request, string $topologyId, string $nodeId, ?string $token = NULL): Response
+    public function runTokenAction(Request $request, string $topoName, string $nodeName, ?string $token = NULL): Response
     {
-        $data = ['request' => $request, 'topoName' => $topologyId, 'nodeName' => $nodeId];
+        $data = ['request' => $request, 'topoName' => $topoName, 'nodeName' => $nodeName];
         if ($token) {
             $data['token'] = $token;
         }

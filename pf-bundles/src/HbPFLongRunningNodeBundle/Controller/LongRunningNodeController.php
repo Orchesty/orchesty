@@ -5,6 +5,7 @@ namespace Hanaboso\PipesFramework\HbPFLongRunningNodeBundle\Controller;
 use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\CommonsBundle\Utils\ControllerUtils;
+use Hanaboso\MongoDataGrid\GridRequestDto;
 use Hanaboso\PipesFramework\HbPFLongRunningNodeBundle\Handler\LongRunningNodeHandler;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -91,7 +92,8 @@ class LongRunningNodeController extends FOSRestController
     public function processAction(Request $request, string $nodeId): Response
     {
         try {
-            $res = $this->handler->process($nodeId, (string) json_encode($request->request->all()), $request->headers->all());
+            $res = $this->handler->process($nodeId, (string) json_encode($request->request->all()),
+                $request->headers->all());
 
             return $this->getResponse($res, 200);
         } catch (Throwable $e) {
@@ -120,14 +122,15 @@ class LongRunningNodeController extends FOSRestController
     /**
      * @Route("/longRunning/topology/{topo}/getTasks", methods={"GET", "OPTIONS"})
      *
-     * @param string $topo
+     * @param Request $request
+     * @param string  $topo
      *
      * @return Response
      */
-    public function getTasksAction(string $topo): Response
+    public function getTasksAction(Request $request, string $topo): Response
     {
         try {
-            return $this->getResponse($this->handler->getTasks($topo));
+            return $this->getResponse($this->handler->getTasks(new GridRequestDto($request->headers->all()), $topo));
         } catch (Throwable $e) {
             return $this->getErrorResponse($e, 200, ControllerUtils::createHeaders([], $e));
         }
@@ -136,15 +139,20 @@ class LongRunningNodeController extends FOSRestController
     /**
      * @Route("/longRunning/topology/{topo}/node/{node}/getTasks", methods={"GET", "OPTIONS"})
      *
-     * @param string $topo
-     * @param string $node
+     * @param Request $request
+     * @param string  $topo
+     * @param string  $node
      *
      * @return Response
      */
-    public function getNodeTasksAction(string $topo, string $node): Response
+    public function getNodeTasksAction(Request $request, string $topo, string $node): Response
     {
         try {
-            return $this->getResponse($this->handler->getTasks($topo, $node));
+            return $this->getResponse($this->handler->getTasks(
+                new GridRequestDto($request->headers->all()),
+                $topo,
+                $node
+            ));
         } catch (Throwable $e) {
             return $this->getErrorResponse($e, 200, ControllerUtils::createHeaders([], $e));
         }
