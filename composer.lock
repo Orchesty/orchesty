@@ -2103,11 +2103,11 @@
         },
         {
             "name": "hanaboso/commons-bundle",
-            "version": "1.0.12",
+            "version": "1.0.13",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.hanaboso.net:hanaboso/commons-bundle.git",
-                "reference": "758c41b208d90378deb6a81fddff4a801ed1da82"
+                "reference": "0786931964c49d09a9b1b9595c211715bd8943d0"
             },
             "require": {
                 "alcaeus/mongo-php-adapter": "^1.1",
@@ -2116,6 +2116,11 @@
                 "doctrine/doctrine-fixtures-bundle": "^3.0",
                 "doctrine/mongodb-odm-bundle": "^3.5",
                 "doctrine/orm": "^2.6",
+                "ext-apcu": "*",
+                "ext-ftp": "*",
+                "ext-json": "*",
+                "ext-soap": "*",
+                "ext-sockets": "*",
                 "guzzlehttp/guzzle": "^6.3",
                 "jms/serializer-bundle": "^2.4",
                 "mongodb/mongodb": "^1.4",
@@ -2145,7 +2150,7 @@
             "license": [
                 "proprietary"
             ],
-            "time": "2018-11-07T12:34:36+00:00"
+            "time": "2018-11-12T08:16:20+00:00"
         },
         {
             "name": "hanaboso/email-service-bundle",
@@ -4873,16 +4878,16 @@
         },
         {
             "name": "react/dns",
-            "version": "v0.4.15",
+            "version": "v0.4.16",
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/dns.git",
-                "reference": "319e110a436d26a2fa137cfa3ef2063951715794"
+                "reference": "0a0bedfec72b38406413c6ea01e1c015bd0bf72b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/dns/zipball/319e110a436d26a2fa137cfa3ef2063951715794",
-                "reference": "319e110a436d26a2fa137cfa3ef2063951715794",
+                "url": "https://api.github.com/repos/reactphp/dns/zipball/0a0bedfec72b38406413c6ea01e1c015bd0bf72b",
+                "reference": "0a0bedfec72b38406413c6ea01e1c015bd0bf72b",
                 "shasum": ""
             },
             "require": {
@@ -4914,7 +4919,7 @@
                 "dns-resolver",
                 "reactphp"
             ],
-            "time": "2018-07-02T12:17:56+00:00"
+            "time": "2018-11-11T11:21:13+00:00"
         },
         {
             "name": "react/event-loop",
