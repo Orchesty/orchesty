@@ -54,7 +54,7 @@ class LongRunningNodeCallback extends SyncCallbackAbstract
     {
         $data;
         try {
-            $serv = $this->loader->getLongRunningNode($message->getHeader(PipesHeaders::NODE_NAME));
+            $serv = $this->loader->getLongRunningNode($message->getHeader(PipesHeaders::createKey(PipesHeaders::NODE_NAME)));
 
             $doc = $serv->beforeAction($message);
             $this->manager->saveDocument($doc);

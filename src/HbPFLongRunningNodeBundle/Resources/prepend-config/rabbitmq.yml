@@ -6,9 +6,9 @@ rabbit-mq:
     consumers:
         long-running-node:
             class: Hanaboso\PipesFramework\LongRunningNode\Consumer\LongRunningNodeConsumer
-            queue: pipes.results
+            queue: pipes.long_running
             serializer: Hanaboso\PipesFramework\RabbitMq\Serializers\JsonSerializer
-            callback: hanaboso.pipes_framework.commons.status_service.status_service_callback
+            callback: hanaboso.pipes_framework.long_running_node.callback
             prefetch_count: 100
 
 services:

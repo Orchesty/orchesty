@@ -59,6 +59,28 @@ class LongRunningNodeController extends FOSRestController
     }
 
     /**
+     * @Route("/longRunning/stop/topology/{topoName}/node/{nodeName}", methods={"GET", "POST", "OPTIONS"})
+     * @Route("/longRunning/stop/topology/{topoName}/node/{nodeName}/token/{token}", methods={"GET", "POST", "OPTIONS"})
+     *
+     * @param Request     $request
+     * @param string      $topoName
+     * @param string      $nodeName
+     * @param null|string $token
+     *
+     * @return Response
+     */
+    public function stopAction(Request $request, string $topoName, string $nodeName, ?string $token = NULL): Response
+    {
+        try {
+            $res = $this->handler->run($topoName, $nodeName, $request->request->all() ?? '', $token);
+
+            return $this->getResponse($res, 200);
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e, 500, ControllerUtils::createHeaders([], $e));
+        }
+    }
+
+    /**
      * @Route("/longRunning/{nodeId}/process", methods={"POST", "OPTIONS"})
      *
      * @param Request $request
@@ -78,7 +100,7 @@ class LongRunningNodeController extends FOSRestController
     }
 
     /**
-     * @Route("/longRunning/{nodeId}/process/test", methods={"POST", "OPTIONS"})
+     * @Route("/longRunning/{nodeId}/process/test", methods={"GET", "OPTIONS"})
      *
      * @param string $nodeId
      *

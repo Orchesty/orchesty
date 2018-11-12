@@ -3,10 +3,7 @@
 namespace Hanaboso\PipesFramework\HbPFLongRunningNodeBundle\Handler;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\MongoDBException;
-use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 use Hanaboso\CommonsBundle\Utils\PipesHeaders;
-use Hanaboso\PipesFramework\Configurator\Exception\StartingPointException;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\StartingPointHandler;
 use Hanaboso\PipesFramework\HbPFLongRunningNodeBundle\Loader\LongRunningNodeLoader;
 use Hanaboso\PipesFramework\LongRunningNode\Document\LongRunningNodeData;
@@ -67,20 +64,23 @@ class LongRunningNodeHandler
      * @param string      $nodeName
      * @param array       $data
      * @param null|string $token
+     * @param bool        $stop
      *
      * @return array
-     * @throws LongRunningNodeException
-     * @throws MongoDBException
-     * @throws PipesFrameworkException
-     * @throws StartingPointException
      */
-    public function run(string $topologyName, string $nodeName, array $data, ?string $token = NULL): array
+    public function run(
+        string $topologyName,
+        string $nodeName,
+        array $data,
+        ?string $token = NULL,
+        bool $stop = FALSE
+    ): array
     {
         $topos = $this->handler->getTopologies($topologyName);
         $c     = 0;
         foreach ($topos as $topo) {
             $node = $this->handler->getNodeByName($nodeName, $topo);
-            $this->startingPoint->run($topo, $node, json_encode($data), $token);
+            $this->startingPoint->run($topo, $node, json_encode($data), $token, $stop);
             $c++;
         }
 

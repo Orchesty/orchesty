@@ -51,7 +51,7 @@ class LongRunningNodeController extends FOSRestController
     }
 
     /**
-     * @Route("/longRunning/{nodeId}/process/test", methods={"POST", "OPTIONS"})
+     * @Route("/longRunning/{nodeId}/process/test", methods={"GET", "OPTIONS"})
      *
      * @param string $nodeId
      *
