@@ -27,5 +27,10 @@ export default dispatch => [
     type: menuItemType.ACTION,
     caption: 'Notifications',
     action: () => dispatch(applicationActions.openPage('notification_settings'))
+  },
+  {
+    type: menuItemType.ACTION,
+    caption: 'Human Tasks',
+    action: () => dispatch(applicationActions.openPage('human_tasks_list'))
   }
 ];

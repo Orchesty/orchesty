@@ -66,6 +66,12 @@ export default {
     needAuth: true,
     simpleRoute: '/notification_settings'
   },
+  human_tasks_list: {
+    key: 'human_tasks_list',
+    caption: 'Human Tasks',
+    needAuth: true,
+    simpleRoute: '/human_tasks'
+  },
   log_list: {
     key: 'log_list',
     caption: 'Log list',
