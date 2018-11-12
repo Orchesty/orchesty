@@ -11,16 +11,21 @@ namespace Demo\CustomNode;
 
 use EmailServiceBundle\Utils\PipesHeaders;
 use Exception;
+use Hanaboso\CommonsBundle\Monolog\LoggerContext;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 use Hanaboso\PipesFramework\HbPFCustomNodeBundle\Exception\CustomNodeException;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
+use Throwable;
 
 /**
  * Class FilterBid
  *
  * @package App\CustomNode
  */
-class FilterStockExchange implements CustomNodeInterface
+class FilterStockExchange implements CustomNodeInterface, LoggerAwareInterface
 {
 
     /**
@@ -29,13 +34,19 @@ class FilterStockExchange implements CustomNodeInterface
     private $key;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * FilterStockExchange constructor.
      *
      * @param string $key
      */
     public function __construct(string $key)
     {
-        $this->key = $key;
+        $this->key    = $key;
+        $this->logger = new NullLogger();
     }
 
     /**
@@ -52,13 +63,36 @@ class FilterStockExchange implements CustomNodeInterface
             return $dto->setData((string) json_encode($data[$this->key]));
         }
 
-        if (mt_rand(1, 10) == 5) {
-            throw new CustomNodeException('My test error exception');
+        try {
+            if (mt_rand(1, 10) == 5) {
+                throw new CustomNodeException('My test error exception');
+            }
+        } catch (Throwable $t) {
+            $context = new LoggerContext();
+            $context
+                ->setException($t)
+                ->setHeaders($dto);
+
+            $this->logger->error($t->getMessage(), $context->toArray());
         }
 
         $dto->setData('');
 
         return $dto->addHeader(PipesHeaders::createKey(PipesHeaders::RESULT_CODE), "1003");
+    }
+
+    /**
+     * Sets a logger instance on the object.
+     *
+     * @param LoggerInterface $logger
+     *
+     * @return FilterStockExchange
+     */
+    public function setLogger(LoggerInterface $logger): FilterStockExchange
+    {
+        $this->logger = $logger;
+
+        return $this;
     }
 
 }

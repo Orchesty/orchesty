@@ -34,6 +34,8 @@ services:
         public: true
         arguments:
             - 'asks'
+        calls:
+            - ['setLogger', ['@monolog.logger.connector']]
 
     hbpf.custom_node.split-file:
         class: Demo\CustomNode\SplitFileBatch
