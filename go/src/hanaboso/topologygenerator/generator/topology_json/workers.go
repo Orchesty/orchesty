@@ -22,6 +22,7 @@ const CUSTOM = "custom"
 const SIGNAL = "signal"
 const START = "start"
 const GATEWAY = "gateway"
+const USER = "user"
 
 func getAmqRpc(node topology.Node) topology.TopologyBridgeWorkerJson {
 	return topology.TopologyBridgeWorkerJson{
@@ -77,5 +78,24 @@ func getHttpWorkerSettings(n topology.Node) topology.TopologyBridgeWorkerSetting
 		Secure:       false,
 		Opts:         make([]string, 0),
 		PublishQueue: topology.TopologyBridgeWorkerSettingsQueueJson{},
+	}
+}
+
+func getLongRunning(node topology.Node) topology.TopologyBridgeWorkerJson {
+	return topology.TopologyBridgeWorkerJson{
+		Type:     "worker.long_running",
+		Settings: getLongRunningWorkerSettings(node),
+	}
+}
+
+func getLongRunningWorkerSettings(n topology.Node) topology.TopologyBridgeWorkerSettingsJson {
+	return topology.TopologyBridgeWorkerSettingsJson{
+		Host:         getHost(n.Type),
+		ProcessPath:  fmt.Sprintf("/%s", getRoute(n.Type, n.Name)),
+		StatusPath:   fmt.Sprintf("/%s/test", getRoute(n.Type, n.Name)),
+		Method:       "POST",
+		Port:         getPort(n.Type),
+		Secure:       false,
+		Opts:         make([]string, 0),
 	}
 }

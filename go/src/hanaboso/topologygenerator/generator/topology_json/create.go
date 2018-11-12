@@ -88,6 +88,8 @@ func getWorkers(n topology.Node) topology.TopologyBridgeWorkerJson {
 		worker = getSplitter(n)
 	case XMLPARSER:
 		worker = getXmlParser(n)
+	case USER:
+		worker = getLongRunning(n)
 	default:
 		worker = getHttp(n)
 	}
@@ -117,6 +119,8 @@ func getHost(nodeType string) string {
 		host = viper.GetString("worker.custom.host")
 	case SIGNAL:
 		host = viper.GetString("worker.signal.host")
+	case USER:
+		host = viper.GetString("worker.user.host")
 	default:
 		panic(model.AppError{"Unknown type for host", model.HTTPWORKER})
 	}
@@ -146,6 +150,8 @@ func getPort(nodeType string) int {
 		port = viper.GetInt("worker.custom.port")
 	case SIGNAL:
 		port = viper.GetInt("worker.signal.port")
+	case USER:
+		port = viper.GetInt("worker.user.port")
 	default:
 		panic(model.AppError{"Unknown type for port", model.HTTPWORKER})
 	}
@@ -175,6 +181,8 @@ func getRoute(nodeType string, serviceId string) string {
 		url = "custom_node/{service_id}/process"
 	case SIGNAL:
 		url = "custom_node/{service_id}/process"
+	case USER:
+		url = "longRunning/{service_id}/process"
 	default:
 		panic(model.AppError{"Unknown type for routing", model.HTTPWORKER})
 	}

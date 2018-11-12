@@ -108,6 +108,7 @@ func parseArgs() {
 	viper.SetDefault("worker.webhook.host", "monolith-api")
 	viper.SetDefault("worker.custom.host", "monolith-api")
 	viper.SetDefault("worker.signal.host", "monolith-api")
+	viper.SetDefault("worker.user.host", "monolith-api")
 	viper.SetDefault("worker.xml_parser.port", 80)
 	viper.SetDefault("worker.ftp.port", 80)
 	viper.SetDefault("worker.email.port", 80)
@@ -117,6 +118,7 @@ func parseArgs() {
 	viper.SetDefault("worker.webhook.port", 80)
 	viper.SetDefault("worker.custom.port", 80)
 	viper.SetDefault("worker.signal.port", 80)
+	viper.SetDefault("worker.user.port", 80)
 
 	//TODO: refactor
 	// connect to defaults

@@ -7,10 +7,8 @@ use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
-use Hanaboso\PipesFramework\Configurator\Exception\StartingPointException;
 use Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint;
 use Hanaboso\PipesFramework\LongRunningNode\Document\LongRunningNodeData;
-use Hanaboso\PipesFramework\LongRunningNode\Exception\LongRunningNodeException;
 use Hanaboso\PipesFramework\RabbitMq\BunnyManager;
 
 /**
@@ -50,16 +48,23 @@ class LongRunningNodeStartingPoint extends StartingPoint
      * @param Node        $node
      * @param null|string $body
      * @param null|string $token
-     *
-     * @throws StartingPointException
-     * @throws LongRunningNodeException
+     * @param bool        $stop
      */
-    public function run(Topology $topology, Node $node, ?string $body = NULL, ?string $token = NULL): void
+    public function run(
+        Topology $topology,
+        Node $node,
+        ?string $body = NULL,
+        ?string $token = NULL,
+        bool $stop = FALSE
+    ): void
     {
         $doc = $this->nodeManager->getDocument($topology->getId(), $node->getId(), $token);
         if ($doc) {
             $headers = $this->createHeaders($topology);
             $headers->addHeader(PipesHeaders::createKey(LongRunningNodeData::DOCUMENT_ID_HEADER), $doc->getId());
+            if ($stop) {
+                $headers->addHeader(PipesHeaders::createKey(PipesHeaders::RESULT_CODE), 1003);
+            }
 
             $this->runTopology($topology, $node, $headers, $this->createBody($body));
         }

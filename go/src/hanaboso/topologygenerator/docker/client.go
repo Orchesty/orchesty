@@ -15,12 +15,13 @@ var cli *client.Client
 func connect() {
 	var err error
 	cli, err = client.NewEnvClient()
-	cli.ClientVersion()
 
 	if err != nil {
 		log.Fatal(err)
 		panic(model.AppError{Message: err.Error(), Type: model.DOCKER})
 	}
+
+	cli.ClientVersion()
 }
 
 func close() {
