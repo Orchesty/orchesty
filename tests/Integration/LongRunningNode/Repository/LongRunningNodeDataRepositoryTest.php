@@ -39,8 +39,8 @@ final class LongRunningNodeDataRepositoryTest extends DatabaseTestCaseAbstract
     {
         for ($i = 0; $i < 4; $i++) {
             $tmp = new LongRunningNodeData();
-            $tmp->setTopologyId($i < 3 ? 'topo' : 'asd')
-                ->setNodeId('node' . ($i % 2));
+            $tmp->setTopologyName($i < 3 ? 'topo' : 'asd')
+                ->setNodeName('node' . ($i % 2));
             $this->dm->persist($tmp);
         }
 

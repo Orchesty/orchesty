@@ -3,12 +3,19 @@
 namespace Hanaboso\PipesFramework\HbPFLongRunningNodeBundle\Handler;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\MongoDBException;
+use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 use Hanaboso\CommonsBundle\Utils\PipesHeaders;
+use Hanaboso\MongoDataGrid\Exception\GridException;
+use Hanaboso\MongoDataGrid\GridRequestDto;
+use Hanaboso\PipesFramework\Configurator\Exception\StartingPointException;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\StartingPointHandler;
 use Hanaboso\PipesFramework\HbPFLongRunningNodeBundle\Loader\LongRunningNodeLoader;
 use Hanaboso\PipesFramework\LongRunningNode\Document\LongRunningNodeData;
 use Hanaboso\PipesFramework\LongRunningNode\Exception\LongRunningNodeException;
+use Hanaboso\PipesFramework\LongRunningNode\Model\LongRunningNodeFilter;
 use Hanaboso\PipesFramework\LongRunningNode\Model\LongRunningNodeStartingPoint;
+use MongoException;
 
 /**
  * Class LongRunningNodeHandler
@@ -34,6 +41,11 @@ class LongRunningNodeHandler
     private $loader;
 
     /**
+     * @var LongRunningNodeFilter
+     */
+    private $filter;
+
+    /**
      * @var DocumentManager
      */
     private $dm;
@@ -44,18 +56,21 @@ class LongRunningNodeHandler
      * @param LongRunningNodeStartingPoint $startingPoint
      * @param StartingPointHandler         $handler
      * @param LongRunningNodeLoader        $loader
+     * @param LongRunningNodeFilter        $filter
      * @param DocumentManager              $dm
      */
     public function __construct(
         LongRunningNodeStartingPoint $startingPoint,
         StartingPointHandler $handler,
         LongRunningNodeLoader $loader,
+        LongRunningNodeFilter $filter,
         DocumentManager $dm
     )
     {
         $this->startingPoint = $startingPoint;
         $this->handler       = $handler;
         $this->loader        = $loader;
+        $this->filter        = $filter;
         $this->dm            = $dm;
     }
 
@@ -67,6 +82,10 @@ class LongRunningNodeHandler
      * @param bool        $stop
      *
      * @return array
+     * @throws LongRunningNodeException
+     * @throws StartingPointException
+     * @throws MongoDBException
+     * @throws PipesFrameworkException
      */
     public function run(
         string $topologyName,
@@ -128,28 +147,33 @@ class LongRunningNodeHandler
     }
 
     /**
-     * @param string      $topologyId
-     * @param null|string $nodeId
+     * @param GridRequestDto $dto
+     * @param string         $topologyName
+     * @param null|string    $nodeName
      *
      * @return array
+     * @throws MongoDBException
+     * @throws GridException
+     * @throws MongoException
      */
-    public function getTasks(string $topologyId, ?string $nodeId = NULL): array
+    public function getTasks(GridRequestDto $dto, string $topologyName, ?string $nodeName = NULL): array
     {
-        $repo   = $this->dm->getRepository(LongRunningNodeData::class);
-        $filter = ['topologyId' => $topologyId];
+        $dto->setAdditionalFilters([LongRunningNodeData::TOPOLOGY_NAME => $topologyName]);
 
-        if ($nodeId) {
-            $filter['nodeId'] = $nodeId;
+        if ($nodeName) {
+            $dto->setAdditionalFilters([LongRunningNodeData::NODE_NAME => $nodeName]);
         }
 
-        $res = [];
-        /** @var LongRunningNodeData[] $arr */
-        $arr = $repo->findBy($filter);
-        foreach ($arr as $row) {
-            $res[] = $row->toArray();
-        }
+        $result = $this->filter->getData($dto)->toArray();
+        $count  = $dto->getParamsForHeader()['total'];
 
-        return $res;
+        return [
+            'limit'  => $dto->getLimit(),
+            'offset' => ((int) ($dto->getPage() ?? 1) - 1) * $dto->getLimit(),
+            'count'  => count($result),
+            'total'  => $count,
+            'items'  => $result,
+        ];
     }
 
 }

@@ -34,10 +34,11 @@ class LongRunningNodeManager
      * @param LongRunningNodeData $doc
      *
      * @return LongRunningNodeData
+     * @throws LongRunningNodeException
      */
     public function saveDocument(LongRunningNodeData $doc): LongRunningNodeData
     {
-        $copy = $this->getDocument($doc->getTopologyId(), $doc->getNodeId(), $doc->getProcessId());
+        $copy = $this->getDocument($doc->getTopologyName(), $doc->getNodeName(), $doc->getProcessId());
 
         if ($copy) {
             $copy->setAuditLogs(array_merge($copy->getAuditLogs(), $doc->getAuditLogs()))
@@ -56,18 +57,17 @@ class LongRunningNodeManager
     }
 
     /**
-     * @param string      $topologyId
-     * @param string      $nodeId
+     * @param string      $topologyName
+     * @param string      $nodeName
      * @param null|string $token
      *
      * @return LongRunningNodeData|null
-     * @throws LongRunningNodeException
      */
-    public function getDocument(string $topologyId, string $nodeId, ?string $token = NULL): ?LongRunningNodeData
+    public function getDocument(string $topologyName, string $nodeName, ?string $token = NULL): ?LongRunningNodeData
     {
         $filter = [
-            'topologyId' => $topologyId,
-            'nodeId'     => $nodeId,
+            'topologyName' => $topologyName,
+            'nodeName'     => $nodeName,
         ];
         if ($token) {
             $filter['processId'] = $token;

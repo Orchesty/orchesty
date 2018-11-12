@@ -29,19 +29,26 @@ class LongRunningNodeData
     public const AUDIT_LOGS_HEADER     = 'audit-logs';
     public const DOCUMENT_ID_HEADER    = 'doc-id';
 
-    /**
-     * @var string
-     *
-     * @ODM\Field(type="string")
-     */
-    private $topologyId;
+    public const TOPOLOGY_NAME = 'topologyName';
+    public const NODE_NAME     = 'nodeName';
+    public const PROCESS_ID    = 'processId';
+    public const CREATED       = 'created';
+    public const UPDATED       = 'updated';
+    public const AUDIT_LOGS    = 'auditLogs';
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $nodeId;
+    private $topologyName;
+
+    /**
+     * @var string
+     *
+     * @ODM\Field(type="string")
+     */
+    private $nodeName;
 
     /**
      * @var string|null
@@ -117,19 +124,19 @@ class LongRunningNodeData
     /**
      * @return string
      */
-    public function getTopologyId(): string
+    public function getTopologyName(): string
     {
-        return $this->topologyId;
+        return $this->topologyName;
     }
 
     /**
-     * @param string $topologyId
+     * @param string $topologyName
      *
      * @return LongRunningNodeData
      */
-    public function setTopologyId(string $topologyId): LongRunningNodeData
+    public function setTopologyName(string $topologyName): LongRunningNodeData
     {
-        $this->topologyId = $topologyId;
+        $this->topologyName = $topologyName;
 
         return $this;
     }
@@ -137,19 +144,19 @@ class LongRunningNodeData
     /**
      * @return string
      */
-    public function getNodeId(): string
+    public function getNodeName(): string
     {
-        return $this->nodeId;
+        return $this->nodeName;
     }
 
     /**
-     * @param string $nodeId
+     * @param string $nodeName
      *
      * @return LongRunningNodeData
      */
-    public function setNodeId(string $nodeId): LongRunningNodeData
+    public function setNodeName(string $nodeName): LongRunningNodeData
     {
-        $this->nodeId = $nodeId;
+        $this->nodeName = $nodeName;
 
         return $this;
     }
@@ -381,8 +388,8 @@ class LongRunningNodeData
         $ent = new LongRunningNodeData();
         $ent->setData($message->content)
             ->setHeaders($message->headers)
-            ->setTopologyId((string) $message->getHeader(PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID), ''))
-            ->setNodeId((string) $message->getHeader(PipesHeaders::createKey(PipesHeaders::NODE_ID), ''))
+            ->setTopologyName((string) $message->getHeader(PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID), ''))
+            ->setNodeName((string) $message->getHeader(PipesHeaders::createKey(PipesHeaders::NODE_ID), ''))
             ->setParentProcess((string) $message->getHeader(PipesHeaders::createKey(self::PARENT_PROCESS_HEADER), ''))
             ->setProcessId((string) $message->getHeader(PipesHeaders::createKey(PipesHeaders::PROCESS_ID), ''))
             ->setUpdatedBy((string) $message->getHeader(PipesHeaders::createKey(self::UPDATED_BY_HEADER), ''))
@@ -398,8 +405,8 @@ class LongRunningNodeData
     public function toArray(): array
     {
         return [
-            'topology_id'    => $this->topologyId,
-            'node_id'        => $this->nodeId,
+            'topology_name'  => $this->topologyName,
+            'node_name'      => $this->nodeName,
             'parent_process' => $this->parentProcess,
             'process_id'     => $this->processId,
             'state'          => $this->state,
