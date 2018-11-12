@@ -10,6 +10,7 @@
 namespace Demo\CustomNode;
 
 use Exception;
+use Hanaboso\CommonsBundle\Monolog\LoggerContext;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
@@ -52,7 +53,11 @@ class DummyExceptionConnector implements CustomNodeInterface, LoggerAwareInterfa
             try {
                 $this->throwDummyException();
             } catch (Exception $e) {
-                $this->logger->error($e->getMessage(), ['Exception' => $e]);
+                $context = new LoggerContext();
+                $context
+                    ->setHeaders($dto)
+                    ->setException($e);
+                $this->logger->error($e->getMessage(), $context->toArray());
 
                 $dto->addHeader(PipesHeaders::createKey(PipesHeaders::RESULT_CODE), "1003");
             }
