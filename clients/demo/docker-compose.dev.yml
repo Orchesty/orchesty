@@ -109,7 +109,7 @@ services:
         REDIS_PORT: '6379'
         REDIS_PASS: ''
         REDIS_DB: '0'
-        COUNTER_PREFETCH: '30'
+        COUNTER_PREFETCH: '1'
         METRICS_HOST: 'kapacitor'
         METRICS_PORT: '9100'
       command: './dist/src/bin/pipes.js start multi_counter'
