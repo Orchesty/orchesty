@@ -38,8 +38,8 @@ class LongRunningNodeController extends FOSRestController
     }
 
     /**
-     * @Route("/longRunning/run/topology/{topoName}/node/{nodeName}", methods={"GET", "POST", "OPTIONS"})
-     * @Route("/longRunning/run/topology/{topoName}/node/{nodeName}/token/{token}", methods={"GET", "POST", "OPTIONS"})
+     * @Route("/longRunning/run/id/topology/{topoName}/node/{nodeName}", methods={"GET", "POST", "OPTIONS"})
+     * @Route("/longRunning/run/id/topology/{topoName}/node/{nodeName}/token/{token}", methods={"GET", "POST", "OPTIONS"})
      *
      * @param Request     $request
      * @param string      $topoName
@@ -60,8 +60,8 @@ class LongRunningNodeController extends FOSRestController
     }
 
     /**
-     * @Route("/longRunning/stop/topology/{topoName}/node/{nodeName}", methods={"GET", "POST", "OPTIONS"})
-     * @Route("/longRunning/stop/topology/{topoName}/node/{nodeName}/token/{token}", methods={"GET", "POST", "OPTIONS"})
+     * @Route("/longRunning/stop/id/topology/{topoName}/node/{nodeName}", methods={"GET", "POST", "OPTIONS"})
+     * @Route("/longRunning/stop/id/topology/{topoName}/node/{nodeName}/token/{token}", methods={"GET", "POST", "OPTIONS"})
      *
      * @param Request     $request
      * @param string      $topoName
@@ -120,7 +120,7 @@ class LongRunningNodeController extends FOSRestController
     }
 
     /**
-     * @Route("/longRunning/topology/{topo}/getTasks", methods={"GET", "OPTIONS"})
+     * @Route("/longRunning/id/topology/{topo}/getTasks", methods={"GET", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $topo
@@ -137,7 +137,7 @@ class LongRunningNodeController extends FOSRestController
     }
 
     /**
-     * @Route("/longRunning/topology/{topo}/node/{node}/getTasks", methods={"GET", "OPTIONS"})
+     * @Route("/longRunning/id/topology/{topo}/node/{node}/getTasks", methods={"GET", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $topo

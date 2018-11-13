@@ -28,7 +28,7 @@ function loadList(id, loadingState = true) {
     }
     const list = getState().humanTask.lists[id];
     const orderby = sortToQuery(list.sort).order_by;
-    const { filter: { topologyId, topologyName, nodeName, auditLogs } = {} } = list;
+    const { filter: { topologyId, nodeId, auditLogs } = {} } = list;
 
     const headers = {
       page: list.page + 1,
@@ -37,7 +37,7 @@ function loadList(id, loadingState = true) {
       filter: JSON.stringify(auditLogs ? { search: auditLogs } : {}),
     };
 
-    return serverRequest(dispatch, 'GET', `/longRunning/topology/${topologyName}/${nodeName ? `node/${nodeName}/` : ''}getTasks`, null, null, headers).then(response => {
+    return serverRequest(dispatch, 'GET', `/longRunning/id/topology/${topologyId}/${nodeId ? `node/${nodeId}/` : ''}getTasks`, null, null, headers).then(response => {
       if (response) {
         const topologies = response.items.map(topology => {
           topology.name = topology._id;
@@ -119,7 +119,7 @@ export function humanTaskListChangeFilter(listId, filter) {
 
 export function humanTaskProcess(listId, topology, node, token, approve) {
   return dispatch => {
-    serverRequest(dispatch, 'GET', `/longRunning/${approve ? 'run' : 'stop'}/topology/${topology}/node/${node}/token/${token}`).then(response => {
+    serverRequest(dispatch, 'GET', `/longRunning/${approve ? 'run' : 'stop'}/id/topology/${topology}/node/${node}/token/${token}`).then(response => {
       if (response) {
         return dispatch(loadList(listId));
       } else {

@@ -2,6 +2,8 @@
 
 namespace Demo\LongRunningNode;
 
+use Bunny\Message;
+use Hanaboso\PipesFramework\LongRunningNode\Document\LongRunningNodeData;
 use Hanaboso\PipesFramework\LongRunningNode\Model\Impl\LongRunningNodeAbstract;
 
 /**
@@ -18,6 +20,19 @@ final class DummyHumanTask extends LongRunningNodeAbstract
     public function getId(): string
     {
         return 'hbpf.long_running.dummy';
+    }
+
+    /**
+     * @param Message $message
+     *
+     * @return LongRunningNodeData
+     */
+    public function beforeAction(Message $message): LongRunningNodeData
+    {
+        $data = LongRunningNodeData::fromMessage($message);
+        $data->setAuditLogs(json_decode($data->getData(), TRUE));
+
+        return $data;
     }
 
 }
