@@ -16,8 +16,8 @@ class LongRunningNodeController extends FOSRestController
 {
 
     /**
-     * @Route("/longRunning/run/topology/{topoName}/node/{nodeName}", methods={"POST", "GET", "OPTIONS"})
-     * @Route("/longRunning/run/topology/{topoName}/node/{nodeName}/token/{token}", methods={"POST", "GET", "OPTIONS"})
+     * @Route("/longRunning/run/id/topology/{topoName}/node/{nodeName}", methods={"POST", "GET", "OPTIONS"})
+     * @Route("/longRunning/run/id/topology/{topoName}/node/{nodeName}/token/{token}", methods={"POST", "GET", "OPTIONS"})
      *
      * @param Request     $request
      * @param string      $topoName
@@ -34,6 +34,27 @@ class LongRunningNodeController extends FOSRestController
         }
 
         return $this->forward('HbPFLongRunningNodeBundle:LongRunningNode:run', $data);
+    }
+
+    /**
+     * @Route("/longRunning/stop/id/topology/{topoName}/node/{nodeName}", methods={"POST", "GET", "OPTIONS"})
+     * @Route("/longRunning/stop/id/topology/{topoName}/node/{nodeName}/token/{token}", methods={"POST", "GET", "OPTIONS"})
+     *
+     * @param Request     $request
+     * @param string      $topoName
+     * @param string      $nodeName
+     * @param null|string $token
+     *
+     * @return Response
+     */
+    public function stopTokenAction(Request $request, string $topoName, string $nodeName, ?string $token = NULL): Response
+    {
+        $data = ['request' => $request, 'topoName' => $topoName, 'nodeName' => $nodeName];
+        if ($token) {
+            $data['token'] = $token;
+        }
+
+        return $this->forward('HbPFLongRunningNodeBundle:LongRunningNode:stop', $data);
     }
 
     /**
@@ -63,7 +84,7 @@ class LongRunningNodeController extends FOSRestController
     }
 
     /**
-     * @Route("/longRunning/topology/{topo}/getTasks", methods={"GET", "OPTIONS"})
+     * @Route("/longRunning/id/topology/{topo}/getTasks", methods={"GET", "OPTIONS"})
      *
      * @param string $topo
      *
@@ -76,7 +97,7 @@ class LongRunningNodeController extends FOSRestController
     }
 
     /**
-     * @Route("/longRunning/topology/{topo}/node/{node}/getTasks", methods={"GET", "OPTIONS"})
+     * @Route("/longRunning/id/topology/{topo}/node/{node}/getTasks", methods={"GET", "OPTIONS"})
      *
      * @param string $topo
      * @param string $node

@@ -82,12 +82,12 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
         }
         $this->dm->flush();
 
-        $this->sendGet('/longRunning/topology/topo/getTasks');
+        $this->sendGet('/longRunning/id/topology/topo/getTasks');
         $res = $this->client->getResponse();
         self::assertEquals(200, $res->getStatusCode());
         self::assertEquals(2, count(json_decode($res->getContent(), TRUE)['items']));
 
-        $this->sendGet('/longRunning/topology/topo/node/node0/getTasks');
+        $this->sendGet('/longRunning/id/topology/topo/node/node0/getTasks');
         $res = $this->client->getResponse();
         self::assertEquals(200, $res->getStatusCode());
         self::assertEquals(1, count(json_decode($res->getContent(), TRUE)['items']));
