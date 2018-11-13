@@ -34,9 +34,7 @@ class HumanTasksListTable extends AbstractTable {
 
       listChangeFilter(Object.assign({}, filter, {
         topologyId: params.topology,
-        topologyName: params.topologyName,
         nodeId: params.node,
-        nodeName: params.nodeName,
         apply: true,
       }));
 
@@ -44,28 +42,22 @@ class HumanTasksListTable extends AbstractTable {
     }
   }
 
-  onTopologyChange({ target: { value, selectedOptions } }) {
+  onTopologyChange({ target: { value } }) {
     const { listChangeFilter, list: { filter } } = this.props;
 
     if (filter && filter.nodeId) {
       delete filter.nodeId;
-      delete filter.nodeName;
     }
 
-    listChangeFilter(Object.assign({}, filter, {
-      topologyId: value,
-      topologyName: selectedOptions[0].textContent,
-      apply: true
-    }));
+    listChangeFilter(Object.assign({}, filter, { topologyId: value, apply: true }));
   }
 
-  onNodeChange({ target: { value, selectedOptions } }) {
+  onNodeChange({ target: { value } }) {
     const { listChangeFilter, list: { filter } } = this.props;
-    const data = Object.assign({}, filter, { nodeId: value, nodeName: selectedOptions[0].textContent, apply: true });
+    const data = Object.assign({}, filter, { nodeId: value, apply: true });
 
     if (value === 'all') {
       delete data.nodeId;
-      delete data.nodeName;
     }
 
     listChangeFilter(data);
@@ -111,12 +103,12 @@ class HumanTasksListTable extends AbstractTable {
       const menuItems = [{
         caption: 'Approve',
         action: () => {
-          process(item.topologyName, item.nodeName, item.processId, true)
+          process(item.topologyId, item.nodeId, item.processId, true)
         },
       }, {
         caption: 'Decline',
         action: () => {
-          process(item.topologyName, item.nodeName, item.processId, false)
+          process(item.topologyId, item.nodeId, item.processId, false)
         },
       }];
 
@@ -165,7 +157,7 @@ class HumanTasksListTable extends AbstractTable {
                       className="form-control"
                       placeholder="Topology"
               >
-                {topologies.map(({ _id, name }) => <option key={_id} value={_id}>{name}</option>)}
+                {topologies.map(({ _id, name, version }) => <option key={_id} value={_id}>{name}.v{version}</option>)}
               </select>
             </div>
           </div>
@@ -183,8 +175,12 @@ class HumanTasksListTable extends AbstractTable {
             <label className="control-label">Search</label>
             <div className="input-prepend input-group">
               <span className="add-on input-group-addon"><i className="fa fa-eye"></i></span>
-              <input onChange={this.onLogsChange} onKeyPress={this.onLogsPress} value={auditLogs}
-                     className="form-control" placeholder="Search" />
+              <input onChange={this.onLogsChange}
+                     onKeyPress={this.onLogsPress}
+                     value={auditLogs}
+                     className="form-control"
+                     placeholder="Search"
+              />
             </div>
           </div>
           <button
