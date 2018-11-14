@@ -2,11 +2,13 @@ rabbit-mq:
     queues:
         pipes.results:
             durable: true
+        pipes.long-running:
+            durable: true
 
     consumers:
         long-running-node:
             class: Hanaboso\PipesFramework\LongRunningNode\Consumer\LongRunningNodeConsumer
-            queue: pipes.long_running
+            queue: pipes.long-running
             serializer: Hanaboso\PipesFramework\RabbitMq\Serializers\JsonSerializer
             callback: hanaboso.pipes_framework.long_running_node.callback
             prefetch_count: 100
