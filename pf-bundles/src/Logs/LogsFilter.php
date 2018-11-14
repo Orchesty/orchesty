@@ -62,12 +62,17 @@ final class LogsFilter extends GridFilterAbstract
      */
     protected $searchableCols = [
         Logs::MESSAGE,
-        'correlation_id',
-        'topology_id',
-        'topology_name',
-        'node_id',
-        'node_name',
+        Logs::PIPES_CORRELATION_ID,
+        Logs::PIPES_TOPOLOGY_ID,
+        Logs::PIPES_TOPOLOGY_NAME,
+        Logs::PIPES_NODE_ID,
+        Logs::PIPES_NODE_NAME,
     ];
+
+    /**
+     * @var bool
+     */
+    protected $useTextSearch = TRUE;
 
     /**
      *

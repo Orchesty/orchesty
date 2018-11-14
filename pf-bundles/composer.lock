@@ -2187,11 +2187,11 @@
         },
         {
             "name": "hanaboso/mongo-data-grid",
-            "version": "1.0.1",
+            "version": "1.0.2",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.hanaboso.net:hanaboso/MongoDataGrid.git",
-                "reference": "35dbc62fbb75466eabc2a3bb7190b05f7062b710"
+                "reference": "3326a13f58db3e61daf0fea9159014081adae5dc"
             },
             "require": {
                 "alcaeus/mongo-php-adapter": "^1.1",
@@ -2218,7 +2218,7 @@
                 "proprietary"
             ],
             "description": "MongoDataGrid",
-            "time": "2018-10-11T09:01:58+00:00"
+            "time": "2018-11-14T07:17:24+00:00"
         },
         {
             "name": "hanaboso/rabbit-mq-bundle",

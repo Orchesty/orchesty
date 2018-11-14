@@ -21,13 +21,13 @@ class LogListTable extends AbstractTable {
     const {list: {sort}, listChangeSort} = this.props;
     return (
         <tr>
-          <SortTh name="timestamp" className="no-wrap" state={sort} onChangeSort={listChangeSort}>Time</SortTh>
-          <SortTh name="severity" className="no-wrap" state={sort} onChangeSort={listChangeSort}>Severity</SortTh>
-          <SortTh name="topology_id" className="no-wrap" state={sort} onChangeSort={listChangeSort}>Topology&nbsp;ID</SortTh>
-          <SortTh name="topology_name" className="no-wrap" state={sort} onChangeSort={listChangeSort}>Topology&nbsp;name</SortTh>
-          <SortTh name="node_id" className="no-wrap" state={sort} onChangeSort={listChangeSort}>Node&nbsp;ID</SortTh>
-          <SortTh name="node_name" className="no-wrap" state={sort} onChangeSort={listChangeSort}>Node&nbsp;name</SortTh>
-          <SortTh name="message" state={sort} onChangeSort={listChangeSort}>Message</SortTh>
+          <SortTh name="timestamp" className="col-md-1 no-wrap" state={sort} onChangeSort={listChangeSort}>Time</SortTh>
+          <SortTh name="severity" className="col-md-1 no-wrap" state={sort} onChangeSort={listChangeSort}>Severity</SortTh>
+          <SortTh name="topology_id" className="col-md-1 no-wrap" state={sort} onChangeSort={listChangeSort}>Topology&nbsp;ID</SortTh>
+          <SortTh name="topology_name" className="col-md-1 no-wrap" state={sort} onChangeSort={listChangeSort}>Topology&nbsp;name</SortTh>
+          <SortTh name="node_id" className="col-md-1 no-wrap" state={sort} onChangeSort={listChangeSort}>Node&nbsp;ID</SortTh>
+          <SortTh name="node_name" className="col-md-1 no-wrap" state={sort} onChangeSort={listChangeSort}>Node&nbsp;name</SortTh>
+          <SortTh name="message" className="col-md-6" state={sort} onChangeSort={listChangeSort}>Message</SortTh>
         </tr>
     );
   }
@@ -38,13 +38,13 @@ class LogListTable extends AbstractTable {
       const item = elements[id];
       return (
         <tr key={item.id}>
-          <td className="no-wrap"><Moment format="DD. MM. YYYY HH:mm:ss">{item.time}</Moment></td>
-          <td className="no-wrap">{item.severity}</td>
-          <td className="no-wrap">{item.topology_id}</td>
-          <td className="no-wrap">{item.topology_name}</td>
-          <td className="no-wrap">{item.node_id}</td>
-          <td className="no-wrap">{item.node_name}</td>
-          <td>{item.message}</td>
+          <td className="col-md-1 no-wrap"><Moment format="DD. MM. YYYY HH:mm:ss">{item.time}</Moment></td>
+          <td className="col-md-1 no-wrap">{item.severity}</td>
+          <td className="col-md-1 no-wrap">{item.topology_id}</td>
+          <td className="col-md-1 no-wrap">{item.topology_name}</td>
+          <td className="col-md-1 no-wrap">{item.node_id}</td>
+          <td className="col-md-1 no-wrap">{item.node_name}</td>
+          <td className="col-md-6">{item.message}</td>
         </tr>
       )
     }) : null;
