@@ -122,8 +122,11 @@ class BpmnIoComponent extends React.Component {
 
       if (element.businessObject.pipesType === 'user') {
         const node = Object.values(this.props.node.elements).filter(n => n.topology_id === this.props.topologyId && n.schema_id === element.businessObject.id)[0];
+        const req = node
+          ? `/longRunning/id/topology/${this.props.topologyId}/node/${node._id}/getTasks`
+          : `/longRunning/name/topology/${this.props.topologyName}/node/${element.businessObject.name}/getTasks`;
 
-        serverRequest(() => {}, 'GET', `/longRunning/id/topology/${this.props.topologyId}/node/${node ? node._id : element.businessObject.name}/getTasks`, null).then(response => {
+        serverRequest(() => {}, 'GET', req, null).then(response => {
           this._modeler.get('overlays').add(element, 'bubbles', {
             position: { top: -25, right: 10 },
             html: `<div onClick="window.location.href = '/ui/human_tasks?topology=${this.props.topologyId}&node=${node ? node._id : element.businessObject.name}'"><span class="badge" title="Waiting tasks">` + response.items.length + '</span></div>'
