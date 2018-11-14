@@ -55,6 +55,7 @@ class NodeManager
             $node
                 ->setName($data['name'])
                 ->setType($data['type'])
+                ->setTopology($data['topology'])
                 ->setHandler($data['handler']);
         }
 
