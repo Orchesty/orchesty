@@ -107,6 +107,34 @@ class LongRunningNodeHandler
     }
 
     /**
+     * @param string      $topologyId
+     * @param string      $nodeId
+     * @param array       $data
+     * @param null|string $token
+     * @param bool        $stop
+     *
+     * @return array
+     * @throws LongRunningNodeException
+     * @throws StartingPointException
+     * @throws MongoDBException
+     * @throws PipesFrameworkException
+     */
+    public function runById(
+        string $topologyId,
+        string $nodeId,
+        array $data,
+        ?string $token = NULL,
+        bool $stop = FALSE
+    ): array
+    {
+        $topo = $this->handler->getTopology($topologyId);
+        $node = $this->handler->getNode($nodeId);
+        $this->startingPoint->run($topo, $node, json_encode($data), $token, $stop);
+
+        return ['started_topologies' => 1];
+    }
+
+    /**
      * @param string $nodeId
      * @param string $data
      * @param array  $headers
@@ -116,12 +144,16 @@ class LongRunningNodeHandler
      */
     public function process(string $nodeId, string $data, array $headers): array
     {
+        file_put_contents('/tmp/01', '');
         $service = $this->loader->getLongRunningNode($nodeId);
         $docId   = PipesHeaders::get(LongRunningNodeData::DOCUMENT_ID_HEADER, $headers);
+        file_put_contents('/tmp/02', '');
         /** @var LongRunningNodeData|null $doc */
         $doc = $this->dm->find(LongRunningNodeData::class, $docId);
+        file_put_contents('/tmp/03', '');
 
         if (!$doc) {
+            file_put_contents('/tmp/003', '');
             throw new LongRunningNodeException(
                 sprintf('LongRunningData document [%s] was not found', $docId),
                 LongRunningNodeException::LONG_RUNNING_DOCUMENT_NOT_FOUND
@@ -129,6 +161,7 @@ class LongRunningNodeHandler
         }
 
         $service->afterAction($doc, $data);
+        file_put_contents('/tmp/04', '');
 
         return [];
     }
@@ -144,6 +177,36 @@ class LongRunningNodeHandler
         $this->loader->getLongRunningNode($nodeId);
 
         return [];
+    }
+
+    /**
+     * @param GridRequestDto $dto
+     * @param string         $topologyId
+     * @param null|string    $nodeId
+     *
+     * @return array
+     * @throws MongoDBException
+     * @throws GridException
+     * @throws MongoException
+     */
+    public function getTasksById(GridRequestDto $dto, string $topologyId, ?string $nodeId = NULL): array
+    {
+        $dto->setAdditionalFilters([LongRunningNodeData::TOPOLOGY_ID => $topologyId]);
+
+        if ($nodeId) {
+            $dto->setAdditionalFilters([LongRunningNodeData::NODE_ID => $nodeId]);
+        }
+
+        $result = $this->filter->getData($dto)->toArray();
+        $count  = $dto->getParamsForHeader()['total'];
+
+        return [
+            'limit'  => $dto->getLimit(),
+            'offset' => ((int) ($dto->getPage() ?? 1) - 1) * $dto->getLimit(),
+            'count'  => count($result),
+            'total'  => $count,
+            'items'  => $result,
+        ];
     }
 
     /**
