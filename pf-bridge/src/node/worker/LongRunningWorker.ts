@@ -9,6 +9,7 @@ import AWorker from "./AWorker";
 import Headers from "../../message/Headers";
 import {Publisher} from "amqplib-plus/dist/lib/Publisher";
 import {Channel} from "amqplib";
+import logger from "../../logger/Logger";
 
 export interface ILongRunningWorkerSettings {
     node_label: INodeLabel;
@@ -43,7 +44,7 @@ class LongRunningWorker extends AWorker {
         this.agent = new http.Agent({ keepAlive: true, maxSockets: Infinity });
 
         this.resultsQueue = {
-            name: 'pipes.long_running',
+            name: 'pipes.long-running',
             options: { durable: true, exclusive: false, autoDelete: false },
             prefetch: 1,
         };
@@ -74,12 +75,22 @@ class LongRunningWorker extends AWorker {
      * @return {Promise<JobMessage[]>}
      */
     public async processData(msg: JobMessage): Promise<JobMessage[]> {
-        const doc = msg.getHeaders().hasPFHeader(Headers.DOCUMENT_ID);
+        const headers = msg.getHeaders();
+        const doc = headers.hasPFHeader(Headers.DOCUMENT_ID);
+
+        logger.error("Worker[type='long_running'] 01.");
+
         if (doc) {
+            logger.error("Worker[type='long_running'] doc: " + doc);
             const reqParams = { method: "GET", url: this.getUrl(this.settings.process_path)};
             request(reqParams);
-            return [msg];
+            logger.error("Worker[type='long_running'] url:  " + reqParams.url);
+            headers.removePFHeader(Headers.DOCUMENT_ID);
+            msg.setHeaders(headers);
+
+            logger.error("Worker[type='long_running'] res.");
         } else {
+            logger.error("Worker[type='long_running'] queue.");
             this.publisher.sendToQueue(
                 this.resultsQueue.name,
                 new Buffer(msg.getContent()),

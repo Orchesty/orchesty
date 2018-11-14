@@ -29,8 +29,10 @@ final class LongRunningNodeManagerTest extends DatabaseTestCaseAbstract
         $doc     = new LongRunningNodeData();
         $doc->setProcessId('proc')
             ->setNodeName('node')
+            ->setNodeId('node')
             ->setAuditLogs(['audit1', 'audit2'])
             ->setTopologyName('topo')
+            ->setTopologyId('topo')
             ->setParentProcess('parent')
             ->setData('data')
             ->setHeaders(['head']);
@@ -53,8 +55,10 @@ final class LongRunningNodeManagerTest extends DatabaseTestCaseAbstract
         $doc = new LongRunningNodeData();
         $doc->setProcessId('proc')
             ->setNodeName('node')
+            ->setNodeId('node')
             ->setAuditLogs(['audit3'])
             ->setTopologyName('topo')
+            ->setTopologyId('topo')
             ->setParentProcess('parent')
             ->setData('data2')
             ->setHeaders(['head2']);

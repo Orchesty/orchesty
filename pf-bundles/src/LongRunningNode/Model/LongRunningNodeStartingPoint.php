@@ -67,6 +67,7 @@ class LongRunningNodeStartingPoint extends StartingPoint
             }
 
             $this->runTopology($topology, $node, $headers, $this->createBody($body));
+            $this->nodeManager->delete($doc);
         }
     }
 
