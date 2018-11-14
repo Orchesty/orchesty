@@ -7,6 +7,7 @@ parameters:
     rabbitmq.user: guest
     rabbitmq.password: guest
     rabbitmq.persistent: false
+    rabbitmq.path: /
 
 #DEMO
 rabbit-mq:

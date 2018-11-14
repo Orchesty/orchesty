@@ -5,6 +5,7 @@ rabbit-mq:
     user: '%rabbitmq.user%'             # default: guest
     password: '%rabbitmq.password%'     # default: guest
     persistent: '%rabbitmq.persistent%' # default: false
+    path: '%rabbitmq.path%'             # default: /
 
     # make heartbeat as long as longest message processing time in any consumer might take
     heartbeat: 120 # in seconds = 2 minutes, default: 60 seconds
