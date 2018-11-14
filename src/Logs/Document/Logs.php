@@ -12,6 +12,10 @@ use Hanaboso\CommonsBundle\Traits\Document\IdTrait;
  * @package Hanaboso\PipesFramework\Logs\Document
  *
  * @ODM\Document()
+ * @ODM\Indexes({
+ *     @ODM\Index(name="SearchIndex", keys={"message"="text", "pipes.correlation_id"="text", "pipes.topology_id"="text", "pipes.topology_name"="text", "pipes.node_id"="text", "pipes.node_name"="text"}),
+ *     @ODM\Index(name="SeverityIndex", keys={"pipes.severity"="hashed"})
+ * })
  */
 class Logs
 {
