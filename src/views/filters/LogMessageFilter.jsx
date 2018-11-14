@@ -9,7 +9,6 @@ const LogMessageFilter = FilterCase(FilterTextInput, {
   property: 'search',
   label: 'Search',
   icon: 'fa fa-pencil',
-  size: 'md'
 });
 
 export default LogMessageFilter;
