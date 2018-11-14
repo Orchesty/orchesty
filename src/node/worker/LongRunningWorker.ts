@@ -43,7 +43,7 @@ class LongRunningWorker extends AWorker {
         this.agent = new http.Agent({ keepAlive: true, maxSockets: Infinity });
 
         this.resultsQueue = {
-            name: 'pipes.long_running',
+            name: 'pipes.long-running',
             options: { durable: true, exclusive: false, autoDelete: false },
             prefetch: 1,
         };
