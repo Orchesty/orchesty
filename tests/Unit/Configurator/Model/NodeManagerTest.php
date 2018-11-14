@@ -32,9 +32,10 @@ class NodeManagerTest extends KernelTestCaseAbstract
             ->setHandler(HandlerEnum::EVENT);
 
         $data = [
-            'name'    => 'test-name',
-            'type'    => TypeEnum::MAPPER,
-            'handler' => HandlerEnum::ACTION,
+            'name'     => 'test-name',
+            'type'     => TypeEnum::MAPPER,
+            'topology' => 'topo',
+            'handler'  => HandlerEnum::ACTION,
         ];
 
         $nodeManager = new NodeManager($this->getDmlMock());

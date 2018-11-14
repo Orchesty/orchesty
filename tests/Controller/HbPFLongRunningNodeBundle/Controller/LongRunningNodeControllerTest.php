@@ -39,7 +39,8 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
         $c = $this->client->getContainer();
         $c->set('hbpf.handler.long_running', $handler);
 
-        $this->sendPost('/longRunning/run/topology/topo/node/test/token/token', ['cont']);
+        $res = $this->sendPost('/longRunning/run/id/topology/topo/node/test/token/token', ['cont']);
+        self::assertEquals(200, $res->status);
     }
 
     /**
@@ -76,8 +77,8 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
     {
         for ($i = 0; $i < 3; $i++) {
             $doc = new LongRunningNodeData();
-            $doc->setTopologyName($i < 2 ? 'topo' : 'anotherTopo')
-                ->setNodeName('node' . $i);
+            $doc->setTopologyId($i < 2 ? 'topo' : 'anotherTopo')
+                ->setNodeId('node' . $i);
             $this->dm->persist($doc);
         }
         $this->dm->flush();

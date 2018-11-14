@@ -1,6 +1,6 @@
 rabbit-mq:
     queues:
-        pipes.results:
+        pipes.long-running:
             durable: true
         pipes.long-running:
             durable: true
@@ -11,7 +11,7 @@ rabbit-mq:
             queue: pipes.long-running
             serializer: Hanaboso\PipesFramework\RabbitMq\Serializers\JsonSerializer
             callback: hanaboso.pipes_framework.long_running_node.callback
-            prefetch_count: 100
+            prefetch_count: 10
 
 services:
     hanaboso.pipes_framework.long_running_node.callback:
