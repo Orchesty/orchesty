@@ -2,8 +2,6 @@ rabbit-mq:
     queues:
         pipes.long-running:
             durable: true
-        pipes.long-running:
-            durable: true
 
     consumers:
         long-running-node:
