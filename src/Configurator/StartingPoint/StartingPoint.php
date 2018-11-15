@@ -80,7 +80,7 @@ class StartingPoint implements LoggerAwareInterface
     /**
      * @var bool
      */
-    private $durableMessage = FALSE;
+    protected $durableMessage = FALSE;
 
     /**
      * StartingPoint constructor.

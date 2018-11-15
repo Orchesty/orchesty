@@ -3,8 +3,10 @@
 namespace Hanaboso\PipesFramework\HbPFLongRunningNodeBundle\Handler;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use Hanaboso\MongoDataGrid\Exception\GridException;
 use Hanaboso\MongoDataGrid\GridRequestDto;
@@ -83,9 +85,9 @@ class LongRunningNodeHandler
      *
      * @return array
      * @throws LongRunningNodeException
-     * @throws StartingPointException
      * @throws MongoDBException
      * @throws PipesFrameworkException
+     * @throws StartingPointException
      */
     public function run(
         string $topologyName,
@@ -107,14 +109,43 @@ class LongRunningNodeHandler
     }
 
     /**
+     * @param string      $topologyId
+     * @param string      $nodeId
+     * @param array       $data
+     * @param null|string $token
+     * @param bool        $stop
+     *
+     * @return array
+     * @throws LongRunningNodeException
+     * @throws MongoDBException
+     * @throws PipesFrameworkException
+     * @throws MappingException
+     * @throws StartingPointException
+     */
+    public function runById(
+        string $topologyId,
+        string $nodeId,
+        array $data,
+        ?string $token = NULL,
+        bool $stop = FALSE
+    ): array
+    {
+        $topo = $this->handler->getTopology($topologyId);
+        $node = $this->handler->getNode($nodeId);
+        $this->startingPoint->run($topo, $node, json_encode($data), $token, $stop);
+
+        return ['started_topologies' => 1];
+    }
+
+    /**
      * @param string $nodeId
      * @param string $data
      * @param array  $headers
      *
-     * @return array
+     * @return ProcessDto
      * @throws LongRunningNodeException
      */
-    public function process(string $nodeId, string $data, array $headers): array
+    public function process(string $nodeId, string $data, array $headers): ProcessDto
     {
         $service = $this->loader->getLongRunningNode($nodeId);
         $docId   = PipesHeaders::get(LongRunningNodeData::DOCUMENT_ID_HEADER, $headers);
@@ -128,9 +159,11 @@ class LongRunningNodeHandler
             );
         }
 
-        $service->afterAction($doc, $data);
+        $this->dm->remove($doc);
+        $this->dm->flush();
+        $this->dm->clear();
 
-        return [];
+        return $service->afterAction($doc, $data);
     }
 
     /**
@@ -144,6 +177,36 @@ class LongRunningNodeHandler
         $this->loader->getLongRunningNode($nodeId);
 
         return [];
+    }
+
+    /**
+     * @param GridRequestDto $dto
+     * @param string         $topologyId
+     * @param null|string    $nodeId
+     *
+     * @return array
+     * @throws MongoDBException
+     * @throws GridException
+     * @throws MongoException
+     */
+    public function getTasksById(GridRequestDto $dto, string $topologyId, ?string $nodeId = NULL): array
+    {
+        $dto->setAdditionalFilters([LongRunningNodeData::TOPOLOGY_ID => $topologyId]);
+
+        if ($nodeId) {
+            $dto->setAdditionalFilters([LongRunningNodeData::NODE_ID => $nodeId]);
+        }
+
+        $result = $this->filter->getData($dto)->toArray();
+        $count  = $dto->getParamsForHeader()['total'];
+
+        return [
+            'limit'  => $dto->getLimit(),
+            'offset' => ((int) ($dto->getPage() ?? 1) - 1) * $dto->getLimit(),
+            'count'  => count($result),
+            'total'  => $count,
+            'items'  => $result,
+        ];
     }
 
     /**
