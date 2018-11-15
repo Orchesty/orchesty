@@ -58,7 +58,15 @@ final class LongRunningDataStartingPointTest extends DatabaseTestCaseAbstract
         $sender = $this->createMock(InfluxDbSender::class);
 
         $doc = new LongRunningNodeData();
-        $doc->setProcessId('proc')
+        $doc
+            ->setParentId('11')
+            ->setTopologyId('1')
+            ->setTopologyName('name')
+            ->setNodeId('14')
+            ->setSequenceId('1')
+            ->setCorrelationId('14')
+            ->setNodeName('nn')
+            ->setProcessId('proc')
             ->setUpdatedBy('usr')
             ->setAuditLogs(['log']);
         $this->dm->persist($doc);
@@ -81,16 +89,17 @@ final class LongRunningDataStartingPointTest extends DatabaseTestCaseAbstract
                 $tmp = $headers->getHeaders();
 
                 self::assertEquals([
-                    'pf-parent-id'           => '',
+                    'pf-parent-id'           => '11',
                     'pf-sequence-id'         => '1',
                     'pf-topology-id'         => $tmp['pf-topology-id'],
-                    'pf-topology-name'       => 'top',
+                    'pf-topology-name'       => 'name',
                     'content-type'           => 'application/json',
                     'timestamp'              => $tmp['timestamp'],
                     'pf-published-timestamp' => $tmp['pf-published-timestamp'],
                     'pf-process-id'          => $tmp['pf-process-id'],
                     'pf-correlation-id'      => $tmp['pf-correlation-id'],
                     'pf-doc-id'              => $tmp['pf-doc-id'],
+                    'pf-result-code'         => 0,
                     'delivery-mode'          => 1,
                 ], $headers->getHeaders());
             }

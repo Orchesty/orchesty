@@ -126,7 +126,7 @@ class LongRunningNodeController extends FOSRestController
     }
 
     /**
-     * @Route("/longRunning/{nodeId}/process", methods={"POST", "OPTIONS"})
+     * @Route("/longRunning/{nodeId}/process", methods={"GET", "POST", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $nodeId
@@ -136,10 +136,9 @@ class LongRunningNodeController extends FOSRestController
     public function processAction(Request $request, string $nodeId): Response
     {
         try {
-            $res = $this->handler->process($nodeId, (string) json_encode($request->request->all()),
-                $request->headers->all());
+            $data = $this->handler->process($nodeId, (string) json_encode($request->getContent()), $request->headers->all());
 
-            return $this->getResponse($res, 200);
+            return $this->getResponse($data->getData(), 200, ControllerUtils::createHeaders($data->getHeaders()));
         } catch (Throwable $e) {
             return $this->getErrorResponse($e, 200, ControllerUtils::createHeaders([], $e));
         }

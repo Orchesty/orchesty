@@ -3,8 +3,10 @@
 namespace Hanaboso\PipesFramework\HbPFLongRunningNodeBundle\Handler;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use Hanaboso\MongoDataGrid\Exception\GridException;
 use Hanaboso\MongoDataGrid\GridRequestDto;
@@ -83,9 +85,9 @@ class LongRunningNodeHandler
      *
      * @return array
      * @throws LongRunningNodeException
-     * @throws StartingPointException
      * @throws MongoDBException
      * @throws PipesFrameworkException
+     * @throws StartingPointException
      */
     public function run(
         string $topologyName,
@@ -115,9 +117,10 @@ class LongRunningNodeHandler
      *
      * @return array
      * @throws LongRunningNodeException
-     * @throws StartingPointException
      * @throws MongoDBException
      * @throws PipesFrameworkException
+     * @throws MappingException
+     * @throws StartingPointException
      */
     public function runById(
         string $topologyId,
@@ -139,10 +142,10 @@ class LongRunningNodeHandler
      * @param string $data
      * @param array  $headers
      *
-     * @return array
+     * @return ProcessDto
      * @throws LongRunningNodeException
      */
-    public function process(string $nodeId, string $data, array $headers): array
+    public function process(string $nodeId, string $data, array $headers): ProcessDto
     {
         file_put_contents('/tmp/01', '');
         $service = $this->loader->getLongRunningNode($nodeId);
@@ -160,10 +163,11 @@ class LongRunningNodeHandler
             );
         }
 
-        $service->afterAction($doc, $data);
-        file_put_contents('/tmp/04', '');
+        $this->dm->remove($doc);
+        $this->dm->flush();
+        $this->dm->clear();
 
-        return [];
+        return $service->afterAction($doc, $data);
     }
 
     /**

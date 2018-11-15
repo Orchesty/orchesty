@@ -67,17 +67,17 @@ final class LongRunningNodeManagerTest extends DatabaseTestCaseAbstract
         $this->dm->clear();
         /** @var LongRunningNodeData $doc */
         $docs = $this->dm->getRepository(LongRunningNodeData::class)->findAll();
-        self::assertEquals(1, count($docs));
+        self::assertEquals(2, count($docs));
         $doc = reset($docs);
-        self::assertEquals(['audit1', 'audit2', 'audit3'], $doc->getAuditLogs());
-        self::assertEquals('data2', $doc->getData());
+        self::assertEquals(['audit1', 'audit2'], $doc->getAuditLogs());
+        self::assertEquals('data', $doc->getData());
         self::assertEquals('proc', $doc->getProcessId());
         self::assertEquals('node', $doc->getNodeName());
         self::assertEquals('topo', $doc->getTopologyName());
 
         self::assertNotNull($manager->getDocument('topo', 'node'));
         self::assertNotNull($manager->getDocument('topo', 'node', 'proc'));
-        self::assertEquals(1, count($this->dm->getRepository(LongRunningNodeData::class)->findAll()));
+        self::assertEquals(2, count($this->dm->getRepository(LongRunningNodeData::class)->findAll()));
     }
 
 }
