@@ -29,12 +29,49 @@ class LongRunningNodeData
     public const AUDIT_LOGS_HEADER     = 'audit-logs';
     public const DOCUMENT_ID_HEADER    = 'doc-id';
 
-    public const TOPOLOGY_NAME = 'topologyName';
+    public const TOPOLOGY_ID   = 'topologyId';
+    public const NODE_ID       = 'nodeId';
     public const NODE_NAME     = 'nodeName';
+    public const TOPOLOGY_NAME = 'topologyName';
     public const PROCESS_ID    = 'processId';
     public const CREATED       = 'created';
     public const UPDATED       = 'updated';
     public const AUDIT_LOGS    = 'auditLogs';
+
+    /**
+     * @var string
+     *
+     * @ODM\Field(type="string")
+     */
+    private $parentId;
+
+    /**
+     * @var string
+     *
+     * @ODM\Field(type="string")
+     */
+    private $correlationId;
+
+    /**
+     * @var string
+     *
+     * @ODM\Field(type="string")
+     */
+    private $sequenceId = 'sracka';
+
+    /**
+     * @var string
+     *
+     * @ODM\Field(type="string")
+     */
+    private $topologyId;
+
+    /**
+     * @var string
+     *
+     * @ODM\Field(type="string")
+     */
+    private $nodeId;
 
     /**
      * @var string
@@ -124,6 +161,86 @@ class LongRunningNodeData
     /**
      * @return string
      */
+    public function getParentId(): string
+    {
+        return $this->parentId;
+    }
+
+    /**
+     * @param string $parentId
+     *
+     * @return LongRunningNodeData
+     */
+    public function setParentId(string $parentId): LongRunningNodeData
+    {
+        $this->parentId = $parentId;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCorrelationId(): string
+    {
+        return $this->correlationId;
+    }
+
+    /**
+     * @param string $correlationId
+     *
+     * @return LongRunningNodeData
+     */
+    public function setCorrelationId(string $correlationId): LongRunningNodeData
+    {
+        $this->correlationId = $correlationId;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSequenceId(): string
+    {
+        return $this->sequenceId;
+    }
+
+    /**
+     * @param string $sequenceId
+     *
+     * @return LongRunningNodeData
+     */
+    public function setSequenceId(string $sequenceId): LongRunningNodeData
+    {
+        $this->sequenceId = $sequenceId;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTopologyId(): string
+    {
+        return $this->topologyId;
+    }
+
+    /**
+     * @param string $topologyId
+     *
+     * @return LongRunningNodeData
+     */
+    public function setTopologyId(string $topologyId): LongRunningNodeData
+    {
+        $this->topologyId = $topologyId;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
     public function getTopologyName(): string
     {
         return $this->topologyName;
@@ -157,6 +274,26 @@ class LongRunningNodeData
     public function setNodeName(string $nodeName): LongRunningNodeData
     {
         $this->nodeName = $nodeName;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNodeId(): string
+    {
+        return $this->nodeId;
+    }
+
+    /**
+     * @param string $nodeId
+     *
+     * @return LongRunningNodeData
+     */
+    public function setNodeId(string $nodeId): LongRunningNodeData
+    {
+        $this->nodeId = $nodeId;
 
         return $this;
     }
@@ -388,10 +525,15 @@ class LongRunningNodeData
         $ent = new LongRunningNodeData();
         $ent->setData($message->content)
             ->setHeaders($message->headers)
-            ->setTopologyName((string) $message->getHeader(PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID), ''))
-            ->setNodeName((string) $message->getHeader(PipesHeaders::createKey(PipesHeaders::NODE_ID), ''))
+            ->setParentId((string) $message->getHeader(PipesHeaders::createKey(PipesHeaders::PARENT_ID), ''))
+            ->setCorrelationId((string) $message->getHeader(PipesHeaders::createKey(PipesHeaders::CORRELATION_ID), ''))
+            ->setTopologyId((string) $message->getHeader(PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID), ''))
+            ->setTopologyName((string) $message->getHeader(PipesHeaders::createKey(PipesHeaders::TOPOLOGY_NAME), ''))
+            ->setNodeId((string) $message->getHeader(PipesHeaders::createKey(PipesHeaders::NODE_ID), ''))
+            ->setNodeName((string) $message->getHeader(PipesHeaders::createKey(PipesHeaders::NODE_NAME), ''))
             ->setParentProcess((string) $message->getHeader(PipesHeaders::createKey(self::PARENT_PROCESS_HEADER), ''))
             ->setProcessId((string) $message->getHeader(PipesHeaders::createKey(PipesHeaders::PROCESS_ID), ''))
+            ->setSequenceId((string) $message->getHeader(PipesHeaders::createKey(PipesHeaders::SEQUENCE_ID), ''))
             ->setUpdatedBy((string) $message->getHeader(PipesHeaders::createKey(self::UPDATED_BY_HEADER), ''))
             ->setAuditLogs(json_decode($message->getHeader(PipesHeaders::createKey(self::AUDIT_LOGS_HEADER), '{}'),
                 TRUE));
@@ -406,9 +548,14 @@ class LongRunningNodeData
     {
         return [
             'topology_name'  => $this->topologyName,
+            'topology_id'    => $this->topologyId,
+            'parent_id'      => $this->parentId,
+            'correlation_id' => $this->correlationId,
             'node_name'      => $this->nodeName,
+            'node_id'        => $this->nodeId,
             'parent_process' => $this->parentProcess,
             'process_id'     => $this->processId,
+            'sequence_id'    => $this->sequenceId,
             'state'          => $this->state,
             'data'           => $this->data,
             'headers'        => $this->headers,

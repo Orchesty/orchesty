@@ -16,8 +16,29 @@ class LongRunningNodeController extends FOSRestController
 {
 
     /**
-     * @Route("/longRunning/run/id/topology/{topoName}/node/{nodeName}", methods={"POST", "GET", "OPTIONS"})
-     * @Route("/longRunning/run/id/topology/{topoName}/node/{nodeName}/token/{token}", methods={"POST", "GET", "OPTIONS"})
+     * @Route("/longRunning/run/id/topology/{topoId}/node/{nodeId}", methods={"POST", "GET", "OPTIONS"})
+     * @Route("/longRunning/run/id/topology/{topoId}/node/{nodeId}/token/{token}", methods={"POST", "GET", "OPTIONS"})
+     *
+     * @param Request     $request
+     * @param string      $topoId
+     * @param string      $nodeId
+     * @param null|string $token
+     *
+     * @return Response
+     */
+    public function runByIdAction(Request $request, string $topoId, string $nodeId, ?string $token = NULL): Response
+    {
+        $data = ['request' => $request, 'topoId' => $topoId, 'nodeId' => $nodeId];
+        if ($token) {
+            $data['token'] = $token;
+        }
+
+        return $this->forward('HbPFLongRunningNodeBundle:LongRunningNode:runById', $data);
+    }
+
+    /**
+     * @Route("/longRunning/run/name/topology/{topoName}/node/{nodeName}", methods={"POST", "GET", "OPTIONS"})
+     * @Route("/longRunning/run/name/topology/{topoName}/node/{nodeName}/token/{token}", methods={"POST", "GET", "OPTIONS"})
      *
      * @param Request     $request
      * @param string      $topoName
@@ -26,7 +47,7 @@ class LongRunningNodeController extends FOSRestController
      *
      * @return Response
      */
-    public function runTokenAction(Request $request, string $topoName, string $nodeName, ?string $token = NULL): Response
+    public function runAction(Request $request, string $topoName, string $nodeName, ?string $token = NULL): Response
     {
         $data = ['request' => $request, 'topoName' => $topoName, 'nodeName' => $nodeName];
         if ($token) {
@@ -37,8 +58,29 @@ class LongRunningNodeController extends FOSRestController
     }
 
     /**
-     * @Route("/longRunning/stop/id/topology/{topoName}/node/{nodeName}", methods={"POST", "GET", "OPTIONS"})
-     * @Route("/longRunning/stop/id/topology/{topoName}/node/{nodeName}/token/{token}", methods={"POST", "GET", "OPTIONS"})
+     * @Route("/longRunning/stop/id/topology/{topoId}/node/{nodeId}", methods={"POST", "GET", "OPTIONS"})
+     * @Route("/longRunning/stop/id/topology/{topoId}/node/{nodeId}/token/{token}", methods={"POST", "GET", "OPTIONS"})
+     *
+     * @param Request     $request
+     * @param string      $topoId
+     * @param string      $nodeId
+     * @param null|string $token
+     *
+     * @return Response
+     */
+    public function stopByIdAction(Request $request, string $topoId, string $nodeId, ?string $token = NULL): Response
+    {
+        $data = ['request' => $request, 'topoId' => $topoId, 'nodeId' => $nodeId];
+        if ($token) {
+            $data['token'] = $token;
+        }
+
+        return $this->forward('HbPFLongRunningNodeBundle:LongRunningNode:stopById', $data);
+    }
+
+    /**
+     * @Route("/longRunning/stop/name/topology/{topoName}/node/{nodeName}", methods={"POST", "GET", "OPTIONS"})
+     * @Route("/longRunning/stop/name/topology/{topoName}/node/{nodeName}/token/{token}", methods={"POST", "GET", "OPTIONS"})
      *
      * @param Request     $request
      * @param string      $topoName
@@ -47,7 +89,7 @@ class LongRunningNodeController extends FOSRestController
      *
      * @return Response
      */
-    public function stopTokenAction(Request $request, string $topoName, string $nodeName, ?string $token = NULL): Response
+    public function stopAction(Request $request, string $topoName, string $nodeName, ?string $token = NULL): Response
     {
         $data = ['request' => $request, 'topoName' => $topoName, 'nodeName' => $nodeName];
         if ($token) {
@@ -90,6 +132,19 @@ class LongRunningNodeController extends FOSRestController
      *
      * @return Response
      */
+    public function getTasksByAction(string $topo): Response
+    {
+        return $this->forward('HbPFLongRunningNodeBundle:LongRunningNode:getTasksById',
+            ['topo' => $topo]);
+    }
+
+    /**
+     * @Route("/longRunning/name/topology/{topo}/getTasks", methods={"GET", "OPTIONS"})
+     *
+     * @param string $topo
+     *
+     * @return Response
+     */
     public function getTasksAction(string $topo): Response
     {
         return $this->forward('HbPFLongRunningNodeBundle:LongRunningNode:getTasks',
@@ -98,6 +153,20 @@ class LongRunningNodeController extends FOSRestController
 
     /**
      * @Route("/longRunning/id/topology/{topo}/node/{node}/getTasks", methods={"GET", "OPTIONS"})
+     *
+     * @param string $topo
+     * @param string $node
+     *
+     * @return Response
+     */
+    public function getNodeTasksByIdAction(string $topo, string $node): Response
+    {
+        return $this->forward('HbPFLongRunningNodeBundle:LongRunningNode:getNodeTasksById',
+            ['topo' => $topo, 'node' => $node]);
+    }
+
+    /**
+     * @Route("/longRunning/name/topology/{topo}/node/{node}/getTasks", methods={"GET", "OPTIONS"})
      *
      * @param string $topo
      * @param string $node

@@ -60,6 +60,32 @@ services:
     ## END STAGE
 
     ## BEGIN DEV
+    long-running-node:
+        image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
+        user: ${DEV_UID}:${DEV_GID}
+        command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit-mq:consumer long-running-node'
+        working_dir: /var/www/pipes/clients/demo/pipes-api
+        environment:
+          BACKEND_HOST: ${BACKEND_URL}/
+          ELASTIC_HOST: elasticsearch
+          ELASTIC_INDEX: 'logstash-2018.01.31'
+        volumes:
+          - ../../:/var/www/pipes
+          - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
+          - ${HOME}/.composer:/srv/.composer
+    ## END DEV
+    ## BEGIN STAGE
+    #long-running-node:
+    #    image: dkr.hanaboso.net/pipes/pipes/php-dev:${TAG_MONOLITH}
+    #    command: bin/console rabbit-mq:consumer long-running-node
+    #    environment:
+    #      BACKEND_HOST: ${BACKEND_URL}/
+    #      ELASTIC_HOST: elasticsearch
+    #      ELASTIC_INDEX: 'logstash-2018.01.31'
+    #      PHP_FPM_MAX_REQUESTS: 5000
+    ## END STAGE
+
+    ## BEGIN DEV
     status-service:
         image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
         user: ${DEV_UID}:${DEV_GID}
@@ -277,7 +303,7 @@ services:
         ports:
           - ${DEV_IP}:27017:27017
         volumes:
-          - mongodb:/data/db
+          - ./mongodb:/data/db
     ## BEGIN STAGE
     #    deploy:
     #      resources:
@@ -364,32 +390,6 @@ services:
           - ${DEV_IP}:5000:5000
         links:
           - mongo
-
-    ## BEGIN DEV
-    long-running-node:
-        image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
-        user: ${DEV_UID}:${DEV_GID}
-        command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit-mq:consumer long-running-node'
-        working_dir: /var/www/pipes/clients/demo/pipes-api
-        environment:
-          BACKEND_HOST: ${BACKEND_URL}/
-          ELASTIC_HOST: elasticsearch
-          ELASTIC_INDEX: 'logstash-2018.01.31'
-        volumes:
-          - ../../:/var/www/pipes
-          - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
-          - ${HOME}/.composer:/srv/.composer
-    ## END DEV
-    ## BEGIN STAGE
-    #long-running-node:
-    #    image: dkr.hanaboso.net/pipes/pipes/php-dev:${TAG_MONOLITH}
-    #    command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit-mq:consumer long-running-node'
-    #    environment:
-    #      BACKEND_HOST: ${BACKEND_URL}/
-    #      ELASTIC_HOST: elasticsearch
-    #      ELASTIC_INDEX: 'logstash-2018.01.31'
-    #      PHP_FPM_MAX_REQUESTS: 5000
-    ## END STAGE
 
 ## BEGIN DEV
 volumes:

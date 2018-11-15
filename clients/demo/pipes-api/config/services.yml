@@ -92,6 +92,8 @@ services:
         calls:
             - ['setLogger', ['@monolog.logger.connector']]
 
-    hbpf.long_running.dummy:
-        class: Demo\LongRunningNode\DummyHumanTask
+    hbpf.long_running.time-stamper:
+        class: Demo\LongRunningNode\TimeStamperHumanTask
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
         public: true

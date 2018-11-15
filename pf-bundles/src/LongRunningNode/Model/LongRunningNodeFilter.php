@@ -17,11 +17,11 @@ final class LongRunningNodeFilter extends GridFilterAbstract
      * @var array
      */
     protected $filterCols = [
-        LongRunningNodeData::CREATED       => LongRunningNodeData::CREATED,
-        LongRunningNodeData::UPDATED       => LongRunningNodeData::UPDATED,
-        LongRunningNodeData::TOPOLOGY_NAME => LongRunningNodeData::TOPOLOGY_NAME,
-        LongRunningNodeData::NODE_NAME     => LongRunningNodeData::NODE_NAME,
-        LongRunningNodeData::AUDIT_LOGS    => LongRunningNodeData::AUDIT_LOGS,
+        LongRunningNodeData::CREATED     => LongRunningNodeData::CREATED,
+        LongRunningNodeData::UPDATED     => LongRunningNodeData::UPDATED,
+        LongRunningNodeData::TOPOLOGY_ID => LongRunningNodeData::TOPOLOGY_ID,
+        LongRunningNodeData::NODE_ID     => LongRunningNodeData::NODE_ID,
+        LongRunningNodeData::AUDIT_LOGS  => LongRunningNodeData::AUDIT_LOGS,
     ];
 
     /**
@@ -51,8 +51,8 @@ final class LongRunningNodeFilter extends GridFilterAbstract
                 LongRunningNodeData::CREATED,
                 LongRunningNodeData::UPDATED,
                 LongRunningNodeData::AUDIT_LOGS,
-                LongRunningNodeData::TOPOLOGY_NAME,
-                LongRunningNodeData::NODE_NAME,
+                LongRunningNodeData::TOPOLOGY_ID,
+                LongRunningNodeData::NODE_ID,
                 LongRunningNodeData::PROCESS_ID,
             ]);
     }
