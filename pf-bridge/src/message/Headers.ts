@@ -189,7 +189,7 @@ class Headers {
      * @param {string} key
      */
     public removePFHeader(key: string) {
-        delete this.headers[`${Headers.PF_HEADERS_PREFIX}key`];
+        delete this.headers[`${Headers.PF_HEADERS_PREFIX}${key}`];
     }
 
     /**

@@ -4,7 +4,6 @@ namespace Hanaboso\PipesFramework\LongRunningNode\Model;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\LongRunningNode\Document\LongRunningNodeData;
-use Hanaboso\PipesFramework\LongRunningNode\Enum\StateEnum;
 use Hanaboso\PipesFramework\LongRunningNode\Exception\LongRunningNodeException;
 
 /**
@@ -38,22 +37,10 @@ class LongRunningNodeManager
      */
     public function saveDocument(LongRunningNodeData $doc): LongRunningNodeData
     {
-        $copy = $this->getDocument($doc->getTopologyId(), $doc->getNodeId(), $doc->getProcessId());
-
-        if ($copy) {
-            $copy->setAuditLogs(array_merge($copy->getAuditLogs(), $doc->getAuditLogs()))
-                ->setData($doc->getData())
-                ->setHeaders($doc->getHeaders())
-                ->setParentProcess($doc->getParentProcess())
-                ->setState(StateEnum::PENDING)
-                ->setUpdatedBy($doc->getUpdatedBy());
-        } else {
-            $copy = $doc;
-            $this->dm->persist($copy);
-        }
+        $this->dm->persist($doc);
         $this->dm->flush();
 
-        return $copy;
+        return $doc;
     }
 
     /**
