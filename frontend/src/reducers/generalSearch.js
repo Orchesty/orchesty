@@ -1,14 +1,14 @@
 import * as types from 'rootApp/actionTypes';
-import {stateType} from 'rootApp/types';
+import { stateType } from 'rootApp/types';
 
 const initialState = {
   state: stateType.NOT_LOADED,
   search: '',
-  items: []
+  items: [],
 };
 
 export default (state = initialState, action) => {
-  switch (action.type){
+  switch (action.type) {
     case types.USER_LOGOUT:
     case types.USER_LOGGED:
       return initialState;
@@ -17,13 +17,13 @@ export default (state = initialState, action) => {
       return {
         state: stateType.LOADING,
         search: action.search,
-        items: []
+        items: [],
       };
 
     case types.GENERAL_SEARCH_FINISH:
       return Object.assign({}, state, {
         state: stateType.SUCCESS,
-        items: action.items
+        items: action.items,
       });
 
     case types.GENERAL_SEARCH_CLEAR:
@@ -32,4 +32,4 @@ export default (state = initialState, action) => {
     default:
       return state;
   }
-}
+};

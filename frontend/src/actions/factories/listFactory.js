@@ -1,5 +1,5 @@
 import * as types from '../../baseActionTypes';
-import {listType} from '../../types';
+import { listType } from '../../types';
 
 export default prefix => ({
   createPaginationList: (id, pageSize, local = false, sort, filter, page = 0) => ({
@@ -10,14 +10,14 @@ export default prefix => ({
     pageSize,
     sort,
     filter,
-    page
+    page,
   }),
   createRelationList: (id, objectType, objectId) => ({
     type: prefix + types.LIST_CREATE,
     id,
     listType: listType.RELATION,
     objectType,
-    objectId
+    objectId,
   }),
   createCompleteList: (id, local = false, sort, filter) => ({
     type: prefix + types.LIST_CREATE,
@@ -25,43 +25,43 @@ export default prefix => ({
     listType: listType.COMPLETE,
     local,
     sort,
-    filter
+    filter,
   }),
   listLoading: id => ({
     type: prefix + types.LIST_LOADING,
-    id
+    id,
   }),
   listError: id => ({
     type: prefix + types.LIST_ERROR,
-    id
+    id,
   }),
   listReceive: (id, data) => ({
     type: prefix + types.LIST_RECEIVE,
     id,
-    data
+    data,
   }),
   listDelete: id => ({
     type: prefix + types.LIST_DELETE,
-    id
+    id,
   }),
   listChangeSort: (id, sort) => ({
     type: prefix + types.LIST_CHANGE_SORT,
     id,
-    sort
+    sort,
   }),
   listChangePage: (id, page) => ({
     type: prefix + types.LIST_CHANGE_PAGE,
-    id: id,
-    page
+    id,
+    page,
   }),
   listChangeFilter: (id, filter) => ({
     type: prefix + types.LIST_CHANGE_FILTER,
-    id: id,
-    filter
+    id,
+    filter,
   }),
   invalidateLists: (objectType, objectId) => ({
     type: prefix + types.LIST_INVALIDATE,
     objectType,
-    objectId
-  })
+    objectId,
+  }),
 });

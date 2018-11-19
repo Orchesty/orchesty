@@ -1,15 +1,15 @@
-import {filterType} from 'rootApp/types';
+import { filterType } from 'rootApp/types';
 
-function shouldFilterText(value){
+function shouldFilterText(value) {
   return value !== null && value !== undefined && value !== '';
 }
 
 export default (filter, getStoredValue) => {
-  let {value, property, storedValue} = filter;
+  let { value, property, storedValue } = filter;
   if (storedValue) {
     value = getStoredValue(storedValue);
   }
-  switch (filter.type){
+  switch (filter.type) {
     case filterType.EXACT:
       return shouldFilterText(value) ? item => item[property] === value : () => true;
 
@@ -20,9 +20,9 @@ export default (filter, getStoredValue) => {
       return shouldFilterText(value) ? item => item[property].indexOf(value) >= 0 : () => true;
 
     case filterType.BOOLEAN:
-      return shouldFilterText(value) ? item => item[property] == value : () => true;
+      return shouldFilterText(value) ? item => item[property] === value : () => true;
 
     default:
       return () => false;
   }
-}
+};

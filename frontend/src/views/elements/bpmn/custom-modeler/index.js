@@ -13,7 +13,7 @@ function CustomModeler(options) {
   ];
 
   options.moddleExtensions = {
-    pipes: PipesModdleDescriptor
+    pipes: PipesModdleDescriptor,
   };
 
   Modeler.call(this, options);
@@ -24,8 +24,8 @@ inherits(CustomModeler, Modeler);
 CustomModeler.prototype._modules = [].concat(
   CustomModeler.prototype._modules,
   [
-    require('./customModules')
-  ]
+    require('./customModules'),
+  ],
 );
 
 module.exports = CustomModeler;

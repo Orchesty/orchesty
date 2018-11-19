@@ -9,6 +9,6 @@ import TagsInput from './input/TagsInput';
 
 export const FormTextInput = FormElement(TextInput);
 export const FormNumberInput = FormElement(NumberInput);
-export const FormCheckboxInput = FormElement(CheckboxInput, {marginTop: '6px'});
+export const FormCheckboxInput = FormElement(CheckboxInput, { marginTop: '6px' });
 export const FormTextAreaInput = FormElement(TextAreaInput);
 export const FormTagsInput = FormElement(TagsInput);

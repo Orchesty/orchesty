@@ -5,16 +5,16 @@ export default {
       apiary: {
         url: 'http://private-973c6-pipes1.apiary-mock.com',
         noCredentials: true,
-        caption: 'Apiary'
+        caption: 'Apiary',
       },
       cm_dev_docker: {
         url: 'http://127.0.0.67/api',
-        caption: 'CM - Dev - docker'
+        caption: 'CM - Dev - docker',
       },
 	    demo_dev_docker: {
 		    url: 'http://127.0.0.66/api',
-		    caption: 'Demo - Dev - docker'
-	    }
-    }
-  }
-}
+		    caption: 'Demo - Dev - docker',
+	    },
+    },
+  },
+};

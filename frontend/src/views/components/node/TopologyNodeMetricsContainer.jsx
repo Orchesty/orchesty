@@ -8,7 +8,6 @@ import stateMerge from 'utils/stateMerge';
 
 import StateComponent from 'wrappers/StateComponent';
 import NodeMetrics from 'components/metrics/NodeMetrics';
-import * as topologyActions from 'rootApp/actions/topologyActions';
 import {needTopology} from 'rootApp/actions/topologyActions';
 import {stateType} from 'rootApp/types';
 import TopologyMetrics from 'components/metrics/TopologyMetrics';

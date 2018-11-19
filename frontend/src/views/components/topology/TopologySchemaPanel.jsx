@@ -1,13 +1,10 @@
 import React from 'react'
-import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import Panel from 'rootApp/views/wrappers/Panel';
 import MetricsDateRangeHeader from '../metrics/MetricsDateRangeHeader';
 import TopologySchema from './TopologySchema';
 import getTopologyState from 'rootApp/utils/getTopologyState';
-import * as nodeActions from 'rootApp/actions/nodeActions';
 import * as applicationActions from 'rootApp/actions/applicationActions';
-import * as metricsActions from 'rootApp/actions/metricsActions';
 import StateComponent from 'rootApp/views/wrappers/StateComponent';
 import {stateType} from 'rootApp/types';
 

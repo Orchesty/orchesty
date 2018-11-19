@@ -47,7 +47,7 @@ function mapStateToProps(state, ownProps) {
   const topologyList = topology.lists.complete;
   return {
     state: stateMerge([tree && tree.state, topologyList && topologyList.state]),
-    root: tree && tree.state == stateType.SUCCESS ? treeItemToTreeView(category.elements, tree.root, tree.selectedId) : null
+    root: tree && tree.state === stateType.SUCCESS ? treeItemToTreeView(category.elements, tree.root, tree.selectedId) : null
   }
 }
 

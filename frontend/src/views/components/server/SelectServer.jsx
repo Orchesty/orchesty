@@ -23,7 +23,7 @@ class SelectServer extends React.Component {
       const {selected} = this.props;
       const items = Object.keys(servers).map(key => {
         const server = servers[key];
-        return <li key={key} className={selected == key ? 'active' : ''}><a href="#"
+        return <li key={key} className={selected === key ? 'active' : ''}><a href="#"
           onClick={this.selectServer.bind(this, key)}>{server.caption}</a></li>;
       });
       return (

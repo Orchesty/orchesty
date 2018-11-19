@@ -6,12 +6,10 @@ export default function (group, element, translate) {
     return;
   }
 
-  group.entries.push(
-    entryFactory.textField({
-      id: 'pipesType',
-      label: translate('Type'),
-      modelProperty: 'pipesType',
-      hidden: (element) => true
-    })
-  );
-};
+  group.entries.push(entryFactory.textField({
+    id: 'pipesType',
+    label: translate('Type'),
+    modelProperty: 'pipesType',
+    hidden: element => true,
+  }));
+}

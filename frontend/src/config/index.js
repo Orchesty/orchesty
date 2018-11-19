@@ -10,5 +10,5 @@ import envServers from 'config-env/servers';
 export default {
   params: deepmerge(commonParams, envParams),
   pages: deepmerge(commonPages, envPages),
-  servers: deepmerge(commonServers, envServers)
+  servers: deepmerge(commonServers, envServers),
 };

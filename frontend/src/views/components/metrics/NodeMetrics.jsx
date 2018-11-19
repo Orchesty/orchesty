@@ -38,11 +38,11 @@ class NodeMetrics extends React.Component {
     if (test){
       actions.push({
         type: menuItemType.TEXT,
-        icon: test.code == 200 ? 'fa fa-check green' : 'fa fa-warning orange',
+        icon: test.code === 200 ? 'fa fa-check green' : 'fa fa-warning orange',
         caption: test.message
       });
     }
-    if (node.handler == 'event'){
+    if (node.handler === 'event'){
       if (topology.enabled){
         actions.push({
           type: menuItemType.ACTION,

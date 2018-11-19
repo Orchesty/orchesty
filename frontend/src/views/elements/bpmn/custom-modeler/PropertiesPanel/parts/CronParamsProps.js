@@ -7,46 +7,44 @@ export default function (group, element, translate) {
     return;
   }
 
-  group.entries.push(
-    entryFactory.validationAwareTextField({
-      id: 'cronParams',
-      label: 'Cron parameters',
-      description: 'JSON format without {}. Eg.: "key": "val", "foo": "bar"',
-      modelProperty: 'cronParams',
-      validate: (element, values) => {
-          if (!values.cronParams) return {};
+  group.entries.push(entryFactory.validationAwareTextField({
+    id: 'cronParams',
+    label: 'Cron parameters',
+    description: 'JSON format without {}. Eg.: "key": "val", "foo": "bar"',
+    modelProperty: 'cronParams',
+    validate: (element, values) => {
+      if (!values.cronParams) return {};
 
-          try {
-              JSON.parse('{' + values.cronParams + '}');
-          } catch (err) {
-              return {
-                  cronParams: err.message
-                      .replace('undefinedundefinedundefined', '\'\'')
-                      .replace('undefined', 'unexpected')
-              };
-          }
+      try {
+        JSON.parse(`{${values.cronParams}}`);
+      } catch (err) {
+        return {
+          cronParams: err.message
+            .replace('undefinedundefinedundefined', '\'\'')
+            .replace('undefined', 'unexpected'),
+        };
+      }
 
-          return {};
-        },
-      getProperty: function (element) {
-          let text = getBusinessObject(element).get('cronParams');
+      return {};
+    },
+    getProperty(element) {
+      let text = getBusinessObject(element).get('cronParams');
 
-          if (!text) text = '';
+      if (!text) text = '';
 
-          return decodeURIComponent((text + '').replace(/\+/g, '%20'));
-      },
-      setProperty: function (element, properties) {
-          if (properties.cronParams) {
-              properties.cronParams = encodeURIComponent(properties.cronParams).replace(/!/g,  '%21')
-                  .replace(/'/g,  '%27')
-                  .replace(/\(/g, '%28')
-                  .replace(/\)/g, '%29')
-                  .replace(/\*/g, '%2A')
-                  .replace(/%20/g, '+');
-          }
+      return decodeURIComponent((`${text}`).replace(/\+/g, '%20'));
+    },
+    setProperty(element, properties) {
+      if (properties.cronParams) {
+        properties.cronParams = encodeURIComponent(properties.cronParams).replace(/!/g, '%21')
+          .replace(/'/g, '%27')
+          .replace(/\(/g, '%28')
+          .replace(/\)/g, '%29')
+          .replace(/\*/g, '%2A')
+          .replace(/%20/g, '+');
+      }
 
-          return cmdHelper.updateProperties(element, properties);
-      },
-    })
-  );
+      return cmdHelper.updateProperties(element, properties);
+    },
+  }));
 }

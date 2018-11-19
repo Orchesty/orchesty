@@ -1,13 +1,13 @@
 import * as types from 'rootApp/actionTypes';
-import {stateType} from 'rootApp/types';
+import { stateType } from 'rootApp/types';
 
 const initialState = {
   state: stateType.NOT_LOADED,
-  data: null
+  data: null,
 };
 
 export default (state = initialState, action) => {
-  switch (action.type){
+  switch (action.type) {
     case types.USER_LOGOUT:
     case types.USER_LOGGED:
       return initialState;
@@ -15,22 +15,22 @@ export default (state = initialState, action) => {
     case types.NOTIFICATION_SETTINGS_RECEIVE:
       return {
         state: stateType.SUCCESS,
-        data: action.data
+        data: action.data,
       };
 
     case types.NOTIFICATION_SETTINGS_ERROR:
       return {
         state: stateType.ERROR,
-        data: null
+        data: null,
       };
 
     case types.NOTIFICATION_SETTINGS_LOADING:
       return {
         state: stateType.LOADING,
-        data: null
+        data: null,
       };
 
     default:
       return state;
   }
-}
+};

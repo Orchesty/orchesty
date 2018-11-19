@@ -20,10 +20,10 @@ function CustomElementFactory(bpmnFactory, moddle, translate) {
    */
   this.create = function (elementType, attrs) {
     if (elementType === 'label') {
-      return this.baseCreate(elementType, assign({type: 'label'}, LabelUtil.DEFAULT_LABEL_SIZE, attrs));
+      return this.baseCreate(elementType, assign({ type: 'label' }, LabelUtil.DEFAULT_LABEL_SIZE, attrs));
     }
 
-    let element = this.createBpmnElement(elementType, attrs);
+    const element = this.createBpmnElement(elementType, attrs);
 
     // Creating of new shape from palette
     if (attrs.createPipes && attrs.pipesType && attrs.pipesType !== '') {

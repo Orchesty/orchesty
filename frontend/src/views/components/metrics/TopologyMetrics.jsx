@@ -1,9 +1,7 @@
 import React from 'react'
-import PropTypes from 'prop-types';
 import StateComponent from 'rootApp/views/wrappers/StateComponent';
 import {connect} from 'react-redux';
 import Panel from 'rootApp/views/wrappers/Panel';
-import DateRangeInput from 'rootApp/views/elements/input/DateRangeInput';
 import MetricsDateRangeHeader from 'rootApp/views/components/metrics/MetricsDateRangeHeader';
 import getTopologyState from 'rootApp/utils/getTopologyState';
 

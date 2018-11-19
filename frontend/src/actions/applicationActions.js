@@ -2,79 +2,79 @@ import * as types from 'rootApp/actionTypes';
 
 export function leftSidebarToggle() {
   return {
-    type: types.LEFT_SIDEBAR_TOGGLE
-  }
+    type: types.LEFT_SIDEBAR_TOGGLE,
+  };
 }
 
 export function editorPropPanelToggle() {
   return {
-    type: types.EDITOR_PROP_PANEL_TOGGLE
-  }
+    type: types.EDITOR_PROP_PANEL_TOGGLE,
+  };
 }
 
-export function openPage(key, args = null){
-  if (!key){
+export function openPage(key, args = null) {
+  if (!key) {
     throw new Error('openPage action: Missing page key');
   }
   return {
     type: types.OPEN_PAGE,
     key,
-    args
-  }
+    args,
+  };
 }
 
-export function closePage(id, newId){
+export function closePage(id, newId) {
   return {
     type: types.CLOSE_PAGE,
     id,
-    newId
-  }
+    newId,
+  };
 }
 
-export function selectPage(id){
+export function selectPage(id) {
   return {
     type: types.SELECT_PAGE,
-    id
-  }
+    id,
+  };
 }
 
-export function setPageArgs(id, args){
+export function setPageArgs(id, args) {
   return (dispatch, getState) => {
     const page = getState().application.pages[id];
-    if (!page){
+    if (!page) {
       throw new Error(`Page [${id}] not found.`);
     }
     return dispatch(openPage(page.key, Object.assign({}, page.args, args)));
-  }
+  };
 }
 
-export function openModal(id, data){
+export function openModal(id, data) {
   return {
     type: types.MODAL_OPEN,
     id,
-    data
-  }
+    data,
+  };
 }
 
-export function closeModal(){
+export function closeModal() {
   return {
-    type: types.MODAL_CLOSE
-  }
+    type: types.MODAL_CLOSE,
+  };
 }
 
-export function openContextMenu(menuKey, args, componentKey, x, y){
+export function openContextMenu(menuKey, args, componentKey, x, y) {
   return {
     type: types.CONTEXT_MENU_OPEN,
     menuKey,
     args,
     componentKey,
     x,
-    y
-  }
+    y,
+  };
 }
 
 export function closeContextMenu() {
   return {
-    type: types.CONTEXT_MENU_CLOSE
-  }
+    type: types.CONTEXT_MENU_CLOSE,
+  };
 }

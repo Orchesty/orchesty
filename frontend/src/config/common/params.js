@@ -8,11 +8,11 @@ export default {
   clearGeneralSearch: false,
   metricsRefreshInterval: null, // null/false - turn off; number - refresh interval in ms
   hotKeys: {
-    generalSearch: {   // false - for turn off
+    generalSearch: { // false - for turn off
       alt: false,
       ctrl: true,
       shift: false,
-      char: 'g'
-    }
-  }
-}
+      char: 'g',
+    },
+  },
+};

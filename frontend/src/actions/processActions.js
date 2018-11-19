@@ -1,28 +1,28 @@
 import * as types from 'rootApp/actionTypes';
-import {stateType} from 'rootApp/types';
+import { stateType } from 'rootApp/types';
 
 export function startProcess(id) {
   return {
     type: types.PROCESS_SET_STATE,
     id,
-    stateType: stateType.LOADING
-  }
+    stateType: stateType.LOADING,
+  };
 }
 
-export function successProcess(id){
+export function successProcess(id) {
   return {
     type: types.PROCESS_SET_STATE,
     id,
-    stateType: stateType.SUCCESS
-  }
+    stateType: stateType.SUCCESS,
+  };
 }
 
 export function errorProcess(id) {
   return {
     type: types.PROCESS_SET_STATE,
     id,
-    stateType: stateType.ERROR
-  }
+    stateType: stateType.ERROR,
+  };
 }
 
 export function finishProcess(id, result) {

@@ -72,7 +72,7 @@ class TopologyDetail extends React.Component {
         icon: 'fa fa-tasks',
         type: menuItemType.ACTION,
         action: () => onChangeTab('nodes'),
-        color: activeTab == 'nodes' ? 'info' : 'default',
+        color: activeTab === 'nodes' ? 'info' : 'default',
         round: true
       },
       {
@@ -80,7 +80,7 @@ class TopologyDetail extends React.Component {
         icon: 'fa fa-edit',
         type: menuItemType.ACTION,
         action: () => onChangeTab('schema'),
-        color: activeTab == 'schema' ? 'info' : 'default',
+        color: activeTab === 'schema' ? 'info' : 'default',
         round: true
       },
       {
@@ -88,7 +88,7 @@ class TopologyDetail extends React.Component {
         icon: 'fa fa-area-chart',
         type: menuItemType.ACTION,
         action: () => onChangeTab('graphs'),
-        color: activeTab == 'graphs' ? 'info' : 'default',
+        color: activeTab === 'graphs' ? 'info' : 'default',
         round: true
       }
     ];
@@ -107,7 +107,7 @@ class TopologyDetail extends React.Component {
         caption: 'Publish',
         action: publish,
         processId: processes.topologyPublish(topologyId),
-        disabled: !topology || topology.visibility == 'public'
+        disabled: !topology || topology.visibility === 'public'
       });
     }
     if (clone){
@@ -118,7 +118,7 @@ class TopologyDetail extends React.Component {
       })
     }
     if (topologyDelete){
-      const deleteDisabled = !topology || (topology.visibility == 'public' && topology.enabled);
+      const deleteDisabled = !topology || (topology.visibility === 'public' && topology.enabled);
       otherActions.items.push({
         caption: 'Delete',
         processId: processes.topologyDelete(topologyId),
@@ -129,7 +129,7 @@ class TopologyDetail extends React.Component {
     }
     if (this._actions['schema']){
       this._actions['schema'].forEach(menuItem => {
-        if (menuItem.type != menuItemType.SUB_MENU){
+        if (menuItem.type !== menuItemType.SUB_MENU){
           pageActions.push(menuItem);
         } else {
           otherActions.items.push({type: menuItemType.SEPARATOR});
@@ -209,7 +209,7 @@ function mapActionsToProps(dispatch, ownProps){
       })
     },
     clone: () => dispatch(topologyActions.cloneTopology(topologyId)).then(topology => {
-      if (topology && topology._id != topologyId){
+      if (topology && topology._id !== topologyId){
         ownProps.onChangeTopology(topology._id);
       }
     }),

@@ -13,32 +13,30 @@ export default function (group, element, translate) {
     modelProperty = 'text';
   }
 
-  group.entries.push(
-    entryFactory.validationAwareTextField({
-      id: 'name',
-      label: 'Name',
-      modelProperty: modelProperty,
-      validate: (element, values) => {
-        if (element.type === 'bpmn:Process') {
-          return {};
-        }
-
-        if (/\s/.test(values.name)) {
-          return { name: 'Name must not contain spaces.' };
-        }
-
-        if (!values.name) {
-          return { name: 'Name must not be empty.' };
-        }
-
+  group.entries.push(entryFactory.validationAwareTextField({
+    id: 'name',
+    label: 'Name',
+    modelProperty,
+    validate: (element, values) => {
+      if (element.type === 'bpmn:Process') {
         return {};
-      },
-      getProperty: function(element) {
-        return getBusinessObject(element).name;
-      },
-      setProperty: function(element, properties) {
-        return cmdHelper.updateProperties(element, properties);
-      },
-    })
-  );
+      }
+
+      if (/\s/.test(values.name)) {
+        return { name: 'Name must not contain spaces.' };
+      }
+
+      if (!values.name) {
+        return { name: 'Name must not be empty.' };
+      }
+
+      return {};
+    },
+    getProperty(element) {
+      return getBusinessObject(element).name;
+    },
+    setProperty(element, properties) {
+      return cmdHelper.updateProperties(element, properties);
+    },
+  }));
 }

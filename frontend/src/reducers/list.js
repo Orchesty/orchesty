@@ -1,61 +1,61 @@
 import * as types from 'rootApp/baseActionTypes';
-import {stateType, listType} from 'rootApp/types';
+import { stateType, listType } from 'rootApp/types';
 
 function listReducer(state, action, getElementId) {
   switch (action.type) {
     case types.LIST_LOADING:
       return Object.assign({}, state, {
         state: stateType.LOADING,
-        items: null
+        items: null,
       });
 
     case types.LIST_RECEIVE:
-      const {data} = action;
+      const { data } = action;
       return Object.assign({}, state, {
         state: stateType.SUCCESS,
         items: data.items.map(getElementId),
         count: typeof data.count === 'string' ? parseInt(data.count) : data.count,
         limit: typeof data.limit === 'string' ? parseInt(data.limit) : data.limit,
         offset: typeof data.offset === 'string' ? parseInt(data.offset) : data.offset,
-        total: typeof data.total === 'string' ? parseInt(data.total) : data.total
+        total: typeof data.total === 'string' ? parseInt(data.total) : data.total,
       });
 
     case types.LIST_ERROR:
       return Object.assign({}, state, {
         state: stateType.ERROR,
-        items: null
+        items: null,
       });
 
     case types.LIST_CHANGE_SORT:
       const newData = {
-        sort: action.sort
+        sort: action.sort,
       };
-      if (state.type == listType.PAGINATION && state.page != 0){
-        newData['page'] = 0;
+      if (state.type === listType.PAGINATION && state.page !== 0) {
+        newData.page = 0;
       }
       return Object.assign({}, state, newData);
 
     case types.LIST_CHANGE_PAGE:
       return Object.assign({}, state, {
-        page: action.page
+        page: action.page,
       });
 
     case types.LIST_CHANGE_FILTER:
       const newDataF = {
-        filter: action.filter
+        filter: action.filter,
       };
-      if (state.type == listType.PAGINATION && state.page != 0){
-        newDataF['page'] = 0;
+      if (state.type === listType.PAGINATION && state.page !== 0) {
+        newDataF.page = 0;
       }
       return Object.assign({}, state, newDataF);
 
     case types.LIST_INVALIDATE:
-      if (state.state != stateType.NOT_LOADED && (state.type == listType.PAGINATION || state.type == listType.COMPLETE ||
-          (state.type == listType.RELATION && state.objectType === action.objectType && state.objectId === action.objectId))) {
-        return Object.assign({}, state, {state: stateType.NOT_LOADED});
-      } else {
-        return state;
+      if (state.state !== stateType.NOT_LOADED && (state.type === listType.PAGINATION || state.type === listType.COMPLETE ||
+          (state.type === listType.RELATION && state.objectType === action.objectType && state.objectId === action.objectId))) {
+        return Object.assign({}, state, { state: stateType.NOT_LOADED });
       }
+      return state;
+
 
     default:
       return state;
@@ -66,34 +66,34 @@ export default (state = {}, action, getElementId) => {
   let newState;
   switch (action.type) {
     case types.LIST_CREATE:
-      let list = {
+      const list = {
         id: action.id,
         type: action.listType,
         state: stateType.NOT_LOADED,
         local: Boolean(action.local),
-        items: null
+        items: null,
       };
 
       switch (action.listType) {
         case listType.COMPLETE:
-          list['sort'] = action.sort;
-          list['filter'] = action.filter;
+          list.sort = action.sort;
+          list.filter = action.filter;
           break;
 
         case listType.PAGINATION:
-          list['pageSize'] = action.pageSize;
-          list['page'] = action.page;
-          list['sort'] = action.sort;
-          list['filter'] = action.filter;
+          list.pageSize = action.pageSize;
+          list.page = action.page;
+          list.sort = action.sort;
+          list.filter = action.filter;
           break;
 
         case listType.RELATION:
-          list['objectType'] = action.objectType;
-          list['objectId'] = action.objectId;
+          list.objectType = action.objectType;
+          list.objectId = action.objectId;
           break;
       }
 
-      return Object.assign({}, state, {[action.id]: list});
+      return Object.assign({}, state, { [action.id]: list });
 
     case types.LIST_DELETE:
       newState = Object.assign({}, state);
@@ -103,8 +103,8 @@ export default (state = {}, action, getElementId) => {
     case types.LIST_INVALIDATE:
       newState = {};
       let changed = false;
-      Object.getOwnPropertyNames(state).forEach(id => {
-        let res = listReducer(state[id], action, getElementId);
+      Object.getOwnPropertyNames(state).forEach((id) => {
+        const res = listReducer(state[id], action, getElementId);
         newState[id] = res;
         changed = changed || newState !== res;
       });
@@ -117,10 +117,10 @@ export default (state = {}, action, getElementId) => {
     case types.LIST_CHANGE_SORT:
     case types.LIST_CHANGE_FILTER:
       return Object.assign({}, state, {
-        [action.id]: listReducer(state[action.id], action, getElementId)
+        [action.id]: listReducer(state[action.id], action, getElementId),
       });
 
     default:
       return state;
   }
-}
+};

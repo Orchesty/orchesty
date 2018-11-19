@@ -3,21 +3,21 @@ import * as types from 'rootApp/actionTypes';
 const initialState = {};
 
 export default (state = initialState, action) => {
-  switch (action.type){
+  switch (action.type) {
     case types.PROCESS_SET_STATE:
-      return Object.assign({}, state, {[action.id]: action.stateType});
-    
+      return Object.assign({}, state, { [action.id]: action.stateType });
+
     case types.PROCESS_CLEAR:
       if (state.hasOwnProperty(action.id)) {
         const newState = Object.assign({}, state);
         delete newState[action.id];
         return newState;
       }
-      else {
-        return state;
-      }
-    
+
+      return state;
+
+
     default:
       return state;
   }
-}
+};

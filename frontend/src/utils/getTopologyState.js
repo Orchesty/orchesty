@@ -1,25 +1,23 @@
-export default topology => {
-  if (topology.visibility === 'draft'){
+export default (topology) => {
+  if (topology.visibility === 'draft') {
     return {
       label: 'default',
-      title: 'Draft'
+      title: 'Draft',
     };
-  } else if (topology.visibility === 'public'){
-    if (topology.enabled){
+  } else if (topology.visibility === 'public') {
+    if (topology.enabled) {
       return {
         label: 'success',
-        title: 'Enabled'
-      }
-    } else {
-      return {
-        label: 'warning',
-        title: 'Disabled'
-      }
+        title: 'Enabled',
+      };
     }
-  } else {
     return {
-      label: 'danger',
-      title: 'Invalid state'
-    }
+      label: 'warning',
+      title: 'Disabled',
+    };
   }
-}
+  return {
+    label: 'danger',
+    title: 'Invalid state',
+  };
+};

@@ -32,5 +32,5 @@ export default {
   processActions,
   serverActions,
   topologyActions,
-  topologyGroupActions
+  topologyGroupActions,
 };

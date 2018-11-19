@@ -1,9 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
 
 import processes from 'enums/processes';
-import * as applicationActions from 'actions/applicationActions';
 
 import StateComponent from 'wrappers/StateComponent';
 import BoolValue from 'elements/BoolValue';
@@ -88,11 +86,11 @@ class TopologyListTable extends React.Component {
               caption: 'Publish',
               action: () => {publish(id)},
               processId: processes.topologyPublish(id),
-              disabled: item.visibility == 'public'
+              disabled: item.visibility === 'public'
             });
           }
           if (topologyDelete){
-            const deleteDisabled = item.visibility == 'public' && item.enabled;
+            const deleteDisabled = item.visibility === 'public' && item.enabled;
             menuItems.push(
               {
                 caption: 'Delete',

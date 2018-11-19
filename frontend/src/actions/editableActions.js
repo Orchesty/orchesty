@@ -1,23 +1,23 @@
 import * as types from 'rootApp/actionTypes';
 
-export function switchEdit(id){
+export function switchEdit(id) {
   return {
     type: types.EDITABLE_SWITCH_EDIT,
-    id
-  }
+    id,
+  };
 }
 
-export function switchView(id){
+export function switchView(id) {
   return {
     type: types.EDITABLE_SWITCH_VIEW,
-    id
-  }
+    id,
+  };
 }
 
 export function change(id, value) {
   return {
     type: types.EDITABLE_CHANGE,
     id,
-    value
-  }
+    value,
+  };
 }

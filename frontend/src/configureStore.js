@@ -1,6 +1,6 @@
 import { createStore, applyMiddleware } from 'redux';
 import thunkMiddleware from 'redux-thunk';
-import * as storage from 'redux-storage'
+import * as storage from 'redux-storage';
 import storageFilter from 'redux-storage-decorator-filter';
 import createEngine from 'redux-storage-engine-localstorage';
 
@@ -20,7 +20,7 @@ export default function (initialState, composeWithDevTools) {
     ['server', 'apiGateway'],
     ['application', 'showSideBar'],
     ['application', 'showEditorPropPanel'],
-    ['application', 'pages']
+    ['application', 'pages'],
   ]);
   const storageMiddleware = storage.createMiddleware(decoratedEngine, [], [
     types.USER_LOGGED,
@@ -29,12 +29,12 @@ export default function (initialState, composeWithDevTools) {
     types.LEFT_SIDEBAR_TOGGLE,
     types.EDITOR_PROP_PANEL_TOGGLE,
     types.OPEN_PAGE,
-    types.CLOSE_PAGE
+    types.CLOSE_PAGE,
   ]);
 
   const middlewares = [thunkMiddleware, storageMiddleware];
   let appliedMiddlewares = applyMiddleware(...middlewares);
-  if (composeWithDevTools){
+  if (composeWithDevTools) {
     appliedMiddlewares = composeWithDevTools(appliedMiddlewares);
   }
 
@@ -45,20 +45,15 @@ export default function (initialState, composeWithDevTools) {
   apiGatewayServer.init(store);
 
   return new Promise((resolve, reject) => {
-    storage.createLoader(engine)(store).then(
-      () => {
-        const pages = store.getState().application.pages;
-        Object.keys(pages).forEach(id => {
-          if (!config.pages[pages[id].key]){
-            store.dispatch(applicationActions.closePage(id))
-          }
-        });
-        router.init(store);
-        resolve(store)
-      }
-    ).catch(
-      (err) => {console.log(err); reject('Loading stored data failed.')}
-    );
+    storage.createLoader(engine)(store).then(() => {
+      const pages = store.getState().application.pages;
+      Object.keys(pages).forEach((id) => {
+        if (!config.pages[pages[id].key]) {
+          store.dispatch(applicationActions.closePage(id));
+        }
+      });
+      router.init(store);
+      resolve(store);
+    }).catch((err) => { console.log(err); reject('Loading stored data failed.'); });
   });
-  
 }

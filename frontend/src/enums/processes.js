@@ -23,5 +23,5 @@ export default {
   categoryCreate: hash => `category-create-${hash}`,
   categoryUpdate: id => `category-update-${id}`,
   categoryDelete: id => `category-delete-${id}`,
-  notificationSettingsUpdate: () => `notification-settings-update`
-}
+  notificationSettingsUpdate: () => 'notification-settings-update',
+};

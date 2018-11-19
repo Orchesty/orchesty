@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 
 import * as pages from 'pages/pages';
 import Error404Page from 'pages/Error404Page';
-import * as applicationActions from 'actions/applicationActions';
 
 const ActivePage = ({page, pageId}) => page && page.key ? React.createElement(pages[page.key], {
   componentKey: page.key,

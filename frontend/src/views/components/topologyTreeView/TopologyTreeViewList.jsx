@@ -45,7 +45,7 @@ function mapStateToProps(state, ownProps){
   const elements = topology.elements;
   return {
     topologies: topology.lists.complete.items
-      .filter(id => elements[id].category == ownProps.category.id)
+      .filter(id => elements[id].category === ownProps.category.id)
       .map(id => elements[id])
   };
 }

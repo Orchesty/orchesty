@@ -1,64 +1,68 @@
-export function lineTimeChartOption(parameters){
-  let {data, title, subTitle, seriesName} = parameters;
+export function lineTimeChartOption(parameters) {
+  const {
+    data, title, subTitle, seriesName,
+  } = parameters;
   const keys = Object.keys(data);
   return {
     title: {
       text: title,
-      subtext: subTitle
+      subtext: subTitle,
     },
     tooltip: {
-      trigger: 'axis'
+      trigger: 'axis',
     },
     legend: {
-      data: []
+      data: [],
     },
     toolbox: {
-      show: false
+      show: false,
     },
     calculable: false,
     xAxis: [{
-      type: 'time'
+      type: 'time',
     }],
     yAxis: [{
-      type: 'value'
+      type: 'value',
     }],
     series: [{
       name: seriesName,
       type: 'line',
-      itemStyle: {normal: {areaStyle: {type: 'default'}}},
+      itemStyle: { normal: { areaStyle: { type: 'default' } } },
       data: keys.map(key => [new Date(parseInt(key) * 1000), data[key]]),
       markPoint: {
         data: [{
           type: 'max',
-          name: '???'
+          name: '???',
         }, {
-          type: 'min'
-        }]
+          type: 'min',
+        }],
       },
       markLine: {
         data: [{
-          type: 'average'
-        }]
-      }
-    }]
+          type: 'average',
+        }],
+      },
+    }],
   };
 }
 
-export function barChartOption(parameters){
-  let {keys, values, title, subTitle, seriesName} = parameters;
+export function barChartOption(parameters) {
+  const {
+    keys, values, title, subTitle, seriesName,
+  } = parameters;
   return {
     title: {
       text: title,
-      subtext: subTitle
+      subtext: subTitle,
     },
     tooltip: {
-      trigger: 'axis'
+      trigger: 'axis',
     },
     legend: {
-      data: []
+      data: [],
     },
     toolbox: {
-      show: false
+      show: false,
     },
     calculable: false,
     xAxis: [{
@@ -67,29 +71,29 @@ export function barChartOption(parameters){
         rotate: 45,
         interval: 0,
       },
-      data: keys
+      data: keys,
     }],
     yAxis: [{
-      type: 'value'
+      type: 'value',
     }],
     series: [{
       name: seriesName,
       type: 'bar',
-      itemStyle: {normal: {areaStyle: {type: 'default'}}},
+      itemStyle: { normal: { areaStyle: { type: 'default' } } },
       data: values,
       markPoint: {
         data: [{
-          type: 'max'
+          type: 'max',
         }, {
-          type: 'min'
-        }]
+          type: 'min',
+        }],
       },
       markLine: {
         data: [{
-          type: 'average'
-        }]
-      }
-    }]
+          type: 'average',
+        }],
+      },
+    }],
   };
 }
 

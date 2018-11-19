@@ -8,33 +8,31 @@ export default function (group, element, translate) {
     return;
   }
 
-  group.entries.push(
-    entryFactory.validationAwareTextField({
-      id: 'cronTime',
-      label: 'Cron time',
-      description: 'eg. */2 * * * *',
-      modelProperty: 'cronTime',
-      validate: (element, values) => {
-        if (!values.cronTime) return {};
+  group.entries.push(entryFactory.validationAwareTextField({
+    id: 'cronTime',
+    label: 'Cron time',
+    description: 'eg. */2 * * * *',
+    modelProperty: 'cronTime',
+    validate: (element, values) => {
+      if (!values.cronTime) return {};
 
-        try {
-          cronParser.parseExpression(values.cronTime);
-        } catch (err) {
-          return {
-            cronTime: err.message
-              .replace('undefinedundefinedundefined', '\'\'')
-              .replace('undefined', 'unexpected')
-          };
-        }
+      try {
+        cronParser.parseExpression(values.cronTime);
+      } catch (err) {
+        return {
+          cronTime: err.message
+            .replace('undefinedundefinedundefined', '\'\'')
+            .replace('undefined', 'unexpected'),
+        };
+      }
 
-        return {};
-      },
-      getProperty: function (element) {
-        return getBusinessObject(element).get('cronTime');
-      },
-      setProperty: function (element, properties) {
-        return cmdHelper.updateProperties(element, properties);
-      },
-    })
-  );
+      return {};
+    },
+    getProperty(element) {
+      return getBusinessObject(element).get('cronTime');
+    },
+    setProperty(element, properties) {
+      return cmdHelper.updateProperties(element, properties);
+    },
+  }));
 }
