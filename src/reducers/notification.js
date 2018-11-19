@@ -10,12 +10,19 @@ export default (state = initialState, action) => {
   switch (action.type) {
     case types.NOTIFICATION_INCREMENT_ID:
       const { hash } = action;
-      state.elements.forEach((element, index) => {
+      const values = Object.values(state.elements);
+      let m = null;
+      values.forEach((element) => {
           if (hash === element.hash) {
-            return Object.assign({}, state, { newId: index })
+            m = Object.assign({}, state, { newId: element.id });
+            return true;
           }
         }
       );
+
+      if (m) {
+        return m;
+      }
 
       return Object.assign({}, state, { newId: state.newId + 1 });
 
@@ -23,7 +30,7 @@ export default (state = initialState, action) => {
       const { notification } = action;
       return Object.assign({}, state, {
         elements: Object.assign({}, state.elements, { [notification.id]: notification }),
-        active: [...state.active, notification.id],
+        active: Array.from(new Set([...state.active, notification.id])),
       });
 
     case types.NOTIFICATION_CLOSE:

@@ -1,5 +1,5 @@
 import * as types from 'rootApp/actionTypes';
-import * as md5 from 'md5';
+import md5 from 'md5';
 
 import config from 'rootApp/config';
 
