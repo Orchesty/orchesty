@@ -1,6 +1,6 @@
 function countProps(obj) {
-  var count = 0;
-  var k;
+  let count = 0;
+  let k;
   for (k in obj) {
     if (obj.hasOwnProperty(k)) {
       count++;
@@ -10,12 +10,11 @@ function countProps(obj) {
 }
 
 function objectEquals(v1, v2) {
-
-  if (typeof(v1) !== typeof(v2)) {
+  if (typeof (v1) !== typeof (v2)) {
     return false;
   }
 
-  if (typeof(v1) === "function") {
+  if (typeof (v1) === 'function') {
     return v1.toString() === v2.toString();
   }
 
@@ -23,8 +22,8 @@ function objectEquals(v1, v2) {
     if (countProps(v1) !== countProps(v2)) {
       return false;
     }
-    var r = true;
-    var k;
+    let r = true;
+    let k;
     for (k in v1) {
       r = objectEquals(v1[k], v2[k]);
       if (!r) {
@@ -32,9 +31,8 @@ function objectEquals(v1, v2) {
       }
     }
     return true;
-  } else {
-    return v1 === v2;
   }
+  return v1 === v2;
 }
 
 export default objectEquals;

@@ -1,5 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
 import TabBar from 'elements/tab/TabBar';
@@ -28,7 +27,7 @@ function mapStateToProps(state){
   const items = Object.keys(application.pages)
     .filter(id => application.pages[id].key && config.pages[application.pages[id].key].tab)
     .map((id, index) => {
-      if (id == application.selectedPage){
+      if (id === application.selectedPage){
         activeIndex = index;
       }
       return {id:id, caption: pageTitleSelector(state, id)}

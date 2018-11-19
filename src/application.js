@@ -3,56 +3,56 @@ import * as serverActions from 'actions/serverActions';
 import config from 'rootApp/config';
 import actions from 'actions';
 
-class Application{
-  constructor(store){
+class Application {
+  constructor(store) {
     this._store = store;
     this._record = null;
     this._recordUnsubscribe = null;
     this._actions = actions;
   }
 
-  get actions(){
+  get actions() {
     return this._actions;
   }
 
-  get dispatch(){
+  get dispatch() {
     return this._store.dispatch;
   }
 
-  downloadState(){
+  downloadState() {
     download(JSON.stringify(this._store.getState()), 'state.json', 'application/json');
   }
 
-  downloadConfig(){
+  downloadConfig() {
     download(JSON.stringify(config), 'config.json', 'application/json');
   }
 
-  logConfig(){
+  logConfig() {
     console.log(config);
   }
 
-  _createRec(){
+  _createRec() {
     this._record.states.push({
       state: this._store.getState(),
-      datetime: new Date()
+      datetime: new Date(),
     });
   }
 
-  startRec(caption){
+  startRec(caption) {
     this._record = {
       caption,
       start: new Date(),
       finish: null,
-      states: []
+      states: [],
     };
     this._createRec();
     this._recordSubscription = this._store.subscribe(this._createRec.bind(this));
   }
 
-  stopRec(downloadIt = false){
+  stopRec(downloadIt = false) {
     this._recordSubscription();
     this._record.finish = new Date();
-    if (downloadIt){
+    if (downloadIt) {
       download(JSON.stringify(this._record), 'rec.json', 'application/json');
     }
 
@@ -64,13 +64,13 @@ class Application{
     const state = rec.states[index];
     const nextTime = new Date(state ? state.datetime : rec.finish);
     setTimeout(() => {
-      if (state){
+      if (state) {
         console.log(`Play state ${index} - ${time}`);
-        this._store.dispatch({type: 'SET_STATE', state: state.state});
+        this._store.dispatch({ type: 'SET_STATE', state: state.state });
         this._playNext(rec, index + 1, nextTime, speed, callback);
       } else {
         console.log('Play - DONE');
-        if (typeof callback == 'function'){
+        if (typeof callback === 'function') {
           callback();
         }
       }
@@ -78,47 +78,47 @@ class Application{
   }
 
   play(rec, speed = 1, callback) {
-    console.log('Play - ' + rec.caption);
+    console.log(`Play - ${rec.caption}`);
     this._playNext(rec, 0, new Date(rec.start), speed, callback);
   }
 
-  _openFileAndPlay(element, file, speed, callback){
+  _openFileAndPlay(element, file, speed, callback) {
     element.parentElement.removeChild(element);
     const reader = new FileReader();
-    reader.onload = response => {
+    reader.onload = (response) => {
       this.play(JSON.parse(response.target.result), speed, callback);
     };
     reader.readAsText(file);
   }
 
-  uploadAndPlay(speed = 1, callback){
-    let elemDiv = document.createElement('div');
+  uploadAndPlay(speed = 1, callback) {
+    const elemDiv = document.createElement('div');
     elemDiv.style.cssText = 'top:0px;left:0px;position:absolute;width:250px;height:50px;z-index:100000;background:yellowgreen;';
-    let input = document.createElement('input');
+    const input = document.createElement('input');
     input.type = 'file';
     input.style = 'margin: 10px';
-    input.addEventListener('change', (e) => this._openFileAndPlay(elemDiv, e.target.files[0], speed, callback));
+    input.addEventListener('change', e => this._openFileAndPlay(elemDiv, e.target.files[0], speed, callback));
     elemDiv.appendChild(input);
     document.body.appendChild(elemDiv);
   }
 
-  changeServer(serverId, callback){
-    this._store.dispatch(serverActions.changeApiGatewayServer(serverId)).then(response => {
-      if (typeof callback == 'function'){
+  changeServer(serverId, callback) {
+    this._store.dispatch(serverActions.changeApiGatewayServer(serverId)).then((response) => {
+      if (typeof callback === 'function') {
         callback(response);
       }
       return response;
-    })
+    });
   }
 }
 
 let application = null;
 
-export default store => {
-  if (!application){
+export default (store) => {
+  if (!application) {
     application = new Application(store);
     window.application = application;
   }
-  
+
   return application;
-}
+};

@@ -2,34 +2,34 @@ import * as types from 'rootApp/actionTypes';
 
 import config from 'rootApp/config';
 
-function incrementId(){
+function incrementId() {
   return {
-    type: types.NOTIFICATION_INCREMENT_ID
-  }
+    type: types.NOTIFICATION_INCREMENT_ID,
+  };
 }
 
-function create(id, type, message){
+function create(id, type, message) {
   return {
     type: types.NOTIFICATION_ADD,
-    notification: {id, type, message}
-  }
+    notification: { id, type, message },
+  };
 }
 
-function notificationTimeout(id){
+function notificationTimeout(id) {
   return {
     type: types.NOTIFICATION_TIMEOUT,
-    id
-  }
+    id,
+  };
 }
 
-function setNotificationTimeout(id, timeout){
-  return dispatch => setTimeout(() => { dispatch(notificationTimeout(id)) }, timeout);
+function setNotificationTimeout(id, timeout) {
+  return dispatch => setTimeout(() => { dispatch(notificationTimeout(id)); }, timeout);
 }
 
 export function addNotification(type, message, timeout = config.params.notificationTimeout) {
   return (dispatch, getState) => {
     dispatch(incrementId());
-    const {notification} = getState();
+    const { notification } = getState();
     const id = notification.newId;
     dispatch(create(id, type, message));
     dispatch(setNotificationTimeout(id, timeout));
@@ -39,12 +39,10 @@ export function addNotification(type, message, timeout = config.params.notificat
 export function closeNotification(id) {
   return {
     type: types.NOTIFICATION_CLOSE,
-    id
-  }
+    id,
+  };
 }
 
 export function addSuccess(message, timeout) {
-  return dispatch => {
-    return dispatch(addNotification('success', message, timeout));
-  }
+  return dispatch => dispatch(addNotification('success', message, timeout));
 }

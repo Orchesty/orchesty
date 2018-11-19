@@ -1,5 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types';
 import CategoryTreeView from 'components/category/CategoryTreeView';
 import AllTopologyListTable from 'rootApp/views/components/topology/AllTopologyListTable';
 import {connect} from 'react-redux';

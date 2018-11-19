@@ -7,51 +7,51 @@ const listPrefixLength = listPrefix.length;
 const initialState = {
   elements: {},
   lists: {},
-  tests: {}
+  tests: {},
 };
 
-function getElementId(element){
+function getElementId(element) {
   return element._id;
 }
 
-function addElement(oldElements, element){
+function addElement(oldElements, element) {
   return Object.assign({}, oldElements, {
-    [element._id]: element
+    [element._id]: element,
   });
 }
 
-function addElements(oldElements, newElements){
+function addElements(oldElements, newElements) {
   const result = Object.assign({}, oldElements);
-  newElements.forEach(item => {
+  newElements.forEach((item) => {
     result[item._id] = item;
   });
   return result;
 }
 
-function reducer(state, action){
-  switch (action.type){
+function reducer(state, action) {
+  switch (action.type) {
     case types.NODE_RECEIVE_ITEMS:
       return Object.assign({}, state, {
-        elements: addElements(state.elements, action.items)
+        elements: addElements(state.elements, action.items),
       });
 
     case types.NODE_RECEIVE:
       return Object.assign({}, state, {
-        elements: addElement(state.elements, action.data)
+        elements: addElement(state.elements, action.data),
       });
 
     case types.TOPOLOGY_RECEIVE_TEST:
       const newTests = {};
-      action.data.nodes.forEach(item => {newTests[item.node_id] = item});
+      action.data.nodes.forEach((item) => { newTests[item.node_id] = item; });
       return Object.assign({}, state, {
-        tests: Object.assign({}, state.tests, newTests)
+        tests: Object.assign({}, state.tests, newTests),
       });
 
     case types.TOPOLOGY_RESET_TEST:
       const rNewTests = Object.assign({}, state.tests);
-      action.nodes.forEach(nodeId => {delete rNewTests[nodeId]});
+      action.nodes.forEach((nodeId) => { delete rNewTests[nodeId]; });
       return Object.assign({}, state, {
-        tests: rNewTests
+        tests: rNewTests,
       });
 
     default:
@@ -60,16 +60,16 @@ function reducer(state, action){
 }
 
 export default (state = initialState, action) => {
-  if (action.type == types.USER_LOGOUT || action.type == types.USER_LOGGED){
+  if (action.type === types.USER_LOGOUT || action.type === types.USER_LOGGED) {
     return initialState;
   }
   let newState = reducer(state, action);
-  if (action.type.startsWith(listPrefix)){
-    const lists = listsReducer(state.lists, Object.assign({}, action, {type: action.type.substring(listPrefixLength)}), getElementId);
-    if (newState == state && lists != state.lists) {
+  if (action.type.startsWith(listPrefix)) {
+    const lists = listsReducer(state.lists, Object.assign({}, action, { type: action.type.substring(listPrefixLength) }), getElementId);
+    if (newState === state && lists !== state.lists) {
       newState = Object.assign({}, newState);
     }
     newState.lists = lists;
   }
   return newState;
-}
+};

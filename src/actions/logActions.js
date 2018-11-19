@@ -2,19 +2,21 @@ import * as types from 'rootApp/actionTypes';
 import listFactory from './factories/listFactory';
 import serverRequest, { sortToQuery } from 'services/apiGatewayServer';
 import config from 'rootApp/config';
-import {stateType} from 'rootApp/types';
+import { stateType } from 'rootApp/types';
 import objectEquals from 'utils/objectEquals';
 
-const { createPaginationList, listLoading, listError, listReceive, listDelete, listChangePage, listChangeSort, listChangeFilter } = listFactory('LOG/LIST/');
+const {
+  createPaginationList, listLoading, listError, listReceive, listChangePage, listChangeSort, listChangeFilter,
+} = listFactory('LOG/LIST/');
 
-function receiveItems(items){
+function receiveItems(items) {
   return {
     type: types.LOG_RECEIVE_ITEMS,
-    items
-  }
+    items,
+  };
 }
 
-function loadList(id, loadingState = true){
+function loadList(id, loadingState = true) {
   return (dispatch, getState) => {
     if (loadingState) {
       dispatch(listLoading(id));
@@ -34,18 +36,18 @@ function loadList(id, loadingState = true){
     const headers = {
       page: list.page + 1,
       limit: list.pageSize,
-      orderby: orderby ? orderby : 'timestamp-',
+      orderby: orderby || 'timestamp-',
       filter: JSON.stringify(sendFilter),
     };
 
-    return serverRequest(dispatch, 'GET', '/logs', null, null, headers).then(response => {
+    return serverRequest(dispatch, 'GET', '/logs', null, null, headers).then((response) => {
       if (response) {
         dispatch(receiveItems(response.items));
       }
       dispatch(response ? listReceive(id, response) : listError(id));
       return response;
-    })
-  }
+    });
+  };
 }
 
 export function needLogList(listId, pageSize = config.params.defaultPageSize) {
@@ -54,22 +56,21 @@ export function needLogList(listId, pageSize = config.params.defaultPageSize) {
     if (!list) {
       dispatch(createPaginationList(listId, pageSize));
     }
-    if (!list || list.state == stateType.NOT_LOADED || list.state == stateType.ERROR) {
+    if (!list || list.state === stateType.NOT_LOADED || list.state === stateType.ERROR) {
       return dispatch(loadList(listId));
-    } else {
-        return Promise.resolve(true);
     }
-  }
+    return Promise.resolve(true);
+  };
 }
 
 export function logListChangePage(listId, page) {
   return (dispatch, getState) => {
     const oldPage = getState().log.lists[listId].page;
-    if (!objectEquals(oldPage, page)){
+    if (!objectEquals(oldPage, page)) {
       dispatch(listChangePage(listId, page));
       dispatch(loadList(listId));
     }
-  }
+  };
 }
 
 export function logListChangeSort(listId, sort) {
@@ -79,10 +80,9 @@ export function logListChangeSort(listId, sort) {
       dispatch(listChangeSort(listId, sort));
       return dispatch(loadList(listId, false));
     }
-    else {
-      return Promise.resolve(true);
-    }
-  }
+
+    return Promise.resolve(true);
+  };
 }
 
 export function logListChangeFilter(listId, filter) {
@@ -93,11 +93,9 @@ export function logListChangeFilter(listId, filter) {
       if (filter.apply) {
         delete filter.apply;
         return dispatch(loadList(listId));
-      } else {
-        return Promise.resolve(true);
       }
-    } else {
       return Promise.resolve(true);
     }
-  }
+    return Promise.resolve(true);
+  };
 }

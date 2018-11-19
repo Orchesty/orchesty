@@ -26,7 +26,7 @@ class TopologyNodeListTable extends React.Component{
           this.setState({topologyState: stateType.SUCCESS});
         });
       }
-    } else if (this.state.topologyState != stateType.SUCCESS) {
+    } else if (this.state.topologyState !== stateType.SUCCESS) {
       this.setState({topologyState: stateType.SUCCESS});
     }
   }

@@ -5,20 +5,22 @@ import serverRequest, { sortToQuery } from 'services/apiGatewayServer';
 import config from 'rootApp/config';
 import objectEquals from 'utils/objectEquals';
 
-const { createPaginationList, listLoading, listError, listReceive, listChangePage, listChangeSort, listChangeFilter } = listFactory('HUMAN_TASK/LIST/');
+const {
+  createPaginationList, listLoading, listError, listReceive, listChangePage, listChangeSort, listChangeFilter,
+} = listFactory('HUMAN_TASK/LIST/');
 
 function receiveItems(items) {
   return {
     type: types.HUMAN_TASKS_RECEIVE_ITEMS,
-    items
-  }
+    items,
+  };
 }
 
 function receiveNodes(items) {
   return {
     type: types.HUMAN_TASKS_RECEIVE_NODES,
-    items
-  }
+    items,
+  };
 }
 
 function loadList(id, loadingState = true) {
@@ -33,13 +35,13 @@ function loadList(id, loadingState = true) {
     const headers = {
       page: list.page + 1,
       limit: list.pageSize,
-      orderby: orderby ? orderby : 'created-',
+      orderby: orderby || 'created-',
       filter: JSON.stringify(auditLogs ? { search: auditLogs } : {}),
     };
 
-    return serverRequest(dispatch, 'GET', `/longRunning/id/topology/${topologyId}/${nodeId ? `node/${nodeId}/` : ''}getTasks`, null, null, headers).then(response => {
+    return serverRequest(dispatch, 'GET', `/longRunning/id/topology/${topologyId}/${nodeId ? `node/${nodeId}/` : ''}getTasks`, null, null, headers).then((response) => {
       if (response) {
-        const topologies = response.items.map(topology => {
+        const topologies = response.items.map((topology) => {
           topology.name = topology._id;
 
           return topology;
@@ -47,24 +49,23 @@ function loadList(id, loadingState = true) {
 
         dispatch(receiveItems(topologies));
 
-        serverRequest(dispatch, 'GET', `/topologies/${topologyId}/nodes?limit=1000`).then(response => {
+        serverRequest(dispatch, 'GET', `/topologies/${topologyId}/nodes?limit=1000`).then((response) => {
           if (response) {
-            const nodes = response.items.filter(item => item.type === 'user').map(node => {
+            const nodes = response.items.filter(item => item.type === 'user').map((node) => {
               node.customName = node.name;
               node.name = node._id;
 
               return node;
             });
 
-            dispatch(receiveNodes(nodes))
+            dispatch(receiveNodes(nodes));
           }
         });
-
       }
       dispatch(response ? listReceive(id, response) : listError(id));
       return response;
-    })
-  }
+    });
+  };
 }
 
 export function needHumanTaskList(listId, pageSize = config.params.defaultPageSize) {
@@ -74,7 +75,7 @@ export function needHumanTaskList(listId, pageSize = config.params.defaultPageSi
       dispatch(createPaginationList(listId, pageSize));
     }
     return dispatch(loadList(listId));
-  }
+  };
 }
 
 export function humanTaskListChangePage(listId, page) {
@@ -84,7 +85,7 @@ export function humanTaskListChangePage(listId, page) {
       dispatch(listChangePage(listId, page));
       dispatch(loadList(listId));
     }
-  }
+  };
 }
 
 export function humanTaskChangeSort(listId, sort) {
@@ -94,10 +95,9 @@ export function humanTaskChangeSort(listId, sort) {
       dispatch(listChangeSort(listId, sort));
       return dispatch(loadList(listId, false));
     }
-    else {
-      return Promise.resolve(true);
-    }
-  }
+
+    return Promise.resolve(true);
+  };
 }
 
 export function humanTaskListChangeFilter(listId, filter) {
@@ -108,23 +108,20 @@ export function humanTaskListChangeFilter(listId, filter) {
       if (filter.apply) {
         delete filter.apply;
         return dispatch(loadList(listId));
-      } else {
-        return Promise.resolve(true);
       }
-    } else {
       return Promise.resolve(true);
     }
-  }
+    return Promise.resolve(true);
+  };
 }
 
 export function humanTaskProcess(listId, topology, node, token, approve) {
-  return dispatch => {
-    serverRequest(dispatch, 'GET', `/longRunning/${approve ? 'run' : 'stop'}/id/topology/${topology}/node/${node}/token/${token}`).then(response => {
+  return (dispatch) => {
+    serverRequest(dispatch, 'GET', `/longRunning/${approve ? 'run' : 'stop'}/id/topology/${topology}/node/${node}/token/${token}`).then((response) => {
       if (response) {
         return dispatch(loadList(listId));
-      } else {
-        return response;
       }
+      return response;
     });
   };
 }

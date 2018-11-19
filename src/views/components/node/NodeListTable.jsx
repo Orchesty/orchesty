@@ -43,8 +43,8 @@ class NodeListTable extends React.Component {
     const {list, elements, topologyElements, withTopology, updateNode, runNode, onlyEvents, listChangePage, withNodeTest, tests} = this.props;
     const rows = list && list.items ? list.items.map(id => {
       const item = elements[id];
-      if (!onlyEvents || item.handler == 'event') {
-        const menuItems = item.handler == 'event' ? [
+      if (!onlyEvents || item.handler === 'event') {
+        const menuItems = item.handler === 'event' ? [
           {
             caption: 'Run',
             action: () => {
@@ -69,7 +69,7 @@ class NodeListTable extends React.Component {
             <td>{item.type}</td>
             <td>{item.handler}</td>
             <td><BoolValue value={item.enabled}/></td>
-            {withNodeTest && <td>{test !== null ? <BoolValue color value={test.code == 200} title={test.message}/> : '-'}</td>}
+            {withNodeTest && <td>{test !== null ? <BoolValue color value={test.code === 200} title={test.message}/> : '-'}</td>}
             <td><ActionButtonPanel items={menuItems} right={true}/></td>
           </tr>
         )

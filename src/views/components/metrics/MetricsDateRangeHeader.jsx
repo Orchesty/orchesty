@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import DateRangeInput from 'rootApp/views/elements/input/DateRangeInput';
 
 import './MetricsDateRangeHeader.less';
-import SelectInput from 'rootApp/views/elements/input/SelectInput';
 import {intervalType} from 'rootApp/types';
 
 const intervalOptions = Object.keys(intervalType).map(key => ({value: intervalType[key].value, label: intervalType[key].caption}));

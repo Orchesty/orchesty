@@ -4,8 +4,8 @@ export default {
     servers: {
       mainServer: {
         url: 'http://url.to.api.gateway',
-        caption: 'Main'
-      }
-    }
-  }
-}
+        caption: 'Main',
+      },
+    },
+  },
+};

@@ -1,5 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types';
 import TreeView from 'elements/treeView/TreeView';
 import {connect} from 'react-redux';
 import * as categoryActions from 'rootApp/actions/categoryActions';
@@ -23,7 +22,7 @@ function mapStateToProps(state, ownProps) {
   const tree = category.trees[ownProps.componentKey];
   return {
     state: tree && tree.state,
-    root: tree && tree.state == stateType.SUCCESS ? treeItemToTreeView(category.elements, tree.root, tree.selectedId) : null
+    root: tree && tree.state === stateType.SUCCESS ? treeItemToTreeView(category.elements, tree.root, tree.selectedId) : null
   }
 }
 

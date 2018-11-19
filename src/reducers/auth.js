@@ -1,19 +1,18 @@
 import * as types from 'rootApp/actionTypes';
 
 const initialState = {
-  user: null
+  user: null,
 };
 
 export default (state = initialState, action) => {
-  switch (action.type){
-
+  switch (action.type) {
     case types.USER_LOGGED:
-      return Object.assign({}, state, {user: action.data});
-    
+      return Object.assign({}, state, { user: action.data });
+
     case types.USER_LOGOUT:
-      return Object.assign({}, state, {user: null});
+      return Object.assign({}, state, { user: null });
 
     default:
       return state;
   }
-}
+};

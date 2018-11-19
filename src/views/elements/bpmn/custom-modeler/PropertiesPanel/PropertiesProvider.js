@@ -22,9 +22,9 @@ function createGeneralTabGroups(element, bpmnFactory, elementRegistry, translate
   ElementPipesTypeProps(generalGroup, element, translate);
 
   const cronGroup = {
-      id: 'cron',
-      label: translate('Cron'),
-      entries: [],
+    id: 'cron',
+    label: translate('Cron'),
+    entries: [],
   };
 
   CronTimeProps(cronGroup, element, translate);
@@ -62,7 +62,7 @@ function PipesPropertiesProvider(eventBus, bpmnFactory, elementRegistry, transla
   };
 }
 
-PipesPropertiesProvider.$inject = [ 'eventBus', 'bpmnFactory', 'elementRegistry', 'translate' ];
+PipesPropertiesProvider.$inject = ['eventBus', 'bpmnFactory', 'elementRegistry', 'translate'];
 
 inherits(PipesPropertiesProvider, PropertiesActivator);
 

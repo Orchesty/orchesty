@@ -1,3 +1,3 @@
 export default {
-  urlPrefix: '/ui'
+  urlPrefix: '/ui',
 };

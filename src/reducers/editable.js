@@ -3,7 +3,7 @@ import * as types from 'rootApp/actionTypes';
 const initialState = {};
 
 export default (state = initialState, action) => {
-  switch (action.type){
+  switch (action.type) {
     case types.USER_LOGOUT:
     case types.USER_LOGGED:
       return initialState;
@@ -11,8 +11,8 @@ export default (state = initialState, action) => {
     case types.EDITABLE_SWITCH_EDIT:
       return Object.assign({}, state, {
         [action.id]: {
-          editMode: true
-        }
+          editMode: true,
+        },
       });
 
     case types.EDITABLE_SWITCH_VIEW:
@@ -22,7 +22,7 @@ export default (state = initialState, action) => {
 
     case types.EDITABLE_CHANGE:
       return Object.assign({}, state, {
-        [action.id]: Object.assign({}, state[action.id], {value: action.value})
+        [action.id]: Object.assign({}, state[action.id], { value: action.value }),
       });
 
     default:

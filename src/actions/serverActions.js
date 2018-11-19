@@ -1,28 +1,27 @@
 import * as types from 'rootApp/actionTypes';
 import * as processActions from './processActions';
 import * as authActions from './authActions';
-import processes from "rootApp/enums/processes";
+import processes from 'rootApp/enums/processes';
 
-function changeApiGateway(server){
+function changeApiGateway(server) {
   return {
     type: types.SERVER_API_GATEWAY_CHANGE,
-    server
-  }
+    server,
+  };
 }
 
-export function changeApiGatewayServer(server, processHash = 'default'){
+export function changeApiGatewayServer(server, processHash = 'default') {
   return (dispatch, getState) => {
-    if (getState().server.apiGateway !== server){
+    if (getState().server.apiGateway !== server) {
       dispatch(processActions.startProcess(processes.serverApiGatewayChange(processHash)));
-      return dispatch(authActions.logout()).then(response => {
+      return dispatch(authActions.logout()).then((response) => {
         dispatch(changeApiGateway(server));
         dispatch(processActions.finishProcess(processes.serverApiGatewayChange(processHash), response));
 
         return Boolean(response);
       });
-    } else {
-      dispatch(processActions.finishProcess(processes.serverApiGatewayChange(processHash), true));
-      return Promise.resolve(true);
     }
-  }
+    dispatch(processActions.finishProcess(processes.serverApiGatewayChange(processHash), true));
+    return Promise.resolve(true);
+  };
 }

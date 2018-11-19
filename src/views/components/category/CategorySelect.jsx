@@ -1,5 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types';
 import CategoryTreeView from './CategoryTreeView';
 
 class CategorySelect extends React.Component {

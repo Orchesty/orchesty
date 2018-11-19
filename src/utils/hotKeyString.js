@@ -1,4 +1,4 @@
-export default rec => {
+export default (rec) => {
   if (rec) {
     const items = [];
     if (rec.ctrl) {
@@ -12,7 +12,6 @@ export default rec => {
     }
     items.push(rec.char);
     return items.join(' + ');
-  } else {
-    return ''
   }
-}
+  return '';
+};

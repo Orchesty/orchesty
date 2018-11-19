@@ -32,7 +32,7 @@ class GeneralSearch extends React.Component {
   componentWillReceiveProps(newProps){
     const items = newProps.generalSearch.items;
     const selected = this.state.selected;
-    if (selected && (!items || items.find(item => item.objectType == selected.objectType && item.id == selected.id) === undefined)){
+    if (selected && (!items || items.find(item => item.objectType === selected.objectType && item.id === selected.id) === undefined)){
       this.setState({selected: null});
     }
   }
@@ -80,7 +80,7 @@ class GeneralSearch extends React.Component {
 
   redirect(item) {
     const {redirectActions, clearAction} = this.props;
-    if (item.objectType != 'topologyGroup') {
+    if (item.objectType !== 'topologyGroup') {
       redirectActions[item.objectType](item.id);
     } else {
       redirectActions.topologyGroup(this.props.globalState.topologyGroup.elements[item.id].last);
@@ -103,7 +103,7 @@ class GeneralSearch extends React.Component {
       if (items && items.length > 0){
         let index = 0;
         if (selected){
-          index = items.reduce((oldIndex, item, index) => item.objectType == selected.objectType && item.id == selected.id ? index + 1 : oldIndex, 0);
+          index = items.reduce((oldIndex, item, index) => item.objectType === selected.objectType && item.id === selected.id ? index + 1 : oldIndex, 0);
           if (index >= items.length){
             index = 0;
           }
@@ -122,7 +122,7 @@ class GeneralSearch extends React.Component {
       if (items && items.length > 0){
         let index = -1;
         if (selected){
-          index = items.reduce((oldIndex, item, index) => item.objectType == selected.objectType && item.id == selected.id ? index - 1 : oldIndex, -1);
+          index = items.reduce((oldIndex, item, index) => item.objectType === selected.objectType && item.id === selected.id ? index - 1 : oldIndex, -1);
         }
         if (index < 0){
           index = items.length - 1;
@@ -165,7 +165,7 @@ class GeneralSearch extends React.Component {
       return (
         <li
           key={`${item.objectType}#${item.id}`}
-          className={'search-item' + (selected && selected.id == item.id && selected.objectType == item.objectType ? ' active' : '')}
+          className={'search-item' + (selected && selected.id === item.id && selected.objectType === item.objectType ? ' active' : '')}
           onClick={this.itemClick.bind(this, item)}
           onMouseMove={() => this.select(item)}
         >
@@ -188,7 +188,7 @@ class GeneralSearch extends React.Component {
           </span>
         </div>
         {
-          focused && generalSearch.state == stateType.SUCCESS &&
+          focused && generalSearch.state === stateType.SUCCESS &&
           <div className="selector">
             {items && items.length > 0 ? <ul>{items}</ul> : <div className="no-match">No match</div>}
           </div>

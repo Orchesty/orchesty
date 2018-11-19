@@ -1,6 +1,6 @@
-import {combineReducers} from 'redux';
+import { combineReducers } from 'redux';
 
-import {reducer as form} from 'redux-form'
+import { reducer as form } from 'redux-form';
 
 import application from './application';
 import notification from './notification';
@@ -38,7 +38,7 @@ const rootReducer = combineReducers({
   notificationSettings,
   generalSearch,
   panel,
-  log
+  log,
 });
 
 export default rootReducer;

@@ -4,8 +4,6 @@ import PropTypes from 'prop-types';
 import ListPagination from 'elements/table/ListPagination';
 import SortTh from 'elements/table/SortTh';
 import StateComponent from 'wrappers/StateComponent';
-import BoolValue from 'elements/BoolValue';
-import ActionButtonPanel from 'rootApp/views/elements/actions/ActionButtonPanel';
 import MetricsTable from 'rootApp/views/components/metrics/MetricsTable';
 
 class NodeMetricsListTable extends React.Component {
@@ -39,7 +37,7 @@ class NodeMetricsListTable extends React.Component {
     const {list, elements, topologyElements, metricsElements, withTopology, onlyEvents, listChangePage} = this.props;
     const rows = list && list.items ? list.items.map(id => {
       const item = elements[id];
-      if (!onlyEvents || item.handler == 'event') {
+      if (!onlyEvents || item.handler === 'event') {
         return (
           <tr key={item._id}>
             {withTopology && <td>{item.topology_id}</td>}

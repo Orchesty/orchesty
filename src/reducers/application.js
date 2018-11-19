@@ -1,6 +1,6 @@
 import * as types from 'rootApp/actionTypes';
 import objectEquals from 'utils/objectEquals';
-import {getPageArgs, getPageId} from 'rootApp/utils/pageUtils';
+import { getPageArgs, getPageId } from 'rootApp/utils/pageUtils';
 import config from 'rootApp/config/index';
 
 const initialState = {
@@ -14,7 +14,7 @@ const initialState = {
 };
 
 export default (state = initialState, action) => {
-  switch (action.type){
+  switch (action.type) {
     case types.OPEN_PAGE:
       const id = getPageId(action.key, action.args);
       if (id && (!state.pages[id] || !objectEquals(state.pages[id].args, action.args))) {
@@ -23,25 +23,25 @@ export default (state = initialState, action) => {
           pages: Object.assign({}, state.pages, {
             [id]: {
               key: action.key,
-              args: getPageArgs(action.key, action.args)
-            }
-          })
+              args: getPageArgs(action.key, action.args),
+            },
+          }),
         });
       } else if (state.selectedPage !== id) {
-        return Object.assign({}, state, {selectedPage: id});
-      } else {
-        return state;
+        return Object.assign({}, state, { selectedPage: id });
       }
+      return state;
+
 
     case types.SELECT_PAGE:
-      return Object.assign({}, state, {selectedPage: action.id});
+      return Object.assign({}, state, { selectedPage: action.id });
 
     case types.CLOSE_PAGE:
-      let newState = Object.assign({}, state, {pages: Object.assign({}, state.pages)});
+      const newState = Object.assign({}, state, { pages: Object.assign({}, state.pages) });
       delete newState.pages[action.id];
-      if (newState.selectedPage == action.id){
-        if (action.newId){
-          newState.selectedPage = action.newId
+      if (newState.selectedPage === action.id) {
+        if (action.newId) {
+          newState.selectedPage = action.newId;
         } else {
           const pageIds = Object.keys(state.pages);
           const pageIndex = Math.max(pageIds.indexOf(action.id) - 1, 0);
@@ -53,23 +53,23 @@ export default (state = initialState, action) => {
 
     case types.LEFT_SIDEBAR_TOGGLE:
       return Object.assign({}, state, {
-        showSideBar: !state.showSideBar
+        showSideBar: !state.showSideBar,
       });
 
     case types.EDITOR_PROP_PANEL_TOGGLE:
       return Object.assign({}, state, {
-        showEditorPropPanel: !state.showEditorPropPanel
+        showEditorPropPanel: !state.showEditorPropPanel,
       });
-    
+
     case types.MODAL_OPEN:
       return Object.assign({}, state, {
         modal: action.id,
-        modalData: action.data
+        modalData: action.data,
       });
-    
+
     case types.MODAL_CLOSE:
       return Object.assign({}, state, {
-        modal: null
+        modal: null,
       });
 
     case types.USER_LOGOUT:
@@ -82,7 +82,7 @@ export default (state = initialState, action) => {
           .reduce((acc, id) => {
             acc[id] = state.pages[id];
             return acc;
-          }, {})
+          }, {}),
       });
 
     case types.CONTEXT_MENU_OPEN:
@@ -92,14 +92,14 @@ export default (state = initialState, action) => {
           args: action.args,
           componentKey: action.componentKey,
           x: action.x,
-          y: action.y
-        }
+          y: action.y,
+        },
       });
 
     case types.CONTEXT_MENU_CLOSE:
-      return Object.assign({}, state, {contextMenu: null});
+      return Object.assign({}, state, { contextMenu: null });
 
     default:
       return state;
   }
-}
+};

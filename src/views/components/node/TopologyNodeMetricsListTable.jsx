@@ -3,7 +3,6 @@ import {connect} from 'react-redux';
 
 import * as nodeActions from 'actions/nodeActions';
 import * as topologyActions from 'actions/topologyActions';
-import * as applicationActions from 'actions/applicationActions';
 
 import {stateType} from 'rootApp/types';
 import stateMerge from 'rootApp/utils/stateMerge';
@@ -27,7 +26,7 @@ class TopologyNodeMetricsListTable extends React.Component{
           this.setState({topologyState: stateType.SUCCESS});
         });
       }
-    } else if (this.state.topologyState != stateType.SUCCESS) {
+    } else if (this.state.topologyState !== stateType.SUCCESS) {
       this.setState({topologyState: stateType.SUCCESS});
     }
   }
