@@ -9,6 +9,14 @@ const initialState = {
 export default (state = initialState, action) => {
   switch (action.type) {
     case types.NOTIFICATION_INCREMENT_ID:
+      const { hash } = action;
+      state.elements.forEach((element, index) => {
+          if (hash === element.hash) {
+            return Object.assign({}, state, { newId: index })
+          }
+        }
+      );
+
       return Object.assign({}, state, { newId: state.newId + 1 });
 
     case types.NOTIFICATION_ADD:

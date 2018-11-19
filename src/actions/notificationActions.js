@@ -1,17 +1,21 @@
 import * as types from 'rootApp/actionTypes';
+import * as md5 from 'md5';
 
 import config from 'rootApp/config';
 
-function incrementId() {
+function incrementId(message) {
+  const hash = md5(message);
   return {
+    hash: hash ,
     type: types.NOTIFICATION_INCREMENT_ID,
   };
 }
 
 function create(id, type, message) {
+  const hash = md5(message);
   return {
     type: types.NOTIFICATION_ADD,
-    notification: { id, type, message },
+    notification: { id, type, message, hash },
   };
 }
 
@@ -28,7 +32,7 @@ function setNotificationTimeout(id, timeout) {
 
 export function addNotification(type, message, timeout = config.params.notificationTimeout) {
   return (dispatch, getState) => {
-    dispatch(incrementId());
+    dispatch(incrementId(message));
     const { notification } = getState();
     const id = notification.newId;
     dispatch(create(id, type, message));
