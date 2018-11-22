@@ -164,7 +164,7 @@ class TopologyManager
         $nodes = $this->dm->getRepository(Node::class)->findBy(['topology' => $topology->getId()]);
         if (empty($nodes)) {
             throw new TopologyException(
-                'Topology has no nodes.',
+                'Topology has no nodes. Please save your topology before publish it.',
                 TopologyException::TOPOLOGY_HAS_NO_NODES
             );
         }
@@ -179,19 +179,10 @@ class TopologyManager
      * @param Topology $topology
      *
      * @return Topology
-     * @throws TopologyException
      * @throws EnumException
      */
     public function unPublishTopology(Topology $topology): Topology
     {
-        $nodes = $this->dm->getRepository(Node::class)->findBy(['topology' => $topology->getId()]);
-        if (empty($nodes)) {
-            throw new TopologyException(
-                'Topology has no nodes.',
-                TopologyException::TOPOLOGY_HAS_NO_NODES
-            );
-        }
-
         $topology->setVisibility(TopologyStatusEnum::DRAFT);
         $this->dm->flush();
 
