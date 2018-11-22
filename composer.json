@@ -27,7 +27,6 @@
     "influxdb/influxdb-php": "^1.14",
     "league/oauth2-client": "^2.3",
     "mtdowling/cron-expression": "^1.2",
-    "nette/http": "^2.4",
     "nette/utils": "^2.5",
     "php-http/client-common": "^1.8",
     "php-http/message": "^1.7",

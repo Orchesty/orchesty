@@ -10,8 +10,8 @@
 namespace Hanaboso\PipesFramework\Authorization\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Hanaboso\CommonsBundle\Crypt\CryptException;
 use Hanaboso\CommonsBundle\Crypt\CryptManager;
+use Hanaboso\CommonsBundle\Crypt\Exceptions\CryptException;
 use Hanaboso\CommonsBundle\Traits\Document\IdTrait;
 
 /**

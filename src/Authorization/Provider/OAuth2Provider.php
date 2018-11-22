@@ -16,7 +16,6 @@ use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2DtoInterface;
 use Hanaboso\PipesFramework\Authorization\Utils\ScopeFormatter;
 use Hanaboso\PipesFramework\Authorization\Wrapper\OAuth2Wrapper;
-use Nette\Http\Url;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -181,10 +180,12 @@ class OAuth2Provider implements OAuth2ProviderInterface, LoggerAwareInterface
             $state = Base64::base64UrlEncode($dto->getUser() . ':' . $dto->getSystemKey());
         }
 
-        $url = sprintf('%s%s', $authorizeUrl, ScopeFormatter::getScopes($scopes, $separator));
+        $scopes = ScopeFormatter::getScopes($scopes, $separator);
+        $url    = sprintf('%s%s', $authorizeUrl, $scopes);
 
         if ($state) {
-            $url = (string) (new Url($url))->setQueryParameter('state', $state);
+            $prefix = empty($scopes) ? '?' : '&';
+            $url    = sprintf('%s%sstate=%s', $url, $prefix, $state);
         }
 
         return $url;
