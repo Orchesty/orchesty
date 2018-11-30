@@ -1,4 +1,4 @@
-package api
+package router
 
 import (
 	"encoding/json"
@@ -33,21 +33,28 @@ func Router(routes Routes) *mux.Router {
 
 // HandleStatus checks if HTTP is working correctly
 func HandleStatus(w http.ResponseWriter, r *http.Request) {
-	_ = json.NewEncoder(writeResponseHeaders(w)).Encode(map[string]string{"status": "OK"})
+	writeResponse(w, map[string]interface{}{"status": "OK"})
 }
 
 func notFoundHandler(w http.ResponseWriter, r *http.Request) {
-	writeResponseHeaders(w)
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusNotFound)
 }
 
 func methodNotAllowedHandler(w http.ResponseWriter, r *http.Request) {
-	writeResponseHeaders(w)
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusMethodNotAllowed)
 }
 
-func writeResponseHeaders(w http.ResponseWriter) http.ResponseWriter {
+func writeResponse(w http.ResponseWriter, content map[string]interface{}) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
-	return w
+	_ = json.NewEncoder(w).Encode(content)
+}
+
+func writeErrorResponse(w http.ResponseWriter, status int, content string) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(status)
+
+	_ = json.NewEncoder(w).Encode(map[string]interface{}{"message": content})
 }

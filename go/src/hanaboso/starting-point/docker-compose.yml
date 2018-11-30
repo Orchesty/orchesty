@@ -4,10 +4,30 @@ services:
   app:
     image: dkr.hanaboso.net/pipes/pipes/starting-point:dev
     environment:
-      - GO111MODULE=on
+      GO111MODULE: "on"
+      MONGO_HOSTNAME: mongodb
+      MONGO_DATABASE: starting-point
     working_dir: /go/src/hanaboso/starting-point
     volumes:
       - ./:/go/src/hanaboso/starting-point
     ports:
       - ${DEV_IP}:80:80
-    command: tail -f /dev/null #go run cmd/starting-point.go
+    command: go run cmd/starting-point.go
+
+  mongodb:
+    image: mongo
+    ports:
+      - ${DEV_IP}:27017:27017
+    volumes:
+      - mongodb:/data/db
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - ${DEV_IP}:15672:15672
+    volumes:
+      - rabbitmq:/var/lib/rabbitmq
+
+volumes:
+  mongodb: {}
+  rabbitmq: {}
