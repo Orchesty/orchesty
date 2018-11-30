@@ -1,0 +1,13 @@
+version: '3.3'
+
+services:
+  app:
+    image: dkr.hanaboso.net/pipes/pipes/starting-point:dev
+    environment:
+      - GO111MODULE=on
+    working_dir: /go/src/hanaboso/starting-point
+    volumes:
+      - ./:/go/src/hanaboso/starting-point
+    ports:
+      - ${DEV_IP}:80:80
+    command: tail -f /dev/null #go run cmd/starting-point.go
