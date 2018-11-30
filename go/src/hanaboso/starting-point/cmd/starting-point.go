@@ -11,10 +11,12 @@ import (
 	"syscall"
 
 	log "github.com/sirupsen/logrus"
+	"github.com/streadway/amqp"
+	"starting-point/pkg/rabbitmq"
+	"time"
 )
 
 func main() {
-
 	var routes = router.Routes{
 		router.Route{
 			Name:        "Status",
@@ -39,6 +41,7 @@ func main() {
 	log.Info("Starting server...")
 	storage.CreateConnection()
 	server := &http.Server{Addr: fmt.Sprint(":80"), Handler: router.Router(routes)}
+	prepareRabbit()
 
 	defer func() {
 		_ = storage.MongoDB.Client().Disconnect(context.Background())
@@ -64,4 +67,18 @@ func gracefulShutdown(server *http.Server) {
 
 		os.Exit(0)
 	}()
+}
+
+func prepareRabbit() {
+
+	b := []byte("That's all folks!!")
+
+	q := rabbitmq.Queue{Name: "aaaa", Durable: true, AutoDelete: false}
+	m := amqp.Publishing{Body: b}
+	sender := rabbitmq.NewRabbitSender()
+
+	time.Sleep(5 * time.Second)
+	log.Info("sending")
+
+	sender.SndMessage(q, m)
 }
