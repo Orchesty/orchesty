@@ -3,12 +3,11 @@ package service
 import (
 	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/bson/objectid"
+	"starting-point/pkg/config"
 	"starting-point/pkg/storage"
 
 	log "github.com/sirupsen/logrus"
 )
-
-const topologyCollection = "Topology"
 
 var topologyVisibilityFilter = bson.E{Key: "visibility", Value: "public"}
 var topologyDeletedFilter = bson.E{Key: "deleted", Value: false}
@@ -24,7 +23,7 @@ func findMongoTopologyByID(topologyID string, nodeID string) *storage.Topology {
 		return nil
 	}
 
-	err = storage.MongoDB.Collection(topologyCollection).FindOne(nil, bson.D{
+	err = storage.MongoDB.Collection(config.Config.MongoDB.TopologyColl).FindOne(nil, bson.D{
 		{"_id", innerTopologyID},
 		topologyVisibilityFilter,
 		topologyDeletedFilter,
@@ -45,7 +44,7 @@ func findMongoTopologyByName(topologyName string, nodeName string) []storage.Top
 	var topology storage.Topology
 	var topologies []storage.Topology
 
-	cursor, err := storage.MongoDB.Collection(topologyCollection).Find(nil, bson.D{
+	cursor, err := storage.MongoDB.Collection(config.Config.MongoDB.TopologyColl).Find(nil, bson.D{
 		{"name", topologyName},
 		topologyVisibilityFilter,
 		topologyDeletedFilter,

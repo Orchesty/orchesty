@@ -3,16 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/streadway/amqp"
 	"net/http"
 	"os"
 	"os/signal"
-	"starting-point/pkg/rabbitmq"
 	"starting-point/pkg/router"
 	"starting-point/pkg/service"
 	"starting-point/pkg/storage"
 	"syscall"
-	"time"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -48,12 +45,14 @@ func main() {
 	log.Info("Starting server...")
 	storage.CreateConnection()
 	service.CreateCache()
+	service.ConnectToRabbit()
 	server := &http.Server{Addr: fmt.Sprint(":80"), Handler: router.Router(routes)}
-	prepareRabbit()
 
 	defer func() {
+		service.RabbitMq.DisconnectToRabbit()
 		_ = storage.MongoDB.Client().Disconnect(context.Background())
 		_ = server.Shutdown(context.Background())
+
 	}()
 
 	gracefulShutdown(server)
@@ -70,23 +69,10 @@ func gracefulShutdown(server *http.Server) {
 		_ = <-sigs
 
 		log.Info("Stopping server...")
+		service.RabbitMq.DisconnectToRabbit()
 		_ = storage.MongoDB.Client().Disconnect(context.Background())
 		_ = server.Shutdown(context.Background())
 
 		os.Exit(0)
 	}()
-}
-
-func prepareRabbit() {
-
-	b := []byte("That's all folks!!")
-
-	q := rabbitmq.Queue{Name: "aaaa", Durable: true, AutoDelete: false}
-	m := amqp.Publishing{Body: b}
-	sender := rabbitmq.NewRabbitSender()
-
-	time.Sleep(5 * time.Second)
-	log.Info("sending")
-
-	sender.SndMessage(q, m)
 }
