@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/mongodb/mongo-go-driver/mongo"
 	"starting-point/pkg/config"
+	"strconv"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -20,7 +21,8 @@ func CreateConnection() context.CancelFunc {
 		log.Error(err)
 	}
 
-	innerContext, mongoDB := context.WithTimeout(context.Background(), 10*time.Second)
+	timeout, _ := strconv.Atoi(config.Config.MongoDB.Timeout)
+	innerContext, mongoDB := context.WithTimeout(context.Background(), time.Duration(timeout)*time.Second)
 
 	err = client.Connect(innerContext)
 	if err != nil {

@@ -8,28 +8,24 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// Node represents node
-type Node struct {
-	ID   objectid.ObjectID `bson:"_id"`
-	Name string            `bson:"name"`
-}
-
 const nodeCollection = "Node"
 
 var nodeDeletedFilter = bson.E{Key: "deleted", Value: false}
 var nodeEnabledFilter = bson.E{Key: "enabled", Value: true}
 
-// FindNodeByID finds node by ID
-func FindNodeByID(ID string) *Node {
-	var node Node
+func findMongoNodeByID(nodeID string, topologyID string) *storage.Node {
+	var node storage.Node
 
-	nodeID, err := objectid.FromHex(ID)
+	innerNodeID, err := objectid.FromHex(nodeID)
 	if err != nil {
 		log.Error(err)
+
+		return nil
 	}
 
 	err = storage.MongoDB.Collection(nodeCollection).FindOne(nil, bson.D{
-		{"_id", nodeID},
+		{"_id", innerNodeID},
+		{"topology", topologyID},
 		nodeDeletedFilter,
 		nodeEnabledFilter,
 	}).Decode(&node)
@@ -42,14 +38,20 @@ func FindNodeByID(ID string) *Node {
 	return &node
 }
 
-// FindNodeByName finds node by name
-func FindNodeByName(name string) *[]Node {
-	var node Node
-	var nodes []Node
+func findMongoNodeByName(nodeName string, topologyID string) []storage.Node {
+	var node storage.Node
+	var nodes []storage.Node
 
-	cursor, err := storage.MongoDB.Collection(nodeCollection).Find(nil, bson.D{{"name", name}})
+	cursor, err := storage.MongoDB.Collection(nodeCollection).Find(nil, bson.D{
+		{"name", nodeName},
+		{"topology", topologyID},
+		nodeDeletedFilter,
+		nodeEnabledFilter,
+	})
 	if err != nil {
 		log.Error(err)
+
+		return nodes
 	}
 
 	defer func() {
@@ -58,13 +60,15 @@ func FindNodeByName(name string) *[]Node {
 
 	for cursor.Next(nil) {
 		err = cursor.Decode(&node)
+
 		if err != nil {
 			log.Error(err)
 
 			return nil
 		}
+
 		nodes = append(nodes, node)
 	}
 
-	return &nodes
+	return nodes
 }

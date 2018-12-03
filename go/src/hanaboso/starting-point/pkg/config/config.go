@@ -10,6 +10,7 @@ var Config config
 type config struct {
 	MongoDB  *mongoDb
 	RabbitMQ *rabbitMq
+	Cache    *cache
 }
 
 type mongoDb struct {
@@ -17,6 +18,7 @@ type mongoDb struct {
 	Username string
 	Password string
 	Database string
+	Timeout  string
 }
 
 type rabbitMq struct {
@@ -28,6 +30,11 @@ type rabbitMq struct {
 	DeliveryMode        string
 }
 
+type cache struct {
+	Expiration string
+	CleanUp    string
+}
+
 func init() {
 	Config = config{
 		MongoDB: &mongoDb{
@@ -35,6 +42,7 @@ func init() {
 			Username: getEnv("MONGO_USERNAME", ""),
 			Password: getEnv("MONGO_PASSWORD", ""),
 			Database: getEnv("MONGO_DATABASE", ""),
+			Timeout:  getEnv("MONGO_TIMEOUT", "60"),
 		},
 		RabbitMQ: &rabbitMq{
 			Hostname:            getEnv("RABBIT_HOSTNAME", ""),
@@ -43,6 +51,10 @@ func init() {
 			CounterQueueName:    getEnv("RABBIT_COUNTER_QUEUE_NAME", ""),
 			CounterQueueDurable: getEnv("RABBIT_COUNTER_QUEUE_DURABLE", ""),
 			DeliveryMode:        getEnv("RABBIT_DELIVERY_MODE", ""),
+		},
+		Cache: &cache{
+			Expiration: getEnv("CACHE_EXPIRATION", "24"),
+			CleanUp:    getEnv("CACHE_CLEAN_UP", "1"),
 		},
 	}
 }

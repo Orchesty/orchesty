@@ -22,19 +22,18 @@ func HandleRunByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	topology := service.FindTopologyByID(vars["topology"])
+	topology := service.FindTopologyByID(vars["topology"], vars["node"])
 	if topology == nil {
 		writeErrorResponse(w, http.StatusNotFound, fmt.Sprintf("Topology with key '%s' not found!", vars["topology"]))
 		return
 	}
 
-	node := service.FindNodeByID(vars["node"])
-	if node == nil {
+	if topology.Node == nil {
 		writeErrorResponse(w, http.StatusNotFound, fmt.Sprintf("Node with key '%s' not found!", vars["node"]))
 		return
 	}
 
-	writeResponse(w, map[string]interface{}{"topology": topology.Name, "node": node.Name})
+	writeResponse(w, map[string]interface{}{"topology": topology})
 }
 
 // HandleRunByName runs topology by name
@@ -49,17 +48,20 @@ func HandleRunByName(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	topologies := service.FindTopologyByName(vars["topology"])
-	if topologies == nil || len(*topologies) == 0 {
-		writeErrorResponse(w, http.StatusNotFound, fmt.Sprintf("Topology with name '%s' not found!", vars["topology"]))
+	topologies := service.FindTopologyByName(vars["topology"], vars["node"])
+	if len(topologies) == 0 {
+		writeErrorResponse(w, http.StatusNotFound, fmt.Sprintf("Topology with name '%s' and node with name '%s' not found!", vars["topology"], vars["node"]))
 		return
 	}
 
-	nodes := service.FindNodeByName(vars["node"])
-	if nodes == nil || len(*nodes) == 0 {
-		writeErrorResponse(w, http.StatusNotFound, fmt.Sprintf("Node with name '%s' not found!", vars["node"]))
-		return
-	}
+	writeResponse(w, map[string]interface{}{"topologies": topologies})
+}
 
-	writeResponse(w, map[string]interface{}{"topologies": len(*topologies), "nodes": len(*nodes)})
+// HandleInvalidateCache invalidates topology cache
+func HandleInvalidateCache(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+
+	cache := service.InvalidateCache(vars["topology"])
+
+	writeResponse(w, map[string]interface{}{"cache": cache})
 }

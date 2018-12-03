@@ -3,17 +3,18 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/streadway/amqp"
 	"net/http"
 	"os"
 	"os/signal"
+	"starting-point/pkg/rabbitmq"
 	"starting-point/pkg/router"
+	"starting-point/pkg/service"
 	"starting-point/pkg/storage"
 	"syscall"
+	"time"
 
 	log "github.com/sirupsen/logrus"
-	"github.com/streadway/amqp"
-	"starting-point/pkg/rabbitmq"
-	"time"
 )
 
 func main() {
@@ -36,10 +37,17 @@ func main() {
 			Pattern:     "/starting-point/topologies/{topology}/nodes/{node}/run-by-name",
 			HandlerFunc: router.HandleRunByName,
 		},
+		router.Route{
+			Name:        "Invalidate cache",
+			Method:      "POST",
+			Pattern:     "/starting-point/topologies/{topology}/invalidate-cache",
+			HandlerFunc: router.HandleInvalidateCache,
+		},
 	}
 
 	log.Info("Starting server...")
 	storage.CreateConnection()
+	service.CreateCache()
 	server := &http.Server{Addr: fmt.Sprint(":80"), Handler: router.Router(routes)}
 	prepareRabbit()
 

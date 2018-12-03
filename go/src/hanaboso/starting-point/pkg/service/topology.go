@@ -8,29 +8,24 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// Topology represents topology
-type Topology struct {
-	ID   objectid.ObjectID `bson:"_id"`
-	Name string            `bson:"name"`
-}
-
 const topologyCollection = "Topology"
 
 var topologyVisibilityFilter = bson.E{Key: "visibility", Value: "public"}
 var topologyDeletedFilter = bson.E{Key: "deleted", Value: false}
 var topologyEnabledFilter = bson.E{Key: "enabled", Value: true}
 
-// FindTopologyByID finds topology by ID
-func FindTopologyByID(ID string) *Topology {
-	var topology Topology
+func findMongoTopologyByID(topologyID string, nodeID string) *storage.Topology {
+	var topology storage.Topology
 
-	topologyID, err := objectid.FromHex(ID)
+	innerTopologyID, err := objectid.FromHex(topologyID)
 	if err != nil {
 		log.Error(err)
+
+		return nil
 	}
 
 	err = storage.MongoDB.Collection(topologyCollection).FindOne(nil, bson.D{
-		{"_id", topologyID},
+		{"_id", innerTopologyID},
 		topologyVisibilityFilter,
 		topologyDeletedFilter,
 		topologyEnabledFilter,
@@ -41,15 +36,21 @@ func FindTopologyByID(ID string) *Topology {
 		return nil
 	}
 
+	topology.Node = findMongoNodeByID(nodeID, topologyID)
+
 	return &topology
 }
 
-// FindTopologyByName finds topology by name
-func FindTopologyByName(name string) *[]Topology {
-	var topology Topology
-	var topologies []Topology
+func findMongoTopologyByName(topologyName string, nodeName string) []storage.Topology {
+	var topology storage.Topology
+	var topologies []storage.Topology
 
-	cursor, err := storage.MongoDB.Collection(topologyCollection).Find(nil, bson.D{{"name", name}})
+	cursor, err := storage.MongoDB.Collection(topologyCollection).Find(nil, bson.D{
+		{"name", topologyName},
+		topologyVisibilityFilter,
+		topologyDeletedFilter,
+		topologyEnabledFilter,
+	})
 	if err != nil {
 		log.Error(err)
 	}
@@ -65,8 +66,13 @@ func FindTopologyByName(name string) *[]Topology {
 
 			return nil
 		}
-		topologies = append(topologies, topology)
+
+		nodes := findMongoNodeByName(nodeName, topology.ID.Hex())
+		if len(nodes) > 0 {
+			topology.Node = &nodes[0]
+			topologies = append(topologies, topology)
+		}
 	}
 
-	return &topologies
+	return topologies
 }
