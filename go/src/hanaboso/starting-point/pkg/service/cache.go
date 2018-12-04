@@ -9,27 +9,51 @@ import (
 	"time"
 )
 
-// Cache represents cache
-var Cache *cache.Cache
+// CacheInterface represents cache interface
+type CacheInterface interface {
+	InitCache()
+	GetCache() *cache.Cache
+	InvalidateCache(topologyName string) int
+	FindTopologyByID(topologyID, nodeID string) *storage.Topology
+	FindTopologyByName(topologyName, nodeName string) []storage.Topology
+}
 
-// CreateCache creates
+// CacheDefault represents default cache implementation
+type CacheDefault struct {
+	cache *cache.Cache
+}
+
+// Cache represents cache
+var Cache CacheInterface
+
+// CreateCache creates default cache implementation
 func CreateCache() {
+	Cache = &CacheDefault{}
+	Cache.InitCache()
+}
+
+// InitCache creates cache
+func (c *CacheDefault) InitCache() {
 	expiration, _ := strconv.Atoi(config.Config.Cache.Expiration)
 	cleanUp, _ := strconv.Atoi(config.Config.Cache.CleanUp)
+	c.cache = cache.New(time.Duration(expiration)*time.Hour, time.Duration(cleanUp)*time.Hour)
+}
 
-	Cache = cache.New(time.Duration(expiration)*time.Hour, time.Duration(cleanUp)*time.Hour)
+// GetCache returns cache
+func (c *CacheDefault) GetCache() *cache.Cache {
+	return c.cache
 }
 
 // FindTopologyByID finds node by ID
-func FindTopologyByID(topologyID string, nodeID string) *storage.Topology {
+func (c *CacheDefault) FindTopologyByID(topologyID, nodeID string) *storage.Topology {
 	topologyKey := fmt.Sprintf("%s-%s", topologyID, nodeID)
-	topology, found := Cache.Get(topologyKey)
+	topology, found := c.cache.Get(topologyKey)
 
 	if !found {
 		foundTopology := findMongoTopologyByID(topologyID, nodeID)
 
 		if foundTopology != nil && foundTopology.Node != nil {
-			Cache.Set(topologyKey, foundTopology, 0)
+			c.cache.Set(topologyKey, foundTopology, 0)
 			addToTopologyCache(foundTopology.Name, topologyKey)
 		}
 
@@ -40,15 +64,15 @@ func FindTopologyByID(topologyID string, nodeID string) *storage.Topology {
 }
 
 // FindTopologyByName finds node by name
-func FindTopologyByName(topologyName string, nodeName string) []storage.Topology {
+func (c *CacheDefault) FindTopologyByName(topologyName, nodeName string) []storage.Topology {
 	topologyKey := fmt.Sprintf("%s-%s", topologyName, nodeName)
-	topologies, found := Cache.Get(topologyKey)
+	topologies, found := c.cache.Get(topologyKey)
 
 	if !found {
 		foundTopologies := findMongoTopologyByName(topologyName, nodeName)
 
 		if len(foundTopologies) > 0 {
-			Cache.Set(topologyKey, foundTopologies, 0)
+			c.cache.Set(topologyKey, foundTopologies, 0)
 			addToTopologyCache(topologyName, topologyKey)
 		}
 
@@ -59,17 +83,17 @@ func FindTopologyByName(topologyName string, nodeName string) []storage.Topology
 }
 
 // InvalidateCache invalidate cache by topology name
-func InvalidateCache(topologyName string) int {
-	topologies, found := Cache.Get(topologyName)
+func (c *CacheDefault) InvalidateCache(topologyName string) int {
+	topologies, found := c.cache.Get(topologyName)
 
 	if found {
 		innerTopologies := topologies.([]string)
 
 		for _, topology := range innerTopologies {
-			Cache.Delete(topology)
+			c.cache.Delete(topology)
 		}
 
-		Cache.Delete(topologyName)
+		c.cache.Delete(topologyName)
 
 		return len(innerTopologies)
 	}
@@ -77,12 +101,12 @@ func InvalidateCache(topologyName string) int {
 	return 0
 }
 
-func addToTopologyCache(topologyName string, topologyKey string) {
-	topologyKeys, found := Cache.Get(topologyName)
+func addToTopologyCache(topologyName, topologyKey string) {
+	topologyKeys, found := Cache.GetCache().Get(topologyName)
 
 	if !found {
-		Cache.Set(topologyName, []string{topologyKey}, 0)
+		Cache.GetCache().Set(topologyName, []string{topologyKey}, 0)
 	} else {
-		Cache.Set(topologyName, append(topologyKeys.([]string), topologyKey), 0)
+		Cache.GetCache().Set(topologyName, append(topologyKeys.([]string), topologyKey), 0)
 	}
 }

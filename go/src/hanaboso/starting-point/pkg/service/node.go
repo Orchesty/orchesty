@@ -12,7 +12,7 @@ import (
 var nodeDeletedFilter = bson.E{Key: "deleted", Value: false}
 var nodeEnabledFilter = bson.E{Key: "enabled", Value: true}
 
-func findMongoNodeByID(nodeID string, topologyID string) *storage.Node {
+func findMongoNodeByID(nodeID, topologyID string) *storage.Node {
 	var node storage.Node
 
 	innerNodeID, err := objectid.FromHex(nodeID)
@@ -37,7 +37,7 @@ func findMongoNodeByID(nodeID string, topologyID string) *storage.Node {
 	return &node
 }
 
-func findMongoNodeByName(nodeName string, topologyID string) []storage.Node {
+func findMongoNodeByName(nodeName, topologyID string) []storage.Node {
 	var node storage.Node
 	var nodes []storage.Node
 

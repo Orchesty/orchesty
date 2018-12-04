@@ -13,7 +13,7 @@ var topologyVisibilityFilter = bson.E{Key: "visibility", Value: "public"}
 var topologyDeletedFilter = bson.E{Key: "deleted", Value: false}
 var topologyEnabledFilter = bson.E{Key: "enabled", Value: true}
 
-func findMongoTopologyByID(topologyID string, nodeID string) *storage.Topology {
+func findMongoTopologyByID(topologyID, nodeID string) *storage.Topology {
 	var topology storage.Topology
 
 	innerTopologyID, err := objectid.FromHex(topologyID)
@@ -40,7 +40,7 @@ func findMongoTopologyByID(topologyID string, nodeID string) *storage.Topology {
 	return &topology
 }
 
-func findMongoTopologyByName(topologyName string, nodeName string) []storage.Topology {
+func findMongoTopologyByName(topologyName, nodeName string) []storage.Topology {
 	var topology storage.Topology
 	var topologies []storage.Topology
 

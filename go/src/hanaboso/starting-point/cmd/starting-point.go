@@ -20,25 +20,25 @@ func main() {
 			Name:        "Status",
 			Method:      "GET",
 			Pattern:     "/status",
-			HandlerFunc: router.HandleStatus,
+			HandlerFunc: router.HandleClear(router.HandleStatus),
 		},
 		router.Route{
 			Name:        "Run by ID",
 			Method:      "POST",
 			Pattern:     "/starting-point/topologies/{topology}/nodes/{node}/run",
-			HandlerFunc: router.HandleRunByID,
+			HandlerFunc: router.HandleClear(router.HandleRunByID),
 		},
 		router.Route{
 			Name:        "Run by name",
 			Method:      "POST",
 			Pattern:     "/starting-point/topologies/{topology}/nodes/{node}/run-by-name",
-			HandlerFunc: router.HandleRunByName,
+			HandlerFunc: router.HandleClear(router.HandleRunByName),
 		},
 		router.Route{
 			Name:        "Invalidate cache",
 			Method:      "POST",
 			Pattern:     "/starting-point/topologies/{topology}/invalidate-cache",
-			HandlerFunc: router.HandleInvalidateCache,
+			HandlerFunc: router.HandleClear(router.HandleInvalidateCache),
 		},
 	}
 

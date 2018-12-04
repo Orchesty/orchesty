@@ -2,6 +2,7 @@ package router
 
 import (
 	"fmt"
+	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
 	"net/http"
 	"starting-point/pkg/service"
@@ -10,16 +11,26 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// HandleClear handles context clear
+func HandleClear(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		defer context.Clear(r)
+
+		h.ServeHTTP(w, r)
+	}
+}
+
 // HandleRunByID runs topology by ID
 func HandleRunByID(w http.ResponseWriter, r *http.Request) {
 	err := utils.ValidateBody(r)
 	if err != nil {
 		log.Error(err)
 		writeErrorResponse(w, http.StatusBadRequest, "Content is not valid!")
+		return
 	}
 
 	vars := mux.Vars(r)
-	topology := service.FindTopologyByID(vars["topology"], vars["node"])
+	topology := service.Cache.FindTopologyByID(vars["topology"], vars["node"])
 	if topology == nil {
 		writeErrorResponse(w, http.StatusNotFound, fmt.Sprintf("Topology with key '%s' not found!", vars["topology"]))
 		return
@@ -41,10 +52,11 @@ func HandleRunByName(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Error(err)
 		writeErrorResponse(w, http.StatusBadRequest, "Content is not valid!")
+		return
 	}
 
 	vars := mux.Vars(r)
-	topologies := service.FindTopologyByName(vars["topology"], vars["node"])
+	topologies := service.Cache.FindTopologyByName(vars["topology"], vars["node"])
 	if len(topologies) == 0 {
 		writeErrorResponse(w, http.StatusNotFound, fmt.Sprintf("Topology with name '%s' and node with name '%s' not found!", vars["topology"], vars["node"]))
 		return
@@ -60,7 +72,7 @@ func HandleRunByName(w http.ResponseWriter, r *http.Request) {
 // HandleInvalidateCache invalidates topology cache
 func HandleInvalidateCache(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	cache := service.InvalidateCache(vars["topology"])
+	cache := service.Cache.InvalidateCache(vars["topology"])
 
 	writeResponse(w, map[string]interface{}{"cache": cache})
 }
