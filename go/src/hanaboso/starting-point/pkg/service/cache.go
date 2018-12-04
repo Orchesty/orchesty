@@ -21,6 +21,7 @@ type CacheInterface interface {
 // CacheDefault represents default cache implementation
 type CacheDefault struct {
 	cache *cache.Cache
+	mongo storage.MongoInterface
 }
 
 // Cache represents cache
@@ -28,7 +29,7 @@ var Cache CacheInterface
 
 // CreateCache creates default cache implementation
 func CreateCache() {
-	Cache = &CacheDefault{}
+	Cache = &CacheDefault{mongo: storage.Mongo}
 	Cache.InitCache()
 }
 
@@ -50,7 +51,7 @@ func (c *CacheDefault) FindTopologyByID(topologyID, nodeID string) *storage.Topo
 	topology, found := c.cache.Get(topologyKey)
 
 	if !found {
-		foundTopology := findMongoTopologyByID(topologyID, nodeID)
+		foundTopology := c.mongo.FindTopologyByID(topologyID, nodeID)
 
 		if foundTopology != nil && foundTopology.Node != nil {
 			c.cache.Set(topologyKey, foundTopology, 0)
@@ -69,7 +70,7 @@ func (c *CacheDefault) FindTopologyByName(topologyName, nodeName string) []stora
 	topologies, found := c.cache.Get(topologyKey)
 
 	if !found {
-		foundTopologies := findMongoTopologyByName(topologyName, nodeName)
+		foundTopologies := c.mongo.FindTopologyByName(topologyName, nodeName)
 
 		if len(foundTopologies) > 0 {
 			c.cache.Set(topologyKey, foundTopologies, 0)

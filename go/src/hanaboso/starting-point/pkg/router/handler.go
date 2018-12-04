@@ -22,6 +22,43 @@ func HandleClear(h http.HandlerFunc) http.HandlerFunc {
 
 // HandleRunByID runs topology by ID
 func HandleRunByID(w http.ResponseWriter, r *http.Request) {
+	handleByID(w, r, false, false)
+}
+
+// HandleRunByName runs topology by name
+func HandleRunByName(w http.ResponseWriter, r *http.Request) {
+	handleByName(w, r, false, false)
+}
+
+// HandleHumanTaskRunByID runs human task topology by ID
+func HandleHumanTaskRunByID(w http.ResponseWriter, r *http.Request) {
+	handleByID(w, r, true, false)
+}
+
+// HandleHumanTaskRunByName runs human task topology by name
+func HandleHumanTaskRunByName(w http.ResponseWriter, r *http.Request) {
+	handleByName(w, r, true, false)
+}
+
+// HandleHumanTaskStopByID stops human task topology by ID
+func HandleHumanTaskStopByID(w http.ResponseWriter, r *http.Request) {
+	handleByID(w, r, true, true)
+}
+
+// HandleHumanTaskStopByName stops human task topology by name
+func HandleHumanTaskStopByName(w http.ResponseWriter, r *http.Request) {
+	handleByName(w, r, true, true)
+}
+
+// HandleInvalidateCache invalidates topology cache
+func HandleInvalidateCache(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	cache := service.Cache.InvalidateCache(vars["topology"])
+
+	writeResponse(w, map[string]interface{}{"cache": cache})
+}
+
+func handleByID(w http.ResponseWriter, r *http.Request, isHumanTask, isStop bool) {
 	err := utils.ValidateBody(r)
 	if err != nil {
 		log.Error(err)
@@ -41,13 +78,21 @@ func HandleRunByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	go service.RabbitMq.SndMessage(r, *topology)
+	if !isHumanTask {
+		go service.RabbitMq.SndMessage(r, *topology)
+	} else {
+		// token, found = vars["token"]
+		if !isStop {
+			// TODO: Implement later...
+		} else {
+			// TODO: Implement later...
+		}
+	}
 
 	writeResponse(w, map[string]interface{}{"state": "ok", "started": 1})
 }
 
-// HandleRunByName runs topology by name
-func HandleRunByName(w http.ResponseWriter, r *http.Request) {
+func handleByName(w http.ResponseWriter, r *http.Request, isHumanTask, isStop bool) {
 	err := utils.ValidateBody(r)
 	if err != nil {
 		log.Error(err)
@@ -63,16 +108,17 @@ func HandleRunByName(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, topology := range topologies {
-		go service.RabbitMq.SndMessage(r, topology)
+		if !isHumanTask {
+			go service.RabbitMq.SndMessage(r, topology)
+		} else {
+			// token, found = vars["token"]
+			if !isStop {
+				// TODO: Implement later...
+			} else {
+				// TODO: Implement later...
+			}
+		}
 	}
 
 	writeResponse(w, map[string]interface{}{"state": "ok", "started": len(topologies)})
-}
-
-// HandleInvalidateCache invalidates topology cache
-func HandleInvalidateCache(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	cache := service.Cache.InvalidateCache(vars["topology"])
-
-	writeResponse(w, map[string]interface{}{"cache": cache})
 }

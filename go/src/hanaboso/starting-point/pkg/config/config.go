@@ -47,7 +47,7 @@ func init() {
 			Database:     getEnv("MONGO_DATABASE", ""),
 			NodeColl:     getEnv("MONGO_NODE_COLL", "Node"),
 			TopologyColl: getEnv("MONGO_TOPOLOGY_COLL", "Topology"),
-			Timeout:      getEnv("MONGO_TIMEOUT", "60"),
+			Timeout:      getEnv("MONGO_TIMEOUT", "10"),
 		},
 		RabbitMQ: &rabbitMq{
 			Hostname:            getEnv("RABBIT_HOSTNAME", "rabbitmq"),
