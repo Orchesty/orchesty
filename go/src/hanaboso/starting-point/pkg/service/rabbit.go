@@ -3,19 +3,20 @@ package service
 import (
 	"encoding/json"
 	"fmt"
-	logger "github.com/sirupsen/logrus"
 	"github.com/streadway/amqp"
 	"net/http"
 	"starting-point/pkg/config"
 	"starting-point/pkg/rabbitmq"
 	"starting-point/pkg/storage"
 	"starting-point/pkg/utils"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // Rabbit represents rabbit
 type Rabbit interface {
 	SndMessage(*http.Request, storage.Topology)
-	DisconnectToRabbit()
+	DisconnectRabbit()
 }
 
 type rabbit struct {
@@ -52,6 +53,7 @@ func ConnectToRabbit() {
 }
 
 func (r *rabbit) SndMessage(request *http.Request, topology storage.Topology) {
+
 	// Create Queue & Message
 	queueName := utils.GenerateTplgName(topology)
 	q := rabbitmq.Queue{Name: queueName, Durable: true, AutoDelete: false}
@@ -65,7 +67,7 @@ func (r *rabbit) SndMessage(request *http.Request, topology storage.Topology) {
 	r.publisher.Publish(m, "", q.Name)
 }
 
-func (r *rabbit) DisconnectToRabbit() {
+func (r *rabbit) DisconnectRabbit() {
 	r.connection.Disconnect()
 }
 
@@ -78,7 +80,7 @@ func (r *rabbit) initCounterProcess(httpHeaders http.Header, topology storage.To
 		})
 
 	if err != nil {
-		logger.Error(fmt.Sprintf("Json marshal error: %s", err))
+		log.Error(fmt.Sprintf("Json marshal error: %+v", err))
 	}
 
 	// Create ProcessMessage headers
@@ -95,10 +97,14 @@ func (r *rabbit) initCounterProcess(httpHeaders http.Header, topology storage.To
 
 // NewRabbit construct
 func NewRabbit() Rabbit {
-	l := logger.New()
-	conn := rabbitmq.NewConnection(config.Config.RabbitMQ.Hostname, 5672, config.Config.RabbitMQ.Password, config.Config.RabbitMQ.Username, *l)
+	conn := rabbitmq.NewConnection(
+		config.Config.RabbitMQ.Hostname,
+		5672,
+		config.Config.RabbitMQ.Password,
+		config.Config.RabbitMQ.Username,
+		config.Config.Logger)
 	conn.Connect()
-	publisher := rabbitmq.NewPublisher(conn, *l)
+	publisher := rabbitmq.NewPublisher(conn, config.Config.Logger)
 	builder := utils.NewHeaderBuilder(config.Config.RabbitMQ.DeliveryMode)
 
 	return &rabbit{publisher: publisher, connection: conn, builder: builder}

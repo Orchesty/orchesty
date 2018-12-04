@@ -6,6 +6,7 @@ import (
 	"github.com/gorilla/mux"
 	"net/http"
 	"starting-point/pkg/service"
+	"starting-point/pkg/storage"
 	"starting-point/pkg/utils"
 
 	log "github.com/sirupsen/logrus"
@@ -78,16 +79,7 @@ func handleByID(w http.ResponseWriter, r *http.Request, isHumanTask, isStop bool
 		return
 	}
 
-	if !isHumanTask {
-		go service.RabbitMq.SndMessage(r, *topology)
-	} else {
-		// token, found = vars["token"]
-		if !isStop {
-			// TODO: Implement later...
-		} else {
-			// TODO: Implement later...
-		}
-	}
+	go processMessage(isHumanTask, isStop, []storage.Topology{*topology}, r)
 
 	writeResponse(w, map[string]interface{}{"state": "ok", "started": 1})
 }
@@ -107,6 +99,12 @@ func handleByName(w http.ResponseWriter, r *http.Request, isHumanTask, isStop bo
 		return
 	}
 
+	go processMessage(isHumanTask, isStop, topologies, r)
+
+	writeResponse(w, map[string]interface{}{"state": "ok", "started": len(topologies)})
+}
+
+func processMessage(isHumanTask bool, isStop bool, topologies []storage.Topology, r *http.Request) {
 	for _, topology := range topologies {
 		if !isHumanTask {
 			go service.RabbitMq.SndMessage(r, topology)
@@ -119,6 +117,4 @@ func handleByName(w http.ResponseWriter, r *http.Request, isHumanTask, isStop bo
 			}
 		}
 	}
-
-	writeResponse(w, map[string]interface{}{"state": "ok", "started": len(topologies)})
 }

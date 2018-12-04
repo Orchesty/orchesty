@@ -8,7 +8,7 @@ build-image:
 	docker build -t dkr.hanaboso.net/pipes/pipes/starting-point:dev .
 
 init: .env build-image
-	docker-compose up -d --force-recreate
+	docker-compose up -d --force-recreate  --remove-orphans
 
 build:
 	docker-compose exec app go build -o build/starting-point cmd/starting-point.go

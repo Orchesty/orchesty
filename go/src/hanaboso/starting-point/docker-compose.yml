@@ -28,6 +28,9 @@ services:
     volumes:
       - rabbitmq:/var/lib/rabbitmq
 
+  influx:
+    image: influxdb:1.7-alpine
+
 volumes:
   mongodb: {}
   rabbitmq: {}

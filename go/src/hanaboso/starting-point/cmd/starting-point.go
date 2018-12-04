@@ -9,6 +9,7 @@ import (
 	"starting-point/pkg/router"
 	"starting-point/pkg/service"
 	"starting-point/pkg/storage"
+	"starting-point/pkg/udp"
 	"syscall"
 
 	log "github.com/sirupsen/logrus"
@@ -94,10 +95,12 @@ func main() {
 	storage.CreateMongo()
 	service.CreateCache()
 	service.ConnectToRabbit()
+	udp.ConnectToUDP()
 	server := &http.Server{Addr: fmt.Sprint(":80"), Handler: router.Router(routes)}
 
 	defer func() {
-		service.RabbitMq.DisconnectToRabbit()
+		service.RabbitMq.DisconnectRabbit()
+		udp.UDPSender.DisconnectUDP()
 		_ = storage.Mongo.Disconnect()
 		_ = server.Shutdown(context.Background())
 
@@ -117,7 +120,8 @@ func gracefulShutdown(server *http.Server) {
 		_ = <-sigs
 
 		log.Info("Stopping server...")
-		service.RabbitMq.DisconnectToRabbit()
+		service.RabbitMq.DisconnectRabbit()
+		udp.UDPSender.DisconnectUDP()
 		_ = storage.Mongo.Disconnect()
 		_ = server.Shutdown(context.Background())
 

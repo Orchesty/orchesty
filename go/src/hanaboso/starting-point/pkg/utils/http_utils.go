@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	logger "github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 )
 
 const contentType = "content-type"
@@ -21,7 +21,7 @@ var emptyData []interface{}
 func GetBodyFromStream(r *http.Request) (b []byte) {
 	b, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		logger.Error(fmt.Sprintf("Convert stream to []byte error: %s", err))
+		log.Error(fmt.Sprintf("Convert stream to []byte error: %s", err))
 	}
 
 	r.Body = ioutil.NopCloser(bytes.NewBuffer(b))

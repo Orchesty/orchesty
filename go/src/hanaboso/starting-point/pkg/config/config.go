@@ -3,6 +3,8 @@ package config
 import (
 	"os"
 	"strconv"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // Config represents config
@@ -12,6 +14,8 @@ type config struct {
 	MongoDB  *mongoDb
 	RabbitMQ *rabbitMq
 	Cache    *cache
+	InfluxDB *influxDB
+	Logger   *log.Logger
 }
 
 type mongoDb struct {
@@ -38,7 +42,21 @@ type cache struct {
 	CleanUp    string
 }
 
+type influxDB struct {
+	Hostname    string
+	Port        string
+	RefreshTime int16
+	Measurement string
+}
+
 func init() {
+	l := log.New()
+	l.SetLevel(log.WarnLevel)
+
+	if debug := getEnvBool("APP_DEBUG", true); debug {
+		l.SetLevel(log.DebugLevel)
+	}
+
 	Config = config{
 		MongoDB: &mongoDb{
 			Hostname:     getEnv("MONGO_HOSTNAME", ""),
@@ -61,6 +79,13 @@ func init() {
 			Expiration: getEnv("CACHE_EXPIRATION", "24"),
 			CleanUp:    getEnv("CACHE_CLEAN_UP", "1"),
 		},
+		InfluxDB: &influxDB{
+			Hostname:    getEnv("INFLUX_HOSTNAME", "influxdb"),
+			Port:        getEnv("INFLUX_PORT", "8089"),
+			RefreshTime: getEnvInt("INFLUX_REFRESH_TIME", 30),
+			Measurement: getEnv("INFLUX_MEASUREMENT", "monolith"),
+		},
+		Logger: l,
 	}
 }
 

@@ -1,12 +1,11 @@
 package rabbitmq
 
 import (
-	logger "github.com/sirupsen/logrus"
-	"github.com/streadway/amqp"
-
 	"fmt"
-	"strconv"
+	"github.com/streadway/amqp"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // Connection represents connection
@@ -14,11 +13,10 @@ type Connection interface {
 	Connect()
 	Declare(Queue)
 	Disconnect()
-	CreateChannel() int
-	GetChannel(int) (ch *amqp.Channel)
+	CreateChannel(string) (ch *amqp.Channel)
+	GetChannel(string) (ch *amqp.Channel)
+	CloseChannel(string)
 	GetRestartChan() chan bool
-	CloseChannel(int)
-	Stop()
 }
 
 type connection struct {
@@ -27,9 +25,9 @@ type connection struct {
 	user        string
 	password    string
 	conn        *amqp.Connection
-	channels    []*amqp.Channel
+	channels    map[string]*amqp.Channel
 	restartChan chan bool
-	logger      logger.Logger
+	log         *log.Logger
 }
 
 func (c *connection) Connect() {
@@ -39,7 +37,7 @@ func (c *connection) Connect() {
 	c.conn, err = amqp.Dial(connString)
 
 	if err != nil {
-		c.logger.Error(fmt.Sprintf("Rabbit MQ connection error: %s", err))
+		c.log.Error(fmt.Sprintf("Rabbit MQ connection error: %+v", err))
 		c.reconnect()
 		return
 	}
@@ -51,46 +49,35 @@ func (c *connection) Connect() {
 			c.restartChan <- false
 		}
 
-		c.logger.Error(fmt.Sprintf("Rabbit MQ connection close error: %s", err))
+		c.log.Error(fmt.Sprintf("Rabbit MQ connection close error: %+v", err))
 
 		c.reconnect()
 		c.restartChan <- true
 	}()
 
 	// Restore channels
-	ids := len(c.channels)
-	c.channels = nil
-	for i := 0; i < ids; i++ {
-		c.CreateChannel()
-	}
+	c.channels = make(map[string]*amqp.Channel)
 
-	c.logger.Info(fmt.Sprintf("Rabbit MQ connected to %s", connString))
+	c.log.Info(fmt.Sprintf("Rabbit MQ connected to %s", connString))
 }
 
 func (c *connection) Declare(q Queue) {
 
 	if c.conn == nil {
-		c.logger.Error("Connection setup error: not connected.")
+		c.log.Error("Connection setup error: not connected.")
 		c.Connect()
 	}
 
-	ch, _ := c.conn.Channel()
-
-	defer func() {
-		err := ch.Close()
-		if err != nil {
-			c.logger.Error(fmt.Sprintf("Connection closing error: %s", err))
-		}
-	}()
+	ch := c.GetChannel(q.Name)
 
 	// Declare queue
 	_, err := ch.QueueDeclare(q.Name, q.Durable, q.AutoDelete, q.Exclusive, q.NoWait, q.Args)
 
 	if err != nil {
-		c.logger.Fatal(fmt.Sprintf("Rabbit MQ queue declare error: %s", err))
+		c.log.Fatal(fmt.Sprintf("Rabbit MQ queue declare error: %+v", err))
 	}
 
-	c.logger.Info(fmt.Sprintf("Rabbit MQ queue declare %s", q.Name))
+	c.log.Info(fmt.Sprintf("Rabbit MQ queue declare %s", q.Name))
 }
 
 func (c *connection) Disconnect() {
@@ -98,30 +85,38 @@ func (c *connection) Disconnect() {
 		err := c.conn.Close()
 
 		if err != nil {
-			c.logger.Error(fmt.Sprintf("Connection closing error: %s", err))
+			c.log.Error(fmt.Sprintf("Connection closing error: %+v", err))
 		}
 	}
 }
 
-func (c *connection) CreateChannel() int {
+func (c *connection) CreateChannel(name string) (ch *amqp.Channel) {
 
 	ch, err := c.conn.Channel()
 
 	if err != nil {
-		c.logger.Fatal(fmt.Sprintf("Rabbit MQ channel error: %s", err))
+		c.log.Fatal(fmt.Sprintf("Rabbit MQ channel error: %+v", err))
 	}
 
-	c.channels = append(c.channels, ch)
+	c.channels[name] = ch
+	c.log.Error(fmt.Sprintf("Chan count %d", len(c.channels)))
+	for k := range c.channels {
+		c.log.Error(k)
+	}
 
-	return len(c.channels) - 1
+	return
 }
 
-func (c *connection) GetChannel(id int) (ch *amqp.Channel) {
-	return c.channels[id]
+func (c *connection) GetChannel(name string) (ch *amqp.Channel) {
+	if _, ok := c.channels[name]; ok {
+		return c.channels[name]
+	}
+
+	return c.CreateChannel(name)
 }
 
 func (c *connection) reconnect() {
-	c.logger.Info("Waiting 1s.", nil)
+	c.log.Info("Waiting 1s.")
 	time.Sleep(time.Second * 1)
 	c.Disconnect()
 	c.Connect()
@@ -131,36 +126,24 @@ func (c *connection) GetRestartChan() chan bool {
 	return c.restartChan
 }
 
-func (c *connection) CloseChannel(id int) {
-	err := c.GetChannel(id).Close()
+func (c *connection) CloseChannel(name string) {
+	ch := c.GetChannel(name)
+	err := ch.Close()
 	if err != nil {
-		c.logger.Error(fmt.Sprintf("Connection closing error: %s", err))
+		c.log.Error(fmt.Sprintf("Connection closing error: %+v", err))
 	}
 
-	c.channels[id] = nil
-	c.logger.Info(fmt.Sprintf("Rabbit MQ channel with id %s.", strconv.Itoa(id)))
-}
-
-func (c *connection) Stop() {
-	exists := false
-	for _, ch := range c.channels {
-		if ch != nil {
-			exists = true
-		}
-	}
-
-	if exists == false && c.conn != nil {
-		err := c.conn.Close()
-		if err != nil {
-			c.logger.Error(fmt.Sprintf("Connection closing error: %s", err))
-		}
-
-		c.conn = nil
-		c.logger.Info("Rabbit MQ connection close.")
-	}
+	delete(c.channels, name)
+	c.log.Info(fmt.Sprintf("Rabbit MQ channel with id %s.", name))
 }
 
 // NewConnection construct
-func NewConnection(host string, port int, user string, password string, logger logger.Logger) (r Connection) {
-	return &connection{host: host, port: port, user: user, password: password, restartChan: make(chan bool), logger: logger}
+func NewConnection(host string, port int, user string, password string, log *log.Logger) (r Connection) {
+	return &connection{
+		host:        host,
+		port:        port,
+		user:        user,
+		password:    password,
+		restartChan: make(chan bool),
+		log:         log}
 }
