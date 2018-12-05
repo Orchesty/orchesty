@@ -53,7 +53,7 @@ func init() {
 	l := log.New()
 	l.SetLevel(log.WarnLevel)
 
-	if debug := getEnvBool("APP_DEBUG", true); debug {
+	if getEnvBool("APP_DEBUG", true) {
 		l.SetLevel(log.DebugLevel)
 	}
 
@@ -103,7 +103,7 @@ func getEnvBool(key string, defaultValue bool) bool {
 		return defaultValue
 	}
 
-	b, err := strconv.ParseBool(key)
+	b, err := strconv.ParseBool(value)
 	if err != nil {
 		b = defaultValue
 	}
@@ -117,7 +117,7 @@ func getEnvInt(key string, defaultValue int16) int16 {
 		return defaultValue
 	}
 
-	i, err := strconv.ParseInt(key, 0, 16)
+	i, err := strconv.ParseInt(value, 0, 16)
 	if err != nil {
 		return defaultValue
 	}

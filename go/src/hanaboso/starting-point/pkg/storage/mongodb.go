@@ -27,6 +27,7 @@ type MongoInterface interface {
 type MongoDefault struct {
 	mongo            *mongo.Database
 	keepAlive        *time.Ticker
+	log              *log.Logger
 	visibilityFilter bson.E
 	enabledFilter    bson.E
 	deletedFilter    bson.E
@@ -41,6 +42,7 @@ func CreateMongo() {
 		visibilityFilter: bson.E{Key: "visibility", Value: "public"},
 		enabledFilter:    bson.E{Key: "enabled", Value: true},
 		deletedFilter:    bson.E{Key: "deleted", Value: false},
+		log:              config.Config.Logger,
 	}
 	Mongo.Connect()
 }
@@ -49,17 +51,17 @@ func CreateMongo() {
 func (m *MongoDefault) Connect() {
 	client, err := mongo.NewClient(fmt.Sprintf("mongodb://%s/%s", config.Config.MongoDB.Hostname, config.Config.MongoDB.Database))
 	if err != nil {
-		log.Error(err)
+		m.log.Errorf("MongoDB connect: %s", err.Error())
 	}
 
 	timeout, _ := strconv.Atoi(config.Config.MongoDB.Timeout)
 	timeoutDuration := time.Duration(timeout) * time.Second
-	innerContext, cancel := context.WithTimeout(context.Background(), timeoutDuration)
+	innerContext, cancel := createContextWithTimeout()
 	defer cancel()
 
 	err = client.Connect(innerContext)
 	if err != nil {
-		log.Error(err)
+		m.log.Errorf("MongoDB connect: %s", err.Error())
 	}
 
 	m.mongo = client.Database(config.Config.MongoDB.Database)
@@ -67,17 +69,15 @@ func (m *MongoDefault) Connect() {
 
 	go func() {
 		for t := range m.keepAlive.C {
-			log.Debug(fmt.Sprintf("MongoDB keep-alive (%s).", t))
-
-			timeout, _ := strconv.Atoi(config.Config.MongoDB.Timeout)
-			timeoutDuration := time.Duration(timeout) * time.Second
-			innerContext, cancel := context.WithTimeout(context.Background(), timeoutDuration)
-			defer cancel()
+			m.log.Debug(fmt.Sprintf("MongoDB keep-alive: %s", t))
+			innerContext, cancel := createContextWithTimeout()
 
 			err := m.mongo.Client().Ping(innerContext, nil)
 			if err != nil {
-				log.Errorf("MongoDB not connected. Reconnecting in %d seconds.", timeout)
+				m.log.Errorf("MongoDB not connected. Reconnecting in %d seconds.", timeout)
 			}
+
+			cancel()
 		}
 	}()
 
@@ -92,14 +92,12 @@ func (m *MongoDefault) Disconnect() error {
 // FindNodeByID finds node by id
 func (m *MongoDefault) FindNodeByID(nodeID, topologyID string) *Node {
 	var node Node
-	timeout, _ := strconv.Atoi(config.Config.MongoDB.Timeout)
-	timeoutDuration := time.Duration(timeout) * time.Second
-	innerContext, cancel := context.WithTimeout(context.Background(), timeoutDuration)
+	innerContext, cancel := createContextWithTimeout()
 	defer cancel()
 
 	innerNodeID, err := objectid.FromHex(nodeID)
 	if err != nil {
-		log.Error(err)
+		m.log.Warnf("Node ID '%s' is not valid MongoDB ID.", nodeID)
 
 		return nil
 	}
@@ -111,7 +109,7 @@ func (m *MongoDefault) FindNodeByID(nodeID, topologyID string) *Node {
 		m.deletedFilter,
 	}).Decode(&node)
 	if err != nil {
-		log.Error(err)
+		logMongoError(m.log, err, fmt.Sprintf("Node with key '%s' not found.", nodeID))
 
 		return nil
 	}
@@ -123,9 +121,7 @@ func (m *MongoDefault) FindNodeByID(nodeID, topologyID string) *Node {
 func (m *MongoDefault) FindNodeByName(nodeName, topologyID string) []Node {
 	var node Node
 	var nodes []Node
-	timeout, _ := strconv.Atoi(config.Config.MongoDB.Timeout)
-	timeoutDuration := time.Duration(timeout) * time.Second
-	innerContext, cancel := context.WithTimeout(context.Background(), timeoutDuration)
+	innerContext, cancel := createContextWithTimeout()
 	defer cancel()
 
 	cursor, err := m.mongo.Collection(config.Config.MongoDB.NodeColl).Find(innerContext, bson.D{
@@ -135,7 +131,7 @@ func (m *MongoDefault) FindNodeByName(nodeName, topologyID string) []Node {
 		m.deletedFilter,
 	})
 	if err != nil {
-		log.Error(err)
+		logMongoError(m.log, err, fmt.Sprintf("Node with name '%s' not found.", nodeName))
 
 		return nodes
 	}
@@ -148,7 +144,7 @@ func (m *MongoDefault) FindNodeByName(nodeName, topologyID string) []Node {
 		err = cursor.Decode(&node)
 
 		if err != nil {
-			log.Error(err)
+			m.log.Errorf("Node with name '%s' decode error: %s", nodeName, err.Error())
 
 			return nil
 		}
@@ -162,14 +158,12 @@ func (m *MongoDefault) FindNodeByName(nodeName, topologyID string) []Node {
 // FindTopologyByID finds topology by ID
 func (m *MongoDefault) FindTopologyByID(topologyID, nodeID string) *Topology {
 	var topology Topology
-	timeout, _ := strconv.Atoi(config.Config.MongoDB.Timeout)
-	timeoutDuration := time.Duration(timeout) * time.Second
-	innerContext, cancel := context.WithTimeout(context.Background(), timeoutDuration)
+	innerContext, cancel := createContextWithTimeout()
 	defer cancel()
 
 	innerTopologyID, err := objectid.FromHex(topologyID)
 	if err != nil {
-		log.Error(err)
+		m.log.Warnf("Topology ID '%s' is not valid MongoDB ID.", topologyID)
 
 		return nil
 	}
@@ -181,7 +175,7 @@ func (m *MongoDefault) FindTopologyByID(topologyID, nodeID string) *Topology {
 		m.deletedFilter,
 	}).Decode(&topology)
 	if err != nil {
-		log.Error(err)
+		logMongoError(m.log, err, fmt.Sprintf("Topology with key '%s' not found.", topologyID))
 
 		return nil
 	}
@@ -195,9 +189,7 @@ func (m *MongoDefault) FindTopologyByID(topologyID, nodeID string) *Topology {
 func (m *MongoDefault) FindTopologyByName(topologyName, nodeName string) []Topology {
 	var topology Topology
 	var topologies []Topology
-	timeout, _ := strconv.Atoi(config.Config.MongoDB.Timeout)
-	timeoutDuration := time.Duration(timeout) * time.Second
-	innerContext, cancel := context.WithTimeout(context.Background(), timeoutDuration)
+	innerContext, cancel := createContextWithTimeout()
 	defer cancel()
 
 	cursor, err := m.mongo.Collection(config.Config.MongoDB.TopologyColl).Find(innerContext, bson.D{
@@ -207,7 +199,7 @@ func (m *MongoDefault) FindTopologyByName(topologyName, nodeName string) []Topol
 		m.deletedFilter,
 	})
 	if err != nil {
-		log.Error(err)
+		logMongoError(m.log, err, fmt.Sprintf("Topology with name '%s' not found.", topologyName))
 	}
 
 	defer func() {
@@ -217,7 +209,7 @@ func (m *MongoDefault) FindTopologyByName(topologyName, nodeName string) []Topol
 	for cursor.Next(nil) {
 		err = cursor.Decode(&topology)
 		if err != nil {
-			log.Error(err)
+			m.log.Errorf("Topology with name '%s' decode error: %s", topologyName, err.Error())
 
 			return nil
 		}
@@ -230,4 +222,19 @@ func (m *MongoDefault) FindTopologyByName(topologyName, nodeName string) []Topol
 	}
 
 	return topologies
+}
+
+func createContextWithTimeout() (context.Context, context.CancelFunc) {
+	timeout, _ := strconv.Atoi(config.Config.MongoDB.Timeout)
+	timeoutDuration := time.Duration(timeout) * time.Second
+
+	return context.WithTimeout(context.Background(), timeoutDuration)
+}
+
+func logMongoError(log *log.Logger, err error, content string) {
+	if err.Error() == "mongo: no documents in result" {
+		log.Warn(content)
+	} else {
+		log.Error("Unexpected MongoDB error: ", err.Error())
+	}
 }

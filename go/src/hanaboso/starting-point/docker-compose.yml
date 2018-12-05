@@ -4,6 +4,7 @@ services:
   app:
     image: dkr.hanaboso.net/pipes/pipes/starting-point:dev
     environment:
+      APP_DEBUG: "false"
       GO111MODULE: "on"
       MONGO_HOSTNAME: mongodb
       MONGO_DATABASE: starting-point

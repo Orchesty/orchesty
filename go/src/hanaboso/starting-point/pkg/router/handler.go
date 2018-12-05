@@ -5,11 +5,10 @@ import (
 	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
 	"net/http"
+	"starting-point/pkg/config"
 	"starting-point/pkg/service"
 	"starting-point/pkg/storage"
 	"starting-point/pkg/utils"
-
-	log "github.com/sirupsen/logrus"
 )
 
 // HandleClear handles context clear
@@ -62,7 +61,7 @@ func HandleInvalidateCache(w http.ResponseWriter, r *http.Request) {
 func handleByID(w http.ResponseWriter, r *http.Request, isHumanTask, isStop bool) {
 	err := utils.ValidateBody(r)
 	if err != nil {
-		log.Error(err)
+		config.Config.Logger.Errorf("Content is not valid: %s", err.Error())
 		writeErrorResponse(w, http.StatusBadRequest, "Content is not valid!")
 		return
 	}
@@ -87,7 +86,7 @@ func handleByID(w http.ResponseWriter, r *http.Request, isHumanTask, isStop bool
 func handleByName(w http.ResponseWriter, r *http.Request, isHumanTask, isStop bool) {
 	err := utils.ValidateBody(r)
 	if err != nil {
-		log.Error(err)
+		config.Config.Logger.Errorf("Content is not valid: %s", err.Error())
 		writeErrorResponse(w, http.StatusBadRequest, "Content is not valid!")
 		return
 	}
@@ -107,7 +106,7 @@ func handleByName(w http.ResponseWriter, r *http.Request, isHumanTask, isStop bo
 func processMessage(isHumanTask bool, isStop bool, topologies []storage.Topology, r *http.Request) {
 	for _, topology := range topologies {
 		if !isHumanTask {
-			go service.RabbitMq.SndMessage(r, topology)
+			service.RabbitMq.SndMessage(r, topology)
 		} else {
 			// token, found = vars["token"]
 			if !isStop {
