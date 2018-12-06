@@ -3,6 +3,7 @@ package rabbitmq
 import (
 	"fmt"
 	"github.com/streadway/amqp"
+	"sync"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -16,6 +17,7 @@ type Connection interface {
 	CreateChannel(string) (ch *amqp.Channel)
 	GetChannel(string) (ch *amqp.Channel)
 	CloseChannel(string)
+	ClearChannels()
 	GetRestartChan() chan bool
 }
 
@@ -28,9 +30,14 @@ type connection struct {
 	channels    map[string]*amqp.Channel
 	restartChan chan bool
 	log         *log.Logger
+	lock        sync.Mutex
 }
 
 func (c *connection) Connect() {
+	if len(c.channels) == 0 {
+		c.channels = make(map[string]*amqp.Channel)
+	}
+
 	connString := fmt.Sprintf("amqp://%s:%s@%s:%d/", c.user, c.password, c.host, c.port)
 
 	var err error
@@ -55,10 +62,7 @@ func (c *connection) Connect() {
 		c.restartChan <- true
 	}()
 
-	// Restore channels
-	c.channels = make(map[string]*amqp.Channel)
-
-	c.log.Info(fmt.Sprintf("Rabbit MQ connected to %s", connString))
+	log.Info(fmt.Sprintf("Rabbit MQ connected to %s", connString))
 }
 
 func (c *connection) Declare(q Queue) {
@@ -68,13 +72,14 @@ func (c *connection) Declare(q Queue) {
 		c.Connect()
 	}
 
-	ch := c.GetChannel(q.Name)
+	if !c.isChannel(q.Name) {
+		ch := c.GetChannel(q.Name)
+		// Declare queue
+		_, err := ch.QueueDeclare(q.Name, q.Durable, q.AutoDelete, q.Exclusive, q.NoWait, q.Args)
 
-	// Declare queue
-	_, err := ch.QueueDeclare(q.Name, q.Durable, q.AutoDelete, q.Exclusive, q.NoWait, q.Args)
-
-	if err != nil {
-		c.log.Fatal(fmt.Sprintf("Rabbit MQ queue declare error: %+v", err))
+		if err != nil {
+			c.log.Fatal(fmt.Sprintf("Rabbit MQ queue declare error: %+v", err))
+		}
 	}
 
 	c.log.Info(fmt.Sprintf("Rabbit MQ queue declare %s", q.Name))
@@ -82,6 +87,7 @@ func (c *connection) Declare(q Queue) {
 
 func (c *connection) Disconnect() {
 	if c.conn != nil {
+		c.ClearChannels()
 		err := c.conn.Close()
 
 		if err != nil {
@@ -99,27 +105,19 @@ func (c *connection) CreateChannel(name string) (ch *amqp.Channel) {
 	}
 
 	c.channels[name] = ch
-	c.log.Error(fmt.Sprintf("Chan count %d", len(c.channels)))
-	for k := range c.channels {
-		c.log.Error(k)
-	}
 
 	return
 }
 
 func (c *connection) GetChannel(name string) (ch *amqp.Channel) {
-	if _, ok := c.channels[name]; ok {
+	defer c.lock.Unlock()
+	c.lock.Lock()
+
+	if c.isChannel(name) {
 		return c.channels[name]
 	}
 
 	return c.CreateChannel(name)
-}
-
-func (c *connection) reconnect() {
-	c.log.Info("Waiting 1s.")
-	time.Sleep(time.Second * 1)
-	c.Disconnect()
-	c.Connect()
 }
 
 func (c *connection) GetRestartChan() chan bool {
@@ -134,7 +132,28 @@ func (c *connection) CloseChannel(name string) {
 	}
 
 	delete(c.channels, name)
-	c.log.Info(fmt.Sprintf("Rabbit MQ channel with id %s.", name))
+}
+
+func (c *connection) ClearChannels() {
+	for k := range c.channels {
+		c.CloseChannel(k)
+	}
+}
+
+func (c *connection) isChannel(n string) (r bool) {
+	r = false
+	if _, ok := c.channels[n]; ok {
+		r = true
+	}
+
+	return
+}
+
+func (c *connection) reconnect() {
+	c.log.Info("Waiting 1s.")
+	time.Sleep(time.Second * 1)
+	c.Disconnect()
+	c.Connect()
 }
 
 // NewConnection construct

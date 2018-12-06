@@ -6,6 +6,7 @@ import (
 	"github.com/streadway/amqp"
 	"net/http"
 	"starting-point/pkg/config"
+	"starting-point/pkg/influx"
 	"starting-point/pkg/rabbitmq"
 	"starting-point/pkg/storage"
 	"starting-point/pkg/utils"
@@ -15,8 +16,9 @@ import (
 
 // Rabbit represents rabbit
 type Rabbit interface {
-	SndMessage(*http.Request, storage.Topology)
+	SndMessage(*http.Request, storage.Topology, map[string]float64)
 	DisconnectRabbit()
+	ClearChannels()
 }
 
 type rabbit struct {
@@ -52,11 +54,10 @@ func ConnectToRabbit() {
 	RabbitMq = NewRabbit()
 }
 
-func (r *rabbit) SndMessage(request *http.Request, topology storage.Topology) {
-
+func (r *rabbit) SndMessage(request *http.Request, topology storage.Topology, init map[string]float64) {
 	// Create Queue & Message
 	queueName := utils.GenerateTplgName(topology)
-	q := rabbitmq.Queue{Name: queueName, Durable: true, AutoDelete: false}
+	q := rabbitmq.Queue{Name: queueName, Durable: config.Config.RabbitMQ.QueueDurable}
 	m := amqp.Publishing{Body: utils.GetBodyFromStream(request), Headers: r.builder.BldProcessHeaders(topology, request.Header)}
 
 	// Init Counter
@@ -64,11 +65,19 @@ func (r *rabbit) SndMessage(request *http.Request, topology storage.Topology) {
 
 	// Declare Queue & Publish Message
 	r.connection.Declare(q)
-	r.publisher.Publish(m, "", q.Name)
+	r.publisher.Publish(m, q.Name)
+
+	// Send Metrics
+	corrID := m.Headers[utils.CorrelationID]
+	influx.SendMetrics(influx.GetTags(topology, corrID.(string)), influx.GetFields(init))
 }
 
 func (r *rabbit) DisconnectRabbit() {
 	r.connection.Disconnect()
+}
+
+func (r *rabbit) ClearChannels() {
+	r.connection.ClearChannels()
 }
 
 func (r *rabbit) initCounterProcess(httpHeaders http.Header, topology storage.Topology) {
@@ -86,13 +95,9 @@ func (r *rabbit) initCounterProcess(httpHeaders http.Header, topology storage.To
 	// Create ProcessMessage headers
 	h := r.builder.BldCounterHeaders(topology, httpHeaders)
 
-	// Create Queue & Message
-	q := rabbitmq.Queue{Name: config.Config.RabbitMQ.CounterQueueName, Durable: config.Config.RabbitMQ.CounterQueueDurable}
+	// Create & Publish Message
 	msg := amqp.Publishing{Body: body, Headers: h}
-
-	// Declare Queue & Publish Message
-	r.connection.Declare(q)
-	r.publisher.Publish(msg, "", q.Name)
+	r.publisher.Publish(msg, config.Config.RabbitMQ.CounterQueueName)
 }
 
 // NewRabbit construct
@@ -106,6 +111,10 @@ func NewRabbit() Rabbit {
 	conn.Connect()
 	publisher := rabbitmq.NewPublisher(conn, config.Config.Logger)
 	builder := utils.NewHeaderBuilder(config.Config.RabbitMQ.DeliveryMode)
+
+	// Declare Process-Counter queue
+	conn.Declare(*rabbitmq.GetProcessCounterQueue())
+	conn.CloseChannel(config.Config.RabbitMQ.CounterQueueName)
 
 	return &rabbit{publisher: publisher, connection: conn, builder: builder}
 }

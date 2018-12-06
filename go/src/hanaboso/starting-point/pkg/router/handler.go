@@ -6,6 +6,7 @@ import (
 	"github.com/gorilla/mux"
 	"net/http"
 	"starting-point/pkg/config"
+	"starting-point/pkg/influx"
 	"starting-point/pkg/service"
 	"starting-point/pkg/storage"
 	"starting-point/pkg/utils"
@@ -66,6 +67,7 @@ func handleByID(w http.ResponseWriter, r *http.Request, isHumanTask, isStop bool
 		return
 	}
 
+	init := influx.InitFields()
 	vars := mux.Vars(r)
 	topology := service.Cache.FindTopologyByID(vars["topology"], vars["node"])
 	if topology == nil {
@@ -78,7 +80,7 @@ func handleByID(w http.ResponseWriter, r *http.Request, isHumanTask, isStop bool
 		return
 	}
 
-	go processMessage(isHumanTask, isStop, []storage.Topology{*topology}, r)
+	go processMessage(isHumanTask, isStop, []storage.Topology{*topology}, r, init)
 
 	writeResponse(w, map[string]interface{}{"state": "ok", "started": 1})
 }
@@ -91,6 +93,7 @@ func handleByName(w http.ResponseWriter, r *http.Request, isHumanTask, isStop bo
 		return
 	}
 
+	init := influx.InitFields()
 	vars := mux.Vars(r)
 	topologies := service.Cache.FindTopologyByName(vars["topology"], vars["node"])
 	if len(topologies) == 0 {
@@ -98,15 +101,15 @@ func handleByName(w http.ResponseWriter, r *http.Request, isHumanTask, isStop bo
 		return
 	}
 
-	go processMessage(isHumanTask, isStop, topologies, r)
+	go processMessage(isHumanTask, isStop, topologies, r, init)
 
 	writeResponse(w, map[string]interface{}{"state": "ok", "started": len(topologies)})
 }
 
-func processMessage(isHumanTask bool, isStop bool, topologies []storage.Topology, r *http.Request) {
+func processMessage(isHumanTask bool, isStop bool, topologies []storage.Topology, r *http.Request, init map[string]float64) {
 	for _, topology := range topologies {
 		if !isHumanTask {
-			service.RabbitMq.SndMessage(r, topology)
+			service.RabbitMq.SndMessage(r, topology, init)
 		} else {
 			// token, found = vars["token"]
 			if !isStop {

@@ -23,12 +23,12 @@ type udpSender struct {
 	resolveTicker *time.Ticker
 }
 
-// UDPSender describe
-var UDPSender Sender
+// UDP describe
+var UDP Sender
 
 // ConnectToUDP init
 func ConnectToUDP() {
-	UDPSender = NewUDPSender()
+	UDP = NewUDPSender()
 }
 
 func (u *udpSender) Send(data []byte) {
@@ -39,7 +39,7 @@ func (u *udpSender) Send(data []byte) {
 			resErr := u.findHost()
 
 			if resErr != nil {
-				log.Println(fmt.Sprintf("Udp resolve host error: %s", resErr))
+				log.Error(fmt.Sprintf("Udp resolve host error: %+v", resErr))
 				return
 			}
 		}
@@ -49,7 +49,7 @@ func (u *udpSender) Send(data []byte) {
 			u.conn, err = net.DialUDP("udp", nil, u.addr)
 
 			if err != nil {
-				log.Println(fmt.Sprintf("Udp sender coonection error: %s", err))
+				log.Error(fmt.Sprintf("Udp sender connection error: %+v", err))
 				return
 			}
 		}
@@ -57,7 +57,7 @@ func (u *udpSender) Send(data []byte) {
 		_, err := u.conn.Write(data)
 
 		if err != nil {
-			log.Println(fmt.Sprintf("Udp sender write error: %s", err))
+			log.Error(fmt.Sprintf("Udp sender write error: %+v", err))
 		}
 
 		return
@@ -69,7 +69,7 @@ func (u *udpSender) DisconnectUDP() {
 	err := u.conn.Close()
 
 	if err != nil {
-		log.Println(fmt.Sprintf("Resolving host error: %s", err))
+		log.Error(fmt.Sprintf("Resolving host error: %+v", err))
 	}
 }
 
@@ -78,7 +78,7 @@ func (u *udpSender) findHost() error {
 	u.addr, err = net.ResolveUDPAddr("udp", u.url)
 
 	if err != nil {
-		log.Println(fmt.Sprintf("Resolve ip addr for host %s error: %s", u.url, err))
+		log.Error(fmt.Sprintf("Resolve ip addr for host %s error: %+v", u.url, err))
 		return err
 	}
 
@@ -92,10 +92,10 @@ func (u *udpSender) resolveHost() {
 			for t := range u.resolveTicker.C {
 				err := u.findHost()
 				if err != nil {
-					log.Println(fmt.Sprintf("Resolving host error: %s", err))
+					log.Error(fmt.Sprintf("Resolving host error: %+v", err))
 				}
 
-				log.Println(fmt.Sprintf("Resolving host in %s", t))
+				log.Info(fmt.Sprintf("Resolving host in %s", t))
 			}
 		}()
 	}

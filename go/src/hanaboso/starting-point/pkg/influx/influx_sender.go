@@ -3,7 +3,7 @@ package influx
 import (
 	"errors"
 	"fmt"
-	"go/types"
+	"reflect"
 	"starting-point/pkg/config"
 	"starting-point/pkg/udp"
 	"strings"
@@ -19,7 +19,7 @@ func SendMetrics(tags map[string]interface{}, fields map[string]interface{}) {
 		log.Error(fmt.Sprintf("Creating data for Metrics failed. Error: %s", err))
 	}
 
-	udp.UDPSender.Send([]byte(m))
+	udp.UDP.Send([]byte(m))
 }
 
 func createMessage(tags map[string]interface{}, fields map[string]interface{}) (m string, err error) {
@@ -27,10 +27,10 @@ func createMessage(tags map[string]interface{}, fields map[string]interface{}) (
 		return "", errors.New("fields must not be empty")
 	}
 
-	t := join(prepareTags(tags))
-	f := join(prepareFields(fields))
+	t := join(prepareItems(tags, false))
+	f := join(prepareItems(fields, true))
 
-	return fmt.Sprintf("%s,%s %s %s", config.Config.InfluxDB.Measurement, t, f, string(time.Now().UnixNano())), nil
+	return fmt.Sprintf("%s,%s %s %d", config.Config.InfluxDB.Measurement, t, f, time.Now().UnixNano()), nil
 }
 
 func join(items map[string]interface{}) (res string) {
@@ -49,48 +49,49 @@ func join(items map[string]interface{}) (res string) {
 	return
 }
 
-func prepareTags(tags map[string]interface{}) map[string]interface{} {
-	for k, item := range tags {
+func prepareItems(items map[string]interface{}, escape bool) map[string]interface{} {
+	for k, item := range items {
+		var i int
+		var i8 int8
+		var i6 int16
+		var i2 int32
+		var i4 int64
+		var f4 float64
+		var f2 float32
+		var b bool
+		var s string
+
+		t := reflect.TypeOf(item)
+
 		if item == "" {
-			tags[k] = "\"\""
-		} else if item == types.IsBoolean {
+			items[k] = "\"\""
+		} else if t == reflect.TypeOf(i) || t == reflect.TypeOf(i8) || t == reflect.TypeOf(i6) || t == reflect.TypeOf(i2) || t == reflect.TypeOf(i4) {
+			items[k] = fmt.Sprintf("%d", item)
+		} else if t == reflect.TypeOf(f2) || t == reflect.TypeOf(f4) {
+			items[k] = fmt.Sprintf("%f", item)
+		} else if t == reflect.TypeOf(b) {
 			switch item {
 			case true:
-				tags[k] = "true"
+				items[k] = "true"
 				break
 			case false:
-				tags[k] = "false"
+				items[k] = "false"
 				break
 			}
 		} else if item == nil {
-			tags[k] = "null"
-		}
-	}
-
-	return tags
-}
-
-func prepareFields(fields map[string]interface{}) map[string]interface{} {
-	for k, item := range fields {
-		if item == types.IsInteger {
-			fields[k] = fmt.Sprintf("%d", item)
-		} else if item == types.IsBoolean {
-			switch item {
-			case true:
-				fields[k] = "true"
-				break
-			case false:
-				fields[k] = "false"
-				break
+			items[k] = "null"
+		} else if t == reflect.TypeOf(s) {
+			if escape == true {
+				items[k] = escapeString(fmt.Sprintf("%s", item))
+			} else {
+				items[k] = fmt.Sprintf("%s", item)
 			}
-		} else if item == nil {
-			fields[k] = "null"
-		} else if item == types.IsString {
-			fields[k] = escapeString(fmt.Sprintf("%s", item))
+		} else {
+			delete(items, k)
 		}
 	}
 
-	return fields
+	return items
 }
 
 func escapeString(s string) string {

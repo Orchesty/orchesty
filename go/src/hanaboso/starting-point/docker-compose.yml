@@ -8,6 +8,10 @@ services:
       GO111MODULE: "on"
       MONGO_HOSTNAME: mongodb
       MONGO_DATABASE: starting-point
+      RABBIT_COUNTER_QUEUE_DURABLE: "true"
+      RABBIT_QUEUE_DURABLE: "true"
+      RABBIT_DELIVERY_MODE: 2
+      APP_CLEANUP_TIME: "300"
     working_dir: /go/src/hanaboso/starting-point
     volumes:
       - ./:/go/src/hanaboso/starting-point
@@ -29,8 +33,12 @@ services:
     volumes:
       - rabbitmq:/var/lib/rabbitmq
 
-  influx:
-    image: influxdb:1.7-alpine
+  influxdb:
+    image: dkr.hanaboso.net/pipes/pipes/influxdb:dev
+
+  test:
+    image: alpine
+    command: tail -f /dev/null
 
 volumes:
   mongodb: {}

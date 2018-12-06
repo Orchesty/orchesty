@@ -21,9 +21,11 @@ type headerBuilder struct {
 
 const prefix = "pf-"
 
+// CorrelationID header
+const CorrelationID = prefix + "correlation-id"
+
 // Prefixed pipes headers
 const parentID = prefix + "parent-id"
-const correlationID = prefix + "correlation-id"
 const processID = prefix + "process-id"
 const sequenceID = prefix + "sequence-id"
 const nodeID = prefix + "node-id"
@@ -62,7 +64,7 @@ func (b *headerBuilder) BldProcessHeaders(topology storage.Topology, headers htt
 		deliveryMode:  b.deliveryMode,
 		pfTimeStamp:   time.Now().UTC().Unix() * 1000,
 		processID:     uuid.New().String(),
-		correlationID: uuid.New().String(),
+		CorrelationID: uuid.New().String(),
 	}
 
 	arrayFilter(headers, h)

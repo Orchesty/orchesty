@@ -6,11 +6,15 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"runtime/debug"
+	"starting-point/pkg/config"
 	"starting-point/pkg/router"
 	"starting-point/pkg/service"
 	"starting-point/pkg/storage"
 	"starting-point/pkg/udp"
+	"starting-point/pkg/utils"
 	"syscall"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -98,9 +102,11 @@ func main() {
 	udp.ConnectToUDP()
 	server := &http.Server{Addr: fmt.Sprint(":80"), Handler: router.Router(routes)}
 
+	memoryCleaner()
+
 	defer func() {
 		service.RabbitMq.DisconnectRabbit()
-		udp.UDPSender.DisconnectUDP()
+		udp.UDP.DisconnectUDP()
 		_ = storage.Mongo.Disconnect()
 		_ = server.Shutdown(context.Background())
 
@@ -121,10 +127,37 @@ func gracefulShutdown(server *http.Server) {
 
 		log.Info("Stopping server...")
 		service.RabbitMq.DisconnectRabbit()
-		udp.UDPSender.DisconnectUDP()
+		udp.UDP.DisconnectUDP()
 		_ = storage.Mongo.Disconnect()
 		_ = server.Shutdown(context.Background())
 
 		os.Exit(0)
+	}()
+}
+
+func memoryCleaner() {
+
+	log.Info(time.Second * time.Duration(config.Config.Cleaner.CleanUp))
+
+	keepAlive := time.NewTicker(time.Second * time.Duration(config.Config.Cleaner.CleanUp))
+	go func() {
+
+		t := 0.0
+		total, err := utils.GetCurrentCPUTimeStat()
+		if err == nil {
+			t = total.Total()
+		}
+
+		for range keepAlive.C {
+			percentCPU, newT := utils.GetCPUUsage(t, int(config.Config.Cleaner.CleanUp))
+			t = newT
+
+			log.Info(percentCPU)
+			if percentCPU <= 1 {
+				service.RabbitMq.ClearChannels()
+				debug.FreeOSMemory()
+				log.Info("cleaned")
+			}
+		}
 	}()
 }

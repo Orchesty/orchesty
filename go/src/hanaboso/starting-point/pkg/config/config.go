@@ -16,6 +16,7 @@ type config struct {
 	Cache    *cache
 	InfluxDB *influxDB
 	Logger   *log.Logger
+	Cleaner  *cleaner
 }
 
 type mongoDb struct {
@@ -35,6 +36,7 @@ type rabbitMq struct {
 	CounterQueueName    string
 	CounterQueueDurable bool
 	DeliveryMode        int16
+	QueueDurable        bool
 }
 
 type cache struct {
@@ -49,11 +51,16 @@ type influxDB struct {
 	Measurement string
 }
 
+type cleaner struct {
+	CleanUp         int16
+	CPUPercentLimit int16
+}
+
 func init() {
 	l := log.New()
 	l.SetLevel(log.WarnLevel)
 
-	if getEnvBool("APP_DEBUG", true) {
+	if getEnvBool("APP_DEBUG", false) {
 		l.SetLevel(log.DebugLevel)
 	}
 
@@ -73,7 +80,8 @@ func init() {
 			Password:            getEnv("RABBIT_PASSWORD", "guest"),
 			CounterQueueName:    getEnv("RABBIT_COUNTER_QUEUE_NAME", "pipes.multi-counter"),
 			CounterQueueDurable: getEnvBool("RABBIT_COUNTER_QUEUE_DURABLE", true),
-			DeliveryMode:        getEnvInt("RABBIT_DELIVERY_MODE", 1),
+			DeliveryMode:        getEnvInt("RABBIT_DELIVERY_MODE", 2), // 0 - 1 Transient, 2 - Persistent
+			QueueDurable:        getEnvBool("RABBIT_QUEUE_DURABLE", true),
 		},
 		Cache: &cache{
 			Expiration: getEnv("CACHE_EXPIRATION", "24"),
@@ -82,10 +90,14 @@ func init() {
 		InfluxDB: &influxDB{
 			Hostname:    getEnv("INFLUX_HOSTNAME", "influxdb"),
 			Port:        getEnv("INFLUX_PORT", "8089"),
-			RefreshTime: getEnvInt("INFLUX_REFRESH_TIME", 30),
+			RefreshTime: getEnvInt("INFLUX_REFRESH_TIME", 3600),
 			Measurement: getEnv("INFLUX_MEASUREMENT", "monolith"),
 		},
 		Logger: l,
+		Cleaner: &cleaner{
+			CleanUp:         getEnvInt("APP_CLEANUP_TIME", 5*60),
+			CPUPercentLimit: getEnvInt("APP_CLEANUP_PERCENT", 2),
+		},
 	}
 }
 
