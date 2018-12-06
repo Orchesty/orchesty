@@ -57,7 +57,7 @@ func ConnectToRabbit() {
 func (r *rabbit) SndMessage(request *http.Request, topology storage.Topology, init map[string]float64) {
 	// Create Queue & Message
 	queueName := utils.GenerateTplgName(topology)
-	q := rabbitmq.Queue{Name: queueName, Durable: config.Config.RabbitMQ.QueueDurable}
+	q := rabbitmq.Queue{Name: queueName, Durable: config.Config.RabbitMQ.QueueDurable, NoWait: false}
 	m := amqp.Publishing{Body: utils.GetBodyFromStream(request), Headers: r.builder.BldProcessHeaders(topology, request.Header)}
 
 	// Init Counter

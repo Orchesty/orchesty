@@ -12,6 +12,7 @@ require (
 	github.com/mongodb/mongo-go-driver v0.0.18
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/shirou/gopsutil v2.18.11+incompatible
+	github.com/shirou/w32 v0.0.0-20160930032740-bb4de0191aa4 // indirect
 	github.com/sirupsen/logrus v1.2.0
 	github.com/streadway/amqp v0.0.0-20181107104731-27835f1a64e9
 	github.com/stretchr/testify v1.2.2

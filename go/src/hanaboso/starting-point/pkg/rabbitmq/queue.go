@@ -17,5 +17,5 @@ type Queue struct {
 
 // GetProcessCounterQueue returns Queue conf
 func GetProcessCounterQueue() *Queue {
-	return &Queue{Name: config.Config.RabbitMQ.CounterQueueName, Durable: config.Config.RabbitMQ.CounterQueueDurable}
+	return &Queue{Name: config.Config.RabbitMQ.CounterQueueName, Durable: config.Config.RabbitMQ.CounterQueueDurable, NoWait: false}
 }

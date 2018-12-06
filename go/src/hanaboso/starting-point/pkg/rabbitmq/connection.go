@@ -12,13 +12,19 @@ import (
 // Connection represents connection
 type Connection interface {
 	Connect()
-	Declare(Queue)
+	Declare(q Queue)
 	Disconnect()
-	CreateChannel(string) (ch *amqp.Channel)
-	GetChannel(string) (ch *amqp.Channel)
+	CreateChannel(string) (chD ChanData)
+	GetChannel(string) (chD ChanData)
 	CloseChannel(string)
 	ClearChannels()
 	GetRestartChan() chan bool
+}
+
+// ChanData represents ChanData
+type ChanData struct {
+	Ch      *amqp.Channel
+	Confirm chan amqp.Confirmation
 }
 
 type connection struct {
@@ -27,17 +33,15 @@ type connection struct {
 	user        string
 	password    string
 	conn        *amqp.Connection
-	channels    map[string]*amqp.Channel
+	channels    map[string]ChanData
 	restartChan chan bool
 	log         *log.Logger
 	lock        sync.Mutex
+	lock2       sync.Mutex
+	lock3       sync.Mutex
 }
 
 func (c *connection) Connect() {
-	if len(c.channels) == 0 {
-		c.channels = make(map[string]*amqp.Channel)
-	}
-
 	connString := fmt.Sprintf("amqp://%s:%s@%s:%d/", c.user, c.password, c.host, c.port)
 
 	var err error
@@ -51,18 +55,18 @@ func (c *connection) Connect() {
 
 	go func() {
 		err := <-c.conn.NotifyClose(make(chan *amqp.Error))
-
 		if err == nil {
-			c.restartChan <- false
+			c.saveWriteRestartChan(false)
 		}
 
 		c.log.Error(fmt.Sprintf("Rabbit MQ connection close error: %+v", err))
-
-		c.reconnect()
-		c.restartChan <- true
+		c.saveWriteRestartChan(true)
 	}()
 
 	log.Info(fmt.Sprintf("Rabbit MQ connected to %s", connString))
+
+	// clear Channels
+	c.ClearChannels()
 }
 
 func (c *connection) Declare(q Queue) {
@@ -72,17 +76,19 @@ func (c *connection) Declare(q Queue) {
 		c.Connect()
 	}
 
+	c.lock3.Lock()
+	defer c.lock3.Unlock()
+
 	if !c.isChannel(q.Name) {
 		ch := c.GetChannel(q.Name)
 		// Declare queue
-		_, err := ch.QueueDeclare(q.Name, q.Durable, q.AutoDelete, q.Exclusive, q.NoWait, q.Args)
+		_, err := ch.Ch.QueueDeclare(q.Name, q.Durable, q.AutoDelete, q.Exclusive, q.NoWait, q.Args)
 
 		if err != nil {
 			c.log.Fatal(fmt.Sprintf("Rabbit MQ queue declare error: %+v", err))
 		}
+		c.log.Info(fmt.Sprintf("Rabbit MQ queue declare %s", q.Name))
 	}
-
-	c.log.Info(fmt.Sprintf("Rabbit MQ queue declare %s", q.Name))
 }
 
 func (c *connection) Disconnect() {
@@ -96,28 +102,31 @@ func (c *connection) Disconnect() {
 	}
 }
 
-func (c *connection) CreateChannel(name string) (ch *amqp.Channel) {
+func (c *connection) GetChannel(name string) (chD ChanData) {
+	c.lock2.Lock()
+	defer c.lock2.Unlock()
 
+	if c.isChannel(name) {
+		return c.saveRead(name)
+	}
+
+	return c.CreateChannel(name)
+}
+
+func (c *connection) CreateChannel(name string) (chD ChanData) {
 	ch, err := c.conn.Channel()
-
 	if err != nil {
 		c.log.Fatal(fmt.Sprintf("Rabbit MQ channel error: %+v", err))
 	}
 
-	c.channels[name] = ch
-
-	return
-}
-
-func (c *connection) GetChannel(name string) (ch *amqp.Channel) {
-	defer c.lock.Unlock()
-	c.lock.Lock()
-
-	if c.isChannel(name) {
-		return c.channels[name]
+	errC := ch.Confirm(false)
+	if errC != nil {
+		c.log.Error(fmt.Sprintf("confirm.select destination: %+v", errC))
 	}
 
-	return c.CreateChannel(name)
+	c.saveWriteChan(name, ChanData{Ch: ch, Confirm: ch.NotifyPublish(make(chan amqp.Confirmation, 500000))})
+
+	return c.saveRead(name)
 }
 
 func (c *connection) GetRestartChan() chan bool {
@@ -125,13 +134,14 @@ func (c *connection) GetRestartChan() chan bool {
 }
 
 func (c *connection) CloseChannel(name string) {
-	ch := c.GetChannel(name)
-	err := ch.Close()
-	if err != nil {
-		c.log.Error(fmt.Sprintf("Connection closing error: %+v", err))
+	if c.isChannel(name) {
+		ch := c.GetChannel(name)
+		err := ch.Ch.Close()
+		if err != nil {
+			c.log.Error(fmt.Sprintf("Connection closing error: %+v", err))
+		}
+		c.saveDelete(name)
 	}
-
-	delete(c.channels, name)
 }
 
 func (c *connection) ClearChannels() {
@@ -141,12 +151,43 @@ func (c *connection) ClearChannels() {
 }
 
 func (c *connection) isChannel(n string) (r bool) {
+	c.lock.Lock()
+	defer c.lock.Unlock()
+
 	r = false
 	if _, ok := c.channels[n]; ok {
 		r = true
 	}
 
 	return
+}
+
+func (c *connection) saveWriteChan(name string, ch ChanData) {
+	c.lock.Lock()
+	defer c.lock.Unlock()
+
+	c.channels[name] = ch
+}
+
+func (c *connection) saveRead(name string) ChanData {
+	c.lock.Lock()
+	defer c.lock.Unlock()
+
+	return c.channels[name]
+}
+
+func (c *connection) saveDelete(name string) {
+	c.lock.Lock()
+	defer c.lock.Unlock()
+
+	delete(c.channels, name)
+}
+
+func (c *connection) saveWriteRestartChan(b bool) {
+	c.lock.Lock()
+	defer c.lock.Unlock()
+
+	c.restartChan <- b
 }
 
 func (c *connection) reconnect() {
@@ -163,6 +204,7 @@ func NewConnection(host string, port int, user string, password string, log *log
 		port:        port,
 		user:        user,
 		password:    password,
+		channels:    make(map[string]ChanData),
 		restartChan: make(chan bool),
 		log:         log}
 }

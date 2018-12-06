@@ -12,6 +12,16 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+var i int
+var i8 int8
+var i6 int16
+var i2 int32
+var i4 int64
+var f4 float64
+var f2 float32
+var b bool
+var s string
+
 // SendMetrics sending metrics via UDP
 func SendMetrics(tags map[string]interface{}, fields map[string]interface{}) {
 	m, err := createMessage(tags, fields)
@@ -51,16 +61,6 @@ func join(items map[string]interface{}) (res string) {
 
 func prepareItems(items map[string]interface{}, escape bool) map[string]interface{} {
 	for k, item := range items {
-		var i int
-		var i8 int8
-		var i6 int16
-		var i2 int32
-		var i4 int64
-		var f4 float64
-		var f2 float32
-		var b bool
-		var s string
-
 		t := reflect.TypeOf(item)
 
 		if item == "" {

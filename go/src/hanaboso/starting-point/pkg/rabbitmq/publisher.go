@@ -2,14 +2,13 @@ package rabbitmq
 
 import (
 	"fmt"
-	"github.com/streadway/amqp"
-
 	log "github.com/sirupsen/logrus"
+	"github.com/streadway/amqp"
 )
 
 // Publisher represents publisher
 type Publisher interface {
-	Publish(msg amqp.Publishing, routingKey string)
+	Publish(amqp.Publishing, string)
 	clearChannels()
 }
 
@@ -21,21 +20,28 @@ type publisher struct {
 }
 
 func (p *publisher) Publish(msg amqp.Publishing, routingKey string) {
-	err := p.getChannel("").Publish("", routingKey, p.mandatory, p.immediate, msg)
+	chD := p.getChannel(routingKey)
+	err := chD.Ch.Publish("", routingKey, p.mandatory, p.immediate, msg)
 	if err != nil {
-		p.log.Error(fmt.Sprintf("Rabbit MQ publish error: %+v", err))
+		p.log.Error(fmt.Sprintf("Rabbit MQ publish error: %+v. Try to recconect.", err))
+		p.connection.Connect()
 
-		v := <-p.connection.GetRestartChan()
-
-		if v == true {
+		if v := <-p.connection.GetRestartChan(); v {
 			p.Publish(msg, routingKey)
 		}
 	}
 
 	p.log.Info(fmt.Sprintf("Rabbit MQ publish message with routing key '%s'", routingKey))
+
+	go func() {
+		if confirmed := <-chD.Confirm; !confirmed.Ack {
+			p.log.Error(fmt.Sprintf("NonConfirm"))
+			p.Publish(msg, routingKey)
+		}
+	}()
 }
 
-func (p *publisher) getChannel(name string) *amqp.Channel {
+func (p *publisher) getChannel(name string) ChanData {
 	return p.connection.GetChannel(name)
 }
 

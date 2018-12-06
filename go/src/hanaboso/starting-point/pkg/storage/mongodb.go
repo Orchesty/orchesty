@@ -55,7 +55,7 @@ func (m *MongoDefault) Connect() {
 	}
 
 	timeout, _ := strconv.Atoi(config.Config.MongoDB.Timeout)
-	timeoutDuration := time.Duration(timeout) * time.Second
+	timeoutDuration := time.Duration(timeout) * (time.Minute)
 	innerContext, cancel := createContextWithTimeout()
 	defer cancel()
 
