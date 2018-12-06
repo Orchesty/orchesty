@@ -86,7 +86,10 @@ func (m *MongoDefault) Connect() {
 
 // Disconnect disconnects from database
 func (m *MongoDefault) Disconnect() error {
-	return m.mongo.Client().Disconnect(nil)
+	innerContext, cancel := createContextWithTimeout()
+	defer cancel()
+
+	return m.mongo.Client().Disconnect(innerContext)
 }
 
 // FindNodeByID finds node by id
@@ -235,6 +238,6 @@ func logMongoError(log *log.Logger, err error, content string) {
 	if err.Error() == "mongo: no documents in result" {
 		log.Warn(content)
 	} else {
-		log.Error("Unexpected MongoDB error: ", err.Error())
+		log.Errorf("Unexpected MongoDB error: %s", err.Error())
 	}
 }

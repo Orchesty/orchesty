@@ -14,6 +14,7 @@ require (
 	github.com/shirou/gopsutil v2.18.11+incompatible
 	github.com/sirupsen/logrus v1.2.0
 	github.com/streadway/amqp v0.0.0-20181107104731-27835f1a64e9
+	github.com/stretchr/testify v1.2.2
 	github.com/tidwall/pretty v0.0.0-20180105212114-65a9db5fad51 // indirect
 	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect
 	github.com/xdg/stringprep v1.0.0 // indirect

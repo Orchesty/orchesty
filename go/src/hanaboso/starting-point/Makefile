@@ -18,7 +18,8 @@ lint:
 	docker-compose exec app golint ./cmd/... ./pkg/...
 
 test: lint
-	docker-compose exec app go test ./... -count=1
+	docker-compose exec app go test -cover -coverprofile build/cover.out ./... -count=1
+	docker-compose exec app go tool cover -html=build/cover.out -o build/cover.html
 
 format-local:
 	gofmt -w cmd pkg
