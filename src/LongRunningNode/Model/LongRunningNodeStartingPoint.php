@@ -4,6 +4,7 @@ namespace Hanaboso\PipesFramework\LongRunningNode\Model;
 
 use DateTime;
 use DateTimeZone;
+use Exception;
 use Hanaboso\CommonsBundle\Metrics\InfluxDbSender;
 use Hanaboso\CommonsBundle\Metrics\SystemMetrics;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
@@ -82,6 +83,7 @@ class LongRunningNodeStartingPoint extends StartingPoint
      * @param LongRunningNodeData $document
      *
      * @return Headers
+     * @throws Exception
      */
     private function createCustomHeaders(LongRunningNodeData $document): Headers
     {
