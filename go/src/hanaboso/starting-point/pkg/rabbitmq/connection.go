@@ -3,6 +3,7 @@ package rabbitmq
 import (
 	"fmt"
 	"github.com/streadway/amqp"
+	"starting-point/pkg/config"
 	"sync"
 	"time"
 
@@ -12,7 +13,7 @@ import (
 // Connection represents connection
 type Connection interface {
 	Connect()
-	Declare(q Queue)
+	Declare(q *Queue)
 	Disconnect()
 	CreateChannel(string) (chD ChanData)
 	GetChannel(string) (chD ChanData)
@@ -69,7 +70,7 @@ func (c *connection) Connect() {
 	c.ClearChannels()
 }
 
-func (c *connection) Declare(q Queue) {
+func (c *connection) Declare(q *Queue) {
 
 	if c.conn == nil {
 		c.log.Error("Connection setup error: not connected.")
@@ -124,7 +125,7 @@ func (c *connection) CreateChannel(name string) (chD ChanData) {
 		c.log.Error(fmt.Sprintf("confirm.select destination: %+v", errC))
 	}
 
-	c.saveWriteChan(name, ChanData{Ch: ch, Confirm: ch.NotifyPublish(make(chan amqp.Confirmation, 500000))})
+	c.saveWriteChan(name, ChanData{Ch: ch, Confirm: ch.NotifyPublish(make(chan amqp.Confirmation, config.Config.RabbitMQ.MaxConcurrentPublish))})
 
 	return c.saveRead(name)
 }

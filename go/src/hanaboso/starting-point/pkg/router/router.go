@@ -21,6 +21,10 @@ type Routes []Route
 func Router(routes Routes) *mux.Router {
 	router := mux.NewRouter().StrictSlash(true)
 
+	if routes == nil {
+		routes = GetDefaultRoutes()
+	}
+
 	for _, route := range routes {
 		router.Methods(route.Method).Path(route.Pattern).Name(route.Name).Handler(route.HandlerFunc)
 	}
@@ -29,11 +33,6 @@ func Router(routes Routes) *mux.Router {
 	router.MethodNotAllowedHandler = http.HandlerFunc(methodNotAllowedHandler)
 
 	return router
-}
-
-// HandleStatus checks if HTTP is working correctly
-func HandleStatus(w http.ResponseWriter, r *http.Request) {
-	writeResponse(w, map[string]interface{}{"status": "OK"})
 }
 
 func notFoundHandler(w http.ResponseWriter, r *http.Request) {

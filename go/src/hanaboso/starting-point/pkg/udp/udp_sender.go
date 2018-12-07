@@ -62,14 +62,15 @@ func (u *udpSender) Send(data []byte) {
 
 		return
 	}()
-
 }
 
 func (u *udpSender) DisconnectUDP() {
-	err := u.conn.Close()
+	if u.conn != nil {
+		err := u.conn.Close()
 
-	if err != nil {
-		log.Error(fmt.Sprintf("Resolving host error: %+v", err))
+		if err != nil {
+			log.Error(fmt.Sprintf("Resolving host error: %+v", err))
+		}
 	}
 }
 

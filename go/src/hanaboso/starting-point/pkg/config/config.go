@@ -30,13 +30,15 @@ type mongoDb struct {
 }
 
 type rabbitMq struct {
-	Hostname            string
-	Username            string
-	Password            string
-	CounterQueueName    string
-	CounterQueueDurable bool
-	DeliveryMode        int16
-	QueueDurable        bool
+	Hostname             string
+	Username             string
+	Password             string
+	Port                 int16
+	CounterQueueName     string
+	CounterQueueDurable  bool
+	DeliveryMode         int16
+	QueueDurable         bool
+	MaxConcurrentPublish int16
 }
 
 type cache struct {
@@ -75,13 +77,15 @@ func init() {
 			Timeout:      getEnv("MONGO_TIMEOUT", "10"),
 		},
 		RabbitMQ: &rabbitMq{
-			Hostname:            getEnv("RABBIT_HOSTNAME", "rabbitmq"),
-			Username:            getEnv("RABBIT_USERNAME", "guest"),
-			Password:            getEnv("RABBIT_PASSWORD", "guest"),
-			CounterQueueName:    getEnv("RABBIT_COUNTER_QUEUE_NAME", "pipes.multi-counter"),
-			CounterQueueDurable: getEnvBool("RABBIT_COUNTER_QUEUE_DURABLE", true),
-			DeliveryMode:        getEnvInt("RABBIT_DELIVERY_MODE", 2), // 0 - 1 Transient, 2 - Persistent
-			QueueDurable:        getEnvBool("RABBIT_QUEUE_DURABLE", true),
+			Hostname:             getEnv("RABBIT_HOSTNAME", "rabbitmq"),
+			Username:             getEnv("RABBIT_USERNAME", "guest"),
+			Password:             getEnv("RABBIT_PASSWORD", "guest"),
+			Port:                 getEnvInt("RABBIT_PORT", 5672),
+			CounterQueueName:     getEnv("RABBIT_COUNTER_QUEUE_NAME", "pipes.multi-counter"),
+			CounterQueueDurable:  getEnvBool("RABBIT_COUNTER_QUEUE_DURABLE", true),
+			DeliveryMode:         getEnvInt("RABBIT_DELIVERY_MODE", 2), // 0 - 1 Transient, 2 - Persistent
+			QueueDurable:         getEnvBool("RABBIT_QUEUE_DURABLE", true),
+			MaxConcurrentPublish: getEnvInt("RABBIT_CONCURRENT_PUBLISH_RATE", 32767),
 		},
 		Cache: &cache{
 			Expiration: getEnv("CACHE_EXPIRATION", "24"),
@@ -96,9 +100,14 @@ func init() {
 		Logger: l,
 		Cleaner: &cleaner{
 			CleanUp:         getEnvInt("APP_CLEANUP_TIME", 5*60),
-			CPUPercentLimit: getEnvInt("APP_CLEANUP_PERCENT", 2),
+			CPUPercentLimit: getEnvInt("APP_CLEANUP_PERCENT", 1),
 		},
 	}
+}
+
+// GetConfig getting Config, for test purpose
+func GetConfig() interface{} {
+	return Config
 }
 
 func getEnv(key string, defaultValue string) string {

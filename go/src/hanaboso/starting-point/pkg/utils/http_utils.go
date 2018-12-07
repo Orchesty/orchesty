@@ -38,9 +38,10 @@ func ValidateBody(r *http.Request) (err error) {
 		return ValidateJSON(body)
 	case xmlType:
 		// TODO validate xml
+		return nil
+	default:
+		return ValidateJSON(body)
 	}
-
-	return nil
 }
 
 // ValidateJSON Validates json on request body

@@ -21,6 +21,11 @@ func HandleClear(h http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
+// HandleStatus checks if HTTP is working correctly
+func HandleStatus(w http.ResponseWriter, r *http.Request) {
+	writeResponse(w, map[string]interface{}{"status": "OK"})
+}
+
 // HandleRunByID runs topology by ID
 func HandleRunByID(w http.ResponseWriter, r *http.Request) {
 	handleByID(w, r, false, false)
