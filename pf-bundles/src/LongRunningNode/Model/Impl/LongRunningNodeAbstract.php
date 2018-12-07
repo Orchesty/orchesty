@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesFramework\LongRunningNode\Model\Impl;
 
 use Bunny\Message;
+use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\LongRunningNode\Document\LongRunningNodeData;
 use Hanaboso\PipesFramework\LongRunningNode\Model\LongRunningNodeInterface;
@@ -19,6 +20,7 @@ abstract class LongRunningNodeAbstract implements LongRunningNodeInterface
      * @param Message $message
      *
      * @return LongRunningNodeData
+     * @throws Exception
      */
     public function beforeAction(Message $message): LongRunningNodeData
     {

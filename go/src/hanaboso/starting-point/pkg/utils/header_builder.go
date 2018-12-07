@@ -11,6 +11,8 @@ import (
 
 // HeaderBuilder represents headerBuilder
 type HeaderBuilder interface {
+	BldHeaders(topology storage.Topology, headers http.Header, isHuman bool, isStop bool) amqp.Table
+	BldHumanTaskHeaders(topology storage.Topology, headers http.Header, stop bool) amqp.Table
 	BldCounterHeaders(storage.Topology, http.Header) amqp.Table
 	BldProcessHeaders(storage.Topology, http.Header) amqp.Table
 }
@@ -33,6 +35,7 @@ const nodeName = prefix + "node-name"
 const topologyID = prefix + "topology-id"
 const topologyName = prefix + "topology-name"
 const pfTimeStamp = prefix + "published-timestamp"
+const resultCode = prefix + "result-code"
 
 // Standard RabbitMq headers
 const timeStamp = "timestamp"
@@ -40,21 +43,56 @@ const deliveryMode = "delivery-mode"
 const htype = "type"
 const appID = "app_id"
 
+// Human tasks headers
+const documentHeader = "doc-id"
+
 var whiteList = map[string]struct{}{contentType: {}}
 
-func (b *headerBuilder) BldCounterHeaders(topology storage.Topology, headers http.Header) amqp.Table {
-	h := b.BldProcessHeaders(topology, headers)
+func (b *headerBuilder) BldHeaders(topology storage.Topology, headers http.Header, isHuman bool, isStop bool) amqp.Table {
+	if isHuman {
+		return b.BldHumanTaskHeaders(topology, headers, isStop)
+	}
+
+	return b.BldProcessHeaders(topology, headers)
+}
+
+func (b *headerBuilder) BldCounterHeaders(topology storage.Topology, headers http.Header) (h amqp.Table) {
+	h = b.BldProcessHeaders(topology, headers)
 
 	h[htype] = "counter_message"
 	h[appID] = "starting_point"
 	h[nodeID] = "starting_point"
 	h[nodeName] = "starting_point"
 
-	return h
+	return
 }
 
-func (b *headerBuilder) BldProcessHeaders(topology storage.Topology, headers http.Header) amqp.Table {
-	h := amqp.Table{
+func (b *headerBuilder) BldHumanTaskHeaders(topology storage.Topology, headers http.Header, stop bool) (h amqp.Table) {
+	code := 0
+	if stop {
+		code = 1003
+	}
+
+	h = amqp.Table{
+		parentID:       "",
+		sequenceID:     "",
+		topologyID:     topology.ID.Hex(),
+		topologyName:   topology.Name,
+		contentType:    "",
+		timeStamp:      time.Now().UTC().String(),
+		deliveryMode:   b.deliveryMode,
+		pfTimeStamp:    time.Now().UTC().Unix() * 1000,
+		processID:      "",
+		CorrelationID:  "",
+		documentHeader: "",
+		resultCode:     code,
+	}
+
+	return
+}
+
+func (b *headerBuilder) BldProcessHeaders(topology storage.Topology, headers http.Header) (h amqp.Table) {
+	h = amqp.Table{
 		parentID:      "",
 		sequenceID:    "1",
 		topologyID:    topology.ID.Hex(),
@@ -69,7 +107,7 @@ func (b *headerBuilder) BldProcessHeaders(topology storage.Topology, headers htt
 
 	arrayFilter(headers, h)
 
-	return h
+	return
 }
 
 func arrayFilter(h http.Header, t amqp.Table) {

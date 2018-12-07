@@ -20,7 +20,7 @@ func TestRabbit(t *testing.T) {
 	topology := storage.Topology{Name: "Topology", ID: objectid.New(), Node: &storage.Node{ID: objectid.New(), Name: "Node"}}
 	init := influx.InitFields()
 
-	RabbitMq.SndMessage(r, topology, init)
+	RabbitMq.SndMessage(r, topology, init, false, false)
 	RabbitMq.ClearChannels()
 	RabbitMq.DisconnectRabbit()
 }

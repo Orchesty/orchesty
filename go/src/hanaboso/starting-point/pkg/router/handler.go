@@ -113,15 +113,6 @@ func handleByName(w http.ResponseWriter, r *http.Request, isHumanTask, isStop bo
 
 func processMessage(isHumanTask bool, isStop bool, topologies []storage.Topology, r *http.Request, init map[string]float64) {
 	for _, topology := range topologies {
-		if !isHumanTask {
-			service.RabbitMq.SndMessage(r, topology, init)
-		} else {
-			// token, found = vars["token"]
-			if !isStop {
-				// TODO: Implement later...
-			} else {
-				// TODO: Implement later...
-			}
-		}
+		service.RabbitMq.SndMessage(r, topology, init, isHumanTask, isStop)
 	}
 }

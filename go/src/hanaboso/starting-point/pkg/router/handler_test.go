@@ -59,7 +59,7 @@ func mockCache(t int) {
 	}
 }
 
-func (r *RabbitMock) SndMessage(request *http.Request, topology storage.Topology, init map[string]float64) {
+func (r *RabbitMock) SndMessage(request *http.Request, topology storage.Topology, init map[string]float64, isHuman bool, isStop bool) {
 	return
 }
 

@@ -16,7 +16,7 @@ import (
 
 // Rabbit represents rabbit
 type Rabbit interface {
-	SndMessage(*http.Request, storage.Topology, map[string]float64)
+	SndMessage(r *http.Request, topology storage.Topology, init map[string]float64, isHuman bool, isStop bool)
 	DisconnectRabbit()
 	ClearChannels()
 }
@@ -56,10 +56,18 @@ func ConnectToRabbit() {
 }
 
 // SndMessage sends message to RabbitMQ
-func (r *RabbitDefault) SndMessage(request *http.Request, topology storage.Topology, init map[string]float64) {
+func (r *RabbitDefault) SndMessage(
+	request *http.Request,
+	topology storage.Topology,
+	init map[string]float64,
+	isHuman bool,
+	isStop bool) {
+
 	// Create Queue & Message
 	q := rabbitmq.GetProcessQueue(topology)
-	m := amqp.Publishing{Body: utils.GetBodyFromStream(request), Headers: r.builder.BldProcessHeaders(topology, request.Header)}
+	m := amqp.Publishing{
+		Body:    utils.GetBodyFromStream(request),
+		Headers: r.builder.BldHeaders(topology, request.Header, isHuman, isStop)}
 
 	// Init Counter
 	r.initCounterProcess(request.Header, topology)

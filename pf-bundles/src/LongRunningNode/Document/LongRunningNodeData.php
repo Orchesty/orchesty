@@ -6,6 +6,7 @@ use Bunny\Message;
 use DateTime;
 use DateTimeZone;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Traits\Document\IdTrait;
 use Hanaboso\CommonsBundle\Utils\PipesHeaders;
@@ -151,7 +152,16 @@ class LongRunningNodeData
     private $auditLogs = [];
 
     /**
+     * @var string
+     *
+     * @ODM\Field(type="string")
+     */
+    private $contentType;
+
+    /**
      * LongRunningNodeData constructor.
+     *
+     * @throws Exception
      */
     public function __construct()
     {
@@ -479,7 +489,29 @@ class LongRunningNodeData
     }
 
     /**
+     * @return string
+     */
+    public function getContentType(): string
+    {
+        return $this->contentType;
+    }
+
+    /**
+     * @param string $contentType
+     *
+     * @return LongRunningNodeData
+     */
+    public function setContentType(string $contentType): LongRunningNodeData
+    {
+        $this->contentType = $contentType;
+
+        return $this;
+    }
+
+    /**
      * @ODM\PreFlush()
+     *
+     * @throws Exception
      */
     public function preFlush(): void
     {
@@ -519,11 +551,14 @@ class LongRunningNodeData
      * @param Message $message
      *
      * @return LongRunningNodeData
+     * @throws Exception
      */
     public static function fromMessage(Message $message): LongRunningNodeData
     {
         $ent = new LongRunningNodeData();
-        $ent->setData($message->content)
+        $ent
+            ->setContentType($message->getHeader(PipesHeaders::CONTENT_TYPE, 'application/json'))
+            ->setData($message->content)
             ->setHeaders($message->headers)
             ->setParentId((string) $message->getHeader(PipesHeaders::createKey(PipesHeaders::PARENT_ID), ''))
             ->setCorrelationId((string) $message->getHeader(PipesHeaders::createKey(PipesHeaders::CORRELATION_ID), ''))
@@ -563,6 +598,7 @@ class LongRunningNodeData
             'updated'        => $this->updated->format('Y-m-d H:i:s'),
             'updated_by'     => $this->updatedBy,
             'audit_logs'     => $this->auditLogs,
+            'content_type'   => $this->contentType,
         ];
     }
 

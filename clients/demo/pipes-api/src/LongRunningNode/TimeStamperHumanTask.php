@@ -6,6 +6,7 @@ use Bunny\Message;
 use DateTime;
 use DateTimeZone;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\LongRunningNode\Document\LongRunningNodeData;
 use Hanaboso\PipesFramework\LongRunningNode\Model\Impl\LongRunningNodeAbstract;
@@ -45,6 +46,7 @@ final class TimeStamperHumanTask extends LongRunningNodeAbstract
      * @param Message $message
      *
      * @return LongRunningNodeData
+     * @throws Exception
      */
     public function beforeAction(Message $message): LongRunningNodeData
     {
@@ -58,6 +60,7 @@ final class TimeStamperHumanTask extends LongRunningNodeAbstract
      * @param string              $requestData
      *
      * @return ProcessDto
+     * @throws Exception
      */
     public function afterAction(LongRunningNodeData $data, string $requestData): ProcessDto
     {
@@ -75,6 +78,7 @@ final class TimeStamperHumanTask extends LongRunningNodeAbstract
      * @param bool  $isAfter
      *
      * @return array
+     * @throws Exception
      */
     private function createTimeStamp(array $data, bool $isAfter = FALSE): array
     {

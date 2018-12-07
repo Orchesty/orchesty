@@ -71,7 +71,7 @@ build-monolith:
 		-e APP_ENV=prod \
 		-e APP_DEBUG=0 \
 		${IMAGE_PHP_DEV} \
-		bash -c 'composer install --no-dev --optimize-autoloader && bin/console cache:warmup' && \
+		bash -c 'composer install --no-dev --optimize-autoloader --ignore-platform-reqs && bin/console cache:warmup' && \
 	: Build an app docker image from the artifacts && \
 	docker build -f docker/Dockerfile.monolith -t ${IMAGE_MONOLITH} .
 
