@@ -165,6 +165,14 @@ frontend:
     - dev
     - master
 
+staring-point:
+  stage: stage2
+  script:
+    - DIR=go/src/hanaboso/starting-point
+    - skip_unmodified $DIR
+    - cd $DIR
+    - make build-image push TAG=${CI_BUILD_REF_NAME}
+
 # Client: demo
 stage-demo:
   stage: stage3

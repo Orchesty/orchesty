@@ -1,9 +1,32 @@
-FROM golang:1.11.2-alpine3.8
-RUN apk update && \
-    apk upgrade && \
-    apk add git vim && \
-	apk add --no-cache --virtual build-base && \
-	go get -u golang.org/x/lint/golint
+# Build stage
 
-#WORKDIR /app
-#VOLUME ["/app"]
+FROM golang:1.11-stretch as build
+
+RUN apt-get update && \
+    apt-get install -y make git && \
+    apt-get clean
+
+COPY go.mod go.sum /precache/
+
+WORKDIR /precache
+
+RUN go mod download
+
+COPY ./ /app
+
+WORKDIR /app
+
+RUN go mod download
+
+RUN go build -o build/starting-point cmd/starting-point.go
+
+
+# Package stage
+
+FROM debian:stretch
+
+COPY --from=build /app/build/starting-point /app/
+
+WORKDIR /app
+
+CMD ["./starting-point"]
