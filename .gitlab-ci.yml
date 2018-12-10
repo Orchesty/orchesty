@@ -165,7 +165,7 @@ frontend:
     - dev
     - master
 
-staring-point:
+starting-point:
   stage: stage2
   script:
     - DIR=go/src/hanaboso/starting-point
