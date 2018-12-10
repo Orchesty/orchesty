@@ -9,6 +9,7 @@
 
 namespace Tests\Integration\Authorization\Impl\Magento2;
 
+use Exception;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
@@ -32,6 +33,7 @@ final class Magento2AuthorizationTest extends DatabaseTestCaseAbstract
      * @covers Magento2Authorization::getHeaders()
      * @covers Magento2Authorization::isAuthorized()
      * @covers Magento2Authorization::getSettings()
+     * @throws Exception
      */
     public function testSaveLoad(): void
     {
@@ -55,6 +57,7 @@ final class Magento2AuthorizationTest extends DatabaseTestCaseAbstract
      * @covers Magento2Authorization::getHeaders()
      * @covers Magento2Authorization::isAuthorized()
      * @covers Magento2Authorization::getSettings()
+     * @throws Exception
      */
     public function testGetHeadersNoSettings(): void
     {
@@ -66,6 +69,7 @@ final class Magento2AuthorizationTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers Magento2Authorization::getReadMe()
+     * @throws Exception
      */
     public function testGetReadme(): void
     {
@@ -81,6 +85,7 @@ final class Magento2AuthorizationTest extends DatabaseTestCaseAbstract
      * @covers Magento2Authorization::authorize()
      * @covers Magento2Authorization::getSettings()
      * @covers Magento2Authorization::saveSettings()
+     * @throws Exception
      */
     public function testSetSettingsMissingUrl(): void
     {
@@ -100,6 +105,7 @@ final class Magento2AuthorizationTest extends DatabaseTestCaseAbstract
      * @covers Magento2Authorization::authorize()
      * @covers Magento2Authorization::getSettings()
      * @covers Magento2Authorization::saveSettings()
+     * @throws Exception
      */
     public function testSetSettingsMissingUsername(): void
     {
@@ -119,6 +125,7 @@ final class Magento2AuthorizationTest extends DatabaseTestCaseAbstract
      * @covers Magento2Authorization::authorize()
      * @covers Magento2Authorization::getSettings()
      * @covers Magento2Authorization::saveSettings()
+     * @throws Exception
      */
     public function testSetSettingsMissingPassword(): void
     {
@@ -136,6 +143,7 @@ final class Magento2AuthorizationTest extends DatabaseTestCaseAbstract
 
     /**
      * @return Magento2Authorization
+     * @throws Exception
      */
     private function getMockedAuthorization(): Magento2Authorization
     {

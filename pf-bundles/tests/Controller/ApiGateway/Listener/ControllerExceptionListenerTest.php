@@ -10,7 +10,7 @@ use Tests\ControllerTestCaseAbstract;
  *
  * @package Tests\Controller\ApiGateway\Listener
  */
-class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
+final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
 {
 
     /**

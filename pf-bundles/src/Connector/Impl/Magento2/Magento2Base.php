@@ -9,7 +9,6 @@
 
 namespace Hanaboso\PipesFramework\Connector\Impl\Magento2;
 
-use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
@@ -80,7 +79,6 @@ abstract class Magento2Base implements ConnectorInterface
      * @param string $body
      *
      * @return StreamInterface|string
-     * @throws GuzzleException
      * @throws CurlException
      */
     protected function processRequest(string $method, string $urlPart, string $body = '')

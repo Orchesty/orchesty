@@ -9,8 +9,9 @@
 
 namespace Demo\CustomNode;
 
-use DateTime;
+use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
@@ -32,6 +33,7 @@ class SplitFileBatch implements BatchInterface, CustomNodeInterface
      * @param callable      $callbackItem
      *
      * @return PromiseInterface
+     * @throws DateTimeException
      */
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
@@ -41,7 +43,7 @@ class SplitFileBatch implements BatchInterface, CustomNodeInterface
         if (array_key_exists('data', $data)) {
             $data = json_decode($data['data'], TRUE);
 
-            $datetime = new DateTime();
+            $datetime = DateTimeUtils::getUTCDateTime();
             if ($datetime->getTimestamp() % 2 == 0) {
                 unset($data['bids']);
             } else {

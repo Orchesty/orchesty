@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
  *
  * @package Tests\Utils
  */
-class StringUtilTest extends TestCase
+final class StringUtilTest extends TestCase
 {
 
     /**

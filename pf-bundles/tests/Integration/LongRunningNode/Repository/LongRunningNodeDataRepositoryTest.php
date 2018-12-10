@@ -25,15 +25,15 @@ final class LongRunningNodeDataRepositoryTest extends DatabaseTestCaseAbstract
         $this->prepData();
         /** @var LongRunningNodeDataRepository $repo */
         $repo = $this->dm->getRepository(LongRunningNodeData::class);
-        $res = $repo->getGroupStats('topo');
+        $res  = $repo->getGroupStats('topo');
         self::assertEquals([
-             'node0' => 2,
-             'node1' => 1,
+            'node0' => 2,
+            'node1' => 1,
         ], $res);
     }
 
     /**
-     *
+     * @throws Exception
      */
     private function prepData(): void
     {

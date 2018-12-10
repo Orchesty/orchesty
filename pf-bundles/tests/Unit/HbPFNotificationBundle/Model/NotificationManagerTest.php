@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\HbPFNotificationBundle\Model;
 
+use Exception;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
@@ -20,7 +21,7 @@ final class NotificationManagerTest extends KernelTestCaseAbstract
 {
 
     /**
-     *
+     * @throws Exception
      */
     public function testReadSettings(): void
     {
@@ -33,7 +34,7 @@ final class NotificationManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testUpdateSettings(): void
     {
@@ -47,7 +48,7 @@ final class NotificationManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testRequestFail(): void
     {

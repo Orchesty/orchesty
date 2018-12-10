@@ -11,7 +11,7 @@ use Tests\ControllerTestCaseAbstract;
  *
  * @package Tests\Controller\HbPfCustomNodeBundle\Controller
  */
-class CustomNodeControllerTest extends ControllerTestCaseAbstract
+final class CustomNodeControllerTest extends ControllerTestCaseAbstract
 {
 
     /**

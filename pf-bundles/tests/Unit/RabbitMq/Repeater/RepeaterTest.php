@@ -10,6 +10,7 @@
 namespace Tests\Unit\RabbitMq\Repeater;
 
 use Bunny\Message;
+use Exception;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Repeater\Repeater;
 use Hanaboso\PipesFramework\RabbitMq\Producer\AbstractProducer;
 use PHPUnit\Framework\TestCase;
@@ -19,7 +20,7 @@ use PHPUnit\Framework\TestCase;
  *
  * @package Tests\Unit\RabbitMq\Repeater
  */
-class RepeaterTest extends TestCase
+final class RepeaterTest extends TestCase
 {
 
     /**
@@ -52,6 +53,7 @@ class RepeaterTest extends TestCase
      * @param bool  $return
      *
      * @return void
+     * @throws Exception
      */
     public function testAdd(array $header, int $hopLimit, array $result, bool $return): void
     {

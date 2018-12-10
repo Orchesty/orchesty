@@ -17,12 +17,11 @@ use PHPUnit\Framework\TestCase;
  *
  * @package Tests\Unit\RabbitMq
  */
-class CallbackStatusTest extends TestCase
+final class CallbackStatusTest extends TestCase
 {
 
     /**
      * @dataProvider getCallbackStatus
-     * @covers       CallbackStatus
      *
      * @param int    $status
      * @param string $message

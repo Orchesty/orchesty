@@ -12,6 +12,7 @@ namespace Tests\Unit\RabbitMq\Consumer;
 use Bunny\Channel;
 use Bunny\Client;
 use Bunny\Message;
+use Exception;
 use Hanaboso\PipesFramework\RabbitMq\CallbackStatus;
 use Hanaboso\PipesFramework\RabbitMq\Consumer\BaseSyncConsumerAbstract;
 use Hanaboso\PipesFramework\RabbitMq\Exception\RabbitMqException;
@@ -23,7 +24,7 @@ use TypeError;
  *
  * @package Tests\Unit\RabbitMq\Base
  */
-class BaseSyncConsumerAbstractTest extends TestCase
+final class BaseSyncConsumerAbstractTest extends TestCase
 {
 
     /**
@@ -53,12 +54,16 @@ class BaseSyncConsumerAbstractTest extends TestCase
      * @param null|string              $exception
      *
      * @return void
+     * @throws Exception
      */
     public function testHandleMessage(BaseSyncConsumerAbstract $baseConsumer, ?string $exception = NULL): void
     {
+        /** @var Message $message */
         $message = $this->getMockBuilder(Message::class)->disableOriginalConstructor()->getMock();
+        /** @var Channel $channel */
         $channel = $this->getMockBuilder(Channel::class)->disableOriginalConstructor()->getMock();
-        $client  = $this->getMockBuilder(Client::class)->disableOriginalConstructor()->getMock();
+        /** @var Client $client */
+        $client = $this->getMockBuilder(Client::class)->disableOriginalConstructor()->getMock();
 
         if ($exception) {
             $this->expectException($exception);

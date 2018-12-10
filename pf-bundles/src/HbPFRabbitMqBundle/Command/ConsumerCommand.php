@@ -225,7 +225,7 @@ class ConsumerCommand extends Command implements LoggerAwareInterface
 
         $channel->consume(
             function (Message $message, Channel $channel, Client $client) use ($consumer, $serializer): void {
-                $this->handleMessage($consumer, $serializer, $message, $channel, $client);
+                $this->handleMessage($consumer, $message, $channel, $client, $serializer);
             },
             $consumer->getQueue(),
             $consumer->getConsumerTag(),
@@ -249,20 +249,20 @@ class ConsumerCommand extends Command implements LoggerAwareInterface
 
     /**
      * @param BaseSyncConsumerAbstract $consumer
-     * @param null|IMessageSerializer  $serializer
      * @param Message                  $message
      * @param Channel                  $channel
      * @param Client                   $client
+     * @param null|IMessageSerializer  $serializer
      *
      * @return void
      * @throws RabbitMqException
      */
     public function handleMessage(
         BaseSyncConsumerAbstract $consumer,
-        $serializer = NULL,
         Message $message,
         Channel $channel,
-        Client $client
+        Client $client,
+        $serializer = NULL
     ): void
     {
         $data = $message->content;

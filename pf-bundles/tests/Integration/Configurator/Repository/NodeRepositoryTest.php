@@ -2,6 +2,7 @@
 
 namespace Tests\Integration\Configurator\Repository;
 
+use Exception;
 use Hanaboso\CommonsBundle\Enum\HandlerEnum;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
@@ -21,6 +22,7 @@ final class NodeRepositoryTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers NodeRepository::getEventNodesByTopology()
+     * @throws Exception
      */
     public function testGetEventNodesByTopology(): void
     {
@@ -92,7 +94,7 @@ final class NodeRepositoryTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testGetStartingPoint(): void
     {
@@ -117,7 +119,7 @@ final class NodeRepositoryTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testGetStartingPointNotFound(): void
     {

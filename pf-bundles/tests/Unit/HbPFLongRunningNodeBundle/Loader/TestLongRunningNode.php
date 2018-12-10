@@ -9,7 +9,7 @@ use Hanaboso\PipesFramework\LongRunningNode\Model\Impl\LongRunningNodeAbstract;
  *
  * @package Tests\Unit\HbPFLongRunningNodeBundle\Loader
  */
-class TestLongRunningNode extends LongRunningNodeAbstract
+final class TestLongRunningNode extends LongRunningNodeAbstract
 {
 
     /**

@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\HbPFCustomNodeBundle\Loader;
 
+use Exception;
 use Hanaboso\PipesFramework\CustomNode\Impl\NullCustomNode;
 use Hanaboso\PipesFramework\HbPFCustomNodeBundle\Exception\CustomNodeException;
 use Hanaboso\PipesFramework\HbPFCustomNodeBundle\Loader\CustomNodeLoader;
@@ -12,7 +13,7 @@ use Tests\KernelTestCaseAbstract;
  *
  * @package Tests\Unit\HbPFCustomNodeBundle\Loader
  */
-class CustomNodeLoaderTest extends KernelTestCaseAbstract
+final class CustomNodeLoaderTest extends KernelTestCaseAbstract
 {
 
     /**
@@ -30,7 +31,7 @@ class CustomNodeLoaderTest extends KernelTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testLoadCustomNode(): void
     {
@@ -40,7 +41,7 @@ class CustomNodeLoaderTest extends KernelTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testLoadMissingCustomNode(): void
     {

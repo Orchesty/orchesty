@@ -24,21 +24,9 @@ services:
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
 
-    hbpf.starting_point.long_running:
-        class: Hanaboso\PipesFramework\LongRunningNode\Model\LongRunningNodeStartingPoint
-        arguments:
-            - '@rabbit-mq.manager'
-            - '@hbpf.transport.curl_manager'
-            - '@hbpf.influxdb_sender_monolith'
-            - '@hbpf.manager.long_running'
-        calls:
-            - ['setLogger', ['@monolog.logger.commons']]
-
     hbpf.handler.long_running:
         class: Hanaboso\PipesFramework\HbPFLongRunningNodeBundle\Handler\LongRunningNodeHandler
         arguments:
-            - '@hbpf.starting_point.long_running'
-            - '@hbpf.handler.starting_point'
             - '@hbpf.loader.long_running'
             - '@hbpf.filter.long_running'
             - '@doctrine_mongodb.odm.default_document_manager'

@@ -9,6 +9,7 @@
 
 namespace Tests\Integration\Category\Repository;
 
+use Exception;
 use Hanaboso\PipesFramework\Category\Document\Category;
 use Hanaboso\PipesFramework\Category\Repository\CategoryRepository;
 use Tests\DatabaseTestCaseAbstract;
@@ -18,11 +19,12 @@ use Tests\DatabaseTestCaseAbstract;
  *
  * @package Tests\Integration\Category\Repository
  */
-class CategoryRepositoryTest extends DatabaseTestCaseAbstract
+final class CategoryRepositoryTest extends DatabaseTestCaseAbstract
 {
 
     /**
      * @covers CategoryRepository::childrenLevelUp()
+     * @throws Exception
      */
     public function testChildrenLevelUp(): void
     {
