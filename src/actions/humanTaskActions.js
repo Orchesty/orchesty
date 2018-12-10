@@ -1,6 +1,6 @@
 import * as types from 'rootApp/actionTypes';
 import listFactory from './factories/listFactory';
-import serverRequest, { sortToQuery } from 'services/apiGatewayServer';
+import serverRequest, { startingPointRequest, sortToQuery } from 'services/apiGatewayServer';
 
 import config from 'rootApp/config';
 import objectEquals from 'utils/objectEquals';
@@ -117,7 +117,7 @@ export function humanTaskListChangeFilter(listId, filter) {
 
 export function humanTaskProcess(listId, topology, node, token, approve) {
   return (dispatch) => {
-    serverRequest(dispatch, 'GET', `/longRunning/${approve ? 'run' : 'stop'}/id/topology/${topology}/node/${node}/token/${token}`).then((response) => {
+    startingPointRequest(dispatch, 'POST', `/human-task/topologies/${topology}/nodes/${node}/token/${token}/${approve ? 'run' : 'stop'}`, null, {}).then((response) => {
       if (response) {
         return dispatch(loadList(listId));
       }

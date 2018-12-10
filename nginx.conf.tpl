@@ -105,6 +105,10 @@ http {
 			proxy_pass http://resolve_cron-api:5000/;
 		}
 
+		location /starting-point/ {
+			proxy_pass http://resolve_starting-point:80/;
+		}
+
 		location /socket.io {
 			proxy_pass http://resolve_stream;
 			proxy_http_version 1.1;

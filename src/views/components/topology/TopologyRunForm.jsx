@@ -79,4 +79,4 @@ function mapActionsToProps(dispatch, ownProps){
   }
 }
 
-export default connect(mapStateToProps, mapActionsToProps)(reduxForm({validate})(TopologyRunForm));
+export default connect(mapStateToProps, mapActionsToProps)(reduxForm({validate, initialValues: { body: "{}" }})(TopologyRunForm));

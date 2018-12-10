@@ -65,6 +65,17 @@ export function makeUrl(relUrl, queries) {
   return apiGatewayServer.url + relUrl + queryUrl;
 }
 
+export function makeStartingPointUrl(relUrl, queries) {
+  let queryUrl = '';
+  if (queries) {
+    queryUrl = `?${Object.keys(queries)
+      .map(k => `${encodeURIComponent(k)}=${encodeURIComponent(queries[k])}`)
+      .join('&')}`;
+  }
+
+  return apiGatewayServer.url_starting_point + relUrl + queryUrl;
+}
+
 export function rawRequest(dispatch, method, relUrl, queries, options) {
   options = Object.assign({ credentials: getCredentialsOption() }, options);
   return fetch(makeUrl(relUrl, queries), Object.assign({ method }, options))
@@ -84,6 +95,30 @@ export function rawRequestJSONReceive(dispatch, method, relUrl, queries, options
     .then(check.bind(null, dispatch))
     .then(response => (response ? response.json() : undefined))
     .catch((error) => {
+      dispatch(notificationActions.addNotification('error', `Error in server request: ${error}`));
+      return undefined;
+    });
+}
+
+export function startingPointRequest (dispatch, method, relUrl, queries, data, headers = {}) {
+  headers.Accept = 'application/json';
+
+  const options = {
+    method,
+    headers,
+    credentials: getCredentialsOption(),
+  };
+  if (data) {
+    headers['Content-Type'] = 'application/json';
+    options.body = JSON.stringify(data);
+  }
+
+  return fetch(makeStartingPointUrl(relUrl, queries), options)
+    .then(check.bind(null, dispatch))
+    .then(response => (response ? response.text() : undefined))
+    .then(textResponse => (textResponse === undefined ? textResponse : (textResponse ? JSON.parse(textResponse) : true)))
+    .catch((error) => {
+      console.log(error);
       dispatch(notificationActions.addNotification('error', `Error in server request: ${error}`));
       return undefined;
     });
