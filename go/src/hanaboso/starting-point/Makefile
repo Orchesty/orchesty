@@ -1,17 +1,25 @@
 .PHONY: build
 
+# TAG?=dev # no, default tag is a nonsense and can cause unwanted overwrites!
+REGISTRY=dkr.hanaboso.net/pipes/pipes
+APP_IMAGE=$(REGISTRY)/starting-point:$(TAG)
+
 .env:
 	@sed -e "s|{GOCACHE}|$(shell go env GOCACHE)|g" \
 		.env.dist > .env
 
 build-image:
-	docker build -t dkr.hanaboso.net/pipes/pipes/starting-point:dev .
+	docker build -t $(APP_IMAGE) .
 
-init: .env build-image
-	docker-compose up -d --force-recreate  --remove-orphans
+build-dev-image:
+	docker build -f Dockerfile.dev -t starting-point-dev .
 
-build:
-	docker-compose exec app go build -o build/starting-point cmd/starting-point.go
+push:
+	docker push $(APP_IMAGE)
+
+
+init: .env build-dev-image
+	docker-compose up -d --force-recreate --remove-orphans
 
 lint:
 	docker-compose exec app gofmt -w cmd pkg
