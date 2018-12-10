@@ -10,6 +10,7 @@
 namespace Demo\Command;
 
 use Hanaboso\CommonsBundle\Enum\MetricsEnum;
+use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\CommonsBundle\Metrics\InfluxDbSender;
 use Hanaboso\CommonsBundle\Metrics\UDPSender;
 use Symfony\Component\Console\Command\Command;
@@ -37,6 +38,7 @@ class KapacitorCommand extends Command
      * @param OutputInterface $output
      *
      * @return void
+     * @throws DateTimeException
      */
     protected function execute(InputInterface $input, OutputInterface $output): void
     {

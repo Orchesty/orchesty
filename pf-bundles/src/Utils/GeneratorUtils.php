@@ -30,27 +30,6 @@ class GeneratorUtils
      *
      * @return string
      */
-    public static function denormalizeName(string $name): string
-    {
-        return preg_replace('/-.*$/', '', $name);
-    }
-
-    /**
-     * @param string $id
-     * @param string $name
-     *
-     * @return string
-     */
-    public static function dokerizeName(string $id, string $name): string
-    {
-        return strtolower(sprintf('%s%s', $id, preg_replace('/-|\s/', '', $name)));
-    }
-
-    /**
-     * @param string $name
-     *
-     * @return string
-     */
     public static function createServiceName(string $name): string
     {
         $pieces = [];

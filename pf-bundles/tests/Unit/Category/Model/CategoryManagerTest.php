@@ -10,6 +10,7 @@
 namespace Tests\Unit\Category\Model;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Exception;
 use Hanaboso\CommonsBundle\DatabaseManager\DatabaseManagerLocator;
 use Hanaboso\PipesFramework\Category\Document\Category;
 use Hanaboso\PipesFramework\Category\Model\CategoryManager;
@@ -22,11 +23,12 @@ use Tests\KernelTestCaseAbstract;
  *
  * @package Tests\Unit\Category\Model
  */
-class CategoryManagerTest extends KernelTestCaseAbstract
+final class CategoryManagerTest extends KernelTestCaseAbstract
 {
 
     /**
      * @covers CategoryManager::createCategory()
+     * @throws Exception
      */
     public function testCreateCategory(): void
     {
@@ -47,6 +49,7 @@ class CategoryManagerTest extends KernelTestCaseAbstract
 
     /**
      * @covers CategoryManager::updateCategory()
+     * @throws Exception
      */
     public function testUpdateCategory(): void
     {

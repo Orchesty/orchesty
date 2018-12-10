@@ -6,7 +6,6 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\UserBundle\Document\User;
 use Hanaboso\UserBundle\Model\Security\SecurityManager;
 use Hanaboso\UserBundle\Model\Token;
-use Nette\Utils\Json;
 use stdClass;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -136,7 +135,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
 
         return (object) [
             'status'  => $response->getStatusCode(),
-            'content' => Json::decode($response->getContent()),
+            'content' => json_decode($response->getContent()),
         ];
     }
 
@@ -149,12 +148,12 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
      */
     protected function sendPost(string $url, array $parameters, ?array $content = NULL): stdClass
     {
-        $this->client->request('POST', $url, $parameters, [], [], $content ? Json::encode($content) : '');
+        $this->client->request('POST', $url, $parameters, [], [], $content ? json_encode($content) : '');
         $response = $this->client->getResponse();
 
         return (object) [
             'status'  => $response->getStatusCode(),
-            'content' => Json::decode($response->getContent()),
+            'content' => json_decode($response->getContent()),
         ];
     }
 
@@ -167,12 +166,12 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
      */
     protected function sendPut(string $url, array $parameters, ?array $content = NULL): stdClass
     {
-        $this->client->request('PUT', $url, $parameters, [], [], $content ? Json::encode($content) : '');
+        $this->client->request('PUT', $url, $parameters, [], [], $content ? json_encode($content) : '');
         $response = $this->client->getResponse();
 
         return (object) [
             'status'  => $response->getStatusCode(),
-            'content' => Json::decode($response->getContent()),
+            'content' => json_decode($response->getContent()),
         ];
     }
 
@@ -188,7 +187,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
 
         return (object) [
             'status'  => $response->getStatusCode(),
-            'content' => Json::decode($response->getContent()),
+            'content' => json_decode($response->getContent()),
         ];
     }
 

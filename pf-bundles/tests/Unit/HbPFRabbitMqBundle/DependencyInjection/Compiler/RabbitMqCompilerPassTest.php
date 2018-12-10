@@ -21,7 +21,7 @@ use Tests\KernelTestCaseAbstract;
  *
  * @package Tests\Unit\HbPFRabbitMqBundle\DependencyInjection\Compiler
  */
-class RabbitMqCompilerPassTest extends KernelTestCaseAbstract
+final class RabbitMqCompilerPassTest extends KernelTestCaseAbstract
 {
 
     /**

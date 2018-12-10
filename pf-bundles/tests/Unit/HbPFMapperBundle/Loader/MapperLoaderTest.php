@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\HbPFMapperBundle\Loader;
 
+use Exception;
 use Hanaboso\PipesFramework\HbPFMapperBundle\Exception\MapperException;
 use Hanaboso\PipesFramework\HbPFMapperBundle\Loader\MapperLoader;
 use Hanaboso\PipesFramework\Mapper\Impl\NullMapper;
@@ -12,7 +13,7 @@ use Tests\KernelTestCaseAbstract;
  *
  * @package Tests\Unit\HbPFMapperBundle\Loader
  */
-class MapperLoaderTest extends KernelTestCaseAbstract
+final class MapperLoaderTest extends KernelTestCaseAbstract
 {
 
     /**
@@ -30,7 +31,7 @@ class MapperLoaderTest extends KernelTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testLoadMapper(): void
     {
@@ -40,7 +41,7 @@ class MapperLoaderTest extends KernelTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testLoadMissingMapper(): void
     {

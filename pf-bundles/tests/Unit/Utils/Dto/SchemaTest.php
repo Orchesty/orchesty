@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Utils\Dto;
 
+use Exception;
 use FOS\RestBundle\Decoder\XmlDecoder;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Utils\Dto\Schema;
@@ -24,6 +25,7 @@ final class SchemaTest extends TestCase
 
     /**
      * @covers Schema::buildIndex()
+     * @throws Exception
      */
     public function testBuildIndex(): void
     {
@@ -36,6 +38,7 @@ final class SchemaTest extends TestCase
 
     /**
      * @covers Schema::buildIndex()
+     * @throws Exception
      */
     public function testBuildIndexSameHash(): void
     {
@@ -48,6 +51,7 @@ final class SchemaTest extends TestCase
 
     /**
      * @covers Schema::buildIndex()
+     * @throws Exception
      */
     public function testBuildIndexNewHash(): void
     {
@@ -59,7 +63,7 @@ final class SchemaTest extends TestCase
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testBuildIndexMissingStartNode(): void
     {
@@ -73,7 +77,7 @@ final class SchemaTest extends TestCase
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testBuildIndexInfiniteLoop(): void
     {
@@ -88,6 +92,7 @@ final class SchemaTest extends TestCase
 
     /**
      * @return string
+     * @throws Exception
      */
     private function getExpected(): string
     {

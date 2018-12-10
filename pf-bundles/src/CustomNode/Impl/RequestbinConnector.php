@@ -2,7 +2,6 @@
 
 namespace Hanaboso\PipesFramework\CustomNode\Impl;
 
-use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
@@ -44,7 +43,6 @@ class RequestbinConnector implements CustomNodeInterface
      * @param ProcessDto $dto
      *
      * @return ProcessDto
-     * @throws GuzzleException
      * @throws CurlException
      */
     public function process(ProcessDto $dto): ProcessDto

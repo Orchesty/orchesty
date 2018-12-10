@@ -3,6 +3,7 @@
 namespace Tests\Unit\Configurator\Model;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Exception;
 use Hanaboso\CommonsBundle\DatabaseManager\DatabaseManagerLocator;
 use Hanaboso\CommonsBundle\Enum\HandlerEnum;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
@@ -17,11 +18,12 @@ use Tests\KernelTestCaseAbstract;
  *
  * @package Tests\Unit\Configurator\Model
  */
-class NodeManagerTest extends KernelTestCaseAbstract
+final class NodeManagerTest extends KernelTestCaseAbstract
 {
 
     /**
      * @covers NodeManager::updateNode()
+     * @throws Exception
      */
     public function testUpdateNode(): void
     {
@@ -48,6 +50,7 @@ class NodeManagerTest extends KernelTestCaseAbstract
 
     /**
      * @covers NodeManager::updateNode()
+     * @throws Exception
      */
     public function testUpdateNodeEnabled(): void
     {
@@ -67,6 +70,7 @@ class NodeManagerTest extends KernelTestCaseAbstract
 
     /**
      * @covers NodeManager::updateNode()
+     * @throws Exception
      */
     public function testUpdateNodeEnabledFail(): void
     {

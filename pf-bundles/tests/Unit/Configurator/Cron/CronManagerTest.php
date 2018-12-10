@@ -3,6 +3,7 @@
 namespace Tests\Unit\Configurator\Cron;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Exception;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\CommonsBundle\Exception\CronException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
@@ -91,6 +92,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
     /**
      * @throws CronException
      * @throws NodeException
+     * @throws Exception
      */
     public function testDelete(): void
     {
@@ -269,7 +271,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
      * @param int $count
      *
      * @return Node|Node[]
-     * @throws NodeException
+     * @throws Exception
      */
     private function getNodes(int $count = 1)
     {

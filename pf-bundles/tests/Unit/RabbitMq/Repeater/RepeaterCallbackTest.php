@@ -10,6 +10,7 @@
 namespace Tests\Unit\RabbitMq\Repeater;
 
 use Bunny\Message;
+use Exception;
 use Hanaboso\PipesFramework\RabbitMq\CallbackStatus;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Repeater\Repeater;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Repeater\RepeaterCallback;
@@ -21,7 +22,7 @@ use PHPUnit\Framework\TestCase;
  *
  * @package Tests\Unit\RabbitMq\Repeater
  */
-class RepeaterCallbackTest extends TestCase
+final class RepeaterCallbackTest extends TestCase
 {
 
     /**
@@ -49,6 +50,7 @@ class RepeaterCallbackTest extends TestCase
      * @covers       RepeaterCallback::handle()
      *
      * @return void
+     * @throws Exception
      */
     public function testHandleNoProducer(): void
     {
@@ -62,6 +64,7 @@ class RepeaterCallbackTest extends TestCase
     /**
      * @covers RepeaterCallback::handle()
      * @return void
+     * @throws Exception
      */
     public function testHandleBadMessage(): void
     {
@@ -76,6 +79,7 @@ class RepeaterCallbackTest extends TestCase
     /**
      * @covers RepeaterCallback::handle()
      * @return void
+     * @throws Exception
      */
     public function testHandle(): void
     {

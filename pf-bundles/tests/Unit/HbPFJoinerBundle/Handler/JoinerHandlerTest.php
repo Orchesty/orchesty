@@ -9,6 +9,7 @@
 
 namespace Tests\Unit\HbPFJoinerBundle\Handler;
 
+use Exception;
 use Hanaboso\PipesFramework\HbPFJoinerBundle\Exception\JoinerException;
 use Tests\KernelTestCaseAbstract;
 
@@ -17,15 +18,16 @@ use Tests\KernelTestCaseAbstract;
  *
  * @package Tests\Unit\HbPFJoinerBundle\Handler
  */
-class JoinerHandler extends KernelTestCaseAbstract
+final class JoinerHandlerTest extends KernelTestCaseAbstract
 {
 
     /**
      * @covers JoinerHandler::processJoiner()
+     * @throws Exception
      */
     public function testJoin(): void
     {
-        $handler = $this->container->get('hbpf.handler.joiner');
+        $handler = $this->ownContainer->get('hbpf.handler.joiner');
 
         $data = [
             'data' => [],

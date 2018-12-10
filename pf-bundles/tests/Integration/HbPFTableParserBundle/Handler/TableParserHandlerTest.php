@@ -2,6 +2,7 @@
 
 namespace Tests\Integration\HbPFTableParserBundle\Handler;
 
+use Exception;
 use Hanaboso\CommonsBundle\FileStorage\Dto\FileContentDto;
 use Hanaboso\CommonsBundle\FileStorage\FileStorage;
 use Hanaboso\PipesFramework\HbPFTableParserBundle\Handler\TableParserHandler;
@@ -47,6 +48,7 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
 
     /**
      * @covers TableParserHandler::parseToJson()
+     * @throws Exception
      */
     public function testParseToJson(): void
     {
@@ -68,6 +70,7 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
 
     /**
      * @covers TableParserHandler::parseToJson()
+     * @throws Exception
      */
     public function testParseToJsonFromContent(): void
     {
@@ -88,6 +91,7 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
 
     /**
      * @covers TableParserHandler::parseFromJson()
+     * @throws Exception
      */
     public function testParseFromJson(): void
     {
@@ -116,6 +120,7 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
 
     /**
      * @covers TableParserHandler::parseFromJson()
+     * @throws Exception
      */
     public function testParseFromJsonFromContent(): void
     {
@@ -135,6 +140,7 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
 
     /**
      * @covers TableParserHandler::parseFromJsonTest()
+     * @throws Exception
      */
     public function testParseFromJsonTest(): void
     {
@@ -143,6 +149,7 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
 
     /**
      * @covers TableParserHandler::parseToJson()
+     * @throws Exception
      */
     public function testParseToJsonWithoutFile(): void
     {
@@ -153,6 +160,7 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
 
     /**
      * @covers TableParserHandler::parseFromJson()
+     * @throws Exception
      */
     public function testParseFromJsonWithoutFile(): void
     {
@@ -163,6 +171,7 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
 
     /**
      * @covers TableParserHandler::parseFromJson()
+     * @throws Exception
      */
     public function testParseFromJsonWithInvalidType(): void
     {

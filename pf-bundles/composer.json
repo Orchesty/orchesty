@@ -2,7 +2,7 @@
   "name": "hanaboso/pipes-framework",
   "license": "proprietary",
   "description": "PipesFramework for Symfony",
-  "version": "1.0.28",
+  "version": "1.0.31",
   "autoload": {
     "psr-4": {
       "Hanaboso\\PipesFramework\\": "src/"
@@ -32,7 +32,6 @@
     "php-http/message": "^1.7",
     "php-http/socket-client": "^1.4",
     "phpoffice/phpspreadsheet": "^1.5",
-    "ramsey/uuid": "^3.8",
     "snc/redis-bundle": "^2.1",
     "symfony/monolog-bundle": "^3.3",
     "symfony/symfony": "^4.2"

@@ -9,6 +9,7 @@
 
 namespace Tests\Unit\RabbitMq\Consumer;
 
+use Exception;
 use Hanaboso\PipesFramework\RabbitMq\Consumer\BaseSyncConsumerAbstract;
 use Hanaboso\PipesFramework\RabbitMq\Serializers\JsonSerializer;
 use Tests\KernelTestCaseAbstract;
@@ -18,11 +19,12 @@ use Tests\KernelTestCaseAbstract;
  *
  * @package Tests\Unit\RabbitMq\Base
  */
-class AbstractConsumerTest extends KernelTestCaseAbstract
+final class AbstractConsumerTest extends KernelTestCaseAbstract
 {
 
     /**
      * @return void
+     * @throws Exception
      */
     public function testEmptyConsumer(): void
     {
@@ -50,6 +52,7 @@ class AbstractConsumerTest extends KernelTestCaseAbstract
 
     /**
      * @return void
+     * @throws Exception
      */
     public function testFilledConsumer(): void
     {

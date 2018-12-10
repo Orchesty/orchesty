@@ -10,6 +10,7 @@
 namespace Tests\Unit\HbPFAuthorizationBundle\Loader;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Exception;
 use Hanaboso\PipesFramework\Authorization\Base\AuthorizationInterface;
 use Hanaboso\PipesFramework\Authorization\Document\Authorization;
 use Hanaboso\PipesFramework\Authorization\Repository\AuthorizationRepository;
@@ -54,6 +55,7 @@ final class AuthorizationLoaderTest extends KernelTestCaseAbstract
 
     /**
      * @covers AuthorizationLoader::getAuthorization()
+     * @throws Exception
      */
     public function testGetAuthorization(): void
     {
@@ -75,6 +77,7 @@ final class AuthorizationLoaderTest extends KernelTestCaseAbstract
 
     /**
      * @covers AuthorizationLoader::getAllAuthorizations()
+     * @throws Exception
      */
     public function testGetAllAuthorizationsInfo(): void
     {
