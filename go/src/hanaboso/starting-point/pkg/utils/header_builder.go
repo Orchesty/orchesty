@@ -68,23 +68,23 @@ func (b *headerBuilder) BldCounterHeaders(topology storage.Topology, headers htt
 }
 
 func (b *headerBuilder) BldHumanTaskHeaders(topology storage.Topology, headers http.Header, stop bool) (h amqp.Table) {
-	code := 0
+	code := "0"
 	if stop {
-		code = 1003
+		code = "1003"
 	}
 
 	h = amqp.Table{
-		parentID:       "",
-		sequenceID:     "",
+		parentID:       topology.Node.HumanTask.ParentID,
+		sequenceID:     topology.Node.HumanTask.SequenceID,
 		topologyID:     topology.ID.Hex(),
 		topologyName:   topology.Name,
-		contentType:    "",
+		contentType:    topology.Node.HumanTask.ContentType,
 		timeStamp:      time.Now().UTC().String(),
 		deliveryMode:   b.deliveryMode,
 		pfTimeStamp:    time.Now().UTC().Unix() * 1000,
-		processID:      "",
-		CorrelationID:  "",
-		documentHeader: "",
+		processID:      topology.Node.HumanTask.ProcessID,
+		CorrelationID:  topology.Node.HumanTask.CorrelationID,
+		documentHeader: topology.Node.HumanTask.ID.Hex(),
 		resultCode:     code,
 	}
 

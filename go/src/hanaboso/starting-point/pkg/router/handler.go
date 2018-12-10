@@ -74,7 +74,14 @@ func handleByID(w http.ResponseWriter, r *http.Request, isHumanTask, isStop bool
 
 	init := influx.InitFields()
 	vars := mux.Vars(r)
-	topology := service.Cache.FindTopologyByID(vars["topology"], vars["node"])
+	var topology *storage.Topology
+
+	if !isHumanTask {
+		topology = service.Cache.FindTopologyByID(vars["topology"], vars["node"], "", isHumanTask)
+	} else {
+		topology = storage.Mongo.FindTopologyByID(vars["topology"], vars["node"], vars["token"], isHumanTask)
+	}
+
 	if topology == nil {
 		writeErrorResponse(w, http.StatusNotFound, fmt.Sprintf("Topology with key '%s' not found!", vars["topology"]))
 		return
@@ -82,6 +89,11 @@ func handleByID(w http.ResponseWriter, r *http.Request, isHumanTask, isStop bool
 
 	if topology.Node == nil {
 		writeErrorResponse(w, http.StatusNotFound, fmt.Sprintf("Node with key '%s' not found!", vars["node"]))
+		return
+	}
+
+	if isHumanTask && topology.Node.HumanTask == nil {
+		writeErrorResponse(w, http.StatusNotFound, fmt.Sprintf("HumanTask with token '%s' not found!", vars["token"]))
 		return
 	}
 
@@ -100,10 +112,22 @@ func handleByName(w http.ResponseWriter, r *http.Request, isHumanTask, isStop bo
 
 	init := influx.InitFields()
 	vars := mux.Vars(r)
-	topologies := service.Cache.FindTopologyByName(vars["topology"], vars["node"])
-	if len(topologies) == 0 {
-		writeErrorResponse(w, http.StatusNotFound, fmt.Sprintf("Topology with name '%s' and node with name '%s' not found!", vars["topology"], vars["node"]))
-		return
+	var topologies []storage.Topology
+
+	if !isHumanTask {
+		topologies = service.Cache.FindTopologyByName(vars["topology"], vars["node"], "", isHumanTask)
+
+		if len(topologies) == 0 {
+			writeErrorResponse(w, http.StatusNotFound, fmt.Sprintf("Topology with name '%s' and node with name '%s' not found!", vars["topology"], vars["node"]))
+			return
+		}
+	} else {
+		topologies = storage.Mongo.FindTopologyByName(vars["topology"], vars["node"], vars["token"], isHumanTask)
+
+		if len(topologies) == 0 {
+			writeErrorResponse(w, http.StatusNotFound, fmt.Sprintf("Topology with name '%s', node with name '%s' and human task with token '%s' not found!", vars["topology"], vars["node"], vars["token"]))
+			return
+		}
 	}
 
 	go processMessage(isHumanTask, isStop, topologies, r, init)

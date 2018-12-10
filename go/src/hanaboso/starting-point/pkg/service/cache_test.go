@@ -31,9 +31,9 @@ func TestCache(t *testing.T) {
 	Cache = &CacheDefault{mongo: &MongoMock{}}
 	Cache.InitCache()
 
-	Cache.FindTopologyByID(customIDOne, customIDOne)
-	Cache.FindTopologyByID(customIDOne, customIDTwo)
-	Cache.FindTopologyByID(customIDOne, customIDTwo)
+	Cache.FindTopologyByID(customIDOne, customIDOne, "", false)
+	Cache.FindTopologyByID(customIDOne, customIDTwo, "", false)
+	Cache.FindTopologyByID(customIDOne, customIDTwo, "", false)
 	cache, _ := Cache.GetCache().Get(topology)
 	cacheCache, _ := Cache.GetCache().Get(cache.([]string)[0])
 
@@ -49,9 +49,9 @@ func TestCache(t *testing.T) {
 	Cache.InvalidateCache(topology)
 	assert.Equal(t, 0, Cache.GetCache().ItemCount())
 
-	Cache.FindTopologyByName(topology, node)
-	Cache.FindTopologyByName(topology, "NodeTwo")
-	Cache.FindTopologyByName(topology, "NodeTwo")
+	Cache.FindTopologyByName(topology, node, "", false)
+	Cache.FindTopologyByName(topology, "NodeTwo", "", false)
+	Cache.FindTopologyByName(topology, "NodeTwo", "", false)
 	cache, _ = Cache.GetCache().Get(topology)
 	cacheCache, _ = Cache.GetCache().Get(cache.([]string)[0])
 	assert.Equal(t, 3, Cache.GetCache().ItemCount())
@@ -62,24 +62,36 @@ func TestCache(t *testing.T) {
 	assert.Equal(t, []storage.Topology{topologyObject}, cacheCache)
 }
 
-func (m *MongoMock) FindNodeByID(nodeID, topologyID string) *storage.Node {
+func (m *MongoMock) FindNodeByID(nodeID, topologyID, processID string, isHumanTask bool) *storage.Node {
 	return &storage.Node{
 		ID:   customObjectID,
 		Name: node,
 	}
 }
 
-func (m *MongoMock) FindNodeByName(nodeName, topologyID string) []storage.Node {
+func (m *MongoMock) FindNodeByName(nodeName, topologyID, processID string, isHumanTask bool) []storage.Node {
 	return []storage.Node{{
 		ID:   customObjectID,
 		Name: node,
 	}}
 }
 
-func (m *MongoMock) FindTopologyByID(topologyID, nodeID string) *storage.Topology {
+func (m *MongoMock) FindTopologyByID(topologyID, nodeID, processID string, isHumanTask bool) *storage.Topology {
 	return &topologyObject
 }
 
-func (m *MongoMock) FindTopologyByName(topologyName, nodeName string) []storage.Topology {
+func (m *MongoMock) FindTopologyByName(topologyName, nodeName, processID string, isHumanTask bool) []storage.Topology {
 	return []storage.Topology{topologyObject}
+}
+
+func (m *MongoMock) FindHumanTask(nodeID, topologyID, processID string) *storage.HumanTask {
+	return &storage.HumanTask{
+		ID:            customObjectID,
+		CorrelationID: "correlationID",
+		ProcessID:     "processID",
+		ContentType:   "contentType",
+		SequenceID:    "sequenceID",
+		ParentID:      "parentID",
+		ParentProcess: "parentProcess",
+	}
 }

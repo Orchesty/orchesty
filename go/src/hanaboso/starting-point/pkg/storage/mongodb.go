@@ -17,10 +17,11 @@ import (
 type MongoInterface interface {
 	Connect()
 	Disconnect() error
-	FindNodeByID(nodeID, topologyID string) *Node
-	FindNodeByName(nodeName, topologyID string) []Node
-	FindTopologyByID(topologyID, nodeID string) *Topology
-	FindTopologyByName(topologyName, nodeName string) []Topology
+	FindNodeByID(nodeID, topologyID, processID string, isHumanTask bool) *Node
+	FindNodeByName(nodeName, topologyID, processID string, isHumanTask bool) []Node
+	FindTopologyByID(topologyID, nodeID, processID string, isHumanTask bool) *Topology
+	FindTopologyByName(topologyName, nodeName, processID string, isHumanTask bool) []Topology
+	FindHumanTask(nodeID, topologyID, processID string) *HumanTask
 }
 
 // MongoDefault represents default MongoDB implementation
@@ -93,7 +94,7 @@ func (m *MongoDefault) Disconnect() error {
 }
 
 // FindNodeByID finds node by id
-func (m *MongoDefault) FindNodeByID(nodeID, topologyID string) *Node {
+func (m *MongoDefault) FindNodeByID(nodeID, topologyID, processID string, isHumanTask bool) *Node {
 	var node Node
 	innerContext, cancel := createContextWithTimeout()
 	defer cancel()
@@ -121,7 +122,7 @@ func (m *MongoDefault) FindNodeByID(nodeID, topologyID string) *Node {
 }
 
 // FindNodeByName finds node by name
-func (m *MongoDefault) FindNodeByName(nodeName, topologyID string) []Node {
+func (m *MongoDefault) FindNodeByName(nodeName, topologyID, processID string, isHumanTask bool) []Node {
 	var node Node
 	var nodes []Node
 	innerContext, cancel := createContextWithTimeout()
@@ -159,7 +160,7 @@ func (m *MongoDefault) FindNodeByName(nodeName, topologyID string) []Node {
 }
 
 // FindTopologyByID finds topology by ID
-func (m *MongoDefault) FindTopologyByID(topologyID, nodeID string) *Topology {
+func (m *MongoDefault) FindTopologyByID(topologyID, nodeID, processID string, isHumanTask bool) *Topology {
 	var topology Topology
 	innerContext, cancel := createContextWithTimeout()
 	defer cancel()
@@ -183,13 +184,17 @@ func (m *MongoDefault) FindTopologyByID(topologyID, nodeID string) *Topology {
 		return nil
 	}
 
-	topology.Node = m.FindNodeByID(nodeID, topologyID)
+	topology.Node = m.FindNodeByID(nodeID, topologyID, processID, isHumanTask)
+
+	if isHumanTask && topology.Node != nil {
+		topology.Node.HumanTask = m.FindHumanTask(nodeID, topologyID, processID)
+	}
 
 	return &topology
 }
 
 // FindTopologyByName finds topology by name
-func (m *MongoDefault) FindTopologyByName(topologyName, nodeName string) []Topology {
+func (m *MongoDefault) FindTopologyByName(topologyName, nodeName, processID string, isHumanTask bool) []Topology {
 	var topology Topology
 	var topologies []Topology
 	innerContext, cancel := createContextWithTimeout()
@@ -217,14 +222,46 @@ func (m *MongoDefault) FindTopologyByName(topologyName, nodeName string) []Topol
 			return nil
 		}
 
-		nodes := m.FindNodeByName(nodeName, topology.ID.Hex())
+		nodes := m.FindNodeByName(nodeName, topology.ID.Hex(), processID, isHumanTask)
 		if len(nodes) > 0 {
 			topology.Node = &nodes[0]
-			topologies = append(topologies, topology)
+			if isHumanTask {
+				topology.Node.HumanTask = m.FindHumanTask(nodes[0].ID.Hex(), topology.ID.Hex(), processID)
+				if topology.Node.HumanTask != nil {
+					topologies = append(topologies, topology)
+				}
+			} else {
+				topologies = append(topologies, topology)
+			}
 		}
 	}
 
 	return topologies
+}
+
+// FindHumanTask finds human task
+func (m *MongoDefault) FindHumanTask(nodeID, topologyID, processID string) *HumanTask {
+	var humanTask HumanTask
+
+	innerContext, cancel := createContextWithTimeout()
+	defer cancel()
+
+	var filter = bson.D{
+		bson.E{Key: "topologyId", Value: topologyID},
+		bson.E{Key: "nodeId", Value: nodeID},
+	}
+	if processID != "" {
+		filter = append(filter, bson.E{Key: "processId", Value: processID})
+	}
+
+	err := m.mongo.Collection(config.Config.MongoDB.HumanTaskColl).FindOne(innerContext, filter).Decode(&humanTask)
+	if err != nil {
+		logMongoError(m.log, err, fmt.Sprintf("HumanTask with topology '%s', node '%s' and process '%s' not found.", topologyID, nodeID, processID))
+
+		return nil
+	}
+
+	return &humanTask
 }
 
 func createContextWithTimeout() (context.Context, context.CancelFunc) {

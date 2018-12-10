@@ -40,14 +40,22 @@ func TestBldHeaders(t *testing.T) {
 func TestHumanHeaders(t *testing.T) {
 	headers := http.Header{}
 	headers.Add("pf-test", "ok")
-	topology := storage.Topology{Name: "Topology", ID: objectid.New(), Node: &storage.Node{ID: objectid.New(), Name: "Node"}}
+	topology := storage.Topology{Name: "Topology", ID: objectid.New(), Node: &storage.Node{ID: objectid.New(), Name: "Node", HumanTask: &storage.HumanTask{
+		ID:            objectid.New(),
+		CorrelationID: "correlationID",
+		ProcessID:     "processID",
+		ContentType:   "contentType",
+		SequenceID:    "sequenceID",
+		ParentID:      "parentID",
+		ParentProcess: "parentProcess",
+	}}}
 	builder := NewHeaderBuilder(2)
 
 	ret := builder.BldHeaders(topology, headers, true, false)
 	assert.NotEmpty(t, ret)
-	assert.Equal(t, 0, ret["pf-result-code"])
+	assert.Equal(t, "0", ret["pf-result-code"])
 
 	ret = builder.BldHeaders(topology, headers, true, true)
 	assert.NotEmpty(t, ret)
-	assert.Equal(t, 1003, ret["pf-result-code"])
+	assert.Equal(t, "1003", ret["pf-result-code"])
 }
