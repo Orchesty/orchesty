@@ -8,6 +8,7 @@ require (
 	github.com/google/go-cmp v0.2.0 // indirect
 	github.com/google/uuid v1.1.0
 	github.com/gorilla/context v1.1.1
+	github.com/gorilla/handlers v1.4.0
 	github.com/gorilla/mux v1.6.2
 	github.com/mongodb/mongo-go-driver v0.0.18
 	github.com/patrickmn/go-cache v2.1.0+incompatible

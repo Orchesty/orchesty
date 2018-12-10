@@ -9,22 +9,22 @@ import (
 )
 
 func TestRouter(t *testing.T) {
-	r, _ := http.NewRequest("GET", "/starting-point/status", nil)
+	r, _ := http.NewRequest("GET", "/status", nil)
 	assertResponse(t, r, 200, `{"status":"OK"}`)
 }
 
 func TestNotFound(t *testing.T) {
-	r, _ := http.NewRequest("GET", "/starting-point/notFound", nil)
+	r, _ := http.NewRequest("GET", "/notFound", nil)
 	assertResponse(t, r, 404, "")
 }
 
 func TestNotAllowed(t *testing.T) {
-	r, _ := http.NewRequest("POST", "/starting-point/status", nil)
+	r, _ := http.NewRequest("POST", "/status", nil)
 	assertResponse(t, r, 405, "")
 }
 
 func TestErrResponse(t *testing.T) {
-	r, _ := http.NewRequest("POST", "/starting-point/topologies/bbb/nodes/aaa/run", bytes.NewReader([]byte("aaa")))
+	r, _ := http.NewRequest("POST", "/topologies/bbb/nodes/aaa/run", bytes.NewReader([]byte("aaa")))
 	assertResponse(t, r, 400, "{\"message\":\"Content is not valid!\"}")
 }
 

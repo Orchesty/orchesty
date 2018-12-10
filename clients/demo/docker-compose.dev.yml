@@ -147,6 +147,39 @@ services:
           aliases:
             - multi-counter-api
 
+    ## BEGIN DEV
+    starting-point:
+      image: dkr.hanaboso.net/pipes/pipes/starting-point:dev
+      environment:
+        APP_DEBUG: "false"
+        GO111MODULE: "on"
+        MONGO_HOSTNAME: demo_mongo_1
+        MONGO_DATABASE: demo
+        RABBIT_COUNTER_QUEUE_DURABLE: "true"
+        RABBIT_QUEUE_DURABLE: "true"
+        RABBIT_DELIVERY_MODE: 2
+        APP_CLEANUP_TIME: "300"
+      working_dir: /go/src/hanaboso/starting-point
+      volumes:
+        - ./../../go/src/hanaboso/starting-point/:/go/src/hanaboso/starting-point
+      ports:
+        - ${DEV_IP}:8000:80
+      command: go run cmd/starting-point.go
+    ## END DEV
+    ## BEGIN STAGE
+    #    starting-point:
+    #       image: dkr.hanaboso.net/pipes/pipes/starting-point:dev
+    #       environment:
+    #         APP_DEBUG: "false"
+    #         GO111MODULE: "on"
+    #         MONGO_HOSTNAME: demo_mongo_1
+    #         MONGO_DATABASE: demo
+    #         RABBIT_COUNTER_QUEUE_DURABLE: "true"
+    #         RABBIT_QUEUE_DURABLE: "true"
+    #         RABBIT_DELIVERY_MODE: 2
+    #         APP_CLEANUP_TIME: "300"
+    ## END STAGE
+
     repeater:
       image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
       user: ${DEV_UID}:${DEV_GID}

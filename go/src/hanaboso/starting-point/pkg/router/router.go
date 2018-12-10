@@ -26,7 +26,7 @@ func Router(routes Routes) *mux.Router {
 	}
 
 	for _, route := range routes {
-		router.Methods(route.Method).Path(route.Pattern).Name(route.Name).Handler(route.HandlerFunc)
+		router.Methods(route.Method, http.MethodOptions).Path(route.Pattern).Name(route.Name).Handler(route.HandlerFunc)
 	}
 
 	router.NotFoundHandler = http.HandlerFunc(notFoundHandler)

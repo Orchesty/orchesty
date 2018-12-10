@@ -44,7 +44,7 @@ const htype = "type"
 const appID = "app_id"
 
 // Human tasks headers
-const documentHeader = "doc-id"
+const documentHeader = prefix + "doc-id"
 
 var whiteList = map[string]struct{}{contentType: {}}
 

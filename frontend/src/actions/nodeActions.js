@@ -1,7 +1,7 @@
 import * as types from 'rootApp/actionTypes';
 import listFactory from './factories/listFactory';
 import { stateType } from 'rootApp/types';
-import serverRequest from 'services/apiGatewayServer';
+import serverRequest, { startingPointRequest } from 'services/apiGatewayServer';
 import processes from 'enums/processes';
 import * as notificationActions from './notificationActions';
 import * as processActions from './processActions';
@@ -91,7 +91,7 @@ export function nodeRun(id, data, silent = false) {
     dispatch(needNode(id)).then((node) => {
       if (node) {
         dispatch(processActions.startProcess(processes.nodeRun(id)));
-        serverRequest(dispatch, 'POST', `/topologies/${node.topology_id}/nodes/${node._id}/run`, null, data).then((response) => {
+        startingPointRequest(dispatch, 'POST', `/topologies/${node.topology_id}/nodes/${node._id}/run`, null, data).then((response) => {
           dispatch(processActions.finishProcess(processes.nodeRun(id), response));
           if (response) {
             if (!silent) {

@@ -115,43 +115,43 @@ func (c *MongoMock) FindTopologyByName(topologyName, nodeName, processID string,
 }
 
 func TestHandleStatus(t *testing.T) {
-	r, _ := http.NewRequest("GET", "/starting-point/status", nil)
+	r, _ := http.NewRequest("GET", "/status", nil)
 	assertResponse(t, r, 200, `{"status":"OK"}`)
 }
 
 func TestHandleRunByID(t *testing.T) {
 	mockCache(1)
 
-	r, _ := http.NewRequest("POST", "/starting-point/topologies/a/nodes/b/run", bytes.NewReader([]byte("[]")))
+	r, _ := http.NewRequest("POST", "/topologies/a/nodes/b/run", bytes.NewReader([]byte("[]")))
 	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
 
 	mockCache(1)
-	r, _ = http.NewRequest("POST", "/starting-point/human-task/topologies/a/nodes/b/run", bytes.NewReader([]byte("[]")))
+	r, _ = http.NewRequest("POST", "/human-task/topologies/a/nodes/b/run", bytes.NewReader([]byte("[]")))
 	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
 
 	mockCache(1)
-	r, _ = http.NewRequest("POST", "/starting-point/human-task/topologies/a/nodes/b/stop", bytes.NewReader([]byte("[]")))
+	r, _ = http.NewRequest("POST", "/human-task/topologies/a/nodes/b/stop", bytes.NewReader([]byte("[]")))
 	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
 }
 
 func TestHandleRunByName(t *testing.T) {
 	mockCache(1)
 
-	r, _ := http.NewRequest("POST", "/starting-point/topologies/a/nodes/b/run-by-name", bytes.NewReader([]byte("[]")))
+	r, _ := http.NewRequest("POST", "/topologies/a/nodes/b/run-by-name", bytes.NewReader([]byte("[]")))
 	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
 
 	mockCache(1)
-	r, _ = http.NewRequest("POST", "/starting-point/human-task/topologies/a/nodes/b/run-by-name", bytes.NewReader([]byte("[]")))
+	r, _ = http.NewRequest("POST", "/human-task/topologies/a/nodes/b/run-by-name", bytes.NewReader([]byte("[]")))
 	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
 
 	mockCache(1)
-	r, _ = http.NewRequest("POST", "/starting-point/human-task/topologies/a/nodes/b/stop-by-name", bytes.NewReader([]byte("[]")))
+	r, _ = http.NewRequest("POST", "/human-task/topologies/a/nodes/b/stop-by-name", bytes.NewReader([]byte("[]")))
 	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
 }
 
 func TestHandleInvalidateCache(t *testing.T) {
 	mockCache(1)
-	r, _ := http.NewRequest("POST", "/starting-point/topologies/a/invalidate-cache", nil)
+	r, _ := http.NewRequest("POST", "/topologies/a/invalidate-cache", nil)
 	assertResponse(t, r, 200, `{"cache":0}`)
 }
 
@@ -176,14 +176,14 @@ func (c *MongoMockTopology) FindTopologyByName(topologyName, nodeName, processID
 func TestHandleRunByIDNodeNotFound(t *testing.T) {
 	mockCache(2)
 
-	r, _ := http.NewRequest("POST", "/starting-point/topologies/a/nodes/b/run", bytes.NewReader([]byte("[]")))
+	r, _ := http.NewRequest("POST", "/topologies/a/nodes/b/run", bytes.NewReader([]byte("[]")))
 	assertResponse(t, r, 404, `{"message":"Node with key 'b' not found!"}`)
 }
 
 func TestHandleRunByNameNodeNotFound(t *testing.T) {
 	mockCache(2)
 
-	r, _ := http.NewRequest("POST", "/starting-point/topologies/a/nodes/b/run-by-name", bytes.NewReader([]byte("[]")))
+	r, _ := http.NewRequest("POST", "/topologies/a/nodes/b/run-by-name", bytes.NewReader([]byte("[]")))
 	assertResponse(t, r, 404, `{"message":"Topology with name 'a' and node with name 'b' not found!"}`)
 }
 
@@ -208,14 +208,14 @@ func (c *MongoNoMock) FindTopologyByName(topologyName, nodeName, processID strin
 func TestHandleRunByIDTopologyNotFound(t *testing.T) {
 	mockCache(3)
 
-	r, _ := http.NewRequest("POST", "/starting-point/topologies/a/nodes/b/run", bytes.NewReader([]byte("[]")))
+	r, _ := http.NewRequest("POST", "/topologies/a/nodes/b/run", bytes.NewReader([]byte("[]")))
 	assertResponse(t, r, 404, `{"message":"Topology with key 'a' not found!"}`)
 }
 
 func TestHandleRunByNameInvalidInput(t *testing.T) {
 	mockCache(3)
 
-	r, _ := http.NewRequest("POST", "/starting-point/topologies/a/nodes/b/run-by-name", bytes.NewReader([]byte("invalid")))
+	r, _ := http.NewRequest("POST", "/topologies/a/nodes/b/run-by-name", bytes.NewReader([]byte("invalid")))
 	assertResponse(t, r, 400, `{"message":"Content is not valid!"}`)
 }
 
@@ -235,13 +235,13 @@ func (c *MongoNoMockHumanTask) FindTopologyByName(topologyName, nodeName, proces
 func TestHandleRunByIDHumanTaskNotFound(t *testing.T) {
 	mockCache(4)
 
-	r, _ := http.NewRequest("POST", "/starting-point/human-task/topologies/a/nodes/b/token/c/run", bytes.NewReader([]byte("[]")))
+	r, _ := http.NewRequest("POST", "/human-task/topologies/a/nodes/b/token/c/run", bytes.NewReader([]byte("[]")))
 	assertResponse(t, r, 404, `{"message":"HumanTask with token 'c' not found!"}`)
 }
 
 func TestHandleRunByNameHumanTaskNotFound(t *testing.T) {
 	mockCache(4)
 
-	r, _ := http.NewRequest("POST", "/starting-point/human-task/topologies/a/nodes/b/token/c/run-by-name", bytes.NewReader([]byte("[]")))
+	r, _ := http.NewRequest("POST", "/human-task/topologies/a/nodes/b/token/c/run-by-name", bytes.NewReader([]byte("[]")))
 	assertResponse(t, r, 404, `{"message":"Topology with name 'a', node with name 'b' and human task with token 'c' not found!"}`)
 }

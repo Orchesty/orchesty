@@ -30,19 +30,19 @@ type RabbitDefault struct {
 
 // ProcessMessage  body structures
 // ---------------------------------------------------------------------------------------------
-type counterBody struct {
-	result resultBody
-	route  routeBody
+type CounterBody struct {
+	Result ResultBody
+	Route  RouteBody
 }
 
-type resultBody struct {
-	code    int
-	message string
+type ResultBody struct {
+	Code    int
+	Message string
 }
 
-type routeBody struct {
-	following  int
-	multiplier int
+type RouteBody struct {
+	Following  int
+	Multiplier int
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -67,7 +67,9 @@ func (r *RabbitDefault) SndMessage(
 	q := rabbitmq.GetProcessQueue(topology)
 	m := amqp.Publishing{
 		Body:    utils.GetBodyFromStream(request),
-		Headers: r.builder.BldHeaders(topology, request.Header, isHuman, isStop)}
+		Headers: r.builder.BldHeaders(topology, request.Header, isHuman, isStop),
+		ContentType: "application/json",
+	}
 
 	// Init Counter
 	r.initCounterProcess(request.Header, topology)
@@ -94,11 +96,12 @@ func (r *RabbitDefault) ClearChannels() {
 func (r *RabbitDefault) initCounterProcess(httpHeaders http.Header, topology storage.Topology) {
 	// Create ProcessMessage body
 	body, err := json.Marshal(
-		counterBody{
-			result: resultBody{0, "Starting point started process"},
-			route:  routeBody{1, 1},
+		CounterBody{
+			Result: ResultBody{0, "Starting point started process"},
+			Route:  RouteBody{1, 1},
 		})
 
+	fmt.Println(string(body))
 	if err != nil {
 		log.Error(fmt.Sprintf("Json marshal error: %+v", err))
 	}
