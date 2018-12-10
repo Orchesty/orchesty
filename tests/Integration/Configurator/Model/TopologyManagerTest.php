@@ -2,13 +2,13 @@
 
 namespace Tests\Integration\Configurator\Model;
 
+use Exception;
 use Hanaboso\CommonsBundle\Enum\HandlerEnum;
 use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\PipesFramework\Configurator\Document\Embed\EmbedNode;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
-use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Tests\DatabaseTestCaseAbstract;
@@ -22,7 +22,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @throws TopologyException
+     * @throws Exception
      */
     public function testCreateTopologyWithSameName(): void
     {
@@ -35,7 +35,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws TopologyException
+     * @throws Exception
      */
     public function testUpdateUnpublishedTopologyWithName(): void
     {
@@ -49,7 +49,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws TopologyException
+     * @throws Exception
      */
     public function testUpdatePublishedTopologyWithName(): void
     {
@@ -65,7 +65,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws TopologyException
+     * @throws Exception
      */
     public function testCheckTopologyNameUnPublished(): void
     {
@@ -81,7 +81,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws TopologyException
+     * @throws Exception
      */
     public function testUpdateTopology(): void
     {
@@ -115,8 +115,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws TopologyException
-     * @throws NodeException
+     * @throws Exception
      */
     public function testPublishTopology(): void
     {
@@ -140,7 +139,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws TopologyException
+     * @throws Exception
      */
     public function testPublishTopologyNoNodes(): void
     {
@@ -157,8 +156,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws TopologyException
-     * @throws NodeException
+     * @throws Exception
      */
     public function testCloneTopology(): void
     {
@@ -301,8 +299,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws TopologyException
-     * @throws NodeException
+     * @throws Exception
      */
     public function testCloneTopologyWithoutBpmn(): void
     {
@@ -328,8 +325,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws TopologyException
-     * @throws NodeException
+     * @throws Exception
      */
     public function testSaveTopologySchema(): void
     {
@@ -351,8 +347,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws TopologyException
-     * @throws NodeException
+     * @throws Exception
      */
     public function testSaveTopologySchemaWithClone(): void
     {
@@ -403,8 +398,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws TopologyException
-     * @throws NodeException
+     * @throws Exception
      */
     public function testSaveTopologySchemaUpdateNodes(): void
     {
@@ -470,8 +464,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws TopologyException
-     * @throws NodeException
+     * @throws Exception
      */
     public function testSaveTopologySchemaNameNotFound(): void
     {
@@ -491,8 +484,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws TopologyException
-     * @throws NodeException
+     * @throws Exception
      */
     public function testSaveTopologySchemaTypeNotExist(): void
     {
@@ -512,8 +504,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws TopologyException
-     * @throws NodeException
+     * @throws Exception
      */
     public function testSaveTopologySchemaCronNotValid(): void
     {
@@ -533,8 +524,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws TopologyException
-     * @throws NodeException
+     * @throws Exception
      */
     public function testDeleteTopology(): void
     {

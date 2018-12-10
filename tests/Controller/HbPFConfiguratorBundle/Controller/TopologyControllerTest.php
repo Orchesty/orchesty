@@ -2,6 +2,7 @@
 
 namespace Tests\Controller\HbPFConfiguratorBundle\Controller;
 
+use Exception;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
@@ -20,6 +21,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers TopologyController::getTopologiesAction()
+     * @throws Exception
      */
     public function testGetTopologies(): void
     {
@@ -39,6 +41,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers TopologyController::getTopologyAction()
+     * @throws Exception
      */
     public function testGetTopology(): void
     {
@@ -121,6 +124,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers TopologyController::getTopologySchemaAction()
+     * @throws Exception
      */
     public function testGetTopologySchema(): void
     {
@@ -143,6 +147,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers TopologyController::getTopologySchemaAction()
+     * @throws Exception
      */
     public function testGetTopologySchemaNotFound(): void
     {
@@ -165,6 +170,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers TopologyController::saveTopologySchemaAction()
+     * @throws Exception
      */
     public function testSaveTopologySchema(): void
     {
@@ -197,6 +203,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers TopologyController::saveTopologySchemaAction()
+     * @throws Exception
      */
     public function testSaveTopologySchemaNotFound(): void
     {
@@ -226,6 +233,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers TopologyController::saveTopologySchemaAction()
+     * @throws Exception
      */
     public function testSaveTopologySchemaNameNotFound(): void
     {
@@ -258,6 +266,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers TopologyController::saveTopologySchemaAction()
+     * @throws Exception
      */
     public function testSaveTopologySchemaTypeNotExist(): void
     {
@@ -290,6 +299,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers TopologyController::saveTopologySchemaAction()
+     * @throws Exception
      */
     public function testSaveTopologySchemaCronNotValid(): void
     {
@@ -399,6 +409,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
      * @param int $count
      *
      * @return Topology[]
+     * @throws Exception
      */
     private function createTopologies(int $count = 1): array
     {
@@ -428,6 +439,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @return array
+     * @throws Exception
      */
     private function getBpmnArray(): array
     {

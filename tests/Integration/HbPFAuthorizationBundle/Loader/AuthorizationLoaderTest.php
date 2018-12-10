@@ -9,6 +9,7 @@
 
 namespace Tests\Integration\HbPFAuthorizationBundle\Loader;
 
+use Exception;
 use Hanaboso\PipesFramework\Authorization\Document\Authorization;
 use Hanaboso\PipesFramework\Authorization\Repository\AuthorizationRepository;
 use Hanaboso\PipesFramework\HbPFAuthorizationBundle\Loader\AuthorizationLoader;
@@ -19,12 +20,13 @@ use Tests\DatabaseTestCaseAbstract;
  *
  * @package Tests\Integration\HbPFAuthorizationBundle\Loader
  */
-class AuthorizationLoaderTest extends DatabaseTestCaseAbstract
+final class AuthorizationLoaderTest extends DatabaseTestCaseAbstract
 {
 
     /**
      * @covers AuthorizationLoader::getAuthorization()
      * @covers AuthorizationLoader::getInstalled()
+     * @throws Exception
      */
     public function testInstallAllAuthorizations(): void
     {

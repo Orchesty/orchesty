@@ -22,7 +22,6 @@ use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\Utils\Dto\Schema;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
-use Nette\Utils\JsonException;
 use Nette\Utils\Strings;
 
 /**
@@ -195,7 +194,6 @@ class TopologyManager
      * @return Topology
      * @throws NodeException
      * @throws EnumException
-     * @throws JsonException
      */
     public function cloneTopology(Topology $topology): Topology
     {

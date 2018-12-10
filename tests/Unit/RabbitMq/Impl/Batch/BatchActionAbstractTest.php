@@ -20,7 +20,7 @@ use React\EventLoop\Factory;
  *
  * @package Tests\Unit\RabbitMq\Impl\Batch
  */
-class BatchActionAbstractTest extends TestCase
+final class BatchActionAbstractTest extends TestCase
 {
 
     /**
@@ -51,6 +51,7 @@ class BatchActionAbstractTest extends TestCase
 
     /**
      * @covers BatchActionAbstract::validateHeaders()
+     * @throws Exception
      */
     public function testValidateHeaders(): void
     {
@@ -72,6 +73,7 @@ class BatchActionAbstractTest extends TestCase
 
     /**
      * @covers BatchActionAbstract::validateHeaders()
+     * @throws Exception
      */
     public function testBatchAction(): void
     {

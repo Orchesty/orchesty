@@ -23,7 +23,7 @@ use PHPUnit\Framework\TestCase;
  *
  * @package Tests\Unit\RabbitMq\Base
  */
-class SyncCallbackAbstractTest extends TestCase
+final class SyncCallbackAbstractTest extends TestCase
 {
 
     /**
@@ -48,6 +48,7 @@ class SyncCallbackAbstractTest extends TestCase
         }
         $message = new Message('', '', FALSE, 'test', 'key', [], '{"1":2}');
 
+        /** @var MockObject|Channel $channel */
         $channel = $this->getMockBuilder(Channel::class)
             ->disableOriginalConstructor()
             ->getMock();

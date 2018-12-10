@@ -11,6 +11,7 @@ namespace Tests\Unit\RabbitMq\Producer;
 
 use Bunny\Channel;
 use Bunny\Exception\BunnyException;
+use Exception;
 use Hanaboso\PipesFramework\HbPFRabbitMqBundle\ContentTypes;
 use Hanaboso\PipesFramework\RabbitMq\BunnyManager;
 use Hanaboso\PipesFramework\RabbitMq\Producer\AbstractProducer;
@@ -23,7 +24,7 @@ use Tests\KernelTestCaseAbstract;
  *
  * @package Tests\Unit\RabbitMq\Base
  */
-class AbstractProducerTest extends KernelTestCaseAbstract
+final class AbstractProducerTest extends KernelTestCaseAbstract
 {
 
     /**
@@ -33,6 +34,7 @@ class AbstractProducerTest extends KernelTestCaseAbstract
 
     /**
      * @return void
+     * @throws Exception
      */
     protected function setUp(): void
     {
@@ -65,6 +67,7 @@ class AbstractProducerTest extends KernelTestCaseAbstract
 
     /**
      * @return void
+     * @throws Exception
      */
     public function testCreateMeta(): void
     {
@@ -74,6 +77,7 @@ class AbstractProducerTest extends KernelTestCaseAbstract
 
     /**
      * @return void
+     * @throws Exception
      */
     public function testPublish(): void
     {
@@ -95,6 +99,7 @@ class AbstractProducerTest extends KernelTestCaseAbstract
 
     /**
      * @return void
+     * @throws Exception
      */
     public function testPublishNoSerializer(): void
     {
@@ -109,6 +114,7 @@ class AbstractProducerTest extends KernelTestCaseAbstract
      * @param string     $beforeExecute
      *
      * @return MockObject|AbstractProducer
+     * @throws Exception
      */
     protected function getPublisher(
         MockObject $bunnyManager,

@@ -18,7 +18,7 @@ use Tests\ControllerTestCaseAbstract;
  *
  * @package Controller\HbPFConfiguratorBundle\Controller
  */
-class CategoryControllerTest extends ControllerTestCaseAbstract
+final class CategoryControllerTest extends ControllerTestCaseAbstract
 {
 
     /**

@@ -11,7 +11,7 @@ use Tests\ControllerTestCaseAbstract;
  *
  * @package Tests\Controller\HbPFTableParserBundle\Controller
  */
-class ApiControllerTest extends ControllerTestCaseAbstract
+final class ApiControllerTest extends ControllerTestCaseAbstract
 {
 
     /**

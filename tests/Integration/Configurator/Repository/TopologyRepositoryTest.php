@@ -2,6 +2,7 @@
 
 namespace Tests\Integration\Configurator\Repository;
 
+use Exception;
 use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
 use Hanaboso\PipesFramework\Category\Document\Category;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
@@ -18,6 +19,7 @@ final class TopologyRepositoryTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers TopologyRepository::getTotalCount()
+     * @throws Exception
      */
     public function testGetTotalCount(): void
     {
@@ -40,7 +42,7 @@ final class TopologyRepositoryTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testGetRunnableTopologies(): void
     {
@@ -69,7 +71,7 @@ final class TopologyRepositoryTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testGetTopologies(): void
     {
@@ -98,6 +100,7 @@ final class TopologyRepositoryTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers TopologyRepository::getTopologiesByCategory()
+     * @throws Exception
      */
     public function testGetTopologiesByCategory(): void
     {

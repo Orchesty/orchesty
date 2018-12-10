@@ -18,32 +18,6 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers LongRunningNodeController::runAction()
-     *
-     * @throws Exception
-     */
-    public function testRun(): void
-    {
-        /** @var LongRunningNodeHandler|MockObject $handler */
-        $handler = $this->createMock(LongRunningNodeHandler::class);
-        $handler->method('run')->willReturnCallback(
-            function (string $topologyName, string $nodeName, array $data, ?string $token = NULL): void {
-                self::assertEquals('topo', $topologyName);
-                self::assertEquals('test', $nodeName);
-                self::assertEquals(['cont'], $data);
-                self::assertEquals('token', $token);
-            }
-        );
-
-        /** @var ContainerInterface $c */
-        $c = $this->client->getContainer();
-        $c->set('hbpf.handler.long_running', $handler);
-
-        $res = $this->sendPost('/longRunning/run/id/topology/topo/node/test/token/token', ['cont']);
-        self::assertEquals(200, $res->status);
-    }
-
-    /**
      * @covers LongRunningNodeController::processAction()
      *
      * @throws Exception

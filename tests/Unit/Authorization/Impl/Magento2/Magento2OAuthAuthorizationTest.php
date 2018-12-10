@@ -11,6 +11,7 @@ namespace Tests\Unit\Authorization\Impl\Magento2;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Exception;
 use Hanaboso\PipesFramework\Authorization\Base\AuthorizationInterface;
 use Hanaboso\PipesFramework\Authorization\Document\Authorization;
 use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
@@ -44,7 +45,7 @@ final class Magento2OAuthAuthorizationTest extends KernelTestCaseAbstract
      * @covers ::getHeaders()
      * @covers ::getSettings()
      * @covers ::saveSettings()
-     * @throws AuthorizationException
+     * @throws Exception
      */
     public function testGetHeaders(): void
     {
@@ -80,7 +81,7 @@ final class Magento2OAuthAuthorizationTest extends KernelTestCaseAbstract
      * @covers ::getHeaders()
      * @covers ::getSettings()
      * @covers ::saveSettings()
-     * @throws AuthorizationException
+     * @throws Exception
      */
     public function testGetHeadersMissingUrl(): void
     {
@@ -101,7 +102,7 @@ final class Magento2OAuthAuthorizationTest extends KernelTestCaseAbstract
      * @covers ::getHeaders()
      * @covers ::getSettings()
      * @covers ::saveSettings()
-     * @throws AuthorizationException
+     * @throws Exception
      */
     public function testGetHeadersMissingKey(): void
     {
@@ -122,7 +123,7 @@ final class Magento2OAuthAuthorizationTest extends KernelTestCaseAbstract
      * @covers ::getHeaders()
      * @covers ::getSettings()
      * @covers ::saveSettings()
-     * @throws AuthorizationException
+     * @throws Exception
      */
     public function testGetHeadersMissingSecret(): void
     {
@@ -142,7 +143,7 @@ final class Magento2OAuthAuthorizationTest extends KernelTestCaseAbstract
      * @covers ::getUrl()
      * @covers ::getSettings()
      * @covers ::saveSettings()
-     * @throws AuthorizationException
+     * @throws Exception
      */
     public function testGetUrl(): void
     {
@@ -160,7 +161,7 @@ final class Magento2OAuthAuthorizationTest extends KernelTestCaseAbstract
      * @covers ::getUrl()
      * @covers ::getSettings()
      * @covers ::saveSettings()
-     * @throws AuthorizationException
+     * @throws Exception
      */
     public function testGetSettingsMissingUrl(): void
     {
@@ -181,7 +182,7 @@ final class Magento2OAuthAuthorizationTest extends KernelTestCaseAbstract
      * @covers ::getUrl()
      * @covers ::getSettings()
      * @covers ::saveSettings()
-     * @throws AuthorizationException
+     * @throws Exception
      */
     public function testGetSettingsMissingKey(): void
     {
@@ -202,7 +203,7 @@ final class Magento2OAuthAuthorizationTest extends KernelTestCaseAbstract
      * @covers ::getUrl()
      * @covers ::getSettings()
      * @covers ::saveSettings()
-     * @throws AuthorizationException
+     * @throws Exception
      */
     public function testGetSettingsMissingSecret(): void
     {
@@ -230,7 +231,7 @@ final class Magento2OAuthAuthorizationTest extends KernelTestCaseAbstract
     /**
      * @covers ::authorize()
      * @covers ::saveSettings()
-     * @throws AuthorizationException
+     * @throws Exception
      */
     public function testAuthorize(): void
     {
@@ -247,7 +248,7 @@ final class Magento2OAuthAuthorizationTest extends KernelTestCaseAbstract
     /**
      * @covers ::saveSettings()
      * @covers ::saveToken()
-     * @throws AuthorizationException
+     * @throws Exception
      */
     public function testSaveToken(): void
     {

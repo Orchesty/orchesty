@@ -1,22 +1,8 @@
 parameters:
-    env(PERSISTENT_QUEUES): true
-    env(PERSISTENT_MESSAGES): false
 
 services:
     _defaults:
         public: '%public.services%'
-
-    # Starting point
-    hbpf.starting_point.starting_point:
-        class: Hanaboso\PipesFramework\Configurator\StartingPoint\StartingPoint
-        arguments:
-            - '@rabbit-mq.manager'
-            - '@hbpf.transport.curl_manager'
-            - '@hbpf.influxdb_sender_monolith'
-        calls:
-            - ['setLogger', ['@monolog.logger.commons']]
-            - ['setDurableQueue', ['%env(bool:PERSISTENT_QUEUES)%']]
-            - ['setDurableMessage', ['%env(bool:PERSISTENT_MESSAGES)%']]
 
     hbpf.cron.manager:
         class: Hanaboso\PipesFramework\Configurator\Cron\CronManager

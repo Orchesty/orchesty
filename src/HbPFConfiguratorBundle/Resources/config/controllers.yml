@@ -6,7 +6,6 @@ services:
         bind:
             $topologyHandler: '@hbpf.configurator.handler.topology'
             $nodeHandler: '@hbpf.configurator.handler.node'
-            $startingPointHandler: '@hbpf.handler.starting_point'
             $categoryHandler: '@hbpf.handler.category'
 
     Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\:

@@ -10,6 +10,7 @@
 namespace Tests\Unit\Authorization\Provider;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Exception;
 use Hanaboso\CommonsBundle\Redirect\RedirectInterface;
 use Hanaboso\PipesFramework\Authorization\Document\Authorization;
 use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
@@ -34,7 +35,7 @@ final class OAuth1ProviderTest extends TestCase
      * @param string $url
      * @param bool   $exception
      *
-     * @throws AuthorizationException
+     * @throws Exception
      */
     public function testAuthorize(array $data, string $url, bool $exception): void
     {
@@ -74,7 +75,7 @@ final class OAuth1ProviderTest extends TestCase
      * @param array $request
      * @param bool  $exception
      *
-     * @throws AuthorizationException
+     * @throws Exception
      */
     public function testGetAccessToken(array $data, array $request, bool $exception): void
     {
@@ -113,7 +114,7 @@ final class OAuth1ProviderTest extends TestCase
      * @param array $data
      * @param bool  $exception
      *
-     * @throws AuthorizationException
+     * @throws Exception
      */
     public function testGetAuthorizeHeader(array $data, bool $exception): void
     {

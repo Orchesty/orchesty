@@ -18,7 +18,7 @@ use PHPUnit\Framework\TestCase;
  *
  * @package Tests\Unit\RabbitMq\Serializer
  */
-class JsonSerializerTest extends TestCase
+final class JsonSerializerTest extends TestCase
 {
 
     /**

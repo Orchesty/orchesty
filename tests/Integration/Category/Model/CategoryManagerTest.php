@@ -9,6 +9,7 @@
 
 namespace Tests\Integration\Category\Model;
 
+use Exception;
 use Hanaboso\PipesFramework\Category\Document\Category;
 use Hanaboso\PipesFramework\Category\Exception\CategoryException;
 use Tests\DatabaseTestCaseAbstract;
@@ -18,11 +19,11 @@ use Tests\DatabaseTestCaseAbstract;
  *
  * @package Tests\Integration\Category\Model
  */
-class CategoryManagerTest extends DatabaseTestCaseAbstract
+final class CategoryManagerTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     *
+     * @throws Exception
      */
     public function testManager(): void
     {
@@ -48,7 +49,7 @@ class CategoryManagerTest extends DatabaseTestCaseAbstract
             'parent' => $categoryR1->getId(),
         ];
 
-        $dataCh2     = [
+        $dataCh2 = [
             'name'   => 'child2',
             'parent' => $categoryR2->getId(),
         ];

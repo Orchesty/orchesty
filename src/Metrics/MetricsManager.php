@@ -12,6 +12,8 @@ namespace Hanaboso\PipesFramework\Metrics;
 use DateTime;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Hanaboso\CommonsBundle\Exception\DateTimeException;
+use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
@@ -194,11 +196,12 @@ class MetricsManager implements LoggerAwareInterface
      *
      * @return array
      * @throws MetricsException
+     * @throws DateTimeException
      */
     public function getTopologyMetrics(Topology $topology, array $params): array
     {
         $data                                = $this->getTopologyProcessTimeMetrics($topology, $params)['process'];
-        $res = [];
+        $res                                 = [];
         $res['topology'][self::PROCESS_TIME] = ['min' => $data['min'], 'avg' => $data['avg'], 'max' => $data['max']];
         unset($data['min'], $data['avg'], $data['max']);
         $res['topology']['process'] = $data;
@@ -219,6 +222,7 @@ class MetricsManager implements LoggerAwareInterface
      *
      * @return array
      * @throws MetricsException
+     * @throws DateTimeException
      */
     public function getNodeMetrics(Node $node, Topology $topology, array $params): array
     {
@@ -279,6 +283,7 @@ class MetricsManager implements LoggerAwareInterface
      *
      * @return array
      * @throws MetricsException
+     * @throws DateTimeException
      */
     public function getTopologyProcessTimeMetrics(Topology $topology, array $params): array
     {
@@ -309,6 +314,7 @@ class MetricsManager implements LoggerAwareInterface
      *
      * @return array
      * @throws MetricsException
+     * @throws DateTimeException
      */
     public function getTopologyRequestCountMetrics(Topology $topology, array $params): array
     {
@@ -316,7 +322,13 @@ class MetricsManager implements LoggerAwareInterface
 
         $dateFrom = $params['from'] ?? 'now - 1h';
         $dateTo   = $params['to'] ?? 'now';
-        $groupBy  = sprintf('TIME(%s)', RetentionFactory::getRetention(new DateTime($dateFrom), new DateTime($dateTo)));
+        $groupBy  = sprintf(
+            'TIME(%s)',
+            RetentionFactory::getRetention(
+                DateTimeUtils::getUTCDateTime($dateFrom),
+                DateTimeUtils::getUTCDateTime($dateTo)
+            )
+        );
 
         $data['requests'] = $this->runQuery(
             sprintf('SUM(%s) AS count', self::TOTAL_COUNT),
@@ -346,6 +358,7 @@ class MetricsManager implements LoggerAwareInterface
      *
      * @return array
      * @throws MetricsException
+     * @throws DateTimeException
      */
     private function runQuery(
         string $select,
@@ -367,8 +380,8 @@ class MetricsManager implements LoggerAwareInterface
         }
 
         if ($dateFrom && $dateTo) {
-            $fromDate = new DateTime($dateFrom);
-            $to       = new DateTime($dateTo);
+            $fromDate = DateTimeUtils::getUTCDateTime($dateFrom);
+            $to       = DateTimeUtils::getUTCDateTime($dateTo);
             $qb
                 ->setTimeRange($fromDate->getTimestamp(), $to->getTimestamp())
                 ->from($this->addRetentionPolicy($from, $fromDate, $to));
@@ -505,6 +518,7 @@ class MetricsManager implements LoggerAwareInterface
      * @param array $series
      *
      * @return array
+     * @throws DateTimeException
      */
     private function processGraphResult(array $series): array
     {
@@ -516,7 +530,7 @@ class MetricsManager implements LoggerAwareInterface
                 if ($i > ($total - 4) && empty($item[1])) {
                     break;
                 } else {
-                    $data[(new DateTime($item[0]))->getTimestamp()] = $item[1] ?? 0;
+                    $data[DateTimeUtils::getUTCDateTime($item[0])->getTimestamp()] = $item[1] ?? 0;
                 }
                 $i++;
             }

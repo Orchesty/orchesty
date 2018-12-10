@@ -9,6 +9,7 @@
 
 namespace Tests\Unit\HbPFConnectorBundle\Loader;
 
+use Exception;
 use Hanaboso\PipesFramework\Connector\Impl\Magento2\Magento2OrdersConnector;
 use Hanaboso\PipesFramework\HbPFConnectorBundle\Loader\ConnectorLoader;
 use Tests\KernelTestCaseAbstract;
@@ -18,7 +19,7 @@ use Tests\KernelTestCaseAbstract;
  *
  * @package Tests\Unit\HbPFConnectorBundle\Loader
  */
-class ConnectorLoaderTest extends KernelTestCaseAbstract
+final class ConnectorLoaderTest extends KernelTestCaseAbstract
 {
 
     /**
@@ -37,6 +38,7 @@ class ConnectorLoaderTest extends KernelTestCaseAbstract
 
     /**
      * @covers ConnectorLoader::getConnector()
+     * @throws Exception
      */
     public function testGetConnector(): void
     {

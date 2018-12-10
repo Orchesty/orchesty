@@ -12,6 +12,7 @@ namespace Hanaboso\PipesFramework\HbPFMetricsBundle\Handler;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Metrics\Exception\MetricsException;
@@ -55,6 +56,7 @@ class MetricsHandler
      * @throws LockException
      * @throws MappingException
      * @throws MetricsException
+     * @throws DateTimeException
      */
     public function getTopologyMetrics(string $topologyId, array $params): array
     {
@@ -70,6 +72,7 @@ class MetricsHandler
      * @throws LockException
      * @throws MappingException
      * @throws MetricsException
+     * @throws DateTimeException
      */
     public function getNodeMetrics(string $topologyId, string $nodeId, array $params): array
     {
@@ -88,6 +91,7 @@ class MetricsHandler
      * @throws LockException
      * @throws MappingException
      * @throws MetricsException
+     * @throws DateTimeException
      */
     public function getRequestsCountMetrics(string $topologyId, array $params): array
     {

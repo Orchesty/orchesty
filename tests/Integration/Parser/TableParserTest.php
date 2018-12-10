@@ -2,6 +2,7 @@
 
 namespace Tests\Integration\Parser;
 
+use Exception;
 use Hanaboso\PipesFramework\Parser\TableParser;
 use Hanaboso\PipesFramework\Parser\TableParserInterface;
 use PHPUnit\Framework\TestCase;
@@ -20,6 +21,7 @@ final class TableParserTest extends TestCase
      * @param bool   $hasHeaders
      *
      * @dataProvider getParseToJsonData
+     * @throws Exception
      */
     public function testParseToJson(string $input, string $output, bool $hasHeaders): void
     {
@@ -34,6 +36,7 @@ final class TableParserTest extends TestCase
      * @param bool   $hasHeaders
      *
      * @dataProvider getParseFromJsonData
+     * @throws Exception
      */
     public function testParseFromJson(string $input, string $type, bool $hasHeaders): void
     {

@@ -2,13 +2,6 @@ services:
     _defaults:
         public: '%public.services%'
 
-    hbpf.command.run_topology:
-        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\RunTopologyCommand
-        arguments:
-            - '@hbpf.handler.starting_point'
-        tags:
-            -  { name: console.command }
-
     hbpf.command.refresh_cron:
         class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\RefreshCronCommand
         arguments:

@@ -11,7 +11,7 @@ use Tests\ControllerTestCaseAbstract;
  *
  * @package Tests\Controller\HbPFConnectorBundle\Controller
  */
-class ConnectorControllerTest extends ControllerTestCaseAbstract
+final class ConnectorControllerTest extends ControllerTestCaseAbstract
 {
 
     /**

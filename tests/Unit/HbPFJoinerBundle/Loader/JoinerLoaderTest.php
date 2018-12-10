@@ -9,6 +9,7 @@
 
 namespace Tests\Unit\HbPFJoinerBundle\Loader;
 
+use Exception;
 use Hanaboso\PipesFramework\HbPFJoinerBundle\Loader\JoinerLoader;
 use Hanaboso\PipesFramework\Joiner\JoinerInterface;
 use Tests\KernelTestCaseAbstract;
@@ -18,7 +19,7 @@ use Tests\KernelTestCaseAbstract;
  *
  * @package Tests\Unit\HbPFJoinerBundle\Loader
  */
-class JoinerLoaderTest extends KernelTestCaseAbstract
+final class JoinerLoaderTest extends KernelTestCaseAbstract
 {
 
     /**
@@ -37,6 +38,7 @@ class JoinerLoaderTest extends KernelTestCaseAbstract
 
     /**
      * @covers JoinerLoader::get()
+     * @throws Exception
      */
     public function testLoader(): void
     {

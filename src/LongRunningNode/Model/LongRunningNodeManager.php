@@ -4,7 +4,6 @@ namespace Hanaboso\PipesFramework\LongRunningNode\Model;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\LongRunningNode\Document\LongRunningNodeData;
-use Hanaboso\PipesFramework\LongRunningNode\Exception\LongRunningNodeException;
 
 /**
  * Class LongRunningNodeManager
@@ -33,7 +32,6 @@ class LongRunningNodeManager
      * @param LongRunningNodeData $doc
      *
      * @return LongRunningNodeData
-     * @throws LongRunningNodeException
      */
     public function saveDocument(LongRunningNodeData $doc): LongRunningNodeData
     {

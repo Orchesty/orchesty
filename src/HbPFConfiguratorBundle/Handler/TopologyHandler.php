@@ -169,7 +169,6 @@ class TopologyHandler
      * @throws NodeException
      * @throws TopologyException
      * @throws EnumException
-     * @throws JsonException
      */
     public function saveTopologySchema(string $id, string $content, array $data): array
     {

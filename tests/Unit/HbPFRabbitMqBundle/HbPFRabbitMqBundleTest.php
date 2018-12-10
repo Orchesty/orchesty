@@ -24,7 +24,7 @@ use Tests\KernelTestCaseAbstract;
  *
  * @package Tests\Unit\HbPFRabbitMqBundle
  */
-class HbPFRabbitMqBundleTest extends KernelTestCaseAbstract
+final class HbPFRabbitMqBundleTest extends KernelTestCaseAbstract
 {
 
     /**
