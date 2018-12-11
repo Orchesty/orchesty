@@ -363,7 +363,7 @@ services:
           - ./stack/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
         ## END DEV
         ## BEGIN STAGE
-        #restart: on-failure
+        #restart_policy: on-failure
         #configs:
         #  - source: logstash.conf
         #    target: /usr/share/logstash/pipeline/logstash.conf
@@ -420,8 +420,6 @@ services:
         ## END DEV
         ports:
           - ${DEV_IP}:5000:5000
-        links:
-          - mongo
 
 ## BEGIN DEV
 volumes:
