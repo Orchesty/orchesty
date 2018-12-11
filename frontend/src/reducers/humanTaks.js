@@ -8,6 +8,7 @@ const initialState = {
   elements: {},
   lists: {},
   nodes: {},
+  initialize: false
 };
 
 function getElementId(element) {
@@ -43,6 +44,11 @@ function reducer(state, action) {
     case types.HUMAN_TASKS_RECEIVE_NODES:
       return Object.assign({}, state, {
         nodes: addElements({}, action.items),
+      });
+
+    case types.HUMAN_TASKS_INITIALIZE:
+      return Object.assign({}, state, {
+        initialize: true
       });
 
     default:

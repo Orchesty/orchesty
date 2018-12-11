@@ -149,7 +149,7 @@ services:
 
     ## BEGIN DEV
     starting-point:
-      image: dkr.hanaboso.net/pipes/pipes/starting-point:dev
+      image: starting-point-dev
       environment:
         APP_DEBUG: "false"
         GO111MODULE: "on"

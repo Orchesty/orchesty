@@ -23,6 +23,7 @@ class HumanTasksListTable extends AbstractTable {
 
   componentDidMount() {
     let params = {};
+    const { topologies, initialize, initialized } = this.props;
 
     location.search.substr(1).split("&").forEach(function (item) {
       const parts = item.split("=");
@@ -39,6 +40,11 @@ class HumanTasksListTable extends AbstractTable {
       }));
 
       window.history.replaceState('', '', '/ui/human_tasks');
+    } else {
+      if (topologies.length > 0 && !initialized) {
+        this.onTopologyChange({ target: { value: topologies[0]._id } });
+        initialize();
+      }
     }
   }
 
@@ -208,11 +214,13 @@ HumanTasksListTable.propTypes = Object.assign({}, AbstractTable.propTypes, {
   topologies: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   nodes: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   process: PropTypes.func.isRequired,
+  initialize: PropTypes.func.isRequired,
 });
 
-const mapStateToProps = ({ topology: { elements } = {}, node: { lists }, humanTask: { nodes } }) => ({
+const mapStateToProps = ({ topology: { elements } = {}, node: { lists }, humanTask: { nodes, initialize } }) => ({
   topologies: Object.values(elements),
   nodes: Object.values(nodes),
+  initialized: initialize,
 });
 
 export default connect(mapStateToProps)(StateComponent(HumanTasksListTable));

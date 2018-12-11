@@ -1,6 +1,6 @@
 import * as types from 'rootApp/actionTypes';
 import listFactory from './factories/listFactory';
-import serverRequest, { startingPointRequest, sortToQuery } from 'services/apiGatewayServer';
+import serverRequest, { sortToQuery, startingPointRequest } from 'services/apiGatewayServer';
 
 import config from 'rootApp/config';
 import objectEquals from 'utils/objectEquals';
@@ -124,4 +124,12 @@ export function humanTaskProcess(listId, topology, node, token, approve) {
       return response;
     });
   };
+}
+
+export function humanTaskInitialize() {
+  return (dispatch) => {
+    dispatch({ type: types.HUMAN_TASKS_INITIALIZE });
+
+    return Promise.resolve(true);
+  }
 }
