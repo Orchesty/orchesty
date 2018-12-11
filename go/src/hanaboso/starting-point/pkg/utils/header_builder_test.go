@@ -15,15 +15,18 @@ func TestBldCounterHeaders(t *testing.T) {
 	topology := storage.Topology{Name: "Topology", ID: objectid.New(), Node: &storage.Node{ID: objectid.New(), Name: "Node"}}
 	builder := NewHeaderBuilder(2)
 
-	ret := builder.BldCounterHeaders(topology, headers)
+	h, c, d, ti := builder.BldCounterHeaders(topology, headers)
 
-	assert.NotEmpty(t, ret)
-	assert.Equal(t, "ok", ret["pf-test"])
-	assert.Equal(t, "application/json", ret["content-type"])
-	assert.Equal(t, "counter_message", ret["type"])
-	assert.Equal(t, "starting_point", ret["app_id"])
-	assert.Equal(t, "starting_point", ret["pf-node-name"])
-	assert.Equal(t, "starting_point", ret["pf-node-id"])
+	assert.NotEmpty(t, h)
+	assert.Equal(t, "ok", h["pf-test"])
+	assert.Equal(t, "counter_message", h["type"])
+	assert.Equal(t, "starting_point", h["app_id"])
+	assert.Equal(t, "starting_point", h["pf-node-name"])
+	assert.Equal(t, "starting_point", h["pf-node-id"])
+	assert.Equal(t, "application/json", c)
+	assert.Equal(t, "application/json", c)
+	assert.NotEmpty(t, d)
+	assert.NotEmpty(t, ti)
 }
 
 func TestBldHeaders(t *testing.T) {
@@ -32,9 +35,12 @@ func TestBldHeaders(t *testing.T) {
 	topology := storage.Topology{Name: "Topology", ID: objectid.New(), Node: &storage.Node{ID: objectid.New(), Name: "Node"}}
 	builder := NewHeaderBuilder(2)
 
-	ret := builder.BldHeaders(topology, headers, false, false)
+	h, c, d, ti := builder.BldHeaders(topology, headers, false, false)
 
-	assert.NotEmpty(t, ret)
+	assert.NotEmpty(t, h)
+	assert.NotEmpty(t, c)
+	assert.NotEmpty(t, d)
+	assert.NotEmpty(t, ti)
 }
 
 func TestHumanHeaders(t *testing.T) {
@@ -51,11 +57,17 @@ func TestHumanHeaders(t *testing.T) {
 	}}}
 	builder := NewHeaderBuilder(2)
 
-	ret := builder.BldHeaders(topology, headers, true, false)
-	assert.NotEmpty(t, ret)
-	assert.Equal(t, "0", ret["pf-result-code"])
+	h, c, d, ti := builder.BldHeaders(topology, headers, true, false)
+	assert.NotEmpty(t, h)
+	assert.NotEmpty(t, c)
+	assert.NotEmpty(t, d)
+	assert.NotEmpty(t, ti)
+	assert.Equal(t, "0", h["pf-result-code"])
 
-	ret = builder.BldHeaders(topology, headers, true, true)
-	assert.NotEmpty(t, ret)
-	assert.Equal(t, "1003", ret["pf-result-code"])
+	h, c, d, ti = builder.BldHeaders(topology, headers, true, true)
+	assert.NotEmpty(t, h)
+	assert.NotEmpty(t, c)
+	assert.NotEmpty(t, d)
+	assert.NotEmpty(t, ti)
+	assert.Equal(t, "1003", h["pf-result-code"])
 }

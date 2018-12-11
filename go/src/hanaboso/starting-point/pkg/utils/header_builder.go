@@ -11,14 +11,14 @@ import (
 
 // HeaderBuilder represents headerBuilder
 type HeaderBuilder interface {
-	BldHeaders(topology storage.Topology, headers http.Header, isHuman bool, isStop bool) amqp.Table
-	BldHumanTaskHeaders(topology storage.Topology, headers http.Header, stop bool) amqp.Table
-	BldCounterHeaders(storage.Topology, http.Header) amqp.Table
-	BldProcessHeaders(storage.Topology, http.Header) amqp.Table
+	BldHeaders(topology storage.Topology, headers http.Header, isHuman bool, isStop bool) (h amqp.Table, c string, d uint8, t time.Time)
+	BldHumanTaskHeaders(topology storage.Topology, headers http.Header, stop bool) (h amqp.Table, c string, d uint8, t time.Time)
+	BldCounterHeaders(storage.Topology, http.Header) (h amqp.Table, c string, d uint8, t time.Time)
+	BldProcessHeaders(storage.Topology, http.Header) (h amqp.Table, c string, d uint8, t time.Time)
 }
 
 type headerBuilder struct {
-	deliveryMode int16
+	deliveryMode uint8
 }
 
 const prefix = "pf-"
@@ -37,9 +37,7 @@ const topologyName = prefix + "topology-name"
 const pfTimeStamp = prefix + "published-timestamp"
 const resultCode = prefix + "result-code"
 
-// Standard RabbitMq headers
-const timeStamp = "timestamp"
-const deliveryMode = "delivery-mode"
+// Others headers
 const htype = "type"
 const appID = "app_id"
 
@@ -48,7 +46,7 @@ const documentHeader = prefix + "doc-id"
 
 var whiteList = map[string]struct{}{contentType: {}}
 
-func (b *headerBuilder) BldHeaders(topology storage.Topology, headers http.Header, isHuman bool, isStop bool) amqp.Table {
+func (b *headerBuilder) BldHeaders(topology storage.Topology, headers http.Header, isHuman bool, isStop bool) (h amqp.Table, c string, d uint8, t time.Time) {
 	if isHuman {
 		return b.BldHumanTaskHeaders(topology, headers, isStop)
 	}
@@ -56,8 +54,8 @@ func (b *headerBuilder) BldHeaders(topology storage.Topology, headers http.Heade
 	return b.BldProcessHeaders(topology, headers)
 }
 
-func (b *headerBuilder) BldCounterHeaders(topology storage.Topology, headers http.Header) (h amqp.Table) {
-	h = b.BldProcessHeaders(topology, headers)
+func (b *headerBuilder) BldCounterHeaders(topology storage.Topology, headers http.Header) (h amqp.Table, c string, d uint8, t time.Time) {
+	h, c, d, t = b.BldProcessHeaders(topology, headers)
 
 	h[htype] = "counter_message"
 	h[appID] = "starting_point"
@@ -67,7 +65,7 @@ func (b *headerBuilder) BldCounterHeaders(topology storage.Topology, headers htt
 	return
 }
 
-func (b *headerBuilder) BldHumanTaskHeaders(topology storage.Topology, headers http.Header, stop bool) (h amqp.Table) {
+func (b *headerBuilder) BldHumanTaskHeaders(topology storage.Topology, headers http.Header, stop bool) (h amqp.Table, c string, d uint8, t time.Time) {
 	code := "0"
 	if stop {
 		code = "1003"
@@ -78,9 +76,6 @@ func (b *headerBuilder) BldHumanTaskHeaders(topology storage.Topology, headers h
 		sequenceID:     topology.Node.HumanTask.SequenceID,
 		topologyID:     topology.ID.Hex(),
 		topologyName:   topology.Name,
-		contentType:    topology.Node.HumanTask.ContentType,
-		timeStamp:      time.Now().UTC().String(),
-		deliveryMode:   b.deliveryMode,
 		pfTimeStamp:    time.Now().UTC().Unix() * 1000,
 		processID:      topology.Node.HumanTask.ProcessID,
 		CorrelationID:  topology.Node.HumanTask.CorrelationID,
@@ -88,18 +83,16 @@ func (b *headerBuilder) BldHumanTaskHeaders(topology storage.Topology, headers h
 		resultCode:     code,
 	}
 
-	return
+	return h, topology.Node.HumanTask.ContentType, b.deliveryMode, time.Now().UTC()
 }
 
-func (b *headerBuilder) BldProcessHeaders(topology storage.Topology, headers http.Header) (h amqp.Table) {
+func (b *headerBuilder) BldProcessHeaders(topology storage.Topology, headers http.Header) (h amqp.Table, c string, d uint8, t time.Time) {
 	h = amqp.Table{
 		parentID:      "",
 		sequenceID:    "1",
 		topologyID:    topology.ID.Hex(),
 		topologyName:  topology.Name,
 		contentType:   jsonType,
-		timeStamp:     time.Now().UTC().String(),
-		deliveryMode:  b.deliveryMode,
 		pfTimeStamp:   time.Now().UTC().Unix() * 1000,
 		processID:     uuid.New().String(),
 		CorrelationID: uuid.New().String(),
@@ -107,7 +100,7 @@ func (b *headerBuilder) BldProcessHeaders(topology storage.Topology, headers htt
 
 	arrayFilter(headers, h)
 
-	return
+	return h, h[contentType].(string), b.deliveryMode, time.Now().UTC()
 }
 
 func arrayFilter(h http.Header, t amqp.Table) {
@@ -123,5 +116,5 @@ func arrayFilter(h http.Header, t amqp.Table) {
 
 // NewHeaderBuilder construct
 func NewHeaderBuilder(deliveryMode int16) HeaderBuilder {
-	return &headerBuilder{deliveryMode: deliveryMode}
+	return &headerBuilder{deliveryMode: uint8(deliveryMode)}
 }

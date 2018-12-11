@@ -67,13 +67,13 @@ func (r *RabbitDefault) SndMessage(
 	isHuman bool,
 	isStop bool) {
 
+	// Create ProcessMessage headers
+	h, c, d, t := r.builder.BldHeaders(topology, request.Header, isHuman, isStop)
+
 	// Create Queue & Message
 	q := rabbitmq.GetProcessQueue(topology)
 	m := amqp.Publishing{
-		Body:        utils.GetBodyFromStream(request),
-		Headers:     r.builder.BldHeaders(topology, request.Header, isHuman, isStop),
-		ContentType: "application/json",
-	}
+		Body: utils.GetBodyFromStream(request), Headers: h, ContentType: c, DeliveryMode: d, Timestamp: t}
 
 	// Init Counter
 	r.initCounterProcess(request.Header, topology)
@@ -105,16 +105,15 @@ func (r *RabbitDefault) initCounterProcess(httpHeaders http.Header, topology sto
 			Route:  RouteBody{1, 1},
 		})
 
-	fmt.Println(string(body))
 	if err != nil {
 		log.Error(fmt.Sprintf("Json marshal error: %+v", err))
 	}
 
 	// Create ProcessMessage headers
-	h := r.builder.BldCounterHeaders(topology, httpHeaders)
+	h, c, d, t := r.builder.BldCounterHeaders(topology, httpHeaders)
 
 	// Create & Publish Message
-	msg := amqp.Publishing{Body: body, Headers: h}
+	msg := amqp.Publishing{Body: body, Headers: h, ContentType: c, DeliveryMode: d, Timestamp: t}
 	r.publisher.Publish(msg, config.Config.RabbitMQ.CounterQueueName)
 }
 
