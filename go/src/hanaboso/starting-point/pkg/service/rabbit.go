@@ -30,16 +30,20 @@ type RabbitDefault struct {
 
 // ProcessMessage  body structures
 // ---------------------------------------------------------------------------------------------
+
+// CounterBody interprets body
 type CounterBody struct {
 	Result ResultBody
 	Route  RouteBody
 }
 
+// ResultBody interprets result
 type ResultBody struct {
 	Code    int
 	Message string
 }
 
+// RouteBody interprets route
 type RouteBody struct {
 	Following  int
 	Multiplier int
@@ -66,8 +70,8 @@ func (r *RabbitDefault) SndMessage(
 	// Create Queue & Message
 	q := rabbitmq.GetProcessQueue(topology)
 	m := amqp.Publishing{
-		Body:    utils.GetBodyFromStream(request),
-		Headers: r.builder.BldHeaders(topology, request.Header, isHuman, isStop),
+		Body:        utils.GetBodyFromStream(request),
+		Headers:     r.builder.BldHeaders(topology, request.Header, isHuman, isStop),
 		ContentType: "application/json",
 	}
 

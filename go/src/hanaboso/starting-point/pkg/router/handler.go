@@ -26,9 +26,9 @@ func HandleClear(h http.HandlerFunc) http.HandlerFunc {
 		if r.Method == http.MethodOptions {
 			w.WriteHeader(http.StatusNoContent)
 			return
-		} else {
-			h.ServeHTTP(w, r)
 		}
+
+		h.ServeHTTP(w, r)
 	}
 }
 
