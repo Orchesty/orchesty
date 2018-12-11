@@ -14,9 +14,6 @@ const contentType = "content-type"
 const jsonType = "application/json"
 const xmlType = "application/xml"
 
-var data map[string]interface{}
-var emptyData []interface{}
-
 // GetBodyFromStream returns []bytes from stream and rewind stream back
 func GetBodyFromStream(r *http.Request) (b []byte) {
 	b, err := ioutil.ReadAll(r.Body)
@@ -46,6 +43,9 @@ func ValidateBody(r *http.Request) (err error) {
 
 // ValidateJSON Validates json on request body
 func ValidateJSON(body []byte) (err error) {
+	data := make(map[string]interface{})
+	emptyData := make([]interface{}, 0)
+
 	// Check if is json data
 	err = json.Unmarshal(body, &data)
 	if err == nil {
