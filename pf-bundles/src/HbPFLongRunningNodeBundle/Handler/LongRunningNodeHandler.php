@@ -50,9 +50,9 @@ class LongRunningNodeHandler
         DocumentManager $dm
     )
     {
-        $this->loader  = $loader;
-        $this->filter  = $filter;
-        $this->dm      = $dm;
+        $this->loader = $loader;
+        $this->filter = $filter;
+        $this->dm     = $dm;
     }
 
     /**
@@ -65,16 +65,12 @@ class LongRunningNodeHandler
      */
     public function process(string $nodeId, string $data, array $headers): ProcessDto
     {
-        file_put_contents('/tmp/01', '');
         $service = $this->loader->getLongRunningNode($nodeId);
         $docId   = PipesHeaders::get(LongRunningNodeData::DOCUMENT_ID_HEADER, $headers);
-        file_put_contents('/tmp/02', '');
         /** @var LongRunningNodeData|null $doc */
         $doc = $this->dm->find(LongRunningNodeData::class, $docId);
-        file_put_contents('/tmp/03', '');
 
         if (!$doc) {
-            file_put_contents('/tmp/003', '');
             throw new LongRunningNodeException(
                 sprintf('LongRunningData document [%s] was not found', $docId),
                 LongRunningNodeException::LONG_RUNNING_DOCUMENT_NOT_FOUND
@@ -85,7 +81,14 @@ class LongRunningNodeHandler
         $this->dm->flush();
         $this->dm->clear();
 
-        return $service->afterAction($doc, $data);
+        $dto = $service->afterAction($doc, $data);
+
+        $stopHeader = PipesHeaders::get(PipesHeaders::PF_STOP, $headers);
+        if ($stopHeader) {
+            $dto->addHeader(PipesHeaders::createKey(PipesHeaders::PF_STOP), $stopHeader);
+        }
+
+        return $dto;
     }
 
     /**

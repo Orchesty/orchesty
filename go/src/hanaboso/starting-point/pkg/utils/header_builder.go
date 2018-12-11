@@ -36,6 +36,7 @@ const topologyID = prefix + "topology-id"
 const topologyName = prefix + "topology-name"
 const pfTimeStamp = prefix + "published-timestamp"
 const resultCode = prefix + "result-code"
+const pfstop = prefix + "stop"
 
 // Others headers
 const htype = "type"
@@ -66,10 +67,6 @@ func (b *headerBuilder) BldCounterHeaders(topology storage.Topology, headers htt
 }
 
 func (b *headerBuilder) BldHumanTaskHeaders(topology storage.Topology, headers http.Header, stop bool) (h amqp.Table, c string, d uint8, t time.Time) {
-	code := "0"
-	if stop {
-		code = "1003"
-	}
 
 	h = amqp.Table{
 		parentID:       topology.Node.HumanTask.ParentID,
@@ -80,7 +77,11 @@ func (b *headerBuilder) BldHumanTaskHeaders(topology storage.Topology, headers h
 		processID:      topology.Node.HumanTask.ProcessID,
 		CorrelationID:  topology.Node.HumanTask.CorrelationID,
 		documentHeader: topology.Node.HumanTask.ID.Hex(),
-		resultCode:     code,
+		resultCode:     "0",
+	}
+
+	if stop {
+		h[pfstop] = "1003"
 	}
 
 	return h, topology.Node.HumanTask.ContentType, b.deliveryMode, time.Now().UTC()
