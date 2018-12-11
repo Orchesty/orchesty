@@ -57,13 +57,13 @@ class LongRunningNodeHandler
 
     /**
      * @param string $nodeId
-     * @param string $data
+     * @param array  $data
      * @param array  $headers
      *
      * @return ProcessDto
      * @throws LongRunningNodeException
      */
-    public function process(string $nodeId, string $data, array $headers): ProcessDto
+    public function process(string $nodeId, array $data, array $headers): ProcessDto
     {
         $service = $this->loader->getLongRunningNode($nodeId);
         $docId   = PipesHeaders::get(LongRunningNodeData::DOCUMENT_ID_HEADER, $headers);
@@ -85,7 +85,7 @@ class LongRunningNodeHandler
 
         $stopHeader = PipesHeaders::get(PipesHeaders::PF_STOP, $headers);
         if ($stopHeader) {
-            $dto->addHeader(PipesHeaders::createKey(PipesHeaders::PF_STOP), $stopHeader);
+            $dto->addHeader(PipesHeaders::createKey(PipesHeaders::RESULT_CODE), $stopHeader);
         }
 
         return $dto;

@@ -48,7 +48,7 @@ class LongRunningNodeController extends FOSRestController
     public function processAction(Request $request, string $nodeId): Response
     {
         try {
-            $data = $this->handler->process($nodeId, (string) json_encode($request->getContent()), $request->headers->all());
+            $data = $this->handler->process($nodeId, $request->request->all(), $request->headers->all());
 
             return $this->getResponse($data->getData(), 200, ControllerUtils::createHeaders($data->getHeaders()));
         } catch (Throwable $e) {
