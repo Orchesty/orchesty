@@ -9,6 +9,7 @@ import TopologyRunFormModal from 'modals/TopologyRunFormModal';
 import TopologyDeleteDialog from 'modals/dialogs/TopologyDeleteDialog';
 import TopologyCategoryChangeModal from 'modals/TopologyCategoryChangeModal';
 import CategoryEditModal from 'modals/CategoryEditModal';
+import HumanTaskApproveFormModal from 'modals/HumanTaskApproveFormModal';
 
 
 class ActiveModal extends React.Component {
@@ -16,11 +17,11 @@ class ActiveModal extends React.Component {
     super(props);
     this._close = this.close.bind(this);
   }
-  
+
   close(){
     this.props.closeModal();
   }
-  
+
   render() {
     const {modal, modalData} = this.props;
     switch (modal){
@@ -41,6 +42,10 @@ class ActiveModal extends React.Component {
 
       case 'category_topology_change':
         return <TopologyCategoryChangeModal {...modalData} onCloseModal={this._close} componentKey={modal} />;
+
+      case 'human_task_approve':
+        return <HumanTaskApproveFormModal {...modalData} onCloseModal={this._close} componentKey={modalData.componentKey} />;
+
       default:
         return null;
     }

@@ -36,7 +36,7 @@ const topologyID = prefix + "topology-id"
 const topologyName = prefix + "topology-name"
 const pfTimeStamp = prefix + "published-timestamp"
 const resultCode = prefix + "result-code"
-const pfstop = prefix + "stop"
+const pfStop = prefix + "stop"
 
 // Others headers
 const htype = "type"
@@ -81,7 +81,7 @@ func (b *headerBuilder) BldHumanTaskHeaders(topology storage.Topology, headers h
 	}
 
 	if stop {
-		h[pfstop] = "1003"
+		h[pfStop] = "1003"
 	}
 
 	return h, topology.Node.HumanTask.ContentType, b.deliveryMode, time.Now().UTC()

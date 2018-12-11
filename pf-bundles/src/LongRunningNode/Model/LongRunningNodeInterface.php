@@ -28,10 +28,10 @@ interface LongRunningNodeInterface
 
     /**
      * @param LongRunningNodeData $data
-     * @param string              $requestData
+     * @param array               $requestData
      *
      * @return ProcessDto
      */
-    public function afterAction(LongRunningNodeData $data, string $requestData): ProcessDto;
+    public function afterAction(LongRunningNodeData $data, array $requestData): ProcessDto;
 
 }
