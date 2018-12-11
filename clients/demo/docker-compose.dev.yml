@@ -364,7 +364,8 @@ services:
         ## END DEV
         ## BEGIN STAGE
         #deploy:
-        #  restart_policy: on-failure
+        #  restart_policy:
+        #    condition: on-failure
         #configs:
         #  - source: logstash.conf
         #    target: /usr/share/logstash/pipeline/logstash.conf
