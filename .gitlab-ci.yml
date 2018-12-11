@@ -24,6 +24,16 @@ php-dev-image:
     - master
     - ci
 
+starting-point-dev-image:
+  stage: stage1
+  script:
+    - DIR=go/src/hanaboso/starting-point
+    - cd $DIR
+    - make build-dev-image
+  only:
+    - dev
+    - master
+
 njs-build-image:
   stage: stage1
   script:
@@ -172,6 +182,9 @@ starting-point:
     - skip_unmodified $DIR
     - cd $DIR
     - make build-image push TAG=${CI_BUILD_REF_NAME}
+  only:
+    - dev
+    - master
 
 # Client: demo
 stage-demo:
@@ -183,7 +196,6 @@ stage-demo:
     - export COMPOSE_PROJECT_NAME=stagedemo
     - export NPM_INSTALL="yes"
     - make docker-pull-dev init-dev DEV_YML=docker-compose.ci.yml
-  script:
     - cd clients/demo
     - make docker-compose.ci.yml
     - source <(../../build/bin/map-branch-image-tags.sh ./branch-image-tag-map ${CI_BUILD_REF_NAME} -e)

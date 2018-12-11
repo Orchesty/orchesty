@@ -1,7 +1,7 @@
 package influx
 
 import (
-	"github.com/mongodb/mongo-go-driver/bson/objectid"
+	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	"starting-point/pkg/storage"
 	"starting-point/pkg/udp"
 	"testing"
@@ -10,7 +10,7 @@ import (
 func TestSendMetrics(t *testing.T) {
 	udp.ConnectToUDP()
 
-	topology := storage.Topology{Name: "Topology", ID: objectid.New(), Node: &storage.Node{ID: objectid.New(), Name: "Node"}}
+	topology := storage.Topology{Name: "Topology", ID: primitive.NewObjectID(), Node: &storage.Node{ID: primitive.NewObjectID(), Name: "Node"}}
 	tags := GetTags(topology, "123")
 	fields := GetFields(InitFields())
 	fields["escaped"] = "aaa/bbb"

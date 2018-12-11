@@ -2,7 +2,7 @@ package service
 
 import (
 	"fmt"
-	"github.com/mongodb/mongo-go-driver/bson/objectid"
+	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	"github.com/stretchr/testify/assert"
 	"starting-point/pkg/storage"
 	"testing"
@@ -12,7 +12,7 @@ var topology = "Topology"
 var node = "Node"
 var customIDOne = "4cb174e20000000000000000"
 var customIDTwo = "4cb174e20000000000000001"
-var customObjectID, _ = objectid.FromHex(customIDOne)
+var customObjectID, _ = primitive.ObjectIDFromHex(customIDOne)
 var topologyObject = storage.Topology{
 	ID:   customObjectID,
 	Name: topology,

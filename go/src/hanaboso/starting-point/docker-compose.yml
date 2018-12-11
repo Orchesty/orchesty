@@ -2,7 +2,7 @@ version: '3.3'
 
 services:
   app:
-    image: starting-point-dev
+    image: dkr.hanaboso.net/pipes/pipes/starting-point:app-dev
     environment:
       APP_DEBUG: "false"
       GO111MODULE: "on"

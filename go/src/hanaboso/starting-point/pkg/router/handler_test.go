@@ -2,7 +2,7 @@ package router
 
 import (
 	"bytes"
-	"github.com/mongodb/mongo-go-driver/bson/objectid"
+	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	"net/http"
 	"starting-point/pkg/service"
 	"starting-point/pkg/storage"
@@ -12,7 +12,7 @@ import (
 var topology = "Topology"
 var node = "Node"
 var customID = "4cb174e20000000000000000"
-var customObjectID, _ = objectid.FromHex(customID)
+var customObjectID, _ = primitive.ObjectIDFromHex(customID)
 var topologyObject = storage.Topology{
 	ID:   customObjectID,
 	Name: topology,

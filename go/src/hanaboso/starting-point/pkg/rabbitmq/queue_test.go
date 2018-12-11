@@ -1,7 +1,7 @@
 package rabbitmq
 
 import (
-	"github.com/mongodb/mongo-go-driver/bson/objectid"
+	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	"github.com/stretchr/testify/assert"
 	"starting-point/pkg/config"
 	"starting-point/pkg/storage"
@@ -17,7 +17,7 @@ func TestGetProcessCounterQueue(t *testing.T) {
 }
 
 func TestGetProcessQueue(t *testing.T) {
-	topology := storage.Topology{Name: "Topology", ID: objectid.New(), Node: &storage.Node{ID: objectid.New(), Name: "Node"}}
+	topology := storage.Topology{Name: "Topology", ID: primitive.NewObjectID(), Node: &storage.Node{ID: primitive.NewObjectID(), Name: "Node"}}
 	q := GetProcessQueue(topology)
 
 	assert.IsType(t, string(0), q.Name)

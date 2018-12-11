@@ -2,7 +2,7 @@ package service
 
 import (
 	"bytes"
-	"github.com/mongodb/mongo-go-driver/bson/objectid"
+	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	"io/ioutil"
 	"net/http"
 	"starting-point/pkg/influx"
@@ -17,7 +17,7 @@ func TestRabbit(t *testing.T) {
 
 	reader := ioutil.NopCloser(bytes.NewBuffer([]byte{}))
 	r := &http.Request{Body: reader, Header: map[string][]string{"contentType": {"aaa"}}}
-	topology := storage.Topology{Name: "Topology", ID: objectid.New(), Node: &storage.Node{ID: objectid.New(), Name: "Node"}}
+	topology := storage.Topology{Name: "Topology", ID: primitive.NewObjectID(), Node: &storage.Node{ID: primitive.NewObjectID(), Name: "Node"}}
 	init := influx.InitFields()
 
 	RabbitMq.SndMessage(r, topology, init, false, false)

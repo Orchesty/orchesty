@@ -257,6 +257,39 @@ class TopologyHandler
     }
 
     /**
+     * @param string $topologyId
+     *
+     * @return array
+     * @throws CurlException
+     * @throws TopologyException
+     */
+    public function runTest(string $topologyId): array
+    {
+        $startTopology = TRUE;
+        $runningInfo   = $this->requestHandler->infoTopology($topologyId);
+        if ($runningInfo instanceof ResponseDto && $runningInfo->getBody()) {
+            $result = json_decode($runningInfo->getBody(), TRUE);
+            if (array_key_exists('docker_info', $result) && count($result['docker_info'])) {
+                $startTopology = FALSE;
+            }
+        }
+
+        if ($startTopology) {
+            $this->requestHandler->generateTopology($topologyId);
+            $this->requestHandler->runTopology($topologyId);
+        }
+
+        $res = $this->requestHandler->runTest($topologyId);
+
+        $topology = $this->getTopologyById($topologyId);
+        if ($topology->getVisibility() === TopologyStatusEnum::DRAFT) {
+            $this->requestHandler->deleteTopology($topologyId);
+        }
+
+        return $res;
+    }
+
+    /**
      * @param Topology $topology
      *
      * @return array

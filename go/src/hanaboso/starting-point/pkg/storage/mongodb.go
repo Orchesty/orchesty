@@ -3,8 +3,7 @@ package storage
 import (
 	"context"
 	"fmt"
-	"github.com/mongodb/mongo-go-driver/bson"
-	"github.com/mongodb/mongo-go-driver/bson/objectid"
+	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	"github.com/mongodb/mongo-go-driver/mongo"
 	"starting-point/pkg/config"
 	"strconv"
@@ -29,9 +28,9 @@ type MongoDefault struct {
 	mongo            *mongo.Database
 	keepAlive        *time.Ticker
 	log              *log.Logger
-	visibilityFilter bson.E
-	enabledFilter    bson.E
-	deletedFilter    bson.E
+	visibilityFilter primitive.E
+	enabledFilter    primitive.E
+	deletedFilter    primitive.E
 }
 
 // Mongo represents default MongoDB implementation
@@ -40,9 +39,9 @@ var Mongo MongoInterface
 // CreateMongo creates default MongoDB implementation
 func CreateMongo() {
 	Mongo = &MongoDefault{
-		visibilityFilter: bson.E{Key: "visibility", Value: "public"},
-		enabledFilter:    bson.E{Key: "enabled", Value: true},
-		deletedFilter:    bson.E{Key: "deleted", Value: false},
+		visibilityFilter: primitive.E{Key: "visibility", Value: "public"},
+		enabledFilter:    primitive.E{Key: "enabled", Value: true},
+		deletedFilter:    primitive.E{Key: "deleted", Value: false},
 		log:              config.Config.Logger,
 	}
 	Mongo.Connect()
@@ -99,14 +98,14 @@ func (m *MongoDefault) FindNodeByID(nodeID, topologyID, processID string, isHuma
 	innerContext, cancel := createContextWithTimeout()
 	defer cancel()
 
-	innerNodeID, err := objectid.FromHex(nodeID)
+	innerNodeID, err := primitive.ObjectIDFromHex(nodeID)
 	if err != nil {
 		m.log.Warnf("Node ID '%s' is not valid MongoDB ID.", nodeID)
 
 		return nil
 	}
 
-	err = m.mongo.Collection(config.Config.MongoDB.NodeColl).FindOne(innerContext, bson.D{
+	err = m.mongo.Collection(config.Config.MongoDB.NodeColl).FindOne(innerContext, primitive.D{
 		{"_id", innerNodeID},
 		{"topology", topologyID},
 		m.enabledFilter,
@@ -128,7 +127,7 @@ func (m *MongoDefault) FindNodeByName(nodeName, topologyID, processID string, is
 	innerContext, cancel := createContextWithTimeout()
 	defer cancel()
 
-	cursor, err := m.mongo.Collection(config.Config.MongoDB.NodeColl).Find(innerContext, bson.D{
+	cursor, err := m.mongo.Collection(config.Config.MongoDB.NodeColl).Find(innerContext, primitive.D{
 		{"name", nodeName},
 		{"topology", topologyID},
 		m.enabledFilter,
@@ -165,14 +164,14 @@ func (m *MongoDefault) FindTopologyByID(topologyID, nodeID, processID string, is
 	innerContext, cancel := createContextWithTimeout()
 	defer cancel()
 
-	innerTopologyID, err := objectid.FromHex(topologyID)
+	innerTopologyID, err := primitive.ObjectIDFromHex(topologyID)
 	if err != nil {
 		m.log.Warnf("Topology ID '%s' is not valid MongoDB ID.", topologyID)
 
 		return nil
 	}
 
-	err = m.mongo.Collection(config.Config.MongoDB.TopologyColl).FindOne(innerContext, bson.D{
+	err = m.mongo.Collection(config.Config.MongoDB.TopologyColl).FindOne(innerContext, primitive.D{
 		{"_id", innerTopologyID},
 		m.visibilityFilter,
 		m.enabledFilter,
@@ -200,7 +199,7 @@ func (m *MongoDefault) FindTopologyByName(topologyName, nodeName, processID stri
 	innerContext, cancel := createContextWithTimeout()
 	defer cancel()
 
-	cursor, err := m.mongo.Collection(config.Config.MongoDB.TopologyColl).Find(innerContext, bson.D{
+	cursor, err := m.mongo.Collection(config.Config.MongoDB.TopologyColl).Find(innerContext, primitive.D{
 		{"name", topologyName},
 		m.visibilityFilter,
 		m.enabledFilter,
@@ -246,12 +245,12 @@ func (m *MongoDefault) FindHumanTask(nodeID, topologyID, processID string) *Huma
 	innerContext, cancel := createContextWithTimeout()
 	defer cancel()
 
-	var filter = bson.D{
-		bson.E{Key: "topologyId", Value: topologyID},
-		bson.E{Key: "nodeId", Value: nodeID},
+	var filter = primitive.D{
+		primitive.E{Key: "topologyId", Value: topologyID},
+		primitive.E{Key: "nodeId", Value: nodeID},
 	}
 	if processID != "" {
-		filter = append(filter, bson.E{Key: "processId", Value: processID})
+		filter = append(filter, primitive.E{Key: "processId", Value: processID})
 	}
 
 	err := m.mongo.Collection(config.Config.MongoDB.HumanTaskColl).FindOne(innerContext, filter).Decode(&humanTask)

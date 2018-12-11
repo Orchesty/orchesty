@@ -214,4 +214,22 @@ class TopologyController extends FOSRestController
         }
     }
 
+    /**
+     * @Route("/topologies/{topologyId}/test", methods={"GET"})
+     *
+     * @param string $topologyId
+     *
+     * @return Response
+     */
+    public function testAction(string $topologyId): Response
+    {
+        try {
+            $data = $this->topologyHandler->runTest($topologyId);
+
+            return $this->getResponse($data, 200, ['Content-Type' => 'application/json']);
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
+        }
+    }
+
 }

@@ -1,7 +1,7 @@
 package rabbitmq
 
 import (
-	"github.com/mongodb/mongo-go-driver/bson/objectid"
+	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	"github.com/streadway/amqp"
 	"starting-point/pkg/config"
 	"starting-point/pkg/storage"
@@ -13,7 +13,7 @@ func TestPublish(t *testing.T) {
 	c.Connect()
 	p := NewPublisher(c, config.Config.Logger)
 
-	topology := storage.Topology{Name: "Topology", ID: objectid.New(), Node: &storage.Node{ID: objectid.New(), Name: "Node"}}
+	topology := storage.Topology{Name: "Topology", ID: primitive.NewObjectID(), Node: &storage.Node{ID: primitive.NewObjectID(), Name: "Node"}}
 	q := GetProcessQueue(topology)
 	m := amqp.Publishing{Body: []byte("test"), Headers: amqp.Table{}}
 

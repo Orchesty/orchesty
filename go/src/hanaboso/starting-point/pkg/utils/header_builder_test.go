@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"github.com/mongodb/mongo-go-driver/bson/objectid"
+	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"starting-point/pkg/storage"
@@ -12,7 +12,7 @@ func TestBldCounterHeaders(t *testing.T) {
 	headers := http.Header{}
 	headers.Add("pf-test", "ok")
 	headers.Add("content-type", "application/json")
-	topology := storage.Topology{Name: "Topology", ID: objectid.New(), Node: &storage.Node{ID: objectid.New(), Name: "Node"}}
+	topology := storage.Topology{Name: "Topology", ID: primitive.NewObjectID(), Node: &storage.Node{ID: primitive.NewObjectID(), Name: "Node"}}
 	builder := NewHeaderBuilder(2)
 
 	h, c, d, ti := builder.BldCounterHeaders(topology, headers)
@@ -32,7 +32,7 @@ func TestBldCounterHeaders(t *testing.T) {
 func TestBldHeaders(t *testing.T) {
 	headers := http.Header{}
 	headers.Add("pf-test", "ok")
-	topology := storage.Topology{Name: "Topology", ID: objectid.New(), Node: &storage.Node{ID: objectid.New(), Name: "Node"}}
+	topology := storage.Topology{Name: "Topology", ID: primitive.NewObjectID(), Node: &storage.Node{ID: primitive.NewObjectID(), Name: "Node"}}
 	builder := NewHeaderBuilder(2)
 
 	h, c, d, ti := builder.BldHeaders(topology, headers, false, false)
@@ -46,8 +46,8 @@ func TestBldHeaders(t *testing.T) {
 func TestHumanHeaders(t *testing.T) {
 	headers := http.Header{}
 	headers.Add("pf-test", "ok")
-	topology := storage.Topology{Name: "Topology", ID: objectid.New(), Node: &storage.Node{ID: objectid.New(), Name: "Node", HumanTask: &storage.HumanTask{
-		ID:            objectid.New(),
+	topology := storage.Topology{Name: "Topology", ID: primitive.NewObjectID(), Node: &storage.Node{ID: primitive.NewObjectID(), Name: "Node", HumanTask: &storage.HumanTask{
+		ID:            primitive.NewObjectID(),
 		CorrelationID: "correlationID",
 		ProcessID:     "processID",
 		ContentType:   "contentType",

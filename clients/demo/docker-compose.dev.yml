@@ -149,11 +149,11 @@ services:
 
     ## BEGIN DEV
     starting-point:
-      image: starting-point-dev
+      image: dkr.hanaboso.net/pipes/pipes/starting-point:app-dev
       environment:
         APP_DEBUG: "false"
         GO111MODULE: "on"
-        MONGO_HOSTNAME: demo_mongo_1
+        MONGO_HOSTNAME: mongo
         MONGO_DATABASE: demo
         RABBIT_COUNTER_QUEUE_DURABLE: "true"
         RABBIT_QUEUE_DURABLE: "true"
@@ -171,8 +171,7 @@ services:
     #       image: dkr.hanaboso.net/pipes/pipes/starting-point:dev
     #       environment:
     #         APP_DEBUG: "false"
-    #         GO111MODULE: "on"
-    #         MONGO_HOSTNAME: demo_mongo_1
+    #         MONGO_HOSTNAME: mongo
     #         MONGO_DATABASE: demo
     #         RABBIT_COUNTER_QUEUE_DURABLE: "true"
     #         RABBIT_QUEUE_DURABLE: "true"
