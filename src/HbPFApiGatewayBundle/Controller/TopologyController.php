@@ -124,4 +124,16 @@ class TopologyController extends FOSRestController
         return $this->forward('HbPFConfiguratorBundle:Topology:deleteTopology', ['id' => $id]);
     }
 
+    /**
+     * @Route("/topologies/{topologyId}/test", methods={"GET"})
+     *
+     * @param string $topologyId
+     *
+     * @return Response
+     */
+    public function testAction(string $topologyId): Response
+    {
+        return $this->forward('HbPFConfiguratorBundle:Topology:test', ['topologyId' => $topologyId]);
+    }
+
 }
