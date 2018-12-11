@@ -2111,11 +2111,11 @@
         },
         {
             "name": "hanaboso/commons-bundle",
-            "version": "1.1.2",
+            "version": "1.1.3",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.hanaboso.net:hanaboso/commons-bundle.git",
-                "reference": "e20f7a66ffdda947808df49a995030713b5a353f"
+                "reference": "00f70ddb89dec1dd018bd44e6289c79f8c216948"
             },
             "require": {
                 "alcaeus/mongo-php-adapter": "^1.1",
@@ -2160,7 +2160,7 @@
             "license": [
                 "proprietary"
             ],
-            "time": "2018-12-10T10:29:56+00:00"
+            "time": "2018-12-11T13:28:16+00:00"
         },
         {
             "name": "hanaboso/email-service-bundle",
