@@ -289,7 +289,7 @@ services:
     ## BEGIN STAGE
     #    image: dkr.hanaboso.net/pipes/pipes/frontend:${TAG_FRONTEND}
     #    environment:
-    #      BACKEND_URL: ${BACKEND_URL}/api
+    #      BACKEND_URL: ${BACKEND_URL}
     #      PHP_WEBROOT: /var/www/html/public
     #    ports:
     #      - ${PUBLISH_HTTP_PORT}:80
