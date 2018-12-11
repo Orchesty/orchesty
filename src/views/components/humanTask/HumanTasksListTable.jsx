@@ -30,15 +30,23 @@ class HumanTasksListTable extends AbstractTable {
       params[parts[0]] = parts[1];
     });
 
-    if (params.topology && params.node) {
+    if (params.topology) {
       const { listChangeFilter, list: { filter } } = this.props;
 
-      listChangeFilter(Object.assign({}, filter, {
-        topologyId: params.topology,
-        nodeId: params.node,
-        apply: true,
-      }));
+      if (params.node) {
+        listChangeFilter(Object.assign({}, filter, {
+          topologyId: params.topology,
+          nodeId: params.node,
+          apply: true,
+        }));
+      } else {
+        listChangeFilter(Object.assign({}, filter, {
+          topologyId: params.topology,
+          apply: true,
+        }));
+      }
 
+      initialize();
       window.history.replaceState('', '', '/ui/human_tasks');
     } else {
       if (topologies.length > 0 && !initialized) {
@@ -93,8 +101,8 @@ class HumanTasksListTable extends AbstractTable {
     const { list: { sort }, listChangeSort } = this.props;
     return (
       <tr>
+        <SortTh name="nodeName" state={sort} onChangeSort={listChangeSort}>Node</SortTh>
         <SortTh name="created" state={sort} onChangeSort={listChangeSort}>Created</SortTh>
-        <SortTh name="updated" state={sort} onChangeSort={listChangeSort}>Updated</SortTh>
         <th>Logs</th>
         <th>Actions</th>
       </tr>
@@ -102,14 +110,14 @@ class HumanTasksListTable extends AbstractTable {
   }
 
   _renderRows() {
-    const { list, elements, process } = this.props;
+    const { list, elements, process, approveHumanTask } = this.props;
 
     return list && list.items ? list.items.map(id => {
       const item = elements[id];
       const menuItems = [{
         caption: 'Approve',
         action: () => {
-          process(item.topologyId, item.nodeId, item.processId, true)
+          approveHumanTask(item.topologyId, item.nodeId, item.processId, true)
         },
       }, {
         caption: 'Decline',
@@ -120,8 +128,8 @@ class HumanTasksListTable extends AbstractTable {
 
       return (
         <tr key={item._id}>
+          <td className="col-md-2">{item.nodeName}</td>
           <td className="col-md-2"><Moment format="DD. MM. YYYY HH:mm:ss">{item.created}</Moment></td>
-          <td className="col-md-2"><Moment format="DD. MM. YYYY HH:mm:ss">{item.updated}</Moment></td>
           <td className="json">
             <JSONTree
               data={JSON.parse(item.auditLogs || '{}')}
@@ -214,6 +222,7 @@ HumanTasksListTable.propTypes = Object.assign({}, AbstractTable.propTypes, {
   topologies: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   nodes: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   process: PropTypes.func.isRequired,
+  approveHumanTask: PropTypes.func.isRequired,
   initialize: PropTypes.func.isRequired,
 });
 

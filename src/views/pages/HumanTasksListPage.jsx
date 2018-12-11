@@ -5,6 +5,7 @@ import * as humanTasksActions from 'actions/humanTaskActions';
 import Page from 'wrappers/Page';
 import Panel from 'wrappers/Panel';
 import HumanTasksListTable from 'components/humanTask/HumanTasksListTable';
+import * as applicationActions from 'rootApp/actions/applicationActions';
 
 function mapStateToProps(state, ownProps) {
   const { humanTask } = state;
@@ -22,10 +23,11 @@ function mapActionsToProps(dispatch, ownProps) {
     needList,
     notLoadedCallback: needList,
     listChangePage: (page) => dispatch(humanTasksActions.humanTaskListChangePage(ownProps.componentKey, page)),
-    process: (topology, node, token, approve) => dispatch(humanTasksActions.humanTaskProcess(ownProps.componentKey, topology, node, token, approve)),
+    process: (topology, node, token, approve) => dispatch(humanTasksActions.humanTaskProcess(ownProps.componentKey, topology, node, token, approve, {})),
     listChangeSort: (sort) => dispatch(humanTasksActions.humanTaskChangeSort(ownProps.componentKey, sort)),
     listChangeFilter: (filter) => dispatch(humanTasksActions.humanTaskListChangeFilter(ownProps.componentKey, filter)),
     initialize: () => dispatch(humanTasksActions.humanTaskInitialize()),
+    approveHumanTask: (topology, node, token, approve) => dispatch(applicationActions.openModal('human_task_approve', { componentKey: ownProps.componentKey, topology, node, token, approve })),
   }
 }
 
