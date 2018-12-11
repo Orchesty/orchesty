@@ -92,7 +92,23 @@ services:
         calls:
             - ['setLogger', ['@monolog.logger.connector']]
 
+    hbpf.custom_node.data-generator:
+        class: Demo\CustomNode\DataGeneratorConnector
+        public: true
+
     hbpf.long_running.time-stamper:
+        class: Demo\LongRunningNode\TimeStamperHumanTask
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+        public: true
+
+    hbpf.long_running.time-stamper-one:
+        class: Demo\LongRunningNode\TimeStamperHumanTask
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+        public: true
+
+    hbpf.long_running.time-stamper-two:
         class: Demo\LongRunningNode\TimeStamperHumanTask
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
