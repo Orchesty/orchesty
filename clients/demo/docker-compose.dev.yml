@@ -167,16 +167,16 @@ services:
       command: go run cmd/starting-point.go
     ## END DEV
     ## BEGIN STAGE
-    #    starting-point:
-    #       image: dkr.hanaboso.net/pipes/pipes/starting-point:dev
-    #       environment:
-    #         APP_DEBUG: "false"
-    #         MONGO_HOSTNAME: mongo
-    #         MONGO_DATABASE: demo
-    #         RABBIT_COUNTER_QUEUE_DURABLE: "true"
-    #         RABBIT_QUEUE_DURABLE: "true"
-    #         RABBIT_DELIVERY_MODE: 2
-    #         APP_CLEANUP_TIME: "300"
+    #starting-point:
+    #  image: dkr.hanaboso.net/pipes/pipes/starting-point:dev
+    #  environment:
+    #    APP_DEBUG: "false"
+    #    MONGO_HOSTNAME: mongo
+    #    MONGO_DATABASE: demo
+    #    RABBIT_COUNTER_QUEUE_DURABLE: "true"
+    #    RABBIT_QUEUE_DURABLE: "true"
+    #    RABBIT_DELIVERY_MODE: 2
+    #    APP_CLEANUP_TIME: "300"
     ## END STAGE
 
     repeater:
