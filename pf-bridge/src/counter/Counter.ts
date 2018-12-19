@@ -1,6 +1,7 @@
 import {Channel, Message, Options} from "amqplib";
 import {Connection} from "amqplib-plus/dist/lib/Connection";
 import {Publisher} from "amqplib-plus/dist/lib/Publisher";
+import {TimeUtils} from "hb-utils/dist/lib/TimeUtils";
 import {IMetrics} from "metrics-sender/dist/lib/metrics/IMetrics";
 import IStoppable from "../IStoppable";
 import logger from "../logger/Logger";
@@ -183,6 +184,8 @@ export default class Counter implements ICounter, IStoppable {
      * @return {Promise<any>}
      */
     private async handleMessage(msg: Message): Promise<any> {
+        const start = TimeUtils.nowMili();
+
         try {
             logger.debug("Counter message received.", {data: JSON.stringify(msg)});
 
@@ -199,6 +202,8 @@ export default class Counter implements ICounter, IStoppable {
             logger.error("Cannot create counter message from amqp message.", {error: e});
 
             return Promise.reject(e);
+        } finally {
+            logger.info(`PROFILER - handleMessage duration ${TimeUtils.nowMili() - start}ms`);
         }
     }
 
@@ -240,6 +245,8 @@ export default class Counter implements ICounter, IStoppable {
      * @return {void}
      */
     private async updateProcessInfo(cm: CounterMessage): Promise<void> {
+        const start = TimeUtils.nowMili();
+
         const topologyId = cm.getTopologyId();
         const processId = cm.getProcessId();
 
@@ -254,12 +261,18 @@ export default class Counter implements ICounter, IStoppable {
         if (CounterProcess.isProcessFinished(processInfo)) {
             processInfo.end_timestamp = Date.now();
             await this.onJobFinished(processInfo, cm);
+            const startRemove = TimeUtils.nowMili();
             await this.storage.remove(topologyId, processId);
-            return Promise.resolve();
+            logger.info(`PROFILER - storage.remove duration ${TimeUtils.nowMili() - startRemove}ms`);
         } else {
+            const startWrite = TimeUtils.nowMili();
             await this.storage.add(topologyId, processInfo);
-            return Promise.resolve();
+            logger.info(`PROFILER - storage.add duration ${TimeUtils.nowMili() - startWrite}ms`);
         }
+
+        logger.info(`PROFILER - updateProcessInfo duration ${TimeUtils.nowMili() - start}ms`);
+
+        return Promise.resolve();
     }
 
     /**
@@ -281,8 +294,7 @@ export default class Counter implements ICounter, IStoppable {
         this.publishResult(process);
         this.terminator.tryTerminate(process.topology);
 
-        this.sendMetrics(process);
-        this.logFinishedProcess(process);
+        this.notify(process);
     }
 
     /**
@@ -322,7 +334,7 @@ export default class Counter implements ICounter, IStoppable {
      * @param {ICounterProcessInfo} process
      * @return {Promise<void>}
      */
-    private async sendMetrics(process: ICounterProcessInfo): Promise<void> {
+    private async notify(process: ICounterProcessInfo): Promise<void> {
         try {
             this.metrics.removeTag("node_id");
             this.metrics.addTag("topology_id", process.topology.split("-")[0]);
@@ -340,14 +352,8 @@ export default class Counter implements ICounter, IStoppable {
                 process_id: process.process_id,
             });
         }
-    }
 
-    /**
-     *
-     * @param {ICounterProcessInfo} process
-     */
-    private logFinishedProcess(process: ICounterProcessInfo): void {
-        logger.info(
+        logger.debug(
             `Finished process [processId='${process.process_id}]', parentId='${process.parent_id}'`,
             {
                 node_id: "counter",
