@@ -38,8 +38,6 @@ type connection struct {
 	restartChan chan bool
 	log         *log.Logger
 	lock        sync.Mutex
-	lock2       sync.Mutex
-	lock3       sync.Mutex
 }
 
 func (c *connection) Connect() {
@@ -77,9 +75,6 @@ func (c *connection) Declare(q *Queue) {
 		c.Connect()
 	}
 
-	c.lock3.Lock()
-	defer c.lock3.Unlock()
-
 	if !c.isChannel(q.Name) {
 		ch := c.GetChannel(q.Name)
 		// Declare queue
@@ -104,9 +99,6 @@ func (c *connection) Disconnect() {
 }
 
 func (c *connection) GetChannel(name string) (chD ChanData) {
-	c.lock2.Lock()
-	defer c.lock2.Unlock()
-
 	if c.isChannel(name) {
 		return c.saveRead(name)
 	}

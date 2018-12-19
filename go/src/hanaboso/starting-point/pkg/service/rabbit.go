@@ -33,20 +33,20 @@ type RabbitDefault struct {
 
 // CounterBody interprets body
 type CounterBody struct {
-	Result ResultBody
-	Route  RouteBody
+	Result ResultBody `json:"result"`
+	Route  RouteBody  `json:"route"`
 }
 
 // ResultBody interprets result
 type ResultBody struct {
-	Code    int
-	Message string
+	Code    int    `json:"code"`
+	Message string `json:"message"`
 }
 
 // RouteBody interprets route
 type RouteBody struct {
-	Following  int
-	Multiplier int
+	Following  int `json:"following"`
+	Multiplier int `json:"multiplier"`
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -72,8 +72,7 @@ func (r *RabbitDefault) SndMessage(
 
 	// Create Queue & Message
 	q := rabbitmq.GetProcessQueue(topology)
-	m := amqp.Publishing{
-		Body: utils.GetBodyFromStream(request), Headers: h, ContentType: c, DeliveryMode: d, Timestamp: t}
+	m := amqp.Publishing{Body: utils.GetBodyFromStream(request), Headers: h, ContentType: c, DeliveryMode: d, Timestamp: t}
 
 	// Init Counter
 	r.initCounterProcess(request.Header, topology)

@@ -69,5 +69,6 @@ func TestHumanHeaders(t *testing.T) {
 	assert.NotEmpty(t, c)
 	assert.NotEmpty(t, d)
 	assert.NotEmpty(t, ti)
-	assert.Equal(t, "1003", h["pf-result-code"])
+	assert.Equal(t, "0", h["pf-result-code"])
+	assert.Equal(t, "1003", h["pf-stop"])
 }
