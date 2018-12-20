@@ -275,31 +275,31 @@ function runCounterTest(counter: Counter, testOutputQueue: any, done: any) {
     const evaluateTest = (info: ICounterProcessInfo) => {
         switch (info.process_id) {
             case "test_job_123":
-                assert.equal(info.total, 3);
-                assert.equal(info.ok, 3);
+                assert.equal(info.total, 1);
+                assert.equal(info.ok, 1);
                 assert.equal(info.nok, 0);
                 assert.isTrue(info.success);
-                assert.lengthOf(info.messages, 3);
+                assert.lengthOf(info.messages, 1);
                 assert.property(info, "correlation_id");
                 assert.property(info, "start_timestamp");
                 assert.property(info, "end_timestamp");
                 break;
             case "test_job_456":
-                assert.equal(info.total, 3);
-                assert.equal(info.ok, 2);
+                assert.equal(info.total, 2);
+                assert.equal(info.ok, 1);
                 assert.equal(info.nok, 1);
                 assert.isFalse(info.success);
-                assert.lengthOf(info.messages, 3);
+                assert.lengthOf(info.messages, 2);
                 assert.property(info, "correlation_id");
                 assert.property(info, "start_timestamp");
                 assert.property(info, "end_timestamp");
                 break;
             case "test_job_789":
-                assert.equal(info.total, 4);
-                assert.equal(info.ok, 4);
+                assert.equal(info.total, 3);
+                assert.equal(info.ok, 3);
                 assert.equal(info.nok, 0);
                 assert.isTrue(info.success);
-                assert.lengthOf(info.messages, 4);
+                assert.lengthOf(info.messages, 3);
                 assert.property(info, "correlation_id");
                 assert.property(info, "start_timestamp");
                 assert.property(info, "end_timestamp");

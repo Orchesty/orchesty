@@ -109,6 +109,15 @@ class CounterMessage extends AMessage implements IMessage {
         return this.headers.getPFHeader(Headers.TOPOLOGY_ID);
     }
 
+    public isOk(): boolean {
+        if (this.getResultCode() === ResultCode.SUCCESS || this.getResultGroup() === ResultCodeGroup.NON_STANDARD
+        ) {
+            return true;
+        }
+
+        return false;
+    }
+
     /**
      *
      * @return {string}
