@@ -34,6 +34,8 @@ class RequestHandler
 
     protected const MULTI_PROBE_URL = 'http://multi-probe:8007/topology/status?topologyId={id}';
 
+    protected const STARTING_POINT_URL = 'http://starting-point:80/topologies/{name}/invalidate-cache';
+
     /**
      * @var CurlManagerInterface
      */
@@ -131,14 +133,35 @@ class RequestHandler
     }
 
     /**
-     * @param string $topologyId
+     * @param string $topologyName
+     *
+     * @return array
+     * @throws CurlException
+     */
+    public function invalidateTopologyCache(string $topologyName): array
+    {
+        $uri         = $this->getUrl($topologyName, self::STARTING_POINT_URL, '{name}');
+        $requestDto  = new RequestDto(CurlManager::METHOD_POST, new Uri($uri));
+        $responseDto = $this->curlManager->send($requestDto);
+
+        if ($responseDto->getStatusCode() === 200) {
+            return json_decode($responseDto->getBody(), TRUE);
+        } else {
+            throw new CurlException(sprintf('Request error: %s', $responseDto->getReasonPhrase()));
+        }
+
+    }
+
+    /**
+     * @param string $topology
      * @param string $url
+     * @param string $search
      *
      * @return mixed
      */
-    protected function getUrl(string $topologyId, string $url)
+    protected function getUrl(string $topology, string $url, string $search = '{id}')
     {
-        return str_replace('{id}', $topologyId, $url);
+        return str_replace($search, $topology, $url);
     }
 
 }

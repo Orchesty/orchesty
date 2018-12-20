@@ -140,11 +140,14 @@ class TopologyHandler
      * @return array
      * @throws TopologyException
      * @throws MongoDBException
+     * @throws CurlException
      */
     public function updateTopology(string $id, array $data): array
     {
         $topology = $this->getTopologyById($id);
-        $this->manager->updateTopology($topology, $data);
+        $topology = $this->manager->updateTopology($topology, $data);
+
+        $this->requestHandler->invalidateTopologyCache($topology->getName());
 
         return $this->getTopologyData($topology);
     }
@@ -252,6 +255,7 @@ class TopologyHandler
         }
 
         $this->manager->deleteTopology($topology);
+        $this->requestHandler->invalidateTopologyCache($topology->getName());
 
         return $res;
     }

@@ -24,12 +24,24 @@ services:
       - rabbitmq
       - smtp
       - redis
+      - starting-point
     links:
       - mongo
       - rabbitmq
       - smtp
     group_add:
       - ${DOCKER_GID}
+
+  starting-point:
+    image: dkr.hanaboso.net/pipes/pipes/starting-point:dev
+    environment:
+      APP_DEBUG: "false"
+      MONGO_HOSTNAME: mongo
+      MONGO_DATABASE: pipes
+      RABBIT_COUNTER_QUEUE_DURABLE: "true"
+      RABBIT_QUEUE_DURABLE: "true"
+      RABBIT_DELIVERY_MODE: 2
+      APP_CLEANUP_TIME: "300"
 
   nginx:
     image: nginx
