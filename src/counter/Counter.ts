@@ -73,29 +73,20 @@ export default class Counter implements ICounter, IStoppable {
     private terminator: Terminator;
     private metrics: IMetrics;
     private consumerTag: string;
-    private distributor: Distributor;
+    private readBuffer: Distributor;
 
-    /**
-     *
-     * @param settings
-     * @param connection
-     * @param storage
-     * @param distributor
-     * @param terminator
-     * @param metrics
-     */
     constructor(
         settings: ICounterSettings,
         connection: Connection,
         storage: ICounterStorage,
-        distributor: Distributor,
+        readBuffer: Distributor,
         terminator: Terminator,
         metrics: IMetrics,
     ) {
         this.settings = settings;
         this.connection = connection;
         this.storage = storage;
-        this.distributor = distributor;
+        this.readBuffer = readBuffer;
         this.terminator = terminator;
         this.metrics = metrics;
 
@@ -197,10 +188,11 @@ export default class Counter implements ICounter, IStoppable {
             }
 
             return new Promise((resolve, reject) => {
-                this.distributor.add(cm.getTopologyId(), cm.getProcessId(), {msg: cm, resolve, reject});
+                this.readBuffer.add(cm.getTopologyId(), cm.getCorrelationId(), {msg: cm, resolve, reject});
 
-                if (this.distributor.length(cm.getTopologyId(), cm.getProcessId()) === 1) {
-                    this.handleQueue(cm.getTopologyId(), cm.getProcessId());
+                // length === 1 means that is there just the record added above so we can process it immediately
+                if (this.readBuffer.length(cm.getTopologyId(), cm.getCorrelationId()) === 1) {
+                    this.processReadBuffer(cm.getTopologyId(), cm.getCorrelationId());
                 }
             });
         } catch (e) {
@@ -214,17 +206,17 @@ export default class Counter implements ICounter, IStoppable {
      * Recursively process messages in synchronous way
      *
      */
-    private handleQueue(topoId: string, processId: string): void {
-        if (this.distributor.has(topoId, processId) === false) {
+    private processReadBuffer(topoId: string, id: string): void {
+        if (this.readBuffer.has(topoId, id) === false) {
             return;
         }
 
-        if (this.distributor.length(topoId, processId) === 0) {
-            this.distributor.deleteSoftly(topoId, processId);
+        if (this.readBuffer.length(topoId, id) === 0) {
+            this.readBuffer.deleteSoftly(topoId, id);
             return;
         }
 
-        const first = this.distributor.first(topoId, processId);
+        const first = this.readBuffer.first(topoId, id);
 
         if (typeof first === "undefined") {
             return;
@@ -233,9 +225,9 @@ export default class Counter implements ICounter, IStoppable {
         (async () => {
             try {
                 await this.updateProcessInfo(first.msg);
-                this.distributor.shift(topoId, processId);
+                this.readBuffer.shift(topoId, id);
                 first.resolve();
-                this.handleQueue(topoId, processId);
+                this.processReadBuffer(topoId, id);
             } catch (e) {
                 first.reject(e);
             }
@@ -255,7 +247,6 @@ export default class Counter implements ICounter, IStoppable {
 
         if (!processInfo) {
             processInfo = CounterProcess.createProcessInfo(topologyId, cm);
-            logger.info("Process info created:", {data: JSON.stringify(processInfo)});
         }
 
         processInfo = CounterProcess.updateProcessInfo(processInfo, cm);
