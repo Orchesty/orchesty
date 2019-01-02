@@ -188,7 +188,7 @@ export default class Counter implements ICounter, IStoppable {
 
             logger.info(
                 "Counter message received.",
-                {correlation_id: cm.getCorrelationId(), topology_id: cm.getTopologyId(), data: cm.toString()}
+                {correlation_id: cm.getCorrelationId(), topology_id: cm.getTopologyId(), data: cm.toString()},
             );
 
             // optimization: skip evaluating success messages with only 1 follower
