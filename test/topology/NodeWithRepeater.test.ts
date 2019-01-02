@@ -164,8 +164,8 @@ describe("Node with repeater test", () => {
                     // In this fn we evaluate expected incoming message and state if test is OK or failed
                     const data: ICounterProcessInfo = JSON.parse(msg.content.toString());
                     assert.equal(data.process_id, testMsgHeaders.getPFHeader(Headers.PROCESS_ID));
-                    assert.equal(data.total, pip.getTopologyConfig(false).nodes.length);
-                    assert.equal(data.ok, pip.getTopologyConfig(false).nodes.length);
+                    assert.equal(data.total, 1);
+                    assert.equal(data.ok, 1);
                     assert.equal(data.nok, 0);
                     done();
                 },

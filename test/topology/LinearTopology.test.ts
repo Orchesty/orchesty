@@ -146,18 +146,15 @@ describe("Linear Topology test", () => {
                     // In this fn we evaluate expected incoming message and state if test is OK or failed
                     const data: ICounterProcessInfo = JSON.parse(msg.content.toString());
                     assert.equal(data.process_id, msgHeaders.headers["pf-process-id"]);
-                    assert.equal(data.total, pip.getTopologyConfig(false).nodes.length);
-                    assert.equal(data.ok, pip.getTopologyConfig(false).nodes.length);
+                    assert.equal(data.total, 1);
+                    assert.equal(data.ok, 1);
                     assert.equal(data.nok, 0);
                     const trace: string[] = [];
                     data.messages.forEach((info) => {
                         assert.equal(info.resultCode, ResultCode.SUCCESS);
                         trace.push(info.node);
                     });
-                    assert.deepEqual(
-                        trace,
-                        [testTopology.nodes[0].id, testTopology.nodes[1].id, testTopology.nodes[2].id],
-                    );
+                    assert.deepEqual(trace, [testTopology.nodes[2].id]);
                     done();
                 },
             );

@@ -42,7 +42,7 @@ function runCounterTest(counter: Counter, testOutputQueue: any, done: any) {
             {
                 headers: {
                     "pf-topology-id": "topoid",
-                    "pf-correlation-id": "corrid1",
+                    "pf-correlation-id": "corrid_123",
                     "pf-process-id": "test_job_123",
                     "pf-parent-id": "",
                     "pf-sequence-id": "1",
@@ -65,7 +65,7 @@ function runCounterTest(counter: Counter, testOutputQueue: any, done: any) {
             {
                 headers: {
                     "pf-topology-id": "topoid",
-                    "pf-correlation-id": "corrid2",
+                    "pf-correlation-id": "corrid_123",
                     "pf-process-id": "test_job_123",
                     "pf-parent-id": "",
                     "pf-sequence-id": "1",
@@ -88,7 +88,7 @@ function runCounterTest(counter: Counter, testOutputQueue: any, done: any) {
             {
                 headers: {
                     "pf-topology-id": "topoid",
-                    "pf-correlation-id": "corrid3",
+                    "pf-correlation-id": "corrid_123",
                     "pf-process-id": "test_job_123",
                     "pf-parent-id": "",
                     "pf-sequence-id": "1",
@@ -115,7 +115,7 @@ function runCounterTest(counter: Counter, testOutputQueue: any, done: any) {
             {
                 headers: {
                     "pf-topology-id": "topoid",
-                    "pf-correlation-id": "corrid1",
+                    "pf-correlation-id": "corrid_456",
                     "pf-process-id": "test_job_456",
                     "pf-parent-id": "",
                     "pf-sequence-id": "1",
@@ -138,7 +138,7 @@ function runCounterTest(counter: Counter, testOutputQueue: any, done: any) {
             {
                 headers: {
                     "pf-topology-id": "topoid",
-                    "pf-correlation-id": "corrid2",
+                    "pf-correlation-id": "corrid_456",
                     "pf-process-id": "test_job_456",
                     "pf-parent-id": "",
                     "pf-sequence-id": "1",
@@ -161,7 +161,7 @@ function runCounterTest(counter: Counter, testOutputQueue: any, done: any) {
             {
                 headers: {
                     "pf-topology-id": "topoid",
-                    "pf-correlation-id": "corrid3",
+                    "pf-correlation-id": "corrid_456",
                     "pf-process-id": "test_job_456",
                     "pf-parent-id": "",
                     "pf-sequence-id": "1",
@@ -191,7 +191,7 @@ function runCounterTest(counter: Counter, testOutputQueue: any, done: any) {
             {
                 headers: {
                     "pf-topology-id": "topoid",
-                    "pf-correlation-id": "corrid1",
+                    "pf-correlation-id": "corrid_789",
                     "pf-process-id": "test_job_789",
                     "pf-parent-id": "",
                     "pf-sequence-id": "1",
@@ -214,7 +214,7 @@ function runCounterTest(counter: Counter, testOutputQueue: any, done: any) {
             {
                 headers: {
                     "pf-topology-id": "topoid",
-                    "pf-correlation-id": "corrid2",
+                    "pf-correlation-id": "corrid_789",
                     "pf-process-id": "test_job_789",
                     "pf-parent-id": "",
                     "pf-sequence-id": "1",
@@ -237,7 +237,7 @@ function runCounterTest(counter: Counter, testOutputQueue: any, done: any) {
             {
                 headers: {
                     "pf-topology-id": "topoid",
-                    "pf-correlation-id": "corrid3",
+                    "pf-correlation-id": "corrid_789",
                     "pf-process-id": "test_job_789",
                     "pf-parent-id": "",
                     "pf-sequence-id": "1",
@@ -260,7 +260,7 @@ function runCounterTest(counter: Counter, testOutputQueue: any, done: any) {
             {
                 headers: {
                     "pf-topology-id": "topoid",
-                    "pf-correlation-id": "corrid4",
+                    "pf-correlation-id": "corrid_789",
                     "pf-process-id": "test_job_789",
                     "pf-parent-id": "",
                     "pf-sequence-id": "1",
