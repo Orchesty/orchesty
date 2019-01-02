@@ -1,5 +1,5 @@
-import {default as CounterMessage} from "../../message/CounterMessage";
 import logger from "../../logger/Logger";
+import {default as CounterMessage} from "../../message/CounterMessage";
 
 export interface ISyncObject {
     msg: CounterMessage;
