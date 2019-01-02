@@ -184,7 +184,7 @@ export default class Counter implements ICounter, IStoppable {
      */
     private async handleMessage(msg: Message): Promise<any> {
         try {
-            logger.debug("Counter message received.", {data: JSON.stringify(msg)});
+            logger.info("Counter message received.", {data: JSON.stringify(msg)});
 
             const cm = Counter.createCounterMessage(msg);
 
@@ -252,11 +252,11 @@ export default class Counter implements ICounter, IStoppable {
 
         if (!processInfo) {
             processInfo = CounterProcess.createProcessInfo(topologyId, cm);
+            logger.info("Process info created:", {data: JSON.stringify(processInfo)});
         }
 
         processInfo = CounterProcess.updateProcessInfo(processInfo, cm);
-
-        logger.info("Process info:", {data: JSON.stringify(processInfo)});
+        logger.info("Process info updated:", {data: JSON.stringify(processInfo)});
 
         if (CounterProcess.isProcessFinished(processInfo)) {
             processInfo.end_timestamp = Date.now();
