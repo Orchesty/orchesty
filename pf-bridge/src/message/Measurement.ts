@@ -59,9 +59,9 @@ export class Measurement {
      * @return {number}
      */
     public getWaitingDuration(): number {
-        if (!this.published) {
-            return 0;
-        }
+        // if (!this.published) {
+        //     return 0;
+        // }
 
         if (this.received < this.published) {
             return 0;
