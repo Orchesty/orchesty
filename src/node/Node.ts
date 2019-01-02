@@ -180,10 +180,6 @@ class Node implements IStoppable {
                 bridge_job_result_success: isSuccess ? "true" : "false",
             };
 
-            if (measurements.bridge_job_waiting_duration > 10000) {
-                logger.info("Too long waiting time", {data: JSON.stringify(msg.getMeasurement())});
-            }
-
             this.metrics.addTag("node_id", msg.getNodeLabel().node_id);
 
             logger.debug(`Sending metrics: ${JSON.stringify(measurements)}`, logger.ctxFromMsg(msg));
