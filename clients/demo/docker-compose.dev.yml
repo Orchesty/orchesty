@@ -135,7 +135,7 @@ services:
         REDIS_PORT: '6379'
         REDIS_PASS: ''
         REDIS_DB: '0'
-        COUNTER_PREFETCH: '1'
+        COUNTER_PREFETCH: '100'
         METRICS_HOST: 'kapacitor'
         METRICS_PORT: '9100'
       command: './dist/src/bin/pipes.js start multi_counter'
@@ -326,7 +326,7 @@ services:
     #    deploy:
     #      resources:
     #        limits:
-    #          memory: 1G
+    #          memory: 2G
     ## END STAGE
 
     # Storage

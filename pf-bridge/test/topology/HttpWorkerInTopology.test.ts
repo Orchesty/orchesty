@@ -133,21 +133,21 @@ describe("Topology with HttpWorker Node", () => {
         );
 
         for (let i: number = 0; i < 10; i++) {
-            const testMsgHeaders = new Headers();
-            testMsgHeaders.setPFHeader(Headers.CORRELATION_ID, `some-correlation-id-${i}`);
-            testMsgHeaders.setPFHeader(Headers.PROCESS_ID, `some-process-id-${i}`);
-            testMsgHeaders.setPFHeader(Headers.PARENT_ID, "");
-            testMsgHeaders.setPFHeader(Headers.SEQUENCE_ID, "0");
-            testMsgHeaders.setPFHeader(Headers.TOPOLOGY_ID, testTopology.id);
-            testMsgHeaders.setHeader(Headers.CONTENT_TYPE, "text/plain");
+            const hdrs = new Headers();
+            hdrs.setPFHeader(Headers.CORRELATION_ID, `some-correlation-id-${i}`);
+            hdrs.setPFHeader(Headers.PROCESS_ID, `some-process-id-${i}`);
+            hdrs.setPFHeader(Headers.PARENT_ID, "");
+            hdrs.setPFHeader(Headers.SEQUENCE_ID, "0");
+            hdrs.setPFHeader(Headers.TOPOLOGY_ID, testTopology.id);
+            hdrs.setHeader(Headers.CONTENT_TYPE, "text/plain");
 
-            const properties = { headers: testMsgHeaders.getRaw(), timestamp: TimeUtils.nowMili() };
+            const props = { headers: hdrs.getRaw(), timestamp: TimeUtils.nowMili() };
 
-            publisher.sendToQueue(firstQueue, new Buffer("original content"), properties);
+            publisher.sendToQueue(firstQueue, new Buffer("original content"), props);
         }
 
         const capturer: any = captureNode.getWorker();
-        const messages = await capturer.getCaptured(1000);
+        const messages = await capturer.getCaptured(2000);
 
         assert.lengthOf(messages, 10);
         assert.equal(resultMessagesReceived, 10);
