@@ -104,7 +104,7 @@ class JsonSplitterWorker extends AWorker {
         let i: number = Resequencer.START_SEQUENCE_ID;
 
         content.forEach((item: any) => {
-            const body = new Buffer(JSON.stringify(item));
+            const body = Buffer.from(JSON.stringify(item));
             const headers = new Headers(msg.getHeaders().getRaw());
             headers.setPFHeader(Headers.SEQUENCE_ID, `${i}`);
             headers.setHeader("content-type", "application/json");

@@ -106,7 +106,7 @@ class Repeater implements IStoppable {
             const headers = new Headers(message.properties.headers);
             const target = headers.getPFHeader(Headers.REPEAT_QUEUE);
 
-            const content = new Buffer(message.content.toString());
+            const content = Buffer.from(message.content.toString());
             const props: Options.Publish = ObjectUtils.removeNullableProperties(message.properties);
             props.headers = headers.getRaw();
             props.priority ? props.priority++ : props.priority = 1;

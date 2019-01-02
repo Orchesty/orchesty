@@ -19,7 +19,7 @@ class CounterMessage extends AMessage implements IMessage {
         private following: number = 0,
         private multiplier: number = 1,
     ) {
-        super(node, headers, new Buffer(""));
+        super(node, headers, Buffer.from(""));
 
         if (!this.headers.hasPFHeader(Headers.TOPOLOGY_ID)) {
             throw new Error(`Cannot create Counter message object. Missing topology-id header.`);
@@ -96,7 +96,7 @@ class CounterMessage extends AMessage implements IMessage {
         };
 
         const contentString = JSON.stringify(content);
-        this.body = new Buffer(contentString);
+        this.body = Buffer.from(contentString);
 
         return contentString;
     }

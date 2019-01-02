@@ -102,7 +102,7 @@ class CounterPublisher extends Publisher implements ICounterPublisher {
 
         return this.sendToQueue(
             this.settings.counter.queue.name,
-            new Buffer(counterMessage.getContent()),
+            Buffer.from(counterMessage.getContent()),
             opts,
         );
     }

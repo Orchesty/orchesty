@@ -92,7 +92,7 @@ abstract class AMessage {
      * @param {string} content
      */
     public setContent(content: string) {
-        this.body = new Buffer(content);
+        this.body = Buffer.from(content);
     }
 
 }

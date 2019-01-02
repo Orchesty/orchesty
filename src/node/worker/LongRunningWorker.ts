@@ -143,7 +143,7 @@ class LongRunningWorker extends AWorker {
             } else {
                return this.publisher.sendToQueue(
                     this.resultsQueue.name,
-                    new Buffer(msg.getContent()),
+                    Buffer.from(msg.getContent()),
                     {
                         replyTo: this.resultsQueue.name,
                         headers: msg.getHeaders().getRaw(),
@@ -163,7 +163,7 @@ class LongRunningWorker extends AWorker {
             const nodeId = this.settings.node_label.id;
             const reqParams = { method: "GET", url: this.getUrl(this.settings.status_path) };
 
-            logger.debug(`Worker[type'long-running'] asking worker if is ready on ${reqParams.url}`, { node_id: nodeId });
+            logger.debug(`Worker[type='long-running'] asking worker if ready on ${reqParams.url}`, { node_id: nodeId });
 
             request(reqParams, (err: any, response: request.RequestResponse) => {
                 if (err) {

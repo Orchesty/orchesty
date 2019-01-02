@@ -21,7 +21,7 @@ export default class TcpClient {
 
             client.connect(this.port, this.host, () => {
                 logger.info(`Tcp listener sending: ${content}`);
-                client.write(new Buffer(content));
+                client.write(Buffer.from(content));
             });
 
             client.on("data", (data: Buffer) => {
