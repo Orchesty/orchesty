@@ -364,6 +364,8 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
             ]
         );
 
+        $headers[PipesHeaders::createKey(PipesHeaders::TIMESTAMP)] = (string) ceil(microtime(TRUE) / 1000);
+
         return $channel->publish(
             $successMessage->getData(),
             $headers,
