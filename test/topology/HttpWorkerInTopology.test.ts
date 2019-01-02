@@ -147,7 +147,7 @@ describe("Topology with HttpWorker Node", () => {
         }
 
         const capturer: any = captureNode.getWorker();
-        const messages = await capturer.getCaptured(2000);
+        const messages = await capturer.getCaptured(1000);
 
         assert.lengthOf(messages, 10);
         assert.equal(resultMessagesReceived, 10);
