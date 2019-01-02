@@ -189,7 +189,7 @@ export default class Counter implements ICounter, IStoppable {
             const cm = Counter.createCounterMessage(msg);
 
             // optimization: skip evaluating success messages with only 1 follower
-            if (cm.isOk() && cm.getFollowing() === 1) {
+            if (cm.getResultCode() === ResultCode.SUCCESS && cm.getFollowing() === 1) {
                 return Promise.resolve(true);
             }
 
