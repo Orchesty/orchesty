@@ -37,6 +37,7 @@ const topologyName = prefix + "topology-name"
 const pfTimeStamp = prefix + "published-timestamp"
 const resultCode = prefix + "result-code"
 const pfStop = prefix + "stop"
+const startingPointInit = prefix + "from-starting-point"
 
 // Others headers
 const htype = "type"
@@ -62,6 +63,7 @@ func (b *headerBuilder) BldCounterHeaders(topology storage.Topology, headers htt
 	h[appID] = "starting_point"
 	h[nodeID] = "starting_point"
 	h[nodeName] = "starting_point"
+	h[startingPointInit] = "1"
 
 	return
 }

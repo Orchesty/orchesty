@@ -23,6 +23,7 @@ func TestBldCounterHeaders(t *testing.T) {
 	assert.Equal(t, "starting_point", h["app_id"])
 	assert.Equal(t, "starting_point", h["pf-node-name"])
 	assert.Equal(t, "starting_point", h["pf-node-id"])
+	assert.Equal(t, "1", h["pf-from-starting-point"])
 	assert.Equal(t, "application/json", c)
 	assert.Equal(t, "application/json", c)
 	assert.NotEmpty(t, d)
