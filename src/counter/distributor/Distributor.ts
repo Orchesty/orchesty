@@ -1,4 +1,3 @@
-import logger from "../../logger/Logger";
 import {default as CounterMessage} from "../../message/CounterMessage";
 
 export interface ISyncObject {
@@ -24,13 +23,6 @@ export default class Distributor {
 
     constructor() {
         this.queue = {};
-
-        const self = this;
-        setInterval(() => {
-            Object.keys(self.queue).forEach((topology) => {
-                logger.info(`Topology "${topology}" has ${self.queue[topology].length} opened processes`);
-            });
-        }, 1000 * 30);
     }
 
     public has(topo: string, process: string): boolean {

@@ -256,6 +256,8 @@ export default class Counter implements ICounter, IStoppable {
 
         processInfo = CounterProcess.updateProcessInfo(processInfo, cm);
 
+        logger.info("Process info:", {data: JSON.stringify(processInfo)});
+
         if (CounterProcess.isProcessFinished(processInfo)) {
             processInfo.end_timestamp = Date.now();
             await this.onJobFinished(processInfo, cm);
