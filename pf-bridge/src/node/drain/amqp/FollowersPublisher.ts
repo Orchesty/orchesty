@@ -102,7 +102,7 @@ class FollowersPublisher extends Publisher {
             const prom = this.publish(
                 follower.exchange.name,
                 follower.routing_key,
-                new Buffer(message.getContent()),
+                Buffer.from(message.getContent()),
                 options,
             ).then(() => {
                 logger.debug(

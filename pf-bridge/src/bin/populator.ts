@@ -59,7 +59,7 @@ const content = JSON.stringify({
 const sendMessage = (i: number) => {
     publisher.sendToQueue(
         inQueue.name,
-        new Buffer(content),
+        Buffer.from(content),
         {
             headers: {
                 "pf-correlation-id" : `corr-${i}`,

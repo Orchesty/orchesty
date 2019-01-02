@@ -42,11 +42,7 @@ class LimiterPublisher extends Publisher {
             timestamp: Date.now(),
         };
 
-        return this.sendToQueue(
-            this.settings.queue.name,
-            new Buffer(message.getContent()),
-            options,
-        );
+        return this.sendToQueue(this.settings.queue.name, Buffer.from(message.getContent()), options);
     }
 
 }

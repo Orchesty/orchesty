@@ -120,7 +120,7 @@ abstract class AAmqpWorker extends AWorker {
 
         this.publisher.sendToQueue(
             this.settings.publish_queue.name,
-            new Buffer(msg.getContent()),
+            Buffer.from(msg.getContent()),
             {
                 type: AAmqpWorker.BATCH_REQUEST_TYPE,
                 replyTo: this.resultsQueue.name,
@@ -203,7 +203,7 @@ abstract class AAmqpWorker extends AWorker {
         testHeaders.setPFHeader(Headers.SEQUENCE_ID, "1");
         testHeaders.setPFHeader(Headers.TOPOLOGY_ID, AAmqpWorker.TEST_ID);
 
-        const jobMsg = new JobMessage(this.settings.node_label, testHeaders.getRaw(), new Buffer(""));
+        const jobMsg = new JobMessage(this.settings.node_label, testHeaders.getRaw(), Buffer.from(""));
         const t: IWaiting = { resolveFn: resolveReadinessTestFn, message: jobMsg, sequence: 0 };
         this.waiting.set(testCorrelationId, t);
 
@@ -214,7 +214,7 @@ abstract class AAmqpWorker extends AWorker {
 
         this.publisher.sendToQueue(
             this.settings.publish_queue.name,
-            new Buffer("Is worker ready test message."),
+            Buffer.from("Is worker ready test message."),
             {
                 type: AAmqpWorker.TEST_TYPE,
                 correlationId: testCorrelationId,

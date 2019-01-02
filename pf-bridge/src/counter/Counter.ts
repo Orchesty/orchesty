@@ -320,7 +320,7 @@ export default class Counter implements ICounter, IStoppable {
         const rKey = this.settings.pub.routing_key;
         const options: Options.Publish = { contentType: "application/json" };
 
-        await this.publisher.publish(ex.name, rKey, new Buffer(JSON.stringify(process)), options);
+        await this.publisher.publish(ex.name, rKey, Buffer.from(JSON.stringify(process)), options);
     }
 
     /**
