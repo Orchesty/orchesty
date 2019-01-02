@@ -184,9 +184,12 @@ export default class Counter implements ICounter, IStoppable {
      */
     private async handleMessage(msg: Message): Promise<any> {
         try {
-            logger.info("Counter message received.", {data: JSON.stringify(msg)});
-
             const cm = Counter.createCounterMessage(msg);
+
+            logger.info(
+                "Counter message received.",
+                {correlation_id: cm.getCorrelationId(), topology_id: cm.getTopologyId(), data: cm.toString()}
+            );
 
             // optimization: skip evaluating success messages with only 1 follower
             if (cm.getResultCode() === ResultCode.SUCCESS && cm.getFollowing() === 1) {
