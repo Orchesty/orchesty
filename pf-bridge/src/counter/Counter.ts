@@ -65,6 +65,13 @@ export default class Counter implements ICounter, IStoppable {
         );
     }
 
+    private static isSkippable(cm: CounterMessage): boolean {
+        return cm.getResultCode() === ResultCode.SUCCESS &&
+               cm.getFollowing() === 1 &&
+               cm.getMultiplier() === 1 &&
+               cm.isFromStartingPoint() === false;
+    }
+
     private settings: any;
     private connection: Connection;
     private publisher: Publisher;
@@ -177,13 +184,13 @@ export default class Counter implements ICounter, IStoppable {
         try {
             const cm = Counter.createCounterMessage(msg);
 
-            logger.info(
+            logger.debug(
                 "Counter message received.",
                 {correlation_id: cm.getCorrelationId(), topology_id: cm.getTopologyId(), data: cm.toString()},
             );
 
             // optimization: skip evaluating success messages with only 1 follower
-            if (cm.getResultCode() === ResultCode.SUCCESS && cm.getFollowing() === 1) {
+            if (Counter.isSkippable(cm)) {
                 return Promise.resolve(true);
             }
 
@@ -250,7 +257,6 @@ export default class Counter implements ICounter, IStoppable {
         }
 
         processInfo = CounterProcess.updateProcessInfo(processInfo, cm);
-        logger.info("Process info updated:", {data: JSON.stringify(processInfo)});
 
         if (CounterProcess.isProcessFinished(processInfo)) {
             processInfo.end_timestamp = Date.now();

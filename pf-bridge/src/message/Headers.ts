@@ -39,6 +39,7 @@ class Headers {
     public static readonly LIMIT_RETURN_ROUTING_KEY = "pf-limit-return-routing-key";
 
     // Other headers
+    public static readonly FROM_STARTING_POINT = "from-starting-point";
     public static readonly PUBLISHED_TIMESTAMP = "published-timestamp";
     public static readonly CONTENT_TYPE = "content-type";
     public static readonly DOCUMENT_ID = "doc-id";

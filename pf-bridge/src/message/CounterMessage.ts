@@ -131,6 +131,11 @@ class CounterMessage extends AMessage implements IMessage {
         });
     }
 
+    public isFromStartingPoint(): boolean {
+        return this.headers.hasPFHeader(Headers.FROM_STARTING_POINT) &&
+            this.headers.getHeader(Headers.FROM_STARTING_POINT) === "1";
+    }
+
 }
 
 export default CounterMessage;

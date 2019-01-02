@@ -114,8 +114,8 @@ describe("Topology with HttpWorker Node", () => {
                 // Check if every received result messages is processed without error
                 const data: ICounterProcessInfo = JSON.parse(msg.content.toString());
                 assert.isTrue(data.success);
-                assert.equal(data.total, pip.getTopologyConfig(false).nodes.length);
-                assert.equal(data.ok, pip.getTopologyConfig(false).nodes.length);
+                assert.equal(data.total, 1);
+                assert.equal(data.ok, 1);
                 assert.equal(data.nok, 0);
 
                 resultMessagesReceived++;
