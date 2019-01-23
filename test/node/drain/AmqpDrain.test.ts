@@ -81,7 +81,7 @@ function createMockMessage(): JobMessage {
 const followPubFailMock: FollowersPublisher = mock.mock(FollowersPublisher);
 followPubFailMock.send = () => {
     assert.fail();
-    return Promise.resolve();
+    return Promise.resolve(0);
 };
 
 const nonStandardPubFailMock: AssertionPublisher = mock.mock(AssertionPublisher);
@@ -124,7 +124,7 @@ describe("AmqpDrain", () => {
             forwardMsgSent = true;
             validateTest();
 
-            return Promise.resolve();
+            return Promise.resolve(0);
         };
 
         const drain = new AmqpDrain(settings, counterPub, followPub, nonStandardPubFailMock, metricsMock);
@@ -261,7 +261,7 @@ describe("AmqpDrain", () => {
             assert.strictEqual(msg, jm);
             assert.equal(jm.getResult().code, ResultCode.SUCCESS);
 
-            return Promise.resolve();
+            return Promise.resolve(0);
         };
 
         const drain = new AmqpDrain(settings, counterPubFailMock, followPub, nonStandardPubFailMock, metricsMock);

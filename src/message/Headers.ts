@@ -18,19 +18,41 @@ class Headers {
     public static readonly TOPOLOGY_NAME = "topology-name";
     public static readonly TOPOLOGY_DELETE_URL = "topology-delete-url";
 
-    // result headers
+    //
+    // message processing result
+    //
+    // what was the result of message processing, 0=success
     public static readonly RESULT_CODE = "result-code";
+    // optional comment about message processing result
     public static readonly RESULT_MESSAGE = "result-message";
 
-    // repeat headers
+    //
+    // repeater headers
+    //
+    // where the message should be published to when repeated from repeater
     public static readonly REPEAT_QUEUE = "repeat-queue";
+    // how many seconds the message should be hold in repeater
     public static readonly REPEAT_INTERVAL = "repeat-interval";
+    // how many times the message can be maximally be repeated
     public static readonly REPEAT_MAX_HOPS = "repeat-max-hops";
+    // how many times yhe message has been already repeated (value being incremented on each repeat)
     public static readonly REPEAT_HOPS = "repeat-hops";
 
-    // force queue forwarding
+    //
+    // sending message to next nodes related headers
+    //
+    // if RESULT_CODE ended with FORWARD_TO_TARGET_QUEUE, the message will be sent to queue in FORCE_TARGET_QUEUE
     public static readonly FORCE_TARGET_QUEUE = "force-target-queue";
+    // when given, it should contain the list of follower queues separated by commas
+    // the message will be forwarded to given queues only instead of all followers
+    public static readonly WHITELIST_FOLLOWERS = "whitelist-followers";
+    // when given, it should contain the list of follower queues separated by commas
+    // the message will NOT be forwarded to given queues
+    public static readonly BLACKLIST_FOLLOWERS = "blacklist-followers";
 
+    //
+    // limiter related headers
+    //
     // limit headers
     public static readonly LIMIT_KEY = "limit-key";
     public static readonly LIMIT_TIME = "limit-time";
@@ -38,9 +60,15 @@ class Headers {
     public static readonly LIMIT_RETURN_EXCHANGE = "pf-limit-return-exchange";
     public static readonly LIMIT_RETURN_ROUTING_KEY = "pf-limit-return-routing-key";
 
+    //
     // Other headers
+    //
+    // if message published from starting point (used in Counter messages to start process time duration statistics)
+    // set to 1 if publishing from starting point
     public static readonly FROM_STARTING_POINT = "from-starting-point";
+    // when the message was published from publisher (used in consumer to count message waiting duration in queue)
     public static readonly PUBLISHED_TIMESTAMP = "published-timestamp";
+    // content-type of the message
     public static readonly CONTENT_TYPE = "content-type";
     public static readonly DOCUMENT_ID = "doc-id";
 
