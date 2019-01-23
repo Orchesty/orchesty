@@ -49,9 +49,9 @@ class FollowersPublisher extends Publisher {
     /**
      *
      * @param {JobMessage} message
-     * @return {Promise<void>}
+     * @return {Promise<number>}
      */
-    public send(message: JobMessage): Promise<void> {
+    public send(message: JobMessage): Promise<number> {
         const sent = this.sendToAllFollowers(message);
 
         return Promise.all(sent)
@@ -60,6 +60,8 @@ class FollowersPublisher extends Publisher {
                     `AmqpDrain forwarded ${sent.length}x message. Followers: ${this.settings.followers.length}`,
                     logger.ctxFromMsg(message),
                 );
+
+                return sent.length;
             });
     }
 
@@ -82,7 +84,7 @@ class FollowersPublisher extends Publisher {
 
         const promises: Array<Promise<void>> = [];
 
-        for (const follower of this.settings.followers) {
+        for (const follower of this.getFollowers(message)) {
             const newHeaders = new Headers(message.getHeaders().getRaw());
 
             if (splitIntoChildProcesses) {
@@ -116,6 +118,30 @@ class FollowersPublisher extends Publisher {
         }
 
         return promises;
+    }
+
+    private getFollowers(message: JobMessage): IFollower[] {
+        if (message.getHeaders().hasPFHeader(Headers.WHITELIST_FOLLOWERS)) {
+            // TODO - what will be the header values? - We need complete IFollower object
+            throw new Error("WHITELISTING of followers not implemented yet.");
+        }
+
+        if (message.getHeaders().hasPFHeader(Headers.BLACKLIST_FOLLOWERS)) {
+            // expecting comma separated nodeIds in header value
+            const blacklist = message.getHeaders().getPFHeader(Headers.BLACKLIST_FOLLOWERS).split(",");
+            if (blacklist.length > 0) {
+                const filtered: IFollower[] = [];
+                this.settings.followers.forEach((follower: IFollower) => {
+                    if (blacklist.indexOf(follower.node_id) === -1) {
+                        filtered.push(follower);
+                    }
+                });
+
+                return filtered;
+            }
+        }
+
+        return this.settings.followers;
     }
 
 }

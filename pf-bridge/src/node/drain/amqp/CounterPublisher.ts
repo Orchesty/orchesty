@@ -67,15 +67,15 @@ class CounterPublisher extends Publisher implements ICounterPublisher {
      * Sends the counter info message
      *
      * @param {JobMessage} message
-     * @param {number} followersCount
+     * @param {number} forceFollowersCount
      * @return {Promise<void>}
      */
-    public send(message: JobMessage, followersCount: number = null): Promise<void> {
+    public send(message: JobMessage, forceFollowersCount: number = null): Promise<void> {
         message.getHeaders().setPFHeader(Headers.TOPOLOGY_ID, this.settings.node_label.topology_id);
 
         let followers = this.settings.followers.length;
-        if (typeof followersCount === "number" && followersCount >= 0) {
-            followers = followersCount;
+        if (forceFollowersCount !== null && typeof forceFollowersCount === "number" && forceFollowersCount >= 0) {
+            followers = forceFollowersCount;
         }
 
         const counterMessage = new CounterMessage(

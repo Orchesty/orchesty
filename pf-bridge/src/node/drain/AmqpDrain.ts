@@ -105,7 +105,8 @@ class AmqpDrain implements IDrain, IPartialForwarder {
      * @return {Promise<boolean>}
      */
     public forwardPart(message: JobMessage): Promise<void> {
-        return this.followersPublisher.send(message);
+        return this.followersPublisher.send(message)
+            .then(() => { return; });
     }
 
     /**
@@ -258,13 +259,13 @@ class AmqpDrain implements IDrain, IPartialForwarder {
     /**
      *
      * @param {JobMessage} message
-     * @param {number} followersCount
+     * @param {number} followforceFollowersCountersCount
      */
-    private async forwardToCounterOnly(message: JobMessage, followersCount: number = null): Promise<void> {
+    private async forwardToCounterOnly(message: JobMessage, forceFollowersCount: number = null): Promise<void> {
         try {
             message.setMultiplier(0);
             message.getMeasurement().markFinished();
-            await this.counterPublisher.send(message, followersCount);
+            await this.counterPublisher.send(message, forceFollowersCount);
         } catch (e) {
             logger.error("AmqpDrain could not send result message to counter", logger.ctxFromMsg(message, e));
         }
@@ -278,8 +279,8 @@ class AmqpDrain implements IDrain, IPartialForwarder {
     private async forwardSuccessMessage(message: JobMessage): Promise<void> {
         try {
             message.getMeasurement().markFinished();
-            await this.counterPublisher.send(message);
-            await this.followersPublisher.send(message);
+            const followersCount = await this.followersPublisher.send(message);
+            await this.counterPublisher.send(message, followersCount);
         } catch (e) {
             logger.error("AmqpDrain could not forward message", logger.ctxFromMsg(message, e));
         }
