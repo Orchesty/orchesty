@@ -46,7 +46,7 @@ class ConsumerCommand extends Command implements LoggerAwareInterface
     protected $manager;
 
     /**
-     * @var BaseSyncConsumerAbstract[][]
+     * @var BaseSyncConsumerAbstract[]
      */
     protected $consumers;
 
@@ -120,19 +120,21 @@ class ConsumerCommand extends Command implements LoggerAwareInterface
      * @param InputInterface  $input
      * @param OutputInterface $output
      *
-     * @return void
+     * @return int
      * @throws Exception
      */
-    protected function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output;
-        $consumerName = strtolower($input->getArgument("consumer-name"));
+        /** @var string $arg */
+        $arg          = $input->getArgument("consumer-name");
+        $consumerName = strtolower($arg);
 
         if (!isset($this->consumers[$consumerName])) {
             throw new InvalidArgumentException(sprintf('Consumer \'%s\' doesn\'t exists.', $consumerName));
         }
 
-        $consumerArgv = $input->getArgument("consumer-parameters");
+        $consumerArgv = (array) $input->getArgument("consumer-parameters");
         array_unshift($consumerArgv, $consumerName);
 
         try {
@@ -181,7 +183,7 @@ class ConsumerCommand extends Command implements LoggerAwareInterface
 
         $serializer = NULL;
         if ($consumer->getSerializer()) {
-            $metaClassName = $consumer->getSerializer();
+            $metaClassName = (string) $consumer->getSerializer();
 
             if (!class_exists($metaClassName)) {
                 throw new BunnyException(sprintf('Consumer meta class %s does not exist.', $metaClassName));
@@ -196,7 +198,7 @@ class ConsumerCommand extends Command implements LoggerAwareInterface
         }
 
         if ($consumer->getSetUpMethod() && !isset($calledSetUps[$consumer->getSetUpMethod()])) {
-            if (!method_exists($consumer, $consumer->getSetUpMethod())) {
+            if (!method_exists($consumer, (string) $consumer->getSetUpMethod())) {
                 throw new BunnyException(
                     sprintf('Init method %s::%s does not exist', get_class($consumer), $consumer->getSetUpMethod())
                 );
@@ -213,7 +215,7 @@ class ConsumerCommand extends Command implements LoggerAwareInterface
                 );
             }
 
-            if (!method_exists($consumer, $consumer->getTickMethod())) {
+            if (!method_exists($consumer, (string) $consumer->getTickMethod())) {
                 throw new BunnyException(
                     sprintf('Tick method %s::%s does not exist.', get_class($consumer), $consumer->getTickMethod())
                 );
@@ -245,6 +247,8 @@ class ConsumerCommand extends Command implements LoggerAwareInterface
             }
         }
         $channel->getClient()->disconnect();
+
+        return 0;
     }
 
     /**
@@ -252,7 +256,7 @@ class ConsumerCommand extends Command implements LoggerAwareInterface
      * @param Message                  $message
      * @param Channel                  $channel
      * @param Client                   $client
-     * @param null|IMessageSerializer  $serializer
+     * @param mixed                    $serializer
      *
      * @return void
      * @throws RabbitMqException

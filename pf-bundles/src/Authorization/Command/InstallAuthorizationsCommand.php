@@ -55,14 +55,17 @@ class InstallAuthorizationsCommand extends Command
      * @param InputInterface  $input
      * @param OutputInterface $output
      *
+     * @return int
      * @throws MongoDBException
      */
-    protected function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $input;
         $output;
 
         $this->loader->installAllAuthorizations();
+
+        return 0;
     }
 
 }

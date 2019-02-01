@@ -10,6 +10,7 @@
 namespace Hanaboso\PipesFramework\Logs;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\MongoDataGrid\Exception\GridException;
 use Hanaboso\MongoDataGrid\GridRequestDto;
@@ -141,6 +142,14 @@ class MongoDbLogs implements LogsInterface
         foreach ($result as $key => $item) {
             $correlationId = $this->getNonEmptyValue($item, self::CORRELATION_ID);
             $nodeId        = $this->getNonEmptyValue($item, self::NODE_ID);
+
+            if (is_array($correlationId)) {
+                throw new LockException('Bad data format.');
+            }
+
+            if (is_array($nodeId)) {
+                throw new LockException('Bad data format.');
+            }
 
             if ($correlationId && $this->getNonEmptyValue($innerResult, $correlationId)) {
                 $result[$key][self::TOPOLOGY_ID]   = $innerResult[$correlationId][self::PIPES][self::TOPOLOGY_ID];

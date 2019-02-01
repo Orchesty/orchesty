@@ -36,12 +36,12 @@ class BunnyManager
     private $client;
 
     /**
-     * @var Channel|\React\Promise\PromiseInterface|null
+     * @var Channel|null
      */
     private $channel = NULL;
 
     /**
-     * @var Channel|\React\Promise\PromiseInterface|null
+     * @var Channel|null
      */
     private $transactionalChannel;
 
@@ -119,13 +119,15 @@ class BunnyManager
     }
 
     /**
-     * @return Channel|\React\Promise\PromiseInterface
+     * @return Channel
      * @throws Exception
      */
-    public function getChannel()
+    public function getChannel(): Channel
     {
         if (!$this->channel) {
-            $this->channel = $this->createChannel();
+            /** @var Channel $ch */
+            $ch            = $this->createChannel();
+            $this->channel = $ch;
         }
 
         return $this->channel;
@@ -134,14 +136,16 @@ class BunnyManager
     /**
      * create/return transactional channel, where messages need to be commited
      *
-     * @return Channel|\React\Promise\PromiseInterface
+     * @return Channel
      * @throws BunnyException
      * @throws Exception
      */
-    public function getTransactionalChannel()
+    public function getTransactionalChannel(): Channel
     {
         if (!$this->transactionalChannel) {
-            $this->transactionalChannel = $this->createChannel();
+            /** @var Channel $ch */
+            $ch                         = $this->createChannel();
+            $this->transactionalChannel = $ch;
 
             // create transactional channel from normal one
             try {

@@ -64,7 +64,7 @@ final class TableParser implements TableParserInterface
             }
         }
 
-        return json_encode($data);
+        return (string) json_encode($data);
     }
 
     /**
@@ -78,9 +78,11 @@ final class TableParser implements TableParserInterface
      * @throws JsonException
      * @throws WriterException
      */
-    public function parseFromJson(string $path,
-                                  string $type = TableParserInterface::XLSX,
-                                  ?bool $hasHeaders = FALSE): string
+    public function parseFromJson(
+        string $path,
+        string $type = TableParserInterface::XLSX,
+        ?bool $hasHeaders = FALSE
+    ): string
     {
         $spreadsheet = new Spreadsheet();
         $worksheet   = $spreadsheet->setActiveSheetIndex(0);
@@ -99,14 +101,14 @@ final class TableParser implements TableParserInterface
             foreach ($rowData as $column => $value) {
                 $hasHeaders
                     ? $this->setCellValue($worksheet, array_search($column, $headers, TRUE) + 1, $row + 2, $value)
-                    : $this->setCellValue($worksheet, ++$column, $row + 1, $value);
+                    : $this->setCellValue($worksheet, (int) ++$column, $row + 1, $value);
             }
         }
 
         $path = sprintf('/tmp/%s.%s', microtime(TRUE), $type);
         $writer->save($path);
 
-        return realpath($path);
+        return (string) realpath($path);
     }
 
     /**

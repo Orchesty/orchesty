@@ -10,6 +10,8 @@
 namespace Hanaboso\PipesFramework\Category\Model;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\CommonsBundle\DatabaseManager\DatabaseManagerLocator;
 use Hanaboso\PipesFramework\Category\Document\Category;
@@ -38,7 +40,9 @@ class CategoryManager
      */
     function __construct(DatabaseManagerLocator $dml)
     {
-        $this->dm = $dml->getDm();
+        /** @var DocumentManager $dm */
+        $dm       = $dml->getDm();
+        $this->dm = $dm;
     }
 
     /**
@@ -46,6 +50,8 @@ class CategoryManager
      *
      * @return Category
      * @throws CategoryException
+     * @throws LockException
+     * @throws MappingException
      */
     public function createCategory(array $data): Category
     {
@@ -62,6 +68,8 @@ class CategoryManager
      *
      * @return Category
      * @throws CategoryException
+     * @throws LockException
+     * @throws MappingException
      */
     public function updateCategory(Category $category, array $data): Category
     {
@@ -100,6 +108,8 @@ class CategoryManager
      *
      * @return Category
      * @throws CategoryException
+     * @throws LockException
+     * @throws MappingException
      */
     private function setCategoryData(Category $category, array $data): Category
     {

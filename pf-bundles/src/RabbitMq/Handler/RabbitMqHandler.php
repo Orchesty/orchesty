@@ -9,6 +9,7 @@
 
 namespace Hanaboso\PipesFramework\RabbitMq\Handler;
 
+use Bunny\Channel;
 use Exception;
 use Hanaboso\PipesFramework\RabbitMq\BunnyManager;
 
@@ -43,6 +44,7 @@ class RabbitMqHandler
      */
     public function deleteQueues(array $queues): bool
     {
+        /** @var Channel $ch */
         $ch = $this->bunnyManager->getChannel();
         foreach ($queues as $queue) {
             $ch->queueDelete($queue);
@@ -59,6 +61,7 @@ class RabbitMqHandler
      */
     public function deleteExchange(string $exchange): bool
     {
+        /** @var Channel $ch */
         $ch = $this->bunnyManager->getChannel();
 
         return (bool) $ch->exchangeDelete($exchange);

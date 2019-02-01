@@ -38,7 +38,9 @@ phpunit:
 
 init: docker-up-force composer-install
 
-test: docker-up-force composer-install codesniffer phpstan phpunit
+test: init fasttest
+
+fasttest: codesniffer phpstan phpunit
 
 docker-compose.ci.yml:
 	# Comment out any port forwarding

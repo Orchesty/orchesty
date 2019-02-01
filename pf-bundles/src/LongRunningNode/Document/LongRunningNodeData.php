@@ -516,10 +516,10 @@ class LongRunningNodeData
     public function preFlush(): void
     {
         if (is_array($this->headers)) {
-            $this->headers = json_encode($this->headers);
+            $this->headers = (string) json_encode($this->headers);
         }
         if (is_array($this->auditLogs)) {
-            $this->auditLogs = json_encode($this->auditLogs);
+            $this->auditLogs = (string) json_encode($this->auditLogs);
         }
         $this->updated = new DateTime('now', new DateTimeZone('UTC'));
     }

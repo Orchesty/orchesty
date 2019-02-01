@@ -51,7 +51,7 @@ class DemoCallback implements BatchActionInterface
                     if ($response->getHeader('content-type') == 'application/json') {
                         $successMessage->setData($response->getBody()->getContents());
                     } else {
-                        $successMessage->setData(json_encode($response->getBody()->getContents()));
+                        $successMessage->setData((string) json_encode($response->getBody()->getContents()));
                     }
 
                     return $successMessage;

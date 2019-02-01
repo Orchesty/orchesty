@@ -120,6 +120,14 @@ class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements M
             throw new AuthorizationException('Magento2Old OAuth not authorized');
         }
 
+        $this->loadAuthorization();
+        if (!$this->authorization) {
+            throw new AuthorizationException(
+                sprintf('Authorization settings \'%s\' not found', $this->getId()),
+                AuthorizationException::AUTHORIZATION_SETTINGS_NOT_FOUND
+            );
+        }
+
         $settings = $this->authorization->getSettings();
         if (empty($settings[self::URL]) || empty($settings[self::CONSUMER_KEY]) || empty($settings[self::CONSUMER_SECRET])) {
             throw new AuthorizationException(
@@ -251,10 +259,20 @@ class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements M
 
     /**
      * @return OAuth1Dto
+     * @throws AuthorizationException
      */
     private function buildDto(): OAuth1Dto
     {
         $settings = $this->getSettings();
+
+        $this->loadAuthorization();
+
+        if (!$this->authorization) {
+            throw new AuthorizationException(
+                sprintf('Authorization settings \'%s\' not found', $this->getId()),
+                AuthorizationException::AUTHORIZATION_SETTINGS_NOT_FOUND
+            );
+        }
 
         return new OAuth1Dto($this->authorization, $settings[self::CONSUMER_KEY], $settings[self::CONSUMER_SECRET]);
     }

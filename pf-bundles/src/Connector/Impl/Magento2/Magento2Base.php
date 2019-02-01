@@ -17,7 +17,6 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Authorization\Impl\Magento2\Magento2AuthorizationInterface;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
-use Psr\Http\Message\StreamInterface;
 
 /**
  * Class Magento2Base
@@ -78,10 +77,10 @@ abstract class Magento2Base implements ConnectorInterface
      * @param string $urlPart
      * @param string $body
      *
-     * @return StreamInterface|string
+     * @return string
      * @throws CurlException
      */
-    protected function processRequest(string $method, string $urlPart, string $body = '')
+    protected function processRequest(string $method, string $urlPart, string $body = ''): string
     {
 
         $dto = new RequestDto($method, new Uri($this->authorization->getUrl() . $urlPart));

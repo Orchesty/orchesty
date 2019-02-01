@@ -69,11 +69,11 @@ class ConnectorLoader
      */
     public function getAllConnectors(array $exclude = []): array
     {
-        $list = Yaml::parse(file_get_contents(__DIR__ . '/../Resources/config/connectors.yml'));
+        $list = Yaml::parse((string) file_get_contents(__DIR__ . '/../Resources/config/connectors.yml'));
         $res  = [];
 
         foreach (array_keys($list['services']) as $key) {
-            $shortened = str_replace(self::CONNECTOR_PREFIX . '.', '', $key);
+            $shortened = str_replace(self::CONNECTOR_PREFIX . '.', '', (string) $key);
             if (in_array($shortened, $exclude)) {
                 unset($exclude[$shortened]);
                 continue;

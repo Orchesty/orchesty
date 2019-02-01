@@ -19,7 +19,6 @@ use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
-use Nette\Utils\JsonException;
 use Throwable;
 
 /**
@@ -68,7 +67,9 @@ class TopologyHandler
         RequestHandler $requestHandler
     )
     {
-        $this->dm                 = $dml->getDm();
+        /** @var DocumentManager $dm */
+        $dm                       = $dml->getDm();
+        $this->dm                 = $dm;
         $this->topologyRepository = $this->dm->getRepository(Topology::class);
         $this->manager            = $manager;
         $this->requestHandler     = $requestHandler;
@@ -212,12 +213,12 @@ class TopologyHandler
         if ($code !== 200) {
             $this->manager->unPublishTopology($topology);
 
-            return new ResponseDto(400, '', json_encode([
+            return new ResponseDto(400, '', (string) json_encode([
                 'generate_result' => $generateResultBody,
                 'run_result'      => $runResultBody,
             ]), []);
         } else {
-            return new ResponseDto(200, '', json_encode($data), []);
+            return new ResponseDto(200, '', (string) json_encode($data), []);
         }
     }
 
@@ -226,7 +227,6 @@ class TopologyHandler
      *
      * @return string[]
      * @throws EnumException
-     * @throws JsonException
      * @throws NodeException
      * @throws TopologyException
      */

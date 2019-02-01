@@ -2,7 +2,6 @@
 
 namespace Hanaboso\PipesFramework\Connector\Impl\Magento2;
 
-use GuzzleHttp\Exception\GuzzleException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 
@@ -18,7 +17,6 @@ class Magento2ModulesConnector extends Magento2Base
      * @param ProcessDto $dto
      *
      * @return ProcessDto
-     * @throws GuzzleException
      * @throws CurlException
      */
     public function processAction(ProcessDto $dto): ProcessDto
@@ -26,7 +24,7 @@ class Magento2ModulesConnector extends Magento2Base
         $data = $this->processRequest('GET', '/rest/V1/modules');
 
         $dto = new ProcessDto();
-        $dto->setData(json_decode($data, TRUE));
+        $dto->setData((string) json_decode($data, TRUE));
 
         return $dto;
     }

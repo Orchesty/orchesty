@@ -57,7 +57,9 @@ class TopologyManager
      */
     function __construct(DatabaseManagerLocator $dml, CronManager $cronManager)
     {
-        $this->dm                 = $dml->getDm();
+        /** @var DocumentManager $dm */
+        $dm                       = $dml->getDm();
+        $this->dm                 = $dm;
         $this->topologyRepository = $this->dm->getRepository(Topology::class);
         $this->cronManager        = $cronManager;
     }
@@ -421,7 +423,16 @@ class TopologyManager
     {
         $this->checkNodeAttributes($id, $name, $type, $cron);
 
-        $node = $this->setNodeAttributes($topology, new Node(), $name, $type, $id, $handler, $cron, $cron_params);
+        $node = $this->setNodeAttributes(
+            $topology,
+            new Node(),
+            (string) $name,
+            (string) $type,
+            $id,
+            $handler,
+            $cron,
+            $cron_params
+        );
 
         $this->dm->persist($node);
         $this->dm->flush();
@@ -429,7 +440,7 @@ class TopologyManager
         $nodes[$id]      = $node;
         $embedNodes[$id] = EmbedNode::from($node);
 
-        $this->makePatchRequestForCron($node, $type, $id);
+        $this->makePatchRequestForCron($node, (string) $type, $id);
 
         return $node;
     }
@@ -465,12 +476,21 @@ class TopologyManager
         $this->checkNodeAttributes($id, $name, $type, $cron);
 
         $node = $this->getNodeBySchemaId($topology, $id);
-        $node = $this->setNodeAttributes($topology, $node, $name, $type, $id, $handler, $cron, $cron_params);
+        $node = $this->setNodeAttributes(
+            $topology,
+            $node,
+            (string) $name,
+            (string) $type,
+            $id,
+            $handler,
+            $cron,
+            $cron_params
+        );
 
         $nodes[$id]      = $node;
         $embedNodes[$id] = EmbedNode::from($node);
 
-        $this->makePatchRequestForCron($node, $type, $id);
+        $this->makePatchRequestForCron($node, (string) $type, $id);
 
         return $node;
     }
@@ -506,7 +526,7 @@ class TopologyManager
             ->setSchemaId($schemaId)
             ->setTopology($topology->getId())
             ->setHandler(Strings::endsWith($handler, 'vent') ? HandlerEnum::EVENT : HandlerEnum::ACTION)
-            ->setCronParams(urldecode($cron_params))
+            ->setCronParams(urldecode((string) $cron_params))
             ->setCron($cron);
 
         return $node;

@@ -37,10 +37,10 @@ class KapacitorCommand extends Command
      * @param InputInterface  $input
      * @param OutputInterface $output
      *
-     * @return void
+     * @return int
      * @throws DateTimeException
      */
-    protected function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $input;
         $output->writeln('Kapacitor start.');
@@ -64,6 +64,8 @@ class KapacitorCommand extends Command
             );
             usleep(1000);
         }
+
+        return 0;
     }
 
 }

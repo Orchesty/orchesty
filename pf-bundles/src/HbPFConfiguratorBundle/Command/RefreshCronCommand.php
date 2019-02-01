@@ -58,8 +58,10 @@ class RefreshCronCommand extends Command
     /**
      * @param InputInterface  $input
      * @param OutputInterface $output
+     *
+     * @return int
      */
-    protected function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $input;
 
@@ -71,7 +73,11 @@ class RefreshCronCommand extends Command
             $output->writeln(' SUCCESS');
         } catch (CronException | CurlException $e) {
             $output->writeln(sprintf(' FAIL (%s)', $e->getMessage()));
+
+            return 1;
         }
+
+        return 0;
     }
 
 }

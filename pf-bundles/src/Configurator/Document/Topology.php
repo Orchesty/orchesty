@@ -247,7 +247,7 @@ class Topology
      */
     public function setBpmn(array $bpmn): Topology
     {
-        $this->bpmn = json_encode($bpmn);
+        $this->bpmn = (string) json_encode($bpmn);
 
         return $this;
     }

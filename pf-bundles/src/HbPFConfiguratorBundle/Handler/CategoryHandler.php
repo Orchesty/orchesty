@@ -10,6 +10,8 @@
 namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\CommonsBundle\DatabaseManager\DatabaseManagerLocatorInterface;
 use Hanaboso\PipesFramework\Category\Document\Category;
@@ -42,7 +44,9 @@ class CategoryHandler
      */
     public function __construct(DatabaseManagerLocatorInterface $dml, CategoryManager $categoryManager)
     {
-        $this->dm              = $dml->getDm();
+        /** @var DocumentManager $dm */
+        $dm                    = $dml->getDm();
+        $this->dm              = $dm;
         $this->categoryManager = $categoryManager;
     }
 
@@ -73,6 +77,8 @@ class CategoryHandler
      *
      * @return array
      * @throws CategoryException
+     * @throws LockException
+     * @throws MappingException
      */
     public function createCategory(array $data): array
     {
@@ -87,6 +93,8 @@ class CategoryHandler
      *
      * @return array
      * @throws CategoryException
+     * @throws LockException
+     * @throws MappingException
      */
     public function updateCategory(string $id, array $data): array
     {
@@ -103,6 +111,7 @@ class CategoryHandler
      * @return array
      * @throws CategoryException
      * @throws MongoDBException
+     * @throws MappingException
      */
     public function deleteCategory(string $id): array
     {
@@ -118,6 +127,8 @@ class CategoryHandler
      *
      * @return Category
      * @throws CategoryException
+     * @throws LockException
+     * @throws MappingException
      */
     private function getCategory(string $id): Category
     {

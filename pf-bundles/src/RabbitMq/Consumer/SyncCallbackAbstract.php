@@ -79,11 +79,12 @@ abstract class SyncCallbackAbstract implements LoggerAwareInterface
                 //TODO: what else
                 break;
             case CallbackStatus::RESEND:
-                if ($this->getRepeater()) {
+                $repeater = $this->getRepeater();
+                if ($repeater) {
                     $prepareMessage['message'] = 'Repeat message';
                     $this->logger->debug('BaseCallback::handleMessage', $prepareMessage);
 
-                    $this->getRepeater()->add($message);
+                    $repeater->add($message);
                 }
                 break;
             default:

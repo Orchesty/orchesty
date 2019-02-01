@@ -47,9 +47,9 @@ class DownloaderCommand extends Command
      * @param InputInterface  $input
      * @param OutputInterface $output
      *
-     * @return void
+     * @return int
      */
-    protected function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $input;
         $output->writeln('Downloader start.');
@@ -59,6 +59,8 @@ class DownloaderCommand extends Command
         $this->connect($loop, $output);
 
         $loop->run();
+
+        return 0;
     }
 
     /**
