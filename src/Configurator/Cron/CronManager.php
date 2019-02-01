@@ -93,7 +93,7 @@ class CronManager
     public function create(Node $node): ResponseDto
     {
         $url = $this->getUrl(self::CREATE);
-        $dto = (new RequestDto(CurlManager::METHOD_POST, $url))->setBody(json_encode([
+        $dto = (new RequestDto(CurlManager::METHOD_POST, $url))->setBody((string) json_encode([
             'hash'    => $this->getHash($node),
             'time'    => $node->getCron(),
             'command' => $this->getCommand($node),
@@ -112,7 +112,7 @@ class CronManager
     public function update(Node $node): ResponseDto
     {
         $url = $this->getUrl(self::UPDATE, $this->getHash($node));
-        $dto = (new RequestDto(CurlManager::METHOD_POST, $url))->setBody(json_encode([
+        $dto = (new RequestDto(CurlManager::METHOD_POST, $url))->setBody((string) json_encode([
             'time'    => $node->getCron(),
             'command' => $this->getCommand($node),
         ]));
@@ -140,7 +140,7 @@ class CronManager
         }
 
         $url = $this->getUrl(self::PATCH, $this->getHash($node));
-        $dto = (new RequestDto(CurlManager::METHOD_POST, $url))->setBody(json_encode($body));
+        $dto = (new RequestDto(CurlManager::METHOD_POST, $url))->setBody((string) json_encode($body));
 
         return $this->sendAndProcessRequest($dto);
     }
@@ -297,7 +297,7 @@ class CronManager
             }
         }
 
-        return json_encode($processedNodes);
+        return (string) json_encode($processedNodes);
     }
 
     /**

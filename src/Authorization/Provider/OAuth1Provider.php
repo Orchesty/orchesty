@@ -103,7 +103,7 @@ class OAuth1Provider implements OAuth1ProviderInterface, LoggerAwareInterface
             $this->throwException(sprintf('OAuth error: %s', $e->getMessage()));
         }
 
-        $this->tokenAndSecretChecker($requestToken);
+        $this->tokenAndSecretChecker((array) $requestToken);
 
         $saveOauthStuffs($this->dm, $dto, $requestToken);
 
@@ -142,7 +142,7 @@ class OAuth1Provider implements OAuth1ProviderInterface, LoggerAwareInterface
             $this->throwException($e->getMessage());
         }
 
-        return $token;
+        return (array) $token;
     }
 
     /**
@@ -164,7 +164,7 @@ class OAuth1Provider implements OAuth1ProviderInterface, LoggerAwareInterface
             $dto->getToken()[self::OAUTH_TOKEN_SECRET]
         );
 
-        return $client->getRequestHeader($method, $url);
+        return (string) $client->getRequestHeader($method, $url);
     }
 
     /**

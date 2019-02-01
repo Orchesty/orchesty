@@ -81,11 +81,11 @@ class AuthorizationLoader
     public function getAllAuthorizations(array $exclude = []): array
     {
         $exclude = array_merge($exclude, ['_defaults']);
-        $list    = Yaml::parse(file_get_contents(__DIR__ . '/../Resources/config/authorizations.yml'));
+        $list    = Yaml::parse((string) file_get_contents(__DIR__ . '/../Resources/config/authorizations.yml'));
         $res     = [];
 
         foreach (array_keys($list['services']) as $key) {
-            $shortened = str_replace(self::AUTHORIZATION_PREFIX . '.', '', $key);
+            $shortened = str_replace(self::AUTHORIZATION_PREFIX . '.', '', (string) $key);
             if (in_array($shortened, $exclude)) {
                 unset($exclude[$shortened]);
                 continue;

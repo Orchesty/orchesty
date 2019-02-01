@@ -95,18 +95,24 @@ class AsyncConsumerCommand extends Command implements LoggerAwareInterface
     /**
      * @param InputInterface  $input
      * @param OutputInterface $output
+     *
+     * @return int
      */
-    protected function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output;
 
-        $consumerName = strtolower($input->getArgument("consumer-name"));
+        /** @var string $arg */
+        $arg          = $input->getArgument("consumer-name");
+        $consumerName = strtolower($arg);
 
         if (!isset($this->asyncConsumers[$consumerName])) {
             throw new InvalidArgumentException(sprintf('Consumer \'%s\' doesn\'t exists.', $consumerName));
         }
 
         $this->startLoop($this->asyncConsumers[$consumerName]);
+
+        return 0;
     }
 
     /**

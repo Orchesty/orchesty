@@ -29,7 +29,9 @@ class NodeManager
      */
     function __construct(DatabaseManagerLocator $dml)
     {
-        $this->dm = $dml->getDm();
+        /** @var DocumentManager $dm */
+        $dm       = $dml->getDm();
+        $this->dm = $dm;
     }
 
     /**

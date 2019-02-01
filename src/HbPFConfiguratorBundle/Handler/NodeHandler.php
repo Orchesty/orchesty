@@ -44,7 +44,9 @@ class NodeHandler
      */
     public function __construct(DatabaseManagerLocator $dml, NodeManager $manager)
     {
-        $this->dm             = $dml->getDm();
+        /** @var DocumentManager $dm */
+        $dm                   = $dml->getDm();
+        $this->dm             = $dm;
         $this->nodeRepository = $this->dm->getRepository(Node::class);
         $this->manager        = $manager;
     }

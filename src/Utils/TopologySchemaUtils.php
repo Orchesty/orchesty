@@ -141,7 +141,7 @@ class TopologySchemaUtils
      */
     public static function getIndexHash(Schema $schema): string
     {
-        return md5(json_encode($schema->buildIndex()));
+        return md5((string) json_encode($schema->buildIndex()));
     }
 
     /**

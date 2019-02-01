@@ -44,7 +44,7 @@ class JsonSerializer implements IMessageSerializer
      */
     public static function toJson($object): string
     {
-        return json_encode($object);
+        return (string) json_encode($object);
     }
 
 }

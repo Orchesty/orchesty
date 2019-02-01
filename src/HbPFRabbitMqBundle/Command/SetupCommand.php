@@ -44,15 +44,17 @@ class SetupCommand extends Command
      * @param InputInterface  $input
      * @param OutputInterface $output
      *
-     * @return void
+     * @return int
      * @throws Exception
      */
-    protected function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $input;
         $output;
 
         $this->manager->setUp();
+
+        return 0;
     }
 
 }

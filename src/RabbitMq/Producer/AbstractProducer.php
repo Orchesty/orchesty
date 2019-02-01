@@ -9,6 +9,7 @@
 
 namespace Hanaboso\PipesFramework\RabbitMq\Producer;
 
+use Bunny\Channel;
 use Bunny\Exception\BunnyException;
 use Exception;
 use Hanaboso\PipesFramework\HbPFRabbitMqBundle\ContentTypes;
@@ -55,7 +56,7 @@ class AbstractProducer implements LoggerAwareInterface
     private $immediate;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $serializerClassName;
 
@@ -212,7 +213,9 @@ class AbstractProducer implements LoggerAwareInterface
             $this->prepareMessage('', $this->exchange, $routingKey, $headers)
         );
 
-        $this->manager->getChannel()->publish(
+        /** @var Channel $channel */
+        $channel = $this->manager->getChannel();
+        $channel->publish(
             $message,
             $headers,
             $this->exchange,
@@ -255,9 +258,9 @@ class AbstractProducer implements LoggerAwareInterface
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getSerializerClassName(): string
+    public function getSerializerClassName(): ?string
     {
         return $this->serializerClassName;
     }

@@ -89,6 +89,14 @@ class Magento2Authorization extends AuthorizationAbstract implements Magento2Aut
             $this->authorize();
         }
 
+        $this->loadAuthorization();
+        if (!$this->authorization) {
+            throw new AuthorizationException(
+                sprintf('Authorization settings \'%s\' not found', $this->getId()),
+                AuthorizationException::AUTHORIZATION_SETTINGS_NOT_FOUND
+            );
+        }
+
         $settings = $this->authorization->getSettings();
         if (empty($settings[self::URL]) || empty($settings[self::USERNAME]) || empty($settings[self::PASSWORD])) {
             throw new AuthorizationException(
