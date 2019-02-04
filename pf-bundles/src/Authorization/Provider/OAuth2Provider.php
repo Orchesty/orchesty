@@ -19,6 +19,7 @@ use Hanaboso\PipesFramework\Authorization\Wrapper\OAuth2Wrapper;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use function GuzzleHttp\Psr7\build_query;
 use function GuzzleHttp\Psr7\parse_query;
 
 /**
@@ -187,20 +188,23 @@ class OAuth2Provider implements OAuth2ProviderInterface, LoggerAwareInterface
 
         $scopes = ScopeFormatter::getScopes($scopes, $separator);
         $url    = sprintf('%s%s', $authorizeUrl, $scopes);
+        $query  = parse_query($url);
+        $host   = key($query);
+        $v      = reset($query);
+        unset($query[$host]);
 
-        $query                    = parse_query($url);
+        $host = explode('?', (string) $host);
+        if (isset($host[1])) {
+            $query[$host[1]] = $v;
+        }
+
         $query[self::ACCESS_TYPE] = 'offline';
 
         if ($state) {
             $query[self::STATE] = $state;
         }
 
-        $url = '';
-        foreach ($query as $key => $part) {
-            $url = sprintf('%s&%s=%s', $url, $key, $part);
-        }
-
-        return ltrim($url, '&');
+        return sprintf('%s?%s', $host[0], build_query($query, FALSE));
     }
 
     /**
