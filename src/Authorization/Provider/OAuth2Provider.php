@@ -19,6 +19,7 @@ use Hanaboso\PipesFramework\Authorization\Wrapper\OAuth2Wrapper;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use function GuzzleHttp\Psr7\parse_query;
 
 /**
  * Class OAuth2Provider
@@ -32,6 +33,8 @@ class OAuth2Provider implements OAuth2ProviderInterface, LoggerAwareInterface
     public const  ACCESS_TOKEN      = 'access_token';
     public const  EXPIRES           = 'expires';
     private const RESOURCE_OWNER_ID = 'resource_owner_id';
+    private const ACCESS_TYPE       = 'access_type';
+    private const STATE             = 'state';
 
     /**
      * @var RedirectInterface
@@ -80,9 +83,11 @@ class OAuth2Provider implements OAuth2ProviderInterface, LoggerAwareInterface
      * @param array              $scopes
      * @param string             $separator
      */
-    public function authorize(OAuth2DtoInterface $dto,
-                              array $scopes = [],
-                              string $separator = ScopeFormatter::COMMA): void
+    public function authorize(
+        OAuth2DtoInterface $dto,
+        array $scopes = [],
+        string $separator = ScopeFormatter::COMMA
+    ): void
     {
         $client           = $this->createClient($dto);
         $authorizationUrl = $this->getAuthorizeUrl($dto, $client->getAuthorizationUrl(), $scopes, $separator);
@@ -183,12 +188,19 @@ class OAuth2Provider implements OAuth2ProviderInterface, LoggerAwareInterface
         $scopes = ScopeFormatter::getScopes($scopes, $separator);
         $url    = sprintf('%s%s', $authorizeUrl, $scopes);
 
+        $query                    = parse_query($url);
+        $query[self::ACCESS_TYPE] = 'offline';
+
         if ($state) {
-            $prefix = empty($scopes) ? '?' : '&';
-            $url    = sprintf('%s%sstate=%s', $url, $prefix, $state);
+            $query[self::STATE] = $state;
         }
 
-        return $url;
+        $url = '';
+        foreach ($query as $key => $part) {
+            $url = sprintf('%s&%s=%s', $url, $key, $part);
+        }
+
+        return ltrim($url, '&');
     }
 
     /**
