@@ -15,4 +15,4 @@ parameters:
     sftp.password: ''
 
     cron_host: 'http://cron-api:5000'
-    monolith_host: 'http://php-dev'
+    starting_point_host: 'http://starting-point'
