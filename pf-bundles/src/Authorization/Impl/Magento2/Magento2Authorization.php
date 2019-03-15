@@ -15,7 +15,7 @@ use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
 /**
  * Class Magento2Authorization
  *
- * @package Hanaboso\PipesFramework\Authorization\Impl\Magento2Old
+ * @package Hanaboso\PipesFramework\Authorization\Impl\Magento2
  */
 class Magento2Authorization extends AuthorizationAbstract implements Magento2AuthorizationInterface
 {

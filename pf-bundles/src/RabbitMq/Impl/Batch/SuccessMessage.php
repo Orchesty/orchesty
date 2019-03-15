@@ -1,19 +1,12 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: venca
- * Date: 10/4/17
- * Time: 8:16 AM
- */
-
 namespace Hanaboso\PipesFramework\RabbitMq\Impl\Batch;
 
 use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use InvalidArgumentException;
 
 /**
- * Class MessageDto
+ * Class SuccessMessage
  *
  * @package Hanaboso\PipesFramework\RabbitMq\Impl\Batch
  */
@@ -36,7 +29,7 @@ class SuccessMessage
     private $headers = [];
 
     /**
-     * MessageDto constructor.
+     * SuccessMessage constructor.
      *
      * @param int $sequenceId
      */

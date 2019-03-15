@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: venca
- * Date: 3/19/18
- * Time: 1:27 PM
- */
-
 namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller;
 
 use FOS\RestBundle\Controller\FOSRestController;
@@ -17,7 +10,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * Class LogsController
  *
- * @package Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\
+ * @package Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller
  */
 class LogsController extends FOSRestController
 {

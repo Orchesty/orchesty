@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: venca
- * Date: 25.9.17
- * Time: 16:24
- */
-
 namespace Hanaboso\PipesFramework\RabbitMq\Consumer;
 
 use Bunny\Async\Client;
@@ -17,7 +10,7 @@ use React\EventLoop\LoopInterface;
 /**
  * Interface AsyncCallbackInterface
  *
- * @package Hanaboso\PipesFramework\RabbitMqBundle\Consumer
+ * @package Hanaboso\PipesFramework\RabbitMq\Consumer
  */
 interface AsyncCallbackInterface
 {

@@ -23,7 +23,7 @@ class NodeManager
     private $dm;
 
     /**
-     * TopologyManager constructor.
+     * NodeManager constructor.
      *
      * @param DatabaseManagerLocator $dml
      */

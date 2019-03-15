@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: Pavel Severyn
- * Date: 30.8.17
- * Time: 20:37
- */
-
 namespace Tests\Unit\RabbitMq\Consumer;
 
 use Bunny\Channel;
@@ -20,9 +13,9 @@ use PHPUnit\Framework\TestCase;
 use TypeError;
 
 /**
- * Class BaseConsumerAbstractTest
+ * Class BaseSyncConsumerAbstractTest
  *
- * @package Tests\Unit\RabbitMq\Base
+ * @package Tests\Unit\RabbitMq\Consumer
  */
 final class BaseSyncConsumerAbstractTest extends TestCase
 {

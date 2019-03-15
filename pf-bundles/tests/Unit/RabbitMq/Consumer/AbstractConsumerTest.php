@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: Pavel Severyn
- * Date: 23.8.17
- * Time: 15:58
- */
-
 namespace Tests\Unit\RabbitMq\Consumer;
 
 use Exception;
@@ -17,7 +10,7 @@ use Tests\KernelTestCaseAbstract;
 /**
  * Class AbstractConsumerTest
  *
- * @package Tests\Unit\RabbitMq\Base
+ * @package Tests\Unit\RabbitMq\Consumer
  */
 final class AbstractConsumerTest extends KernelTestCaseAbstract
 {

@@ -7,7 +7,7 @@ use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 /**
  * Class TableParserHandlerException
  *
- * @package Hanaboso\PipesFramework\HbPFTableParserBundle\Exception
+ * @package Hanaboso\PipesFramework\HbPFTableParserBundle\Handler
  */
 final class TableParserHandlerException extends PipesFrameworkException
 {

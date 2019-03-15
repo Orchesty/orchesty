@@ -1,16 +1,9 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: radek.jirsa
- * Date: 26.9.17
- * Time: 9:54
- */
-
 namespace Hanaboso\PipesFramework\Authorization\Utils;
 
 /**
- * Class ScopeFormater
+ * Class ScopeFormatter
  *
  * @package Hanaboso\PipesFramework\Authorization\Utils
  */
@@ -21,7 +14,7 @@ final class ScopeFormatter
     public const SPACE = ' ';
 
     /**
-     * ScopeFormater constructor.
+     * ScopeFormatter constructor.
      */
     private function __construct()
     {

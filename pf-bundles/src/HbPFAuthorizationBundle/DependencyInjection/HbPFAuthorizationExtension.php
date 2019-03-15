@@ -3,7 +3,6 @@
 namespace Hanaboso\PipesFramework\HbPFAuthorizationBundle\DependencyInjection;
 
 use Exception;
-use InvalidArgumentException;
 use RuntimeException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -14,7 +13,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 /**
  * Class HbPFAuthorizationExtension
  *
- * @package Hanaboso\PipesFramework\HbPFConnectorBundle\DependencyInjection
+ * @package Hanaboso\PipesFramework\HbPFAuthorizationBundle\DependencyInjection
  */
 class HbPFAuthorizationExtension extends Extension implements PrependExtensionInterface
 {
@@ -33,12 +32,9 @@ class HbPFAuthorizationExtension extends Extension implements PrependExtensionIn
     }
 
     /**
-     * Loads a specific configuration.
+     * @param array            $configs
+     * @param ContainerBuilder $container
      *
-     * @param array            $configs   An array of configuration values
-     * @param ContainerBuilder $container A ContainerBuilder instance
-     *
-     * @throws InvalidArgumentException When provided tag is not defined in this extension
      * @throws Exception
      */
     public function load(array $configs, ContainerBuilder $container): void

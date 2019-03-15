@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: Pavel Severyn
- * Date: 22.8.17
- * Time: 12:45
- */
-
 namespace Hanaboso\PipesFramework\HbPFRabbitMqBundle;
 
 /**

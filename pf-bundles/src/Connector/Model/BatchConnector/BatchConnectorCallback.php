@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: venca
- * Date: 6.10.17
- * Time: 16:41
- */
-
 namespace Hanaboso\PipesFramework\Connector\Model\BatchConnector;
 
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
@@ -29,7 +22,7 @@ class BatchConnectorCallback extends BatchActionAbstract
     private $connectorLoader;
 
     /**
-     * CronBatchActionCallback constructor.
+     * BatchConnectorCallback constructor.
      *
      * @param ConnectorLoader $connectorLoader
      */

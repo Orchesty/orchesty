@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: Pavel Seveyn
- * Date: 22.8.17
- * Time: 8:57
- */
-
 namespace Hanaboso\PipesFramework\HbPFRabbitMqBundle\DependencyInjection;
 
 use Exception;

@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: venca
- * Date: 3/16/18
- * Time: 9:56 AM
- */
-
 namespace Demo\CustomNode;
 
 use Hanaboso\CommonsBundle\Exception\DateTimeException;

@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: Pavel Severyn
- * Date: 29.8.17
- * Time: 11:26
- */
-
 namespace Hanaboso\PipesFramework\RabbitMq\Consumer;
 
 use Bunny\Channel;
@@ -21,9 +14,9 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
 /**
- * Class BaseCallbackAbstract
+ * Class SyncCallbackAbstract
  *
- * @package Hanaboso\PipesFramework\RabbitMq\Base
+ * @package Hanaboso\PipesFramework\RabbitMq\Consumer
  */
 abstract class SyncCallbackAbstract implements LoggerAwareInterface
 {
@@ -41,7 +34,7 @@ abstract class SyncCallbackAbstract implements LoggerAwareInterface
     protected $logger;
 
     /**
-     * BaseCallbackAbstract constructor.
+     * SyncCallbackAbstract constructor.
      */
     public function __construct()
     {

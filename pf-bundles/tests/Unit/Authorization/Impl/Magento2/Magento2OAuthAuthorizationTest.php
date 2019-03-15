@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: david.horacek
- * Date: 8/17/17
- * Time: 1:33 PM
- */
-
 namespace Tests\Unit\Authorization\Impl\Magento2;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -24,8 +17,7 @@ use Tests\PrivateTrait;
 /**
  * Class Magento2OAuthAuthorizationTest
  *
- * @coversDefaultClass Hanaboso\PipesFramework\Authorization\Impl\Magento2\Magento2Authorization
- * @package Tests\Unit\Authorization\Impl\Magento2Old
+ * @package Tests\Unit\Authorization\Impl\Magento2
  */
 final class Magento2OAuthAuthorizationTest extends KernelTestCaseAbstract
 {

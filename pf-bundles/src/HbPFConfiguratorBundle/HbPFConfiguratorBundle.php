@@ -7,7 +7,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 /**
  * Class HbPFConfiguratorBundle
  *
- * @package Hanaboso\PipesFramework\HbPFConnectorBundle
+ * @package Hanaboso\PipesFramework\HbPFConfiguratorBundle
  */
 class HbPFConfiguratorBundle extends Bundle
 {

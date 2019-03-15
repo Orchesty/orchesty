@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: radek.jirsa
- * Date: 30.11.17
- * Time: 11:31
- */
-
 namespace Hanaboso\PipesFramework\HbPFMetricsBundle\Handler;
 
 use Doctrine\ODM\MongoDB\DocumentManager;

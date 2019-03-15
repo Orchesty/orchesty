@@ -20,11 +20,9 @@ class TopologyEvent extends Event
     private $topologyName;
 
     /**
-     * ProcessStatusEvent constructor.
+     * TopologyEvent constructor.
      *
      * @param string $topologyName
-     *
-     * @internal param mixed $data
      */
     public function __construct(string $topologyName)
     {

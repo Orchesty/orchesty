@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: venca
- * Date: 3/14/18
- * Time: 10:26 AM
- */
-
 namespace Demo\Command;
 
 use Hanaboso\CommonsBundle\Enum\MetricsEnum;
@@ -18,9 +11,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class DownloaderCommand
+ * Class KapacitorCommand
  *
- * @package App\Command
+ * @package Demo\Command
  */
 class KapacitorCommand extends Command
 {

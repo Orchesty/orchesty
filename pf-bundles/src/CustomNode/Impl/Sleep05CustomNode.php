@@ -6,7 +6,7 @@ use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 
 /**
- * Class MSleep05CustomNode
+ * Class Sleep05CustomNode
  *
  * @package Hanaboso\PipesFramework\CustomNode\Impl
  */

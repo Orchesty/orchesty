@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: david.horacek
- * Date: 8/25/17
- * Time: 1:54 PM
- */
-
 namespace Hanaboso\PipesFramework\HbPFJoinerBundle\Handler;
 
 use Hanaboso\PipesFramework\HbPFJoinerBundle\Exception\JoinerException;

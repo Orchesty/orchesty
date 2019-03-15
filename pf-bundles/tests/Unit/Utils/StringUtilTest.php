@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: venca
- * Date: 5.10.17
- * Time: 10:30
- */
-
 namespace Tests\Unit\Utils;
 
 use Hanaboso\PipesFramework\Utils\StringUtil;
@@ -15,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * Class StringUtilTest
  *
- * @package Tests\Utils
+ * @package Tests\Unit\Utils
  */
 final class StringUtilTest extends TestCase
 {

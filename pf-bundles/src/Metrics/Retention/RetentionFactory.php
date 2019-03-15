@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: radek.jirsa
- * Date: 23.3.18
- * Time: 13:59
- */
-
 namespace Hanaboso\PipesFramework\Metrics\Retention;
 
 use DateTime;

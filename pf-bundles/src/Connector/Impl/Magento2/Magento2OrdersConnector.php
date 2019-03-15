@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: Admin
- * Date: 16.3.2017
- * Time: 13:42
- */
-
 namespace Hanaboso\PipesFramework\Connector\Impl\Magento2;
 
 use Hanaboso\CommonsBundle\Process\ProcessDto;
@@ -15,7 +8,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 /**
  * Class Magento2OrdersConnector
  *
- * @package Hanaboso\PipesFramework\Connector\Impl\Magento2Old
+ * @package Hanaboso\PipesFramework\Connector\Impl\Magento2
  */
 class Magento2OrdersConnector extends Magento2Base
 {

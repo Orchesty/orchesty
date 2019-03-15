@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: venca
- * Date: 3/26/18
- * Time: 4:34 PM
- */
-
 namespace Demo\CustomNode;
 
 use Exception;
@@ -20,7 +13,7 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
 /**
- * Class IdnesConnector
+ * Class DummyExceptionConnector
  *
  * @package Demo\CustomNode
  */

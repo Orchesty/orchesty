@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: Pavel Severyn
- * Date: 23.8.17
- * Time: 14:07
- */
-
 namespace Tests\Unit\RabbitMq\Serializer;
 
 use Hanaboso\PipesFramework\RabbitMq\Serializers\IMessageSerializer;

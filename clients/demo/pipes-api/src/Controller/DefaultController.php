@@ -9,7 +9,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * Class DefaultController
  *
- * @package AppBundle\Controller
+ * @package Demo\Controller
  */
 class DefaultController extends Controller
 {

@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: venca
- * Date: 3/14/18
- * Time: 10:26 AM
- */
-
 namespace Demo\Command;
 
 use Clue\React\Buzz\Browser;
@@ -28,7 +21,7 @@ use Throwable;
 /**
  * Class DownloaderCommand
  *
- * @package App\Command
+ * @package Demo\Command
  */
 class DownloaderCommand extends Command
 {

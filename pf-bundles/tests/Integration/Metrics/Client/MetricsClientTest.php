@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: radek.jirsa
- * Date: 30.11.17
- * Time: 12:27
- */
-
 namespace Tests\Integration\Metrics\Client;
 
 use Hanaboso\PipesFramework\Metrics\Client\MetricsClient;

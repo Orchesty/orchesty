@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: Pavel Severyn
- * Date: 29.8.17
- * Time: 11:28
- */
-
 namespace Hanaboso\PipesFramework\RabbitMq\Impl\Repeater;
 
 use Bunny\Message;
@@ -19,7 +12,7 @@ use Hanaboso\PipesFramework\RabbitMq\Producer\AbstractProducer;
 /**
  * Class RepeaterCallback
  *
- * @package Hanaboso\PipesFramework\RabbitMq\Repeater
+ * @package Hanaboso\PipesFramework\RabbitMq\Impl\Repeater
  */
 class RepeaterCallback extends SyncCallbackAbstract
 {

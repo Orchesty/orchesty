@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: venca
- * Date: 6.10.17
- * Time: 13:30
- */
-
 namespace Hanaboso\PipesFramework\CustomNode\Model\Batch;
 
 use Hanaboso\PipesFramework\HbPFCustomNodeBundle\Exception\CustomNodeException;
@@ -29,7 +22,7 @@ class BatchActionCallback extends BatchActionAbstract
     private $customNodeLoader;
 
     /**
-     * CronBatchActionCallback constructor.
+     * BatchActionCallback constructor.
      *
      * @param CustomNodeLoader $customNodeLoader
      */

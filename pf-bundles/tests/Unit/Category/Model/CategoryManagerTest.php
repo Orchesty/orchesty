@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: michal.bartl
- * Date: 11/27/17
- * Time: 4:31 PM
- */
-
 namespace Tests\Unit\Category\Model;
 
 use Doctrine\ODM\MongoDB\DocumentManager;

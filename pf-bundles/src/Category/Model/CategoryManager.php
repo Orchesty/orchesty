@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: michal.bartl
- * Date: 11/27/17
- * Time: 12:11 PM
- */
-
 namespace Hanaboso\PipesFramework\Category\Model;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -34,7 +27,7 @@ class CategoryManager
     private $dm;
 
     /**
-     * TopologyManager constructor.
+     * CategoryManager constructor.
      *
      * @param DatabaseManagerLocator $dml
      */

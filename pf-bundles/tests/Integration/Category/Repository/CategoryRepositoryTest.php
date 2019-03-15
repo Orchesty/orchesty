@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: michal.bartl
- * Date: 11/28/17
- * Time: 1:55 PM
- */
-
 namespace Tests\Integration\Category\Repository;
 
 use Exception;

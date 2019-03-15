@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: venca
- * Date: 3/14/18
- * Time: 2:46 PM
- */
-
 namespace Demo\CustomNode;
 
 use EmailServiceBundle\Utils\PipesHeaders;
@@ -21,9 +14,9 @@ use Psr\Log\NullLogger;
 use Throwable;
 
 /**
- * Class FilterBid
+ * Class FilterStockExchange
  *
- * @package App\CustomNode
+ * @package Demo\CustomNode
  */
 class FilterStockExchange implements CustomNodeInterface, LoggerAwareInterface
 {

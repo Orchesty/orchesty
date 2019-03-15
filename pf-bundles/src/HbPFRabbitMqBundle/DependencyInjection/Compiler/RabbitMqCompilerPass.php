@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: Pavel Severyn
- * Date: 22.8.17
- * Time: 9:04
- */
-
 namespace Hanaboso\PipesFramework\HbPFRabbitMqBundle\DependencyInjection\Compiler;
 
 use InvalidArgumentException;

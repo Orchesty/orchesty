@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: david.horacek
- * Date: 8/25/17
- * Time: 2:34 PM
- */
-
 namespace Hanaboso\PipesFramework\Joiner\Impl;
 
 use Hanaboso\PipesFramework\Joiner\JoinerAbstract;
@@ -14,7 +7,7 @@ use Hanaboso\PipesFramework\Joiner\JoinerAbstract;
 /**
  * Class NullJoiner
  *
- * @package Hanaboso\PipesFramework\Joiner\Joiner
+ * @package Hanaboso\PipesFramework\Joiner\Impl
  */
 class NullJoiner extends JoinerAbstract
 {
