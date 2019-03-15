@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: david.horacek
- * Date: 8/18/17
- * Time: 2:02 PM
- */
-
 namespace Hanaboso\PipesFramework\Connector\Model;
 
 use Hanaboso\CommonsBundle\Process\ProcessDto;

@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: david.horacek
- * Date: 8/17/17
- * Time: 3:15 PM
- */
-
 namespace Tests\Integration\Authorization\Impl\Magento2;
 
 use Exception;
@@ -19,9 +12,9 @@ use Tests\DatabaseTestCaseAbstract;
 use Tests\PrivateTrait;
 
 /**
- * Class AuthorizationDBTest
+ * Class Magento2AuthorizationTest
  *
- * @package Tests\Integration\Authorization\Impl\Magento2Old
+ * @package Tests\Integration\Authorization\Impl\Magento2
  */
 final class Magento2AuthorizationTest extends DatabaseTestCaseAbstract
 {

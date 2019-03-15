@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: Admin
- * Date: 16.3.2017
- * Time: 12:32
- */
-
 namespace Hanaboso\PipesFramework\Connector\Impl\Magento2;
 
 use GuzzleHttp\Psr7\Uri;
@@ -21,7 +14,7 @@ use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 /**
  * Class Magento2Base
  *
- * @package Hanaboso\PipesFramework\Connector\Impl\Magento2Old
+ * @package Hanaboso\PipesFramework\Connector\Impl\Magento2
  */
 abstract class Magento2Base implements ConnectorInterface
 {

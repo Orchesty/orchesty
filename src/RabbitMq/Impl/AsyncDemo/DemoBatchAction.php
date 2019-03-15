@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: venca
- * Date: 10/20/17
- * Time: 4:03 PM
- */
-
 namespace Hanaboso\PipesFramework\RabbitMq\Impl\AsyncDemo;
 
 use Hanaboso\CommonsBundle\Process\ProcessDto;

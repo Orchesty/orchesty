@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: Pavel Severyn
- * Date: 29.8.17
- * Time: 10:00
- */
-
 namespace Hanaboso\PipesFramework\RabbitMq;
 
 /**

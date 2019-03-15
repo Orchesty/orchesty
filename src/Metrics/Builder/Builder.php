@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: radek.jirsa
- * Date: 5.1.18
- * Time: 10:12
- */
-
 namespace Hanaboso\PipesFramework\Metrics\Builder;
 
 use InfluxDB\Query\Builder as InfluxDbBuilder;
@@ -15,7 +8,7 @@ use InvalidArgumentException;
 /**
  * Class Builder
  *
- * @package Metrics\Builder
+ * @package Hanaboso\PipesFramework\Metrics\Builder
  */
 class Builder extends InfluxDbBuilder
 {

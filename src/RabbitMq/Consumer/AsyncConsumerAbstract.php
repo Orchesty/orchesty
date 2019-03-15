@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: venca
- * Date: 25.9.17
- * Time: 11:09
- */
-
 namespace Hanaboso\PipesFramework\RabbitMq\Consumer;
 
 use Bunny\Async\Client;
@@ -18,7 +11,7 @@ use React\Promise\PromiseInterface;
 /**
  * Class AsyncConsumerAbstract
  *
- * @package Hanaboso\PipesFramework\RabbitMqBundle\Consumer
+ * @package Hanaboso\PipesFramework\RabbitMq\Consumer
  */
 abstract class AsyncConsumerAbstract extends ConsumerAbstract
 {

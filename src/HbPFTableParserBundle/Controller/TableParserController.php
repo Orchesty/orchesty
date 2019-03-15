@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Throwable;
 
 /**
- * Class ApiController
+ * Class TableParserController
  *
  * @package Hanaboso\PipesFramework\HbPFTableParserBundle\Controller
  */
@@ -29,7 +29,7 @@ class TableParserController extends FOSRestController
     private $tableParserHandler;
 
     /**
-     * ApiController constructor.
+     * TableParserController constructor.
      *
      * @param TableParserHandler $tableParserHandler
      */

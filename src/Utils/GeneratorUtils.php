@@ -9,7 +9,7 @@ use Nette\Utils\Strings;
 /**
  * Class GeneratorUtils
  *
- * @package Hanaboso\PipesFramework\TopologyGenerator
+ * @package Hanaboso\PipesFramework\Utils
  */
 class GeneratorUtils
 {

@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: radek.jirsa
- * Date: 10.8.17
- * Time: 12:31
- */
-
 namespace Hanaboso\PipesFramework\Authorization\Impl\Magento2;
 
 use Hanaboso\PipesFramework\Authorization\Base\AuthorizationInterface;
@@ -14,7 +7,7 @@ use Hanaboso\PipesFramework\Authorization\Base\AuthorizationInterface;
 /**
  * Interface Magento2AuthorizationInterface
  *
- * @package Hanaboso\PipesFramework\Authorization\Impl\Magento2Old
+ * @package Hanaboso\PipesFramework\Authorization\Impl\Magento2
  */
 interface Magento2AuthorizationInterface extends AuthorizationInterface
 {

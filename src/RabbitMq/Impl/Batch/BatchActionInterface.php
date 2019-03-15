@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: venca
- * Date: 10/2/17
- * Time: 10:09 AM
- */
-
 namespace Hanaboso\PipesFramework\RabbitMq\Impl\Batch;
 
 use Bunny\Message;

@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: michal.bartl
- * Date: 11/28/17
- * Time: 4:00 PM
- */
-
 namespace Tests\Controller\HbPFConfiguratorBundle\Controller;
 
 use Hanaboso\PipesFramework\Category\Document\Category;
@@ -16,7 +9,7 @@ use Tests\ControllerTestCaseAbstract;
 /**
  * Class CategoryControllerTest
  *
- * @package Controller\HbPFConfiguratorBundle\Controller
+ * @package Tests\Controller\HbPFConfiguratorBundle\Controller
  */
 final class CategoryControllerTest extends ControllerTestCaseAbstract
 {

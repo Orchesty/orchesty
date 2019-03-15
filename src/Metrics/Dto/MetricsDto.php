@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: radek.jirsa
- * Date: 12.12.17
- * Time: 11:44
- */
-
 namespace Hanaboso\PipesFramework\Metrics\Dto;
 
 /**

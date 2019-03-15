@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: pavel.severyn
- * Date: 29.8.17
- * Time: 10:28
- */
-
 namespace Hanaboso\PipesFramework\RabbitMq\Consumer;
 
 use Bunny\Channel;
@@ -16,9 +9,9 @@ use Hanaboso\PipesFramework\RabbitMq\CallbackStatus;
 use Hanaboso\PipesFramework\RabbitMq\Exception\RabbitMqException;
 
 /**
- * Class BaseConsumerAbstract
+ * Class BaseSyncConsumerAbstract
  *
- * @package Hanaboso\PipesFramework\RabbitMq\Base
+ * @package Hanaboso\PipesFramework\RabbitMq\Consumer
  */
 abstract class BaseSyncConsumerAbstract extends SyncConsumerAbstract
 {

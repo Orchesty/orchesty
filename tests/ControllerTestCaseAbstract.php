@@ -54,7 +54,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     protected $encoder;
 
     /**
-     * DatabaseTestCase constructor.
+     * ControllerTestCaseAbstract constructor.
      *
      * @param null   $name
      * @param array  $data

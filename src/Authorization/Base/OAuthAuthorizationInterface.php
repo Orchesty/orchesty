@@ -3,7 +3,7 @@
 namespace Hanaboso\PipesFramework\Authorization\Base;
 
 /**
- * Interface OAuthorizationInterface
+ * Interface OAuthAuthorizationInterface
  *
  * @package Hanaboso\PipesFramework\Authorization\Base
  */

@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: venca
- * Date: 3/19/18
- * Time: 1:46 PM
- */
-
 namespace Hanaboso\PipesFramework\HbPFLogsBundle\Handler;
 
 use Hanaboso\MongoDataGrid\GridRequestDto;

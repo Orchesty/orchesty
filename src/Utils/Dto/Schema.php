@@ -7,7 +7,7 @@ use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 /**
  * Class Schema
  *
- * @package CleverConnectors\AppBundle\Utils\Dto
+ * @package Hanaboso\PipesFramework\Utils\Dto
  */
 class Schema
 {

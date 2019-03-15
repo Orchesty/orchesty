@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: Pavel Severyn
- * Date: 22.8.17
- * Time: 12:42
- */
-
 namespace Hanaboso\PipesFramework\RabbitMq\Producer;
 
 use Bunny\Channel;
@@ -23,7 +16,7 @@ use Psr\Log\NullLogger;
 /**
  * Class AbstractProducer
  *
- * @package Hanaboso\PipesFramework\RabbitMq\Base
+ * @package Hanaboso\PipesFramework\RabbitMq\Producer
  */
 class AbstractProducer implements LoggerAwareInterface
 {

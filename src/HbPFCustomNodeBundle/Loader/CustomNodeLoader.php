@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: david.horacek
- * Date: 8/25/17
- * Time: 1:36 PM
- */
-
 namespace Hanaboso\PipesFramework\HbPFCustomNodeBundle\Loader;
 
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;

@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: radek.jirsa
- * Date: 25.9.17
- * Time: 17:20
- */
-
 namespace Hanaboso\PipesFramework\Authorization\Provider\Dto;
 
 /**

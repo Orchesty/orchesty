@@ -16,7 +16,7 @@ use Throwable;
 /**
  * Class AuthorizationController
  *
- * @package Hanaboso\PipesFramework\HbPFCommonsBundle\Controller
+ * @package Hanaboso\PipesFramework\HbPFAuthorizationBundle\Controller
  */
 class AuthorizationController extends FOSRestController
 {

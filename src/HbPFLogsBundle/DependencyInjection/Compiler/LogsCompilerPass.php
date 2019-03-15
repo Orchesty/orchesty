@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: venca
- * Date: 3/20/18
- * Time: 9:38 AM
- */
-
 namespace Hanaboso\PipesFramework\HbPFLogsBundle\DependencyInjection\Compiler;
 
 use Hanaboso\PipesFramework\HbPFLogsBundle\HbPFLogsBundle;

@@ -7,7 +7,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Hanaboso\CommonsBundle\Traits\Document\IdTrait;
 
 /**
- * Class LogsDocument
+ * Class Logs
  *
  * @package Hanaboso\PipesFramework\Logs\Document
  *

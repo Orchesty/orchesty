@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: stanislav.kundrat
- * Date: 8/29/17
- * Time: 4:35 PM
- */
-
 namespace Tests\Controller\HbPFJoinerBundle\Controller;
 
 use Hanaboso\PipesFramework\HbPFJoinerBundle\Handler\JoinerHandler;
@@ -15,7 +8,7 @@ use Tests\ControllerTestCaseAbstract;
 /**
  * Class JoinerControllerTest
  *
- * @package Controller\HbPFJoinerBundle\Controller
+ * @package Tests\Controller\HbPFJoinerBundle\Controller
  */
 final class JoinerControllerTest extends ControllerTestCaseAbstract
 {

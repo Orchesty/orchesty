@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: venca
- * Date: 25.9.17
- * Time: 16:46
- */
-
 namespace Hanaboso\PipesFramework\RabbitMq\Impl\AsyncDemo;
 
 use Bunny\Message;
@@ -25,7 +18,7 @@ use function React\Promise\all;
 /**
  * Class DemoCallback
  *
- * @package Hanaboso\PipesFramework\Commons\RabbitMq\AsyncDemo
+ * @package Hanaboso\PipesFramework\RabbitMq\Impl\AsyncDemo
  */
 class DemoCallback implements BatchActionInterface
 {

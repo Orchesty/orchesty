@@ -5,9 +5,9 @@ namespace Hanaboso\PipesFramework\HbPFAuthorizationBundle;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
- * Class HbPFMailerBundle
+ * Class HbPFAuthorizationBundle
  *
- * @package Hanaboso\PipesFramework\HbPFMailerBundle
+ * @package Hanaboso\PipesFramework\HbPFAuthorizationBundle
  */
 class HbPFAuthorizationBundle extends Bundle
 {

@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: venca
- * Date: 25.9.17
- * Time: 11:10
- */
-
 namespace Hanaboso\PipesFramework\RabbitMq\Consumer;
 
 use Psr\Log\LoggerInterface;
@@ -15,7 +8,7 @@ use Psr\Log\NullLogger;
 /**
  * Class ConsumerAbstract
  *
- * @package Hanaboso\PipesFramework\RabbitMqBundle\Consumer
+ * @package Hanaboso\PipesFramework\RabbitMq\Consumer
  */
 abstract class ConsumerAbstract
 {
@@ -86,7 +79,7 @@ abstract class ConsumerAbstract
     private $serializer;
 
     /**
-     * AbstractConsumer constructor.
+     * ConsumerAbstract constructor.
      *
      * @param string      $exchange
      * @param string      $routingKey

@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: david.horacek
- * Date: 8/25/17
- * Time: 2:57 PM
- */
-
 namespace Tests\Unit\HbPFJoinerBundle\Handler;
 
 use Exception;
@@ -14,7 +7,7 @@ use Hanaboso\PipesFramework\HbPFJoinerBundle\Exception\JoinerException;
 use Tests\KernelTestCaseAbstract;
 
 /**
- * Class JoinerHandler
+ * Class JoinerHandlerTest
  *
  * @package Tests\Unit\HbPFJoinerBundle\Handler
  */

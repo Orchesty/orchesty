@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: Pavel Severyn
- * Date: 31.8.17
- * Time: 22:01
- */
-
 namespace Tests\Unit\RabbitMq\Consumer;
 
 use Bunny\Channel;
@@ -19,9 +12,9 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Class BaseCallbackAbstractTest
+ * Class SyncCallbackAbstractTest
  *
- * @package Tests\Unit\RabbitMq\Base
+ * @package Tests\Unit\RabbitMq\Consumer
  */
 final class SyncCallbackAbstractTest extends TestCase
 {
@@ -108,7 +101,7 @@ final class SyncCallbackAbstractTest extends TestCase
             private $callbackStatus;
 
             /**
-             *  constructor.
+             * SyncCallbackAbstract constructor.
              *
              * @param int|null $callbackStatus
              */

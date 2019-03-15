@@ -8,9 +8,9 @@ use MongoDB\BSON\ObjectID;
 use Tests\DatabaseTestCaseAbstract;
 
 /**
- * Class DocumentListenerTest
+ * Class AuthorizationTest
  *
- * @package Tests\Integration\Authorization\DocumentListener
+ * @package Tests\Integration\Authorization\Document
  */
 final class AuthorizationTest extends DatabaseTestCaseAbstract
 {

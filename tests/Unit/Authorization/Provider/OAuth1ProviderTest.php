@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: radek.jirsa
- * Date: 18.8.17
- * Time: 10:30
- */
-
 namespace Tests\Unit\Authorization\Provider;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -23,7 +16,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * Class OAuth1ProviderTest
  *
- * @package Unit\Authorization\Provider
+ * @package Tests\Unit\Authorization\Provider
  */
 final class OAuth1ProviderTest extends TestCase
 {

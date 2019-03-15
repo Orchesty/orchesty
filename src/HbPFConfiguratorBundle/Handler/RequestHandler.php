@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: Pavel Severyn
- * Date: 17.10.17
- * Time: 8:28
- */
-
 namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler;
 
 use GuzzleHttp\Psr7\Uri;
@@ -18,9 +11,9 @@ use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 
 /**
- * Class ReqeustHandler
+ * Class RequestHandler
  *
- * @package Hanaboso\PipesFramework\TopologyGenerator\Request
+ * @package Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler
  */
 class RequestHandler
 {
@@ -42,7 +35,7 @@ class RequestHandler
     protected $curlManager;
 
     /**
-     * ReqeustHandler constructor.
+     * RequestHandler constructor.
      *
      * @param CurlManagerInterface $curlManager
      */

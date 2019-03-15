@@ -8,7 +8,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 /**
  * Class Magento2ModulesConnector
  *
- * @package Hanaboso\PipesFramework\Connector\Impl\Magento2Old
+ * @package Hanaboso\PipesFramework\Connector\Impl\Magento2
  */
 class Magento2ModulesConnector extends Magento2Base
 {

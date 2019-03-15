@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: Admin
- * Date: 16.3.2017
- * Time: 16:25
- */
-
 namespace Hanaboso\PipesFramework\HbPFAuthorizationBundle\Loader;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -19,7 +12,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Yaml\Yaml;
 
 /**
- * Class AuthorizationRepository
+ * Class AuthorizationLoader
  *
  * @package Hanaboso\PipesFramework\HbPFAuthorizationBundle\Loader
  */
@@ -39,7 +32,7 @@ class AuthorizationLoader
     private $dm;
 
     /**
-     * AuthorizationRepository constructor.
+     * AuthorizationLoader constructor.
      *
      * @param ContainerInterface $container
      * @param DocumentManager    $dm

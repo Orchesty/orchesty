@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: radek.jirsa
- * Date: 1.12.17
- * Time: 10:33
- */
-
 namespace Hanaboso\PipesFramework;
 
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;

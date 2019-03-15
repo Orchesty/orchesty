@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: Pavel Severyn
- * Date: 22.8.17
- * Time: 12:57
- */
-
 namespace Hanaboso\PipesFramework\RabbitMq\Consumer;
 
 use Bunny\Channel;
@@ -15,9 +8,9 @@ use Bunny\Message;
 use Psr\Log\LoggerAwareInterface;
 
 /**
- * Class AbstractConsumer
+ * Class SyncConsumerAbstract
  *
- * @package RabbitMqBundle\Consumer
+ * @package Hanaboso\PipesFramework\RabbitMq\Consumer
  */
 abstract class SyncConsumerAbstract extends ConsumerAbstract implements LoggerAwareInterface
 {
@@ -48,7 +41,7 @@ abstract class SyncConsumerAbstract extends ConsumerAbstract implements LoggerAw
     private $maxSeconds;
 
     /**
-     * AbstractConsumer constructor.
+     * SyncConsumerAbstract constructor.
      *
      * @param string      $exchange
      * @param string      $routingKey
@@ -62,8 +55,8 @@ abstract class SyncConsumerAbstract extends ConsumerAbstract implements LoggerAw
      * @param int         $prefetchCount
      * @param int         $prefetchSize
      * @param string|null $serializer
-     * @param null|string $setUpMethod
-     * @param null|string $tickMethod
+     * @param string|null $setUpMethod
+     * @param string|null $tickMethod
      * @param int|null    $tickSeconds
      * @param int|null    $maxMessages
      * @param int|null    $maxSeconds

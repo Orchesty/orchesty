@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: venca
- * Date: 10/2/17
- * Time: 10:11 AM
- */
-
 namespace Hanaboso\PipesFramework\RabbitMq\Impl\Batch;
 
 use Bunny\Async\Client;
@@ -31,7 +24,7 @@ use function React\Promise\reject;
 use function React\Promise\resolve;
 
 /**
- * Class BatchCallback
+ * Class BatchConsumerCallback
  *
  * @package Hanaboso\PipesFramework\RabbitMq\Impl\Batch
  */
@@ -65,7 +58,7 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
     private $currentMetrics = [];
 
     /**
-     * BatchCallback constructor.
+     * BatchConsumerCallback constructor.
      *
      * @param BatchActionInterface $batchAction
      * @param InfluxDbSender       $sender
@@ -228,9 +221,14 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
                     });
             })->always(function () use ($message, &$replyChannel): void {
 
+                /** @var Channel|null $channel */
+                $channel      = $replyChannel;
+                $replyChannel = $channel;
+
                 if ($replyChannel !== NULL) {
                     $replyChannel->close();
                     unset($replyChannel);
+                    unset($channel);
                 }
 
                 $this->sendMetrics($message, $this->currentMetrics);

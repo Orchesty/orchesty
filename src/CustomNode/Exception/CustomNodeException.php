@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: venca
- * Date: 6.10.17
- * Time: 13:19
- */
-
 namespace Hanaboso\PipesFramework\CustomNode\Exception;
 
 use Exception;

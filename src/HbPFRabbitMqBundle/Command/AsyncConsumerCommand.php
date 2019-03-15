@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: venca
- * Date: 19.9.17
- * Time: 8:39
- */
-
 namespace Hanaboso\PipesFramework\HbPFRabbitMqBundle\Command;
 
 use Bunny\Async\Client;
@@ -33,7 +26,7 @@ use function React\Promise\resolve;
 /**
  * Class AsyncConsumerCommand
  *
- * @package Hanaboso\PipesFramework\RabbitMqBundle\Command
+ * @package Hanaboso\PipesFramework\HbPFRabbitMqBundle\Command
  */
 class AsyncConsumerCommand extends Command implements LoggerAwareInterface
 {

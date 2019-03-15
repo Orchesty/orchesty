@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: venca
- * Date: 10/3/17
- * Time: 3:49 PM
- */
-
 namespace Tests\Unit\RabbitMq\Impl\Batch;
 
 use Bunny\Async\Client;
@@ -25,7 +18,7 @@ use React\EventLoop\Factory;
 use function React\Promise\resolve;
 
 /**
- * Class BatchCallbackTest
+ * Class BatchConsumerCallbackTest
  *
  * @package Tests\Unit\RabbitMq\Impl\Batch
  */

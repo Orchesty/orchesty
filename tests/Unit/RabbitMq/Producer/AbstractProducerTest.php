@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: Pavel Severyn
- * Date: 23.8.17
- * Time: 17:04
- */
-
 namespace Tests\Unit\RabbitMq\Producer;
 
 use Bunny\Channel;
@@ -22,7 +15,7 @@ use Tests\KernelTestCaseAbstract;
 /**
  * Class AbstractProducerTest
  *
- * @package Tests\Unit\RabbitMq\Base
+ * @package Tests\Unit\RabbitMq\Producer
  */
 final class AbstractProducerTest extends KernelTestCaseAbstract
 {

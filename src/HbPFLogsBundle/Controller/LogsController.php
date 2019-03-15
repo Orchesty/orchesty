@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: david.horacek
- * Date: 8/25/17
- * Time: 1:53 PM
- */
-
 namespace Hanaboso\PipesFramework\HbPFLogsBundle\Controller;
 
 use FOS\RestBundle\Controller\FOSRestController;
@@ -19,9 +12,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * Class JoinerController
+ * Class LogsController
  *
- * @package Hanaboso\PipesFramework\HbPFJoinerBundle\Controller
+ * @package Hanaboso\PipesFramework\HbPFLogsBundle\Controller
  */
 class LogsController extends FOSRestController
 {

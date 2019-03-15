@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: venca
- * Date: 6.10.17
- * Time: 19:18
- */
-
 namespace Hanaboso\PipesFramework\RabbitMq\Impl\Batch;
 
 use Bunny\Message;
@@ -35,7 +28,7 @@ abstract class BatchActionAbstract implements BatchActionInterface, LoggerAwareI
     protected $logger;
 
     /**
-     * CronBatchActionCallback constructor.
+     * BatchActionAbstract constructor.
      */
     public function __construct()
     {

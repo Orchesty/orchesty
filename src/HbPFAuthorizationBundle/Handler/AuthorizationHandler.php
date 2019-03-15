@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: david.horacek
- * Date: 8/16/17
- * Time: 10:33 AM
- */
-
 namespace Hanaboso\PipesFramework\HbPFAuthorizationBundle\Handler;
 
 use Doctrine\ODM\MongoDB\MongoDBException;

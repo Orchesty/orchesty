@@ -7,7 +7,7 @@ use Hanaboso\AclBundle\Enum\ResourceEnum as AclResourceEnum;
 /**
  * Class ResourceEnum
  *
- * @package Hanaboso\PipesFramework\Acl\Enum
+ * @package Hanaboso\PipesFramework
  */
 class ResourceEnum extends AclResourceEnum
 {

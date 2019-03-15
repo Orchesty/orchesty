@@ -1,12 +1,5 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: Admin
- * Date: 17.3.2017
- * Time: 14:35
- */
-
 namespace Hanaboso\PipesFramework\Authorization\Impl\Magento2;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -23,7 +16,7 @@ use Psr\Log\NullLogger;
 /**
  * Class Magento2OAuthAuthorization
  *
- * @package Hanaboso\PipesFramework\Authorization\Impl\Magento2Old
+ * @package Hanaboso\PipesFramework\Authorization\Impl\Magento2
  */
 class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements Magento2AuthorizationInterface, LoggerAwareInterface
 {

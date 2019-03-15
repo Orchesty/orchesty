@@ -1,18 +1,11 @@
 <?php declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: venca
- * Date: 5.10.17
- * Time: 10:23
- */
-
 namespace Hanaboso\PipesFramework\Utils;
 
 use Nette\Utils\Strings;
 
 /**
- * Class Strings
+ * Class StringUtil
  *
  * @package Hanaboso\PipesFramework\Utils
  */
