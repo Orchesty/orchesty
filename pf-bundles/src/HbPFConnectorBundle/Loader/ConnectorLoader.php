@@ -4,8 +4,8 @@ namespace Hanaboso\PipesFramework\HbPFConnectorBundle\Loader;
 
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
+use Hanaboso\PipesFramework\Utils\NodeServiceLoaderUtil;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Yaml\Yaml;
 
 /**
  * Class ConnectorLoader
@@ -62,19 +62,9 @@ class ConnectorLoader
      */
     public function getAllConnectors(array $exclude = []): array
     {
-        $list = Yaml::parse((string) file_get_contents(__DIR__ . '/../Resources/config/connectors.yml'));
-        $res  = [];
+        $dirs = $this->container->getParameter('node_services_dirs');
 
-        foreach (array_keys($list['services']) as $key) {
-            $shortened = str_replace(sprintf('%s.', self::CONNECTOR_PREFIX), '', (string) $key);
-            if (in_array($shortened, $exclude)) {
-                unset($exclude[$shortened]);
-                continue;
-            }
-            $res[] = $shortened;
-        }
-
-        return $res;
+        return NodeServiceLoaderUtil::getServices($dirs, self::CONNECTOR_PREFIX, $exclude);
     }
 
 }

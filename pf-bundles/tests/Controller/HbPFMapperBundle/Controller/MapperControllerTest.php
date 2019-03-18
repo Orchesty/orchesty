@@ -59,4 +59,30 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
         $this->client->getContainer()->set('hbpf.mapper.handler.mapper', $mapperHandlerMock);
     }
 
+    /**
+     * @throws \ReflectionException
+     */
+    public function testGetListOfCustomNodes(): void
+    {
+        $this->mockNodeControllerHandler();
+        $this->client->request('GET', '/mapper/list');
+
+        $response = $this->client->getResponse();
+
+        self::assertTrue(in_array('handler.mapper', json_decode($response->getContent())));
+        self::assertEquals(200, $response->getStatusCode());
+    }
+
+    /**
+     * @throws \ReflectionException
+     */
+    private function mockNodeControllerHandler(): void
+    {
+        $handler = $this->getMockBuilder(MapperHandler::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $handler->method('getMappers');
+    }
+
 }

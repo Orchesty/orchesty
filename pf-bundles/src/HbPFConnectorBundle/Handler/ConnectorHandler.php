@@ -81,4 +81,12 @@ class ConnectorHandler
         return $this->connManager->processAction($conn, $request);
     }
 
+    /**
+     * @return array
+     */
+    public function getConnectors(): array
+    {
+        return $this->loader->getAllConnectors();
+    }
+
 }

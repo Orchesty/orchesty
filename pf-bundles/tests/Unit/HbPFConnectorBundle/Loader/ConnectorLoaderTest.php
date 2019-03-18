@@ -39,16 +39,4 @@ final class ConnectorLoaderTest extends KernelTestCaseAbstract
         self::assertInstanceOf(Magento2OrdersConnector::class, $conn);
     }
 
-    /**
-     * @covers ConnectorLoader::getAllConnectors()
-     */
-    public function testGetAllConnector(): void
-    {
-        $exclude = ['magento2.modules'];
-        $conns   = $this->loader->getAllConnectors($exclude);
-
-        self::assertNotEmpty($conns);
-        self::assertFalse(in_array('magento2.modules', $conns));
-    }
-
 }

@@ -50,4 +50,29 @@ class NodeController extends AbstractFOSRestController
         return $this->forward('HbPFConfiguratorBundle:Node:updateNode', ['id' => $id]);
     }
 
+    /**
+     * @Route("/nodes/{type}/list_nodes", requirements={"type"="connector|custom_node|joiner|mapper"}, methods={"GET"})
+     *
+     * @param string $type
+     *
+     * @return Response
+     */
+    public function listOfNodesAction(string $type)
+    {
+        switch ($type) {
+            case 'connector':
+                return $this->forward('HbPFConnectorBundle:Connector:listOfConnectors');
+                break;
+            case 'custom_node':
+                return $this->forward('HbPFCustomNodeBundle:CustomNode:listOfCustomNodes');
+                break;
+            case 'joiner':
+                return $this->forward('HbPFCustomNodeBundle:CustomNode:listOfCustomNodes');
+                break;
+            case 'mapper':
+                return $this->forward('HbPFMapperBundle:Mapper:listOfMappers');
+                break;
+        }
+    }
+
 }

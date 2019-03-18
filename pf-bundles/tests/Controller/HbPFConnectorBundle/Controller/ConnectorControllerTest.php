@@ -63,4 +63,30 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
         $this->client->getContainer()->set('hbpf.handler.connector', $handler);
     }
 
+    /**
+     * @throws \ReflectionException
+     */
+    public function testGetListOfConnectors(): void
+    {
+        $this->mockConnectorsHandler();
+        $this->client->request('GET', '/connector/list');
+
+        $response = $this->client->getResponse();
+
+        self::assertTrue(in_array('magento2.modules', json_decode($response->getContent())));
+        self::assertEquals(200, $response->getStatusCode());
+    }
+
+    /**
+     * @throws \ReflectionException
+     */
+    private function mockConnectorsHandler(): void
+    {
+        $handler = $this->getMockBuilder(ConnectorHandler::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $handler->method('getConnectors');
+    }
+
 }

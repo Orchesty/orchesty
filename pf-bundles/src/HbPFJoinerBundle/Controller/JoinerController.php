@@ -2,6 +2,7 @@
 
 namespace Hanaboso\PipesFramework\HbPFJoinerBundle\Controller;
 
+use Exception;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\HbPFJoinerBundle\Exception\JoinerException;
@@ -9,6 +10,7 @@ use Hanaboso\PipesFramework\HbPFJoinerBundle\Handler\JoinerHandler;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Throwable;
 
 /**
  * Class JoinerController
@@ -70,6 +72,23 @@ class JoinerController extends AbstractFOSRestController
             return $this->getResponse([]);
         } catch (JoinerException $e) {
             return $this->getErrorResponse($e);
+        }
+    }
+
+    /**
+     * @Route("/joiner/list", methods={"GET"})
+     *
+     * @return Response
+     */
+    public function listOfJoinersAction(): Response
+    {
+        try {
+            $data = $this->joinerHandler->getJoiners();
+
+            return $this->getResponse($data);
+        } catch (Exception|Throwable $e) {
+
+            return $this->getErrorResponse($e, 500);
         }
     }
 

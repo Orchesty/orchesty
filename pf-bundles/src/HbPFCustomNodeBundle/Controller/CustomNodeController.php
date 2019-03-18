@@ -93,6 +93,25 @@ class CustomNodeController extends AbstractFOSRestController implements LoggerAw
     }
 
     /**
+     * @Route("/custom_node/list", methods={"GET"})
+     *
+     * @return Response
+     */
+    public function listOfCustomNodesAction(): Response
+    {
+        try {
+            $data = $this->handler->getCustomNodes();
+
+            return $this->getResponse($data);
+        } catch (Exception|Throwable $e) {
+            $this->logger->error($e->getMessage(), ['exception' => $e]);
+
+            return $this->getErrorResponse($e, 500);
+        }
+
+    }
+
+    /**
      * @param LoggerInterface $logger
      *
      * @required

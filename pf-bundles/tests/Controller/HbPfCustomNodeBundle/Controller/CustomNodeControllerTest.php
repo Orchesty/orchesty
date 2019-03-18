@@ -63,4 +63,30 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
         $this->client->getContainer()->set('hbpf.handler.custom_node', $joinerHandlerMock);
     }
 
+    /**
+     * @throws \ReflectionException
+     */
+    public function testGetListOfCustomNodes(): void
+    {
+        $this->mockNodeControllerHandler();
+        $this->client->request('GET', '/custom_node/list');
+
+        $response = $this->client->getResponse();
+
+        self::assertTrue(in_array('microsleep500000', json_decode($response->getContent())));
+        self::assertEquals(200, $response->getStatusCode());
+    }
+
+    /**
+     * @throws \ReflectionException
+     */
+    private function mockNodeControllerHandler(): void
+    {
+        $handler = $this->getMockBuilder(CustomNodeHandler::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $handler->method('getCustomNodes');
+    }
+
 }
