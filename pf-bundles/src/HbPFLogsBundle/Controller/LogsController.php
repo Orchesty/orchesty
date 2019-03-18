@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesFramework\HbPFLogsBundle\Controller;
 
-use FOS\RestBundle\Controller\FOSRestController;
+use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\MongoDataGrid\GridRequestDto;
 use Hanaboso\PipesFramework\HbPFLogsBundle\Handler\LogsHandler;
@@ -16,7 +16,7 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @package Hanaboso\PipesFramework\HbPFLogsBundle\Controller
  */
-class LogsController extends FOSRestController
+class LogsController extends AbstractFOSRestController
 {
 
     use ControllerTrait;

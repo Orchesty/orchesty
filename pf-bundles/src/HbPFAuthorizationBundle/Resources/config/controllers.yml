@@ -1,11 +1,10 @@
 services:
     _defaults:
-        autowire: true
-        autoconfigure: true
-        public: false
-        bind:
-            $authorizationHandler: '@hbpf.handler.authorization'
+        public: '%public.services%'
 
-    Hanaboso\PipesFramework\HbPFAuthorizationBundle\Controller\:
-        resource: '../../Controller'
-        tags: ['controller.service_arguments']
+    Hanaboso\PipesFramework\HbPFAuthorizationBundle\Controller\AuthorizationController:
+        class: Hanaboso\PipesFramework\HbPFAuthorizationBundle\Controller\AuthorizationController
+        arguments:
+            - '@hbpf.handler.authorization'
+        calls:
+            - ['setContainer', ['@service_container']]

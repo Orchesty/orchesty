@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller;
 
-use FOS\RestBundle\Controller\FOSRestController;
+use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler;
@@ -16,7 +16,7 @@ use Throwable;
  *
  * @package Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller
  */
-class TopologyController extends FOSRestController
+class TopologyController extends AbstractFOSRestController
 {
 
     use ControllerTrait;
