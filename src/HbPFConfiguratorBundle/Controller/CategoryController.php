@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller;
 
-use FOS\RestBundle\Controller\FOSRestController;
+use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\Category\Exception\CategoryException;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler;
@@ -16,7 +16,7 @@ use Throwable;
  *
  * @package Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller
  */
-class CategoryController extends FOSRestController
+class CategoryController extends AbstractFOSRestController
 {
 
     use ControllerTrait;

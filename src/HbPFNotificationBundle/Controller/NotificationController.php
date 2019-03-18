@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesFramework\HbPFNotificationBundle\Controller;
 
-use FOS\RestBundle\Controller\FOSRestController;
+use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\HbPFNotificationBundle\Handler\NotificationHandler;
 use Hanaboso\PipesFramework\Notification\Exception\NotificationException;
@@ -16,7 +16,7 @@ use Throwable;
  *
  * @package Hanaboso\PipesFramework\HbPFNotificationBundle\Controller
  */
-class NotificationController extends FOSRestController
+class NotificationController extends AbstractFOSRestController
 {
 
     use ControllerTrait;

@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesFramework\HbPFMetricsBundle\Controller;
 
-use FOS\RestBundle\Controller\FOSRestController;
+use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler;
 use Symfony\Component\HttpFoundation\ParameterBag;
@@ -16,7 +16,7 @@ use Throwable;
  *
  * @package Hanaboso\PipesFramework\HbPFMetricsBundle\Controller
  */
-class MetricsController extends FOSRestController
+class MetricsController extends AbstractFOSRestController
 {
 
     use ControllerTrait;

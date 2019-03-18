@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesFramework\HbPFMapperBundle\Controller;
 
-use FOS\RestBundle\Controller\FOSRestController;
+use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\HbPFMapperBundle\Exception\MapperException;
 use Hanaboso\PipesFramework\HbPFMapperBundle\Handler\MapperHandler;
@@ -15,7 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @package Hanaboso\PipesFramework\HbPFMapperBundle\Controller
  */
-class MapperController extends FOSRestController
+class MapperController extends AbstractFOSRestController
 {
 
     use ControllerTrait;

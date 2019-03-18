@@ -3,7 +3,7 @@
 namespace Hanaboso\PipesFramework\HbPFConnectorBundle\Controller;
 
 use Exception;
-use FOS\RestBundle\Controller\FOSRestController;
+use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\CommonsBundle\Utils\ControllerUtils;
 use Hanaboso\PipesFramework\HbPFConnectorBundle\Handler\ConnectorHandler;
@@ -21,7 +21,7 @@ use Throwable;
  * @package Hanaboso\PipesFramework\HbPFConnectorBundle\Controller
  * @todo    remove logger
  */
-class ConnectorController extends FOSRestController implements LoggerAwareInterface
+class ConnectorController extends AbstractFOSRestController implements LoggerAwareInterface
 {
 
     use ControllerTrait;

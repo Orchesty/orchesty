@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesFramework\HbPFJoinerBundle\Controller;
 
-use FOS\RestBundle\Controller\FOSRestController;
+use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\HbPFJoinerBundle\Exception\JoinerException;
 use Hanaboso\PipesFramework\HbPFJoinerBundle\Handler\JoinerHandler;
@@ -15,7 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @package Hanaboso\PipesFramework\HbPFJoinerBundle\Controller
  */
-class JoinerController extends FOSRestController
+class JoinerController extends AbstractFOSRestController
 {
 
     use ControllerTrait;

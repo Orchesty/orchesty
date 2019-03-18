@@ -2,11 +2,12 @@
 
 namespace Hanaboso\PipesFramework\HbPFAuthorizationBundle\Controller;
 
-use FOS\RestBundle\Controller\FOSRestController;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesFramework\HbPFAuthorizationBundle\Handler\AuthorizationHandler;
 use InvalidArgumentException;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,7 +19,7 @@ use Throwable;
  *
  * @package Hanaboso\PipesFramework\HbPFAuthorizationBundle\Controller
  */
-class AuthorizationController extends FOSRestController
+class AuthorizationController extends AbstractController
 {
 
     use ControllerTrait;
@@ -105,7 +106,10 @@ class AuthorizationController extends FOSRestController
         try {
             $this->authorizationHandler->saveToken($request->request->all(), $authorizationId);
 
-            return new RedirectResponse($this->container->getParameter('frontend_host') . '/close-me.html');
+            /** @var ContainerInterface $container */
+            $container = $this->container;
+
+            return new RedirectResponse($container->getParameter('frontend_host') . '/close-me.html');
         } catch (AuthorizationException | Throwable $e) {
             return $this->getErrorResponse($e);
         }

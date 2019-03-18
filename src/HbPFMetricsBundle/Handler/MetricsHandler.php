@@ -95,9 +95,9 @@ class MetricsHandler
      * @param string $id
      *
      * @return Topology
-     * @throws MetricsException
      * @throws LockException
      * @throws MappingException
+     * @throws MetricsException
      */
     private function getTopologyById(string $id): Topology
     {

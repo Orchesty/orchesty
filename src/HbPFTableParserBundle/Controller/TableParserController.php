@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesFramework\HbPFTableParserBundle\Controller;
 
-use FOS\RestBundle\Controller\FOSRestController;
+use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Hanaboso\CommonsBundle\Exception\FileStorageException;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\HbPFTableParserBundle\Handler\TableParserHandler;
@@ -18,7 +18,7 @@ use Throwable;
  *
  * @package Hanaboso\PipesFramework\HbPFTableParserBundle\Controller
  */
-class TableParserController extends FOSRestController
+class TableParserController extends AbstractFOSRestController
 {
 
     use ControllerTrait;
