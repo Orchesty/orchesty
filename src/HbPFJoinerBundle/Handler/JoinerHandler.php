@@ -66,4 +66,12 @@ class JoinerHandler
         }
     }
 
+    /**
+     * @return array
+     */
+    public function getJoiners(): array
+    {
+        return $this->loader->getAllJoiners();
+    }
+
 }

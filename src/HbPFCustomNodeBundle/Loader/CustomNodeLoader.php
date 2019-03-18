@@ -4,6 +4,7 @@ namespace Hanaboso\PipesFramework\HbPFCustomNodeBundle\Loader;
 
 use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
 use Hanaboso\PipesFramework\HbPFCustomNodeBundle\Exception\CustomNodeException;
+use Hanaboso\PipesFramework\Utils\NodeServiceLoaderUtil;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -51,6 +52,18 @@ final class CustomNodeLoader
             sprintf('Node [%s] not found.', $serviceName),
             CustomNodeException::CUSTOM_NODE_SERVICE_NOT_FOUND
         );
+    }
+
+    /**
+     * @param array $exclude
+     *
+     * @return array
+     */
+    public function getAllCustomNodes(array $exclude = []): array
+    {
+        $dirs = $this->container->getParameter('node_services_dirs');
+
+        return NodeServiceLoaderUtil::getServices($dirs, self::PREFIX, $exclude);
     }
 
 }

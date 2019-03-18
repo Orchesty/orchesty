@@ -58,4 +58,12 @@ class CustomNodeHandler
         $this->loader->get($joinerId);
     }
 
+    /**
+     * @return array
+     */
+    public function getCustomNodes(): array
+    {
+        return $this->loader->getAllCustomNodes();
+    }
+
 }

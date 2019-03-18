@@ -2,7 +2,10 @@
 
 namespace Tests\Controller\HbPFConfiguratorBundle\Controller;
 
+use Exception;
+use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NodeController;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler;
+use Hanaboso\PipesFramework\HbPFConnectorBundle\Handler\ConnectorHandler;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Tests\ControllerTestCaseAbstract;
 
@@ -84,6 +87,37 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
         $nodeHandlerMock->method($methodName)->willReturn($returnValue);
 
         $this->client->getContainer()->set('hbpf.configurator.handler.node', $nodeHandlerMock);
+    }
+
+    /**
+     * @covers NodeController::listOfNodesAction()
+     *
+     * @throws Exception
+     */
+    public function testListOfNodes()
+    {
+        $type = 'connector';
+        $this->prepareNodeMock(ConnectorHandler::class, 'getConnectors');
+
+        $response = $this->sendGet(sprintf('/api/nodes/%s/list_nodes', $type));
+        $content  = $response->content;
+
+        self::assertEquals(200, $response->status);
+        self::assertEquals(['magento2.orders', 'magento2.modules', 'magento2.customers'], $content);
+
+        $type     = 'config';
+        $response = $this->sendGet(sprintf('/api/nodes/%s/list_nodes', $type));
+
+        self::assertEquals(404, $response->status);
+    }
+
+    private function prepareNodeMock(string $className, string $methodName): void
+    {
+        $nodeHandlerMock = $this->getMockBuilder($className)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $nodeHandlerMock->method($methodName);
     }
 
 }

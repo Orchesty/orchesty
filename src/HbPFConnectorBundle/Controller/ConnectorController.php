@@ -132,6 +132,24 @@ class ConnectorController extends AbstractFOSRestController implements LoggerAwa
     }
 
     /**
+     * @Route("/connector/list", methods={"GET"})
+     *
+     * @return Response
+     */
+    public function listOfConnectorsAction(): Response
+    {
+        try {
+            $data = $this->connectorHandler->getConnectors();
+
+            return $this->getResponse($data);
+        } catch (Exception|Throwable $e) {
+            $this->logger->error($e->getMessage(), ['exception' => $e]);
+
+            return $this->getErrorResponse($e, 500);
+        }
+    }
+
+    /**
      * @param LoggerInterface $logger
      *
      * @return void

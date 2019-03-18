@@ -2,6 +2,7 @@
 
 namespace Hanaboso\PipesFramework\HbPFMapperBundle\Controller;
 
+use Exception;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\HbPFMapperBundle\Exception\MapperException;
@@ -9,6 +10,7 @@ use Hanaboso\PipesFramework\HbPFMapperBundle\Handler\MapperHandler;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Throwable;
 
 /**
  * Class MapperController
@@ -70,6 +72,23 @@ class MapperController extends AbstractFOSRestController
             return $this->getResponse([]);
         } catch (MapperException $e) {
             return $this->getErrorResponse($e);
+        }
+    }
+
+    /**
+     * @Route("/mapper/list", methods={"GET"})
+     *
+     * @return Response
+     */
+    public function listOfMappersAction(): Response
+    {
+        try {
+            $data = $this->mapperHandler->getMappers();
+
+            return $this->getResponse($data);
+        } catch (Exception|Throwable $e) {
+
+            return $this->getErrorResponse($e, 500);
         }
     }
 

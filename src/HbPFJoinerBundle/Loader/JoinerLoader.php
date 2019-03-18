@@ -4,6 +4,7 @@ namespace Hanaboso\PipesFramework\HbPFJoinerBundle\Loader;
 
 use Hanaboso\PipesFramework\HbPFJoinerBundle\Exception\JoinerException;
 use Hanaboso\PipesFramework\Joiner\JoinerInterface;
+use Hanaboso\PipesFramework\Utils\NodeServiceLoaderUtil;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -51,6 +52,18 @@ final class JoinerLoader
             sprintf('Joiner [%s] not found.', $joiner),
             JoinerException::JOINER_SERVICE_NOT_FOUND
         );
+    }
+
+    /**
+     * @param array $exclude
+     *
+     * @return array
+     */
+    public function getAllJoiners(array $exclude = []): array
+    {
+        $dirs = $this->container->getParameter('node_services_dirs');
+
+        return NodeServiceLoaderUtil::getServices($dirs, self::PREFIX, $exclude);
     }
 
 }

@@ -54,4 +54,12 @@ class MapperHandler
         return $data;
     }
 
+    /**
+     * @return array
+     */
+    public function getMappers(): array
+    {
+        return $this->mapperLoader->getAllMappers();
+    }
+
 }

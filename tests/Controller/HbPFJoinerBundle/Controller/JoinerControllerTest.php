@@ -66,4 +66,30 @@ final class JoinerControllerTest extends ControllerTestCaseAbstract
         $this->client->getContainer()->set('hbpf.handler.joiner', $joinerHandlerMock);
     }
 
+    /**
+     *
+     */
+    public function testGetListOfConnectors(): void
+    {
+        $this->mockConnectorsHandler();
+        $this->client->request('GET', '/joiner/list');
+
+        $response = $this->client->getResponse();
+
+        self::assertTrue(in_array('null', json_decode($response->getContent())));
+        self::assertEquals(200, $response->getStatusCode());
+    }
+
+    /**
+     * @throws \ReflectionException
+     */
+    private function mockConnectorsHandler(): void
+    {
+        $handler = $this->getMockBuilder(JoinerHandler::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $handler->method('getJoiners');
+    }
+
 }

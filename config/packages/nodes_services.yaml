@@ -1,0 +1,6 @@
+parameters:
+    node_services_dirs:
+        - '%kernel.root_dir%/HbPFConnectorBundle/Resources/config/'
+        - '%kernel.root_dir%/HbPFCustomNodeBundle/Resources/config/'
+        - '%kernel.root_dir%/HbPFJoinerBundle/Resources/config/'
+        - '%kernel.root_dir%/HbPFMapperBundle/Resources/config/'
