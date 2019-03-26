@@ -2,8 +2,24 @@
 
 namespace Hanaboso\PipesFramework\ApiGateway\Listener;
 
+use Hanaboso\CommonsBundle\Crypt\Exceptions\CryptException;
+use Hanaboso\CommonsBundle\Exception\EnumException;
+use Hanaboso\CommonsBundle\Exception\FileStorageException;
 use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
+use Hanaboso\CommonsBundle\Exception\PipesFrameworkExceptionAbstract;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
+use Hanaboso\CommonsBundle\Transport\Ftp\Exception\FtpException;
+use Hanaboso\CommonsBundle\Transport\Soap\SoapException;
+use Hanaboso\CommonsBundle\Utils\PipesHeaders;
+use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
+use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
+use Hanaboso\PipesFramework\CustomNode\Exception\CustomNodeException;
+use Hanaboso\PipesFramework\HbPFJoinerBundle\Exception\JoinerException;
+use Hanaboso\PipesFramework\HbPFMapperBundle\Exception\MapperException;
+use Hanaboso\PipesFramework\HbPFTableParserBundle\Handler\TableParserHandlerException;
+use Hanaboso\PipesFramework\LongRunningNode\Exception\LongRunningNodeException;
+use Hanaboso\PipesFramework\Notification\Exception\NotificationException;
+use Hanaboso\PipesFramework\Parser\Exception\TableParserException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -25,6 +41,28 @@ class ControllerExceptionListener implements EventSubscriberInterface, LoggerAwa
      * @var LoggerInterface
      */
     private $logger;
+
+    /**
+     * @var array
+     */
+    protected $exceptionClasses = [
+        SoapException::class,
+        FtpException::class,
+        PipesFrameworkException::class,
+        FileStorageException::class,
+        CryptException::class,
+        EnumException::class,
+        TableParserHandlerException::class,
+        CustomNodeException::class,
+        MapperException::class,
+        JoinerException::class,
+        LongRunningNodeException::class,
+        AuthorizationException::class,
+        NotificationException::class,
+        CustomNodeException::class,
+        ConnectorException::class,
+        TableParserException::class,
+    ];
 
     /**
      * ControllerExceptionListener constructor.
@@ -53,12 +91,19 @@ class ControllerExceptionListener implements EventSubscriberInterface, LoggerAwa
     {
         $e = $event->getException();
 
-        if (!$e instanceof PipesFrameworkException) {
+        if (!$e instanceof PipesFrameworkExceptionAbstract) {
             return;
         }
 
         $this->logger->error('Controller exception.', ['exception' => $e]);
-        $event->setResponse($this->getErrorResponse($e, 400));
+
+        $response = $this->getErrorResponse($e, 400);
+
+        if (in_array(get_class($e), $this->exceptionClasses)) {
+            $response->headers->set(PipesHeaders::createKey(PipesHeaders::RESULT_CODE), json_decode((string) 1006));
+        }
+
+        $event->setResponse($response);
     }
 
     /**
@@ -69,6 +114,18 @@ class ControllerExceptionListener implements EventSubscriberInterface, LoggerAwa
     public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
+    }
+
+    /**
+     * @param array $exceptionClasses
+     *
+     * @return ControllerExceptionListener
+     */
+    public function setExceptionClasses(array $exceptionClasses): ControllerExceptionListener
+    {
+        $this->exceptionClasses = $exceptionClasses;
+
+        return $this;
     }
 
 }

@@ -2,14 +2,14 @@
 
 namespace Hanaboso\PipesFramework\CustomNode\Exception;
 
-use Exception;
+use Hanaboso\CommonsBundle\Exception\PipesFrameworkExceptionAbstract;
 
 /**
  * Class CustomNodeException
  *
  * @package Hanaboso\PipesFramework\CustomNode\Exception
  */
-class CustomNodeException extends Exception
+class CustomNodeException extends PipesFrameworkExceptionAbstract
 {
 
     public const NO_PROCESS_ACTION = 1;

@@ -2,14 +2,14 @@
 
 namespace Hanaboso\PipesFramework\HbPFJoinerBundle\Exception;
 
-use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
+use Hanaboso\CommonsBundle\Exception\PipesFrameworkExceptionAbstract;
 
 /**
  * Class JoinerException
  *
  * @package Hanaboso\PipesFramework\HbPFJoinerBundle\Exception
  */
-final class JoinerException extends PipesFrameworkException
+final class JoinerException extends PipesFrameworkExceptionAbstract
 {
 
     protected const OFFSET = 1600;

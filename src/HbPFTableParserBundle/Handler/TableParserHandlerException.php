@@ -2,14 +2,14 @@
 
 namespace Hanaboso\PipesFramework\HbPFTableParserBundle\Handler;
 
-use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
+use Hanaboso\CommonsBundle\Exception\PipesFrameworkExceptionAbstract;
 
 /**
  * Class TableParserHandlerException
  *
  * @package Hanaboso\PipesFramework\HbPFTableParserBundle\Handler
  */
-final class TableParserHandlerException extends PipesFrameworkException
+final class TableParserHandlerException extends PipesFrameworkExceptionAbstract
 {
 
     protected const OFFSET = 400;
