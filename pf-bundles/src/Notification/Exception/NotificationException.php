@@ -2,14 +2,14 @@
 
 namespace Hanaboso\PipesFramework\Notification\Exception;
 
-use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
+use Hanaboso\CommonsBundle\Exception\PipesFrameworkExceptionAbstract;
 
 /**
  * Class NotificationException
  *
  * @package Hanaboso\PipesFramework\Notification\Exception
  */
-final class NotificationException extends PipesFrameworkException
+final class NotificationException extends PipesFrameworkExceptionAbstract
 {
 
     protected const OFFSET = 2900;

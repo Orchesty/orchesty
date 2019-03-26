@@ -2,14 +2,14 @@
 
 namespace Hanaboso\PipesFramework\Parser\Exception;
 
-use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
+use Hanaboso\CommonsBundle\Exception\PipesFrameworkExceptionAbstract;
 
 /**
  * Class TableParserException
  *
  * @package Hanaboso\PipesFramework\Parser\Exception
  */
-final class TableParserException extends PipesFrameworkException
+final class TableParserException extends PipesFrameworkExceptionAbstract
 {
 
     protected const OFFSET = 800;

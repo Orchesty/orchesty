@@ -2,14 +2,14 @@
 
 namespace Hanaboso\PipesFramework\HbPFMapperBundle\Exception;
 
-use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
+use Hanaboso\CommonsBundle\Exception\PipesFrameworkExceptionAbstract;
 
 /**
  * Class MapperException
  *
  * @package Hanaboso\PipesFramework\HbPFMapperBundle\Exception
  */
-class MapperException extends PipesFrameworkException
+class MapperException extends PipesFrameworkExceptionAbstract
 {
 
     protected const OFFSET = 1700;

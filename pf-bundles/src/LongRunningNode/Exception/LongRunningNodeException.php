@@ -2,14 +2,14 @@
 
 namespace Hanaboso\PipesFramework\LongRunningNode\Exception;
 
-use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
+use Hanaboso\CommonsBundle\Exception\PipesFrameworkExceptionAbstract;
 
 /**
  * Class LongRunningNodeException
  *
  * @package Hanaboso\PipesFramework\LongRunningNode\Exception
  */
-final class LongRunningNodeException extends PipesFrameworkException
+final class LongRunningNodeException extends PipesFrameworkExceptionAbstract
 {
 
     private const OFFSET = 2700;

@@ -2,14 +2,14 @@
 
 namespace Hanaboso\PipesFramework\RabbitMq\Exception;
 
-use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
+use Hanaboso\CommonsBundle\Exception\PipesFrameworkExceptionAbstract;
 
 /**
  * Class RabbitMqException
  *
  * @package Hanaboso\PipesFramework\RabbitMq\Exception
  */
-class RabbitMqException extends PipesFrameworkException
+class RabbitMqException extends PipesFrameworkExceptionAbstract
 {
 
     public const MISSING_CALLBACK_DEFINITION  = 1;

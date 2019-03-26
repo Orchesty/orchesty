@@ -2,14 +2,14 @@
 
 namespace Hanaboso\PipesFramework\Configurator\Exception;
 
-use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
+use Hanaboso\CommonsBundle\Exception\PipesFrameworkExceptionAbstract;
 
 /**
  * Class TopologyException
  *
  * @package Hanaboso\PipesFramework\Configurator\Exception
  */
-class TopologyException extends PipesFrameworkException
+class TopologyException extends PipesFrameworkExceptionAbstract
 {
 
     protected const OFFSET = 2400;

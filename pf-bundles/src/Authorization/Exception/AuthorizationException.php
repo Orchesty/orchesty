@@ -2,14 +2,14 @@
 
 namespace Hanaboso\PipesFramework\Authorization\Exception;
 
-use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
+use Hanaboso\CommonsBundle\Exception\PipesFrameworkExceptionAbstract;
 
 /**
  * Class AuthorizationException
  *
  * @package Hanaboso\PipesFramework\Authorization\Exception
  */
-final class AuthorizationException extends PipesFrameworkException
+final class AuthorizationException extends PipesFrameworkExceptionAbstract
 {
 
     protected const OFFSET = 200;

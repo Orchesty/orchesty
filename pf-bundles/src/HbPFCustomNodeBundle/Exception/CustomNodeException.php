@@ -2,14 +2,14 @@
 
 namespace Hanaboso\PipesFramework\HbPFCustomNodeBundle\Exception;
 
-use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
+use Hanaboso\CommonsBundle\Exception\PipesFrameworkExceptionAbstract;
 
 /**
  * Class CustomNodeException
  *
  * @package Hanaboso\PipesFramework\HbPFCustomNodeBundle\Exception
  */
-final class CustomNodeException extends PipesFrameworkException
+final class CustomNodeException extends PipesFrameworkExceptionAbstract
 {
 
     protected const OFFSET = 1800;

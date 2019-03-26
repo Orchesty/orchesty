@@ -2,14 +2,14 @@
 
 namespace Hanaboso\PipesFramework\Category\Exception;
 
-use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
+use Hanaboso\CommonsBundle\Exception\PipesFrameworkExceptionAbstract;
 
 /**
  * Class CategoryException
  *
  * @package Hanaboso\PipesFramework\Category\Exception
  */
-class CategoryException extends PipesFrameworkException
+class CategoryException extends PipesFrameworkExceptionAbstract
 {
 
     protected const OFFSET = 2300;

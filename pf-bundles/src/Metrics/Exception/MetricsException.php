@@ -2,14 +2,14 @@
 
 namespace Hanaboso\PipesFramework\Metrics\Exception;
 
-use Exception;
+use Hanaboso\CommonsBundle\Exception\PipesFrameworkExceptionAbstract;
 
 /**
  * Class MetricsException
  *
  * @package Hanaboso\PipesFramework\Metrics\Exception
  */
-final class MetricsException extends Exception
+final class MetricsException extends PipesFrameworkExceptionAbstract
 {
 
     protected const OFFSET = 2800;

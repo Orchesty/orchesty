@@ -2,14 +2,14 @@
 
 namespace Hanaboso\PipesFramework\Connector\Exception;
 
-use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
+use Hanaboso\CommonsBundle\Exception\PipesFrameworkExceptionAbstract;
 
 /**
  * Class ConnectorException
  *
  * @package Hanaboso\PipesFramework\Connector\Exception
  */
-final class ConnectorException extends PipesFrameworkException
+final class ConnectorException extends PipesFrameworkExceptionAbstract
 {
 
     protected const OFFSET = 1000;
