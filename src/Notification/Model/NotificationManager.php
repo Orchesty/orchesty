@@ -9,8 +9,6 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Notification\Exception\NotificationException;
-use Nette\Utils\Json;
-use Nette\Utils\JsonException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -72,11 +70,11 @@ class NotificationManager implements LoggerAwareInterface
      * @return ResponseDto
      * @throws CurlException
      * @throws NotificationException
-     * @throws JsonException
      */
     public function updateSettings(array $data): ResponseDto
     {
-        $dto = (new RequestDto(CurlManager::METHOD_PUT, $this->getUrl(self::URL)))->setBody(Json::encode($data));
+        $dto = (new RequestDto(CurlManager::METHOD_PUT, $this->getUrl(self::URL)))
+            ->setBody((string) json_encode($data));
 
         return $this->sendAndProcessRequest($dto);
     }

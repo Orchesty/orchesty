@@ -6,7 +6,6 @@ use Hanaboso\CommonsBundle\Exception\FileStorageException;
 use Hanaboso\CommonsBundle\FileStorage\FileStorage;
 use Hanaboso\PipesFramework\Parser\Exception\TableParserException;
 use Hanaboso\PipesFramework\Parser\TableParser;
-use Nette\Utils\JsonException;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\Reader\Exception as ReaderException;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -81,7 +80,6 @@ class TableParserHandler
      * @throws Exception
      * @throws TableParserException
      * @throws TableParserHandlerException
-     * @throws JsonException
      * @throws WriterException
      * @throws FileStorageException
      */

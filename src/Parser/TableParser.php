@@ -3,8 +3,6 @@
 namespace Hanaboso\PipesFramework\Parser;
 
 use Hanaboso\PipesFramework\Parser\Exception\TableParserException;
-use Nette\Utils\Json;
-use Nette\Utils\JsonException;
 use Nette\Utils\Strings;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Exception;
@@ -75,7 +73,6 @@ final class TableParser implements TableParserInterface
      * @return string
      * @throws Exception
      * @throws TableParserException
-     * @throws JsonException
      * @throws WriterException
      */
     public function parseFromJson(
@@ -87,7 +84,7 @@ final class TableParser implements TableParserInterface
         $spreadsheet = new Spreadsheet();
         $worksheet   = $spreadsheet->setActiveSheetIndex(0);
         $writer      = $this->createWriter($spreadsheet, $type);
-        $data        = Json::decode(file_get_contents($path));
+        $data        = json_decode((string) file_get_contents($path));
 
         $headers = [];
         if ($hasHeaders) {
