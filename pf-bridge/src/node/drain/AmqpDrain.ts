@@ -150,6 +150,14 @@ class AmqpDrain implements IDrain, IPartialForwarder {
                 this.forwardToCounterOnly(message, 0);
                 break;
 
+            case ResultCode.STOP_AND_FAILED:
+                message.setResult({
+                    code: ResultCode.STOP_AND_FAILED,
+                    message: `Process was terminated with code '${message.getResult().code}'`,
+                });
+                this.forwardToCounterOnly(message, 0);
+                break;
+
             case ResultCode.SPLITTER_BATCH_END:
                 // do nothing, final counter message already sent by splitter
                 break;
