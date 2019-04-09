@@ -4,6 +4,7 @@ namespace Tests\Controller\HbPfCustomNodeBundle\Controller;
 
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\HbPFCustomNodeBundle\Handler\CustomNodeHandler;
+use ReflectionException;
 use Tests\ControllerTestCaseAbstract;
 
 /**
@@ -64,7 +65,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function testGetListOfCustomNodes(): void
     {
@@ -78,7 +79,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     private function mockNodeControllerHandler(): void
     {

@@ -34,7 +34,7 @@ class NodeServiceLoaderUtil
                         continue;
                     }
 
-                    $shortened = str_replace($nodeType . '.', '', (string) $key);
+                    $shortened = str_replace( sprintf('%s.', $nodeType ), '', (string) $key);
                     if (in_array($shortened, $exclude)) {
                         unset($exclude[$shortened]);
                         continue;

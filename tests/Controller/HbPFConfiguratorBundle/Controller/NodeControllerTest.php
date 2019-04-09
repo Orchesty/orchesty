@@ -3,9 +3,9 @@
 namespace Tests\Controller\HbPFConfiguratorBundle\Controller;
 
 use Exception;
-use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NodeController;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler;
 use Hanaboso\PipesFramework\HbPFConnectorBundle\Handler\ConnectorHandler;
+use ReflectionException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Tests\ControllerTestCaseAbstract;
 
@@ -94,7 +94,7 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
      *
      * @throws Exception
      */
-    public function testListOfNodes()
+    public function testListOfNodes(): void
     {
         $type = 'connector';
         $this->prepareNodeMock(ConnectorHandler::class, 'getConnectors');
@@ -103,7 +103,7 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
         $content  = $response->content;
 
         self::assertEquals(200, $response->status);
-        self::assertEquals(['magento2.orders', 'magento2.modules', 'magento2.customers'], $content);
+        self::assertEquals(['magento2.orders', 'magento2.modules', 'magento2.customers'], (array) $content);
 
         $type     = 'config';
         $response = $this->sendGet(sprintf('/api/nodes/%s/list_nodes', $type));
@@ -111,6 +111,12 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
         self::assertEquals(404, $response->status);
     }
 
+    /**
+     * @param string $className
+     * @param string $methodName
+     *
+     * @throws ReflectionException
+     */
     private function prepareNodeMock(string $className, string $methodName): void
     {
         $nodeHandlerMock = $this->getMockBuilder($className)

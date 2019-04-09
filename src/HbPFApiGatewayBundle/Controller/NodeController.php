@@ -57,7 +57,7 @@ class NodeController extends AbstractFOSRestController
      *
      * @return Response
      */
-    public function listOfNodesAction(string $type)
+    public function listOfNodesAction(string $type): Response
     {
         switch ($type) {
             case 'connector':
