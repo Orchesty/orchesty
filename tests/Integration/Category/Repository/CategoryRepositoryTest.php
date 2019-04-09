@@ -50,7 +50,7 @@ final class CategoryRepositoryTest extends DatabaseTestCaseAbstract
 
         foreach ($children as $child) {
             $childCategory = $repo->find($child->getId());
-            $this->assertEquals($rootCategory->getId(), $childCategory->getParent());
+            self::assertEquals($rootCategory->getId(), $childCategory->getParent());
         }
     }
 

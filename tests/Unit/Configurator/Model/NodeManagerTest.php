@@ -10,7 +10,7 @@ use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
 use Hanaboso\PipesFramework\Configurator\Model\NodeManager;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use Tests\KernelTestCaseAbstract;
 
 /**
@@ -82,8 +82,8 @@ final class NodeManagerTest extends KernelTestCaseAbstract
 
         $data = ['enabled' => TRUE];
 
-        $this->expectException(NodeException::class);
-        $this->expectExceptionCode(NodeException::DISALLOWED_ACTION_ON_NON_EVENT_NODE);
+        self::expectException(NodeException::class);
+        self::expectExceptionCode(NodeException::DISALLOWED_ACTION_ON_NON_EVENT_NODE);
 
         $nodeManager = new NodeManager($this->getDmlMock());
         $nodeManager->updateNode($node, $data);
@@ -91,14 +91,15 @@ final class NodeManagerTest extends KernelTestCaseAbstract
 
     /**
      * @return DatabaseManagerLocator
+     * @throws Exception
      */
     private function getDmlMock(): DatabaseManagerLocator
     {
-        $dm = $this->createPartialMock(DocumentManager::class, ['flush']);
+        $dm = self::createPartialMock(DocumentManager::class, ['flush']);
         $dm->method('flush')->willReturn(TRUE);
 
-        /** @var PHPUnit_Framework_MockObject_MockObject|DatabaseManagerLocator $dml */
-        $dml = $this->createPartialMock(DatabaseManagerLocator::class, ['getDm']);
+        /** @var MockObject|DatabaseManagerLocator $dml */
+        $dml = self::createPartialMock(DatabaseManagerLocator::class, ['getDm']);
         $dml->method('getDm')->willReturn($dm);
 
         return $dml;

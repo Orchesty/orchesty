@@ -25,7 +25,7 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
     public function testProcess(): void
     {
         /** @var LongRunningNodeHandler|MockObject $handler */
-        $handler = $this->createMock(LongRunningNodeHandler::class);
+        $handler = self::createMock(LongRunningNodeHandler::class);
         $handler->method('process')->willReturnCallback(
             function (string $nodeId, string $data, array $headers): void {
                 $headers;

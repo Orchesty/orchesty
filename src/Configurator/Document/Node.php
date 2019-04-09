@@ -49,7 +49,7 @@ class Node
     protected $topology;
 
     /**
-     * @var EmbedNode[]
+     * @var array|PersistentCollection
      *
      * @MongoDB\EmbedMany(targetDocument="Hanaboso\PipesFramework\Configurator\Document\Embed\EmbedNode")
      */
@@ -151,10 +151,14 @@ class Node
     }
 
     /**
-     * @return EmbedNode[]|iterable|PersistentCollection
+     * @return EmbedNode[]
      */
-    public function getNext(): iterable
+    public function getNext(): array
     {
+        if (!is_array($this->next)) {
+            $this->next = $this->next->toArray();
+        }
+
         return $this->next;
     }
 

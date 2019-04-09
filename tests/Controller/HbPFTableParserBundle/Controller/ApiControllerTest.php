@@ -24,8 +24,8 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
             'file_id' => sprintf('%s/../../../Integration/Parser/data/input-10.csv', __DIR__),
         ]);
 
-        $this->assertEquals(200, $response->status);
-        $this->assertEquals(
+        self::assertEquals(200, $response->status);
+        self::assertEquals(
             json_decode(file_get_contents(__DIR__ . '/../../../Integration/Parser/data/output-10.json')),
             $response->content
         );
@@ -38,10 +38,10 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
     {
         $response = $this->sendPost('/parser/csv/to/json', ['file_id' => '']);
 
-        $this->assertEquals(500, $response->status);
+        self::assertEquals(500, $response->status);
         $content = $response->content;
-        $this->assertEquals(FileStorageException::class, $content->type);
-        $this->assertEquals(2001, $content->errorCode);
+        self::assertEquals(FileStorageException::class, $content->type);
+        self::assertEquals(2001, $content->errorCode);
     }
 
     /**
@@ -53,8 +53,8 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
             'file_id' => sprintf('%s/../../../Integration/Parser/data/input-10.csv', __DIR__),
         ]);
 
-        $this->assertEquals(200, $response->status);
-        $this->assertTrue($response->content);
+        self::assertEquals(200, $response->status);
+        self::assertTrue($response->content);
     }
 
     /**
@@ -66,8 +66,8 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
             'file_id' => sprintf('%s/../../../Integration/Parser/data/output-10.json', __DIR__),
         ]);
 
-        $this->assertEquals(200, $response->status);
-        $this->assertRegExp('#\/tmp\/\d+\.\d+\.csv#i', $response->content);
+        self::assertEquals(200, $response->status);
+        self::assertRegExp('#\/tmp\/\d+\.\d+\.csv#i', $response->content);
     }
 
     /**
@@ -78,9 +78,9 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
         $response = $this->sendPost('/parser/json/to/csv', ['file_id' => '']);
         $content  = $response->content;
 
-        $this->assertEquals(500, $response->status);
-        $this->assertEquals(FileStorageException::class, $content->type);
-        $this->assertEquals(2001, $content->errorCode);
+        self::assertEquals(500, $response->status);
+        self::assertEquals(FileStorageException::class, $content->type);
+        self::assertEquals(2001, $content->errorCode);
     }
 
     /**
@@ -93,9 +93,9 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
         ]);
         $content  = $response->content;
 
-        $this->assertEquals(500, $response->status);
-        $this->assertEquals(TableParserException::class, $content->type);
-        $this->assertEquals(2001, $content->errorCode);
+        self::assertEquals(500, $response->status);
+        self::assertEquals(TableParserException::class, $content->type);
+        self::assertEquals(2001, $content->errorCode);
     }
 
     /**
@@ -107,8 +107,8 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
             'file_id' => sprintf('%s/../../../Integration/Parser/data/output-10.json', __DIR__),
         ]);
 
-        $this->assertEquals(200, $response->status);
-        $this->assertTrue($response->content);
+        self::assertEquals(200, $response->status);
+        self::assertTrue($response->content);
     }
 
     /**
@@ -118,8 +118,8 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
     {
         $response = $this->sendPost('/parser/json/to/csv/test', ['file_id' => '',]);
 
-        $this->assertEquals(200, $response->status);
-        $this->assertTrue($response->content);
+        self::assertEquals(200, $response->status);
+        self::assertTrue($response->content);
     }
 
     /**
@@ -132,9 +132,9 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
         ]);
         $content  = $response->content;
 
-        $this->assertEquals(500, $response->status);
-        $this->assertEquals(TableParserException::class, $content->type);
-        $this->assertEquals(2001, $content->errorCode);
+        self::assertEquals(500, $response->status);
+        self::assertEquals(TableParserException::class, $content->type);
+        self::assertEquals(2001, $content->errorCode);
     }
 
     /**

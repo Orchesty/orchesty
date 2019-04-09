@@ -3,6 +3,7 @@
 namespace Tests;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\UserBundle\Document\User;
 use Hanaboso\UserBundle\Model\Security\SecurityManager;
 use Hanaboso\UserBundle\Model\Token;
@@ -10,7 +11,6 @@ use stdClass;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
@@ -28,11 +28,6 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
      * @var Client
      */
     protected $client;
-
-    /**
-     * @var ContainerInterface
-     */
-    protected $ownContainer;
 
     /**
      * @var DocumentManager
@@ -65,17 +60,17 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     {
         parent::__construct($name, $data, $dataName);
         self::bootKernel();
-        $this->ownContainer = self::$kernel->getContainer();
-        $this->dm           = $this->ownContainer->get('doctrine_mongodb.odm.default_document_manager');
-        $this->encoder      = new BCryptPasswordEncoder(12);
+        $this->encoder = new BCryptPasswordEncoder(12);
     }
 
     /**
-     *
+     * @throws DateTimeException
      */
     protected function setUp(): void
     {
         parent::setUp();
+        self::bootKernel();
+        $this->dm      = self::$container->get('doctrine_mongodb.odm.default_document_manager');
         $this->client = self::createClient([], []);
         $this->dm->getConnection()->dropDatabase('pipes');
 
@@ -97,10 +92,11 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
      * @param string $password
      *
      * @return User
+     * @throws DateTimeException
      */
     protected function loginUser(string $username, string $password): User
     {
-        $this->session      = $this->ownContainer->get('session');
+        $this->session      = self::$container->get('session');
         $this->tokenStorage = $this->client->getContainer()->get('security.token_storage');
         $this->session->invalidate();
         $this->session->start();

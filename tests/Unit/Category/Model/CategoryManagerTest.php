@@ -8,7 +8,7 @@ use Hanaboso\CommonsBundle\DatabaseManager\DatabaseManagerLocator;
 use Hanaboso\PipesFramework\Category\Document\Category;
 use Hanaboso\PipesFramework\Category\Model\CategoryManager;
 use Hanaboso\PipesFramework\Category\Repository\CategoryRepository;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use Tests\KernelTestCaseAbstract;
 
 /**
@@ -68,19 +68,20 @@ final class CategoryManagerTest extends KernelTestCaseAbstract
      * @param Category|null $parentCategory
      *
      * @return DatabaseManagerLocator
+     * @throws Exception
      */
     private function getDmlMock(?Category $parentCategory = NULL): DatabaseManagerLocator
     {
-        $repository = $this->createMock(CategoryRepository::class);
+        $repository = self::createMock(CategoryRepository::class);
         $repository->method('find')->willReturn($parentCategory);
 
-        $dm = $this->createPartialMock(DocumentManager::class, ['flush', 'getRepository', 'persist']);
+        $dm = self::createPartialMock(DocumentManager::class, ['flush', 'getRepository', 'persist']);
         $dm->method('flush')->willReturn(TRUE);
         $dm->method('persist')->willReturn(TRUE);
         $dm->method('getRepository')->willReturn($repository);
 
-        /** @var PHPUnit_Framework_MockObject_MockObject|DatabaseManagerLocator $dml */
-        $dml = $this->createPartialMock(DatabaseManagerLocator::class, ['getDm']);
+        /** @var MockObject|DatabaseManagerLocator $dml */
+        $dml = self::createPartialMock(DatabaseManagerLocator::class, ['getDm']);
         $dml->method('getDm')->willReturn($dm);
 
         return $dml;

@@ -18,7 +18,7 @@ final class ConnectorLoaderTest extends KernelTestCaseAbstract
      */
     public function testGetAllConnectors(): void
     {
-        $connector = new ConnectorLoader($this->ownContainer);
+        $connector = new ConnectorLoader(self::$container);
 
         $fields = $connector->getAllConnectors();
         self::assertCount(3, $fields);

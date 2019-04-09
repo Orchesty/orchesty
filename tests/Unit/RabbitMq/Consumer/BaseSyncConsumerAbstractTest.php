@@ -32,7 +32,7 @@ final class BaseSyncConsumerAbstractTest extends TestCase
     public function testSetCallback($callback, $exception = NULL): void
     {
         if ($exception) {
-            $this->expectException($exception);
+            self::expectException($exception);
         }
 
         $baseConsumer = $this->getBaseConsumer();
@@ -52,14 +52,14 @@ final class BaseSyncConsumerAbstractTest extends TestCase
     public function testHandleMessage(BaseSyncConsumerAbstract $baseConsumer, ?string $exception = NULL): void
     {
         /** @var Message $message */
-        $message = $this->getMockBuilder(Message::class)->disableOriginalConstructor()->getMock();
+        $message = self::getMockBuilder(Message::class)->disableOriginalConstructor()->getMock();
         /** @var Channel $channel */
-        $channel = $this->getMockBuilder(Channel::class)->disableOriginalConstructor()->getMock();
+        $channel = self::getMockBuilder(Channel::class)->disableOriginalConstructor()->getMock();
         /** @var Client $client */
-        $client = $this->getMockBuilder(Client::class)->disableOriginalConstructor()->getMock();
+        $client = self::getMockBuilder(Client::class)->disableOriginalConstructor()->getMock();
 
         if ($exception) {
-            $this->expectException($exception);
+            self::expectException($exception);
         }
         $baseConsumer->handleMessage('', $message, $channel, $client);
     }

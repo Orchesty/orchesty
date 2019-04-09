@@ -24,7 +24,7 @@ final class StringUtilTest extends TestCase
     public function testToCamelCase(string $string, string $assert, bool $firstUpper): void
     {
         $camelCase = StringUtil::toCamelCase($string, $firstUpper);
-        $this->assertSame($assert, $camelCase);
+        self::assertSame($assert, $camelCase);
     }
 
     /**
@@ -56,7 +56,7 @@ final class StringUtilTest extends TestCase
      */
     public function testGetShortClassName(): void
     {
-        $this->assertSame('StringUtilTest', StringUtil::getShortClassName($this));
+        self::assertSame('StringUtilTest', StringUtil::getShortClassName($this));
     }
 
 }

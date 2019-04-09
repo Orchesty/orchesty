@@ -2,6 +2,7 @@
 
 namespace Tests\Controller\HbPFJoinerBundle\Controller;
 
+use Exception;
 use Hanaboso\PipesFramework\HbPFJoinerBundle\Handler\JoinerHandler;
 use ReflectionException;
 use Tests\ControllerTestCaseAbstract;
@@ -16,6 +17,7 @@ final class JoinerControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers JoinerController::sendAction()
+     * @throws Exception
      */
     public function testSend(): void
     {
@@ -35,6 +37,7 @@ final class JoinerControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers JoinerController::sendTestAction()
+     * @throws Exception
      */
     public function testSendTest(): void
     {
@@ -55,6 +58,8 @@ final class JoinerControllerTest extends ControllerTestCaseAbstract
     /**
      * @param string $methodName
      * @param string $returnValue
+     *
+     * @throws Exception
      */
     private function prepareJoinerHandlerMock(string $methodName, $returnValue = 'Test'): void
     {
@@ -68,7 +73,7 @@ final class JoinerControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testGetListOfConnectors(): void
     {

@@ -39,14 +39,14 @@ final class AbstractProducerTest extends KernelTestCaseAbstract
      */
     public function testParamFromConstructor(): void
     {
-        $this->assertEquals('foo', $this->producer->getExchange());
-        $this->assertEquals('*.*', $this->producer->getRoutingKey());
-        $this->assertFalse($this->producer->isMandatory());
-        $this->assertTrue($this->producer->isImmediate());
-        $this->assertEquals(JsonSerializer::class, $this->producer->getSerializerClassName());
-        $this->assertEquals('beforeExecute', $this->producer->getBeforeMethod());
-        $this->assertEquals(ContentTypes::APPLICATION_JSON, $this->producer->getContentType());
-        $this->assertInstanceOf(BunnyManager::class, $this->producer->getManager());
+        self::assertEquals('foo', $this->producer->getExchange());
+        self::assertEquals('*.*', $this->producer->getRoutingKey());
+        self::assertFalse($this->producer->isMandatory());
+        self::assertTrue($this->producer->isImmediate());
+        self::assertEquals(JsonSerializer::class, $this->producer->getSerializerClassName());
+        self::assertEquals('beforeExecute', $this->producer->getBeforeMethod());
+        self::assertEquals(ContentTypes::APPLICATION_JSON, $this->producer->getContentType());
+        self::assertInstanceOf(BunnyManager::class, $this->producer->getManager());
     }
 
     /**
@@ -55,7 +55,7 @@ final class AbstractProducerTest extends KernelTestCaseAbstract
     public function testGetMeta(): void
     {
         $serializer = $this->producer->getSerializer();
-        $this->assertInstanceOf(JsonSerializer::class, $serializer);
+        self::assertInstanceOf(JsonSerializer::class, $serializer);
     }
 
     /**
@@ -65,7 +65,7 @@ final class AbstractProducerTest extends KernelTestCaseAbstract
     public function testCreateMeta(): void
     {
         $publisher = $this->getPublisher($this->getDefaultBunnyManager(), '');
-        $this->assertNull($publisher->createSerializer());
+        self::assertNull($publisher->createSerializer());
     }
 
     /**
@@ -74,11 +74,11 @@ final class AbstractProducerTest extends KernelTestCaseAbstract
      */
     public function testPublish(): void
     {
-        $bunnyManager = $this->getMockBuilder(BunnyManager::class)
+        $bunnyManager = self::getMockBuilder(BunnyManager::class)
             ->disableOriginalConstructor()
             ->getMock();
 
-        $channel = $this->getMockBuilder(Channel::class)
+        $channel = self::getMockBuilder(Channel::class)
             ->disableOriginalConstructor()
             ->getMock();
         $channel->expects($this->once())->method('publish')->with('[1,3,2]');
@@ -96,7 +96,7 @@ final class AbstractProducerTest extends KernelTestCaseAbstract
      */
     public function testPublishNoSerializer(): void
     {
-        $this->expectException(BunnyException::class);
+        self::expectException(BunnyException::class);
         $publisher = $this->getPublisher($this->getDefaultBunnyManager(), '', '');
         $publisher->publish('[1,2,3]');
     }
@@ -132,10 +132,11 @@ final class AbstractProducerTest extends KernelTestCaseAbstract
 
     /**
      * @return MockObject
+     * @throws Exception
      */
     protected function getDefaultBunnyManager(): MockObject
     {
-        return $this->getMockBuilder(BunnyManager::class)->disableOriginalConstructor()->getMock();
+        return self::getMockBuilder(BunnyManager::class)->disableOriginalConstructor()->getMock();
     }
 
 }

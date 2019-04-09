@@ -54,8 +54,8 @@ final class Magento2AuthorizationTest extends DatabaseTestCaseAbstract
      */
     public function testGetHeadersNoSettings(): void
     {
-        $this->expectException(AuthorizationException::class);
-        $this->expectExceptionCode(AuthorizationException::AUTHORIZATION_SETTINGS_NOT_FOUND);
+        self::expectException(AuthorizationException::class);
+        self::expectExceptionCode(AuthorizationException::AUTHORIZATION_SETTINGS_NOT_FOUND);
 
         $this->getMockedAuthorization()->getHeaders('GET', 'url');
     }
@@ -68,7 +68,7 @@ final class Magento2AuthorizationTest extends DatabaseTestCaseAbstract
     {
         $readme = $this->getMockedAuthorization()->getReadMe();
 
-        $this->assertEquals(
+        self::assertEquals(
             'Field1 contains connector URL, field2 contains username, field3 contains password.',
             $readme
         );
@@ -82,8 +82,8 @@ final class Magento2AuthorizationTest extends DatabaseTestCaseAbstract
      */
     public function testSetSettingsMissingUrl(): void
     {
-        $this->expectException(AuthorizationException::class);
-        $this->expectExceptionCode(AuthorizationException::AUTHORIZATION_SETTINGS_NOT_FOUND);
+        self::expectException(AuthorizationException::class);
+        self::expectExceptionCode(AuthorizationException::AUTHORIZATION_SETTINGS_NOT_FOUND);
 
         /** @var Magento2Authorization $authorization */
         $authorization = $this->getMockedAuthorization();
@@ -102,8 +102,8 @@ final class Magento2AuthorizationTest extends DatabaseTestCaseAbstract
      */
     public function testSetSettingsMissingUsername(): void
     {
-        $this->expectException(AuthorizationException::class);
-        $this->expectExceptionCode(AuthorizationException::AUTHORIZATION_SETTINGS_NOT_FOUND);
+        self::expectException(AuthorizationException::class);
+        self::expectExceptionCode(AuthorizationException::AUTHORIZATION_SETTINGS_NOT_FOUND);
 
         /** @var Magento2Authorization $authorization */
         $authorization = $this->getMockedAuthorization();
@@ -122,8 +122,8 @@ final class Magento2AuthorizationTest extends DatabaseTestCaseAbstract
      */
     public function testSetSettingsMissingPassword(): void
     {
-        $this->expectException(AuthorizationException::class);
-        $this->expectExceptionCode(AuthorizationException::AUTHORIZATION_SETTINGS_NOT_FOUND);
+        self::expectException(AuthorizationException::class);
+        self::expectExceptionCode(AuthorizationException::AUTHORIZATION_SETTINGS_NOT_FOUND);
 
         /** @var Magento2Authorization $authorization */
         $authorization = $this->getMockedAuthorization();
@@ -140,11 +140,11 @@ final class Magento2AuthorizationTest extends DatabaseTestCaseAbstract
      */
     private function getMockedAuthorization(): Magento2Authorization
     {
-        $response = $this->createPartialMock(ResponseDto::class, ['getBody']);
+        $response = self::createPartialMock(ResponseDto::class, ['getBody']);
         $response->method('getBody')->willReturn('{"token":"tokenizer"}');
 
         /** @var CurlManagerInterface|PHPUnit_Framework_MockObject_MockObject $curl */
-        $curl = $this->createPartialMock(CurlManagerInterface::class, ['send']);
+        $curl = self::createPartialMock(CurlManagerInterface::class, ['send']);
         $curl->method('send')->willReturn($response);
 
         return new Magento2Authorization($this->dm, $curl, 'magento2_auth', 'Magento2Old auth', 'Magento2Old auth');

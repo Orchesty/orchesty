@@ -26,7 +26,7 @@ final class JoinerLoaderTest extends KernelTestCaseAbstract
     function setUp(): void
     {
         parent::setUp();
-        $this->loader = $this->ownContainer->get('hbpf.loader.joiner');
+        $this->loader = self::$container->get('hbpf.loader.joiner');
     }
 
     /**

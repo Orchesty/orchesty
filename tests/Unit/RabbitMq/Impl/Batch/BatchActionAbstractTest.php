@@ -56,8 +56,8 @@ final class BatchActionAbstractTest extends TestCase
         $batchAction
             ->batchAction($this->createMessage(), $loop, $this->callback)
             ->then(NULL, function (Exception $e) use ($loop): void {
-                $this->assertInstanceOf(Exception::class, $e);
-                $this->assertSame('Missing "node-name" in the message header.', $e->getMessage());
+                self::assertInstanceOf(Exception::class, $e);
+                self::assertSame('Missing "node-name" in the message header.', $e->getMessage());
                 $loop->stop();
             })->done();
 
@@ -78,10 +78,10 @@ final class BatchActionAbstractTest extends TestCase
         $batchAction
             ->batchAction($this->createMessage(['pf-node-name' => 'abc']), $loop, $this->callback)
             ->then(function () use ($loop): void {
-                $this->assertTrue(TRUE);
+                self::assertTrue(TRUE);
                 $loop->stop();
             }, function (): void {
-                $this->assertTrue(FALSE);
+                self::assertTrue(FALSE);
             })->done();
 
         $loop->run();

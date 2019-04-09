@@ -58,21 +58,21 @@ final class BatchConsumerCallbackTest extends TestCase
         $loop = Factory::create();
 
         /** @var BatchActionInterface|MockObject $batchAction */
-        $batchAction = $this->createMock(BatchActionInterface::class);
+        $batchAction = self::createMock(BatchActionInterface::class);
         /** @var Channel|MockObject $channel */
-        $channel = $this->createMock(Channel::class);
+        $channel = self::createMock(Channel::class);
         $channel->method('publish')->willReturn(resolve());
         /** @var Client|MockObject $client */
-        $client = $this->createMock(Client::class);
+        $client = self::createMock(Client::class);
         /** @var InfluxDbSender|MockObject $influxSender */
-        $influxSender = $this->createMock(InfluxDbSender::class);
+        $influxSender = self::createMock(InfluxDbSender::class);
         $callback     = new BatchConsumerCallback($batchAction, $influxSender);
 
         $callback
             ->processMessage($this->createMessage($headers), $channel, $client, $loop)
             ->then(NULL, function (Exception $e) use ($loop, $message): void {
-                $this->assertInstanceOf(InvalidArgumentException::class, $e);
-                $this->assertSame($message, $e->getMessage());
+                self::assertInstanceOf(InvalidArgumentException::class, $e);
+                self::assertSame($message, $e->getMessage());
                 $loop->stop();
             })
             ->done();
@@ -151,17 +151,17 @@ final class BatchConsumerCallbackTest extends TestCase
         $loop = Factory::create();
 
         /** @var BatchActionInterface|MockObject $batchAction */
-        $batchAction = $this->createMock(BatchActionInterface::class);
+        $batchAction = self::createMock(BatchActionInterface::class);
         $batchAction->method('batchAction')->willReturn(resolve());
         /** @var Channel|MockObject $channel */
-        $channel = $this->createMock(Channel::class);
+        $channel = self::createMock(Channel::class);
         $channel->method('queueDeclare')->willReturn(resolve());
         $channel->method('publish')->willReturn(resolve());
         /** @var Client|MockObject $client */
-        $client = $this->createMock(Client::class);
+        $client = self::createMock(Client::class);
         $client->method('channel')->willReturn($channel);
         /** @var InfluxDbSender|MockObject $influxSender */
-        $influxSender = $this->createMock(InfluxDbSender::class);
+        $influxSender = self::createMock(InfluxDbSender::class);
 
         $callback = new BatchConsumerCallback($batchAction, $influxSender);
 
@@ -178,11 +178,11 @@ final class BatchConsumerCallbackTest extends TestCase
             ->processMessage($this->createMessage($headers), $channel, $client, $loop)
             ->then(function () use ($loop): void {
                 // Test if resolve
-                $this->assertTrue(TRUE);
+                self::assertTrue(TRUE);
                 $loop->stop();
             }, function () use ($loop): void {
                 // Test if reject
-                $this->assertTrue(FALSE);
+                self::assertTrue(FALSE);
                 $loop->stop();
             })
             ->done();
@@ -199,18 +199,18 @@ final class BatchConsumerCallbackTest extends TestCase
         $loop = Factory::create();
 
         /** @var BatchActionInterface|MockObject $batchAction */
-        $batchAction = $this->createMock(BatchActionInterface::class);
+        $batchAction = self::createMock(BatchActionInterface::class);
         $batchAction->method('batchAction')->willReturn(resolve());
-        $batchAction->method('getBatchService')->willReturn($this->createMock(BatchInterface::class));
+        $batchAction->method('getBatchService')->willReturn(self::createMock(BatchInterface::class));
         /** @var Channel|MockObject $channel */
-        $channel = $this->createMock(Channel::class);
+        $channel = self::createMock(Channel::class);
         $channel->method('queueDeclare')->willReturn(resolve());
         $channel->method('publish')->willReturn(resolve());
         /** @var Client|MockObject $client */
-        $client = $this->createMock(Client::class);
+        $client = self::createMock(Client::class);
         $client->method('channel')->willReturn($channel);
         /** @var InfluxDbSender|MockObject $influxSender */
-        $influxSender = $this->createMock(InfluxDbSender::class);
+        $influxSender = self::createMock(InfluxDbSender::class);
 
         $callback = new BatchConsumerCallback($batchAction, $influxSender);
 
@@ -228,11 +228,11 @@ final class BatchConsumerCallbackTest extends TestCase
             ->processMessage($this->createMessage($headers), $channel, $client, $loop)
             ->then(function () use ($loop): void {
                 // Test if resolve
-                $this->assertTrue(TRUE);
+                self::assertTrue(TRUE);
                 $loop->stop();
             }, function () use ($loop): void {
                 // Test if reject
-                $this->assertTrue(FALSE);
+                self::assertTrue(FALSE);
                 $loop->stop();
             })
             ->done();
@@ -249,18 +249,18 @@ final class BatchConsumerCallbackTest extends TestCase
         $loop = Factory::create();
 
         /** @var BatchActionInterface|MockObject $batchAction */
-        $batchAction = $this->createMock(BatchActionInterface::class);
+        $batchAction = self::createMock(BatchActionInterface::class);
         $batchAction->method('batchAction')->willReturn(resolve());
         $batchAction->method('getBatchService')->willThrowException(new Exception());
         /** @var Channel|MockObject $channel */
-        $channel = $this->createMock(Channel::class);
+        $channel = self::createMock(Channel::class);
         $channel->method('queueDeclare')->willReturn(resolve());
         $channel->method('publish')->willReturn(resolve());
         /** @var Client|MockObject $client */
-        $client = $this->createMock(Client::class);
+        $client = self::createMock(Client::class);
         $client->method('channel')->willReturn($channel);
         /** @var InfluxDbSender|MockObject $influxSender */
-        $influxSender = $this->createMock(InfluxDbSender::class);
+        $influxSender = self::createMock(InfluxDbSender::class);
 
         $callback = new BatchConsumerCallback($batchAction, $influxSender);
 
@@ -278,11 +278,11 @@ final class BatchConsumerCallbackTest extends TestCase
             ->processMessage($this->createMessage($headers), $channel, $client, $loop)
             ->then(function () use ($loop): void {
                 // Test if resolve
-                $this->assertTrue(TRUE);
+                self::assertTrue(TRUE);
                 $loop->stop();
             }, function () use ($loop): void {
                 // Test if reject
-                $this->assertTrue(FALSE);
+                self::assertTrue(FALSE);
                 $loop->stop();
             })
             ->done();
@@ -299,17 +299,17 @@ final class BatchConsumerCallbackTest extends TestCase
         $loop = Factory::create();
 
         /** @var BatchActionInterface|MockObject $batchAction */
-        $batchAction = $this->createMock(BatchActionInterface::class);
+        $batchAction = self::createMock(BatchActionInterface::class);
         $batchAction->method('batchAction')->willReturn(resolve());
         /** @var Channel|MockObject $channel */
-        $channel = $this->createMock(Channel::class);
+        $channel = self::createMock(Channel::class);
         $channel->method('queueDeclare')->willReturn(resolve());
         $channel->method('publish')->willReturn(resolve());
         /** @var Client|MockObject $client */
-        $client = $this->createMock(Client::class);
+        $client = self::createMock(Client::class);
         $client->method('channel')->willReturn($channel);
         /** @var InfluxDbSender|MockObject $influxSender */
-        $influxSender = $this->createMock(InfluxDbSender::class);
+        $influxSender = self::createMock(InfluxDbSender::class);
 
         $callback = new BatchConsumerCallback($batchAction, $influxSender);
 
@@ -325,8 +325,8 @@ final class BatchConsumerCallbackTest extends TestCase
         $callback
             ->processMessage($this->createMessage($headers), $channel, $client, $loop)
             ->then(NULL, function (Exception $e) use ($loop): void {
-                $this->assertInstanceOf(InvalidArgumentException::class, $e);
-                $this->assertSame('Unsupported type "unknown".', $e->getMessage());
+                self::assertInstanceOf(InvalidArgumentException::class, $e);
+                self::assertSame('Unsupported type "unknown".', $e->getMessage());
                 $loop->stop();
             })
             ->done();

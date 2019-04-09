@@ -24,8 +24,8 @@ final class CallbackStatusTest extends TestCase
     public function testCallbackStatus(int $status, string $message): void
     {
         $callbackStatus = new CallbackStatus($status, $message);
-        $this->assertEquals($status, $callbackStatus->getStatus());
-        $this->assertEquals($message, $callbackStatus->getStatusMessage());
+        self::assertEquals($status, $callbackStatus->getStatus());
+        self::assertEquals($message, $callbackStatus->getStatusMessage());
     }
 
     /**

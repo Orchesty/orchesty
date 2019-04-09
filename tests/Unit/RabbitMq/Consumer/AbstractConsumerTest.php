@@ -24,23 +24,23 @@ final class AbstractConsumerTest extends KernelTestCaseAbstract
         /** @var BaseSyncConsumerAbstract $consumer */
         $consumer = $this->getMockForAbstractClass(BaseSyncConsumerAbstract::class);
 
-        $this->assertEquals('', $consumer->getExchange());
-        $this->assertEquals('', $consumer->getRoutingKey());
-        $this->assertEquals('', $consumer->getQueue());
-        $this->assertEquals('', $consumer->getConsumerTag());
-        $this->assertFalse($consumer->isNoLocal());
-        $this->assertFalse($consumer->isNoAck());
-        $this->assertFalse($consumer->isExclusive());
-        $this->assertFalse($consumer->isNowait());
-        $this->assertEquals([], $consumer->getArguments());
-        $this->assertEquals(1, $consumer->getPrefetchCount());
-        $this->assertEquals(0, $consumer->getPrefetchSize());
-        $this->assertNull($consumer->getSerializer());
-        $this->assertNull($consumer->getSetUpMethod());
-        $this->assertNull($consumer->getTickMethod());
-        $this->assertNull($consumer->getTickSeconds());
-        $this->assertNull($consumer->getMaxMessages());
-        $this->assertNull($consumer->getMaxSeconds());
+        self::assertEquals('', $consumer->getExchange());
+        self::assertEquals('', $consumer->getRoutingKey());
+        self::assertEquals('', $consumer->getQueue());
+        self::assertEquals('', $consumer->getConsumerTag());
+        self::assertFalse($consumer->isNoLocal());
+        self::assertFalse($consumer->isNoAck());
+        self::assertFalse($consumer->isExclusive());
+        self::assertFalse($consumer->isNowait());
+        self::assertEquals([], $consumer->getArguments());
+        self::assertEquals(1, $consumer->getPrefetchCount());
+        self::assertEquals(0, $consumer->getPrefetchSize());
+        self::assertNull($consumer->getSerializer());
+        self::assertNull($consumer->getSetUpMethod());
+        self::assertNull($consumer->getTickMethod());
+        self::assertNull($consumer->getTickSeconds());
+        self::assertNull($consumer->getMaxMessages());
+        self::assertNull($consumer->getMaxSeconds());
     }
 
     /**
@@ -70,23 +70,23 @@ final class AbstractConsumerTest extends KernelTestCaseAbstract
             10,
         ]);
 
-        $this->assertEquals('foo', $consumer->getExchange());
-        $this->assertEquals('*', $consumer->getRoutingKey());
-        $this->assertEquals('queue_foo', $consumer->getQueue());
-        $this->assertEquals('act_0123456879', $consumer->getConsumerTag());
-        $this->assertTrue($consumer->isNoLocal());
-        $this->assertFalse($consumer->isNoAck());
-        $this->assertTrue($consumer->isExclusive());
-        $this->assertTrue($consumer->isNowait());
-        $this->assertEquals(['x-header-dead' => 500], $consumer->getArguments());
-        $this->assertEquals(10, $consumer->getPrefetchCount());
-        $this->assertEquals(500, $consumer->getPrefetchSize());
-        $this->assertEquals('Hanaboso\PipesFramework\RabbitMq\Serializers\JsonSerializer', $consumer->getSerializer());
-        $this->assertNull($consumer->getSetUpMethod());
-        $this->assertEquals('tick_up', $consumer->getTickMethod());
-        $this->assertEquals(5, $consumer->getTickSeconds());
-        $this->assertEquals(200, $consumer->getMaxMessages());
-        $this->assertEquals(10, $consumer->getMaxSeconds());
+        self::assertEquals('foo', $consumer->getExchange());
+        self::assertEquals('*', $consumer->getRoutingKey());
+        self::assertEquals('queue_foo', $consumer->getQueue());
+        self::assertEquals('act_0123456879', $consumer->getConsumerTag());
+        self::assertTrue($consumer->isNoLocal());
+        self::assertFalse($consumer->isNoAck());
+        self::assertTrue($consumer->isExclusive());
+        self::assertTrue($consumer->isNowait());
+        self::assertEquals(['x-header-dead' => 500], $consumer->getArguments());
+        self::assertEquals(10, $consumer->getPrefetchCount());
+        self::assertEquals(500, $consumer->getPrefetchSize());
+        self::assertEquals('Hanaboso\PipesFramework\RabbitMq\Serializers\JsonSerializer', $consumer->getSerializer());
+        self::assertNull($consumer->getSetUpMethod());
+        self::assertEquals('tick_up', $consumer->getTickMethod());
+        self::assertEquals(5, $consumer->getTickSeconds());
+        self::assertEquals(200, $consumer->getMaxMessages());
+        self::assertEquals(10, $consumer->getMaxSeconds());
     }
 
 }

@@ -19,6 +19,7 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers NodeController::getNodesAction()
+     * @throws Exception
      */
     public function testGetNodes(): void
     {
@@ -38,6 +39,7 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers NodeController::getNodeAction()
+     * @throws Exception
      */
     public function testGetNode(): void
     {
@@ -57,6 +59,7 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers NodeController::updateNodeAction()
+     * @throws Exception
      */
     public function testUpdateNode(): void
     {
@@ -77,6 +80,8 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
     /**
      * @param string $methodName
      * @param bool   $returnValue
+     *
+     * @throws Exception
      */
     private function prepareNodeHandlerMock(string $methodName, $returnValue = TRUE): void
     {

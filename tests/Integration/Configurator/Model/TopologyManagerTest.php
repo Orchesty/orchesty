@@ -26,7 +26,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
      */
     public function testCreateTopologyWithSameName(): void
     {
-        $manager = $this->ownContainer->get('hbpf.configurator.manager.topology');
+        $manager = self::$container->get('hbpf.configurator.manager.topology');
 
         self::expectException(TopologyException::class);
         self::expectExceptionCode(TopologyException::TOPOLOGY_NAME_ALREADY_EXISTS);
@@ -39,7 +39,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
      */
     public function testUpdateUnpublishedTopologyWithName(): void
     {
-        $manager  = $this->ownContainer->get('hbpf.configurator.manager.topology');
+        $manager  = self::$container->get('hbpf.configurator.manager.topology');
         $topology = $manager->createTopology(['name' => 'Topology']);
         $manager->updateTopology($topology, ['name' => 'Another Topology']);
 
@@ -53,7 +53,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
      */
     public function testUpdatePublishedTopologyWithName(): void
     {
-        $manager  = $this->ownContainer->get('hbpf.configurator.manager.topology');
+        $manager  = self::$container->get('hbpf.configurator.manager.topology');
         $topology = $manager->createTopology(['name' => 'Topology']);
         $topology->setVisibility(TopologyStatusEnum::PUBLIC);
         $this->dm->flush();
@@ -69,7 +69,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
      */
     public function testCheckTopologyNameUnPublished(): void
     {
-        $manager = $this->ownContainer->get('hbpf.configurator.manager.topology');
+        $manager = self::$container->get('hbpf.configurator.manager.topology');
 
         $manager->createTopology(['name' => 'Another Topology']);
         $topology = $manager->createTopology(['name' => 'Topology']);
@@ -103,7 +103,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
             'enabled' => FALSE,
         ];
 
-        $this->ownContainer->get('hbpf.configurator.manager.topology')->updateTopology($top, $expt);
+        self::$container->get('hbpf.configurator.manager.topology')->updateTopology($top, $expt);
         $this->dm->clear();
         /** @var Topology $top */
         $top = $this->dm->getRepository(Topology::class)->findOneBy(['id' => $top->getId()]);
@@ -134,7 +134,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $this->dm->flush();
 
         /** @var Topology $res */
-        $res = $this->ownContainer->get('hbpf.configurator.manager.topology')->publishTopology($top);
+        $res = self::$container->get('hbpf.configurator.manager.topology')->publishTopology($top);
         self::assertEquals(TopologyStatusEnum::PUBLIC, $res->getVisibility());
     }
 
@@ -152,7 +152,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         self::expectException(TopologyException::class);
         self::expectExceptionCode(TopologyException::TOPOLOGY_HAS_NO_NODES);
 
-        $this->ownContainer->get('hbpf.configurator.manager.topology')->publishTopology($top);
+        self::$container->get('hbpf.configurator.manager.topology')->publishTopology($top);
     }
 
     /**
@@ -235,7 +235,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $this->dm->clear();
 
         /** @var Topology $res */
-        $res = $this->ownContainer->get('hbpf.configurator.manager.topology')->cloneTopology($top);
+        $res = self::$container->get('hbpf.configurator.manager.topology')->cloneTopology($top);
 
         self::assertEquals($top->getName(), $res->getName());
         self::assertEquals($top->getVersion() + 1, $res->getVersion());
@@ -251,15 +251,15 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
 
         foreach ($nodes as $node) {
             if ($node->getName() == 'node1') {
-                $this->assertNodeAfterClone($node1, $node, $res, 1);
+                self::assertNodeAfterClone($node1, $node, $res, 1);
             } elseif ($node->getName() == 'node2') {
-                $this->assertNodeAfterClone($node2, $node, $res, 2);
+                self::assertNodeAfterClone($node2, $node, $res, 2);
             } elseif ($node->getName() == 'node3') {
-                $this->assertNodeAfterClone($node3, $node, $res, 0);
+                self::assertNodeAfterClone($node3, $node, $res, 0);
             } elseif ($node->getName() == 'node4') {
-                $this->assertNodeAfterClone($node4, $node, $res, 1);
+                self::assertNodeAfterClone($node4, $node, $res, 1);
             } elseif ($node->getName() == 'node5') {
-                $this->assertNodeAfterClone($node5, $node, $res, 0);
+                self::assertNodeAfterClone($node5, $node, $res, 0);
             }
         }
     }
@@ -280,13 +280,13 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         self::assertEquals($expected->isEnabled(), $actual->isEnabled());
 
         // next
-        self::assertEquals($nextCount, $expected->getNext()->count());
-        self::assertEquals($nextCount, $actual->getNext()->count());
+        self::assertEquals($nextCount, count($expected->getNext()));
+        self::assertEquals($nextCount, count($actual->getNext()));
 
         /** @var EmbedNode[] $expNext */
         /** @var EmbedNode[] $actNext */
-        $expNext = $expected->getNext()->toArray();
-        $actNext = $actual->getNext()->toArray();
+        $expNext = $expected->getNext();
+        $actNext = $actual->getNext();
 
         if ($nextCount == 1) {
             self::assertFalse($expNext[0]->getId() == $actNext[0]->getId());
@@ -315,7 +315,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $this->dm->clear();
 
         /** @var Topology $res */
-        $res = $this->ownContainer->get('hbpf.configurator.manager.topology')->cloneTopology($top);
+        $res = self::$container->get('hbpf.configurator.manager.topology')->cloneTopology($top);
 
         self::assertEquals($top->getName(), $res->getName());
         self::assertEquals($top->getVersion() + 1, $res->getVersion());
@@ -334,7 +334,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
             ->setDescr('Topology');
         $this->persistAndFlush($topology);
 
-        $topologyManager = $this->ownContainer->get('hbpf.configurator.manager.topology');
+        $topologyManager = self::$container->get('hbpf.configurator.manager.topology');
         $result          = $topologyManager->saveTopologySchema($topology, '', $this->getSchema('schema.json'));
 
         /** @var Node[] $nodes */
@@ -343,7 +343,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         self::assertEquals($topology->getId(), $result->getId());
         self::assertEquals(7, count($nodes));
 
-        $this->assertNodesFromSchemaFile($nodes);
+        self::assertNodesFromSchemaFile($nodes);
     }
 
     /**
@@ -383,7 +383,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $this->dm->flush();
         $this->dm->clear();
 
-        $topologyManager = $this->ownContainer->get('hbpf.configurator.manager.topology');
+        $topologyManager = self::$container->get('hbpf.configurator.manager.topology');
         $result          = $topologyManager->saveTopologySchema($topology, '', $this->getSchema('schema.json'));
 
         self::assertNotEquals($topology->getId(), $result->getId());
@@ -394,7 +394,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         self::assertNotEquals($topology->getId(), $result->getId()); // because it is cloned
         self::assertEquals(7, count($nodes));
 
-        $this->assertNodesFromSchemaFile($nodes);
+        self::assertNodesFromSchemaFile($nodes);
     }
 
     /**
@@ -409,7 +409,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $this->dm->flush();
         $this->dm->clear();
 
-        $topologyManager = $this->ownContainer->get('hbpf.configurator.manager.topology');
+        $topologyManager = self::$container->get('hbpf.configurator.manager.topology');
         $result1         = $topologyManager->saveTopologySchema($topology, '', $this->getSchema('schema.json'));
         $result2         = $topologyManager->saveTopologySchema($result1, '', $this->getSchema('schema-update.json'));
 
@@ -473,10 +473,10 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
             ->setDescr('Topology');
         $this->persistAndFlush($topology);
 
-        $topologyManager = $this->ownContainer->get('hbpf.configurator.manager.topology');
+        $topologyManager = self::$container->get('hbpf.configurator.manager.topology');
 
-        $this->expectException(TopologyException::class);
-        $this->expectExceptionCode(TopologyException::TOPOLOGY_NODE_NAME_NOT_FOUND);
+        self::expectException(TopologyException::class);
+        self::expectExceptionCode(TopologyException::TOPOLOGY_NODE_NAME_NOT_FOUND);
 
         $schema = $this->getSchema('schema.json');
         unset($schema['bpmn:process']['bpmn:startEvent']['@name']);
@@ -493,10 +493,10 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
             ->setDescr('Topology');
         $this->persistAndFlush($topology);
 
-        $topologyManager = $this->ownContainer->get('hbpf.configurator.manager.topology');
+        $topologyManager = self::$container->get('hbpf.configurator.manager.topology');
 
-        $this->expectException(TopologyException::class);
-        $this->expectExceptionCode(TopologyException::TOPOLOGY_NODE_TYPE_NOT_EXIST);
+        self::expectException(TopologyException::class);
+        self::expectExceptionCode(TopologyException::TOPOLOGY_NODE_TYPE_NOT_EXIST);
 
         $schema                                                        = $this->getSchema('schema.json');
         $schema['bpmn:process']['bpmn:startEvent']['@pipes:pipesType'] = 'Unknown';
@@ -513,10 +513,10 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
             ->setDescr('Topology');
         $this->persistAndFlush($topology);
 
-        $topologyManager = $this->ownContainer->get('hbpf.configurator.manager.topology');
+        $topologyManager = self::$container->get('hbpf.configurator.manager.topology');
 
-        $this->expectException(TopologyException::class);
-        $this->expectExceptionCode(TopologyException::TOPOLOGY_NODE_CRON_NOT_VALID);
+        self::expectException(TopologyException::class);
+        self::expectExceptionCode(TopologyException::TOPOLOGY_NODE_CRON_NOT_VALID);
 
         $schema                                                     = $this->getSchema('schema.json');
         $schema['bpmn:process']['bpmn:event'][0]['@pipes:cronTime'] = 'Unknown';
@@ -528,7 +528,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
      */
     public function testDeleteTopology(): void
     {
-        $manager = $this->ownContainer->get('hbpf.configurator.manager.topology');
+        $manager = self::$container->get('hbpf.configurator.manager.topology');
 
         $node = new Node();
         $top  = new Topology();

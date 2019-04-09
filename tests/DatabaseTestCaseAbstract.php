@@ -24,27 +24,14 @@ abstract class DatabaseTestCaseAbstract extends KernelTestCaseAbstract
     protected $session;
 
     /**
-     * DatabaseTestCaseAbstract constructor.
-     *
-     * @param null   $name
-     * @param array  $data
-     * @param string $dataName
-     */
-    public function __construct($name = NULL, array $data = [], $dataName = '')
-    {
-        parent::__construct($name, $data, $dataName);
-        self::bootKernel();
-        $this->dm      = $this->ownContainer->get('doctrine_mongodb.odm.default_document_manager');
-        $this->session = new Session();
-    }
-
-    /**
      *
      */
     protected function setUp(): void
     {
         parent::setUp();
+        $this->dm = self::$container->get('doctrine_mongodb.odm.default_document_manager');
         $this->dm->getConnection()->dropDatabase('pipes');
+        $this->session = new Session();
         $this->session->invalidate();
         $this->session->clear();
     }

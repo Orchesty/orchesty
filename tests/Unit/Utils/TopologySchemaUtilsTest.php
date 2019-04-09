@@ -28,28 +28,28 @@ final class TopologySchemaUtilsTest extends TestCase
         $content = $this->load('default.tplg');
         $schema  = TopologySchemaUtils::getSchemaObject($this->getXmlDecoder()->decode($content));
 
-        $this->assertInstanceOf(Schema::class, $schema);
+        self::assertInstanceOf(Schema::class, $schema);
 
         $nodes = $schema->getNodes();
-        $this->assertCount(9, $schema->getNodes());
-        $this->assertCount(6, $schema->getSequences());
-        $this->assertEquals('Event_1lqi8dm', $schema->getStartNode());
+        self::assertCount(9, $schema->getNodes());
+        self::assertCount(6, $schema->getSequences());
+        self::assertEquals('Event_1lqi8dm', $schema->getStartNode());
 
         foreach ($nodes as $node) {
-            $this->assertArrayHasKey('handler', $node);
-            $this->assertArrayHasKey('id', $node);
-            $this->assertArrayHasKey('name', $node);
-            $this->assertArrayHasKey('cron_time', $node);
-            $this->assertArrayHasKey('pipes_type', $node);
+            self::assertArrayHasKey('handler', $node);
+            self::assertArrayHasKey('id', $node);
+            self::assertArrayHasKey('name', $node);
+            self::assertArrayHasKey('cron_time', $node);
+            self::assertArrayHasKey('pipes_type', $node);
         }
 
-        $this->assertEquals('bpmn:event', $nodes['Event_1lqi8dm']['handler']);
-        $this->assertEquals('Event_1lqi8dm', $nodes['Event_1lqi8dm']['id']);
-        $this->assertEquals('hubspot-updated-contact-connector', $nodes['Event_1lqi8dm']['name']);
-        $this->assertEquals('', $nodes['Event_1lqi8dm']['cron_time']);
-        $this->assertEquals('webhook', $nodes['Event_1lqi8dm']['pipes_type']);
+        self::assertEquals('bpmn:event', $nodes['Event_1lqi8dm']['handler']);
+        self::assertEquals('Event_1lqi8dm', $nodes['Event_1lqi8dm']['id']);
+        self::assertEquals('hubspot-updated-contact-connector', $nodes['Event_1lqi8dm']['name']);
+        self::assertEquals('', $nodes['Event_1lqi8dm']['cron_time']);
+        self::assertEquals('webhook', $nodes['Event_1lqi8dm']['pipes_type']);
 
-        $this->assertEquals([
+        self::assertEquals([
             'Event_1lqi8dm' => ['Task_1taayin'],
             'Task_1taayin'  => ['Task_152x7cw', 'Task_1niijps'],
             'Task_1wcc82o'  => ['Task_0h8gpta'],

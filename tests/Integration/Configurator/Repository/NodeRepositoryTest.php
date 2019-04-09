@@ -140,8 +140,8 @@ final class NodeRepositoryTest extends DatabaseTestCaseAbstract
         $this->dm->flush($node);
         $this->dm->clear();
 
-        $this->expectException(LogicException::class);
-        $this->expectExceptionMessage(sprintf('Starting Node not found for topology [%s]', $topology->getId()));
+        self::expectException(LogicException::class);
+        self::expectExceptionMessage(sprintf('Starting Node not found for topology [%s]', $topology->getId()));
         $repo->getStartingNode($topology);
     }
 

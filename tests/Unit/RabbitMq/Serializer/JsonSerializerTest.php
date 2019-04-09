@@ -33,7 +33,7 @@ final class JsonSerializerTest extends TestCase
      */
     public function testGetInstance(): void
     {
-        $this->assertInstanceOf(JsonSerializer::class, $this->serializer->getInstance());
+        self::assertInstanceOf(JsonSerializer::class, $this->serializer->getInstance());
     }
 
     /**
@@ -47,7 +47,7 @@ final class JsonSerializerTest extends TestCase
     public function testToJson(array $src, string $result): void
     {
         $serialized = $this->serializer->toJson($src);
-        $this->assertEquals($result, $serialized);
+        self::assertEquals($result, $serialized);
     }
 
     /**
@@ -61,7 +61,7 @@ final class JsonSerializerTest extends TestCase
     public function testFromJson(string $src, array $result): void
     {
         $serialized = $this->serializer->fromJson($src);
-        $this->assertEquals($result, $serialized);
+        self::assertEquals($result, $serialized);
     }
 
     /**

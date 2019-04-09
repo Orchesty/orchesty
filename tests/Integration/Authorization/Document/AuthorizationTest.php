@@ -36,26 +36,26 @@ final class AuthorizationTest extends DatabaseTestCaseAbstract
             '_id' => new ObjectID($authorization->getId()),
         ])->toArray();
 
-        $this->assertArrayHasKey($authorization->getId(), $data);
+        self::assertArrayHasKey($authorization->getId(), $data);
 
-        $this->assertArrayNotHasKey('token', $data[$authorization->getId()]);
-        $this->assertArrayHasKey('encryptedToken', $data[$authorization->getId()]);
-        $this->assertTrue(is_string($data[$authorization->getId()]['encryptedToken']));
+        self::assertArrayNotHasKey('token', $data[$authorization->getId()]);
+        self::assertArrayHasKey('encryptedToken', $data[$authorization->getId()]);
+        self::assertTrue(is_string($data[$authorization->getId()]['encryptedToken']));
 
-        $this->assertArrayNotHasKey('settings', $data[$authorization->getId()]);
-        $this->assertArrayHasKey('encryptedSettings', $data[$authorization->getId()]);
-        $this->assertTrue(is_string($data[$authorization->getId()]['encryptedSettings']));
+        self::assertArrayNotHasKey('settings', $data[$authorization->getId()]);
+        self::assertArrayHasKey('encryptedSettings', $data[$authorization->getId()]);
+        self::assertTrue(is_string($data[$authorization->getId()]['encryptedSettings']));
 
         // postLoad should decrypt the data
         $loaded = $this->dm->getRepository(Authorization::class)->find($authorization->getId());
 
-        $this->assertNotEmpty($loaded->getToken());
-        $this->assertTrue(is_array($loaded->getToken()));
-        $this->assertEquals($token, $loaded->getToken());
+        self::assertNotEmpty($loaded->getToken());
+        self::assertTrue(is_array($loaded->getToken()));
+        self::assertEquals($token, $loaded->getToken());
 
-        $this->assertNotEmpty($loaded->getSettings());
-        $this->assertTrue(is_array($loaded->getSettings()));
-        $this->assertEquals($settings, $loaded->getSettings());
+        self::assertNotEmpty($loaded->getSettings());
+        self::assertTrue(is_array($loaded->getSettings()));
+        self::assertEquals($settings, $loaded->getSettings());
     }
 
 }

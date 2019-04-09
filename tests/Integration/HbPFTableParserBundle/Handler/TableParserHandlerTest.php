@@ -36,14 +36,14 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
     private $storage;
 
     /**
-     * TableParserHandlerTest constructor.
+     *
      */
-    public function __construct()
+    protected function setUp(): void
     {
-        parent::__construct();
-        $this->storage = $this->ownContainer->get('hbpf.file_storage');
+        parent::setUp();
+        $this->storage = self::$container->get('hbpf.file_storage');
         $this->handler = new TableParserHandler(new TableParser(), $this->storage);
-        $this->path    = sprintf('%s/../../Parser/data', __DIR__);
+        $this->path    = __DIR__ . '/../../Parser/data';
     }
 
     /**
@@ -53,19 +53,19 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
     public function testParseToJson(): void
     {
 
-        $this->ownContainer->get('hbpf.database_manager_locator');
+        self::$container->get('hbpf.database_manager_locator');
 
         $result = $this->handler->parseToJson([
             'file_id'     => sprintf('%s/input-10.xlsx', $this->path),
             'has_headers' => FALSE,
         ]);
-        $this->assertEquals(file_get_contents(sprintf('%s/output-10.json', $this->path)), $result);
+        self::assertEquals(file_get_contents(sprintf('%s/output-10.json', $this->path)), $result);
 
         $result = $this->handler->parseToJson([
             'file_id'     => sprintf('%s/input-10h.xlsx', $this->path),
             'has_headers' => TRUE,
         ]);
-        $this->assertEquals(file_get_contents(sprintf('%s/output-10h.json', $this->path)), $result);
+        self::assertEquals(file_get_contents(sprintf('%s/output-10h.json', $this->path)), $result);
     }
 
     /**
@@ -78,7 +78,7 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
         $file    = $this->storage->saveFileFromContent(new FileContentDto($content, 'xlsx'));
 
         $result = $this->handler->parseToJson(['file_id' => $file->getId()]);
-        $this->assertEquals(file_get_contents(sprintf('%s/output-10.json', $this->path)), $result);
+        self::assertEquals(file_get_contents(sprintf('%s/output-10.json', $this->path)), $result);
     }
 
     /**
@@ -103,7 +103,7 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
             'file_id'     => $resultPath,
             'has_headers' => FALSE,
         ]);
-        $this->assertEquals(file_get_contents(sprintf('%s/output-10.json', $this->path)), $result);
+        self::assertEquals(file_get_contents(sprintf('%s/output-10.json', $this->path)), $result);
         unlink($resultPath);
 
         $resultPath = $this->handler->parseFromJson(TableParserInterface::XLSX, [
@@ -114,7 +114,7 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
             'file_id'     => $resultPath,
             'has_headers' => TRUE,
         ]);
-        $this->assertEquals(file_get_contents(sprintf('%s/output-10h.json', $this->path)), $result);
+        self::assertEquals(file_get_contents(sprintf('%s/output-10h.json', $this->path)), $result);
         unlink($resultPath);
     }
 
@@ -134,7 +134,7 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
             'file_id'     => $resultPath,
             'has_headers' => FALSE,
         ]);
-        $this->assertEquals(file_get_contents(sprintf('%s/output-10.json', $this->path)), $result);
+        self::assertEquals(file_get_contents(sprintf('%s/output-10.json', $this->path)), $result);
         unlink($resultPath);
     }
 
@@ -153,8 +153,8 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
      */
     public function testParseToJsonWithoutFile(): void
     {
-        $this->expectException(TableParserHandlerException::class);
-        $this->expectExceptionCode(TableParserHandlerException::PROPERTY_FILE_ID_NOT_SET);
+        self::expectException(TableParserHandlerException::class);
+        self::expectExceptionCode(TableParserHandlerException::PROPERTY_FILE_ID_NOT_SET);
         $this->handler->parseToJson([]);
     }
 
@@ -164,8 +164,8 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
      */
     public function testParseFromJsonWithoutFile(): void
     {
-        $this->expectException(TableParserHandlerException::class);
-        $this->expectExceptionCode(TableParserHandlerException::PROPERTY_FILE_ID_NOT_SET);
+        self::expectException(TableParserHandlerException::class);
+        self::expectExceptionCode(TableParserHandlerException::PROPERTY_FILE_ID_NOT_SET);
         $this->handler->parseFromJson(TableParserInterface::XLSX, []);
     }
 
@@ -175,8 +175,8 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
      */
     public function testParseFromJsonWithInvalidType(): void
     {
-        $this->expectException(TableParserException::class);
-        $this->expectExceptionCode(TableParserException::UNKNOWN_WRITER_TYPE);
+        self::expectException(TableParserException::class);
+        self::expectExceptionCode(TableParserException::UNKNOWN_WRITER_TYPE);
         $this->handler->parseFromJson('Invalid', ['file_id' => sprintf('%s/output-10.json', $this->path)]);
     }
 

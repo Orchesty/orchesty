@@ -24,7 +24,7 @@ final class AuthorizationLoaderTest extends DatabaseTestCaseAbstract
     public function testInstallAllAuthorizations(): void
     {
         /** @var AuthorizationLoader $loader */
-        $loader = $this->ownContainer->get('hbpf.loader.authorization');
+        $loader = self::$container->get('hbpf.loader.authorization');
         /** @var AuthorizationRepository $repo */
         $repo = $this->dm->getRepository(Authorization::class);
 

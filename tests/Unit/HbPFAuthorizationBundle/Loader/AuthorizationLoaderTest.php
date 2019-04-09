@@ -27,7 +27,7 @@ final class AuthorizationLoaderTest extends KernelTestCaseAbstract
     private $loader;
 
     /**
-     *
+     * @throws Exception
      */
     protected function setUp(): void
     {
@@ -35,15 +35,15 @@ final class AuthorizationLoaderTest extends KernelTestCaseAbstract
         $auth = new Authorization('magento2_auth');
         $auth->setToken(['password' => 'Password']);
 
-        $repo = $this->createMock(AuthorizationRepository::class);
+        $repo = self::createMock(AuthorizationRepository::class);
         $repo->method('getInstalledKeys')->willReturn(['magento2_auth']);
 
-        $dm = $this->createMock(DocumentManager::class);
+        $dm = self::createMock(DocumentManager::class);
         $dm->method('getRepository')->willReturn($repo);
         $dm->method('persist')->willReturn(NULL);
         $dm->method('flush')->willReturn(NULL);
 
-        $this->loader = new AuthorizationLoader($this->ownContainer, $dm);
+        $this->loader = new AuthorizationLoader(self::$container, $dm);
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace Tests\Controller\HbPfCustomNodeBundle\Controller;
 
+use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\HbPFCustomNodeBundle\Handler\CustomNodeHandler;
 use ReflectionException;
@@ -17,6 +18,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers JoinerController::sendAction()
+     * @throws Exception
      */
     public function testSend(): void
     {
@@ -32,6 +34,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers CustomNodeController::sendTestAction()
+     * @throws Exception
      */
     public function testSendActionTest(): void
     {
@@ -47,6 +50,8 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @param string $methodName
+     *
+     * @throws Exception
      */
     private function mockHandler(string $methodName): void
     {

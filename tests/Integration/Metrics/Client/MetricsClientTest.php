@@ -43,8 +43,8 @@ final class MetricsClientTest extends KernelTestCaseAbstract
 
         self::assertInstanceOf(Database::class, $database);
 
-        $this->expectException(MetricsException::class);
-        $this->expectExceptionCode(MetricsException::DB_NOT_EXIST);
+        self::expectException(MetricsException::class);
+        self::expectExceptionCode(MetricsException::DB_NOT_EXIST);
         $manager->getDatabase('customDb');
     }
 
@@ -70,11 +70,11 @@ final class MetricsClientTest extends KernelTestCaseAbstract
      */
     private function getMetricsClient(): MetricsClient
     {
-        $host = $this->ownContainer->getParameter('influx.host');
-        $port = $this->ownContainer->getParameter('influx.api_port');
-        $user = $this->ownContainer->getParameter('influx.user');
-        $pass = $this->ownContainer->getParameter('influx.password');
-        $db   = $this->ownContainer->getParameter('influx.database');
+        $host = self::$container->getParameter('influx.host');
+        $port = self::$container->getParameter('influx.api_port');
+        $user = self::$container->getParameter('influx.user');
+        $pass = self::$container->getParameter('influx.password');
+        $db   = self::$container->getParameter('influx.database');
 
         return new MetricsClient($host, $port, $user, $pass, $db);
     }

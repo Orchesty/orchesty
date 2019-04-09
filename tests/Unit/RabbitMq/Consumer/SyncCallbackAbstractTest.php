@@ -4,6 +4,7 @@ namespace Tests\Unit\RabbitMq\Consumer;
 
 use Bunny\Channel;
 use Bunny\Message;
+use Exception;
 use Hanaboso\PipesFramework\RabbitMq\CallbackStatus;
 use Hanaboso\PipesFramework\RabbitMq\Consumer\SyncCallbackAbstract;
 use Hanaboso\PipesFramework\RabbitMq\Exception\RabbitMqException;
@@ -28,7 +29,7 @@ final class SyncCallbackAbstractTest extends TestCase
      * @param int|null             $callbackStatus
      *
      * @return void
-     * @throws RabbitMqException
+     * @throws Exception
      */
     public function testHandleMessage(
         SyncCallbackAbstract $baseCallback,
@@ -37,12 +38,12 @@ final class SyncCallbackAbstractTest extends TestCase
     ): void
     {
         if ($exception) {
-            $this->expectException($exception);
+            self::expectException($exception);
         }
         $message = new Message('', '', FALSE, 'test', 'key', [], '{"1":2}');
 
         /** @var MockObject|Channel $channel */
-        $channel = $this->getMockBuilder(Channel::class)
+        $channel = self::getMockBuilder(Channel::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -51,11 +52,12 @@ final class SyncCallbackAbstractTest extends TestCase
             ->willReturn(TRUE);
 
         $result = $baseCallback->handleMessage($message->content, $message, $channel);
-        $this->assertEquals($result->getStatus(), $callbackStatus);
+        self::assertEquals($result->getStatus(), $callbackStatus);
     }
 
     /**
      * @return array
+     * @throws Exception
      */
     public function handleMessage(): array
     {
@@ -136,11 +138,12 @@ final class SyncCallbackAbstractTest extends TestCase
 
     /**
      * @return Repeater|MockObject
+     * @throws Exception
      */
     private function getRepeater(): MockObject
     {
         /** @var MockObject $repeater */
-        $repeater = $this->getMockBuilder(Repeater::class)
+        $repeater = self::getMockBuilder(Repeater::class)
             ->disableOriginalConstructor()
             ->getMock();
 

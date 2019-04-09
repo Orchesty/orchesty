@@ -27,7 +27,7 @@ final class MapperLoaderTest extends KernelTestCaseAbstract
     protected function setUp(): void
     {
         parent::setUp();
-        $this->mapperLoader = $this->ownContainer->get('hbpf.mapper.loader.mapper');
+        $this->mapperLoader = self::$container->get('hbpf.mapper.loader.mapper');
     }
 
     /**
@@ -37,7 +37,7 @@ final class MapperLoaderTest extends KernelTestCaseAbstract
     {
         $mapper = $this->mapperLoader->loadMapper('null');
 
-        $this->assertInstanceOf(NullMapper::class, $mapper);
+        self::assertInstanceOf(NullMapper::class, $mapper);
     }
 
     /**
@@ -45,8 +45,8 @@ final class MapperLoaderTest extends KernelTestCaseAbstract
      */
     public function testLoadMissingMapper(): void
     {
-        $this->expectException(MapperException::class);
-        $this->expectExceptionCode(MapperException::MAPPER_NOT_EXIST);
+        self::expectException(MapperException::class);
+        self::expectExceptionCode(MapperException::MAPPER_NOT_EXIST);
 
         $this->mapperLoader->loadMapper('missing');
     }

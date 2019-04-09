@@ -109,7 +109,7 @@ class NodeHandler
             '_id'         => $node->getId(),
             'name'        => $node->getName(),
             'topology_id' => $node->getTopology(),
-            'next'        => $node->getNext()->toArray(),
+            'next'        => $node->getNext(),
             'type'        => $node->getType(),
             'handler'     => $node->getHandler(),
             'enabled'     => $node->isEnabled(),
