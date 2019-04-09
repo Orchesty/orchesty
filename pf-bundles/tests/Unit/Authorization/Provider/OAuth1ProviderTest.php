@@ -39,8 +39,8 @@ final class OAuth1ProviderTest extends TestCase
         $dto      = new OAuth1Dto($authorization, 'key', 'sec');
 
         if ($exception) {
-            $this->expectException(AuthorizationException::class);
-            $this->expectExceptionCode(AuthorizationException::AUTHORIZATION_OAUTH1_ERROR);
+            self::expectException(AuthorizationException::class);
+            self::expectExceptionCode(AuthorizationException::AUTHORIZATION_OAUTH1_ERROR);
         }
 
         $provider->authorize($dto, 'token/url', 'authorize/url', '127.0.0.4', function (): void {
@@ -79,14 +79,14 @@ final class OAuth1ProviderTest extends TestCase
         $dto      = new OAuth1Dto($authorization, 'key', 'sec');
 
         if ($exception) {
-            $this->expectException(AuthorizationException::class);
-            $this->expectExceptionCode(AuthorizationException::AUTHORIZATION_OAUTH1_ERROR);
+            self::expectException(AuthorizationException::class);
+            self::expectExceptionCode(AuthorizationException::AUTHORIZATION_OAUTH1_ERROR);
         }
 
         $token = $provider->getAccessToken($dto, $request, 'accesToken/Url');
 
-        $this->assertNotEmpty($token);
-        $this->assertTrue(is_array($token));
+        self::assertNotEmpty($token);
+        self::assertTrue(is_array($token));
     }
 
     /**
@@ -118,14 +118,14 @@ final class OAuth1ProviderTest extends TestCase
         $dto      = new OAuth1Dto($authorization, 'key', 'sec');
 
         if ($exception) {
-            $this->expectException(AuthorizationException::class);
-            $this->expectExceptionCode(AuthorizationException::AUTHORIZATION_OAUTH1_ERROR);
+            self::expectException(AuthorizationException::class);
+            self::expectExceptionCode(AuthorizationException::AUTHORIZATION_OAUTH1_ERROR);
         }
 
         $header = $provider->getAuthorizeHeader($dto, 'GET', 'someEndpoint/Url');
 
-        $this->assertNotEmpty($header);
-        $this->assertStringStartsWith('ge', $header);
+        self::assertNotEmpty($header);
+        self::assertStringStartsWith('ge', $header);
     }
 
     /**
@@ -149,17 +149,18 @@ final class OAuth1ProviderTest extends TestCase
      * @param string $authorizeUrl
      *
      * @return MockObject
+     * @throws Exception
      */
     private function getMockedProvider(array $data, string $authorizeUrl): MockObject
     {
-        $dm = $this->createMock(DocumentManager::class);
+        $dm = self::createMock(DocumentManager::class);
         $dm->method('persist')->willReturn(TRUE);
         $dm->method('flush')->willReturn(TRUE);
 
-        $redirect = $this->createMock(RedirectInterface::class);
+        $redirect = self::createMock(RedirectInterface::class);
         $redirect->method('make')->with($authorizeUrl)->willReturn(TRUE);
 
-        $oauth = $this->createPartialMock(
+        $oauth = self::createPartialMock(
             OAuth::class,
             ['getAccessToken', 'getRequestToken', 'setToken', 'getRequestHeader']
         );
@@ -168,7 +169,7 @@ final class OAuth1ProviderTest extends TestCase
         $oauth->method('setToken')->with('token', 'secret')->willReturn(TRUE);
         $oauth->method('getRequestHeader')->with('GET', 'someEndpoint/Url')->willReturn('generatedUrl');
 
-        $client = $this->getMockBuilder(OAuth1Provider::class)
+        $client = self::getMockBuilder(OAuth1Provider::class)
             ->setConstructorArgs([$dm, $redirect])
             ->setMethods(['createClient'])
             ->getMock();

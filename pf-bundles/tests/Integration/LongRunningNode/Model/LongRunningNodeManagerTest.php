@@ -25,7 +25,7 @@ final class LongRunningNodeManagerTest extends DatabaseTestCaseAbstract
     public function testManager(): void
     {
         /** @var LongRunningNodeManager $manager */
-        $manager = $this->ownContainer->get('hbpf.manager.long_running');
+        $manager = self::$container->get('hbpf.manager.long_running');
         $doc     = new LongRunningNodeData();
         $doc->setProcessId('proc')
             ->setNodeName('node')

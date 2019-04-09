@@ -67,9 +67,9 @@ phpmanual-tests:
 phpmanual-down:
 	cd tests/Manual; $(MAKE) docker-down-clean;
 
-test: docker-up-force composer-install codesniffer phpstan clear-cache phpunit phpintegration phpcontroller
+test: docker-up-force composer-install fasttest
 
-fasttest: codesniffer phpstan clear-cache phpunit phpintegration phpcontroller
+fasttest: codesniffer clear-cache phpstan phpunit phpintegration phpcontroller
 
 docker-compose.ci.yml:
 	# Comment out any port forwarding
@@ -82,6 +82,7 @@ console:
 
 clear-cache:
 	$(DE) sudo rm -rf var/cache
+	$(DE) php bin/console cache:warmup --env=test
 
 database-create:
 	$(DE) php bin/console doctrine:database:drop --force || true

@@ -2,6 +2,7 @@
 
 namespace Tests\Controller\HbPFAuthorizationBundle\Controller;
 
+use Exception;
 use Hanaboso\PipesFramework\HbPFAuthorizationBundle\Handler\AuthorizationHandler;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Tests\ControllerTestCaseAbstract;
@@ -9,7 +10,6 @@ use Tests\ControllerTestCaseAbstract;
 /**
  * Class AuthorizationControllerTest
  *
- * @coversDefaultClass Hanaboso\PipesFramework\HbPFAuthorizationBundle\Controller\AuthorizationController
  * @package Tests\Controller\HbPFAuthorizationBundle\Controller
  */
 final class AuthorizationControllerTest extends ControllerTestCaseAbstract
@@ -17,6 +17,7 @@ final class AuthorizationControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers ::authorization()
+     * @throws Exception
      */
     public function testAuthorization(): void
     {
@@ -34,6 +35,7 @@ final class AuthorizationControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers ::authorization()
+     * @throws Exception
      */
     public function testAuthorizationFail(): void
     {
@@ -48,6 +50,7 @@ final class AuthorizationControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers ::authorization()
+     * @throws Exception
      */
     public function testSaveToken(): void
     {
@@ -62,6 +65,7 @@ final class AuthorizationControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers ::getAuthorizations()
+     * @throws Exception
      */
     public function testGetAuthorizations(): void
     {
@@ -86,6 +90,8 @@ final class AuthorizationControllerTest extends ControllerTestCaseAbstract
     /**
      * @param string $methodName
      * @param string $returnValue
+     *
+     * @throws Exception
      */
     private function prepareAuthorizationHandlerMock(string $methodName, $returnValue = 'Test'): void
     {

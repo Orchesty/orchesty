@@ -24,16 +24,17 @@ final class RepeaterTest extends TestCase
      * @param int $result
      *
      * @return void
+     * @throws Exception
      */
     public function testGetHopLimit(int $limit, int $result): void
     {
         /** @var AbstractProducer $producer */
-        $producer = $this->getMockBuilder(AbstractProducer::class)
+        $producer = self::getMockBuilder(AbstractProducer::class)
             ->disableOriginalConstructor()
             ->getMock();
 
         $repeater = new Repeater($producer, $limit);
-        $this->assertEquals($result, $repeater->getHopLimit());
+        self::assertEquals($result, $repeater->getHopLimit());
     }
 
     /**
@@ -60,7 +61,7 @@ final class RepeaterTest extends TestCase
             'content'
         );
 
-        $producer = $this->getMockBuilder(AbstractProducer::class)
+        $producer = self::getMockBuilder(AbstractProducer::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -72,7 +73,7 @@ final class RepeaterTest extends TestCase
         $repeater = new Repeater($producer, $hopLimit);
         $added    = $repeater->add($message);
 
-        $this->assertEquals($return, $added);
+        self::assertEquals($return, $added);
     }
 
     /**
@@ -95,7 +96,7 @@ final class RepeaterTest extends TestCase
             $header,
             'content'
         );
-        $this->assertEquals($result, Repeater::validRepeaterMessage($message));
+        self::assertEquals($result, Repeater::validRepeaterMessage($message));
     }
 
     /**

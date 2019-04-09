@@ -347,6 +347,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers TopologyController::deleteTopologyAction()
+     * @throws Exception
      */
     public function testDeleteTopology(): void
     {
@@ -424,6 +425,8 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     /**
      * @param string $methodName
      * @param mixed  $res
+     *
+     * @throws Exception
      */
     private function mockHandler(string $methodName, $res = ['test']): void
     {

@@ -32,8 +32,8 @@ final class SchemaTest extends TestCase
         $content = $this->load('default.tplg');
         $schema  = TopologySchemaUtils::getSchemaObject($this->getXmlDecoder()->decode($content));
 
-        $this->assertInstanceOf(Schema::class, $schema);
-        $this->assertEquals($this->getExpected(), TopologySchemaUtils::getIndexHash($schema));
+        self::assertInstanceOf(Schema::class, $schema);
+        self::assertEquals($this->getExpected(), TopologySchemaUtils::getIndexHash($schema));
     }
 
     /**
@@ -45,8 +45,8 @@ final class SchemaTest extends TestCase
         $content = $this->load('ignored-change-same-hash.tplg');
         $schema  = TopologySchemaUtils::getSchemaObject($this->getXmlDecoder()->decode($content));
 
-        $this->assertInstanceOf(Schema::class, $schema);
-        $this->assertEquals($this->getExpected(), TopologySchemaUtils::getIndexHash($schema));
+        self::assertInstanceOf(Schema::class, $schema);
+        self::assertEquals($this->getExpected(), TopologySchemaUtils::getIndexHash($schema));
     }
 
     /**
@@ -58,8 +58,8 @@ final class SchemaTest extends TestCase
         $content = $this->load('change-new-hash.tplg');
         $schema  = TopologySchemaUtils::getSchemaObject($this->getXmlDecoder()->decode($content));
 
-        $this->assertInstanceOf(Schema::class, $schema);
-        $this->assertNotEquals($this->getExpected(), TopologySchemaUtils::getIndexHash($schema));
+        self::assertInstanceOf(Schema::class, $schema);
+        self::assertNotEquals($this->getExpected(), TopologySchemaUtils::getIndexHash($schema));
     }
 
     /**
@@ -70,8 +70,8 @@ final class SchemaTest extends TestCase
         $content = $this->load('missing-start-node.tplg');
         $schema  = TopologySchemaUtils::getSchemaObject($this->getXmlDecoder()->decode($content));
 
-        $this->expectException(TopologyException::class);
-        $this->expectExceptionCode(TopologyException::SCHEMA_START_NODE_MISSING);
+        self::expectException(TopologyException::class);
+        self::expectExceptionCode(TopologyException::SCHEMA_START_NODE_MISSING);
 
         $schema->buildIndex();
     }
@@ -84,8 +84,8 @@ final class SchemaTest extends TestCase
         $content = $this->load('infinite-loop.tplg');
         $schema  = TopologySchemaUtils::getSchemaObject($this->getXmlDecoder()->decode($content));
 
-        $this->expectException(TopologyException::class);
-        $this->expectExceptionCode(TopologyException::SCHEMA_INFINITE_LOOP);
+        self::expectException(TopologyException::class);
+        self::expectExceptionCode(TopologyException::SCHEMA_INFINITE_LOOP);
 
         $schema->buildIndex();
     }

@@ -18,7 +18,7 @@ final class NodeServiceLoaderUtilTest extends KernelTestCaseAbstract
      */
     public function testGetServices(): void
     {
-        $path = $this->ownContainer->getParameter('kernel.root_dir');
+        $path = self::$container->getParameter('kernel.root_dir');
 
         $dirs     = [
             sprintf('%s/HbPFConnectorBundle/Resources/config/', $path),

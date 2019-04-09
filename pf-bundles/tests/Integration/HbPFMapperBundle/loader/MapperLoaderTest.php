@@ -18,7 +18,7 @@ final class MapperLoaderTest extends KernelTestCaseAbstract
      */
     public function testGetAllMappers(): void
     {
-        $connector = new MapperLoader($this->ownContainer);
+        $connector = new MapperLoader(self::$container);
 
         $fields = $connector->getAllMappers();
         self::assertCount(3, $fields);

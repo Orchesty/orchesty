@@ -24,15 +24,15 @@ final class LongRunningNodeLoaderTest extends KernelTestCaseAbstract
     public function testLoader(): void
     {
         $testClass = new TestLongRunningNode();
-        $this->ownContainer->set('hbpf.long_running.test', $testClass);
+        self::$container->set('hbpf.long_running.test', $testClass);
 
         /** @var LongRunningNodeLoader $loader */
-        $loader = $this->ownContainer->get('hbpf.loader.long_running');
+        $loader = self::$container->get('hbpf.loader.long_running');
         $res    = $loader->getLongRunningNode('test');
         self::assertInstanceOf(LongRunningNodeInterface::class, $res);
 
-        $this->expectException(LongRunningNodeException::class);
-        $this->expectExceptionCode(LongRunningNodeException::LONG_RUNNING_SERVICE_NOT_FOUND);
+        self::expectException(LongRunningNodeException::class);
+        self::expectExceptionCode(LongRunningNodeException::LONG_RUNNING_SERVICE_NOT_FOUND);
         $loader->getLongRunningNode('another_test');
     }
 

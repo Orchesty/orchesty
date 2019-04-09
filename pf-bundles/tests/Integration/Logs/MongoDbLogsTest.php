@@ -30,11 +30,11 @@ final class MongoDbLogsTest extends DatabaseTestCaseAbstract
     {
         $this->prepareData();
 
-        $result = $this->ownContainer->get('mongodb.logs')->getData(new GridRequestDto([
+        $result = self::$container->get('mongodb.logs')->getData(new GridRequestDto([
             'filter' => '{"correlation_id":"Correlation ID 5"}',
         ]));
 
-        $this->assertEquals([
+        self::assertEquals([
             'limit'  => 10,
             'offset' => 0,
             'count'  => 1,

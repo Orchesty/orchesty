@@ -2,6 +2,7 @@
 
 namespace Tests\Controller\HbPFMapperBundle\Controller;
 
+use Exception;
 use Hanaboso\PipesFramework\HbPFMapperBundle\Handler\MapperHandler;
 use ReflectionException;
 use Tests\ControllerTestCaseAbstract;
@@ -9,7 +10,6 @@ use Tests\ControllerTestCaseAbstract;
 /**
  * Class MapperControllerTest
  *
- * @coversDefaultClass  Hanaboso\PipesFramework\HbPFMapperBundle\Controller\MapperController
  * @package Tests\Controller\HbPFMapperBundle\Controller
  */
 final class MapperControllerTest extends ControllerTestCaseAbstract
@@ -17,6 +17,7 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers ::processTestAction()
+     * @throws Exception
      */
     public function testProcessTest(): void
     {
@@ -31,6 +32,7 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers ::processAction()
+     * @throws Exception
      */
     public function testProcess(): void
     {
@@ -48,6 +50,8 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
     /**
      * @param string $methodName
      * @param string $returnValue
+     *
+     * @throws Exception
      */
     private function prepareMapperHandlerMock(string $methodName, $returnValue = 'Test'): void
     {

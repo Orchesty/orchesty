@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Authorization\Provider;
 
+use Exception;
 use Hanaboso\CommonsBundle\Redirect\RedirectInterface;
 use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2Dto;
@@ -23,6 +24,8 @@ final class OAuth2ProviderTest extends TestCase
      * @dataProvider authorizeDataProvider
      *
      * @param string $url
+     *
+     * @throws Exception
      */
     public function testAuthorize(string $url): void
     {
@@ -38,6 +41,8 @@ final class OAuth2ProviderTest extends TestCase
      * @dataProvider authorizeDataProvider
      *
      * @param string $url
+     *
+     * @throws Exception
      */
     public function testAuthorizeCustomApp(string $url): void
     {
@@ -66,7 +71,7 @@ final class OAuth2ProviderTest extends TestCase
      * @param array $request
      * @param bool  $exception
      *
-     * @throws AuthorizationException
+     * @throws Exception
      */
     public function testGetAccessToken(array $request, bool $exception): void
     {
@@ -75,14 +80,14 @@ final class OAuth2ProviderTest extends TestCase
         $dto      = new OAuth2Dto('cl_id', 'cl_sec', '127.0.0.4/red', 'authorize/url', 'token/url');
 
         if ($exception) {
-            $this->expectException(AuthorizationException::class);
-            $this->expectExceptionCode(AuthorizationException::AUTHORIZATION_OAUTH2_ERROR);
+            self::expectException(AuthorizationException::class);
+            self::expectExceptionCode(AuthorizationException::AUTHORIZATION_OAUTH2_ERROR);
         }
 
         $token = $provider->getAccessToken($dto, $request);
 
-        $this->assertNotEmpty($token);
-        $this->assertTrue(is_array($token));
+        self::assertNotEmpty($token);
+        self::assertTrue(is_array($token));
     }
 
     /**
@@ -102,7 +107,7 @@ final class OAuth2ProviderTest extends TestCase
      * @param array $token
      * @param bool  $exception
      *
-     * @throws AuthorizationException
+     * @throws Exception
      */
     public function testRefreshAccessToken(array $token, bool $exception): void
     {
@@ -111,14 +116,14 @@ final class OAuth2ProviderTest extends TestCase
         $dto      = new OAuth2Dto('cl_id', 'cl_sec', '127.0.0.4/red', 'authorize/url', 'token/url');
 
         if ($exception) {
-            $this->expectException(AuthorizationException::class);
-            $this->expectExceptionCode(AuthorizationException::AUTHORIZATION_OAUTH2_ERROR);
+            self::expectException(AuthorizationException::class);
+            self::expectExceptionCode(AuthorizationException::AUTHORIZATION_OAUTH2_ERROR);
         }
 
         $token = $provider->refreshAccessToken($dto, $token);
 
-        $this->assertNotEmpty($token);
-        $this->assertTrue(is_array($token));
+        self::assertNotEmpty($token);
+        self::assertTrue(is_array($token));
     }
 
     /**
@@ -141,17 +146,18 @@ final class OAuth2ProviderTest extends TestCase
      * @param string $authorizeUrl
      *
      * @return MockObject
+     * @throws Exception
      */
     private function getMockedProvider(string $authorizeUrl): MockObject
     {
-        $redirect = $this->createMock(RedirectInterface::class);
+        $redirect = self::createMock(RedirectInterface::class);
         $redirect->method('make')->willReturn(TRUE);
 
-        $oauth = $this->createPartialMock(OAuth2Wrapper::class, ['getAuthorizationUrl', 'getAccessToken']);
+        $oauth = self::createPartialMock(OAuth2Wrapper::class, ['getAuthorizationUrl', 'getAccessToken']);
         $oauth->method('getAuthorizationUrl')->willReturn($authorizeUrl);
         $oauth->method('getAccessToken')->willReturn(new AccessToken(['access_token' => '123']));
 
-        $client = $this->getMockBuilder(OAuth2Provider::class)
+        $client = self::getMockBuilder(OAuth2Provider::class)
             ->setConstructorArgs([$redirect, '127.0.0.4'])
             ->setMethods(['createClient'])
             ->getMock();

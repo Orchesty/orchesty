@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\HbPFRabbitMqBundle;
 
+use Exception;
 use Hanaboso\PipesFramework\HbPFRabbitMqBundle\DependencyInjection\Compiler\RabbitMqCompilerPass;
 use Hanaboso\PipesFramework\HbPFRabbitMqBundle\DependencyInjection\RabbitMqExtension;
 use Hanaboso\PipesFramework\HbPFRabbitMqBundle\HbPFRabbitMqBundle;
@@ -38,7 +39,7 @@ final class HbPFRabbitMqBundleTest extends KernelTestCaseAbstract
      */
     public function testGetContainerExtension(): void
     {
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             RabbitMqExtension::class,
             $this->bundle->getContainerExtension()
         );
@@ -69,13 +70,14 @@ final class HbPFRabbitMqBundleTest extends KernelTestCaseAbstract
 
     /**
      * @return void
+     * @throws Exception
      */
     public function testRegisterCommands(): void
     {
         /** @var Application $application */
-        $application = $this->getMockBuilder(Application::class)->getMock();
+        $application = self::getMockBuilder(Application::class)->getMock();
 
-        $container = $this->getMockBuilder(ContainerInterface::class)->getMock();
+        $container = self::getMockBuilder(ContainerInterface::class)->getMock();
         $container->method('get')->willReturnCallback(function ($id) {
             if (in_array($id, [
                     'command.rabbit-mq.setup',

@@ -27,7 +27,7 @@ final class CustomNodeLoaderTest extends KernelTestCaseAbstract
     protected function setUp(): void
     {
         parent::setUp();
-        $this->customNodeLoader = $this->ownContainer->get('hbpf.loader.custom_node');
+        $this->customNodeLoader = self::$container->get('hbpf.loader.custom_node');
     }
 
     /**
@@ -37,7 +37,7 @@ final class CustomNodeLoaderTest extends KernelTestCaseAbstract
     {
         $customNode = $this->customNodeLoader->get('null');
 
-        $this->assertInstanceOf(NullCustomNode::class, $customNode);
+        self::assertInstanceOf(NullCustomNode::class, $customNode);
     }
 
     /**
@@ -45,8 +45,8 @@ final class CustomNodeLoaderTest extends KernelTestCaseAbstract
      */
     public function testLoadMissingCustomNode(): void
     {
-        $this->expectException(CustomNodeException::class);
-        $this->expectExceptionCode(CustomNodeException::CUSTOM_NODE_SERVICE_NOT_FOUND);
+        self::expectException(CustomNodeException::class);
+        self::expectExceptionCode(CustomNodeException::CUSTOM_NODE_SERVICE_NOT_FOUND);
 
         $this->customNodeLoader->get('missing');
     }

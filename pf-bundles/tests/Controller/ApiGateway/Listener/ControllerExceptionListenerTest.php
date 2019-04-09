@@ -76,7 +76,7 @@ final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
     private function mockEvent(Throwable $exception)
     {
         /** @var GetResponseForExceptionEvent | MockObject $eventMock */
-        $eventMock = $this->createPartialMock(
+        $eventMock = self::createPartialMock(
             GetResponseForExceptionEvent::class,
             ['getException']
         );

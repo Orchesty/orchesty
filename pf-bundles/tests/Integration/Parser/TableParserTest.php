@@ -27,7 +27,7 @@ final class TableParserTest extends TestCase
     {
         $parser = new TableParser();
         $result = $parser->parseToJson(__DIR__ . $input, $hasHeaders);
-        $this->assertEquals(file_get_contents(__DIR__ . $output), $result);
+        self::assertEquals(file_get_contents(__DIR__ . $output), $result);
     }
 
     /**
@@ -44,7 +44,7 @@ final class TableParserTest extends TestCase
         $path   = $parser->parseFromJson(__DIR__ . $input, $type, $hasHeaders);
 
         $result = $parser->parseToJson($path, $hasHeaders);
-        $this->assertEquals(file_get_contents(__DIR__ . $input), $result);
+        self::assertEquals(file_get_contents(__DIR__ . $input), $result);
 
         unlink($path);
     }

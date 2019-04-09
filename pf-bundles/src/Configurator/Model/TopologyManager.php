@@ -228,7 +228,7 @@ class TopologyManager
             $orig = $node['orig'];
             $copy = $node['copy'];
 
-            if (!$orig->getNext()->isEmpty()) {
+            if (!empty($orig->getNext())) {
                 $nexts = $orig->getNext();
                 foreach ($nexts as $next) {
                     $copy->addNext(EmbedNode::from($nodesMap[$next->getId()]['copy']));

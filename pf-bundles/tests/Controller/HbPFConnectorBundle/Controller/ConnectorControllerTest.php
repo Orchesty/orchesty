@@ -2,6 +2,7 @@
 
 namespace Tests\Controller\HbPFConnectorBundle\Controller;
 
+use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\HbPFConnectorBundle\Handler\ConnectorHandler;
 use ReflectionException;
@@ -17,6 +18,7 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers ConnectorController::processEvent()
+     * @throws Exception
      */
     public function testProcessEvent(): void
     {
@@ -32,6 +34,7 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers ConnectorController::processAction()
+     * @throws Exception
      */
     public function testProcessAction(): void
     {
@@ -47,6 +50,8 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @param string $method
+     *
+     * @throws Exception
      */
     private function mockHandler(string $method): void
     {

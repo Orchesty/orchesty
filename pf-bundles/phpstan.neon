@@ -1,11 +1,14 @@
+includes:
+	- vendor/phpstan/phpstan-symfony/extension.neon # symfony extension
+	- vendor/phpstan/phpstan-doctrine/extension.neon # doctrine extension
+	- vendor/phpstan/phpstan-phpunit/extension.neon # phpunit extension
+	- vendor/phpstan/phpstan-phpunit/rules.neon # phpunit rules
+	- vendor/hanaboso/php-check-utils/phpstan.neon # hanaboso rules
+
 parameters:
+	excludes_analyse:
 	ignoreErrors:
-		- '#Cannot call method toArray\(\) on iterable<Hanaboso\\PipesFramework\\Configurator\\Document\\Embed\\EmbedNode>.#'
 		- '#Parameter \#2 \$auth_session_handle of method OAuth::getAccessToken\(\) expects string, null given.#'
 		- '#Call to function method_exists\(\) with string *#'
-
-includes:
-	- vendor/phpstan/phpstan-doctrine/extension.neon
-	- vendor/phpstan/phpstan-phpunit/extension.neon
-	- vendor/hanaboso/php-check-utils/phpstan.neon
-	- vendor/phpstan/phpstan-phpunit/rules.neon
+	symfony:
+		container_xml_path: %rootDir%/../../../var/cache/test/srcHanaboso_PipesFramework_KernelTestDebugContainer.xml

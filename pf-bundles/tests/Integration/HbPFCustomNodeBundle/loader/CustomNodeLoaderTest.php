@@ -18,7 +18,7 @@ final class CustomNodeLoaderTest extends KernelTestCaseAbstract
      */
     public function testGetAllCustomNodes(): void
     {
-        $connector = new CustomNodeLoader($this->ownContainer);
+        $connector = new CustomNodeLoader(self::$container);
 
         $fields = $connector->getAllCustomNodes();
         self::assertCount(7, $fields);

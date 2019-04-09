@@ -20,9 +20,9 @@ final class CategoryManagerTest extends DatabaseTestCaseAbstract
      */
     public function testManager(): void
     {
-        $manager         = $this->ownContainer->get('hbpf.configurator.manager.category');
+        $manager         = self::$container->get('hbpf.configurator.manager.category');
         $repo            = $this->dm->getRepository(Category::class);
-        $topologyManager = $this->ownContainer->get('hbpf.configurator.manager.topology');
+        $topologyManager = self::$container->get('hbpf.configurator.manager.topology');
 
         $dataR1 = [
             'name'   => 'root1',
@@ -70,8 +70,8 @@ final class CategoryManagerTest extends DatabaseTestCaseAbstract
 
         $topologyManager->createTopology(['name' => 'Topology', 'category' => $categoryCh2->getId()]);
 
-        $this->expectException(CategoryException::class);
-        $this->expectExceptionCode(CategoryException::CATEGORY_USED);
+        self::expectException(CategoryException::class);
+        self::expectExceptionCode(CategoryException::CATEGORY_USED);
         $manager->deleteCategory($categoryCh2);
     }
 

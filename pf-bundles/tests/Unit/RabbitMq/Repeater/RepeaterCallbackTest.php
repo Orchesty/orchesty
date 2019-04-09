@@ -50,8 +50,8 @@ final class RepeaterCallbackTest extends TestCase
         /** @var RepeaterCallback $callback */
         $callback = new RepeaterCallback();
         $result   = $callback->handle([], $this->message);
-        $this->assertInstanceOf(CallbackStatus::class, $result);
-        $this->assertEquals(1, $result->getStatus());
+        self::assertInstanceOf(CallbackStatus::class, $result);
+        self::assertEquals(1, $result->getStatus());
     }
 
     /**
@@ -61,12 +61,12 @@ final class RepeaterCallbackTest extends TestCase
      */
     public function testHandleBadMessage(): void
     {
-        $producer = $this->getMockBuilder(RepeaterProducer::class)->disableOriginalConstructor()->getMock();
+        $producer = self::getMockBuilder(RepeaterProducer::class)->disableOriginalConstructor()->getMock();
         $producer->expects($this->never())->method('publish')->willReturn(TRUE);
         $callback = new RepeaterCallback($producer);
         $result   = $callback->handle([], $this->message);
-        $this->assertInstanceOf(CallbackStatus::class, $result);
-        $this->assertEquals(1, $result->getStatus());
+        self::assertInstanceOf(CallbackStatus::class, $result);
+        self::assertEquals(1, $result->getStatus());
     }
 
     /**
@@ -81,13 +81,13 @@ final class RepeaterCallbackTest extends TestCase
             Repeater::DESTINATION_ROUTING_KEY => 'test',
         ];
 
-        $producer = $this->getMockBuilder(RepeaterProducer::class)->disableOriginalConstructor()->getMock();
+        $producer = self::getMockBuilder(RepeaterProducer::class)->disableOriginalConstructor()->getMock();
         $producer->expects($this->once())->method('publish')->willReturn(TRUE);
 
         $callback = new RepeaterCallback($producer);
         $result   = $callback->handle([], $this->message);
-        $this->assertInstanceOf(CallbackStatus::class, $result);
-        $this->assertEquals(1, $result->getStatus());
+        self::assertInstanceOf(CallbackStatus::class, $result);
+        self::assertEquals(1, $result->getStatus());
     }
 
 }

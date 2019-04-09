@@ -20,14 +20,14 @@ final class JoinerHandlerTest extends KernelTestCaseAbstract
      */
     public function testJoin(): void
     {
-        $handler = $this->ownContainer->get('hbpf.handler.joiner');
+        $handler = self::$container->get('hbpf.handler.joiner');
 
         $data = [
             'data' => [],
         ];
 
-        $this->expectException(JoinerException::class);
-        $this->expectExceptionCode(JoinerException::MISSING_DATA_IN_REQUEST);
+        self::expectException(JoinerException::class);
+        self::expectExceptionCode(JoinerException::MISSING_DATA_IN_REQUEST);
         $handler->processJoinerTest('null', $data);
 
         $data['count'] = 3;

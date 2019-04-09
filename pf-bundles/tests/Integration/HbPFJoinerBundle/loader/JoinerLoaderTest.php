@@ -16,7 +16,7 @@ final class JoinerLoaderTest extends KernelTestCaseAbstract
      */
     public function testGetAllJoiners(): void
     {
-        $connector = new JoinerLoader($this->ownContainer);
+        $connector = new JoinerLoader(self::$container);
 
         $fields = $connector->getAllJoiners();
         self::assertCount(1, $fields);

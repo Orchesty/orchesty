@@ -44,7 +44,7 @@ final class RabbitMqCompilerPassTest extends KernelTestCaseAbstract
      */
     public function testProcessNoKey(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        self::expectException(InvalidArgumentException::class);
         $container = new ContainerBuilder(
             new ParameterBag()
         );
@@ -66,7 +66,7 @@ final class RabbitMqCompilerPassTest extends KernelTestCaseAbstract
 
         $this->pass->process($container);
 
-        $this->assertEquals([
+        self::assertEquals([
             'service_container',
             'rabbit-mq.producer.demo',
             'rabbit-mq.consumer.demo',

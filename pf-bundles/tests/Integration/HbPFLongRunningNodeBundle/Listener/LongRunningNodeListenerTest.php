@@ -25,7 +25,7 @@ final class LongRunningNodeListenerTest extends DatabaseTestCaseAbstract
     {
         $this->prepData();
         /** @var EventDispatcher $dispatch */
-        $dispatch = $this->ownContainer->get('event_dispatcher');
+        $dispatch = self::$container->get('event_dispatcher');
         $dispatch->dispatch(ProcessStatusEvent::PROCESS_FINISHED, new ProcessStatusEvent('0', TRUE));
 
         /** @var LongRunningNodeData[] $res */

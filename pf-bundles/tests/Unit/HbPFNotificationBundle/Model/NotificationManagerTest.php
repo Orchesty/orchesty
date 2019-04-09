@@ -26,8 +26,8 @@ final class NotificationManagerTest extends KernelTestCaseAbstract
     public function testReadSettings(): void
     {
         $this->getManager(function (RequestDto $request): ResponseDto {
-            $this->assertEquals(CurlManager::METHOD_GET, $request->getMethod());
-            $this->assertEquals('http://example.com/notification_settings', $request->getUri(TRUE));
+            self::assertEquals(CurlManager::METHOD_GET, $request->getMethod());
+            self::assertEquals('http://example.com/notification_settings', $request->getUri(TRUE));
 
             return new ResponseDto(200, 'OK', '', []);
         })->getSettings();
@@ -39,9 +39,9 @@ final class NotificationManagerTest extends KernelTestCaseAbstract
     public function testUpdateSettings(): void
     {
         $this->getManager(function (RequestDto $request): ResponseDto {
-            $this->assertEquals(CurlManager::METHOD_PUT, $request->getMethod());
-            $this->assertEquals('http://example.com/notification_settings', $request->getUri(TRUE));
-            $this->assertEquals('{"type":"Type"}', $request->getBody());
+            self::assertEquals(CurlManager::METHOD_PUT, $request->getMethod());
+            self::assertEquals('http://example.com/notification_settings', $request->getUri(TRUE));
+            self::assertEquals('{"type":"Type"}', $request->getBody());
 
             return new ResponseDto(200, 'OK', '', []);
         })->updateSettings(['type' => 'Type']);
@@ -52,9 +52,9 @@ final class NotificationManagerTest extends KernelTestCaseAbstract
      */
     public function testRequestFail(): void
     {
-        $this->expectException(NotificationException::class);
-        $this->expectExceptionCode(NotificationException::NOTIFICATION_EXCEPTION);
-        $this->expectExceptionMessageRegExp('#Notification API failed: .+#');
+        self::expectException(NotificationException::class);
+        self::expectExceptionCode(NotificationException::NOTIFICATION_EXCEPTION);
+        self::expectExceptionMessageRegExp('#Notification API failed: .+#');
 
         $this->getManager(function (RequestDto $request): void {
             $request;
@@ -70,11 +70,12 @@ final class NotificationManagerTest extends KernelTestCaseAbstract
      * @param callable $callback
      *
      * @return NotificationManager
+     * @throws Exception
      */
     private function getManager(callable $callback): NotificationManager
     {
         /** @var CurlManager|MockObject $curlManager */
-        $curlManager = $this->createPartialMock(CurlManager::class, ['send']);
+        $curlManager = self::createPartialMock(CurlManager::class, ['send']);
         $curlManager->method('send')->willReturnCallback($callback);
 
         return new NotificationManager($curlManager, 'http://example.com/');
