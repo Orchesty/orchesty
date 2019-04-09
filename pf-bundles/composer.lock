@@ -2256,16 +2256,16 @@
         },
         {
             "name": "hanaboso/commons-bundle",
-            "version": "1.1.9",
+            "version": "1.1.10",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.hanaboso.net:hanaboso/commons-bundle.git",
-                "reference": "fa961297f7709c8ad1eb5646df09a166f96d537e"
+                "reference": "9d352bef0909e727db7bd3e01119ac9fed53c9eb"
             },
             "require": {
                 "alcaeus/mongo-php-adapter": "^1.1",
                 "aws/aws-sdk-php-symfony": "^2.0",
-                "clue/buzz-react": "^2.5",
+                "clue/buzz-react": "^2.6",
                 "doctrine/doctrine-bundle": "^1.10",
                 "doctrine/doctrine-fixtures-bundle": "^3.1",
                 "doctrine/mongodb-odm-bundle": "^3.5",
@@ -2306,7 +2306,7 @@
             "license": [
                 "proprietary"
             ],
-            "time": "2019-04-05T12:10:44+00:00"
+            "time": "2019-04-09T10:42:23+00:00"
         },
         {
             "name": "hanaboso/email-service-bundle",
