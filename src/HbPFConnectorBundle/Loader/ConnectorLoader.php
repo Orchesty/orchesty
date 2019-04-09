@@ -66,7 +66,7 @@ class ConnectorLoader
         $res  = [];
 
         foreach (array_keys($list['services']) as $key) {
-            $shortened = str_replace(self::CONNECTOR_PREFIX . '.', '', (string) $key);
+            $shortened = str_replace(sprintf('%s.', self::CONNECTOR_PREFIX), '', (string) $key);
             if (in_array($shortened, $exclude)) {
                 unset($exclude[$shortened]);
                 continue;

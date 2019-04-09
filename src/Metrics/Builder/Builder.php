@@ -40,16 +40,16 @@ class Builder extends InfluxDbBuilder
             }
 
             $clause = $this->where[$i];
-            $query  .= ' ' . $selection . ' ' . $clause;
+            $query  .= sprintf(' %s %s', $selection, $clause);
 
         }
 
         if (!empty($this->groupBy)) {
-            $query .= ' GROUP BY ' . implode(',', $this->groupBy);
+            $query .= sprintf(' GROUP BY %s', implode(',', $this->groupBy));
         }
 
         if (!empty($this->orderBy)) {
-            $query .= ' ORDER BY ' . implode(',', $this->orderBy);
+            $query .= sprintf(' ORDER BY %s', implode(',', $this->orderBy));
         }
 
         if ($this->limitClause) {
@@ -62,8 +62,8 @@ class Builder extends InfluxDbBuilder
     /**
      * Set's the time range to select data from
      *
-     * @param  int $from
-     * @param  int $to
+     * @param int $from
+     * @param int $to
      *
      * @return $this
      */

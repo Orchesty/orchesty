@@ -38,15 +38,15 @@ class Repeater implements LoggerAwareInterface
     protected $logger;
 
     /**
-     * @var \Hanaboso\PipesFramework\RabbitMq\Producer\AbstractProducer
+     * @var AbstractProducer
      */
     private $producer;
 
     /**
      * Repeater constructor.
      *
-     * @param \Hanaboso\PipesFramework\RabbitMq\Producer\AbstractProducer $producer
-     * @param int                                                         $hopLimit
+     * @param AbstractProducer $producer
+     * @param int              $hopLimit
      */
     public function __construct(AbstractProducer $producer, int $hopLimit = 3)
     {

@@ -28,14 +28,14 @@ final class RabbitMqCompilerPassTest extends KernelTestCaseAbstract
     protected function setUp(): void
     {
         $this->pass = new  RabbitMqCompilerPass(
-            "rabbit-mq",
-            "rabbit-mq.client",
-            "rabbit-mq.manager",
-            "rabbit-mq.channel",
-            "command.rabbit-mq.setup",
-            "command.rabbit-mq.consumer",
-            "command.rabbit-mq.async-consumer",
-            "command.rabbit-mq.producer"
+            'rabbit-mq',
+            'rabbit-mq.client',
+            'rabbit-mq.manager',
+            'rabbit-mq.channel',
+            'command.rabbit-mq.setup',
+            'command.rabbit-mq.consumer',
+            'command.rabbit-mq.async-consumer',
+            'command.rabbit-mq.producer'
         );
     }
 
@@ -86,7 +86,7 @@ final class RabbitMqCompilerPassTest extends KernelTestCaseAbstract
      */
     private function getParameters(string $file): array
     {
-        $config = __DIR__ . '/sample/' . $file;
+        $config = sprintf('%s/sample/%s', __DIR__, $file);
         if (!file_exists($config)) {
             return [];
         }

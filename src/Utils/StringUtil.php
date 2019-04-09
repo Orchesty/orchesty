@@ -38,7 +38,7 @@ class StringUtil
      */
     public static function getShortClassName($object): string
     {
-        return substr((string) strrchr(get_class($object), "\\"), 1);
+        return substr((string) strrchr(get_class($object), '\\'), 1);
     }
 
 }

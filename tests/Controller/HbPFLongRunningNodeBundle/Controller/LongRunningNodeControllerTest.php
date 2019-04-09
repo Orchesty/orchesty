@@ -52,7 +52,7 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
         for ($i = 0; $i < 3; $i++) {
             $doc = new LongRunningNodeData();
             $doc->setTopologyId($i < 2 ? 'topo' : 'anotherTopo')
-                ->setNodeId('node' . $i);
+                ->setNodeId(sprintf('node%s', $i));
             $this->dm->persist($doc);
         }
         $this->dm->flush();

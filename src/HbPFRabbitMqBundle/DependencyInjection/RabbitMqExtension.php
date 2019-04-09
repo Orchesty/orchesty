@@ -39,7 +39,7 @@ class RabbitMqExtension extends Extension implements ConfigurationInterface, Pre
         $treeBuilder = new TreeBuilder();
 
         /** @var ArrayNodeDefinition $rootNode */
-        $rootNode = $treeBuilder->root("rabbit-mq");
+        $rootNode = $treeBuilder->root('rabbit-mq');
 
         $rootNode = $this->getConnectionConfig($rootNode);
         $rootNode = $this->getExchangesConfig($rootNode);
@@ -58,14 +58,14 @@ class RabbitMqExtension extends Extension implements ConfigurationInterface, Pre
      */
     public function getConnectionConfig(ArrayNodeDefinition $rootNode): ArrayNodeDefinition
     {
-        $rootNode->children()->scalarNode("host")->defaultValue("127.0.0.1");
-        $rootNode->children()->scalarNode("port")->defaultValue(5672);
-        $rootNode->children()->scalarNode("vhost")->defaultValue("/");
-        $rootNode->children()->scalarNode("user")->defaultValue("guest");
-        $rootNode->children()->scalarNode("password")->defaultValue("guest");
-        $rootNode->children()->scalarNode("heartbeat")->defaultValue(60);
-        $rootNode->children()->scalarNode("persistent")->defaultValue(FALSE);
-        $rootNode->children()->scalarNode("path")->defaultValue("/");
+        $rootNode->children()->scalarNode('host')->defaultValue('127.0.0.1');
+        $rootNode->children()->scalarNode('port')->defaultValue(5672);
+        $rootNode->children()->scalarNode('vhost')->defaultValue('/');
+        $rootNode->children()->scalarNode('user')->defaultValue('guest');
+        $rootNode->children()->scalarNode('password')->defaultValue('guest');
+        $rootNode->children()->scalarNode('heartbeat')->defaultValue(60);
+        $rootNode->children()->scalarNode('persistent')->defaultValue(FALSE);
+        $rootNode->children()->scalarNode('path')->defaultValue('/');
 
         return $rootNode;
     }
@@ -80,20 +80,20 @@ class RabbitMqExtension extends Extension implements ConfigurationInterface, Pre
     public function getExchangesConfig(ArrayNodeDefinition $rootNode): ArrayNodeDefinition
     {
         /** @var ArrayNodeDefinition $exchangesNode */
-        $exchangesNode = $rootNode->children()->arrayNode("exchanges")->useAttributeAsKey('key')->normalizeKeys(FALSE)
-            ->defaultValue([])->prototype("array");
-        $exchangesNode->children()->scalarNode("type");
-        $exchangesNode->children()->booleanNode("durable")->defaultValue(FALSE);
-        $exchangesNode->children()->booleanNode("auto_delete")->defaultValue(FALSE);
-        $exchangesNode->children()->booleanNode("internal")->defaultValue(FALSE);
-        $exchangesNode->children()->arrayNode("arguments")->normalizeKeys(FALSE)->prototype("scalar")->defaultValue([]);
+        $exchangesNode = $rootNode->children()->arrayNode('exchanges')->useAttributeAsKey('key')->normalizeKeys(FALSE)
+            ->defaultValue([])->prototype('array');
+        $exchangesNode->children()->scalarNode('type');
+        $exchangesNode->children()->booleanNode('durable')->defaultValue(FALSE);
+        $exchangesNode->children()->booleanNode('auto_delete')->defaultValue(FALSE);
+        $exchangesNode->children()->booleanNode('internal')->defaultValue(FALSE);
+        $exchangesNode->children()->arrayNode('arguments')->normalizeKeys(FALSE)->prototype('scalar')->defaultValue([]);
 
         /** @var ArrayNodeDefinition $exchangesBindingsNode */
-        $exchangesBindingsNode = $exchangesNode->children()->arrayNode("bindings")->normalizeKeys(FALSE)
-            ->defaultValue([])->prototype("array");
-        $exchangesBindingsNode->children()->scalarNode("exchange")->isRequired();
-        $exchangesBindingsNode->children()->scalarNode("routing_key")->defaultValue("");
-        $exchangesBindingsNode->children()->arrayNode("arguments")->normalizeKeys(FALSE)->prototype("scalar")
+        $exchangesBindingsNode = $exchangesNode->children()->arrayNode('bindings')->normalizeKeys(FALSE)
+            ->defaultValue([])->prototype('array');
+        $exchangesBindingsNode->children()->scalarNode('exchange')->isRequired();
+        $exchangesBindingsNode->children()->scalarNode('routing_key')->defaultValue('');
+        $exchangesBindingsNode->children()->arrayNode('arguments')->normalizeKeys(FALSE)->prototype('scalar')
             ->defaultValue([]);
 
         return $rootNode;
@@ -109,18 +109,18 @@ class RabbitMqExtension extends Extension implements ConfigurationInterface, Pre
         /** @var ArrayNodeDefinition $queuesNode */
         $queuesNode = $rootNode->children()->arrayNode('queues')->useAttributeAsKey('key')->normalizeKeys(FALSE)
             ->defaultValue([])
-            ->prototype("array");
-        $queuesNode->children()->booleanNode("durable")->defaultValue(FALSE);
-        $queuesNode->children()->booleanNode("exclusive")->defaultValue(FALSE);
-        $queuesNode->children()->booleanNode("auto_delete")->defaultValue(FALSE);
-        $queuesNode->children()->arrayNode("arguments")->normalizeKeys(FALSE)->prototype("scalar")->defaultValue([]);
+            ->prototype('array');
+        $queuesNode->children()->booleanNode('durable')->defaultValue(FALSE);
+        $queuesNode->children()->booleanNode('exclusive')->defaultValue(FALSE);
+        $queuesNode->children()->booleanNode('auto_delete')->defaultValue(FALSE);
+        $queuesNode->children()->arrayNode('arguments')->normalizeKeys(FALSE)->prototype('scalar')->defaultValue([]);
 
         /** @var ArrayNodeDefinition $queuesBindingsNode */
-        $queuesBindingsNode = $queuesNode->children()->arrayNode("bindings")->normalizeKeys(FALSE)->defaultValue([])
-            ->prototype("array");
-        $queuesBindingsNode->children()->scalarNode("exchange")->isRequired();
-        $queuesBindingsNode->children()->scalarNode("routing_key")->defaultValue("");
-        $queuesBindingsNode->children()->arrayNode("arguments")->normalizeKeys(FALSE)->prototype("scalar")
+        $queuesBindingsNode = $queuesNode->children()->arrayNode('bindings')->normalizeKeys(FALSE)->defaultValue([])
+            ->prototype('array');
+        $queuesBindingsNode->children()->scalarNode('exchange')->isRequired();
+        $queuesBindingsNode->children()->scalarNode('routing_key')->defaultValue('');
+        $queuesBindingsNode->children()->arrayNode('arguments')->normalizeKeys(FALSE)->prototype('scalar')
             ->defaultValue([]);
 
         return $rootNode;
@@ -179,7 +179,7 @@ class RabbitMqExtension extends Extension implements ConfigurationInterface, Pre
         $consumersNode->children()->scalarNode('tick_seconds')->defaultValue(NULL);
         $consumersNode->children()->scalarNode('max_messages')->defaultValue(NULL);
         $consumersNode->children()->scalarNode('max_seconds')->defaultValue(NULL);
-        $consumersNode->children()->arrayNode("arguments")->normalizeKeys(FALSE)->prototype("scalar")->defaultValue([]);
+        $consumersNode->children()->arrayNode('arguments')->normalizeKeys(FALSE)->prototype('scalar')->defaultValue([]);
 
         return $rootNode;
     }
@@ -211,7 +211,7 @@ class RabbitMqExtension extends Extension implements ConfigurationInterface, Pre
         $consumersNode->children()->booleanNode('nowait')->defaultFalse();
         $consumersNode->children()->scalarNode('prefetch_count')->defaultValue(1);
         $consumersNode->children()->scalarNode('prefetch_size')->defaultValue(0);
-        $consumersNode->children()->arrayNode("arguments")->normalizeKeys(FALSE)->prototype("scalar")->defaultValue([]);
+        $consumersNode->children()->arrayNode('arguments')->normalizeKeys(FALSE)->prototype('scalar')->defaultValue([]);
 
         return $rootNode;
     }
@@ -231,7 +231,7 @@ class RabbitMqExtension extends Extension implements ConfigurationInterface, Pre
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yml');
 
-        $container->setParameter("rabbit-mq", $this->processConfiguration($this, $configs));
+        $container->setParameter('rabbit-mq', $this->processConfiguration($this, $configs));
     }
 
     /**

@@ -236,14 +236,14 @@ class RabbitMqCompilerPass implements CompilerPassInterface
 
         $clientDefinition = new Definition('%rabbit-mq.bunny-client%', [
             [
-                'host'       => $config["host"],
-                'port'       => $config["port"],
-                'vhost'      => $config["vhost"],
-                'user'       => $config["user"],
-                'password'   => $config["password"],
-                'heartbeat'  => $config["heartbeat"],
-                'persistent' => $config["persistent"],
-                'path'       => $config["vhost"],
+                'host'       => $config['host'],
+                'port'       => $config['port'],
+                'vhost'      => $config['vhost'],
+                'user'       => $config['user'],
+                'password'   => $config['password'],
+                'heartbeat'  => $config['heartbeat'],
+                'persistent' => $config['persistent'],
+                'path'       => $config['vhost'],
             ],
         ]);
         $clientDefinition->setPublic(TRUE);
@@ -266,7 +266,7 @@ class RabbitMqCompilerPass implements CompilerPassInterface
          * Bunny channel
          */
         $channel = new Definition('%rabbit-mq.bunny-channel%');
-        $channel->setFactory([new Reference($this->managerServiceId), "getChannel"]);
+        $channel->setFactory([new Reference($this->managerServiceId), 'getChannel']);
         $container->setDefinition($this->channelServiceId, $channel);
 
         $setupCommand = new Definition('%rabbit-mq.command.setup%', [
@@ -277,7 +277,7 @@ class RabbitMqCompilerPass implements CompilerPassInterface
 
         // CONSUMER COMMAND
         $consumerCommand = new Definition('%rabbit-mq.command.consumer%', [
-            new Reference("service_container"),
+            new Reference('service_container'),
             new Reference($this->managerServiceId),
             $consumers,
         ]);

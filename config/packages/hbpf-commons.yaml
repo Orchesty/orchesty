@@ -56,7 +56,7 @@ services:
     ##########################
 
     hbpf.file_storage.driver.mongo:
-        class: Hanaboso\CommonsBundle\FileStorage\Driver\MongoFileDriver
+        class: Hanaboso\CommonsBundle\FileStorage\Driver\Impl\Mongo\MongoFileDriver
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.path_generator.hash'

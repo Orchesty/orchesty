@@ -77,7 +77,7 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
         self::assertEquals(400, $response->status);
         self::assertEquals(CategoryException::class, $content->type);
         self::assertEquals('ERROR', $content->status);
-        self::assertEquals(2001, $content->error_code);
+        self::assertEquals(2001, $content->errorCode);
     }
 
     /**

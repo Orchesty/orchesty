@@ -69,7 +69,7 @@ class ConsumerCommand extends Command implements LoggerAwareInterface
      */
     public function __construct(ContainerInterface $container, BunnyManager $manager, array $consumers)
     {
-        parent::__construct("rabbit-mq:consumer");
+        parent::__construct('rabbit-mq:consumer');
         $this->container = $container;
         $this->manager   = $manager;
         $this->consumers = $consumers;
@@ -82,9 +82,9 @@ class ConsumerCommand extends Command implements LoggerAwareInterface
     protected function configure(): void
     {
         $this
-            ->setDescription("Starts given consumer.")
-            ->addArgument("consumer-name", InputArgument::REQUIRED, "Name of consumer.")
-            ->addArgument("consumer-parameters", InputArgument::IS_ARRAY, "Argv input to consumer.", []);
+            ->setDescription('Starts given consumer.')
+            ->addArgument('consumer-name', InputArgument::REQUIRED, 'Name of consumer.')
+            ->addArgument('consumer-parameters', InputArgument::IS_ARRAY, 'Argv input to consumer.', []);
     }
 
     /**
@@ -127,14 +127,14 @@ class ConsumerCommand extends Command implements LoggerAwareInterface
     {
         $output;
         /** @var string $arg */
-        $arg          = $input->getArgument("consumer-name");
+        $arg          = $input->getArgument('consumer-name');
         $consumerName = strtolower($arg);
 
         if (!isset($this->consumers[$consumerName])) {
             throw new InvalidArgumentException(sprintf('Consumer \'%s\' doesn\'t exists.', $consumerName));
         }
 
-        $consumerArgv = (array) $input->getArgument("consumer-parameters");
+        $consumerArgv = (array) $input->getArgument('consumer-parameters');
         array_unshift($consumerArgv, $consumerName);
 
         try {
@@ -161,23 +161,23 @@ class ConsumerCommand extends Command implements LoggerAwareInterface
         $maxSeconds  = min($maxSeconds, $consumer->getMaxSeconds() ?? PHP_INT_MAX);
 
         if (empty($consumer->getQueue())) {
-            $queueOk = $channel->queueDeclare("", FALSE, FALSE, TRUE);
+            $queueOk = $channel->queueDeclare('', FALSE, FALSE, TRUE);
             if (!($queueOk instanceof MethodQueueDeclareOkFrame)) {
-                throw new BunnyException("Could not declare anonymous queue.");
+                throw new BunnyException('Could not declare anonymous queue.');
             }
 
             $consumer->setQueue($queueOk->queue);
 
             $bindOk = $channel->queueBind($consumer->getQueue(), $consumer->getExchange(), $consumer->getRoutingKey());
             if (!($bindOk instanceof MethodQueueBindOkFrame)) {
-                throw new BunnyException("Could not bind anonymous queue.");
+                throw new BunnyException('Could not bind anonymous queue.');
             }
         }
 
         if ($consumer->getPrefetchSize() || $consumer->getPrefetchCount()) {
             $qosOk = $channel->qos($consumer->getPrefetchSize(), $consumer->getPrefetchCount());
             if (!($qosOk instanceof MethodBasicQosOkFrame)) {
-                throw new BunnyException("Could not set prefetch-size/prefetch-count.");
+                throw new BunnyException('Could not set prefetch-size/prefetch-count.');
             }
         }
 
@@ -189,7 +189,7 @@ class ConsumerCommand extends Command implements LoggerAwareInterface
                 throw new BunnyException(sprintf('Consumer meta class %s does not exist.', $metaClassName));
             }
 
-            if (!method_exists($metaClassName, "getInstance")) {
+            if (!method_exists($metaClassName, 'getInstance')) {
                 throw new BunnyException(sprintf('Method %s::getInstance() does not exist.', $metaClassName));
             }
 
@@ -211,7 +211,8 @@ class ConsumerCommand extends Command implements LoggerAwareInterface
         if ($consumer->getTickMethod()) {
             if (!$consumer->getTickSeconds()) {
                 throw new BunnyException(
-                    "If you specify 'tickMethod', you have to specify 'tickSeconds' - " . get_class($consumer) . "."
+                    sprintf("If you specify 'tickMethod', you have to specify 'tickSeconds' - %s.",
+                        get_class($consumer))
                 );
             }
 
@@ -271,7 +272,7 @@ class ConsumerCommand extends Command implements LoggerAwareInterface
     {
         $data = $message->content;
         if ($serializer) {
-            switch ($message->getHeader("content-type")) {
+            switch ($message->getHeader('content-type')) {
                 case ContentTypes::APPLICATION_JSON:
                     if ($serializer instanceof IMessageSerializer) {
                         try {

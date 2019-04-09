@@ -237,7 +237,7 @@ class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements M
             $this->getRequestTokenUrl(),
             $this->getAuthorizationUrl(),
             $this->getRedirectUrl(),
-            $this->saveOAuthStuffs(),
+            $this->saveOauthStuffs(),
             []
         );
     }
@@ -305,7 +305,7 @@ class Magento2OAuthAuthorization extends OAuthAuthorizationAbstract implements M
     /**
      * @return callable
      */
-    private function saveOAuthStuffs(): callable
+    private function saveOauthStuffs(): callable
     {
         return function (DocumentManager $dm, OAuth1Dto $dto, array $data): void {
             $dto->getAuthorization()->setToken(

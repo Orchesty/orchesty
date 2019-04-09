@@ -78,7 +78,7 @@ class AuthorizationLoader
         $res     = [];
 
         foreach (array_keys($list['services']) as $key) {
-            $shortened = str_replace(self::AUTHORIZATION_PREFIX . '.', '', (string) $key);
+            $shortened = str_replace(sprintf('%s.', self::AUTHORIZATION_PREFIX), '', (string) $key);
             if (in_array($shortened, $exclude)) {
                 unset($exclude[$shortened]);
                 continue;
