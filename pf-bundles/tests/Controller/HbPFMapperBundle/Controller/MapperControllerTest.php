@@ -3,6 +3,7 @@
 namespace Tests\Controller\HbPFMapperBundle\Controller;
 
 use Hanaboso\PipesFramework\HbPFMapperBundle\Handler\MapperHandler;
+use ReflectionException;
 use Tests\ControllerTestCaseAbstract;
 
 /**
@@ -60,7 +61,7 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function testGetListOfCustomNodes(): void
     {
@@ -74,7 +75,7 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     private function mockNodeControllerHandler(): void
     {

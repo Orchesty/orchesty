@@ -4,6 +4,7 @@ namespace Tests\Controller\HbPFConnectorBundle\Controller;
 
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\HbPFConnectorBundle\Handler\ConnectorHandler;
+use ReflectionException;
 use Tests\ControllerTestCaseAbstract;
 
 /**
@@ -64,7 +65,7 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function testGetListOfConnectors(): void
     {
@@ -78,7 +79,7 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     private function mockConnectorsHandler(): void
     {

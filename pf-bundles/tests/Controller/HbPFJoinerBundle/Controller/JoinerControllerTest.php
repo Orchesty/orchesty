@@ -3,6 +3,7 @@
 namespace Tests\Controller\HbPFJoinerBundle\Controller;
 
 use Hanaboso\PipesFramework\HbPFJoinerBundle\Handler\JoinerHandler;
+use ReflectionException;
 use Tests\ControllerTestCaseAbstract;
 
 /**
@@ -81,7 +82,7 @@ final class JoinerControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     private function mockConnectorsHandler(): void
     {
