@@ -28,7 +28,7 @@ class SetupCommand extends Command
      */
     public function __construct(BunnyManager $manager)
     {
-        parent::__construct("rabbit-mq:setup");
+        parent::__construct('rabbit-mq:setup');
         $this->manager = $manager;
     }
 
@@ -37,7 +37,7 @@ class SetupCommand extends Command
      */
     protected function configure(): void
     {
-        $this->setDescription("Sets up exchange-queue topology as specified on RabbitMqBundle configuration.");
+        $this->setDescription('Sets up exchange-queue topology as specified on RabbitMqBundle configuration.');
     }
 
     /**

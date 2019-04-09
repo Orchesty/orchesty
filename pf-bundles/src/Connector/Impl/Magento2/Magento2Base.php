@@ -76,7 +76,7 @@ abstract class Magento2Base implements ConnectorInterface
     protected function processRequest(string $method, string $urlPart, string $body = ''): string
     {
 
-        $dto = new RequestDto($method, new Uri($this->authorization->getUrl() . $urlPart));
+        $dto = new RequestDto($method, new Uri(sprintf('%s%s', $this->authorization->getUrl(), $urlPart)));
         $dto
             ->setHeaders($this->authorization->getHeaders($dto->getMethod(), (string) $dto->getUri()))
             ->setBody($body);

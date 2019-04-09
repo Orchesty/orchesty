@@ -23,11 +23,11 @@ class Configuration implements ConfigurationInterface
         $rootNode    = $treeBuilder->root(HbPFLogsBundle::KEY);
 
         $rootNode->children()
-            ->enumNode("type")->values(['mongodb', 'elastic'])->isRequired()
+            ->enumNode('type')->values(['mongodb', 'elastic'])->isRequired()
             ->end();
 
         $rootNode->children()
-            ->scalarNode("storage_name")->isRequired()
+            ->scalarNode('storage_name')->isRequired()
             ->info('Set name of mongodb database or elastic index.')
             ->end();
 

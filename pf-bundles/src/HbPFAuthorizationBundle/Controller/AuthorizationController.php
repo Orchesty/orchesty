@@ -109,7 +109,7 @@ class AuthorizationController extends AbstractController
             /** @var ContainerInterface $container */
             $container = $this->container;
 
-            return new RedirectResponse($container->getParameter('frontend_host') . '/close-me.html');
+            return new RedirectResponse(sprintf('%s/close-me.html', $container->getParameter('frontend_host')));
         } catch (AuthorizationException | Throwable $e) {
             return $this->getErrorResponse($e);
         }

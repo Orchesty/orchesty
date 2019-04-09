@@ -152,7 +152,9 @@ class OAuth2Provider implements OAuth2ProviderInterface, LoggerAwareInterface
         return new OAuth2Wrapper([
             'clientId'                => $dto->getClientId(),
             'clientSecret'            => $dto->getClientSecret(),
-            'redirectUri'             => rtrim($this->backend, '/') . '/' . ltrim($dto->getRedirectUrl(), '/'),
+            'redirectUri'             => sprintf('%s/%s',
+                rtrim($this->backend, '/'),
+                ltrim($dto->getRedirectUrl(), '/')),
             'urlAuthorize'            => $dto->getAuthorizeUrl(),
             'urlAccessToken'          => $dto->getTokenUrl(),
             'urlResourceOwnerDetails' => $dto->getAuthorizeUrl(),
@@ -176,7 +178,7 @@ class OAuth2Provider implements OAuth2ProviderInterface, LoggerAwareInterface
     {
         $state = NULL;
         if (!$dto->isCustomApp()) {
-            $state = Base64::base64UrlEncode($dto->getUser() . ':' . $dto->getSystemKey());
+            $state = Base64::base64UrlEncode(sprintf('%s:%s', $dto->getUser(), $dto->getSystemKey()));
         }
 
         $scopes = ScopeFormatter::getScopes($scopes, $separator);

@@ -38,7 +38,7 @@ final class CategoryRepositoryTest extends DatabaseTestCaseAbstract
         $children = [];
         for ($i = 0; $i < 3; $i++) {
             $child = new Category();
-            $child->setName('child_' . $i);
+            $child->setName(sprintf('child%s', $i));
             $child->setParent($category->getId());
             $children[$i] = $child;
             $this->dm->persist($child);

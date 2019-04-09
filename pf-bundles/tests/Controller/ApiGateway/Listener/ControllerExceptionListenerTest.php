@@ -42,7 +42,7 @@ final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
     {
         $controller = new ControllerExceptionListener();
 
-        $eventMock = $this->mockEvent(new Exception(""));
+        $eventMock = $this->mockEvent(new Exception(''));
         $controller->onKernelException($eventMock);
         self::assertNull($eventMock->getResponse());
 

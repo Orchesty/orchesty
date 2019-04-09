@@ -22,8 +22,8 @@ class ElasticLogs implements LogsInterface
         return [
             'limit'  => $dto->getLimit(),
             'offset' => ((int) ($dto->getPage() ?? 1) - 1) * $dto->getLimit(),
-            'count'  => "0",
-            'total'  => "0",
+            'count'  => '0',
+            'total'  => '0',
             'items'  => [],
         ];
     }

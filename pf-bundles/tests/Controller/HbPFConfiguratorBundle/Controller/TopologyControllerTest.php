@@ -35,8 +35,8 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         self::assertEquals(2, $response->content->count);
         self::assertEquals(4, $response->content->total);
 
-        self::assertTopology($topologies[2], $response->content->items[0]);
-        self::assertTopology($topologies[1], $response->content->items[1]);
+        self::assertTopology($topologies[2], (object) $response->content->items[0]);
+        self::assertTopology($topologies[1], (object) $response->content->items[1]);
     }
 
     /**
@@ -63,7 +63,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
         self::assertEquals(500, $response->status);
         self::assertEquals(TopologyException::class, $content->type);
-        self::assertEquals(2001, $content->error_code);
+        self::assertEquals(2001, $content->errorCode);
     }
 
     /**
@@ -119,7 +119,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
         self::assertEquals(500, $response->status);
         self::assertEquals(TopologyException::class, $content->type);
-        self::assertEquals(2001, $content->error_code);
+        self::assertEquals(2001, $content->errorCode);
     }
 
     /**
@@ -156,16 +156,12 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             '/api/topologies/999/schema.bpmn'
         );
 
-        $response = $this->client->getResponse();
-        $response = (object) [
-            'status'  => $response->getStatusCode(),
-            'content' => Json::decode($response->getContent()),
-        ];
+        $response = $this->returnResponse($this->client->getResponse());
         $content  = $response->content;
 
         self::assertEquals(500, $response->status);
         self::assertEquals(TopologyException::class, $content->type);
-        self::assertEquals(2001, $content->error_code);
+        self::assertEquals(2001, $content->errorCode);
     }
 
     /**
@@ -192,12 +188,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             $this->getBpmn()
         );
 
-        $response = $this->client->getResponse();
-        $response = (object) [
-            'status'  => $response->getStatusCode(),
-            'content' => Json::decode($response->getContent()),
-        ];
-
+        $response = $this->returnResponse($this->client->getResponse());
         self::assertEquals(200, $response->status);
     }
 
@@ -207,6 +198,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
      */
     public function testSaveTopologySchemaNotFound(): void
     {
+
         $this->client->request(
             'PUT',
             '/api/topologies/999/schema.bpmn',
@@ -219,16 +211,11 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             $this->getBpmn()
         );
 
-        $response = $this->client->getResponse();
-        $response = (object) [
-            'status'  => $response->getStatusCode(),
-            'content' => Json::decode($response->getContent()),
-        ];
+        $response = $this->returnResponse($this->client->getResponse());
         $content  = $response->content;
-
         self::assertEquals(500, $response->status);
         self::assertEquals(TopologyException::class, $content->type);
-        self::assertEquals(2001, $content->error_code);
+        self::assertEquals(2001, $content->errorCode);
     }
 
     /**
@@ -255,12 +242,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             str_replace('name="Start Event"', '', $this->getBpmn())
         );
 
-        $response = $this->client->getResponse();
-        $response = (object) [
-            'status'  => $response->getStatusCode(),
-            'content' => Json::decode($response->getContent()),
-        ];
-
+        $response = $this->returnResponse($this->client->getResponse());
         self::assertEquals(400, $response->status);
     }
 
@@ -321,12 +303,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             str_replace('pipes:cronTime="*/2 * * * *"', 'pipes:cronTime="Unknown"', $this->getBpmn())
         );
 
-        $response = $this->client->getResponse();
-        $response = (object) [
-            'status'  => $response->getStatusCode(),
-            'content' => Json::decode($response->getContent()),
-        ];
-
+        $response = $this->returnResponse($this->client->getResponse());
         self::assertEquals(400, $response->status);
     }
 
@@ -364,7 +341,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             'status'  => $response->getStatusCode(),
             'content' => $response->getContent(),
         ];
-
         self::assertEquals(200, $response->status);
         self::assertEquals($this->getBpmn(), $response->content);
     }
@@ -389,7 +365,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         );
 
         $response = $this->client->getResponse();
-
         self::assertEquals(200, $response->getStatusCode());
     }
 

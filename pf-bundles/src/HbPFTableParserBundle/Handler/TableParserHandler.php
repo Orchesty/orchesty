@@ -53,12 +53,12 @@ class TableParserHandler
      */
     public function parseToJson(array $data): string
     {
-        $fs     = new Filesystem();
-        $is_tmp = FALSE;
-        $path   = $this->getFile($data, $is_tmp, $fs);
-        $res    = $this->tableParser->parseToJson($path, $data['has_headers'] ?? FALSE);
+        $fs    = new Filesystem();
+        $isTmp = FALSE;
+        $path  = $this->getFile($data, $isTmp, $fs);
+        $res   = $this->tableParser->parseToJson($path, $data['has_headers'] ?? FALSE);
 
-        if ($is_tmp) {
+        if ($isTmp) {
             $fs->remove($path);
         }
 
@@ -85,12 +85,12 @@ class TableParserHandler
      */
     public function parseFromJson(string $type, array $data): string
     {
-        $fs     = new Filesystem();
-        $is_tmp = FALSE;
-        $path   = $this->getFile($data, $is_tmp, $fs);
-        $res    = $this->tableParser->parseFromJson($path, $type, $data['has_headers'] ?? FALSE);
+        $fs    = new Filesystem();
+        $isTmp = FALSE;
+        $path  = $this->getFile($data, $isTmp, $fs);
+        $res   = $this->tableParser->parseFromJson($path, $type, $data['has_headers'] ?? FALSE);
 
-        if ($is_tmp) {
+        if ($isTmp) {
             $fs->remove($path);
         }
 
@@ -112,14 +112,14 @@ class TableParserHandler
 
     /**
      * @param array           $data
-     * @param bool            $is_tmp
+     * @param bool            $isTmp
      * @param Filesystem|null $fs
      *
      * @return string
      * @throws TableParserHandlerException
      * @throws FileStorageException
      */
-    private function getFile(array $data, bool &$is_tmp, ?Filesystem $fs = NULL): string
+    private function getFile(array $data, bool &$isTmp, ?Filesystem $fs = NULL): string
     {
         if (isset($data['file_id'])) {
             if (!$fs) {
@@ -127,15 +127,15 @@ class TableParserHandler
             }
 
             if ($fs->exists($data['file_id'])) {
-                $is_tmp = FALSE;
+                $isTmp = FALSE;
 
                 return $data['file_id'];
             }
 
-            $is_tmp = TRUE;
-            $file   = $this->fileStorage->getFileDocument($data['file_id']);
-            $file   = $this->fileStorage->getFileStorage($file)->getContent();
-            $path   = __DIR__ . '/' . uniqid();
+            $isTmp = TRUE;
+            $file  = $this->fileStorage->getFileDocument($data['file_id']);
+            $file  = $this->fileStorage->getFileStorage($file)->getContent();
+            $path  = sprintf('%s/%s', __DIR__, uniqid());
             $fs->dumpFile($path, $file);
 
             return $path;

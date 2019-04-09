@@ -76,10 +76,10 @@ final class HbPFRabbitMqBundleTest extends KernelTestCaseAbstract
         $application = $this->getMockBuilder(Application::class)->getMock();
 
         $container = $this->getMockBuilder(ContainerInterface::class)->getMock();
-        $container->method("get")->willReturnCallback(function ($id) {
+        $container->method('get')->willReturnCallback(function ($id) {
             if (in_array($id, [
-                    "command.rabbit-mq.setup",
-                    "command.rabbit-mq.consumer",
+                    'command.rabbit-mq.setup',
+                    'command.rabbit-mq.consumer',
                     'command.rabbit-mq.async-consumer',
                 ]
             )) {

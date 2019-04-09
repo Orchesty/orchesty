@@ -55,35 +55,35 @@ class Pipes
      *
      * @ODM\Field(type="string")
      */
-    private $correlation_id;
+    private $correlationId;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $topology_id;
+    private $topologyId;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $topology_name;
+    private $topologyName;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $node_id;
+    private $nodeId;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $node_name;
+    private $nodeName;
 
     /**
      * @var Stacktrace
@@ -137,7 +137,7 @@ class Pipes
      */
     public function getCorrelationId(): string
     {
-        return $this->correlation_id;
+        return $this->correlationId;
     }
 
     /**
@@ -145,7 +145,7 @@ class Pipes
      */
     public function getTopologyId(): string
     {
-        return $this->topology_id;
+        return $this->topologyId;
     }
 
     /**
@@ -153,7 +153,7 @@ class Pipes
      */
     public function getTopologyName(): string
     {
-        return $this->topology_name;
+        return $this->topologyName;
     }
 
     /**
@@ -161,7 +161,7 @@ class Pipes
      */
     public function getNodeId(): string
     {
-        return $this->node_id;
+        return $this->nodeId;
     }
 
     /**
@@ -169,7 +169,7 @@ class Pipes
      */
     public function getNodeName(): string
     {
-        return $this->node_name;
+        return $this->nodeName;
     }
 
     /**

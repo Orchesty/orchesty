@@ -44,8 +44,8 @@ doctrine_mongodb:
                 FileMongo:
                     type: annotation
                     is_bundle: false
-                    dir: "%kernel.root_dir%/../vendor/hanaboso/commons-bundle/src/FileStorage/Driver"
-                    prefix: Hanaboso\CommonsBundle\FileStorage\Driver
+                    dir: "%kernel.root_dir%/../vendor/hanaboso/commons-bundle/src/FileStorage/Driver/Impl/Mongo"
+                    prefix: Hanaboso\CommonsBundle\FileStorage\Driver\Impl\Mongo
                 LongRunningNodeDocument:
                     type: annotation
                     is_bundle: false

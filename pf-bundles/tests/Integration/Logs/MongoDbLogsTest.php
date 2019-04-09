@@ -79,11 +79,11 @@ final class MongoDbLogsTest extends DatabaseTestCaseAbstract
             $this->setProperty($pipes, 'hostname', sprintf('Hostname '));
             $this->setProperty($pipes, 'channel', sprintf('Channel %s', $i));
             $this->setProperty($pipes, 'severity', 'ERROR');
-            $this->setProperty($pipes, 'correlation_id', sprintf('Correlation ID %s', $i));
-            $this->setProperty($pipes, 'topology_id', sprintf('Topology ID %s', $i));
-            $this->setProperty($pipes, 'topology_name', sprintf('Topology Name %s', $i));
-            $this->setProperty($pipes, 'node_id', $node->getId());
-            $this->setProperty($pipes, 'node_name', sprintf('Node Name %s', $i));
+            $this->setProperty($pipes, 'correlationId', sprintf('Correlation ID %s', $i));
+            $this->setProperty($pipes, 'topologyId', sprintf('Topology ID %s', $i));
+            $this->setProperty($pipes, 'topologyName', sprintf('Topology Name %s', $i));
+            $this->setProperty($pipes, 'nodeId', $node->getId());
+            $this->setProperty($pipes, 'nodeName', sprintf('Node Name %s', $i));
             $this->setProperty($pipes, 'stacktrace', $stacktrace);
             $this->dm->persist($pipes);
 

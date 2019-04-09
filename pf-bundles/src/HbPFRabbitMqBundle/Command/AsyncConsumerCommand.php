@@ -81,8 +81,8 @@ class AsyncConsumerCommand extends Command implements LoggerAwareInterface
     protected function configure(): void
     {
         $this
-            ->setDescription("Starts async consumer.")
-            ->addArgument("consumer-name", InputArgument::REQUIRED, "Name of consumer.");
+            ->setDescription('Starts async consumer.')
+            ->addArgument('consumer-name', InputArgument::REQUIRED, 'Name of consumer.');
     }
 
     /**
@@ -96,7 +96,7 @@ class AsyncConsumerCommand extends Command implements LoggerAwareInterface
         $output;
 
         /** @var string $arg */
-        $arg          = $input->getArgument("consumer-name");
+        $arg          = $input->getArgument('consumer-name');
         $consumerName = strtolower($arg);
 
         if (!isset($this->asyncConsumers[$consumerName])) {
@@ -148,7 +148,7 @@ class AsyncConsumerCommand extends Command implements LoggerAwareInterface
     }
 
     /**
-     * @param \Hanaboso\PipesFramework\RabbitMq\Consumer\AsyncConsumerAbstract $consumer
+     * @param AsyncConsumerAbstract $consumer
      */
     private function startLoop(AsyncConsumerAbstract $consumer): void
     {
@@ -166,8 +166,8 @@ class AsyncConsumerCommand extends Command implements LoggerAwareInterface
     }
 
     /**
-     * @param LoopInterface                                                    $loop
-     * @param \Hanaboso\PipesFramework\RabbitMq\Consumer\AsyncConsumerAbstract $consumer
+     * @param LoopInterface         $loop
+     * @param AsyncConsumerAbstract $consumer
      */
     public function restart(LoopInterface $loop, AsyncConsumerAbstract $consumer): void
     {
@@ -177,8 +177,8 @@ class AsyncConsumerCommand extends Command implements LoggerAwareInterface
     }
 
     /**
-     * @param LoopInterface                                                    $loop
-     * @param \Hanaboso\PipesFramework\RabbitMq\Consumer\AsyncConsumerAbstract $consumer
+     * @param LoopInterface         $loop
+     * @param AsyncConsumerAbstract $consumer
      *
      * @return PromiseInterface
      */
@@ -200,8 +200,8 @@ class AsyncConsumerCommand extends Command implements LoggerAwareInterface
     }
 
     /**
-     * @param Channel                                                          $channel
-     * @param \Hanaboso\PipesFramework\RabbitMq\Consumer\AsyncConsumerAbstract $asyncConsumer
+     * @param Channel               $channel
+     * @param AsyncConsumerAbstract $asyncConsumer
      *
      * @return PromiseInterface
      */
@@ -223,8 +223,8 @@ class AsyncConsumerCommand extends Command implements LoggerAwareInterface
     }
 
     /**
-     * @param LoopInterface                                                    $loop
-     * @param \Hanaboso\PipesFramework\RabbitMq\Consumer\AsyncConsumerAbstract $consumer
+     * @param LoopInterface         $loop
+     * @param AsyncConsumerAbstract $consumer
      */
     private function runAsyncConsumer(LoopInterface $loop, AsyncConsumerAbstract $consumer): void
     {

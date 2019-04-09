@@ -10,6 +10,7 @@ use Bunny\Protocol\MethodExchangeDeclareOkFrame;
 use Bunny\Protocol\MethodQueueBindOkFrame;
 use Bunny\Protocol\MethodQueueDeclareOkFrame;
 use Exception;
+use React\Promise\PromiseInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -106,7 +107,7 @@ class BunnyManager
     }
 
     /**
-     * @return Channel|\React\Promise\PromiseInterface
+     * @return Channel|PromiseInterface
      * @throws Exception
      */
     public function createChannel()
@@ -238,7 +239,7 @@ class BunnyManager
                     throw new BunnyException(
                         sprintf(
                             'Could not bind queue \'%s\' to \'%s\' with routing key \'%s\'.',
-                            $queueName, $binding["exchange"], $binding["routing_key"]
+                            $queueName, $binding['exchange'], $binding['routing_key']
                         )
                     );
                 }

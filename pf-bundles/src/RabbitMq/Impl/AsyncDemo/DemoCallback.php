@@ -74,7 +74,7 @@ class DemoCallback implements BatchActionInterface
      */
     private function createRequest(int $page): RequestInterface
     {
-        return new Request('GET', 'http://jsonplaceholder.typicode.com/posts/' . $page);
+        return new Request('GET', sprintf('http://jsonplaceholder.typicode.com/posts/%s', $page));
     }
 
     /**

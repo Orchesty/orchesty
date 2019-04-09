@@ -39,14 +39,14 @@ class HbPFRabbitMqBundle extends Bundle
     {
         $container->addCompilerPass(
             new RabbitMqCompilerPass(
-                "rabbit-mq",
-                "rabbit-mq.client",
-                "rabbit-mq.manager",
-                "rabbit-mq.channel",
-                "command.rabbit-mq.setup",
-                "command.rabbit-mq.consumer",
-                "command.rabbit-mq.async-consumer",
-                "command.rabbit-mq.producer"
+                'rabbit-mq',
+                'rabbit-mq.client',
+                'rabbit-mq.manager',
+                'rabbit-mq.channel',
+                'command.rabbit-mq.setup',
+                'command.rabbit-mq.consumer',
+                'command.rabbit-mq.async-consumer',
+                'command.rabbit-mq.producer'
             ),
             PassConfig::TYPE_OPTIMIZE
         );
@@ -61,9 +61,9 @@ class HbPFRabbitMqBundle extends Bundle
     {
         /** @var Command[] $commands */
         $commands = [
-            $this->container->get("command.rabbit-mq.consumer"),
-            $this->container->get("command.rabbit-mq.setup"),
-            $this->container->get("command.rabbit-mq.async-consumer"),
+            $this->container->get('command.rabbit-mq.consumer'),
+            $this->container->get('command.rabbit-mq.setup'),
+            $this->container->get('command.rabbit-mq.async-consumer'),
         ];
 
         foreach ($commands as $command) {
