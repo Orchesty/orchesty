@@ -55,11 +55,11 @@ func (c *connection) Connect() {
 	go func() {
 		err := <-c.conn.NotifyClose(make(chan *amqp.Error))
 		if err == nil {
-			c.saveWriteRestartChan(false)
+			c.restartChan <- false
 		}
 
 		c.log.Error(fmt.Sprintf("Rabbit MQ connection close error: %+v", err))
-		c.saveWriteRestartChan(true)
+		c.restartChan <- true
 	}()
 
 	log.Info(fmt.Sprintf("Rabbit MQ connected to %s", connString))
@@ -143,16 +143,12 @@ func (c *connection) ClearChannels() {
 	}
 }
 
-func (c *connection) isChannel(n string) (r bool) {
+func (c *connection) isChannel(n string) (bool) {
 	c.lock.Lock()
 	defer c.lock.Unlock()
 
-	r = false
-	if _, ok := c.channels[n]; ok {
-		r = true
-	}
-
-	return
+	_, ok := c.channels[n]
+	return ok
 }
 
 func (c *connection) saveWriteChan(name string, ch ChanData) {
@@ -174,13 +170,6 @@ func (c *connection) saveDelete(name string) {
 	defer c.lock.Unlock()
 
 	delete(c.channels, name)
-}
-
-func (c *connection) saveWriteRestartChan(b bool) {
-	c.lock.Lock()
-	defer c.lock.Unlock()
-
-	c.restartChan <- b
 }
 
 func (c *connection) reconnect() {

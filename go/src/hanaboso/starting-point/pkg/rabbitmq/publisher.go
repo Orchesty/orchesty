@@ -26,8 +26,9 @@ func (p *publisher) Publish(msg amqp.Publishing, routingKey string) {
 		p.log.Error(fmt.Sprintf("Rabbit MQ publish error: %+v. Try to recconect.", err))
 		p.connection.Connect()
 
-		if v := <-p.connection.GetRestartChan(); v {
+		if <-p.connection.GetRestartChan() {
 			p.Publish(msg, routingKey)
+			return
 		}
 	}
 

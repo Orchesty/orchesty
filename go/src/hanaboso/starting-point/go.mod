@@ -5,6 +5,7 @@ require (
 	github.com/go-ole/go-ole v1.2.1 // indirect
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/golang/snappy v0.0.0-20180518054509-2e65f85255db // indirect
+	github.com/google/go-cmp v0.2.0 // indirect
 	github.com/google/uuid v1.1.0
 	github.com/gorilla/context v1.1.1
 	github.com/gorilla/mux v1.6.2
@@ -15,6 +16,7 @@ require (
 	github.com/sirupsen/logrus v1.2.0
 	github.com/streadway/amqp v0.0.0-20181205114330-a314942b2fd9
 	github.com/stretchr/testify v1.2.2
+	github.com/tidwall/pretty v0.0.0-20190325153808-1166b9ac2b65 // indirect
 	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect
 	github.com/xdg/stringprep v1.0.0 // indirect
 	golang.org/x/sync v0.0.0-20181108010431-42b317875d0f // indirect
