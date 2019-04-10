@@ -2,7 +2,7 @@
   "name": "hanaboso/pipes-framework",
   "license": "proprietary",
   "description": "PipesFramework for Symfony",
-  "version": "1.0.33",
+  "version": "1.0.34",
   "autoload": {
     "psr-4": {
       "Hanaboso\\PipesFramework\\": "src/"
@@ -14,7 +14,7 @@
     }
   },
   "require": {
-    "php": "^7.2",
+    "php": "^7.3",
     "ext-json": "*",
     "ext-mongodb": "*",
     "ext-oauth": "*",
