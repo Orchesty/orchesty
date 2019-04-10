@@ -2,7 +2,8 @@
 
 namespace Demo\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use FOS\RestBundle\Controller\AbstractFOSRestController;
+use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -11,8 +12,10 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @package Demo\Controller
  */
-class DefaultController extends AbstractController
+class DefaultController extends AbstractFOSRestController
 {
+
+    use ControllerTrait;
 
     /**
      * @Route("/", name="homepage")
@@ -21,10 +24,7 @@ class DefaultController extends AbstractController
      */
     public function indexAction(): Response
     {
-        // replace this example code with whatever you need
-        return $this->render('default/index.html.twig', [
-            'base_dir' => realpath($this->getParameter('kernel.project_dir')) . DIRECTORY_SEPARATOR,
-        ]);
+        return $this->getResponse(['status' => 'ok']);
     }
 
 }

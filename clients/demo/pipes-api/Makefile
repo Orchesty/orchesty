@@ -26,12 +26,15 @@ composer-install:
 composer-update:
 	$(DEC) update --ignore-platform-reqs
 
+clear-cache:
+	$(DE) sudo rm -rf var/cache
+	$(DE) php bin/console cache:warmup --env=test
+
 codesniffer:
 	$(DE) php ./vendor/bin/phpcs --standard=./ruleset.xml --colors -p src/ tests/
 
 phpstan:
-	$(DE) php ./vendor/bin/phpstan analyse -l 7 src/
-	$(DE) php ./vendor/bin/phpstan analyse -l 5 tests/
+	$(DE) php ./vendor/bin/phpstan analyse -c ./phpstan.neon -l 7 src/ tests/
 
 phpunit:
 	$(DE) php ./vendor/bin/phpunit -c phpunit.xml.dist --dont-report-useless-tests --colors --stderr tests
@@ -40,7 +43,7 @@ init: docker-up-force composer-install
 
 test: init fasttest
 
-fasttest: codesniffer phpstan phpunit
+fasttest: clear-cache codesniffer phpstan phpunit
 
 docker-compose.ci.yml:
 	# Comment out any port forwarding

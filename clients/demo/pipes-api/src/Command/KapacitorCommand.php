@@ -49,10 +49,10 @@ class KapacitorCommand extends Command
                 ],
                 [
                     MetricsEnum::HOST           => gethostname(),
-                    MetricsEnum::URI            => "http://localhost.com",
-                    MetricsEnum::TOPOLOGY_ID    => "#999",
-                    MetricsEnum::CORRELATION_ID => "#456",
-                    MetricsEnum::NODE_ID        => "#123",
+                    MetricsEnum::URI            => 'http://localhost.com',
+                    MetricsEnum::TOPOLOGY_ID    => '#999',
+                    MetricsEnum::CORRELATION_ID => '#456',
+                    MetricsEnum::NODE_ID        => '#123',
                 ]
             );
             usleep(1000);

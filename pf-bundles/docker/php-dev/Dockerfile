@@ -1,9 +1,7 @@
-FROM dkr.hanaboso.net/hanaboso/symfony3-base:php-7.2
+FROM dkr.hanaboso.net/hanaboso/symfony3-base:php-7.3
 
 RUN apt-get update && \
     apt-get install -y git mc sudo nginx-extras socat libpng-dev && \
-    curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
-    composer global require "hirak/prestissimo:^0.3" && \
     pecl install xdebug && \
     docker-php-ext-install gd && \
     docker-php-ext-enable xdebug && \
@@ -20,9 +18,6 @@ RUN mkdir -p /var/log/nginx
 ENV SSH_AUTH_SOCK=/tmp/bound-ssh-agent
 
 ENV TERM=xterm
-
-RUN curl -L https://github.com/docker/compose/releases/download/1.16.1/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose && \
-    chmod +x /usr/local/bin/docker-compose
 
 # Allow these binaries to be executed with root privileges (Don't you dare use this in prod image!)
 RUN chmod u+s /usr/sbin/useradd && \

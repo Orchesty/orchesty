@@ -27,7 +27,7 @@ class DummyConnectorSplit implements CustomNodeInterface
         if (DateTimeUtils::getUTCDateTime()->getTimestamp() % 2 == 0) {
             $dto->setData('');
 
-            return $dto->addHeader(PipesHeaders::createKey(PipesHeaders::RESULT_CODE), "1003");
+            return $dto->addHeader(PipesHeaders::createKey(PipesHeaders::RESULT_CODE), '1003');
         }
 
         return $dto;

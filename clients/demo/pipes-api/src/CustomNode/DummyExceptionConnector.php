@@ -52,7 +52,7 @@ class DummyExceptionConnector implements CustomNodeInterface, LoggerAwareInterfa
                     ->setException($e);
                 $this->logger->error($e->getMessage(), $context->toArray());
 
-                $dto->addHeader(PipesHeaders::createKey(PipesHeaders::RESULT_CODE), "1003");
+                $dto->addHeader(PipesHeaders::createKey(PipesHeaders::RESULT_CODE), '1003');
             }
         }
 
@@ -69,10 +69,10 @@ class DummyExceptionConnector implements CustomNodeInterface, LoggerAwareInterfa
         $text     = '';
 
         for ($i = 1; $i <= $wordsCnt; $i++) {
-            $text .= $words[rand(0, 6)] . ' ';
+            $text .= sprintf('%s ', $words[rand(0, 6)]);
         }
 
-        throw new CustomNodeException(ucfirst(strtolower($text)) . 'exception');
+        throw new CustomNodeException(sprintf('%sexception', ucfirst(strtolower($text))));
     }
 
     /**

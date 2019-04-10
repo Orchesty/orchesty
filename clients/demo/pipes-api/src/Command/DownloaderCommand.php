@@ -176,7 +176,7 @@ class DownloaderCommand extends Command
     {
         $request = new Request(
             'POST',
-            'http://frontend/starting-point/topologies/' . $topology . '/nodes/start/run-by-name',
+            sprintf('http://frontend/starting-point/topologies/%s/nodes/start/run-by-name', $topology),
             [
                 'Accept'       => 'application/json',
                 'Content-Type' => 'application/json',

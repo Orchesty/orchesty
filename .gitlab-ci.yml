@@ -16,7 +16,7 @@ php-dev-image:
     - DIR=pf-bundles/docker/php-dev
     - cd $REPO_ROOT/$DIR
     - IMAGE=dkr.hanaboso.net/pipes/pipes/php-dev:${CI_BUILD_REF_NAME}
-    - docker pull dkr.hanaboso.net/hanaboso/symfony3-base:latest
+    - docker pull dkr.hanaboso.net/hanaboso/symfony3-base:php-7.3
     - docker build -t ${IMAGE} .
     - docker push ${IMAGE}
   only:

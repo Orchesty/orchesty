@@ -9,7 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
  *
  * @package Tests\Controller
  */
-class DefaultControllerTest extends WebTestCase
+final class DefaultControllerTest extends WebTestCase
 {
 
     /**
@@ -17,8 +17,7 @@ class DefaultControllerTest extends WebTestCase
      */
     public function testIndex(): void
     {
-        $client = static::createClient();
-
+        $client = self::createClient();
         $client->request('GET', '/');
 
         $this->assertEquals(401, $client->getResponse()->getStatusCode());

@@ -4,8 +4,9 @@ namespace Demo;
 
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
-use Symfony\Component\Config\Exception\FileLoaderLoadException;
+use Symfony\Component\Config\Exception\LoaderLoadException;
 use Symfony\Component\Config\Loader\LoaderInterface;
+use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;
 use Symfony\Component\Routing\RouteCollectionBuilder;
@@ -15,7 +16,7 @@ use Symfony\Component\Routing\RouteCollectionBuilder;
  *
  * @package Demo
  */
-class Kernel extends BaseKernel
+final class Kernel extends BaseKernel
 {
 
     use MicroKernelTrait;
@@ -23,29 +24,13 @@ class Kernel extends BaseKernel
     public const CONFIG_EXTS = '.{php,xml,yaml,yml}';
 
     /**
-     * @return string
-     */
-    public function getCacheDir(): string
-    {
-        return $this->getProjectDir() . '/var/cache/' . $this->environment;
-    }
-
-    /**
-     * @return string
-     */
-    public function getLogDir(): string
-    {
-        return $this->getProjectDir() . '/var/log';
-    }
-
-    /**
-     * @return \Generator|\Symfony\Component\HttpKernel\Bundle\BundleInterface[]
+     * @return iterable
      */
     public function registerBundles(): iterable
     {
-        $contents = require $this->getProjectDir() . '/config/Bundles.php';
+        $contents = require sprintf('%s/config/Bundles.php', $this->getProjectDir());
         foreach ($contents as $class => $envs) {
-            if (isset($envs['all']) || isset($envs[$this->environment])) {
+            if ($envs[$this->environment] ?? $envs['all'] ?? FALSE) {
                 yield new $class();
             }
         }
@@ -59,31 +44,33 @@ class Kernel extends BaseKernel
      */
     protected function configureContainer(ContainerBuilder $container, LoaderInterface $loader): void
     {
+        $container->addResource(new FileResource(sprintf('%s/config/Bundles.php', $this->getProjectDir())));
         $container->setParameter('container.dumper.inline_class_loader', TRUE);
-        $confDir = $this->getProjectDir() . '/config';
-        $loader->load($confDir . '/packages/*' . self::CONFIG_EXTS, 'glob');
-        if (is_dir($confDir . '/packages/' . $this->environment)) {
-            $loader->load($confDir . '/packages/' . $this->environment . '/**/*' . self::CONFIG_EXTS, 'glob');
-        }
-        $loader->load($confDir . '/services' . self::CONFIG_EXTS, 'glob');
-        $loader->load($confDir . '/services_' . $this->environment . self::CONFIG_EXTS, 'glob');
+        $confDir = $this->getConfigDir();
+        $loader->load(sprintf('%s/*%s', $confDir, self::CONFIG_EXTS), 'glob');
+        $loader->load(sprintf('%s/{packages}/*%s', $confDir, self::CONFIG_EXTS), 'glob');
+        $loader->load(sprintf('%s/{packages}/%s/**/*%s', $confDir, $this->environment, self::CONFIG_EXTS), 'glob');
     }
 
     /**
      * @param RouteCollectionBuilder $routes
      *
-     * @throws FileLoaderLoadException
+     * @throws LoaderLoadException
      */
     protected function configureRoutes(RouteCollectionBuilder $routes): void
     {
-        $confDir = $this->getProjectDir() . '/config';
-        if (is_dir($confDir . '/routes/')) {
-            $routes->import($confDir . '/routes/*' . self::CONFIG_EXTS, '/', 'glob');
-        }
-        if (is_dir($confDir . '/routes/' . $this->environment)) {
-            $routes->import($confDir . '/routes/' . $this->environment . '/**/*' . self::CONFIG_EXTS, '/', 'glob');
-        }
-        $routes->import($confDir . '/routes' . self::CONFIG_EXTS, '/', 'glob');
+        $confDir = $this->getConfigDir();
+        $routes->import(sprintf('%s/{routes}/*%s', $confDir, self::CONFIG_EXTS), '/', 'glob');
+        $routes->import(sprintf('%s/{routes}/%s/**/*%s', $confDir, $this->environment, self::CONFIG_EXTS), '/', 'glob');
+        $routes->import(sprintf('%s/{routes}%s', $confDir, self::CONFIG_EXTS), '/', 'glob');
+    }
+
+    /**
+     * @return string
+     */
+    private function getConfigDir(): string
+    {
+        return sprintf('%s/config', $this->getProjectDir());
     }
 
 }
