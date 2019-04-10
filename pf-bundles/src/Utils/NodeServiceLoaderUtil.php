@@ -29,7 +29,7 @@ class NodeServiceLoaderUtil
             foreach ($finder as $file) {
                 $list = Yaml::parse((string) $file->getContents());
 
-                foreach (array_keys($list['services']) as $key) {
+                foreach (array_keys($list['services'] ?? []) as $key) {
                     if (strrpos((string) $key, $nodeType) !== 0) {
                         continue;
                     }
@@ -46,6 +46,8 @@ class NodeServiceLoaderUtil
                 }
             }
         }
+
+        sort($res);
 
         return $res;
 

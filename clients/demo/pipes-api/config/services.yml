@@ -8,6 +8,7 @@ parameters:
     notification_host: 'http://notification-sender-api/notification-sender'
     activateLink: '%backend_host%/user/%s/activate'
     access_token_refresh_interval: 3600
+    node_services_dirs: ['%kernel.project_dir%/config']
 
 services:
     _defaults:
