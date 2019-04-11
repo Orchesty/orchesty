@@ -1,5 +1,5 @@
 # Build the binary
-FROM golang:1-alpine
+FROM golang:1.9
 WORKDIR /go/src/hanaboso/topologygenerator
 RUN go get -v -u github.com/streadway/amqp github.com/spf13/viper github.com/gorilla/mux github.com/docker/docker/api/types github.com/docker/docker/client gopkg.in/mgo.v2
 
@@ -10,7 +10,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags "-X main.co
 
 FROM docker:18.05
 RUN apk update --no-cache && apk add --no-cache py-pip libcap
-RUN pip install docker-compose
+#RUN pip install docker-compose :: Disabled because failed build
 
 WORKDIR /usr/local/bin
 COPY topologygenerator/config.yml /etc/default/topology-generator/config.yml
