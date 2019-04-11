@@ -9,7 +9,7 @@ COPY ./utils /go/src/hanaboso/utils
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags "-X main.compiled=$(date +\"%y%m%d%H%M%S\")" -o topologygenerator .
 
 FROM docker:18.05
-RUN apk update --no-cache && apk add --no-cache py-pip libcap gcc
+RUN apk update --no-cache && apk add --no-cache py-pip libcap gcc py-cffi
 RUN pip install docker-compose
 
 WORKDIR /usr/local/bin
