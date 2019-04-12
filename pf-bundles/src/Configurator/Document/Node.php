@@ -12,6 +12,8 @@ use Hanaboso\CommonsBundle\Traits\Document\DeletedTrait;
 use Hanaboso\CommonsBundle\Traits\Document\IdTrait;
 use Hanaboso\PipesFramework\Configurator\Document\Embed\EmbedNode;
 use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
+use Hanaboso\PipesFramework\Configurator\Model\Dto\SystemConfDto;
+use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
 
 /**
  * Class Node
@@ -89,6 +91,13 @@ class Node
      * @MongoDB\Field(type="string")
      */
     protected $cronParams;
+
+    /**
+     * @var string|null
+     *
+     * @MongoDB\Field(type="string")
+     */
+    protected $systemConfigs;
 
     /**
      * @return string
@@ -296,6 +305,18 @@ class Node
     public function setCronParams(?string $cronParams): Node
     {
         $this->cronParams = $cronParams;
+
+        return $this;
+    }
+
+    /**
+     * @param SystemConfDto $systemConfigs
+     *
+     * @return Node
+     */
+    public function setSystemConfigs(SystemConfDto $systemConfigs): Node
+    {
+        $this->systemConfigs = $systemConfigs->toString(TopologySchemaUtils::$confFields);
 
         return $this;
     }
