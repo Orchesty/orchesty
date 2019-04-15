@@ -3,20 +3,14 @@ import { ICounterSettings } from "../counter/Counter";
 import {IAmqpDrainSettings} from "../node/drain/AmqpDrain";
 import {IAmqpFaucetSettings} from "../node/faucet/AmqpFaucet";
 
-export interface IWorkerConfig {
+export interface INodeComponentConfig {
     type: string;
     settings: any;
 }
 
-export interface IFaucetConfig {
-    type: string;
-    settings: any;
-}
-
-export interface IDrainConfig {
-    type: string;
-    settings: any;
-}
+export interface IWorkerConfig extends INodeComponentConfig {}
+export interface IFaucetConfig extends INodeComponentConfig {}
+export interface IDrainConfig extends INodeComponentConfig {}
 
 export interface INodeLabel {
     id: string; // unique id combining node_id and node_name
@@ -179,24 +173,25 @@ class Configurator {
         nodePosition: number,
         isMulti: boolean = false,
     ): INodeConfig {
+        // TODO - handle defaults more systematically (eg. merging provided config with defaults etc.)
         const defaults: INodeConfig = this.getNodeConfigDefaults(topoId, nodeSkeleton, nodePosition, isMulti);
 
-        const faucetSettings = nodeSkeleton.faucet || defaults.faucet;
-        const workerSettings = nodeSkeleton.worker || defaults.worker;
-        const drainSettings = nodeSkeleton.drain || defaults.drain;
+        const faucetCfg = this.isValidComponentConfig(nodeSkeleton.faucet) ? nodeSkeleton.faucet : defaults.faucet;
+        const workerCfg = this.isValidComponentConfig(nodeSkeleton.worker) ? nodeSkeleton.worker : defaults.worker;
+        const drainCfg = this.isValidComponentConfig(nodeSkeleton.drain) ? nodeSkeleton.drain : defaults.drain;
 
-        // add label to all node parts
-        faucetSettings.settings.node_label = defaults.label;
-        workerSettings.settings.node_label = defaults.label;
-        drainSettings.settings.node_label = defaults.label;
+        // add label to all node components
+        faucetCfg.settings.node_label = defaults.label;
+        workerCfg.settings.node_label = defaults.label;
+        drainCfg.settings.node_label = defaults.label;
 
         return {
             id: nodeSkeleton.id,
             label: defaults.label,
             next: nodeSkeleton.next,
-            worker: workerSettings,
-            faucet: faucetSettings,
-            drain: drainSettings,
+            worker: workerCfg,
+            faucet: faucetCfg,
+            drain: drainCfg,
             debug: nodeSkeleton.debug || defaults.debug,
             initial: nodePosition === 0,
         };
@@ -258,6 +253,10 @@ class Configurator {
      */
     private static getDefaultFaucetConfig(topoId: string, node: INodeConfigSkeleton): IFaucetConfig {
         const type = "faucet.amqp";
+        const prefetch = node.faucet && node.faucet.settings && node.faucet.settings.prefetch ?
+            Number.parseInt(node.faucet.settings.prefetch, 10) :
+            amqpFaucetOptions.prefetch;
+
         const settings: IAmqpFaucetSettings = {
             node_label: node.label,
             exchange: { name: `pipes.${topoId}.events`, type: "direct", options: {} },
@@ -267,9 +266,9 @@ class Configurator {
                     durable: persistentQueues,
                 },
             },
-            prefetch: amqpFaucetOptions.prefetch,
             dead_letter_exchange: amqpFaucetOptions.dead_letter_exchange,
             routing_key: `${topoId}.${node.id}`,
+            prefetch,
         };
 
         return { type, settings };
@@ -335,6 +334,14 @@ class Configurator {
         };
 
         return { type, settings };
+    }
+
+    /**
+     * Checks if valid node component (faucet, drain, worker) config structure was provided
+     * @param cfg
+     */
+    private static isValidComponentConfig(cfg: any): boolean {
+        return cfg && cfg.type && cfg.type.length > 0 && cfg.settings;
     }
 
 }

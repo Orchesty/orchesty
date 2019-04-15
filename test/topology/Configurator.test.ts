@@ -28,6 +28,10 @@ const testTopo: ITopologyConfigSkeleton = {
                 topology_id: "test-topo_id",
             },
             worker: { type: "worker.appender", settings: { suffix: "| something"} },
+            faucet : {
+                type: "",
+                settings: {prefetch: 99}, // overrides default faucet.amqp value
+            },
             next: [],
         },
     ],
@@ -216,7 +220,7 @@ const expectedTopo: ITopologyConfig = {
                         node_name: "b",
                         topology_id: "test-topo_id",
                     },
-                    prefetch: 5,
+                    prefetch: 99,
                     queue: {
                         name: "pipes.test-topo_id.node_b",
                         options: {
