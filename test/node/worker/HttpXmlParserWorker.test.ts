@@ -52,7 +52,7 @@ describe("HttpXmlParserWorker", () => {
         const msg = new JobMessage(
             node,
             headers.getRaw(),
-            new Buffer("<?xml version=\"1.0\" encoding=\"UTF-8\"?><root></root>"),
+            Buffer.from("<?xml version=\"1.0\" encoding=\"UTF-8\"?><root></root>"),
         );
 
         const worker = new HttpXmlParserWorker(workerSettings, metricsMock);
@@ -97,7 +97,7 @@ describe("HttpXmlParserWorker", () => {
         const msg = new JobMessage(
             node,
             headers.getRaw(),
-            new Buffer("<?xml version=\"1.0\" encoding=\"UTF-8\"?><root></root>"),
+            Buffer.from("<?xml version=\"1.0\" encoding=\"UTF-8\"?><root></root>"),
         );
 
         const outMsg = await worker.processData(msg);

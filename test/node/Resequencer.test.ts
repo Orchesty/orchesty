@@ -19,7 +19,7 @@ describe("Resequencer", () => {
             headers.setPFHeader(Headers.PROCESS_ID, "procId");
             headers.setPFHeader(Headers.PARENT_ID, "parId");
             headers.setPFHeader(Headers.SEQUENCE_ID, `${i}`);
-            messages.push(new JobMessage(nodeLabel, headers.getRaw(), new Buffer("")));
+            messages.push(new JobMessage(nodeLabel, headers.getRaw(), Buffer.from("")));
         }
         const resequencer = new Resequencer("nodeId");
         let output: JobMessage[] = [];
@@ -47,7 +47,7 @@ describe("Resequencer", () => {
                 headers.setPFHeader(Headers.PROCESS_ID, `${i}`);
                 headers.setPFHeader(Headers.PARENT_ID, "");
                 headers.setPFHeader(Headers.SEQUENCE_ID, `${j}`);
-                messages.push(new JobMessage(nodeLabel, headers.getRaw(), new Buffer("")));
+                messages.push(new JobMessage(nodeLabel, headers.getRaw(), Buffer.from("")));
             }
         }
         const resequencer = new Resequencer("nodeId");

@@ -146,7 +146,7 @@ describe("FollowersPublisher", () => {
                 headers.setPFHeader(Headers.PARENT_ID, msgParentId);
                 headers.setPFHeader(Headers.SEQUENCE_ID, `${msgSeqId}`);
 
-                const msg: JobMessage = new JobMessage(node, headers.getRaw(), new Buffer(JSON.stringify(msgBody)));
+                const msg: JobMessage = new JobMessage(node, headers.getRaw(), Buffer.from(JSON.stringify(msgBody)));
                 msg.setResult({ code: ResultCode.SUCCESS, message: ""});
 
                 // This should send 3 messages setting parentId to processId (when splitting into more than 1 followers)

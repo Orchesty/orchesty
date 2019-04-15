@@ -75,7 +75,7 @@ describe("CounterPublisher", () => {
         const msgCorrId = "corrId";
         const msgProcessId = "123";
         const msgSeqId = 1;
-        const msgBody = new Buffer(JSON.stringify({some: "json content"}));
+        const msgBody = Buffer.from(JSON.stringify({some: "json content"}));
         const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName", topology_id: "topId"};
 
         const headers = new Headers();
@@ -174,7 +174,7 @@ describe("CounterPublisher", () => {
         consumer.consume(settings.counter.queue.name, {})
             .then(() => {
                 const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName", topology_id: "topId"};
-                const msg: JobMessage = new JobMessage(node, headers.getRaw(), new Buffer(JSON.stringify(msgBody)));
+                const msg: JobMessage = new JobMessage(node, headers.getRaw(), Buffer.from(JSON.stringify(msgBody)));
                 msg.setResult({ code: ResultCode.SUCCESS, message: ""});
 
                 publisher.send(msg);

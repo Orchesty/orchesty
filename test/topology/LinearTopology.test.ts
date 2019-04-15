@@ -177,7 +177,7 @@ describe("Linear Topology test", () => {
                     });
                 },
             );
-            return publisher.sendToQueue(firstQueue, new Buffer(msgTestContent), msgHeaders);
+            return publisher.sendToQueue(firstQueue, Buffer.from(msgTestContent), msgHeaders);
         });
     }).timeout(5000);
 

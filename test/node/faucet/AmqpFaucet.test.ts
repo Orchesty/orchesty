@@ -69,7 +69,7 @@ describe("AmqpFaucet", () => {
                 return publisher.publish(
                     settings.exchange.name,
                     settings.routing_key,
-                    new Buffer("Test content"),
+                    Buffer.from("Test content"),
                     {
                         contentType: "text/plain",
                         headers: headers.getRaw(),

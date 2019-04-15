@@ -17,7 +17,7 @@ const createBasicMessage = (): JobMessage => {
     return new JobMessage(
         { id: "id", node_id: "node_id", node_name: "node_name", topology_id: "topo"},
         hdrs.getRaw(),
-        new Buffer(""),
+        Buffer.from(""),
     );
 };
 

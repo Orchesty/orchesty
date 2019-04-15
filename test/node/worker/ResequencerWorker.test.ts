@@ -15,7 +15,7 @@ describe("Resequencer worker", () => {
         headers.setPFHeader(Headers.PROCESS_ID, "123");
         headers.setPFHeader(Headers.PARENT_ID, "");
         headers.setPFHeader(Headers.SEQUENCE_ID, "0");
-        const inMsg = new JobMessage(label, headers.getRaw(), new Buffer("{}{}{}"));
+        const inMsg = new JobMessage(label, headers.getRaw(), Buffer.from("{}{}{}"));
 
         const worker = new ResequencerWorker({ node_label: label });
 
@@ -48,7 +48,7 @@ describe("Resequencer worker", () => {
         headers.setPFHeader(Headers.PROCESS_ID, "123");
         headers.setPFHeader(Headers.PARENT_ID, "");
         headers.setPFHeader(Headers.SEQUENCE_ID, "0");
-        const inMsg = new JobMessage(label, headers.getRaw(), new Buffer("{}{}{}"));
+        const inMsg = new JobMessage(label, headers.getRaw(), Buffer.from("{}{}{}"));
 
         const worker = new ResequencerWorker({ node_label: label });
 
@@ -77,7 +77,7 @@ describe("Resequencer worker", () => {
         headers.setPFHeader(Headers.PROCESS_ID, "123");
         headers.setPFHeader(Headers.PARENT_ID, "");
         headers.setPFHeader(Headers.SEQUENCE_ID, "0");
-        const inMsg = new JobMessage(label, headers.getRaw(), new Buffer("{}{}{}"));
+        const inMsg = new JobMessage(label, headers.getRaw(), Buffer.from("{}{}{}"));
 
         const worker = new ResequencerWorker({ node_label: label });
 

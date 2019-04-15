@@ -28,7 +28,7 @@ describe("Splitter worker", () => {
         headers.setPFHeader(Headers.PROCESS_ID, "123");
         headers.setPFHeader(Headers.PARENT_ID, "");
         headers.setPFHeader(Headers.SEQUENCE_ID, "1");
-        const msg = new JobMessage(node, headers.getRaw(), new Buffer("{}{}{}"));
+        const msg = new JobMessage(node, headers.getRaw(), Buffer.from("{}{}{}"));
         const worker = new JsonSplitterWorker(settings, partialForwarder);
         return worker.processData(msg)
             .then((outMsgs: JobMessage[]) => {
@@ -44,7 +44,7 @@ describe("Splitter worker", () => {
         const partialForwarder: IPartialForwarder = {
             forwardPart: () => Promise.resolve(),
         };
-        const body = new Buffer(JSON.stringify({ foo: "bar" }));
+        const body = Buffer.from(JSON.stringify({ foo: "bar" }));
         const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName", topology_id: "topoId"};
         const headers = new Headers();
         headers.setPFHeader(Headers.CORRELATION_ID, "123");
@@ -76,7 +76,7 @@ describe("Splitter worker", () => {
         headers.setPFHeader(Headers.PROCESS_ID, "123");
         headers.setPFHeader(Headers.PARENT_ID, "");
         headers.setPFHeader(Headers.SEQUENCE_ID, "1");
-        const msg = new JobMessage(node, headers.getRaw(), new Buffer(JSON.stringify(content)));
+        const msg = new JobMessage(node, headers.getRaw(), Buffer.from(JSON.stringify(content)));
         const partialForwarder: IPartialForwarder = {
             forwardPart: (forwardedMsg: JobMessage) => {
                 forwarded.push(forwardedMsg);
