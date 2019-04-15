@@ -63,6 +63,13 @@ class Probe implements IStoppable {
     }
 
     /**
+     * returns the port probe should listen on
+     */
+    public getPort(): number {
+        return this.settings.port;
+    }
+
+    /**
      *
      * @param {INodeConfig} node
      */
