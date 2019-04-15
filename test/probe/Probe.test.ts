@@ -48,23 +48,19 @@ const topo = Configurator.createConfigFromSkeleton(
 );
 
 describe("Probe", () => {
-    it("should return that none of nodes is running", () => {
+    it("should return that none of nodes is running", async () => {
         const probe = new Probe("topoId", {port: 8003, path: "/status", timeout: 1000});
         topo.nodes.forEach((node: INodeConfig) => {
              probe.addNode(node);
         });
-        return probe.start()
-            .then(() => {
-                return rp("http://localhost:8003/status");
-            })
-            .then((resp: string) => {
-                const result: IProbeResult = JSON.parse(resp);
-                assert.isFalse(result.status);
-                assert.equal(result.message, "0/2 nodes ready.");
-            });
+
+        await probe.start();
+        const result: IProbeResult = JSON.parse(await rp(`http://localhost:${probe.getPort()}/status`));
+        assert.isFalse(result.status);
+        assert.equal(result.message, "0/2 nodes ready.");
     });
 
-    it("should return that all nodes are running", () => {
+    it("should return that all nodes are running", async () => {
         // Node1 server mock
         const mock1 = express();
         mock1.get("/status", (req, resp) => {
@@ -83,20 +79,16 @@ describe("Probe", () => {
         topo.nodes.forEach((node: INodeConfig) => {
             probe.addNode(node);
         });
-        return probe.start()
-            .then(() => {
-                return rp("http://localhost:8004/status");
-            })
-            .then((resp: string) => {
-                const result: IProbeResult = JSON.parse(resp);
-                assert.equal(result.message, "2/2 nodes ready.");
-                assert.equal(result.nodes.length, 2);
-                m1server.close();
-                m2server.close();
-            });
+
+        await probe.start();
+        const result: IProbeResult = JSON.parse(await rp(`http://localhost:${probe.getPort()}/status`));
+        assert.equal(result.message, "2/2 nodes ready.");
+        assert.equal(result.nodes.length, 2);
+        m1server.close();
+        m2server.close();
     });
 
-    it("should return that first node is prepared, but the second is not", () => {
+    it("should return that first node is prepared, but the second is not", async () => {
         // Node1 server mock
         const mock1 = express();
         mock1.get("/status", (req, resp) => {
@@ -115,44 +107,40 @@ describe("Probe", () => {
         topo.nodes.forEach((node: INodeConfig) => {
             probe.addNode(node);
         });
-        return probe.start()
-            .then(() => {
-                return rp("http://localhost:8005/status");
-            })
-            .then((resp: string) => {
-                const result: IProbeResult = JSON.parse(resp);
-                assert.equal(result.message, "1/2 nodes ready.");
-                assert.equal(result.nodes.length, 2);
-                assert.isFalse(result.status);
-                assert.sameDeepMembers(
-                    result.nodes,
-                    [
-                        {
-                            id: topo.nodes[0].id,
-                            node_id: topo.nodes[0].label.node_id,
-                            node_name: topo.nodes[0].label.node_name,
-                            url: topo.nodes[0].debug.url,
-                            code: 200,
-                            message: "OK",
-                            status: true,
-                        },
-                        {
-                            id: topo.nodes[1].id,
-                            node_id: topo.nodes[1].label.node_id,
-                            node_name: topo.nodes[1].label.node_name,
-                            url: topo.nodes[1].debug.url,
-                            code: 500,
-                            message: "Worker down",
-                            status: false,
-                        },
-                    ],
-                );
-                m1server.close();
-                m2server.close();
-            });
+
+        await probe.start();
+        const result: IProbeResult = JSON.parse(await rp(`http://localhost:${probe.getPort()}/status`));
+        assert.equal(result.message, "1/2 nodes ready.");
+        assert.equal(result.nodes.length, 2);
+        assert.isFalse(result.status);
+        assert.sameDeepMembers(
+            result.nodes,
+            [
+                {
+                    id: topo.nodes[0].id,
+                    node_id: topo.nodes[0].label.node_id,
+                    node_name: topo.nodes[0].label.node_name,
+                    url: topo.nodes[0].debug.url,
+                    code: 200,
+                    message: "OK",
+                    status: true,
+                },
+                {
+                    id: topo.nodes[1].id,
+                    node_id: topo.nodes[1].label.node_id,
+                    node_name: topo.nodes[1].label.node_name,
+                    url: topo.nodes[1].debug.url,
+                    code: 500,
+                    message: "Worker down",
+                    status: false,
+                },
+            ],
+        );
+        m1server.close();
+        m2server.close();
     });
 
-    it("should return that all nodes are running second node check timeouted", () => {
+    it("should return that all nodes are running second node check timeouted", async () => {
         // Node1 server mock
         const mock1 = express();
         mock1.get("/status", (req, resp) => {
@@ -174,16 +162,12 @@ describe("Probe", () => {
         topo.nodes.forEach((node: INodeConfig) => {
             probe.addNode(node);
         });
-        return probe.start()
-            .then(() => {
-                return rp("http://localhost:8006/status");
-            })
-            .then((resp: string) => {
-                const result: IProbeResult = JSON.parse(resp);
-                assert.equal(result.message, "1/2 nodes ready.");
-                assert.equal(result.nodes.length, 2);
-                m1server.close();
-                m2server.close();
-            });
+
+        await probe.start();
+        const result: IProbeResult = JSON.parse(await rp(`http://localhost:${probe.getPort()}/status`));
+        assert.equal(result.message, "1/2 nodes ready.");
+        assert.equal(result.nodes.length, 2);
+        m1server.close();
+        m2server.close();
     });
 });
