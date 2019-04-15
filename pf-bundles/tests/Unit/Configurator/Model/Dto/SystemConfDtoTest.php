@@ -2,8 +2,8 @@
 
 namespace Tests\Unit\Configurator\Model\Dto;
 
-use Hanaboso\PipesFramework\Configurator\Model\Dto\SystemConfDto;
-use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
+use Exception;
+use Hanaboso\PipesFramework\Configurator\Model\Dto\SystemConfigDto;
 use Tests\KernelTestCaseAbstract;
 
 /**
@@ -19,21 +19,21 @@ final class SystemConfDtoTest extends KernelTestCaseAbstract
      */
     public function testToString(): void
     {
-        $dto  = new SystemConfDto();
-        $json = $dto->toString(TopologySchemaUtils::$confFields);
+        $dto  = new SystemConfigDto();
+        $json = $dto->toString();
 
         self::assertJson($json);
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testFromString(): void
     {
-        $dto  = new SystemConfDto('Example');
-        $json = $dto->toString(TopologySchemaUtils::$confFields);
+        $dto  = new SystemConfigDto('Example');
+        $json = $dto->toString();
 
-        $result = $dto->fromString($json, TopologySchemaUtils::$confFields);
+        $result = $dto->fromString($json);
 
         self::assertEquals('Example', $result->getSdkHost());
         self::assertEquals(1, $result->getPrefetch());

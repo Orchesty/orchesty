@@ -12,7 +12,7 @@ use Hanaboso\CommonsBundle\Traits\Document\DeletedTrait;
 use Hanaboso\CommonsBundle\Traits\Document\IdTrait;
 use Hanaboso\PipesFramework\Configurator\Document\Embed\EmbedNode;
 use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
-use Hanaboso\PipesFramework\Configurator\Model\Dto\SystemConfDto;
+use Hanaboso\PipesFramework\Configurator\Model\Dto\SystemConfigDto;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
 
 /**
@@ -310,15 +310,23 @@ class Node
     }
 
     /**
-     * @param SystemConfDto $systemConfigs
+     * @param SystemConfigDto $dto
      *
      * @return Node
      */
-    public function setSystemConfigs(SystemConfDto $systemConfigs): Node
+    public function setSystemConfigs(SystemConfigDto $dto): Node
     {
-        $this->systemConfigs = $systemConfigs->toString(TopologySchemaUtils::$confFields);
+        $this->systemConfigs = $dto->toString();
 
         return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getSystemConfigs(): ?string
+    {
+        return $this->systemConfigs;
     }
 
 }

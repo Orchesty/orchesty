@@ -51,18 +51,6 @@ class TopologySchemaUtils
     /**
      * @var array
      */
-    public static $confFields = [
-        'sdkHost'          => self::SDK_HOST,
-        'bridgeHost'       => self::BRIDGE_HOST,
-        'prefetch'         => self::PREFETCH,
-        'repeaterEnabled'  => self::REPEATER_ENABLED,
-        'repeaterHops'     => self::REPEATER_HOPS,
-        'repeaterInterval' => self::REPEATER_INTERVAL,
-    ];
-
-    /**
-     * @var array
-     */
     private static $bpmnHandlers = [
         self::BPMN_START_EVENT,
         self::BPMN_TASK,
