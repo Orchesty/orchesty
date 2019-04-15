@@ -1,0 +1,6 @@
+venv
+.idea
+build
+dist
+hb_pipes_sdk.egg-info
+*__pycache__*
