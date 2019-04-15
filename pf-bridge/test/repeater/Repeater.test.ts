@@ -76,7 +76,7 @@ describe("Repeater", () => {
             .then(() => {
                 return publisher.sendToQueue(
                     settings.input.queue.name,
-                    new Buffer(msgContent),
+                    Buffer.from(msgContent),
                     {headers: headersToSend.getRaw()},
                 );
             });

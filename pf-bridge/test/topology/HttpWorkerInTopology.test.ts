@@ -143,7 +143,7 @@ describe("Topology with HttpWorker Node", () => {
 
             const props = { headers: hdrs.getRaw(), timestamp: TimeUtils.nowMili() };
 
-            publisher.sendToQueue(firstQueue, new Buffer("original content"), props);
+            publisher.sendToQueue(firstQueue, Buffer.from("original content"), props);
         }
 
         const capturer: any = captureNode.getWorker();

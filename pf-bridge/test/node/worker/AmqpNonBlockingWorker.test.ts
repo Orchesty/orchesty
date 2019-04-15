@@ -46,12 +46,12 @@ describe("AmqpNonBlockingWorker", () => {
         headers.setPFHeader(Headers.PROCESS_ID, "aaa");
         headers.setPFHeader(Headers.PARENT_ID, "");
         headers.setPFHeader(Headers.SEQUENCE_ID, "0");
-        const batchItemMsg = { content: new Buffer(""), fields: {}, properties: {headers: headers.getRaw()} };
+        const batchItemMsg = { content: Buffer.from(""), fields: {}, properties: {headers: headers.getRaw()} };
         await rpcWorker.onBatchItem("corr123", batchItemMsg);
 
         // hack using any type in order to allow add to waiting list even though it is private
         const hackedRpcWorker: any = rpcWorker;
-        const jobMessage = new JobMessage(settings.node_label, headers.getRaw(), new Buffer(""));
+        const jobMessage = new JobMessage(settings.node_label, headers.getRaw(), Buffer.from(""));
         const wait: IWaiting = { resolveFn: (): void  => null, message: jobMessage, sequence: 0};
         hackedRpcWorker.waiting.set("corr123", wait);
 
@@ -188,7 +188,7 @@ describe("AmqpNonBlockingWorker", () => {
                     replyHeaders["pf-result-code"] = ResultCode.SUCCESS;
                     replyHeaders["pf-result-message"] = "ok";
 
-                    const content = new Buffer(`${i}`);
+                    const content = Buffer.from(`${i}`);
 
                     const p = publisher.sendToQueue(
                         msg.properties.replyTo,
@@ -213,7 +213,7 @@ describe("AmqpNonBlockingWorker", () => {
 
                         publisher.sendToQueue(
                             msg.properties.replyTo,
-                            new Buffer(""),
+                            Buffer.from(""),
                             {
                                 type: AmqpNonBlockingWorker.BATCH_END_TYPE,
                                 correlationId: msg.properties.correlationId,
@@ -245,7 +245,7 @@ describe("AmqpNonBlockingWorker", () => {
                 const jobMsg = new JobMessage(
                     node,
                     headers.getRaw(),
-                    new Buffer(JSON.stringify({ settings: {}, data: "test" })),
+                    Buffer.from(JSON.stringify({ settings: {}, data: "test" })),
                 );
 
                 return rpcWorker.processData(jobMsg);

@@ -14,7 +14,7 @@ describe("MongoMessageStorage", () => {
         const storage = new MongoMessageStorage(mongoStorageOptions);
 
         const msg1: Message = {
-            content: new Buffer("some content expires immediately"),
+            content: Buffer.from("some content expires immediately"),
             fields: {},
             properties: {
                 headers: {
@@ -26,7 +26,7 @@ describe("MongoMessageStorage", () => {
         };
 
         const msg2: Message = {
-            content: new Buffer("some other content expires in 1s"),
+            content: Buffer.from("some other content expires in 1s"),
             fields: {},
             properties: {
                 headers: {
@@ -75,7 +75,7 @@ describe("MongoMessageStorage", () => {
     it("should do keep collection as is if no document found via findExpired()", () => {
         const storage = new MongoMessageStorage(mongoStorageOptions);
         const msg: Message = {
-            content: new Buffer("expires in far future"),
+            content: Buffer.from("expires in far future"),
             fields: {},
             properties: {
                 headers: {

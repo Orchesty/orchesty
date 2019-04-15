@@ -153,7 +153,7 @@ describe("Linear topology with splitter test", () => {
                     });
                 },
             );
-            return publisher.sendToQueue(firstQueue, new Buffer(JSON.stringify(msgTestContent)), msgHeaders);
+            return publisher.sendToQueue(firstQueue, Buffer.from(JSON.stringify(msgTestContent)), msgHeaders);
         });
     }).timeout(5000);
 

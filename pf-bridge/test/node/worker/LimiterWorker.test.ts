@@ -46,7 +46,7 @@ describe("LimiterWorker", () => {
         const msg = new JobMessage(
             {id: "1", node_id: "1", node_name: "1", topology_id: "t"},
             hdrs.getRaw(),
-            new Buffer(""),
+            Buffer.from(""),
         );
 
         return new Promise(async (resolve) => {
@@ -81,7 +81,7 @@ describe("LimiterWorker", () => {
         const msg = new JobMessage(
             {id: "1", node_id: "1", node_name: "1", topology_id: "t"},
             hdrs.getRaw(),
-            new Buffer(""),
+            Buffer.from(""),
         );
 
         return new Promise(async (resolve) => {

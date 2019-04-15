@@ -112,7 +112,7 @@ describe("HttpWorker", () => {
         headers.setPFHeader(Headers.PARENT_ID, "");
         headers.setPFHeader(Headers.SEQUENCE_ID, "1");
         // headers.setHeader("content-type", "application/json");
-        const msg = new JobMessage(node, headers.getRaw(), new Buffer(JSON.stringify({ val: "original" })));
+        const msg = new JobMessage(node, headers.getRaw(), Buffer.from(JSON.stringify({ val: "original" })));
 
         const worker = createHttpWorker(4020, "/ok");
 
@@ -133,7 +133,7 @@ describe("HttpWorker", () => {
         headers.setPFHeader(Headers.PROCESS_ID, "123");
         headers.setPFHeader(Headers.PARENT_ID, "");
         headers.setPFHeader(Headers.SEQUENCE_ID, "1");
-        const msg = new JobMessage(node, headers.getRaw(), new Buffer(JSON.stringify({ val: "original" })));
+        const msg = new JobMessage(node, headers.getRaw(), Buffer.from(JSON.stringify({ val: "original" })));
 
         const worker = createHttpWorker(4020, "/invalid-status-code");
 
@@ -154,7 +154,7 @@ describe("HttpWorker", () => {
         headers.setPFHeader(Headers.PROCESS_ID, "123");
         headers.setPFHeader(Headers.PARENT_ID, "");
         headers.setPFHeader(Headers.SEQUENCE_ID, "1");
-        const msg = new JobMessage(node, headers.getRaw(), new Buffer(JSON.stringify({ val: "original" })));
+        const msg = new JobMessage(node, headers.getRaw(), Buffer.from(JSON.stringify({ val: "original" })));
 
         const worker = createHttpWorker(4020, "/invalid-result-code");
 
@@ -175,7 +175,7 @@ describe("HttpWorker", () => {
         headers.setPFHeader(Headers.PROCESS_ID, "123");
         headers.setPFHeader(Headers.PARENT_ID, "");
         headers.setPFHeader(Headers.SEQUENCE_ID, "1");
-        const msg = new JobMessage(node, headers.getRaw(), new Buffer(JSON.stringify({ val: "original" })));
+        const msg = new JobMessage(node, headers.getRaw(), Buffer.from(JSON.stringify({ val: "original" })));
 
         const worker = createHttpWorker(4020, "/non-existing");
 
@@ -196,7 +196,7 @@ describe("HttpWorker", () => {
         headers.setPFHeader(Headers.PROCESS_ID, "123");
         headers.setPFHeader(Headers.PARENT_ID, "");
         headers.setPFHeader(Headers.SEQUENCE_ID, "1");
-        const msg = new JobMessage(node, headers.getRaw(), new Buffer(JSON.stringify({ val: "original" })));
+        const msg = new JobMessage(node, headers.getRaw(), Buffer.from(JSON.stringify({ val: "original" })));
 
         const worker = createHttpWorker(4020, "/ok");
         // This should emit ETIMEDOUT error "/ok" responds after 20ms
@@ -222,7 +222,7 @@ describe("HttpWorker", () => {
         headers.setPFHeader(Headers.PROCESS_ID, "123");
         headers.setPFHeader(Headers.PARENT_ID, "");
         headers.setPFHeader(Headers.SEQUENCE_ID, "1");
-        const msg = new JobMessage(node, headers.getRaw(), new Buffer(JSON.stringify({ val: "original" })));
+        const msg = new JobMessage(node, headers.getRaw(), Buffer.from(JSON.stringify({ val: "original" })));
 
         const worker = createHttpWorker(4020, "/empty-result-body");
         // TODO - find out why this test fails when using agent with keepAlive: true
@@ -276,7 +276,7 @@ describe("HttpWorker", () => {
         headers.setPFHeader(Headers.PARENT_ID, "");
         headers.setPFHeader(Headers.SEQUENCE_ID, "1");
         headers.setHeader("content-type", "application/json");
-        const msg = new JobMessage(node, headers.getRaw(), new Buffer(JSON.stringify({ val: "original" })));
+        const msg = new JobMessage(node, headers.getRaw(), Buffer.from(JSON.stringify({ val: "original" })));
 
         const worker = createHttpWorker(4020, "/ok-xml");
 
@@ -301,7 +301,7 @@ describe("HttpWorker", () => {
         headers.setPFHeader(Headers.PARENT_ID, "");
         headers.setPFHeader(Headers.SEQUENCE_ID, "1");
         headers.setHeader("content-type", "application/json");
-        const msg = new JobMessage(node, headers.getRaw(), new Buffer(JSON.stringify({ val: "original" })));
+        const msg = new JobMessage(node, headers.getRaw(), Buffer.from(JSON.stringify({ val: "original" })));
 
         const worker = createHttpWorker(4020, "/non-existing", "nonexistinghost");
 

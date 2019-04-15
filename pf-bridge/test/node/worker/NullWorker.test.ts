@@ -15,7 +15,7 @@ describe("Null worker", () => {
         headers.setPFHeader(Headers.PROCESS_ID, "123");
         headers.setPFHeader(Headers.PARENT_ID, "");
         headers.setPFHeader(Headers.SEQUENCE_ID, "1");
-        const inMsg = new JobMessage(node, headers.getRaw(), new Buffer("{}{}{}"));
+        const inMsg = new JobMessage(node, headers.getRaw(), Buffer.from("{}{}{}"));
 
         const worker = new NullWorker({node_label: node});
         return worker.processData(inMsg)

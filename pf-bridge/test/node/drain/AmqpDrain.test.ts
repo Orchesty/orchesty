@@ -66,7 +66,7 @@ const settings: IAmqpDrainSettings = {
  * @return {JobMessage}
  */
 function createMockMessage(): JobMessage {
-    const body = new Buffer(JSON.stringify({foo: "bar"}));
+    const body = Buffer.from(JSON.stringify({foo: "bar"}));
     const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName", topology_id: "topoId"};
     const headers = new Headers();
     headers.setPFHeader(Headers.CORRELATION_ID, "123");

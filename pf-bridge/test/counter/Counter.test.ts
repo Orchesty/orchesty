@@ -359,7 +359,7 @@ function runCounterTest(counter: Counter, testOutputQueue: any, done: any) {
                 promises.push(
                     publisher.sendToQueue(
                         counter.getSettings().sub.queue.name,
-                        new Buffer(JSON.stringify(ev[0])),
+                        Buffer.from(JSON.stringify(ev[0])),
                         ev[1],
                     ),
                 );
@@ -428,7 +428,7 @@ describe("Counter", () => {
         const counter = new Counter(counterSettings, conn, storage, distributor, terminator, metricsMock);
 
         try {
-            const msg: Message = {content: new Buffer(""), fields: {}, properties: {}};
+            const msg: Message = {content: Buffer.from(""), fields: {}, properties: {}};
             // tslint:disable-next-line
             await counter["handleMessage"](msg);
         } catch (e) {
@@ -436,7 +436,7 @@ describe("Counter", () => {
         }
 
         try {
-            const msg: Message = {content: new Buffer('{"foo": "bar"}'), fields: {}, properties: {}};
+            const msg: Message = {content: Buffer.from('{"foo": "bar"}'), fields: {}, properties: {}};
             // tslint:disable-next-line
             await counter["handleMessage"](msg);
         } catch (e) {
@@ -445,7 +445,7 @@ describe("Counter", () => {
 
         try {
             const content = {result: {code: 0, message: ""}, route: {following: 1, multiplier: 1}};
-            const msg: Message = {content: new Buffer(JSON.stringify(content)), fields: {}, properties: {}};
+            const msg: Message = {content: Buffer.from(JSON.stringify(content)), fields: {}, properties: {}};
             // tslint:disable-next-line
             await counter["handleMessage"](msg);
         } catch (e) {
