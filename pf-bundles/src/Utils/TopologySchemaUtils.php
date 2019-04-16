@@ -4,6 +4,8 @@ namespace Hanaboso\PipesFramework\Utils;
 
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
+use Hanaboso\PipesFramework\Configurator\Model\Dto\SystemConfigDto;
+use Hanaboso\PipesFramework\Utils\Dto\NodeSchemaDto;
 use Hanaboso\PipesFramework\Utils\Dto\Schema;
 use Nette\Utils\Arrays;
 
@@ -101,7 +103,6 @@ class TopologySchemaUtils
                     unset($process);
                     $process[0] = $tmp;
                 }
-
                 foreach ($process as $innerProcess) {
 
                     if (isset($innerProcess[$outgoing]) && !isset($innerProcess[$incoming])) {
@@ -113,14 +114,17 @@ class TopologySchemaUtils
                         $type = self::getPipesType($handler);
                     }
 
-                    $schema->addNode($innerProcess['@id'], [
-                        'handler'     => $handler,
-                        'id'          => $innerProcess['@id'],
-                        'name'        => $innerProcess['@name'] ?? '',
-                        'cron_time'   => $innerProcess['@pipes:cronTime'] ?? '',
-                        'cron_params' => $innerProcess['@pipes:cronParams'] ?? '',
-                        'pipes_type'  => $type,
-                    ]);
+                    $topologyDto = new NodeSchemaDto(
+                        $handler,
+                        $innerProcess['@id'],
+                        $type,
+                        self::createConfigDto($innerProcess),
+                        $innerProcess['@name'] ?? '',
+                        $innerProcess['@pipes:cronTime'] ?? '',
+                        $innerProcess['@pipes:cronParams'] ?? ''
+                    );
+
+                    $schema->addNode($innerProcess['@id'], $topologyDto);
                 }
             }
         }
@@ -172,6 +176,23 @@ class TopologySchemaUtils
                 return '';
         }
 
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return SystemConfigDto
+     */
+    private static function createConfigDto(array $data): SystemConfigDto
+    {
+        return new SystemConfigDto(
+            $data[self::SDK_HOST] ?? '',
+            $data[self::BRIDGE_HOST] ?? '',
+            $data[self::RABBIT_PREFETCH] ?? 1,
+            $data[self::REPEATER_ENABLED] ?? FALSE,
+            $data[self::REPEATER_HOPS] ?? 0,
+            $data[self::REPEATER_INTERVAL] ?? 0
+        );
     }
 
 }
