@@ -84,7 +84,7 @@ const settings: IAmqpDrainSettings = {
 };
 
 describe("FollowersPublisher", () => {
-    it("publishes message to followers", (done) => {
+    it("publishes message to followers #integration", (done) => {
         const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName", topology_id: "topoId"};
         const receivedMessages: Message[] = [];
         const checkEnd = () => {
@@ -104,21 +104,15 @@ describe("FollowersPublisher", () => {
 
         const consumer = new SimpleConsumer(
             conn,
-            (ch: Channel): any => {
-                return ch.assertQueue(outputQueue, {})
-                    .then(() => {
-                        return ch.purgeQueue(outputQueue);
-                    })
-                    .then(() => {
-                        return ch.assertExchange(
-                            fConfig.exchange.name,
-                            fConfig.exchange.type,
-                            fConfig.exchange.options,
-                        );
-                    })
-                    .then(() => {
-                        return ch.bindQueue(outputQueue, fConfig.exchange.name, fConfig.routing_key);
-                    });
+            async (ch: Channel): Promise<any> => {
+                await ch.assertQueue(outputQueue, {});
+                await ch.purgeQueue(outputQueue);
+                await ch.assertExchange(
+                    fConfig.exchange.name,
+                    fConfig.exchange.type,
+                    fConfig.exchange.options,
+                );
+                await ch.bindQueue(outputQueue, fConfig.exchange.name, fConfig.routing_key);
             },
             (received: Message) => {
                 receivedMessages.push(received);

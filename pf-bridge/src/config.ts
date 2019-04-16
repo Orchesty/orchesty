@@ -5,6 +5,9 @@ import {IProbeSettings} from "./probe/Probe";
 import {IRepeaterSettings} from "./repeater/Repeater";
 import {IMongoMessageStorageSettings} from "./repeater/storage/MongoMessageStorage";
 
+// use production by default, some libraries are optimized for better performance in production env
+process.env.NODE_ENV = process.env.NODE_ENV || "production";
+
 // Set timeouts and other env values differently for tests
 if (process.env.NODE_ENV === "test") {
     process.env.REPEATER_CHECK_TIMEOUT = "500";

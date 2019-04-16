@@ -17,7 +17,7 @@ const dumbStorage = {
 };
 
 describe("Terminator", () => {
-    it("should accept valid termination http request and send another request to given url", async () => {
+    it("should accept valid termination http request and send another request to given url #unit", async () => {
         const prom = new Promise((resolve) => {
             const topoApiMock = express();
             topoApiMock.use(bodyParser.raw({ type: () => true }));
@@ -44,7 +44,7 @@ describe("Terminator", () => {
         return prom;
     });
 
-    it("should return error response when missing delete url header", async () => {
+    it("should return error response when missing delete url header #unit", async () => {
         const terminator = new Terminator(7902, dumbStorage);
         await terminator.startServer();
 
@@ -56,14 +56,14 @@ describe("Terminator", () => {
         }
     });
 
-    it("tryTerminate will do nothing if topology have not been previously requested for termination", async () => {
+    it("tryTerminate will do nothing if topology hasn't been previously requested for termination #unit", async () => {
         const terminator = new Terminator(7903, dumbStorage);
         const terminated  = await terminator.tryTerminate("abcd");
 
         assert.isFalse(terminated);
     });
 
-    it("tryTerminate will do nothing if topology have not still some processes running", async () => {
+    it("tryTerminate will do nothing if topology have not still some processes running #unit", async () => {
         dumbStorage.hasSome = () => Promise.resolve(true);
         const terminator = new Terminator(7903, dumbStorage);
         await terminator.startServer();

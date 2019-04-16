@@ -104,7 +104,7 @@ function createHttpWorker(port: number, processPath: string, host: string = "loc
 }
 
 describe("HttpWorker", () => {
-    it("should convert JobMessage to http request, receive response and set message result", () => {
+    it("should convert JobMessage to http request, receive response and set message result #unit", async () => {
         const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName", topology_id: "topoId"};
         const headers = new Headers();
         headers.setPFHeader(Headers.CORRELATION_ID, "123");
@@ -116,17 +116,15 @@ describe("HttpWorker", () => {
 
         const worker = createHttpWorker(4020, "/ok");
 
-        return worker.processData(msg)
-            .then((outMsgs: JobMessage[]) => {
-                assert.lengthOf(outMsgs, 1);
-                const outMsg: JobMessage = outMsgs[0];
+        const outMsgs = await worker.processData(msg);
+        assert.lengthOf(outMsgs, 1);
 
-                assert.equal(outMsg.getResult().code, ResultCode.SUCCESS);
-                assert.equal(outMsg.getContent(), JSON.stringify({ val: "modified" }));
-            });
+        const outMsg: JobMessage = outMsgs[0];
+        assert.equal(outMsg.getResult().code, ResultCode.SUCCESS);
+        assert.equal(outMsg.getContent(), JSON.stringify({ val: "modified" }));
     });
 
-    it("should return original message content when server responds with error", () => {
+    it("should return original message content when server responds with error #unit", async () => {
         const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName", topology_id: "topoId"};
         const headers = new Headers();
         headers.setPFHeader(Headers.CORRELATION_ID, "123");
@@ -137,17 +135,19 @@ describe("HttpWorker", () => {
 
         const worker = createHttpWorker(4020, "/invalid-status-code");
 
-        return worker.processData(msg)
-            .catch((err) => {
-                assert.lengthOf(err, 1);
-                const outMsg: JobMessage = err[0];
+        try {
+            await worker.processData(msg);
+            assert.fail("Should have failed");
+        } catch (err) {
+            assert.lengthOf(err, 1);
+            const outMsg: JobMessage = err[0];
 
-                assert.equal(outMsg.getResult().code, ResultCode.HTTP_ERROR);
-                assert.equal(outMsg.getContent(), JSON.stringify({ val: "original" }));
-            });
+            assert.equal(outMsg.getResult().code, ResultCode.HTTP_ERROR);
+            assert.equal(outMsg.getContent(), JSON.stringify({ val: "original" }));
+        }
     });
 
-    it("should return modified message but be marked as failed due to result_status error", () => {
+    it("should return modified message but be marked as failed due to result_status error #unit", async () => {
         const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName", topology_id: "topoId"};
         const headers = new Headers();
         headers.setPFHeader(Headers.CORRELATION_ID, "123");
@@ -158,17 +158,15 @@ describe("HttpWorker", () => {
 
         const worker = createHttpWorker(4020, "/invalid-result-code");
 
-        return worker.processData(msg)
-            .then((outMsgs: JobMessage[]) => {
-                assert.lengthOf(outMsgs, 1);
-                const outMsg: JobMessage = outMsgs[0];
+        const outMsgs = await worker.processData(msg);
+        assert.lengthOf(outMsgs, 1);
 
-                assert.equal(outMsg.getResult().code, ResultCode.MISSING_RESULT_CODE);
-                assert.equal(outMsg.getContent(), JSON.stringify({ val: "original" }));
-            });
+        const outMsg: JobMessage = outMsgs[0];
+        assert.equal(outMsg.getResult().code, ResultCode.MISSING_RESULT_CODE);
+        assert.equal(outMsg.getContent(), JSON.stringify({ val: "original" }));
     });
 
-    it("should return original message content when process_path does not exist", () => {
+    it("should return original message content when process_path does not exist #unit", async () => {
         const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName", topology_id: "topoId"};
         const headers = new Headers();
         headers.setPFHeader(Headers.CORRELATION_ID, "123");
@@ -179,17 +177,19 @@ describe("HttpWorker", () => {
 
         const worker = createHttpWorker(4020, "/non-existing");
 
-        return worker.processData(msg)
-            .catch((err) => {
-                assert.lengthOf(err, 1);
-                const outMsg: JobMessage = err[0];
+        try {
+            await worker.processData(msg);
+            assert.fail("Should have failed");
+        } catch (err) {
+            assert.lengthOf(err, 1);
+            const outMsg: JobMessage = err[0];
 
-                assert.equal(outMsg.getResult().code, ResultCode.HTTP_ERROR);
-                assert.equal(outMsg.getContent(), JSON.stringify({ val: "original" }));
-            });
+            assert.equal(outMsg.getResult().code, ResultCode.HTTP_ERROR);
+            assert.equal(outMsg.getContent(), JSON.stringify({ val: "original" }));
+        }
     });
 
-    it("should return original message content and set repeat code when worker timeouted on valid route", () => {
+    it("should return orig msg content and set repeat code when worker timeouted on valid route #unit", async () => {
         const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName", topology_id: "topoId"};
         const headers = new Headers();
         headers.setPFHeader(Headers.CORRELATION_ID, "123");
@@ -202,20 +202,22 @@ describe("HttpWorker", () => {
         // This should emit ETIMEDOUT error "/ok" responds after 20ms
         worker.setTimeout(5);
 
-        return worker.processData(msg)
-            .catch((err) => {
-                assert.lengthOf(err, 1);
-                const outMsg: JobMessage = err[0];
+        try {
+            await worker.processData(msg);
+            assert.fail("Should have failed");
+        } catch (err) {
+            assert.lengthOf(err, 1);
+            const outMsg: JobMessage = err[0];
 
-                assert.equal(outMsg.getResult().code, ResultCode.REPEAT);
-                assert.equal(outMsg.getContent(), JSON.stringify({ val: "original" }));
-                assert.isTrue(outMsg.getHeaders().hasPFHeader(Headers.REPEAT_MAX_HOPS));
-                assert.isTrue(outMsg.getHeaders().hasPFHeader(Headers.REPEAT_HOPS));
-                assert.isTrue(outMsg.getHeaders().hasPFHeader(Headers.REPEAT_INTERVAL));
-            });
+            assert.equal(outMsg.getResult().code, ResultCode.REPEAT);
+            assert.equal(outMsg.getContent(), JSON.stringify({ val: "original" }));
+            assert.isTrue(outMsg.getHeaders().hasPFHeader(Headers.REPEAT_MAX_HOPS));
+            assert.isTrue(outMsg.getHeaders().hasPFHeader(Headers.REPEAT_HOPS));
+            assert.isTrue(outMsg.getHeaders().hasPFHeader(Headers.REPEAT_INTERVAL));
+        }
     });
 
-    it("should return empty data when worker returns empty body", () => {
+    it("should return empty data when worker returns empty body #unit", async () => {
         const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName", topology_id: "topoId"};
         const headers = new Headers();
         headers.setPFHeader(Headers.CORRELATION_ID, "123");
@@ -228,17 +230,15 @@ describe("HttpWorker", () => {
         // TODO - find out why this test fails when using agent with keepAlive: true
         worker.setAgent(new http.Agent({ keepAlive: false }));
 
-        return worker.processData(msg)
-            .then((outMsgs: JobMessage[]) => {
-                assert.lengthOf(outMsgs, 1);
-                const outMsg: JobMessage = outMsgs[0];
+        const outMsgs = await worker.processData(msg);
+        assert.lengthOf(outMsgs, 1);
 
-                assert.equal(outMsg.getResult().code, ResultCode.SUCCESS);
-                assert.equal(outMsg.getContent(), "");
-            });
+        const outMsg: JobMessage = outMsgs[0];
+        assert.equal(outMsg.getResult().code, ResultCode.SUCCESS);
+        assert.equal(outMsg.getContent(), "");
     });
 
-    it("should return that worker is ready when it is really ready", () => {
+    it("should return that worker is ready when it is really ready #unit", async () => {
         const workerServer = express();
         workerServer.get("/status", (req, resp) => {
             resp.sendStatus(200);
@@ -246,14 +246,10 @@ describe("HttpWorker", () => {
         workerServer.listen(4321);
 
         const worker = createHttpWorker(4321, "/some-path");
-
-        return worker.isWorkerReady()
-            .then((isReady: boolean) => {
-                assert.isTrue(isReady);
-            });
+        assert.isTrue(await worker.isWorkerReady());
     });
 
-    it("should return that worker is not ready when it says it is not", () => {
+    it("should return that worker is not ready when it says it is not #unit", async () => {
         const workerServer = express();
         workerServer.post("/status", (req, resp) => {
             resp.sendStatus(500);
@@ -261,14 +257,10 @@ describe("HttpWorker", () => {
         workerServer.listen(4322);
 
         const worker = createHttpWorker(4322, "/some-path");
-
-        return worker.isWorkerReady()
-            .then((isReady: boolean) => {
-                assert.isFalse(isReady);
-            });
+        assert.isFalse(await worker.isWorkerReady());
     });
 
-    it("should send json and receive xml", () => {
+    it("should send json and receive xml #unit", async () => {
         const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName", topology_id: "topoId"};
         const headers = new Headers();
         headers.setPFHeader(Headers.CORRELATION_ID, "123");
@@ -280,20 +272,18 @@ describe("HttpWorker", () => {
 
         const worker = createHttpWorker(4020, "/ok-xml");
 
-        return worker.processData(msg)
-            .then((outMsgs: JobMessage[]) => {
-                assert.lengthOf(outMsgs, 1);
-                const outMsg: JobMessage = outMsgs[0];
+        const outMsgs = await worker.processData(msg);
+        assert.lengthOf(outMsgs, 1);
+        const outMsg: JobMessage = outMsgs[0];
 
-                assert.equal(outMsg.getResult().code, ResultCode.SUCCESS);
-                assert.equal(
-                    outMsg.getContent(),
-                    "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root>some content</root>",
-                );
-            });
+        assert.equal(outMsg.getResult().code, ResultCode.SUCCESS);
+        assert.equal(
+            outMsg.getContent(),
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root>some content</root>",
+        );
     });
 
-    it("should return failed result message when remote http host does not exist", () => {
+    it("should return failed result message when remote http host does not exist #unit", async () => {
         const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName", topology_id: "topoId"};
         const headers = new Headers();
         headers.setPFHeader(Headers.CORRELATION_ID, "123");
@@ -305,14 +295,16 @@ describe("HttpWorker", () => {
 
         const worker = createHttpWorker(4020, "/non-existing", "nonexistinghost");
 
-        return worker.processData(msg)
-            .catch((err) => {
-                assert.lengthOf(err, 1);
-                const outMsg: JobMessage = err[0];
+        try {
+            await worker.processData(msg);
+            assert.fail("Should have failed");
+        } catch (err) {
+            assert.lengthOf(err, 1);
+            const outMsg: JobMessage = err[0];
 
-                assert.equal(outMsg.getResult().code, ResultCode.HTTP_ERROR);
-                assert.equal(outMsg.getContent(), JSON.stringify({ val: "original" }));
-            });
+            assert.equal(outMsg.getResult().code, ResultCode.HTTP_ERROR);
+            assert.equal(outMsg.getContent(), JSON.stringify({ val: "original" }));
+        }
     });
 
 });

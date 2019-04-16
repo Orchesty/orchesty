@@ -22,7 +22,7 @@ const createBasicMessage = (): JobMessage => {
 };
 
 describe("Limiter", () => {
-    it("isReady should return negative result on requesting invalid limiter", async () => {
+    it("isReady should return negative result on requesting invalid limiter #unit", async () => {
         const tcp = new TcpClient("invalidhost", 3333);
         const publisher: any = {};
         const limiter = new Limiter(tcp, publisher);
@@ -30,10 +30,9 @@ describe("Limiter", () => {
         assert.isFalse(result);
     });
 
-    it("isReady should send and receive tcp packet", (done) => {
+    it("isReady should send and receive tcp packet #unit", (done) => {
         const server = net.createServer((socket) => {
             socket.write("pf-health-check;someid;ok");
-            socket.pipe(socket);
         });
         server.listen(1337, "localhost");
 
@@ -47,7 +46,7 @@ describe("Limiter", () => {
         }, 100);
     });
 
-    it("canBeProcessed should returns true when missing mandatory message headers", async () => {
+    it("canBeProcessed should returns true when missing mandatory message headers #unit", async () => {
         const tcp = new TcpClient("localhost", 3333);
         const publisher: any = {};
         const limiter = new Limiter(tcp, publisher);
@@ -62,7 +61,7 @@ describe("Limiter", () => {
         assert.isTrue(resultTwo);
     });
 
-    it("canBeProcessed should return true when cannot contact remote server", async () => {
+    it("canBeProcessed should return true when cannot contact remote server #unit", async () => {
         const tcp = new TcpClient("invalidhost", 3333);
         const publisher: any = {};
         const limiter = new Limiter(tcp, publisher);
@@ -76,10 +75,9 @@ describe("Limiter", () => {
         assert.isTrue(result);
     }).timeout(4000);
 
-    it("canBeProcessed should return what true when limiter returns positive response", (done) => {
+    it("canBeProcessed should return what true when limiter returns positive response #unit", (done) => {
         const positive = net.createServer((socket) => {
             socket.write("pf-check;someid;ok");
-            socket.pipe(socket);
         });
         positive.listen(1338, "localhost", () => {
             assert.isTrue(positive.listening);
@@ -100,10 +98,9 @@ describe("Limiter", () => {
         });
     });
 
-    it("canBeProcessed should return what true when limiter returns negative response", (done) => {
+    it("canBeProcessed should return what true when limiter returns negative response #unit", (done) => {
         const negative = net.createServer((socket) => {
             socket.write("pf-check;someid;nok");
-            socket.pipe(socket);
         });
         negative.listen(1339, "localhost", async () => {
             assert.isTrue(negative.listening);
@@ -128,7 +125,7 @@ describe("Limiter", () => {
     // Tests against real go app
     //
 
-    it.skip("isReady against live go server", async () => {
+    it.skip("isReady against live go server #integration", async () => {
         const tcp = new TcpClient("localhost", 3333);
         const publisher: any = {};
         const limiter = new Limiter(tcp, publisher);
@@ -136,7 +133,7 @@ describe("Limiter", () => {
         assert.isTrue(result);
     });
 
-    it.skip("check limit against live go server", async () => {
+    it.skip("check limit against live go server #integration", async () => {
         const tcp = new TcpClient("localhost", 3333);
         const publisher: any = {};
         const limiter = new Limiter(tcp, publisher);

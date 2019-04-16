@@ -9,7 +9,7 @@ import LimiterWorker from "../../../src/node/worker/LimiterWorker";
 
 describe("LimiterWorker", () => {
 
-    it("isWorkerReady should return result according to the limiter and inner worker readiness", async () => {
+    it("isWorkerReady should return result according to the limiter and inner worker readiness #unit", async () => {
         const limiterMock: ILimiter = {
             isReady: async () => false,
             canBeProcessed: async () => true,
@@ -37,7 +37,7 @@ describe("LimiterWorker", () => {
         assert.isFalse(await readyWorker.isWorkerReady());
     });
 
-    it("processData should call limiter's postpone if cannot be processed", async () => {
+    it("processData should call limiter's postpone if cannot be processed #unit", async () => {
         const hdrs = new Headers();
         hdrs.setPFHeader(Headers.CORRELATION_ID, "1");
         hdrs.setPFHeader(Headers.PROCESS_ID, "1");
@@ -72,7 +72,7 @@ describe("LimiterWorker", () => {
         });
     });
 
-    it("processData should call limiter's postpone and do not fail if it throws error", async () => {
+    it("processData should call limiter's postpone and do not fail if it throws error #unit", async () => {
         const hdrs = new Headers();
         hdrs.setPFHeader(Headers.CORRELATION_ID, "1");
         hdrs.setPFHeader(Headers.PROCESS_ID, "1");

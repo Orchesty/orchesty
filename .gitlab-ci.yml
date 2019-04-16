@@ -159,10 +159,12 @@ pf-bridge-test:
     - export COMPOSE_PROJECT_NAME="p${CI_PIPELINE_ID}-bridge"  # CLEANUP bridge
     - export RABBITMQ_HOST=rabbitmq
     - export METRICS_HOST=influxdb
+    - docker-compose pull
     - docker-compose up -d
     - docker-compose exec -T test npm run lint
     - docker-compose exec -T test bash -c 'while ! nc -z rabbitmq 5672; do sleep 1; done'
-    - docker-compose exec -T test npm test
+    - docker-compose exec -T test npm run testunit
+    - docker-compose exec -T test npm run testintegration
 
 frontend:
   stage: stage2

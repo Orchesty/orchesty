@@ -64,7 +64,7 @@ const amqpConn = new Connection(config.amqpConnectionOptions);
 const firstQueue = `pipes.${testTopology.id}.${testTopology.nodes[0].id}`;
 
 describe("Linear topology with splitter test", () => {
-    it("complete flow of messages till the end", (testDone) => {
+    it("complete flow of messages till the end #integration", (testDone) => {
         const msgTestContent = [
             { val : "to be split 1"},
             { val : "to be split 2"},
@@ -103,21 +103,15 @@ describe("Linear topology with splitter test", () => {
             const resultConsumer = new SimpleConsumer(
                 amqpConn,
                 (ch: Channel) => {
-                    return new Promise((resolve) => {
-                        ch.assertQueue(counterResultQueue.name, counterResultQueue.options)
-                            .then(() => {
-                                return ch.purgeQueue(counterResultQueue.name);
-                            })
-                            .then(() => {
-                                return ch.bindQueue(
-                                    counterResultQueue.name,
-                                    pip.getTopologyConfig(false).counter.pub.exchange.name,
-                                    pip.getTopologyConfig(false).counter.pub.routing_key,
-                                );
-                            })
-                            .then(() => {
-                                resolve();
-                            });
+                    return new Promise(async (resolve) => {
+                        await ch.assertQueue(counterResultQueue.name, counterResultQueue.options);
+                        await ch.purgeQueue(counterResultQueue.name);
+                        await ch.bindQueue(
+                            counterResultQueue.name,
+                            pip.getTopologyConfig(false).counter.pub.exchange.name,
+                            pip.getTopologyConfig(false).counter.pub.routing_key,
+                        );
+                        resolve();
                     });
                 },
                 (msg: Message) => {
@@ -142,14 +136,10 @@ describe("Linear topology with splitter test", () => {
             const publisher = new Publisher(
                 amqpConn,
                 (ch: Channel) => {
-                    return new Promise((resolve) => {
-                        ch.assertQueue(firstQueue, { durable: persistentQueues })
-                            .then(() => {
-                                return ch.purgeQueue(firstQueue);
-                            })
-                            .then(() => {
-                                resolve();
-                            });
+                    return new Promise(async (resolve) => {
+                        await ch.assertQueue(firstQueue, { durable: persistentQueues });
+                        await ch.purgeQueue(firstQueue);
+                        resolve();
                     });
                 },
             );
