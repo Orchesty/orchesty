@@ -3,6 +3,8 @@
 namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller;
 
 use FOS\RestBundle\Controller\AbstractFOSRestController;
+use Hanaboso\PipesFramework\Configurator\Enum\NodeImplementationEnum;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -73,6 +75,41 @@ class NodeController extends AbstractFOSRestController
                 return $this->forward('HbPFMapperBundle:Mapper:listOfMappers');
                 break;
         }
+    }
+
+    /**
+     * @Route("/nodes/list/name", methods={"GET"})
+     *
+     * @return Response
+     */
+    public function listNodesNamesAction(): Response
+    {
+        return new JsonResponse([
+            NodeImplementationEnum::PHP => [
+                NodeImplementationEnum::CONNECTOR => $this->getForwardContent('HbPFConnectorBundle:Connector:listOfConnectors'),
+                NodeImplementationEnum::CUSTOM    => $this->getForwardContent('HbPFCustomNodeBundle:CustomNode:listOfCustomNodes'),
+            ],
+        ]);
+    }
+
+    /**
+     * @Route("/nodes/list/implementation", methods={"GET"})
+     *
+     * @return Response
+     */
+    public function listNodesImplementationAction(): Response
+    {
+        return new JsonResponse(NodeImplementationEnum::getChoices());
+    }
+
+    /**
+     * @param string $path
+     *
+     * @return array
+     */
+    private function getForwardContent(string $path): array
+    {
+        return json_decode($this->forward($path)->getContent(), TRUE, 512, JSON_THROW_ON_ERROR);
     }
 
 }
