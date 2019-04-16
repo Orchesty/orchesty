@@ -20,6 +20,7 @@ use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
+use Hanaboso\PipesFramework\Utils\Dto\NodeSchemaDto;
 use Hanaboso\PipesFramework\Utils\Dto\Schema;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
 use Nette\Utils\Strings;
@@ -315,18 +316,8 @@ class TopologyManager
         $nodes      = [];
         $embedNodes = [];
 
-        foreach ($dto->getNodes() as $id => $node) {
-            $this->createNode(
-                $topology,
-                $id,
-                $node['handler'],
-                $nodes,
-                $embedNodes,
-                $node['name'],
-                $node['pipes_type'],
-                $node['cron_time'],
-                $node['cron_params']
-            );
+        foreach ($dto->getNodes() as $nodeSchemaDto) {
+            $this->createNode($topology, $nodes, $embedNodes, $nodeSchemaDto);
         }
 
         foreach ($dto->getSequences() as $source => $targets) {
@@ -353,32 +344,12 @@ class TopologyManager
         $nodes      = [];
         $embedNodes = [];
 
-        foreach ($dto->getNodes() as $id => $node) {
+        foreach ($dto->getNodes() as $nodeSchemaDto) {
             try {
-                $this->updateNode(
-                    $topology,
-                    $id,
-                    $node['handler'],
-                    $nodes,
-                    $embedNodes,
-                    $node['name'],
-                    $node['pipes_type'],
-                    $node['cron_time'],
-                    $node['cron_params']
-                );
+                $this->updateNode($topology, $nodes, $embedNodes, $nodeSchemaDto);
             } catch (NodeException $e) {
                 if ($e->getCode() === NodeException::NODE_NOT_FOUND) {
-                    $this->createNode(
-                        $topology,
-                        $id,
-                        $node['handler'],
-                        $nodes,
-                        $embedNodes,
-                        $node['name'],
-                        $node['pipes_type'],
-                        $node['cron_time'],
-                        $node['cron_params']
-                    );
+                    $this->createNode($topology, $nodes, $embedNodes, $nodeSchemaDto);
                 }
             }
         }
@@ -394,185 +365,118 @@ class TopologyManager
     }
 
     /**
-     * @param Topology    $topology
-     * @param string      $id
-     * @param string      $handler
-     * @param array       $nodes
-     * @param array       $embedNodes
-     * @param string|null $name
-     * @param string|null $type
-     * @param string|null $cron
-     * @param string|null $cronParams
+     * @param Topology      $topology
+     * @param array         $nodes
+     * @param array         $embedNodes
+     * @param NodeSchemaDto $dto
      *
      * @return Node
-     * @throws TopologyException
-     * @throws NodeException
      * @throws EnumException
+     * @throws NodeException
+     * @throws TopologyException
      */
-    private function createNode(
-        Topology $topology,
-        string $id,
-        string $handler,
-        array &$nodes,
-        array &$embedNodes,
-        ?string $name = NULL,
-        ?string $type = NULL,
-        ?string $cron = NULL,
-        ?string $cronParams = NULL
-    ): Node
+    private function createNode(Topology $topology, array &$nodes, array &$embedNodes, NodeSchemaDto $dto): Node
     {
-        $this->checkNodeAttributes($id, $name, $type, $cron);
-
-        $node = $this->setNodeAttributes(
-            $topology,
-            new Node(),
-            (string) $name,
-            (string) $type,
-            $id,
-            $handler,
-            $cron,
-            $cronParams
-        );
+        $this->checkNodeAttributes($dto);
+        $node = $this->setNodeAttributes($topology, new Node(), $dto);
 
         $this->dm->persist($node);
         $this->dm->flush();
 
-        $nodes[$id]      = $node;
-        $embedNodes[$id] = EmbedNode::from($node);
+        $nodes[$dto->getId()]      = $node;
+        $embedNodes[$dto->getId()] = EmbedNode::from($node);
 
-        $this->makePatchRequestForCron($node, (string) $type, $id);
+        $this->makePatchRequestForCron($node, (string) $dto->getPipesType(), $dto->getId());
 
         return $node;
     }
 
     /**
-     * @param Topology    $topology
-     * @param string      $id
-     * @param string      $handler
-     * @param array       $nodes
-     * @param array       $embedNodes
-     * @param string|null $name
-     * @param string|null $type
-     * @param string|null $cron
-     * @param string|null $cronParams
+     * @param Topology      $topology
+     * @param array         $nodes
+     * @param array         $embedNodes
+     * @param NodeSchemaDto $dto
      *
      * @return Node
+     * @throws EnumException
      * @throws NodeException
      * @throws TopologyException
-     * @throws EnumException
      */
     private function updateNode(
         Topology $topology,
-        string $id,
-        string $handler,
         array &$nodes,
         array &$embedNodes,
-        ?string $name = NULL,
-        ?string $type = NULL,
-        ?string $cron = NULL,
-        ?string $cronParams = NULL
+        NodeSchemaDto $dto
     ): Node
     {
-        $this->checkNodeAttributes($id, $name, $type, $cron);
+        $this->checkNodeAttributes($dto);
+        $node = $this->getNodeBySchemaId($topology, $dto->getId());
+        $node = $this->setNodeAttributes($topology, $node, $dto);
 
-        $node = $this->getNodeBySchemaId($topology, $id);
-        $node = $this->setNodeAttributes(
-            $topology,
-            $node,
-            (string) $name,
-            (string) $type,
-            $id,
-            $handler,
-            $cron,
-            $cronParams
-        );
+        $nodes[$dto->getId()]      = $node;
+        $embedNodes[$dto->getId()] = EmbedNode::from($node);
 
-        $nodes[$id]      = $node;
-        $embedNodes[$id] = EmbedNode::from($node);
-
-        $this->makePatchRequestForCron($node, (string) $type, $id);
+        $this->makePatchRequestForCron($node, $dto->getPipesType(), $dto->getId());
 
         return $node;
     }
 
     /**
-     * @param Topology    $topology
-     * @param Node        $node
-     * @param string      $name
-     * @param string      $type
-     * @param string      $schemaId
-     * @param string      $handler
-     * @param null|string $cron
-     * @param null|string $cronParams
+     * @param Topology      $topology
+     * @param Node          $node
+     * @param NodeSchemaDto $dto
      *
      * @return Node
-     * @throws NodeException
      * @throws EnumException
+     * @throws NodeException
      */
-    private function setNodeAttributes(
-        Topology $topology,
-        Node $node,
-        string $name,
-        string $type,
-        string $schemaId,
-        string $handler,
-        ?string $cron = NULL,
-        ?string $cronParams = NULL
-    ): Node
+    private function setNodeAttributes(Topology $topology, Node $node, NodeSchemaDto $dto): Node
     {
         $node
-            ->setName($name)
-            ->setType($type)
-            ->setSchemaId($schemaId)
+            ->setName($dto->getName())
+            ->setType($dto->getPipesType())
+            ->setSchemaId($dto->getId())
             ->setTopology($topology->getId())
-            ->setHandler(Strings::endsWith($handler, 'vent') ? HandlerEnum::EVENT : HandlerEnum::ACTION)
-            ->setCronParams(urldecode((string) $cronParams))
-            ->setCron($cron);
+            ->setHandler(Strings::endsWith($dto->getHandler(), 'vent') ? HandlerEnum::EVENT : HandlerEnum::ACTION)
+            ->setCronParams(urldecode((string) $dto->getCronParams()))
+            ->setCron($dto->getCronTime());
 
         return $node;
     }
 
     /**
-     * @param string      $id
-     * @param null|string $name
-     * @param null|string $type
-     * @param null|string $cron
+     * @param NodeSchemaDto $dto
      *
      * @throws TopologyException
      */
-    private function checkNodeAttributes(
-        string $id,
-        ?string $name = NULL,
-        ?string $type = NULL,
-        ?string $cron = NULL
-    ): void
+    private function checkNodeAttributes(NodeSchemaDto $dto): void
     {
-        if (!$name) {
+        if (!$dto->getName()) {
             throw new TopologyException(
-                sprintf('Node [%s] name not found', $id),
+                sprintf('Node [%s] name not found', $dto->getId()),
                 TopologyException::TOPOLOGY_NODE_NAME_NOT_FOUND
             );
         }
 
-        if (!$type) {
+        if (!$dto->getPipesType()) {
             throw new TopologyException(
-                sprintf('Node [%s] type not found', $id),
+                sprintf('Node [%s] type not found', $dto->getId()),
                 TopologyException::TOPOLOGY_NODE_TYPE_NOT_FOUND
             );
         }
 
         try {
-            TypeEnum::isValid($type);
+            TypeEnum::isValid($dto->getPipesType());
         } catch (EnumException $e) {
             throw new TopologyException(
-                sprintf('Node [%s] type [%s] not exist', $id, $type),
+                sprintf('Node [%s] type [%s] not exist', $dto->getId(), $dto->getPipesType()),
                 TopologyException::TOPOLOGY_NODE_TYPE_NOT_EXIST
             );
         }
 
-        if ($cron && !CronExpression::isValidExpression($cron)) {
+        if ($dto->getCronTime() && !CronExpression::isValidExpression($dto->getCronTime())) {
             throw new TopologyException(
-                sprintf('Node [%s] cron [%s] not valid', $id, $type),
+                sprintf('Node [%s] cron [%s] not valid', $dto->getId(), $dto->getPipesType()),
                 TopologyException::TOPOLOGY_NODE_CRON_NOT_VALID
             );
         }

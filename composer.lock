@@ -2256,11 +2256,11 @@
         },
         {
             "name": "hanaboso/commons-bundle",
-            "version": "1.1.10",
+            "version": "1.1.11",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.hanaboso.net:hanaboso/commons-bundle.git",
-                "reference": "9d352bef0909e727db7bd3e01119ac9fed53c9eb"
+                "reference": "c1dd047fcf8793952bdfd51781776a40a7781c3a"
             },
             "require": {
                 "alcaeus/mongo-php-adapter": "^1.1",
@@ -2280,7 +2280,8 @@
                 "guzzlehttp/guzzle": "^6.3",
                 "jms/serializer-bundle": "^2.4",
                 "mongodb/mongodb": "^1.4",
-                "php": "^7.2",
+                "php": "^7.3",
+                "php-imap/php-imap": "^3.0",
                 "phpseclib/phpseclib": "^2.0",
                 "predis/predis": "^1.1",
                 "windwalker/crypt": "^3.5"
@@ -2306,7 +2307,7 @@
             "license": [
                 "proprietary"
             ],
-            "time": "2019-04-09T10:42:23+00:00"
+            "time": "2019-04-15T16:36:31+00:00"
         },
         {
             "name": "hanaboso/email-service-bundle",
@@ -4139,6 +4140,58 @@
             "time": "2017-11-30T13:30:09+00:00"
         },
         {
+            "name": "php-imap/php-imap",
+            "version": "3.0.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/barbushin/php-imap.git",
+                "reference": "d4f8ef4504dfb555857241aa7d1e414a1c229079"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/barbushin/php-imap/zipball/d4f8ef4504dfb555857241aa7d1e414a1c229079",
+                "reference": "d4f8ef4504dfb555857241aa7d1e414a1c229079",
+                "shasum": ""
+            },
+            "require": {
+                "ext-imap": "*",
+                "php": ">=5.5"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "PhpImap\\": "src/PhpImap"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sergey Barbushin",
+                    "email": "barbushin@gmail.com",
+                    "homepage": "http://linkedin.com/in/barbushin"
+                }
+            ],
+            "description": "Manage mailboxes, filter/get/delete emails in PHP (supports IMAP/POP3/NNTP)",
+            "homepage": "https://github.com/barbushin/php-imap",
+            "keywords": [
+                "imap",
+                "mail",
+                "mailbox",
+                "php",
+                "pop3",
+                "receive emails"
+            ],
+            "time": "2017-12-22T12:53:34+00:00"
+        },
+        {
             "name": "phpcollection/phpcollection",
             "version": "0.5.0",
             "source": {
@@ -5952,16 +6005,16 @@
         },
         {
             "name": "symfony/symfony",
-            "version": "v4.2.5",
+            "version": "v4.2.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "5365a36a024503583a9841c177802ab1211cb5b8"
+                "reference": "cd999a4b6c8070cc00ce2f98479517f75e103bca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/5365a36a024503583a9841c177802ab1211cb5b8",
-                "reference": "5365a36a024503583a9841c177802ab1211cb5b8",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/cd999a4b6c8070cc00ce2f98479517f75e103bca",
+                "reference": "cd999a4b6c8070cc00ce2f98479517f75e103bca",
                 "shasum": ""
             },
             "require": {
@@ -6109,7 +6162,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2019-04-02T19:04:13+00:00"
+            "time": "2019-04-16T07:20:43+00:00"
         },
         {
             "name": "tracy/tracy",
@@ -6179,16 +6232,16 @@
         },
         {
             "name": "twig/twig",
-            "version": "v2.7.4",
+            "version": "v2.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "ed9c49220e09bfaeb1ba4d48077c08a7b09908dd"
+                "reference": "26517b0e879865ee0d8a9748144be0875d838f5a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/ed9c49220e09bfaeb1ba4d48077c08a7b09908dd",
-                "reference": "ed9c49220e09bfaeb1ba4d48077c08a7b09908dd",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/26517b0e879865ee0d8a9748144be0875d838f5a",
+                "reference": "26517b0e879865ee0d8a9748144be0875d838f5a",
                 "shasum": ""
             },
             "require": {
@@ -6204,7 +6257,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.7-dev"
+                    "dev-master": "2.8-dev"
                 }
             },
             "autoload": {
@@ -6242,7 +6295,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2019-03-23T14:28:58+00:00"
+            "time": "2019-04-16T12:36:25+00:00"
         },
         {
             "name": "willdurand/jsonp-callback-validator",
@@ -7589,16 +7642,16 @@
         },
         {
             "name": "phpstan/phpstan-symfony",
-            "version": "0.11.3",
+            "version": "0.11.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-symfony.git",
-                "reference": "9c7e936759b284f710e77fbb18ca1da1257dcdd6"
+                "reference": "142a5d573e8ee52dcb9a8272fe39433fb19adb3b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-symfony/zipball/9c7e936759b284f710e77fbb18ca1da1257dcdd6",
-                "reference": "9c7e936759b284f710e77fbb18ca1da1257dcdd6",
+                "url": "https://api.github.com/repos/phpstan/phpstan-symfony/zipball/142a5d573e8ee52dcb9a8272fe39433fb19adb3b",
+                "reference": "142a5d573e8ee52dcb9a8272fe39433fb19adb3b",
                 "shasum": ""
             },
             "require": {
@@ -7620,9 +7673,10 @@
                 "phpunit/phpunit": "^7.0",
                 "slevomat/coding-standard": "^4.5.2",
                 "squizlabs/php_codesniffer": "^3.3.2",
+                "symfony/console": "^3.0 || ^4.0",
                 "symfony/framework-bundle": "^3.0 || ^4.0",
                 "symfony/messenger": "^4.2",
-                "symfony/serializer": "^3|^4"
+                "symfony/serializer": "^3.0 || ^4.0"
             },
             "type": "library",
             "extra": {
@@ -7647,7 +7701,7 @@
                 }
             ],
             "description": "Symfony Framework extensions and rules for PHPStan",
-            "time": "2019-04-01T08:02:03+00:00"
+            "time": "2019-04-16T08:20:11+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -8594,16 +8648,16 @@
         },
         {
             "name": "squizlabs/php_codesniffer",
-            "version": "3.4.1",
+            "version": "3.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/squizlabs/PHP_CodeSniffer.git",
-                "reference": "5b4333b4010625d29580eb4a41f1e53251be6baa"
+                "reference": "b8a7362af1cc1aadb5bd36c3defc4dda2cf5f0a8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/5b4333b4010625d29580eb4a41f1e53251be6baa",
-                "reference": "5b4333b4010625d29580eb4a41f1e53251be6baa",
+                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/b8a7362af1cc1aadb5bd36c3defc4dda2cf5f0a8",
+                "reference": "b8a7362af1cc1aadb5bd36c3defc4dda2cf5f0a8",
                 "shasum": ""
             },
             "require": {
@@ -8641,7 +8695,7 @@
                 "phpcs",
                 "standards"
             ],
-            "time": "2019-03-19T03:22:27+00:00"
+            "time": "2019-04-10T23:49:02+00:00"
         },
         {
             "name": "theseer/tokenizer",
