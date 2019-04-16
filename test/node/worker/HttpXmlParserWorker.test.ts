@@ -40,7 +40,7 @@ const workerSettings: IHttpXmlParserWorkerSettings = {
 };
 
 describe("HttpXmlParserWorker", () => {
-    it("should prepare POST body in correct format", () => {
+    it("should prepare POST body in correct format #unit", () => {
         const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName", topology_id: "topoId"};
         const headers = new Headers();
         headers.setPFHeader(Headers.CORRELATION_ID, "123");
@@ -64,7 +64,7 @@ describe("HttpXmlParserWorker", () => {
         assert.equal(bodyJson.data, '<?xml version="1.0" encoding="UTF-8"?><root></root>');
     });
 
-    it("sends request to remote server", async () => {
+    it("sends request to remote server #unit", async () => {
         httpServer.use(bodyParser.raw(bodyParserRaw));
         httpServer.post("/xml-worker", (req, resp) => {
             assert.equal(

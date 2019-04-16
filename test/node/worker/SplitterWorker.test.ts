@@ -18,7 +18,7 @@ const settings: IJsonSplitterWorkerSettings = {
 };
 
 describe("Splitter worker", () => {
-    it("should fail when invalid JSON content format", () => {
+    it("should fail when invalid JSON content format #unit", async () => {
         const partialForwarder: IPartialForwarder = {
             forwardPart: () => Promise.resolve(),
         };
@@ -30,17 +30,16 @@ describe("Splitter worker", () => {
         headers.setPFHeader(Headers.SEQUENCE_ID, "1");
         const msg = new JobMessage(node, headers.getRaw(), Buffer.from("{}{}{}"));
         const worker = new JsonSplitterWorker(settings, partialForwarder);
-        return worker.processData(msg)
-            .then((outMsgs: JobMessage[]) => {
-                assert.lengthOf(outMsgs, 1);
-                const outMsg: JobMessage = outMsgs[0];
 
-                assert.equal(outMsg.getResult().code, ResultCode.INVALID_CONTENT);
-                assert.include(outMsg.getResult().message, "Could not parse message content.");
-            });
+        const outMsgs = await worker.processData(msg);
+        assert.lengthOf(outMsgs, 1);
+        const outMsg: JobMessage = outMsgs[0];
+
+        assert.equal(outMsg.getResult().code, ResultCode.INVALID_CONTENT);
+        assert.include(outMsg.getResult().message, "Could not parse message content.");
     });
 
-    it("should fail when JSON content is empty array", () => {
+    it("should fail when JSON content is empty array #unit", async () => {
         const partialForwarder: IPartialForwarder = {
             forwardPart: () => Promise.resolve(),
         };
@@ -53,17 +52,16 @@ describe("Splitter worker", () => {
         headers.setPFHeader(Headers.SEQUENCE_ID, "1");
         const msg = new JobMessage(node, headers.getRaw(), body);
         const worker = new JsonSplitterWorker(settings, partialForwarder);
-        return worker.processData(msg)
-            .then((outMsgs: JobMessage[]) => {
-                assert.lengthOf(outMsgs, 1);
-                const outMsg: JobMessage = outMsgs[0];
 
-                assert.equal(outMsg.getResult().code, ResultCode.INVALID_CONTENT);
-                assert.include(outMsg.getResult().message, "Message content must be json array");
-            });
+        const outMsgs = await worker.processData(msg);
+        assert.lengthOf(outMsgs, 1);
+        const outMsg: JobMessage = outMsgs[0];
+
+        assert.equal(outMsg.getResult().code, ResultCode.INVALID_CONTENT);
+        assert.include(outMsg.getResult().message, "Message content must be json array");
     });
 
-    it("should split message", () => {
+    it("should split message #unit", async () => {
         const forwarded: JobMessage[] = [];
         const content = [
             { foo: "bar" },
@@ -84,24 +82,23 @@ describe("Splitter worker", () => {
             },
         };
         const worker = new JsonSplitterWorker(settings, partialForwarder);
-        return worker.processData(msg)
-            .then((outMsgs: JobMessage[]) => {
-                assert.lengthOf(outMsgs, 1);
-                const outMsg: JobMessage = outMsgs[0];
 
-                assert.equal(outMsg.getResult().code, ResultCode.SUCCESS);
-                assert.equal(outMsg.getMultiplier(), 3);
-                assert.isFalse(outMsg.getForwardSelf());
-                // Split messages check
-                let i: number = 0;
-                forwarded.forEach((split) => {
-                    assert.equal(
-                        split.getContent(),
-                        JSON.stringify(content[i]),
-                    );
-                    i++;
-                });
-            });
+        const outMsgs = await worker.processData(msg);
+        assert.lengthOf(outMsgs, 1);
+        const outMsg: JobMessage = outMsgs[0];
+
+        assert.equal(outMsg.getResult().code, ResultCode.SUCCESS);
+        assert.equal(outMsg.getMultiplier(), 3);
+        assert.isFalse(outMsg.getForwardSelf());
+        // Split messages check
+        let i: number = 0;
+        forwarded.forEach((split) => {
+            assert.equal(
+                split.getContent(),
+                JSON.stringify(content[i]),
+            );
+            i++;
+        });
     });
 
 });

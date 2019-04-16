@@ -29,7 +29,7 @@ const loadTopologyConfigFromFile = (): ITopologyConfig => {
     try {
         return JSON.parse(fs.readFileSync("topology/topology.json", "utf8"));
     } catch (e) {
-        logger.error("Cannot start program: ", {error: e, node_id: argv.service});
+        logger.error("Cannot start program: ", {error: e, node_id: `${argv.service}`});
         process.exit(126);
     }
 };
@@ -79,7 +79,7 @@ const main = async () => {
             process.exit(126);
     }
 
-    process.on("SIGTERM", async () => {
+    process.on("SIGTERM", async (): Promise<void> => {
         logger.info("SIGTERM received");
         process.exit(0);
     });

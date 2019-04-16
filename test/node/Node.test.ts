@@ -15,7 +15,7 @@ const metricsMock = {
 };
 
 describe("Node", () => {
-    it("prepare and start and open node, when worker is ready", () => {
+    it("prepare and start and open node, when worker is ready #unit", async () => {
         const worker = mock.mock(UppercaseWorker);
         worker.isWorkerReady = () => Promise.resolve(true);
         const drain = mock.mock(AmqpDrain);
@@ -25,18 +25,12 @@ describe("Node", () => {
 
         const node = new Node("test-node", worker, faucetInstance, drain, metricsMock);
 
-        return node.open()
-            .then(() => {
-                return node.startServer(5002);
-            })
-            .then(() => {
-                return rp("http://localhost:5002/status");
-            })
-            .then((resp: string) => {
-                assert.equal(resp, "Bridge and worker are both ready.");
-            });
-    });
-    it("prepare and start and open node, when worker is not ready yet", () => {
+        await node.open();
+        await node.startServer(5002);
+        const resp = await rp("http://localhost:5002/status");
+        assert.equal(resp, "Bridge and worker are both ready.");
+    }).timeout(5000);
+    it("prepare and start and open node, when worker is not ready yet #unit", async () => {
         const worker = mock.mock(UppercaseWorker);
         worker.isWorkerReady = () => Promise.resolve(false);
         const drain = mock.mock(AmqpDrain);
@@ -46,16 +40,13 @@ describe("Node", () => {
 
         const node = new Node("test-node", worker, faucetInstance, drain, metricsMock);
 
-        return node.open()
-            .then(() => {
-                return node.startServer(5001);
-            })
-            .then(() => {
-                return rp("http://localhost:5001/status");
-            })
-            .catch((err: any) => {
-                assert.equal(err.statusCode, 503);
-                assert.equal(err.error, "Worker not ready yet");
-            });
-    });
+        await node.open();
+        await node.startServer(5001);
+        try {
+            await rp("http://localhost:5001/status");
+        } catch (err) {
+            assert.equal(err.statusCode, 503);
+            assert.equal(err.error, "Worker not ready yet");
+        }
+    }).timeout(5000);
 });

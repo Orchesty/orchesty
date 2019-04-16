@@ -4,7 +4,7 @@ import "mocha";
 import {default as Headers} from "../../src/message/Headers";
 
 describe("Headers", () => {
-    it("containsAllMandatory should return false when some mandatory header is missing", () => {
+    it("containsAllMandatory should return false when some mandatory header is missing #unit", () => {
         let h;
         assert.isFalse(Headers.containsAllMandatory(h));
 
@@ -24,7 +24,7 @@ describe("Headers", () => {
         assert.isFalse(Headers.containsAllMandatory(h));
     });
 
-    it("should filter headers and keep only those prefixed", () => {
+    it("should filter headers and keep only those prefixed #unit", () => {
         const headers = {
             "content-type": "application/json",
             "content-length": 1024,

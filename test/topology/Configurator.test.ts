@@ -257,16 +257,16 @@ const expectedTopo: ITopologyConfig = {
 };
 
 describe("Configurator", () => {
-    it("should add defaults to missing topology skeleton fields when single topo", () => {
+    it("should add defaults to missing topology skeleton fields when single topo #unit", () => {
         const config: ITopologyConfig = Configurator.createConfigFromSkeleton(false, testTopo);
         assert.deepEqual(config, expectedTopo);
     });
-    it("should not damage existing topology if converted multiple times", () => {
+    it("should not damage existing topology if converted multiple times #unit", () => {
         const config: ITopologyConfig = Configurator.createConfigFromSkeleton(false, testTopo);
         const again: ITopologyConfig = Configurator.createConfigFromSkeleton(false, config);
         assert.deepEqual(again, expectedTopo);
     });
-    it("should add defaults to missing topology skeleton fields when multi topo", () => {
+    it("should add defaults to missing topology skeleton fields when multi topo #unit", () => {
         const config: ITopologyConfig = Configurator.createConfigFromSkeleton(true, testTopo);
         expectedTopo.counter.sub.queue.name = "pipes.multi-counter";
         expectedTopo.counter.pub.exchange.name = "pipes.events";

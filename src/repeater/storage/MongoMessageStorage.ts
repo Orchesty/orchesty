@@ -129,16 +129,17 @@ class MongoMessageStorage implements IMessageStorage {
     private createConnection(): void {
         const url = `mongodb://${this.settings.host}/${this.settings.db}`;
         const options: MongoClientOptions = {
+            useNewUrlParser: true,
             autoReconnect : true,
             reconnectTries: Number.MAX_SAFE_INTEGER, // keep trying reconnect almost forever
             reconnectInterval: RECONNECT_INTERVAL,
         };
 
         this.db = MongoClient.connect(url, options)
-            .then((db: Db) => {
+            .then((client: MongoClient) => {
                 logger.info("MongoDb connection opened.", { node_name: "repeater" });
 
-                return db;
+                return client.db();
             })
             .catch((err: any) => {
                 logger.error("MongoDb connection error.", { node_name: "repeater", error: err });

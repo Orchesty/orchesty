@@ -22,7 +22,7 @@ const metricsMock = {
     removeTag: () => { return; },
 };
 
-function runCounterTest(counter: Counter, testOutputQueue: any, done: any) {
+const runCounterTest = async (counter: Counter, testOutputQueue: any, done: any) => {
     const events: Array<[{}, {}]> = [
         // Test Job 123 - linear success
         //
@@ -315,33 +315,23 @@ function runCounterTest(counter: Counter, testOutputQueue: any, done: any) {
     };
 
     const preparePublisher = (ch: Channel): Promise<void> => {
-        return new Promise((resolve) => {
-            ch.assertQueue(counter.getSettings().sub.queue.name, counter.getSettings().sub.queue.options)
-                .then(() => {
-                    return ch.purgeQueue(counter.getSettings().sub.queue.name);
-                })
-                .then(() => {
-                    resolve();
-                });
+        return new Promise(async (resolve) => {
+            await ch.assertQueue(counter.getSettings().sub.queue.name, counter.getSettings().sub.queue.options);
+            await ch.purgeQueue(counter.getSettings().sub.queue.name);
+            resolve();
         });
     };
     const publisher = new Publisher(conn, preparePublisher);
     const prepareConsumer = (ch: Channel): Promise<void> => {
-        return new Promise((resolve) => {
-            ch.assertQueue(testOutputQueue.name, { durable: persistentQueues })
-                .then((q: Replies.AssertQueue) => {
-                    return ch.bindQueue(
-                        q.queue,
-                        counter.getSettings().pub.exchange.name,
-                        counter.getSettings().pub.routing_key,
-                    );
-                })
-                .then(() => {
-                    return ch.purgeQueue(testOutputQueue.name);
-                })
-                .then(() => {
-                    resolve();
-                });
+        return new Promise(async (resolve) => {
+            const q = await ch.assertQueue(testOutputQueue.name, { durable: persistentQueues });
+            await ch.bindQueue(
+                q.queue,
+                counter.getSettings().pub.exchange.name,
+                counter.getSettings().pub.routing_key,
+            );
+            await ch.purgeQueue(testOutputQueue.name);
+            resolve();
         });
     };
     // In this moment test can be evaluated
@@ -352,26 +342,24 @@ function runCounterTest(counter: Counter, testOutputQueue: any, done: any) {
     const consumer = new SimpleConsumer(conn, prepareConsumer, handleMessage);
     consumer.consume(testOutputQueue.name, testOutputQueue.options);
 
-    counter.start()
-        .then(() => {
-            const promises: Array<Promise<any>> = [];
-            events.forEach((ev) => {
-                promises.push(
-                    publisher.sendToQueue(
-                        counter.getSettings().sub.queue.name,
-                        Buffer.from(JSON.stringify(ev[0])),
-                        ev[1],
-                    ),
-                );
-            });
+    await counter.start();
+    const promises: Array<Promise<any>> = [];
+    events.forEach((ev) => {
+        promises.push(
+            publisher.sendToQueue(
+                counter.getSettings().sub.queue.name,
+                Buffer.from(JSON.stringify(ev[0])),
+                ev[1],
+            ),
+        );
+    });
 
-            return Promise.all(promises);
-        });
-}
+    await Promise.all(promises);
+};
 
 describe("Counter", () => {
 
-    it("using inMemory storage should evaluate processes properly", (done) => {
+    it("using inMemory storage should evaluate processes properly #integration", (done) => {
         const counterSettings: ICounterSettings = {
             sub: {queue: {name: "test_counter_memory_sub_q", prefetch: 1, options: {}}},
             pub: {
@@ -392,7 +380,7 @@ describe("Counter", () => {
         runCounterTest(counter, testOutputQueue, done);
     });
 
-    it("using RedisStorage storage should evaluate processes properly", (done) => {
+    it("using RedisStorage storage should evaluate processes properly #integration", (done) => {
         const counterSettings: ICounterSettings = {
             sub: {queue: {name: "test_counter_redis_sub_q", prefetch: 1, options: {}}},
             pub: {
@@ -413,7 +401,7 @@ describe("Counter", () => {
         runCounterTest(counter, testOutputQueue, done);
     });
 
-    it("handleMessage method should return rejection on invalid message", async () => {
+    it("handleMessage method should return rejection on invalid message #integration", async () => {
         const counterSettings: ICounterSettings = {
             sub: {queue: {name: "test_counter_redis_sub_q", prefetch: 1, options: {}}},
             pub: {
@@ -427,8 +415,11 @@ describe("Counter", () => {
         const distributor = new Distributor();
         const counter = new Counter(counterSettings, conn, storage, distributor, terminator, metricsMock);
 
+        const emptyFields: any = {};
+        const emptyProps: any = {};
+
         try {
-            const msg: Message = {content: Buffer.from(""), fields: {}, properties: {}};
+            const msg: Message = {content: Buffer.from(""), fields: emptyFields, properties: emptyProps};
             // tslint:disable-next-line
             await counter["handleMessage"](msg);
         } catch (e) {
@@ -436,7 +427,7 @@ describe("Counter", () => {
         }
 
         try {
-            const msg: Message = {content: Buffer.from('{"foo": "bar"}'), fields: {}, properties: {}};
+            const msg: Message = {content: Buffer.from('{"foo": "bar"}'), fields: emptyFields, properties: emptyProps};
             // tslint:disable-next-line
             await counter["handleMessage"](msg);
         } catch (e) {
@@ -444,8 +435,8 @@ describe("Counter", () => {
         }
 
         try {
-            const content = {result: {code: 0, message: ""}, route: {following: 1, multiplier: 1}};
-            const msg: Message = {content: Buffer.from(JSON.stringify(content)), fields: {}, properties: {}};
+            const content = JSON.stringify({result: {code: 0, message: ""}, route: {following: 1, multiplier: 1}});
+            const msg: Message = {content: Buffer.from(content), fields: emptyFields, properties: emptyProps};
             // tslint:disable-next-line
             await counter["handleMessage"](msg);
         } catch (e) {

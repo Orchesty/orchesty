@@ -10,7 +10,7 @@ import {INodeLabel} from "../../src/topology/Configurator";
 const nodeLabel: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName", topology_id: "topo_id"};
 
 describe("Resequencer", () => {
-    it("orders messages with same job_id by their sequenceId", () => {
+    it("orders messages with same job_id by their sequenceId #unit", () => {
         const messages: JobMessage[] = [];
 
         for (let i = 0; i < 10; i++) {
@@ -37,7 +37,7 @@ describe("Resequencer", () => {
         });
     });
 
-    it("orders messages by their sequenceId when also mixed job_id", () => {
+    it("orders messages by their sequenceId when also mixed job_id #unit", () => {
         const messages: JobMessage[] = [];
 
         for (let i = 0; i < 2; i++) {

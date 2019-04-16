@@ -97,7 +97,7 @@ counterPubFailMock.send = () => {
 };
 
 describe("AmqpDrain", () => {
-    it("should forward message and send to counter when message has success result code", (done) => {
+    it("should forward message and send to counter when message has success result code #unit", (done) => {
         let counterMsgSent = false;
         let forwardMsgSent = false;
 
@@ -132,7 +132,7 @@ describe("AmqpDrain", () => {
         drain.forward(msg);
     });
 
-    it("should forward message only to counter when message has error result code", () => {
+    it("should forward message only to counter when message has error result code #unit", () => {
         const msg = createMockMessage();
         msg.setResult({ code: ResultCode.UNKNOWN_ERROR, message: "Unknown error"});
 
@@ -147,7 +147,7 @@ describe("AmqpDrain", () => {
         drain.forward(msg);
     });
 
-    it("should forward message only to counter when message has invalid non-standard code", () => {
+    it("should forward message only to counter when message has invalid non-standard code #unit", () => {
         const msg = createMockMessage();
         msg.setResult({ code: 1111, message: "Invalid non-standard code"});
 
@@ -165,7 +165,7 @@ describe("AmqpDrain", () => {
         drain.forward(msg);
     });
 
-    it("should send counter error message on repeat message with missing repeat interval", () => {
+    it("should send counter error message on repeat message with missing repeat interval #unit", () => {
         const msg = createMockMessage();
         msg.setResult({ code: ResultCode.REPEAT, message: "repeat please"});
         msg.getHeaders().setPFHeader(Headers.REPEAT_HOPS, "1");
@@ -183,7 +183,7 @@ describe("AmqpDrain", () => {
         drain.forward(msg);
     });
 
-    it("should send counter error message on repeat message with exceeded hops", () => {
+    it("should send counter error message on repeat message with exceeded hops #unit", () => {
         const msg = createMockMessage();
         msg.setResult({ code: ResultCode.REPEAT, message: "repeat please"});
 
@@ -203,7 +203,7 @@ describe("AmqpDrain", () => {
         drain.forward(msg);
     });
 
-    it("should forward message only via non-standard publisher on repeat result code", () => {
+    it("should forward message only via non-standard publisher on repeat result code #unit", () => {
         const msg = createMockMessage();
         msg.setResult({ code: ResultCode.REPEAT, message: "repeat please"});
 
@@ -230,7 +230,7 @@ describe("AmqpDrain", () => {
         drain.forward(msg);
     });
 
-    it("should forward message directly to node's input queue n repeat code with small repeat interval", () => {
+    it("should forward message directly to node's input queue n repeat code with small repeat interval #unit", () => {
         const msg = createMockMessage();
         msg.setResult({ code: ResultCode.REPEAT, message: "repeat please"});
 
@@ -252,7 +252,7 @@ describe("AmqpDrain", () => {
         drain.forward(msg);
     });
 
-    it("forwardPart should send single message only to followers but not to counter", () => {
+    it("forwardPart should send single message only to followers but not to counter #unit", () => {
         const msg: JobMessage = createMockMessage();
         msg.setResult({code: ResultCode.SUCCESS, message: "partial ok"});
 

@@ -70,7 +70,7 @@ const settings: IAmqpDrainSettings = {
 };
 
 describe("CounterPublisher", () => {
-    it("composes message in correct format", () => {
+    it("composes message in correct format #integration", () => {
         const publisher = new CounterPublisher(conn, settings);
         const msgCorrId = "corrId";
         const msgProcessId = "123";
@@ -133,7 +133,7 @@ describe("CounterPublisher", () => {
 
         return publisher.send(msg);
     });
-    it("publishes message to counter input queue", (done) => {
+    it("publishes message to counter input queue #integration", (done) => {
         const publisher = new CounterPublisher(conn, settings);
         const msgCorrId = "corrId";
         const msgProcessId = "123";
@@ -148,11 +148,9 @@ describe("CounterPublisher", () => {
 
         const consumer = new SimpleConsumer(
             conn,
-            (ch: Channel): any => {
-                return ch.assertQueue(settings.counter.queue.name, {})
-                    .then(() => {
-                        return ch.purgeQueue(settings.counter.queue.name);
-                    });
+            async (ch: Channel): Promise<void> => {
+                await ch.assertQueue(settings.counter.queue.name, {});
+                await ch.purgeQueue(settings.counter.queue.name);
             },
             (received: Message) => {
                 assert.deepEqual(

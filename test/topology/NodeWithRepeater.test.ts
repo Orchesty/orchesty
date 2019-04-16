@@ -120,7 +120,7 @@ testMsgHeaders.setPFHeader(Headers.TOPOLOGY_ID, testTopology.id);
 testMsgHeaders.setHeader(Headers.CONTENT_TYPE, "text/plain");
 
 describe("Node with repeater test", () => {
-    it("in first node message should be repeated and then forwarded to second node", (done) => {
+    it("in first node message should be repeated and then forwarded to second node #integration", (done) => {
         const pip = new Pipes(testTopology);
 
         // manually set the terminator port not to collide with other tests
@@ -143,21 +143,15 @@ describe("Node with repeater test", () => {
             const resultConsumer = new SimpleConsumer(
                 amqpConn,
                 (ch: Channel) => {
-                    return new Promise((resolve) => {
-                        ch.assertQueue(counterResultQueue.name, counterResultQueue.options)
-                            .then(() => {
-                                return ch.purgeQueue(counterResultQueue.name);
-                            })
-                            .then(() => {
-                                return ch.bindQueue(
-                                    counterResultQueue.name,
-                                    pip.getTopologyConfig(false).counter.pub.exchange.name,
-                                    pip.getTopologyConfig(false).counter.pub.routing_key,
-                                );
-                            })
-                            .then(() => {
-                                resolve();
-                            });
+                    return new Promise(async (resolve) => {
+                        await ch.assertQueue(counterResultQueue.name, counterResultQueue.options);
+                        await ch.purgeQueue(counterResultQueue.name);
+                        await ch.bindQueue(
+                            counterResultQueue.name,
+                            pip.getTopologyConfig(false).counter.pub.exchange.name,
+                            pip.getTopologyConfig(false).counter.pub.routing_key,
+                        );
+                        resolve();
                     });
                 },
                 (msg: Message) => {
@@ -178,14 +172,10 @@ describe("Node with repeater test", () => {
             const publisher = new Publisher(
                 amqpConn,
                 (ch: Channel) => {
-                    return new Promise((resolve) => {
-                        ch.assertQueue(firstQueue, { durable: persistentQueues })
-                            .then(() => {
-                                return ch.purgeQueue(firstQueue);
-                            })
-                            .then(() => {
-                                resolve();
-                            });
+                    return new Promise(async (resolve) => {
+                        await ch.assertQueue(firstQueue, { durable: persistentQueues });
+                        await ch.purgeQueue(firstQueue);
+                        resolve();
                     });
                 },
             );

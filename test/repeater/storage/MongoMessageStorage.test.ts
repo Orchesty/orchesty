@@ -1,19 +1,26 @@
 import { assert } from "chai";
 import "mocha";
 
-import {Message} from "amqplib";
 import {Db, MongoClient} from "mongodb";
 import {mongoStorageOptions} from "../../../src/config";
 import MongoMessageStorage from "../../../src/repeater/storage/MongoMessageStorage";
 
-const mongo = MongoClient.connect(`mongodb://${mongoStorageOptions.host}/${mongoStorageOptions.db}`);
-const COLLECTION_NAME = "messages";
-
 describe("MongoMessageStorage", () => {
-    it("saves save messages and get the subset of them that are expired", () => {
+    let db: Db;
+    const COLLECTION_NAME = "messages";
+
+    before(async () => {
+        const mongo = await MongoClient.connect(
+            `mongodb://${mongoStorageOptions.host}/${mongoStorageOptions.db}`,
+            {useNewUrlParser: true},
+        );
+        db = mongo.db();
+    });
+
+    it("saves save messages and get the subset of them that are expired #integration", async () => {
         const storage = new MongoMessageStorage(mongoStorageOptions);
 
-        const msg1: Message = {
+        const msg1: any = {
             content: Buffer.from("some content expires immediately"),
             fields: {},
             properties: {
@@ -25,7 +32,7 @@ describe("MongoMessageStorage", () => {
             },
         };
 
-        const msg2: Message = {
+        const msg2: any = {
             content: Buffer.from("some other content expires in 1s"),
             fields: {},
             properties: {
@@ -37,44 +44,32 @@ describe("MongoMessageStorage", () => {
             },
         };
 
-        let db: Db;
-        return mongo
-            .then((mongodb: Db) => {
-                db = mongodb;
-                return db.collection(COLLECTION_NAME).deleteMany({});
-            })
-            .then(() => {
-                return Promise.all([
-                    storage.save(msg1, msg1.properties.headers.repeat_interval),
-                    storage.save(msg2, msg2.properties.headers.repeat_interval),
-                ]);
-            })
-            .then(() => {
-                // Only msg1 should be returned due to its repeat_interval
-                return storage.findExpired();
-            }).then((messages: Message[]) => {
-                assert.lengthOf(messages, 1);
-                const toRepeat = messages.pop();
-                assert.equal(msg1.content.toString(), toRepeat.content.toString());
-                assert.deepEqual(msg1.properties, toRepeat.properties);
-                assert.deepEqual(msg1.fields, toRepeat.fields);
-            })
-            .then(() => {
-                // Checks if previously returned document is no longer in collection
-                return db.collection(COLLECTION_NAME).find({}).toArray();
-            })
-            .then((documents: any[]) => {
-                assert.lengthOf(documents, 1);
-                const remaining = documents.pop();
-                assert.equal(msg2.content.toString(), remaining.content.toString());
-                assert.deepEqual(msg2.properties, remaining.properties);
-                assert.deepEqual(msg2.fields, remaining.fields);
-            });
+        await db.collection(COLLECTION_NAME).deleteMany({});
+        await Promise.all([
+            storage.save(msg1, msg1.properties.headers.repeat_interval),
+            storage.save(msg2, msg2.properties.headers.repeat_interval),
+        ]);
+
+        // Only msg1 should be returned due to its repeat_interval
+        const messages = await storage.findExpired();
+        assert.lengthOf(messages, 1);
+        const toRepeat = messages.pop();
+        assert.equal(msg1.content.toString(), toRepeat.content.toString());
+        assert.deepEqual(msg1.properties, toRepeat.properties);
+        assert.deepEqual(msg1.fields, toRepeat.fields);
+
+        // Checks if previously returned document is no longer in collection
+        const documents = await db.collection(COLLECTION_NAME).find({}).toArray();
+        assert.lengthOf(documents, 1);
+        const remaining = documents.pop();
+        assert.equal(msg2.content.toString(), remaining.content.toString());
+        assert.deepEqual(msg2.properties, remaining.properties);
+        assert.deepEqual(msg2.fields, remaining.fields);
     });
 
-    it("should do keep collection as is if no document found via findExpired()", () => {
+    it("should do keep collection as is if no document found via findExpired( #integration)", async () => {
         const storage = new MongoMessageStorage(mongoStorageOptions);
-        const msg: Message = {
+        const msg: any = {
             content: Buffer.from("expires in far future"),
             fields: {},
             properties: {
@@ -86,30 +81,18 @@ describe("MongoMessageStorage", () => {
             },
         };
 
-        let db: Db;
-        return mongo
-            .then((mongodb: Db) => {
-                db = mongodb;
-                return db.collection(COLLECTION_NAME).deleteMany({});
-            })
-            .then(() => {
-                return storage.save(msg, msg.properties.headers.repeat_interval);
-            })
-            .then(() => {
-                return db.collection(COLLECTION_NAME).find({}).toArray();
-            })
-            .then((documents: any[]) => {
-                assert.lengthOf(documents, 1);
-                const remaining = documents.pop();
-                assert.equal(msg.content.toString(), remaining.content.toString());
-                assert.deepEqual(msg.properties, remaining.properties);
-                assert.deepEqual(msg.fields, remaining.fields);
-            })
-            .then(() => {
-                return storage.findExpired();
-            }).then((messages: Message[]) => {
-                assert.lengthOf(messages, 0);
-            });
+        await db.collection(COLLECTION_NAME).deleteMany({});
+        await storage.save(msg, msg.properties.headers.repeat_interval);
+        const documents = await db.collection(COLLECTION_NAME).find({}).toArray();
+
+        assert.lengthOf(documents, 1);
+        const remaining = documents.pop();
+        assert.equal(msg.content.toString(), remaining.content.toString());
+        assert.deepEqual(msg.properties, remaining.properties);
+        assert.deepEqual(msg.fields, remaining.fields);
+
+        const messages = await storage.findExpired();
+        assert.lengthOf(messages, 0);
     });
 
 });

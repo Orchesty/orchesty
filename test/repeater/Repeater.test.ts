@@ -13,7 +13,7 @@ import MongoMessageStorage from "../../src/repeater/storage/MongoMessageStorage"
 const conn = new Connection(amqpConnectionOptions);
 
 describe("Repeater", () => {
-    it("should consume message and publish it after repeat interval", (done) => {
+    it("should consume message and publish it after repeat interval #integration", (done) => {
         const settings: IRepeaterSettings = {
             input: { queue: { name: "repeater_a", options: { durable: persistentQueues } } },
             check_timeout: 1000,
@@ -35,28 +35,21 @@ describe("Repeater", () => {
 
         let sentTimestamp = Date.now();
         const publisher = new Publisher(conn, (ch: Channel) => {
-            return new Promise((resolve) => {
-                ch.assertQueue(settings.input.queue.name, settings.input.queue.options)
-                    .then(() => {
-                        sentTimestamp = Date.now();
-                        return ch.purgeQueue(settings.input.queue.name);
-                    })
-                    .then(() => {
-                        resolve();
-                    });
+            return new Promise(async (resolve) => {
+                await ch.assertQueue(settings.input.queue.name, settings.input.queue.options);
+                await ch.purgeQueue(settings.input.queue.name);
+                sentTimestamp = Date.now();
+                resolve();
             });
         });
 
         const consumer = new SimpleConsumer(
             conn,
             (ch: Channel) => {
-                return new Promise((resolve) => {
-                    ch.assertQueue(outputQueue, { durable: persistentQueues })
-                        .then(() => {
-                            return ch.purgeQueue(outputQueue);
-                        }).then(() => {
-                            resolve();
-                        });
+                return new Promise(async (resolve) => {
+                    await ch.assertQueue(outputQueue, { durable: persistentQueues });
+                    await ch.purgeQueue(outputQueue);
+                    resolve();
                 });
             },
             (msg: Message) => {

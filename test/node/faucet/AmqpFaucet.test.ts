@@ -40,7 +40,7 @@ const conn = new Connection(amqpConnectionOptions);
 const publisher = new Publisher(conn, (ch: Channel) =>  Promise.resolve() );
 
 describe("AmqpFaucet", () => {
-    it("should start consumption on open", (done) => {
+    it("should start consumption on open #integration", (done) => {
         const check = (msg: JobMessage) => {
             assert.equal(msg.getCorrelationId(), "correlationId");
             assert.equal(msg.getProcessId(), "processId");

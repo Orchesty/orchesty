@@ -4,7 +4,7 @@ import "mocha";
 import {Measurement} from "../../src/message/Measurement";
 
 describe("Measurement", () => {
-    it("should count waiting duration properly", () => {
+    it("should count waiting duration properly #unit", () => {
         const now = Date.now();
 
         const cases = [

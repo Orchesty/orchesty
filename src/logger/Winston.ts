@@ -1,9 +1,7 @@
 import * as winston from "winston";
 
-const nodeEnv = process.env.NODE_ENV || "prod";
-
 let level;
-switch (nodeEnv) {
+switch (process.env.NODE_ENV) {
     case "debug":
         level = "debug";
         break;
@@ -14,14 +12,13 @@ switch (nodeEnv) {
         level = "info";
 }
 
-const transports = [
-    new (winston.transports.Console)({
-        name: "pf-console",
-        colorize: true,
-        level,
-    }),
-];
+const consoleT = new winston.transports.Console({
+    format: winston.format.simple(),
+});
 
-const winstonLogger = new (winston.Logger)({ transports });
+const winstonLogger = winston.createLogger({
+    level,
+    transports: [consoleT],
+});
 
 export default winstonLogger;

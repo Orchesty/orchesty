@@ -38,7 +38,7 @@ const createSyncObj = (): ISyncObject => {
 };
 
 describe("Distributor", () => {
-    it("first should always return the oldest item", async () => {
+    it("first should always return the oldest item #unit", async () => {
         const distributor = new Distributor();
 
         const item1 = createSyncObj();
