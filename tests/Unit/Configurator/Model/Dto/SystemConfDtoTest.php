@@ -37,6 +37,12 @@ final class SystemConfDtoTest extends KernelTestCaseAbstract
 
         self::assertEquals('Example', $result->getSdkHost());
         self::assertEquals(1, $result->getPrefetch());
+
+        try {
+            $dto->fromString('example');
+        } catch (Exception $e) {
+            self::assertEquals($e->getMessage(), 'Syntax error');
+        }
     }
 
 }

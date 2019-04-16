@@ -43,7 +43,7 @@ class TopologySchemaUtils
 
     private const SDK_HOST          = '@pipes:sdk_host';
     private const BRIDGE_HOST       = '@pipes:bridge_host';
-    private const PREFETCH          = '@pipes:rabbit_prefetch';
+    private const RABBIT_PREFETCH   = '@pipes:rabbit_prefetch';
     private const REPEATER_ENABLED  = '@pipes:repeater_enabled';
     private const REPEATER_HOPS     = '@pipes:repeater_hops';
     private const REPEATER_INTERVAL = '@pipes:repeater_interval';

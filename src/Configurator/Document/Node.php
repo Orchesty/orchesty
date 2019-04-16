@@ -13,7 +13,6 @@ use Hanaboso\CommonsBundle\Traits\Document\IdTrait;
 use Hanaboso\PipesFramework\Configurator\Document\Embed\EmbedNode;
 use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
 use Hanaboso\PipesFramework\Configurator\Model\Dto\SystemConfigDto;
-use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
 
 /**
  * Class Node

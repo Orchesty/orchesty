@@ -12,8 +12,12 @@ use Exception;
 class SystemConfigDto
 {
 
-    private const HOST     = 'host';
+    private const SDK      = 'sdk';
     private const BRIDGE   = 'bridge';
+    private const RABBIT   = 'rabbit';
+    private const REPEATER = 'repeater';
+
+    private const HOST     = 'host';
     private const PREFETCH = 'prefetch';
     private const ENABLED  = 'enabled';
     private const HOPS     = 'hops';
@@ -82,10 +86,10 @@ class SystemConfigDto
     public function toString(): string
     {
         return (string) json_encode([
-            'sdk'      => [self::HOST => $this->getSdkHost()],
-            'bridge'   => [self::BRIDGE => $this->getBridgeHost()],
-            'rabbit'   => [self::PREFETCH => $this->getPrefetch()],
-            'repeater' => [
+            self::SDK      => [self::HOST => $this->getSdkHost()],
+            self::BRIDGE   => [self::HOST => $this->getBridgeHost()],
+            self::RABBIT   => [self::PREFETCH => $this->getPrefetch()],
+            self::REPEATER => [
                 self::ENABLED  => $this->isRepeaterEnabled(),
                 self::HOPS     => $this->getRepeaterHops(),
                 self::INTERVAL => $this->getRepeaterInterval(),
@@ -101,18 +105,15 @@ class SystemConfigDto
      */
     public function fromString(string $param): SystemConfigDto
     {
-        $result = json_decode($param, TRUE);
-        if (JSON_ERROR_NONE !== json_last_error()) {
-            throw new Exception('Unable to parse response body into JSON: ' . json_last_error());
-        }
+        $result = json_decode($param, TRUE, 512, JSON_THROW_ON_ERROR);
 
         return new SystemConfigDto(
-            $result['sdk'][self::HOST],
-            $result['bridge'][self::BRIDGE],
-            $result['rabbit'][self::PREFETCH],
-            $result['repeater'][self::ENABLED],
-            $result['repeater'][self::HOPS],
-            $result['repeater'][self::INTERVAL]
+            $result[self::SDK][self::HOST],
+            $result[self::BRIDGE][self::HOST],
+            $result[self::RABBIT][self::PREFETCH],
+            $result[self::REPEATER][self::ENABLED],
+            $result[self::REPEATER][self::HOPS],
+            $result[self::REPEATER][self::INTERVAL]
         );
     }
 
