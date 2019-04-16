@@ -8,6 +8,10 @@ import CustomNameProps from './parts/CustomNameProps';
 import ElementPipesTypeProps from './parts/PipesTypeProps';
 import CronTimeProps from './parts/CronTimeProps.js';
 import CronParamsProps from './parts/CronParamsProps.js';
+import ConnectorRepeaterEnabled from './parts/ConnectorRepeaterEnabled';
+import ConnectorRepeaterHops from './parts/ConnectorRepeaterHops';
+import ConnectorRepeaterInterval from './parts/ConnectorRepeaterInterval';
+import PrefetchProps from './parts/PrefetchProps.js';
 
 function createGeneralTabGroups(element, bpmnFactory, elementRegistry, translate) {
   const generalGroup = {
@@ -20,6 +24,7 @@ function createGeneralTabGroups(element, bpmnFactory, elementRegistry, translate
   CustomNameProps(generalGroup, element, translate);
   processProps(generalGroup, element, translate);
   ElementPipesTypeProps(generalGroup, element, translate);
+  PrefetchProps(generalGroup, element, translate);
 
   const cronGroup = {
     id: 'cron',
@@ -29,6 +34,16 @@ function createGeneralTabGroups(element, bpmnFactory, elementRegistry, translate
 
   CronTimeProps(cronGroup, element, translate);
   CronParamsProps(cronGroup, element, translate);
+
+  const connectorGroup = {
+    id: 'connector',
+    label: translate('Connector'),
+    entries: [],
+  };
+
+  ConnectorRepeaterEnabled(connectorGroup, element, translate);
+  ConnectorRepeaterHops(connectorGroup, element, translate);
+  ConnectorRepeaterInterval(connectorGroup, element, translate);
 
   const detailsGroup = {
     id: 'details',
@@ -43,6 +58,7 @@ function createGeneralTabGroups(element, bpmnFactory, elementRegistry, translate
     generalGroup,
     detailsGroup,
     cronGroup,
+    connectorGroup,
   ];
 }
 

@@ -8,6 +8,7 @@ const initialState = {
   elements: {},
   lists: {},
   tests: {},
+  implementations: {},
 };
 
 function getElementId(element) {
@@ -53,6 +54,9 @@ function reducer(state, action) {
       return Object.assign({}, state, {
         tests: rNewTests,
       });
+
+    case types.NODE_IMPLEMENTATION:
+      return Object.assign({}, state, { implementations: action.data });
 
     default:
       return state;

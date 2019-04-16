@@ -19,6 +19,16 @@
           "type": "String"
         },
         {
+          "name": "sdkHost",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "rabbitPrefetch",
+          "isAttr": true,
+          "type": "Int"
+        },
+        {
           "name": "cronTime",
           "isAttr": true,
           "type": "String"
@@ -27,6 +37,21 @@
           "name": "cronParams",
           "isAttr": true,
           "type": "String"
+        },
+        {
+          "name": "repeaterEnabled",
+          "isAttr": true,
+          "type": "Bool"
+        },
+        {
+          "name": "repeaterHops",
+          "isAttr": true,
+          "type": "Int"
+        },
+        {
+          "name": "repeaterInterval",
+          "isAttr": true,
+          "type": "Int"
         }
       ]
     }

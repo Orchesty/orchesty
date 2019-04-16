@@ -21,6 +21,7 @@ export default function (initialState, composeWithDevTools) {
     ['application', 'showSideBar'],
     ['application', 'showEditorPropPanel'],
     ['application', 'pages'],
+    ['node', 'implementations']
   ]);
   const storageMiddleware = storage.createMiddleware(decoratedEngine, [], [
     types.USER_LOGGED,
@@ -30,6 +31,7 @@ export default function (initialState, composeWithDevTools) {
     types.EDITOR_PROP_PANEL_TOGGLE,
     types.OPEN_PAGE,
     types.CLOSE_PAGE,
+    types.NODE_IMPLEMENTATION
   ]);
 
   const middlewares = [thunkMiddleware, storageMiddleware];

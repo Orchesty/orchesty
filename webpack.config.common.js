@@ -10,6 +10,8 @@ module.exports = {
     new CopyWebpackPlugin([{
       from: './src/static/index.html'
     },{
+      from: './src/static/favicon.ico'
+    },{
       from: './src/static/close-me.html'
     },{
       from: './src/static/.htaccess'
