@@ -36,18 +36,23 @@ final class TopologySchemaUtilsTest extends TestCase
         self::assertEquals('Event_1lqi8dm', $schema->getStartNode());
 
         foreach ($nodes as $node) {
-            self::assertArrayHasKey('handler', $node);
-            self::assertArrayHasKey('id', $node);
-            self::assertArrayHasKey('name', $node);
-            self::assertArrayHasKey('cron_time', $node);
-            self::assertArrayHasKey('pipes_type', $node);
+            $this->assertObjectHasAttribute('handler', $node);
+            $this->assertObjectHasAttribute('id', $node);
+            $this->assertObjectHasAttribute('name', $node);
+            $this->assertObjectHasAttribute('cronTime', $node);
+            $this->assertObjectHasAttribute('pipesType', $node);
+            $this->assertObjectHasAttribute('systemConfigs', $node);
         }
 
-        self::assertEquals('bpmn:event', $nodes['Event_1lqi8dm']['handler']);
-        self::assertEquals('Event_1lqi8dm', $nodes['Event_1lqi8dm']['id']);
-        self::assertEquals('hubspot-updated-contact-connector', $nodes['Event_1lqi8dm']['name']);
-        self::assertEquals('', $nodes['Event_1lqi8dm']['cron_time']);
-        self::assertEquals('webhook', $nodes['Event_1lqi8dm']['pipes_type']);
+        $this->assertEquals('bpmn:event', $nodes['Event_1lqi8dm']->getHandler());
+        $this->assertEquals('Event_1lqi8dm', $nodes['Event_1lqi8dm']->getId());
+        $this->assertEquals('hubspot-updated-contact-connector', $nodes['Event_1lqi8dm']->getName());
+        $this->assertEquals('', $nodes['Event_1lqi8dm']->getCronTime());
+        $this->assertEquals('webhook', $nodes['Event_1lqi8dm']->getPipesType());
+
+        $this->assertCount(9, $schema->getNodes());
+        $this->assertCount(6, $schema->getSequences());
+        $this->assertEquals('Event_1lqi8dm', $schema->getStartNode());
 
         self::assertEquals([
             'Event_1lqi8dm' => ['Task_1taayin'],

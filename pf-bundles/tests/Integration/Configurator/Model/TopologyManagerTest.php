@@ -10,6 +10,7 @@ use Hanaboso\PipesFramework\Configurator\Document\Embed\EmbedNode;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
+use Hanaboso\PipesFramework\Configurator\Model\Dto\SystemConfigDto;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Tests\DatabaseTestCaseAbstract;
 
@@ -548,6 +549,28 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $this->dm->clear();
         self::assertNull($this->dm->getRepository(TopologyRepository::class)->find($top->getId()));
         self::assertNull($this->dm->getRepository(Node::class)->find($node->getId()));
+    }
+
+    /**
+     *
+     */
+    public function testSystemConfig(): void
+    {
+        $dto  = new SystemConfigDto('host1', 'bridge1', 2, TRUE, 2, 2);
+        $json = $dto->toString();
+
+        $node = new Node();
+        $node
+            ->setName('node10')
+            ->setSystemConfigs($dto);
+
+        $this->dm->persist($node);
+        $this->dm->flush();
+
+        $foundNode = $this->dm->getRepository(Node::class)->findBy(['name' => 'node10']);
+
+        self::assertEquals('node10', $foundNode[0]->getName());
+        self::assertEquals($json, $foundNode[0]->getSystemConfigs());
     }
 
     /**
