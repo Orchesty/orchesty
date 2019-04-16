@@ -15,7 +15,7 @@ class Schema
     private const LIMIT = 100;
 
     /**
-     * @var array
+     * @var array|NodeSchemaDto[]
      */
     private $nodes = [];
 
@@ -30,20 +30,37 @@ class Schema
     private $startNode = '';
 
     /**
-     * @return mixed
+     * @return array|NodeSchemaDto[]
      */
-    public function getNodes()
+    public function getNodes(): array
     {
         return $this->nodes;
     }
 
     /**
-     * @param string $id
-     * @param array  $node
+     * @param string        $id
+     * @param NodeSchemaDto $dto
+     *
+     * @return Schema
      */
-    public function addNode(string $id, array $node): void
+    public function addNode(string $id, NodeSchemaDto $dto): Schema
     {
-        $this->nodes[$id] = $node;
+        $this->nodes[$id] = $dto;
+
+        return $this;
+    }
+
+    /**
+     * @param string $source
+     * @param string $target
+     *
+     * @return Schema
+     */
+    public function addSequence(string $source, string $target): Schema
+    {
+        $this->sequences[$source][] = $target;
+
+        return $this;
     }
 
     /**
@@ -52,15 +69,6 @@ class Schema
     public function getSequences()
     {
         return $this->sequences;
-    }
-
-    /**
-     * @param string $source
-     * @param string $target
-     */
-    public function addSequence(string $source, string $target): void
-    {
-        $this->sequences[$source][] = $target;
     }
 
     /**
@@ -73,10 +81,14 @@ class Schema
 
     /**
      * @param string $startNode
+     *
+     * @return Schema
      */
-    public function setStartNode(string $startNode): void
+    public function setStartNode(string $startNode): Schema
     {
         $this->startNode = $startNode;
+
+        return $this;
     }
 
     /**
@@ -126,7 +138,7 @@ class Schema
     {
         $node = $this->nodes[$id];
 
-        return sprintf('%s:%s', $node['name'], $node['pipes_type']);
+        return sprintf('%s:%s', $node->getName(), $node->getPipesType());
     }
 
     /**
