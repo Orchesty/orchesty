@@ -1,6 +1,6 @@
 import entryFactory from 'bpmn-js-properties-panel/lib/factory/EntryFactory';
 import cmdHelper from 'bpmn-js-properties-panel/lib/helper/CmdHelper';
-import { is, getBusinessObject } from 'bpmn-js/lib/util/ModelUtil';
+import { getBusinessObject, is } from 'bpmn-js/lib/util/ModelUtil';
 import apiGatewayServer from 'services/apiGatewayServer';
 
 export default function (group, element, translate) {
@@ -14,21 +14,52 @@ export default function (group, element, translate) {
     modelProperty = 'text';
   }
 
-  const pipesType = (getBusinessObject(element).pipesType);
-  const type = pipesType === 'custom' ? 'custom_node' : 'connector';
-  const typeKey = `pipes-${type}-list`;
+  apiGatewayServer(() => {}, 'GET', '/nodes/list/name', null).then(response => {
+    localStorage.setItem('pipes-nodes-list', JSON.stringify(response));
+  });
+
+  const pipesType = getBusinessObject(element).pipesType;
+  const pipesNodes = JSON.parse(localStorage.getItem('pipes-nodes-list') || '[]');
+  const implementationTypes = Object.keys(pipesNodes);
+  const implementationTypesNames = JSON.parse(localStorage.getItem('pipes')).node.implementations;
+
+  if (element.type !== 'bpmn:Process') {
+    group.entries.push(entryFactory.selectBox({
+      id: 'sdkHost',
+      label: 'Implementation',
+      selectOptions: implementationTypes.map(item => ({ name: implementationTypesNames[item] || item, value: item })),
+      modelProperty: 'sdkHost',
+      getProperty(element) {
+        return getBusinessObject(element).sdkHost;
+      },
+      setProperty(element, properties) {
+        return cmdHelper.updateProperties(element, properties);
+      },
+    }));
+  }
 
   if (['connector', 'batch_connector', 'custom'].includes(pipesType)) {
-    apiGatewayServer(() => {}, 'GET', `/nodes/${type}/list_nodes`, null).then(response => {
-      localStorage.setItem(typeKey, JSON.stringify(response));
-    });
+    const sdkHost = document.getElementById('camunda-sdkHost-select');
+    const serviceName = document.getElementById('camunda-name-select');
+    const nodeType = pipesType === 'custom' ? 'custom' : 'connector';
+    let sdkHostValue = implementationTypes[0];
+    if (sdkHost) {
+      sdkHostValue = sdkHost.value;
 
-    const selectOptions = JSON.parse(localStorage.getItem(typeKey) || '[]');
+      const length = serviceName.options.length;
+      for (let i = 0; i < length; i++) {
+        serviceName.options.remove(0);
+      }
+
+      pipesNodes[sdkHostValue][nodeType].map(item => {
+        serviceName.options.add(new Option(item, item));
+      });
+    }
 
     group.entries.push(entryFactory.selectBox({
-      id: 'names',
-      label: 'Names',
-      selectOptions: selectOptions.map(item => ({ name: item, value: item })),
+      id: 'name',
+      label: 'Name',
+      selectOptions: pipesNodes[sdkHostValue][nodeType].map(item => ({ name: item, value: item })),
       modelProperty,
       validate: (element, values) => {
         if (element.type === 'bpmn:Process') {

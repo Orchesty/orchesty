@@ -20,6 +20,13 @@ function userLogout() {
   };
 }
 
+function nodeImplementation(data) {
+  return {
+    type: types.NODE_IMPLEMENTATION,
+    data,
+  };
+}
+
 export function login(data, processHash = 'default') {
   return (dispatch) => {
     dispatch(processActions.startProcess(processes.authLogin(processHash)));
@@ -27,6 +34,12 @@ export function login(data, processHash = 'default') {
       if (response) {
         dispatch(userLogged(response));
         dispatch(applicationActions.openPage(config.params.mainPage));
+
+        return serverRequest(dispatch, 'GET', '/nodes/list/implementation').then((response) => {
+          if (response) {
+            dispatch(nodeImplementation(response));
+          }
+        });
       }
       dispatch(processActions.finishProcess(processes.authLogin(processHash), response));
       return response;
