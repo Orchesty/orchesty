@@ -38,10 +38,10 @@ export default function (group, element, translate) {
     }));
   }
 
-  if (['connector', 'batch_connector', 'custom'].includes(pipesType)) {
+  if (['connector', 'batch_connector', 'custom', 'user'].includes(pipesType)) {
     const sdkHost = document.getElementById('camunda-sdkHost-select');
     const serviceName = document.getElementById('camunda-name-select');
-    const nodeType = pipesType === 'custom' ? 'custom' : 'connector';
+    const nodeType = pipesType === 'batch_connector' ? 'connector' : pipesType;
     let sdkHostValue = implementationTypes[0];
     if (sdkHost) {
       sdkHostValue = sdkHost.value;

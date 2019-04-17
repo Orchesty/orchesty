@@ -129,6 +129,20 @@ export function humanTaskProcess(listId, topology, node, token, approve, body) {
   });
 }
 
+export function humanTaskChange(listId, id, body) {
+  return dispatch => new Promise((resolve, reject) => {
+    serverRequest(dispatch, 'PUT', `/longRunning/${id}`, null, { data: body }).then((response) => {
+      if (response) {
+        dispatch(loadList(listId));
+
+        resolve(true);
+      }
+
+      reject('Something gone wrong.')
+    });
+  });
+}
+
 export function humanTaskInitialize() {
   return (dispatch) => {
     dispatch({ type: types.HUMAN_TASKS_INITIALIZE });
