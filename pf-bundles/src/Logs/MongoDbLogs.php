@@ -20,11 +20,11 @@ use MongoException;
 class MongoDbLogs implements LogsInterface
 {
 
-    private const CORRELATIONID = 'correlationId';
-    private const TOPOLOGYID    = 'topologyId';
-    private const TOPOLOGYNAME  = 'topologyName';
-    private const NODEID        = 'nodeId';
-    private const NODENAME      = 'nodeName';
+    private const CORRELATIONID  = 'correlationId';
+    private const TOPOLOGYID     = 'topologyId';
+    private const TOPOLOGYNAME   = 'topologyName';
+    private const NODEID         = 'nodeId';
+    private const NODENAME       = 'nodeName';
     private const CORRELATION_ID = 'correlation_id';
     private const TOPOLOGY_ID    = 'topology_id';
     private const TOPOLOGY_NAME  = 'topology_name';
@@ -85,7 +85,7 @@ class MongoDbLogs implements LogsInterface
             $pipes = $item[self::PIPES] ?? [];
 
             $result[] = [
-                'id'                 => array_key_exists('_id', $item) ? (string) $item['_id'] : '',
+                'id'                 => $item['id'] ?? '',
                 self::SEVERITY       => $pipes[self::SEVERITY] ?? '',
                 self::MESSAGE        => $item[self::MESSAGE] ?? '',
                 self::TYPE           => $pipes[self::TYPE] ?? '',
