@@ -59,7 +59,7 @@ class TopologyDetail extends React.Component {
   }
 
   _sendActions(props){
-    const {topology, setActions, testTopology, edit, clone, publish, topologyDelete, topologyId, onChangeTab, activeTab} = props;
+    const {topology, setActions, testTopology, editTopology, edit, clone, publish, topologyDelete, topologyId, onChangeTab, activeTab} = props;
     const otherActions = {
       type: menuItemType.SUB_MENU,
       caption: '...',
@@ -97,11 +97,28 @@ class TopologyDetail extends React.Component {
     }
     if (testTopology) {
       otherActions.items.push({
-        caption: 'Test topology',
+        caption: 'Test',
         action: testTopology,
         processId: processes.topologyTest(topologyId)
       });
     }
+
+    if (topology.visibility !== 'draft') {
+      if (topology.enabled) {
+        otherActions.items.push({
+          caption: 'Disable',
+          action: () => editTopology(false),
+          processId: processes.topologyUpdate(topologyId),
+        });
+      } else {
+        otherActions.items.push({
+          caption: 'Enable',
+          action: () => editTopology(true),
+          processId: processes.topologyUpdate(topologyId),
+        });
+      }
+    }
+
     if (publish){
       otherActions.items.push({
         caption: 'Publish',
@@ -200,6 +217,7 @@ function mapActionsToProps(dispatch, ownProps){
   const {topologyId} = ownProps;
   return {
     edit: () => dispatch(applicationActions.openModal('topology_edit', {topologyId})),
+    editTopology: enabled => dispatch(topologyActions.topologyUpdate(ownProps.topologyId, { enabled })),
     testTopology: () => {
       dispatch(topologyActions.testTopology(ownProps.topologyId)).then(result => {
         if (result){
