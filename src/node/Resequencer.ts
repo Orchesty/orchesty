@@ -15,8 +15,8 @@ class Resequencer {
     public static readonly START_SEQUENCE_ID = 0;
 
     private nodeId: string;
-    private buffer: {[key: string]: IBufferType };
-    private bufferTtl: number;
+    private readonly buffer: {[key: string]: IBufferType };
+    private readonly bufferTtl: number;
 
     /**
      * @param nodeId {string}

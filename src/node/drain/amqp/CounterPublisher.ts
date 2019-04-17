@@ -50,11 +50,9 @@ class CounterPublisher extends Publisher implements ICounterPublisher {
             (ch: Channel) => {
                 const q = settings.counter.queue;
 
-                return new Promise((resolve) => {
-                    ch.assertQueue(q.name, q.options)
-                        .then(() => {
-                            resolve();
-                        });
+                return new Promise(async (resolve) => {
+                    await ch.assertQueue(q.name, q.options);
+                    resolve();
                 });
             },
             IS_CONFIRM_CHANNEL,

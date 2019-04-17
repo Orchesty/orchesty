@@ -48,7 +48,7 @@ abstract class AAmqpWorker extends AWorker {
      * @param {Connection} connection
      * @param {IAmqpWorkerSettings} settings
      */
-    constructor(
+    protected constructor(
         protected connection: Connection,
         protected settings: IAmqpWorkerSettings,
     ) {
@@ -112,37 +112,38 @@ abstract class AAmqpWorker extends AWorker {
      * @param {JobMessage} msg
      * @return {Promise<JobMessage[]>}
      */
-    public processData(msg: JobMessage): Promise<JobMessage[]> {
+    public async processData(msg: JobMessage): Promise<JobMessage[]> {
         const uuid = uuid4();
         const headersToSend = new Headers(msg.getHeaders().getRaw());
         headersToSend.setPFHeader(Headers.NODE_ID, this.settings.node_label.node_id);
         headersToSend.setPFHeader(Headers.NODE_NAME, this.settings.node_label.node_name);
 
-        this.publisher.sendToQueue(
-            this.settings.publish_queue.name,
-            Buffer.from(msg.getContent()),
-            {
-                type: AAmqpWorker.BATCH_REQUEST_TYPE,
-                replyTo: this.resultsQueue.name,
-                correlationId: uuid,
-                headers: headersToSend.getRaw(),
-            },
-        ).then(() => {
+        try {
+            await this.publisher.sendToQueue(
+                this.settings.publish_queue.name,
+                Buffer.from(msg.getContent()),
+                {
+                    type: AAmqpWorker.BATCH_REQUEST_TYPE,
+                    replyTo: this.resultsQueue.name,
+                    correlationId: uuid,
+                    headers: headersToSend.getRaw(),
+                },
+            );
             logger.debug(
                 `Worker[type='amqprpc'] sent request to "${this.settings.publish_queue.name}" queue.`,
                 logger.ctxFromMsg(msg),
             );
-        }).catch((err: Error) => {
+        } catch (err) {
             logger.error(
                 `Worker[type='amqprpc'] sending request to "${this.settings.publish_queue.name}" failed`,
                 logger.ctxFromMsg(msg, err),
             );
-        });
+        }
 
         if (this.waiting.has(uuid)) {
             this.onDuplicateMessage(msg);
 
-            return Promise.resolve([msg]);
+            return [msg];
         }
 
         // resolve will be done with the last received result message

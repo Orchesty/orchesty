@@ -20,8 +20,8 @@ class UppercaseWorker extends AWorker {
     }
 
     /** @inheritdoc */
-    public isWorkerReady(): Promise<boolean> {
-        return Promise.resolve(true);
+    public async isWorkerReady(): Promise<boolean> {
+        return true;
     }
 
 }

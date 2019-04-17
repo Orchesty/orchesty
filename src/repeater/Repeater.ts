@@ -81,15 +81,14 @@ class Repeater implements IStoppable {
                     { node_name: "repeater" },
                 );
 
-                toResend.forEach((msg: Message) => {
-                    this.resend(msg)
-                        .then(() => {
-                            const h = msg.properties.headers;
-                            logger.info(
-                                "Message repeated.",
-                                { node_name: "repeater", correlation_id: h.correlation_id, process_id: h.process_id },
-                            );
-                        });
+                toResend.forEach(async (msg: Message) => {
+                    await this.resend(msg);
+                    const ctx = {
+                        node_name: "repeater",
+                        correlation_id: msg.properties.headers.correlation_id,
+                        process_id: msg.properties.headers.process_id,
+                    };
+                    logger.info("Message repeated.", ctx);
                 });
             });
 
@@ -129,12 +128,10 @@ class Repeater implements IStoppable {
      */
     private createConsumer() {
         const prepareFn: createChannelCallback = (ch: Channel) => {
-            return new Promise((resolve) => {
-                ch.assertQueue(this.settings.input.queue.name, this.settings.input.queue.options)
-                    .then(() => {
-                        logger.info("Repeater consumer ready.", { node_name: "repeater" });
-                        resolve();
-                    });
+            return new Promise(async (resolve) => {
+                await ch.assertQueue(this.settings.input.queue.name, this.settings.input.queue.options);
+                logger.info("Repeater consumer ready.", { node_name: "repeater" });
+                resolve();
             });
         };
 

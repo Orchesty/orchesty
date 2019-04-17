@@ -23,6 +23,7 @@ import HttpWorker, {IHttpWorkerSettings} from "./node/worker/HttpWorker";
 import HttpXmlParserWorker, {IHttpXmlParserWorkerSettings} from "./node/worker/HttpXmlParserWorker";
 import JsonSplitterWorker, {IJsonSplitterWorkerSettings} from "./node/worker/JsonSplitterWorker";
 import LimiterWorker from "./node/worker/LimiterWorker";
+import LongRunningWorker, {ILongRunningWorkerSettings} from "./node/worker/LongRunningWorker";
 import NullWorker, {INullWorkerSettings} from "./node/worker/NullWorker";
 import {default as ResequencerWorker, IResequencerWorkerSettings} from "./node/worker/ResequencerWorker";
 import TestCaptureWorker from "./node/worker/TestCaptureWorker";
@@ -30,7 +31,6 @@ import UppercaseWorker from "./node/worker/UppercaseWorker";
 import MultiProbeConnector from "./probe/MultiProbeConnector";
 import Terminator from "./terminator/Terminator";
 import INodeConfigProvider from "./topology/INodeConfigProvider";
-import LongRunningWorker, {ILongRunningWorkerSettings} from "./node/worker/LongRunningWorker";
 
 class DIContainer extends Container {
 

@@ -1,15 +1,15 @@
+import { Channel } from "amqplib";
+import { Connection } from "amqplib-plus/dist/lib/Connection";
+import { Publisher } from "amqplib-plus/dist/lib/Publisher";
 import { Agent } from "http";
 import { IMetrics } from "metrics-sender/dist/lib/metrics/IMetrics";
-import { Connection } from "amqplib-plus/dist/lib/Connection";
 import * as request from "request";
+import logger from "../../logger/Logger";
+import Headers from "../../message/Headers";
 import JobMessage, { IResult } from "../../message/JobMessage";
 import { ResultCode } from "../../message/ResultCode";
 import { INodeLabel } from "../../topology/Configurator";
 import AWorker from "./AWorker";
-import Headers from "../../message/Headers";
-import { Publisher } from "amqplib-plus/dist/lib/Publisher";
-import { Channel } from "amqplib";
-import logger from '../../logger/Logger';
 
 export interface ILongRunningWorkerSettings {
     node_label: INodeLabel;
@@ -48,7 +48,7 @@ class LongRunningWorker extends AWorker {
         super();
 
         this.resultsQueue = {
-            name: 'pipes.long-running',
+            name: "pipes.long-running",
             options: { durable: true, exclusive: false, autoDelete: false },
             prefetch: 1,
         };
@@ -102,7 +102,8 @@ class LongRunningWorker extends AWorker {
                 Object.assign(reqParams, this.settings.opts);
 
                 logger.debug(
-                    `Worker[type='long-running'] sent request to ${reqParams.url}. Headers: ${JSON.stringify(reqParams.headers)}`,
+                    `Worker[type='long-running'] sent request to ${reqParams.url}. \
+                     Headers: ${JSON.stringify(reqParams.headers)}`,
                     logger.ctxFromMsg(msg),
                 );
 
@@ -298,7 +299,8 @@ class LongRunningWorker extends AWorker {
      */
     private onRequestError(msg: JobMessage, reqParams: request.Options, err: any): void {
         if (err.code === "ETIMEDOUT" || err.code === "ESOCKETTIMEDOUT") {
-            logger.warn(`Worker[type='long-running'] http timeout error. Repeating message.`, logger.ctxFromMsg(msg, err));
+            logger.warn(`Worker[type='long-running'] http timeout error. \
+                Repeating message.`, logger.ctxFromMsg(msg, err));
             msg.setResult({ code: ResultCode.REPEAT, message: err.message });
 
             const h = msg.getHeaders();
