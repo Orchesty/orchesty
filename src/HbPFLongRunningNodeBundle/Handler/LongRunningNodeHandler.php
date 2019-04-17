@@ -12,6 +12,7 @@ use Hanaboso\PipesFramework\HbPFLongRunningNodeBundle\Loader\LongRunningNodeLoad
 use Hanaboso\PipesFramework\LongRunningNode\Document\LongRunningNodeData;
 use Hanaboso\PipesFramework\LongRunningNode\Exception\LongRunningNodeException;
 use Hanaboso\PipesFramework\LongRunningNode\Model\LongRunningNodeFilter;
+use Hanaboso\PipesFramework\LongRunningNode\Model\LongRunningNodeManager;
 use MongoException;
 
 /**
@@ -21,6 +22,11 @@ use MongoException;
  */
 class LongRunningNodeHandler
 {
+
+    /**
+     * @var LongRunningNodeManager
+     */
+    private $manager;
 
     /**
      * @var LongRunningNodeLoader
@@ -40,19 +46,22 @@ class LongRunningNodeHandler
     /**
      * LongRunningNodeHandler constructor.
      *
-     * @param LongRunningNodeLoader $loader
-     * @param LongRunningNodeFilter $filter
-     * @param DocumentManager       $dm
+     * @param LongRunningNodeManager $manager
+     * @param LongRunningNodeLoader  $loader
+     * @param LongRunningNodeFilter  $filter
+     * @param DocumentManager        $dm
      */
     public function __construct(
+        LongRunningNodeManager $manager,
         LongRunningNodeLoader $loader,
         LongRunningNodeFilter $filter,
         DocumentManager $dm
     )
     {
-        $this->loader = $loader;
-        $this->filter = $filter;
-        $this->dm     = $dm;
+        $this->manager = $manager;
+        $this->loader  = $loader;
+        $this->filter  = $filter;
+        $this->dm      = $dm;
     }
 
     /**
@@ -162,6 +171,36 @@ class LongRunningNodeHandler
             'total'  => $count,
             'items'  => $result,
         ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getAllLongRunningNodes(): array
+    {
+        return $this->loader->getAllLongRunningNodes();
+    }
+
+    /**
+     * @param string $id
+     * @param array  $data
+     *
+     * @return array
+     * @throws LongRunningNodeException
+     */
+    public function updateLongRunningNode(string $id, array $data): array
+    {
+        /** @var LongRunningNodeData|NULL $node */
+        $node = $this->dm->find(LongRunningNodeData::class, $id);
+
+        if (!$node) {
+            throw new LongRunningNodeException(
+                sprintf('LongRunningData document [%s] was not found', $id),
+                LongRunningNodeException::LONG_RUNNING_DOCUMENT_NOT_FOUND
+            );
+        }
+
+        return $this->manager->update($node, $data)->toArray();
     }
 
 }

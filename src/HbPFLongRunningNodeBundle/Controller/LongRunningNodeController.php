@@ -85,7 +85,8 @@ class LongRunningNodeController extends AbstractFOSRestController
     public function getTasksByIdAction(Request $request, string $topo): Response
     {
         try {
-            return $this->getResponse($this->handler->getTasksById(new GridRequestDto($request->headers->all()), $topo));
+            return $this->getResponse($this->handler->getTasksById(new GridRequestDto($request->headers->all()),
+                $topo));
         } catch (Throwable $e) {
             return $this->getErrorResponse($e, 200, ControllerUtils::createHeaders([], $e));
         }
@@ -149,6 +150,39 @@ class LongRunningNodeController extends AbstractFOSRestController
             ));
         } catch (Throwable $e) {
             return $this->getErrorResponse($e, 200, ControllerUtils::createHeaders([], $e));
+        }
+    }
+
+    /**
+     * @Route("/longRunning/list", methods={"GET"})
+     *
+     * @return Response
+     */
+    public function listOfLongRunningNodesAction(): Response
+    {
+        try {
+            $data = $this->handler->getAllLongRunningNodes();
+
+            return $this->getResponse($data);
+        } catch (Throwable $t) {
+            return $this->getErrorResponse($t);
+        }
+    }
+
+    /**
+     * @Route("/longRunning/{id}", methods={"PUT", "OPTIONS"})
+     *
+     * @param Request $request
+     * @param string  $id
+     *
+     * @return Response
+     */
+    public function updateLongRunningAction(Request $request, string $id): Response
+    {
+        try {
+            return $this->getResponse($this->handler->updateLongRunningNode($id, $request->request->all()));
+        } catch (Throwable $t) {
+            return $this->getErrorResponse($t);
         }
     }
 

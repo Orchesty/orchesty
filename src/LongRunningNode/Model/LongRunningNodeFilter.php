@@ -52,6 +52,7 @@ final class LongRunningNodeFilter extends GridFilterAbstract
             ->select([
                 LongRunningNodeData::CREATED,
                 LongRunningNodeData::UPDATED,
+                LongRunningNodeData::DATA,
                 LongRunningNodeData::AUDIT_LOGS,
                 LongRunningNodeData::TOPOLOGY_ID,
                 LongRunningNodeData::TOPOLOGY_NAME,

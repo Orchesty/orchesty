@@ -24,7 +24,7 @@
         </bpmn:task>
         <bpmn:sequenceFlow id="SequenceFlow_00j2wst" sourceRef="Event_1lqi8dm" targetRef="Task_1taayin"/>
         <bpmn:sequenceFlow id="SequenceFlow_14kr2it" sourceRef="Task_1taayin" targetRef="Task_152x7cw"/>
-        <bpmn:task id="Task_0h8gpta" pipes:pipesType="connector" name="cleverconnectors-update-subscriptions-connector">
+        <bpmn:task id="Task_0h8gpta" pipes:pipesType="connector" pipes:sdkHost="php" pipes:rabbitPrefetch="9" pipes:repeaterEnabled="true" pipes:repeaterHops="9" pipes:repeaterInterval="9" name="cleverconnectors-update-subscriptions-connector">
             <bpmn:incoming>SequenceFlow_1wvt3jb</bpmn:incoming>
         </bpmn:task>
         <bpmn:task id="Task_0fzjb0y" pipes:pipesType="connector" name="cleverconnectors-delete-subscriptions-connector">

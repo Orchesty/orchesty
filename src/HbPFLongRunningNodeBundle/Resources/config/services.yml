@@ -27,6 +27,7 @@ services:
     hbpf.handler.long_running:
         class: Hanaboso\PipesFramework\HbPFLongRunningNodeBundle\Handler\LongRunningNodeHandler
         arguments:
+            - '@hbpf.manager.long_running'
             - '@hbpf.loader.long_running'
             - '@hbpf.filter.long_running'
             - '@doctrine_mongodb.odm.default_document_manager'

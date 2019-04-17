@@ -43,12 +43,12 @@ class TopologySchemaUtils
     private const BPMN_OUTGOING = 'bpmn:outgoing';
     private const OUTGOING      = 'outgoing';
 
-    private const SDK_HOST          = '@pipes:sdk_host';
-    private const BRIDGE_HOST       = '@pipes:bridge_host';
-    private const RABBIT_PREFETCH   = '@pipes:rabbit_prefetch';
-    private const REPEATER_ENABLED  = '@pipes:repeater_enabled';
-    private const REPEATER_HOPS     = '@pipes:repeater_hops';
-    private const REPEATER_INTERVAL = '@pipes:repeater_interval';
+    private const SDK_HOST          = '@pipes:sdkHost';
+    private const BRIDGE_HOST       = '@pipes:bridgeHost';
+    private const RABBIT_PREFETCH   = '@pipes:rabbitPrefetch';
+    private const REPEATER_ENABLED  = '@pipes:repeaterEnabled';
+    private const REPEATER_HOPS     = '@pipes:repeaterHops';
+    private const REPEATER_INTERVAL = '@pipes:repeaterInterval';
 
     /**
      * @var array
@@ -188,10 +188,10 @@ class TopologySchemaUtils
         return new SystemConfigDto(
             $data[self::SDK_HOST] ?? '',
             $data[self::BRIDGE_HOST] ?? '',
-            $data[self::RABBIT_PREFETCH] ?? 1,
-            $data[self::REPEATER_ENABLED] ?? FALSE,
-            $data[self::REPEATER_HOPS] ?? 0,
-            $data[self::REPEATER_INTERVAL] ?? 0
+            intval($data[self::RABBIT_PREFETCH] ?? 1),
+            ($data[self::REPEATER_ENABLED] ?? 'false') === 'true',
+            intval($data[self::REPEATER_HOPS] ?? 0),
+            intval($data[self::REPEATER_INTERVAL] ?? 0)
         );
     }
 

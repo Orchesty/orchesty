@@ -53,7 +53,7 @@ class NodeController extends AbstractFOSRestController
     }
 
     /**
-     * @Route("/nodes/{type}/list_nodes", requirements={"type"="connector|custom_node|joiner|mapper"}, methods={"GET"})
+     * @Route("/nodes/{type}/list_nodes", requirements={"type"="connector|custom_node|joiner|mapper|long_running"}, methods={"GET"})
      *
      * @param string $type
      *
@@ -67,6 +67,9 @@ class NodeController extends AbstractFOSRestController
                 break;
             case 'custom_node':
                 return $this->forward('HbPFCustomNodeBundle:CustomNode:listOfCustomNodes');
+                break;
+            case 'long_running':
+                return $this->forward('HbPFLongRunningNodeBundle:LongRunningNode:listOfLongRunningNodes');
                 break;
             case 'joiner':
                 return $this->forward('HbPFCustomNodeBundle:CustomNode:listOfCustomNodes');
@@ -88,6 +91,7 @@ class NodeController extends AbstractFOSRestController
             NodeImplementationEnum::PHP => [
                 NodeImplementationEnum::CONNECTOR => $this->getForwardContent('HbPFConnectorBundle:Connector:listOfConnectors'),
                 NodeImplementationEnum::CUSTOM    => $this->getForwardContent('HbPFCustomNodeBundle:CustomNode:listOfCustomNodes'),
+                NodeImplementationEnum::USER      => $this->getForwardContent('HbPFLongRunningNodeBundle:LongRunningNode:listOfLongRunningNodes'),
             ],
         ]);
     }
