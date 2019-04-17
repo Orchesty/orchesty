@@ -8,7 +8,7 @@ import NullWorker from "../../../src/node/worker/NullWorker";
 import {INodeLabel} from "../../../src/topology/Configurator";
 
 describe("Null worker", () => {
-    it("should set result to success", () => {
+    it("should set result to success #unit", async () => {
         const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName", topology_id: "topoId"};
         const headers = new Headers();
         headers.setPFHeader(Headers.CORRELATION_ID, "123");
@@ -18,23 +18,18 @@ describe("Null worker", () => {
         const inMsg = new JobMessage(node, headers.getRaw(), Buffer.from("{}{}{}"));
 
         const worker = new NullWorker({node_label: node});
-        return worker.processData(inMsg)
-            .then((outMsgs: JobMessage[]) => {
-                assert.lengthOf(outMsgs, 1);
-                const outMsg: JobMessage = outMsgs[0];
+        const outMsgs = await worker.processData(inMsg);
+        assert.lengthOf(outMsgs, 1);
+        const outMsg: JobMessage = outMsgs[0];
 
-                assert.equal(outMsg, inMsg);
-                assert.equal(outMsg.getResult().code, ResultCode.SUCCESS);
-            });
+        assert.equal(outMsg, inMsg);
+        assert.equal(outMsg.getResult().code, ResultCode.SUCCESS);
     });
 
-    it("should always return that his worker is ready", () => {
+    it("should always return that his worker is ready #unit", async () => {
         const label: any = {};
         const worker = new NullWorker(label);
-        return worker.isWorkerReady()
-            .then((isReady: boolean) => {
-                assert.isTrue(isReady);
-            });
+        assert.isTrue(await worker.isWorkerReady());
     });
 
 });

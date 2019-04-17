@@ -54,18 +54,17 @@ class Node implements IStoppable {
         const app = express();
 
         // All nodes have "/status" route to indicate their readiness
-        app.get(ROUTE_STATUS, (req, resp) => {
+        app.get(ROUTE_STATUS, async (req, resp) => {
             if (this.nodeStatus === NODE_STATUS.BRIDGE_NOT_READY) {
                 return resp.status(NODE_STATUS.BRIDGE_NOT_READY).send("Bridge not ready yet");
             }
 
-            this.worker.isWorkerReady().then((isReady: boolean) => {
-                if (isReady) {
-                    return resp.status(NODE_STATUS.READY).send("Bridge and worker are both ready.");
-                } else {
-                    return resp.status(NODE_STATUS.WORKER_NOT_READY).send("Worker not ready yet");
-                }
-            });
+            const isReady = await this.worker.isWorkerReady();
+            if (isReady) {
+                return resp.status(NODE_STATUS.READY).send("Bridge and worker are both ready.");
+            } else {
+                return resp.status(NODE_STATUS.WORKER_NOT_READY).send("Worker not ready yet");
+            }
         });
 
         return new Promise((resolve) => {

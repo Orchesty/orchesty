@@ -33,49 +33,47 @@ class JsonSplitterWorker extends AWorker {
      *
      * @inheritdoc
      */
-    public processData(msg: JobMessage): Promise<JobMessage[]> {
+    public async processData(msg: JobMessage): Promise<JobMessage[]> {
         let content: any[];
 
         try {
             content = JSON.parse(msg.getContent());
         } catch (err) {
             this.setError(msg, "Could not parse message content. Is it valid JSON?", err);
-            return Promise.resolve([msg]);
+
+            return [msg];
         }
 
         if (!Array.isArray(content) || content.length < 1) {
             this.setError(msg, "Message content must be json array.", null);
-            return Promise.resolve([msg]);
+
+            return [msg];
         }
 
-        return this.splitMessage(msg, content)
-            .then((splits: void[]) => {
-                msg.setForwardSelf(false);
-                msg.setMultiplier(splits.length);
-                msg.setResult({
-                    code: ResultCode.SUCCESS,
-                    message: `Split into ${splits.length} messages was successful.`,
-                });
+        msg.setForwardSelf(false);
 
-                logger.debug(
-                    `Worker[type"splitter"] split message. \
+        try {
+            const splits = await this.splitMessage(msg, content);
+            msg.setMultiplier(splits.length);
+            msg.setResult({code: ResultCode.SUCCESS, message: `Split into ${splits.length} messages was successful.`});
+
+            logger.debug(
+                `Worker[type"splitter"] split message. \
                     Status="${msg.getResult().code}" message="${msg.getResult().message}"]`,
-                    logger.ctxFromMsg(msg),
-                );
+                logger.ctxFromMsg(msg),
+            );
 
-                return [msg];
-            })
-            .catch(() => {
-                this.setError(msg, "One or multiple partial messages forward failed", {});
-                msg.setForwardSelf(false);
+            return [msg];
+        } catch (e) {
+            this.setError(msg, "One or multiple partial messages forward failed", {});
 
-                return [msg];
-            });
+            return [msg];
+        }
     }
 
     /** @inheritdoc */
-    public isWorkerReady(): Promise<boolean> {
-        return Promise.resolve(true);
+    public async isWorkerReady(): Promise<boolean> {
+        return true;
     }
 
     /**

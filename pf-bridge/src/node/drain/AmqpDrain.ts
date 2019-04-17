@@ -104,9 +104,8 @@ class AmqpDrain implements IDrain, IPartialForwarder {
      * @param {JobMessage} message
      * @return {Promise<boolean>}
      */
-    public forwardPart(message: JobMessage): Promise<void> {
-        return this.followersPublisher.send(message)
-            .then(() => { return; });
+    public async forwardPart(message: JobMessage): Promise<void> {
+        await this.followersPublisher.send(message);
     }
 
     /**

@@ -26,16 +26,16 @@ class AppenderWorker extends AWorker {
       *
       * @inheritdoc
       */
-    public processData(msg: JobMessage): Promise<JobMessage[]> {
+    public async processData(msg: JobMessage): Promise<JobMessage[]> {
         msg.setContent(`${msg.getContent()}${this.settings.suffix}`);
         msg.setResult({code: ResultCode.SUCCESS, message: "Appender worker OK"});
 
-        return Promise.resolve([msg]);
+        return [msg];
     }
 
     /** @inheritdoc */
-    public isWorkerReady(): Promise<boolean> {
-        return Promise.resolve(true);
+    public async isWorkerReady(): Promise<boolean> {
+        return true;
     }
 
 }

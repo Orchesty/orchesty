@@ -28,7 +28,7 @@ class NullWorker extends AWorker {
      *
      * @inheritdoc
      */
-    public processData(msg: JobMessage): Promise<JobMessage[]> {
+    public async processData(msg: JobMessage): Promise<JobMessage[]> {
         if (this.settings && this.settings.node_label.node_name.toLowerCase() === "debug") {
             msg.setResult({code: ResultCode.SUCCESS, message: "Debug worker passed message."});
 
@@ -57,14 +57,14 @@ class NullWorker extends AWorker {
             );
         }
 
-        return Promise.resolve([msg]);
+        return [msg];
     }
 
     /** @inheritdoc */
-    public isWorkerReady(): Promise<boolean> {
+    public async isWorkerReady(): Promise<boolean> {
         logger.debug(`Worker[type="null"] isWorkerReady() called. Responding with true.`);
 
-        return Promise.resolve(true);
+        return true;
     }
 
 }

@@ -48,7 +48,7 @@ const topo = Configurator.createConfigFromSkeleton(
 );
 
 describe("Probe", () => {
-    it("should return that none of nodes is running", async () => {
+    it("should return that none of nodes is running #unit", async () => {
         const probe = new Probe("topoId", {port: 8003, path: "/status", timeout: 1000});
         topo.nodes.forEach((node: INodeConfig) => {
              probe.addNode(node);
@@ -60,7 +60,7 @@ describe("Probe", () => {
         assert.equal(result.message, "0/2 nodes ready.");
     });
 
-    it("should return that all nodes are running", async () => {
+    it("should return that all nodes are running #unit", async () => {
         // Node1 server mock
         const mock1 = express();
         mock1.get("/status", (req, resp) => {
@@ -88,7 +88,7 @@ describe("Probe", () => {
         m2server.close();
     });
 
-    it("should return that first node is prepared, but the second is not", async () => {
+    it("should return that first node is prepared, but the second is not #unit", async () => {
         // Node1 server mock
         const mock1 = express();
         mock1.get("/status", (req, resp) => {
@@ -140,7 +140,7 @@ describe("Probe", () => {
         m2server.close();
     });
 
-    it("should return that all nodes are running second node check timeouted", async () => {
+    it("should return that all nodes are running second node check timeouted #unit", async () => {
         // Node1 server mock
         const mock1 = express();
         mock1.get("/status", (req, resp) => {

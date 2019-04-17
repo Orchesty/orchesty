@@ -46,10 +46,10 @@ class ResequencerWorker extends AWorker {
     }
 
     /** @inheritdoc */
-    public isWorkerReady(): Promise<boolean> {
+    public async isWorkerReady(): Promise<boolean> {
         logger.debug(`Worker[type="resequencer"] isWorkerReady() called. Responding with true.`);
 
-        return Promise.resolve(true);
+        return true;
     }
 
 }

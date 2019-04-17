@@ -8,7 +8,7 @@ import ResequencerWorker from "../../../src/node/worker/ResequencerWorker";
 import {INodeLabel} from "../../../src/topology/Configurator";
 
 describe("Resequencer worker", () => {
-    it("should return same message when waiting for it", () => {
+    it("should return same message when waiting for it #unit", async () => {
         const label: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName", topology_id: "topoId"};
         const headers = new Headers();
         headers.setPFHeader(Headers.CORRELATION_ID, "123");
@@ -19,29 +19,21 @@ describe("Resequencer worker", () => {
 
         const worker = new ResequencerWorker({ node_label: label });
 
-        return worker.processData(inMsg)
-            .then((outMsgs: JobMessage[]) => {
-                assert.lengthOf(outMsgs, 1);
-                const outMsg: JobMessage = outMsgs[0];
+        let outMsgs = await worker.processData(inMsg);
+        assert.lengthOf(outMsgs, 1);
+        let outMsg: JobMessage = outMsgs[0];
+        assert.equal(outMsg, inMsg);
+        assert.equal(outMsg.getResult().code, ResultCode.SUCCESS);
 
-                assert.equal(outMsg, inMsg);
-                assert.equal(outMsg.getResult().code, ResultCode.SUCCESS);
-            })
-            .then(() => {
-                inMsg.getHeaders().setPFHeader(Headers.SEQUENCE_ID, "1");
-
-                return worker.processData(inMsg);
-            })
-            .then((outMsgs: JobMessage[]) => {
-                assert.lengthOf(outMsgs, 1);
-                const outMsg: JobMessage = outMsgs[0];
-
-                assert.equal(outMsg, inMsg);
-                assert.equal(outMsg.getResult().code, ResultCode.SUCCESS);
-            });
+        inMsg.getHeaders().setPFHeader(Headers.SEQUENCE_ID, "1");
+        outMsgs = await worker.processData(inMsg);
+        assert.lengthOf(outMsgs, 1);
+        outMsg = outMsgs[0];
+        assert.equal(outMsg, inMsg);
+        assert.equal(outMsg.getResult().code, ResultCode.SUCCESS);
     });
 
-    it("should return empty array when waiting for some previous message", () => {
+    it("should return empty array when waiting for some previous message #unit", async () => {
         const label: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName", topology_id: "topoId"};
         const headers = new Headers();
         headers.setPFHeader(Headers.CORRELATION_ID, "123");
@@ -52,25 +44,18 @@ describe("Resequencer worker", () => {
 
         const worker = new ResequencerWorker({ node_label: label });
 
-        return worker.processData(inMsg)
-            .then((outMsgs: JobMessage[]) => {
-                assert.lengthOf(outMsgs, 1);
-                const outMsg: JobMessage = outMsgs[0];
+        let outMsgs = await worker.processData(inMsg);
+        assert.lengthOf(outMsgs, 1);
+        const outMsg: JobMessage = outMsgs[0];
+        assert.equal(outMsg, inMsg);
+        assert.equal(outMsg.getResult().code, ResultCode.SUCCESS);
 
-                assert.equal(outMsg, inMsg);
-                assert.equal(outMsg.getResult().code, ResultCode.SUCCESS);
-            })
-            .then(() => {
-                inMsg.getHeaders().setPFHeader(Headers.SEQUENCE_ID, "5");
-
-                return worker.processData(inMsg);
-            })
-            .then((outMsgs: JobMessage[]) => {
-                assert.lengthOf(outMsgs, 0);
-            });
+        inMsg.getHeaders().setPFHeader(Headers.SEQUENCE_ID, "5");
+        outMsgs = await worker.processData(inMsg);
+        assert.lengthOf(outMsgs, 0);
     });
 
-    it("should return empty array when trying to process message with the same sequenceId", () => {
+    it("should return empty array when trying to process message with the same sequenceId #unit", async () => {
         const label: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName", topology_id: "topoId"};
         const headers = new Headers();
         headers.setPFHeader(Headers.CORRELATION_ID, "123");
@@ -81,29 +66,20 @@ describe("Resequencer worker", () => {
 
         const worker = new ResequencerWorker({ node_label: label });
 
-        return worker.processData(inMsg)
-            .then((outMsgs: JobMessage[]) => {
-                assert.lengthOf(outMsgs, 1);
-                const outMsg: JobMessage = outMsgs[0];
+        let outMsgs = await worker.processData(inMsg);
+        assert.lengthOf(outMsgs, 1);
+        const outMsg: JobMessage = outMsgs[0];
+        assert.equal(outMsg, inMsg);
+        assert.equal(outMsg.getResult().code, ResultCode.SUCCESS);
 
-                assert.equal(outMsg, inMsg);
-                assert.equal(outMsg.getResult().code, ResultCode.SUCCESS);
-            })
-            .then(() => {
-                return worker.processData(inMsg);
-            })
-            .then((outMsgs: JobMessage[]) => {
-                assert.lengthOf(outMsgs, 0);
-            });
+        outMsgs = await worker.processData(inMsg);
+        assert.lengthOf(outMsgs, 0);
     });
 
-    it("should always return that his worker is ready", () => {
+    it("should always return that his worker is ready #unit", async () => {
         const label: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName", topology_id: "topoId"};
         const worker = new ResequencerWorker({ node_label: label });
-        return worker.isWorkerReady()
-            .then((isReady: boolean) => {
-                assert.isTrue(isReady);
-            });
+        assert.isTrue(await worker.isWorkerReady());
     });
 
 });

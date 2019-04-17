@@ -17,6 +17,7 @@ services:
       environment:
         - RABBITMQ_HOST=rabbitmq
         - REDIS_HOST=redis
+        - MONGO_HOST=mongo
         - METRICS_HOST=influxdb
         - METRICS_PORT=8086
       depends_on:

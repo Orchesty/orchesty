@@ -19,7 +19,7 @@ const conn = new Connection(amqpConnectionOptions);
 
 describe("AmqpNonBlockingWorker", () => {
 
-    it("onBatchItem should ignore batch item if not found in waiting list or has not success result", async () => {
+    it("should ignore batch item if not found in waiting list or hasn't success result #integration", async () => {
         const settings: IAmqpWorkerSettings = {
             node_label: {
                 id: "amqp_rpc_unit_ignore",
@@ -46,7 +46,7 @@ describe("AmqpNonBlockingWorker", () => {
         headers.setPFHeader(Headers.PROCESS_ID, "aaa");
         headers.setPFHeader(Headers.PARENT_ID, "");
         headers.setPFHeader(Headers.SEQUENCE_ID, "0");
-        const batchItemMsg = { content: Buffer.from(""), fields: {}, properties: {headers: headers.getRaw()} };
+        const batchItemMsg: any = { content: Buffer.from(""), fields: {}, properties: {headers: headers.getRaw()} };
         await rpcWorker.onBatchItem("corr123", batchItemMsg);
 
         // hack using any type in order to allow add to waiting list even though it is private
@@ -58,7 +58,7 @@ describe("AmqpNonBlockingWorker", () => {
         await rpcWorker.onBatchItem("corr123", batchItemMsg);
     });
 
-    it("worker should check if worker is ready by sending rpc message", () => {
+    it("worker should check if worker is ready by sending rpc message #integration", async () => {
         const settings: IAmqpWorkerSettings = {
             node_label: {
                 id: "amqp_rpc_node_test",
@@ -83,14 +83,10 @@ describe("AmqpNonBlockingWorker", () => {
         const externalWorkerMock = new SimpleConsumer(
             conn,
             (ch: Channel) => {
-                return new Promise((resolve) => {
-                    ch.assertQueue(settings.publish_queue.name, settings.publish_queue.options)
-                        .then(() => {
-                            return ch.purgeQueue(settings.publish_queue.name);
-                        })
-                        .then(() => {
-                            resolve();
-                        });
+                return new Promise(async (resolve) => {
+                    await ch.assertQueue(settings.publish_queue.name, settings.publish_queue.options);
+                    await ch.purgeQueue(settings.publish_queue.name);
+                    resolve();
                 });
             },
             (msg: Message) => {
@@ -113,16 +109,11 @@ describe("AmqpNonBlockingWorker", () => {
             },
         );
 
-        return externalWorkerMock.consume(settings.publish_queue.name, {})
-            .then(() => {
-                return rpcWorker.isWorkerReady();
-            })
-            .then((isReady: boolean) => {
-                assert.isTrue(isReady);
-            });
+        await externalWorkerMock.consume(settings.publish_queue.name, {});
+        assert.isTrue(await rpcWorker.isWorkerReady());
     });
 
-    it("worker should send 1 message to external worker and receive multiple with proper headers", () => {
+    it("worker should send 1 msg to worker and receive multiple with proper headers #integration", async () => {
         const forwarded: JobMessage[] = [];
         const settings: IAmqpWorkerSettings = {
             node_label: {
@@ -150,17 +141,13 @@ describe("AmqpNonBlockingWorker", () => {
         const externalWorkerMock = new SimpleConsumer(
             conn,
             (ch: Channel) => {
-                return new Promise((resolve) => {
-                    ch.assertQueue(settings.publish_queue.name, settings.publish_queue.options)
-                        .then(() => {
-                            return ch.purgeQueue(settings.publish_queue.name);
-                        })
-                        .then(() => {
-                            resolve();
-                        });
+                return new Promise(async (resolve) => {
+                    await ch.assertQueue(settings.publish_queue.name, settings.publish_queue.options);
+                    await ch.purgeQueue(settings.publish_queue.name);
+                    resolve();
                 });
             },
-            (msg: Message) => {
+            async (msg: Message) => {
                 // check if message has all expected headers
                 assert.lengthOf(msg.properties.correlationId, 36); // uuidv4 length
                 assert.equal(
@@ -168,27 +155,27 @@ describe("AmqpNonBlockingWorker", () => {
                     `pipes.${settings.node_label.topology_id}.${settings.node_label.id}_reply`,
                 );
                 assert.isTrue(Headers.containsAllMandatory(msg.properties.headers));
-                const headers = new Headers(msg.properties.headers);
-                assert.equal(headers.getPFHeader(Headers.NODE_ID), "507f191e810c19729de860ea");
-                assert.equal(headers.getPFHeader(Headers.NODE_NAME), "amqprpcnode");
-                assert.equal(headers.getPFHeader(Headers.CORRELATION_ID), "amqp.worker.correlation_id");
-                assert.equal(headers.getPFHeader(Headers.PROCESS_ID), "amqp.worker.process_id");
-                assert.equal(headers.getPFHeader(Headers.PARENT_ID), "");
-                assert.equal(headers.getPFHeader(Headers.SEQUENCE_ID), "1");
-                assert.equal(headers.getPFHeader(Headers.TOPOLOGY_ID), "topoId");
-                assert.equal(headers.getPFHeader(Headers.TOPOLOGY_NAME), "topoName");
-                assert.equal(headers.getPFHeader("foo"), "bar");
+                const hdrs = new Headers(msg.properties.headers);
+                assert.equal(hdrs.getPFHeader(Headers.NODE_ID), "507f191e810c19729de860ea");
+                assert.equal(hdrs.getPFHeader(Headers.NODE_NAME), "amqprpcnode");
+                assert.equal(hdrs.getPFHeader(Headers.CORRELATION_ID), "amqp.worker.correlation_id");
+                assert.equal(hdrs.getPFHeader(Headers.PROCESS_ID), "amqp.worker.process_id");
+                assert.equal(hdrs.getPFHeader(Headers.PARENT_ID), "");
+                assert.equal(hdrs.getPFHeader(Headers.SEQUENCE_ID), "1");
+                assert.equal(hdrs.getPFHeader(Headers.TOPOLOGY_ID), "topoId");
+                assert.equal(hdrs.getPFHeader(Headers.TOPOLOGY_NAME), "topoName");
+                assert.equal(hdrs.getPFHeader("foo"), "bar");
 
                 // Send partial messages and the confirmation message afterwards
-                let i = 1;
+                let j = 1;
                 const proms = [];
-                while (i <= 5) {
+                while (j <= 5) {
                     const replyHeaders = JSON.parse(JSON.stringify(msg.properties.headers));
-                    replyHeaders["pf-sequence-id"] = i;
+                    replyHeaders["pf-sequence-id"] = j;
                     replyHeaders["pf-result-code"] = ResultCode.SUCCESS;
                     replyHeaders["pf-result-message"] = "ok";
 
-                    const content = Buffer.from(`${i}`);
+                    const content = Buffer.from(`${j}`);
 
                     const p = publisher.sendToQueue(
                         msg.properties.replyTo,
@@ -200,72 +187,68 @@ describe("AmqpNonBlockingWorker", () => {
                         },
                     );
                     proms.push(p);
-                    i++;
+                    j++;
                 }
 
                 // Send confirmation message after all BATCH_ITEM messages are sent
-                Promise.all(proms)
-                    .then(() => {
-                        const finalHeaders = JSON.parse(JSON.stringify(msg.properties.headers));
-                        finalHeaders["pf-sequence-id"] = 1;
-                        finalHeaders["pf-result-code"] = ResultCode.SPLITTER_BATCH_END;
-                        finalHeaders["pf-result-message"] = "everything okay";
+                await Promise.all(proms);
+                const finalHeaders = JSON.parse(JSON.stringify(msg.properties.headers));
+                finalHeaders["pf-sequence-id"] = 1;
+                finalHeaders["pf-result-code"] = ResultCode.SPLITTER_BATCH_END;
+                finalHeaders["pf-result-message"] = "everything okay";
 
-                        publisher.sendToQueue(
-                            msg.properties.replyTo,
-                            Buffer.from(""),
-                            {
-                                type: AmqpNonBlockingWorker.BATCH_END_TYPE,
-                                correlationId: msg.properties.correlationId,
-                                headers: finalHeaders,
-                            },
-                        );
-                    });
+                publisher.sendToQueue(
+                    msg.properties.replyTo,
+                    Buffer.from(""),
+                    {
+                        type: AmqpNonBlockingWorker.BATCH_END_TYPE,
+                        correlationId: msg.properties.correlationId,
+                        headers: finalHeaders,
+                    },
+                );
             },
         );
 
-        return externalWorkerMock.consume(settings.publish_queue.name, {})
-            .then(() => {
-                const node: INodeLabel = {
-                    id: "amqp.worker.node_id",
-                    node_id: "nodeId",
-                    node_name: "nodeName",
-                    topology_id: "topoId",
-                };
-                const headers = new Headers();
-                headers.setPFHeader(Headers.CORRELATION_ID, "amqp.worker.correlation_id");
-                headers.setPFHeader(Headers.PROCESS_ID, "amqp.worker.process_id");
-                headers.setPFHeader(Headers.PARENT_ID, "");
-                headers.setPFHeader(Headers.SEQUENCE_ID, "1");
-                headers.setPFHeader(Headers.TOPOLOGY_ID, "topoId");
-                headers.setPFHeader(Headers.TOPOLOGY_NAME, "topoName");
-                headers.setPFHeader("foo", "bar");
-                headers.setHeader("baz", "bat");
+        await externalWorkerMock.consume(settings.publish_queue.name, {});
 
-                const jobMsg = new JobMessage(
-                    node,
-                    headers.getRaw(),
-                    Buffer.from(JSON.stringify({ settings: {}, data: "test" })),
-                );
+        const node: INodeLabel = {
+            id: "amqp.worker.node_id",
+            node_id: "nodeId",
+            node_name: "nodeName",
+            topology_id: "topoId",
+        };
+        const headers = new Headers();
+        headers.setPFHeader(Headers.CORRELATION_ID, "amqp.worker.correlation_id");
+        headers.setPFHeader(Headers.PROCESS_ID, "amqp.worker.process_id");
+        headers.setPFHeader(Headers.PARENT_ID, "");
+        headers.setPFHeader(Headers.SEQUENCE_ID, "1");
+        headers.setPFHeader(Headers.TOPOLOGY_ID, "topoId");
+        headers.setPFHeader(Headers.TOPOLOGY_NAME, "topoName");
+        headers.setPFHeader("foo", "bar");
+        headers.setHeader("baz", "bat");
 
-                return rpcWorker.processData(jobMsg);
-            })
-            .then((outMsgs: JobMessage[]) => {
-                assert.lengthOf(outMsgs, 1);
-                const outMsg: JobMessage = outMsgs[0];
+        const jobMsg = new JobMessage(
+            node,
+            headers.getRaw(),
+            Buffer.from(JSON.stringify({ settings: {}, data: "test" })),
+        );
 
-                assert.instanceOf(outMsg, JobMessage);
-                assert.equal(outMsg.getMultiplier(), 0);
-                assert.isFalse(outMsg.getForwardSelf());
-                assert.equal(ResultCode.SPLITTER_BATCH_END, outMsg.getResult().code);
-                assert.equal("everything okay", outMsg.getResult().message);
+        const outMsgs = await rpcWorker.processData(jobMsg);
 
-                let i = 1;
-                forwarded.forEach((splitMsg: JobMessage) => {
-                    assert.equal(i, splitMsg.getSequenceId());
-                    assert.equal(`${i}`, splitMsg.getContent());
-                    i++;
-                });
-            });
+        assert.lengthOf(outMsgs, 1);
+        const outMsg: JobMessage = outMsgs[0];
+
+        assert.instanceOf(outMsg, JobMessage);
+        assert.equal(outMsg.getMultiplier(), 0);
+        assert.isFalse(outMsg.getForwardSelf());
+        assert.equal(ResultCode.SPLITTER_BATCH_END, outMsg.getResult().code);
+        assert.equal("everything okay", outMsg.getResult().message);
+
+        let i = 1;
+        forwarded.forEach((splitMsg: JobMessage) => {
+            assert.equal(i, splitMsg.getSequenceId());
+            assert.equal(`${i}`, splitMsg.getContent());
+            i++;
+        });
     });
 });
