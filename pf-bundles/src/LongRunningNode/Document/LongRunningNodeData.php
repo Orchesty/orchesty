@@ -38,6 +38,7 @@ class LongRunningNodeData
     public const CREATED       = 'created';
     public const UPDATED       = 'updated';
     public const AUDIT_LOGS    = 'auditLogs';
+    public const DATA          = 'data';
 
     /**
      * @var string
