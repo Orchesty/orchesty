@@ -92,14 +92,14 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
     private function getManager(): InstallManager
     {
         /** @var MockObject|RequestHandler $requestHandler */
-        $requestHandler = $this->createMock(RequestHandler::class);
+        $requestHandler = self::createMock(RequestHandler::class);
         $requestHandler->method('runTopology')->willReturn(new ResponseDto(200, '', '', []));
         $requestHandler->method('deleteTopology')->willReturn(new ResponseDto(200, '', '', []));
 
-        $this->redis     = $this->ownContainer->get('snc_redis.default');
-        $topologyManager = $this->ownContainer->get('hbpf.configurator.manager.topology');
+        $this->redis     = self::$container->get('snc_redis.default');
+        $topologyManager = self::$container->get('hbpf.configurator.manager.topology');
         $dir             = sprintf('%s/data', __DIR__);
-        $categoryManager = $this->ownContainer->get('hbpf.configurator.manager.category');
+        $categoryManager = self::$container->get('hbpf.configurator.manager.category');
         $categoryParser  = new CategoryParser($this->dm, $categoryManager);
         $categoryParser->addRoot('systems', $dir);
 
