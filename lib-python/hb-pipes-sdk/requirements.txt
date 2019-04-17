@@ -1,5 +1,5 @@
-PyYAML
+PyYAML=5.1
 mock
-flask
-flask_json
+flask>=1.0.2
+flask_json>=0.3.3
 yaml

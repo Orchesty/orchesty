@@ -11,7 +11,7 @@ setup(
     packages=['hb_pipes_sdk'],
     include_package_data=True,
     platforms='any',
-    install_requires=['flask>=1.0.2', 'flask_json>=0.3.3', 'PyYAML=5.1'],
+    install_requires=['flask', 'flask_json', 'PyYAML'],
     version='1.0',
     license='MIT',
     description='Pipes SDK for custom python node',
