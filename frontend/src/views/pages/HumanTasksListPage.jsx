@@ -28,6 +28,7 @@ function mapActionsToProps(dispatch, ownProps) {
     listChangeFilter: (filter) => dispatch(humanTasksActions.humanTaskListChangeFilter(ownProps.componentKey, filter)),
     initialize: () => dispatch(humanTasksActions.humanTaskInitialize()),
     approveHumanTask: (topology, node, token, approve) => dispatch(applicationActions.openModal('human_task_approve', { componentKey: ownProps.componentKey, topology, node, token, approve })),
+    changeHumanTask: (id, data) => dispatch(applicationActions.openModal('human_task_change', { componentKey: ownProps.componentKey, id, data })),
   }
 }
 

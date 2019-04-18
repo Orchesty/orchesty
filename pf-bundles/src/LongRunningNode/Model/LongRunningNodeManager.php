@@ -62,6 +62,23 @@ class LongRunningNodeManager
     }
 
     /**
+     * @param LongRunningNodeData $node
+     * @param array               $data
+     *
+     * @return LongRunningNodeData
+     */
+    public function update(LongRunningNodeData $node, array $data): LongRunningNodeData
+    {
+        if (isset($data['data'])) {
+            $node->setData(json_encode($data['data'], JSON_THROW_ON_ERROR));
+        }
+
+        $this->dm->flush();
+
+        return $node;
+    }
+
+    /**
      * @param LongRunningNodeData $doc
      */
     public function delete(LongRunningNodeData $doc): void
