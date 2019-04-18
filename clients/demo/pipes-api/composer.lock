@@ -74,16 +74,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.91.4",
+            "version": "3.91.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "41b67dce3c86da61137b47054d9d52c6ef57b5ec"
+                "reference": "9185a0e00f833ca407ab85451dc523b9dd78fbab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/41b67dce3c86da61137b47054d9d52c6ef57b5ec",
-                "reference": "41b67dce3c86da61137b47054d9d52c6ef57b5ec",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/9185a0e00f833ca407ab85451dc523b9dd78fbab",
+                "reference": "9185a0e00f833ca407ab85451dc523b9dd78fbab",
                 "shasum": ""
             },
             "require": {
@@ -152,7 +152,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2019-04-05T18:10:20+00:00"
+            "time": "2019-04-17T18:08:24+00:00"
         },
         {
             "name": "aws/aws-sdk-php-symfony",
@@ -2707,16 +2707,16 @@
         },
         {
             "name": "jms/serializer",
-            "version": "1.13.0",
+            "version": "1.14.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/schmittjoh/serializer.git",
-                "reference": "00863e1d55b411cc33ad3e1de09a4c8d3aae793c"
+                "reference": "ee96d57024af9a7716d56fcbe3aa94b3d030f3ca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/schmittjoh/serializer/zipball/00863e1d55b411cc33ad3e1de09a4c8d3aae793c",
-                "reference": "00863e1d55b411cc33ad3e1de09a4c8d3aae793c",
+                "url": "https://api.github.com/repos/schmittjoh/serializer/zipball/ee96d57024af9a7716d56fcbe3aa94b3d030f3ca",
+                "reference": "ee96d57024af9a7716d56fcbe3aa94b3d030f3ca",
                 "shasum": ""
             },
             "require": {
@@ -2756,7 +2756,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-1.x": "1.13-dev"
+                    "dev-1.x": "1.14-dev"
                 }
             },
             "autoload": {
@@ -2787,7 +2787,7 @@
                 "serialization",
                 "xml"
             ],
-            "time": "2018-07-25T13:58:54+00:00"
+            "time": "2019-04-17T08:12:16+00:00"
         },
         {
             "name": "jms/serializer-bundle",
@@ -3581,7 +3581,7 @@
                     "homepage": "https://nette.org/contributors"
                 }
             ],
-            "description": "? Nette Dependency Injection Container: Flexible, compiled and full-featured DIC with perfectly usable autowiring and support for all new PHP 7.1 features.",
+            "description": "💎 Nette Dependency Injection Container: Flexible, compiled and full-featured DIC with perfectly usable autowiring and support for all new PHP 7.1 features.",
             "homepage": "https://nette.org",
             "keywords": [
                 "compiled",
@@ -3644,7 +3644,7 @@
                     "homepage": "https://nette.org/contributors"
                 }
             ],
-            "description": "? Nette NEON: encodes and decodes NEON file format.",
+            "description": "🍸 Nette NEON: encodes and decodes NEON file format.",
             "homepage": "http://ne-on.org",
             "keywords": [
                 "export",
@@ -3776,7 +3776,7 @@
                     "homepage": "https://nette.org/contributors"
                 }
             ],
-            "description": "? Nette Utils: lightweight utilities for string & array manipulation, image handling, safe JSON encoding/decoding, validation, slug or strong password generating etc.",
+            "description": "🛠 Nette Utils: lightweight utilities for string & array manipulation, image handling, safe JSON encoding/decoding, validation, slug or strong password generating etc.",
             "homepage": "https://nette.org",
             "keywords": [
                 "array",
@@ -6254,16 +6254,16 @@
         },
         {
             "name": "symfony/symfony",
-            "version": "v4.2.6",
+            "version": "v4.2.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "cd999a4b6c8070cc00ce2f98479517f75e103bca"
+                "reference": "6122c791d640b75702514c18c8aae816dbbefae2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/cd999a4b6c8070cc00ce2f98479517f75e103bca",
-                "reference": "cd999a4b6c8070cc00ce2f98479517f75e103bca",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/6122c791d640b75702514c18c8aae816dbbefae2",
+                "reference": "6122c791d640b75702514c18c8aae816dbbefae2",
                 "shasum": ""
             },
             "require": {
@@ -6411,7 +6411,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2019-04-16T07:20:43+00:00"
+            "time": "2019-04-17T16:17:33+00:00"
         },
         {
             "name": "tracy/tracy",
@@ -6481,16 +6481,16 @@
         },
         {
             "name": "twig/twig",
-            "version": "v2.7.4",
+            "version": "v2.8.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "ed9c49220e09bfaeb1ba4d48077c08a7b09908dd"
+                "reference": "91cc2594d3143761ce0399c1caffd0b500ffe5b9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/ed9c49220e09bfaeb1ba4d48077c08a7b09908dd",
-                "reference": "ed9c49220e09bfaeb1ba4d48077c08a7b09908dd",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/91cc2594d3143761ce0399c1caffd0b500ffe5b9",
+                "reference": "91cc2594d3143761ce0399c1caffd0b500ffe5b9",
                 "shasum": ""
             },
             "require": {
@@ -6506,7 +6506,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.7-dev"
+                    "dev-master": "2.8-dev"
                 }
             },
             "autoload": {
@@ -6544,7 +6544,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2019-03-23T14:28:58+00:00"
+            "time": "2019-04-16T17:14:24+00:00"
         },
         {
             "name": "willdurand/jsonp-callback-validator",
@@ -7107,7 +7107,7 @@
                     "homepage": "https://nette.org/contributors"
                 }
             ],
-            "description": "? Nette Bootstrap: the simple way to configure and bootstrap your Nette application.",
+            "description": "🅱 Nette Bootstrap: the simple way to configure and bootstrap your Nette application.",
             "homepage": "https://nette.org",
             "keywords": [
                 "bootstrapping",
@@ -7168,7 +7168,7 @@
                     "homepage": "https://nette.org/contributors"
                 }
             ],
-            "description": "? Nette Finder: find files and directories with an intuitive API.",
+            "description": "🔍 Nette Finder: find files and directories with an intuitive API.",
             "homepage": "https://nette.org",
             "keywords": [
                 "filesystem",
@@ -7232,7 +7232,7 @@
                     "homepage": "https://nette.org/contributors"
                 }
             ],
-            "description": "? Nette RobotLoader: high performance and comfortable autoloader that will search and autoload classes within your application.",
+            "description": "🍀 Nette RobotLoader: high performance and comfortable autoloader that will search and autoload classes within your application.",
             "homepage": "https://nette.org",
             "keywords": [
                 "autoload",
@@ -7891,16 +7891,16 @@
         },
         {
             "name": "phpstan/phpstan-symfony",
-            "version": "0.11.4",
+            "version": "0.11.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-symfony.git",
-                "reference": "142a5d573e8ee52dcb9a8272fe39433fb19adb3b"
+                "reference": "490ff775bd3a6441f6794ae57911d4f9ba347a26"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-symfony/zipball/142a5d573e8ee52dcb9a8272fe39433fb19adb3b",
-                "reference": "142a5d573e8ee52dcb9a8272fe39433fb19adb3b",
+                "url": "https://api.github.com/repos/phpstan/phpstan-symfony/zipball/490ff775bd3a6441f6794ae57911d4f9ba347a26",
+                "reference": "490ff775bd3a6441f6794ae57911d4f9ba347a26",
                 "shasum": ""
             },
             "require": {
@@ -7950,7 +7950,7 @@
                 }
             ],
             "description": "Symfony Framework extensions and rules for PHPStan",
-            "time": "2019-04-16T08:20:11+00:00"
+            "time": "2019-04-16T17:26:20+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
