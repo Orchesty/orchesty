@@ -13,7 +13,7 @@ RUN apk update --no-cache && \
     apk add --no-cache libcap py-pip python-dev libffi-dev openssl-dev gcc libc-dev make && \
     pip install --upgrade pip && \
     pip install docker-compose
-RUN apk --purge del libcap py-pip python-dev libffi-dev openssl-dev gcc libc-dev make
+RUN apk --purge del py-pip python-dev libffi-dev openssl-dev gcc libc-dev make
 
 WORKDIR /usr/local/bin
 COPY topologygenerator/config.yml /etc/default/topology-generator/config.yml
