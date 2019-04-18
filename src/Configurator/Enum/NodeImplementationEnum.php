@@ -16,6 +16,7 @@ final class NodeImplementationEnum extends EnumAbstract
 
     public const CONNECTOR = 'connector';
     public const CUSTOM    = 'custom';
+    public const USER      = 'user';
 
     /**
      * @var string[]

@@ -95,4 +95,20 @@ class LongRunningNodeController extends AbstractFOSRestController
             ['topo' => $topo, 'node' => $node]);
     }
 
+    /**
+     * @Route("/longRunning/{id}", methods={"PUT", "OPTIONS"})
+     *
+     * @param Request $request
+     * @param string  $id
+     *
+     * @return Response
+     */
+    public function updateLongRunningAction(Request $request, string $id): Response
+    {
+        return $this->forward('HbPFLongRunningNodeBundle:LongRunningNode:updateLongRunning', [
+            'request' => $request,
+            'id'      => $id,
+        ]);
+    }
+
 }

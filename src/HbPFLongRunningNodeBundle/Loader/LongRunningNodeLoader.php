@@ -4,6 +4,7 @@ namespace Hanaboso\PipesFramework\HbPFLongRunningNodeBundle\Loader;
 
 use Hanaboso\PipesFramework\LongRunningNode\Exception\LongRunningNodeException;
 use Hanaboso\PipesFramework\LongRunningNode\Model\LongRunningNodeInterface;
+use Hanaboso\PipesFramework\Utils\NodeServiceLoaderUtil;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -51,6 +52,18 @@ final class LongRunningNodeLoader
             sprintf('Service for [%s] long running node was not found', $id),
             LongRunningNodeException::LONG_RUNNING_SERVICE_NOT_FOUND
         );
+    }
+
+    /**
+     * @param array $exclude
+     *
+     * @return array
+     */
+    public function getAllLongRunningNodes(array $exclude = []): array
+    {
+        $dirs = $this->container->getParameter('node_services_dirs');
+
+        return NodeServiceLoaderUtil::getServices($dirs, self::PREFIX, $exclude);
     }
 
 }
