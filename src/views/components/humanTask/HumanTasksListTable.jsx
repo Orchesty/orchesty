@@ -103,6 +103,7 @@ class HumanTasksListTable extends AbstractTable {
       <tr>
         <SortTh name="nodeName" state={sort} onChangeSort={listChangeSort}>Node</SortTh>
         <SortTh name="created" state={sort} onChangeSort={listChangeSort}>Created</SortTh>
+        <th>Data</th>
         <th>Logs</th>
         <th>Actions</th>
       </tr>
@@ -110,26 +111,34 @@ class HumanTasksListTable extends AbstractTable {
   }
 
   _renderRows() {
-    const { list, elements, process, approveHumanTask } = this.props;
+    const { list, elements, process, approveHumanTask, changeHumanTask } = this.props;
 
     return list && list.items ? list.items.map(id => {
       const item = elements[id];
       const menuItems = [{
         caption: 'Approve',
-        action: () => {
-          approveHumanTask(item.topologyId, item.nodeId, item.processId, true)
-        },
+        customClass: 'btn btn-success',
+        action: () => approveHumanTask(item.topologyId, item.nodeId, item.processId, true)
+      }, {
+        caption: 'Change',
+        customClass: 'btn btn-warning',
+        action: () => changeHumanTask(item.id, item.data),
       }, {
         caption: 'Decline',
-        action: () => {
-          process(item.topologyId, item.nodeId, item.processId, false)
-        },
+        customClass: 'btn btn-danger',
+        action: () => process(item.topologyId, item.nodeId, item.processId, false)
       }];
 
       return (
-        <tr key={item._id}>
+        <tr key={item.id}>
           <td className="col-md-2">{item.nodeName}</td>
           <td className="col-md-2"><Moment format="DD. MM. YYYY HH:mm:ss">{item.created}</Moment></td>
+          <td className="json">
+            <JSONTree
+              data={JSON.parse(item.data || '{}')}
+              shouldExpandNode={() => false}
+            />
+          </td>
           <td className="json">
             <JSONTree
               data={JSON.parse(item.auditLogs || '{}')}
@@ -140,7 +149,7 @@ class HumanTasksListTable extends AbstractTable {
             <ActionButtonPanel
               items={menuItems}
               right={true}
-              buttonClassName={({ caption }) => caption === 'Decline' ? 'btn btn-danger' : 'btn btn-success'}
+              buttonClassName={({ customClass }) => customClass || 'btn btn-primary'}
             />
           </td>
         </tr>
@@ -223,10 +232,11 @@ HumanTasksListTable.propTypes = Object.assign({}, AbstractTable.propTypes, {
   nodes: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   process: PropTypes.func.isRequired,
   approveHumanTask: PropTypes.func.isRequired,
+  changeHumanTask: PropTypes.func.isRequired,
   initialize: PropTypes.func.isRequired,
 });
 
-const mapStateToProps = ({ topology: { elements } = {}, node: { lists }, humanTask: { nodes, initialize } }) => ({
+const mapStateToProps = ({ topology: { elements } = {}, humanTask: { nodes, initialize } }) => ({
   topologies: Object.values(elements),
   nodes: Object.values(nodes),
   initialized: initialize,

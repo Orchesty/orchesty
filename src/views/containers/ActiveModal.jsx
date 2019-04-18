@@ -10,6 +10,7 @@ import TopologyDeleteDialog from 'modals/dialogs/TopologyDeleteDialog';
 import TopologyCategoryChangeModal from 'modals/TopologyCategoryChangeModal';
 import CategoryEditModal from 'modals/CategoryEditModal';
 import HumanTaskApproveFormModal from 'modals/HumanTaskApproveFormModal';
+import HumanTaskChangeFormModal from 'modals/HumanTaskChangeFormModal';
 
 
 class ActiveModal extends React.Component {
@@ -46,6 +47,8 @@ class ActiveModal extends React.Component {
       case 'human_task_approve':
         return <HumanTaskApproveFormModal {...modalData} onCloseModal={this._close} componentKey={modalData.componentKey} />;
 
+      case 'human_task_change':
+        return <HumanTaskChangeFormModal {...modalData} onCloseModal={this._close} componentKey={modalData.componentKey} />;
       default:
         return null;
     }
