@@ -74,16 +74,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.91.5",
+            "version": "3.91.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "ffd63f5d39f48e679f2dc78346fd4dad746d7f43"
+                "reference": "9185a0e00f833ca407ab85451dc523b9dd78fbab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/ffd63f5d39f48e679f2dc78346fd4dad746d7f43",
-                "reference": "ffd63f5d39f48e679f2dc78346fd4dad746d7f43",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/9185a0e00f833ca407ab85451dc523b9dd78fbab",
+                "reference": "9185a0e00f833ca407ab85451dc523b9dd78fbab",
                 "shasum": ""
             },
             "require": {
@@ -152,7 +152,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2019-04-16T18:11:52+00:00"
+            "time": "2019-04-17T18:08:24+00:00"
         },
         {
             "name": "aws/aws-sdk-php-symfony",
@@ -6005,16 +6005,16 @@
         },
         {
             "name": "symfony/symfony",
-            "version": "v4.2.6",
+            "version": "v4.2.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "cd999a4b6c8070cc00ce2f98479517f75e103bca"
+                "reference": "6122c791d640b75702514c18c8aae816dbbefae2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/cd999a4b6c8070cc00ce2f98479517f75e103bca",
-                "reference": "cd999a4b6c8070cc00ce2f98479517f75e103bca",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/6122c791d640b75702514c18c8aae816dbbefae2",
+                "reference": "6122c791d640b75702514c18c8aae816dbbefae2",
                 "shasum": ""
             },
             "require": {
@@ -6162,7 +6162,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2019-04-16T07:20:43+00:00"
+            "time": "2019-04-17T16:17:33+00:00"
         },
         {
             "name": "tracy/tracy",
