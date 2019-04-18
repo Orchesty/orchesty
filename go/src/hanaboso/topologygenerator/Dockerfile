@@ -9,8 +9,11 @@ COPY ./utils /go/src/hanaboso/utils
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags "-X main.compiled=$(date +\"%y%m%d%H%M%S\")" -o topologygenerator .
 
 FROM docker:18.05
-RUN apk update --no-cache && apk add --no-cache py-pip libcap
-#RUN pip install docker-compose :: Disabled because failed build
+RUN apk update --no-cache && \
+    apk add --no-cache libcap py-pip python-dev libffi-dev openssl-dev gcc libc-dev make && \
+    pip install --upgrade pip && \
+    pip install docker-compose
+RUN apk --purge del libcap py-pip python-dev libffi-dev openssl-dev gcc libc-dev make
 
 WORKDIR /usr/local/bin
 COPY topologygenerator/config.yml /etc/default/topology-generator/config.yml
