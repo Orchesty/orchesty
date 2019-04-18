@@ -66,8 +66,8 @@ func TestServer(t *testing.T) {
 	var client = http.Client{Timeout: time.Second * 1}
 
 	// List should be empty
-	response, _ := client.Get(host + "/topology/list")
-	defer response.Body.Close()
+	response, err := client.Get(host + "/topology/list")
+	assert.Nil(t, err)
 	body, _ := ioutil.ReadAll(response.Body)
 	assert.Equal(t, "{\"status\":true,\"data\":\"\"}", string(body))
 
@@ -91,7 +91,7 @@ func TestServer(t *testing.T) {
 		assert.Nil(t, err, "Could not load topology file.")
 		return
 	}
-	json.Unmarshal(topoData, &topo)
+	_ = json.Unmarshal(topoData, &topo)
 
 	// Add topology should success
 	addReq, _ := http.NewRequest("POST", host+"/topology/add", bytes.NewBuffer(topoData))
@@ -101,7 +101,6 @@ func TestServer(t *testing.T) {
 
 	// List should contain 1 topo
 	response, _ = client.Get(host + "/topology/list")
-	defer response.Body.Close()
 	body, _ = ioutil.ReadAll(response.Body)
 	assert.Equal(t, "{\"status\":true,\"data\":\""+topo.TopologyId+"\"}", string(body))
 
@@ -111,7 +110,6 @@ func TestServer(t *testing.T) {
 
 	// List should contain 1 topo
 	response, _ = client.Get(host + "/topology/list")
-	defer response.Body.Close()
 	body, _ = ioutil.ReadAll(response.Body)
 	assert.Equal(t, "{\"status\":true,\"data\":\""+topo.TopologyId+"\"}", string(body))
 
@@ -119,9 +117,8 @@ func TestServer(t *testing.T) {
 	var checkResult probeStatusResponse
 	response, _ = client.Get(host + "/topology/status?topologyId=" + topo.TopologyId)
 	assert.Equal(t, http.StatusOK, response.StatusCode)
-	defer response.Body.Close()
 	statusBody, _ := ioutil.ReadAll(response.Body)
-	json.Unmarshal(statusBody, &checkResult)
+	_ = json.Unmarshal(statusBody, &checkResult)
 	assert.Equal(t, topo.TopologyId, checkResult.Id)
 	assert.True(t, checkResult.Status)
 	assert.Equal(t, "2 of 2 bridges are ready", checkResult.Message)
@@ -133,7 +130,6 @@ func TestServer(t *testing.T) {
 
 	// List should be empty
 	response, _ = client.Get(host + "/topology/list")
-	defer response.Body.Close()
 	body, _ = ioutil.ReadAll(response.Body)
 	assert.Equal(t, "{\"status\":true,\"data\":\"\"}", string(body))
 }
