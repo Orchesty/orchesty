@@ -29,24 +29,22 @@ final class RepeaterListenerTest extends ControllerTestCaseAbstract
         $dto      = new ProcessDto();
 
         $eventMock = $this->mockEvent(new OnRepeatException($dto));
-        $listener->onRepeatableException($eventMock);
-        $listener->onRepeatableException($eventMock);
-        $listener->onRepeatableException($eventMock);
 
-        $currentHop = $eventMock->getResponse()->headers->get(PipesHeaders::createKey(PipesHeaders::REPEAT_HOPS));
+        for ($i = 1; ; $i++) {
+            $listener->onRepeatableException($eventMock);
+            $currentHop = $eventMock->getResponse()->headers->get(PipesHeaders::createKey(PipesHeaders::REPEAT_HOPS));
+            $maxHop     = $eventMock->getResponse()->headers->get(PipesHeaders::createKey(PipesHeaders::REPEAT_MAX_HOPS));
 
-        self::assertEquals('3', $currentHop);
-        self::assertArrayHasKey(
-            PipesHeaders::createKey(PipesHeaders::REPEAT_MAX_HOPS),
-            $eventMock->getResponse()->headers->all()
-        );
+            if ($currentHop > $maxHop) {
+                self::assertArrayNotHasKey(
+                    PipesHeaders::createKey(PipesHeaders::REPEAT_MAX_HOPS),
+                    $eventMock->getResponse()->headers->all()
+                );
+                break;
+            }
+            self::assertEquals($i, $currentHop);
 
-        $listener->onRepeatableException($eventMock);
-        self::assertArrayNotHasKey(
-            PipesHeaders::createKey(PipesHeaders::REPEAT_MAX_HOPS),
-            $eventMock->getResponse()->headers->all()
-        );
-
+        }
     }
 
     /**
