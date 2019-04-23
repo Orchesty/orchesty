@@ -5,7 +5,6 @@ import {Channel, Message} from "amqplib";
 import {Connection} from "amqplib-plus/dist/lib/Connection";
 import {Publisher} from "amqplib-plus/dist/lib/Publisher";
 import {SimpleConsumer} from "amqplib-plus/dist/lib/SimpleConsumer";
-import {Replies} from "amqplib/properties";
 import {amqpConnectionOptions, persistentQueues, redisStorageOptions} from "../../src/config";
 import {default as Counter, ICounterSettings} from "../../src/counter/Counter";
 import {ICounterProcessInfo} from "../../src/counter/CounterProcess";
