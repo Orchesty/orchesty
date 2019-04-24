@@ -8,3 +8,9 @@ services:
             - ['setLogger', ['@monolog.logger.commons']]
         tags:
             - { name: kernel.event_subscriber }
+    listener.repeater:
+        class: Hanaboso\PipesFramework\ApiGateway\Listener\RepeaterListener
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]
+        tags:
+            - { name: kernel.event_subscriber }
