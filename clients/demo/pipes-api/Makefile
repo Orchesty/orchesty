@@ -37,7 +37,7 @@ phpstan:
 	$(DE) php ./vendor/bin/phpstan analyse -c ./phpstan.neon -l 7 src/ tests/
 
 phpunit:
-	$(DE) php ./vendor/bin/phpunit -c phpunit.xml.dist --dont-report-useless-tests --colors --stderr tests
+	$(DE) php ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr tests
 
 init: docker-up-force composer-install
 
