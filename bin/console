@@ -1,12 +1,12 @@
 #!/usr/bin/env php
 <?php
+use Hanaboso\PipesFramework\Command\IncludeCommands;
 use Hanaboso\PipesFramework\Kernel;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Debug\Debug;
 set_time_limit(0);
 require __DIR__.'/../vendor/autoload.php';
-if (!class_exists(Application::class)) {
+if (!class_exists(IncludeCommands::class)) {
     throw new \RuntimeException('You need to add "symfony/framework-bundle" as a Composer dependency.');
 }
 
@@ -20,5 +20,5 @@ if ($debug) {
     }
 }
 $kernel = new Kernel($env, $debug);
-$application = new Application($kernel);
-$application->run($input);
+$commands = new IncludeCommands($kernel);
+$commands->run($input);
