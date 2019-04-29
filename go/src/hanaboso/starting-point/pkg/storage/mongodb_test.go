@@ -1,10 +1,10 @@
 package storage
 
 import (
-	"github.com/mongodb/mongo-go-driver/bson"
-	"github.com/mongodb/mongo-go-driver/bson/primitive"
-	"github.com/mongodb/mongo-go-driver/mongo"
 	"github.com/stretchr/testify/assert"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"starting-point/pkg/config"
 	"testing"
 )
@@ -65,7 +65,8 @@ func TestMongo(t *testing.T) {
 	assert.Nil(t, topology.Node)
 
 	topologies := Mongo.FindTopologyByName(topologyCollection, nodeCollection, "", false)
-	assert.Equal(t, 3, len(topologies))
+	assert.Equal(t, 1, len(topologies))
+	assert.Equal(t, int32(8), topologies[0].Version)
 
 	topologies = Mongo.FindTopologyByName("Unknown", nodeCollection, "", false)
 	assert.Equal(t, 0, len(topologies))
@@ -94,6 +95,7 @@ func prepareData(mongo *mongo.Database) map[string][]string {
 		"visibility": "public",
 		"enabled":    true,
 		"deleted":    false,
+		"version":    1,
 	})
 	topologyID := innerResult.InsertedID.(primitive.ObjectID).Hex()
 	innerResult, _ = mongo.Collection(config.Config.MongoDB.NodeColl).InsertOne(nil, bson.M{
@@ -109,6 +111,7 @@ func prepareData(mongo *mongo.Database) map[string][]string {
 		"visibility": "public",
 		"enabled":    true,
 		"deleted":    false,
+		"version":    2,
 	})
 	topologyID = innerResult.InsertedID.(primitive.ObjectID).Hex()
 	innerResult, _ = mongo.Collection(config.Config.MongoDB.NodeColl).InsertOne(nil, bson.M{
@@ -124,6 +127,7 @@ func prepareData(mongo *mongo.Database) map[string][]string {
 		"visibility": "private",
 		"enabled":    true,
 		"deleted":    false,
+		"version":    3,
 	})
 	topologyID = innerResult.InsertedID.(primitive.ObjectID).Hex()
 	innerResult, _ = mongo.Collection(config.Config.MongoDB.NodeColl).InsertOne(nil, bson.M{
@@ -139,6 +143,7 @@ func prepareData(mongo *mongo.Database) map[string][]string {
 		"visibility": "public",
 		"enabled":    false,
 		"deleted":    false,
+		"version":    4,
 	})
 	topologyID = innerResult.InsertedID.(primitive.ObjectID).Hex()
 	innerResult, _ = mongo.Collection(config.Config.MongoDB.NodeColl).InsertOne(nil, bson.M{
@@ -154,6 +159,7 @@ func prepareData(mongo *mongo.Database) map[string][]string {
 		"visibility": "public",
 		"enabled":    true,
 		"deleted":    true,
+		"version":    5,
 	})
 	topologyID = innerResult.InsertedID.(primitive.ObjectID).Hex()
 	innerResult, _ = mongo.Collection(config.Config.MongoDB.NodeColl).InsertOne(nil, bson.M{
@@ -169,6 +175,7 @@ func prepareData(mongo *mongo.Database) map[string][]string {
 		"visibility": "public",
 		"enabled":    false,
 		"deleted":    false,
+		"version":    6,
 	})
 	topologyID = innerResult.InsertedID.(primitive.ObjectID).Hex()
 	innerResult, _ = mongo.Collection(config.Config.MongoDB.NodeColl).InsertOne(nil, bson.M{
@@ -184,6 +191,7 @@ func prepareData(mongo *mongo.Database) map[string][]string {
 		"visibility": "public",
 		"enabled":    false,
 		"deleted":    false,
+		"version":    7,
 	})
 	topologyID = innerResult.InsertedID.(primitive.ObjectID).Hex()
 	innerResult, _ = mongo.Collection(config.Config.MongoDB.NodeColl).InsertOne(nil, bson.M{
@@ -199,6 +207,7 @@ func prepareData(mongo *mongo.Database) map[string][]string {
 		"visibility": "public",
 		"enabled":    true,
 		"deleted":    false,
+		"version":    8,
 	})
 	topologyID = innerResult.InsertedID.(primitive.ObjectID).Hex()
 	innerResult, _ = mongo.Collection(config.Config.MongoDB.NodeColl).InsertOne(nil, bson.M{

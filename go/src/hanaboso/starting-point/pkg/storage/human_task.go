@@ -1,6 +1,6 @@
 package storage
 
-import "github.com/mongodb/mongo-go-driver/bson/primitive"
+import "go.mongodb.org/mongo-driver/bson/primitive"
 
 // HumanTask represents HumanTask data
 type HumanTask struct {

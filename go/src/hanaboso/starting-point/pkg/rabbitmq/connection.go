@@ -143,7 +143,7 @@ func (c *connection) ClearChannels() {
 	}
 }
 
-func (c *connection) isChannel(n string) (bool) {
+func (c *connection) isChannel(n string) bool {
 	c.lock.Lock()
 	defer c.lock.Unlock()
 

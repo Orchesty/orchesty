@@ -2,8 +2,8 @@ package service
 
 import (
 	"fmt"
-	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	"github.com/stretchr/testify/assert"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"starting-point/pkg/storage"
 	"testing"
 )

@@ -1,8 +1,8 @@
 package rabbitmq
 
 import (
-	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	"github.com/streadway/amqp"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"starting-point/pkg/config"
 	"starting-point/pkg/storage"
 	"testing"

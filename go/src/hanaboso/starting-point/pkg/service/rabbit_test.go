@@ -2,7 +2,7 @@ package service
 
 import (
 	"bytes"
-	"github.com/mongodb/mongo-go-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"io/ioutil"
 	"net/http"
 	"starting-point/pkg/influx"

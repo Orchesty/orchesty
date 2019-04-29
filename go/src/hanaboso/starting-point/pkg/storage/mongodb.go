@@ -3,8 +3,9 @@ package storage
 import (
 	"context"
 	"fmt"
-	"github.com/mongodb/mongo-go-driver/bson/primitive"
-	"github.com/mongodb/mongo-go-driver/mongo"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"starting-point/pkg/config"
 	"strconv"
 	"time"
@@ -31,6 +32,7 @@ type MongoDefault struct {
 	visibilityFilter primitive.E
 	enabledFilter    primitive.E
 	deletedFilter    primitive.E
+	versionSort      primitive.D
 }
 
 // Mongo represents default MongoDB implementation
@@ -42,6 +44,7 @@ func CreateMongo() {
 		visibilityFilter: primitive.E{Key: "visibility", Value: "public"},
 		enabledFilter:    primitive.E{Key: "enabled", Value: true},
 		deletedFilter:    primitive.E{Key: "deleted", Value: false},
+		versionSort:      primitive.D{{"version", -1}},
 		log:              config.Config.Logger,
 	}
 	Mongo.Connect()
@@ -49,7 +52,7 @@ func CreateMongo() {
 
 // Connect connects to database
 func (m *MongoDefault) Connect() {
-	client, err := mongo.NewClient(fmt.Sprintf("mongodb://%s/%s", config.Config.MongoDB.Hostname, config.Config.MongoDB.Database))
+	client, err := mongo.NewClient(options.Client().ApplyURI(fmt.Sprintf("mongodb://%s", config.Config.MongoDB.Hostname)))
 	if err != nil {
 		m.log.Errorf("MongoDB connect: %s", err.Error())
 	}
@@ -81,7 +84,7 @@ func (m *MongoDefault) Connect() {
 		}
 	}()
 
-	log.Infof("Connecting MongoDB to %s...", m.mongo.Client().ConnectionString())
+	log.Info("Connecting to MongoDB...")
 }
 
 // Disconnect disconnects from database
@@ -204,7 +207,7 @@ func (m *MongoDefault) FindTopologyByName(topologyName, nodeName, processID stri
 		m.visibilityFilter,
 		m.enabledFilter,
 		m.deletedFilter,
-	})
+	}, options.Find().SetSort(m.versionSort).SetLimit(1))
 	if err != nil {
 		logMongoError(m.log, err, fmt.Sprintf("Topology with name '%s' not found.", topologyName))
 	}
