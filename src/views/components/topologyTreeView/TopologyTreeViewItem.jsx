@@ -45,8 +45,8 @@ class TopologyTreeViewItem extends React.Component {
       case 'topology':
         return (
           <li className={'topology-tree-view-item topology' + (topLevel ? ' top-level-item' : ' next-level-item')} >
-            <a onClick={this.topologyClick} onContextMenu={this.contextMenuClick} className={item.enabled ? 'enabled' : 'disabled'}>
-              <i className="fa fa-file-code-o" />{item.name}.v{item.version}
+            <a onClick={this.topologyClick} onContextMenu={this.contextMenuClick} className={`${item.enabled ? 'enabled' : 'disabled'} ${item.type}`}>
+              <i className={item.type === 'cron' ? 'fa fa-clock-o' : 'fa fa-file-code-o'} />{item.name}.v{item.version}
             </a>
           </li>
         );
