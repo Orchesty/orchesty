@@ -1,0 +1,44 @@
+package storage
+
+import "gopkg.in/mgo.v2/bson"
+
+type Storage interface {
+	CheckerSaver
+	Remover
+	Finder
+}
+
+type CheckerSaver interface {
+	Checker
+	Saver
+}
+
+type Checker interface {
+	// CanHandle returns true if message can be processed
+	CanHandle(key string, time int, val int) (bool, error)
+}
+
+type Saver interface {
+	// Save persists message to the storage and returns it's storage key
+	Save(m *Message) (string, error)
+}
+
+type Remover interface {
+	// Remove removes the document by it's unique object id
+	Remove(key string, id bson.ObjectId) (bool, error)
+}
+
+type Finder interface {
+	DistinctFinder
+	// Exists returns true if any message with given key is present in storage
+	Exists(key string) (bool, error)
+	// Returns the message or error if no message was found
+	Get(key string, length int) ([]*Message, error)
+	// Count returns the number of messages with given key
+	Count(key string) (int, error)
+}
+
+type DistinctFinder interface {
+	// GetDistinctFirstItems returns for every distinct limitkey the first record
+	GetDistinctFirstItems() (map[string]*Message, error)
+}
