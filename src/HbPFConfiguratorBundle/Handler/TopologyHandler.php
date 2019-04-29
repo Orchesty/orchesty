@@ -14,10 +14,12 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\CommonsBundle\Utils\ControllerUtils;
 use Hanaboso\CommonsBundle\Utils\UriParams;
+use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
+use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Throwable;
 
@@ -300,8 +302,12 @@ class TopologyHandler
      */
     private function getTopologyData(Topology $topology): array
     {
+        /** @var NodeRepository $repository */
+        $repository = $this->dm->getRepository(Node::class);
+
         return [
             '_id'        => $topology->getId(),
+            'type'       => $repository->getTopologyType($topology),
             'name'       => $topology->getName(),
             'descr'      => $topology->getDescr(),
             'status'     => $topology->getStatus(),
