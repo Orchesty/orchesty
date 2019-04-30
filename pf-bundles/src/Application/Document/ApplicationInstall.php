@@ -179,10 +179,11 @@ class ApplicationInstall
     }
 
     /**
+     * @ODM\PreFlush
      * @throws CryptException
      * @throws DateTimeException
      */
-    public function preUpdated(): void
+    public function preFlush(): void
     {
         $this->encryptedSettings = CryptManager::encrypt($this->settings);
         $this->updated           = DateTimeUtils::getUtcDateTime();
@@ -192,7 +193,7 @@ class ApplicationInstall
      * @ODM\PostLoad
      * @throws CryptException
      */
-    public function postLoadDecrypt(): void
+    public function postLoad(): void
     {
         $this->settings = CryptManager::decrypt($this->encryptedSettings);
     }
