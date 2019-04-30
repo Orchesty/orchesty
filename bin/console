@@ -19,6 +19,6 @@ if ($debug) {
         Debug::enable();
     }
 }
-$kernel = new Kernel($env, $debug);
-$commands = new Application($kernel);
-$commands->run($input);
+$kernel      = new Kernel($env, $debug);
+$application = new Application($kernel);
+$application->run($input);
