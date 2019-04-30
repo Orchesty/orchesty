@@ -79,7 +79,7 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
 
         $response = $this->client->getResponse();
 
-        self::assertTrue(in_array('magento2.modules', json_decode($response->getContent())));
+        self::assertTrue(in_array('null', json_decode($response->getContent())));
         self::assertEquals(200, $response->getStatusCode());
     }
 

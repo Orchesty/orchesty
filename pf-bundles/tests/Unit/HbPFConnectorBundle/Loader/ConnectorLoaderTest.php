@@ -3,7 +3,6 @@
 namespace Tests\Unit\HbPFConnectorBundle\Loader;
 
 use Exception;
-use Hanaboso\PipesFramework\Connector\Impl\Magento2\Magento2OrdersConnector;
 use Hanaboso\PipesFramework\HbPFConnectorBundle\Loader\ConnectorLoader;
 use Tests\KernelTestCaseAbstract;
 
@@ -35,8 +34,8 @@ final class ConnectorLoaderTest extends KernelTestCaseAbstract
      */
     public function testGetConnector(): void
     {
-        $conn = $this->loader->getConnector('magento2.orders');
-        self::assertInstanceOf(Magento2OrdersConnector::class, $conn);
+        $conn = $this->loader->getConnector('null');
+        self::assertInstanceOf(NullConnector::class, $conn);
     }
 
 }

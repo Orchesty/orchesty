@@ -43,11 +43,7 @@ class HbPFAuthorizationExtension extends Extension implements PrependExtensionIn
         $this->processConfiguration($configuration, $configs);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
-        $loader->load('authorizations.yml');
-        $loader->load('commands.yml');
-        $loader->load('controllers.yml');
         $loader->load('oauth_providers.yml');
-        $loader->load('services.yml');
     }
 
 }

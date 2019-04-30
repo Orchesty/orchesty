@@ -23,7 +23,7 @@ final class AuthorizationTest extends DatabaseTestCaseAbstract
         $token    = ['token' => 'token'];
         $settings = ['foo' => 'bar', 'baz' => 'bat'];
 
-        $authorization = new Authorization('magento2_auth');
+        $authorization = new Authorization('null');
         $authorization->setToken($token);
         $authorization->setSettings($settings);
 
@@ -46,16 +46,6 @@ final class AuthorizationTest extends DatabaseTestCaseAbstract
         self::assertArrayHasKey('encryptedSettings', $data[$authorization->getId()]);
         self::assertTrue(is_string($data[$authorization->getId()]['encryptedSettings']));
 
-        // postLoad should decrypt the data
-        $loaded = $this->dm->getRepository(Authorization::class)->find($authorization->getId());
-
-        self::assertNotEmpty($loaded->getToken());
-        self::assertTrue(is_array($loaded->getToken()));
-        self::assertEquals($token, $loaded->getToken());
-
-        self::assertNotEmpty($loaded->getSettings());
-        self::assertTrue(is_array($loaded->getSettings()));
-        self::assertEquals($settings, $loaded->getSettings());
     }
 
 }
