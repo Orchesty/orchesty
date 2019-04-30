@@ -7,10 +7,6 @@ hb_pf_api_gateway:
     type:     annotation
     prefix:   /api
 
-hb_pf_authorization:
-    resource: "@HbPFAuthorizationBundle/Controller"
-    type: annotation
-
 hb_pf_mapper:
     resource: "@HbPFMapperBundle/Controller"
     type: annotation
