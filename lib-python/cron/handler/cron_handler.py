@@ -114,3 +114,9 @@ class CronHandler(CronHandlerBase):
         logger.debug('remove all')
         
         return get_json_content(200, json.dumps({"message": "Purged {} entries".format(result)}))
+
+    def get_all(self):
+        result = self.db.get_all_cron()
+        logger.debug('get all')
+
+        return get_json_content(200, json.dumps(result))
