@@ -6,6 +6,7 @@ use FOS\RestBundle\FOSRestBundle;
 use Hanaboso\AclBundle\HbPFAclBundle;
 use Hanaboso\CommonsBundle\HbPFCommonsBundle;
 use Hanaboso\PipesFramework\HbPFApiGatewayBundle\HbPFApiGatewayBundle;
+use Hanaboso\PipesFramework\HbPFApplicationBundle\HbPFApplicationBundle;
 use Hanaboso\PipesFramework\HbPFAuthorizationBundle\HbPFAuthorizationBundle;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\HbPFConfiguratorBundle;
 use Hanaboso\PipesFramework\HbPFConnectorBundle\HbPFConnectorBundle;
@@ -43,6 +44,7 @@ return [
     HbPFAuthorizationBundle::class   => ['all' => TRUE],
     HbPFAclBundle::class             => ['all' => TRUE],
     HbPFApiGatewayBundle::class      => ['all' => TRUE],
+    HbPFApplicationBundle::class     => ['all' => TRUE],
     HbPFConfiguratorBundle::class    => ['all' => TRUE],
     HbPFConnectorBundle::class       => ['all' => TRUE],
     HbPFCustomNodeBundle::class      => ['all' => TRUE],
