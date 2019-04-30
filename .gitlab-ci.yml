@@ -100,7 +100,7 @@ kapacitor-build:
 topology-api:
   stage: stage1
   script:
-    - cd topologygenerator && make docker-push
+    -  cd go/src/hanaboso/topologygenerator && make docker-push
   only:
     - dev
     - master
@@ -136,11 +136,11 @@ limiter-test:
     DIR: limiter
   stage: stage2
 
-# topology-generator-test:
-  # <<: *go_test
-  # variables:
-  #   DIR: go/src/hanaboso/topologygenerator
-  # stage: stage2
+topology-generator-test:
+  <<: *go_test
+  variables:
+   DIR: go/src/hanaboso/topologygenerator
+  stage: stage2
 
 pf-bundles-test:
   stage: stage2
