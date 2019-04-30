@@ -1,0 +1,28 @@
+stages:
+    - build
+    - clean
+
+before_script:
+  - eval $(ssh-agent)
+  - ssh-add ~/.ssh/id_rsa
+
+build:
+    stage: build
+    only:
+        - dev
+        - master
+        - ci
+    script:
+        - export COMPOSE_PROJECT_NAME="build_${CI_PIPELINE_ID}"
+        - make ci-test
+        - IMAGE=cmhanaboso.azurecr.io/clever-monitor/limiter:${CI_BUILD_REF_SLUG}
+        - docker build -t ${IMAGE} .
+        - docker push ${IMAGE}
+
+clean:
+    stage: clean
+    script:
+        - export COMPOSE_PROJECT_NAME="build_${CI_PIPELINE_ID}"
+        - make ci-clean
+    when: always
+

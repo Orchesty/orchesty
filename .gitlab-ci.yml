@@ -58,6 +58,18 @@ multi-probe-image:
     - master
     - ci
 
+limiter-image:
+  stage: stage1
+  script:
+    - cd $REPO_ROOT/go/src/hanaboso/limiter
+    - IMAGE=dkr.hanaboso.net/pipes/pipes/limiter:${CI_BUILD_REF_NAME}
+    - docker build -t ${IMAGE} .
+    - docker push ${IMAGE}
+  only:
+    - dev
+    - master
+    - ci
+
 logstash-build:
     stage: stage1
     script:
@@ -116,6 +128,12 @@ multi-probe-test:
   <<: *go_test
   variables:
     DIR: go/src/hanaboso/multi-probe
+  stage: stage2
+
+limiter-test:
+  <<: *go_test
+  variables:
+    DIR: go/src/hanaboso/limiter
   stage: stage2
 
 utils-test:
@@ -284,6 +302,12 @@ cleanup:
     - export COMPOSE_FILE=docker-compose.ci.yml
     - make ${COMPOSE_FILE}
     - docker-compose down -v || echo "multi-probe cleanup phase failed"
+
+    - ": limiter"
+    - cd $REPO_ROOT/go/src/hanaboso/limiter
+    - export COMPOSE_PROJECT_NAME="limiter-test_${CI_PIPELINE_ID}"
+    - export COMPOSE_FILE=docker-compose.ci.yml
+    - docker-compose down -v || echo "limiter cleanup phase failed"
 
     - ": utils"
     - cd $REPO_ROOT/go/src/hanaboso/utils
