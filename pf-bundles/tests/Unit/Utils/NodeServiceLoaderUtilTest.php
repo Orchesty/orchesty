@@ -23,11 +23,12 @@ final class NodeServiceLoaderUtilTest extends KernelTestCaseAbstract
         $dirs     = [
             sprintf('%s/HbPFConnectorBundle/Resources/config/', $path),
             sprintf('%s/HbPFCustomNodeBundle/Resources/config/', $path),
+            sprintf('%s/../config/packages/test/', $path),
         ];
         $services = NodeServiceLoaderUtil::getServices($dirs, 'hbpf.connector');
 
         self::assertNotEmpty($services);
-        self::assertTrue(in_array('magento2.customers', $services));
+        self::assertTrue(in_array('null', $services));
         self::assertFalse(in_array('_defaults', $services));
         self::assertFalse(in_array('requestbin', $services));
     }
