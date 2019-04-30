@@ -31,6 +31,16 @@ class TopologyController extends AbstractFOSRestController
     }
 
     /**
+     * @Route("/topologies/cron", methods={"GET", "OPTIONS"})
+     *
+     * @return Response
+     */
+    public function getCronTopologiesAction(): Response
+    {
+        return $this->forward('HbPFConfiguratorBundle:Topology:getCronTopologies');
+    }
+
+    /**
      * @Route("/topologies/{id}", defaults={}, requirements={"id": "\w+"}, methods={"GET", "OPTIONS"})
      *
      * @param string $id

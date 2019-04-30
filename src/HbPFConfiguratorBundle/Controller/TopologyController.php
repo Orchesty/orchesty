@@ -61,6 +61,22 @@ class TopologyController extends AbstractFOSRestController
     }
 
     /**
+     * @Route("/topologies/cron", methods={"GET", "OPTIONS"})
+     *
+     * @return Response
+     */
+    public function getCronTopologiesAction(): Response
+    {
+        try {
+            return $this->getResponse($this->topologyHandler->getCronTopologies());
+        } catch (TopologyException $e) {
+            return $this->getErrorResponse($e, 404);
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
+        }
+    }
+
+    /**
      * @Route("/topologies/{id}", defaults={}, requirements={"id": "\w+"}, methods={"GET", "OPTIONS"})
      *
      * @param string $id
