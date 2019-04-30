@@ -72,6 +72,12 @@ export default {
     needAuth: true,
     simpleRoute: '/human_tasks',
   },
+  cron_tasks_list: {
+    key: 'cron_tasks_list',
+    caption: 'Cron Tasks',
+    needAuth: true,
+    simpleRoute: '/cron_tasks',
+  },
   log_list: {
     key: 'log_list',
     caption: 'Log list',

@@ -33,4 +33,9 @@ export default dispatch => [
     caption: 'Human Tasks',
     action: () => dispatch(applicationActions.openPage('human_tasks_list')),
   },
+  {
+    type: menuItemType.ACTION,
+    caption: 'Cron Tasks',
+    action: () => dispatch(applicationActions.openPage('cron_tasks_list')),
+  },
 ];

@@ -9,7 +9,8 @@ import topologyGroup from './topologyGroup';
 import node from './node';
 import category from './category';
 import authorization from './authorization';
-import humanTask from './humanTaks';
+import humanTask from './humanTask';
+import cronTask from './cronTasks';
 import auth from './auth';
 import process from './process';
 import server from './server';
@@ -30,6 +31,7 @@ const rootReducer = combineReducers({
   category,
   authorization,
   humanTask,
+  cronTask,
   process,
   server,
   form,
