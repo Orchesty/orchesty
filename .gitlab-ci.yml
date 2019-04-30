@@ -27,7 +27,7 @@ php-dev-image:
 starting-point-dev-image:
   stage: stage1
   script:
-    - DIR=go/src/hanaboso/starting-point
+    - DIR=starting-point
     - cd $DIR
     - make build-dev-image
   only:
@@ -49,9 +49,9 @@ njs-build-image:
 multi-probe-image:
   stage: stage1
   script:
-    - cd $REPO_ROOT/go/src/hanaboso/multi-probe
+    - cd $REPO_ROOT/multi-probe
     - IMAGE=dkr.hanaboso.net/pipes/pipes/multi-probe:${CI_BUILD_REF_NAME}
-    - cd ../ && docker build -t ${IMAGE} -f ./multi-probe/Dockerfile .
+    - docker build -t ${IMAGE} .
     - docker push ${IMAGE}
   only:
     - dev
@@ -61,7 +61,7 @@ multi-probe-image:
 limiter-image:
   stage: stage1
   script:
-    - cd $REPO_ROOT/go/src/hanaboso/limiter
+    - cd $REPO_ROOT/limiter
     - IMAGE=dkr.hanaboso.net/pipes/pipes/limiter:${CI_BUILD_REF_NAME}
     - docker build -t ${IMAGE} .
     - docker push ${IMAGE}
@@ -100,7 +100,7 @@ kapacitor-build:
 topology-api:
   stage: stage1
   script:
-    - cd go/src/hanaboso/topologygenerator && make docker-push
+    - cd topologygenerator && make docker-push
   only:
     - dev
     - master
@@ -127,26 +127,20 @@ pf-bridge:
 multi-probe-test:
   <<: *go_test
   variables:
-    DIR: go/src/hanaboso/multi-probe
+    DIR: multi-probe
   stage: stage2
 
 limiter-test:
   <<: *go_test
   variables:
-    DIR: go/src/hanaboso/limiter
+    DIR: limiter
   stage: stage2
 
-utils-test:
-  <<: *go_test
-  variables:
-    DIR: go/src/hanaboso/utils
-  stage: stage2
-
-topology-generator-test:
-  <<: *go_test
-  variables:
-    DIR: go/src/hanaboso/topologygenerator
-  stage: stage2
+# topology-generator-test:
+  # <<: *go_test
+  # variables:
+  #   DIR: go/src/hanaboso/topologygenerator
+  # stage: stage2
 
 pf-bundles-test:
   stage: stage2
@@ -198,7 +192,7 @@ frontend:
 starting-point:
   stage: stage2
   script:
-    - DIR=go/src/hanaboso/starting-point
+    - DIR=starting-point
     - skip_unmodified $DIR
     - cd $DIR
     - make build-image push TAG=${CI_BUILD_REF_NAME}
@@ -297,24 +291,16 @@ cleanup:
     - docker-compose down -v || echo "bridge cleanup phase failed"
 
     - ": multi-probe"
-    - cd $REPO_ROOT/go/src/hanaboso/multi-probe
+    - cd $REPO_ROOT/multi-probe
     - export COMPOSE_PROJECT_NAME="multi-probe-test_${CI_PIPELINE_ID}"
     - export COMPOSE_FILE=docker-compose.ci.yml
-    - make ${COMPOSE_FILE}
     - docker-compose down -v || echo "multi-probe cleanup phase failed"
 
     - ": limiter"
-    - cd $REPO_ROOT/go/src/hanaboso/limiter
+    - cd $REPO_ROOT/limiter
     - export COMPOSE_PROJECT_NAME="limiter-test_${CI_PIPELINE_ID}"
     - export COMPOSE_FILE=docker-compose.ci.yml
     - docker-compose down -v || echo "limiter cleanup phase failed"
-
-    - ": utils"
-    - cd $REPO_ROOT/go/src/hanaboso/utils
-    - export COMPOSE_PROJECT_NAME="utils-test_${CI_PIPELINE_ID}"
-    - export COMPOSE_FILE=docker-compose.ci.yml
-    - make ${COMPOSE_FILE}
-    - docker-compose down -v || echo "utils cleanup phase failed"
 
     - ": topology generator"
     - cd $REPO_ROOT/go/src/hanaboso/topologygenerator
