@@ -108,7 +108,7 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
         $content  = $response->content;
 
         self::assertEquals(200, $response->status);
-        self::assertEquals(['magento2.customers', 'magento2.modules', 'magento2.orders'], (array) $content);
+        self::assertEquals(['null'], (array) $content);
 
         $type     = 'config';
         $response = $this->sendGet(sprintf('/api/nodes/%s/list_nodes', $type));

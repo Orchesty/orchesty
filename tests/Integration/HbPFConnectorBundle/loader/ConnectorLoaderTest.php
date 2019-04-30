@@ -21,10 +21,10 @@ final class ConnectorLoaderTest extends KernelTestCaseAbstract
         $connector = new ConnectorLoader(self::$container);
 
         $fields = $connector->getAllConnectors();
-        self::assertCount(3, $fields);
+        self::assertCount(1, $fields);
 
-        $fields = $connector->getAllConnectors(['magento2.orders']);
-        self::assertCount(2, $fields);
+        $fields = $connector->getAllConnectors(['null']);
+        self::assertCount(0, $fields);
     }
 
 }
