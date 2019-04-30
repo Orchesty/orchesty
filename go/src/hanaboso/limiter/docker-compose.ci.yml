@@ -16,7 +16,7 @@ services:
       - MONGO_HOST=mongodb
       - RABBITMQ_HOST=rabbitmq
       - LOGSTASH_HOST=logstash
-      - LOGSTASH_PORT=4444
+      - LOGSTASH_PORT=5120
     volumes:
       - ./:/limiter
     command: bash -c 'sleep infinity'
