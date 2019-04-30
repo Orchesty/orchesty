@@ -1,0 +1,8 @@
+FROM golang:1.11-stretch
+
+RUN apt-get update && \
+    apt-get install -y vim git mc make && \
+    apt-get clean && \
+    go get -u golang.org/x/lint/golint
+
+WORKDIR /app

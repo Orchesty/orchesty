@@ -1,0 +1,113 @@
+package service
+
+import (
+	"fmt"
+	"github.com/patrickmn/go-cache"
+	"starting-point/pkg/config"
+	"starting-point/pkg/storage"
+	"strconv"
+	"time"
+)
+
+// CacheInterface represents cache interface
+type CacheInterface interface {
+	InitCache()
+	GetCache() *cache.Cache
+	InvalidateCache(topologyName string) int
+	FindTopologyByID(topologyID, nodeID, processID string, isHumanTask bool) *storage.Topology
+	FindTopologyByName(topologyName, nodeName, processID string, isHumanTask bool) []storage.Topology
+}
+
+// CacheDefault represents default cache implementation
+type CacheDefault struct {
+	cache *cache.Cache
+	mongo storage.MongoInterface
+}
+
+// Cache represents cache
+var Cache CacheInterface
+
+// CreateCache creates default cache implementation
+func CreateCache() {
+	Cache = &CacheDefault{mongo: storage.Mongo}
+	Cache.InitCache()
+}
+
+// InitCache creates cache
+func (c *CacheDefault) InitCache() {
+	expiration, _ := strconv.Atoi(config.Config.Cache.Expiration)
+	cleanUp, _ := strconv.Atoi(config.Config.Cache.CleanUp)
+	c.cache = cache.New(time.Duration(expiration)*time.Hour, time.Duration(cleanUp)*time.Hour)
+}
+
+// GetCache returns cache
+func (c *CacheDefault) GetCache() *cache.Cache {
+	return c.cache
+}
+
+// FindTopologyByID finds node by ID
+func (c *CacheDefault) FindTopologyByID(topologyID, nodeID, processID string, isHumanTask bool) *storage.Topology {
+	topologyKey := fmt.Sprintf("%s-%s", topologyID, nodeID)
+	topology, found := c.cache.Get(topologyKey)
+
+	if !found {
+		foundTopology := c.mongo.FindTopologyByID(topologyID, nodeID, processID, isHumanTask)
+
+		if foundTopology != nil && foundTopology.Node != nil {
+			c.cache.Set(topologyKey, foundTopology, 0)
+			addToTopologyCache(foundTopology.Name, topologyKey)
+		}
+
+		return foundTopology
+	}
+
+	return topology.(*storage.Topology)
+}
+
+// FindTopologyByName finds node by name
+func (c *CacheDefault) FindTopologyByName(topologyName, nodeName, processID string, isHumanTask bool) []storage.Topology {
+	topologyKey := fmt.Sprintf("%s-%s", topologyName, nodeName)
+	topologies, found := c.cache.Get(topologyKey)
+
+	if !found {
+		foundTopologies := c.mongo.FindTopologyByName(topologyName, nodeName, processID, isHumanTask)
+
+		if len(foundTopologies) > 0 {
+			c.cache.Set(topologyKey, foundTopologies, 0)
+			addToTopologyCache(topologyName, topologyKey)
+		}
+
+		return foundTopologies
+	}
+
+	return topologies.([]storage.Topology)
+}
+
+// InvalidateCache invalidate cache by topology name
+func (c *CacheDefault) InvalidateCache(topologyName string) int {
+	topologies, found := c.cache.Get(topologyName)
+
+	if found {
+		innerTopologies := topologies.([]string)
+
+		for _, topology := range innerTopologies {
+			c.cache.Delete(topology)
+		}
+
+		c.cache.Delete(topologyName)
+
+		return len(innerTopologies)
+	}
+
+	return 0
+}
+
+func addToTopologyCache(topologyName, topologyKey string) {
+	topologyKeys, found := Cache.GetCache().Get(topologyName)
+
+	if !found {
+		Cache.GetCache().Set(topologyName, []string{topologyKey}, 0)
+	} else {
+		Cache.GetCache().Set(topologyName, append(topologyKeys.([]string), topologyKey), 0)
+	}
+}

@@ -1,0 +1,45 @@
+version: '3.3'
+
+services:
+  app:
+    image: dkr.hanaboso.net/pipes/pipes/starting-point:app-dev
+    environment:
+      APP_DEBUG: "false"
+      GO111MODULE: "on"
+      MONGO_HOSTNAME: mongodb
+      MONGO_DATABASE: starting-point
+      RABBIT_COUNTER_QUEUE_DURABLE: "true"
+      RABBIT_QUEUE_DURABLE: "true"
+      RABBIT_DELIVERY_MODE: 2
+      APP_CLEANUP_TIME: "300"
+    working_dir: /go/src/hanaboso/starting-point
+    volumes:
+      - ./:/go/src/hanaboso/starting-point
+    ports:
+      - ${DEV_IP}:80:80
+    command: go run cmd/starting-point.go
+
+  mongodb:
+    image: mongo
+    ports:
+      - ${DEV_IP}:27017:27017
+    volumes:
+      - mongodb:/data/db
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - ${DEV_IP}:15672:15672
+    volumes:
+      - rabbitmq:/var/lib/rabbitmq
+
+  influxdb:
+    image: dkr.hanaboso.net/pipes/pipes/influxdb:dev
+
+  test:
+    image: alpine
+    command: tail -f /dev/null
+
+volumes:
+  mongodb: {}
+  rabbitmq: {}
