@@ -2,7 +2,8 @@
 
 namespace Hanaboso\PipesFramework\Authorization\Provider\Dto;
 
-use Hanaboso\PipesFramework\Authorization\Document\Authorization;
+use Hanaboso\PipesFramework\Application\Base\BasicApplicationInterface;
+use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 
 /**
  * Class OAuth1Dto
@@ -13,7 +14,7 @@ final class OAuth1Dto implements OAuth1DtoInterface
 {
 
     /**
-     * @var Authorization
+     * @var ApplicationInstall
      */
     private $authorization;
 
@@ -40,14 +41,14 @@ final class OAuth1Dto implements OAuth1DtoInterface
     /**
      * OAuth1Dto constructor.
      *
-     * @param Authorization $authorization
-     * @param string        $consumerKey
-     * @param string        $consumerSecret
-     * @param string        $signatureMethod
-     * @param int           $authType
+     * @param ApplicationInstall $authorization
+     * @param string             $consumerKey
+     * @param string             $consumerSecret
+     * @param string             $signatureMethod
+     * @param int                $authType
      */
     public function __construct(
-        Authorization $authorization,
+        ApplicationInstall $authorization,
         string $consumerKey,
         string $consumerSecret,
         string $signatureMethod = OAUTH_SIG_METHOD_HMACSHA1,
@@ -94,9 +95,9 @@ final class OAuth1Dto implements OAuth1DtoInterface
     }
 
     /**
-     * @return Authorization
+     * @return ApplicationInstall
      */
-    public function getAuthorization(): Authorization
+    public function getAuthorization(): ApplicationInstall
     {
         return $this->authorization;
     }
@@ -106,7 +107,7 @@ final class OAuth1Dto implements OAuth1DtoInterface
      */
     public function getToken(): array
     {
-        return $this->authorization->getToken();
+        return $this->authorization->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::TOKEN];
     }
 
 }

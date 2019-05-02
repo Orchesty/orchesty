@@ -36,11 +36,6 @@ doctrine_mongodb:
                     is_bundle: false
                     dir: "%kernel.root_dir%/Application/Document"
                     prefix: Hanaboso\PipesFramework\Application\Document
-                AuthorizationDocument:
-                    type: annotation
-                    is_bundle: false
-                    dir: "%kernel.root_dir%/Authorization/Document"
-                    prefix: Hanaboso\PipesFramework\Authorization\Document
                 FileDocument:
                     type: annotation
                     is_bundle: false

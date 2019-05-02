@@ -8,13 +8,18 @@ use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth1DtoInterface;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth1Provider;
 use OAuthException;
 
+/**
+ * Class OAuth1ApplicationAbstract
+ *
+ * @package Hanaboso\PipesFramework\Application\Base
+ */
 abstract class OAuth1ApplicationAbstract extends BasicApplicationAbstract implements OAuth1ApplicationInterface
 {
 
     /**
      * @var OAuth1Provider
      */
-    private $provider;
+    protected $OAuth1Provider;
 
     /**
      * @var OAuth1DtoInterface;
@@ -28,7 +33,7 @@ abstract class OAuth1ApplicationAbstract extends BasicApplicationAbstract implem
      */
     public function __construct(OAuth1Provider $provider)
     {
-        $this->provider = $provider;
+        $this->OAuth1Provider = $provider;
     }
 
     /**
@@ -42,30 +47,18 @@ abstract class OAuth1ApplicationAbstract extends BasicApplicationAbstract implem
     /**
      * @param ApplicationInstall $applicationInstall
      *
-     * @return bool
-     */
-    public function isAuthorized(ApplicationInstall $applicationInstall): bool
-    {
-        return isset($applicationInstall->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::TOKEN]);
-    }
-
-    /**
-     * @param ApplicationInstall $applicationInstall
-     *
      * @throws AuthorizationException
      * @throws OAuthException
      */
     public function authorize(ApplicationInstall $applicationInstall): void
     {
-        $this->provider->authorize
-        (
+        $this->OAuth1Provider->authorize(
             $this->dto,
             $this->getTokenUrl(),
             $this->getAuthorizeUrl(),
             $this->getRedirectUrl(),
             $this->saveOAuthStaff(),
-            $this->getScopes()
-        );
+            );
     }
 
     /**
@@ -86,11 +79,6 @@ abstract class OAuth1ApplicationAbstract extends BasicApplicationAbstract implem
     /**
      * @return callable
      */
-    abstract protected function saveOAuthStaff(): callable;
-
-    /**
-     * @return array
-     */
-    abstract protected function getScopes(): array;
+    abstract protected function saveOauthStaff(): callable;
 
 }
