@@ -262,6 +262,48 @@ class TopologyManager
     }
 
     /**
+     * @return array
+     * @throws CronException
+     * @throws CurlException
+     * @throws TopologyException
+     */
+    public function getCronTopologies(): array
+    {
+        $data = json_decode($this->cronManager->getAll()->getBody(), TRUE, 512, JSON_THROW_ON_ERROR);
+
+        foreach ($data as $key => $item) {
+            [$topologyName, $nodeName] = explode('-', $item['name']);
+            /** @var Topology[] $topologies */
+            $topologies = $this->topologyRepository->findBy(
+                ['name' => $topologyName],
+                ['enabled' => 'DESC', 'version' => 'DESC']
+            );
+
+            if (count($topologies) === 0) {
+                throw new TopologyException(
+                    sprintf('Topology with name [%s] not found!', $topologyName),
+                    TopologyException::TOPOLOGY_NOT_FOUND
+                );
+            }
+
+            $data[$key]['topology_status'] = $topologies[0]->isEnabled();
+            $data[$key]['topology_id']     = $topologies[0]->getId();
+            $data[$key]['topology']        = $topologyName;
+            $data[$key]['node']            = $nodeName;
+        }
+
+        usort($data, function (array $one, array $two): int {
+            if ($one['topology_status'] === $two['topology_status']) {
+                return $one['topology'] <=> $two['topology'];
+            } else {
+                return ($one['topology_status'] <=> $two['topology_status']) * -1;
+            }
+        });
+
+        return $data;
+    }
+
+    /**
      * ----------------------------------------------- HELPERS -----------------------------------------------
      */
 
