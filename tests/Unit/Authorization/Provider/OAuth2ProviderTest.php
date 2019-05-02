@@ -4,6 +4,7 @@ namespace Tests\Unit\Authorization\Provider;
 
 use Exception;
 use Hanaboso\CommonsBundle\Redirect\RedirectInterface;
+use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
@@ -31,7 +32,8 @@ final class OAuth2ProviderTest extends TestCase
     {
         /** @var MockObject|OAuth2Provider $provider */
         $provider = $this->getMockedProvider($url);
-        $dto      = new OAuth2Dto('cl_id', 'cl_sec', '127.0.0.4/red', 'authorize/url', 'token/url');
+        $install  = new ApplicationInstall();
+        $dto      = new OAuth2Dto($install, '127.0.0.4/red', 'authorize/url', 'token/url');
         $dto->setCustomAppDependencies(uniqid(), 'magento');
 
         $provider->authorize($dto, []);
@@ -48,7 +50,8 @@ final class OAuth2ProviderTest extends TestCase
     {
         /** @var MockObject|OAuth2Provider $provider */
         $provider = $this->getMockedProvider($url);
-        $dto      = new OAuth2Dto('cl_id', 'cl_sec', '127.0.0.4/red', 'authorize/url', 'token/url');
+        $install  = new ApplicationInstall();
+        $dto      = new OAuth2Dto($install, '127.0.0.4/red', 'authorize/url', 'token/url');
 
         $provider->authorize($dto, []);
     }
@@ -77,7 +80,8 @@ final class OAuth2ProviderTest extends TestCase
     {
         /** @var OAuth2Provider|MockObject $provider */
         $provider = $this->getMockedProvider('');
-        $dto      = new OAuth2Dto('cl_id', 'cl_sec', '127.0.0.4/red', 'authorize/url', 'token/url');
+        $install  = new ApplicationInstall();
+        $dto      = new OAuth2Dto($install, '127.0.0.4/red', 'authorize/url', 'token/url');
 
         if ($exception) {
             self::expectException(AuthorizationException::class);
@@ -113,7 +117,8 @@ final class OAuth2ProviderTest extends TestCase
     {
         /** @var OAuth2Provider|MockObject $provider */
         $provider = $this->getMockedProvider('');
-        $dto      = new OAuth2Dto('cl_id', 'cl_sec', '127.0.0.4/red', 'authorize/url', 'token/url');
+        $install  = new ApplicationInstall();
+        $dto      = new OAuth2Dto($install, '127.0.0.4/red', 'authorize/url', 'token/url');
 
         if ($exception) {
             self::expectException(AuthorizationException::class);
