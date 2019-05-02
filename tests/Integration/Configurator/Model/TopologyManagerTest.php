@@ -563,7 +563,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     {
         $cronManager = self::createMock(CronManager::class);
         $cronManager->method('getAll')->willReturn(
-            new ResponseDto(200, 'OK', '[{"name":"Topology-Node", "time":"*/1 * * * *"}]', [])
+            new ResponseDto(200, 'OK', '[{"topology":"Topology", "node":"Node", "time":"*/1 * * * *"}]', [])
         );
 
         $this->dm->persist((new Topology())->setName('Topology')->setVersion(1)->setEnabled(TRUE));
@@ -576,12 +576,27 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
 
         self::assertEquals([
             [
-                'name'            => 'Topology-Node',
-                'time'            => '*/1 * * * *',
-                'topology_status' => TRUE,
-                'topology_id'     => $topologies[0]['topology_id'],
-                'topology'        => 'Topology',
-                'node'            => 'Node',
+                'topology' => [
+                    'id'      => $topologies[0]['topology']['id'],
+                    'name'    => 'Topology',
+                    'status'  => TRUE,
+                    'version' => 1,
+                ],
+                'node'     => [
+                    'name' => 'Node',
+                ],
+                'time'     => '*/1 * * * *',
+            ], [
+                'topology' => [
+                    'id'      => $topologies[1]['topology']['id'],
+                    'name'    => 'Topology',
+                    'status'  => FALSE,
+                    'version' => 2,
+                ],
+                'node'     => [
+                    'name' => 'Node',
+                ],
+                'time'     => '*/1 * * * *',
             ],
         ], $topologies);
     }
@@ -593,17 +608,13 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     {
         $cronManager = self::createMock(CronManager::class);
         $cronManager->method('getAll')->willReturn(
-            new ResponseDto(200, 'OK', '[{"name":"Topology-Node", "time":"*/1 * * * *"}]', [])
+            new ResponseDto(200, 'OK', '[{"topology":"Topology", "node":"Node", "time":"*/1 * * * *"}]', [])
         );
 
         $manager = self::$container->get('hbpf.configurator.manager.topology');
         $this->setProperty($manager, 'cronManager', $cronManager);
 
-        self::expectException(TopologyException::class);
-        self::expectExceptionCode(TopologyException::TOPOLOGY_NOT_FOUND);
-        self::expectExceptionMessage('Topology with name [Topology] not found!');
-
-        $manager->getCronTopologies();
+        self::assertCount(0, $manager->getCronTopologies());
     }
 
     /**

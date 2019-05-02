@@ -59,9 +59,10 @@ final class CronManagerTest extends KernelTestCaseAbstract
             self::assertEquals(CurlManager::METHOD_POST, $request->getMethod());
             self::assertEquals('http://example.com/cron-api/create', $request->getUri(TRUE));
             self::assertEquals([
-                'hash'    => 'topology-1-node-1',
-                'time'    => '1 1 1 1 1',
-                'command' => self::COM1,
+                'topology' => 'topology-1',
+                'node'     => 'node-1',
+                'time'     => '1 1 1 1 1',
+                'command'  => self::COM1,
             ], Json::decode($request->getBody(), TRUE));
 
             return new ResponseDto(200, 'OK', '', []);
@@ -75,7 +76,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
     {
         $this->getManager(function (RequestDto $request): ResponseDto {
             self::assertEquals(CurlManager::METHOD_POST, $request->getMethod());
-            self::assertEquals('http://example.com/cron-api/update/topology-1-node-1', $request->getUri(TRUE));
+            self::assertEquals('http://example.com/cron-api/update/topology-1/node-1', $request->getUri(TRUE));
             self::assertEquals([
                 'time'    => '1 1 1 1 1',
                 'command' => self::COM1,
@@ -92,7 +93,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
     {
         $this->getManager(function (RequestDto $request): ResponseDto {
             self::assertEquals(CurlManager::METHOD_POST, $request->getMethod());
-            self::assertEquals('http://example.com/cron-api/patch/topology-1-node-1', $request->getUri(TRUE));
+            self::assertEquals('http://example.com/cron-api/patch/topology-1/node-1', $request->getUri(TRUE));
             self::assertEquals([
                 'time'    => '1 1 1 1 1',
                 'command' => self::COM1,
@@ -109,7 +110,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
     {
         $this->getManager(function (RequestDto $request): ResponseDto {
             self::assertEquals(CurlManager::METHOD_POST, $request->getMethod());
-            self::assertEquals('http://example.com/cron-api/delete/topology-1-node-1', $request->getUri(TRUE));
+            self::assertEquals('http://example.com/cron-api/delete/topology-1/node-1', $request->getUri(TRUE));
             self::assertEmpty($request->getBody());
 
             return new ResponseDto(200, 'OK', '', []);
@@ -125,20 +126,21 @@ final class CronManagerTest extends KernelTestCaseAbstract
             self::assertEquals(CurlManager::METHOD_POST, $request->getMethod());
             self::assertEquals('http://example.com/cron-api/batch_create', $request->getUri(TRUE));
             self::assertEquals([
-                0 => [
-                    'hash'    => 'topology-1-node-1',
-                    'time'    => '1 1 1 1 1',
-                    'command' => self::COM1,
-                ],
-                1 => [
-                    'hash'    => 'topology-1-node-2',
-                    'time'    => '2 2 2 2 2',
-                    'command' => self::COM2,
-                ],
-                2 => [
-                    'hash'    => 'topology-1-node-3',
-                    'time'    => '3 3 3 3 3',
-                    'command' => self::COM3,
+                [
+                    'topology' => 'topology-1',
+                    'node'     => 'node-1',
+                    'time'     => '1 1 1 1 1',
+                    'command'  => self::COM1,
+                ], [
+                    'topology' => 'topology-1',
+                    'node'     => 'node-2',
+                    'time'     => '2 2 2 2 2',
+                    'command'  => self::COM2,
+                ], [
+                    'topology' => 'topology-1',
+                    'node'     => 'node-3',
+                    'time'     => '3 3 3 3 3',
+                    'command'  => self::COM3,
                 ],
             ], Json::decode($request->getBody(), TRUE));
 
@@ -155,20 +157,21 @@ final class CronManagerTest extends KernelTestCaseAbstract
             self::assertEquals(CurlManager::METHOD_POST, $request->getMethod());
             self::assertEquals('http://example.com/cron-api/batch_update', $request->getUri(TRUE));
             self::assertEquals([
-                0 => [
-                    'hash'    => 'topology-1-node-1',
-                    'time'    => '1 1 1 1 1',
-                    'command' => self::COM1,
-                ],
-                1 => [
-                    'hash'    => 'topology-1-node-2',
-                    'time'    => '2 2 2 2 2',
-                    'command' => self::COM2,
-                ],
-                2 => [
-                    'hash'    => 'topology-1-node-3',
-                    'time'    => '3 3 3 3 3',
-                    'command' => self::COM3,
+                [
+                    'topology' => 'topology-1',
+                    'node'     => 'node-1',
+                    'time'     => '1 1 1 1 1',
+                    'command'  => self::COM1,
+                ], [
+                    'topology' => 'topology-1',
+                    'node'     => 'node-2',
+                    'time'     => '2 2 2 2 2',
+                    'command'  => self::COM2,
+                ], [
+                    'topology' => 'topology-1',
+                    'node'     => 'node-3',
+                    'time'     => '3 3 3 3 3',
+                    'command'  => self::COM3,
                 ],
             ], Json::decode($request->getBody(), TRUE));
 
@@ -185,20 +188,21 @@ final class CronManagerTest extends KernelTestCaseAbstract
             self::assertEquals(CurlManager::METHOD_POST, $request->getMethod());
             self::assertEquals('http://example.com/cron-api/batch_patch', $request->getUri(TRUE));
             self::assertEquals([
-                0 => [
-                    'hash'    => 'topology-1-node-1',
-                    'time'    => '1 1 1 1 1',
-                    'command' => self::COM1,
-                ],
-                1 => [
-                    'hash'    => 'topology-1-node-2',
-                    'time'    => '2 2 2 2 2',
-                    'command' => self::COM2,
-                ],
-                2 => [
-                    'hash'    => 'topology-1-node-3',
-                    'time'    => '3 3 3 3 3',
-                    'command' => self::COM3,
+                [
+                    'topology' => 'topology-1',
+                    'node'     => 'node-1',
+                    'time'     => '1 1 1 1 1',
+                    'command'  => self::COM1,
+                ], [
+                    'topology' => 'topology-1',
+                    'node'     => 'node-2',
+                    'time'     => '2 2 2 2 2',
+                    'command'  => self::COM2,
+                ], [
+                    'topology' => 'topology-1',
+                    'node'     => 'node-3',
+                    'time'     => '3 3 3 3 3',
+                    'command'  => self::COM3,
                 ],
             ], Json::decode($request->getBody(), TRUE));
 
@@ -215,9 +219,9 @@ final class CronManagerTest extends KernelTestCaseAbstract
             self::assertEquals(CurlManager::METHOD_POST, $request->getMethod());
             self::assertEquals('http://example.com/cron-api/batch_delete', $request->getUri(TRUE));
             self::assertEquals([
-                0 => ['hash' => 'topology-1-node-1'],
-                1 => ['hash' => 'topology-1-node-2'],
-                2 => ['hash' => 'topology-1-node-3'],
+                ['topology' => 'topology-1', 'node' => 'node-1'],
+                ['topology' => 'topology-1', 'node' => 'node-2'],
+                ['topology' => 'topology-1', 'node' => 'node-3'],
             ], Json::decode($request->getBody(), TRUE));
 
             return new ResponseDto(200, 'OK', '', []);
