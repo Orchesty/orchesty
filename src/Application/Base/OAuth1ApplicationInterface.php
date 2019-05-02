@@ -12,6 +12,9 @@ use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 interface OAuth1ApplicationInterface extends BasicApplicationInterface
 {
 
+    public const  CONSUMER_KEY    = 'consumer_key';
+    public const  CONSUMER_SECRET = 'consumer_secret';
+
     /**
      * @param ApplicationInstall $applicationInstall
      */

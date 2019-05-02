@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesFramework\Authorization\Provider\Dto;
 
 use Hanaboso\PipesFramework\Application\Base\BasicApplicationInterface;
+use Hanaboso\PipesFramework\Application\Base\OAuth1ApplicationInterface;
 use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 
 /**
@@ -42,24 +43,20 @@ final class OAuth1Dto implements OAuth1DtoInterface
      * OAuth1Dto constructor.
      *
      * @param ApplicationInstall $authorization
-     * @param string             $consumerKey
-     * @param string             $consumerSecret
      * @param string             $signatureMethod
      * @param int                $authType
      */
     public function __construct(
         ApplicationInstall $authorization,
-        string $consumerKey,
-        string $consumerSecret,
         string $signatureMethod = OAUTH_SIG_METHOD_HMACSHA1,
         int $authType = OAUTH_AUTH_TYPE_AUTHORIZATION
     )
     {
         $this->authorization   = $authorization;
-        $this->consumerKey     = $consumerKey;
-        $this->consumerSecret  = $consumerSecret;
         $this->signatureMethod = $signatureMethod;
         $this->authType        = $authType;
+        $this->consumerKey     = $authorization->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][OAuth1ApplicationInterface::CONSUMER_KEY];
+        $this->consumerSecret  = $authorization->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][OAuth1ApplicationInterface::CONSUMER_SECRET];
     }
 
     /**
