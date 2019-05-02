@@ -4,6 +4,7 @@ namespace Hanaboso\PipesFramework\HbPFApplicationBundle\Loader;
 
 use Exception;
 use Hanaboso\PipesFramework\Application\Base\ApplicationInterface;
+use Hanaboso\PipesFramework\Application\Base\BasicApplicationInterface;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Yaml\Yaml;
 
@@ -35,15 +36,15 @@ class ApplicationLoader
     /**
      * @param string $key
      *
-     * @return ApplicationInterface
+     * @return BasicApplicationInterface
      * @throws
      */
-    public function getApplication(string $key): ApplicationInterface
+    public function getApplication(string $key): BasicApplicationInterface
     {
         $name = sprintf('%s.%s', self::APPLICATION_PREFIX, $key);
 
         if ($this->container->has($name)) {
-            /** @var ApplicationInterface $application */
+            /** @var BasicApplicationInterface $application */
             $application = $this->container->get($name);
         } else {
             throw new Exception(
