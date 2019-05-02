@@ -11,18 +11,16 @@ use Hanaboso\CommonsBundle\Traits\Document\IdTrait;
 use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
 
 /**
- * Class ApplicationInstall
+ * Class Install
  *
  * @package Hanaboso\PipesFramework\Application\Document
  *
- * @ODM\Document
+ * @ODM\Document(repositoryClass="Hanaboso\PipesFramework\Application\Repository\ApplicationInstallRepository")
+ *
  * @ODM\HasLifecycleCallbacks()
  */
 class ApplicationInstall
 {
-
-    public const USER = 'user';
-    public const NAME = 'name';
 
     use IdTrait;
 
@@ -52,7 +50,7 @@ class ApplicationInstall
      *
      * @ODM\Field(type="string")
      */
-    private $name;
+    private $key;
 
     /**
      * @var DateTime
@@ -163,19 +161,19 @@ class ApplicationInstall
     /**
      * @return string
      */
-    public function getName(): string
+    public function getKey(): string
     {
-        return $this->name;
+        return $this->key;
     }
 
     /**
-     * @param string $name
+     * @param string $key
      *
      * @return ApplicationInstall
      */
-    public function setName(string $name): ApplicationInstall
+    public function setKey(string $key): ApplicationInstall
     {
-        $this->name = $name;
+        $this->key = $key;
 
         return $this;
     }

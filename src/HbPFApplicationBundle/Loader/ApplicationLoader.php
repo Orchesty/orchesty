@@ -3,10 +3,9 @@
 namespace Hanaboso\PipesFramework\HbPFApplicationBundle\Loader;
 
 use Exception;
-use Hanaboso\PipesFramework\Application\Base\ApplicationInterface;
 use Hanaboso\PipesFramework\Application\Base\BasicApplicationInterface;
-use Psr\Container\ContainerInterface;
-use Symfony\Component\Yaml\Yaml;
+use Hanaboso\PipesFramework\Utils\NodeServiceLoaderUtil;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class ApplicationLoader
@@ -37,7 +36,7 @@ class ApplicationLoader
      * @param string $key
      *
      * @return BasicApplicationInterface
-     * @throws
+     * @throws Exception
      */
     public function getApplication(string $key): BasicApplicationInterface
     {
@@ -56,20 +55,15 @@ class ApplicationLoader
     }
 
     /**
+     * @param array $exclude
+     *
      * @return array
      */
-    public function getApplications(): array
+    public function getApplications($exclude = []): array
     {
-        $list = Yaml::parse((string) file_get_contents(__DIR__ . '/../Resources/config/applications.yml'));
-        $res  = [];
+        $dirs = $this->container->getParameter('applications');
 
-        foreach (array_keys($list['services']) as $key) {
-            $shortened = str_replace(sprintf('%s.', self::APPLICATION_PREFIX), '', (string) $key);
-
-            $res[] = $shortened;
-        }
-
-        return $res;
+        return NodeServiceLoaderUtil::getServices($dirs, self::APPLICATION_PREFIX, $exclude);
     }
 
 }
