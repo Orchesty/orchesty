@@ -15,11 +15,6 @@ class OAuth2Dto implements OAuth2DtoInterface
 {
 
     /**
-     * @var ApplicationInstall
-     */
-    private $authorization;
-
-    /**
      * @var string
      */
     private $clientId;
@@ -69,11 +64,11 @@ class OAuth2Dto implements OAuth2DtoInterface
         string $tokenUrl
     )
     {
-        $this->redirectUrl   = $redirectUrl;
-        $this->authorizeUrl  = $authorizeUrl;
-        $this->tokenUrl      = $tokenUrl;
-        $this->clientId      = $authorization->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][OAuth2ApplicationInterface::CLIENT_ID];
-        $this->clientSecret  = $authorization->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][OAuth2ApplicationInterface::CONSUMER_SECRET];
+        $this->redirectUrl  = $redirectUrl;
+        $this->authorizeUrl = $authorizeUrl;
+        $this->tokenUrl     = $tokenUrl;
+        $this->clientId     = $authorization->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][OAuth2ApplicationInterface::CLIENT_ID] ?? '';
+        $this->clientSecret = $authorization->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][OAuth2ApplicationInterface::CONSUMER_SECRET] ?? '';
     }
 
     /**
