@@ -25,11 +25,11 @@ class CronHandler(CronHandlerBase):
         body = request.get_body()
         
         try:
-            hash_key, time, command = body['hash'], body['time'], body['command']
-            logger.debug('create rules: {} {} {}'.format(hash_key, time, command))
+            topology, node, time, command = body['topology'], body['node'], body['time'], body['command']
+            logger.debug('create rules: {} {} {} {}'.format(topology, node, time, command))
             
             if self.valid_time(time):
-                self.db.add(hash_key, time, command)
+                self.db.add(topology, node, time, command)
             else:
                 message = 'Invalid time format {}'.format(time)
                 logger.warning(message)
@@ -41,10 +41,11 @@ class CronHandler(CronHandlerBase):
         
         return get_json_content(200, "")
     
-    def update(self, hash_key: str, request: Request):
+    def update(self, topology: str, node: str, request: Request):
         """
         
-        :param hash_key:
+        :param topology:
+        :param node:
         :param request:
         :return:
         """
@@ -52,10 +53,10 @@ class CronHandler(CronHandlerBase):
         
         try:
             time, command = body['time'], body['command']
-            logger.debug('update rules: {} {} {}'.format(hash_key, time, command))
+            logger.debug('update rules: {} {} {} {}'.format(topology, node, time, command))
             
             if self.valid_time(time):
-                self.db.update(hash_key, time, command)
+                self.db.update(topology, node, time, command)
             else:
                 message = 'Invalid time format {}'.format(time)
                 logger.warning(message)
@@ -67,20 +68,21 @@ class CronHandler(CronHandlerBase):
         
         return get_json_content(200, "")
     
-    def patch(self, hash_key: str, request: Request):
+    def patch(self, topology: str, node: str, request: Request):
         """
 
-        :param hash_key:
+        :param topology:
+        :param node:
         :param request:
         :return:
         """
         body = request.get_body()
         try:
             time, command = body['time'], body['command']
-            logger.debug('update rules: {} {} {}'.format(hash_key, time, command))
+            logger.debug('update rules: {} {} {} {}'.format(topology, node, time, command))
             
             if self.valid_time(time):
-                self.db.patch(hash_key, time, command)
+                self.db.patch(topology, node, time, command)
             else:
                 message = 'Invalid time format {}'.format(time)
                 logger.warning(message)
@@ -88,8 +90,8 @@ class CronHandler(CronHandlerBase):
         except KeyError as e:
             if len(body) == 0:
                 try:
-                    self.db.remove(hash_key)
-                    logger.debug('remove hash: {} '.format(hash_key))
+                    self.db.remove(topology, node)
+                    logger.debug('remove: {} {} '.format(topology, node))
                 except RecordNotFound as e:
                     pass
             else:
@@ -99,13 +101,14 @@ class CronHandler(CronHandlerBase):
         
         return get_json_content(200, "")
     
-    def delete(self, hash_key: str):
+    def delete(self, topology: str, node: str):
         """
-        :param hash_key:
+        :param topology:
+        :param node:
         :return:
         """
-        self.db.remove(hash_key)
-        logger.debug('remove hash: {} '.format(hash_key))
+        self.db.remove(topology, node)
+        logger.debug('remove: {} {} '.format(topology, node))
         
         return get_json_content(200, "")
     

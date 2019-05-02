@@ -30,16 +30,17 @@ class CronBatchHandler(CronHandlerBase):
         result = []
         for item in body:
             try:
-                hash_key, time, command = item['hash'], item['time'], item['command']
+                topology, node, time, command = item['topology'], item['node'], item['time'], item['command']
                 if self.valid_time(time):
                     try:
-                        self.db.add(hash_key, time, command)
+                        self.db.add(topology, node, time, command)
                     except RecordExist as e:
-                        logger.info('batch create hash:{} {}'.format(hash_key, e.message))
-                        result.append({'hash': hash_key, 'message': e.message})
+                        logger.info('batch create {} {} {}'.format(topology, node, e.message))
+                        result.append({'topology': topology, 'node': node, 'message': e.message})
                 else:
                     result.append({
-                        'hash': hash_key,
+                        'topology': topology,
+                        'node': node,
                         'message': 'Invalid time format {}'.format(time)
                     })
             except KeyError as e:
@@ -70,16 +71,17 @@ class CronBatchHandler(CronHandlerBase):
 
         for item in body:
             try:
-                hash_key, time, command = item['hash'], item['time'], item['command']
+                topology, node, time, command = item['topology'], item['node'], item['time'], item['command']
                 if self.valid_time(time):
                     try:
-                        self.db.update(hash_key, time, command)
+                        self.db.update(topology, node, time, command)
                     except RecordNotFound as e:
-                        logger.info('batch update hash:{} {}'.format(hash_key, e.message))
-                        result.append({'hash': hash_key, 'message': e.message})
+                        logger.info('batch update {} {} {}'.format(topology, node, e.message))
+                        result.append({'topology': topology, 'node': node, 'message': e.message})
                 else:
                     result.append({
-                        'hash': hash_key,
+                        'topology': topology,
+                        'node': node,
                         'message': 'Invalid time format {}'.format(time)
                     })
             except KeyError as e:
@@ -110,32 +112,34 @@ class CronBatchHandler(CronHandlerBase):
 
         for item in body:
             try:
-                hash_key, time, command = item['hash'], item['time'], item['command']
+                topology, node, time, command = item['topology'], item['node'], item['time'], item['command']
                 if self.valid_time(time):
                     try:
-                        self.db.update(hash_key, time, command)
+                        self.db.update(topology, node, time, command)
                     except RecordNotFound as e:
-                        logger.info('batch update hash: {} {} try to insert'.format(hash_key, e.message))
+                        logger.info('batch update {} {} {} try to insert'.format(topology, node, e.message))
                         try:
-                            self.db.add(hash_key, time, command)
+                            self.db.add(topology, node, time, command)
                         except RecordExist as e:
-                            logger.info('batch patch hash: {} {}'.format(hash_key, e.message))
+                            logger.info('batch patch {} {} {}'.format(topology, node, e.message))
                             result.append({
-                                'hash': hash_key,
+                                'topology': topology,
+                                'node': node,
                                 'message': 'Unknown problem {}'.format(str(e))
                             })
                 else:
                     result.append({
-                        'hash': hash_key,
+                        'topology': topology,
+                        'node': node,
                         'message': 'Invalid time format {}'.format(time)
                     })
             except KeyError as e:
-                if 'hash' in item and len(item) == 1:
+                if 'topology' in item and 'node' in item and len(item) == 1:
                     try:
-                        self.db.remove(item['hash'])
+                        self.db.remove(item['topology'], item['node'])
                     except RecordNotFound as e:
-                        logger.info('batch patch => delete hash:{} {}'.format(item['hash'], e.message))
-                        # result.append({'hash': item['hash'], 'message': e.message})
+                        logger.info('batch patch => delete {} {} {}'.format(item['topology'], item['node'], e.message))
+                        # result.append({'topology': item['topology'], 'node': item['node'], 'message': e.message})
                 else:
                     message = 'Item key {} missing'.format(str(e))
                     logger.error(message)
@@ -165,10 +169,10 @@ class CronBatchHandler(CronHandlerBase):
         for item in body:
             try:
                 try:
-                    self.db.remove(item['hash'])
+                    self.db.remove(item['topology'], item['node'])
                 except RecordNotFound as e:
-                    logger.info('batch delete hash:{} {}'.format(item['hash'], e.message))
-                    result.append({'hash': item['hash'], 'message': e.message})
+                    logger.info('batch delete {} {} {}'.format(item['topology'], item['node'], e.message))
+                    result.append({'topology': item['topology'], 'node': item['node'], 'message': e.message})
             except KeyError as e:
                 message = 'Item key {} missing'.format(str(e))
                 logger.error(message)

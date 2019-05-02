@@ -43,21 +43,21 @@ def create_cron():
     return cron_handler.create(request)
 
 
-@app.route("/cron-api/update/<hash_key>", methods=['POST'])
-def update_cron(hash_key):
+@app.route("/cron-api/update/<topology>/<node>", methods=['POST'])
+def update_cron(topology, node):
     request = Request(flask.request)
-    return cron_handler.update(hash_key, request)
+    return cron_handler.update(topology, node, request)
 
 
-@app.route("/cron-api/patch/<hash_key>", methods=['POST'])
-def patch_cron(hash_key):
+@app.route("/cron-api/patch/<topology>/<node>", methods=['POST'])
+def patch_cron(topology, node):
     request = Request(flask.request)
-    return cron_handler.patch(hash_key, request)
+    return cron_handler.patch(topology, node, request)
 
 
-@app.route("/cron-api/delete/<hash_key>", methods=['POST'])
-def delete_cron(hash_key):
-    return cron_handler.delete(hash_key)
+@app.route("/cron-api/delete/<topology>/<node>", methods=['POST'])
+def delete_cron(topology, node):
+    return cron_handler.delete(topology, node)
 
 
 @app.route("/cron-api/batch_create", methods=['POST'])
