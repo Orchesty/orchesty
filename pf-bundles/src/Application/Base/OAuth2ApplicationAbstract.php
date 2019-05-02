@@ -3,7 +3,9 @@
 namespace Hanaboso\PipesFramework\Application\Base;
 
 use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
+use Hanaboso\PipesFramework\Application\Utils\ApplicationUtils;
 use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
+use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2DtoInterface;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 
@@ -14,6 +16,9 @@ use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
  */
 abstract class OAuth2ApplicationAbstract extends OAuth1ApplicationAbstract implements OAuth2ApplicationInterface
 {
+
+    private const AUTHORIZE_URL = 'https://appcenter.intuit.com/connect/oauth2';
+    private const TOKEN_URL     = 'https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer';
 
     /**
      * @var OAuth2Provider
@@ -49,6 +54,9 @@ abstract class OAuth2ApplicationAbstract extends OAuth1ApplicationAbstract imple
      */
     public function authorize(ApplicationInstall $applicationInstall): void
     {
+        $redirectUrl = ApplicationUtils::generateUrl();
+        $this->dto   = new OAuth2Dto($applicationInstall, $redirectUrl, self::AUTHORIZE_URL, self::TOKEN_URL);
+
         $this->OAuth2Provider->authorize($this->dto);
     }
 

@@ -2,6 +2,10 @@
 
 namespace Hanaboso\PipesFramework\Authorization\Provider\Dto;
 
+use Hanaboso\PipesFramework\Application\Base\BasicApplicationInterface;
+use Hanaboso\PipesFramework\Application\Base\OAuth2ApplicationInterface;
+use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
+
 /**
  * Class OAuth2Dto
  *
@@ -9,6 +13,11 @@ namespace Hanaboso\PipesFramework\Authorization\Provider\Dto;
  */
 class OAuth2Dto implements OAuth2DtoInterface
 {
+
+    /**
+     * @var ApplicationInstall
+     */
+    private $authorization;
 
     /**
      * @var string
@@ -48,26 +57,23 @@ class OAuth2Dto implements OAuth2DtoInterface
     /**
      * OAuth2Dto constructor.
      *
-     * @param string $clientId
-     * @param string $clientSecret
-     * @param string $redirectUrl
-     * @param string $authorizeUrl
-     * @param string $tokenUrl
+     * @param ApplicationInstall $authorization
+     * @param string             $redirectUrl
+     * @param string             $authorizeUrl
+     * @param string             $tokenUrl
      */
     public function __construct(
-        string $clientId,
-        string $clientSecret,
+        ApplicationInstall $authorization,
         string $redirectUrl,
         string $authorizeUrl,
         string $tokenUrl
     )
     {
-
-        $this->clientId     = $clientId;
-        $this->clientSecret = $clientSecret;
-        $this->redirectUrl  = $redirectUrl;
-        $this->authorizeUrl = $authorizeUrl;
-        $this->tokenUrl     = $tokenUrl;
+        $this->redirectUrl   = $redirectUrl;
+        $this->authorizeUrl  = $authorizeUrl;
+        $this->tokenUrl      = $tokenUrl;
+        $this->clientId      = $authorization->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][OAuth2ApplicationInterface::CLIENT_ID];
+        $this->clientSecret  = $authorization->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][OAuth2ApplicationInterface::CONSUMER_SECRET];
     }
 
     /**

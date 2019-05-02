@@ -4,6 +4,7 @@ namespace Hanaboso\PipesFramework\Application\Base;
 
 use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
+use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth1Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth1DtoInterface;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth1Provider;
 use OAuthException;
@@ -52,6 +53,8 @@ abstract class OAuth1ApplicationAbstract extends BasicApplicationAbstract implem
      */
     public function authorize(ApplicationInstall $applicationInstall): void
     {
+        $this->dto = new OAuth1Dto($applicationInstall);
+
         $this->OAuth1Provider->authorize(
             $this->dto,
             $this->getTokenUrl(),
