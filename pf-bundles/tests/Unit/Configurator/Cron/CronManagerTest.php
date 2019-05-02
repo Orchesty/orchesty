@@ -33,6 +33,26 @@ final class CronManagerTest extends KernelTestCaseAbstract
     /**
      * @throws Exception
      */
+    public function testGetAll(): void
+    {
+        $data = $this->getManager(function (RequestDto $request): ResponseDto {
+            self::assertEquals(CurlManager::METHOD_GET, $request->getMethod());
+            self::assertEquals('http://example.com/cron-api/get_all', $request->getUri(TRUE));
+
+            return new ResponseDto(200, 'OK', '[{"name":"Name", "time":"*/1 * * * *"}]', []);
+        })->getAll();
+
+        self::assertEquals([
+            [
+                'name' => 'Name',
+                'time' => '*/1 * * * *',
+            ],
+        ], json_decode($data->getBody(), TRUE, 512, JSON_THROW_ON_ERROR));
+    }
+
+    /**
+     * @throws Exception
+     */
     public function testCreate(): void
     {
         $this->getManager(function (RequestDto $request): ResponseDto {

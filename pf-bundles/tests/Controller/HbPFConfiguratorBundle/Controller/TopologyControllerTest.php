@@ -370,6 +370,41 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
+     * @covers TopologyController::getCronTopologiesAction()
+     * @throws Exception
+     */
+    public function testGetCronTopologies(): void
+    {
+        $this->mockHandler('getCronTopologies', [
+            'items' => [
+                [
+                    'name'            => 'Topology-Node',
+                    'time'            => '*/1 * * * *',
+                    'topology_status' => TRUE,
+                    'topology_id'     => 'Topology ID',
+                    'topology'        => 'Topology',
+                    'node'            => 'Node',
+                ],
+            ],
+        ]);
+        $response = $this->sendGet('/api/topologies/cron');
+
+        self::assertEquals(200, $response->status);
+        self::assertEquals((object) [
+            'items' => [
+                [
+                    'name'            => 'Topology-Node',
+                    'time'            => '*/1 * * * *',
+                    'topology_status' => TRUE,
+                    'topology_id'     => 'Topology ID',
+                    'topology'        => 'Topology',
+                    'node'            => 'Node',
+                ],
+            ],
+        ], $response->content);
+    }
+
+    /**
      * @param Topology $topology
      * @param stdClass $item
      */

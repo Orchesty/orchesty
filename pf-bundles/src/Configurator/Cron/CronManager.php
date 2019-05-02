@@ -28,10 +28,11 @@ class CronManager
 
     private const CURL_COMMAND = 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d \'{%s}\' %s%s';
 
-    private const CREATE = '%s/cron-api/create';
-    private const UPDATE = '%s/cron-api/update/%s';
-    private const PATCH  = '%s/cron-api/patch/%s';
-    private const DELETE = '%s/cron-api/delete/%s';
+    private const GET_ALL = '%s/cron-api/get_all';
+    private const CREATE  = '%s/cron-api/create';
+    private const UPDATE  = '%s/cron-api/update/%s';
+    private const PATCH   = '%s/cron-api/patch/%s';
+    private const DELETE  = '%s/cron-api/delete/%s';
 
     private const BATCH_CREATE = '%s/cron-api/batch_create';
     private const BATCH_UPDATE = '%s/cron-api/batch_update';
@@ -81,6 +82,16 @@ class CronManager
         $this->curlManager        = $curlManager;
         $this->backend            = $backend;
         $this->cronHost           = $cronHost;
+    }
+
+    /**
+     * @return ResponseDto
+     * @throws CurlException
+     * @throws CronException
+     */
+    public function getAll(): ResponseDto
+    {
+        return $this->sendAndProcessRequest(new RequestDto(CurlManager::METHOD_GET, $this->getUrl(self::GET_ALL)));
     }
 
     /**

@@ -7,6 +7,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\CommonsBundle\DatabaseManager\DatabaseManagerLocator;
 use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
+use Hanaboso\CommonsBundle\Exception\CronException;
 use Hanaboso\CommonsBundle\Exception\EnumException;
 use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
@@ -104,6 +105,17 @@ class TopologyHandler
         $data['offset'] = $offset;
 
         return $data;
+    }
+
+    /**
+     * @return array
+     * @throws CurlException
+     * @throws CronException
+     * @throws TopologyException
+     */
+    public function getCronTopologies(): array
+    {
+        return ['items' => $this->manager->getCronTopologies()];
     }
 
     /**

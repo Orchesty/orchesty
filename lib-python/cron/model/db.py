@@ -108,3 +108,16 @@ class Db:
         """
         all_records = self.conn.select(self.collection)
         return all_records if all_records is not None else []
+
+    def get_all_cron(self):
+        """
+
+        :return:
+        :rtype list
+        """
+        crons = []
+
+        for row in self.get_all():
+            crons.append({ 'name': row['hash'], 'time': row['time'] })
+
+        return crons

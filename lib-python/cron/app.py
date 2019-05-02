@@ -89,6 +89,11 @@ def clear_cron():
     return cron_handler.clear()
 
 
+@app.route("/cron-api/get_all", methods=['GET'])
+def get_all_cron():
+    return cron_handler.get_all()
+
+
 @app.errorhandler(404)
 def page_not_found(error):
     return get_json_content(404, json.dumps({"message": str(error)}))

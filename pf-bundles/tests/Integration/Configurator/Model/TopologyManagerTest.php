@@ -6,6 +6,8 @@ use Exception;
 use Hanaboso\CommonsBundle\Enum\HandlerEnum;
 use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
 use Hanaboso\PipesFramework\Configurator\Document\Embed\EmbedNode;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
@@ -13,6 +15,7 @@ use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Configurator\Model\Dto\SystemConfigDto;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Tests\DatabaseTestCaseAbstract;
+use Tests\PrivateTrait;
 
 /**
  * Class TopologyManagerTest
@@ -21,6 +24,8 @@ use Tests\DatabaseTestCaseAbstract;
  */
 final class TopologyManagerTest extends DatabaseTestCaseAbstract
 {
+
+    use PrivateTrait;
 
     /**
      * @throws Exception
@@ -549,6 +554,56 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $this->dm->clear();
         self::assertNull($this->dm->getRepository(TopologyRepository::class)->find($top->getId()));
         self::assertNull($this->dm->getRepository(Node::class)->find($node->getId()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetCronTopologies(): void
+    {
+        $cronManager = self::createMock(CronManager::class);
+        $cronManager->method('getAll')->willReturn(
+            new ResponseDto(200, 'OK', '[{"name":"Topology-Node", "time":"*/1 * * * *"}]', [])
+        );
+
+        $this->dm->persist((new Topology())->setName('Topology')->setVersion(1)->setEnabled(TRUE));
+        $this->dm->persist((new Topology())->setName('Topology')->setVersion(2)->setEnabled(FALSE));
+        $this->dm->flush();
+
+        $manager = self::$container->get('hbpf.configurator.manager.topology');
+        $this->setProperty($manager, 'cronManager', $cronManager);
+        $topologies = $manager->getCronTopologies();
+
+        self::assertEquals([
+            [
+                'name'            => 'Topology-Node',
+                'time'            => '*/1 * * * *',
+                'topology_status' => TRUE,
+                'topology_id'     => $topologies[0]['topology_id'],
+                'topology'        => 'Topology',
+                'node'            => 'Node',
+            ],
+        ], $topologies);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetCronTopologiesNotFound(): void
+    {
+        $cronManager = self::createMock(CronManager::class);
+        $cronManager->method('getAll')->willReturn(
+            new ResponseDto(200, 'OK', '[{"name":"Topology-Node", "time":"*/1 * * * *"}]', [])
+        );
+
+        $manager = self::$container->get('hbpf.configurator.manager.topology');
+        $this->setProperty($manager, 'cronManager', $cronManager);
+
+        self::expectException(TopologyException::class);
+        self::expectExceptionCode(TopologyException::TOPOLOGY_NOT_FOUND);
+        self::expectExceptionMessage('Topology with name [Topology] not found!');
+
+        $manager->getCronTopologies();
     }
 
     /**
