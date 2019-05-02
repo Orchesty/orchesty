@@ -4,6 +4,7 @@ namespace Hanaboso\PipesFramework\Application\Model\Webhook;
 
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\PipesFramework\Application\Base\ApplicationInterface;
 use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 
 /**
@@ -11,7 +12,7 @@ use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
  *
  * @package Hanaboso\PipesFramework\Application\Model\Webhook
  */
-interface WebhookApplicationInterface
+interface WebhookApplicationInterface extends ApplicationInterface
 {
 
     /**
@@ -30,9 +31,9 @@ interface WebhookApplicationInterface
     /**
      * @param string $id
      *
-     * @return ResponseDto
+     * @return RequestDto
      */
-    public function getWebhookUnsubscribeRequestDto(string $id): ResponseDto;
+    public function getWebhookUnsubscribeRequestDto(string $id): RequestDto;
 
     /**
      * @param ResponseDto        $dto
