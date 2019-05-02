@@ -39,9 +39,10 @@ class CronManager
     private const BATCH_PATCH  = '%s/cron-api/batch_patch';
     private const BATCH_DELETE = '%s/cron-api/batch_delete';
 
-    private const HASH    = 'hash';
-    private const TIME    = 'time';
-    private const COMMAND = 'command';
+    private const TOPOLOGY = 'topology';
+    private const NODE     = 'node';
+    private const TIME     = 'time';
+    private const COMMAND  = 'command';
 
     /**
      * @var CurlManagerInterface
@@ -103,11 +104,13 @@ class CronManager
      */
     public function create(Node $node): ResponseDto
     {
+        [$topologyName, $nodeName] = $this->getTopologyAndNode($node);
         $url = $this->getUrl(self::CREATE);
         $dto = (new RequestDto(CurlManager::METHOD_POST, $url))->setBody((string) json_encode([
-            'hash'    => $this->getHash($node),
-            'time'    => $node->getCron(),
-            'command' => $this->getCommand($node),
+            'topology' => $topologyName,
+            'node'     => $nodeName,
+            'time'     => $node->getCron(),
+            'command'  => $this->getCommand($node),
         ]));
 
         return $this->sendAndProcessRequest($dto);
@@ -266,6 +269,19 @@ class CronManager
     /**
      * @param Node $node
      *
+     * @return array
+     */
+    private function getTopologyAndNode(Node $node): array
+    {
+        /** @var Topology $topology */
+        $topology = $this->topologyRepository->findOneBy(['id' => $node->getTopology()]);
+
+        return [$topology->getName(), $node->getName()];
+    }
+
+    /**
+     * @param Node $node
+     *
      * @return string
      */
     private function getCommand(Node $node): string
@@ -294,7 +310,7 @@ class CronManager
 
         foreach ($nodes as $node) {
             if ($node->getCron()) {
-                $processedNode[self::HASH] = $this->getHash($node);
+                [$processedNode[self::TOPOLOGY], $processedNode[self::NODE]] = $this->getTopologyAndNode($node);
 
                 if (!in_array(self::TIME, $exclude, TRUE)) {
                     $processedNode[self::TIME] = $node->getCron();

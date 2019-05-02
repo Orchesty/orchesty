@@ -269,38 +269,40 @@ class TopologyManager
      */
     public function getCronTopologies(): array
     {
-        $data = json_decode($this->cronManager->getAll()->getBody(), TRUE, 512, JSON_THROW_ON_ERROR);
+        $data   = json_decode($this->cronManager->getAll()->getBody(), TRUE, 512, JSON_THROW_ON_ERROR);
+        $result = [];
 
-        foreach ($data as $key => $item) {
-            [$topologyName, $nodeName] = explode('-', $item['name']);
+        foreach ($data as $item) {
             /** @var Topology[] $topologies */
-            $topologies = $this->topologyRepository->findBy(
-                ['name' => $topologyName],
-                ['enabled' => 'DESC', 'version' => 'DESC']
-            );
+            $topologies = $this->topologyRepository->findBy(['name' => $item['topology']]);
 
-            if (count($topologies) === 0) {
-                throw new TopologyException(
-                    sprintf('Topology with name [%s] not found!', $topologyName),
-                    TopologyException::TOPOLOGY_NOT_FOUND
-                );
+            foreach ($topologies as $topology) {
+                $result[] = [
+                    'topology' => [
+                        'id'      => $topology->getId(),
+                        'name'    => $topology->getName(),
+                        'status'  => $topology->isEnabled(),
+                        'version' => $topology->getVersion(),
+                    ],
+                    'node'     => [
+                        'name' => $item['node'],
+                    ],
+                    'time'     => $item['time'],
+                ];
             }
-
-            $data[$key]['topology_status'] = $topologies[0]->isEnabled();
-            $data[$key]['topology_id']     = $topologies[0]->getId();
-            $data[$key]['topology']        = $topologyName;
-            $data[$key]['node']            = $nodeName;
         }
 
-        usort($data, function (array $one, array $two): int {
-            if ($one['topology_status'] === $two['topology_status']) {
-                return $one['topology'] <=> $two['topology'];
-            } else {
-                return ($one['topology_status'] <=> $two['topology_status']) * -1;
+        usort($result, function (array $one, array $two): int {
+            $result = $one['topology']['status'] <=> $two['topology']['status'];
+
+            if (!$result) {
+                $result = $one['topology']['version'] <=> $two['topology']['version'];
             }
+
+            return $result * -1;
         });
 
-        return $data;
+        return $result;
     }
 
     /**

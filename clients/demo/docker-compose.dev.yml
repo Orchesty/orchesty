@@ -161,7 +161,7 @@ services:
         APP_CLEANUP_TIME: "300"
       working_dir: /go/src/hanaboso/starting-point
       volumes:
-        - ./../../go/src/hanaboso/starting-point/:/go/src/hanaboso/starting-point
+        - ./../../starting-point/:/go/src/hanaboso/starting-point
       ports:
         - ${DEV_IP}:8000:80
       command: go run cmd/starting-point.go
