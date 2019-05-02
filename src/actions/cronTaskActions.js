@@ -18,7 +18,11 @@ function loadList(id, loadingState = true) {
     }
 
     return serverRequest(dispatch, 'GET', '/topologies/cron').then((response) => {
-      dispatch(receiveItems(response.items));
+      dispatch(receiveItems(response.items.map(item => {
+        item.name = item.topology.name + item.topology.version;
+
+        return item;
+      })));
       dispatch(response ? listReceive(id, response) : listError(id));
       return response;
     });

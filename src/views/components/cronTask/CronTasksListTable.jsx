@@ -26,10 +26,10 @@ class CronTasksListTable extends AbstractTable {
       const item = elements[id];
 
       return (
-        <tr key={item.name} className={item.topology_status ? 'enabled' : 'disabled'} onClick={() => openTopology(item.topology_id)}>
-          <td className="col-md-2">{item.topology_status ? 'Enabled' : 'Disabled'}</td>
-          <td className="col-md-2">{item.topology}</td>
-          <td className="col-md-2">{item.node}</td>
+        <tr key={`${item.topology.name}-${item.topology.version}`} className={item.topology.status ? 'enabled' : 'disabled'} onClick={() => openTopology(item.topology.id)}>
+          <td className="col-md-2">{item.topology.status ? 'Enabled' : 'Disabled'}</td>
+          <td className="col-md-2">{item.topology.name}.v{item.topology.version}</td>
+          <td className="col-md-2">{item.node.name}</td>
           <td className="col-md-2">{item.time}</td>
         </tr>
       )
