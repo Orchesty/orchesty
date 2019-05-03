@@ -11,6 +11,10 @@ services:
     _defaults:
         public: '%public.services%'
 
-    # Magento2Old
     hbpf.connector.null:
         class: Tests\Unit\HbPFConnectorBundle\Loader\NullConnector
+        arguments:
+
+    hbpf.application.webhook:
+        class: Tests\Integration\Application\Model\Webhook\WebhookApplication
+        arguments:
