@@ -46,6 +46,6 @@ docker-push-sdk-dev: docker-build-sdk-dev
 docker-push-sdk-prod: docker-build-sdk-prod
 	docker push $(DOCKER_REGISTRY)python-sdk:$(DOCKER_PROD_TAG)
 
-docker-build-all: docker-build-dev docker-build-prod
+docker-build-all: docker-build-base docker-build-base3 docker-build-dev docker-build-cron-dev docker-build-prod docker-build-sdk-dev docker-build-sdk-prod
 
-docker-push-all: docker-push-base docker-push-xml-parser-prod docker-push-xml-parser-dev
+docker-push-all: docker-push-base docker-push-base3 docker-push-xml-parser-prod docker-push-xml-parser-dev docker-push-cron-dev docker-push-sdk-dev docker-push-sdk-prod
