@@ -1,4 +1,4 @@
-.PHONY: docker-build-base docker-build-dev docker-build-prod docker-push-base docker-push-xml-parser-prod docker-push-xml-parser-dev
+.PHONY: docker-build-base docker-build-dev docker-build-prod docker-push-base docker-push-xml-parser-prod docker-push-xml-parser-dev docker-build-sdk-dev docker-build-sdk-prod docker-push-sdk-dev docker-push-sdk-prod
 
 DOCKER_DEFAULT_TAG := dev
 DOCKER_PROD_TAG := prod
@@ -19,6 +19,12 @@ docker-build-cron-dev: docker-build-base3
 docker-build-prod: docker-build-base
 	docker build -t python-xml-parser:$(DOCKER_PROD_TAG) -t $(DOCKER_REGISTRY)python-xml-parser:$(DOCKER_PROD_TAG) -f docker/prod/Dockerfile .
 
+docker-build-sdk-dev: docker-build-base3
+	docker build -t python-sdk:$(DOCKER_DEFAULT_TAG) -t $(DOCKER_REGISTRY)python-sdk:$(DOCKER_DEFAULT_TAG) -f docker/sdk/dev/Dockerfile .
+
+docker-build-sdk-prod: docker-build-base3
+	docker build -t python-sdk:$(DOCKER_PROD_TAG) -t $(DOCKER_REGISTRY)python-sdk:$(DOCKER_PROD_TAG) -f docker/sdk/prod/Dockerfile .
+
 docker-push-base: docker-build-base
 	docker push $(DOCKER_REGISTRY)python-base:$(DOCKER_DEFAULT_TAG)
 
@@ -33,6 +39,12 @@ docker-push-xml-parser-dev: docker-build-dev
 
 docker-push-cron-dev: docker-build-cron-dev
 	docker push $(DOCKER_REGISTRY)python-cron:$(DOCKER_DEFAULT_TAG)
+
+docker-push-sdk-dev: docker-build-sdk-dev
+	docker push $(DOCKER_REGISTRY)python-sdk:$(DOCKER_DEFAULT_TAG)
+
+docker-push-sdk-prod: docker-build-sdk-prod
+	docker push $(DOCKER_REGISTRY)python-sdk:$(DOCKER_PROD_TAG)
 
 docker-build-all: docker-build-dev docker-build-prod
 
