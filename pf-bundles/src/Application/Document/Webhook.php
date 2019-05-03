@@ -18,6 +18,9 @@ use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
 class Webhook
 {
 
+    public const USER        = 'user';
+    public const APPLICATION = 'application';
+
     use IdTrait;
 
     /**

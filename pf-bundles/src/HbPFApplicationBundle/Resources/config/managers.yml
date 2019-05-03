@@ -1,0 +1,10 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf.application.manager.webhook:
+        class: Hanaboso\PipesFramework\Application\Model\Webhook\WebhookManager
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+            - '%backend_host%'
