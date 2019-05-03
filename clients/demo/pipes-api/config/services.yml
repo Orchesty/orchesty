@@ -55,6 +55,12 @@ services:
         arguments:
             - '@hbpf.transport.curl_manager'
 
+    hbpf.connector.pager-duty:
+        class: Demo\Connector\PagerDutyConnector
+        public: true
+        arguments:
+            - '@hbpf.transport.curl_manager'
+
     hbpf.custom_node.package:
         class: Demo\CustomNode\DummyConnector
         public: true

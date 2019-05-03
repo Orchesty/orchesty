@@ -1,0 +1,44 @@
+<?php declare(strict_types=1);
+
+namespace Tests\Live\Connector;
+
+use Demo\Connector\PagerDutyConnector;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+
+/**
+ * Class PagerDutyConnectorTest
+ *
+ * @package Tests\Live\Connector
+ */
+final class PagerDutyConnectorTest extends KernelTestCase
+{
+
+    /**
+     *
+     */
+    protected function setUp(): void
+    {
+        self::bootKernel();
+    }
+
+    /**
+     * @throws CurlException
+     */
+    public function testProcessAction(): void
+    {
+        $manager   = self::$container->get('hbpf.transport.curl_manager');
+        $connector = new PagerDutyConnector($manager);
+        $dto       = new ProcessDto();
+        $dto->setData((string) json_encode(['since' => '2019-04-19', 'until' => '2019-04-29']));
+        $data = $connector->processAction($dto)->getData();
+        $arr  = json_decode($data, TRUE, 512, JSON_THROW_ON_ERROR);
+        self::assertEquals(40, $arr['Radek Jirsa']['hours']);
+        self::assertEquals(40, $arr['Marcel Pavlíček']['hours']);
+        self::assertEquals(40, $arr['Tomáš Procházka']['hours']);
+        self::assertEquals(45, $arr['Václav Krecl']['hours']);
+        self::assertEquals(42, $arr['Jakub Husák']['hours']);
+    }
+
+}
