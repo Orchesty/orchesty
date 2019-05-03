@@ -219,7 +219,8 @@ stage-demo:
     - export COMPOSE_PROJECT_NAME=stagedemo
     - export NPM_INSTALL="yes"
     - make docker-pull-dev init-dev DEV_YML=docker-compose.ci.yml
-    - cd $REPO_ROOT/clients/demo
+  script:
+    - cd clients/demo
     - make docker-compose.ci.yml
     - source <(../../build/bin/map-branch-image-tags.sh ./branch-image-tag-map ${CI_BUILD_REF_NAME} -e)
     - export DEPLOYMENT_PREFIX=demo
@@ -229,8 +230,6 @@ stage-demo:
     - export DOCKER_TLS_VERIFY=1
     - docker stack deploy --with-registry-auth -c docker-compose.ci.yml ${DEPLOYMENT_PREFIX}
 
-
-# Client: Clever Monitor
 monolith-demo:
   stage: stage2
   script:
@@ -240,22 +239,6 @@ monolith-demo:
   only:
     - dev
     - master
-
-stage-ranger2:
-  stage: stage3
-  when: manual
-  script:
-    - cd clients/ranger
-    - make docker-compose.ci.yml
-    - source <(../../build/bin/map-branch-image-tags.sh ./branch-image-tag-map ${CI_BUILD_REF_NAME} -e)
-    - export DEPLOYMENT_PREFIX=cm-ranger2
-    - export PUBLISH_HTTP_PORT=6543
-    - export PUBLISH_HTTP_PORT_UI=6544
-    - export BACKEND_URL=https://cm-ranger2.stage.hanaboso.net
-    - export DOCKER_HOST=192.168.10.31:2376
-    - export DOCKER_TLS_VERIFY=1
-    - export EXTERNAL_NETWORK=cc-stage2_default
-    - docker stack deploy --with-registry-auth -c docker-compose.ci.yml ${DEPLOYMENT_PREFIX}
 
 git-pf-bundles:
   stage: stage3
