@@ -36,14 +36,20 @@ codesniffer:
 phpstan:
 	$(DE) php ./vendor/bin/phpstan analyse -c ./phpstan.neon -l 7 src/ tests/
 
-phpunit:
-	$(DE) php ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr tests
+phpcontroller:
+	$(DE) php ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr tests/Controller
+
+phpintegration:
+	$(DE) php ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr tests/Integration
+
+phplive:
+	$(DE) php ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr tests/Live
 
 init: docker-up-force composer-install
 
 test: init fasttest
 
-fasttest: clear-cache codesniffer phpstan phpunit
+fasttest: clear-cache codesniffer phpstan phpintegration phpcontroller
 
 docker-compose.ci.yml:
 	# Comment out any port forwarding
