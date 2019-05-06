@@ -14,7 +14,7 @@ use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
  *
  * @package Hanaboso\PipesFramework\Application\Base
  */
-abstract class OAuth2ApplicationAbstract extends OAuth1ApplicationAbstract implements OAuth2ApplicationInterface
+abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements OAuth2ApplicationInterface
 {
 
     private const AUTHORIZE_URL = 'https://appcenter.intuit.com/connect/oauth2';
@@ -23,7 +23,7 @@ abstract class OAuth2ApplicationAbstract extends OAuth1ApplicationAbstract imple
     /**
      * @var OAuth2Provider
      */
-    private $OAuth2Provider;
+    private $provider;
 
     /**
      * @var OAuth2DtoInterface
@@ -33,12 +33,11 @@ abstract class OAuth2ApplicationAbstract extends OAuth1ApplicationAbstract imple
     /**
      * OAuth2ApplicationAbstract constructor.
      *
-     * @param OAuth2Provider $provider2
+     * @param OAuth2Provider $provider
      */
-    public function __construct(OAuth2Provider $provider2)
+    public function __construct(OAuth2Provider $provider)
     {
-        parent::__construct($this->OAuth1Provider);
-        $this->OAuth2Provider = $provider2;
+        $this->provider = $provider;
     }
 
     /**
@@ -46,7 +45,7 @@ abstract class OAuth2ApplicationAbstract extends OAuth1ApplicationAbstract imple
      */
     public function getAuthorizationType(): string
     {
-        return BasicApplicationInterface::OAUTH2;
+        return OAuth2ApplicationInterface::OAUTH2;
     }
 
     /**
@@ -57,7 +56,7 @@ abstract class OAuth2ApplicationAbstract extends OAuth1ApplicationAbstract imple
         $redirectUrl = ApplicationUtils::generateUrl();
         $this->dto   = new OAuth2Dto($applicationInstall, $redirectUrl, self::AUTHORIZE_URL, self::TOKEN_URL);
 
-        $this->OAuth2Provider->authorize($this->dto);
+        $this->provider->authorize($this->dto);
     }
 
     /**
@@ -68,7 +67,7 @@ abstract class OAuth2ApplicationAbstract extends OAuth1ApplicationAbstract imple
      */
     public function refreshAuthorization(ApplicationInstall $applicationInstall): ApplicationInstall
     {
-        $accessToken = $this->OAuth2Provider->refreshAccessToken($this->dto, $this->getTokens());
+        $accessToken = $this->provider->refreshAccessToken($this->dto, $this->getTokens());
 
         return $applicationInstall->setSettings([
             BasicApplicationInterface::AUTHORIZATION_SETTINGS => [BasicApplicationInterface::TOKEN => $accessToken],
