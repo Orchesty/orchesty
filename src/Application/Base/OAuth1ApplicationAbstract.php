@@ -14,13 +14,13 @@ use OAuthException;
  *
  * @package Hanaboso\PipesFramework\Application\Base
  */
-abstract class OAuth1ApplicationAbstract extends BasicApplicationAbstract implements OAuth1ApplicationInterface
+abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements OAuth1ApplicationInterface
 {
 
     /**
      * @var OAuth1Provider
      */
-    protected $OAuth1Provider;
+    protected $provider;
 
     /**
      * @var OAuth1DtoInterface;
@@ -34,7 +34,7 @@ abstract class OAuth1ApplicationAbstract extends BasicApplicationAbstract implem
      */
     public function __construct(OAuth1Provider $provider)
     {
-        $this->OAuth1Provider = $provider;
+        $this->provider = $provider;
     }
 
     /**
@@ -42,7 +42,7 @@ abstract class OAuth1ApplicationAbstract extends BasicApplicationAbstract implem
      */
     public function getAuthorizationType(): string
     {
-        return BasicApplicationAbstract::OAUTH;
+        return OAuth1ApplicationInterface::OAUTH;
     }
 
     /**
@@ -55,7 +55,7 @@ abstract class OAuth1ApplicationAbstract extends BasicApplicationAbstract implem
     {
         $this->dto = new OAuth1Dto($applicationInstall);
 
-        $this->OAuth1Provider->authorize(
+        $this->provider->authorize(
             $this->dto,
             $this->getTokenUrl(),
             $this->getAuthorizeUrl(),
