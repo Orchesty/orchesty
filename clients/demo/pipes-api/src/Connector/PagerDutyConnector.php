@@ -70,7 +70,7 @@ class PagerDutyConnector implements ConnectorInterface
     {
         $requestDto = new RequestDto('GET', new Uri(
                 sprintf(
-                    'https://api.pagerduty.com/schedules/PUUDPGA?time_zone=UTC&since=%s&until=%s',
+                    'https://api.pagerduty.com/schedules/PUUDPGA?time_zone=CET&since=%s&until=%s',
                     json_decode($dto->getData(), TRUE, 512, JSON_THROW_ON_ERROR)['since'] ?? date('Y-m-01'),
                     json_decode($dto->getData(), TRUE, 512, JSON_THROW_ON_ERROR)['until'] ?? date('Y-m-d'),
                     )
@@ -94,11 +94,8 @@ class PagerDutyConnector implements ConnectorInterface
             $user  = $day['user']['summary'] ?? '';
             $hours = $this->getHours($day['start'] ?? '', $day['end'] ?? '');
 
-            if (!$this->isWeekendOrHoliday($day['start'])) {
+            if (!$this->isWeekendOrHoliday($day['start']) && $hours > 8) {
                 $hours -= 8;
-                if ($hours < 0) {
-                    $hours = 0;
-                }
             }
 
             if (array_key_exists($user, $res)) {
@@ -118,9 +115,8 @@ class PagerDutyConnector implements ConnectorInterface
      */
     private function isWeekendOrHoliday(string $date): bool
     {
-        $date = date('Y-m-d', (int) strtotime($date));
         /** @var DateTimeInterface $day */
-        $day = DateTimeImmutable::createFromFormat('Y-m-d', $date);
+        $day = DateTimeImmutable::createFromFormat('Y-m-d', substr($date, 0, 10));
 
         return date('N', (int) strtotime($date)) >= 6 || CzechHolidays::isHoliday($day);
     }
