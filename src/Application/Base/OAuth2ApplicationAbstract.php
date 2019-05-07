@@ -34,12 +34,18 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
         $this->provider = $provider;
     }
 
-    public function getAuthUrl()
+    /**
+     * @return string
+     */
+    public function getAuthUrl(): string
     {
         return static::AUTHORIZE_URL;
     }
 
-    public function getTokenUrl()
+    /**
+     * @return string
+     */
+    public function getTokenUrl(): string
     {
         return static::TOKEN_URL;
     }
@@ -68,7 +74,7 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
      */
     public function refreshAuthorization(ApplicationInstall $applicationInstall): ApplicationInstall
     {
-        $accessToken = $this->provider->refreshAccessToken($this->dto, $this->getTokens());
+        $accessToken = $this->provider->refreshAccessToken($this->createDto($applicationInstall), $this->getTokens());
 
         return $applicationInstall->setSettings([
             BasicApplicationInterface::AUTHORIZATION_SETTINGS => [BasicApplicationInterface::TOKEN => $accessToken],
@@ -76,7 +82,12 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
 
     }
 
-    protected function createDto(ApplicationInstall $applicationInstall)
+    /**
+     * @param ApplicationInstall $applicationInstall
+     *
+     * @return OAuth2Dto
+     */
+    protected function createDto(ApplicationInstall $applicationInstall): OAuth2Dto
     {
         $redirectUrl = ApplicationUtils::generateUrl();
 

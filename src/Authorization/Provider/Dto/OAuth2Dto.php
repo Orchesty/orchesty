@@ -68,7 +68,7 @@ class OAuth2Dto implements OAuth2DtoInterface
         $this->authorizeUrl = $authorizeUrl;
         $this->tokenUrl     = $tokenUrl;
         $this->clientId     = $authorization->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][OAuth2ApplicationInterface::CLIENT_ID] ?? '';
-        $this->clientSecret = $authorization->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][OAuth2ApplicationInterface::CONSUMER_SECRET] ?? '';
+        $this->clientSecret = $authorization->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][OAuth2ApplicationInterface::CLIENT_SECRET] ?? '';
     }
 
     /**
