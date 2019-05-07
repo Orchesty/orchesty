@@ -127,10 +127,12 @@ final class WebhookManager
      */
     private function getApplicationInstall(WebhookApplicationInterface $application, string $userId): ApplicationInstall
     {
+        // TODO: refactor
+
         /** @var ApplicationInstall|NULL $install */
         $install = $this->repository->findOneBy([
-            ApplicationInstall::USER => $userId,
-            ApplicationInstall::NAME => $application->getKey(),
+            'user' => $userId,
+            'key'  => $application->getKey(),
         ]);
 
         if (!$install) {
