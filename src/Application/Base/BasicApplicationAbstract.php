@@ -28,6 +28,8 @@ abstract class BasicApplicationAbstract extends ApplicationAbstract implements B
     public function isAuthorized(ApplicationInstall $applicationInstall): bool
     {
         return isset($applicationInstall->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::TOKEN]);
+
+        //        TODO: refactor
     }
 
 }
