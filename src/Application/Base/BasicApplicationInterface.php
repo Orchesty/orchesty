@@ -12,9 +12,9 @@ use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 interface BasicApplicationInterface extends ApplicationInterface
 {
 
-    public const BASIC  = 'basic';
-    public const OAUTH  = 'oauth';
-    public const OAUTH2 = 'oauth2';
+    public const  BASIC                  = 'basic';
+    public const  AUTHORIZATION_SETTINGS = 'authorization_settings';
+    public const  TOKEN                  = 'token';
 
     /**
      * @return string
