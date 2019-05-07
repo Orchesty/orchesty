@@ -48,7 +48,7 @@ final class WebhookManagerTest extends DatabaseTestCaseAbstract
      */
     public function testSubscribeAndUnsubscribe(): void
     {
-        $this->dm->persist((new ApplicationInstall())->setUser('User')->setName('webhook'));
+        $this->dm->persist((new ApplicationInstall())->setUser('User')->setKey('webhook'));
         $this->dm->flush();
 
         $this->getService(function (): ResponseDto {
@@ -79,7 +79,7 @@ final class WebhookManagerTest extends DatabaseTestCaseAbstract
      */
     public function testSubscribeAndUnsubscribeFailed(): void
     {
-        $this->dm->persist((new ApplicationInstall())->setUser('User')->setName('webhook'));
+        $this->dm->persist((new ApplicationInstall())->setUser('User')->setKey('webhook'));
         $this->dm->flush();
 
         $this->getService(function (): ResponseDto {

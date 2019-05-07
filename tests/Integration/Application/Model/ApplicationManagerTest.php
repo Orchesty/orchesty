@@ -55,12 +55,7 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
         self::assertIsObject($appDetail);
 
         self::expectException(ApplicationException::class);
-        self::expectExceptionMessage(
-            sprintf(
-                'Application was not found [%s].',
-                ApplicationException::APP_WAS_NOT_FOUND
-            )
-        );
+        self::expectExceptionCode(ApplicationException::APP_WAS_NOT_FOUND);
         $applicationManager->getInstalledApplicationDetail('some app', 'example5');
 
     }
