@@ -23,11 +23,6 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
     protected $provider;
 
     /**
-     * @var OAuth1DtoInterface;
-     */
-    private $dto;
-
-    /**
      * OAuth1ApplicationAbstract constructor.
      *
      * @param OAuth1Provider $provider
@@ -53,15 +48,18 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
      */
     public function authorize(ApplicationInstall $applicationInstall): void
     {
-        $this->dto = new OAuth1Dto($applicationInstall);
-
         $this->provider->authorize(
-            $this->dto,
+            $this->createDto($applicationInstall),
             $this->getTokenUrl(),
             $this->getAuthorizeUrl(),
             $this->getRedirectUrl(),
             $this->saveOAuthStaff(),
             );
+    }
+
+    protected function createDto(ApplicationInstall $applicationInstall)
+    {
+        return new OAuth1Dto($applicationInstall);
     }
 
     /**

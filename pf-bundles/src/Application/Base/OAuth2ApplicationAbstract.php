@@ -6,7 +6,6 @@ use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 use Hanaboso\PipesFramework\Application\Utils\ApplicationUtils;
 use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2Dto;
-use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth2DtoInterface;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 
 /**
@@ -17,18 +16,13 @@ use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements OAuth2ApplicationInterface
 {
 
-    private const AUTHORIZE_URL = 'https://appcenter.intuit.com/connect/oauth2';
-    private const TOKEN_URL     = 'https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer';
+    private const AUTHORIZE_URL = '';
+    private const TOKEN_URL     = '';
 
     /**
      * @var OAuth2Provider
      */
     private $provider;
-
-    /**
-     * @var OAuth2DtoInterface
-     */
-    private $dto;
 
     /**
      * OAuth2ApplicationAbstract constructor.
@@ -38,6 +32,16 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
     public function __construct(OAuth2Provider $provider)
     {
         $this->provider = $provider;
+    }
+
+    public function getAuthUrl()
+    {
+        return static::AUTHORIZE_URL;
+    }
+
+    public function getTokenUrl()
+    {
+        return static::TOKEN_URL;
     }
 
     /**
@@ -53,10 +57,7 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
      */
     public function authorize(ApplicationInstall $applicationInstall): void
     {
-        $redirectUrl = ApplicationUtils::generateUrl();
-        $this->dto   = new OAuth2Dto($applicationInstall, $redirectUrl, self::AUTHORIZE_URL, self::TOKEN_URL);
-
-        $this->provider->authorize($this->dto);
+        $this->provider->authorize($this->createDto($applicationInstall));
     }
 
     /**
@@ -73,6 +74,13 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
             BasicApplicationInterface::AUTHORIZATION_SETTINGS => [BasicApplicationInterface::TOKEN => $accessToken],
         ]);
 
+    }
+
+    protected function createDto(ApplicationInstall $applicationInstall)
+    {
+        $redirectUrl = ApplicationUtils::generateUrl();
+
+        return new OAuth2Dto($applicationInstall, $redirectUrl, $this->getAuthUrl(), $this->getTokenUrl());
     }
 
     /**
