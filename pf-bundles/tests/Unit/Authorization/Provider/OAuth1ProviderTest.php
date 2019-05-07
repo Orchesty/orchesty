@@ -5,7 +5,8 @@ namespace Tests\Unit\Authorization\Provider;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
 use Hanaboso\CommonsBundle\Redirect\RedirectInterface;
-use Hanaboso\PipesFramework\Authorization\Document\Authorization;
+use Hanaboso\PipesFramework\Application\Base\BasicApplicationInterface;
+use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth1Dto;
 use Hanaboso\PipesFramework\Authorization\Provider\OAuth1Provider;
@@ -32,11 +33,10 @@ final class OAuth1ProviderTest extends TestCase
      */
     public function testAuthorize(array $data, string $url, bool $exception): void
     {
-        $authorization = new Authorization('magento2.oauth');
-        $authorization->setToken([]);
+        $install = new ApplicationInstall();
         /** @var OAuth1Provider|MockObject $provider */
         $provider = $this->getMockedProvider($data, $url);
-        $dto      = new OAuth1Dto($authorization, 'key', 'sec');
+        $dto      = new OAuth1Dto($install);
 
         if ($exception) {
             self::expectException(AuthorizationException::class);
@@ -72,11 +72,13 @@ final class OAuth1ProviderTest extends TestCase
      */
     public function testGetAccessToken(array $data, array $request, bool $exception): void
     {
-        $authorization = new Authorization('magento2.oauth');
-        $authorization->setToken($data);
+        $install = new ApplicationInstall();
+        $install->setSettings(
+            [BasicApplicationInterface::AUTHORIZATION_SETTINGS => [BasicApplicationInterface::TOKEN => $data]]
+        );
         /** @var OAuth1Provider|MockObject $provider */
         $provider = $this->getMockedProvider(['token'], '');
-        $dto      = new OAuth1Dto($authorization, 'key', 'sec');
+        $dto      = new OAuth1Dto($install);
 
         if ($exception) {
             self::expectException(AuthorizationException::class);
@@ -111,11 +113,13 @@ final class OAuth1ProviderTest extends TestCase
      */
     public function testGetAuthorizeHeader(array $data, bool $exception): void
     {
-        $authorization = new Authorization('magento2.oauth');
-        $authorization->setToken($data);
+        $install = new ApplicationInstall();
+        $install->setSettings(
+            [BasicApplicationInterface::AUTHORIZATION_SETTINGS => [BasicApplicationInterface::TOKEN => $data]]
+        );
         /** @var OAuth1Provider|MockObject $provider */
         $provider = $this->getMockedProvider(['token'], '');
-        $dto      = new OAuth1Dto($authorization, 'key', 'sec');
+        $dto      = new OAuth1Dto($install);
 
         if ($exception) {
             self::expectException(AuthorizationException::class);
