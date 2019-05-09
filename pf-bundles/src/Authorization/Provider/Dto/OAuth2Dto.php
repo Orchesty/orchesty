@@ -2,8 +2,8 @@
 
 namespace Hanaboso\PipesFramework\Authorization\Provider\Dto;
 
-use Hanaboso\PipesFramework\Application\Base\BasicApplicationInterface;
-use Hanaboso\PipesFramework\Application\Base\OAuth2ApplicationInterface;
+use Hanaboso\PipesFramework\Application\Base\Basic\BasicApplicationInterface;
+use Hanaboso\PipesFramework\Application\Base\OAuth2\OAuth2ApplicationInterface;
 use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 
 /**

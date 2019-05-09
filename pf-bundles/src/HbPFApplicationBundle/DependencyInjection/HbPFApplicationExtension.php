@@ -41,6 +41,7 @@ class HbPFApplicationExtension extends Extension implements PrependExtensionInte
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('applications.yml');
+        $loader->load('managers.yml');
         $loader->load('services.yml');
     }
 

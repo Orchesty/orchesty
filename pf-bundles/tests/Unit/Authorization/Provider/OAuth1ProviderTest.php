@@ -5,7 +5,7 @@ namespace Tests\Unit\Authorization\Provider;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
 use Hanaboso\CommonsBundle\Redirect\RedirectInterface;
-use Hanaboso\PipesFramework\Application\Base\BasicApplicationInterface;
+use Hanaboso\PipesFramework\Application\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth1Dto;

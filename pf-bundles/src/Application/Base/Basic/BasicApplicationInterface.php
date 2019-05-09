@@ -1,13 +1,14 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\Application\Base;
+namespace Hanaboso\PipesFramework\Application\Base\Basic;
 
+use Hanaboso\PipesFramework\Application\Base\ApplicationInterface;
 use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 
 /**
  * Interface BasicApplicationInterface
  *
- * @package Hanaboso\PipesFramework\Application\Base
+ * @package Hanaboso\PipesFramework\Application\Base\Basic
  */
 interface BasicApplicationInterface extends ApplicationInterface
 {
