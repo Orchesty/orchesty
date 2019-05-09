@@ -3,12 +3,11 @@
 namespace Tests\Unit\RabbitMq\Producer;
 
 use Bunny\Channel;
-use Bunny\Exception\BunnyException;
 use Exception;
-use Hanaboso\PipesFramework\HbPFRabbitMqBundle\ContentTypes;
 use Hanaboso\PipesFramework\RabbitMq\BunnyManager;
+use Hanaboso\PipesFramework\RabbitMq\ContentTypes;
 use Hanaboso\PipesFramework\RabbitMq\Producer\AbstractProducer;
-use Hanaboso\PipesFramework\RabbitMq\Serializers\JsonSerializer;
+use JsonException;
 use PHPUnit\Framework\MockObject\MockObject;
 use Tests\KernelTestCaseAbstract;
 
@@ -43,29 +42,9 @@ final class AbstractProducerTest extends KernelTestCaseAbstract
         self::assertEquals('*.*', $this->producer->getRoutingKey());
         self::assertFalse($this->producer->isMandatory());
         self::assertTrue($this->producer->isImmediate());
-        self::assertEquals(JsonSerializer::class, $this->producer->getSerializerClassName());
         self::assertEquals('beforeExecute', $this->producer->getBeforeMethod());
         self::assertEquals(ContentTypes::APPLICATION_JSON, $this->producer->getContentType());
         self::assertInstanceOf(BunnyManager::class, $this->producer->getManager());
-    }
-
-    /**
-     * @return void
-     */
-    public function testGetMeta(): void
-    {
-        $serializer = $this->producer->getSerializer();
-        self::assertInstanceOf(JsonSerializer::class, $serializer);
-    }
-
-    /**
-     * @return void
-     * @throws Exception
-     */
-    public function testCreateMeta(): void
-    {
-        $publisher = $this->getPublisher($this->getDefaultBunnyManager(), '');
-        self::assertNull($publisher->createSerializer());
     }
 
     /**
@@ -85,7 +64,7 @@ final class AbstractProducerTest extends KernelTestCaseAbstract
 
         $bunnyManager->method('getChannel')->willReturn($channel);
 
-        $publisher = $this->getPublisher($bunnyManager, JsonSerializer::class, '');
+        $publisher = $this->getPublisher($bunnyManager, '');
 
         $publisher->publish('[1,3,2]');
     }
@@ -96,14 +75,13 @@ final class AbstractProducerTest extends KernelTestCaseAbstract
      */
     public function testPublishNoSerializer(): void
     {
-        self::expectException(BunnyException::class);
-        $publisher = $this->getPublisher($this->getDefaultBunnyManager(), '', '');
-        $publisher->publish('[1,2,3]');
+        self::expectException(JsonException::class);
+        $publisher = $this->getPublisher($this->getDefaultBunnyManager(), '');
+        $publisher->publish('This is not JSON');
     }
 
     /**
      * @param MockObject $bunnyManager
-     * @param string     $serializerClassName
      * @param string     $beforeExecute
      *
      * @return MockObject|AbstractProducer
@@ -111,7 +89,6 @@ final class AbstractProducerTest extends KernelTestCaseAbstract
      */
     protected function getPublisher(
         MockObject $bunnyManager,
-        $serializerClassName = JsonSerializer::class,
         $beforeExecute = 'beforeExecute'
     ): AbstractProducer
     {
@@ -121,7 +98,6 @@ final class AbstractProducerTest extends KernelTestCaseAbstract
             '*.*',
             FALSE,
             TRUE,
-            $serializerClassName,
             $beforeExecute,
             ContentTypes::APPLICATION_JSON,
             $bunnyManager,

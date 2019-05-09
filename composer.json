@@ -2,7 +2,7 @@
   "name": "hanaboso/pipes-framework",
   "license": "proprietary",
   "description": "PipesFramework for Symfony",
-  "version": "1.0.36",
+  "version": "1.0.37",
   "autoload": {
     "psr-4": {
       "Hanaboso\\PipesFramework\\": "src/"
@@ -22,6 +22,7 @@
     "hanaboso/acl-bundle": "^1.0",
     "hanaboso/email-service-bundle": "^1.0",
     "hanaboso/mongo-data-grid": "^1.1",
+    "hanaboso/rabbit-mq-bundle": "^1.1",
     "influxdb/influxdb-php": "^1.14",
     "league/oauth2-client": "^2.4",
     "mtdowling/cron-expression": "^1.2",

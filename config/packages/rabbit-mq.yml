@@ -1,66 +1,65 @@
 parameters:
-    # Rabbitmq
-    rabbitmq.host: rabbitmq
     rabbit_host: rabbitmq
-    rabbitmq.port: 5672
-    rabbitmq.vhost: /
-    rabbitmq.user: guest
-    rabbitmq.password: guest
-    rabbitmq.persistent: false
-    rabbitmq.path: /
+    rabbit_port: 5672
+    rabbit_vhost: /
+    rabbit_user: guest
+    rabbit_password: guest
+    rabbit_persistent: false
+    rabbit_path: /
 
-#DEMO
-rabbit-mq:
+rabbit_mq:
+    connections:
+        default:
+            host: '%rabbit_host%'
+            port: '%rabbit_port%'
+            vhost: '%rabbit_vhost%'
+            user: '%rabbit_user%'
+            password: '%rabbit_password%'
+
     exchanges:
-        pipes_exchange:
+        repeater:
             durable: true
             type: direct
 
     queues:
-        demo_queue:
+        repeater:
             durable: true
             bindings:
-                - exchange: pipes_exchange
-                  routing_key: demo
+                -   exchange: repeater
+                    routing_key: repeater
 
-    producers:
-        demo:
-            class: Hanaboso\PipesFramework\RabbitMq\Impl\Demo\DemoProducer
-            exchange: pipes_exchange
-            serializer: Hanaboso\PipesFramework\RabbitMqBundle\Serializers\JsonSerializer
-            routing_key: demo
+        delayed_repeater:
+            durable: true
+            arguments:
+                x-dead-letter-exchange: 'repeater'
+                x-message-ttl: 6000
+                x-dead-letter-routing-key: 'repeater'
+            bindings:
+                -   exchange: repeater
+                    routing_key: delayed_repeater
+
+    publishers:
+        repeater:
+            class: Hanaboso\PipesFramework\RabbitMq\Impl\Repeater\RepeaterProducer
+            exchange: repeater
+            routing_key: repeater
 
     consumers:
-        demo:
-            class: Hanaboso\PipesFramework\RabbitMq\Impl\Demo\DemoConsumer
-            routing_key: demo
-            queue: demo_queue
-            serializer: Hanaboso\PipesFramework\RabbitMqBundle\Serializers\JsonSerializer
-            callback: hanaboso.pipes_framework.commons.rabbit_mq.demo.demo_callback
-
-    async_consumers:
-        async-demo:
-            class: Hanaboso\PipesFramework\RabbitMq\Impl\AsyncDemo\DemoConsumer
-            queue: async-demo
-            serializer:
-            callback: hanaboso.pipes_framework.commons.rabbit_mq.async_demo.demo_callback
-            prefetch_count: 10
+        repeater:
+            class: Hanaboso\PipesFramework\RabbitMq\Impl\Repeater\RepeaterConsumer
+            queue: repeater
+            callback: hanaboso.pipes_framework.commons.repeater.repeater_callback
+            no_ack: true
 
 services:
-    hanaboso.pipes_framework.commons.rabbit_mq.demo.demo_callback:
-        class: Hanaboso\PipesFramework\RabbitMq\Impl\Demo\DemoCallback
+    # callback for repeater
+    hanaboso.pipes_framework.commons.repeater.repeater_callback:
+        class: Hanaboso\PipesFramework\RabbitMq\Impl\Repeater\RepeaterCallback
         arguments:
-            - '@monolog.logger.rabbit-mq'
+            - '@rabbit_mq.publisher.repeater'
         calls:
             - [setRepeater, ['@hanaboso.pipes_framework.commons.rabbit_mq.repeater.repeater']]
 
-    hanaboso.pipes_framework.commons.rabbit_mq.async_demo.batch_demo_callback:
-        class: Hanaboso\PipesFramework\RabbitMq\Impl\AsyncDemo\DemoCallback
-
-    hanaboso.pipes_framework.commons.rabbit_mq.async_demo.demo_callback:
-        class: Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchConsumerCallback
-        arguments:
-            - '@hanaboso.pipes_framework.commons.rabbit_mq.async_demo.batch_demo_callback'
-            - '@hbpf.influxdb_sender_monolith'
-        calls:
-            - [setLogger, ['@monolog.logger.rabbit-mq']]
+    hanaboso.pipes_framework.commons.rabbit_mq.repeater.repeater:
+        class: Hanaboso\PipesFramework\RabbitMq\Impl\Repeater\Repeater
+        arguments: ['@rabbit_mq.publisher.repeater', '3']

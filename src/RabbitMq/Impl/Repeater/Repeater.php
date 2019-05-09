@@ -4,10 +4,10 @@ namespace Hanaboso\PipesFramework\RabbitMq\Impl\Repeater;
 
 use Bunny\Message;
 use Exception;
-use Hanaboso\PipesFramework\RabbitMq\Producer\AbstractProducer;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use RabbitMqBundle\Publisher\Publisher;
 
 /**
  * Class Repeater
@@ -38,17 +38,17 @@ class Repeater implements LoggerAwareInterface
     protected $logger;
 
     /**
-     * @var AbstractProducer
+     * @var Publisher
      */
     private $producer;
 
     /**
      * Repeater constructor.
      *
-     * @param AbstractProducer $producer
-     * @param int              $hopLimit
+     * @param Publisher $producer
+     * @param int       $hopLimit
      */
-    public function __construct(AbstractProducer $producer, int $hopLimit = 3)
+    public function __construct(Publisher $producer, int $hopLimit = 3)
     {
         $this->hopLimit = $hopLimit;
         $this->producer = $producer;
@@ -83,7 +83,7 @@ class Repeater implements LoggerAwareInterface
         }
 
         //TODO: log
-        $this->producer->publish($message->content, NULL, $headers);
+        $this->producer->publish($message->content, $headers);
 
         return TRUE;
     }
@@ -103,8 +103,7 @@ class Repeater implements LoggerAwareInterface
      */
     public static function validRepeaterMessage(Message $message): bool
     {
-        return $message->hasHeader(self::DESTINATION_ROUTING_KEY)
-            && $message->hasHeader(self::DESTINATION_EXCHANGE);
+        return $message->hasHeader(self::DESTINATION_ROUTING_KEY) && $message->hasHeader(self::DESTINATION_EXCHANGE);
     }
 
     /**

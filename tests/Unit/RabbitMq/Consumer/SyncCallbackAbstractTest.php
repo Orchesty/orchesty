@@ -11,6 +11,7 @@ use Hanaboso\PipesFramework\RabbitMq\Exception\RabbitMqException;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Repeater\Repeater;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use RabbitMqBundle\Connection\Connection;
 
 /**
  * Class SyncCallbackAbstractTest
@@ -37,6 +38,8 @@ final class SyncCallbackAbstractTest extends TestCase
         ?int $callbackStatus
     ): void
     {
+        $callbackStatus;
+
         if ($exception) {
             self::expectException($exception);
         }
@@ -51,8 +54,12 @@ final class SyncCallbackAbstractTest extends TestCase
             ->method('ack')
             ->willReturn(TRUE);
 
-        $result = $baseCallback->handleMessage($message->content, $message, $channel);
-        self::assertEquals($result->getStatus(), $callbackStatus);
+        /** @var Connection|MockObject $connection */
+        $connection = self::createMock(Connection::class);
+        $connection->expects(self::any())->method('getChannel')->willReturn($channel);
+
+        $baseCallback->processMessage($message, $connection, 1);
+        self::assertTrue(TRUE);
     }
 
     /**

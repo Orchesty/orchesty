@@ -2,14 +2,14 @@
 
 namespace Hanaboso\PipesFramework\CustomNode\Model\Batch;
 
-use Hanaboso\PipesFramework\RabbitMq\Consumer\AsyncConsumerAbstract;
+use RabbitMqBundle\Consumer\AsyncConsumer;
 
 /**
  * Class BatchConsumer
  *
  * @package Hanaboso\PipesFramework\CustomNode\Model\Batch
  */
-class BatchConsumer extends AsyncConsumerAbstract
+class BatchConsumer extends AsyncConsumer
 {
 
 }

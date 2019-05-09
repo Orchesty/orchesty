@@ -4,10 +4,11 @@ namespace Hanaboso\PipesFramework\RabbitMq\Impl\Repeater;
 
 use Bunny\Message;
 use Exception;
-use Hanaboso\PipesFramework\HbPFRabbitMqBundle\DebugMessageTrait;
 use Hanaboso\PipesFramework\RabbitMq\CallbackStatus;
 use Hanaboso\PipesFramework\RabbitMq\Consumer\SyncCallbackAbstract;
-use Hanaboso\PipesFramework\RabbitMq\Producer\AbstractProducer;
+use RabbitMqBundle\Connection\Connection;
+use RabbitMqBundle\Consumer\DebugMessageTrait;
+use RabbitMqBundle\Publisher\Publisher;
 
 /**
  * Class RepeaterCallback
@@ -20,16 +21,16 @@ class RepeaterCallback extends SyncCallbackAbstract
     use DebugMessageTrait;
 
     /**
-     * @var AbstractProducer|null
+     * @var Publisher|null
      */
     protected $producer = NULL;
 
     /**
      * RepeaterCallback constructor.
      *
-     * @param AbstractProducer|null $producer
+     * @param Publisher|null $producer
      */
-    public function __construct(?AbstractProducer $producer = NULL)
+    public function __construct(?Publisher $producer = NULL)
     {
         parent::__construct();
         $this->producer = $producer;
@@ -42,7 +43,7 @@ class RepeaterCallback extends SyncCallbackAbstract
      * @return CallbackStatus
      * @throws Exception
      */
-    function handle($data, Message $message): CallbackStatus
+    public function handle($data, Message $message): CallbackStatus
     {
         $data;
 
@@ -52,15 +53,30 @@ class RepeaterCallback extends SyncCallbackAbstract
 
         //TODO: refactor publishing
         if ($this->producer) {
+            $routingKey = $message->getHeader(Repeater::DESTINATION_ROUTING_KEY);
+            if ($routingKey) {
+                $this->producer->setRoutingKey($routingKey);
+            }
+
             $this->producer->setExchange($message->getHeader(Repeater::DESTINATION_EXCHANGE));
-            $this->producer->publish(
-                $message->content,
-                $message->getHeader(Repeater::DESTINATION_ROUTING_KEY),
-                $message->headers
-            );
+            $this->producer->publish($message->content, $message->headers);
         }
 
         return new CallbackStatus(CallbackStatus::SUCCESS);
+    }
+
+    /**
+     * @param Message    $message
+     * @param Connection $connection
+     * @param int        $channelId
+     */
+    public function processMessage(Message $message, Connection $connection, int $channelId): void
+    {
+        $message;
+        $connection;
+        $channelId;
+
+        // Not needed, used handle method instead...
     }
 
 }
