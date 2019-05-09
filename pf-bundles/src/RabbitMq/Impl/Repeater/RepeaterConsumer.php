@@ -2,14 +2,14 @@
 
 namespace Hanaboso\PipesFramework\RabbitMq\Impl\Repeater;
 
-use Hanaboso\PipesFramework\RabbitMq\Consumer\BaseSyncConsumerAbstract;
+use RabbitMqBundle\Consumer\Consumer;
 
 /**
  * Class RepeaterConsumer
  *
  * @package Hanaboso\PipesFramework\RabbitMq\Impl\Repeater
  */
-class RepeaterConsumer extends BaseSyncConsumerAbstract
+class RepeaterConsumer extends Consumer
 {
 
 }

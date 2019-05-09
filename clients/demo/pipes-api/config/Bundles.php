@@ -14,7 +14,6 @@ use Hanaboso\PipesFramework\HbPFLongRunningNodeBundle\HbPFLongRunningNodeBundle;
 use Hanaboso\PipesFramework\HbPFMapperBundle\HbPFMapperBundle;
 use Hanaboso\PipesFramework\HbPFMetricsBundle\HbPFMetricsBundle;
 use Hanaboso\PipesFramework\HbPFNotificationBundle\HbPFNotificationBundle;
-use Hanaboso\PipesFramework\HbPFRabbitMqBundle\HbPFRabbitMqBundle;
 use Hanaboso\UserBundle\HbPFUserBundle;
 use JMS\SerializerBundle\JMSSerializerBundle;
 use Nelmio\CorsBundle\NelmioCorsBundle;
@@ -46,7 +45,6 @@ return [
     HbPFMapperBundle::class          => ['all' => TRUE],
     HbPFMetricsBundle::class         => ['all' => TRUE],
     HbPFUserBundle::class            => ['all' => TRUE],
-    HbPFRabbitMqBundle::class        => ['all' => TRUE],
     RabbitMqBundle::class            => ['all' => TRUE],
     EmailServiceBundle::class        => ['all' => TRUE],
     HbPFLogsBundle::class            => ['all' => TRUE],

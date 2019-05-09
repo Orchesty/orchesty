@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\HbPFRabbitMqBundle;
+namespace Hanaboso\PipesFramework\RabbitMq;
 
 /**
  * Class ContentTypes
  *
- * @package Hanaboso\PipesFramework\HbPFRabbitMqBundle
+ * @package Hanaboso\PipesFramework\RabbitMq
  */
 final class ContentTypes
 {

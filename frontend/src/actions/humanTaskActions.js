@@ -42,7 +42,7 @@ function loadList(id, loadingState = true) {
     return serverRequest(dispatch, 'GET', `/longRunning/id/topology/${topologyId}/${nodeId ? `node/${nodeId}/` : ''}getTasks`, null, null, headers).then((response) => {
       if (response) {
         const topologies = response.items.map((topology) => {
-          topology.name = topology._id;
+          topology.name = topology.id;
 
           return topology;
         });

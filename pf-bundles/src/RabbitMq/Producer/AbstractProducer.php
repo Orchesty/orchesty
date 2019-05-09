@@ -5,13 +5,12 @@ namespace Hanaboso\PipesFramework\RabbitMq\Producer;
 use Bunny\Channel;
 use Bunny\Exception\BunnyException;
 use Exception;
-use Hanaboso\PipesFramework\HbPFRabbitMqBundle\ContentTypes;
-use Hanaboso\PipesFramework\HbPFRabbitMqBundle\DebugMessageTrait;
 use Hanaboso\PipesFramework\RabbitMq\BunnyManager;
-use Hanaboso\PipesFramework\RabbitMq\Serializers\IMessageSerializer;
+use Hanaboso\PipesFramework\RabbitMq\ContentTypes;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use RabbitMqBundle\Consumer\DebugMessageTrait;
 
 /**
  * Class AbstractProducer
@@ -54,11 +53,6 @@ class AbstractProducer implements LoggerAwareInterface
     private $serializerClassName;
 
     /**
-     * @var IMessageSerializer|null
-     */
-    private $serializer = NULL;
-
-    /**
      * @var ?string
      */
     private $beforeMethod;
@@ -80,7 +74,6 @@ class AbstractProducer implements LoggerAwareInterface
      * @param string       $routingKey
      * @param bool         $mandatory
      * @param bool         $immediate
-     * @param string       $serializerClassName
      * @param string|null  $beforeMethod
      * @param string       $contentType
      * @param BunnyManager $manager
@@ -90,50 +83,20 @@ class AbstractProducer implements LoggerAwareInterface
         string $routingKey,
         bool $mandatory,
         bool $immediate,
-        ?string $serializerClassName,
         ?string $beforeMethod,
         string $contentType,
         BunnyManager $manager
     )
     {
-        $this->exchange            = $exchange;
-        $this->routingKey          = $routingKey;
-        $this->mandatory           = $mandatory;
-        $this->immediate           = $immediate;
-        $this->serializerClassName = $serializerClassName;
-        $this->beforeMethod        = $beforeMethod;
-        $this->contentType         = $contentType;
-        $this->manager             = $manager;
+        $this->exchange     = $exchange;
+        $this->routingKey   = $routingKey;
+        $this->mandatory    = $mandatory;
+        $this->immediate    = $immediate;
+        $this->beforeMethod = $beforeMethod;
+        $this->contentType  = $contentType;
+        $this->manager      = $manager;
 
         $this->logger = new NullLogger();
-    }
-
-    /**
-     * @return IMessageSerializer|null
-     */
-    public function createSerializer(): ?IMessageSerializer
-    {
-        if ($this->serializerClassName) {
-            /** @var IMessageSerializer $metaClassName */
-            $metaClassName = $this->serializerClassName;
-
-            return $metaClassName::getInstance();
-        } else {
-
-            return NULL;
-        }
-    }
-
-    /**
-     * @return IMessageSerializer|null
-     */
-    public function getSerializer(): ?IMessageSerializer
-    {
-        if ($this->serializer === NULL) {
-            $this->serializer = $this->createSerializer();
-        }
-
-        return $this->serializer;
     }
 
     /**
@@ -144,19 +107,8 @@ class AbstractProducer implements LoggerAwareInterface
      */
     public function beforeSerializer($message): array
     {
-        if (!$this->getSerializer()) {
-            $this->getLogger()
-                ->warning(
-                    sprintf('Could not create meta class %s.', $this->serializerClassName),
-                    $this->prepareMessage($message)
-                );
-            throw new BunnyException(
-                sprintf('Could not create meta class %s.', $this->serializerClassName)
-            );
-        }
-
-        if (is_string($message) && $this->serializer) {
-            $message = $this->serializer->fromJson($message);
+        if (is_string($message)) {
+            $message = json_decode($message, TRUE, 512, JSON_THROW_ON_ERROR);
         }
 
         if ($this->getBeforeMethod()) {
@@ -178,13 +130,7 @@ class AbstractProducer implements LoggerAwareInterface
     {
         switch ($this->getContentType()) {
             case ContentTypes::APPLICATION_JSON:
-                $message = $this->beforeSerializer($message);
-
-                if ($this->serializer instanceof IMessageSerializer) {
-                    $message = $this->serializer->toJson($message);
-                } else {
-                    throw new BunnyException('Cannot serialize message to JSON.');
-                }
+                $message = json_encode($this->beforeSerializer($message), JSON_THROW_ON_ERROR);
                 break;
             case ContentTypes::TEXT_PLAIN:
                 break;

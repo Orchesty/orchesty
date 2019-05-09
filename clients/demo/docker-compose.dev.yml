@@ -41,7 +41,7 @@ services:
           BACKEND_HOST: ${BACKEND_URL}/
           ELASTIC_HOST: elasticsearch
           ELASTIC_INDEX: 'index'
-        command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit-mq:async-consumer batch'
+        command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit_mq:consumer:batch'
         working_dir: /var/www/pipes/clients/demo/pipes-api
         volumes:
           - ../../:/var/www/pipes
@@ -51,7 +51,33 @@ services:
     ## BEGIN STAGE
     #batch:
     #    image: dkr.hanaboso.net/pipes/demo/monolith:${TAG_MONOLITH}
-    #    command: bin/console rabbit-mq:async-consumer batch
+    #    command: bin/console rabbit_mq:consumer:batch
+    #    environment:
+    #      BACKEND_HOST: ${BACKEND_URL}/
+    #      ELASTIC_HOST: elasticsearch
+    #      ELASTIC_INDEX: 'logstash-2018.01.31'
+    #      PHP_FPM_MAX_REQUESTS: 5000
+    ## END STAGE
+
+    ## BEGIN DEV
+    batch-connector:
+        image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
+        user: ${DEV_UID}:${DEV_GID}
+        environment:
+            BACKEND_HOST: ${BACKEND_URL}/
+            ELASTIC_HOST: elasticsearch
+            ELASTIC_INDEX: 'index'
+        command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit_mq:consumer:batch-connector'
+        working_dir: /var/www/pipes/clients/demo/pipes-api
+        volumes:
+            - ../../:/var/www/pipes
+            - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
+            - ${HOME}/.composer:/srv/.composer
+    ## END DEV
+    ## BEGIN STAGE
+    #batch-connector:
+    #    image: dkr.hanaboso.net/pipes/demo/monolith:${TAG_MONOLITH}
+    #    command: bin/console rabbit_mq:consumer:batch-connector
     #    environment:
     #      BACKEND_HOST: ${BACKEND_URL}/
     #      ELASTIC_HOST: elasticsearch
@@ -63,7 +89,7 @@ services:
     long-running-node:
         image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
         user: ${DEV_UID}:${DEV_GID}
-        command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit-mq:consumer long-running-node'
+        command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit_mq:consumer:long-running-node'
         working_dir: /var/www/pipes/clients/demo/pipes-api
         environment:
           BACKEND_HOST: ${BACKEND_URL}/
@@ -77,7 +103,7 @@ services:
     ## BEGIN STAGE
     #long-running-node:
     #    image: dkr.hanaboso.net/pipes/demo/monolith:${TAG_MONOLITH}
-    #    command: bin/console rabbit-mq:consumer long-running-node
+    #    command: bin/console rabbit_mq:consumer:long-running-node
     #    environment:
     #      BACKEND_HOST: ${BACKEND_URL}/
     #      ELASTIC_HOST: elasticsearch
@@ -93,7 +119,7 @@ services:
           BACKEND_HOST: ${BACKEND_URL}/
           ELASTIC_HOST: elasticsearch
           ELASTIC_INDEX: 'index'
-        command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit-mq:consumer status-service'
+        command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit_mq:consumer:status-service'
         working_dir: /var/www/pipes/clients/demo/pipes-api
         volumes:
           - ../../:/var/www/pipes
@@ -103,7 +129,7 @@ services:
     ## BEGIN STAGE
     #status-service:
     #    image: dkr.hanaboso.net/pipes/demo/monolith:${TAG_MONOLITH}
-    #    command: bin/console rabbit-mq:consumer status-service
+    #    command: bin/console rabbit_mq:consumer:status-service
     #    environment:
     #      BACKEND_HOST: ${BACKEND_URL}/
     #      ELASTIC_HOST: elasticsearch
