@@ -3,6 +3,10 @@ hb_pf_api_gateway:
     type:     annotation
     prefix:   /api
 
+hb_pf_application:
+    resource: "@HbPFApplicationBundle"
+    type: annotation
+
 hb_pf_authorization:
     resource: "@HbPFAuthorizationBundle"
     type: annotation

@@ -56,7 +56,7 @@ class ApplicationInstall
     private $key;
 
     /**
-     * @var DateTime
+     * @var DateTime | null
      *
      * @ODM\Field(type="date", nullable=true)
      */
@@ -142,23 +142,23 @@ class ApplicationInstall
     }
 
     /**
-     * @param DateTime $expires
+     * @return DateTime|null
+     */
+    public function getExpires(): ?DateTime
+    {
+        return $this->expires;
+    }
+
+    /**
+     * @param DateTime|null $expires
      *
      * @return ApplicationInstall
      */
-    public function setExpires(DateTime $expires): ApplicationInstall
+    public function setExpires(?DateTime $expires): ApplicationInstall
     {
         $this->expires = $expires;
 
         return $this;
-    }
-
-    /**
-     * @return DateTime
-     */
-    public function getExpires(): DateTime
-    {
-        return $this->expires;
     }
 
     /**

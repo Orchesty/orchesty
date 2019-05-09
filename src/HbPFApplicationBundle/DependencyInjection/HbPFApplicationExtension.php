@@ -43,6 +43,7 @@ class HbPFApplicationExtension extends Extension implements PrependExtensionInte
         $loader->load('applications.yml');
         $loader->load('managers.yml');
         $loader->load('services.yml');
+        $loader->load('controllers.yml');
     }
 
 }

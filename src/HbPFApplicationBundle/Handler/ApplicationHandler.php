@@ -45,7 +45,7 @@ class ApplicationHandler
      * @return array
      * @throws Exception
      */
-    public function getApplicationsByKey(string $key): array
+    public function getApplicationByKey(string $key): array
     {
         $application = $this->applicationManager->getApplication($key);
 
