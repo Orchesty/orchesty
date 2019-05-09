@@ -2,17 +2,17 @@
 
 namespace Hanaboso\PipesFramework\Application\Model;
 
+use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ORM\EntityRepository;
 use Exception;
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
-use Hanaboso\PipesFramework\Application\Base\BasicApplicationInterface;
-use Hanaboso\PipesFramework\Application\Base\OAuth1ApplicationInterface;
-use Hanaboso\PipesFramework\Application\Base\OAuth2ApplicationInterface;
+use Hanaboso\PipesFramework\Application\Base\Basic\BasicApplicationInterface;
+use Hanaboso\PipesFramework\Application\Base\OAuth1\OAuth1ApplicationInterface;
+use Hanaboso\PipesFramework\Application\Base\OAuth2\OAuth2ApplicationInterface;
 use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 use Hanaboso\PipesFramework\Application\Exception\ApplicationInstallException;
+use Hanaboso\PipesFramework\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\PipesFramework\HbPFApplicationBundle\Loader\ApplicationLoader;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class ApplicationManager
@@ -33,19 +33,19 @@ class ApplicationManager
     private $dm;
 
     /**
-     * @var EntityRepository
+     * @var ObjectRepository|ApplicationInstallRepository
      */
     private $repository;
 
     /**
      * ApplicationManager constructor.
      *
-     * @param DocumentManager    $dm
-     * @param ContainerInterface $container
+     * @param DocumentManager   $dm
+     * @param ApplicationLoader $loader
      */
-    public function __construct(DocumentManager $dm, ContainerInterface $container)
+    public function __construct(DocumentManager $dm, ApplicationLoader $loader)
     {
-        $this->loader     = new ApplicationLoader($container);
+        $this->loader     = $loader;
         $this->dm         = $dm;
         $this->repository = $this->dm->getRepository(ApplicationInstall::class);
     }
@@ -76,7 +76,7 @@ class ApplicationManager
      */
     public function getInstalledApplications(string $user): array
     {
-        return $this->repository->findBy(['user' => $user]);
+        return $this->repository->findBy([ApplicationInstall::USER => $user]);
     }
 
     /**
@@ -96,12 +96,12 @@ class ApplicationManager
      * @param string $user
      *
      * @return ApplicationInstall
-     * @throws DateTimeException
      * @throws ApplicationInstallException
+     * @throws DateTimeException
      */
     public function installApplication(string $key, string $user): ApplicationInstall
     {
-        if ($this->repository->findOneBy(['user' => $user, 'key' => $key])) {
+        if ($this->repository->findOneBy([ApplicationInstall::USER => $user, ApplicationInstall::KEY => $key])) {
             throw new ApplicationInstallException(
                 sprintf('Application [%s] was already installed.', $key),
                 ApplicationInstallException::APP_ALREADY_INSTALLED
@@ -183,7 +183,6 @@ class ApplicationManager
     {
         /** @var ApplicationInstall $app */
         $app = $this->repository->findUserApp($key, $user);
-
         /** @var OAuth1ApplicationInterface|OAuth2ApplicationInterface $appAuth */
         $appAuth = $this->loader->getApplication($key);
         $appAuth->authorize($app);

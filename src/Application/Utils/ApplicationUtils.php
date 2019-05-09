@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesFramework\Application\Utils;
 
-use Hanaboso\PipesFramework\Application\Base\OAuth2ApplicationInterface;
+use Hanaboso\PipesFramework\Application\Base\OAuth2\OAuth2ApplicationInterface;
 use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 
 /**

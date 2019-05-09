@@ -22,6 +22,9 @@ use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
 class ApplicationInstall
 {
 
+    public const USER = 'user';
+    public const KEY  = 'key';
+
     use IdTrait;
 
     /**
@@ -181,12 +184,19 @@ class ApplicationInstall
     /**
      * @ODM\PreFlush
      * @throws CryptException
-     * @throws DateTimeException
      */
     public function preFlush(): void
     {
         $this->encryptedSettings = CryptManager::encrypt($this->settings);
-        $this->updated           = DateTimeUtils::getUtcDateTime();
+    }
+
+    /**
+     * @ODM\PreUpdate
+     * @throws DateTimeException
+     */
+    public function preUpdate(): void
+    {
+        $this->updated = DateTimeUtils::getUtcDateTime();
     }
 
     /**
@@ -196,6 +206,22 @@ class ApplicationInstall
     public function postLoad(): void
     {
         $this->settings = CryptManager::decrypt($this->encryptedSettings);
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return [
+            'id'                     => $this->getId(),
+            ApplicationInstall::USER => $this->getUser(),
+            ApplicationInstall::KEY  => $this->getKey(),
+            'expires'                => $this->getExpires(),
+            'settings'               => $this->getSettings(),
+            'create'                 => $this->getCreated()->format(DateTimeUtils::DATE_TIME),
+            'updated'                => $this->getUpdated()->format(DateTimeUtils::DATE_TIME),
+        ];
     }
 
 }

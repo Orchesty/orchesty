@@ -3,7 +3,7 @@
 namespace Hanaboso\PipesFramework\HbPFApplicationBundle\Loader;
 
 use Exception;
-use Hanaboso\PipesFramework\Application\Base\BasicApplicationInterface;
+use Hanaboso\PipesFramework\Application\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesFramework\Utils\NodeServiceLoaderUtil;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 

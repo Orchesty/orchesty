@@ -1,7 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\Application\Base;
+namespace Hanaboso\PipesFramework\Application\Base\OAuth1;
 
+use Hanaboso\PipesFramework\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth1Dto;
@@ -11,7 +12,7 @@ use OAuthException;
 /**
  * Class OAuth1ApplicationAbstract
  *
- * @package Hanaboso\PipesFramework\Application\Base
+ * @package Hanaboso\PipesFramework\Application\Base\OAuth1
  */
 abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements OAuth1ApplicationInterface
 {

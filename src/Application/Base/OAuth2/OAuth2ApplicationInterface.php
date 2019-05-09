@@ -1,13 +1,14 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\Application\Base;
+namespace Hanaboso\PipesFramework\Application\Base\OAuth2;
 
+use Hanaboso\PipesFramework\Application\Base\ApplicationInterface;
 use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 
 /**
  * Interface OAuth2ApplicationInterface
  *
- * @package Hanaboso\PipesFramework\Application\Base
+ * @package Hanaboso\PipesFramework\Application\Base\OAuth2
  */
 interface OAuth2ApplicationInterface extends ApplicationInterface
 {

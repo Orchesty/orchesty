@@ -25,8 +25,8 @@ class ApplicationInstallRepository extends DocumentRepository
     {
         /** @var ApplicationInstall | null $app */
         $app = $this->createQueryBuilder()
-            ->field('key')->equals($key)
-            ->field('user')->equals($user)
+            ->field(ApplicationInstall::KEY)->equals($key)
+            ->field(ApplicationInstall::USER)->equals($user)
             ->getQuery()->getSingleResult();
 
         if (!$app) {
@@ -40,3 +40,4 @@ class ApplicationInstallRepository extends DocumentRepository
     }
 
 }
+
