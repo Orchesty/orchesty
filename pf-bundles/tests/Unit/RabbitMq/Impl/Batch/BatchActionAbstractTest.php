@@ -81,7 +81,7 @@ final class BatchActionAbstractTest extends TestCase
                 self::assertTrue(TRUE);
                 $loop->stop();
             }, function (): void {
-                self::assertTrue(FALSE);
+                self::fail();
             })->done();
 
         $loop->run();

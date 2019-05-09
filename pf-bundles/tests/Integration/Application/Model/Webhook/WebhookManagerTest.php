@@ -108,8 +108,7 @@ final class WebhookManagerTest extends DatabaseTestCaseAbstract
     public function testSubscribeAndUnsubscribeNoApplication(): void
     {
         self::expectException(ApplicationInstallException::class);
-        self::expectExceptionCode(ApplicationInstallException::APPLICATION_INSTALL_NOT_FOUND);
-        self::expectExceptionMessage('ApplicationInstall for given application [webhook] and user [User] not found!');
+        self::expectExceptionCode(ApplicationInstallException::APP_WAS_NOT_FOUND);
 
         $this->getService(function (): ResponseDto {
             return new ResponseDto(200, 'OK', '{"id":"id"}', []);

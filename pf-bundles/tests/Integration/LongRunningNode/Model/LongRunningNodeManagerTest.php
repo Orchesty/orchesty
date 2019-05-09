@@ -38,9 +38,9 @@ final class LongRunningNodeManagerTest extends DatabaseTestCaseAbstract
             ->setHeaders(['head']);
 
         $manager->saveDocument($doc);
-        /** @var LongRunningNodeData $doc */
         $docs = $this->dm->getRepository(LongRunningNodeData::class)->findAll();
-        $doc  = reset($docs);
+        /** @var LongRunningNodeData $doc */
+        $doc = reset($docs);
         self::assertEquals(['audit1', 'audit2'], $doc->getAuditLogs());
         self::assertEquals('proc', $doc->getProcessId());
         self::assertEquals('parent', $doc->getParentProcess());
@@ -65,9 +65,9 @@ final class LongRunningNodeManagerTest extends DatabaseTestCaseAbstract
         $manager->saveDocument($doc);
 
         $this->dm->clear();
-        /** @var LongRunningNodeData $doc */
         $docs = $this->dm->getRepository(LongRunningNodeData::class)->findAll();
         self::assertEquals(2, count($docs));
+        /** @var LongRunningNodeData $doc */
         $doc = reset($docs);
         self::assertEquals(['audit1', 'audit2'], $doc->getAuditLogs());
         self::assertEquals('data', $doc->getData());

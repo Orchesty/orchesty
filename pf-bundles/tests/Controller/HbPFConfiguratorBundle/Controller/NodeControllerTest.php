@@ -5,7 +5,9 @@ namespace Tests\Controller\HbPFConfiguratorBundle\Controller;
 use Exception;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler;
 use Hanaboso\PipesFramework\HbPFConnectorBundle\Handler\ConnectorHandler;
+use PHPUnit\Framework\MockObject\MockObject;
 use ReflectionException;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Tests\ControllerTestCaseAbstract;
 
@@ -79,19 +81,21 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @param string $methodName
-     * @param bool   $returnValue
+     * @param mixed  $returnValue
      *
      * @throws Exception
      */
     private function prepareNodeHandlerMock(string $methodName, $returnValue = TRUE): void
     {
-        $nodeHandlerMock = $this->getMockBuilder(NodeHandler::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        /** @var NodeHandler|MockObject $nodeHandlerMock */
+        $nodeHandlerMock = self::createMock(NodeHandler::class);
+        $nodeHandlerMock
+            ->method($methodName)
+            ->willReturn($returnValue);
 
-        $nodeHandlerMock->method($methodName)->willReturn($returnValue);
-
-        $this->client->getContainer()->set('hbpf.configurator.handler.node', $nodeHandlerMock);
+        /** @var ContainerInterface $container */
+        $container = $this->client->getContainer();
+        $container->set('hbpf.configurator.handler.node', $nodeHandlerMock);
     }
 
     /**

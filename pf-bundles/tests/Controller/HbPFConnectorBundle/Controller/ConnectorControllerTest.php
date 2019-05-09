@@ -6,6 +6,7 @@ use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\HbPFConnectorBundle\Handler\ConnectorHandler;
 use ReflectionException;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Tests\ControllerTestCaseAbstract;
 
 /**
@@ -62,11 +63,13 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
 
         $dto = new ProcessDto();
         $dto
-            ->setData(json_encode(['test' => 'test']))
+            ->setData((string) json_encode(['test' => 'test']))
             ->setHeaders([]);
         $handler->method($method)->willReturn($dto);
 
-        $this->client->getContainer()->set('hbpf.handler.connector', $handler);
+        /** @var ContainerInterface $container */
+        $container = $this->client->getContainer();
+        $container->set('hbpf.handler.connector', $handler);
     }
 
     /**

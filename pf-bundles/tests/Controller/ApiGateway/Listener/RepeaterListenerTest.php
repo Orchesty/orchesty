@@ -8,6 +8,7 @@ use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use Hanaboso\PipesFramework\ApiGateway\Exceptions\OnRepeatException;
 use Hanaboso\PipesFramework\ApiGateway\Listener\RepeaterListener;
 use PHPUnit\Framework\MockObject\MockObject;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Tests\ControllerTestCaseAbstract;
 use Throwable;
@@ -32,13 +33,15 @@ final class RepeaterListenerTest extends ControllerTestCaseAbstract
 
         for ($i = 1; ; $i++) {
             $listener->onRepeatableException($eventMock);
-            $currentHop = $eventMock->getResponse()->headers->get(PipesHeaders::createKey(PipesHeaders::REPEAT_HOPS));
-            $maxHop     = $eventMock->getResponse()->headers->get(PipesHeaders::createKey(PipesHeaders::REPEAT_MAX_HOPS));
+            /** @var Response $response */
+            $response   = $eventMock->getResponse();
+            $currentHop = $response->headers->get(PipesHeaders::createKey(PipesHeaders::REPEAT_HOPS));
+            $maxHop     = $response->headers->get(PipesHeaders::createKey(PipesHeaders::REPEAT_MAX_HOPS));
 
             if ($currentHop > $maxHop) {
                 self::assertArrayNotHasKey(
                     PipesHeaders::createKey(PipesHeaders::REPEAT_MAX_HOPS),
-                    $eventMock->getResponse()->headers->all()
+                    $response->headers->all()
                 );
                 break;
             }
@@ -63,20 +66,22 @@ final class RepeaterListenerTest extends ControllerTestCaseAbstract
 
         $eventMock = $this->mockEvent($exception);
         $listener->onRepeatableException($eventMock);
+        /** @var Response $response */
+        $response = $eventMock->getResponse();
 
-        self::assertEquals(0, (int) $eventMock->getResponse()->headers->get(
+        self::assertEquals(0, (int) $response->headers->get(
             PipesHeaders::createKey(PipesHeaders::REPEAT_INTERVAL)
         ));
 
         self::assertArrayNotHasKey(
             PipesHeaders::createKey(PipesHeaders::REPEAT_MAX_HOPS),
-            $eventMock->getResponse()->headers->all());
+            $response->headers->all());
 
         self::assertArrayHasKey(
             PipesHeaders::createKey(PipesHeaders::REPEAT_HOPS),
-            $eventMock->getResponse()->headers->all());
+            $response->headers->all());
 
-        self::assertEquals(200, $eventMock->getResponse()->getStatusCode());
+        self::assertEquals(200, $response->getStatusCode());
     }
 
     /**

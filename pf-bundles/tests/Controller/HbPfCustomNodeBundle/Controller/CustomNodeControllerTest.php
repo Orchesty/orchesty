@@ -5,7 +5,9 @@ namespace Tests\Controller\HbPfCustomNodeBundle\Controller;
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\HbPFCustomNodeBundle\Handler\CustomNodeHandler;
+use PHPUnit\Framework\MockObject\MockObject;
 use ReflectionException;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Tests\ControllerTestCaseAbstract;
 
 /**
@@ -24,7 +26,14 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
     {
         $this->mockHandler('process');
 
-        $this->client->request('POST', '/custom_node/null/process', [], [], [], json_encode(['test' => 'test']));
+        $this->client->request(
+            'POST',
+            '/custom_node/null/process',
+            [],
+            [],
+            [],
+            (string) json_encode(['test' => 'test'])
+        );
 
         $response = $this->client->getResponse();
 
@@ -55,18 +64,20 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
      */
     private function mockHandler(string $methodName): void
     {
-        $joinerHandlerMock = $this->getMockBuilder(CustomNodeHandler::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
         $dto = new ProcessDto();
         $dto
             ->setHeaders(['test' => 'test'])
-            ->setData(json_encode(['test' => 'test']));
+            ->setData((string) json_encode(['test' => 'test']));
 
-        $joinerHandlerMock->method($methodName)->willReturn($dto);
+        /** @var CustomNodeHandler|MockObject $joinerHandlerMock */
+        $joinerHandlerMock = self::createMock(CustomNodeHandler::class);
+        $joinerHandlerMock
+            ->method($methodName)
+            ->willReturn($dto);
 
-        $this->client->getContainer()->set('hbpf.handler.custom_node', $joinerHandlerMock);
+        /** @var ContainerInterface $container */
+        $container = $this->client->getContainer();
+        $container->set('hbpf.handler.custom_node', $joinerHandlerMock);
     }
 
     /**

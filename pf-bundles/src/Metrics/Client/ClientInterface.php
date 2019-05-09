@@ -20,11 +20,11 @@ interface ClientInterface
     public function getQueryBuilder(): Builder;
 
     /**
-     * @param null $name
+     * @param string|null $name
      *
      * @return Database
      */
-    public function getDatabase($name = NULL): Database;
+    public function getDatabase(?string $name = NULL): Database;
 
     /**
      * @return Client

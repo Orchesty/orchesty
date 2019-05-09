@@ -7,6 +7,7 @@ use Hanaboso\PipesFramework\HbPFRabbitMqBundle\DependencyInjection\Compiler\Rabb
 use Hanaboso\PipesFramework\HbPFRabbitMqBundle\DependencyInjection\RabbitMqExtension;
 use Hanaboso\PipesFramework\HbPFRabbitMqBundle\HbPFRabbitMqBundle;
 use InvalidArgumentException;
+use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -74,26 +75,28 @@ final class HbPFRabbitMqBundleTest extends KernelTestCaseAbstract
      */
     public function testRegisterCommands(): void
     {
-        /** @var Application $application */
-        $application = self::getMockBuilder(Application::class)->getMock();
+        /** @var Application|MockObject $application */
+        $application = self::createMock(Application::class);
 
-        $container = self::getMockBuilder(ContainerInterface::class)->getMock();
-        $container->method('get')->willReturnCallback(function ($id) {
-            if (in_array($id, [
-                    'command.rabbit-mq.setup',
-                    'command.rabbit-mq.consumer',
-                    'command.rabbit-mq.async-consumer',
-                ]
-            )) {
-                return new Command($id);
-            }
+        /** @var ContainerInterface|MockObject $container */
+        $container = self::createMock(ContainerInterface::class);
+        $container
+            ->method('get')
+            ->willReturnCallback(function ($id) {
+                if (in_array($id, [
+                        'command.rabbit-mq.setup',
+                        'command.rabbit-mq.consumer',
+                        'command.rabbit-mq.async-consumer',
+                    ]
+                )) {
+                    return new Command($id);
+                }
 
-            throw new InvalidArgumentException(
-                sprintf('Service \'%s\' does not exist.', $id)
-            );
-        });
+                throw new InvalidArgumentException(
+                    sprintf('Service \'%s\' does not exist.', $id)
+                );
+            });
 
-        /** @var ContainerInterface $container */
         $this->bundle->setContainer($container);
         $this->bundle->registerCommands($application);
     }

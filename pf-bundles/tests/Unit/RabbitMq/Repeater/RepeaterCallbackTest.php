@@ -8,6 +8,7 @@ use Hanaboso\PipesFramework\RabbitMq\CallbackStatus;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Repeater\Repeater;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Repeater\RepeaterCallback;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Repeater\RepeaterProducer;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -61,8 +62,12 @@ final class RepeaterCallbackTest extends TestCase
      */
     public function testHandleBadMessage(): void
     {
-        $producer = self::getMockBuilder(RepeaterProducer::class)->disableOriginalConstructor()->getMock();
-        $producer->expects($this->never())->method('publish')->willReturn(TRUE);
+        /** @var RepeaterProducer|MockObject $producer */
+        $producer = self::createMock(RepeaterProducer::class);
+        $producer
+            ->expects($this->never())
+            ->method('publish')
+            ->willReturn(TRUE);
         $callback = new RepeaterCallback($producer);
         $result   = $callback->handle([], $this->message);
         self::assertInstanceOf(CallbackStatus::class, $result);
@@ -81,8 +86,12 @@ final class RepeaterCallbackTest extends TestCase
             Repeater::DESTINATION_ROUTING_KEY => 'test',
         ];
 
-        $producer = self::getMockBuilder(RepeaterProducer::class)->disableOriginalConstructor()->getMock();
-        $producer->expects($this->once())->method('publish')->willReturn(TRUE);
+        /** @var RepeaterProducer|MockObject $producer */
+        $producer = self::createMock(RepeaterProducer::class);
+        $producer
+            ->expects($this->once())
+            ->method('publish')
+            ->willReturn(TRUE);
 
         $callback = new RepeaterCallback($producer);
         $result   = $callback->handle([], $this->message);

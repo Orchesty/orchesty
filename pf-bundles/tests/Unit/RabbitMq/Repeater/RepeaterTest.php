@@ -6,6 +6,7 @@ use Bunny\Message;
 use Exception;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Repeater\Repeater;
 use Hanaboso\PipesFramework\RabbitMq\Producer\AbstractProducer;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -61,15 +62,14 @@ final class RepeaterTest extends TestCase
             'content'
         );
 
-        $producer = self::getMockBuilder(AbstractProducer::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $producer->expects($this->any())
+        /** @var AbstractProducer|MockObject $producer */
+        $producer = self::createMock(AbstractProducer::class);
+        $producer
+            ->expects($this->any())
             ->method('publish')
-            ->with($message->content, $message->routingKey, $result);
+            ->with($message->content, $message->routingKey, $result)
+            ->willReturn(TRUE);
 
-        /** @var AbstractProducer $producer */
         $repeater = new Repeater($producer, $hopLimit);
         $added    = $repeater->add($message);
 

@@ -10,7 +10,7 @@ use Hanaboso\PipesFramework\Application\Base\BasicApplicationInterface;
 use Hanaboso\PipesFramework\Application\Base\OAuth1ApplicationInterface;
 use Hanaboso\PipesFramework\Application\Base\OAuth2ApplicationInterface;
 use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
-use Hanaboso\PipesFramework\Application\Exception\ApplicationException;
+use Hanaboso\PipesFramework\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesFramework\HbPFApplicationBundle\Loader\ApplicationLoader;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -84,11 +84,11 @@ class ApplicationManager
      * @param string $user
      *
      * @return ApplicationInstall
-     * @throws ApplicationException
+     * @throws ApplicationInstallException
      */
     public function getInstalledApplicationDetail(string $key, string $user): ApplicationInstall
     {
-        return $this->repository->findAppByUserAndKey($key, $user);
+        return $this->repository->findUserApp($key, $user);
     }
 
     /**
@@ -96,15 +96,15 @@ class ApplicationManager
      * @param string $user
      *
      * @return ApplicationInstall
-     * @throws ApplicationException
      * @throws DateTimeException
+     * @throws ApplicationInstallException
      */
     public function installApplication(string $key, string $user): ApplicationInstall
     {
         if ($this->repository->findOneBy(['user' => $user, 'key' => $key])) {
-            throw new ApplicationException(
+            throw new ApplicationInstallException(
                 sprintf('Application [%s] was already installed.', $key),
-                ApplicationException::APP_ALREADY_INSTALLED
+                ApplicationInstallException::APP_ALREADY_INSTALLED
             );
         }
 
@@ -127,7 +127,7 @@ class ApplicationManager
      */
     public function uninstallApplication(string $key, string $user): ApplicationInstall
     {
-        $app = $this->repository->findAppByUserAndKey($key, $user);
+        $app = $this->repository->findUserApp($key, $user);
         $this->dm->remove($app);
         $this->dm->flush($app);
 
@@ -144,7 +144,7 @@ class ApplicationManager
      */
     public function saveApplicationSettings(string $key, string $user, array $data): ApplicationInstall
     {
-        $app = $this->repository->findAppByUserAndKey($key, $user);
+        $app = $this->repository->findUserApp($key, $user);
 
         $updatedApp = $this->loader->getApplication($key)->setApplicationSettings($app, $data);
         $this->dm->persist($updatedApp);
@@ -163,7 +163,7 @@ class ApplicationManager
      */
     public function saveApplicationPassword(string $key, string $user, string $password): ApplicationInstall
     {
-        $app = $this->repository->findAppByUserAndKey($key, $user);
+        $app = $this->repository->findUserApp($key, $user);
 
         /** @var ApplicationInstall $updatedApp */
         $updatedApp = $this->loader->getApplication($key)->setApplicationPassword($app, $password);
@@ -182,7 +182,7 @@ class ApplicationManager
     public function authorizeApplication(string $key, string $user): void
     {
         /** @var ApplicationInstall $app */
-        $app = $this->repository->findAppByUserAndKey($key, $user);
+        $app = $this->repository->findUserApp($key, $user);
 
         /** @var OAuth1ApplicationInterface|OAuth2ApplicationInterface $appAuth */
         $appAuth = $this->loader->getApplication($key);

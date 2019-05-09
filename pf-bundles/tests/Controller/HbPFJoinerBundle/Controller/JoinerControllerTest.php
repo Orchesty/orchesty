@@ -4,7 +4,9 @@ namespace Tests\Controller\HbPFJoinerBundle\Controller;
 
 use Exception;
 use Hanaboso\PipesFramework\HbPFJoinerBundle\Handler\JoinerHandler;
+use PHPUnit\Framework\MockObject\MockObject;
 use ReflectionException;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Tests\ControllerTestCaseAbstract;
 
 /**
@@ -57,19 +59,21 @@ final class JoinerControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @param string $methodName
-     * @param string $returnValue
+     * @param mixed  $returnValue
      *
      * @throws Exception
      */
     private function prepareJoinerHandlerMock(string $methodName, $returnValue = 'Test'): void
     {
-        $joinerHandlerMock = $this->getMockBuilder(JoinerHandler::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        /** @var JoinerHandler|MockObject $joinerHandlerMock */
+        $joinerHandlerMock = self::createMock(JoinerHandler::class);
+        $joinerHandlerMock
+            ->method($methodName)
+            ->willReturn($returnValue);
 
-        $joinerHandlerMock->method($methodName)->willReturn($returnValue);
-
-        $this->client->getContainer()->set('hbpf.handler.joiner', $joinerHandlerMock);
+        /** @var ContainerInterface $container */
+        $container = $this->client->getContainer();
+        $container->set('hbpf.handler.joiner', $joinerHandlerMock);
     }
 
     /**

@@ -38,6 +38,7 @@ final class InstallTest extends DatabaseTestCaseAbstract
         self::assertArrayHasKey('user', $data[$applicationInstall->getId()]);
         self::assertArrayHasKey('encryptedSettings', $data[$applicationInstall->getId()]);
 
+        /** @var ApplicationInstall $loaded */
         $loaded = $this->dm->getRepository(ApplicationInstall::class)->find($applicationInstall->getId());
         self::assertNotEmpty($loaded->getSettings());
     }
