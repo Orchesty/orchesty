@@ -182,7 +182,7 @@ final class BatchConsumerCallbackTest extends TestCase
                 $loop->stop();
             }, function () use ($loop): void {
                 // Test if reject
-                self::assertTrue(FALSE);
+                self::fail();
                 $loop->stop();
             })
             ->done();
@@ -232,7 +232,7 @@ final class BatchConsumerCallbackTest extends TestCase
                 $loop->stop();
             }, function () use ($loop): void {
                 // Test if reject
-                self::assertTrue(FALSE);
+                self::fail();
                 $loop->stop();
             })
             ->done();
@@ -282,7 +282,7 @@ final class BatchConsumerCallbackTest extends TestCase
                 $loop->stop();
             }, function () use ($loop): void {
                 // Test if reject
-                self::assertTrue(FALSE);
+                self::fail();
                 $loop->stop();
             })
             ->done();

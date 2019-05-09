@@ -19,11 +19,6 @@ final class SchemaTest extends TestCase
 {
 
     /**
-     * @var XmlDecoder
-     */
-    private $xmlDecoder;
-
-    /**
      * @covers Schema::buildIndex()
      * @throws Exception
      */
@@ -116,7 +111,7 @@ final class SchemaTest extends TestCase
      */
     private function load(string $name): string
     {
-        return file_get_contents(sprintf('%s/data/%s', __DIR__, $name));
+        return (string) file_get_contents(sprintf('%s/data/%s', __DIR__, $name));
     }
 
     /**
@@ -124,11 +119,7 @@ final class SchemaTest extends TestCase
      */
     private function getXmlDecoder(): XmlDecoder
     {
-        if (!$this->xmlDecoder) {
-            $this->xmlDecoder = new XmlDecoder();
-        }
-
-        return $this->xmlDecoder;
+        return new XmlDecoder();
     }
 
 }

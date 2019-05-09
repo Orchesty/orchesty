@@ -66,7 +66,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
             ], Json::decode($request->getBody(), TRUE));
 
             return new ResponseDto(200, 'OK', '', []);
-        })->create($this->getNodes());
+        })->create($this->getNode());
     }
 
     /**
@@ -83,7 +83,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
             ], Json::decode($request->getBody(), TRUE));
 
             return new ResponseDto(200, 'OK', '', []);
-        })->update($this->getNodes());
+        })->update($this->getNode());
     }
 
     /**
@@ -100,7 +100,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
             ], Json::decode($request->getBody(), TRUE));
 
             return new ResponseDto(200, 'OK', '', []);
-        })->patch($this->getNodes());
+        })->patch($this->getNode());
     }
 
     /**
@@ -114,7 +114,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
             self::assertEmpty($request->getBody());
 
             return new ResponseDto(200, 'OK', '', []);
-        })->delete($this->getNodes());
+        })->delete($this->getNode());
     }
 
     /**
@@ -244,7 +244,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
                 'Client error: `GET http://example.com/cron-api/create` resulted in a `406 Not Acceptable` response: Response',
                 CurlException::REQUEST_FAILED
             );
-        })->create($this->getNodes());
+        })->create($this->getNode());
     }
 
     /**
@@ -276,12 +276,11 @@ final class CronManagerTest extends KernelTestCaseAbstract
     /**
      * @param int $count
      *
-     * @return Node|Node[]
+     * @return Node[]
      * @throws Exception
      */
-    private function getNodes(int $count = 1)
+    private function getNodes(int $count = 1): array
     {
-        /** @var Node[] $nodes */
         $nodes = [];
 
         for ($i = 1; $i <= $count; $i++) {
@@ -293,7 +292,16 @@ final class CronManagerTest extends KernelTestCaseAbstract
                 ->setCron(sprintf('%s %s %s %s %s', $i, $i, $i, $i, $i));
         }
 
-        return count($nodes) === 1 ? $nodes[0] : $nodes;
+        return $nodes;
+    }
+
+    /**
+     * @return Node
+     * @throws Exception
+     */
+    private function getNode(): Node
+    {
+        return $this->getNodes()[0];
     }
 
 }

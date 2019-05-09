@@ -4,7 +4,7 @@ namespace Hanaboso\PipesFramework\Application\Model\Webhook;
 
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
+use Exception;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
@@ -61,9 +61,7 @@ final class WebhookManager
      * @param WebhookApplicationInterface $application
      * @param string                      $userId
      *
-     * @throws CurlException
-     * @throws ApplicationInstallException
-     * @throws DateTimeException
+     * @throws Exception
      */
     public function subscribeWebhooks(WebhookApplicationInterface $application, string $userId): void
     {
@@ -75,7 +73,7 @@ final class WebhookManager
             );
             $webhookId = $application->processWebhookSubscribeResponse(
                 $this->manager->send($request),
-                $this->getApplicationInstall($application, $userId)
+                $this->repository->findUserApp($application->getKey(), $userId)
             );
 
             $webhook = (new Webhook())
@@ -116,37 +114,6 @@ final class WebhookManager
         }
 
         $this->dm->flush();
-    }
-
-    /**
-     * @param WebhookApplicationInterface $application
-     * @param string                      $userId
-     *
-     * @return ApplicationInstall
-     * @throws ApplicationInstallException
-     */
-    private function getApplicationInstall(WebhookApplicationInterface $application, string $userId): ApplicationInstall
-    {
-        // TODO: refactor
-
-        /** @var ApplicationInstall|NULL $install */
-        $install = $this->repository->findOneBy([
-            'user' => $userId,
-            'key'  => $application->getKey(),
-        ]);
-
-        if (!$install) {
-            throw new ApplicationInstallException(
-                sprintf(
-                    'ApplicationInstall for given application [%s] and user [%s] not found!',
-                    $application->getKey(),
-                    $userId
-                ),
-                ApplicationInstallException::APPLICATION_INSTALL_NOT_FOUND
-            );
-        }
-
-        return $install;
     }
 
 }

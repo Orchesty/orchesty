@@ -9,6 +9,7 @@ use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler;
 use Nette\Utils\Json;
 use stdClass;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Tests\ControllerTestCaseAbstract;
 
 /**
@@ -445,7 +446,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
      */
     private function getBpmn(): string
     {
-        return file_get_contents(sprintf('%s/data/schema.bpmn', __DIR__));
+        return (string) file_get_contents(sprintf('%s/data/schema.bpmn', __DIR__));
     }
 
     /**
@@ -471,7 +472,9 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
         $configuratorHandlerMock->method($methodName)->willReturn($res);
 
-        $this->client->getContainer()->set('hbpf.configurator.handler.topology', $configuratorHandlerMock);
+        /** @var ContainerInterface $container */
+        $container = $this->client->getContainer();
+        $container->set('hbpf.configurator.handler.topology', $configuratorHandlerMock);
     }
 
 }

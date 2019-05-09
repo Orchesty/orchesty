@@ -5,7 +5,7 @@ namespace Tests\Integration\Application\Model;
 use Exception;
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
-use Hanaboso\PipesFramework\Application\Exception\ApplicationException;
+use Hanaboso\PipesFramework\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesFramework\Application\Model\ApplicationManager;
 use Tests\DatabaseTestCaseAbstract;
 
@@ -54,15 +54,15 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
         $appDetail          = $applicationManager->getInstalledApplicationDetail('some app', 'example1');
         self::assertIsObject($appDetail);
 
-        self::expectException(ApplicationException::class);
-        self::expectExceptionCode(ApplicationException::APP_WAS_NOT_FOUND);
+        self::expectException(ApplicationInstallException::class);
+        self::expectExceptionCode(ApplicationInstallException::APP_WAS_NOT_FOUND);
         $applicationManager->getInstalledApplicationDetail('some app', 'example5');
 
     }
 
     /**
      * @throws DateTimeException
-     * @throws ApplicationException
+     * @throws ApplicationInstallException
      */
     public function testInstallApplication(): void
     {

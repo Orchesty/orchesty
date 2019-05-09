@@ -4,7 +4,9 @@ namespace Tests\Controller\HbPFMapperBundle\Controller;
 
 use Exception;
 use Hanaboso\PipesFramework\HbPFMapperBundle\Handler\MapperHandler;
+use PHPUnit\Framework\MockObject\MockObject;
 use ReflectionException;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Tests\ControllerTestCaseAbstract;
 
 /**
@@ -49,19 +51,21 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @param string $methodName
-     * @param string $returnValue
+     * @param mixed  $returnValue
      *
      * @throws Exception
      */
     private function prepareMapperHandlerMock(string $methodName, $returnValue = 'Test'): void
     {
-        $mapperHandlerMock = $this->getMockBuilder(MapperHandler::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        /** @var MapperHandler|MockObject $mapperHandlerMock */
+        $mapperHandlerMock = self::createMock(MapperHandler::class);
+        $mapperHandlerMock
+            ->method($methodName)
+            ->willReturn($returnValue);
 
-        $mapperHandlerMock->method($methodName)->willReturn($returnValue);
-
-        $this->client->getContainer()->set('hbpf.mapper.handler.mapper', $mapperHandlerMock);
+        /** @var ContainerInterface $container */
+        $container = $this->client->getContainer();
+        $container->set('hbpf.mapper.handler.mapper', $mapperHandlerMock);
     }
 
     /**

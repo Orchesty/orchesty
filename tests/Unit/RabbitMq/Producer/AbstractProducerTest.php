@@ -115,7 +115,7 @@ final class AbstractProducerTest extends KernelTestCaseAbstract
         $beforeExecute = 'beforeExecute'
     ): AbstractProducer
     {
-        /** @var MockObject $producer */
+        /** @var MockObject|AbstractProducer $producer */
         $producer = $this->getMockForAbstractClass(AbstractProducer::class, [
             'foo',
             '*.*',

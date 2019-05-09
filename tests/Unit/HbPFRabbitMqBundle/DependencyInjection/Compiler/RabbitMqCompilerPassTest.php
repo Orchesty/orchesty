@@ -91,7 +91,7 @@ final class RabbitMqCompilerPassTest extends KernelTestCaseAbstract
             return [];
         }
 
-        return Yaml::parse(file_get_contents($config));
+        return Yaml::parseFile($config);
     }
 
 }

@@ -4,7 +4,6 @@ namespace Tests\Controller\HbPFTableParserBundle\Controller;
 
 use Hanaboso\CommonsBundle\Exception\FileStorageException;
 use Hanaboso\PipesFramework\Parser\Exception\TableParserException;
-use stdClass;
 use Tests\ControllerTestCaseAbstract;
 
 /**
@@ -26,7 +25,7 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
 
         self::assertEquals(200, $response->status);
         self::assertEquals(
-            json_decode(file_get_contents(__DIR__ . '/../../../Integration/Parser/data/output-10.json')),
+            json_decode((string) file_get_contents(__DIR__ . '/../../../Integration/Parser/data/output-10.json')),
             $response->content
         );
     }
@@ -142,11 +141,11 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
      * @param array      $parameters
      * @param array|null $content
      *
-     * @return stdClass
+     * @return object
      */
-    protected function sendPost(string $url, array $parameters, ?array $content = NULL): stdClass
+    protected function sendPost(string $url, array $parameters, ?array $content = NULL): object
     {
-        $this->client->request('POST', $url, $parameters, [], [], $content ? json_encode($content) : '');
+        $this->client->request('POST', $url, $parameters, [], [], $content ? (string) json_encode($content) : '');
         $response = $this->client->getResponse();
 
         $res = json_decode($response->getContent(), TRUE);

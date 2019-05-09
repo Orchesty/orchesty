@@ -70,12 +70,12 @@ class MetricsClient implements ClientInterface
     }
 
     /**
-     * @param null $name
+     * @param string|null $name
      *
      * @return Database
      * @throws MetricsException
      */
-    public function getDatabase($name = NULL): Database
+    public function getDatabase(?string $name = NULL): Database
     {
         $client   = $this->createClient();
         $name     = $name ?? $this->database;

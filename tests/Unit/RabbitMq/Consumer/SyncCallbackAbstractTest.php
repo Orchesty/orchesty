@@ -124,7 +124,7 @@ final class SyncCallbackAbstractTest extends TestCase
                 $data;
                 $message;
 
-                return new CallbackStatus($this->callbackStatus);
+                return new CallbackStatus($this->callbackStatus ?? 1);
             }
 
         };
@@ -142,16 +142,13 @@ final class SyncCallbackAbstractTest extends TestCase
      */
     private function getRepeater(): MockObject
     {
-        /** @var MockObject $repeater */
-        $repeater = self::getMockBuilder(Repeater::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $repeater->expects($this->once())
+        /** @var MockObject|Repeater $repeater */
+        $repeater = self::createMock(Repeater::class);
+        $repeater
+            ->expects($this->once())
             ->method('add')
             ->willReturn(TRUE);
 
-        /** @var Repeater $repeater */
         return $repeater;
     }
 

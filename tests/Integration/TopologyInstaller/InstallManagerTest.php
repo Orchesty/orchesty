@@ -150,7 +150,7 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
      */
     private function load(string $name, bool $change): string
     {
-        $content = file_get_contents(sprintf('%s/data/%s', __DIR__, $name));
+        $content = (string) file_get_contents(sprintf('%s/data/%s', __DIR__, $name));
 
         if (!$change) {
             return $content;

@@ -6,6 +6,7 @@ use Exception;
 use FOS\RestBundle\Decoder\XmlDecoder;
 use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
+use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\TopologyFile;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\UpdateObject;
@@ -62,7 +63,8 @@ final class TopologiesComparatorTest extends DatabaseTestCaseAbstract
         $this->dm->persist($topology2);
         $this->dm->flush();
 
-        $dir        = sprintf('%s/data', __DIR__);
+        $dir = sprintf('%s/data', __DIR__);
+        /** @var TopologyRepository $repo */
         $repo       = $this->dm->getRepository(Topology::class);
         $comparator = new TopologiesComparator($repo, [$dir]);
 
@@ -90,7 +92,7 @@ final class TopologiesComparatorTest extends DatabaseTestCaseAbstract
      */
     private function load(string $name, bool $change): string
     {
-        $content = file_get_contents(sprintf('%s/data/%s', __DIR__, $name));
+        $content = (string) file_get_contents(sprintf('%s/data/%s', __DIR__, $name));
 
         if (!$change) {
             return $content;

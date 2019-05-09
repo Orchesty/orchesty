@@ -4,7 +4,7 @@ namespace Hanaboso\PipesFramework\Application\Repository;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
-use Hanaboso\PipesFramework\Application\Exception\ApplicationException;
+use Hanaboso\PipesFramework\Application\Exception\ApplicationInstallException;
 
 /**
  * Class ApplicationInstallRepository
@@ -19,9 +19,9 @@ class ApplicationInstallRepository extends DocumentRepository
      * @param string $user
      *
      * @return ApplicationInstall
-     * @throws ApplicationException
+     * @throws ApplicationInstallException
      */
-    public function findAppByUserAndKey(string $key, string $user): ApplicationInstall
+    public function findUserApp(string $key, string $user): ApplicationInstall
     {
         /** @var ApplicationInstall | null $app */
         $app = $this->createQueryBuilder()
@@ -30,8 +30,9 @@ class ApplicationInstallRepository extends DocumentRepository
             ->getQuery()->getSingleResult();
 
         if (!$app) {
-            throw new ApplicationException(
-                sprintf('Application [%s] was not found .', $key), ApplicationException::APP_WAS_NOT_FOUND
+            throw new ApplicationInstallException(
+                sprintf('Application [%s] was not found .', $key),
+                ApplicationInstallException::APP_WAS_NOT_FOUND
             );
         }
 

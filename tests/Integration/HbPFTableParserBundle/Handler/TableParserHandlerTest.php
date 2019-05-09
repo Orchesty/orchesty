@@ -74,7 +74,7 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
      */
     public function testParseToJsonFromContent(): void
     {
-        $content = file_get_contents(sprintf('%s/input-10.xlsx', $this->path));
+        $content = (string) file_get_contents(sprintf('%s/input-10.xlsx', $this->path));
         $file    = $this->storage->saveFileFromContent(new FileContentDto($content, 'xlsx'));
 
         $result = $this->handler->parseToJson(['file_id' => $file->getId()]);
@@ -124,7 +124,7 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
      */
     public function testParseFromJsonFromContent(): void
     {
-        $content = file_get_contents(sprintf('%s/output-10.json', $this->path));
+        $content = (string) file_get_contents(sprintf('%s/output-10.json', $this->path));
         $file    = $this->storage->saveFileFromContent(new FileContentDto($content, 'json'));
 
         $resultPath = $this->handler->parseFromJson(TableParserInterface::XLSX, [
