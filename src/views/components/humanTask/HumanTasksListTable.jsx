@@ -130,7 +130,7 @@ class HumanTasksListTable extends AbstractTable {
       }];
 
       return (
-        <tr key={item.id}>
+        <tr key={item.name}>
           <td className="col-md-2">{item.nodeName}</td>
           <td className="col-md-2"><Moment format="DD. MM. YYYY HH:mm:ss">{item.created}</Moment></td>
           <td className="json">

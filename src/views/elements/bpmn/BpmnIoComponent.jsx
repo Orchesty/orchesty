@@ -129,7 +129,7 @@ class BpmnIoComponent extends React.Component {
         serverRequest(() => {}, 'GET', req, null).then(response => {
           this._modeler.get('overlays').add(element, 'bubbles', {
             position: { top: -25, right: 10 },
-            html: `<div onClick="window.location.href = '/ui/human_tasks?topology=${this.props.topologyId}${node ? `&node=${node._id}` : ""}'"><span class="badge" title="Waiting tasks">` + response.items.length + '</span></div>'
+            html: `<div onClick="window.location.href = '/ui/human_tasks?topology=${this.props.topologyId}${node ? `&node=${node._id}` : ""}'"><span class="badge" title="Waiting tasks">` + response.total + '</span></div>'
           });
         });
 
