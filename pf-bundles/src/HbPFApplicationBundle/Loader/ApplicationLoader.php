@@ -4,6 +4,7 @@ namespace Hanaboso\PipesFramework\HbPFApplicationBundle\Loader;
 
 use Exception;
 use Hanaboso\PipesFramework\Application\Base\Basic\BasicApplicationInterface;
+use Hanaboso\PipesFramework\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesFramework\Utils\NodeServiceLoaderUtil;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -47,7 +48,8 @@ class ApplicationLoader
             $application = $this->container->get($name);
         } else {
             throw new Exception(
-                sprintf('Application for [%s] was not found.', $key)
+                sprintf('Application for [%s] was not found.', $key),
+                ApplicationInstallException::APP_WAS_NOT_FOUND
             );
         }
 
