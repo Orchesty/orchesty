@@ -3,6 +3,8 @@
 namespace Tests\Controller\HbPFApplicationBundle\Controller;
 
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
+use Hanaboso\CommonsBundle\Utils\Base64;
+use Hanaboso\PipesFramework\Application\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 use Hanaboso\PipesFramework\HbPFApplicationBundle\Handler\ApplicationHandler;
 use ReflectionException;
@@ -38,10 +40,10 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetApplication(): void
     {
-        $application = 'webhook';
+        $application = 'someApp';
         $this->mockApplicationHandler('getApplicationByKey', [$application]);
 
-        $this->client->request('GET', sprintf('/applications/%s', 'webhook'));
+        $this->client->request('GET', sprintf('/applications/%s', 'someApp'));
         $response = $this->client->getResponse();
 
         self::assertTrue(in_array($application, json_decode($response->getContent(), TRUE)));
@@ -76,7 +78,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     {
         $this->insertApp();
 
-        $this->client->request('GET', '/applications/webhook/users/bar');
+        $this->client->request('GET', '/applications/someApp/users/bar');
         $response = $this->client->getResponse();
 
         self::assertEquals('bar', json_decode($response->getContent(), TRUE)['user']);
@@ -102,13 +104,13 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     {
         $this->insertApp();
 
-        $this->client->request('DELETE', '/applications/webhook/users/bar/uninstall');
+        $this->client->request('DELETE', '/applications/someApp/users/bar/uninstall');
         $response = $this->client->getResponse();
 
         self::assertEquals('bar', json_decode($response->getContent(), TRUE)['user']);
         self::assertEquals('200', $response->getStatusCode());
 
-        $this->client->request('GET', '/applications/webhook/users/bar');
+        $this->client->request('GET', '/applications/someApp/users/bar');
         $response = $this->client->getResponse();
 
         self::assertEquals('2001', json_decode($response->getContent(), TRUE)['error_code']);
@@ -122,7 +124,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     {
         $this->mockApplicationHandler('updateApplicationSettings', ['new_settings' => 'test1']);
 
-        $this->client->request('PUT', '/applications/webhook/users/bar/settings', [], [], [], '{"test":1}');
+        $this->client->request('PUT', '/applications/someApp/users/bar/settings', [], [], [], '{"test":1}');
         $response = $this->client->getResponse();
 
         self::assertEquals('200', $response->getStatusCode());
@@ -136,7 +138,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     {
         $this->mockApplicationHandler('updateApplicationPassword', ['new_passwd' => 'secret']);
 
-        $this->client->request('PUT', '/applications/webhook/users/bar/password', [], [], [], '{"passwd": test}');
+        $this->client->request('PUT', '/applications/someApp/users/bar/password', [], [], [], '{"passwd": test}');
         $response = $this->client->getResponse();
 
         self::assertEquals('200', $response->getStatusCode());
@@ -150,10 +152,40 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     {
         $this->mockApplicationHandler('authorizeApplication');
         $this->insertApp();
-        $this->client->request('POST', '/applications/webhook/users/bar/authorize');
+        $this->client->request('POST', '/applications/someApp/users/bar/authorize?redirect_url=somewhere');
         $response = $this->client->getResponse();
 
-        self::assertEquals('200', $response->getStatusCode());
+        self::assertEquals('302', $response->getStatusCode());
+    }
+
+    /**
+     * @throws DateTimeException
+     * @throws ReflectionException
+     */
+    public function testSetAuthorizationToken(): void
+    {
+        $this->mockApplicationHandler('setAuthToken', [BasicApplicationInterface::REDIRECT_URL => 'somewhere']);
+        $this->insertApp();
+        $this->client->request('GET', '/applications/someApp/users/bar/authorize/token');
+        $response = $this->client->getResponse();
+
+        self::assertEquals('302', $response->getStatusCode());
+    }
+
+    /**
+     * @throws DateTimeException
+     * @throws ReflectionException
+     */
+    public function testSetAuthorizationTokenQuery(): void
+    {
+        $this->mockApplicationHandler('setAuthToken', [BasicApplicationInterface::REDIRECT_URL => 'somewhere']);
+        $this->insertApp();
+
+        $encodedQuery = Base64::base64UrlEncode('user=bar&key=someApp');
+        $this->client->request('GET', sprintf('/applications/authorize/token?state=%s', $encodedQuery));
+        $response = $this->client->getResponse();
+
+        self::assertEquals('302', $response->getStatusCode());
     }
 
     /**
@@ -182,7 +214,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
      *
      * @throws DateTimeException
      */
-    private function insertApp(string $key = 'webhook', string $user = 'bar'): void
+    private function insertApp(string $key = 'someApp', string $user = 'bar'): void
     {
         $dto = new ApplicationInstall();
         $dto->setKey($key)

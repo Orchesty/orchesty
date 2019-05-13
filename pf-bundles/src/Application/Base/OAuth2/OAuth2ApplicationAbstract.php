@@ -71,17 +71,68 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
     /**
      * @param ApplicationInstall $applicationInstall
      *
+     * @return bool
+     */
+    public function isAuthorize(ApplicationInstall $applicationInstall): bool
+    {
+        return isset($applicationInstall->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][OAuth2ApplicationInterface::OAUTH2]);
+    }
+
+    /**
+     * @param ApplicationInstall $applicationInstall
+     *
      * @return ApplicationInstall
      * @throws AuthorizationException
      */
     public function refreshAuthorization(ApplicationInstall $applicationInstall): ApplicationInstall
     {
-        $accessToken = $this->provider->refreshAccessToken($this->createDto($applicationInstall), $this->getTokens());
+        $token = $this->provider->refreshAccessToken($this->createDto($applicationInstall), $this->getTokens());
 
-        return $applicationInstall->setSettings([
-            BasicApplicationInterface::AUTHORIZATION_SETTINGS => [BasicApplicationInterface::TOKEN => $accessToken],
+        return $applicationInstall->setSettings([BasicApplicationInterface::TOKEN => $token]);
+    }
+
+    /**
+     * @param ApplicationInstall $applicationInstall
+     *
+     * @return string
+     */
+    public function getAuthorizationRedirectUrl(ApplicationInstall $applicationInstall): string
+    {
+        return $applicationInstall->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::REDIRECT_URL];
+    }
+
+    /**
+     * @param ApplicationInstall $applicationInstall
+     * @param string             $redirectUrl
+     *
+     * @return OAuth2ApplicationInterface
+     */
+    public function setAuthorizationRedirectUrl(
+        ApplicationInstall $applicationInstall,
+        string $redirectUrl): OAuth2ApplicationInterface
+    {
+        $applicationInstall->setSettings([
+            BasicApplicationInterface::AUTHORIZATION_SETTINGS => [BasicApplicationInterface::REDIRECT_URL => $redirectUrl],
         ]);
 
+        return $this;
+    }
+
+    /**
+     * @param ApplicationInstall $applicationInstall
+     * @param array              $token
+     *
+     * @return OAuth2ApplicationInterface
+     */
+    public function setAuthorizationToken(
+        ApplicationInstall $applicationInstall,
+        array $token): OAuth2ApplicationInterface
+    {
+        $applicationInstall->setSettings([
+            BasicApplicationInterface::AUTHORIZATION_SETTINGS => [BasicApplicationInterface::TOKEN => $token],
+        ]);
+
+        return $this;
     }
 
     /**
@@ -93,7 +144,10 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
     {
         $redirectUrl = ApplicationUtils::generateUrl();
 
-        return new OAuth2Dto($applicationInstall, $redirectUrl, $this->getAuthUrl(), $this->getTokenUrl());
+        $dto = new OAuth2Dto($applicationInstall, $redirectUrl, $this->getAuthUrl(), $this->getTokenUrl());
+        $dto->setCustomAppDependencies($applicationInstall->getUser(), $applicationInstall->getKey());
+
+        return $dto;
     }
 
     /**
