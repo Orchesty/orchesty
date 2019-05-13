@@ -1,11 +1,8 @@
 services:
     _defaults:
-        autowire: true
-        autoconfigure: true
-        public: false
-        bind:
-            $tableParserHandler: '@hbpf.parser.table.handler'
+        public: '%public.services%'
 
-    Hanaboso\PipesFramework\HbPFTableParserBundle\Controller\:
-        resource: '../../Controller'
-        tags: ['controller.service_arguments']
+    Hanaboso\PipesFramework\HbPFTableParserBundle\Controller\TableParserController:
+        class: Hanaboso\PipesFramework\HbPFTableParserBundle\Controller\TableParserController
+        arguments:
+            - '@hbpf.parser.table.handler'

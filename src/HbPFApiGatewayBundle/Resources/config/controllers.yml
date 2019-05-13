@@ -1,9 +1,47 @@
 services:
     _defaults:
         autowire: true
-        autoconfigure: true
-        public: false
 
-    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\:
-        resource: '../../Controller'
-        tags: ['controller.service_arguments']
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\AuthorizationController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\AuthorizationController
+        arguments:
+
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\CategoryController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\CategoryController
+        arguments:
+
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ConnectorController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ConnectorController
+        arguments:
+
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\GeneratorController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\GeneratorController
+        arguments:
+
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\LogsController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\LogsController
+        arguments:
+
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\LongRunningNodeController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\LongRunningNodeController
+        arguments:
+
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\MetricsController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\MetricsController
+        arguments:
+
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NodeController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NodeController
+        arguments:
+
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NotificationController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NotificationController
+        arguments:
+
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyController
+        arguments:
+
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserController
+        arguments:

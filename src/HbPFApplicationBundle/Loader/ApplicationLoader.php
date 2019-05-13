@@ -2,7 +2,6 @@
 
 namespace Hanaboso\PipesFramework\HbPFApplicationBundle\Loader;
 
-use Exception;
 use Hanaboso\PipesFramework\Application\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesFramework\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesFramework\Utils\NodeServiceLoaderUtil;
@@ -37,7 +36,7 @@ class ApplicationLoader
      * @param string $key
      *
      * @return BasicApplicationInterface
-     * @throws Exception
+     * @throws ApplicationInstallException
      */
     public function getApplication(string $key): BasicApplicationInterface
     {
@@ -47,7 +46,7 @@ class ApplicationLoader
             /** @var BasicApplicationInterface $application */
             $application = $this->container->get($name);
         } else {
-            throw new Exception(
+            throw new ApplicationInstallException(
                 sprintf('Application for [%s] was not found.', $key),
                 ApplicationInstallException::APP_WAS_NOT_FOUND
             );
