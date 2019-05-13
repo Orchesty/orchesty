@@ -2,7 +2,6 @@
 
 namespace Hanaboso\PipesFramework\Application\Utils;
 
-use Hanaboso\PipesFramework\Application\Base\OAuth2\OAuth2ApplicationInterface;
 use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 
 /**
@@ -21,12 +20,12 @@ final class ApplicationUtils
     public static function generateUrl(?ApplicationInstall $systemInstall = NULL): string
     {
         if ($systemInstall) {
-            return sprintf('/user/user/%s/authorize_redirect/%s',
+            return sprintf('/applications/%s/users/%s/authorize/token',
+                $systemInstall->getKey(),
                 $systemInstall->getUser(),
-                $systemInstall->getSettings()[OAuth2ApplicationInterface::FRONTEND_REDIRECT_URL]
             );
         } else {
-            return '/user/saveToken';
+            return '/applications/authorize/token';
         }
     }
 

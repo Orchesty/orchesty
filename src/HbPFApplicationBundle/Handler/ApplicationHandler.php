@@ -141,12 +141,26 @@ class ApplicationHandler
     /**
      * @param string $key
      * @param string $user
+     * @param string $redirectUrl
      *
      * @throws Exception
      */
-    public function authorizeApplication(string $key, string $user): void
+    public function authorizeApplication(string $key, string $user, string $redirectUrl): void
     {
-        $this->applicationManager->authorizeApplication($key, $user);
+        $this->applicationManager->authorizeApplication($key, $user, $redirectUrl);
+    }
+
+    /**
+     * @param string $key
+     * @param string $user
+     * @param array  $token
+     *
+     * @return array
+     * @throws ApplicationInstallException
+     */
+    public function setAuthToken(string $key, string $user, array $token): array
+    {
+        return $this->applicationManager->setApplicationAuthorizationToken($key, $user, $token);
     }
 
 }

@@ -16,6 +16,7 @@ interface BasicApplicationInterface extends ApplicationInterface
     public const  BASIC                  = 'basic';
     public const  AUTHORIZATION_SETTINGS = 'authorization_settings';
     public const  TOKEN                  = 'token';
+    public const  REDIRECT_URL           = 'redirect_url';
 
     /**
      * @return string

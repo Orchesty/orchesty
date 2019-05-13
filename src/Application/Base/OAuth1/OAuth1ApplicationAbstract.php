@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesFramework\Application\Base\OAuth1;
 
 use Hanaboso\PipesFramework\Application\Base\ApplicationAbstract;
+use Hanaboso\PipesFramework\Application\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth1Dto;
@@ -43,6 +44,16 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
     /**
      * @param ApplicationInstall $applicationInstall
      *
+     * @return bool
+     */
+    public function isAuthorize(ApplicationInstall $applicationInstall): bool
+    {
+        return isset($applicationInstall->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][OAuth1ApplicationInterface::OAUTH]);
+    }
+
+    /**
+     * @param ApplicationInstall $applicationInstall
+     *
      * @throws AuthorizationException
      * @throws OAuthException
      */
@@ -55,6 +66,50 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
             $this->getRedirectUrl(),
             $this->saveOAuthStaff(),
             );
+    }
+
+    /**
+     * @param ApplicationInstall $applicationInstall
+     *
+     * @return string
+     */
+    public function getAuthorizationRedirectUrl(ApplicationInstall $applicationInstall): string
+    {
+        return $applicationInstall->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::REDIRECT_URL];
+    }
+
+    /**
+     * @param ApplicationInstall $applicationInstall
+     * @param string             $redirectUrl
+     *
+     * @return OAuth1ApplicationInterface
+     */
+    public function setAuthorizationRedirectUrl(
+        ApplicationInstall $applicationInstall,
+        string $redirectUrl): OAuth1ApplicationInterface
+    {
+        $applicationInstall->setSettings([
+            BasicApplicationInterface::AUTHORIZATION_SETTINGS => [BasicApplicationInterface::REDIRECT_URL => $redirectUrl],
+        ]);
+
+        return $this;
+    }
+
+    /**
+     * @param ApplicationInstall $applicationInstall
+     * @param array              $token
+     *
+     * @return OAuth1ApplicationInterface
+     */
+    public function setAuthorizationToken(
+        ApplicationInstall $applicationInstall,
+        array $token): OAuth1ApplicationInterface
+    {
+        $applicationInstall->setSettings([
+            BasicApplicationInterface::AUTHORIZATION_SETTINGS => [BasicApplicationInterface::TOKEN => $token],
+        ]);
+
+        return $this;
     }
 
     /**

@@ -108,14 +108,14 @@ class ApplicationManager
             );
         }
 
-        $app = new ApplicationInstall();
-        $app
+        $applicationInstall = new ApplicationInstall();
+        $applicationInstall
             ->setUser($user)
             ->setKey($key);
-        $this->dm->persist($app);
-        $this->dm->flush($app);
+        $this->dm->persist($applicationInstall);
+        $this->dm->flush($applicationInstall);
 
-        return $app;
+        return $applicationInstall;
     }
 
     /**
@@ -127,11 +127,11 @@ class ApplicationManager
      */
     public function uninstallApplication(string $key, string $user): ApplicationInstall
     {
-        $app = $this->repository->findUserApp($key, $user);
-        $this->dm->remove($app);
-        $this->dm->flush($app);
+        $applicationInstall = $this->repository->findUserApp($key, $user);
+        $this->dm->remove($applicationInstall);
+        $this->dm->flush($applicationInstall);
 
-        return $app;
+        return $applicationInstall;
     }
 
     /**
@@ -144,13 +144,13 @@ class ApplicationManager
      */
     public function saveApplicationSettings(string $key, string $user, array $data): ApplicationInstall
     {
-        $app = $this->repository->findUserApp($key, $user);
+        $applicationInstall = $this->repository->findUserApp($key, $user);
 
-        $updatedApp = $this->loader->getApplication($key)->setApplicationSettings($app, $data);
-        $this->dm->persist($updatedApp);
-        $this->dm->flush($updatedApp);
+        $application = $this->loader->getApplication($key)->setApplicationSettings($applicationInstall, $data);
+        $this->dm->persist($application);
+        $this->dm->flush($application);
 
-        return $updatedApp;
+        return $application;
     }
 
     /**
@@ -163,29 +163,54 @@ class ApplicationManager
      */
     public function saveApplicationPassword(string $key, string $user, string $password): ApplicationInstall
     {
-        $app = $this->repository->findUserApp($key, $user);
+        $applicationInstall = $this->repository->findUserApp($key, $user);
 
-        /** @var ApplicationInstall $updatedApp */
-        $updatedApp = $this->loader->getApplication($key)->setApplicationPassword($app, $password);
-        $this->dm->persist($updatedApp);
-        $this->dm->flush($updatedApp);
+        /** @var ApplicationInstall $application */
+        $application = $this->loader->getApplication($key)->setApplicationPassword($applicationInstall, $password);
+        $this->dm->persist($application);
+        $this->dm->flush($application);
 
-        return $updatedApp;
+        return $application;
     }
 
     /**
      * @param string $key
      * @param string $user
+     * @param string $redirectUrl
      *
-     * @throws Exception
+     * @throws ApplicationInstallException
      */
-    public function authorizeApplication(string $key, string $user): void
+    public function authorizeApplication(string $key, string $user, string $redirectUrl): void
     {
-        /** @var ApplicationInstall $app */
-        $app = $this->repository->findUserApp($key, $user);
-        /** @var OAuth1ApplicationInterface|OAuth2ApplicationInterface $appAuth */
-        $appAuth = $this->loader->getApplication($key);
-        $appAuth->authorize($app);
+        /** @var ApplicationInstall $applicationInstall */
+        $applicationInstall = $this->repository->findUserApp($key, $user);
+        /** @var OAuth1ApplicationInterface|OAuth2ApplicationInterface $application */
+        $application = $this->loader->getApplication($key);
+        $application->setAuthorizationRedirectUrl($applicationInstall, $redirectUrl);
+
+        $this->dm->flush();
+
+        $application->authorize($applicationInstall);
+    }
+
+    /**
+     * @param string $key
+     * @param string $user
+     * @param array  $token
+     *
+     * @return array
+     * @throws ApplicationInstallException
+     */
+    public function setApplicationAuthorizationToken(string $key, string $user, array $token): array
+    {
+        /** @var ApplicationInstall $applicationInstall */
+        $applicationInstall = $this->repository->findUserApp($key, $user);
+        /** @var OAuth1ApplicationInterface|OAuth2ApplicationInterface $application */
+        $application = $this->loader->getApplication($key);
+        $application->setAuthorizationToken($applicationInstall, $token);
+        $this->dm->flush();
+
+        return [BasicApplicationInterface::REDIRECT_URL => $application->getAuthorizationRedirectUrl($applicationInstall)];
     }
 
 }

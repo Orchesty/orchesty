@@ -30,4 +30,31 @@ interface OAuth2ApplicationInterface extends ApplicationInterface
      */
     public function refreshAuthorization(ApplicationInstall $applicationInstall): ApplicationInstall;
 
+    /**
+     * @param ApplicationInstall $applicationInstall
+     *
+     * @return string
+     */
+    public function getAuthorizationRedirectUrl(ApplicationInstall $applicationInstall): string;
+
+    /**
+     * @param ApplicationInstall $applicationInstall
+     * @param string             $redirectUrl
+     *
+     * @return OAuth2ApplicationInterface
+     */
+    public function setAuthorizationRedirectUrl(
+        ApplicationInstall $applicationInstall,
+        string $redirectUrl): OAuth2ApplicationInterface;
+
+    /**
+     * @param ApplicationInstall $applicationInstall
+     * @param array              $token
+     *
+     * @return OAuth2ApplicationInterface
+     */
+    public function setAuthorizationToken(
+        ApplicationInstall $applicationInstall,
+        array $token): OAuth2ApplicationInterface;
+
 }
