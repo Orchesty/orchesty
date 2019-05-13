@@ -1,11 +1,8 @@
 services:
     _defaults:
-        autowire: true
-        autoconfigure: true
-        public: false
-        bind:
-            $applicationHandler: '@hbpf.application.handler.application'
+        public: '%public.services%'
 
-    Hanaboso\PipesFramework\HbPFApplicationBundle\Controller\:
-        resource: '../../Controller'
-        tags: ['controller.service_arguments']
+    Hanaboso\PipesFramework\HbPFApplicationBundle\Controller\ApplicationController:
+        class: Hanaboso\PipesFramework\HbPFApplicationBundle\Controller\ApplicationController
+        arguments:
+            - '@hbpf.application.handler.application'

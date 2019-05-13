@@ -1,0 +1,8 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    Hanaboso\PipesFramework\HbPFLogsBundle\Controller\LogsController:
+        class: Hanaboso\PipesFramework\HbPFLogsBundle\Controller\LogsController
+        arguments:
+            - '@hbpf.handler.logs'

@@ -132,7 +132,7 @@ class ApplicationController extends AbstractFOSRestController
     }
 
     /**
-     * @Route("/applications/{key}/users/{user}/uninstall", methods={"POST"})
+     * @Route("/applications/{key}/users/{user}/uninstall", methods={"DELETE"})
      *
      * @param string $key
      * @param string $user
@@ -152,7 +152,7 @@ class ApplicationController extends AbstractFOSRestController
     }
 
     /**
-     * @Route("/applications/{key}/users/{user}/settings", methods={"POST"})
+     * @Route("/applications/{key}/users/{user}/settings", methods={"PUT"})
      *
      * @param string  $key
      * @param string  $user
@@ -175,7 +175,7 @@ class ApplicationController extends AbstractFOSRestController
     }
 
     /**
-     * @Route("/applications/{key}/users/{user}/password", methods={"POST"})
+     * @Route("/applications/{key}/users/{user}/password", methods={"PUT"})
      *
      * @param string  $key
      * @param string  $user

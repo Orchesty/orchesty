@@ -1,13 +1,18 @@
 services:
     _defaults:
-        autowire: true
-        autoconfigure: true
-        public: false
-        bind:
-            $topologyHandler: '@hbpf.configurator.handler.topology'
-            $nodeHandler: '@hbpf.configurator.handler.node'
-            $categoryHandler: '@hbpf.handler.category'
+        public: '%public.services%'
 
-    Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\:
-        resource: '../../Controller'
-        tags: ['controller.service_arguments']
+    Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\CategoryController:
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\CategoryController
+        arguments:
+            - '@hbpf.handler.category'
+
+    Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController:
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController
+        arguments:
+            - '@hbpf.configurator.handler.node'
+
+    Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController:
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController
+        arguments:
+            - '@hbpf.configurator.handler.topology'

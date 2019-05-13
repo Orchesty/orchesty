@@ -102,7 +102,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     {
         $this->insertApp();
 
-        $this->client->request('POST', '/applications/webhook/users/bar/uninstall');
+        $this->client->request('DELETE', '/applications/webhook/users/bar/uninstall');
         $response = $this->client->getResponse();
 
         self::assertEquals('bar', json_decode($response->getContent(), TRUE)['user']);
@@ -122,7 +122,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     {
         $this->mockApplicationHandler('updateApplicationSettings', ['new_settings' => 'test1']);
 
-        $this->client->request('POST', '/applications/webhook/users/bar/settings', [], [], [], '{"test":1}');
+        $this->client->request('PUT', '/applications/webhook/users/bar/settings', [], [], [], '{"test":1}');
         $response = $this->client->getResponse();
 
         self::assertEquals('200', $response->getStatusCode());
@@ -136,7 +136,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     {
         $this->mockApplicationHandler('updateApplicationPassword', ['new_passwd' => 'secret']);
 
-        $this->client->request('POST', '/applications/webhook/users/bar/password', [], [], [], '{"passwd": test}');
+        $this->client->request('PUT', '/applications/webhook/users/bar/password', [], [], [], '{"passwd": test}');
         $response = $this->client->getResponse();
 
         self::assertEquals('200', $response->getStatusCode());

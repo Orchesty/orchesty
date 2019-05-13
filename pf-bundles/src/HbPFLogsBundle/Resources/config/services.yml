@@ -4,12 +4,10 @@ services:
         autoconfigure: true
         public: false
 
-    Hanaboso\PipesFramework\HbPFLogsBundle\Controller\:
-        resource: '../../Controller'
-        tags: ['controller.service_arguments']
-
-    Hanaboso\PipesFramework\HbPFLogsBundle\Handler\:
-        resource: '../../Handler'
+    hbpf.handler.logs:
+        class: Hanaboso\PipesFramework\HbPFLogsBundle\Handler\LogsHandler
+        arguments:
+            - '@mongodb.logs'
 
     Hanaboso\PipesFramework\Logs\:
         resource: '../../../Logs'

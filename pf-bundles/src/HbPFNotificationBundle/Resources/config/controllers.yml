@@ -1,11 +1,8 @@
 services:
     _defaults:
-        autowire: true
-        autoconfigure: true
-        public: false
-        bind:
-            $notificationHandler: '@hbpf.notification.handler.notification'
+        public: '%public.services%'
 
-    Hanaboso\PipesFramework\HbPFNotificationBundle\Controller\:
-        resource: '../../Controller'
-        tags: ['controller.service_arguments']
+    Hanaboso\PipesFramework\HbPFNotificationBundle\Controller\NotificationController:
+        class: Hanaboso\PipesFramework\HbPFNotificationBundle\Controller\NotificationController
+        arguments:
+            - '@hbpf.notification.handler.notification'

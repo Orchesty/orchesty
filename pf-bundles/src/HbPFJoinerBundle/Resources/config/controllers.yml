@@ -1,11 +1,8 @@
 services:
     _defaults:
-        autowire: true
-        autoconfigure: true
-        public: false
-        bind:
-            $joinerHandler: '@hbpf.handler.joiner'
+        public: '%public.services%'
 
-    Hanaboso\PipesFramework\HbPFJoinerBundle\Controller\:
-        resource: '../../Controller'
-        tags: ['controller.service_arguments']
+    Hanaboso\PipesFramework\HbPFJoinerBundle\Controller\JoinerController:
+        class: Hanaboso\PipesFramework\HbPFJoinerBundle\Controller\JoinerController
+        arguments:
+            - '@hbpf.handler.joiner'
