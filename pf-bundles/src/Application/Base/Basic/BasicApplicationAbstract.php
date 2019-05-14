@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesFramework\Application\Base\Basic;
 
 use Hanaboso\PipesFramework\Application\Base\ApplicationAbstract;
+use Hanaboso\PipesFramework\Application\Base\ApplicationInterface;
 use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 
 /**
@@ -28,9 +29,30 @@ abstract class BasicApplicationAbstract extends ApplicationAbstract implements B
      */
     public function isAuthorized(ApplicationInstall $applicationInstall): bool
     {
-        return isset($applicationInstall->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::TOKEN]);
+        return isset($applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::PASSWORD])
+            && isset($applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::USER]);
+    }
 
-        //        TODO: refactor
+    /**
+     * @param ApplicationInstall $applicationInstall
+     * @param string             $password
+     *
+     * @return ApplicationInstall
+     */
+    public function setApplicationPassword(ApplicationInstall $applicationInstall, string $password): ApplicationInstall
+    {
+        return $applicationInstall->setSettings([ApplicationInterface::AUTHORIZATION_SETTINGS => [BasicApplicationInterface::PASSWORD => $password]]);
+    }
+
+    /**
+     * @param ApplicationInstall $applicationInstall
+     * @param string             $user
+     *
+     * @return ApplicationInstall
+     */
+    public function setApplicationUser(ApplicationInstall $applicationInstall, string $user): ApplicationInstall
+    {
+        return $applicationInstall->setSettings([ApplicationInterface::AUTHORIZATION_SETTINGS => [BasicApplicationInterface::USER => $user]]);
     }
 
 }

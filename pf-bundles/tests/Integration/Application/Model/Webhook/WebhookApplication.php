@@ -7,6 +7,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\PipesFramework\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesFramework\Application\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 use Hanaboso\PipesFramework\Application\Model\Webhook\WebhookApplicationInterface;
@@ -17,7 +18,7 @@ use Hanaboso\PipesFramework\Application\Model\Webhook\WebhookSubscription;
  *
  * @package Tests\Integration\Application\Model\Webhook
  */
-final class WebhookApplication implements WebhookApplicationInterface
+final class WebhookApplication extends ApplicationAbstract implements WebhookApplicationInterface
 {
 
     private const SUBSCRIBE   = 'https://example.com/webhook/subscribe';
@@ -174,6 +175,18 @@ final class WebhookApplication implements WebhookApplicationInterface
     public function processWebhookUnsubscribeResponse(ResponseDto $dto): bool
     {
         return json_decode($dto->getBody(), TRUE, 512, JSON_THROW_ON_ERROR)['success'] ?? FALSE;
+    }
+
+    /**
+     * @param ApplicationInstall $applicationInstall
+     *
+     * @return bool
+     */
+    public function isAuthorized(ApplicationInstall $applicationInstall): bool
+    {
+        $applicationInstall;
+
+        return TRUE;
     }
 
 }

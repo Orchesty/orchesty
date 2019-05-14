@@ -7,6 +7,7 @@ use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 use Hanaboso\PipesFramework\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesFramework\Application\Model\ApplicationManager;
+use InvalidArgumentException;
 
 /**
  * Class ApplicationHandler
@@ -47,14 +48,7 @@ class ApplicationHandler
      */
     public function getApplicationByKey(string $key): array
     {
-        $application = $this->applicationManager->getApplication($key);
-
-        return [
-            'name'        => $application->getName(),
-            'type'        => $application->getType(),
-            'key'         => $application->getKey(),
-            'description' => $application->getDescription(),
-        ];
+        return $this->applicationManager->getApplication($key)->toArray();
     }
 
     /**
@@ -128,13 +122,18 @@ class ApplicationHandler
     /**
      * @param string $key
      * @param string $user
-     * @param string $password
+     * @param array  $data
      *
      * @return array
      * @throws Exception
      */
-    public function updateApplicationPassword(string $key, string $user, string $password): array
+    public function updateApplicationPassword(string $key, string $user, array $data): array
     {
+        if (!array_key_exists('password', $data)) {
+            throw new InvalidArgumentException('Field password is not included.');
+        }
+        $password = $data['password'];
+
         return $this->applicationManager->saveApplicationPassword($key, $user, $password)->toArray();
     }
 
@@ -158,9 +157,9 @@ class ApplicationHandler
      * @return array
      * @throws ApplicationInstallException
      */
-    public function setAuthToken(string $key, string $user, array $token): array
+    public function saveAuthToken(string $key, string $user, array $token): array
     {
-        return $this->applicationManager->setApplicationAuthorizationToken($key, $user, $token);
+        return $this->applicationManager->saveAuthorizationToken($key, $user, $token);
     }
 
 }

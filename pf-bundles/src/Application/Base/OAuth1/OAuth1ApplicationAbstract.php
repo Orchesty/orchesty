@@ -2,8 +2,9 @@
 
 namespace Hanaboso\PipesFramework\Application\Base\OAuth1;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Application\Base\ApplicationAbstract;
-use Hanaboso\PipesFramework\Application\Base\Basic\BasicApplicationInterface;
+use Hanaboso\PipesFramework\Application\Base\ApplicationInterface;
 use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 use Hanaboso\PipesFramework\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesFramework\Authorization\Provider\Dto\OAuth1Dto;
@@ -36,6 +37,26 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
     /**
      * @return string
      */
+    abstract protected function getTokenUrl(): string;
+
+    /**
+     * @return string
+     */
+    abstract protected function getAuthorizeUrl(): string;
+
+    /**
+     * @return string
+     */
+    abstract protected function getAccessTokenUrl(): string;
+
+    /**
+     * @return string
+     */
+    abstract protected function getRedirectUrl(): string;
+
+    /**
+     * @return string
+     */
     public function getAuthorizationType(): string
     {
         return OAuth1ApplicationInterface::OAUTH;
@@ -48,7 +69,7 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
      */
     public function isAuthorize(ApplicationInstall $applicationInstall): bool
     {
-        return isset($applicationInstall->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][OAuth1ApplicationInterface::OAUTH]);
+        return isset($applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS][OAuth1ApplicationInterface::TOKEN]);
     }
 
     /**
@@ -64,8 +85,34 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
             $this->getTokenUrl(),
             $this->getAuthorizeUrl(),
             $this->getRedirectUrl(),
-            $this->saveOAuthStaff(),
+            $this->saveOauthStuff(),
             );
+    }
+
+    /**
+     * @param ApplicationInstall $applicationInstall
+     * @param array              $token
+     *
+     * @return OAuth1ApplicationInterface
+     * @throws AuthorizationException
+     * @throws OAuthException
+     */
+    public function setAuthorizationToken(
+        ApplicationInstall $applicationInstall,
+        array $token
+    ): OAuth1ApplicationInterface
+    {
+        $token = $this->provider->getAccessToken(
+            $this->createDto($applicationInstall),
+            $token,
+            $this->getAccessTokenUrl()
+        );
+
+        $applicationInstall->setSettings(
+            [ApplicationInterface::AUTHORIZATION_SETTINGS => [ApplicationInterface::TOKEN => $token]]
+        );
+
+        return $this;
     }
 
     /**
@@ -73,9 +120,9 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
      *
      * @return string
      */
-    public function getAuthorizationRedirectUrl(ApplicationInstall $applicationInstall): string
+    public function getFrontendRedirectUrl(ApplicationInstall $applicationInstall): string
     {
-        return $applicationInstall->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::REDIRECT_URL];
+        return $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::REDIRECT_URL];
     }
 
     /**
@@ -84,30 +131,14 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
      *
      * @return OAuth1ApplicationInterface
      */
-    public function setAuthorizationRedirectUrl(
+    public function setFrontendRedirectUrl(
         ApplicationInstall $applicationInstall,
-        string $redirectUrl): OAuth1ApplicationInterface
+        string $redirectUrl
+    ): OAuth1ApplicationInterface
     {
-        $applicationInstall->setSettings([
-            BasicApplicationInterface::AUTHORIZATION_SETTINGS => [BasicApplicationInterface::REDIRECT_URL => $redirectUrl],
-        ]);
-
-        return $this;
-    }
-
-    /**
-     * @param ApplicationInstall $applicationInstall
-     * @param array              $token
-     *
-     * @return OAuth1ApplicationInterface
-     */
-    public function setAuthorizationToken(
-        ApplicationInstall $applicationInstall,
-        array $token): OAuth1ApplicationInterface
-    {
-        $applicationInstall->setSettings([
-            BasicApplicationInterface::AUTHORIZATION_SETTINGS => [BasicApplicationInterface::TOKEN => $token],
-        ]);
+        $applicationInstall->setSettings(
+            [ApplicationInterface::AUTHORIZATION_SETTINGS => [ApplicationInterface::REDIRECT_URL => $redirectUrl]]
+        );
 
         return $this;
     }
@@ -123,23 +154,18 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
     }
 
     /**
-     * @return string
-     */
-    abstract protected function getTokenUrl(): string;
-
-    /**
-     * @return string
-     */
-    abstract protected function getAuthorizeUrl(): string;
-
-    /**
-     * @return string
-     */
-    abstract protected function getRedirectUrl(): string;
-
-    /**
      * @return callable
      */
-    abstract protected function saveOauthStaff(): callable;
+    protected function saveOauthStuff(): callable
+    {
+        return function (DocumentManager $dm, OAuth1Dto $dto, array $data): void {
+            $dto->getApplicationInstall()->setSettings(
+                [ApplicationInterface::AUTHORIZATION_SETTINGS => [OAuth1ApplicationInterface::OAUTH => $data]]
+            );
+
+            $dm->persist($dto->getApplicationInstall());
+            $dm->flush($dto->getApplicationInstall());
+        };
+    }
 
 }

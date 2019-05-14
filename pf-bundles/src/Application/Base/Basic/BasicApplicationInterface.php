@@ -13,10 +13,9 @@ use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 interface BasicApplicationInterface extends ApplicationInterface
 {
 
-    public const  BASIC                  = 'basic';
-    public const  AUTHORIZATION_SETTINGS = 'authorization_settings';
-    public const  TOKEN                  = 'token';
-    public const  REDIRECT_URL           = 'redirect_url';
+    public const  BASIC = 'basic';
+    public const  USER = 'user';
+    public const  PASSWORD = 'password';
 
     /**
      * @return string
@@ -25,33 +24,24 @@ interface BasicApplicationInterface extends ApplicationInterface
 
     /**
      * @param ApplicationInstall $applicationInstall
-     *
-     * @return bool
-     */
-    public function isAuthorized(ApplicationInstall $applicationInstall): bool;
-
-    /**
-     * @param ApplicationInstall $applicationInstall
-     * @param array              $settings
-     *
-     * @return BasicApplicationInterface
-     */
-    public function setAuthorizationSettings
-    (
-        ApplicationInstall $applicationInstall,
-        array $settings
-    ): BasicApplicationInterface;
-
-    /**
-     * @param ApplicationInstall $applicationInstall
      * @param string             $password
      *
-     * @return BasicApplicationInterface
+     * @return ApplicationInstall
      */
-    public function setApplicationPassword
-    (
+    public function setApplicationPassword(
         ApplicationInstall $applicationInstall,
         string $password
-    ): BasicApplicationInterface;
+    ): ApplicationInstall;
+
+    /**
+     * @param ApplicationInstall $applicationInstall
+     * @param string             $user
+     *
+     * @return ApplicationInstall
+     */
+    public function setApplicationUser(
+        ApplicationInstall $applicationInstall,
+        string $user
+    ): ApplicationInstall;
 
 }
