@@ -50,7 +50,7 @@ class LongRunningNodeCallback extends SyncCallbackAbstract
      *
      * @return CallbackStatus
      */
-    function handle($data, Message $message): CallbackStatus
+    public function handle($data, Message $message): CallbackStatus
     {
         $data;
         try {

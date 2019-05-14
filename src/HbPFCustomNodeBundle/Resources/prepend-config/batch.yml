@@ -1,22 +1,21 @@
-rabbit-mq:
+rabbit_mq:
     exchanges:
         pipes.test_batch:
             durable: true
             type: direct
 
-    async_consumers:
+    consumers:
         batch:
             class: Hanaboso\PipesFramework\CustomNode\Model\Batch\BatchConsumer
             queue: pipes.batch
-            serializer:
+            async: true
             callback: hbpf.custom_nodes.batch_callback
             prefetch_count: 10
 
-    producers:
+    publishers:
         test_batch:
             class: Hanaboso\PipesFramework\CustomNode\Model\Batch\BatchProducer
             exchange: pipes.test_batch
-            serializer: Hanaboso\PipesFramework\RabbitMq\Serializers\JsonSerializer
 
 services:
     hbpf.custom_nodes.batch_action_callback:
@@ -24,7 +23,7 @@ services:
         arguments:
             - '@hbpf.loader.custom_node'
         calls:
-            - [setLogger, ['@monolog.logger.rabbit-mq']]
+            - [setLogger, ['@monolog.logger.rabbit_mq']]
 
     hbpf.custom_nodes.batch_callback:
         class: Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchConsumerCallback
@@ -32,4 +31,4 @@ services:
             - '@hbpf.custom_nodes.batch_action_callback'
             - '@hbpf.influxdb_sender_monolith'
         calls:
-            - [setLogger, ['@monolog.logger.rabbit-mq']]
+            - [setLogger, ['@monolog.logger.rabbit_mq']]
