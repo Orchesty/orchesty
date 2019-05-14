@@ -2,23 +2,23 @@
 
 namespace Hanaboso\PipesFramework\RabbitMq\Consumer;
 
-use Bunny\Channel;
 use Bunny\Message;
-use Exception;
-use Hanaboso\PipesFramework\HbPFRabbitMqBundle\DebugMessageTrait;
 use Hanaboso\PipesFramework\RabbitMq\CallbackStatus;
 use Hanaboso\PipesFramework\RabbitMq\Exception\RabbitMqException;
 use Hanaboso\PipesFramework\RabbitMq\Impl\Repeater\Repeater;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use RabbitMqBundle\Connection\Connection;
+use RabbitMqBundle\Consumer\CallbackInterface;
+use RabbitMqBundle\Consumer\DebugMessageTrait;
 
 /**
  * Class SyncCallbackAbstract
  *
  * @package Hanaboso\PipesFramework\RabbitMq\Consumer
  */
-abstract class SyncCallbackAbstract implements LoggerAwareInterface
+abstract class SyncCallbackAbstract implements CallbackInterface, LoggerAwareInterface
 {
 
     use DebugMessageTrait;
@@ -42,18 +42,16 @@ abstract class SyncCallbackAbstract implements LoggerAwareInterface
     }
 
     /**
-     * @param mixed   $data
-     * @param Message $message
-     * @param Channel $channel
+     * @param Message    $message
+     * @param Connection $connection
+     * @param int        $channelId
      *
-     * @return CallbackStatus
+     * @return void
      * @throws RabbitMqException
-     * @throws Exception
      */
-    final public function handleMessage($data, Message $message, Channel $channel): CallbackStatus
+    public function processMessage(Message $message, Connection $connection, int $channelId): void
     {
-        $channel;
-        $result         = $this->handle($data, $message);
+        $result         = $this->handle($message->content, $message);
         $prepareMessage = $this->prepareMessage(
             '',
             $message->exchange,
@@ -88,7 +86,8 @@ abstract class SyncCallbackAbstract implements LoggerAwareInterface
                 );
         }
 
-        return $result;
+        // TODO: Should we acknowledge message like this?
+        $connection->getChannel($channelId)->ack($message);
     }
 
     /**

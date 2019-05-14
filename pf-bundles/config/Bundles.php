@@ -17,7 +17,6 @@ use Hanaboso\PipesFramework\HbPFLongRunningNodeBundle\HbPFLongRunningNodeBundle;
 use Hanaboso\PipesFramework\HbPFMapperBundle\HbPFMapperBundle;
 use Hanaboso\PipesFramework\HbPFMetricsBundle\HbPFMetricsBundle;
 use Hanaboso\PipesFramework\HbPFNotificationBundle\HbPFNotificationBundle;
-use Hanaboso\PipesFramework\HbPFRabbitMqBundle\HbPFRabbitMqBundle;
 use Hanaboso\PipesFramework\HbPFTableParserBundle\HbPFTableParserBundle;
 use Hanaboso\UserBundle\HbPFUserBundle;
 use JMS\SerializerBundle\JMSSerializerBundle;
@@ -51,12 +50,11 @@ return [
     HbPFJoinerBundle::class          => ['all' => TRUE],
     HbPFMapperBundle::class          => ['all' => TRUE],
     HbPFTableParserBundle::class     => ['all' => TRUE],
-    HbPFRabbitMqBundle::class        => ['all' => TRUE],
-    RabbitMqBundle::class            => ['all' => TRUE],
     HbPFUserBundle::class            => ['all' => TRUE],
     HbPFMetricsBundle::class         => ['all' => TRUE],
     HbPFNotificationBundle::class    => ['all' => TRUE],
-    EmailServiceBundle::class        => ['all' => TRUE],
     HbPFLogsBundle::class            => ['all' => TRUE],
     HbPFLongRunningNodeBundle::class => ['all' => TRUE],
+    EmailServiceBundle::class        => ['all' => TRUE],
+    RabbitMqBundle::class            => ['all' => TRUE],
 ];

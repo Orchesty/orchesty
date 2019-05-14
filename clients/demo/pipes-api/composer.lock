@@ -74,16 +74,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.93.3",
+            "version": "3.93.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "874c1040edab52df3873157aa54ea51833d48c0e"
+                "reference": "75d6b1ec57f3438ac960d74e08366be43d52eca7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/874c1040edab52df3873157aa54ea51833d48c0e",
-                "reference": "874c1040edab52df3873157aa54ea51833d48c0e",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/75d6b1ec57f3438ac960d74e08366be43d52eca7",
+                "reference": "75d6b1ec57f3438ac960d74e08366be43d52eca7",
                 "shasum": ""
             },
             "require": {
@@ -153,7 +153,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2019-05-03T18:07:06+00:00"
+            "time": "2019-05-08T18:16:33+00:00"
         },
         {
             "name": "aws/aws-sdk-php-symfony",
@@ -2380,11 +2380,11 @@
         },
         {
             "name": "hanaboso/pipes-framework",
-            "version": "1.0.36",
+            "version": "1.0.37",
             "dist": {
                 "type": "path",
                 "url": "../../../pf-bundles",
-                "reference": "844117dd32de240e83062bf0c60de9ce211aefea"
+                "reference": "93e257484b028efb05c76f981438527079c12af2"
             },
             "require": {
                 "ext-json": "*",
@@ -2394,6 +2394,7 @@
                 "hanaboso/acl-bundle": "^1.0",
                 "hanaboso/email-service-bundle": "^1.0",
                 "hanaboso/mongo-data-grid": "^1.1",
+                "hanaboso/rabbit-mq-bundle": "^1.1",
                 "influxdb/influxdb-php": "^1.14",
                 "league/oauth2-client": "^2.4",
                 "mtdowling/cron-expression": "^1.2",
@@ -2431,11 +2432,11 @@
         },
         {
             "name": "hanaboso/rabbit-mq-bundle",
-            "version": "1.1.1",
+            "version": "1.1.2",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.hanaboso.net:hanaboso/rabbit-mq-bundle.git",
-                "reference": "70f3d5c75a89980951fc985e7ad76335e1ed5a77"
+                "reference": "0d1e15a4fe04af5600a4515f7aaff20d425e3b73"
             },
             "require": {
                 "bunny/bunny": "^0.4",
@@ -2462,7 +2463,7 @@
             "license": [
                 "proprietary"
             ],
-            "time": "2019-05-03T06:44:49+00:00"
+            "time": "2019-05-06T06:50:28+00:00"
         },
         {
             "name": "hanaboso/user-bundle",
@@ -3974,16 +3975,16 @@
         },
         {
             "name": "php-imap/php-imap",
-            "version": "3.0.11",
+            "version": "3.0.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/barbushin/php-imap.git",
-                "reference": "ff842543915f47258ef75f82e0635888e05b2ada"
+                "reference": "4f953db756a5ef71c4123827009849482f9df0be"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/barbushin/php-imap/zipball/ff842543915f47258ef75f82e0635888e05b2ada",
-                "reference": "ff842543915f47258ef75f82e0635888e05b2ada",
+                "url": "https://api.github.com/repos/barbushin/php-imap/zipball/4f953db756a5ef71c4123827009849482f9df0be",
+                "reference": "4f953db756a5ef71c4123827009849482f9df0be",
                 "shasum": ""
             },
             "require": {
@@ -4020,7 +4021,7 @@
                 "pop3",
                 "receive emails"
             ],
-            "time": "2019-05-05T14:03:29+00:00"
+            "time": "2019-05-07T21:01:39+00:00"
         },
         {
             "name": "phpcollection/phpcollection",
@@ -5432,16 +5433,16 @@
         },
         {
             "name": "symfony/contracts",
-            "version": "v1.0.2",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/contracts.git",
-                "reference": "1aa7ab2429c3d594dd70689604b5cf7421254cdf"
+                "reference": "d3636025e8253c6144358ec0a62773cae588395b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/contracts/zipball/1aa7ab2429c3d594dd70689604b5cf7421254cdf",
-                "reference": "1aa7ab2429c3d594dd70689604b5cf7421254cdf",
+                "url": "https://api.github.com/repos/symfony/contracts/zipball/d3636025e8253c6144358ec0a62773cae588395b",
+                "reference": "d3636025e8253c6144358ec0a62773cae588395b",
                 "shasum": ""
             },
             "require": {
@@ -5449,19 +5450,22 @@
             },
             "require-dev": {
                 "psr/cache": "^1.0",
-                "psr/container": "^1.0"
+                "psr/container": "^1.0",
+                "symfony/polyfill-intl-idn": "^1.10"
             },
             "suggest": {
                 "psr/cache": "When using the Cache contracts",
                 "psr/container": "When using the Service contracts",
                 "symfony/cache-contracts-implementation": "",
+                "symfony/event-dispatcher-implementation": "",
+                "symfony/http-client-contracts-implementation": "",
                 "symfony/service-contracts-implementation": "",
                 "symfony/translation-contracts-implementation": ""
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.0-dev"
+                    "dev-master": "1.1-dev"
                 }
             },
             "autoload": {
@@ -5496,7 +5500,7 @@
                 "interoperability",
                 "standards"
             ],
-            "time": "2018-12-05T08:06:11+00:00"
+            "time": "2019-04-27T14:29:50+00:00"
         },
         {
             "name": "symfony/monolog-bundle",
@@ -7555,16 +7559,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "0.11.5",
+            "version": "0.11.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "24ce5a566a798b81343138ed5d41d6877554cf9a"
+                "reference": "7af8b9d02b3ab36444dbf4e1b9ca1c1bd5044d81"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/24ce5a566a798b81343138ed5d41d6877554cf9a",
-                "reference": "24ce5a566a798b81343138ed5d41d6877554cf9a",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/7af8b9d02b3ab36444dbf4e1b9ca1c1bd5044d81",
+                "reference": "7af8b9d02b3ab36444dbf4e1b9ca1c1bd5044d81",
                 "shasum": ""
             },
             "require": {
@@ -7624,7 +7628,7 @@
                 "MIT"
             ],
             "description": "PHPStan - PHP Static Analysis Tool",
-            "time": "2019-03-25T16:40:09+00:00"
+            "time": "2019-05-08T16:33:56+00:00"
         },
         {
             "name": "phpstan/phpstan-doctrine",
@@ -8052,16 +8056,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "8.1.3",
+            "version": "8.1.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "2a676677982b484ee36b54961f570c02eabbe7e1"
+                "reference": "b534b017daaef2d7f60c6ee61e6aa2e13fdc6910"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/2a676677982b484ee36b54961f570c02eabbe7e1",
-                "reference": "2a676677982b484ee36b54961f570c02eabbe7e1",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/b534b017daaef2d7f60c6ee61e6aa2e13fdc6910",
+                "reference": "b534b017daaef2d7f60c6ee61e6aa2e13fdc6910",
                 "shasum": ""
             },
             "require": {
@@ -8130,7 +8134,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2019-04-19T15:52:00+00:00"
+            "time": "2019-05-09T05:13:39+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",

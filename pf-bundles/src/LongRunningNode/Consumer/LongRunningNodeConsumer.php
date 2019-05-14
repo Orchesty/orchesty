@@ -2,14 +2,14 @@
 
 namespace Hanaboso\PipesFramework\LongRunningNode\Consumer;
 
-use Hanaboso\PipesFramework\RabbitMq\Consumer\BaseSyncConsumerAbstract;
+use RabbitMqBundle\Consumer\Consumer;
 
 /**
  * Class LongRunningNodeConsumer
  *
  * @package Hanaboso\PipesFramework\LongRunningNode\Consumer
  */
-class LongRunningNodeConsumer extends BaseSyncConsumerAbstract
+class LongRunningNodeConsumer extends Consumer
 {
 
 }

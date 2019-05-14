@@ -8,6 +8,7 @@ use Hanaboso\PipesFramework\RabbitMq\Impl\Repeater\Repeater;
 use Hanaboso\PipesFramework\RabbitMq\Producer\AbstractProducer;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use RabbitMqBundle\Publisher\Publisher;
 
 /**
  * Class RepeaterTest
@@ -29,10 +30,8 @@ final class RepeaterTest extends TestCase
      */
     public function testGetHopLimit(int $limit, int $result): void
     {
-        /** @var AbstractProducer $producer */
-        $producer = self::getMockBuilder(AbstractProducer::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        /** @var Publisher|MockObject $producer */
+        $producer = self::createMock(Publisher::class);
 
         $repeater = new Repeater($producer, $limit);
         self::assertEquals($result, $repeater->getHopLimit());
@@ -62,14 +61,11 @@ final class RepeaterTest extends TestCase
             'content'
         );
 
-        /** @var AbstractProducer|MockObject $producer */
-        $producer = self::createMock(AbstractProducer::class);
-        $producer
-            ->expects($this->any())
-            ->method('publish')
-            ->with($message->content, $message->routingKey, $result)
-            ->willReturn(TRUE);
+        /** @var Publisher|MockObject $producer */
+        $producer = self::createMock(Publisher::class);
+        $producer->expects(self::any())->method('publish')->with($message->content, $result);
 
+        /** @var AbstractProducer $producer */
         $repeater = new Repeater($producer, $hopLimit);
         $added    = $repeater->add($message);
 

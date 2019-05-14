@@ -12,8 +12,8 @@ parameters:
 
 services:
     _defaults:
-        autowire: true      # Automatically injects dependencies in your services.
-        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        autowire: true
+        autoconfigure: true
         public: false
 
     Demo\Controller\:
@@ -23,6 +23,14 @@ services:
     Demo\:
         resource: '../src/*'
         exclude: '../src/{Entity,Migrations,Tests,Kernel.php}'
+
+    hbpf.connector.batch:
+        class: Demo\Connector\BatchConnector
+        public: true
+
+    hbpf.custom_node.batch:
+        class: Demo\CustomNode\BatchCustomNode
+        public: true
 
     hbpf.custom_node.filter-bids:
         class: Demo\CustomNode\FilterStockExchange
@@ -46,7 +54,7 @@ services:
         class: Demo\CustomNode\SplitFileBatch2
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
-            - '@rabbit-mq.producer.test_batch'
+            - '@rabbit_mq.publisher.test_batch'
         public: true
 
     hbpf.custom_node.idnes:

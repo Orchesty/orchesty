@@ -2,8 +2,8 @@
 
 namespace Tests\Unit\RabbitMq\Impl\Batch;
 
-use Bunny\Async\Client;
 use Bunny\Channel;
+use Bunny\Client;
 use Bunny\Message;
 use Exception;
 use Hanaboso\CommonsBundle\Metrics\InfluxDbSender;
@@ -14,6 +14,7 @@ use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
 use InvalidArgumentException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use RabbitMqBundle\Connection\Connection;
 use React\EventLoop\Factory;
 use function React\Promise\resolve;
 
@@ -62,14 +63,15 @@ final class BatchConsumerCallbackTest extends TestCase
         /** @var Channel|MockObject $channel */
         $channel = self::createMock(Channel::class);
         $channel->method('publish')->willReturn(resolve());
-        /** @var Client|MockObject $client */
-        $client = self::createMock(Client::class);
         /** @var InfluxDbSender|MockObject $influxSender */
         $influxSender = self::createMock(InfluxDbSender::class);
         $callback     = new BatchConsumerCallback($batchAction, $influxSender);
+        /** @var Connection|MockObject $connection */
+        $connection = self::createMock(Connection::class);
+        $connection->expects(self::any())->method('getChannel')->willReturn($channel);
 
         $callback
-            ->processMessage($this->createMessage($headers), $channel, $client, $loop)
+            ->processMessage($this->createMessage($headers), $connection, 1, $loop)
             ->then(NULL, function (Exception $e) use ($loop, $message): void {
                 self::assertInstanceOf(InvalidArgumentException::class, $e);
                 self::assertSame($message, $e->getMessage());
@@ -162,8 +164,11 @@ final class BatchConsumerCallbackTest extends TestCase
         $client->method('channel')->willReturn($channel);
         /** @var InfluxDbSender|MockObject $influxSender */
         $influxSender = self::createMock(InfluxDbSender::class);
-
-        $callback = new BatchConsumerCallback($batchAction, $influxSender);
+        $callback     = new BatchConsumerCallback($batchAction, $influxSender);
+        /** @var Connection|MockObject $connection */
+        $connection = self::createMock(Connection::class);
+        $connection->expects(self::any())->method('getChannel')->willReturn($channel);
+        $connection->expects(self::any())->method('getClient')->willReturn($client);
 
         $headers = [
             'reply-to'                                            => 'reply',
@@ -175,7 +180,7 @@ final class BatchConsumerCallbackTest extends TestCase
             PipesHeaders::createKey(PipesHeaders::PARENT_ID)      => '',
         ];
         $callback
-            ->processMessage($this->createMessage($headers), $channel, $client, $loop)
+            ->processMessage($this->createMessage($headers), $connection, 1, $loop)
             ->then(function () use ($loop): void {
                 // Test if resolve
                 self::assertTrue(TRUE);
@@ -211,8 +216,11 @@ final class BatchConsumerCallbackTest extends TestCase
         $client->method('channel')->willReturn($channel);
         /** @var InfluxDbSender|MockObject $influxSender */
         $influxSender = self::createMock(InfluxDbSender::class);
-
-        $callback = new BatchConsumerCallback($batchAction, $influxSender);
+        $callback     = new BatchConsumerCallback($batchAction, $influxSender);
+        /** @var Connection|MockObject $connection */
+        $connection = self::createMock(Connection::class);
+        $connection->expects(self::any())->method('getChannel')->willReturn($channel);
+        $connection->expects(self::any())->method('getClient')->willReturn($client);
 
         $headers = [
             'reply-to'                                            => 'reply',
@@ -225,7 +233,7 @@ final class BatchConsumerCallbackTest extends TestCase
             PipesHeaders::createKey(PipesHeaders::NODE_NAME)      => 'test',
         ];
         $callback
-            ->processMessage($this->createMessage($headers), $channel, $client, $loop)
+            ->processMessage($this->createMessage($headers), $connection, 1, $loop)
             ->then(function () use ($loop): void {
                 // Test if resolve
                 self::assertTrue(TRUE);
@@ -261,8 +269,11 @@ final class BatchConsumerCallbackTest extends TestCase
         $client->method('channel')->willReturn($channel);
         /** @var InfluxDbSender|MockObject $influxSender */
         $influxSender = self::createMock(InfluxDbSender::class);
-
-        $callback = new BatchConsumerCallback($batchAction, $influxSender);
+        $callback     = new BatchConsumerCallback($batchAction, $influxSender);
+        /** @var Connection|MockObject $connection */
+        $connection = self::createMock(Connection::class);
+        $connection->expects(self::any())->method('getChannel')->willReturn($channel);
+        $connection->expects(self::any())->method('getClient')->willReturn($client);
 
         $headers = [
             'reply-to'                                            => 'reply',
@@ -275,7 +286,7 @@ final class BatchConsumerCallbackTest extends TestCase
             PipesHeaders::createKey(PipesHeaders::NODE_NAME)      => 'test',
         ];
         $callback
-            ->processMessage($this->createMessage($headers), $channel, $client, $loop)
+            ->processMessage($this->createMessage($headers), $connection, 1, $loop)
             ->then(function () use ($loop): void {
                 // Test if resolve
                 self::assertTrue(TRUE);
@@ -310,8 +321,11 @@ final class BatchConsumerCallbackTest extends TestCase
         $client->method('channel')->willReturn($channel);
         /** @var InfluxDbSender|MockObject $influxSender */
         $influxSender = self::createMock(InfluxDbSender::class);
-
-        $callback = new BatchConsumerCallback($batchAction, $influxSender);
+        $callback     = new BatchConsumerCallback($batchAction, $influxSender);
+        /** @var Connection|MockObject $connection */
+        $connection = self::createMock(Connection::class);
+        $connection->expects(self::any())->method('getChannel')->willReturn($channel);
+        $connection->expects(self::any())->method('getClient')->willReturn($client);
 
         $headers = [
             'reply-to'                                            => 'reply',
@@ -323,7 +337,7 @@ final class BatchConsumerCallbackTest extends TestCase
             PipesHeaders::createKey(PipesHeaders::PARENT_ID)      => '',
         ];
         $callback
-            ->processMessage($this->createMessage($headers), $channel, $client, $loop)
+            ->processMessage($this->createMessage($headers), $connection, 1, $loop)
             ->then(NULL, function (Exception $e) use ($loop): void {
                 self::assertInstanceOf(InvalidArgumentException::class, $e);
                 self::assertSame('Unsupported type "unknown".', $e->getMessage());
