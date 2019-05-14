@@ -139,6 +139,28 @@ class OAuth2Provider implements OAuth2ProviderInterface, LoggerAwareInterface
     }
 
     /**
+     * @param OAuth2DtoInterface $dto
+     *
+     * @return string
+     */
+    public static function stateEncode(OAuth2DtoInterface $dto): string
+    {
+        return Base64::base64UrlEncode(sprintf('%s:%s', $dto->getUser(), $dto->getApplicationKey()));
+    }
+
+    /**
+     * @param string $state
+     *
+     * @return array
+     */
+    public static function stateDecode(string $state): array
+    {
+        $params = explode(':', Base64::base64UrlDecode($state));
+
+        return [$params[0] ?? '', $params[1] ?? ''];
+    }
+
+    /**
      * -------------------------------------------- HELPERS --------------------------------------
      */
 
@@ -178,7 +200,7 @@ class OAuth2Provider implements OAuth2ProviderInterface, LoggerAwareInterface
     {
         $state = NULL;
         if (!$dto->isCustomApp()) {
-            $state = Base64::base64UrlEncode(sprintf('%s:%s', $dto->getUser(), $dto->getSystemKey()));
+            $state = self::stateEncode($dto);
         }
 
         $scopes = ScopeFormatter::getScopes($scopes, $separator);

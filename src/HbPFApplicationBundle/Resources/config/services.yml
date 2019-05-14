@@ -10,7 +10,6 @@ services:
 
     hbpf.application.manager.application:
         class: Hanaboso\PipesFramework\Application\Model\ApplicationManager
-        public: true
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.loader.authorization'

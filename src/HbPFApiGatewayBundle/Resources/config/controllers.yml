@@ -1,6 +1,6 @@
 services:
     _defaults:
-        autowire: true
+        public: '%public.services%'
 
     Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\AuthorizationController:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\AuthorizationController

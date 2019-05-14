@@ -17,7 +17,7 @@ final class OAuth1Dto implements OAuth1DtoInterface
     /**
      * @var ApplicationInstall
      */
-    private $authorization;
+    private $applicationInstall;
 
     /**
      * @var string
@@ -42,21 +42,21 @@ final class OAuth1Dto implements OAuth1DtoInterface
     /**
      * OAuth1Dto constructor.
      *
-     * @param ApplicationInstall $authorization
+     * @param ApplicationInstall $applicationInstall
      * @param string             $signatureMethod
      * @param int                $authType
      */
     public function __construct(
-        ApplicationInstall $authorization,
+        ApplicationInstall $applicationInstall,
         string $signatureMethod = OAUTH_SIG_METHOD_HMACSHA1,
         int $authType = OAUTH_AUTH_TYPE_AUTHORIZATION
     )
     {
-        $this->authorization   = $authorization;
-        $this->signatureMethod = $signatureMethod;
-        $this->authType        = $authType;
-        $this->consumerKey     = $authorization->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][OAuth1ApplicationInterface::CONSUMER_KEY] ?? '';
-        $this->consumerSecret  = $authorization->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][OAuth1ApplicationInterface::CONSUMER_SECRET] ?? '';
+        $this->applicationInstall = $applicationInstall;
+        $this->signatureMethod    = $signatureMethod;
+        $this->authType           = $authType;
+        $this->consumerKey        = $applicationInstall->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][OAuth1ApplicationInterface::CONSUMER_KEY] ?? '';
+        $this->consumerSecret     = $applicationInstall->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][OAuth1ApplicationInterface::CONSUMER_SECRET] ?? '';
     }
 
     /**
@@ -94,9 +94,9 @@ final class OAuth1Dto implements OAuth1DtoInterface
     /**
      * @return ApplicationInstall
      */
-    public function getAuthorization(): ApplicationInstall
+    public function getApplicationInstall(): ApplicationInstall
     {
-        return $this->authorization;
+        return $this->applicationInstall;
     }
 
     /**
@@ -104,7 +104,7 @@ final class OAuth1Dto implements OAuth1DtoInterface
      */
     public function getToken(): array
     {
-        return $this->authorization->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::TOKEN] ?? [];
+        return $this->applicationInstall->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::TOKEN] ?? [];
     }
 
 }

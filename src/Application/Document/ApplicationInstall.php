@@ -100,7 +100,7 @@ class ApplicationInstall
      */
     public function setSettings(array $settings): ApplicationInstall
     {
-        $this->settings = $settings;
+        $this->settings = array_merge($this->settings, $settings);
 
         return $this;
     }

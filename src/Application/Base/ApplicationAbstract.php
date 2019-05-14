@@ -10,4 +10,17 @@ namespace Hanaboso\PipesFramework\Application\Base;
 abstract class ApplicationAbstract implements ApplicationInterface
 {
 
+    /**
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return [
+            'name'        => $this->getName(),
+            'type'        => $this->getType(),
+            'key'         => $this->getKey(),
+            'description' => $this->getDescription(),
+        ];
+    }
+
 }

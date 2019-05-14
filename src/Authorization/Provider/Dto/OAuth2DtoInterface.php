@@ -48,12 +48,12 @@ interface OAuth2DtoInterface
     /**
      * @return string
      */
-    public function getSystemKey(): string;
+    public function getApplicationKey(): string;
 
     /**
      * @param string $user
-     * @param string $systemKey
+     * @param string $applicationKey
      */
-    public function setCustomAppDependencies(string $user, string $systemKey): void;
+    public function setCustomAppDependencies(string $user, string $applicationKey): void;
 
 }

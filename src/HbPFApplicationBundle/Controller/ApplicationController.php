@@ -5,8 +5,8 @@ namespace Hanaboso\PipesFramework\HbPFApplicationBundle\Controller;
 use Exception;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
-use Hanaboso\CommonsBundle\Utils\Base64;
-use Hanaboso\PipesFramework\Application\Base\Basic\BasicApplicationInterface;
+use Hanaboso\PipesFramework\Application\Base\ApplicationInterface;
+use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesFramework\HbPFApplicationBundle\Handler\ApplicationHandler;
 use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -158,18 +158,16 @@ class ApplicationController extends AbstractFOSRestController
     /**
      * @Route("/applications/{key}/users/{user}/settings", methods={"PUT"})
      *
+     * @param Request $request
      * @param string  $key
      * @param string  $user
-     * @param Request $request
      *
      * @return Response
      */
-    public function updateApplicationSettingsAction(string $key, string $user, Request $request): Response
+    public function updateApplicationSettingsAction(Request $request, string $key, string $user): Response
     {
         try {
-            $settings = json_decode($request->getContent(), TRUE, 512, JSON_THROW_ON_ERROR);
-
-            $data = $this->applicationHandler->updateApplicationSettings($key, $user, $settings);
+            $data = $this->applicationHandler->updateApplicationSettings($key, $user, $request->request->all());
 
             return $this->getResponse($data);
         } catch (Exception|Throwable $e) {
@@ -181,18 +179,16 @@ class ApplicationController extends AbstractFOSRestController
     /**
      * @Route("/applications/{key}/users/{user}/password", methods={"PUT"})
      *
+     * @param Request $request
      * @param string  $key
      * @param string  $user
-     * @param Request $request
      *
      * @return Response
      */
-    public function saveApplicationPasswordAction(string $key, string $user, Request $request): Response
+    public function saveApplicationPasswordAction(Request $request, string $key, string $user): Response
     {
         try {
-            $password = $request->getContent();
-
-            $data = $this->applicationHandler->updateApplicationPassword($key, $user, $password);
+            $data = $this->applicationHandler->updateApplicationPassword($key, $user, $request->request->all());
 
             return $this->getResponse($data);
         } catch (Exception|Throwable $e) {
@@ -204,22 +200,23 @@ class ApplicationController extends AbstractFOSRestController
     /**
      * @Route("/applications/{key}/users/{user}/authorize", methods={"POST"})
      *
+     * @param Request $request
      * @param string  $key
      * @param string  $user
-     * @param Request $request
      *
      * @return Response
      */
-    public function authorizeApplicationAction(string $key, string $user, Request $request): Response
+    public function authorizeApplicationAction(Request $request, string $key, string $user): Response
     {
         try {
-            $redirectUrl = $request->get('redirect_url', NULL);
-            $this->applicationHandler->authorizeApplication($key, $user, $redirectUrl);
+            $redirectUrl = $request->query->get('redirect_url', NULL);
             if (!$redirectUrl) {
                 throw new InvalidArgumentException('Missing "redirect_url" query parameter.');
             }
 
-            return new RedirectResponse($redirectUrl);
+            $this->applicationHandler->authorizeApplication($key, $user, $redirectUrl);
+
+            return $this->getResponse([]);
         } catch (Exception|Throwable $e) {
             return $this->getErrorResponse($e, 500);
         }
@@ -228,19 +225,18 @@ class ApplicationController extends AbstractFOSRestController
     /**
      * @Route("/applications/{key}/users/{user}/authorize/token", methods={"GET"})
      *
+     * @param Request $request
      * @param string  $key
      * @param string  $user
-     * @param Request $request
      *
      * @return Response
      */
-    public function setAuthorizationToken(string $key, string $user, Request $request): Response
+    public function setAuthorizationToken(Request $request, string $key, string $user): Response
     {
         try {
-            $params = $request->request->all();
-            $url    = $this->applicationHandler->setAuthToken($key, $user, $params);
+            $url = $this->applicationHandler->saveAuthToken($key, $user, $request->request->all());
 
-            return new RedirectResponse($url[BasicApplicationInterface::REDIRECT_URL]);
+            return new RedirectResponse($url[ApplicationInterface::REDIRECT_URL]);
         } catch (Exception|Throwable $e) {
             return $this->getErrorResponse($e, 500);
         }
@@ -256,14 +252,10 @@ class ApplicationController extends AbstractFOSRestController
     public function setAuthorizationTokenQuery(Request $request): Response
     {
         try {
-            $params = explode(':', Base64::base64UrlDecode($request->get('state')));
-            $url    = $this->applicationHandler->setAuthToken(
-                $params[1] ?? '',
-                $params[0] ?? '',
-                $request->query->all()
-            );
+            [$user, $key] = OAuth2Provider::stateDecode($request->get('state'));
+            $url = $this->applicationHandler->saveAuthToken($key, $user, $request->query->all());
 
-            return new RedirectResponse($url[BasicApplicationInterface::REDIRECT_URL]);
+            return new RedirectResponse($url[ApplicationInterface::REDIRECT_URL]);
         } catch (Exception|Throwable $e) {
             return $this->getErrorResponse($e, 500);
         }

@@ -6,6 +6,7 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
+use Hanaboso\PipesFramework\Application\Base\ApplicationInterface;
 use Hanaboso\PipesFramework\Application\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesFramework\Application\Base\OAuth1\OAuth1ApplicationInterface;
 use Hanaboso\PipesFramework\Application\Base\OAuth2\OAuth2ApplicationInterface;
@@ -144,13 +145,14 @@ class ApplicationManager
      */
     public function saveApplicationSettings(string $key, string $user, array $data): ApplicationInstall
     {
-        $applicationInstall = $this->repository->findUserApp($key, $user);
+        $applicationInstall = $this->loader->getApplication($key)
+            ->setApplicationSettings(
+                $this->repository->findUserApp($key, $user),
+                $data
+            );
+        $this->dm->flush($applicationInstall);
 
-        $application = $this->loader->getApplication($key)->setApplicationSettings($applicationInstall, $data);
-        $this->dm->persist($application);
-        $this->dm->flush($application);
-
-        return $application;
+        return $applicationInstall;
     }
 
     /**
@@ -163,14 +165,14 @@ class ApplicationManager
      */
     public function saveApplicationPassword(string $key, string $user, string $password): ApplicationInstall
     {
-        $applicationInstall = $this->repository->findUserApp($key, $user);
+        $applicationInstall = $this->loader->getApplication($key)
+            ->setApplicationPassword(
+                $this->repository->findUserApp($key, $user),
+                $password
+            );
+        $this->dm->flush($applicationInstall);
 
-        /** @var ApplicationInstall $application */
-        $application = $this->loader->getApplication($key)->setApplicationPassword($applicationInstall, $password);
-        $this->dm->persist($application);
-        $this->dm->flush($application);
-
-        return $application;
+        return $applicationInstall;
     }
 
     /**
@@ -182,12 +184,11 @@ class ApplicationManager
      */
     public function authorizeApplication(string $key, string $user, string $redirectUrl): void
     {
-        /** @var ApplicationInstall $applicationInstall */
         $applicationInstall = $this->repository->findUserApp($key, $user);
+
         /** @var OAuth1ApplicationInterface|OAuth2ApplicationInterface $application */
         $application = $this->loader->getApplication($key);
-        $application->setAuthorizationRedirectUrl($applicationInstall, $redirectUrl);
-
+        $application->setFrontendRedirectUrl($applicationInstall, $redirectUrl);
         $this->dm->flush();
 
         $application->authorize($applicationInstall);
@@ -201,16 +202,16 @@ class ApplicationManager
      * @return array
      * @throws ApplicationInstallException
      */
-    public function setApplicationAuthorizationToken(string $key, string $user, array $token): array
+    public function saveAuthorizationToken(string $key, string $user, array $token): array
     {
-        /** @var ApplicationInstall $applicationInstall */
         $applicationInstall = $this->repository->findUserApp($key, $user);
+
         /** @var OAuth1ApplicationInterface|OAuth2ApplicationInterface $application */
         $application = $this->loader->getApplication($key);
         $application->setAuthorizationToken($applicationInstall, $token);
         $this->dm->flush();
 
-        return [BasicApplicationInterface::REDIRECT_URL => $application->getAuthorizationRedirectUrl($applicationInstall)];
+        return [ApplicationInterface::REDIRECT_URL => $application->getFrontendRedirectUrl($applicationInstall)];
     }
 
 }

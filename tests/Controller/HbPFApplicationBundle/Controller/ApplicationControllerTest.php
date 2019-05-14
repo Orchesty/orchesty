@@ -67,7 +67,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         $this->client->request('GET', '/applications/users/bar');
         $response = $this->client->getResponse();
 
-        self::assertEquals('bar', json_decode($response->getContent(), TRUE)[0]['user']);
+        self::assertEquals('bar', json_decode($response->getContent(), TRUE)[0][ApplicationInstall::USER]);
         self::assertEquals('200', $response->getStatusCode());
     }
 
@@ -81,7 +81,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         $this->client->request('GET', '/applications/someApp/users/bar');
         $response = $this->client->getResponse();
 
-        self::assertEquals('bar', json_decode($response->getContent(), TRUE)['user']);
+        self::assertEquals('bar', json_decode($response->getContent(), TRUE)[ApplicationInstall::USER]);
         self::assertEquals('200', $response->getStatusCode());
     }
 
@@ -93,7 +93,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         $this->client->request('POST', '/applications/example/users/bar/install');
         $response = $this->client->getResponse();
 
-        self::assertEquals('bar', json_decode($response->getContent(), TRUE)['user']);
+        self::assertEquals('bar', json_decode($response->getContent(), TRUE)[ApplicationInstall::USER]);
         self::assertEquals('200', $response->getStatusCode());
     }
 
@@ -107,7 +107,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         $this->client->request('DELETE', '/applications/someApp/users/bar/uninstall');
         $response = $this->client->getResponse();
 
-        self::assertEquals('bar', json_decode($response->getContent(), TRUE)['user']);
+        self::assertEquals('bar', json_decode($response->getContent(), TRUE)[ApplicationInstall::USER]);
         self::assertEquals('200', $response->getStatusCode());
 
         $this->client->request('GET', '/applications/someApp/users/bar');
@@ -155,7 +155,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         $this->client->request('POST', '/applications/someApp/users/bar/authorize?redirect_url=somewhere');
         $response = $this->client->getResponse();
 
-        self::assertEquals('302', $response->getStatusCode());
+        self::assertEquals('200', $response->getStatusCode());
     }
 
     /**
@@ -164,7 +164,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
      */
     public function testSetAuthorizationToken(): void
     {
-        $this->mockApplicationHandler('setAuthToken', [BasicApplicationInterface::REDIRECT_URL => 'somewhere']);
+        $this->mockApplicationHandler('saveAuthToken', [BasicApplicationInterface::REDIRECT_URL => 'somewhere']);
         $this->insertApp();
         $this->client->request('GET', '/applications/someApp/users/bar/authorize/token');
         $response = $this->client->getResponse();
@@ -178,7 +178,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
      */
     public function testSetAuthorizationTokenQuery(): void
     {
-        $this->mockApplicationHandler('setAuthToken', [BasicApplicationInterface::REDIRECT_URL => 'somewhere']);
+        $this->mockApplicationHandler('saveAuthToken', [BasicApplicationInterface::REDIRECT_URL => 'somewhere']);
         $this->insertApp();
 
         $encodedQuery = Base64::base64UrlEncode('user=bar&key=someApp');
