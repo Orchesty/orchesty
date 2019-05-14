@@ -15,6 +15,8 @@ use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 interface WebhookApplicationInterface extends ApplicationInterface
 {
 
+    public const WEBHOOK = 'webhook';
+
     /**
      * @return WebhookSubscription[]
      */
