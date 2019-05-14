@@ -7,7 +7,6 @@ use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 use Hanaboso\PipesFramework\Configurator\Event\ProcessStatusEvent;
 use Hanaboso\PipesFramework\RabbitMq\CallbackStatus;
 use Hanaboso\PipesFramework\RabbitMq\Consumer\SyncCallbackAbstract;
-use RabbitMqBundle\Connection\Connection;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -66,20 +65,6 @@ class StatusServiceCallback extends SyncCallbackAbstract
         $this->eventDispatcher->dispatch(ProcessStatusEvent::PROCESS_FINISHED, $event);
 
         return new CallbackStatus(CallbackStatus::SUCCESS);
-    }
-
-    /**
-     * @param Message    $message
-     * @param Connection $connection
-     * @param int        $channelId
-     */
-    public function processMessage(Message $message, Connection $connection, int $channelId): void
-    {
-        $message;
-        $connection;
-        $channelId;
-
-        // Not needed, used handle method instead...
     }
 
 }

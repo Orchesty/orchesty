@@ -111,7 +111,6 @@ class TopologyHandler
      * @return array
      * @throws CurlException
      * @throws CronException
-     * @throws TopologyException
      */
     public function getCronTopologies(): array
     {
@@ -137,6 +136,7 @@ class TopologyHandler
      * @return array
      * @throws PipesFrameworkException
      * @throws MongoDBException
+     * @throws TopologyException
      */
     public function createTopology(array $data): array
     {

@@ -78,6 +78,8 @@ class NodeController extends AbstractFOSRestController
                 return $this->forward('HbPFMapperBundle:Mapper:listOfMappers');
                 break;
         }
+
+        return new JsonResponse();
     }
 
     /**

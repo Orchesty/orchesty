@@ -6,7 +6,6 @@ use Bunny\Message;
 use Exception;
 use Hanaboso\PipesFramework\RabbitMq\CallbackStatus;
 use Hanaboso\PipesFramework\RabbitMq\Consumer\SyncCallbackAbstract;
-use RabbitMqBundle\Connection\Connection;
 use RabbitMqBundle\Consumer\DebugMessageTrait;
 use RabbitMqBundle\Publisher\Publisher;
 
@@ -63,20 +62,6 @@ class RepeaterCallback extends SyncCallbackAbstract
         }
 
         return new CallbackStatus(CallbackStatus::SUCCESS);
-    }
-
-    /**
-     * @param Message    $message
-     * @param Connection $connection
-     * @param int        $channelId
-     */
-    public function processMessage(Message $message, Connection $connection, int $channelId): void
-    {
-        $message;
-        $connection;
-        $channelId;
-
-        // Not needed, used handle method instead...
     }
 
 }

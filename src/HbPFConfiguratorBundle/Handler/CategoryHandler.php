@@ -48,11 +48,10 @@ class CategoryHandler
      */
     public function getCategories(): array
     {
+        /** @var Category[] $categories */
         $categories = $this->dm->getRepository(Category::class)->findAll();
+        $data       = ['items' => []];
 
-        $data = [
-            'items' => [],
-        ];
         foreach ($categories as $category) {
             $data['items'][] = $this->getCategoryData($category);
         }

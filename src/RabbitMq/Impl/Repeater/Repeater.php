@@ -3,7 +3,6 @@
 namespace Hanaboso\PipesFramework\RabbitMq\Impl\Repeater;
 
 use Bunny\Message;
-use Exception;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -59,7 +58,6 @@ class Repeater implements LoggerAwareInterface
      * @param Message $message
      *
      * @return bool
-     * @throws Exception
      */
     public function add(Message $message): bool
     {
