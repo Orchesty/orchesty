@@ -2,15 +2,15 @@
 
 namespace Demo\Connector;
 
-use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
-use Exception;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
+use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
 use Hanaboso\PipesFramework\Connector\ConnectorInterface;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use JK\Utils\CzechHolidays;
@@ -65,6 +65,8 @@ class PagerDutyConnector implements ConnectorInterface
      *
      * @return ProcessDto
      * @throws CurlException
+     * @throws ConnectorException
+     * @throws DateTimeException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
@@ -83,7 +85,7 @@ class PagerDutyConnector implements ConnectorInterface
 
         $response = $this->curlManager->send($requestDto);
         if ($response->getStatusCode() !== 200) {
-            throw new Exception(sprintf('Server response with status code [%s]', $response->getStatusCode()));
+            throw new ConnectorException(sprintf('Server response with status code [%s]', $response->getStatusCode()));
         }
         $json          = json_decode($response->getBody(), TRUE, 512, JSON_THROW_ON_ERROR);
         $finalSchedule = $json['schedule']['final_schedule']['rendered_schedule_entries'] ?? '';
@@ -126,12 +128,12 @@ class PagerDutyConnector implements ConnectorInterface
      * @param string $endDay
      *
      * @return int
-     * @throws Exception
+     * @throws DateTimeException
      */
     private function getHours(string $startDay, string $endDay): int
     {
-        $start = new DateTime($startDay);
-        $end   = new DateTime($endDay);
+        $start = DateTimeUtils::getUtcDateTime($startDay);
+        $end   = DateTimeUtils::getUtcDateTime($endDay);
         $diff  = $end->diff($start);
         $hours = $diff->h;
 

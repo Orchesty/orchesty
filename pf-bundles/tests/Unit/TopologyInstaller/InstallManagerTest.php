@@ -3,10 +3,9 @@
 namespace Tests\Unit\TopologyInstaller;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\MongoDBException;
+use Exception;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
-use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
@@ -19,7 +18,6 @@ use Hanaboso\PipesFramework\TopologyInstaller\InstallManager;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Predis\Client;
-use ReflectionException;
 use Tests\PrivateTrait;
 
 /**
@@ -33,10 +31,7 @@ final class InstallManagerTest extends TestCase
     use PrivateTrait;
 
     /**
-     * @throws ConnectorException
-     * @throws MongoDBException
-     * @throws ReflectionException
-     * @throws TopologyException
+     * @throws Exception
      */
     public function testPrepareInstall(): void
     {
@@ -52,8 +47,7 @@ final class InstallManagerTest extends TestCase
     }
 
     /**
-     * @throws ConnectorException
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function testMakeInstall(): void
     {
@@ -71,8 +65,7 @@ final class InstallManagerTest extends TestCase
     }
 
     /**
-     * @throws ConnectorException
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function testMakeInstallEx(): void
     {
@@ -90,7 +83,7 @@ final class InstallManagerTest extends TestCase
      * @param array       $dirs
      *
      * @return InstallManager
-     * @throws ReflectionException
+     * @throws Exception
      */
     private function createManager(
         ?string $redisResult,
@@ -132,7 +125,7 @@ final class InstallManagerTest extends TestCase
 
     /**
      * @return string
-     * @throws ReflectionException
+     * @throws Exception
      */
     private function createRedisRecord(): string
     {

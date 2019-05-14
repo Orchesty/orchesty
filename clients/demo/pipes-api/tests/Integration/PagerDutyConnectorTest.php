@@ -3,11 +3,11 @@
 namespace Tests\Integration;
 
 use Demo\Connector\PagerDutyConnector;
+use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
-use ReflectionException;
+use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 /**
@@ -15,7 +15,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
  *
  * @package Tests\Integration
  */
-class PagerDutyConnectorTest extends KernelTestCase
+final class PagerDutyConnectorTest extends KernelTestCase
 {
 
     /**
@@ -27,18 +27,16 @@ class PagerDutyConnectorTest extends KernelTestCase
     }
 
     /**
-     * @throws ReflectionException
-     * @throws CurlException
+     * @throws Exception
      */
     public function testProcessAction(): void
     {
-        $dto  = new ResponseDto(200, '', (string) file_get_contents(__DIR__ . '/data.json'), []);
+        $dto = new ResponseDto(200, '', (string) file_get_contents(__DIR__ . '/data.json'), []);
+        /** @var CurlManagerInterface|MockObject $curl */
         $curl = self::createMock(CurlManagerInterface::class);
-
         $curl->method('send')
             ->willReturn($dto);
-        /** @var CurlManagerInterface $curl */
-        $curl = $curl;
+
         $connector = new PagerDutyConnector($curl);
         $data      = $connector->processAction(new ProcessDto())->getData();
         $arr       = json_decode($data, TRUE, 512, JSON_THROW_ON_ERROR);

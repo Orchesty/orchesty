@@ -9,7 +9,6 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 use Hanaboso\PipesFramework\Application\Document\Webhook;
-use Hanaboso\PipesFramework\Application\Exception\ApplicationInstallException;
 
 /**
  * Class WebhookManager
@@ -93,7 +92,6 @@ final class WebhookManager
      * @param WebhookApplicationInterface $application
      * @param string                      $userId
      *
-     * @throws ApplicationInstallException
      * @throws CurlException
      */
     public function unsubscribeWebhooks(WebhookApplicationInterface $application, string $userId): void

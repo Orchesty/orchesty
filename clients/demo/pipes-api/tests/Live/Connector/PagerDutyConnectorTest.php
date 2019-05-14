@@ -3,8 +3,8 @@
 namespace Tests\Live\Connector;
 
 use Demo\Connector\PagerDutyConnector;
+use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 /**
@@ -24,7 +24,7 @@ final class PagerDutyConnectorTest extends KernelTestCase
     }
 
     /**
-     * @throws CurlException
+     * @throws Exception
      */
     public function testProcessAction(): void
     {

@@ -265,7 +265,6 @@ class TopologyManager
      * @return array
      * @throws CronException
      * @throws CurlException
-     * @throws TopologyException
      */
     public function getCronTopologies(): array
     {
