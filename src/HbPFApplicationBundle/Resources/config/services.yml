@@ -19,8 +19,3 @@ services:
         class: Hanaboso\PipesFramework\HbPFApplicationBundle\Handler\ApplicationHandler
         arguments:
             - '@hbpf._application.manager.application'
-
-    hbpf._application.handler.webhook:
-        class: Hanaboso\PipesFramework\HbPFApplicationBundle\Handler\WebhookHandler
-        arguments:
-            - '@hbpf._application.manager.application'
