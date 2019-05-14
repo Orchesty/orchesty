@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesFramework\Application\Base\OAuth1;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Hanaboso\CommonsBundle\Enum\AuthorizationTypeEnum;
 use Hanaboso\PipesFramework\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesFramework\Application\Base\ApplicationInterface;
 use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
@@ -59,7 +60,7 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
      */
     public function getAuthorizationType(): string
     {
-        return OAuth1ApplicationInterface::OAUTH;
+        return AuthorizationTypeEnum::OAUTH;
     }
 
     /**

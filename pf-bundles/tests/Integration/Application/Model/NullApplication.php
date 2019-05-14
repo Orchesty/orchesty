@@ -1,41 +1,35 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Application\Model\Webhook;
+namespace Tests\Integration\Application\Model;
 
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\CommonsBundle\Enum\AuthorizationTypeEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
-use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
-use Hanaboso\PipesFramework\Application\Base\ApplicationAbstract;
+use Hanaboso\PipesFramework\Application\Base\OAuth2\OAuth2ApplicationAbstract;
 use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 use Hanaboso\PipesFramework\Application\Model\Webhook\WebhookApplicationInterface;
 use Hanaboso\PipesFramework\Application\Model\Webhook\WebhookSubscription;
+use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 
 /**
- * Class WebhookApplication
+ * Class NullApplication
  *
- * @package Tests\Integration\Application\Model\Webhook
+ * @package Tests\Integration\Application\Model
  */
-final class WebhookApplication extends ApplicationAbstract implements WebhookApplicationInterface
+class NullApplication extends OAuth2ApplicationAbstract implements WebhookApplicationInterface
 {
 
-    private const SUBSCRIBE   = 'https://example.com/webhook/subscribe';
-    private const UNSUBSCRIBE = 'https://example.com/webhook/unsubscribe';
-
     /**
-     * @var WebhookSubscription[]
+     * NullApplication constructor.
+     *
+     * @param OAuth2Provider $provider
      */
-    private $subscriptions = [];
-
-    /**
-     * WebhookApplication constructor.
-     */
-    public function __construct()
+    public function __construct(OAuth2Provider $provider)
     {
-        $this->subscriptions[] = new WebhookSubscription('node', 'topology');
+        parent::__construct($provider);
     }
 
     /**
@@ -51,7 +45,7 @@ final class WebhookApplication extends ApplicationAbstract implements WebhookApp
      */
     public function getKey(): string
     {
-        return 'webhook';
+        return 'null';
     }
 
     /**
@@ -59,7 +53,7 @@ final class WebhookApplication extends ApplicationAbstract implements WebhookApp
      */
     public function getName(): string
     {
-        return 'Webhook';
+        return 'null';
     }
 
     /**
@@ -67,7 +61,7 @@ final class WebhookApplication extends ApplicationAbstract implements WebhookApp
      */
     public function getDescription(): string
     {
-        return $this->getName();
+        return 'This is null app.';
     }
 
     /**
@@ -81,16 +75,15 @@ final class WebhookApplication extends ApplicationAbstract implements WebhookApp
      */
     public function getRequestDto(
         ApplicationInstall $applicationInstall,
-        string $method,
-        ?string $url,
-        ?string $data): RequestDto
+        string $method, ?string $url,
+        ?string $data
+    ): RequestDto
     {
         $applicationInstall;
-        $method;
-        $url;
         $data;
+        $url;
 
-        return new RequestDto(CurlManager::METHOD_POST, new Uri('https://example.com'));
+        return new RequestDto($method, new Uri(''));
     }
 
     /**
@@ -100,9 +93,7 @@ final class WebhookApplication extends ApplicationAbstract implements WebhookApp
      */
     public function getSettingsFields(ApplicationInstall $applicationInstall): array
     {
-        $applicationInstall;
-
-        return [];
+        return $applicationInstall->getSettings();
     }
 
     /**
@@ -113,9 +104,35 @@ final class WebhookApplication extends ApplicationAbstract implements WebhookApp
      */
     public function setApplicationSettings(ApplicationInstall $applicationInstall, array $settings): ApplicationInstall
     {
-        $settings;
+        return $applicationInstall->setSettings($settings);
+    }
 
-        return $applicationInstall;
+    /**
+     * @param ApplicationInstall $applicationInstall
+     *
+     * @return bool
+     */
+    public function isAuthorized(ApplicationInstall $applicationInstall): bool
+    {
+        $applicationInstall;
+
+        return TRUE;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAuthUrl(): string
+    {
+        return 'auth.url';
+    }
+
+    /**
+     * @return string
+     */
+    public function getTokenUrl(): string
+    {
+        return 'token.url';
     }
 
     /**
@@ -123,7 +140,7 @@ final class WebhookApplication extends ApplicationAbstract implements WebhookApp
      */
     public function getWebhookSubscriptions(): array
     {
-        return $this->subscriptions;
+        return [];
     }
 
     /**
@@ -136,10 +153,9 @@ final class WebhookApplication extends ApplicationAbstract implements WebhookApp
     public function getWebhookSubscribeRequestDto(WebhookSubscription $subscription, string $url): RequestDto
     {
         $subscription;
+        $url;
 
-        return (new RequestDto(CurlManager::METHOD_POST, new Uri(self::SUBSCRIBE)))->setBody(json_encode([
-            'url' => $url,
-        ], JSON_THROW_ON_ERROR));
+        return new RequestDto('', new Uri($url));
     }
 
     /**
@@ -150,9 +166,9 @@ final class WebhookApplication extends ApplicationAbstract implements WebhookApp
      */
     public function getWebhookUnsubscribeRequestDto(string $id): RequestDto
     {
-        return (new RequestDto(CurlManager::METHOD_POST, new Uri(self::UNSUBSCRIBE)))->setBody(json_encode([
-            'id' => $id,
-        ], JSON_THROW_ON_ERROR));
+        $id;
+
+        return new RequestDto('', new Uri(''));
     }
 
     /**
@@ -175,17 +191,7 @@ final class WebhookApplication extends ApplicationAbstract implements WebhookApp
      */
     public function processWebhookUnsubscribeResponse(ResponseDto $dto): bool
     {
-        return json_decode($dto->getBody(), TRUE, 512, JSON_THROW_ON_ERROR)['success'] ?? FALSE;
-    }
-
-    /**
-     * @param ApplicationInstall $applicationInstall
-     *
-     * @return bool
-     */
-    public function isAuthorized(ApplicationInstall $applicationInstall): bool
-    {
-        $applicationInstall;
+        $dto;
 
         return TRUE;
     }

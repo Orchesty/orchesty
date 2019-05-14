@@ -2,7 +2,7 @@ services:
     _defaults:
         public: '%public.services%'
 
-    hbpf.application.manager.webhook:
+    hbpf._application.manager.webhook:
         class: Hanaboso\PipesFramework\Application\Model\Webhook\WebhookManager
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'

@@ -2,6 +2,7 @@
 
 namespace Hanaboso\PipesFramework\Application\Base\Basic;
 
+use Hanaboso\CommonsBundle\Enum\AuthorizationTypeEnum;
 use Hanaboso\PipesFramework\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesFramework\Application\Base\ApplicationInterface;
 use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
@@ -19,7 +20,7 @@ abstract class BasicApplicationAbstract extends ApplicationAbstract implements B
      */
     public function getAuthorizationType(): string
     {
-        return BasicApplicationInterface::BASIC;
+        return AuthorizationTypeEnum::BASIC;
     }
 
     /**
