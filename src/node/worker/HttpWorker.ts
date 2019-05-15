@@ -19,8 +19,8 @@ export interface IHttpWorkerSettings {
     opts: any;
 }
 
-// wait maximally 60s for the http response
-const DEFAULT_HTTP_TIMEOUT = 60000;
+// wait maximally 4h for the http response
+const DEFAULT_HTTP_TIMEOUT = 14400000;
 
 /**
  * Converts JobMessage to Http request and then converts received Http response back to JobMessage object
