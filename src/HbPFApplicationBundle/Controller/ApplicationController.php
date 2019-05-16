@@ -231,7 +231,7 @@ class ApplicationController extends AbstractFOSRestController
      *
      * @return Response
      */
-    public function setAuthorizationToken(Request $request, string $key, string $user): Response
+    public function setAuthorizationTokenAction(Request $request, string $key, string $user): Response
     {
         try {
             $url = $this->applicationHandler->saveAuthToken($key, $user, $request->request->all());
@@ -249,7 +249,7 @@ class ApplicationController extends AbstractFOSRestController
      *
      * @return Response
      */
-    public function setAuthorizationTokenQuery(Request $request): Response
+    public function setAuthorizationTokenQueryAction(Request $request): Response
     {
         try {
             [$user, $key] = OAuth2Provider::stateDecode($request->get('state'));
