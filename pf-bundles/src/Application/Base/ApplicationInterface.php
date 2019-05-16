@@ -43,6 +43,11 @@ interface ApplicationInterface
     public function getDescription(): string;
 
     /**
+     * @return bool
+     */
+    public function isWebhook(): bool;
+
+    /**
      * @param ApplicationInstall $applicationInstall
      * @param string             $method
      * @param string|null        $url
