@@ -13,7 +13,6 @@ use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 interface OAuth1ApplicationInterface extends ApplicationInterface
 {
 
-    public const  OAUTH           = 'oauth';
     public const  CONSUMER_KEY    = 'consumer_key';
     public const  CONSUMER_SECRET = 'consumer_secret';
 
