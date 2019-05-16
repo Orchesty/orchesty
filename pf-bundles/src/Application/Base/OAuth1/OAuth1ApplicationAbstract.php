@@ -161,7 +161,7 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
     {
         return function (DocumentManager $dm, OAuth1Dto $dto, array $data): void {
             $dto->getApplicationInstall()->setSettings(
-                [ApplicationInterface::AUTHORIZATION_SETTINGS => [AuthorizationTypeEnum::OAUTH => $data]]
+                [ApplicationInterface::AUTHORIZATION_SETTINGS => [OAuth1ApplicationInterface::OAUTH => $data]]
             );
 
             $dm->persist($dto->getApplicationInstall());
