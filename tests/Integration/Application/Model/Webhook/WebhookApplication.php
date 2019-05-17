@@ -11,6 +11,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
+use Hanaboso\PipesFramework\Application\Model\Form\Form;
 use Hanaboso\PipesFramework\Application\Model\Webhook\WebhookApplicationInterface;
 use Hanaboso\PipesFramework\Application\Model\Webhook\WebhookSubscription;
 
@@ -96,13 +97,13 @@ final class WebhookApplication extends ApplicationAbstract implements WebhookApp
     /**
      * @param ApplicationInstall $applicationInstall
      *
-     * @return array
+     * @return Form
      */
-    public function getSettingsFields(ApplicationInstall $applicationInstall): array
+    public function getSettingsFields(ApplicationInstall $applicationInstall): Form
     {
         $applicationInstall;
 
-        return [];
+        return new Form();
     }
 
     /**

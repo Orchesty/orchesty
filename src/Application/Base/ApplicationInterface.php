@@ -4,6 +4,7 @@ namespace Hanaboso\PipesFramework\Application\Base;
 
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
+use Hanaboso\PipesFramework\Application\Model\Form\Form;
 
 /**
  * Interface ApplicationInterface
@@ -61,9 +62,9 @@ interface ApplicationInterface
     /**
      * @param ApplicationInstall $applicationInstall
      *
-     * @return array
+     * @return Form
      */
-    public function getSettingsFields(ApplicationInstall $applicationInstall): array;
+    public function getSettingsFields(ApplicationInstall $applicationInstall): Form;
 
     /**
      * @param ApplicationInstall $applicationInstall
