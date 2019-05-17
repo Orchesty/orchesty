@@ -3,11 +3,13 @@
 namespace Hanaboso\PipesFramework\LongRunningNode\Consumer;
 
 use Bunny\Message;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Utils\PipesHeaders;
+use Hanaboso\PipesFramework\ApiGateway\Exceptions\OnRepeatException;
 use Hanaboso\PipesFramework\HbPFLongRunningNodeBundle\Loader\LongRunningNodeLoader;
 use Hanaboso\PipesFramework\LongRunningNode\Model\LongRunningNodeManager;
-use Hanaboso\PipesFramework\RabbitMq\CallbackStatus;
-use Hanaboso\PipesFramework\RabbitMq\Consumer\SyncCallbackAbstract;
+use RabbitMqBundle\Connection\Connection;
+use RabbitMqBundle\Consumer\CallbackInterface;
 use Throwable;
 
 /**
@@ -15,7 +17,7 @@ use Throwable;
  *
  * @package Hanaboso\PipesFramework\LongRunningNode\Consumer
  */
-class LongRunningNodeCallback extends SyncCallbackAbstract
+class LongRunningNodeCallback implements CallbackInterface
 {
 
     /**
@@ -34,34 +36,36 @@ class LongRunningNodeCallback extends SyncCallbackAbstract
      * @param LongRunningNodeManager $manager
      * @param LongRunningNodeLoader  $loader
      */
-    public function __construct(
-        LongRunningNodeManager $manager,
-        LongRunningNodeLoader $loader
-    )
+    public function __construct(LongRunningNodeManager $manager, LongRunningNodeLoader $loader)
     {
-        parent::__construct();
         $this->manager = $manager;
         $this->loader  = $loader;
     }
 
     /**
-     * @param mixed   $data
-     * @param Message $message
+     * @param Message    $message
+     * @param Connection $connection
+     * @param int        $channelId
      *
-     * @return CallbackStatus
+     * @throws OnRepeatException
      */
-    public function handle($data, Message $message): CallbackStatus
+    public function processMessage(Message $message, Connection $connection, int $channelId): void
     {
-        $data;
         try {
-            $serv = $this->loader->getLongRunningNode($message->getHeader(PipesHeaders::createKey(PipesHeaders::NODE_NAME)));
+            $this->manager->saveDocument(
+                $this->loader
+                    ->getLongRunningNode($message->getHeader(PipesHeaders::createKey(PipesHeaders::NODE_NAME)))
+                    ->beforeAction($message)
+            );
 
-            $doc = $serv->beforeAction($message);
-            $this->manager->saveDocument($doc);
-
-            return new CallbackStatus(CallbackStatus::SUCCESS);
-        } catch (Throwable $e) {
-            return new CallbackStatus(CallbackStatus::RESEND);
+            $connection->getChannel($channelId)->ack($message);
+        } catch (Throwable $t) {
+            throw new OnRepeatException(
+                (new ProcessDto())->setData($message->content)->setHeaders($message->headers),
+                $t->getMessage(),
+                $t->getCode(),
+                $t
+            );
         }
     }
 

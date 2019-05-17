@@ -4,8 +4,10 @@ namespace Hanaboso\PipesFramework\HbPFConnectorBundle\Controller;
 
 use Exception;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
+use Hanaboso\CommonsBundle\Exception\PipesFrameworkExceptionAbstract;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\CommonsBundle\Utils\ControllerUtils;
+use Hanaboso\PipesFramework\ApiGateway\Exceptions\OnRepeatException;
 use Hanaboso\PipesFramework\HbPFConnectorBundle\Handler\ConnectorHandler;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
@@ -96,6 +98,8 @@ class ConnectorController extends AbstractFOSRestController implements LoggerAwa
      * @param Request $request
      *
      * @return Response
+     * @throws OnRepeatException
+     * @throws PipesFrameworkExceptionAbstract
      */
     public function processActionAction(string $id, Request $request): Response
     {
@@ -103,7 +107,9 @@ class ConnectorController extends AbstractFOSRestController implements LoggerAwa
             $data = $this->connectorHandler->processAction($id, $request);
 
             return $this->getResponse($data->getData(), 200, ControllerUtils::createHeaders($data->getHeaders()));
-        } catch (Exception|Throwable $e) {
+        } catch (PipesFrameworkExceptionAbstract | OnRepeatException $e) {
+            throw $e;
+        } catch (Throwable $e) {
             $this->logger->error($e->getMessage(), ['exception' => $e]);
 
             return $this->getErrorResponse($e, 500, ControllerUtils::createHeaders($request->headers->all(), $e));

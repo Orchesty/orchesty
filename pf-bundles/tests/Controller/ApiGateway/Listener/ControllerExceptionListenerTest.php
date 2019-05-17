@@ -9,9 +9,11 @@ use Hanaboso\PipesFramework\ApiGateway\Listener\ControllerExceptionListener;
 use PHPUnit\Framework\MockObject\MockObject;
 use RabbitMqBundle\Consumer\Callback\Exception\CallbackException;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Tests\ControllerTestCaseAbstract;
+use Tests\PrivateTrait;
 use Throwable;
 
 /**
@@ -21,6 +23,8 @@ use Throwable;
  */
 final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
 {
+
+    use PrivateTrait;
 
     /**
      *
@@ -84,6 +88,8 @@ final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
         $eventMock
             ->method('getException')
             ->will($this->returnValue($exception));
+
+        $this->setProperty($eventMock, 'request', new Request());
 
         return $eventMock;
     }

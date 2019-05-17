@@ -62,10 +62,12 @@ class RepeaterListener implements EventSubscriberInterface, LoggerAwareInterface
         $repeatInterval = PipesHeaders::createKey(PipesHeaders::REPEAT_INTERVAL);
         $repeatMaxHops  = PipesHeaders::createKey(PipesHeaders::REPEAT_MAX_HOPS);
         $repeatHops     = PipesHeaders::createKey(PipesHeaders::REPEAT_HOPS);
+        $repeatCode     = PipesHeaders::createKey(PipesHeaders::RESULT_CODE);
         $dto            = $e->getProcessDto();
 
         if (!$dto->getHeader($repeatHops) && !$dto->getHeader($repeatMaxHops) && !$dto->getHeader($repeatInterval)) {
             $dto
+                ->addHeader($repeatCode, '1001')
                 ->addHeader($repeatInterval, (string) $e->getInterval())
                 ->addHeader($repeatMaxHops, (string) $e->getMaxHops())
                 ->addHeader($repeatHops, '0');
@@ -73,14 +75,12 @@ class RepeaterListener implements EventSubscriberInterface, LoggerAwareInterface
 
         $currentHop = $dto->getHeader($repeatHops);
         $maxHop     = $dto->getHeader($repeatMaxHops);
+        $currentHop = is_array($currentHop) ? $currentHop[0] : $currentHop;
+        $maxHop     = is_array($maxHop) ? $maxHop[0] : $maxHop;
 
-        if ($currentHop >= $maxHop) {
-            $ignoredHeaders = [$repeatInterval => '', $repeatMaxHops => ''];
-            $headers        = array_diff_key($dto->getHeaders(), $ignoredHeaders);
-        } else {
+        if ($currentHop <= $maxHop) {
             $currentHop++;
             $e->getProcessDto()->addHeader($repeatHops, (string) $currentHop);
-            $headers = $dto->getHeaders();
         }
 
         $this->logger->info(
@@ -88,7 +88,7 @@ class RepeaterListener implements EventSubscriberInterface, LoggerAwareInterface
             ['currentHop' => $currentHop, 'interval' => $e->getInterval(), 'maxHops' => $maxHop]
         );
 
-        $response = new Response($e->getProcessDto()->getData(), 200, $headers);
+        $response = new Response($e->getProcessDto()->getData(), 200, $e->getProcessDto()->getHeaders());
         $event->setResponse($response);
     }
 

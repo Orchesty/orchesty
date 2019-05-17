@@ -49,6 +49,7 @@ class HbPFLogsExtension extends Extension implements PrependExtensionInterface
         $container->setParameter(HbPFLogsBundle::KEY, $config);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+        $loader->load('controllers.yml');
         $loader->load('services.yml');
     }
 

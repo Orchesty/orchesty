@@ -5,8 +5,8 @@ namespace Hanaboso\PipesFramework\Configurator\StatusService;
 use Bunny\Message;
 use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 use Hanaboso\PipesFramework\Configurator\Event\ProcessStatusEvent;
-use Hanaboso\PipesFramework\RabbitMq\CallbackStatus;
-use Hanaboso\PipesFramework\RabbitMq\Consumer\SyncCallbackAbstract;
+use RabbitMqBundle\Connection\Connection;
+use RabbitMqBundle\Consumer\CallbackInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -14,7 +14,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  *
  * @package Hanaboso\PipesFramework\Configurator\StatusService
  */
-class StatusServiceCallback extends SyncCallbackAbstract
+class StatusServiceCallback implements CallbackInterface
 {
 
     /**
@@ -29,22 +29,19 @@ class StatusServiceCallback extends SyncCallbackAbstract
      */
     public function __construct(EventDispatcherInterface $eventDispatcher)
     {
-        parent::__construct();
-
         $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
-     * @param mixed   $data
-     * @param Message $message
-     *
-     * @return CallbackStatus
+     * @param Message    $message
+     * @param Connection $connection
+     * @param int        $channelId
      *
      * @throws PipesFrameworkException
      */
-    public function handle($data, Message $message): CallbackStatus
+    public function processMessage(Message $message, Connection $connection, int $channelId): void
     {
-        $message;
+        $data = json_decode($message->content, TRUE, 512, JSON_THROW_ON_ERROR);
 
         if (!isset($data['process_id'])) {
             throw new PipesFrameworkException(
@@ -60,11 +57,12 @@ class StatusServiceCallback extends SyncCallbackAbstract
             );
         }
 
-        $event = new ProcessStatusEvent($data['process_id'], (bool) $data['success']);
+        $this->eventDispatcher->dispatch(
+            ProcessStatusEvent::PROCESS_FINISHED,
+            new ProcessStatusEvent($data['process_id'], (bool) $data['success'])
+        );
 
-        $this->eventDispatcher->dispatch(ProcessStatusEvent::PROCESS_FINISHED, $event);
-
-        return new CallbackStatus(CallbackStatus::SUCCESS);
+        $connection->getChannel($channelId)->ack($message);
     }
 
 }

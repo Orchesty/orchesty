@@ -2,8 +2,8 @@
 
 namespace Tests;
 
-use Exception;
 use ReflectionClass;
+use ReflectionException;
 use ReflectionObject;
 
 /**
@@ -15,31 +15,51 @@ trait PrivateTrait
 {
 
     /**
-     * @param object $object
+     * @param mixed  $object
      * @param string $propertyName
      * @param mixed  $value
      *
-     * @throws Exception
+     * @throws ReflectionException
      */
     protected function setProperty($object, $propertyName, $value): void
     {
         $reflection = new ReflectionObject($object);
-        $property   = $reflection->getProperty($propertyName);
+
+        do {
+            if ($reflection->hasProperty($propertyName)) {
+                break;
+            }
+
+            /** @var ReflectionObject $reflection */
+            $reflection = $reflection->getParentClass();
+        } while ($reflection);
+
+        $property = $reflection->getProperty($propertyName);
         $property->setAccessible(TRUE);
         $property->setValue($object, $value);
     }
 
     /**
-     * @param object $object
+     * @param mixed  $object
      * @param string $propertyName
      *
      * @return mixed
-     * @throws Exception
+     * @throws ReflectionException
      */
     protected function getProperty($object, $propertyName)
     {
         $reflection = new ReflectionObject($object);
-        $property   = $reflection->getProperty($propertyName);
+
+        do {
+            if ($reflection->hasProperty($propertyName)) {
+                break;
+            }
+
+            /** @var ReflectionObject $reflection */
+            $reflection = $reflection->getParentClass();
+        } while ($reflection);
+
+        $property = $reflection->getProperty($propertyName);
         $property->setAccessible(TRUE);
 
         return $property->getValue($object);
@@ -51,12 +71,22 @@ trait PrivateTrait
      * @param array  $parameters
      *
      * @return mixed
-     * @throws Exception
+     * @throws ReflectionException
      */
     protected function invokeMethod($object, $methodName, array $parameters = [])
     {
         $reflection = new ReflectionClass(get_class($object));
-        $method     = $reflection->getMethod($methodName);
+
+        do {
+            if ($reflection->hasMethod($methodName)) {
+                break;
+            }
+
+            /** @var ReflectionObject $reflection */
+            $reflection = $reflection->getParentClass();
+        } while ($reflection);
+
+        $method = $reflection->getMethod($methodName);
         $method->setAccessible(TRUE);
 
         return $method->invokeArgs($object, $parameters);

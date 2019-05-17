@@ -20,11 +20,6 @@ export default dispatch => [
   },
   {
     type: menuItemType.ACTION,
-    caption: 'Authorizations',
-    action: () => dispatch(applicationActions.openPage('authorization_list')),
-  },
-  {
-    type: menuItemType.ACTION,
     caption: 'Notifications',
     action: () => dispatch(applicationActions.openPage('notification_settings')),
   },
