@@ -16,5 +16,6 @@ final class ApplicationInstallException extends PipesFrameworkExceptionAbstract
 
     public const APP_ALREADY_INSTALLED = self::OFFSET + 1;
     public const APP_WAS_NOT_FOUND     = self::OFFSET + 2;
+    public const INVALID_FIELD_TYPE    = self::OFFSET + 3;
 
 }
