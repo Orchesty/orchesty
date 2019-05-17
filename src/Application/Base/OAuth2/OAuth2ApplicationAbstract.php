@@ -2,6 +2,7 @@
 
 namespace Hanaboso\PipesFramework\Application\Base\OAuth2;
 
+use Hanaboso\CommonsBundle\Enum\AuthorizationTypeEnum;
 use Hanaboso\PipesFramework\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesFramework\Application\Base\ApplicationInterface;
 use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
@@ -48,7 +49,7 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
      */
     public function getAuthorizationType(): string
     {
-        return OAuth2ApplicationInterface::OAUTH2;
+        return AuthorizationTypeEnum::OAUTH2;
     }
 
     /**

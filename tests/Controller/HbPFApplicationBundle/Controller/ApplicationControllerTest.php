@@ -27,7 +27,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         $this->client->request('GET', '/applications');
         $response = $this->client->getResponse();
 
-        self::assertTrue(in_array('handler.application', json_decode($response->getContent(), TRUE)));
+        self::assertIsArray(json_decode($response->getContent(), TRUE));
         self::assertEquals(200, $response->getStatusCode());
 
         $this->client->request('GET', '/applicationsss');
@@ -40,10 +40,10 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetApplication(): void
     {
-        $application = 'someApp';
+        $application = 'null';
         $this->mockApplicationHandler('getApplicationByKey', [$application]);
 
-        $this->client->request('GET', sprintf('/applications/%s', 'someApp'));
+        $this->client->request('GET', sprintf('/applications/%s', 'null'));
         $response = $this->client->getResponse();
 
         self::assertTrue(in_array($application, json_decode($response->getContent(), TRUE)));
@@ -102,9 +102,9 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
      */
     public function testUninstallApplication(): void
     {
-        $this->insertApp();
+        $this->insertApp('null');
 
-        $this->client->request('DELETE', '/applications/someApp/users/bar/uninstall');
+        $this->client->request('DELETE', '/applications/null/users/bar/uninstall');
         $response = $this->client->getResponse();
 
         self::assertEquals('bar', json_decode($response->getContent(), TRUE)[ApplicationInstall::USER]);
@@ -205,7 +205,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
 
         /** @var ContainerInterface $container */
         $container = $this->client->getContainer();
-        $container->set('hbpf.application.handler.application', $handler);
+        $container->set('hbpf._application.handler.application', $handler);
     }
 
     /**

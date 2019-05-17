@@ -5,13 +5,17 @@ namespace Hanaboso\PipesFramework\Application\Model;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
+use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Application\Base\ApplicationInterface;
 use Hanaboso\PipesFramework\Application\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesFramework\Application\Base\OAuth1\OAuth1ApplicationInterface;
 use Hanaboso\PipesFramework\Application\Base\OAuth2\OAuth2ApplicationInterface;
 use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 use Hanaboso\PipesFramework\Application\Exception\ApplicationInstallException;
+use Hanaboso\PipesFramework\Application\Model\Webhook\WebhookApplicationInterface;
+use Hanaboso\PipesFramework\Application\Model\Webhook\WebhookManager;
 use Hanaboso\PipesFramework\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\PipesFramework\HbPFApplicationBundle\Loader\ApplicationLoader;
 
@@ -39,15 +43,22 @@ class ApplicationManager
     private $repository;
 
     /**
+     * @var WebhookManager
+     */
+    private $webhook;
+
+    /**
      * ApplicationManager constructor.
      *
      * @param DocumentManager   $dm
      * @param ApplicationLoader $loader
+     * @param WebhookManager    $webhook
      */
-    public function __construct(DocumentManager $dm, ApplicationLoader $loader)
+    public function __construct(DocumentManager $dm, ApplicationLoader $loader, WebhookManager $webhook)
     {
         $this->loader     = $loader;
         $this->dm         = $dm;
+        $this->webhook    = $webhook;
         $this->repository = $this->dm->getRepository(ApplicationInstall::class);
     }
 
@@ -62,10 +73,10 @@ class ApplicationManager
     /**
      * @param string $key
      *
-     * @return BasicApplicationInterface
+     * @return ApplicationInterface
      * @throws Exception
      */
-    public function getApplication(string $key): BasicApplicationInterface
+    public function getApplication(string $key): ApplicationInterface
     {
         return $this->loader->getApplication($key);
     }
@@ -129,6 +140,8 @@ class ApplicationManager
     public function uninstallApplication(string $key, string $user): ApplicationInstall
     {
         $applicationInstall = $this->repository->findUserApp($key, $user);
+        $this->unsubscribeWebhooks($applicationInstall);
+
         $this->dm->remove($applicationInstall);
         $this->dm->flush($applicationInstall);
 
@@ -165,12 +178,11 @@ class ApplicationManager
      */
     public function saveApplicationPassword(string $key, string $user, string $password): ApplicationInstall
     {
-        $applicationInstall = $this->loader->getApplication($key)
-            ->setApplicationPassword(
-                $this->repository->findUserApp($key, $user),
-                $password
-            );
-        $this->dm->flush($applicationInstall);
+        /** @var BasicApplicationInterface $application */
+        $application        = $this->loader->getApplication($key);
+        $applicationInstall = $this->repository->findUserApp($key, $user);
+        $application->setApplicationPassword($applicationInstall, $password);
+        $this->dm->flush($application);
 
         return $applicationInstall;
     }
@@ -212,6 +224,37 @@ class ApplicationManager
         $this->dm->flush();
 
         return [ApplicationInterface::REDIRECT_URL => $application->getFrontendRedirectUrl($applicationInstall)];
+    }
+
+    /**
+     * @param ApplicationInstall $applicationInstall
+     *
+     * @throws ApplicationInstallException
+     */
+    public function subscribeWebhooks(ApplicationInstall $applicationInstall): void
+    {
+        /** @var WebhookApplicationInterface $application */
+        $application = $this->loader->getApplication($applicationInstall->getKey());
+
+        if (ApplicationTypeEnum::isWebhook($application->getApplicationType()) && $application->isAuthorized($applicationInstall)) {
+            $this->webhook->subscribeWebhooks($application, $applicationInstall->getUser());
+        }
+    }
+
+    /**
+     * @param ApplicationInstall $applicationInstall
+     *
+     * @throws ApplicationInstallException
+     * @throws CurlException
+     */
+    public function unsubscribeWebhooks(ApplicationInstall $applicationInstall): void
+    {
+        /** @var WebhookApplicationInterface $application */
+        $application = $this->loader->getApplication($applicationInstall->getKey());
+
+        if (ApplicationTypeEnum::isWebhook($application->getApplicationType()) && $application->isAuthorized($applicationInstall)) {
+            $this->webhook->unsubscribeWebhooks($application, $applicationInstall->getUser());
+        }
     }
 
 }

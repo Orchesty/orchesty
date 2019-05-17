@@ -20,7 +20,12 @@ interface ApplicationInterface
     /**
      * @return string
      */
-    public function getType(): string;
+    public function getAuthorizationType(): string;
+
+    /**
+     * @return string
+     */
+    public function getApplicationType(): string;
 
     /**
      * @return string
