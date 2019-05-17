@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesFramework\HbPFApplicationBundle\Loader;
 
-use Hanaboso\PipesFramework\Application\Base\Basic\BasicApplicationInterface;
+use Hanaboso\PipesFramework\Application\Base\ApplicationInterface;
 use Hanaboso\PipesFramework\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesFramework\Utils\NodeServiceLoaderUtil;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -35,15 +35,15 @@ class ApplicationLoader
     /**
      * @param string $key
      *
-     * @return BasicApplicationInterface
+     * @return ApplicationInterface
      * @throws ApplicationInstallException
      */
-    public function getApplication(string $key): BasicApplicationInterface
+    public function getApplication(string $key): ApplicationInterface
     {
         $name = sprintf('%s.%s', self::APPLICATION_PREFIX, $key);
 
         if ($this->container->has($name)) {
-            /** @var BasicApplicationInterface $application */
+            /** @var ApplicationInterface $application */
             $application = $this->container->get($name);
         } else {
             throw new ApplicationInstallException(

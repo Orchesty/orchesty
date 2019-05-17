@@ -16,10 +16,11 @@ abstract class ApplicationAbstract implements ApplicationInterface
     public function toArray(): array
     {
         return [
-            'name'        => $this->getName(),
-            'type'        => $this->getType(),
-            'key'         => $this->getKey(),
-            'description' => $this->getDescription(),
+            'name'               => $this->getName(),
+            'authorization_type' => $this->getAuthorizationType(),
+            'application_type'   => $this->getApplicationType(),
+            'key'                => $this->getKey(),
+            'description'        => $this->getDescription(),
         ];
     }
 

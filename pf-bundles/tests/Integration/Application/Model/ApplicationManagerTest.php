@@ -3,11 +3,10 @@
 namespace Tests\Integration\Application\Model;
 
 use Exception;
-use Hanaboso\PipesFramework\Application\Base\Basic\BasicApplicationInterface;
+use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 use Hanaboso\PipesFramework\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesFramework\Application\Model\ApplicationManager;
-use Hanaboso\PipesFramework\HbPFApplicationBundle\Loader\ApplicationLoader;
 use Tests\DatabaseTestCaseAbstract;
 
 /**
@@ -19,15 +18,26 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
 {
 
     /**
+     * @var ApplicationManager
+     */
+    private $applicationManager;
+
+    /**
+     *
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->applicationManager = self::$container->get('hbpf._application.manager.application');
+    }
+
+    /**
      * @throws Exception
      */
     public function testGetApp(): void
     {
-        $nullApp = self::createMock(BasicApplicationInterface::class);
-        self::$container->set('hbpf.application.null', $nullApp);
-
-        $applicationManager = new ApplicationManager($this->dm, new ApplicationLoader(self::$container));
-        $app                = $applicationManager->getApplication('null');
+        $app = $this->applicationManager->getApplication('null');
 
         self::assertIsObject($app);
     }
@@ -37,8 +47,7 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
      */
     public function testGetApplications(): void
     {
-        $applicationManager = new ApplicationManager($this->dm, new ApplicationLoader(self::$container));
-        $applications       = $applicationManager->getApplications();
+        $applications = $this->applicationManager->getApplications();
 
         self::assertIsArray($applications);
     }
@@ -51,8 +60,7 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
         $this->createApp();
         $this->createApp();
 
-        $applicationManager = new ApplicationManager($this->dm, new ApplicationLoader(self::$container));
-        $installedApp       = $applicationManager->getInstalledApplications('example1');
+        $installedApp = $this->applicationManager->getInstalledApplications('example1');
 
         self::assertEquals(2, count($installedApp));
     }
@@ -64,13 +72,12 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
     {
         $this->createApp();
 
-        $applicationManager = new ApplicationManager($this->dm, new ApplicationLoader(self::$container));
-        $appDetail          = $applicationManager->getInstalledApplicationDetail('some app', 'example1');
+        $appDetail = $this->applicationManager->getInstalledApplicationDetail('some app', 'example1');
         self::assertIsObject($appDetail);
 
         self::expectException(ApplicationInstallException::class);
         self::expectExceptionCode(ApplicationInstallException::APP_WAS_NOT_FOUND);
-        $applicationManager->getInstalledApplicationDetail('some app', 'example5');
+        $this->applicationManager->getInstalledApplicationDetail('some app', 'example5');
     }
 
     /**
@@ -78,8 +85,7 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
      */
     public function testInstallApplication(): void
     {
-        $applicationManager = new ApplicationManager($this->dm, new ApplicationLoader(self::$container));
-        $applicationManager->installApplication('something', 'example3');
+        $this->applicationManager->installApplication('something', 'example3');
 
         $repository = $this->dm->getRepository(ApplicationInstall::class);
         $app        = $repository->findOneBy([
@@ -95,10 +101,9 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
      */
     public function testUninstallApplication(): void
     {
-        $this->createApp();
+        $this->createApp('null');
 
-        $applicationManager = new ApplicationManager($this->dm, new ApplicationLoader(self::$container));
-        $applicationManager->uninstallApplication('some app', 'example1');
+        $this->applicationManager->uninstallApplication('null', 'example1');
 
         $repository = $this->dm->getRepository(ApplicationInstall::class);
         $app        = $repository->findAll();
@@ -110,7 +115,7 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
      * @param string $key
      * @param string $user
      *
-     * @throws Exception
+     * @throws DateTimeException
      */
     private function createApp(string $key = 'some app', string $user = 'example1'): void
     {

@@ -74,16 +74,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.93.8",
+            "version": "3.93.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "8b51e85e954ef232ea9c905f26454195ac72ba9b"
+                "reference": "c9f4cfeb46ce9842d6e7d3692425b7cb1449d573"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/8b51e85e954ef232ea9c905f26454195ac72ba9b",
-                "reference": "8b51e85e954ef232ea9c905f26454195ac72ba9b",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/c9f4cfeb46ce9842d6e7d3692425b7cb1449d573",
+                "reference": "c9f4cfeb46ce9842d6e7d3692425b7cb1449d573",
                 "shasum": ""
             },
             "require": {
@@ -153,7 +153,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2019-05-13T18:08:02+00:00"
+            "time": "2019-05-16T18:45:30+00:00"
         },
         {
             "name": "aws/aws-sdk-php-symfony",
@@ -2261,11 +2261,11 @@
         },
         {
             "name": "hanaboso/commons-bundle",
-            "version": "1.1.12",
+            "version": "1.1.13",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.hanaboso.net:hanaboso/commons-bundle.git",
-                "reference": "a28f5906f8c8092bb6298f04a8f729226875b03b"
+                "reference": "ddc8bccd998dff4a832d942720b2bbbec90830fa"
             },
             "require": {
                 "alcaeus/mongo-php-adapter": "^1.1",
@@ -2312,7 +2312,7 @@
             "license": [
                 "proprietary"
             ],
-            "time": "2019-04-25T16:51:50+00:00"
+            "time": "2019-05-16T14:04:08+00:00"
         },
         {
             "name": "hanaboso/email-service-bundle",
@@ -3824,16 +3824,16 @@
         },
         {
             "name": "php-imap/php-imap",
-            "version": "3.0.15",
+            "version": "3.0.16",
             "source": {
                 "type": "git",
                 "url": "https://github.com/barbushin/php-imap.git",
-                "reference": "c0750ec4ce4e00be2e884005b2fbd94ccd64a34d"
+                "reference": "72ead4eafacad003b322e4454e68591fe51eced9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/barbushin/php-imap/zipball/c0750ec4ce4e00be2e884005b2fbd94ccd64a34d",
-                "reference": "c0750ec4ce4e00be2e884005b2fbd94ccd64a34d",
+                "url": "https://api.github.com/repos/barbushin/php-imap/zipball/72ead4eafacad003b322e4454e68591fe51eced9",
+                "reference": "72ead4eafacad003b322e4454e68591fe51eced9",
                 "shasum": ""
             },
             "require": {
@@ -3870,7 +3870,7 @@
                 "pop3",
                 "receive emails"
             ],
-            "time": "2019-05-12T14:03:01+00:00"
+            "time": "2019-05-15T21:02:51+00:00"
         },
         {
             "name": "phpcollection/phpcollection",

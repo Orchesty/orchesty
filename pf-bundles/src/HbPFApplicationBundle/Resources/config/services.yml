@@ -8,13 +8,14 @@ services:
         arguments:
             - '@service_container'
 
-    hbpf.application.manager.application:
+    hbpf._application.manager.application:
         class: Hanaboso\PipesFramework\Application\Model\ApplicationManager
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.loader.authorization'
+            - '@hbpf._application.manager.webhook'
 
-    hbpf.application.handler.application:
+    hbpf._application.handler.application:
         class: Hanaboso\PipesFramework\HbPFApplicationBundle\Handler\ApplicationHandler
         arguments:
-            - '@hbpf.application.manager.application'
+            - '@hbpf._application.manager.application'

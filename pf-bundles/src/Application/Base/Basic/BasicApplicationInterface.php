@@ -13,8 +13,7 @@ use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 interface BasicApplicationInterface extends ApplicationInterface
 {
 
-    public const  BASIC = 'basic';
-    public const  USER = 'user';
+    public const  USER     = 'user';
     public const  PASSWORD = 'password';
 
     /**
