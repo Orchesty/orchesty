@@ -4,8 +4,10 @@ namespace Hanaboso\PipesFramework\HbPFCustomNodeBundle\Controller;
 
 use Exception;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
+use Hanaboso\CommonsBundle\Exception\PipesFrameworkExceptionAbstract;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\CommonsBundle\Utils\ControllerUtils;
+use Hanaboso\PipesFramework\ApiGateway\Exceptions\OnRepeatException;
 use Hanaboso\PipesFramework\HbPFCustomNodeBundle\Exception\CustomNodeException;
 use Hanaboso\PipesFramework\HbPFCustomNodeBundle\Handler\CustomNodeHandler;
 use Psr\Log\LoggerAwareInterface;
@@ -54,6 +56,8 @@ class CustomNodeController extends AbstractFOSRestController implements LoggerAw
      * @param string  $nodeId
      *
      * @return Response
+     * @throws OnRepeatException
+     * @throws PipesFrameworkExceptionAbstract
      */
     public function sendAction(Request $request, string $nodeId): Response
     {
@@ -65,7 +69,9 @@ class CustomNodeController extends AbstractFOSRestController implements LoggerAw
             $this->logger->error($e->getMessage(), ['exception' => $e]);
 
             return $this->getErrorResponse($e, 200, ControllerUtils::createHeaders([], $e));
-        } catch (Exception|Throwable $e) {
+        } catch (PipesFrameworkExceptionAbstract | OnRepeatException $e) {
+            throw $e;
+        } catch (Throwable $e) {
             $this->logger->error($e->getMessage(), ['exception' => $e]);
 
             return $this->getErrorResponse($e, 500, ControllerUtils::createHeaders([], $e));

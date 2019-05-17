@@ -4,7 +4,9 @@ namespace Hanaboso\PipesFramework\HbPFMapperBundle\Controller;
 
 use Exception;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
+use Hanaboso\CommonsBundle\Exception\PipesFrameworkExceptionAbstract;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
+use Hanaboso\PipesFramework\ApiGateway\Exceptions\OnRepeatException;
 use Hanaboso\PipesFramework\HbPFMapperBundle\Exception\MapperException;
 use Hanaboso\PipesFramework\HbPFMapperBundle\Handler\MapperHandler;
 use Symfony\Component\HttpFoundation\Request;
@@ -44,6 +46,8 @@ class MapperController extends AbstractFOSRestController
      * @param string  $id
      *
      * @return Response
+     * @throws OnRepeatException
+     * @throws PipesFrameworkExceptionAbstract
      */
     public function processAction(Request $request, string $id): Response
     {
@@ -51,6 +55,8 @@ class MapperController extends AbstractFOSRestController
             $data = $this->mapperHandler->process($id, $request->request->all());
 
             return $this->getResponse($data);
+        } catch (PipesFrameworkExceptionAbstract | OnRepeatException $e) {
+            throw $e;
         } catch (MapperException $e) {
             return $this->getErrorResponse($e);
         }

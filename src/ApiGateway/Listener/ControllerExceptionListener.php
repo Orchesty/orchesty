@@ -97,10 +97,11 @@ class ControllerExceptionListener implements EventSubscriberInterface, LoggerAwa
 
         $this->logger->error('Controller exception.', ['exception' => $e]);
 
-        $response = $this->getErrorResponse($e, 400);
+        $response = $this->getErrorResponse($e, 200);
 
         if (in_array(get_class($e), $this->exceptionClasses)) {
-            $response->headers->set(PipesHeaders::createKey(PipesHeaders::RESULT_CODE), json_decode((string) 1006));
+            $response->headers->add(PipesHeaders::clear($event->getRequest()->headers->all()));
+            $response->headers->set(PipesHeaders::createKey(PipesHeaders::RESULT_CODE), '1006');
         }
 
         $event->setResponse($response);

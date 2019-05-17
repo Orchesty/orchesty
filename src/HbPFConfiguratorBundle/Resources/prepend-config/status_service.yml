@@ -17,5 +17,3 @@ services:
         class: Hanaboso\PipesFramework\Configurator\StatusService\StatusServiceCallback
         arguments:
             - '@event_dispatcher'
-        calls:
-            - [setRepeater, ['@hanaboso.pipes_framework.commons.rabbit_mq.repeater.repeater']]

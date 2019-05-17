@@ -11,5 +11,7 @@ parameters:
 		- '#Access to an undefined property*#'
 		- '#Parameter \#2 \$auth_session_handle of method OAuth::getAccessToken\(\) expects string, null given.#'
 		- '#Call to function method_exists\(\) with string *#'
+		- '#ReflectionClass\.#'
+		- '#ReflectionObject\.#'
 	symfony:
 		container_xml_path: %rootDir%/../../../var/cache/test/srcHanaboso_PipesFramework_KernelTestDebugContainer.xml

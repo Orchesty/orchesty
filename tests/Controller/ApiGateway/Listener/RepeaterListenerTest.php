@@ -31,22 +31,15 @@ final class RepeaterListenerTest extends ControllerTestCaseAbstract
 
         $eventMock = $this->mockEvent(new OnRepeatException($dto));
 
-        for ($i = 1; ; $i++) {
+        for ($i = 1; $i <= 3; $i++) {
             $listener->onRepeatableException($eventMock);
             /** @var Response $response */
             $response   = $eventMock->getResponse();
             $currentHop = $response->headers->get(PipesHeaders::createKey(PipesHeaders::REPEAT_HOPS));
             $maxHop     = $response->headers->get(PipesHeaders::createKey(PipesHeaders::REPEAT_MAX_HOPS));
 
-            if ($currentHop > $maxHop) {
-                self::assertArrayNotHasKey(
-                    PipesHeaders::createKey(PipesHeaders::REPEAT_MAX_HOPS),
-                    $response->headers->all()
-                );
-                break;
-            }
+            self::assertEquals(3, $maxHop);
             self::assertEquals($i, $currentHop);
-
         }
     }
 

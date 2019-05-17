@@ -16,5 +16,3 @@ services:
         arguments:
             - '@hbpf.manager.long_running'
             - '@hbpf.loader.long_running'
-        calls:
-            - [setRepeater, ['@hanaboso.pipes_framework.commons.rabbit_mq.repeater.repeater']]
