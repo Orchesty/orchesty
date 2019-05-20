@@ -12,16 +12,16 @@ use Exception;
 final class SystemConfigDto
 {
 
-    private const SDK      = 'sdk';
-    private const BRIDGE   = 'bridge';
-    private const RABBIT   = 'rabbit';
-    private const REPEATER = 'repeater';
+    public const SDK      = 'sdk';
+    public const BRIDGE   = 'bridge';
+    public const RABBIT   = 'rabbit';
+    public const REPEATER = 'repeater';
 
-    private const HOST     = 'host';
-    private const PREFETCH = 'prefetch';
-    private const ENABLED  = 'enabled';
-    private const HOPS     = 'hops';
-    private const INTERVAL = 'interval';
+    public const HOST     = 'host';
+    public const PREFETCH = 'prefetch';
+    public const ENABLED  = 'enabled';
+    public const HOPS     = 'hops';
+    public const INTERVAL = 'interval';
 
     /**
      * @var string
