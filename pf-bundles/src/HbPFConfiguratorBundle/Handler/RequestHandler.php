@@ -2,13 +2,16 @@
 
 namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\CommonsBundle\DatabaseManager\DatabaseManagerLocator;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
-use Hanaboso\CommonsBundle\Utils\PipesHeaders;
+use Hanaboso\PipesFramework\Configurator\Document\Node;
+use Hanaboso\PipesFramework\Utils\TopologyConfigFactory;
 
 /**
  * Class RequestHandler
@@ -18,16 +21,16 @@ use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 class RequestHandler
 {
 
-    public const DELETE_TOPOLOGY_URL    = 'http://topology-api:80/api/topology/delete/{id}';
-    public const TERMINATE_TOPOLOGY_URL = 'http://multi-counter-api:8005/topology/terminate/{id}';
-    public const INFO_TOPOLOGY_URL      = 'http://topology-api:80/api/topology/info/{id}';
+    public const BASE_TOPOLOGY_URL = 'http://topology-api:80/api/topology/%s';
 
-    protected const RUN_TOPOLOGY_URL       = 'http://topology-api:80/api/topology/run/{id}';
-    protected const GENERATOR_TOPOLOGY_URL = 'http://topology-api:80/api/topology/generate/{id}';
+    protected const GENERATOR_TOPOLOGY_URL = 'http://topology-api:80/v1/api/topology/%s';
+    protected const MULTI_PROBE_URL        = 'http://multi-probe:8007/topology/status?topologyId=%s';
+    protected const STARTING_POINT_URL     = 'http://starting-point:80/topologies/%s/invalidate-cache';
 
-    protected const MULTI_PROBE_URL = 'http://multi-probe:8007/topology/status?topologyId={id}';
-
-    protected const STARTING_POINT_URL = 'http://starting-point:80/topologies/{name}/invalidate-cache';
+    /**
+     * @var DocumentManager
+     */
+    private $dm;
 
     /**
      * @var CurlManagerInterface
@@ -37,10 +40,13 @@ class RequestHandler
     /**
      * RequestHandler constructor.
      *
-     * @param CurlManagerInterface $curlManager
+     * @param DatabaseManagerLocator $dml
+     * @param CurlManagerInterface   $curlManager
      */
-    public function __construct(CurlManagerInterface $curlManager)
+    public function __construct(DatabaseManagerLocator $dml, CurlManagerInterface $curlManager)
     {
+        $dm                = $dml->getDm();
+        $this->dm          = $dm;
         $this->curlManager = $curlManager;
     }
 
@@ -52,8 +58,12 @@ class RequestHandler
      */
     public function generateTopology(string $topologyId): ResponseDto
     {
-        $uri = $this->getUrl($topologyId, self::GENERATOR_TOPOLOGY_URL);
-        $dto = new RequestDto(CurlManager::METHOD_GET, new Uri($uri));
+        $nodeRepository = $this->dm->getRepository(Node::class);
+        $nodes = $nodeRepository->getNodesByTopology($topologyId);
+
+        $uri = sprintf(self::GENERATOR_TOPOLOGY_URL, $topologyId);
+        $dto = new RequestDto(CurlManager::METHOD_POST, new Uri($uri));
+        $dto->setBody(TopologyConfigFactory::create($nodes));
 
         return $this->curlManager->send($dto);
     }
@@ -66,8 +76,24 @@ class RequestHandler
      */
     public function runTopology(string $topologyId): ResponseDto
     {
-        $uri = $this->getUrl($topologyId, self::RUN_TOPOLOGY_URL);
-        $dto = new RequestDto(CurlManager::METHOD_GET, new Uri($uri));
+        $uri = sprintf(self::BASE_TOPOLOGY_URL, $topologyId);
+        $dto = new RequestDto(CurlManager::METHOD_PUT, new Uri($uri));
+        $dto->setBody(json_encode(['action' => 'start']));
+
+        return $this->curlManager->send($dto);
+    }
+
+    /**
+     * @param string $topologyId
+     *
+     * @return ResponseDto
+     * @throws CurlException
+     */
+    public function stopTopology(string $topologyId): ResponseDto
+    {
+        $uri = sprintf(self::BASE_TOPOLOGY_URL, $topologyId);
+        $dto = new RequestDto(CurlManager::METHOD_PUT, new Uri($uri));
+        $dto->setBody(json_encode(['action' => 'stop']));
 
         return $this->curlManager->send($dto);
     }
@@ -80,13 +106,8 @@ class RequestHandler
      */
     public function deleteTopology(string $topologyId): ResponseDto
     {
-        $uri        = $this->getUrl($topologyId, self::DELETE_TOPOLOGY_URL);
-        $counterUri = $this->getUrl($topologyId, self::TERMINATE_TOPOLOGY_URL);
-
-        $dto = new RequestDto(CurlManager::METHOD_GET, new Uri($counterUri));
-        $dto->setHeaders([
-            PipesHeaders::createKey(PipesHeaders::TOPOLOGY_DELETE_URL) => $uri,
-        ]);
+        $uri = sprintf(self::BASE_TOPOLOGY_URL, $topologyId);
+        $dto = new RequestDto(CurlManager::METHOD_DELETE, new Uri($uri));
 
         return $this->curlManager->send($dto);
     }
@@ -99,7 +120,7 @@ class RequestHandler
      */
     public function infoTopology(string $topologyId): ResponseDto
     {
-        $uri = $this->getUrl($topologyId, self::INFO_TOPOLOGY_URL);
+        $uri = sprintf(self::BASE_TOPOLOGY_URL, $topologyId);
         $dto = new RequestDto(CurlManager::METHOD_GET, new Uri($uri));
 
         return $this->curlManager->send($dto);
@@ -113,7 +134,7 @@ class RequestHandler
      */
     public function runTest(string $topologyId): array
     {
-        $uri         = $this->getUrl($topologyId, self::MULTI_PROBE_URL);
+        $uri         = sprintf(self::MULTI_PROBE_URL, $topologyId);
         $requestDto  = new RequestDto(CurlManager::METHOD_GET, new Uri($uri));
         $responseDto = $this->curlManager->send($requestDto);
 
@@ -133,7 +154,7 @@ class RequestHandler
      */
     public function invalidateTopologyCache(string $topologyName): array
     {
-        $uri         = $this->getUrl($topologyName, self::STARTING_POINT_URL, '{name}');
+        $uri         = sprintf(self::STARTING_POINT_URL, $topologyName);
         $requestDto  = new RequestDto(CurlManager::METHOD_POST, new Uri($uri));
         $responseDto = $this->curlManager->send($requestDto);
 
@@ -142,19 +163,6 @@ class RequestHandler
         } else {
             throw new CurlException(sprintf('Request error: %s', $responseDto->getReasonPhrase()));
         }
-
-    }
-
-    /**
-     * @param string $topology
-     * @param string $url
-     * @param string $search
-     *
-     * @return mixed
-     */
-    protected function getUrl(string $topology, string $url, string $search = '{id}')
-    {
-        return str_replace($search, $topology, $url);
     }
 
 }
