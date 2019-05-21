@@ -11,6 +11,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
+use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
 use Hanaboso\PipesFramework\Utils\TopologyConfigFactory;
 
 /**
@@ -21,8 +22,7 @@ use Hanaboso\PipesFramework\Utils\TopologyConfigFactory;
 class RequestHandler
 {
 
-    public const BASE_TOPOLOGY_URL = 'http://topology-api:80/api/topology/%s';
-
+    protected const BASE_TOPOLOGY_URL      = 'http://topology-api:80/api/topology/%s';
     protected const GENERATOR_TOPOLOGY_URL = 'http://topology-api:80/v1/api/topology/%s';
     protected const MULTI_PROBE_URL        = 'http://multi-probe:8007/topology/status?topologyId=%s';
     protected const STARTING_POINT_URL     = 'http://starting-point:80/topologies/%s/invalidate-cache';
@@ -45,6 +45,7 @@ class RequestHandler
      */
     public function __construct(DatabaseManagerLocator $dml, CurlManagerInterface $curlManager)
     {
+        /** @var DocumentManager $dm */
         $dm                = $dml->getDm();
         $this->dm          = $dm;
         $this->curlManager = $curlManager;
@@ -58,8 +59,9 @@ class RequestHandler
      */
     public function generateTopology(string $topologyId): ResponseDto
     {
+        /** @var NodeRepository $nodeRepository */
         $nodeRepository = $this->dm->getRepository(Node::class);
-        $nodes = $nodeRepository->getNodesByTopology($topologyId);
+        $nodes          = $nodeRepository->getNodesByTopology($topologyId);
 
         $uri = sprintf(self::GENERATOR_TOPOLOGY_URL, $topologyId);
         $dto = new RequestDto(CurlManager::METHOD_POST, new Uri($uri));
@@ -78,7 +80,7 @@ class RequestHandler
     {
         $uri = sprintf(self::BASE_TOPOLOGY_URL, $topologyId);
         $dto = new RequestDto(CurlManager::METHOD_PUT, new Uri($uri));
-        $dto->setBody(json_encode(['action' => 'start']));
+        $dto->setBody((string) json_encode(['action' => 'start']));
 
         return $this->curlManager->send($dto);
     }
@@ -93,7 +95,7 @@ class RequestHandler
     {
         $uri = sprintf(self::BASE_TOPOLOGY_URL, $topologyId);
         $dto = new RequestDto(CurlManager::METHOD_PUT, new Uri($uri));
-        $dto->setBody(json_encode(['action' => 'stop']));
+        $dto->setBody((string) json_encode(['action' => 'stop']));
 
         return $this->curlManager->send($dto);
     }

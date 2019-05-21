@@ -20,3 +20,9 @@ services:
         arguments:
             - '@hbpf.database_manager_locator'
             - '@hbpf.configurator.manager.category'
+
+    hbpf.topology_generator.request.request_handler:
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\RequestHandler
+        arguments:
+            - '@hbpf.database_manager_locator'
+            - '@hbpf.transport.curl_manager'

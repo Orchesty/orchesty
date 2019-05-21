@@ -11,8 +11,3 @@ services:
             - '@hbpf.transport.curl_manager'
             - '%starting_point_host%'
             - '%cron_host%'
-
-    hbpf.topology_generator.request.request_handler:
-        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\RequestHandler
-        arguments:
-            - '@hbpf.transport.curl_manager'
