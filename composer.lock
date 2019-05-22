@@ -74,16 +74,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.93.11",
+            "version": "3.94.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "c9f4cfeb46ce9842d6e7d3692425b7cb1449d573"
+                "reference": "759a565285324d2248b6ee783de541ce65bddd46"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/c9f4cfeb46ce9842d6e7d3692425b7cb1449d573",
-                "reference": "c9f4cfeb46ce9842d6e7d3692425b7cb1449d573",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/759a565285324d2248b6ee783de541ce65bddd46",
+                "reference": "759a565285324d2248b6ee783de541ce65bddd46",
                 "shasum": ""
             },
             "require": {
@@ -153,7 +153,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2019-05-16T18:45:30+00:00"
+            "time": "2019-05-21T18:29:47+00:00"
         },
         {
             "name": "aws/aws-sdk-php-symfony",
@@ -1784,16 +1784,16 @@
         },
         {
             "name": "egulias/email-validator",
-            "version": "2.1.7",
+            "version": "2.1.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/egulias/EmailValidator.git",
-                "reference": "709f21f92707308cdf8f9bcfa1af4cb26586521e"
+                "reference": "c26463ff9241f27907112fbcd0c86fa670cfef98"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/egulias/EmailValidator/zipball/709f21f92707308cdf8f9bcfa1af4cb26586521e",
-                "reference": "709f21f92707308cdf8f9bcfa1af4cb26586521e",
+                "url": "https://api.github.com/repos/egulias/EmailValidator/zipball/c26463ff9241f27907112fbcd0c86fa670cfef98",
+                "reference": "c26463ff9241f27907112fbcd0c86fa670cfef98",
                 "shasum": ""
             },
             "require": {
@@ -1837,7 +1837,7 @@
                 "validation",
                 "validator"
             ],
-            "time": "2018-12-04T22:38:24+00:00"
+            "time": "2019-05-16T22:02:54+00:00"
         },
         {
             "name": "evenement/evenement",
@@ -3824,16 +3824,16 @@
         },
         {
             "name": "php-imap/php-imap",
-            "version": "3.0.16",
+            "version": "3.0.17",
             "source": {
                 "type": "git",
                 "url": "https://github.com/barbushin/php-imap.git",
-                "reference": "72ead4eafacad003b322e4454e68591fe51eced9"
+                "reference": "b23e99b3885ba1fb4c7910928b5c1f95dd18df68"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/barbushin/php-imap/zipball/72ead4eafacad003b322e4454e68591fe51eced9",
-                "reference": "72ead4eafacad003b322e4454e68591fe51eced9",
+                "url": "https://api.github.com/repos/barbushin/php-imap/zipball/b23e99b3885ba1fb4c7910928b5c1f95dd18df68",
+                "reference": "b23e99b3885ba1fb4c7910928b5c1f95dd18df68",
                 "shasum": ""
             },
             "require": {
@@ -3870,7 +3870,7 @@
                 "pop3",
                 "receive emails"
             ],
-            "time": "2019-05-15T21:02:51+00:00"
+            "time": "2019-05-18T12:05:57+00:00"
         },
         {
             "name": "phpcollection/phpcollection",
@@ -6009,16 +6009,16 @@
         },
         {
             "name": "windwalker/crypt",
-            "version": "3.5.4",
+            "version": "3.5.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ventoviro/windwalker-crypt.git",
-                "reference": "3964bbe1f29711362b982d1001d826ccbae06929"
+                "reference": "7fc579ac41c423b3d1ed781ebb7783e83bd22991"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ventoviro/windwalker-crypt/zipball/3964bbe1f29711362b982d1001d826ccbae06929",
-                "reference": "3964bbe1f29711362b982d1001d826ccbae06929",
+                "url": "https://api.github.com/repos/ventoviro/windwalker-crypt/zipball/7fc579ac41c423b3d1ed781ebb7783e83bd22991",
+                "reference": "7fc579ac41c423b3d1ed781ebb7783e83bd22991",
                 "shasum": ""
             },
             "require": {
@@ -6057,7 +6057,7 @@
                 "scrypt",
                 "windwalker"
             ],
-            "time": "2019-04-27T11:15:30+00:00"
+            "time": "2019-04-28T06:01:00+00:00"
         }
     ],
     "packages-dev": [
@@ -7399,23 +7399,23 @@
         },
         {
             "name": "phpstan/phpstan-phpunit",
-            "version": "0.11.1",
+            "version": "0.11.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-phpunit.git",
-                "reference": "0d339995c3c6acc56bc912959f436298c70d13ab"
+                "reference": "fbf2ad56c3b13189d29655e226c9b1da47c2fad9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-phpunit/zipball/0d339995c3c6acc56bc912959f436298c70d13ab",
-                "reference": "0d339995c3c6acc56bc912959f436298c70d13ab",
+                "url": "https://api.github.com/repos/phpstan/phpstan-phpunit/zipball/fbf2ad56c3b13189d29655e226c9b1da47c2fad9",
+                "reference": "fbf2ad56c3b13189d29655e226c9b1da47c2fad9",
                 "shasum": ""
             },
             "require": {
                 "nikic/php-parser": "^4.0",
                 "php": "~7.1",
                 "phpstan/phpdoc-parser": "^0.3",
-                "phpstan/phpstan": "^0.11"
+                "phpstan/phpstan": "^0.11.4"
             },
             "conflict": {
                 "phpunit/phpunit": "<7.0"
@@ -7437,7 +7437,8 @@
                 },
                 "phpstan": {
                     "includes": [
-                        "extension.neon"
+                        "extension.neon",
+                        "rules.neon"
                     ]
                 }
             },
@@ -7451,7 +7452,7 @@
                 "MIT"
             ],
             "description": "PHPUnit extensions and rules for PHPStan",
-            "time": "2019-05-10T20:33:17+00:00"
+            "time": "2019-05-17T17:50:16+00:00"
         },
         {
             "name": "phpstan/phpstan-symfony",

@@ -1,8 +1,17 @@
 .PHONY: docker-up docker-up-force docker-down-clean test codesniffer phpstan phpunit
 
+TAG?=dev
+IMAGE=dkr.hanaboso.net/pipes/pipes/php-dev:${TAG}
+BASE=dkr.hanaboso.net/hanaboso/symfony3-base:php-7.3
 DC=docker-compose
 DE=docker-compose exec -T php-dev
 DEC=docker-compose exec -T php-dev composer
+
+# Build
+build-dev:
+	docker pull ${BASE}
+	cd docker/php-dev/ && docker build -t ${IMAGE} .
+	docker push ${IMAGE}
 
 # Docker
 docker-up: .env
@@ -17,9 +26,7 @@ docker-down-clean: .env
 	$(DC) down -v
 
 #Composer
-
 composer-install:
-#	$(DEC) global require hirak/prestissimo
 	$(DEC) install --ignore-platform-reqs
 
 composer-update:
@@ -42,7 +49,6 @@ composer-deploy:
 init: .env docker-up-force composer-install
 
 #CI
-
 codesniffer:
 	$(DE) ./vendor/bin/phpcs --standard=./ruleset.xml --colors -p src/ tests/
 
@@ -76,7 +82,6 @@ docker-compose.ci.yml:
 	sed -r 's/^(\s+ports:)$$/#\1/g; s/^(\s+- \$$\{DEV_IP\}.*)$$/#\1/g' docker-compose.yml > docker-compose.ci.yml
 
 #Other
-
 console:
 	$(DE) php bin/console ${command}
 

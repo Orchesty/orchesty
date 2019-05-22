@@ -4,7 +4,6 @@ RUN apt-get update && \
     apt-get install -y git mc sudo nginx-extras socat libpng-dev && \
     pecl install xdebug && \
     docker-php-ext-install gd && \
-    docker-php-ext-enable xdebug && \
     apt-get clean && apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/* /var/lib/log/* /var/log/* /tmp/* /var/tmp/*
 
@@ -36,4 +35,6 @@ ENTRYPOINT [ "/entrypoint.sh" ]
 
 WORKDIR /srv/project
 
-CMD sudo -E php-fpm
+RUN rm -f /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+
+CMD sudo -E php-fpm -d extension=xdebug.so
