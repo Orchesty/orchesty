@@ -1,4 +1,4 @@
-version: '2'
+version: '2.2'
 services:
   php-dev:
     image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
