@@ -19,6 +19,7 @@ var topologyDeletedNodeSuccess = "topologyDeletedNodeSuccess"
 var topologySuccessNodeEnabled = "topologySuccessNodeEnabled"
 var topologySuccessNodeDeleted = "topologySuccessNodeDeleted"
 var topologySuccessNodeSuccessHumanTaskSuccess = "topologySuccessNodeSuccessHumanTaskSuccess"
+var topologySuccessWebhookSuccess = "topologySuccessWebhookSuccess"
 
 func TestMongo(t *testing.T) {
 	CreateMongo()
@@ -64,15 +65,31 @@ func TestMongo(t *testing.T) {
 	assert.Equal(t, topologyCollection, topology.Name)
 	assert.Nil(t, topology.Node)
 
-	topologies := Mongo.FindTopologyByName(topologyCollection, nodeCollection, "", false)
-	assert.Equal(t, 1, len(topologies))
-	assert.Equal(t, int32(8), topologies[0].Version)
+	topology = Mongo.FindTopologyByName(topologyCollection, nodeCollection, "", false)
+	assert.NotNil(t, topology)
+	assert.Equal(t, int32(8), topology.Version)
 
-	topologies = Mongo.FindTopologyByName("Unknown", nodeCollection, "", false)
-	assert.Equal(t, 0, len(topologies))
+	topology = Mongo.FindTopologyByName("Unknown", nodeCollection, "", false)
+	assert.Nil(t, topology)
 
-	topologies = Mongo.FindTopologyByName(topologyCollection, "Unknown", "", false)
-	assert.Equal(t, 0, len(topologies))
+	topology = Mongo.FindTopologyByName(topologyCollection, "Unknown", "", false)
+	assert.Nil(t, topology)
+
+	topology, webhook := Mongo.FindTopologyByApplication(topologyCollection, nodeCollection, "Token")
+	id, _ := primitive.ObjectIDFromHex(data[topologySuccessWebhookSuccess][2])
+	assert.NotNil(t, topology)
+	assert.Equal(t, &Webhook{
+		ID:          id,
+		User:        "User",
+		Token:       "Token",
+		Node:        "Node",
+		Topology:    "Topology",
+		Application: "Application",
+	}, webhook)
+
+	topology, webhook = Mongo.FindTopologyByApplication(topologyCollection, nodeCollection, "Unknown")
+	assert.Nil(t, topology)
+	assert.Nil(t, webhook)
 
 	topology = Mongo.FindTopologyByID(data[topologySuccessNodeSuccessHumanTaskSuccess][0], data[topologySuccessNodeSuccessHumanTaskSuccess][1], "processID", true)
 	assert.Equal(t, data[topologySuccessNodeSuccessHumanTaskSuccess][0], topology.ID.Hex())
@@ -80,14 +97,15 @@ func TestMongo(t *testing.T) {
 	assert.Equal(t, nodeCollection, topology.Node.Name)
 	assert.Equal(t, "processID", topology.Node.HumanTask.ProcessID)
 
-	topologies = Mongo.FindTopologyByName(topologyCollection, nodeCollection, "processID", true)
-	assert.Equal(t, 1, len(topologies))
+	topology = Mongo.FindTopologyByName(topologyCollection, nodeCollection, "processID", true)
+	assert.NotNil(t, topology)
 }
 
 func prepareData(mongo *mongo.Database) map[string][]string {
 	_ = mongo.Collection(config.Config.MongoDB.NodeColl).Drop(nil)
 	_ = mongo.Collection(config.Config.MongoDB.TopologyColl).Drop(nil)
 	_ = mongo.Collection(config.Config.MongoDB.HumanTaskColl).Drop(nil)
+	_ = mongo.Collection(config.Config.MongoDB.WebhookColl).Drop(nil)
 	result := make(map[string][]string)
 
 	innerResult, _ := mongo.Collection(config.Config.MongoDB.TopologyColl).InsertOne(nil, bson.M{
@@ -224,6 +242,16 @@ func prepareData(mongo *mongo.Database) map[string][]string {
 	})
 
 	result[topologySuccessNodeSuccessHumanTaskSuccess] = []string{topologyID, nodeID, innerResult.InsertedID.(primitive.ObjectID).Hex()}
+
+	innerResult, _ = mongo.Collection(config.Config.MongoDB.WebhookColl).InsertOne(nil, bson.M{
+		"user":        "User",
+		"token":       "Token",
+		"node":        "Node",
+		"topology":    "Topology",
+		"application": "Application",
+	})
+
+	result[topologySuccessWebhookSuccess] = []string{topologyID, nodeID, innerResult.InsertedID.(primitive.ObjectID).Hex()}
 
 	return result
 }

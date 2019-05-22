@@ -26,6 +26,12 @@ const prefix = "pf-"
 // CorrelationID header
 const CorrelationID = prefix + "correlation-id"
 
+// ApplicationID header
+const ApplicationID = prefix + "application"
+
+// UserID header
+const UserID = prefix + "user"
+
 // Prefixed pipes headers
 const parentID = prefix + "parent-id"
 const processID = prefix + "process-id"

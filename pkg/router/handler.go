@@ -47,6 +47,11 @@ func HandleRunByName(w http.ResponseWriter, r *http.Request) {
 	handleByName(w, r, false, false)
 }
 
+// HandleRunByApplication runs topology by application
+func HandleRunByApplication(w http.ResponseWriter, r *http.Request) {
+	handleByApplication(w, r)
+}
+
 // HandleHumanTaskRunByID runs human task topology by ID
 func HandleHumanTaskRunByID(w http.ResponseWriter, r *http.Request) {
 	handleByID(w, r, true, false)
@@ -108,7 +113,7 @@ func handleByID(w http.ResponseWriter, r *http.Request, isHumanTask, isStop bool
 		return
 	}
 
-	go processMessage(isHumanTask, isStop, []storage.Topology{*topology}, r, init)
+	go processMessage(isHumanTask, isStop, topology, r, init)
 
 	writeResponse(w, map[string]interface{}{"state": "ok", "started": 1})
 }
@@ -123,31 +128,54 @@ func handleByName(w http.ResponseWriter, r *http.Request, isHumanTask, isStop bo
 
 	init := influx.InitFields()
 	vars := mux.Vars(r)
-	var topologies []storage.Topology
+	var topology *storage.Topology
 
 	if !isHumanTask {
-		topologies = service.Cache.FindTopologyByName(vars["topology"], vars["node"], "", isHumanTask)
+		topology = service.Cache.FindTopologyByName(vars["topology"], vars["node"], "", isHumanTask)
 
-		if len(topologies) == 0 {
+		if topology == nil {
 			writeErrorResponse(w, http.StatusNotFound, fmt.Sprintf("Topology with name '%s' and node with name '%s' not found!", vars["topology"], vars["node"]))
 			return
 		}
 	} else {
-		topologies = storage.Mongo.FindTopologyByName(vars["topology"], vars["node"], vars["token"], isHumanTask)
+		topology = storage.Mongo.FindTopologyByName(vars["topology"], vars["node"], vars["token"], isHumanTask)
 
-		if len(topologies) == 0 {
+		if topology == nil {
 			writeErrorResponse(w, http.StatusNotFound, fmt.Sprintf("Topology with name '%s', node with name '%s' and human task with token '%s' not found!", vars["topology"], vars["node"], vars["token"]))
 			return
 		}
 	}
 
-	go processMessage(isHumanTask, isStop, topologies, r, init)
+	go processMessage(isHumanTask, isStop, topology, r, init)
 
-	writeResponse(w, map[string]interface{}{"state": "ok", "started": len(topologies)})
+	writeResponse(w, map[string]interface{}{"state": "ok", "started": 1})
 }
 
-func processMessage(isHumanTask bool, isStop bool, topologies []storage.Topology, r *http.Request, init map[string]float64) {
-	for _, topology := range topologies {
-		service.RabbitMq.SndMessage(r, topology, init, isHumanTask, isStop)
+func handleByApplication(w http.ResponseWriter, r *http.Request) {
+	err := utils.ValidateBody(r)
+	if err != nil {
+		config.Config.Logger.Errorf("Content is not valid: %s", err.Error())
+		writeErrorResponse(w, http.StatusBadRequest, "Content is not valid!")
+		return
 	}
+
+	init := influx.InitFields()
+	vars := mux.Vars(r)
+	var topology, webhook = service.Cache.FindTopologyByApplication(vars["topology"], vars["node"], vars["token"])
+
+	if topology == nil {
+		writeErrorResponse(w, http.StatusNotFound, fmt.Sprintf("Topology with name '%s', node with name '%s' and webhook with token '%s' not found!", vars["topology"], vars["node"], vars["token"]))
+		return
+	}
+
+	r.Header.Set(utils.ApplicationID, webhook.Application)
+	r.Header.Set(utils.UserID, webhook.User)
+
+	go processMessage(false, false, topology, r, init)
+
+	writeResponse(w, map[string]interface{}{"state": "ok", "started": 1})
+}
+
+func processMessage(isHumanTask bool, isStop bool, topology *storage.Topology, r *http.Request, init map[string]float64) {
+	service.RabbitMq.SndMessage(r, *topology, init, isHumanTask, isStop)
 }

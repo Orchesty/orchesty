@@ -20,7 +20,8 @@ type MongoInterface interface {
 	FindNodeByID(nodeID, topologyID, processID string, isHumanTask bool) *Node
 	FindNodeByName(nodeName, topologyID, processID string, isHumanTask bool) []Node
 	FindTopologyByID(topologyID, nodeID, processID string, isHumanTask bool) *Topology
-	FindTopologyByName(topologyName, nodeName, processID string, isHumanTask bool) []Topology
+	FindTopologyByName(topologyName, nodeName, processID string, isHumanTask bool) *Topology
+	FindTopologyByApplication(topologyName, nodeName, token string) (*Topology, *Webhook)
 	FindHumanTask(nodeID, topologyID, processID string) *HumanTask
 }
 
@@ -196,9 +197,8 @@ func (m *MongoDefault) FindTopologyByID(topologyID, nodeID, processID string, is
 }
 
 // FindTopologyByName finds topology by name
-func (m *MongoDefault) FindTopologyByName(topologyName, nodeName, processID string, isHumanTask bool) []Topology {
+func (m *MongoDefault) FindTopologyByName(topologyName, nodeName, processID string, isHumanTask bool) *Topology {
 	var topology Topology
-	var topologies []Topology
 	innerContext, cancel := createContextWithTimeout()
 	defer cancel()
 
@@ -216,7 +216,7 @@ func (m *MongoDefault) FindTopologyByName(topologyName, nodeName, processID stri
 		_ = cursor.Close(nil)
 	}()
 
-	for cursor.Next(nil) {
+	if cursor.Next(nil) {
 		err = cursor.Decode(&topology)
 		if err != nil {
 			m.log.Errorf("Topology with name '%s' decode error: %s", topologyName, err.Error())
@@ -230,15 +230,38 @@ func (m *MongoDefault) FindTopologyByName(topologyName, nodeName, processID stri
 			if isHumanTask {
 				topology.Node.HumanTask = m.FindHumanTask(nodes[0].ID.Hex(), topology.ID.Hex(), processID)
 				if topology.Node.HumanTask != nil {
-					topologies = append(topologies, topology)
+					return &topology
 				}
 			} else {
-				topologies = append(topologies, topology)
+				return &topology
 			}
 		}
 	}
 
-	return topologies
+	return nil
+}
+
+// FindTopologyByApplication finds topology by application
+func (m *MongoDefault) FindTopologyByApplication(topologyName, nodeName, token string) (*Topology, *Webhook) {
+	var webhook Webhook
+	innerContext, cancel := createContextWithTimeout()
+	defer cancel()
+
+	err := m.mongo.Collection(config.Config.MongoDB.WebhookColl).FindOne(innerContext, primitive.D{
+		{"topology", topologyName},
+		{"node", nodeName},
+		{"token", token},
+	}).Decode(&webhook)
+
+	if err != nil {
+		logMongoError(m.log, err, fmt.Sprintf("Webhook with token '%s' decode error: %s", token, err.Error()))
+
+		return nil, nil
+	}
+
+	topology := m.FindTopologyByName(topologyName, nodeName, "", false)
+
+	return topology, &webhook
 }
 
 // FindHumanTask finds human task

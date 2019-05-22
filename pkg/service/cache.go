@@ -15,7 +15,8 @@ type CacheInterface interface {
 	GetCache() *cache.Cache
 	InvalidateCache(topologyName string) int
 	FindTopologyByID(topologyID, nodeID, processID string, isHumanTask bool) *storage.Topology
-	FindTopologyByName(topologyName, nodeName, processID string, isHumanTask bool) []storage.Topology
+	FindTopologyByName(topologyName, nodeName, processID string, isHumanTask bool) *storage.Topology
+	FindTopologyByApplication(topologyName, nodeName, token string) (*storage.Topology, *storage.Webhook)
 }
 
 // CacheDefault represents default cache implementation
@@ -45,7 +46,7 @@ func (c *CacheDefault) GetCache() *cache.Cache {
 	return c.cache
 }
 
-// FindTopologyByID finds node by ID
+// FindTopologyByID finds topology by ID
 func (c *CacheDefault) FindTopologyByID(topologyID, nodeID, processID string, isHumanTask bool) *storage.Topology {
 	topologyKey := fmt.Sprintf("%s-%s", topologyID, nodeID)
 	topology, found := c.cache.Get(topologyKey)
@@ -64,23 +65,42 @@ func (c *CacheDefault) FindTopologyByID(topologyID, nodeID, processID string, is
 	return topology.(*storage.Topology)
 }
 
-// FindTopologyByName finds node by name
-func (c *CacheDefault) FindTopologyByName(topologyName, nodeName, processID string, isHumanTask bool) []storage.Topology {
+// FindTopologyByName finds topology by name
+func (c *CacheDefault) FindTopologyByName(topologyName, nodeName, processID string, isHumanTask bool) *storage.Topology {
 	topologyKey := fmt.Sprintf("%s-%s", topologyName, nodeName)
-	topologies, found := c.cache.Get(topologyKey)
+	topology, found := c.cache.Get(topologyKey)
 
 	if !found {
-		foundTopologies := c.mongo.FindTopologyByName(topologyName, nodeName, processID, isHumanTask)
+		foundTopology := c.mongo.FindTopologyByName(topologyName, nodeName, processID, isHumanTask)
 
-		if len(foundTopologies) > 0 {
-			c.cache.Set(topologyKey, foundTopologies, 0)
+		if foundTopology != nil {
+			c.cache.Set(topologyKey, foundTopology, 0)
 			addToTopologyCache(topologyName, topologyKey)
 		}
 
-		return foundTopologies
+		return foundTopology
 	}
 
-	return topologies.([]storage.Topology)
+	return topology.(*storage.Topology)
+}
+
+// FindTopologyByApplication finds node by application
+func (c *CacheDefault) FindTopologyByApplication(topologyName, nodeName, token string) (*storage.Topology, *storage.Webhook) {
+	topologyKey := fmt.Sprintf("%s-%s-%s", topologyName, nodeName, token)
+	cacheData, found := c.cache.Get(topologyKey)
+
+	if !found {
+		foundTopology, foundWebhook := c.mongo.FindTopologyByApplication(topologyName, nodeName, token)
+
+		if foundTopology != nil {
+			c.cache.Set(topologyKey, map[string]interface{}{"topology": foundTopology, "webhook": foundWebhook}, 0)
+			addToTopologyCache(topologyName, topologyKey)
+		}
+
+		return foundTopology, foundWebhook
+	}
+
+	return cacheData.(map[string]interface{})["topology"].(*storage.Topology), cacheData.(map[string]interface{})["webhook"].(*storage.Webhook)
 }
 
 // InvalidateCache invalidate cache by topology name

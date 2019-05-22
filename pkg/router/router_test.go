@@ -37,3 +37,17 @@ func assertResponse(t *testing.T, r *http.Request, code int, content string) {
 		assert.Equal(t, content, res.Body.String()[:len(res.Body.String())-1])
 	}
 }
+
+func assertResponseWithHeaders(t *testing.T, r *http.Request, code int, content string, headers map[string]string) {
+	res := httptest.NewRecorder()
+	Router(nil).ServeHTTP(res, r)
+
+	assert.Equal(t, res.Code, code)
+	if len(res.Body.String()) > 0 {
+		assert.Equal(t, content, res.Body.String()[:len(res.Body.String())-1])
+	}
+
+	for key, val := range headers {
+		assert.Equal(t, val, res.Header()[key][0])
+	}
+}

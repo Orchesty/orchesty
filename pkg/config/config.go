@@ -27,6 +27,7 @@ type mongoDb struct {
 	NodeColl      string
 	TopologyColl  string
 	HumanTaskColl string
+	WebhookColl   string
 	Timeout       string
 }
 
@@ -76,6 +77,7 @@ func init() {
 			NodeColl:      getEnv("MONGO_NODE_COLL", "Node"),
 			TopologyColl:  getEnv("MONGO_TOPOLOGY_COLL", "Topology"),
 			HumanTaskColl: getEnv("MONGO_HUMAN_TASK_COLL", "LongRunningNodeData"),
+			WebhookColl:   getEnv("MONGO_WEBHOOK_COLL", "Webhook"),
 			Timeout:       getEnv("MONGO_TIMEOUT", "10"),
 		},
 		RabbitMQ: &rabbitMq{
