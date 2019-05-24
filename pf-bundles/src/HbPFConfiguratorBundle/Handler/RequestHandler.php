@@ -11,8 +11,8 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
+use Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory;
 use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
-use Hanaboso\PipesFramework\Utils\TopologyConfigFactory;
 
 /**
  * Class RequestHandler
@@ -38,17 +38,28 @@ class RequestHandler
     protected $curlManager;
 
     /**
+     * @var TopologyConfigFactory
+     */
+    private $configFactory;
+
+    /**
      * RequestHandler constructor.
      *
      * @param DatabaseManagerLocator $dml
      * @param CurlManagerInterface   $curlManager
+     * @param TopologyConfigFactory  $configFactory
      */
-    public function __construct(DatabaseManagerLocator $dml, CurlManagerInterface $curlManager)
+    public function __construct(
+        DatabaseManagerLocator $dml,
+        CurlManagerInterface $curlManager,
+        TopologyConfigFactory $configFactory
+    )
     {
         /** @var DocumentManager $dm */
-        $dm                = $dml->getDm();
-        $this->dm          = $dm;
-        $this->curlManager = $curlManager;
+        $dm                  = $dml->getDm();
+        $this->dm            = $dm;
+        $this->curlManager   = $curlManager;
+        $this->configFactory = $configFactory;
     }
 
     /**
@@ -65,7 +76,7 @@ class RequestHandler
 
         $uri = sprintf(self::GENERATOR_TOPOLOGY_URL, $topologyId);
         $dto = new RequestDto(CurlManager::METHOD_POST, new Uri($uri));
-        $dto->setBody(TopologyConfigFactory::create($nodes));
+        $dto->setBody($this->configFactory->create($nodes));
 
         return $this->curlManager->send($dto);
     }

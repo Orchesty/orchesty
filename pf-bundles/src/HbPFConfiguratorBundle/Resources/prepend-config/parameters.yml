@@ -9,3 +9,23 @@ parameters:
     env(DEPLOYMENT_PREFIX): demo
     topology_mode: "%env(TOPOLOGY_MODE)%"
     env(TOPOLOGY_MODE): swarm
+    docker_registry: "%env(DOCKER_REGISTRY)%"
+    env(DOCKER_REGISTRY): dkr.hanaboso.net/pipes/pipes
+    docker_pf_bridge_image: "%env(DOCKER_PF_BRIDGE_IMAGE)%"
+    env(DOCKER_PF_BRIDGE_IMAGE): pf-bridge:dev
+    multi_probe_host: "%env(MULTI_PROBE_HOST)%"
+    env(MULTI_PROBE_HOST): multi-probe:8007
+    worker_default_port: "%env(WORKER_DEFAULT_PORT)%"
+    env(WORKER_DEFAULT_PORT): 8008
+
+
+    topology_configs:
+        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::RABBITMQ_HOST: "%rabbit_host%"
+        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::RABBITMQ_USER: "%rabbit_user%"
+        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::RABBITMQ_PASS: "%rabbit_password%"
+        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::RABBITMQ_VHOST: "%rabbit_vhost%"
+        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::DOCKER_REGISTRY: "%docker_registry%"
+        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::DOCKER_PF_BRIDGE_IMAGE: "%docker_pf_bridge_image%"
+        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::MULTI_PROBE_HOST: "%multi_probe_host%"
+        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::METRICS_HOST: "%kapacitor.host%:%kapacitor.port%"
+        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::WORKER_DEFAULT_PORT: "%worker_default_port%"

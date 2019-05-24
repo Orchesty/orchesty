@@ -26,3 +26,4 @@ services:
         arguments:
             - '@hbpf.database_manager_locator'
             - '@hbpf.transport.curl_manager'
+            - '@hbpf.topology.configurator'
