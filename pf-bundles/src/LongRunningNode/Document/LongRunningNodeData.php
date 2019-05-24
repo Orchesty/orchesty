@@ -3,12 +3,13 @@
 namespace Hanaboso\PipesFramework\LongRunningNode\Document;
 
 use Bunny\Message;
-use DateTime;
-use DateTimeZone;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Traits\Document\CreatedTrait;
 use Hanaboso\CommonsBundle\Traits\Document\IdTrait;
+use Hanaboso\CommonsBundle\Traits\Document\UpdatedTrait;
+use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
 use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 
 /**
@@ -17,13 +18,14 @@ use Hanaboso\CommonsBundle\Utils\PipesHeaders;
  * @package Hanaboso\PipesFramework\LongRunningNode\Document
  *
  * @ODM\Document(repositoryClass="Hanaboso\PipesFramework\LongRunningNode\Repository\LongRunningNodeDataRepository")
- *
  * @ODM\HasLifecycleCallbacks()
  */
 class LongRunningNodeData
 {
 
     use IdTrait;
+    use CreatedTrait;
+    use UpdatedTrait;
 
     public const PARENT_PROCESS_HEADER = 'parent-process-id';
     public const UPDATED_BY_HEADER     = 'updated-by';
@@ -125,20 +127,6 @@ class LongRunningNodeData
     private $headers = [];
 
     /**
-     * @var DateTime
-     *
-     * @ODM\Field(type="date")
-     */
-    private $created;
-
-    /**
-     * @var DateTime
-     *
-     * @ODM\Field(type="date")
-     */
-    private $updated;
-
-    /**
      * @var string|null
      *
      * @ODM\Field(type="string", nullable=true)
@@ -166,7 +154,8 @@ class LongRunningNodeData
      */
     public function __construct()
     {
-        $this->created = new DateTime('now', new DateTimeZone('UTC'));
+        $this->created = DateTimeUtils::getUtcDateTime();
+        $this->updated = DateTimeUtils::getUtcDateTime();
     }
 
     /**
@@ -410,46 +399,6 @@ class LongRunningNodeData
     }
 
     /**
-     * @return DateTime
-     */
-    public function getCreated(): DateTime
-    {
-        return $this->created;
-    }
-
-    /**
-     * @param DateTime $created
-     *
-     * @return LongRunningNodeData
-     */
-    public function setCreated(DateTime $created): LongRunningNodeData
-    {
-        $this->created = $created;
-
-        return $this;
-    }
-
-    /**
-     * @return DateTime
-     */
-    public function getUpdated(): DateTime
-    {
-        return $this->updated;
-    }
-
-    /**
-     * @param DateTime $updated
-     *
-     * @return LongRunningNodeData
-     */
-    public function setUpdated(DateTime $updated): LongRunningNodeData
-    {
-        $this->updated = $updated;
-
-        return $this;
-    }
-
-    /**
      * @return string|null
      */
     public function getUpdatedBy(): ?string
@@ -522,7 +471,6 @@ class LongRunningNodeData
         if (is_array($this->auditLogs)) {
             $this->auditLogs = (string) json_encode($this->auditLogs);
         }
-        $this->updated = new DateTime('now', new DateTimeZone('UTC'));
     }
 
     /**

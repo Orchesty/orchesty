@@ -2,9 +2,9 @@
 
 namespace Hanaboso\PipesFramework\Application\Document;
 
-use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
+use Hanaboso\CommonsBundle\Traits\Document\CreatedTrait;
 use Hanaboso\CommonsBundle\Traits\Document\IdTrait;
 use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
 
@@ -22,13 +22,7 @@ class Webhook
     public const APPLICATION = 'application';
 
     use IdTrait;
-
-    /**
-     * @var DateTime
-     *
-     * @ODM\Field(type="date")
-     */
-    private $created;
+    use CreatedTrait;
 
     /**
      * @var string
@@ -87,14 +81,6 @@ class Webhook
     public function __construct()
     {
         $this->created = DateTimeUtils::getUtcDateTime();
-    }
-
-    /**
-     * @return DateTime
-     */
-    public function getCreated(): DateTime
-    {
-        return $this->created;
     }
 
     /**
