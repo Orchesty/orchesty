@@ -5,6 +5,7 @@ namespace Hanaboso\PipesFramework\Configurator\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Index;
 use Doctrine\ODM\MongoDB\PersistentCollection;
+use Exception;
 use Hanaboso\CommonsBundle\Enum\HandlerEnum;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\CommonsBundle\Exception\EnumException;
@@ -325,11 +326,15 @@ class Node
     }
 
     /**
-     * @return string|null
+     * @return SystemConfigDto|null
+     * @throws Exception
      */
-    public function getSystemConfigs(): ?string
+    public function getSystemConfigs(): ?SystemConfigDto
     {
-        return $this->systemConfigs;
+        if (!$this->systemConfigs) {
+            return NULL;
+        }
+        return SystemConfigDto::fromString($this->systemConfigs);
     }
 
 }

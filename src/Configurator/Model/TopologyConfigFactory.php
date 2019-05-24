@@ -1,18 +1,19 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\Utils;
+namespace Hanaboso\PipesFramework\Configurator\Model;
 
 use Exception;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
-use Symfony\Component\Dotenv\Dotenv;
+use Hanaboso\PipesFramework\Configurator\Exception\TopologyConfigException;
+use Hanaboso\PipesFramework\Configurator\Model\Dto\SystemConfigDto;
 
 /**
  * Class TopologyConfigFactory
  *
- * @package Hanaboso\PipesFramework\Utils
+ * @package Hanaboso\PipesFramework\Configurator\Model
  */
-final class TopologyConfigFactory
+class TopologyConfigFactory
 {
 
     public const ENVIRONMENT            = 'enviroment';
@@ -50,19 +51,32 @@ final class TopologyConfigFactory
     public const NAME          = 'name';
 
     /**
+     * @var array
+     */
+    private $configs;
+
+    /**
+     * TopologyConfigFactory constructor.
+     *
+     * @param array $configs
+     */
+    public function __construct(array $configs)
+    {
+        $this->configs = $configs;
+    }
+
+    /**
      * @param array $nodes
      *
      * @return string
      * @throws Exception
      */
-    public static function create(array $nodes): string
+    public function create(array $nodes): string
     {
-        $dotenv = new Dotenv();
-        $dotenv->load(__DIR__ . '/../../.env');
 
         $result = [
-            self::ENVIRONMENT => self::getEnvParameters(),
-            self::NODE_CONFIG => self::loopNodes($nodes),
+            self::ENVIRONMENT => $this->getEnvParameters(),
+            self::NODE_CONFIG => $this->loopNodes($nodes),
         ];
 
         return (string) json_encode($result);
@@ -72,17 +86,18 @@ final class TopologyConfigFactory
      * @param array $nodes
      *
      * @return array
-     * @throws Exception
+     * @throws TopologyConfigException
      */
-    private static function loopNodes(array $nodes): array
+    private function loopNodes(array $nodes): array
     {
         $arr = [];
         /** @var Node $node */
         foreach ($nodes as $node) {
-            $arr[$node->getId()] = [
-                self::FAUCET => self::getFaucet($node),
-                self::WORKER => self::getWorkers($node),
-            ];
+            $arr[$node->getId()] = [self::WORKER => $this->getWorkers($node)];
+
+            if (self::getFaucet($node)) {
+                $arr[$node->getId()][self::FAUCET] = $this->getFaucet($node);
+            }
         }
 
         return $arr;
@@ -91,19 +106,19 @@ final class TopologyConfigFactory
     /**
      * @return array
      */
-    private static function getEnvParameters(): array
+    private function getEnvParameters(): array
     {
         return [
             self::ENVIRONMENT => [
-                self::DOCKER_REGISTRY        => $_ENV[self::DOCKER_REGISTRY],
-                self::DOCKER_PF_BRIDGE_IMAGE => $_ENV[self::DOCKER_PF_BRIDGE_IMAGE],
-                self::RABBITMQ_HOST          => $_ENV[self::RABBITMQ_HOST],
-                self::RABBITMQ_USER          => $_ENV['RABBITMQ_DEFAULT_USER'],
-                self::RABBITMQ_PASS          => $_ENV['RABBITMQ_DEFAULT_PASS'],
-                self::RABBITMQ_VHOST         => $_ENV['RABBITMQ_DEFAULT_VHOST'],
-                self::MULTI_PROBE_HOST       => $_ENV[self::MULTI_PROBE_HOST],
-                self::METRICS_HOST           => $_ENV[self::METRICS_HOST],
-                self::WORKER_DEFAULT_PORT    => $_ENV[self::WORKER_DEFAULT_PORT],
+                self::DOCKER_REGISTRY        => $this->configs[self::DOCKER_REGISTRY],
+                self::DOCKER_PF_BRIDGE_IMAGE => $this->configs[self::DOCKER_PF_BRIDGE_IMAGE],
+                self::RABBITMQ_HOST          => $this->configs[self::RABBITMQ_HOST],
+                self::RABBITMQ_USER          => $this->configs[self::RABBITMQ_USER],
+                self::RABBITMQ_PASS          => $this->configs[self::RABBITMQ_PASS],
+                self::RABBITMQ_VHOST         => $this->configs[self::RABBITMQ_VHOST],
+                self::MULTI_PROBE_HOST       => $this->configs[self::MULTI_PROBE_HOST],
+                self::METRICS_HOST           => $this->configs[self::METRICS_HOST],
+                self::WORKER_DEFAULT_PORT    => $this->configs[self::WORKER_DEFAULT_PORT],
             ],
         ];
     }
@@ -112,14 +127,18 @@ final class TopologyConfigFactory
      * @param Node $node
      *
      * @return array|null
+     * @throws Exception
      */
-    private static function getFaucet(Node $node): ?array
+    private function getFaucet(Node $node): ?array
     {
         if ($node->getSystemConfigs()) {
+            /** @var SystemConfigDto $config */
+            $config = $node->getSystemConfigs();
+
             return [
                 self::SETTINGS => [
                     self::PREFETCH =>
-                        json_decode((string) $node->getSystemConfigs(), TRUE, 512, JSON_THROW_ON_ERROR),
+                        $config->getPrefetch(),
                 ],
             ];
         } else {
@@ -131,19 +150,19 @@ final class TopologyConfigFactory
      * @param Node $node
      *
      * @return array
-     * @throws Exception
+     * @throws TopologyConfigException
      */
-    private static function getWorkers(Node $node): array
+    private function getWorkers(Node $node): array
     {
         return [
-            self::TYPE     => self::getWorkerByType($node),
+            self::TYPE     => $this->getWorkerByType($node),
             self::SETTINGS => [
-                self::HOST          => self::getHost($node->getType()),
-                self::PROCESS_PATH  => self::getPaths($node->getType())[self::PROCESS_PATH],
-                self::STATUS_PATH   => self::getPaths($node->getType())[self::STATUS_PATH],
+                self::HOST          => $this->getHost($node->getType(), $node->getSystemConfigs()),
+                self::PROCESS_PATH  => $this->getPaths($node->getType())[self::PROCESS_PATH],
+                self::STATUS_PATH   => $this->getPaths($node->getType())[self::STATUS_PATH],
                 self::METHOD        => 'POST',
-                self::PORT          => self::getPort($node->getType()),
-                self::PUBLISH_QUEUE => self::getPublishQueue($node->getType()),
+                self::PORT          => $this->getPort($node->getType()),
+                self::PUBLISH_QUEUE => $this->getPublishQueue($node->getType()),
             ],
         ];
     }
@@ -153,7 +172,7 @@ final class TopologyConfigFactory
      *
      * @return string
      */
-    private static function getWorkerByType(Node $node): string
+    private function getWorkerByType(Node $node): string
     {
         switch ($node->getType()) {
             case TypeEnum::BATCH:
@@ -197,9 +216,9 @@ final class TopologyConfigFactory
      * @param string $nodeType
      *
      * @return array
-     * @throws Exception
+     * @throws TopologyConfigException
      */
-    public static function getPaths(string $nodeType): array
+    public function getPaths(string $nodeType): array
     {
         switch ($nodeType) {
             case TypeEnum::XML_PARSER:
@@ -263,20 +282,25 @@ final class TopologyConfigFactory
                 ];
                 break;
             default:
-                throw new Exception(sprintf('Unknown type of routing.'));
+                throw new TopologyConfigException(sprintf('Unknown type of routing.'));
         }
 
         return $paths;
     }
 
     /**
-     * @param string $nodeType
+     * @param string               $nodeType
+     * @param SystemConfigDto|null $dto
      *
      * @return string
-     * @throws Exception
+     * @throws TopologyConfigException
      */
-    private static function getHost(string $nodeType): string
+    private function getHost(string $nodeType, ?SystemConfigDto $dto): string
     {
+
+        if ($dto && !empty($dto->getSdkHost())) {
+            return $dto->getSdkHost();
+        }
 
         switch ($nodeType) {
             case TypeEnum::XML_PARSER:
@@ -295,7 +319,7 @@ final class TopologyConfigFactory
                 $host = 'monolith-api';
                 break;
             default:
-                throw new Exception(sprintf('Unknow type of host'));
+                throw new TopologyConfigException(sprintf('Unknown type of host'));
         }
 
         return $host;
@@ -307,7 +331,7 @@ final class TopologyConfigFactory
      *
      * @return array
      */
-    private static function getPublishQueue(string $nodeType): array
+    private function getPublishQueue(string $nodeType): array
     {
         if ($nodeType === TypeEnum::BATCH or $nodeType === TypeEnum::BATCH_CONNECTOR) {
             return [
@@ -322,9 +346,9 @@ final class TopologyConfigFactory
      * @param string $nodeType
      *
      * @return int
-     * @throws Exception
+     * @throws TopologyConfigException
      */
-    private static function getPort(string $nodeType): int
+    private function getPort(string $nodeType): int
     {
         if ($nodeType === TypeEnum::XML_PARSER
             or $nodeType === TypeEnum::FTP
@@ -339,7 +363,7 @@ final class TopologyConfigFactory
         ) {
             return 80;
         } else {
-            throw new Exception('Unknown type for port');
+            throw new TopologyConfigException('Unknown type for port');
         }
     }
 

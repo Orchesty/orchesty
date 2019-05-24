@@ -103,7 +103,7 @@ final class SystemConfigDto
      * @return SystemConfigDto
      * @throws Exception
      */
-    public function fromString(string $param): SystemConfigDto
+    public static function fromString(string $param): SystemConfigDto
     {
         $result = json_decode($param, TRUE, 512, JSON_THROW_ON_ERROR);
 

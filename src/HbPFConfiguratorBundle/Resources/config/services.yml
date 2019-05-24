@@ -11,3 +11,8 @@ services:
             - '@hbpf.transport.curl_manager'
             - '%starting_point_host%'
             - '%cron_host%'
+
+    hbpf.topology.configurator:
+        class: Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory
+        arguments:
+            - '%topology_configs%'

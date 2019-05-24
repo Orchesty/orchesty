@@ -634,9 +634,11 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $this->dm->flush();
 
         $foundNode = $this->dm->getRepository(Node::class)->findBy(['name' => 'node10']);
+        /** @var SystemConfigDto $config */
+        $config = $foundNode[0]->getSystemConfigs();
 
         self::assertEquals('node10', $foundNode[0]->getName());
-        self::assertEquals($json, $foundNode[0]->getSystemConfigs());
+        self::assertEquals($json, $config->toString());
     }
 
     /**

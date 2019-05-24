@@ -1,23 +1,22 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\Utils;
+namespace Tests\Integration\Configurator\Model;
 
-use Exception;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\CommonsBundle\Exception\EnumException;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
 use Hanaboso\PipesFramework\Configurator\Model\Dto\SystemConfigDto;
+use Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory;
 use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
-use Hanaboso\PipesFramework\Utils\TopologyConfigFactory;
 use Tests\DatabaseTestCaseAbstract;
 
 /**
  * Class TopologyConfigFactoryTest
  *
- * @package Tests\Unit\Utils
+ * @package Tests\Integration\Configurator\Model
  */
-final class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
+class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
 {
 
     /**
@@ -40,27 +39,21 @@ final class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
         $nodeRepository = $this->dm->getRepository(Node::class);
         $nodes          = $nodeRepository->getNodesByTopology('123');
 
-        $result = TopologyConfigFactory::create($nodes);
+        $configFactory = self::$container->get('hbpf.topology.configurator');
+        $result        = $configFactory->create($nodes);
+
         self::assertIsString($result);
 
-        $repository = $this->dm->getRepository(Node::class);
-        $nodes      = $repository->findAll();
+        $nodes = $nodeRepository->findAll();
 
         $arr = json_decode($result, TRUE);
         self::assertArrayNotHasKey(TopologyConfigFactory::WORKER, $arr);
         self::assertArrayNotHasKey(TopologyConfigFactory::SETTINGS, $arr);
 
-        self::assertEquals('monolith-api',
+        self::assertEquals('someSdkHost',
             $arr[TopologyConfigFactory::NODE_CONFIG][$nodes[1]->getId()][TopologyConfigFactory::WORKER][TopologyConfigFactory::SETTINGS][TopologyConfigFactory::HOST]
         );
         self::assertEquals(3, count($arr[TopologyConfigFactory::NODE_CONFIG]));
-
-        $node4 = (new Node())->setTopology('123')->setType(TypeEnum::BATCH);
-        $this->persistAndFlush($node4);
-        $nodes = $nodeRepository->getNodesByTopology('123');
-
-        self::expectException(Exception::class);
-        TopologyConfigFactory::create($nodes);
     }
 
 }
