@@ -60,11 +60,9 @@ interface ApplicationInterface
     ): RequestDto;
 
     /**
-     * @param ApplicationInstall $applicationInstall
-     *
      * @return Form
      */
-    public function getSettingsFields(ApplicationInstall $applicationInstall): Form;
+    public function getSettingsForm(): Form;
 
     /**
      * @param ApplicationInstall $applicationInstall

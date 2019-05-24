@@ -8,29 +8,21 @@ use Hanaboso\CommonsBundle\Enum\AuthorizationTypeEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
-use Hanaboso\PipesFramework\Application\Base\OAuth2\OAuth2ApplicationAbstract;
+use Hanaboso\PipesFramework\Application\Base\Basic\BasicApplicationAbstract;
 use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
+use Hanaboso\PipesFramework\Application\Exception\ApplicationInstallException;
+use Hanaboso\PipesFramework\Application\Model\Form\Field;
+use Hanaboso\PipesFramework\Application\Model\Form\Form;
 use Hanaboso\PipesFramework\Application\Model\Webhook\WebhookApplicationInterface;
 use Hanaboso\PipesFramework\Application\Model\Webhook\WebhookSubscription;
-use Hanaboso\PipesFramework\Authorization\Provider\OAuth2Provider;
 
 /**
  * Class NullApplication
  *
  * @package Tests\Integration\Application\Model
  */
-class NullApplication extends OAuth2ApplicationAbstract implements WebhookApplicationInterface
+class NullApplication extends BasicApplicationAbstract implements WebhookApplicationInterface
 {
-
-    /**
-     * NullApplication constructor.
-     *
-     * @param OAuth2Provider $provider
-     */
-    public function __construct(OAuth2Provider $provider)
-    {
-        parent::__construct($provider);
-    }
 
     /**
      * @return string
@@ -84,27 +76,6 @@ class NullApplication extends OAuth2ApplicationAbstract implements WebhookApplic
         $url;
 
         return new RequestDto($method, new Uri(''));
-    }
-
-    /**
-     * @param ApplicationInstall $applicationInstall
-     *
-     * @return array
-     */
-    public function getSettingsFields(ApplicationInstall $applicationInstall): array
-    {
-        return $applicationInstall->getSettings();
-    }
-
-    /**
-     * @param ApplicationInstall $applicationInstall
-     * @param array              $settings
-     *
-     * @return ApplicationInstall
-     */
-    public function setApplicationSettings(ApplicationInstall $applicationInstall, array $settings): ApplicationInstall
-    {
-        return $applicationInstall->setSettings($settings);
     }
 
     /**
@@ -202,6 +173,40 @@ class NullApplication extends OAuth2ApplicationAbstract implements WebhookApplic
     public function getApplicationType(): string
     {
         return ApplicationTypeEnum::WEBHOOK;
+    }
+
+    /**
+     * @return Form
+     * @throws ApplicationInstallException
+     */
+    public function getSettingsForm(): Form
+    {
+
+        $field1 = new Field(
+            Field::TEXT,
+            'settings1',
+            'Client 11',
+        );
+
+        $field2 = new Field(
+            Field::TEXT,
+            'settings2',
+            'Client 22'
+        );
+
+        $field3 = new Field(
+            Field::PASSWORD,
+            'settings3',
+            'Client 33'
+        );
+
+        $form = new Form();
+        $form
+            ->addField($field1)
+            ->addField($field2)
+            ->addField($field3);
+
+        return $form;
     }
 
 }
