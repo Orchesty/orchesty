@@ -9,7 +9,7 @@ use Hanaboso\PipesFramework\Application\Model\Form\Form;
 /**
  * Interface ApplicationInterface
  *
- * @package Hanaboso\PipesFramework\Application
+ * @package Hanaboso\PipesFramework\Application\Base
  */
 interface ApplicationInterface
 {

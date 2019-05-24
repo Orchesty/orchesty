@@ -27,6 +27,7 @@ final class CustomNodeLoaderTest extends KernelTestCaseAbstract
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->customNodeLoader = self::$container->get('hbpf.loader.custom_node');
     }
 

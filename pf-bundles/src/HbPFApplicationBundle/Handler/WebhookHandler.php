@@ -20,7 +20,7 @@ class WebhookHandler
     private $applicationManager;
 
     /**
-     * ApplicationHandler constructor.
+     * WebhookHandler constructor.
      *
      * @param ApplicationManager $applicationManager
      */

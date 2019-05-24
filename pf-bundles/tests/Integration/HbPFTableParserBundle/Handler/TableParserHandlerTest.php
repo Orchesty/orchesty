@@ -41,6 +41,7 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->storage = self::$container->get('hbpf.file_storage');
         $this->handler = new TableParserHandler(new TableParser(), $this->storage);
         $this->path    = __DIR__ . '/../../Parser/data';

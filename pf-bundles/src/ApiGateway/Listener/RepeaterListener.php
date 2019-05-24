@@ -14,7 +14,7 @@ use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
- * Class ControllerExceptionListener
+ * Class RepeaterListener
  *
  * @package Hanaboso\PipesFramework\ApiGateway\Listener
  */
@@ -29,7 +29,7 @@ class RepeaterListener implements EventSubscriberInterface, LoggerAwareInterface
     private $logger;
 
     /**
-     * ControllerExceptionListener constructor.
+     * RepeaterListener constructor.
      */
     public function __construct()
     {

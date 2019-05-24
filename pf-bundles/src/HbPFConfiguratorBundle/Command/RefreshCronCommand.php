@@ -41,6 +41,7 @@ class RefreshCronCommand extends Command
     public function __construct(DocumentManager $dm, CronManager $cronManager)
     {
         parent::__construct(self::CMD_NAME);
+
         $this->dm          = $dm;
         $this->cronManager = $cronManager;
     }

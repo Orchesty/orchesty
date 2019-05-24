@@ -14,7 +14,7 @@ use Symfony\Component\Routing\RouteCollectionBuilder;
 /**
  * Class Kernel
  *
- * @package App
+ * @package Hanaboso\PipesFramework
  */
 final class Kernel extends BaseKernel
 {

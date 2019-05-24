@@ -29,6 +29,7 @@ class BatchConnectorCallback extends BatchActionAbstract
     public function __construct(ConnectorLoader $connectorLoader)
     {
         parent::__construct();
+
         $this->connectorLoader = $connectorLoader;
     }
 

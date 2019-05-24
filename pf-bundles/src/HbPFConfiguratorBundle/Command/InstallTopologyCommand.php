@@ -38,6 +38,7 @@ class InstallTopologyCommand extends Command
     public function __construct(InstallManager $manager)
     {
         parent::__construct('topology:install');
+
         $this->manager = $manager;
     }
 

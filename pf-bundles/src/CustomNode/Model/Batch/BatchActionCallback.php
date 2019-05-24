@@ -29,6 +29,7 @@ class BatchActionCallback extends BatchActionAbstract
     public function __construct(CustomNodeLoader $customNodeLoader)
     {
         parent::__construct();
+
         $this->customNodeLoader = $customNodeLoader;
     }
 

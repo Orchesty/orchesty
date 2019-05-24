@@ -14,7 +14,7 @@ use Tests\ControllerTestCaseAbstract;
  *
  * @package Tests\Controller\HbPFApplicationBundle\Controller
  */
-class WebhookControllerTest extends ControllerTestCaseAbstract
+final class WebhookControllerTest extends ControllerTestCaseAbstract
 {
 
     /**

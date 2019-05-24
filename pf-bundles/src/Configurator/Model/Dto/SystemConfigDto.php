@@ -5,7 +5,7 @@ namespace Hanaboso\PipesFramework\Configurator\Model\Dto;
 use Exception;
 
 /**
- * Class SystemConfDto
+ * Class SystemConfigDto
  *
  * @package Hanaboso\PipesFramework\Configurator\Model\Dto
  */
@@ -54,7 +54,7 @@ final class SystemConfigDto
     private $repeaterInterval;
 
     /**
-     * SystemConfDto constructor.
+     * SystemConfigDto constructor.
      *
      * @param string $sdkHost
      * @param string $bridgeHost

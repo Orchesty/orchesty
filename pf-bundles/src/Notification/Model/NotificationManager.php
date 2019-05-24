@@ -22,7 +22,9 @@ use Throwable;
 class NotificationManager implements LoggerAwareInterface
 {
 
-    private const URL = '%s/notification_settings';
+    private const LIST = '%s/notifications/settings';
+    private const GET  = '%s/notifications/settings/%s';
+    private const SAVE = '%s/notifications/settings/%s';
 
     /**
      * @var CurlManagerInterface
@@ -59,21 +61,36 @@ class NotificationManager implements LoggerAwareInterface
      */
     public function getSettings(): ResponseDto
     {
-        $dto = new RequestDto(CurlManager::METHOD_GET, $this->getUrl(self::URL));
+        $dto = new RequestDto(CurlManager::METHOD_GET, $this->getUrl(self::LIST));
 
         return $this->sendAndProcessRequest($dto);
     }
 
     /**
-     * @param array $data
+     * @param string $id
      *
      * @return ResponseDto
      * @throws CurlException
      * @throws NotificationException
      */
-    public function updateSettings(array $data): ResponseDto
+    public function getSetting(string $id): ResponseDto
     {
-        $dto = (new RequestDto(CurlManager::METHOD_PUT, $this->getUrl(self::URL)))
+        $dto = new RequestDto(CurlManager::METHOD_GET, $this->getUrl(self::GET, $id));
+
+        return $this->sendAndProcessRequest($dto);
+    }
+
+    /**
+     * @param string $id
+     * @param array  $data
+     *
+     * @return ResponseDto
+     * @throws CurlException
+     * @throws NotificationException
+     */
+    public function updateSettings(string $id, array $data): ResponseDto
+    {
+        $dto = (new RequestDto(CurlManager::METHOD_PUT, $this->getUrl(self::SAVE, $id)))
             ->setBody((string) json_encode($data));
 
         return $this->sendAndProcessRequest($dto);
@@ -81,12 +98,13 @@ class NotificationManager implements LoggerAwareInterface
 
     /**
      * @param string $url
+     * @param string ...$parameters
      *
      * @return Uri
      */
-    private function getUrl(string $url): Uri
+    private function getUrl(string $url, ?string ...$parameters): Uri
     {
-        return new Uri(sprintf($url, rtrim($this->backend, '/')));
+        return new Uri(sprintf($url, rtrim($this->backend, '/'), ...$parameters));
     }
 
     /**

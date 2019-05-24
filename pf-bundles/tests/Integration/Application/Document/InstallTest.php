@@ -10,7 +10,7 @@ use Tests\DatabaseTestCaseAbstract;
 /**
  * Class InstallTest
  *
- * @package Tests\Integration\Document
+ * @package Tests\Integration\Application\Document
  */
 final class InstallTest extends DatabaseTestCaseAbstract
 {
