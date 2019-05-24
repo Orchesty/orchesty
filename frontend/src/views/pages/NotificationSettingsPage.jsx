@@ -1,29 +1,30 @@
-import React from 'react';
-import {connect} from 'react-redux';
+import React from 'react'
+import { connect } from 'react-redux';
 
-import NotificationSettingsForm from 'components/notificationSettings/NotificationSettingsForm';
-import Page from 'wrappers/Page';
-import StateComponent from 'wrappers/StateComponent';
+import * as applicationActions from 'rootApp/actions/applicationActions';
 import * as notificationSettingsActions from 'actions/notificationSettingsActions';
-import processes from 'enums/processes';
+import Page from 'wrappers/Page';
 import Panel from 'wrappers/Panel';
+import NotificationSettingsListTable from '../components/notificationSettings/NotificationSettingsListTable';
 
 function mapStateToProps(state, ownProps) {
-  const {notificationSettings} = state;
+  const { notificationSettings } = state;
+  const list = notificationSettings.lists[ownProps.componentKey];
   return {
-    initialValues: notificationSettings.data,
-    state: notificationSettings.state,
-    pageTitle: 'Notification settings',
-    form: ownProps.componentKey,
-    processId: processes.notificationSettingsUpdate()
+    list: list,
+    elements: notificationSettings.elements,
+    state: list && list.state,
   }
 }
 
-function mapActionsToProps(dispatch, ownProps){
+function mapActionsToProps(dispatch, ownProps) {
+  const needList = forced => dispatch(notificationSettingsActions.needNotificationSettingList(ownProps.componentKey));
   return {
-    notLoadedCallback: () => dispatch(notificationSettingsActions.needNotificationSettings()),
-    commitAction: data => dispatch(notificationSettingsActions.updateNotificationSettings(data))
+    needList: needList,
+    notLoadedCallback: needList,
+    initialize: () => dispatch(notificationSettingsActions.notificationSettingInitialize()),
+    changeNotificationSettings: (id, data) => dispatch(applicationActions.openModal('notification_settings_change', { componentKey: ownProps.componentKey, id, data })),
   }
 }
 
-export default connect(mapStateToProps, mapActionsToProps)(Page(Panel(StateComponent(NotificationSettingsForm), {title: 'Notification setting'})));
+export default Page(Panel(connect(mapStateToProps, mapActionsToProps)(NotificationSettingsListTable), { title: 'Notification Settings' }));
