@@ -7,12 +7,6 @@ RUN apt-get update && \
     apt-get clean && apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/* /var/lib/log/* /var/log/* /tmp/* /var/tmp/*
 
-# Nginx & FPM config
-ENV PHP_APP_INDEX index.php
-COPY nginx.conf /etc/nginx/nginx.conf
-COPY php-fpm.conf /usr/local/etc/php-fpm.d/zzz-local.conf
-RUN mkdir -p /var/log/nginx
-
 # Container has the same ssh as the host machine
 ENV SSH_AUTH_SOCK=/tmp/bound-ssh-agent
 
@@ -33,8 +27,6 @@ RUN sed -i "s/^user =.*/user = dev/; s/^group = .*/group = dev/;" /usr/local/etc
 COPY entrypoint.sh /
 ENTRYPOINT [ "/entrypoint.sh" ]
 
-WORKDIR /srv/project
+WORKDIR /var/www
 
-RUN rm -f /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
-
-CMD sudo -E php-fpm -d extension=xdebug.so
+CMD sudo -E php-xdebug-w-nginx.sh

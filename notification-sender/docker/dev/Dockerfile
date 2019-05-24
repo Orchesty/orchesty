@@ -28,6 +28,4 @@ ENTRYPOINT [ "/entrypoint.sh" ]
 
 WORKDIR /var/www
 
-RUN rm -f /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
-
-CMD sudo -E php-fpm -d extension=xdebug.so
+CMD sudo -E php-xdebug-w-nginx.sh
