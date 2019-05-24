@@ -6,3 +6,8 @@ services:
         class: Hanaboso\PipesFramework\HbPFApplicationBundle\Controller\ApplicationController
         arguments:
             - '@hbpf._application.handler.application'
+
+    Hanaboso\PipesFramework\HbPFApplicationBundle\Controller\WebhookController:
+        class: Hanaboso\PipesFramework\HbPFApplicationBundle\Controller\WebhookController
+        arguments:
+            - '@hbpf._application.handler.webhook'
