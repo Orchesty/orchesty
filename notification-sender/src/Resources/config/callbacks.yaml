@@ -1,0 +1,10 @@
+services:
+    _defaults:
+        autowire: false
+        autoconfigure: false
+        public: '%service_visibility%'
+
+    notification.callback.message:
+        class: Hanaboso\NotificationSender\Model\Notification\NotificationMessageCallback
+        arguments:
+            - '@notification.manager'

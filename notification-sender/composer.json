@@ -1,0 +1,45 @@
+{
+  "name": "hanaboso/notification-sender",
+  "license": "proprietary",
+  "description": "NotificationSender for Symfony",
+  "version": "1.0.0",
+  "autoload": {
+    "psr-4": {
+      "Hanaboso\\NotificationSender\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
+  "require": {
+    "php": "^7.3",
+    "ext-json": "*",
+    "ext-mongodb": "*",
+    "alcaeus/mongo-php-adapter": "^1.1",
+    "doctrine/mongodb-odm-bundle": "^3.5",
+    "friendsofsymfony/rest-bundle": "^2.5",
+    "hanaboso/commons-bundle": "^1.1",
+    "hanaboso/email-service-bundle": "^1.0",
+    "hanaboso/rabbit-mq-bundle": "^1.1",
+    "symfony/symfony": "^4.2"
+  },
+  "require-dev": {
+    "hanaboso/php-check-utils": "^1.0"
+  },
+  "repositories": [
+    {
+      "type": "git",
+      "url": "git@gitlab.hanaboso.net:hanaboso/commons-bundle.git"
+    },
+    {
+      "type": "git",
+      "url": "git@gitlab.hanaboso.net:hanaboso/email-service-bundle.git"
+    },
+    {
+      "type": "git",
+      "url": "git@gitlab.hanaboso.net:hanaboso/rabbit-mq-bundle.git"
+    }
+  ]
+}

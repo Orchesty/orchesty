@@ -1,0 +1,19 @@
+parameters:
+    locale: 'en'
+    secret: '%env(APP_SECRET)%'
+
+    env(MONGO_HOST): mongodb
+    env(MONGO_PORT): null
+    env(MONGO_DB): notification-sender
+    env(MONGO_USER): root
+    env(MONGO_PASSWORD): root
+    env(MONGO_CONNECTION): 'mongodb://%mongo_host%'
+    mongo_host: '%env(MONGO_HOST)%'
+    mongo_port: '%env(MONGO_PORT)%'
+    mongo_db: '%env(MONGO_DB)%'
+    mongo_user: '%env(MONGO_USER)%'
+    mongo_password: '%env(MONGO_PASSWORD)%'
+    mongo_connection: '%env(MONGO_CONNECTION)%'
+
+    env(RABBIT_HOST): rabbitmq
+    rabbit_host: '%env(RABBIT_HOST)%'

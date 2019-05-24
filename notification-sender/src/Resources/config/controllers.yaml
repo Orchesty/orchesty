@@ -1,0 +1,10 @@
+services:
+    _defaults:
+        autowire: false
+        autoconfigure: false
+        public: '%service_visibility%'
+
+    Hanaboso\NotificationSender\Controller\NotificationSettingsController:
+        class: Hanaboso\NotificationSender\Controller\NotificationSettingsController
+        arguments:
+            - '@notification.handler.settings'
