@@ -40,4 +40,12 @@ class Form
         return $fields;
     }
 
+    /**
+     * @return Field[] | array
+     */
+    public function getFields(): array
+    {
+        return $this->fields;
+    }
+
 }

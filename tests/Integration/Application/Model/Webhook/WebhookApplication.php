@@ -99,7 +99,7 @@ final class WebhookApplication extends ApplicationAbstract implements WebhookApp
      *
      * @return Form
      */
-    public function getSettingsFields(ApplicationInstall $applicationInstall): Form
+    public function getForm(ApplicationInstall $applicationInstall): Form
     {
         $applicationInstall;
 
@@ -197,6 +197,14 @@ final class WebhookApplication extends ApplicationAbstract implements WebhookApp
     public function getApplicationType(): string
     {
         return ApplicationTypeEnum::WEBHOOK;
+    }
+
+    /**
+     * @return Form
+     */
+    public function getSettingsForm(): Form
+    {
+        return new Form();
     }
 
 }

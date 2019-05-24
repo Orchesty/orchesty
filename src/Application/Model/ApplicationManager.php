@@ -8,6 +8,7 @@ use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
+use Hanaboso\PipesFramework\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesFramework\Application\Base\ApplicationInterface;
 use Hanaboso\PipesFramework\Application\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesFramework\Application\Base\OAuth1\OAuth1ApplicationInterface;
@@ -158,14 +159,14 @@ class ApplicationManager
      */
     public function saveApplicationSettings(string $key, string $user, array $data): ApplicationInstall
     {
-        $applicationInstall = $this->loader->getApplication($key)
+        $application = $this->loader->getApplication($key)
             ->setApplicationSettings(
                 $this->repository->findUserApp($key, $user),
                 $data
             );
-        $this->dm->flush($applicationInstall);
+        $this->dm->flush($application);
 
-        return $applicationInstall;
+        return $application;
     }
 
     /**
@@ -179,12 +180,14 @@ class ApplicationManager
     public function saveApplicationPassword(string $key, string $user, string $password): ApplicationInstall
     {
         /** @var BasicApplicationInterface $application */
-        $application        = $this->loader->getApplication($key);
-        $applicationInstall = $this->repository->findUserApp($key, $user);
-        $application->setApplicationPassword($applicationInstall, $password);
+        $application = $this->loader->getApplication($key);
+        $application = $application->setApplicationPassword(
+            $this->repository->findUserApp($key, $user),
+            $password
+        );
         $this->dm->flush($application);
 
-        return $applicationInstall;
+        return $application;
     }
 
     /**
@@ -255,6 +258,22 @@ class ApplicationManager
         if (ApplicationTypeEnum::isWebhook($application->getApplicationType()) && $application->isAuthorized($applicationInstall)) {
             $this->webhook->unsubscribeWebhooks($application, $applicationInstall->getUser());
         }
+    }
+
+    /**
+     * @param string $key
+     * @param string $user
+     *
+     * @return array
+     * @throws ApplicationInstallException
+     */
+    public function getApplicationSettings(string $key, string $user): array
+    {
+        $applicationInstall = $this->repository->findUserApp($key, $user);
+        /** @var ApplicationAbstract $application */
+        $application = $this->loader->getApplication($key);
+
+        return $application->getApplicationForm($applicationInstall);
     }
 
 }

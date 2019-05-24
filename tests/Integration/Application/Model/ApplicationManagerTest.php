@@ -4,6 +4,7 @@ namespace Tests\Integration\Application\Model;
 
 use Exception;
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
+use Hanaboso\PipesFramework\Application\Base\ApplicationInterface;
 use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 use Hanaboso\PipesFramework\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesFramework\Application\Model\ApplicationManager;
@@ -109,6 +110,93 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
         $app        = $repository->findAll();
 
         self::assertEquals([], $app);
+    }
+
+    /**
+     * @throws DateTimeException
+     */
+    public function testApplicationPassword(): void
+    {
+        $this->createApp('null');
+
+        $this->applicationManager->saveApplicationPassword('null', 'example1', 'password123');
+        $repository = $this->dm->getRepository(ApplicationInstall::class);
+        /** @var ApplicationInstall $app */
+        $app = $repository->findOneBy(['key' => 'null']);
+
+        self::assertEquals('password123',
+            $app->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS]['password']);
+    }
+
+    /**
+     * @throws DateTimeException
+     */
+    public function testApplicationSettings(): void
+    {
+        $this->createApp('null');
+
+        $this->applicationManager->saveApplicationSettings(
+            'null',
+            'example1',
+            [
+                'settings1' => 'some text',
+                'settings2' => 'example2',
+            ]
+        );
+        $repository = $this->dm->getRepository(ApplicationInstall::class);
+        /** @var ApplicationInstall $app */
+        $app = $repository->findOneBy(['key' => 'null']);
+
+        self::assertEquals('some text', $app->getSettings()['form']['settings1']);
+    }
+
+    /**
+     * @throws ApplicationInstallException
+     * @throws DateTimeException
+     */
+    public function testGetSettingsFormValues(): void
+    {
+        $this->createApp('null');
+
+        $this->applicationManager->saveApplicationSettings(
+            'null',
+            'example1',
+            [
+                'settings1' => 'data1',
+                'settings2' => 'data2',
+                'settings3' => 'secret',
+            ]
+        );
+        $values = $this->applicationManager->getApplicationSettings('null', 'example1');
+
+        self::assertEquals('settings1', $values[0]['key']);
+        self::assertEquals(TRUE, $values[2]['value']);
+    }
+
+    /**
+     * @throws DateTimeException
+     */
+    public function testSetApplicationSettingForm(): void
+    {
+        $this->createApp('null');
+
+        $application = $this->applicationManager->saveApplicationSettings(
+            'null',
+            'example1',
+            [
+                'settings1' => 'data1',
+                'settings2' => 'data2',
+                'password'  => 'secret123',
+            ]
+        );
+
+        self::assertIsObject($application);
+        $repository = $this->dm->getRepository(ApplicationInstall::class);
+        /** @var ApplicationInstall $app */
+        $app = $repository->findOneBy(['key' => 'null']);
+
+        self::assertEquals('data1', $app->getSettings()['form']['settings1']);
+        self::assertArrayNotHasKey('password', $app->getSettings()['form']);
     }
 
     /**
