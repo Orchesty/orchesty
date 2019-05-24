@@ -1,0 +1,15 @@
+services:
+    _defaults:
+        autowire: false
+        autoconfigure: false
+        public: '%service_visibility%'
+
+    notification.handler.settings:
+        class: Hanaboso\NotificationSender\Handler\NotificationSettingsHandler
+        arguments:
+            - '@notification.manager.settings'
+
+    hbpf.notification.handler.hanaboso:
+        class: Hanaboso\NotificationSender\Model\Notification\Handler\Impl\HanabosoNotificationHandler
+        arguments:
+        tags: ['hbpf.notification.handler']

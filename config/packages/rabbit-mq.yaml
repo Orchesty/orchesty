@@ -1,0 +1,18 @@
+rabbit_mq:
+    logger: 'monolog.logger.rabbit-mq'
+
+    connections:
+        default:
+            host: '%rabbit_host%'
+
+    queues:
+        notification-rabbit:
+        notification:
+
+    publishers:
+        notification-rabbit:
+
+    consumers:
+        notification:
+            queue: notification
+            callback: notification.callback.message

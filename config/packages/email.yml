@@ -1,0 +1,35 @@
+parameters:
+    env(SMTP_TRANSPORT): smtp
+    env(SMTP_HOST): mailhog
+    env(SMTP_PORT): 1025
+    env(SMTP_USER): root
+    env(SMTP_PASSWORD): root
+
+    mailer_transport: '%env(SMTP_TRANSPORT)%'
+    mailer_host: '%env(SMTP_HOST)%'
+    mailer_port: '%env(SMTP_PORT)%'
+    mailer_user: '%env(SMTP_USER)%'
+    mailer_password: '%env(SMTP_PASSWORD)%'
+    mailer_async: false
+    mailer_builder_id: generic
+
+services:
+    _defaults:
+        autowire: false
+        autoconfigure: false
+        public: '%public.services%'
+
+    mailer:
+        class: EmailServiceBundle\Mailer\Mailer
+        arguments:
+            - '@EmailServiceBundle\Transport\Impl\SwiftMailerTransport'
+
+swiftmailer:
+    transport: '%mailer_transport%'
+    host: '%mailer_host%'
+    port: '%mailer_port%'
+    username: '%mailer_user%'
+    password: '%mailer_password%'
+    spool: { type: memory }
+    disable_delivery: false
+    logging: true
