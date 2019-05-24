@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesFramework\HbPFNotificationBundle\Controller;
 
 use FOS\RestBundle\Controller\AbstractFOSRestController;
+use Hanaboso\CommonsBundle\Enum\NotificationEventEnum;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\HbPFNotificationBundle\Handler\NotificationHandler;
 use Hanaboso\PipesFramework\Notification\Exception\NotificationException;
@@ -51,16 +52,43 @@ class NotificationController extends AbstractFOSRestController
     }
 
     /**
-     * @Route("/notification_settings", methods={"PUT", "OPTIONS"})
-     *
-     * @param Request $request
+     * @Route("/notification_settings/events", methods={"GET", "OPTIONS"})
      *
      * @return Response
      */
-    public function updateSettingsAction(Request $request): Response
+    public function getSettingEventsAction(): Response
+    {
+        return $this->getResponse(NotificationEventEnum::getChoices());
+    }
+
+    /**
+     * @Route("/notification_settings/{id}", methods={"GET", "OPTIONS"})
+     *
+     * @param string $id
+     *
+     * @return Response
+     */
+    public function getSettingAction(string $id): Response
     {
         try {
-            return $this->getResponse($this->notificationHandler->updateSettings($request->request->all()));
+            return $this->getResponse($this->notificationHandler->getSetting($id));
+        } catch (NotificationException | Throwable $e) {
+            return $this->getErrorResponse($e);
+        }
+    }
+
+    /**
+     * @Route("/notification_settings/{id}", methods={"PUT", "OPTIONS"})
+     *
+     * @param Request $request
+     * @param string  $id
+     *
+     * @return Response
+     */
+    public function updateSettingsAction(Request $request, string $id): Response
+    {
+        try {
+            return $this->getResponse($this->notificationHandler->updateSettings($id, $request->request->all()));
         } catch (NotificationException | Throwable $e) {
             return $this->getErrorResponse($e);
         }

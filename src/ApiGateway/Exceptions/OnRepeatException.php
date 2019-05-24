@@ -42,6 +42,7 @@ class OnRepeatException extends Exception
     public function __construct(ProcessDto $processDto, $message = '', $code = 0, ?Throwable $previous = NULL)
     {
         parent::__construct($message, $code, $previous);
+
         $this->processDto = $processDto;
     }
 

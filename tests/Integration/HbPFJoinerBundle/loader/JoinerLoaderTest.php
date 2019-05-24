@@ -7,6 +7,8 @@ use Tests\KernelTestCaseAbstract;
 
 /**
  * Class JoinerLoaderTest
+ *
+ * @package Tests\Integration\HbPFJoinerBundle\loader
  */
 final class JoinerLoaderTest extends KernelTestCaseAbstract
 {

@@ -5,7 +5,7 @@ namespace Hanaboso\PipesFramework\Utils\Dto;
 use Hanaboso\PipesFramework\Configurator\Model\Dto\SystemConfigDto;
 
 /**
- * Class TopologyDto
+ * Class NodeSchemaDto
  *
  * @package Hanaboso\PipesFramework\Utils\Dto
  */
@@ -56,7 +56,7 @@ final class NodeSchemaDto
     private $systemConfigs;
 
     /**
-     * TopologyDto constructor.
+     * NodeSchemaDto constructor.
      *
      * @param string          $handler
      * @param string          $id

@@ -11,12 +11,11 @@ use Hanaboso\CommonsBundle\Traits\Document\IdTrait;
 use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
 
 /**
- * Class Install
+ * Class ApplicationInstall
  *
  * @package Hanaboso\PipesFramework\Application\Document
  *
  * @ODM\Document(repositoryClass="Hanaboso\PipesFramework\Application\Repository\ApplicationInstallRepository")
- *
  * @ODM\HasLifecycleCallbacks()
  */
 class ApplicationInstall

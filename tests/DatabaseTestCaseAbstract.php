@@ -29,6 +29,7 @@ abstract class DatabaseTestCaseAbstract extends KernelTestCaseAbstract
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->dm = self::$container->get('doctrine_mongodb.odm.default_document_manager');
         $this->dm->getConnection()->dropDatabase('pipes');
         $this->session = new Session();

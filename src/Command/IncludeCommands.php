@@ -66,14 +66,7 @@ class IncludeCommands extends BundleApplication
      */
     public function add(Command $command): ?Command
     {
-        if (in_array($command->getName(), $this->getIncludedCommands())) {
-            $return = parent::add($command);
-        } else {
-            $return = parent::add($command);
-            $command->setHidden(TRUE);
-        }
-
-        return $return;
+        return parent::add($command->setHidden(!in_array($command->getName(), $this->getIncludedCommands(), TRUE)));
     }
 
 }

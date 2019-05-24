@@ -40,15 +40,28 @@ class NotificationHandler
     }
 
     /**
-     * @param array $data
+     * @param string $id
      *
      * @return array
-     * @throws NotificationException
      * @throws CurlException
+     * @throws NotificationException
      */
-    public function updateSettings(array $data): array
+    public function getSetting(string $id): array
     {
-        return json_decode($this->manager->updateSettings($data)->getBody(), TRUE);
+        return json_decode($this->manager->getSetting($id)->getBody(), TRUE);
+    }
+
+    /**
+     * @param string $id
+     * @param array  $data
+     *
+     * @return array
+     * @throws CurlException
+     * @throws NotificationException
+     */
+    public function updateSettings(string $id, array $data): array
+    {
+        return json_decode($this->manager->updateSettings($id, $data)->getBody(), TRUE);
     }
 
 }
