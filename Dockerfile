@@ -19,9 +19,5 @@ RUN mkdir -p /var/www/var/log && chmod -R 777 /var/www/var/log
 
 WORKDIR /var/www
 
-
-RUN mkdir -p /var/log/nginx && \
-    ln -s /proc/self/fd/2 /var/log/nginx/error.log
-
 ENV PHP_WEBROOT /var/www/public
 CMD [ "php-w-nginx.sh" ]
