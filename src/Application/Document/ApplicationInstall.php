@@ -7,7 +7,9 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Hanaboso\CommonsBundle\Crypt\CryptManager;
 use Hanaboso\CommonsBundle\Crypt\Exceptions\CryptException;
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
+use Hanaboso\CommonsBundle\Traits\Document\CreatedTrait;
 use Hanaboso\CommonsBundle\Traits\Document\IdTrait;
+use Hanaboso\CommonsBundle\Traits\Document\UpdatedTrait;
 use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
 
 /**
@@ -25,20 +27,8 @@ class ApplicationInstall
     public const KEY  = 'key';
 
     use IdTrait;
-
-    /**
-     * @var DateTime
-     *
-     * @ODM\Field(type="date")
-     */
-    private $created;
-
-    /**
-     * @var dateTime;
-     *
-     * @ODM\Field(type="date")
-     */
-    private $updated;
+    use CreatedTrait;
+    use UpdatedTrait;
 
     /**
      * @var string
@@ -102,22 +92,6 @@ class ApplicationInstall
         $this->settings = array_merge($this->settings, $settings);
 
         return $this;
-    }
-
-    /**
-     * @return DateTime
-     */
-    public function getUpdated(): DateTime
-    {
-        return $this->updated;
-    }
-
-    /**
-     * @return DateTime
-     */
-    public function getCreated(): DateTime
-    {
-        return $this->created;
     }
 
     /**
@@ -187,15 +161,6 @@ class ApplicationInstall
     public function preFlush(): void
     {
         $this->encryptedSettings = CryptManager::encrypt($this->settings);
-    }
-
-    /**
-     * @ODM\PreUpdate
-     * @throws DateTimeException
-     */
-    public function preUpdate(): void
-    {
-        $this->updated = DateTimeUtils::getUtcDateTime();
     }
 
     /**
