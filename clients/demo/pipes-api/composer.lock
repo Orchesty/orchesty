@@ -74,16 +74,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.94.1",
+            "version": "3.94.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "759a565285324d2248b6ee783de541ce65bddd46"
+                "reference": "402a7e30c4ad979ca264079cd224984840ce6b37"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/759a565285324d2248b6ee783de541ce65bddd46",
-                "reference": "759a565285324d2248b6ee783de541ce65bddd46",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/402a7e30c4ad979ca264079cd224984840ce6b37",
+                "reference": "402a7e30c4ad979ca264079cd224984840ce6b37",
                 "shasum": ""
             },
             "require": {
@@ -153,7 +153,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2019-05-21T18:29:47+00:00"
+            "time": "2019-05-23T18:07:25+00:00"
         },
         {
             "name": "aws/aws-sdk-php-symfony",
@@ -2261,17 +2261,17 @@
         },
         {
             "name": "hanaboso/commons-bundle",
-            "version": "1.1.13",
+            "version": "1.1.15",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.hanaboso.net:hanaboso/commons-bundle.git",
-                "reference": "ddc8bccd998dff4a832d942720b2bbbec90830fa"
+                "reference": "2e434c8ed1f06e5b1c1fd10c443a788f00488572"
             },
             "require": {
                 "alcaeus/mongo-php-adapter": "^1.1",
                 "aws/aws-sdk-php-symfony": "^2.0",
                 "clue/buzz-react": "^2.6",
-                "doctrine/doctrine-bundle": "^1.10",
+                "doctrine/doctrine-bundle": "^1.11",
                 "doctrine/doctrine-fixtures-bundle": "^3.1",
                 "doctrine/mongodb-odm-bundle": "^3.5",
                 "doctrine/orm": "^2.6",
@@ -2312,7 +2312,7 @@
             "license": [
                 "proprietary"
             ],
-            "time": "2019-05-16T14:04:08+00:00"
+            "time": "2019-05-24T12:29:17+00:00"
         },
         {
             "name": "hanaboso/email-service-bundle",
@@ -2384,11 +2384,11 @@
         },
         {
             "name": "hanaboso/pipes-framework",
-            "version": "1.0.39",
+            "version": "1.0.40",
             "dist": {
                 "type": "path",
                 "url": "../../../pf-bundles",
-                "reference": "df8f68a9cf948a2063a9dff7546e9de6fa7acf12"
+                "reference": "cc47d76b47243b53da5ccb6d220b59d22c8d2a84"
             },
             "require": {
                 "ext-json": "*",
@@ -3979,16 +3979,16 @@
         },
         {
             "name": "php-imap/php-imap",
-            "version": "3.0.17",
+            "version": "3.0.19",
             "source": {
                 "type": "git",
                 "url": "https://github.com/barbushin/php-imap.git",
-                "reference": "b23e99b3885ba1fb4c7910928b5c1f95dd18df68"
+                "reference": "7fb17e4ed9a66d03d9fa6ad31fa5611230a592fc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/barbushin/php-imap/zipball/b23e99b3885ba1fb4c7910928b5c1f95dd18df68",
-                "reference": "b23e99b3885ba1fb4c7910928b5c1f95dd18df68",
+                "url": "https://api.github.com/repos/barbushin/php-imap/zipball/7fb17e4ed9a66d03d9fa6ad31fa5611230a592fc",
+                "reference": "7fb17e4ed9a66d03d9fa6ad31fa5611230a592fc",
                 "shasum": ""
             },
             "require": {
@@ -4025,7 +4025,7 @@
                 "pop3",
                 "receive emails"
             ],
-            "time": "2019-05-18T12:05:57+00:00"
+            "time": "2019-05-24T09:37:30+00:00"
         },
         {
             "name": "phpcollection/phpcollection",

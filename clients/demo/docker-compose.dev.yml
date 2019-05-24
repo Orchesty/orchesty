@@ -248,6 +248,17 @@ services:
     #        target: /var/www/html/var/secret/keypair.pem
     ## END STAGE
 
+    # PHP Services monolith
+    ## BEGIN DEV
+    notification-sender-api:
+        image: dkr.hanaboso.net/pipes/notification-sender:master
+        working_dir: /var/www/html
+    ## END DEV
+    ## BEGIN STAGE
+    #notification-sender-api:
+    #    image: dkr.hanaboso.net/pipes/notification-sender:${TAG_MONOLITH}
+    ## END STAGE
+
     ## BEGIN DEV
     topology-api:
         user: ${DEV_UID}:${DEV_GID}
@@ -310,7 +321,6 @@ services:
         depends_on:
           - monolith-api
           - topology-api
-          - notification-sender-fpm
     ## END DEV
     ## BEGIN STAGE
     #    image: dkr.hanaboso.net/pipes/pipes/frontend:${TAG_FRONTEND}
@@ -328,7 +338,6 @@ services:
               - mailer-api
               - ftp-api
               - mapper-api
-              - notification-sender-api
 
     stream:
         image: dkr.hanaboso.net/pipes/pipes/stream:dev
@@ -424,19 +433,6 @@ services:
     kapacitor:
         image: dkr.hanaboso.net/pipes/pipes/kapacitor:dev
         hostname: kapacitor
-
-    notification-sender-fpm:
-        image: dkr.hanaboso.net/clever-monitor/clever-notification-sender:master
-        ## BEGIN DEV
-        environment:
-            - DEV_UID=${DEV_UID}
-            - DEV_GID=${DEV_GID}
-            - BACKEND_HOST=${BACKEND_URL}
-        ## END DEV
-        ## BEGIN STAGE
-        #environment:
-        #    - BACKEND_HOST=${BACKEND_URL}
-        ## END STAGE
 
     cron-api:
         image: dkr.hanaboso.net/pipes/pipes/python-cron:dev
