@@ -72,14 +72,6 @@ http {
 		keepalive 64;
 	}
 
-	upstream notification-sender-fpm-upstream {
-		server resolve_notification-sender-fpm:9000;
-	}
-
-	upstream notification-center-fpm-upstream {
-		server resolve_notification-center-fpm:9000;
-	}
-
 	server {
 		server_name _;
 		listen 80 default_server;
@@ -123,34 +115,6 @@ http {
 			fastcgi_param SCRIPT_FILENAME /var/www/html/www/index.php; # TODO: make non-CM specific
 			fastcgi_param PATH_INFO $request_uri;
 			fastcgi_pass resolve_api-demo-fpm:9000;
-		}
-
-		location /notification-sender {
-			set $path_info "/";
-			if ($request_uri ~* ^/notification-sender(/.+)$) {
-				set $path_info $1;
-			}
-
-			include fastcgi_params;
-			fastcgi_param SCRIPT_NAME index.php;
-			fastcgi_param SCRIPT_FILENAME /srv/project/public/index.php; # TODO: make non-CM specific
-			fastcgi_param PATH_INFO $path_info;
-			fastcgi_param REQUEST_URI $path_info;
-			fastcgi_pass notification-sender-fpm-upstream;
-		}
-
-		location /notification-center {
-			set $path_info "/";
-			if ($request_uri ~* ^/notification-center(/.+)$) {
-				set $path_info $1;
-			}
-
-			include fastcgi_params;
-			fastcgi_param SCRIPT_NAME index.php;
-			fastcgi_param SCRIPT_FILENAME /srv/project/public/index.php; # TODO: make non-CM specific
-			fastcgi_param PATH_INFO $path_info;
-			fastcgi_param REQUEST_URI $path_info;
-			fastcgi_pass notification-center-fpm-upstream;
 		}
 
 		# monolith route (API fallback)

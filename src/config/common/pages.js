@@ -60,9 +60,9 @@ export default {
     needAuth: true,
     simpleRoute: '/authorizations',
   },
-  notification_settings: {
-    key: 'notification_settings',
-    caption: 'Notification setting',
+  notification_settings_list: {
+    key: 'notification_settings_list',
+    caption: 'Notification Settings',
     needAuth: true,
     simpleRoute: '/notification_settings',
   },

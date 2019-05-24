@@ -1,58 +1,77 @@
 import * as types from 'rootApp/actionTypes';
-import { stateType } from 'rootApp/types';
+import listFactory from './factories/listFactory';
 import serverRequest from 'services/apiGatewayServer';
-import * as processActions from 'rootApp/actions/processActions';
-import processes from 'enums/processes';
 
-function receive(data) {
+const { listLoading, listError, listReceive } = listFactory('NOTIFICATION_SETTING/LIST/');
+
+function receiveItems(items) {
   return {
-    type: types.NOTIFICATION_SETTINGS_RECEIVE,
-    data,
+    type: types.NOTIFICATION_SETTINGS_RECEIVE_ITEMS,
+    items,
   };
 }
 
-function loading() {
+function receiveEvents(events) {
   return {
-    type: types.NOTIFICATION_SETTINGS_LOADING,
+    type: types.NOTIFICATION_SETTINGS_RECEIVE_EVENTS,
+    events,
   };
 }
 
-function error() {
-  return {
-    type: types.NOTIFICATION_SETTINGS_ERROR,
-  };
-}
-
-function loadNotificationSettings() {
+function loadList(id, loadingState = true) {
   return (dispatch) => {
-    dispatch(loading());
+    if (loadingState) {
+      dispatch(listLoading(id));
+    }
 
     return serverRequest(dispatch, 'GET', '/notification_settings').then((response) => {
-      dispatch(response ? receive(response) : error());
+      dispatch(receiveItems(response.items.map(item => {
+        item.customName = item.name;
+        item.name = item.id;
+
+        return item;
+      })));
+
+      serverRequest(dispatch, 'GET', '/notification_settings/events').then((response) => {
+        dispatch(receiveEvents(response));
+      });
+
+      dispatch(response ? listReceive(id, response) : listError(id));
       return response;
     });
   };
 }
 
-export function needNotificationSettings(forced = false) {
-  return (dispatch, getState) => {
-    const state = getState().notificationSettings.state;
-    if (forced || !state || state === stateType.NOT_LOADED || state === stateType.ERROR) {
-      return dispatch(loadNotificationSettings());
-    }
-    return Promise.resolve(true);
-  };
-}
-
-export function updateNotificationSettings(data) {
+export function needNotificationSettingList(listId) {
   return (dispatch) => {
-    dispatch(processActions.startProcess(processes.notificationSettingsUpdate()));
-    serverRequest(dispatch, 'PUT', '/notification_settings', null, data).then((response) => {
-      if (response) {
-        dispatch(receive(response));
-      }
-      dispatch(processActions.finishProcess(processes.notificationSettingsUpdate(), response));
-    });
+    return dispatch(loadList(listId));
   };
 }
 
+export function notificationSettingsChange(listId, id, data) {
+  const { events, ...settings } = data;
+
+  if (settings.emails) {
+    settings.emails = settings.emails.split(/\r\n|\r|\n/g);
+  }
+
+  return dispatch => new Promise((resolve, reject) => {
+    serverRequest(dispatch, 'PUT', `/notification_settings/${id}`, null, { events, settings }).then((response) => {
+      if (response) {
+        dispatch(loadList(listId));
+
+        resolve(true);
+      }
+
+      reject('Something gone wrong.')
+    });
+  });
+}
+
+export function notificationSettingInitialize() {
+  return (dispatch) => {
+    dispatch({ type: types.NOTIFICATION_SETTINGS_INITIALIZE });
+
+    return Promise.resolve(true);
+  }
+}
