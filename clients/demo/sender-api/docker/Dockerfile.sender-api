@@ -1,0 +1,13 @@
+FROM dkr.hanaboso.net/hanaboso/symfony3-base:php-7.3
+
+ENV APP_ENV=prod
+ENV APP_DEBUG=0
+
+COPY ./ /var/www/html/
+
+RUN chown -R www-data:www-data ./var
+
+ENV PHP_FPM_MAX_CHILDREN 10
+ENV PHP_FPM_MAX_REQUESTS 500
+
+CMD [ "php-w-nginx.sh" ]

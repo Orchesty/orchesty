@@ -1,0 +1,40 @@
+{
+  "name": "hanaboso/notification-sender-demo",
+  "license": "proprietary",
+  "type": "project",
+  "autoload": {
+    "psr-4": {
+      "Demo\\": "src/"
+    }
+  },
+  "require": {
+    "php": "^7.3",
+    "ext-json": "*",
+    "ext-mongodb": "*",
+    "hanaboso/notification-sender": "^1.0"
+  },
+  "require-dev": {
+    "hanaboso/php-check-utils": "^1.0"
+  },
+  "repositories": [
+    {
+      "type": "path",
+      "url": "../../../notification-sender",
+      "options": {
+        "symlink": true
+      }
+    },
+    {
+      "type": "git",
+      "url": "git@gitlab.hanaboso.net:hanaboso/commons-bundle.git"
+    },
+    {
+      "type": "git",
+      "url": "git@gitlab.hanaboso.net:hanaboso/email-service-bundle.git"
+    },
+    {
+      "type": "git",
+      "url": "git@gitlab.hanaboso.net:hanaboso/rabbit-mq-bundle.git"
+    }
+  ]
+}
