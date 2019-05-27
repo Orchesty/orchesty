@@ -17,6 +17,22 @@ class IncludeCommands extends BundleApplication
     /**
      * @var array
      */
+    protected $defaultCommands = [
+        'user:create',
+        'user:delete',
+        'user:list',
+        'user:password:change',
+        'rabbit_mq:async-consumer',
+        'rabbit_mq:consumer',
+        'rabbit_mq:setup',
+        'rabbit_mq:publisher:pipes.messages',
+        'authorization:install',
+        'cron:refresh',
+    ];
+
+    /**
+     * @var array
+     */
     protected $includedCommands = [];
 
     /**
@@ -36,23 +52,12 @@ class IncludeCommands extends BundleApplication
      */
     public function getIncludedCommands(): array
     {
-        $return = $this->includedCommands;
+        $return = [];
         // help and list commands are added before container instantiation
         if ($this->getKernel()->getContainer() instanceof ContainerInterface) {
             $return = array_merge(
-                $return,
-                [
-                    'user:create',
-                    'user:delete',
-                    'user:list',
-                    'user:password:change',
-                    'rabbit_mq:async-consumer',
-                    'rabbit_mq:consumer',
-                    'rabbit_mq:setup',
-                    'rabbit_mq:publisher:pipes.messages',
-                    'authorization:install',
-                    'cron:refresh',
-                ]
+                $this->defaultCommands,
+                $this->includedCommands
             );
         }
 

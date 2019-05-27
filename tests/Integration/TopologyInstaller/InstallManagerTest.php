@@ -7,8 +7,8 @@ use FOS\RestBundle\Decoder\XmlDecoder;
 use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
+use Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
-use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\RequestHandler;
 use Hanaboso\PipesFramework\TopologyInstaller\CategoryParser;
 use Hanaboso\PipesFramework\TopologyInstaller\InstallManager;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
@@ -91,8 +91,8 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
      */
     private function getManager(): InstallManager
     {
-        /** @var MockObject|RequestHandler $requestHandler */
-        $requestHandler = self::createMock(RequestHandler::class);
+        /** @var MockObject|TopologyGeneratorBridge $requestHandler */
+        $requestHandler = self::createMock(TopologyGeneratorBridge::class);
         $requestHandler->method('runTopology')->willReturn(new ResponseDto(200, '', '', []));
         $requestHandler->method('deleteTopology')->willReturn(new ResponseDto(200, '', '', []));
 

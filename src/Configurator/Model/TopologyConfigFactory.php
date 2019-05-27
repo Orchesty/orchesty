@@ -319,7 +319,7 @@ class TopologyConfigFactory
                 $host = 'monolith-api';
                 break;
             default:
-                throw new TopologyConfigException(sprintf('Unknown type of host'));
+                throw new TopologyConfigException(sprintf('Unknown type of host.'));
         }
 
         return $host;
@@ -363,7 +363,7 @@ class TopologyConfigFactory
         ) {
             return 80;
         } else {
-            throw new TopologyConfigException('Unknown type for port');
+            throw new TopologyConfigException('Unknown type for port.');
         }
     }
 

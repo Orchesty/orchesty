@@ -17,6 +17,10 @@ parameters:
     env(MULTI_PROBE_HOST): multi-probe:8007
     worker_default_port: "%env(WORKER_DEFAULT_PORT)%"
     env(WORKER_DEFAULT_PORT): 8008
+    topology_api: "%env(TOPOLOGY_API)%"
+    env(TOPOLOGY_API): topology-api:80
+    starting_point: "%env(STARTING_POINT)%"
+    env(STARTING_POINT): starting-point:80
 
 
     topology_configs:
@@ -29,3 +33,8 @@ parameters:
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::MULTI_PROBE_HOST: "%multi_probe_host%"
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::METRICS_HOST: "%kapacitor.host%:%kapacitor.port%"
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::WORKER_DEFAULT_PORT: "%worker_default_port%"
+
+    topology_generator_configs:
+        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge::MULTI_PROBE: "%multi_probe_host%"
+        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge::TOPOLOGY_API: "%topology_api%"
+        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge::STARTING_POINT: "%starting_point%"

@@ -7,7 +7,7 @@ services:
         arguments:
             - '@hbpf.database_manager_locator'
             - '@hbpf.configurator.manager.topology'
-            - '@hbpf.topology_generator.request.request_handler'
+            - '@hbpf.topology_generator.bridge'
 
     hbpf.configurator.handler.node:
         class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler
@@ -20,10 +20,3 @@ services:
         arguments:
             - '@hbpf.database_manager_locator'
             - '@hbpf.configurator.manager.category'
-
-    hbpf.topology_generator.request.request_handler:
-        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\RequestHandler
-        arguments:
-            - '@hbpf.database_manager_locator'
-            - '@hbpf.transport.curl_manager'
-            - '@hbpf.topology.configurator'
