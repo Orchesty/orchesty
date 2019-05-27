@@ -2,9 +2,13 @@
 
 namespace Hanaboso\PipesFramework\ApiGateway\Listener;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Exception;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use Hanaboso\PipesFramework\ApiGateway\Exceptions\OnRepeatException;
+use Hanaboso\PipesFramework\Configurator\Document\Node;
+use Hanaboso\PipesFramework\Configurator\Model\Dto\SystemConfigDto;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -29,11 +33,19 @@ class RepeaterListener implements EventSubscriberInterface, LoggerAwareInterface
     private $logger;
 
     /**
-     * RepeaterListener constructor.
+     * @var DocumentManager
      */
-    public function __construct()
+    private $dm;
+
+    /**
+     * RepeaterListener constructor.
+     *
+     * @param DocumentManager $dm
+     */
+    public function __construct(DocumentManager $dm)
     {
         $this->logger = new NullLogger();
+        $this->dm     = $dm;
     }
 
     /**
@@ -49,7 +61,7 @@ class RepeaterListener implements EventSubscriberInterface, LoggerAwareInterface
     /**
      * @param GetResponseForExceptionEvent $event
      *
-     * @return void
+     * @throws Exception
      */
     public function onRepeatableException(GetResponseForExceptionEvent $event): void
     {
@@ -65,11 +77,28 @@ class RepeaterListener implements EventSubscriberInterface, LoggerAwareInterface
         $repeatCode     = PipesHeaders::createKey(PipesHeaders::RESULT_CODE);
         $dto            = $e->getProcessDto();
 
+        $nodeRepository = $this->dm->getRepository(Node::class);
+        /** @var Node|null $node */
+        $node = $nodeRepository->find($dto->getHeaders()[PipesHeaders::createKey(PipesHeaders::NODE_ID)] ?? '');
+
         if (!$dto->getHeader($repeatHops) && !$dto->getHeader($repeatMaxHops) && !$dto->getHeader($repeatInterval)) {
+            if ($node) {
+                /** @var SystemConfigDto $configs */
+                $configs = $node->getSystemConfigs();
+
+                if (!$configs->isRepeaterEnabled()) {
+                    throw new Exception('Repeater is not enabled.');
+                }
+                $dto
+                    ->addHeader($repeatInterval, (string) $configs->getRepeaterInterval())
+                    ->addHeader($repeatMaxHops, (string) $configs->getRepeaterHops());
+            } else {
+                $dto
+                    ->addHeader($repeatInterval, (string) $e->getInterval())
+                    ->addHeader($repeatMaxHops, (string) $e->getMaxHops());
+            }
             $dto
                 ->addHeader($repeatCode, '1001')
-                ->addHeader($repeatInterval, (string) $e->getInterval())
-                ->addHeader($repeatMaxHops, (string) $e->getMaxHops())
                 ->addHeader($repeatHops, '0');
         }
 
@@ -78,7 +107,7 @@ class RepeaterListener implements EventSubscriberInterface, LoggerAwareInterface
         $currentHop = is_array($currentHop) ? $currentHop[0] : $currentHop;
         $maxHop     = is_array($maxHop) ? $maxHop[0] : $maxHop;
 
-        if ($currentHop <= $maxHop) {
+        if ($currentHop < $maxHop) {
             $currentHop++;
             $e->getProcessDto()->addHeader($repeatHops, (string) $currentHop);
         }

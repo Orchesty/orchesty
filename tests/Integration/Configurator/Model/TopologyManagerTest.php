@@ -622,8 +622,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
      */
     public function testSystemConfig(): void
     {
-        $dto  = new SystemConfigDto('host1', 'bridge1', 2, TRUE, 2, 2);
-        $json = $dto->toString();
+        $dto = new SystemConfigDto('host1', 'bridge1', 2, TRUE, 2, 2);
 
         $node = new Node();
         $node
@@ -632,13 +631,10 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
 
         $this->dm->persist($node);
         $this->dm->flush();
-
         $foundNode = $this->dm->getRepository(Node::class)->findBy(['name' => 'node10']);
-        /** @var SystemConfigDto $config */
-        $config = $foundNode[0]->getSystemConfigs();
 
         self::assertEquals('node10', $foundNode[0]->getName());
-        self::assertEquals($json, $config->toString());
+        self::assertIsObject($foundNode[0]->getSystemConfigs());
     }
 
     /**
