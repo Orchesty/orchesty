@@ -19,6 +19,7 @@ use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
+use Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
 use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
@@ -53,21 +54,21 @@ class TopologyHandler
     protected $curlManager;
 
     /**
-     * @var RequestHandler
+     * @var TopologyGeneratorBridge
      */
     protected $requestHandler;
 
     /**
      * TopologyHandler constructor.
      *
-     * @param DatabaseManagerLocator $dml
-     * @param TopologyManager        $manager
-     * @param RequestHandler         $requestHandler
+     * @param DatabaseManagerLocator  $dml
+     * @param TopologyManager         $manager
+     * @param TopologyGeneratorBridge $requestHandler
      */
     public function __construct(
         DatabaseManagerLocator $dml,
         TopologyManager $manager,
-        RequestHandler $requestHandler
+        TopologyGeneratorBridge $requestHandler
     )
     {
         /** @var DocumentManager $dm */

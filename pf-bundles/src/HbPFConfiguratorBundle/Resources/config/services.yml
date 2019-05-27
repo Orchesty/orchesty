@@ -16,3 +16,11 @@ services:
         class: Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory
         arguments:
             - '%topology_configs%'
+
+    hbpf.topology_generator.bridge:
+        class: Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge
+        arguments:
+            - '@hbpf.database_manager_locator'
+            - '@hbpf.transport.curl_manager'
+            - '@hbpf.topology.configurator'
+            - '%topology_generator_configs%'

@@ -6,10 +6,10 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
+use Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
-use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\RequestHandler;
 use Hanaboso\PipesFramework\TopologyInstaller\CategoryParser;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\TopologyFile;
@@ -111,8 +111,8 @@ final class InstallManagerTest extends TestCase
         $topologyManager->method('deleteTopology')->willReturn(TRUE);
         $topologyManager->method('saveTopologySchema')->willReturn($savedTopo);
 
-        /** @var RequestHandler|MockObject $requestHandler */
-        $requestHandler = $this->createMock(RequestHandler::class);
+        /** @var TopologyGeneratorBridge|MockObject $requestHandler */
+        $requestHandler = $this->createMock(TopologyGeneratorBridge::class);
         $requestHandler->method('runTopology')->willReturn(new ResponseDto(200, '', '', []));
         $requestHandler->method('deleteTopology')->willReturn(new ResponseDto(200, '', '', []));
 
