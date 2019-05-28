@@ -16,7 +16,7 @@ use Hanaboso\PipesFramework\Configurator\Model\Dto\SystemConfigDto;
 class TopologyConfigFactory
 {
 
-    public const ENVIRONMENT            = 'enviroment';
+    public const ENVIRONMENT            = 'environment';
     public const DOCKER_REGISTRY        = 'docker_registry';
     public const DOCKER_PF_BRIDGE_IMAGE = 'docker_pf_bridge_image';
     public const RABBITMQ_HOST          = 'rabbitmq_host';
@@ -33,7 +33,7 @@ class TopologyConfigFactory
     public const SETTINGS        = 'settings';
     public const FAUCET          = 'faucet';
     public const PREFETCH        = 'prefetch';
-    public const SPLITTER_AMQRPC = 'splitter.amqrpc';
+    public const SPLITTER_AMQRPC = 'splitter.amqprpc';
 
     public const WORKER_NULL            = 'worker.null';
     public const WORKER_RESEQUENCER     = 'worker.resequencer';
@@ -73,13 +73,12 @@ class TopologyConfigFactory
      */
     public function create(array $nodes): string
     {
-
         $result = [
             self::ENVIRONMENT => $this->getEnvParameters(),
             self::NODE_CONFIG => $this->loopNodes($nodes),
         ];
 
-        return (string) json_encode($result);
+        return (string) json_encode($result, JSON_FORCE_OBJECT);
     }
 
     /**
@@ -109,17 +108,15 @@ class TopologyConfigFactory
     private function getEnvParameters(): array
     {
         return [
-            self::ENVIRONMENT => [
-                self::DOCKER_REGISTRY        => $this->configs[self::DOCKER_REGISTRY],
-                self::DOCKER_PF_BRIDGE_IMAGE => $this->configs[self::DOCKER_PF_BRIDGE_IMAGE],
-                self::RABBITMQ_HOST          => $this->configs[self::RABBITMQ_HOST],
-                self::RABBITMQ_USER          => $this->configs[self::RABBITMQ_USER],
-                self::RABBITMQ_PASS          => $this->configs[self::RABBITMQ_PASS],
-                self::RABBITMQ_VHOST         => $this->configs[self::RABBITMQ_VHOST],
-                self::MULTI_PROBE_HOST       => $this->configs[self::MULTI_PROBE_HOST],
-                self::METRICS_HOST           => $this->configs[self::METRICS_HOST],
-                self::WORKER_DEFAULT_PORT    => $this->configs[self::WORKER_DEFAULT_PORT],
-            ],
+            self::DOCKER_REGISTRY        => $this->configs[self::DOCKER_REGISTRY],
+            self::DOCKER_PF_BRIDGE_IMAGE => $this->configs[self::DOCKER_PF_BRIDGE_IMAGE],
+            self::RABBITMQ_HOST          => $this->configs[self::RABBITMQ_HOST],
+            self::RABBITMQ_USER          => $this->configs[self::RABBITMQ_USER],
+            self::RABBITMQ_PASS          => $this->configs[self::RABBITMQ_PASS],
+            self::RABBITMQ_VHOST         => $this->configs[self::RABBITMQ_VHOST],
+            self::MULTI_PROBE_HOST       => $this->configs[self::MULTI_PROBE_HOST],
+            self::METRICS_HOST           => $this->configs[self::METRICS_HOST],
+            self::WORKER_DEFAULT_PORT    => (int) $this->configs[self::WORKER_DEFAULT_PORT],
         ];
     }
 
@@ -154,17 +151,37 @@ class TopologyConfigFactory
      */
     private function getWorkers(Node $node): array
     {
-        return [
-            self::TYPE     => $this->getWorkerByType($node),
-            self::SETTINGS => [
-                self::HOST          => $this->getHost($node->getType(), $node->getSystemConfigs()),
-                self::PROCESS_PATH  => $this->getPaths($node->getType())[self::PROCESS_PATH],
-                self::STATUS_PATH   => $this->getPaths($node->getType())[self::STATUS_PATH],
-                self::METHOD        => 'POST',
-                self::PORT          => $this->getPort($node->getType()),
-                self::PUBLISH_QUEUE => $this->getPublishQueue($node->getType()),
-            ],
-        ];
+        switch ($node->getType()) {
+            case TypeEnum::WEBHOOK:
+            case TypeEnum::CRON:
+            case TypeEnum::START:
+                return [
+                    self::TYPE => $this->getWorkerByType($node),
+                ];
+            case TypeEnum::BATCH:
+            case TypeEnum::BATCH_CONNECTOR:
+            case TypeEnum::RESEQUENCER:
+            case TypeEnum::SPLITTER:
+            case TypeEnum::DEBUG:
+                return [
+                    self::TYPE     => $this->getWorkerByType($node),
+                    self::SETTINGS => [
+                        self::PUBLISH_QUEUE => $this->getPublishQueue($node->getType()),
+                    ],
+                ];
+            default:
+                return [
+                    self::TYPE     => $this->getWorkerByType($node),
+                    self::SETTINGS => [
+                        self::HOST          => $this->getHost($node->getType(), $node->getSystemConfigs()),
+                        self::PROCESS_PATH  => $this->getPaths($node)[self::PROCESS_PATH],
+                        self::STATUS_PATH   => $this->getPaths($node)[self::STATUS_PATH],
+                        self::METHOD        => 'POST',
+                        self::PORT          => $this->getPort($node->getType()),
+                        self::PUBLISH_QUEUE => $this->getPublishQueue($node->getType()),
+                    ],
+                ];
+        }
     }
 
     /**
@@ -181,15 +198,10 @@ class TopologyConfigFactory
             case TypeEnum::BATCH_CONNECTOR:
                 $workerType = self::SPLITTER_AMQRPC;
                 break;
-            case TypeEnum::CRON:
-                $workerType = self::WORKER_NULL;
-                break;
-            case TypeEnum::DEBUG:
-                $workerType = self::WORKER_NULL;
-                break;
+            case TypeEnum::WEBHOOK:
             case TypeEnum::GATEWAY:
-                $workerType = self::WORKER_NULL;
-                break;
+            case TypeEnum::DEBUG:
+            case TypeEnum::CRON:
             case TypeEnum::START:
                 $workerType = self::WORKER_NULL;
                 break;
@@ -213,18 +225,24 @@ class TopologyConfigFactory
     }
 
     /**
-     * @param string $nodeType
+     * @param Node $node
      *
      * @return array
      * @throws TopologyConfigException
      */
-    public function getPaths(string $nodeType): array
+    public function getPaths(Node $node): array
     {
-        switch ($nodeType) {
+        switch ($node->getType()) {
             case TypeEnum::XML_PARSER:
                 $paths = [
                     self::PROCESS_PATH => '/xml_parser',
                     self::STATUS_PATH  => '/xml_parser/test',
+                ];
+                break;
+            case TypeEnum::TABLE_PARSER:
+                $paths = [
+                    self::PROCESS_PATH => sprintf('/parser/json/to/%s/', $node->getName()),
+                    self::STATUS_PATH  => sprintf('/parser/json/to/%s/test', $node->getName()),
                 ];
                 break;
             case TypeEnum::FTP:
@@ -241,26 +259,21 @@ class TopologyConfigFactory
                 break;
             case TypeEnum::MAPPER:
                 $paths = [
-                    self::PROCESS_PATH => '/mapper/mapper',
-                    self::STATUS_PATH  => '/mapper/mapper/test',
+                    self::PROCESS_PATH => sprintf('/mapper/%s/process', $node->getName()),
+                    self::STATUS_PATH  => sprintf('/mapper/%s/test', $node->getName()),
                 ];
                 break;
             case TypeEnum::CONNECTOR:
+            case TypeEnum::BATCH_CONNECTOR:
                 $paths = [
-                    self::PROCESS_PATH => '/connector/connector/action',
-                    self::STATUS_PATH  => '/connector/connector/action/test',
-                ];
-                break;
-            case TypeEnum::WEBHOOK:
-                $paths = [
-                    self::PROCESS_PATH => '/connector/webhook/webhook',
-                    self::STATUS_PATH  => '/connector/webhook/webhook/test',
+                    self::PROCESS_PATH => sprintf('/connector/%s/action', $node->getName()),
+                    self::STATUS_PATH  => sprintf('/connector/%s/action/test', $node->getName()),
                 ];
                 break;
             case TypeEnum::CUSTOM:
                 $paths = [
-                    self::PROCESS_PATH => '/custom_node/custom/process',
-                    self::STATUS_PATH  => '/custom_node/custom/process/test',
+                    self::PROCESS_PATH => sprintf('/custom_node/%s/process', $node->getName()),
+                    self::STATUS_PATH  => sprintf('/custom_node/%s/process/test', $node->getName()),
                 ];
                 break;
             case TypeEnum::SIGNAL:
@@ -271,8 +284,8 @@ class TopologyConfigFactory
                 break;
             case TypeEnum::USER:
                 $paths = [
-                    self::PROCESS_PATH => '/longRunning/user/process',
-                    self::STATUS_PATH  => '/longRunning/user/process/test',
+                    self::PROCESS_PATH => sprintf('/longRunning/%s/process', $node->getName()),
+                    self::STATUS_PATH  => sprintf('/longRunning/%s/process/test', $node->getName()),
                 ];
                 break;
             case TypeEnum::API:
@@ -282,7 +295,7 @@ class TopologyConfigFactory
                 ];
                 break;
             default:
-                throw new TopologyConfigException(sprintf('Unknown type of routing.'));
+                throw new TopologyConfigException(sprintf('Unknown type of routing [%s].', $node->getType()));
         }
 
         return $paths;
@@ -297,7 +310,6 @@ class TopologyConfigFactory
      */
     private function getHost(string $nodeType, ?SystemConfigDto $dto): string
     {
-
         if ($dto && !empty($dto->getSdkHost())) {
             return $dto->getSdkHost();
         }
@@ -315,25 +327,31 @@ class TopologyConfigFactory
             case TypeEnum::MAPPER:
                 $host = 'mapper-api';
                 break;
-            case TypeEnum::CONNECTOR or TypeEnum::WEBHOOK or TypeEnum::CUSTOM or TypeEnum::SIGNAL or TypeEnum::USER or TypeEnum::API:
+            case TypeEnum::BATCH_CONNECTOR:
+            case TypeEnum::TABLE_PARSER:
+            case TypeEnum::CONNECTOR:
+            case TypeEnum::WEBHOOK:
+            case TypeEnum::CUSTOM:
+            case TypeEnum::SIGNAL:
+            case TypeEnum::USER:
+            case TypeEnum::API:
                 $host = 'monolith-api';
                 break;
             default:
-                throw new TopologyConfigException(sprintf('Unknown type of host.'));
+                throw new TopologyConfigException(sprintf('Unknown type of host [%s].', $nodeType));
         }
 
         return $host;
-
     }
 
     /**
      * @param string $nodeType
      *
-     * @return array
+     * @return array|null
      */
-    private function getPublishQueue(string $nodeType): array
+    private function getPublishQueue(string $nodeType): ?array
     {
-        if ($nodeType === TypeEnum::BATCH or $nodeType === TypeEnum::BATCH_CONNECTOR) {
+        if ($nodeType === TypeEnum::BATCH || $nodeType === TypeEnum::BATCH_CONNECTOR) {
             return [
                 self::NAME => sprintf('pipes.%s', $nodeType),
             ];
@@ -350,20 +368,23 @@ class TopologyConfigFactory
      */
     private function getPort(string $nodeType): int
     {
-        if ($nodeType === TypeEnum::XML_PARSER
-            or $nodeType === TypeEnum::FTP
-            or $nodeType === TypeEnum::EMAIL
-            or $nodeType === TypeEnum::MAPPER
-            or $nodeType === TypeEnum::API
-            or $nodeType === TypeEnum::CONNECTOR
-            or $nodeType === TypeEnum::WEBHOOK
-            or $nodeType === TypeEnum::CUSTOM
-            or $nodeType === TypeEnum::SIGNAL
-            or $nodeType === TypeEnum::USER
+        if (in_array($nodeType, [
+            $nodeType === TypeEnum::FTP,
+            $nodeType === TypeEnum::EMAIL,
+            $nodeType === TypeEnum::MAPPER,
+            $nodeType === TypeEnum::API,
+            $nodeType === TypeEnum::CONNECTOR,
+            $nodeType === TypeEnum::WEBHOOK,
+            $nodeType === TypeEnum::CUSTOM,
+            $nodeType === TypeEnum::SIGNAL,
+            $nodeType === TypeEnum::USER,
+            $nodeType === TypeEnum::BATCH_CONNECTOR,
+            $nodeType === TypeEnum::TABLE_PARSER,
+        ])
         ) {
             return 80;
         } else {
-            throw new TopologyConfigException('Unknown type for port.');
+            throw new TopologyConfigException(sprintf('Unknown type for port [%s].', $nodeType));
         }
     }
 
