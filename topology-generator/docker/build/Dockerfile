@@ -6,12 +6,12 @@ WORKDIR /go/src/app
 
 ENV GO111MODULE=on
 
-COPY ../../go.mod .
-COPY ../../go.sum .
+COPY ./go.mod .
+COPY ./go.sum .
 
 RUN go mod download
 
-COPY ../.. .
+COPY ./ .
 
 RUN go generate ./...
 RUN CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go install -a -ldflags '-w -extldflags "-static"' ./
