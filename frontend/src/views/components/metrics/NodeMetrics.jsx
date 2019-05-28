@@ -135,10 +135,10 @@ function mapStateToProps(state, ownProps){
   }
 }
 
-function mapActionsToProps(dispatch, ownProps){
+function mapActionsToProps(dispatch, { nodeId, nodeName, nodeType, topologyId, topologyName }){
   return {
-    updateNode: data => dispatch(nodeActions.nodeUpdate(ownProps.nodeId, data)),
-    runNode:() => dispatch(applicationActions.openModal('node_run', {nodeId: ownProps.nodeId})),
+    updateNode: data => dispatch(nodeActions.nodeUpdate(nodeId, data)),
+    runNode:() => dispatch(applicationActions.openModal('node_run', { nodeId, nodeName, nodeType, topologyId, topologyName })),
   }
 }
 

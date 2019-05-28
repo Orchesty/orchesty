@@ -1,9 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 
 import './TabBar.less';
 import {menuItemType} from 'rootApp/types';
 import ActionButton from 'rootApp/views/elements/actions/ActionButton';
+import * as applicationActions from 'actions/applicationActions';
 
 class TabBar extends React.Component {
   constructor(props) {
@@ -56,9 +58,10 @@ class TabBar extends React.Component {
   }
 
   closeClick(index, e){
-    const {onClose, items} = this.props;
+    const { onClose,  items, topologySave, changed } = this.props;
     e.preventDefault();
     e.stopPropagation();
+
     let newIndex = index - 1;
     if (newIndex < 0){
       newIndex = index + 1;
@@ -66,7 +69,12 @@ class TabBar extends React.Component {
         newIndex = null;
       }
     }
-    onClose(items[index], newIndex !== null ? items[newIndex] : null);
+
+    if (changed.includes(items[index].id.split('-')[1])) {
+      topologySave(() => onClose(items[index], newIndex !== null ? items[newIndex] : null));
+    } else {
+      onClose(items[index], newIndex !== null ? items[newIndex] : null);
+    }
   }
 
   render() {
@@ -115,7 +123,19 @@ TabBar.propTypes = {
   })).isRequired,
   active: PropTypes.number,
   onChangeTab: PropTypes.func,
-  onClose: PropTypes.func
+  onClose: PropTypes.func,
+  topologySave: PropTypes.func.isRequired,
+  changed: PropTypes.array.isRequired,
 };
 
-export default TabBar;
+function mapStateToProps({ topology: { changed } }) {
+  return { changed };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    topologySave: onClose => dispatch(applicationActions.openModal('topology_save_dialog', { onClose })),
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(TabBar);

@@ -21,6 +21,10 @@ class HumanTasksListTable extends AbstractTable {
     this.onApply = this.onApply.bind(this);
   }
 
+  componentWillMount() {
+    document.title = 'Human Tasks | Pipes Manager';
+  }
+
   componentDidMount() {
     let params = {};
     const { topologies, initialize, initialized } = this.props;

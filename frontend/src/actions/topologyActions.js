@@ -67,6 +67,14 @@ function resetTest(id, nodes) {
   };
 }
 
+export function onChange(id, changed = true) {
+  return {
+    type: types.TOPOLOGY_CHANGED,
+    id,
+    changed,
+  }
+}
+
 function loadList(id, loadingState = true) {
   return (dispatch, getState) => {
     if (loadingState) {
@@ -342,6 +350,7 @@ export function saveTopologySchema(id, schema, silent = false) {
         }
         dispatch(nodeActions.nodeInvalidateLists('topology', response._id));
         dispatch(metricsActions.invalidateTopologyMetrics(response._id));
+        dispatch(onChange(response._id, false))
       }
       dispatch(processActions.finishProcess(processes.topologySaveScheme(id), response));
       return response;

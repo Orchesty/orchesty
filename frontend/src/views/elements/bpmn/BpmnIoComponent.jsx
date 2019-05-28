@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
+import * as topologyActions from 'actions/topologyActions';
 import * as metricsActions from 'actions/metricsActions';
 import * as nodeActions from 'actions/nodeActions';
 import StateComponent from 'wrappers/StateComponent';
@@ -26,6 +27,7 @@ class BpmnIoComponent extends React.Component {
     super(props);
     this._modeler = null;
     this._changed = false;
+    this._saved = false;
     this._fileInputElement = null;
     this._canvasBpmnElement = null;
     this._propertiesElement = null;
@@ -185,10 +187,17 @@ class BpmnIoComponent extends React.Component {
   }
 
   changed(){
-    if (!this._changed){
-      this._changed = true;
-      this._sendActions();
+    const { onChange, topologyId } = this.props;
+
+    if (!this._saved) {
+      if (!this._changed) {
+        this._changed = true;
+        onChange(topologyId);
+        this._sendActions();
+      }
     }
+
+    this._saved = false;
   }
 
   propPanelToggle(e){
@@ -240,6 +249,9 @@ class BpmnIoComponent extends React.Component {
         }
         else if (this.props.onSave){
           this.props.onSave(xml);
+          this._changed = false;
+          this._sendActions();
+          this._saved = true;
         }
       });
     }
@@ -286,6 +298,7 @@ class BpmnIoComponent extends React.Component {
 
 BpmnIoComponent.propTypes = {
   onSave: PropTypes.func,
+  onChange: PropTypes.func,
   schema: PropTypes.string,
   topologyName: PropTypes.string,
   onError: PropTypes.func.isRequired,
@@ -333,6 +346,7 @@ function mapActionsToProps(dispatch, ownProps){
 	const needNodeList = forced => dispatch(nodeActions.needNodesForTopology(ownProps.topologyId, forced));
 	const needMetricsList = forced => dispatch(metricsActions.needTopologyMetrics(ownProps.topologyId, ownProps.metricsRange, forced));
 	return {
+	  onChange: id => dispatch(topologyActions.onChange(id)),
 		needNodeList,
 		needMetricsList,
 		notLoadedCallback: () => {

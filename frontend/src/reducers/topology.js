@@ -9,6 +9,7 @@ const initialState = {
   lists: {},
   schemas: {},
   tests: {},
+  changed: [],
 };
 
 function getElementId(element) {
@@ -68,6 +69,19 @@ function reducer(state = initialState, action) {
       return Object.assign({}, state, {
         tests: newTests,
       });
+
+    case types.TOPOLOGY_CHANGED:
+      let changed = [...state.changed];
+
+      if (action.changed) {
+        if (!changed.includes(action.id)) {
+          changed.push(action.id);
+        }
+      } else {
+        changed = changed.filter(id => action.id !== id);
+      }
+
+      return Object.assign({}, state, { changed });
 
     default:
       return state;

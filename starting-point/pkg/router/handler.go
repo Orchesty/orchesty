@@ -163,7 +163,7 @@ func handleByApplication(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	var topology, webhook = service.Cache.FindTopologyByApplication(vars["topology"], vars["node"], vars["token"])
 
-	if topology == nil {
+	if topology == nil || webhook == nil {
 		writeErrorResponse(w, http.StatusNotFound, fmt.Sprintf("Topology with name '%s', node with name '%s' and webhook with token '%s' not found!", vars["topology"], vars["node"], vars["token"]))
 		return
 	}

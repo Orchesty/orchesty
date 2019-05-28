@@ -73,9 +73,9 @@ function mapStateToProps(state, ownProps) {
   return {};
 }
 
-function mapActionsToProps(dispatch, ownProps){
+function mapActionsToProps(dispatch, { nodeId, nodeName, nodeType, topologyId, topologyName }){
   return {
-    commitAction: (data) => dispatch(nodeActions.nodeRun(ownProps.nodeId, data))
+    commitAction: (data) => dispatch(nodeActions.nodeRun(nodeId, nodeName, nodeType, topologyId, topologyName, data))
   }
 }
 
