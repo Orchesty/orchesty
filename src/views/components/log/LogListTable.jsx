@@ -9,8 +9,8 @@ import ListPagination from 'elements/table/ListPagination';
 import LogListFilter from 'components/log/LogListFilter';
 
 class LogListTable extends AbstractTable {
-  constructor(props) {
-    super(props);
+  componentWillMount() {
+    document.title = 'Logs | Pipes Manager';
   }
 
   getClassName(){

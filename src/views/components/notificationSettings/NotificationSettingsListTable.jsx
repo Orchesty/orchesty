@@ -7,6 +7,10 @@ import './NotificationSettingsListTable.less';
 
 class NotificationSettingsListTable extends AbstractTable {
 
+  componentWillMount() {
+    document.title = 'Notification Settings | Pipes Manager';
+  }
+
   _renderHead() {
     const { list, elements, changeNotificationSettings } = this.props;
 

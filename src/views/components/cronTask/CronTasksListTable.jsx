@@ -8,6 +8,10 @@ import './CronTasksListTable.less';
 
 class CronTasksListTable extends AbstractTable {
 
+  componentWillMount() {
+    document.title = 'Cron Tasks | Pipes Manager';
+  }
+
   _renderHead() {
     return (
       <tr>

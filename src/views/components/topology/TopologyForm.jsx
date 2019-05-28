@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 import {Field, reduxForm} from 'redux-form'
 
 import * as topologyActions from 'actions/topologyActions';
+import * as applicationActions from 'actions/applicationActions';
 
 import {FormTextInput, FormCheckboxInput} from 'elements/formInputs';
 
@@ -36,10 +37,15 @@ class TopologyForm extends React.Component {
     }
     this.props.commitAction(sendData).then(
       response => {
-        const {onSuccess} = this.props;
+        const { onSuccess, openTopology, isNew } = this.props;
+
         if (response){
           if (onSuccess){
             onSuccess(this);
+          }
+
+          if (isNew) {
+            openTopology(response._id);
           }
         }
         return response;
@@ -77,6 +83,8 @@ TopologyForm.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
   setSubmit: PropTypes.func.isRequired,
   onSuccess: PropTypes.func,
+  openTopology: PropTypes.func.isRequired,
+  isNew: PropTypes.bool.isRequired,
   commitAction: PropTypes.func.isRequired
 };
 
@@ -92,7 +100,8 @@ function validate(values){
 function mapStateToProps(state, ownProps) {
   const {topology} = state;
   return {
-    initialValues: ownProps.addNew ? {enabled: false} : topology.elements[ownProps.topologyId]
+    initialValues: ownProps.addNew ? {enabled: false} : topology.elements[ownProps.topologyId],
+    isNew: ownProps.addNew,
   };
 }
 
@@ -100,7 +109,8 @@ function mapActionsToProps(dispatch, ownProps){
   return {
     commitAction: (data) => dispatch(
       ownProps.addNew ? topologyActions.topologyCreate(Object.assign(data, {category: ownProps.categoryId ? ownProps.categoryId : null}), ownProps.newProcessId) : topologyActions.topologyUpdate(ownProps.topologyId, data)
-    )
+    ),
+    openTopology: id => dispatch(applicationActions.openPage('topology_detail', { topologyId: id, activeTab: 'schema' }))
   }
 }
 

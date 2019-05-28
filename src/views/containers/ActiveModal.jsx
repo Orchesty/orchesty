@@ -7,6 +7,7 @@ import TopologyEditModal from 'modals/TopologyEditModal';
 import AuthorizationSettingsEditModal from 'modals/AuthorizationSettingsEditModal';
 import TopologyRunFormModal from 'modals/TopologyRunFormModal';
 import TopologyDeleteDialog from 'modals/dialogs/TopologyDeleteDialog';
+import TopologySaveDialog from 'modals/dialogs/TopologySaveDialog';
 import TopologyCategoryChangeModal from 'modals/TopologyCategoryChangeModal';
 import CategoryEditModal from 'modals/CategoryEditModal';
 import HumanTaskApproveFormModal from 'modals/HumanTaskApproveFormModal';
@@ -41,6 +42,9 @@ class ActiveModal extends React.Component {
 
       case 'topology_delete_dialog':
         return <TopologyDeleteDialog {...modalData} onCloseModal={this._close} componentKey={modal} />;
+
+      case 'topology_save_dialog':
+        return <TopologySaveDialog {...modalData} onCloseModal={this._close} componentKey={modal} />;
 
       case 'category_topology_change':
         return <TopologyCategoryChangeModal {...modalData} onCloseModal={this._close} componentKey={modal} />;

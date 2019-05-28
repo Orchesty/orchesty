@@ -86,24 +86,20 @@ export function nodeUpdate(id, data, silent = false) {
   };
 }
 
-export function nodeRun(id, data, silent = false) {
+export function nodeRun(nodeId, nodeName, nodeType, topologyId, topologyName, data, silent = false) {
   return dispatch => new Promise((resolve, reject) => {
-    dispatch(needNode(id)).then((node) => {
-      if (node) {
-        dispatch(processActions.startProcess(processes.nodeRun(id)));
-        startingPointRequest(dispatch, 'POST', `/topologies/${node.topology_id}/nodes/${node._id}/run`, null, data).then((response) => {
-          dispatch(processActions.finishProcess(processes.nodeRun(id), response));
-          if (response) {
-            if (!silent) {
-              dispatch(notificationActions.addSuccess('Node was started successfully.'));
-            }
-            resolve(true);
-          } else {
-            reject('Node starting failed.');
-          }
-        });
+    const url = nodeType === 'webhook' ? `/topologies/${topologyName}/nodes/${nodeName}/token/${data.token ? data.token : 'token'}/run` : `/topologies/${topologyId}/nodes/${nodeId}/run`;
+
+    dispatch(processActions.startProcess(processes.nodeRun(nodeId)));
+    startingPointRequest(dispatch, 'POST', url, null, data).then((response) => {
+      dispatch(processActions.finishProcess(processes.nodeRun(nodeId), response));
+      if (response) {
+        if (!silent) {
+          dispatch(notificationActions.addSuccess('Node was started successfully.'));
+        }
+        resolve(true);
       } else {
-        reject('Node does not exists.');
+        reject('Node starting failed.');
       }
     });
   });

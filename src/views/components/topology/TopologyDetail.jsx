@@ -166,6 +166,8 @@ class TopologyDetail extends React.Component {
     const {topologyId, activeTab, setActions, topology, onChangeTopology, componentKey, metricsRange, altMetricsRange, interval, pageId} = this.props;
     const schemaVisible = activeTab === 'schema';
     const newComponentKey = `${componentKey}.${topologyId}`;
+    document.title = `${topology.name}.v${topology.version} | Pipes Manager`;
+
     return (
       <div className="topology-detail">
         <div className="tab-content">

@@ -20,8 +20,19 @@ class TopologyNodeMetricsContainer extends React.Component {
   }
 
   render() {
-    const {nodeList, componentKey, topologyId, changeMetricsRange, metricsRange} = this.props;
-    const nodeItems = nodeList.items.map(nodeId => <NodeMetrics key={nodeId} nodeId={nodeId} componentKey={`${componentKey}.${nodeId}`} metricsRange={metricsRange} />);
+    const {topologies, nodes, nodeList, componentKey, topologyId, changeMetricsRange, metricsRange} = this.props;
+    const nodeItems = nodeList.items.map(nodeId => (
+      <NodeMetrics
+        key={nodeId}
+        nodeId={nodeId}
+        nodeName={nodes[nodeId].name}
+        nodeType={nodes[nodeId].type}
+        topologyId={topologies[topologyId]._id}
+        topologyName={topologies[topologyId].name}
+        componentKey={`${componentKey}.${nodeId}`}
+        metricsRange={metricsRange}
+      />
+      ));
     return (
       <div>
         <TopologyMetrics
@@ -39,6 +50,8 @@ class TopologyNodeMetricsContainer extends React.Component {
 TopologyNodeMetricsContainer.propTypes = {
   componentKey: PropTypes.string.isRequired,
   nodeList: PropTypes.object.isRequired,
+  topologies: PropTypes.object.isRequired,
+  nodes: PropTypes.object.isRequired,
   changeMetricsRange: PropTypes.func.isRequired,
 };
 
@@ -52,10 +65,15 @@ function mapStateToProps(state, ownProps){
     key = `${ownProps.topologyId}[${metricsRange.since}-${metricsRange.till}]`;
     metricsList = metrics.topologies[key];
   }
+
+  const topologies = topology.elements;
+  const nodes = node.elements;
   const nodeList = node.lists['@topology-' + ownProps.topologyId];
   const topologyElement = topology.elements[ownProps.topologyId];
   return {
     state: stateMerge([nodeList && nodeList.state, metricsList && metricsList.state, topologyElement ? stateType.SUCCESS : stateType.LOADING]),
+    topologies,
+    nodes,
     nodeList,
     metricsRange
   }
