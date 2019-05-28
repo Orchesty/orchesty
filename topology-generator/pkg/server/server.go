@@ -44,9 +44,9 @@ func (m *mux) version1() {
 	v1 := m.Group("/v1", apiVersion("1", "0"))
 	{
 		v1.GET("/status", Wrap(func(c *contextWrapper) { c.OK("ok") }))
-		v1.POST("/api/topology/:topologyId", Wrap(handler.GenerateAction))
-		v1.PUT("/api/topology/:topologyId", Wrap(handler.RunStopAction))
-		v1.DELETE("/api/topology/:topologyId", Wrap(handler.DeleteAction))
-		v1.GET("/api/topology/:topologyId", Wrap(handler.InfoAction))
+		v1.POST("/api/topologies/:topologyId", Wrap(handler.GenerateAction))
+		v1.PUT("/api/topologies/:topologyId", Wrap(handler.RunStopAction))
+		v1.DELETE("/api/topologies/:topologyId", Wrap(handler.DeleteAction))
+		v1.GET("/api/topologies/:topologyId", Wrap(handler.InfoAction))
 	}
 }
