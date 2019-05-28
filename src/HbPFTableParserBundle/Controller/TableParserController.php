@@ -86,7 +86,7 @@ class TableParserController extends AbstractFOSRestController
     }
 
     /**
-     * @Route("/parser/json/to/{type}/test", requirements={"type": "\w+"}, methods={"POST"})
+     * @Route("/parser/json/to/{type}/test", requirements={"type": "\w+"}, methods={"GET", "OPTIONS"})
      *
      * @param string $type
      *

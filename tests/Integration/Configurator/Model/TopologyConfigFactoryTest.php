@@ -27,13 +27,17 @@ class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
     {
         $settings = new SystemConfigDto('someSdkHost', '', 10);
 
-        $node1 = (new Node())->setTopology('123')->setType(TypeEnum::XML_PARSER);
-        $node2 = (new Node())->setTopology('123')->setSystemConfigs($settings)->setType(TypeEnum::USER);
-        $node3 = (new Node())->setTopology('123')->setType(TypeEnum::SIGNAL);
+        $node1 = (new Node())->setTopology('123')->setType(TypeEnum::CUSTOM)->setName('example1');
+        $node2 = (new Node())->setTopology('123')->setName('example2')->setSystemConfigs($settings)->setType(TypeEnum::USER);
+        $node3 = (new Node())->setTopology('123')->setName('example3')->setType(TypeEnum::BATCH_CONNECTOR);
+        $node4 = (new Node())->setTopology('123')->setName('example4')->setType(TypeEnum::CONNECTOR);
+        $node5 = (new Node())->setTopology('123')->setName('example5')->setType(TypeEnum::USER);
 
         $this->persistAndFlush($node1);
         $this->persistAndFlush($node2);
         $this->persistAndFlush($node3);
+        $this->persistAndFlush($node4);
+        $this->persistAndFlush($node5);
 
         /** @var NodeRepository $nodeRepository */
         $nodeRepository = $this->dm->getRepository(Node::class);
@@ -53,7 +57,7 @@ class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
         self::assertEquals('someSdkHost',
             $arr[TopologyConfigFactory::NODE_CONFIG][$nodes[1]->getId()][TopologyConfigFactory::WORKER][TopologyConfigFactory::SETTINGS][TopologyConfigFactory::HOST]
         );
-        self::assertEquals(3, count($arr[TopologyConfigFactory::NODE_CONFIG]));
+        self::assertEquals(5, count($arr[TopologyConfigFactory::NODE_CONFIG]));
     }
 
 }
