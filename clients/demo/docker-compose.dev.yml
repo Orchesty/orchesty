@@ -262,7 +262,7 @@ services:
     ## BEGIN DEV
     topology-api:
         user: ${DEV_UID}:${DEV_GID}
-        image: dkr.hanaboso.net/pipes/pipes/topology-api:dev
+        image: dkr.hanaboso.net/pipes/pipes/topology-api-v1:dev
         environment:
           DEPLOYMENT_PREFIX: demo
           GENERATOR_NETWORK: demo_default
@@ -278,7 +278,7 @@ services:
     ## END DEV
     ## BEGIN STAGE
     #topology-api:
-    #    image: dkr.hanaboso.net/pipes/pipes/topology-api:dev
+    #    image: dkr.hanaboso.net/pipes/pipes/topology-api-v1:dev
     #    environment:
     #      DEPLOYMENT_PREFIX: ${DEPLOYMENT_PREFIX}
     #      DOCKER_HOST: tcp://${DOCKER_HOST}
