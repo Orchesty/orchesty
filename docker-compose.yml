@@ -3,8 +3,8 @@ version: '3'
 
 services:
     topology-generator:
-        build: ./docker/work
+        build: docker/work
         working_dir: /srv
         volumes:
           - ./:/srv/
-        command: sh -c 'while true;do sleep 1;done'
+        command: sh -c "while true;do sleep 1;done"
