@@ -33,4 +33,4 @@ RUN setcap cap_net_bind_service=+ep /bin/topology-generator
 
 # docker lib needs this variable set through env var
 ENV DOCKER_API_VERSION=1.37
-CMD ["./topology-generator", "server"]
+CMD ["/bin/topology-generator", "server"]
