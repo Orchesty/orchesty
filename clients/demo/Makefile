@@ -41,7 +41,6 @@ init-dev: .env
 	$(DC_DEV) pull
 	rm -rf pipes-api/var/cache/*
 	$(DC_DEV) up -d --force-recreate --remove-orphans
-#	$(DE_DEV) monolith-api composer global require hirak/prestissimo
 	$(DE_DEV) monolith-api composer install --ignore-platform-reqs
 	$(DE_DEV) monolith-api sudo rm -rf var/cache/*
 

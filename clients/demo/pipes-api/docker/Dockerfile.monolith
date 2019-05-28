@@ -6,10 +6,10 @@ ENV APP_DEBUG=0
 COPY ./ /var/www/
 
 # WTF?
-RUN mkdir /srv/topology && \
-    chmod 0777 /srv/topology
+RUN mkdir /var/topology && \
+    chmod 0777 /var/topology
 
-RUN chown -R www-data:www-data ./var
+RUN chown -R www-data:www-data /var
 
 ENV PHP_FPM_MAX_CHILDREN 10
 ENV PHP_FPM_MAX_REQUESTS 500
