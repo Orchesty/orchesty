@@ -103,13 +103,13 @@ lib-python-build:
     - dev
     - master
 
-#topology-api:
-#  stage: stage1
-#  script:
-#    -  cd go/src/hanaboso/topologygenerator && make docker-push
-#  only:
-#    - dev
-#    - master
+topology-api:
+  stage: stage1
+  script:
+    -  cd topology-generator && make docker-push
+  only:
+    - dev
+    - master
 
 pf-bridge:
   stage: stage1
@@ -142,11 +142,11 @@ limiter-test:
     DIR: limiter
   stage: stage2
 
-#topology-generator-test:
-#  <<: *go_test
-#  variables:
-#   DIR: go/src/hanaboso/topologygenerator
-#  stage: stage2
+topology-generator-test:
+  <<: *go_test
+  variables:
+   DIR: topology-generator
+  stage: stage2
 
 pf-bundles-test:
   stage: stage2
@@ -291,7 +291,7 @@ cleanup:
     - docker-compose down -v || echo "limiter cleanup phase failed"
 
     - ": topology generator"
-    - cd $REPO_ROOT/go/src/hanaboso/topologygenerator
+    - cd $REPO_ROOT/topology-generator
     - export COMPOSE_PROJECT_NAME="topology-generator-test_${CI_PIPELINE_ID}"
     - export COMPOSE_FILE=docker-compose.ci.yml
     - make ${COMPOSE_FILE}
