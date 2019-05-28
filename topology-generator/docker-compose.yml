@@ -2,9 +2,9 @@
 version: '3'
 
 services:
-    topology-generator:
-        build: docker/work
-        working_dir: /srv
-        volumes:
-          - ./:/srv/
-        command: sh -c "while true;do sleep 1;done"
+  topology-generator:
+    image: golang:latest
+    working_dir: /app
+    volumes:
+    - ./:/app
+    command: bash -c 'sleep infinity'
