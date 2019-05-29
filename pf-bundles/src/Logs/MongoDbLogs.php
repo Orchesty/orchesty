@@ -20,11 +20,6 @@ use MongoException;
 class MongoDbLogs implements LogsInterface
 {
 
-    private const CORRELATIONID  = 'correlationId';
-    private const TOPOLOGYID     = 'topologyId';
-    private const TOPOLOGYNAME   = 'topologyName';
-    private const NODEID         = 'nodeId';
-    private const NODENAME       = 'nodeName';
     private const CORRELATION_ID = 'correlation_id';
     private const TOPOLOGY_ID    = 'topology_id';
     private const TOPOLOGY_NAME  = 'topology_name';
@@ -85,19 +80,19 @@ class MongoDbLogs implements LogsInterface
             $pipes = $item[self::PIPES] ?? [];
 
             $result[] = [
-                'id'                 => $item['id'] ?? '',
+                'id'                 => array_key_exists('id', $item) ? (string) $item['id'] : '',
                 self::SEVERITY       => $pipes[self::SEVERITY] ?? '',
                 self::MESSAGE        => $item[self::MESSAGE] ?? '',
                 self::TYPE           => $pipes[self::TYPE] ?? '',
-                self::CORRELATION_ID => $pipes[self::CORRELATIONID] ?? '',
-                self::TOPOLOGY_ID    => $pipes[self::TOPOLOGYID] ?? '',
-                self::TOPOLOGY_NAME  => $pipes[self::TOPOLOGYNAME] ?? '',
-                self::NODE_ID        => $pipes[self::NODEID] ?? '',
-                self::NODE_NAME      => $pipes[self::NODENAME] ?? '',
+                self::CORRELATION_ID => $pipes[self::CORRELATION_ID] ?? '',
+                self::TOPOLOGY_ID    => $pipes[self::TOPOLOGY_ID] ?? '',
+                self::TOPOLOGY_NAME  => $pipes[self::TOPOLOGY_NAME] ?? '',
+                self::NODE_ID        => $pipes[self::NODE_ID] ?? '',
+                self::NODE_NAME      => $pipes[self::NODE_NAME] ?? '',
                 'timestamp'          => str_replace('"', '', $item['@timestamp'] ?? ''),
             ];
 
-            $correlationId = $this->getNonEmptyValue($pipes, self::CORRELATIONID);
+            $correlationId = $this->getNonEmptyValue($pipes, self::CORRELATION_ID);
 
             if ($correlationId) {
                 $correlationIds[] = $correlationId;
@@ -134,7 +129,7 @@ class MongoDbLogs implements LogsInterface
         $innerResult = [];
 
         foreach ($data as $item) {
-            $innerResult[$item[self::PIPES][self::CORRELATIONID]] = $item;
+            $innerResult[$item[self::PIPES][self::CORRELATION_ID]] = $item;
         }
 
         foreach ($result as $key => $item) {
@@ -150,8 +145,8 @@ class MongoDbLogs implements LogsInterface
             }
 
             if ($correlationId && $this->getNonEmptyValue($innerResult, $correlationId)) {
-                $result[$key][self::TOPOLOGY_ID]   = $innerResult[$correlationId][self::PIPES][self::TOPOLOGYID];
-                $result[$key][self::TOPOLOGY_NAME] = $innerResult[$correlationId][self::PIPES][self::TOPOLOGYNAME];
+                $result[$key][self::TOPOLOGY_ID]   = $innerResult[$correlationId][self::PIPES][self::TOPOLOGY_ID];
+                $result[$key][self::TOPOLOGY_NAME] = $innerResult[$correlationId][self::PIPES][self::TOPOLOGY_NAME];
             }
 
             if ($nodeId) {

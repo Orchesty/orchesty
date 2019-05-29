@@ -53,35 +53,35 @@ class Pipes
     /**
      * @var string
      *
-     * @ODM\Field(type="string")
+     * @ODM\Field(type="string", name="correlation_id")
      */
     private $correlationId;
 
     /**
      * @var string
      *
-     * @ODM\Field(type="string")
+     * @ODM\Field(type="string", name="topology_id")
      */
     private $topologyId;
 
     /**
      * @var string
      *
-     * @ODM\Field(type="string")
+     * @ODM\Field(type="string", name="topology_name")
      */
     private $topologyName;
 
     /**
      * @var string
      *
-     * @ODM\Field(type="string")
+     * @ODM\Field(type="string", name="node_id")
      */
     private $nodeId;
 
     /**
      * @var string
      *
-     * @ODM\Field(type="string")
+     * @ODM\Field(type="string", name="node_name")
      */
     private $nodeName;
 

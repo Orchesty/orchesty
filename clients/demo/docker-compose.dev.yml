@@ -268,7 +268,7 @@ services:
           GENERATOR_NETWORK: demo_default
           GENERATOR_MODE: compose
           GENERATOR_PATH: /srv/topology
-          MONGO_HOST: mongo
+          MONGO_HOST: mongodb://mongo
           MONGO_DATABASE: demo
           RABBITMQ_HOST: rabbitmq
           PROJECT_SOURCE_PATH: ${PROJECT_SOURCE_PATH}/../topology
@@ -396,6 +396,8 @@ services:
         ## BEGIN DEV
         volumes:
           - ./stack/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+        depends_on:
+          - mongo
         ## END DEV
         ## BEGIN STAGE
         #deploy:

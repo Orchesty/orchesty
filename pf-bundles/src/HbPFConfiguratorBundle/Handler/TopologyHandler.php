@@ -267,6 +267,7 @@ class TopologyHandler
         $res      = new ResponseDto(200, '', '', []);
 
         if (!($topology->getVisibility() === TopologyStatusEnum::PUBLIC && $topology->isEnabled())) {
+            $this->generatorBridge->stopTopology($id);
             $res = $this->generatorBridge->deleteTopology($id);
         }
 
@@ -298,12 +299,14 @@ class TopologyHandler
         if ($startTopology) {
             $this->generatorBridge->generateTopology($topologyId);
             $this->generatorBridge->runTopology($topologyId);
+            sleep(3); // Wait for topology start...
         }
 
         $res = $this->generatorBridge->runTest($topologyId);
 
         $topology = $this->getTopologyById($topologyId);
         if ($topology->getVisibility() === TopologyStatusEnum::DRAFT) {
+            $this->generatorBridge->stopTopology($topologyId);
             $this->generatorBridge->deleteTopology($topologyId);
         }
 

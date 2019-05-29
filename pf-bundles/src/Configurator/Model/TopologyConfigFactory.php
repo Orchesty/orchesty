@@ -78,7 +78,7 @@ class TopologyConfigFactory
             self::NODE_CONFIG => $this->loopNodes($nodes),
         ];
 
-        return (string) json_encode($result, JSON_THROW_ON_ERROR);
+        return (string) json_encode($result, JSON_FORCE_OBJECT | JSON_THROW_ON_ERROR);
     }
 
     /**
