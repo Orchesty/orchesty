@@ -98,6 +98,24 @@ class MetricsManager implements LoggerAwareInterface
     private const QUEUE_MAX        = 'queue_max';
     private const PROCESS_TIME_MAX = 'process_time_max';
 
+    private const COUNT = 'COUNT';
+    private const SUM   = 'SUM';
+    private const MIN   = 'MIN';
+    private const MAX   = 'MAX';
+
+    private const COUNT_KEY = 'count';
+    private const SUM_KEY   = 'sum';
+    private const MIN_KEY   = 'min';
+    private const AVG_KEY   = 'avg';
+    private const MAX_KEY   = 'max';
+
+    private const CPU_KEY          = 'cpu_%s';
+    private const REQUEST_KEY      = 'request_%s';
+    private const WAIT_KEY         = 'wait_%s';
+    private const PROCESSED_KEY    = 'top_processed_%s';
+    private const QUEUE_KEY        = 'queue_%s';
+    private const PROCESS_TIME_KEY = 'process_time_%s';
+
     /**
      * @var ClientInterface
      */
@@ -195,8 +213,12 @@ class MetricsManager implements LoggerAwareInterface
     {
         $data                                = $this->getTopologyProcessTimeMetrics($topology, $params)['process'];
         $res                                 = [];
-        $res['topology'][self::PROCESS_TIME] = ['min' => $data['min'], 'avg' => $data['avg'], 'max' => $data['max']];
-        unset($data['min'], $data['avg'], $data['max']);
+        $res['topology'][self::PROCESS_TIME] = [
+            self::MIN_KEY => $data[self::MIN_KEY],
+            self::AVG_KEY => $data[self::AVG_KEY],
+            self::MAX_KEY => $data[self::MAX_KEY],
+        ];
+        unset($data[self::MIN_KEY], $data[self::AVG_KEY], $data[self::MAX_KEY]);
         $res['topology']['process'] = $data;
 
         /** @var Node[] $nodes */
@@ -229,15 +251,15 @@ class MetricsManager implements LoggerAwareInterface
             $this->connectorTable
         );
 
-        $select = self::getCountForSelect([
+        $select = self::addStringSeparator(self::getFunctionForSelect([
             self::AVG_PROCESS_TIME => self::PROCESSED_COUNT,
             self::AVG_WAIT_TIME    => self::WAIT_COUNT,
             self::CPU_KERNEL_AVG   => self::CPU_COUNT,
             self::AVG_TIME         => self::REQUEST_COUNT,
             self::AVG_MESSAGES     => self::QUEUE_COUNT,
-        ]);
-        $select = self::addStringSeparator($select);
-        $select .= self::getSumForSelect([
+        ], self::COUNT));
+
+        $select .= self::addStringSeparator(self::getFunctionForSelect([
             self::AVG_PROCESS_TIME => self::PROCESSED_SUM,
             self::AVG_WAIT_TIME    => self::WAIT_SUM,
             self::CPU_KERNEL_AVG   => self::CPU_SUM,
@@ -245,22 +267,22 @@ class MetricsManager implements LoggerAwareInterface
             self::FAILED_COUNT     => self::NODE_ERROR_SUM,
             self::TOTAL_COUNT      => self::NODE_TOTAL_SUM,
             self::AVG_MESSAGES     => self::QUEUE_SUM,
-        ]);
-        $select = self::addStringSeparator($select);
-        $select .= self::getMinForSelect([
+        ], self::SUM));
+
+        $select .= self::addStringSeparator(self::getFunctionForSelect([
             self::MIN_PROCESS_TIME => self::PROCESSED_MIN,
             self::MIN_WAIT_TIME    => self::WAIT_MIN,
             self::CPU_KERNEL_MIN   => self::CPU_MIN,
             self::MIN_TIME         => self::REQUEST_MIN,
-        ]);
-        $select = self::addStringSeparator($select);
-        $select .= self::getMaxForSelect([
+        ], self::MIN));
+
+        $select .= self::getFunctionForSelect([
             self::MAX_PROCESS_TIME => self::PROCESSED_MAX,
             self::MAX_WAIT_TIME    => self::WAIT_MAX,
             self::CPU_KERNEL_MAX   => self::CPU_MAX,
             self::MAX_TIME         => self::REQUEST_MAX,
             self::MAX_MESSAGES     => self::QUEUE_MAX,
-        ]);
+        ], self::MAX);
 
         $where = [
             self::NODE  => $node->getId(),
@@ -284,17 +306,17 @@ class MetricsManager implements LoggerAwareInterface
         $dateTo   = $params['to'] ?? NULL;
         $from     = $this->counterTable;
 
-        $select = self::getCountForSelect([self::AVG_TIME => self::PROCESS_TIME_COUNT]);
+        $select = self::getFunctionForSelect([self::AVG_TIME => self::PROCESS_TIME_COUNT], self::COUNT);
         $select = self::addStringSeparator($select);
-        $select .= self::getSumForSelect([self::AVG_TIME => self::PROCESS_TIME_SUM]);
+        $select .= self::getFunctionForSelect([self::AVG_TIME => self::PROCESS_TIME_SUM], self::SUM);
         $select = self::addStringSeparator($select);
-        $select .= self::getMinForSelect([self::MIN_TIME => self::PROCESS_TIME_MIN]);
+        $select .= self::getFunctionForSelect([self::MIN_TIME => self::PROCESS_TIME_MIN], self::MIN);
         $select = self::addStringSeparator($select);
-        $select .= self::getMaxForSelect([self::MAX_TIME => self::PROCESS_TIME_MAX]);
+        $select .= self::getFunctionForSelect([self::MAX_TIME => self::PROCESS_TIME_MAX], self::MAX);
         $select = self::addStringSeparator($select);
-        $select .= self::getSumForSelect([self::TOTAL_COUNT => self::NODE_TOTAL_SUM]);
+        $select .= self::getFunctionForSelect([self::TOTAL_COUNT => self::NODE_TOTAL_SUM], self::SUM);
         $select = self::addStringSeparator($select);
-        $select .= self::getSumForSelect([self::FAILED_COUNT => self::NODE_ERROR_SUM]);
+        $select .= self::getFunctionForSelect([self::FAILED_COUNT => self::NODE_ERROR_SUM], self::SUM);
 
         $where = [self::TOPOLOGY => $topology->getId()];
 
@@ -373,11 +395,11 @@ class MetricsManager implements LoggerAwareInterface
         }
 
         if ($dateFrom && $dateTo) {
-            $fromDate = DateTimeUtils::getUTCDateTime($dateFrom);
-            $to       = DateTimeUtils::getUTCDateTime($dateTo);
+            $dateFrom = DateTimeUtils::getUTCDateTime($dateFrom);
+            $dateTo   = DateTimeUtils::getUTCDateTime($dateTo);
             $qb
-                ->setTimeRange($fromDate->getTimestamp(), $to->getTimestamp())
-                ->from($this->addRetentionPolicy($from, $fromDate, $to));
+                ->setTimeRange($dateFrom->getTimestamp(), $dateTo->getTimestamp())
+                ->from($this->addRetentionPolicy($from, $dateFrom, $dateTo));
         }
         $this->logger->debug('Metrics was selected.', ['Query' => $qb->getQuery()]);
         try {
@@ -415,7 +437,7 @@ class MetricsManager implements LoggerAwareInterface
     }
 
     /**
-     * @param  array $serie
+     * @param array $serie
      *
      * @return array
      */
@@ -428,6 +450,21 @@ class MetricsManager implements LoggerAwareInterface
         }
 
         return $points;
+    }
+
+    /**
+     * @param MetricsDto $dto
+     * @param array      $result
+     * @param string     $type
+     *
+     * @return void
+     */
+    private function processInnerResult(MetricsDto $dto, array $result, string $type): void
+    {
+        $dto
+            ->setMin($result[sprintf($type, self::MIN_KEY)] ?? '')
+            ->setAvg($result[sprintf($type, self::COUNT_KEY)] ?? '', $result[sprintf($type, self::SUM_KEY) ?? ''])
+            ->setMax($result[sprintf($type, self::MAX_KEY)] ?? '');
     }
 
     /**
@@ -446,59 +483,27 @@ class MetricsManager implements LoggerAwareInterface
         $counter = new MetricsDto();
 
         if (isset($result[$this->fpmTable])) {
-            $cpu
-                ->setMin($result[$this->fpmTable][self::CPU_MIN] ?? '')
-                ->setMax($result[$this->fpmTable][self::CPU_MAX] ?? '')
-                ->setAvg(
-                    $result[$this->fpmTable][self::CPU_COUNT] ?? '',
-                    $result[$this->fpmTable][self::CPU_SUM] ?? ''
-                );
+            $this->processInnerResult($cpu, $result[$this->fpmTable], self::CPU_KEY);
         }
+
         if (isset($result[$this->connectorTable])) {
-            $request
-                ->setMin($result[$this->connectorTable][self::REQUEST_MIN] ?? '')
-                ->setMax($result[$this->connectorTable][self::REQUEST_MAX] ?? '')
-                ->setAvg(
-                    $result[$this->connectorTable][self::REQUEST_COUNT] ?? '',
-                    $result[$this->connectorTable][self::REQUEST_SUM] ?? ''
-                );
+            $this->processInnerResult($request, $result[$this->connectorTable], self::REQUEST_KEY);
         }
+
         if (isset($result[$this->nodeTable])) {
-            $waiting
-                ->setMin($result[$this->nodeTable][self::WAIT_MIN] ?? '')
-                ->setMax($result[$this->nodeTable][self::WAIT_MAX] ?? '')
-                ->setAvg(
-                    $result[$this->nodeTable][self::WAIT_COUNT] ?? '',
-                    $result[$this->nodeTable][self::WAIT_SUM] ?? ''
-                );
-            $process
-                ->setMin($result[$this->nodeTable][self::PROCESSED_MIN] ?? '')
-                ->setMax($result[$this->nodeTable][self::PROCESSED_MAX] ?? '')
-                ->setAvg(
-                    $result[$this->nodeTable][self::PROCESSED_COUNT] ?? '',
-                    $result[$this->nodeTable][self::PROCESSED_SUM] ?? ''
-                );
+            $this->processInnerResult($waiting, $result[$this->nodeTable], self::WAIT_KEY);
+            $this->processInnerResult($process, $result[$this->nodeTable], self::PROCESSED_KEY);
             $error
                 ->setTotal($result[$this->nodeTable][self::NODE_TOTAL_SUM] ?? '')
                 ->setErrors($result[$this->nodeTable][self::NODE_ERROR_SUM] ?? '');
+        }
 
-        }
         if (isset($result[$this->rabbitTable])) {
-            $queue
-                ->setMax($result[$this->rabbitTable][self::QUEUE_MAX] ?? '')
-                ->setAvg(
-                    $result[$this->rabbitTable][self::QUEUE_COUNT] ?? '',
-                    $result[$this->rabbitTable][self::QUEUE_SUM] ?? ''
-                );
+            $this->processInnerResult($queue, $result[$this->rabbitTable], self::QUEUE_KEY);
         }
+
         if (isset($result[$this->counterTable])) {
-            $counter
-                ->setMin($result[$this->counterTable][self::PROCESS_TIME_MIN] ?? '')
-                ->setMax($result[$this->counterTable][self::PROCESS_TIME_MAX] ?? '')
-                ->setAvg(
-                    $result[$this->counterTable][self::PROCESS_TIME_COUNT] ?? '',
-                    $result[$this->counterTable][self::PROCESS_TIME_SUM] ?? ''
-                );
+            $this->processInnerResult($process, $result[$this->connectorTable], self::PROCESS_TIME_KEY);
             $error
                 ->setTotal($result[$this->counterTable][self::NODE_TOTAL_SUM] ?? '')
                 ->setErrors($result[$this->counterTable][self::NODE_ERROR_SUM] ?? '');
@@ -516,16 +521,11 @@ class MetricsManager implements LoggerAwareInterface
     private function processGraphResult(array $series): array
     {
         $data = [];
+
         if (isset($series[0]['values'])) {
-            $total = count($series[0]['values']);
-            $i     = 1;
-            foreach ($series[0]['values'] as $item) {
-                if ($i > ($total - 4) && empty($item[1])) {
-                    break;
-                } else {
-                    $data[DateTimeUtils::getUTCDateTime($item[0])->getTimestamp()] = $item[1] ?? 0;
-                }
-                $i++;
+            for ($i = 0; $i < count($series[0]['values']) - 4; $i++) {
+                $item                                                          = $series[0]['values'][$i];
+                $data[DateTimeUtils::getUTCDateTime($item[0])->getTimestamp()] = $item[1] ?? 0;
             }
         }
 
@@ -555,35 +555,35 @@ class MetricsManager implements LoggerAwareInterface
     {
         return [
             self::QUEUE_DEPTH  => [
-                'max' => $queue->getMax(),
-                'avg' => $queue->getAvg(),
+                self::MAX_KEY => $queue->getMax(),
+                self::AVG_KEY => $queue->getAvg(),
             ],
             self::WAITING_TIME => [
-                'max' => $waiting->getMax(),
-                'min' => $waiting->getMin(),
-                'avg' => $waiting->getAvg(),
+                self::MAX_KEY => $waiting->getMax(),
+                self::AVG_KEY => $waiting->getAvg(),
+                self::MIN_KEY => $waiting->getMin(),
             ],
             self::PROCESS_TIME => [
-                'max' => $process->getMax(),
-                'min' => $process->getMin(),
-                'avg' => $process->getAvg(),
+                self::MAX_KEY => $process->getMax(),
+                self::AVG_KEY => $process->getAvg(),
+                self::MIN_KEY => $process->getMin(),
             ],
             self::CPU_TIME     => [
-                'max' => $cpu->getMax(),
-                'min' => $cpu->getMin(),
-                'avg' => $cpu->getAvg(),
+                self::MAX_KEY => $cpu->getMax(),
+                self::AVG_KEY => $cpu->getAvg(),
+                self::MIN_KEY => $cpu->getMin(),
             ],
             self::REQUEST_TIME => [
-                'max' => $request->getMax(),
-                'min' => $request->getMin(),
-                'avg' => $request->getAvg() == 0 ? 'n/a' : $request->getAvg(),
+                self::MAX_KEY => $request->getMax(),
+                self::AVG_KEY => $request->getAvg() == 0 ? 'n/a' : $request->getAvg(),
+                self::MIN_KEY => $request->getMin(),
             ],
             self::PROCESS      => [
-                'max'    => $counter->getMax(),
-                'min'    => $counter->getMin(),
-                'avg'    => $counter->getAvg(),
-                'total'  => $error->getTotal(),
-                'errors' => $error->getErrors(),
+                self::MAX_KEY => $counter->getMax(),
+                self::MIN_KEY => $counter->getMin(),
+                self::AVG_KEY => $counter->getAvg(),
+                'total'       => $error->getTotal(),
+                'errors'      => $error->getErrors(),
             ],
         ];
     }
@@ -596,18 +596,11 @@ class MetricsManager implements LoggerAwareInterface
      */
     private static function getConditions(array $data, string $delimiter = 'or'): array
     {
-        $ret   = '';
-        $first = TRUE;
-        foreach ($data as $name => $value) {
-            if (!$first) {
-                $ret .= sprintf(' %s ', $delimiter);
-            }
+        array_walk($data, function (string &$value, string $key): void {
+            $value = sprintf('%s = "%s"', $key, $value);
+        });
 
-            $ret   .= sprintf('%s = \'%s\'', $name, $value);
-            $first = FALSE;
-        }
-
-        return [$ret];
+        return [implode(sprintf(' %s ', $delimiter), $data)];
     }
 
     /**
@@ -621,65 +614,29 @@ class MetricsManager implements LoggerAwareInterface
     }
 
     /**
-     * @param array $counts
+     * @param array  $data
+     * @param string $function
      *
      * @return string
      */
-    private static function getCountForSelect(array $counts): string
+    private static function getFunctionForSelect(array $data, string $function): string
     {
-        return self::createQuery($counts, 'COUNT');
-    }
-
-    /**
-     * @param array $sums
-     *
-     * @return string
-     */
-    private static function getSumForSelect(array $sums): string
-    {
-        return self::createQuery($sums, 'SUM');
-    }
-
-    /**
-     * @param array $sums
-     *
-     * @return string
-     */
-    private static function getMinForSelect(array $sums): string
-    {
-        return self::createQuery($sums, 'MIN');
-    }
-
-    /**
-     * @param array $sums
-     *
-     * @return string
-     */
-    private static function getMaxForSelect(array $sums): string
-    {
-        return self::createQuery($sums, 'MAX');
+        return self::createQuery($data, $function);
     }
 
     /**
      * @param array  $data
-     * @param string $funcName
+     * @param string $function
      *
      * @return string
      */
-    private static function createQuery(array $data, string $funcName): string
+    private static function createQuery(array $data, string $function): string
     {
-        $ret   = '';
-        $first = TRUE;
-        foreach ($data as $key => $alias) {
-            if (!$first) {
-                $ret .= ',';
-            }
+        array_walk($data, function (string &$value, string $key) use ($function): void {
+            $value = sprintf('%s("%s") AS %s', $function, $key, $value);
+        });
 
-            $first = FALSE;
-            $ret   .= sprintf('%s("%s") as %s', $funcName, $key, $alias);
-        }
-
-        return $ret;
+        return implode(', ', $data);
     }
 
     /**
@@ -689,23 +646,13 @@ class MetricsManager implements LoggerAwareInterface
      *
      * @return string
      */
-    private function addRetentionPolicy(
-        string $fromTables,
-        DateTime $from,
-        DateTime $to
-    ): string
+    private function addRetentionPolicy(string $fromTables, DateTime $from, DateTime $to): string
     {
-        $out       = '';
         $retention = RetentionFactory::getRetention($from, $to);
-        foreach (explode(',', $fromTables) as $item) {
-            if (!empty($out)) {
-                $out .= ',';
-            }
 
-            $out .= sprintf('"%s".%s', $retention, $item);
-        }
-
-        return $out;
+        return implode(', ', array_map(function (string $item) use ($retention): string {
+            return sprintf('"%s".%s', $retention, $item);
+        }, explode(',', $fromTables)));
     }
 
 }
