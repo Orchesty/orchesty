@@ -18,7 +18,9 @@ use Hanaboso\CommonsBundle\Utils\UriParams;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
+use Hanaboso\PipesFramework\Configurator\Exception\TopologyConfigException;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
+use Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
 use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
@@ -53,21 +55,21 @@ class TopologyHandler
     protected $curlManager;
 
     /**
-     * @var RequestHandler
+     * @var TopologyGeneratorBridge
      */
-    protected $requestHandler;
+    protected $generatorBridge;
 
     /**
      * TopologyHandler constructor.
      *
-     * @param DatabaseManagerLocator $dml
-     * @param TopologyManager        $manager
-     * @param RequestHandler         $requestHandler
+     * @param DatabaseManagerLocator  $dml
+     * @param TopologyManager         $manager
+     * @param TopologyGeneratorBridge $generatorBridge
      */
     public function __construct(
         DatabaseManagerLocator $dml,
         TopologyManager $manager,
-        RequestHandler $requestHandler
+        TopologyGeneratorBridge $generatorBridge
     )
     {
         /** @var DocumentManager $dm */
@@ -75,7 +77,7 @@ class TopologyHandler
         $this->dm                 = $dm;
         $this->topologyRepository = $this->dm->getRepository(Topology::class);
         $this->manager            = $manager;
-        $this->requestHandler     = $requestHandler;
+        $this->generatorBridge    = $generatorBridge;
     }
 
     /**
@@ -162,7 +164,7 @@ class TopologyHandler
         $topology = $this->getTopologyById($id);
         $topology = $this->manager->updateTopology($topology, $data);
 
-        $this->requestHandler->invalidateTopologyCache($topology->getName());
+        $this->generatorBridge->invalidateTopologyCache($topology->getName());
 
         return $this->getTopologyData($topology);
     }
@@ -210,8 +212,8 @@ class TopologyHandler
         $data     = $this->getTopologyData($topology);
 
         try {
-            $generateResult = $this->requestHandler->generateTopology($id);
-            $runResult      = $this->requestHandler->runTopology($id);
+            $generateResult = $this->generatorBridge->generateTopology($id);
+            $runResult      = $this->generatorBridge->runTopology($id);
             $code           = 200;
             if ($generateResult->getStatusCode() !== 200 || $runResult->getStatusCode() !== 200) {
                 $code = 400;
@@ -265,11 +267,11 @@ class TopologyHandler
         $res      = new ResponseDto(200, '', '', []);
 
         if (!($topology->getVisibility() === TopologyStatusEnum::PUBLIC && $topology->isEnabled())) {
-            $res = $this->requestHandler->deleteTopology($id);
+            $res = $this->generatorBridge->deleteTopology($id);
         }
 
         $this->manager->deleteTopology($topology);
-        $this->requestHandler->invalidateTopologyCache($topology->getName());
+        $this->generatorBridge->invalidateTopologyCache($topology->getName());
 
         return $res;
     }
@@ -280,11 +282,12 @@ class TopologyHandler
      * @return array
      * @throws CurlException
      * @throws TopologyException
+     * @throws TopologyConfigException
      */
     public function runTest(string $topologyId): array
     {
         $startTopology = TRUE;
-        $runningInfo   = $this->requestHandler->infoTopology($topologyId);
+        $runningInfo   = $this->generatorBridge->infoTopology($topologyId);
         if ($runningInfo instanceof ResponseDto && $runningInfo->getBody()) {
             $result = json_decode($runningInfo->getBody(), TRUE);
             if (array_key_exists('docker_info', $result) && count($result['docker_info'])) {
@@ -293,15 +296,15 @@ class TopologyHandler
         }
 
         if ($startTopology) {
-            $this->requestHandler->generateTopology($topologyId);
-            $this->requestHandler->runTopology($topologyId);
+            $this->generatorBridge->generateTopology($topologyId);
+            $this->generatorBridge->runTopology($topologyId);
         }
 
-        $res = $this->requestHandler->runTest($topologyId);
+        $res = $this->generatorBridge->runTest($topologyId);
 
         $topology = $this->getTopologyById($topologyId);
         if ($topology->getVisibility() === TopologyStatusEnum::DRAFT) {
-            $this->requestHandler->deleteTopology($topologyId);
+            $this->generatorBridge->deleteTopology($topologyId);
         }
 
         return $res;

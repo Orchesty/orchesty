@@ -325,11 +325,15 @@ class Node
     }
 
     /**
-     * @return string|null
+     * @return SystemConfigDto|null
      */
-    public function getSystemConfigs(): ?string
+    public function getSystemConfigs(): ?SystemConfigDto
     {
-        return $this->systemConfigs;
+        if (!$this->systemConfigs) {
+            return NULL;
+        }
+
+        return SystemConfigDto::fromString($this->systemConfigs);
     }
 
 }

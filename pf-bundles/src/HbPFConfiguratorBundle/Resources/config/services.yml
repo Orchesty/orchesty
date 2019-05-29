@@ -12,7 +12,15 @@ services:
             - '%starting_point_host%'
             - '%cron_host%'
 
-    hbpf.topology_generator.request.request_handler:
-        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\RequestHandler
+    hbpf.topology.configurator:
+        class: Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory
         arguments:
+            - '%topology_configs%'
+
+    hbpf.topology_generator.bridge:
+        class: Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge
+        arguments:
+            - '@hbpf.database_manager_locator'
             - '@hbpf.transport.curl_manager'
+            - '@hbpf.topology.configurator'
+            - '%topology_generator_configs%'

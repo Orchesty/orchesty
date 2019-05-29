@@ -9,11 +9,12 @@ use Hanaboso\CommonsBundle\Exception\EnumException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
+use Hanaboso\PipesFramework\Configurator\Exception\TopologyConfigException;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
+use Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
-use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\RequestHandler;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\UpdateObject;
 use Predis\Client;
@@ -62,7 +63,7 @@ class InstallManager implements LoggerAwareInterface
     private $xml;
 
     /**
-     * @var RequestHandler
+     * @var TopologyGeneratorBridge
      */
     private $requestHandler;
 
@@ -102,18 +103,18 @@ class InstallManager implements LoggerAwareInterface
     /**
      * InstallManager constructor.
      *
-     * @param DocumentManager $dm
-     * @param Client          $client
-     * @param TopologyManager $topologyManager
-     * @param RequestHandler  $requestHandler
-     * @param CategoryParser  $categoryParser
-     * @param array           $dirs
+     * @param DocumentManager         $dm
+     * @param Client                  $client
+     * @param TopologyManager         $topologyManager
+     * @param TopologyGeneratorBridge $requestHandler
+     * @param CategoryParser          $categoryParser
+     * @param array                   $dirs
      */
     public function __construct(
         DocumentManager $dm,
         Client $client,
         TopologyManager $topologyManager,
-        RequestHandler $requestHandler,
+        TopologyGeneratorBridge $requestHandler,
         CategoryParser $categoryParser,
         array $dirs
     )
@@ -283,6 +284,7 @@ class InstallManager implements LoggerAwareInterface
      * @throws CurlException
      * @throws NodeException
      * @throws TopologyException
+     * @throws TopologyConfigException
      */
     private function makeRunnable(Topology $topology, string $content): Topology
     {

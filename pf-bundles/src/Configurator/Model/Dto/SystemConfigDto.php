@@ -2,8 +2,6 @@
 
 namespace Hanaboso\PipesFramework\Configurator\Model\Dto;
 
-use Exception;
-
 /**
  * Class SystemConfigDto
  *
@@ -12,16 +10,16 @@ use Exception;
 final class SystemConfigDto
 {
 
-    private const SDK      = 'sdk';
-    private const BRIDGE   = 'bridge';
-    private const RABBIT   = 'rabbit';
-    private const REPEATER = 'repeater';
+    public const SDK      = 'sdk';
+    public const BRIDGE   = 'bridge';
+    public const RABBIT   = 'rabbit';
+    public const REPEATER = 'repeater';
 
-    private const HOST     = 'host';
-    private const PREFETCH = 'prefetch';
-    private const ENABLED  = 'enabled';
-    private const HOPS     = 'hops';
-    private const INTERVAL = 'interval';
+    public const HOST     = 'host';
+    public const PREFETCH = 'prefetch';
+    public const ENABLED  = 'enabled';
+    public const HOPS     = 'hops';
+    public const INTERVAL = 'interval';
 
     /**
      * @var string
@@ -101,9 +99,8 @@ final class SystemConfigDto
      * @param string $param
      *
      * @return SystemConfigDto
-     * @throws Exception
      */
-    public function fromString(string $param): SystemConfigDto
+    public static function fromString(string $param): SystemConfigDto
     {
         $result = json_decode($param, TRUE, 512, JSON_THROW_ON_ERROR);
 
