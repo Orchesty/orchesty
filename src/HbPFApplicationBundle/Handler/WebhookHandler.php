@@ -34,7 +34,6 @@ class WebhookHandler
      * @param string $user
      *
      * @throws ApplicationInstallException
-     * @throws CurlException
      */
     public function subscribeWebhooks(string $key, string $user): void
     {

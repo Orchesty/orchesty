@@ -2,8 +2,6 @@
 
 namespace Hanaboso\PipesFramework\Configurator\Model\Dto;
 
-use Exception;
-
 /**
  * Class SystemConfigDto
  *
@@ -101,7 +99,6 @@ final class SystemConfigDto
      * @param string $param
      *
      * @return SystemConfigDto
-     * @throws Exception
      */
     public static function fromString(string $param): SystemConfigDto
     {

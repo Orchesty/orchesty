@@ -11,6 +11,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
+use Hanaboso\PipesFramework\Configurator\Exception\TopologyConfigException;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory;
 use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
 
@@ -78,6 +79,7 @@ class TopologyGeneratorBridge
      *
      * @return ResponseDto
      * @throws CurlException
+     * @throws TopologyConfigException
      */
     public function generateTopology(string $topologyId): ResponseDto
     {

@@ -2,10 +2,6 @@ services:
     _defaults:
         public: '%public.services%'
 
-    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\AuthorizationController:
-        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\AuthorizationController
-        arguments:
-
     Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\CategoryController:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\CategoryController
         arguments:

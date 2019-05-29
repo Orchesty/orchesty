@@ -113,7 +113,7 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws DateTimeException
+     * @throws Exception
      */
     public function testApplicationPassword(): void
     {
@@ -129,7 +129,7 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws DateTimeException
+     * @throws Exception
      */
     public function testApplicationSettings(): void
     {
@@ -151,8 +151,7 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws ApplicationInstallException
-     * @throws DateTimeException
+     * @throws Exception
      */
     public function testGetSettingsFormValues(): void
     {
@@ -174,7 +173,7 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws DateTimeException
+     * @throws Exception
      */
     public function testSetApplicationSettingForm(): void
     {

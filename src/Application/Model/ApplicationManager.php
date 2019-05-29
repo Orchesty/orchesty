@@ -232,7 +232,7 @@ class ApplicationManager
     /**
      * @param ApplicationInstall $applicationInstall
      *
-     * @throws ApplicationInstallException
+     * @throws Exception
      */
     public function subscribeWebhooks(ApplicationInstall $applicationInstall): void
     {

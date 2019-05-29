@@ -57,8 +57,6 @@ class MapperController extends AbstractFOSRestController
             return $this->getResponse($data);
         } catch (PipesFrameworkExceptionAbstract | OnRepeatException $e) {
             throw $e;
-        } catch (MapperException $e) {
-            return $this->getErrorResponse($e);
         }
     }
 

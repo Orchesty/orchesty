@@ -48,12 +48,9 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
      */
     public function testToJsonTest(): void
     {
-        $response = $this->sendPost('/parser/csv/to/json/test', [
-            'file_id' => sprintf('%s/../../../Integration/Parser/data/input-10.csv', __DIR__),
-        ]);
+        $response = $this->sendGet('/parser/csv/to/json/test');
 
         self::assertEquals(200, $response->status);
-        self::assertTrue($response->content);
     }
 
     /**
@@ -102,12 +99,9 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
      */
     public function testFromTestJson(): void
     {
-        $response = $this->sendPost('/parser/json/to/csv/test', [
-            'file_id' => sprintf('%s/../../../Integration/Parser/data/output-10.json', __DIR__),
-        ]);
+        $response = $this->sendGet('/parser/json/to/csv/test');
 
         self::assertEquals(200, $response->status);
-        self::assertTrue($response->content);
     }
 
     /**
@@ -115,10 +109,9 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
      */
     public function testFromTestJsonNotFound(): void
     {
-        $response = $this->sendPost('/parser/json/to/csv/test', ['file_id' => '',]);
+        $response = $this->sendGet('/parser/json/to/csv/test');
 
         self::assertEquals(200, $response->status);
-        self::assertTrue($response->content);
     }
 
     /**
