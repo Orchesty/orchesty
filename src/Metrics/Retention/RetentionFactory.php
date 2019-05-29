@@ -25,17 +25,13 @@ final class RetentionFactory
      */
     public static function getRetention(DateTime $from, DateTime $to): String
     {
-        $to = $to->modify('-1 second');
-        $diff  = $to->diff($from);
-        $days  = $diff->d;
-        $hours = $diff->h;
-        $mins  = $diff->i;
+        $diff = $to->modify('-1 second')->diff($from);
 
-        if ($days > 0) {
+        if ($diff->d > 0) {
             return self::FOUR_HOUR;
-        } elseif ($hours > 0) {
+        } elseif ($diff->h > 0) {
             return self::HALF_HOUR;
-        } elseif ($mins > 0) {
+        } elseif ($diff->i > 0) {
             return self::MIN;
         } else {
             return self::SEC;
