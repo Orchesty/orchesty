@@ -7,6 +7,8 @@ use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use Hanaboso\PipesFramework\ApiGateway\Exceptions\OnRepeatException;
 use Hanaboso\PipesFramework\ApiGateway\Listener\RepeaterListener;
+use Hanaboso\PipesFramework\Configurator\Document\Node;
+use Hanaboso\PipesFramework\Configurator\Model\Dto\SystemConfigDto;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
@@ -26,21 +28,46 @@ final class RepeaterListenerTest extends ControllerTestCaseAbstract
      */
     public function testOnRepeatableException(): void
     {
-        $listener = new RepeaterListener();
+        $node = (new Node())->setSystemConfigs((new SystemConfigDto('', '', 1, TRUE, 5, 20)));
+        $this->persistAndFlush($node);
+
+        $nodeRepository = $this->dm->getRepository(Node::class);
+        $node           = $nodeRepository->findAll()[0];
+
+        $listener = new RepeaterListener($this->dm);
         $dto      = new ProcessDto();
+        $dto->setHeaders([PipesHeaders::createKey(PipesHeaders::NODE_ID) => $node->getId()]);
 
         $eventMock = $this->mockEvent(new OnRepeatException($dto));
 
-        for ($i = 1; $i <= 3; $i++) {
+        for ($i = 1; $i <= 5; $i++) {
             $listener->onRepeatableException($eventMock);
             /** @var Response $response */
-            $response   = $eventMock->getResponse();
-            $currentHop = $response->headers->get(PipesHeaders::createKey(PipesHeaders::REPEAT_HOPS));
-            $maxHop     = $response->headers->get(PipesHeaders::createKey(PipesHeaders::REPEAT_MAX_HOPS));
+            $response         = $eventMock->getResponse();
+            $currentHop       = $response->headers->get(PipesHeaders::createKey(PipesHeaders::REPEAT_HOPS));
+            $maxHop           = $response->headers->get(PipesHeaders::createKey(PipesHeaders::REPEAT_MAX_HOPS));
+            $repeaterInterval = $response->headers->get(PipesHeaders::createKey(PipesHeaders::REPEAT_INTERVAL));
 
-            self::assertEquals(3, $maxHop);
             self::assertEquals($i, $currentHop);
+            self::assertEquals(5, $maxHop);
+            self::assertEquals(20, $repeaterInterval);
         }
+
+    }
+
+    /**
+     * @throws Exception
+     */
+    function testException(): void
+    {
+        $node = (new Node())->setSystemConfigs((new SystemConfigDto('', '', 1, FALSE, 5, 20)));
+        $this->persistAndFlush($node);
+        $listener = new RepeaterListener($this->dm);
+        $dto      = new ProcessDto();
+        $dto->setHeaders([PipesHeaders::createKey(PipesHeaders::NODE_ID) => $node->getId()]);
+
+        $eventMock = $this->mockEvent(new OnRepeatException($dto));
+        $listener->onRepeatableException($eventMock);
     }
 
     /**
@@ -48,7 +75,7 @@ final class RepeaterListenerTest extends ControllerTestCaseAbstract
      */
     function testMaxHops(): void
     {
-        $listener = new RepeaterListener();
+        $listener = new RepeaterListener($this->dm);
         $dto      = new ProcessDto();
 
         $dto->addHeader(PipesHeaders::createKey(PipesHeaders::REPEAT_HOPS), '5');
