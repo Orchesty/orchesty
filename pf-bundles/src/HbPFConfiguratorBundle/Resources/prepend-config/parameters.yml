@@ -21,7 +21,16 @@ parameters:
     env(TOPOLOGY_API): topology-api:80
     starting_point: "%env(STARTING_POINT)%"
     env(STARTING_POINT): starting-point:80
-
+    ftp_api_host: "%env(FTP_API_HOST)%"
+    env(FTP_API_HOST): ftp-api
+    mailer_api_host: "%env(MAILER_API_HOST)%"
+    env(MAILER_API_HOST): mailer-api
+    mapper_api_host: "%env(MAPPER_API_HOST)%"
+    env(MAPPER_API_HOST): mapper-api
+    monolith_api_host: "%env(MONOLITH_API_HOST)%"
+    env(MONOLITH_API_HOST): monolith-api
+    xml_parser_api_host: "%env(XML_PARSER_API_HOST)%"
+    env(XML_PARSER_API_HOST): xml-parser-api
 
     topology_configs:
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::RABBITMQ_HOST: "%rabbit_host%"
@@ -33,6 +42,11 @@ parameters:
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::MULTI_PROBE_HOST: "%multi_probe_host%"
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::METRICS_HOST: "%kapacitor.host%:%kapacitor.port%"
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::WORKER_DEFAULT_PORT: "%worker_default_port%"
+        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::FTP_API_HOST: "%ftp_api_host%"
+        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::MAILER_API_HOST: "%mailer_api_host%"
+        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::MAPPER_API_HOST: "%mapper_api_host%"
+        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::MONOLITH_API_HOST: "%monolith_api_host%"
+        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::XML_PARSER_API_HOST: "%xml_parser_api_host%"
 
     topology_generator_configs:
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge::MULTI_PROBE: "%multi_probe_host%"
