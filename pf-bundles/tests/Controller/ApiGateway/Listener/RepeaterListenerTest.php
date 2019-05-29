@@ -67,7 +67,6 @@ final class RepeaterListenerTest extends ControllerTestCaseAbstract
         $dto->setHeaders([PipesHeaders::createKey(PipesHeaders::NODE_ID) => $node->getId()]);
 
         $eventMock = $this->mockEvent(new OnRepeatException($dto));
-        self::expectException(Exception::class);
         $listener->onRepeatableException($eventMock);
     }
 
