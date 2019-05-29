@@ -9,6 +9,7 @@ use Hanaboso\CommonsBundle\Exception\EnumException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
+use Hanaboso\PipesFramework\Configurator\Exception\TopologyConfigException;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
@@ -283,6 +284,7 @@ class InstallManager implements LoggerAwareInterface
      * @throws CurlException
      * @throws NodeException
      * @throws TopologyException
+     * @throws TopologyConfigException
      */
     private function makeRunnable(Topology $topology, string $content): Topology
     {

@@ -2,10 +2,9 @@
 
 namespace Tests\Integration\Configurator\Model;
 
+use Exception;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
-use Hanaboso\CommonsBundle\Exception\EnumException;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
-use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
 use Hanaboso\PipesFramework\Configurator\Model\Dto\SystemConfigDto;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory;
 use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
@@ -20,15 +19,15 @@ class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @throws EnumException
-     * @throws NodeException
+     * @throws Exception
      */
     public function testCreate(): void
     {
         $settings = new SystemConfigDto('someSdkHost', '', 10);
 
         $node1 = (new Node())->setTopology('123')->setType(TypeEnum::CUSTOM)->setName('example1');
-        $node2 = (new Node())->setTopology('123')->setName('example2')->setSystemConfigs($settings)->setType(TypeEnum::USER);
+        $node2 = (new Node())->setTopology('123')->setName('example2')->setSystemConfigs($settings)
+            ->setType(TypeEnum::USER);
         $node3 = (new Node())->setTopology('123')->setName('example3')->setType(TypeEnum::BATCH_CONNECTOR);
         $node4 = (new Node())->setTopology('123')->setName('example4')->setType(TypeEnum::CONNECTOR);
         $node5 = (new Node())->setTopology('123')->setName('example5')->setType(TypeEnum::USER);

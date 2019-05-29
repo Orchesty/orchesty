@@ -55,14 +55,16 @@ class TableParserController extends AbstractFOSRestController
     }
 
     /**
-     * @Route("/parser/{type}/to/json/test", requirements={"type": "\w+"}, methods={"POST"})
+     * @Route("/parser/{type}/to/json/test", requirements={"type": "\w+"}, methods={"GET", "OPTIONS"})
      *
      * @return Response
      */
     public function toJsonTestAction(): Response
     {
         try {
-            return $this->getResponse($this->tableParserHandler->parseToJsonTest());
+            $this->tableParserHandler->parseToJsonTest();
+
+            return $this->getResponse('');
         } catch (Throwable $e) {
             return $this->getErrorResponse($e);
         }

@@ -2,8 +2,8 @@
 
 namespace Hanaboso\PipesFramework\Configurator\Model;
 
-use Exception;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyConfigException;
 use Hanaboso\PipesFramework\Configurator\Model\Dto\SystemConfigDto;
@@ -69,7 +69,7 @@ class TopologyConfigFactory
      * @param array $nodes
      *
      * @return string
-     * @throws Exception
+     * @throws TopologyConfigException
      */
     public function create(array $nodes): string
     {
@@ -78,7 +78,7 @@ class TopologyConfigFactory
             self::NODE_CONFIG => $this->loopNodes($nodes),
         ];
 
-        return (string) json_encode($result, JSON_FORCE_OBJECT);
+        return (string) json_encode($result, JSON_THROW_ON_ERROR);
     }
 
     /**
@@ -124,23 +124,20 @@ class TopologyConfigFactory
      * @param Node $node
      *
      * @return array|null
-     * @throws Exception
      */
     private function getFaucet(Node $node): ?array
     {
-        if ($node->getSystemConfigs()) {
-            /** @var SystemConfigDto $config */
-            $config = $node->getSystemConfigs();
-
-            return [
-                self::SETTINGS => [
-                    self::PREFETCH =>
-                        $config->getPrefetch(),
-                ],
-            ];
-        } else {
+        $config = $node->getSystemConfigs();
+        if (!$config) {
             return NULL;
         }
+
+        return [
+            self::SETTINGS => [
+                self::PREFETCH =>
+                    $config->getPrefetch(),
+            ],
+        ];
     }
 
     /**
@@ -176,7 +173,7 @@ class TopologyConfigFactory
                         self::HOST          => $this->getHost($node->getType(), $node->getSystemConfigs()),
                         self::PROCESS_PATH  => $this->getPaths($node)[self::PROCESS_PATH],
                         self::STATUS_PATH   => $this->getPaths($node)[self::STATUS_PATH],
-                        self::METHOD        => 'POST',
+                        self::METHOD        => CurlManager::METHOD_POST,
                         self::PORT          => $this->getPort($node->getType()),
                         self::PUBLISH_QUEUE => $this->getPublishQueue($node->getType()),
                     ],
@@ -351,12 +348,14 @@ class TopologyConfigFactory
      */
     private function getPublishQueue(string $nodeType): ?array
     {
-        if ($nodeType === TypeEnum::BATCH || $nodeType === TypeEnum::BATCH_CONNECTOR) {
-            return [
-                self::NAME => sprintf('pipes.%s', $nodeType),
-            ];
-        } else {
-            return [];
+        switch ($nodeType) {
+            case TypeEnum::BATCH:
+            case TypeEnum::BATCH_CONNECTOR:
+                return [
+                    self::NAME => sprintf('pipes.%s', $nodeType),
+                ];
+            default:
+                return [];
         }
     }
 
@@ -368,23 +367,23 @@ class TopologyConfigFactory
      */
     private function getPort(string $nodeType): int
     {
-        if (in_array($nodeType, [
-            $nodeType === TypeEnum::FTP,
-            $nodeType === TypeEnum::EMAIL,
-            $nodeType === TypeEnum::MAPPER,
-            $nodeType === TypeEnum::API,
-            $nodeType === TypeEnum::CONNECTOR,
-            $nodeType === TypeEnum::WEBHOOK,
-            $nodeType === TypeEnum::CUSTOM,
-            $nodeType === TypeEnum::SIGNAL,
-            $nodeType === TypeEnum::USER,
-            $nodeType === TypeEnum::BATCH_CONNECTOR,
-            $nodeType === TypeEnum::TABLE_PARSER,
-        ])
-        ) {
-            return 80;
-        } else {
-            throw new TopologyConfigException(sprintf('Unknown type for port [%s].', $nodeType));
+        switch ($nodeType) {
+            case TypeEnum::API:
+            case TypeEnum::BATCH:
+            case TypeEnum::BATCH_CONNECTOR:
+            case TypeEnum::CONNECTOR:
+            case TypeEnum::CUSTOM:
+            case TypeEnum::EMAIL:
+            case TypeEnum::FTP:
+            case TypeEnum::MAPPER:
+            case TypeEnum::SIGNAL:
+            case TypeEnum::TABLE_PARSER:
+            case TypeEnum::USER:
+            case TypeEnum::WEBHOOK:
+                return 80;
+            default:
+                throw new TopologyConfigException(sprintf('Unknown type for port [%s].', $nodeType));
+
         }
     }
 
