@@ -26,6 +26,11 @@ class TopologyConfigFactory
     public const MULTI_PROBE_HOST       = 'multi_probe_host';
     public const METRICS_HOST           = 'metrics_host';
     public const WORKER_DEFAULT_PORT    = 'worker_default_port';
+    public const FTP_API_HOST           = 'ftp_api_host';
+    public const MAILER_API_HOST        = 'mailer_api_host';
+    public const MAPPER_API_HOST        = 'mapper_api_host';
+    public const MONOLITH_API_HOST      = 'monolith_api_host';
+    public const XML_PARSER_API_HOST    = 'xml_parser_api_host';
 
     public const NODE_CONFIG     = 'node_config';
     public const WORKER          = 'worker';
@@ -313,16 +318,16 @@ class TopologyConfigFactory
 
         switch ($nodeType) {
             case TypeEnum::XML_PARSER:
-                $host = 'xml-parser-api';
+                $host = $this->configs[self::XML_PARSER_API_HOST];
                 break;
             case  TypeEnum::FTP:
-                $host = 'ftp-api';
+                $host = $this->configs[self::FTP_API_HOST];
                 break;
             case TypeEnum::EMAIL:
-                $host = 'mailer-api';
+                $host = $this->configs[self::MAILER_API_HOST];
                 break;
             case TypeEnum::MAPPER:
-                $host = 'mapper-api';
+                $host = $this->configs[self::MAPPER_API_HOST];
                 break;
             case TypeEnum::BATCH_CONNECTOR:
             case TypeEnum::TABLE_PARSER:
@@ -332,7 +337,7 @@ class TopologyConfigFactory
             case TypeEnum::SIGNAL:
             case TypeEnum::USER:
             case TypeEnum::API:
-                $host = 'monolith-api';
+                $host = $this->configs[self::MONOLITH_API_HOST];
                 break;
             default:
                 throw new TopologyConfigException(sprintf('Unknown type of host [%s].', $nodeType));
