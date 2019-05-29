@@ -32,6 +32,8 @@ class TopologyGeneratorBridge
     protected const MULTI_PROBE_URL        = 'http://%s/topology/status?topologyId=%s';
     protected const STARTING_POINT_URL     = 'http://%s/topologies/%s/invalidate-cache';
 
+    private const HEADERS = ['Content-Type' => 'application/json'];
+
     /**
      * @var DocumentManager
      */
@@ -89,7 +91,7 @@ class TopologyGeneratorBridge
 
         $uri = sprintf(self::GENERATOR_TOPOLOGY_URL, $this->configs[self::TOPOLOGY_API], $topologyId);
         $dto = new RequestDto(CurlManager::METHOD_POST, new Uri($uri));
-        $dto->setBody($this->configFactory->create($nodes))->setHeaders(['Content-Type' => 'application/json']);
+        $dto->setBody($this->configFactory->create($nodes))->setHeaders(self::HEADERS);
 
         return $this->curlManager->send($dto);
     }
@@ -104,7 +106,7 @@ class TopologyGeneratorBridge
     {
         $uri = sprintf(self::BASE_TOPOLOGY_URL, $this->configs[self::TOPOLOGY_API], $topologyId);
         $dto = new RequestDto(CurlManager::METHOD_PUT, new Uri($uri));
-        $dto->setBody((string) json_encode(['action' => 'start']))->setHeaders(['Content-Type' => 'application/json']);
+        $dto->setBody((string) json_encode(['action' => 'start']))->setHeaders(self::HEADERS);
 
         return $this->curlManager->send($dto);
     }
@@ -119,7 +121,7 @@ class TopologyGeneratorBridge
     {
         $uri = sprintf(self::BASE_TOPOLOGY_URL, $this->configs[self::TOPOLOGY_API], $topologyId);
         $dto = new RequestDto(CurlManager::METHOD_PUT, new Uri($uri));
-        $dto->setBody((string) json_encode(['action' => 'stop']));
+        $dto->setBody((string) json_encode(['action' => 'stop']))->setHeaders(self::HEADERS);
 
         return $this->curlManager->send($dto);
     }
@@ -169,7 +171,6 @@ class TopologyGeneratorBridge
         } else {
             throw new CurlException(sprintf('Request error: %s', $responseDto->getReasonPhrase()));
         }
-
     }
 
     /**
