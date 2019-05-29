@@ -55,7 +55,6 @@ export default (WrappedComponent, parameters) => {
         <div ref={this.setSelf} className="modal fade manage-user-modal in" tabIndex="0" role="dialog" style={{display: 'block'}} onKeyDown={this.keyDown}>
           <div className={`modal-dialog modal-${size}`}>
             <div className="modal-content">
-
               <div className="modal-header">
                 <button type="button" className="close" onClick={this.closeClick}>
                   <span aria-hidden="true">×</span>

@@ -4,11 +4,14 @@ import {connect} from 'react-redux';
 import Modal from 'rootApp/views/wrappers/Modal';
 import TopologyRunForm from 'rootApp/views/components/topology/TopologyRunForm';
 import processes from 'rootApp/enums/processes';
+import { getNodeRunUrl } from '../../actions/nodeActions';
+import { makeStartingPointUrl } from '../../services/apiGatewayServer';
 
-function mapStateToProps(state, ownProps) {
+function mapStateToProps(state, { nodeId, nodeName, nodeType, topologyId, topologyName, componentKey }) {
   return {
-    form: ownProps.componentKey,
-    processId: processes.nodeRun(ownProps.nodeId)
+    form: componentKey,
+    processId: processes.nodeRun(nodeId),
+    subTitle: makeStartingPointUrl(getNodeRunUrl(nodeId, nodeName, nodeType, topologyId, topologyName))
   };
 }
 
