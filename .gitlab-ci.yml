@@ -158,6 +158,16 @@ pf-bundles-test:
     - export COMPOSE_FILE=docker-compose.ci.yml                # CLEANUP bundles
     - make ${COMPOSE_FILE} docker-up-force composer-install test
 
+notification-sender-test:
+  stage: stage2
+  script:
+    - DIR=notification-sender
+    - skip_unmodified $DIR
+    - cd $REPO_ROOT/$DIR
+    - export COMPOSE_PROJECT_NAME="p${CI_PIPELINE_ID}-notification-sender" # CLEANUP notification-sender
+    - export COMPOSE_FILE=docker-compose.ci.yml                            # CLEANUP notification-sender
+    - make ${COMPOSE_FILE} test
+
 demo-pipes-api-test:
   stage: stage2
   script:
@@ -166,6 +176,16 @@ demo-pipes-api-test:
     - cd $REPO_ROOT/$DIR
     - export COMPOSE_PROJECT_NAME="p${CI_PIPELINE_ID}-demo-pipes-api" # CLEANUP bundles
     - export COMPOSE_FILE=docker-compose.ci.yml                       # CLEANUP bundles
+    - make ${COMPOSE_FILE} test
+
+demo-notification-sender-test:
+  stage: stage2
+  script:
+    - DIR=clients/demo/sender-api
+    - skip_unmodified $DIR
+    - cd $REPO_ROOT/$DIR
+    - export COMPOSE_PROJECT_NAME="p${CI_PIPELINE_ID}-demo-sender-api" # CLEANUP notification-sender
+    - export COMPOSE_FILE=docker-compose.ci.yml                        # CLEANUP notification-sender
     - make ${COMPOSE_FILE} test
 
 pf-bridge-test:
@@ -237,6 +257,16 @@ monolith-demo:
     - dev
     - master
 
+notification-sender-demo:
+  stage: stage2
+  script:
+    - ": This job is being run all the time because the most changes happen in its dependencies. Can anyone come up with an optimization?"
+    - cd clients/demo
+    - make build-sender push-sender TAG=${CI_BUILD_REF_NAME}
+  only:
+    - dev
+    - master
+
 git-pf-bundles:
   stage: stage3
   when: always
@@ -253,6 +283,21 @@ git-pf-bundles:
     - git remote add dest git@gitlab.hanaboso.net:pipes/pf-bundles.git
     - git push --mirror dest
 
+git-notification-sender:
+  stage: stage3
+  when: always
+  only:
+    - dev
+    - master
+  script:
+    - skip_unmodified notification-sender
+    - rm -rf _tmp_pipes
+    - git clone --bare git@gitlab.hanaboso.net:pipes/pipes.git _tmp_pipes
+    - cd _tmp_pipes
+    - git filter-branch -f --prune-empty --subdirectory-filter notification-sender -- -q --all
+    - git remote add dest git@gitlab.hanaboso.net:pipes/notification-sender.git
+    - git push --mirror dest
+
 cleanup:
   stage: cleanup
   when: always
@@ -266,11 +311,23 @@ cleanup:
     - export COMPOSE_FILE=docker-compose.ci.yml
     - make ${COMPOSE_FILE} docker-down-clean || echo "bundles cleanup phase failed"
 
+    - ": notification-sender"
+    - cd $REPO_ROOT/notification-sender
+    - export COMPOSE_PROJECT_NAME=p${CI_PIPELINE_ID}-notification-sender
+    - export COMPOSE_FILE=docker-compose.ci.yml
+    - make ${COMPOSE_FILE} docker-down-clean || echo "notification-sender cleanup phase failed"
+
     - ": demo-pipes-api-test"
     - cd $REPO_ROOT/clients/demo/pipes-api
     - export COMPOSE_PROJECT_NAME=p${CI_PIPELINE_ID}-demo-pipes-api
     - export COMPOSE_FILE=docker-compose.ci.yml
     - make ${COMPOSE_FILE} docker-down-clean || echo "demo-pipes-api cleanup phase failed"
+
+    - ": demo-sender-api-test"
+    - cd $REPO_ROOT/clients/demo/sender-api
+    - export COMPOSE_PROJECT_NAME=p${CI_PIPELINE_ID}-demo-sender-api
+    - export COMPOSE_FILE=docker-compose.ci.yml
+    - make ${COMPOSE_FILE} docker-down-clean || echo "demo-sender-api cleanup phase failed"
 
     - ": bridge"
     - cd $REPO_ROOT/pf-bridge/test
