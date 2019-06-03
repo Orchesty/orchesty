@@ -1,6 +1,6 @@
 .PHONY: docker-up docker-up-force .env composer-install composer-update codesniffer phpstan phpunit init test
 
-DC=docker-compose
+DC=docker-compose -f docker-compose.ci.yml
 DE=docker-compose exec -T notification-sender-api
 DEC=docker-compose exec -T notification-sender-api composer
 
@@ -21,7 +21,6 @@ docker-up-force: .env
 	$(DC) up -d --force-recreate --remove-orphans
 
 composer-install:
-	$(DEC) global require hirak/prestissimo
 	$(DEC) install --ignore-platform-reqs
 
 composer-update:
