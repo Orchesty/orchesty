@@ -3,7 +3,6 @@
 namespace Tests;
 
 use JsonException;
-use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -16,11 +15,6 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
 {
 
     use TestCaseTrait;
-
-    /**
-     * @var Client
-     */
-    protected $client;
 
     /**
      *
@@ -46,9 +40,9 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     {
         $this->prepareClient();
 
-        $this->client->request('GET', $url, $parameters, [], $headers);
+        self::$client->request('GET', $url, $parameters, [], $headers);
 
-        return $this->processResponse($this->client->getResponse());
+        return $this->processResponse(self::$client->getResponse());
     }
 
     /**
@@ -70,9 +64,9 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     {
         $this->prepareClient();
 
-        $this->client->request('POST', $url, $parameters, $files, $headers, $content);
+        self::$client->request('POST', $url, $parameters, $files, $headers, $content);
 
-        return $this->processResponse($this->client->getResponse());
+        return $this->processResponse(self::$client->getResponse());
     }
 
     /**
@@ -91,9 +85,9 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     {
         $this->prepareClient();
 
-        $this->client->request('PUT', $url, $parameters, $files, $headers);
+        self::$client->request('PUT', $url, $parameters, $files, $headers);
 
-        return $this->processResponse($this->client->getResponse());
+        return $this->processResponse(self::$client->getResponse());
     }
 
     /**
@@ -106,9 +100,9 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     {
         $this->prepareClient();
 
-        $this->client->request('DELETE', $url, [], [], $headers);
+        self::$client->request('DELETE', $url, [], [], $headers);
 
-        return $this->processResponse($this->client->getResponse());
+        return $this->processResponse(self::$client->getResponse());
     }
 
     /**
@@ -158,8 +152,8 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
      */
     private function prepareClient(): void
     {
-        $this->client    = self::createClient();
-        self::$container = $this->client->getContainer() ?? self::$container;
+        self::$client    = self::createClient();
+        self::$container = self::$client->getContainer() ?? self::$container;
         self::$container->set('doctrine_mongodb.odm.default_document_manager', $this->dm);
     }
 

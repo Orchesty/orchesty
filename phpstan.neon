@@ -6,5 +6,7 @@ includes:
     - vendor/hanaboso/php-check-utils/phpstan.neon # hanaboso rules
 
 parameters:
-	symfony:
-		container_xml_path: %rootDir%/../../../var/cache/test/srcHanaboso_NotificationSender_KernelTestDebugContainer.xml
+    symfony:
+        container_xml_path: %rootDir%/../../../var/cache/test/srcHanaboso_NotificationSender_KernelTestDebugContainer.xml
+    ignoreErrors:
+        - '#Symfony\\Bundle\\FrameworkBundle\\Test\\Client#'
