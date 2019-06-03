@@ -3,13 +3,13 @@ services:
   consumer:
     image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
     user: ${DEV_UID}:${DEV_GID}
-    working_dir: /var/www/notification-sender
+    working_dir: /var/www
     environment:
       - APP_ENV=dev
       - DEV_UID=${DEV_UID}
       - DEV_GID=${DEV_GID}
     volumes:
-      - ./:/var/www/notification-sender
+      - ./:/var/www
       - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
     command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit_mq:consumer:notification'
 
