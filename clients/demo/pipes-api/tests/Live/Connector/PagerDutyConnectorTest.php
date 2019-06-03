@@ -34,8 +34,8 @@ final class PagerDutyConnectorTest extends KernelTestCase
         $dto->setData((string) json_encode(['since' => '2019-04-19', 'until' => '2019-04-29']));
         $data = $connector->processAction($dto)->getData();
         $arr  = json_decode($data, TRUE, 512, JSON_THROW_ON_ERROR);
-        self::assertEquals(40, $arr['Radek Jirsa']['hours']);
-        self::assertEquals(40, $arr['Marcel Pavlíček']['hours']);
+        self::assertEquals(56, $arr['Radek Jirsa']['hours']);
+        self::assertEquals(55, $arr['Marcel Pavlíček']['hours']);
         self::assertEquals(40, $arr['Tomáš Procházka']['hours']);
         self::assertEquals(45, $arr['Václav Krecl']['hours']);
         self::assertEquals(42, $arr['Jakub Husák']['hours']);

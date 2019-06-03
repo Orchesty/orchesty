@@ -44,7 +44,7 @@ final class PagerDutyConnectorTest extends KernelTestCase
         self::assertEquals(40, $arr['Marcel Pavlíček']['hours']);
         self::assertEquals(40, $arr['Tomáš Procházka']['hours']);
         self::assertEquals(45, $arr['Václav Krecl']['hours']);
-        self::assertEquals(42, $arr['Jakub Husák']['hours']);
+        self::assertEquals(18, $arr['Jakub Husák']['hours']);
     }
 
 }

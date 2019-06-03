@@ -8,6 +8,7 @@ use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
@@ -70,14 +71,7 @@ class PagerDutyConnector implements ConnectorInterface
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
-        $requestDto = new RequestDto('GET', new Uri(
-                sprintf(
-                    'https://api.pagerduty.com/schedules/PUUDPGA?time_zone=CET&since=%s&until=%s',
-                    json_decode($dto->getData(), TRUE, 512, JSON_THROW_ON_ERROR)['since'] ?? date('Y-m-01'),
-                    json_decode($dto->getData(), TRUE, 512, JSON_THROW_ON_ERROR)['until'] ?? date('Y-m-d'),
-                    )
-            )
-        );
+        $requestDto = new RequestDto(CurlManager::METHOD_GET, $this->getUrl($dto));
         $requestDto->setHeaders([
             'Accept'        => 'application/vnd.pagerduty+json;version=2',
             'Authorization' => 'Token token=pu51uTEKrZcUrS5a9ev4',
@@ -89,16 +83,32 @@ class PagerDutyConnector implements ConnectorInterface
         }
         $json          = json_decode($response->getBody(), TRUE, 512, JSON_THROW_ON_ERROR);
         $finalSchedule = $json['schedule']['final_schedule']['rendered_schedule_entries'] ?? '';
+        array_shift($finalSchedule);
+        array_pop($finalSchedule);
 
-        $res = [];
+        $minuses = [];
+        $res     = [];
         /** @var array $day */
         foreach ($finalSchedule as $day) {
-            $user  = $day['user']['summary'] ?? '';
-            $hours = $this->getHours($day['start'] ?? '', $day['end'] ?? '');
+            $user       = $day['user']['summary'] ?? '';
+            $hours      = $this->getHours($day['start'] ?? '', $day['end'] ?? '');
+            $minusIndex = DateTimeUtils::getUtcDateTime($day['start'])->format(DateTimeUtils::DATE);
+            $minus      = $minuses[$minusIndex] ?? 8;
 
-            if (!$this->isWeekendOrHoliday($day['start']) && $hours > 8) {
-                $hours -= 8;
+            if ($hours > 24) {
+                // Split days if is merged into one interval (override)
+                $since     = DateTimeUtils::getUtcDateTime($day['start']);
+                $till      = DateTimeUtils::getUtcDateTime($day['end']);
+                $daysCount = $till->diff($since)->d;
+
+                for ($i = 1; $i <= $daysCount; $i++) {
+                    $this->getComputedHours($since->format(DATE_ATOM), $hours, $minus);
+                    $since->modify('+ 1 Day');
+                }
+            } else {
+                $this->getComputedHours($day['start'], $hours, $minus);
             }
+            $minuses[$minusIndex] = $minus;
 
             if (array_key_exists($user, $res)) {
                 $res[$user]['hours'] += $hours;
@@ -108,6 +118,26 @@ class PagerDutyConnector implements ConnectorInterface
         }
 
         return $dto->setData((string) json_encode($res));
+    }
+
+    /**
+     * @param string $day
+     * @param int    $hours
+     * @param int    $minus
+     */
+    private function getComputedHours(string $day, int &$hours, int &$minus = 8): void
+    {
+        if (!$this->isWeekendOrHoliday($day)) {
+            if ($hours < $minus) {
+                $minus = abs($hours - $minus);
+                $hours = 0;
+
+                return;
+            } else {
+                $hours -= $minus;
+            }
+        }
+        $minus = 0;
     }
 
     /**
@@ -138,6 +168,31 @@ class PagerDutyConnector implements ConnectorInterface
         $hours = $diff->h;
 
         return (int) ($hours + ($diff->days * 24));
+    }
+
+    /**
+     * @param ProcessDto $dto
+     *
+     * @return Uri
+     * @throws DateTimeException
+     */
+    private function getUrl(ProcessDto $dto): Uri
+    {
+        $data  = json_decode($dto->getData(), TRUE, 512, JSON_THROW_ON_ERROR);
+        $since = $data['since'] ??
+            DateTimeUtils::getUtcDateTime('first day of last month')->format(DateTimeUtils::DATE);
+        $till  = $data['until'] ??
+            DateTimeUtils::getUtcDateTime('first day of this month')
+                ->modify('+ 1 day')
+                ->format(DateTimeUtils::DATE);
+
+        return new Uri(
+            sprintf(
+                'https://api.pagerduty.com/schedules/PUUDPGA?time_zone=CET&since=%s&until=%s',
+                $since,
+                $till,
+                )
+        );
     }
 
 }
