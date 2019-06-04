@@ -135,7 +135,6 @@ func (m *MongoDefault) FindTopologyByID(id string) (*model.Topology, error) {
 
 func (m *MongoDefault) FindNodesByTopology(id string) ([]model.Node, error) {
 	var nodes []model.Node
-	var node model.Node
 
 	innerContext, cancel := createContextWithTimeout()
 	defer cancel()
@@ -158,6 +157,7 @@ func (m *MongoDefault) FindNodesByTopology(id string) ([]model.Node, error) {
 	}()
 
 	for cursor.Next(nil) {
+		var node model.Node
 		err = cursor.Decode(&node)
 
 		if err != nil {
