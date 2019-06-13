@@ -162,7 +162,8 @@ final class OAuth1ProviderTest extends TestCase
         $dm->method('flush')->willReturn(TRUE);
 
         $redirect = self::createMock(RedirectInterface::class);
-        $redirect->method('make')->with($authorizeUrl)->willReturn(TRUE);
+        $redirect->method('make')->with($authorizeUrl)->willReturnCallback(function (): void {
+        });
 
         $oauth = self::createPartialMock(
             OAuth::class,

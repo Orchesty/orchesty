@@ -7,7 +7,8 @@ use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 use Hanaboso\PipesFramework\Configurator\Event\ProcessStatusEvent;
 use RabbitMqBundle\Connection\Connection;
 use RabbitMqBundle\Consumer\CallbackInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Class StatusServiceCallback
@@ -57,9 +58,11 @@ class StatusServiceCallback implements CallbackInterface
             );
         }
 
-        $this->eventDispatcher->dispatch(
-            ProcessStatusEvent::PROCESS_FINISHED,
-            new ProcessStatusEvent($data['process_id'], (bool) $data['success'])
+        /** @var EventDispatcher $ed */
+        $ed = $this->eventDispatcher;
+        $ed->dispatch(
+            new ProcessStatusEvent($data['process_id'], (bool) $data['success']),
+            ProcessStatusEvent::PROCESS_FINISHED
         );
 
         $connection->getChannel($channelId)->ack($message);

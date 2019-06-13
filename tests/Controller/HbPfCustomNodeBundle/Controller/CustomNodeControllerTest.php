@@ -8,6 +8,7 @@ use Hanaboso\PipesFramework\HbPFCustomNodeBundle\Handler\CustomNodeHandler;
 use PHPUnit\Framework\MockObject\MockObject;
 use ReflectionException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\ControllerTestCaseAbstract;
 
 /**
@@ -24,9 +25,9 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
      */
     public function testSend(): void
     {
-        $this->mockHandler('process');
+        $this->mockHandler();
 
-        $this->client->request(
+        self::$client->request(
             'POST',
             '/custom_node/null/process',
             [],
@@ -35,7 +36,8 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
             (string) json_encode(['test' => 'test'])
         );
 
-        $response = $this->client->getResponse();
+        /** @var Response $response */
+        $response = self::$client->getResponse();
 
         self::assertEquals(200, $response->getStatusCode());
         self::assertEquals(['test' => 'test'], json_decode($response->getContent(), TRUE));
@@ -47,22 +49,21 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
      */
     public function testSendActionTest(): void
     {
-        $this->mockHandler('processTest');
+        $this->mockHandler();
 
-        $this->client->request('GET', '/custom_node/null/process/test', [], [], [], '');
+        self::$client->request('GET', '/custom_node/null/process/test', [], [], [], '');
 
-        $response = $this->client->getResponse();
+        /** @var Response $response */
+        $response = self::$client->getResponse();
 
         self::assertEquals(200, $response->getStatusCode());
         self::assertEquals([], json_decode($response->getContent(), TRUE));
     }
 
     /**
-     * @param string $methodName
-     *
      * @throws Exception
      */
-    private function mockHandler(string $methodName): void
+    private function mockHandler(): void
     {
         $dto = new ProcessDto();
         $dto
@@ -72,11 +73,15 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
         /** @var CustomNodeHandler|MockObject $joinerHandlerMock */
         $joinerHandlerMock = self::createMock(CustomNodeHandler::class);
         $joinerHandlerMock
-            ->method($methodName)
+            ->method('process')
             ->willReturn($dto);
+        $joinerHandlerMock
+            ->method('processTest')
+            ->willReturnCallback(function (): void {
+            });
 
         /** @var ContainerInterface $container */
-        $container = $this->client->getContainer();
+        $container = self::$client->getContainer();
         $container->set('hbpf.handler.custom_node', $joinerHandlerMock);
     }
 
@@ -86,9 +91,10 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
     public function testGetListOfCustomNodes(): void
     {
         $this->mockNodeControllerHandler();
-        $this->client->request('GET', '/custom_node/list');
+        self::$client->request('GET', '/custom_node/list');
 
-        $response = $this->client->getResponse();
+        /** @var Response $response */
+        $response = self::$client->getResponse();
 
         self::assertTrue(in_array('microsleep500000', json_decode($response->getContent())));
         self::assertEquals(200, $response->getStatusCode());

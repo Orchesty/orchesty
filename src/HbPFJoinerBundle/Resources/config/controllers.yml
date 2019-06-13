@@ -6,3 +6,5 @@ services:
         class: Hanaboso\PipesFramework\HbPFJoinerBundle\Controller\JoinerController
         arguments:
             - '@hbpf.handler.joiner'
+        calls:
+            - ['setContainer', ['@service_container']]

@@ -6,13 +6,19 @@ services:
         class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\CategoryController
         arguments:
             - '@hbpf.handler.category'
+        calls:
+            - ['setContainer', ['@service_container']]
 
     Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController:
         class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController
         arguments:
             - '@hbpf.configurator.handler.node'
+        calls:
+            - ['setContainer', ['@service_container']]
 
     Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController:
         class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController
         arguments:
             - '@hbpf.configurator.handler.topology'
+        calls:
+            - ['setContainer', ['@service_container']]

@@ -4,6 +4,7 @@ namespace Tests\Controller\HbPFTableParserBundle\Controller;
 
 use Hanaboso\CommonsBundle\Exception\FileStorageException;
 use Hanaboso\PipesFramework\Parser\Exception\TableParserException;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\ControllerTestCaseAbstract;
 
 /**
@@ -138,8 +139,9 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
      */
     protected function sendPost(string $url, array $parameters, ?array $content = NULL): object
     {
-        $this->client->request('POST', $url, $parameters, [], [], $content ? (string) json_encode($content) : '');
-        $response = $this->client->getResponse();
+        self::$client->request('POST', $url, $parameters, [], [], $content ? (string) json_encode($content) : '');
+        /** @var Response $response */
+        $response = self::$client->getResponse();
 
         $res = json_decode($response->getContent(), TRUE);
 

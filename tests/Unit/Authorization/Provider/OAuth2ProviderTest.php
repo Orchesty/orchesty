@@ -156,7 +156,8 @@ final class OAuth2ProviderTest extends TestCase
     private function getMockedProvider(string $authorizeUrl): MockObject
     {
         $redirect = self::createMock(RedirectInterface::class);
-        $redirect->method('make')->willReturn(TRUE);
+        $redirect->method('make')->willReturnCallback(function (): void {
+        });
 
         $oauth = self::createPartialMock(OAuth2Wrapper::class, ['getAuthorizationUrl', 'getAccessToken']);
         $oauth->method('getAuthorizationUrl')->willReturn($authorizeUrl);

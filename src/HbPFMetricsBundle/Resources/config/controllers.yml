@@ -6,3 +6,5 @@ services:
         class: Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController
         arguments:
             - '@hbpf.metrics.handler.metrics'
+        calls:
+            - ['setContainer', ['@service_container']]

@@ -29,10 +29,10 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
 
         $this->prepareNodeHandlerMock('getNodes', $returnValue);
 
-        $this->client->request('GET', '/api/topologies/abc123/nodes', [], [], []);
+        self::$client->request('GET', '/api/topologies/abc123/nodes', [], [], []);
 
         /** @var JsonResponse $response */
-        $response = $this->client->getResponse();
+        $response = self::$client->getResponse();
         $content  = json_decode($response->getContent(), TRUE);
 
         self::assertEquals(200, $response->getStatusCode());
@@ -49,10 +49,10 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
 
         $this->prepareNodeHandlerMock('getNode', $returnValue);
 
-        $this->client->request('GET', '/api/nodes/abc123', [], [], []);
+        self::$client->request('GET', '/api/nodes/abc123', [], [], []);
 
         /** @var JsonResponse $response */
-        $response = $this->client->getResponse();
+        $response = self::$client->getResponse();
         $content  = json_decode($response->getContent(), TRUE);
 
         self::assertEquals(200, $response->getStatusCode());
@@ -69,10 +69,10 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
 
         $this->prepareNodeHandlerMock('updateNode', $returnValue);
 
-        $this->client->request('PATCH', '/api/nodes/abc123', [], [], []);
+        self::$client->request('PATCH', '/api/nodes/abc123', [], [], []);
 
         /** @var JsonResponse $response */
-        $response = $this->client->getResponse();
+        $response = self::$client->getResponse();
         $content  = json_decode($response->getContent(), TRUE);
 
         self::assertEquals(200, $response->getStatusCode());
@@ -94,7 +94,7 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
             ->willReturn($returnValue);
 
         /** @var ContainerInterface $container */
-        $container = $this->client->getContainer();
+        $container = self::$client->getContainer();
         $container->set('hbpf.configurator.handler.node', $nodeHandlerMock);
     }
 

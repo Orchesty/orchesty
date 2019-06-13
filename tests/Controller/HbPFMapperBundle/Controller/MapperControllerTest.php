@@ -7,6 +7,7 @@ use Hanaboso\PipesFramework\HbPFMapperBundle\Handler\MapperHandler;
 use PHPUnit\Framework\MockObject\MockObject;
 use ReflectionException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\ControllerTestCaseAbstract;
 
 /**
@@ -25,9 +26,10 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
     {
         $this->prepareMapperHandlerMock('processTest', []);
 
-        $this->client->request('POST', '/mapper/null/process/test', [], [], [], '{"test":1}');
+        self::$client->request('POST', '/mapper/null/process/test', [], [], [], '{"test":1}');
 
-        $response = $this->client->getResponse();
+        /** @var Response $response */
+        $response = self::$client->getResponse();
 
         self::assertEquals(200, $response->getStatusCode());
     }
@@ -41,9 +43,10 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
         $params = ['abc' => 'def'];
         $this->prepareMapperHandlerMock('process', $params);
 
-        $this->client->request('POST', '/mapper/null/process', $params, [], [], '{"test":1}');
+        self::$client->request('POST', '/mapper/null/process', $params, [], [], '{"test":1}');
 
-        $response = $this->client->getResponse();
+        /** @var Response $response */
+        $response = self::$client->getResponse();
 
         self::assertEquals(200, $response->getStatusCode());
         self::assertEquals($params, json_decode($response->getContent(), TRUE));
@@ -64,7 +67,7 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
             ->willReturn($returnValue);
 
         /** @var ContainerInterface $container */
-        $container = $this->client->getContainer();
+        $container = self::$client->getContainer();
         $container->set('hbpf.mapper.handler.mapper', $mapperHandlerMock);
     }
 
@@ -74,9 +77,10 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
     public function testGetListOfCustomNodes(): void
     {
         $this->mockNodeControllerHandler();
-        $this->client->request('GET', '/mapper/list');
+        self::$client->request('GET', '/mapper/list');
 
-        $response = $this->client->getResponse();
+        /** @var Response $response */
+        $response = self::$client->getResponse();
 
         self::assertTrue(in_array('handler.mapper', json_decode($response->getContent())));
         self::assertEquals(200, $response->getStatusCode());

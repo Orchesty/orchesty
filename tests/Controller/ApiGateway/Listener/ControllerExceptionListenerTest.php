@@ -31,10 +31,10 @@ final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
      */
     public function testListener(): void
     {
-        $this->client->request('GET', '/nodes/oiz5', [], [], []);
+        self::$client->request('GET', '/nodes/oiz5', [], [], []);
 
         /** @var JsonResponse $response */
-        $response = $this->client->getResponse();
+        $response = self::$client->getResponse();
 
         self::assertEquals(400, $response->getStatusCode());
     }
