@@ -256,7 +256,7 @@ services:
     ## END DEV
     ## BEGIN STAGE
     #notification-sender-api:
-    #    image: dkr.hanaboso.net/pipes/notification-sender:${TAG_MONOLITH}
+    #    image: dkr.hanaboso.net/pipes/notification-sender:${TAG_NOTIFICATION_SENDER}
     ## END STAGE
 
     ## BEGIN DEV

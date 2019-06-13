@@ -3,6 +3,7 @@ declare -A BRANCH_IMAGE_TAG_MAP=(
   # default tags
   [MONOLITH_default]="dev"
   [FRONTEND_default]="dev"
+  [TAG_NOTIFICATION_SENDER]="master"
 
   # branch: perf
   [FRONTEND_perf]="perf"

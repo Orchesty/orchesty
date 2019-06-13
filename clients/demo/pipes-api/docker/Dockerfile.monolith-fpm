@@ -9,6 +9,7 @@ ENV APP_DEBUG=0
 
 COPY ./ /var/www/
 
+WORKDIR /var/www
 RUN mkdir /srv/topology && \
     chmod 0777 /srv/topology
 
