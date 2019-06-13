@@ -256,7 +256,7 @@ services:
     ## END DEV
     ## BEGIN STAGE
     #notification-sender-api:
-    #    image: dkr.hanaboso.net/pipes/notification-sender:${TAG_NOTIFICATION_SENDER}
+    #    image: dkr.hanaboso.net/pipes/notification-sender:master
     ## END STAGE
 
     ## BEGIN DEV
