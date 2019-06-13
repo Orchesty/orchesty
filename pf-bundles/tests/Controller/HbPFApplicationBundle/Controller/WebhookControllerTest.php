@@ -7,6 +7,7 @@ use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 use Hanaboso\PipesFramework\HbPFApplicationBundle\Handler\WebhookHandler;
 use ReflectionException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\ControllerTestCaseAbstract;
 
 /**
@@ -23,11 +24,12 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
      */
     public function testSubscribeWebhooksAction(): void
     {
-        $this->mockApplicationHandler('subscribeWebhooks');
+        $this->mockApplicationHandler();
         $this->insertApp();
 
-        $this->client->request('POST', '/webhook/applications/null/users/bar/subscribe');
-        $response = $this->client->getResponse();
+        self::$client->request('POST', '/webhook/applications/null/users/bar/subscribe');
+        /** @var Response $response */
+        $response = self::$client->getResponse();
 
         self::assertEquals('200', $response->getStatusCode());
     }
@@ -38,32 +40,34 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
      */
     public function testUnsubscribeWebhooksAction(): void
     {
-        $this->mockApplicationHandler('unsubscribeWebhooks');
+        $this->mockApplicationHandler();
         $this->insertApp();
 
-        $this->client->request('POST', '/webhook/applications/null/users/bar/unsubscribe');
-        $response = $this->client->getResponse();
+        self::$client->request('POST', '/webhook/applications/null/users/bar/unsubscribe');
+        /** @var Response $response */
+        $response = self::$client->getResponse();
 
         self::assertEquals('200', $response->getStatusCode());
     }
 
     /**
-     * @param string $method
-     * @param array  $returnValue
-     *
      * @throws ReflectionException
      */
-    private function mockApplicationHandler(string $method, array $returnValue = []): void
+    private function mockApplicationHandler(): void
     {
         $handler = $this->getMockBuilder(WebhookHandler::class)
             ->disableOriginalConstructor()
             ->getMock();
 
-        $handler->method($method)
-            ->willReturn($returnValue);
+        $handler->method('subscribeWebhooks')
+            ->willReturnCallback(function (): void {
+            });
+        $handler->method('unsubscribeWebhooks')
+            ->willReturnCallback(function (): void {
+            });
 
         /** @var ContainerInterface $container */
-        $container = $this->client->getContainer();
+        $container = self::$client->getContainer();
         $container->set('hbpf._application.handler.application', $handler);
     }
 

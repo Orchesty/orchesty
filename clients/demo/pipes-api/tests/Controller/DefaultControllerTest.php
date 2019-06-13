@@ -3,6 +3,7 @@
 namespace Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class DefaultControllerTest
@@ -20,8 +21,10 @@ final class DefaultControllerTest extends WebTestCase
         $client = self::createClient();
         $client->request('GET', '/');
 
-        $this->assertEquals(401, $client->getResponse()->getStatusCode());
-        $this->assertNotEmpty($client->getResponse()->getContent());
+        /** @var Response $response */
+        $response = $client->getResponse();
+        $this->assertEquals(401, $response->getStatusCode());
+        $this->assertNotEmpty($response->getContent());
     }
 
 }

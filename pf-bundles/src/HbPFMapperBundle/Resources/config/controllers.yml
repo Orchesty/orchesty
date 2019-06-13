@@ -6,3 +6,5 @@ services:
         class: Hanaboso\PipesFramework\HbPFMapperBundle\Controller\MapperController
         arguments:
             - '@hbpf.mapper.handler.mapper'
+        calls:
+            - ['setContainer', ['@service_container']]

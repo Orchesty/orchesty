@@ -6,3 +6,5 @@ services:
         class: Hanaboso\PipesFramework\HbPFTableParserBundle\Controller\TableParserController
         arguments:
             - '@hbpf.parser.table.handler'
+        calls:
+            - ['setContainer', ['@service_container']]

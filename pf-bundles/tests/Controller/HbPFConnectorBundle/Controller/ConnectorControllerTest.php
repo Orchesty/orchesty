@@ -7,6 +7,7 @@ use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\HbPFConnectorBundle\Handler\ConnectorHandler;
 use ReflectionException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\ControllerTestCaseAbstract;
 
 /**
@@ -25,9 +26,10 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
     {
         $this->mockHandler('processEvent');
 
-        $this->client->request('POST', '/connector/magento/webhook', [], [], [], '{}');
+        self::$client->request('POST', '/connector/magento/webhook', [], [], [], '{}');
 
-        $response = $this->client->getResponse();
+        /** @var Response $response */
+        $response = self::$client->getResponse();
 
         self::assertEquals(200, $response->getStatusCode());
         self::assertEquals(['test' => 'test'], json_decode($response->getContent(), TRUE));
@@ -41,9 +43,10 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
     {
         $this->mockHandler('processAction');
 
-        $this->client->request('POST', '/connector/magento/action', [], [], [], '{}');
+        self::$client->request('POST', '/connector/magento/action', [], [], [], '{}');
 
-        $response = $this->client->getResponse();
+        /** @var Response $response */
+        $response = self::$client->getResponse();
 
         self::assertEquals(200, $response->getStatusCode());
         self::assertEquals(['test' => 'test'], json_decode($response->getContent(), TRUE));
@@ -68,7 +71,7 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
         $handler->method($method)->willReturn($dto);
 
         /** @var ContainerInterface $container */
-        $container = $this->client->getContainer();
+        $container = self::$client->getContainer();
         $container->set('hbpf.handler.connector', $handler);
     }
 
@@ -78,9 +81,10 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
     public function testGetListOfConnectors(): void
     {
         $this->mockConnectorsHandler();
-        $this->client->request('GET', '/connector/list');
+        self::$client->request('GET', '/connector/list');
 
-        $response = $this->client->getResponse();
+        /** @var Response $response */
+        $response = self::$client->getResponse();
 
         self::assertTrue(in_array('null', json_decode($response->getContent())));
         self::assertEquals(200, $response->getStatusCode());

@@ -7,6 +7,7 @@ COPY ./ /var/www
 
 RUN chown -R www-data:www-data /var
 
+WORKDIR /var/www
 ENV PHP_FPM_MAX_CHILDREN 10
 ENV PHP_FPM_MAX_REQUESTS 500
 

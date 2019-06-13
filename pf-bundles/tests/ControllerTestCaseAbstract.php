@@ -27,7 +27,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     /**
      * @var Client
      */
-    protected $client;
+    protected static $client;
 
     /**
      * @var DocumentManager
@@ -72,8 +72,10 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
         parent::setUp();
 
         self::bootKernel();
-        $this->dm     = self::$container->get('doctrine_mongodb.odm.default_document_manager');
-        $this->client = self::createClient([], []);
+        $this->dm = self::$container->get('doctrine_mongodb.odm.default_document_manager');
+        /** @var Client $cl */
+        $cl           = self::createClient([], []);
+        self::$client = $cl;
         $this->dm->getConnection()->dropDatabase('pipes');
 
         // Login
@@ -100,7 +102,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     {
         $this->session = self::$container->get('session');
         /** @var ContainerInterface $container */
-        $container          = $this->client->getContainer();
+        $container          = self::$client->getContainer();
         $this->tokenStorage = $container->get('security.token_storage');
         $this->session->invalidate();
         $this->session->start();
@@ -122,7 +124,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
         $this->session->save();
 
         $cookie = new Cookie($this->session->getName(), $this->session->getId());
-        $this->client->getCookieJar()->set($cookie);
+        self::$client->getCookieJar()->set($cookie);
 
         return $user;
     }
@@ -134,9 +136,11 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
      */
     protected function sendGet(string $url): object
     {
-        $this->client->request('GET', $url);
+        self::$client->request('GET', $url);
+        /** @var Response $response */
+        $response = self::$client->getResponse();
 
-        return $this->returnResponse($this->client->getResponse());
+        return $this->returnResponse($response);
     }
 
     /**
@@ -148,9 +152,12 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
      */
     protected function sendPost(string $url, array $parameters, ?array $content = NULL): object
     {
-        $this->client->request('POST', $url, $parameters, [], [], $content ? (string) json_encode($content) : '');
+        self::$client->request('POST', $url, $parameters, [], [], $content ? (string) json_encode($content) : '');
 
-        return $this->returnResponse($this->client->getResponse());
+        /** @var Response $response */
+        $response = self::$client->getResponse();
+
+        return $this->returnResponse($response);
     }
 
     /**
@@ -162,9 +169,12 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
      */
     protected function sendPut(string $url, array $parameters, ?array $content = NULL): object
     {
-        $this->client->request('PUT', $url, $parameters, [], [], $content ? (string) json_encode($content) : '');
+        self::$client->request('PUT', $url, $parameters, [], [], $content ? (string) json_encode($content) : '');
 
-        return $this->returnResponse($this->client->getResponse());
+        /** @var Response $response */
+        $response = self::$client->getResponse();
+
+        return $this->returnResponse($response);
     }
 
     /**
@@ -174,9 +184,12 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
      */
     protected function sendDelete(string $url): object
     {
-        $this->client->request('DELETE', $url);
+        self::$client->request('DELETE', $url);
 
-        return $this->returnResponse($this->client->getResponse());
+        /** @var Response $response */
+        $response = self::$client->getResponse();
+
+        return $this->returnResponse($response);
     }
 
     /**

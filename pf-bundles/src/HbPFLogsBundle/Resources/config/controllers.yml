@@ -6,3 +6,5 @@ services:
         class: Hanaboso\PipesFramework\HbPFLogsBundle\Controller\LogsController
         arguments:
             - '@hbpf.handler.logs'
+        calls:
+            - ['setContainer', ['@service_container']]

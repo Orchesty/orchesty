@@ -12,119 +12,112 @@ parameters:
 
 services:
     _defaults:
-        autowire: true
+        autowire: false
         autoconfigure: true
-        public: false
+        public: '%public.services%'
 
-    Demo\Controller\:
-        resource: '../src/Controller'
-        tags: ['controller.service_arguments']
+    Demo\Controller\DefaultController:
+        class: Demo\Controller\DefaultController
+        calls:
+            - ['setContainer', ['@service_container']]
 
-    Demo\:
-        resource: '../src/*'
-        exclude: '../src/{Entity,Migrations,Tests,Kernel.php}'
 
+    Demo\Command\DownloaderCommand:
+        arguments:
+            - 'downloader:run'
+        tags:
+            - { name: 'console.command', command: 'downloader:run' }
+
+    Demo\Command\KapacitorCommand:
+        arguments:
+            - 'kapacitor:run'
+        tags:
+            - { name: 'console.command', command: 'kapacitor:run' }
+
+
+    # Connector
     hbpf.connector.batch:
         class: Demo\Connector\BatchConnector
-        public: true
 
+    hbpf.connector.pager-duty:
+        class: Demo\Connector\PagerDutyConnector
+        arguments:
+            - '@hbpf.transport.curl_manager'
+
+    # CustomNode
     hbpf.custom_node.batch:
         class: Demo\CustomNode\BatchCustomNode
-        public: true
+
+    hbpf.custom_node.data-generator:
+        class: Demo\CustomNode\DataGeneratorConnector
+
+    hbpf.custom_node.package:
+        class: Demo\CustomNode\DummyConnector
+
+    hbpf.custom_node.pick-area:
+        class: Demo\CustomNode\DummyConnector
+
+    hbpf.custom_node.customer-notify:
+        class: Demo\CustomNode\DummyConnector
+
+    hbpf.custom_node.extra-insurance:
+        class: Demo\CustomNode\DummyConnector
+
+    hbpf.custom_node.print-label:
+        class: Demo\CustomNode\DummyConnector
+
+    hbpf.custom_node.request-carrier:
+        class: Demo\CustomNode\DummyConnector
+
+    hbpf.custom_node.fill-in-form:
+        class: Demo\CustomNode\DummyConnectorSplit
+
+    hbpf.custom_node.check-insurance:
+        class: Demo\CustomNode\DummyConnectorSplit
+
+    hbpf.custom_node.dummy-exception:
+        class: Demo\CustomNode\DummyExceptionConnector
+        calls:
+            - ['setLogger', ['@monolog.logger.connector']]
 
     hbpf.custom_node.filter-bids:
         class: Demo\CustomNode\FilterStockExchange
-        public: true
         arguments:
             - 'bids'
 
     hbpf.custom_node.filter-asks:
         class: Demo\CustomNode\FilterStockExchange
-        public: true
         arguments:
             - 'asks'
         calls:
             - ['setLogger', ['@monolog.logger.connector']]
 
+    hbpf.custom_node.idnes:
+        class: Demo\CustomNode\IdnesConnector
+        arguments:
+            - '@hbpf.transport.curl_manager'
+
     hbpf.custom_node.split-file:
         class: Demo\CustomNode\SplitFileBatch
-        public: true
 
     hbpf.custom_node.split-file2:
         class: Demo\CustomNode\SplitFileBatch2
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@rabbit_mq.publisher.test_batch'
-        public: true
 
-    hbpf.custom_node.idnes:
-        class: Demo\CustomNode\IdnesConnector
-        public: true
-        arguments:
-            - '@hbpf.transport.curl_manager'
-
-    hbpf.connector.pager-duty:
-        class: Demo\Connector\PagerDutyConnector
-        public: true
-        arguments:
-            - '@hbpf.transport.curl_manager'
-
-    hbpf.custom_node.package:
-        class: Demo\CustomNode\DummyConnector
-        public: true
-
-    hbpf.custom_node.pick-area:
-        class: Demo\CustomNode\DummyConnector
-        public: true
-
-    hbpf.custom_node.customer-notify:
-        class: Demo\CustomNode\DummyConnector
-        public: true
-
-    hbpf.custom_node.check-insurance:
-        class: Demo\CustomNode\DummyConnectorSplit
-        public: true
-
-    hbpf.custom_node.extra-insurance:
-        class: Demo\CustomNode\DummyConnector
-        public: true
-
-    hbpf.custom_node.print-label:
-        class: Demo\CustomNode\DummyConnector
-        public: true
-
-    hbpf.custom_node.fill-in-form:
-        class: Demo\CustomNode\DummyConnectorSplit
-        public: true
-
-    hbpf.custom_node.request-carrier:
-        class: Demo\CustomNode\DummyConnector
-        public: true
-
-    hbpf.custom_node.dummy-exception:
-        class: Demo\CustomNode\DummyExceptionConnector
-        public: true
-        calls:
-            - ['setLogger', ['@monolog.logger.connector']]
-
-    hbpf.custom_node.data-generator:
-        class: Demo\CustomNode\DataGeneratorConnector
-        public: true
-
+    # LongRunningNode
     hbpf.long_running.time-stamper:
         class: Demo\LongRunningNode\TimeStamperHumanTask
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
-        public: true
 
     hbpf.long_running.time-stamper-one:
         class: Demo\LongRunningNode\TimeStamperHumanTask
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
-        public: true
 
     hbpf.long_running.time-stamper-two:
         class: Demo\LongRunningNode\TimeStamperHumanTask
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
-        public: true

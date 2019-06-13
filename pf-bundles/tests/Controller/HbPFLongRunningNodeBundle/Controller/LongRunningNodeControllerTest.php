@@ -7,6 +7,7 @@ use Hanaboso\PipesFramework\HbPFLongRunningNodeBundle\Handler\LongRunningNodeHan
 use Hanaboso\PipesFramework\LongRunningNode\Document\LongRunningNodeData;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\ControllerTestCaseAbstract;
 
 /**
@@ -35,7 +36,7 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
         );
 
         /** @var ContainerInterface $c */
-        $c = $this->client->getContainer();
+        $c = self::$client->getContainer();
         $c->set('hbpf.handler.long_running', $handler);
 
         $this->sendPost('/longRunning/node/process', ['cont']);
@@ -58,12 +59,14 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
         $this->dm->flush();
 
         $this->sendGet('/longRunning/id/topology/topo/getTasks');
-        $res = $this->client->getResponse();
+        /** @var Response $res */
+        $res = self::$client->getResponse();
         self::assertEquals(200, $res->getStatusCode());
         self::assertEquals(2, count(json_decode($res->getContent(), TRUE)['items']));
 
         $this->sendGet('/longRunning/id/topology/topo/node/node0/getTasks');
-        $res = $this->client->getResponse();
+        /** @var Response $res */
+        $res = self::$client->getResponse();
         self::assertEquals(200, $res->getStatusCode());
         self::assertEquals(1, count(json_decode($res->getContent(), TRUE)['items']));
     }

@@ -6,3 +6,5 @@ services:
         class: Hanaboso\PipesFramework\HbPFNotificationBundle\Controller\NotificationController
         arguments:
             - '@hbpf.notification.handler.notification'
+        calls:
+            - ['setContainer', ['@service_container']]

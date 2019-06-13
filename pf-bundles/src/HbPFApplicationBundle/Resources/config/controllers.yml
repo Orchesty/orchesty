@@ -6,8 +6,12 @@ services:
         class: Hanaboso\PipesFramework\HbPFApplicationBundle\Controller\ApplicationController
         arguments:
             - '@hbpf._application.handler.application'
+        calls:
+            - ['setContainer', ['@service_container']]
 
     Hanaboso\PipesFramework\HbPFApplicationBundle\Controller\WebhookController:
         class: Hanaboso\PipesFramework\HbPFApplicationBundle\Controller\WebhookController
         arguments:
             - '@hbpf._application.handler.webhook'
+        calls:
+            - ['setContainer', ['@service_container']]

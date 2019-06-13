@@ -4,6 +4,7 @@ namespace Tests;
 
 use JsonException;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\BrowserKit\Client;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -15,6 +16,11 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
 {
 
     use TestCaseTrait;
+
+    /**
+     * @var Client
+     */
+    protected static $client;
 
     /**
      *
@@ -41,8 +47,10 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
         $this->prepareClient();
 
         self::$client->request('GET', $url, $parameters, [], $headers);
+        /** @var Response $response */
+        $response = self::$client->getResponse();
 
-        return $this->processResponse(self::$client->getResponse());
+        return $this->processResponse($response);
     }
 
     /**
@@ -65,8 +73,10 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
         $this->prepareClient();
 
         self::$client->request('POST', $url, $parameters, $files, $headers, $content);
+        /** @var Response $response */
+        $response = self::$client->getResponse();
 
-        return $this->processResponse(self::$client->getResponse());
+        return $this->processResponse($response);
     }
 
     /**
@@ -86,8 +96,10 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
         $this->prepareClient();
 
         self::$client->request('PUT', $url, $parameters, $files, $headers);
+        /** @var Response $response */
+        $response = self::$client->getResponse();
 
-        return $this->processResponse(self::$client->getResponse());
+        return $this->processResponse($response);
     }
 
     /**
@@ -101,8 +113,10 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
         $this->prepareClient();
 
         self::$client->request('DELETE', $url, [], [], $headers);
+        /** @var Response $response */
+        $response = self::$client->getResponse();
 
-        return $this->processResponse(self::$client->getResponse());
+        return $this->processResponse($response);
     }
 
     /**
