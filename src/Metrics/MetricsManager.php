@@ -463,7 +463,7 @@ class MetricsManager implements LoggerAwareInterface
     {
         $dto
             ->setMin($result[sprintf($type, self::MIN_KEY)] ?? '')
-            ->setAvg($result[sprintf($type, self::COUNT_KEY)] ?? '', $result[sprintf($type, self::SUM_KEY) ?? ''])
+            ->setAvg($result[sprintf($type, self::COUNT_KEY)] ?? '', $result[sprintf($type, self::SUM_KEY)] ?? '')
             ->setMax($result[sprintf($type, self::MAX_KEY)] ?? '');
     }
 
@@ -503,7 +503,7 @@ class MetricsManager implements LoggerAwareInterface
         }
 
         if (isset($result[$this->counterTable])) {
-            $this->processInnerResult($process, $result[$this->connectorTable], self::PROCESS_TIME_KEY);
+            $this->processInnerResult($process, $result[$this->counterTable], self::PROCESS_TIME_KEY);
             $error
                 ->setTotal($result[$this->counterTable][self::NODE_TOTAL_SUM] ?? '')
                 ->setErrors($result[$this->counterTable][self::NODE_ERROR_SUM] ?? '');
@@ -597,7 +597,7 @@ class MetricsManager implements LoggerAwareInterface
     private static function getConditions(array $data, string $delimiter = 'or'): array
     {
         array_walk($data, function (string &$value, string $key): void {
-            $value = sprintf('%s = "%s"', $key, $value);
+            $value = sprintf('%s = \'%s\'', $key, $value);
         });
 
         return [implode(sprintf(' %s ', $delimiter), $data)];
