@@ -38,6 +38,9 @@ class ApplicationHandler
     /**
      * ApplicationHandler constructor.
      *
+     * Example:
+     * {{md "docs/sdk/examples/application-handler.md"}}
+     *
      * @param ApplicationManager $applicationManager
      * @param WebhookManager     $webhookManager
      */

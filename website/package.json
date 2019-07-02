@@ -1,0 +1,29 @@
+{
+  "name": "pipes-jam-site-builder",
+  "version": "1.0.0",
+  "description": "A JAM pipeline for building Pipes website including documentation pages.",
+  "main": "build.js",
+  "author": "Jakub Husak",
+  "license": "PROPRIETARY",
+  "private": true,
+  "scripts": {
+    "build": "yarn install && node build.js",
+    "dev-server": "yarn run static-server ./build"
+  },
+  "dependencies": {
+    "handlebars": "^4.1.2",
+    "handlebars-helpers": "^0.10.0",
+    "jstransformer-handlebars": "^1.1.0",
+    "metalsmith": "^2.3.0",
+    "metalsmith-autotoc": "^0.1.5",
+    "metalsmith-collections": "^0.9.0",
+    "metalsmith-debug": "^1.2.0",
+    "metalsmith-in-place": "^4.4.0",
+    "metalsmith-layouts": "^2.3.1",
+    "metalsmith-markdown": "^1.2.0",
+    "metalsmith-markdown-partials": "^1.0.0",
+    "metalsmith-metallic": "^2.0.3",
+    "metalsmith-s3": "^0.1.0",
+    "static-server": "^2.2.1"
+  }
+}

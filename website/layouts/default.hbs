@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <style>
+      .content ul:first-of-type { display: none }
+    </style>
+  </head>
+  <body>
+    <div style="background-color: #f0f0f0; padding: 1em; margin-bottom: 2px;">
+      <h1 style="text-align: center">Pipes homepage</h1>
+      <p>
+        <a href="/">Home</a> |
+        <a href="/docs/sdk/api">Docs</a> |
+        <a href="/contact.html">Contact</a>
+      </p>
+    </div>
+    {{#if toc}}
+    <div style="width: 25em; float: left; margin-right: 3em; background-color: #f0f0f0">
+      <h2>AutoTOC plugin</h2>
+      <ul>
+      {{#each toc}}
+        <li>{{text}}
+          <ul>
+            {{#each children}}
+            <li>{{text}}</li>
+            {{/each}}
+          </ul>
+        </li>
+      {{/each}}
+      </ul>
+      <br style="clear: both">
+    </div>
+    {{/if}}
+    <div style="float: left; width: auto;" class="content">
+      {{{ contents }}}
+    </div>
+  </body>
+</html>

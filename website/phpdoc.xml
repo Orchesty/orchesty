@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpdoc>
+    <title>Pipes SDK API Documentation</title>
+    <parser>
+        <target>/tmp/phpdoc</target>
+    </parser>
+    <transformer>
+        <target>/tmp/phpdoc-build</target>
+    </transformer>
+    <transformations>
+        <template name="/root/.composer/vendor/cvuorinen/phpdoc-markdown-public/data/templates/markdown-public" />
+    </transformations>
+    <files>
+        <directory>../pf-bundles/src</directory>
+    </files>
+</phpdoc>
