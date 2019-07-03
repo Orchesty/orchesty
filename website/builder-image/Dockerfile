@@ -6,7 +6,8 @@ RUN apt-get update && \
       php7.0-curl \
       php7.0-xml \
       php7.0-zip \
-      composer && \
+      composer \
+      awscli && \
     rm -rf /var/lib/* /var/cache/apt/*
 
 RUN composer global require jms/serializer:~1.7.1 cvuorinen/phpdoc-markdown-public
