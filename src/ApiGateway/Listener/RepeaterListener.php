@@ -81,7 +81,7 @@ class RepeaterListener implements EventSubscriberInterface, LoggerAwareInterface
         $repeatCode     = PipesHeaders::createKey(PipesHeaders::RESULT_CODE);
         $dto            = $e->getProcessDto();
 
-        if (!$dto->getHeader($repeatHops) && !$dto->getHeader($repeatMaxHops) && !$dto->getHeader($repeatInterval)) {
+        if ((!$dto->getHeader($repeatHops) && $dto->getHeader($repeatHops) <= 0) && !$dto->getHeader($repeatMaxHops) && !$dto->getHeader($repeatInterval)) {
 
             [$interval, $hops, $enabled] = $this->getRepeaterStuff($e, $dto);
 
@@ -102,8 +102,7 @@ class RepeaterListener implements EventSubscriberInterface, LoggerAwareInterface
         $maxHop     = is_array($maxHop) ? $maxHop[0] : $maxHop;
 
         if ($currentHop < $maxHop) {
-            $currentHop++;
-            $e->getProcessDto()->addHeader($repeatHops, (string) $currentHop);
+            $dto->addHeader($repeatHops, (string) ++$currentHop);
         }
 
         $this->logger->info(
@@ -111,8 +110,9 @@ class RepeaterListener implements EventSubscriberInterface, LoggerAwareInterface
             ['currentHop' => $currentHop, 'interval' => $e->getInterval(), 'maxHops' => $maxHop]
         );
 
-        $response = new Response($e->getProcessDto()->getData(), 200, $e->getProcessDto()->getHeaders());
+        $response = new Response($dto->getData(), 200, $dto->getHeaders());
         $event->setResponse($response);
+        $event->allowCustomResponseCode();
     }
 
     /**
