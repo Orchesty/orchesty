@@ -80,7 +80,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         ]);
 
         self::assertEquals(200, $response->status);
-        self::assertEquals('Topology', $response->content->name);
+        self::assertEquals('topology', $response->content->name);
         self::assertEquals('Topology', $response->content->descr);
         self::assertEquals(TRUE, $response->content->enabled);
     }
@@ -102,7 +102,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         ]);
 
         self::assertEquals(200, $response->status);
-        self::assertEquals('Topology 2', $response->content->name);
+        self::assertEquals('topology-2', $response->content->name);
         self::assertEquals('Topology 2', $response->content->descr);
         self::assertEquals(TRUE, $response->content->enabled);
     }

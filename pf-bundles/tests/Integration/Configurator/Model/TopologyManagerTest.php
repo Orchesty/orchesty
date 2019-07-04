@@ -50,7 +50,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $manager->updateTopology($topology, ['name' => 'Another Topology']);
 
         $this->dm->clear();
-        $topologies = $this->dm->getRepository(Topology::class)->findBy(['name' => 'Another Topology']);
+        $topologies = $this->dm->getRepository(Topology::class)->findBy(['name' => 'another-topology']);
         self::assertEquals(1, count($topologies));
     }
 

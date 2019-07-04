@@ -74,6 +74,7 @@ class TopologyManager
      */
     public function createTopology(array $data): Topology
     {
+        $this->normalizeName($data);
         if ($this->topologyRepository->getTopologiesCountByName($data['name']) > 0) {
             throw new TopologyException(
                 sprintf('Topology with name \'%s\' already exists', $data['name']),
@@ -100,6 +101,7 @@ class TopologyManager
      */
     public function updateTopology(Topology $topology, array $data): Topology
     {
+        $this->normalizeName($data);
         $topology = $this->checkTopologyName($topology, $data);
         $topology = $this->setTopologyData($topology, $data);
         $this->dm->flush();
@@ -627,6 +629,16 @@ class TopologyManager
         }
 
         return $topology;
+    }
+
+    /**
+     * @param array $data
+     */
+    private function normalizeName(array &$data): void
+    {
+        if (isset($data['name'])) {
+            $data['name'] = Strings::webalize($data['name']);
+        }
     }
 
 }
