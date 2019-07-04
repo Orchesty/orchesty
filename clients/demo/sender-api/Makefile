@@ -1,6 +1,7 @@
 .PHONY: docker-up docker-up-force .env composer-install composer-update codesniffer phpstan phpunit init test
 
-DC=docker-compose -f docker-compose.ci.yml
+FILE?=docker-compose.ci.yml
+DC=docker-compose -f $(FILE)
 DE=docker-compose exec -T notification-sender-api
 DEC=docker-compose exec -T notification-sender-api composer
 
