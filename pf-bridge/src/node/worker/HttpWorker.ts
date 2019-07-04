@@ -276,7 +276,7 @@ class HttpWorker extends AWorker {
         const context = logger.ctxFromMsg(msg);
         context.data = JSON.stringify({request: { body: req.body }, response});
         logger.warn(
-            `Worker[type='http'] received response with statusCode="${statusCode}"`,
+            `Worker[type='http'] received response with statusCode="${statusCode}" body="${req.body}"`,
             context,
         );
         msg.setResult(
