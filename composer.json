@@ -2,7 +2,7 @@
   "name": "hanaboso/pipes-framework",
   "license": "proprietary",
   "description": "PipesFramework for Symfony",
-  "version": "1.0.45",
+  "version": "1.0.46",
   "autoload": {
     "psr-4": {
       "Hanaboso\\PipesFramework\\": "src/"
@@ -23,17 +23,17 @@
     "hanaboso/email-service-bundle": "^1.0",
     "hanaboso/mongo-data-grid": "^1.1",
     "hanaboso/rabbit-mq-bundle": "^1.1",
-    "influxdb/influxdb-php": "^1.14",
+    "influxdb/influxdb-php": "^1.15",
     "league/oauth2-client": "^2.4",
     "mtdowling/cron-expression": "^1.2",
     "nette/utils": "^2.5",
     "php-http/client-common": "^1.9",
     "php-http/message": "^1.7",
     "php-http/socket-client": "^1.4",
-    "phpoffice/phpspreadsheet": "^1.7",
+    "phpoffice/phpspreadsheet": "^1.8",
     "snc/redis-bundle": "^2.1",
-    "symfony/monolog-bundle": "^3.3",
-    "symfony/symfony": "^4.2"
+    "symfony/monolog-bundle": "^3.4",
+    "symfony/symfony": "^4.3"
   },
   "require-dev": {
     "hanaboso/php-check-utils": "^1.0"
