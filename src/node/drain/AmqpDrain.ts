@@ -1,11 +1,11 @@
-import {AssertionPublisher} from "amqplib-plus/dist/lib/AssertPublisher";
-import {IMetrics} from "metrics-sender/dist/lib/metrics/IMetrics";
+import { AssertionPublisher } from "amqplib-plus/dist/lib/AssertPublisher";
+import { IMetrics } from "metrics-sender/dist/lib/metrics/IMetrics";
 import logger from "../../logger/Logger";
-import {MessageType} from "../../message/AMessage";
+import { MessageType } from "../../message/AMessage";
 import Headers from "../../message/Headers";
 import JobMessage from "../../message/JobMessage";
-import {ResultCode, ResultCodeGroup} from "../../message/ResultCode";
-import {INodeLabel} from "../../topology/Configurator";
+import { ResultCode, ResultCodeGroup } from "../../message/ResultCode";
+import { INodeLabel } from "../../topology/Configurator";
 import CounterPublisher from "./amqp/CounterPublisher";
 import FollowersPublisher from "./amqp/FollowersPublisher";
 import IDrain from "./IDrain";
@@ -134,6 +134,7 @@ class AmqpDrain implements IDrain, IPartialForwarder {
      * @param {JobMessage} message
      */
     private forwardNonStandard(message: JobMessage): void {
+        let msg = '';
         switch (message.getResult().code) {
 
             // Handle non-standard result codes
@@ -150,9 +151,14 @@ class AmqpDrain implements IDrain, IPartialForwarder {
                 break;
 
             case ResultCode.STOP_AND_FAILED:
+                msg = `Process was terminated with code '${message.getResult().code}'`;
+                if (message.getHeaders().hasPFHeader(Headers.RESULT_MESSAGE)) {
+                    msg = message.getHeaders().getPFHeader(Headers.RESULT_MESSAGE);
+                }
+
                 message.setResult({
                     code: ResultCode.STOP_AND_FAILED,
-                    message: `Process was terminated with code '${message.getResult().code}'`,
+                    message: msg,
                 });
                 this.forwardToCounterOnly(message, 0);
                 break;
@@ -162,10 +168,15 @@ class AmqpDrain implements IDrain, IPartialForwarder {
                 break;
 
             default:
+                msg = `Unknown non-standard result code '${message.getResult().code}'`;
+                if (message.getHeaders().hasPFHeader(Headers.RESULT_MESSAGE)) {
+                    msg = message.getHeaders().getPFHeader(Headers.RESULT_MESSAGE);
+                }
+
                 // Let the message fail
                 message.setResult({
                     code: ResultCode.INVALID_NON_STANDARD_CODE,
-                    message: `Unknown non-standard result code '${message.getResult().code}'`,
+                    message: msg,
                 });
                 this.forward(message);
         }
