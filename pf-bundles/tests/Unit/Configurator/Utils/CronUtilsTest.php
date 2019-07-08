@@ -6,6 +6,7 @@ use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Utils\CronUtils;
 use Tests\KernelTestCaseAbstract;
+use Tests\PrivateTrait;
 
 /**
  * Class CronUtilsTest
@@ -15,18 +16,22 @@ use Tests\KernelTestCaseAbstract;
 final class CronUtilsTest extends KernelTestCaseAbstract
 {
 
+    use PrivateTrait;
+
     /**
      *
      */
     public function testGetTopologyUrl(): void
     {
         $topology = new Topology();
-        $topology->setName('topName');
+        $topology->setName('id-1');
+        $this->setProperty($topology, 'id', 'test');
         $node = new Node();
-        $node->setName('nodeName');
+        $node->setName('test');
+        $this->setProperty($node, 'id', 'id-1');
 
         self::assertEquals(
-            '/topologies/topName/nodes/nodeName/run-by-name',
+            '/topologies/test/nodes/id-1/run',
             CronUtils::getTopologyUrl($topology, $node)
         );
     }
