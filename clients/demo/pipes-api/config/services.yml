@@ -121,3 +121,14 @@ services:
         class: Demo\LongRunningNode\TimeStamperHumanTask
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.custom_node.send-duty-email:
+        class: Demo\CustomNode\SendDutyEmail
+        arguments:
+            - '@mailer'
+            - '@hbpf.connector.pager-duty'
+
+    mailer:
+        class: EmailServiceBundle\Mailer\Mailer
+        arguments:
+            - '@EmailServiceBundle\Transport\Impl\SwiftMailerTransport'

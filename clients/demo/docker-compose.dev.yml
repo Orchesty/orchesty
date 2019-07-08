@@ -228,6 +228,8 @@ services:
           BACKEND_HOST: ${BACKEND_URL}/
           ELASTIC_HOST: elasticsearch
           ELASTIC_INDEX: 'index'
+          SMTP_USER: dev.email.hb@gmail.com
+          SMTP_PASSWORD: jVME2RkX9xyYhj9v
         working_dir: /var/www/pipes/clients/demo/pipes-api
         volumes:
           - ../../:/var/www/pipes
@@ -241,6 +243,8 @@ services:
     #      BACKEND_HOST: ${BACKEND_URL}/
     #      ELASTIC_HOST: elasticsearch
     #      ELASTIC_INDEX: 'logstash-2018.01.31'
+    #      SMTP_USER: dev.email.hb@gmail.com
+    #      SMTP_PASSWORD: jVME2RkX9xyYhj9v
     #    secrets:
     #      - source: clevermonitor-ca.pem
     #        target: /var/www/html/var/secret/ca.crt

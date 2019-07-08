@@ -3,19 +3,21 @@
 version: '2'
 
 services:
-  pipes-api:
-    image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
-    user: ${DEV_UID}:${DEV_GID}
-    ports:
-        - ${DEV_IP}:8000:80
-    working_dir: /var/www/pipes/clients/demo/pipes-api
-    environment:
-      PHP_WEBROOT: /var/www/pipes/clients/demo/pipes-api
-      DEV_UID: ${DEV_UID}
-      DEV_GID: ${DEV_GID}
-      DEPLOYMENT_PREFIX: ${DEPLOYMENT_PREFIX}
-      TOPOLOGY_MODE: ${TOPOLOGY_MODE}
-    volumes:
-      - ../../../:/var/www/pipes
-      - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
-      - ${HOME}/.composer:/srv/.composer
+    pipes-api:
+        image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
+        user: ${DEV_UID}:${DEV_GID}
+        ports:
+            - ${DEV_IP}:8000:80
+        working_dir: /var/www/pipes/clients/demo/pipes-api
+        environment:
+            PHP_WEBROOT: /var/www/pipes/clients/demo/pipes-api
+            DEV_UID: ${DEV_UID}
+            DEV_GID: ${DEV_GID}
+            DEPLOYMENT_PREFIX: ${DEPLOYMENT_PREFIX}
+            TOPOLOGY_MODE: ${TOPOLOGY_MODE}
+            SMTP_USER: dev.email.hb@gmail.com
+            SMTP_PASSWORD: jVME2RkX9xyYhj9v
+        volumes:
+            - ../../../:/var/www/pipes
+            - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
+            - ${HOME}/.composer:/srv/.composer
