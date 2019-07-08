@@ -22,8 +22,8 @@ class SendDutyEmail implements CustomNodeInterface
 {
 
     private const FROM    = 'dev.email.hb@gmail.com';
-    private const TO     = 'jirsa.r@hanaboso.com';
-    private const SUBJECT = 'PagerDuty';
+    private const TO      = 'jirsa.r@hanaboso.com';
+    private const SUBJECT = 'Monitoring';
 
     /**
      * @var Mailer

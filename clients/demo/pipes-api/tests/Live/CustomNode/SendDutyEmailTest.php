@@ -36,7 +36,7 @@ class SendDutyEmailTest extends KernelTestCase
     public function testSend(): void
     {
         $sendDutyEmail = self::$container->get('hbpf.custom_node.send-duty-email');
-        $data = $sendDutyEmail->process(new ProcessDto())->getData();
+        $data          = $sendDutyEmail->process(new ProcessDto())->getData();
         self::assertIsString($data);
     }
 
