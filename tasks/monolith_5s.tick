@@ -8,6 +8,8 @@ var monolithData = stream
        .database('pipes')
        .retentionPolicy('default')
        .measurement('monolith')
+   |barrier()
+       .period(sample)
    |window()
        .period(sample)
        .every(sample)
