@@ -8,6 +8,8 @@ var data = stream
        .database('pipes')
        .retentionPolicy('default')
        .measurement('pipes_counter')
+   |barrier()
+       .period(sample)
    |window()
        .period(sample)
        .every(sample)

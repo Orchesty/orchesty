@@ -8,6 +8,8 @@ var connectorData = stream
        .database('pipes')
        .retentionPolicy('default')
        .measurement('connectors')
+   |barrier()
+       .period(sample)
    |window()
        .period(sample)
        .every(sample)
