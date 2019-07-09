@@ -203,7 +203,7 @@ class Pipes implements INodeConfigProvider {
             this.dic.get(nodeCfg.worker.type)(nodeCfg.worker.settings, drain, nodeCfg.drain.settings) :
             this.dic.get(nodeCfg.worker.type)(nodeCfg.worker.settings);
 
-        const metrics: IMetrics = this.dic.get("metrics")(topo.id, id, metricsOptions.node_measurement);
+        const metrics: IMetrics = this.dic.get("metrics")(topo.topology_id, id, metricsOptions.node_measurement);
 
         const node = new Node(id, worker, faucet, drain, metrics);
 
