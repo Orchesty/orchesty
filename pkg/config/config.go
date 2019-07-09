@@ -1,7 +1,9 @@
 package config
 
 import (
+	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/jinzhu/configor"
@@ -54,4 +56,7 @@ func init() {
 	if err := configor.Load(&c); err != nil {
 		panic(err)
 	}
+	 if !strings.HasPrefix(Mongo.Host, "mongodb://") {
+            Mongo.Host = fmt.Sprintf("mongodb://%s/", Mongo.Host)
+     }
 }
