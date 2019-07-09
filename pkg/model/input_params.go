@@ -102,26 +102,20 @@ func (p *NodeConfig) GetBridges(t *Topology, nodes []Node, WorkerDefaultPort int
 func (e *Environment) GetEnvironment() (map[string]string, error) {
 	var environment = make(map[string]string)
 
-	if host, port, err := net.SplitHostPort(e.RabbitMqHost); err != nil {
-		return nil, err
-	} else {
+	if host, port, err := net.SplitHostPort(e.RabbitMqHost); err == nil {
 		environment[RabbitMqHost] = host
 		environment[RabbitMqPort] = port
+		environment[RabbitMqUser] = e.RabbitMqUser
+		environment[RabbitMqPass] = e.RabbitMqPass
+		environment[RabbitMqVHost] = e.RabbitMqVHost
 	}
-	environment[RabbitMqUser] = e.RabbitMqUser
-	environment[RabbitMqPass] = e.RabbitMqPass
-	environment[RabbitMqVHost] = e.RabbitMqVHost
 
-	if host, port, err := net.SplitHostPort(e.MultiProbeHost); err != nil {
-		return nil, err
-	} else {
+	if host, port, err := net.SplitHostPort(e.MultiProbeHost); err == nil {
 		environment[MultiProbeHost] = host
 		environment[MultiProbePort] = port
 	}
 
-	if host, port, err := net.SplitHostPort(e.MetricsHost); err != nil {
-		return nil, err
-	} else {
+	if host, port, err := net.SplitHostPort(e.MetricsHost); err == nil {
 		environment[MetricsHost] = host
 		environment[MetricsPort] = port
 	}
