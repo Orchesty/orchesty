@@ -28,21 +28,25 @@ var waitingTimeAvg = bridgeData
     |mean('bridge_job_waiting_duration')
         .as('time')
 
-var tmpTimeMin = bridgeData
+var timeMinWaiting = bridgeData
     |min('bridge_job_waiting_duration')
         .as('waiting')
+    |delete().field('bridge_job_result_success')
+    |delete().field('bridge_job_worker_duration')
 
-var timeMin = tmpTimeMin
+var timeMinProcess = bridgeData
     |min('bridge_job_total_duration')
         .as('process')
     |delete().field('bridge_job_result_success')
     |delete().field('bridge_job_worker_duration')
 
-var tmpTimeMax = bridgeData
+var timeMaxWaiting = bridgeData
     |max('bridge_job_waiting_duration')
         .as('waiting')
+    |delete().field('bridge_job_result_success')
+    |delete().field('bridge_job_worker_duration')
 
-var timeMax = tmpTimeMax
+var timeMaxProcess = bridgeData
     |max('bridge_job_total_duration')
         .as('process')
     |delete().field('bridge_job_result_success')
@@ -53,8 +57,8 @@ var processTimeAvg = bridgeData
         .as('time')
 
 total
-   |join(totalFailed, waitingTimeAvg, timeMin, timeMax, processTimeAvg)
-       .as('total', 'failed', 'avg_waiting', 'job_min', 'job_max', 'avg_process')
+   |join(totalFailed, waitingTimeAvg, timeMinWaiting, timeMaxWaiting, timeMinProcess, timeMaxProcess, processTimeAvg)
+       .as('total', 'failed', 'avg_waiting', 'job_min.waiting', 'job_max.waiting', 'job_min.process', 'job_max.process', 'avg_process')
    |influxDBOut()
        .database('pipes')
        .measurement('bridges')
