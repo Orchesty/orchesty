@@ -22,6 +22,7 @@ var cpuKernelAvg = monolithData
 var cpuMin = monolithData
     |min('fpm_cpu_kernel_time')
         .as('kernel')
+cpuMin
     |min('fpm_cpu_user_time')
         .as('user')
     |delete().field('fpm_request_total_duration')
@@ -30,6 +31,7 @@ var cpuMin = monolithData
 var cpuMax = monolithData
     |max('fpm_cpu_kernel_time')
         .as('kernel')
+cpuMax
     |max('fpm_cpu_user_time')
         .as('user')
     |delete().field('fpm_request_total_duration')

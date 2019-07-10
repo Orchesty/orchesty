@@ -33,6 +33,7 @@ var waitingTimeAvg = bridgeData
 var timeMin = bridgeData
     |min('bridge_job_waiting_duration')
         .as('waiting')
+timeMin
     |min('bridge_job_total_duration')
         .as('process')
     |delete().field('bridge_job_result_success')
@@ -41,6 +42,7 @@ var timeMin = bridgeData
 var timeMax = bridgeData
     |max('bridge_job_waiting_duration')
         .as('waiting')
+timeMax
     |max('bridge_job_total_duration')
         .as('process')
     |delete().field('bridge_job_result_success')
