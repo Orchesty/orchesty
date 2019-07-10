@@ -16,7 +16,6 @@ var bridgeData = stream
    |groupBy('topology_id', 'node_id')
 
 // Total Processes
-
 var total = bridgeData
    |count('bridge_job_result_success')
 
@@ -25,24 +24,25 @@ var totalFailed = bridgeData
    |count('bridge_job_result_success')
 
 // Bridge data
-
 var waitingTimeAvg = bridgeData
     |mean('bridge_job_waiting_duration')
         .as('time')
 
-var timeMin = bridgeData
+var tmpTimeMin = bridgeData
     |min('bridge_job_waiting_duration')
         .as('waiting')
-timeMin
+
+var timeMin = tmpTimeMin
     |min('bridge_job_total_duration')
         .as('process')
     |delete().field('bridge_job_result_success')
     |delete().field('bridge_job_worker_duration')
 
-var timeMax = bridgeData
+var tmpTimeMax = bridgeData
     |max('bridge_job_waiting_duration')
         .as('waiting')
-timeMax
+
+var timeMax = tmpTimeMax
     |max('bridge_job_total_duration')
         .as('process')
     |delete().field('bridge_job_result_success')
@@ -60,11 +60,3 @@ total
        .measurement('bridges')
        .precision('ms')
        .retentionPolicy(retention)
-
-
-//monolithData
-//   |groupBy('topology_id', 'node_id', 'correlation_id')
-//   |count('count')
-
-
-
