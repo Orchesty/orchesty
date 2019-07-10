@@ -16,7 +16,6 @@ var connectorData = stream
    |groupBy('node_id')
 
 // Monolith data
-
 var reqAvg = connectorData
     |mean('sent_request_total_duration')
         .as('time')
@@ -37,11 +36,3 @@ reqAvg
        .measurement('connectors')
        .precision('ms')
        .retentionPolicy(retention)
-
-
-//monolithData
-//   |groupBy('topology_id', 'node_id', 'correlation_id')
-//   |count('count')
-
-
-
