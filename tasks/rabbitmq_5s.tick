@@ -14,6 +14,8 @@ var rabbitMqData = stream
        .period(sample)
        .every(sample)
    |groupBy('queue')
+   |default()
+       .field('messages', 0)
 
 var messagesAvg = rabbitMqData
     |mean('messages')
