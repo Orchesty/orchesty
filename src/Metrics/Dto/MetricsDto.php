@@ -13,12 +13,12 @@ final class MetricsDto
     /**
      * @var string
      */
-    private $min = 'n/a';
+    private $min = '0';
 
     /**
      * @var string
      */
-    private $max = 'n/a';
+    private $max = '0';
 
     /**
      * @var string
