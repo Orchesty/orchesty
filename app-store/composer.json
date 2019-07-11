@@ -1,0 +1,49 @@
+{
+  "name": "hanaboso/app-store",
+  "license": "proprietary",
+  "description": "App store for PipesFramework",
+  "version": "1.0.1",
+  "autoload": {
+    "psr-4": {
+      "Hanaboso\\HbPFApplication\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
+  "require": {
+    "php": "^7.3",
+    "ext-json": "*",
+    "hanaboso/commons-bundle": "^1.1",
+    "hanaboso/pipes-php-sdk": "^1.0",
+    "symfony/monolog-bundle": "^3.4",
+    "friendsofsymfony/rest-bundle": "^2.5",
+    "symfony/symfony": "^4.3"
+  },
+  "require-dev": {
+    "hanaboso/php-check-utils": "^1.0"
+  },
+  "repositories": [
+    {
+      "type": "path",
+      "url": "../pipes-php-sdk",
+      "options": {
+        "symlink": true
+      }
+    },
+    {
+      "type": "git",
+      "url": "git@gitlab.hanaboso.net:hanaboso/commons-bundle.git"
+    },
+    {
+      "type": "git",
+      "url": "git@gitlab.hanaboso.net:hanaboso/rabbit-mq-bundle.git"
+    },
+    {
+      "type": "git",
+      "url": "git@gitlab.hanaboso.net:hanaboso/MongoDataGrid.git"
+    }
+  ]
+}

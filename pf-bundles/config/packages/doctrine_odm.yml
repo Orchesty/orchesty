@@ -30,7 +30,7 @@ doctrine_mongodb:
                 WebhookDocument:
                     type: annotation
                     is_bundle: false
-                    dir: "%kernel.root_dir%/Application/Document"
+                    dir: "%kernel.root_dir%/../vendor/hanaboso/app-store/src/Document"
                     prefix: Hanaboso\PipesFramework\Application\Document
                 FileDocument:
                     type: annotation

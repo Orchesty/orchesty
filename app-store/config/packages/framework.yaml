@@ -1,0 +1,21 @@
+framework:
+    secret: "%secret%"
+    csrf_protection:
+        enabled: false
+    default_locale: "%locale%"
+    trusted_hosts: ~
+    fragments: ~
+    http_method_override: true
+    test: false
+    session:
+        storage_id: session.storage.mock_file
+    router:
+        strict_requirements: ~
+
+parameters:
+    backend_host: 127.0.0.9
+    # Base params
+    locale: en
+
+    # A secret key that's used to generate certain security-related tokens
+    secret: ThisTokenIsNotSoSecretChangeIt

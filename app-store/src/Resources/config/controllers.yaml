@@ -1,0 +1,17 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    Hanaboso\HbPFApplication\Controller\ApplicationController:
+        class: Hanaboso\HbPFApplication\Controller\ApplicationController
+        arguments:
+            - '@hbpf._application.handler.application'
+        calls:
+            - ['setContainer', ['@service_container']]
+
+    Hanaboso\HbPFApplication\Controller\WebhookController:
+        class: Hanaboso\HbPFApplication\Controller\WebhookController
+        arguments:
+            - '@hbpf._application.handler.webhook'
+        calls:
+            - ['setContainer', ['@service_container']]
