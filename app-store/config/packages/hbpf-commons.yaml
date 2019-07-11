@@ -118,8 +118,3 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - 'null'
             - '%database_type%'
-
-parameters:
-    #MongoDb sender
-    mongodb.monolith_table: connector
-    mongodb.connector_table: monolith
