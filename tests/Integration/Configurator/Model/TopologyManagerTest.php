@@ -13,7 +13,6 @@ use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Configurator\Model\Dto\SystemConfigDto;
-use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\PrivateTrait;
 
@@ -532,28 +531,53 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     /**
      * @throws Exception
      */
-    public function testDeleteTopology(): void
+    public function testDeletePublishedTopology(): void
     {
         $manager = self::$container->get('hbpf.configurator.manager.topology');
 
-        $node = new Node();
-        $top  = new Topology();
+        $node  = new Node();
+        $node2 = new Node();
+        $top   = new Topology();
         $top
             ->setName('name')
             ->setVisibility(TopologyStatusEnum::PUBLIC);
         $this->persistAndFlush($top);
         $node->setName('node')->setType(TypeEnum::MAPPER)->setTopology($top->getId());
+        $node2->setName('node')->setType(TypeEnum::CRON)->setTopology($top->getId());
         $this->persistAndFlush($node);
+        $this->persistAndFlush($node2);
 
         self::expectException(TopologyException::class);
         self::expectExceptionCode(TopologyException::CANNOT_DELETE_PUBLIC_TOPOLOGY);
         $manager->deleteTopology($top);
+    }
 
-        $top->setVisibility(TopologyStatusEnum::DRAFT);
+    /**
+     * @throws Exception
+     */
+    public function testDeleteTopology(): void
+    {
+        $manager = self::$container->get('hbpf.configurator.manager.topology');
+
+        $node  = new Node();
+        $node2 = new Node();
+        $top   = new Topology();
+        $top
+            ->setName('name')
+            ->setVisibility(TopologyStatusEnum::DRAFT);
+        $this->persistAndFlush($top);
+        $node->setName('node')->setType(TypeEnum::MAPPER)->setTopology($top->getId());
+        $node2->setName('node')->setType(TypeEnum::CRON)->setTopology($top->getId());
+        $this->persistAndFlush($node);
+        $this->persistAndFlush($node2);
+
         $manager->deleteTopology($top);
         $this->dm->clear();
-        self::assertNull($this->dm->getRepository(TopologyRepository::class)->find($top->getId()));
-        self::assertNull($this->dm->getRepository(Node::class)->find($node->getId()));
+        self::assertEmpty($this->dm->getRepository(Topology::class)->findBy(['id'      => $top->getId(),
+                                                                             'deleted' => FALSE,
+        ]));
+        self::assertEmpty($this->dm->getRepository(Node::class)->findBy(['id' => $node->getId(), 'deleted' => FALSE]));
+        self::assertEmpty($this->dm->getRepository(Node::class)->findBy(['id' => $node2->getId(), 'deleted' => FALSE]));
     }
 
     /**
@@ -568,6 +592,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
 
         $this->dm->persist((new Topology())->setName('Topology')->setVersion(1)->setEnabled(TRUE));
         $this->dm->persist((new Topology())->setName('Topology')->setVersion(2)->setEnabled(FALSE));
+        $this->dm->persist((new Topology())->setName('Topology')->setVersion(2)->setEnabled(FALSE)->setDeleted(TRUE));
         $this->dm->flush();
 
         $manager = self::$container->get('hbpf.configurator.manager.topology');
