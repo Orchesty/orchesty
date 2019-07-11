@@ -4,9 +4,9 @@ namespace Tests\Integration\Logs;
 
 use DateTime;
 use Exception;
+use Hanaboso\CommonsBundle\Document\Node;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\MongoDataGrid\GridRequestDto;
-use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Logs\Document\Logs;
 use Hanaboso\PipesFramework\Logs\Document\Pipes;
 use Hanaboso\PipesFramework\Logs\Document\Stacktrace;

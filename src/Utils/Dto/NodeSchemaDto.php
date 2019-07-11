@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesFramework\Utils\Dto;
 
-use Hanaboso\PipesFramework\Configurator\Model\Dto\SystemConfigDto;
+use Hanaboso\CommonsBundle\Model\Dto\SystemConfigDto;
 
 /**
  * Class NodeSchemaDto

@@ -2,8 +2,8 @@
 
 namespace Tests\Unit\Configurator\Utils;
 
-use Hanaboso\PipesFramework\Configurator\Document\Node;
-use Hanaboso\PipesFramework\Configurator\Document\Topology;
+use Hanaboso\CommonsBundle\Document\Node;
+use Hanaboso\CommonsBundle\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Utils\CronUtils;
 use Tests\KernelTestCaseAbstract;
 

@@ -2,11 +2,11 @@
 
 namespace Hanaboso\PipesFramework\Configurator\Model;
 
+use Hanaboso\CommonsBundle\Document\Node;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
+use Hanaboso\CommonsBundle\Model\Dto\SystemConfigDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
-use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyConfigException;
-use Hanaboso\PipesFramework\Configurator\Model\Dto\SystemConfigDto;
 
 /**
  * Class TopologyConfigFactory

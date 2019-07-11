@@ -2,8 +2,8 @@
 
 namespace Hanaboso\PipesFramework\Configurator\Utils;
 
-use Hanaboso\PipesFramework\Configurator\Document\Node;
-use Hanaboso\PipesFramework\Configurator\Document\Topology;
+use Hanaboso\CommonsBundle\Document\Node;
+use Hanaboso\CommonsBundle\Document\Topology;
 
 /**
  * Class CronUtils

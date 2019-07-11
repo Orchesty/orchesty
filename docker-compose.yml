@@ -5,8 +5,9 @@ services:
     user: ${DEV_UID}:${DEV_GID}
     ports:
       - ${DEV_IP}:8000:80
+    working_dir: /var/www/pipes/pf-bundles
     volumes:
-      - ./:/var/www
+      - ../:/var/www/pipes
       - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
       - ./topology:${GENERATOR_PATH}
       - ${HOME}/.composer:/srv/.composer

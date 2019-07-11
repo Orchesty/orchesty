@@ -3,8 +3,8 @@
 namespace Tests\Integration\TopologyInstaller;
 
 use Exception;
-use Hanaboso\PipesFramework\Category\Document\Category;
-use Hanaboso\PipesFramework\Configurator\Document\Topology;
+use Hanaboso\CommonsBundle\Document\Category;
+use Hanaboso\CommonsBundle\Document\Topology;
 use Hanaboso\PipesFramework\TopologyInstaller\CategoryParser;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\TopologyFile;
 use RuntimeException;

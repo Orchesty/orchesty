@@ -7,11 +7,11 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Hanaboso\CommonsBundle\DatabaseManager\DatabaseManagerLocator;
+use Hanaboso\CommonsBundle\Document\Node;
 use Hanaboso\CommonsBundle\Exception\EnumException;
-use Hanaboso\PipesFramework\Configurator\Document\Node;
-use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
+use Hanaboso\CommonsBundle\Exception\NodeException;
+use Hanaboso\CommonsBundle\Repository\NodeRepository;
 use Hanaboso\PipesFramework\Configurator\Model\NodeManager;
-use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
 
 /**
  * Class NodeHandler

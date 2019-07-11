@@ -4,9 +4,9 @@ namespace Tests\Integration\TopologyInstaller;
 
 use Exception;
 use FOS\RestBundle\Decoder\XmlDecoder;
+use Hanaboso\CommonsBundle\Document\Topology;
 use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
-use Hanaboso\PipesFramework\Configurator\Document\Topology;
-use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
+use Hanaboso\CommonsBundle\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\TopologyFile;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\UpdateObject;

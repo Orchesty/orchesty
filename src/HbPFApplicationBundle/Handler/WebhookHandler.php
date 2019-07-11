@@ -3,8 +3,8 @@
 namespace Hanaboso\PipesFramework\HbPFApplicationBundle\Handler;
 
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
-use Hanaboso\PipesFramework\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesFramework\Application\Model\ApplicationManager;
+use Hanaboso\PipesPhpSdk\Authorization\Exception\ApplicationInstallException;
 
 /**
  * Class WebhookHandler
