@@ -1,3 +1,2 @@
 parameters:
     applications:
-        - '%kernel.root_dir%/HbPFApplicationBundle/Resources/config/'
