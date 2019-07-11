@@ -4,8 +4,8 @@ namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command;
 
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
-use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Hanaboso\PipesFramework\TopologyInstaller\InstallManager;
+use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;

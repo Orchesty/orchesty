@@ -1,0 +1,19 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf.loader.connector:
+        class: Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Loader\ConnectorLoader
+        public: true
+        arguments:
+            - '@service_container'
+
+    hbpf.handler.connector:
+        class: Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Handler\ConnectorHandler
+        arguments:
+            - '@hbpf.manager.connector'
+            - '@hbpf.loader.connector'
+
+    hbpf.manager.connector:
+        class: Hanaboso\PipesPhpSdk\Connector\Model\ConnectorManager
+        arguments:

@@ -8,7 +8,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Utils\PipesHeaders;
-use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
+use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeInterface;
 
 /**
  * Class IdnesConnector

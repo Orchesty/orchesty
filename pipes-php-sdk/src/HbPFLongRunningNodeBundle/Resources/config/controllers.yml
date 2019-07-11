@@ -1,0 +1,10 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController:
+        class: Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController
+        arguments:
+            - '@hbpf.handler.long_running'
+        calls:
+            - ['setContainer', ['@service_container']]

@@ -3,9 +3,9 @@
 namespace Demo\CustomNode;
 
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
-use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
-use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
+use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeInterface;
+use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchInterface;
+use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\SuccessMessage;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
 use function React\Promise\resolve;

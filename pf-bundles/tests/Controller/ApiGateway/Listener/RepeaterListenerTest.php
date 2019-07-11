@@ -3,12 +3,12 @@
 namespace Tests\Controller\ApiGateway\Listener;
 
 use Exception;
+use Hanaboso\CommonsBundle\Document\Node;
+use Hanaboso\CommonsBundle\Exception\OnRepeatException;
+use Hanaboso\CommonsBundle\Model\Dto\SystemConfigDto;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Utils\PipesHeaders;
-use Hanaboso\PipesFramework\ApiGateway\Exceptions\OnRepeatException;
 use Hanaboso\PipesFramework\ApiGateway\Listener\RepeaterListener;
-use Hanaboso\PipesFramework\Configurator\Document\Node;
-use Hanaboso\PipesFramework\Configurator\Model\Dto\SystemConfigDto;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;

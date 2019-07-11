@@ -3,17 +3,17 @@
 namespace Tests\Integration\Configurator\Model;
 
 use Exception;
+use Hanaboso\CommonsBundle\Document\Embed\EmbedNode;
+use Hanaboso\CommonsBundle\Document\Node;
+use Hanaboso\CommonsBundle\Document\Topology;
 use Hanaboso\CommonsBundle\Enum\HandlerEnum;
 use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
+use Hanaboso\CommonsBundle\Model\Dto\SystemConfigDto;
+use Hanaboso\CommonsBundle\Repository\TopologyRepository;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
-use Hanaboso\PipesFramework\Configurator\Document\Embed\EmbedNode;
-use Hanaboso\PipesFramework\Configurator\Document\Node;
-use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
-use Hanaboso\PipesFramework\Configurator\Model\Dto\SystemConfigDto;
-use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\PrivateTrait;
 

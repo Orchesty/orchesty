@@ -1,0 +1,41 @@
+version: '2.2'
+services:
+  php-dev:
+    image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
+    user: ${DEV_UID}:${DEV_GID}
+    ports:
+      - ${DEV_IP}:8000:80
+    volumes:
+      - ./:/var/www
+      - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
+      - ./topology:${GENERATOR_PATH}
+      - ${HOME}/.composer:/srv/.composer
+    environment:
+      - DEV_UID=${DEV_UID}
+      - DEV_GID=${DEV_GID}
+      - COMPOSER_HOME=/home/dev/.composer
+      - PHP_IDE_CONFIG=${PHP_IDE_CONFIG}
+      - GENERATOR_PATH=${GENERATOR_PATH}
+      - PROJECT_SOURCE_PATH=${PROJECT_SOURCE_PATH}
+      - DEPLOYMENT_PREFIX=${DEPLOYMENT_PREFIX}
+
+  mongo:
+      image: mongo:3.6
+      ports:
+        - ${DEV_IP}:27017:27017
+      volumes:
+        - mongo:/data/db
+
+  mariadb:
+      image: mariadb:10.3
+      command: "mysqld --innodb_flush_method=nosync"
+      environment:
+       MYSQL_ROOT_PASSWORD: root
+      ports:
+       - ${DEV_IP}:3306:3306
+      volumes:
+       - mariadb:/var/lib/mysql
+
+volumes:
+  mongo: {}
+  mariadb: {}

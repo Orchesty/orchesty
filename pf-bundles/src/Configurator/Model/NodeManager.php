@@ -4,10 +4,10 @@ namespace Hanaboso\PipesFramework\Configurator\Model;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\CommonsBundle\DatabaseManager\DatabaseManagerLocator;
+use Hanaboso\CommonsBundle\Document\Node;
 use Hanaboso\CommonsBundle\Enum\HandlerEnum;
 use Hanaboso\CommonsBundle\Exception\EnumException;
-use Hanaboso\PipesFramework\Configurator\Document\Node;
-use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
+use Hanaboso\CommonsBundle\Exception\NodeException;
 
 /**
  * Class NodeManager

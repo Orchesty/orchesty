@@ -1,0 +1,11 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Controller\ConnectorController:
+        class: Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Controller\ConnectorController
+        arguments:
+            - '@hbpf.handler.connector'
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]
+            - ['setContainer', ['@service_container']]

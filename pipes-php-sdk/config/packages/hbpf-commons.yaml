@@ -1,0 +1,90 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    ##########################
+    #    Session Handlers    #
+    ##########################
+
+    hbpf.commons.session_handler:
+        class: Hanaboso\CommonsBundle\Session\Handler\CachedSessionHandler
+        arguments:
+            - '@hbpf.commons.redis_session_handler'
+
+    hbpf.commons.redis_session_handler:
+        class: Hanaboso\CommonsBundle\Session\Handler\RedisSessionHandler
+        arguments:
+            - '@snc_redis.sessions'
+
+    ##########################
+    #        Metrics         #
+    ##########################
+
+    hbpf.system_metrics_listener:
+        class: Hanaboso\CommonsBundle\Listener\SystemMetricsListener
+        arguments:
+            - '@hbpf.influxdb_sender_monolith'
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]
+        tags:
+            - { name: kernel.event_subscriber, event: kernel.terminate }
+            - { name: kernel.event_subscriber, event: kernel.controller }
+
+    udp_metrics_sender:
+        class: Hanaboso\CommonsBundle\Metrics\UDPSender
+        arguments:
+            - '%kapacitor.host%'
+            - '%kapacitor.port%'
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]
+
+    hbpf.influxdb_sender_connector:
+            class: Hanaboso\CommonsBundle\Metrics\InfluxDbSender
+            arguments:
+                - '@udp_metrics_sender'
+                - '%influx.connector_table%'
+
+    hbpf.influxdb_sender_monolith:
+        class: Hanaboso\CommonsBundle\Metrics\InfluxDbSender
+        arguments:
+            - '@udp_metrics_sender'
+            - '%influx.monolith_table%'
+
+    ##########################
+    #      File Storage      #
+    ##########################
+
+    hbpf.file_storage.driver.mongo:
+        class: Hanaboso\CommonsBundle\FileStorage\Driver\Impl\Mongo\MongoFileDriver
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.path_generator.hash'
+
+    hbpf.path_generator.hash:
+        class: Hanaboso\CommonsBundle\FileStorage\PathGenerator\HashPathGenerator
+        arguments:
+
+    hbpf.file_storage.locator:
+        class: Hanaboso\CommonsBundle\FileStorage\Driver\FileStorageDriverLocator
+        arguments:
+            - '@hbpf.file_storage.driver.mongo'
+            - '@hbpf.file_storage.driver.mongo'
+            - '@hbpf.file_storage.driver.mongo'
+
+    hbpf.file_storage:
+        class: Hanaboso\CommonsBundle\FileStorage\FileStorage
+        arguments:
+            - '@hbpf.file_storage.locator'
+            - '@hbpf.database_manager_locator'
+            - 'Hanaboso\CommonsBundle\FileStorage\Document\File'
+
+    ##########################
+    #    Database Locator    #
+    ##########################
+
+    hbpf.database_manager_locator:
+        class: Hanaboso\CommonsBundle\DatabaseManager\DatabaseManagerLocator
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@doctrine.orm.default_entity_manager'
+            - '%database_type%'

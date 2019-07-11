@@ -3,8 +3,8 @@
 namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller;
 
 use FOS\RestBundle\Controller\AbstractFOSRestController;
+use Hanaboso\CommonsBundle\Exception\CategoryException;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
-use Hanaboso\PipesFramework\Category\Exception\CategoryException;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

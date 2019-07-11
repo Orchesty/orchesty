@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bbd0682e41a9f5fd88f98eb99ca7cb54",
+    "content-hash": "dd9b83a8b7ffaa9295a6d34304210551",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -74,16 +74,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.104.1",
+            "version": "3.104.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "295706ab2134bf842837fa0b0162ff3aef8b0aa4"
+                "reference": "9feac27d183fa08f210f38c8cb6d449cf2411d29"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/295706ab2134bf842837fa0b0162ff3aef8b0aa4",
-                "reference": "295706ab2134bf842837fa0b0162ff3aef8b0aa4",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/9feac27d183fa08f210f38c8cb6d449cf2411d29",
+                "reference": "9feac27d183fa08f210f38c8cb6d449cf2411d29",
                 "shasum": ""
             },
             "require": {
@@ -153,7 +153,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2019-07-03T18:08:50+00:00"
+            "time": "2019-07-02T18:21:12+00:00"
         },
         {
             "name": "aws/aws-sdk-php-symfony",
@@ -2395,11 +2395,11 @@
         },
         {
             "name": "hanaboso/pipes-framework",
-            "version": "1.0.46",
+            "version": "1.0.45",
             "dist": {
                 "type": "path",
                 "url": "../../../pf-bundles",
-                "reference": "7d302d7ba297a0bf2ffe2cda8e952d7c3a49ffb5"
+                "reference": "a2f21a6247af7e3c66d5feceb10dd9ad3eefbf06"
             },
             "require": {
                 "ext-json": "*",
@@ -2410,7 +2410,7 @@
                 "hanaboso/email-service-bundle": "^1.0",
                 "hanaboso/mongo-data-grid": "^1.1",
                 "hanaboso/rabbit-mq-bundle": "^1.1",
-                "influxdb/influxdb-php": "^1.15",
+                "influxdb/influxdb-php": "^1.14",
                 "league/oauth2-client": "^2.4",
                 "mtdowling/cron-expression": "^1.2",
                 "nette/utils": "^2.5",
@@ -2418,10 +2418,10 @@
                 "php-http/client-common": "^1.9",
                 "php-http/message": "^1.7",
                 "php-http/socket-client": "^1.4",
-                "phpoffice/phpspreadsheet": "^1.8",
+                "phpoffice/phpspreadsheet": "^1.7",
                 "snc/redis-bundle": "^2.1",
-                "symfony/monolog-bundle": "^3.4",
-                "symfony/symfony": "^4.3"
+                "symfony/monolog-bundle": "^3.3",
+                "symfony/symfony": "^4.2"
             },
             "require-dev": {
                 "hanaboso/php-check-utils": "^1.0"
@@ -2441,6 +2441,49 @@
                 "proprietary"
             ],
             "description": "PipesFramework for Symfony",
+            "transport-options": {
+                "symlink": true
+            }
+        },
+        {
+            "name": "hanaboso/pipes-php-sdk",
+            "version": "1.0.1",
+            "dist": {
+                "type": "path",
+                "url": "../../../pipes-php-sdk",
+                "reference": "67be169df606eaf36e2212fd17fa3ea672cf9859"
+            },
+            "require": {
+                "ext-json": "*",
+                "ext-mongodb": "*",
+                "friendsofsymfony/rest-bundle": "^2.5",
+                "hanaboso/commons-bundle": "^1.1",
+                "hanaboso/mongo-data-grid": "^1.1",
+                "hanaboso/rabbit-mq-bundle": "^1.1",
+                "php": "^7.3",
+                "phpoffice/phpspreadsheet": "^1.7",
+                "snc/redis-bundle": "^2.1",
+                "symfony/monolog-bundle": "^3.3",
+                "symfony/symfony": "^4.2"
+            },
+            "require-dev": {
+                "hanaboso/php-check-utils": "^1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Hanaboso\\PipesPhpSdk\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "proprietary"
+            ],
+            "description": "PHP sdk for PipesFramework",
             "transport-options": {
                 "symlink": true
             }
@@ -5065,26 +5108,26 @@
         },
         {
             "name": "react/promise-stream",
-            "version": "v1.2.0",
+            "version": "v1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/promise-stream.git",
-                "reference": "6384d8b76cf7dcc44b0bf3343fb2b2928412d1fe"
+                "reference": "00e269d611e9c9a29356aef64c07f7e513e73dc9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/promise-stream/zipball/6384d8b76cf7dcc44b0bf3343fb2b2928412d1fe",
-                "reference": "6384d8b76cf7dcc44b0bf3343fb2b2928412d1fe",
+                "url": "https://api.github.com/repos/reactphp/promise-stream/zipball/00e269d611e9c9a29356aef64c07f7e513e73dc9",
+                "reference": "00e269d611e9c9a29356aef64c07f7e513e73dc9",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3",
                 "react/promise": "^2.1 || ^1.2",
-                "react/stream": "^1.0 || ^0.7 || ^0.6 || ^0.5 || ^0.4.6"
+                "react/stream": "^1.0 || ^0.7 || ^0.6 || ^0.5 || ^0.4 || ^0.3"
             },
             "require-dev": {
                 "clue/block-react": "^1.0",
-                "phpunit/phpunit": "^7.0 || ^6.4 || ^5.7 || ^4.8.35",
+                "phpunit/phpunit": "^6.4 || ^5.7 || ^4.8.35",
                 "react/event-loop": "^1.0 || ^0.5 || ^0.4 || ^0.3",
                 "react/promise-timer": "^1.0"
             },
@@ -5117,7 +5160,7 @@
                 "stream",
                 "unwrap"
             ],
-            "time": "2019-07-03T12:29:10+00:00"
+            "time": "2017-12-22T12:02:05+00:00"
         },
         {
             "name": "react/promise-timer",

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1d15e7731806172ba80fc5ec93741365",
+    "content-hash": "9aa62dde5a5c1c1c1d5517a83c30592b",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -74,16 +74,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.104.1",
+            "version": "3.104.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "295706ab2134bf842837fa0b0162ff3aef8b0aa4"
+                "reference": "9feac27d183fa08f210f38c8cb6d449cf2411d29"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/295706ab2134bf842837fa0b0162ff3aef8b0aa4",
-                "reference": "295706ab2134bf842837fa0b0162ff3aef8b0aa4",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/9feac27d183fa08f210f38c8cb6d449cf2411d29",
+                "reference": "9feac27d183fa08f210f38c8cb6d449cf2411d29",
                 "shasum": ""
             },
             "require": {
@@ -153,7 +153,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2019-07-03T18:08:50+00:00"
+            "time": "2019-07-02T18:21:12+00:00"
         },
         {
             "name": "aws/aws-sdk-php-symfony",
@@ -2394,6 +2394,49 @@
             "time": "2019-03-28T12:17:06+00:00"
         },
         {
+            "name": "hanaboso/pipes-php-sdk",
+            "version": "1.0.1",
+            "dist": {
+                "type": "path",
+                "url": "../pipes-php-sdk",
+                "reference": "67be169df606eaf36e2212fd17fa3ea672cf9859"
+            },
+            "require": {
+                "ext-json": "*",
+                "ext-mongodb": "*",
+                "friendsofsymfony/rest-bundle": "^2.5",
+                "hanaboso/commons-bundle": "^1.1",
+                "hanaboso/mongo-data-grid": "^1.1",
+                "hanaboso/rabbit-mq-bundle": "^1.1",
+                "php": "^7.3",
+                "phpoffice/phpspreadsheet": "^1.7",
+                "snc/redis-bundle": "^2.1",
+                "symfony/monolog-bundle": "^3.3",
+                "symfony/symfony": "^4.2"
+            },
+            "require-dev": {
+                "hanaboso/php-check-utils": "^1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Hanaboso\\PipesPhpSdk\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "proprietary"
+            ],
+            "description": "PHP sdk for PipesFramework",
+            "transport-options": {
+                "symlink": true
+            }
+        },
+        {
             "name": "hanaboso/rabbit-mq-bundle",
             "version": "1.1.3",
             "source": {
@@ -3362,7 +3405,7 @@
                     "homepage": "https://nette.org/contributors"
                 }
             ],
-            "description": "🛠 Nette Utils: lightweight utilities for string & array manipulation, image handling, safe JSON encoding/decoding, validation, slug or strong password generating etc.",
+            "description": "? Nette Utils: lightweight utilities for string & array manipulation, image handling, safe JSON encoding/decoding, validation, slug or strong password generating etc.",
             "homepage": "https://nette.org",
             "keywords": [
                 "array",
@@ -5341,7 +5384,7 @@
                 },
                 {
                     "name": "Gert de Pagter",
-                    "email": "backendtea@gmail.com"
+                    "email": "BackEndTea@gmail.com"
                 }
             ],
             "description": "Symfony polyfill for ctype functions",
@@ -6566,7 +6609,7 @@
                     "homepage": "https://nette.org/contributors"
                 }
             ],
-            "description": "🅱 Nette Bootstrap: the simple way to configure and bootstrap your Nette application.",
+            "description": "? Nette Bootstrap: the simple way to configure and bootstrap your Nette application.",
             "homepage": "https://nette.org",
             "keywords": [
                 "bootstrapping",
@@ -6631,7 +6674,7 @@
                     "homepage": "https://nette.org/contributors"
                 }
             ],
-            "description": "💎 Nette Dependency Injection Container: Flexible, compiled and full-featured DIC with perfectly usable autowiring and support for all new PHP 7.1 features.",
+            "description": "? Nette Dependency Injection Container: Flexible, compiled and full-featured DIC with perfectly usable autowiring and support for all new PHP 7.1 features.",
             "homepage": "https://nette.org",
             "keywords": [
                 "compiled",
@@ -6696,7 +6739,7 @@
                     "homepage": "https://nette.org/contributors"
                 }
             ],
-            "description": "🔍 Nette Finder: find files and directories with an intuitive API.",
+            "description": "? Nette Finder: find files and directories with an intuitive API.",
             "homepage": "https://nette.org",
             "keywords": [
                 "filesystem",
@@ -6880,7 +6923,7 @@
                     "homepage": "https://nette.org/contributors"
                 }
             ],
-            "description": "🍀 Nette RobotLoader: high performance and comfortable autoloader that will search and autoload classes within your application.",
+            "description": "? Nette RobotLoader: high performance and comfortable autoloader that will search and autoload classes within your application.",
             "homepage": "https://nette.org",
             "keywords": [
                 "autoload",

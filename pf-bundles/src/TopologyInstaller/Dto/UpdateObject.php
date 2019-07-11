@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesFramework\TopologyInstaller\Dto;
 
-use Hanaboso\PipesFramework\Configurator\Document\Topology;
+use Hanaboso\CommonsBundle\Document\Topology;
 
 /**
  * Class UpdateObject

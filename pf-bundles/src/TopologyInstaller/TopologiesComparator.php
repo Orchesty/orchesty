@@ -4,9 +4,9 @@ namespace Hanaboso\PipesFramework\TopologyInstaller;
 
 use Doctrine\ODM\MongoDB\MongoDBException;
 use FOS\RestBundle\Decoder\XmlDecoder;
-use Hanaboso\PipesFramework\Configurator\Document\Topology;
+use Hanaboso\CommonsBundle\Document\Topology;
+use Hanaboso\CommonsBundle\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
-use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\TopologyFile;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\UpdateObject;

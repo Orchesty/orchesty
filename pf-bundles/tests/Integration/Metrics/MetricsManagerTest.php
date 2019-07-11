@@ -3,11 +3,11 @@
 namespace Tests\Integration\Metrics;
 
 use Exception;
-use Hanaboso\PipesFramework\Configurator\Document\Node;
-use Hanaboso\PipesFramework\Configurator\Document\Topology;
+use Hanaboso\CommonsBundle\Document\Node;
+use Hanaboso\CommonsBundle\Document\Topology;
+use Hanaboso\CommonsBundle\Utils\GeneratorUtils;
 use Hanaboso\PipesFramework\Metrics\Client\MetricsClient;
 use Hanaboso\PipesFramework\Metrics\MetricsManager;
-use Hanaboso\PipesFramework\Utils\GeneratorUtils;
 use InfluxDB\Database;
 use InfluxDB\Database\RetentionPolicy;
 use InfluxDB\Point;

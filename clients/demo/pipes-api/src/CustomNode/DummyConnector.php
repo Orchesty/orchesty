@@ -3,7 +3,7 @@
 namespace Demo\CustomNode;
 
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
+use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeInterface;
 
 /**
  * Class DummyConnector

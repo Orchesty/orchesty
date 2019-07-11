@@ -1,0 +1,47 @@
+{
+  "name": "hanaboso/pipes-php-sdk",
+  "license": "proprietary",
+  "description": "PHP sdk for PipesFramework",
+  "version": "1.0.1",
+  "autoload": {
+    "psr-4": {
+      "Hanaboso\\PipesPhpSdk\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
+  "require": {
+    "php": "^7.3",
+    "ext-json": "*",
+    "ext-mongodb": "*",
+    "hanaboso/commons-bundle": "^1.1",
+    "friendsofsymfony/rest-bundle": "^2.5",
+    "hanaboso/mongo-data-grid": "^1.1",
+    "hanaboso/rabbit-mq-bundle": "^1.1",
+    "league/oauth2-client": "^2.4",
+    "phpoffice/phpspreadsheet": "^1.7",
+    "symfony/monolog-bundle": "^3.3",
+    "symfony/symfony": "^4.2",
+    "snc/redis-bundle": "^2.1"
+  },
+  "require-dev": {
+    "hanaboso/php-check-utils": "^1.0"
+  },
+  "repositories": [
+    {
+      "type": "git",
+      "url": "git@gitlab.hanaboso.net:hanaboso/commons-bundle.git"
+    },
+    {
+      "type": "git",
+      "url": "git@gitlab.hanaboso.net:hanaboso/rabbit-mq-bundle.git"
+    },
+    {
+      "type": "git",
+      "url": "git@gitlab.hanaboso.net:hanaboso/MongoDataGrid.git"
+    }
+  ]
+}
