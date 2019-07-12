@@ -16,6 +16,7 @@ use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use Tests\KernelTestCaseAbstract;
+use Tests\PrivateTrait;
 
 /**
  * Class CronManagerTest
@@ -25,9 +26,11 @@ use Tests\KernelTestCaseAbstract;
 final class CronManagerTest extends KernelTestCaseAbstract
 {
 
-    private const COM1 = 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d \'{"params":"abc"}\' http://example.com/topologies/topology-1/nodes/node-1/run-by-name';
-    private const COM2 = 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d \'{"params":"abc"}\' http://example.com/topologies/topology-1/nodes/node-2/run-by-name';
-    private const COM3 = 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d \'{"params":"abc"}\' http://example.com/topologies/topology-1/nodes/node-3/run-by-name';
+    use PrivateTrait;
+
+    private const COM1 = 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d \'{"params":"abc"}\' http://example.com/topologies/test/nodes/id-1/run';
+    private const COM2 = 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d \'{"params":"abc"}\' http://example.com/topologies/test/nodes/id-2/run';
+    private const COM3 = 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d \'{"params":"abc"}\' http://example.com/topologies/test/nodes/id-3/run';
 
     /**
      * @throws Exception
@@ -75,7 +78,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
     {
         $this->getManager(function (RequestDto $request): ResponseDto {
             self::assertEquals(CurlManager::METHOD_POST, $request->getMethod());
-            self::assertEquals('http://example.com/cron-api/update/topology-1/node-1', $request->getUri(TRUE));
+            self::assertEquals('http://example.com/cron-api/update/test/id-1', $request->getUri(TRUE));
             self::assertEquals([
                 'time'    => '1 1 1 1 1',
                 'command' => self::COM1,
@@ -92,7 +95,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
     {
         $this->getManager(function (RequestDto $request): ResponseDto {
             self::assertEquals(CurlManager::METHOD_POST, $request->getMethod());
-            self::assertEquals('http://example.com/cron-api/patch/topology-1/node-1', $request->getUri(TRUE));
+            self::assertEquals('http://example.com/cron-api/patch/test/id-1', $request->getUri(TRUE));
             self::assertEquals([
                 'time'    => '1 1 1 1 1',
                 'command' => self::COM1,
@@ -109,7 +112,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
     {
         $this->getManager(function (RequestDto $request): ResponseDto {
             self::assertEquals(CurlManager::METHOD_POST, $request->getMethod());
-            self::assertEquals('http://example.com/cron-api/delete/topology-1/node-1', $request->getUri(TRUE));
+            self::assertEquals('http://example.com/cron-api/delete/test/id-1', $request->getUri(TRUE));
             self::assertEmpty($request->getBody());
 
             return new ResponseDto(200, 'OK', '', []);
@@ -254,12 +257,15 @@ final class CronManagerTest extends KernelTestCaseAbstract
      */
     private function getManager(callable $callback): CronManager
     {
+        $topology = (new Topology())
+            ->setName('topology-1')
+            ->setVersion(1);
+
+        $this->setProperty($topology, 'id', 'test');
+
         /** @var TopologyRepository|MockObject $topologyRepository */
         $topologyRepository = self::createPartialMock(TopologyRepository::class, ['findOneBy']);
-        $topologyRepository->method('findOneBy')->willReturn((new Topology())
-            ->setName('topology-1')
-            ->setVersion(1)
-        );
+        $topologyRepository->method('findOneBy')->willReturn($topology);
 
         /** @var DocumentManager|MockObject $documentManager */
         $documentManager = self::createPartialMock(DocumentManager::class, ['getRepository']);
@@ -280,15 +286,18 @@ final class CronManagerTest extends KernelTestCaseAbstract
      */
     private function getNodes(int $count = 1): array
     {
+
         $nodes = [];
 
         for ($i = 1; $i <= $count; $i++) {
-            $nodes[] = (new Node())
+            $node = (new Node())
                 ->setName(sprintf('node-%s', $i))
                 ->setTopology(sprintf('topology-%s', $i))
                 ->setType(TypeEnum::CRON)
                 ->setCronParams('"params":"abc"')
                 ->setCron(sprintf('%s %s %s %s %s', $i, $i, $i, $i, $i));
+            $this->setProperty($node, 'id', sprintf('id-%s', $i));
+            $nodes[] = $node;
         }
 
         return $nodes;
