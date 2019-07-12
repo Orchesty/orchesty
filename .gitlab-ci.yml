@@ -168,6 +168,26 @@ notification-sender-test:
     - export COMPOSE_FILE=docker-compose.ci.yml                            # CLEANUP notification-sender
     - make ${COMPOSE_FILE} test
 
+app-store-test:
+  stage: stage2
+  script:
+    - DIR=app-store
+    - skip_unmodified $DIR
+    - cd $REPO_ROOT/$DIR
+    - export COMPOSE_PROJECT_NAME="p${CI_PIPELINE_ID}-app-store" # CLEANUP app-store
+    - export COMPOSE_FILE=docker-compose.ci.yml                  # CLEANUP app-store
+    - make ${COMPOSE_FILE} test
+
+pipes-php-sdk-test:
+  stage: stage2
+  script:
+    - DIR=pipes-php-sdk
+    - skip_unmodified $DIR
+    - cd $REPO_ROOT/$DIR
+    - export COMPOSE_PROJECT_NAME="p${CI_PIPELINE_ID}-pipes-php-sdk" # CLEANUP pipes-php-sdk
+    - export COMPOSE_FILE=docker-compose.ci.yml                      # CLEANUP pipes-php-sdk
+    - make ${COMPOSE_FILE} test
+
 demo-pipes-api-test:
   stage: stage2
   script:
@@ -298,6 +318,36 @@ git-notification-sender:
     - git remote add dest git@gitlab.hanaboso.net:pipes/notification-sender.git
     - git push --mirror dest
 
+git-app-store:
+  stage: stage3
+  when: always
+  only:
+    - dev
+    - master
+  script:
+    - skip_unmodified app-store
+    - rm -rf _tmp_pipes
+    - git clone --bare git@gitlab.hanaboso.net:pipes/pipes.git _tmp_pipes
+    - cd _tmp_pipes
+    - git filter-branch -f --prune-empty --subdirectory-filter app-store -- -q --all
+    - git remote add dest git@gitlab.hanaboso.net:pipes/app-store.git
+    - git push --mirror dest
+
+git-pipes-php-sdk:
+  stage: stage3
+  when: always
+  only:
+    - dev
+    - master
+  script:
+    - skip_unmodified pipes-php-sdk
+    - rm -rf _tmp_pipes
+    - git clone --bare git@gitlab.hanaboso.net:pipes/pipes.git _tmp_pipes
+    - cd _tmp_pipes
+    - git filter-branch -f --prune-empty --subdirectory-filter pipes-php-sdk -- -q --all
+    - git remote add dest git@gitlab.hanaboso.net:pipes/pipes-php-sdk.git
+    - git push --mirror dest
+
 cleanup:
   stage: cleanup
   when: always
@@ -316,6 +366,18 @@ cleanup:
     - export COMPOSE_PROJECT_NAME=p${CI_PIPELINE_ID}-notification-sender
     - export COMPOSE_FILE=docker-compose.ci.yml
     - make ${COMPOSE_FILE} docker-down-clean || echo "notification-sender cleanup phase failed"
+
+    - ": app-store"
+    - cd $REPO_ROOT/app-store
+    - export COMPOSE_PROJECT_NAME=p${CI_PIPELINE_ID}-app-store
+    - export COMPOSE_FILE=docker-compose.ci.yml
+    - make ${COMPOSE_FILE} docker-down-clean || echo "app-store cleanup phase failed"
+
+    - ": pipes-php-sdk"
+    - cd $REPO_ROOT/pipes-php-sdk
+    - export COMPOSE_PROJECT_NAME=p${CI_PIPELINE_ID}-pipes-php-sdk
+    - export COMPOSE_FILE=docker-compose.ci.yml
+    - make ${COMPOSE_FILE} docker-down-clean || echo "pipes-php-sdk cleanup phase failed"
 
     - ": demo-pipes-api-test"
     - cd $REPO_ROOT/clients/demo/pipes-api
