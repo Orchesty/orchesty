@@ -275,7 +275,7 @@ class TopologyManager
 
         foreach ($data as $item) {
             /** @var Topology[] $topologies */
-            $topologies = $this->topologyRepository->findBy(['name' => $item['topology']]);
+            $topologies = $this->topologyRepository->findBy(['name' => $item['topology'],'deleted' => FALSE]);
 
             foreach ($topologies as $topology) {
                 $result[] = [
@@ -341,6 +341,9 @@ class TopologyManager
         /** @var Node $node */
         foreach ($this->dm->getRepository(Node::class)->findBy(['topology' => $topology->getId()]) as $node) {
             $node->setDeleted(TRUE);
+            if($node->getType() === TypeEnum::CRON){
+                $this->cronManager->delete($node);
+            }
         }
 
         $this->dm->flush();
