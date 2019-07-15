@@ -1,0 +1,10 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    Hanaboso\PipesPhpSdk\HbPFMapperBundle\Controller\MapperController:
+        class: Hanaboso\PipesPhpSdk\HbPFMapperBundle\Controller\MapperController
+        arguments:
+            - '@hbpf.mapper.handler.mapper'
+        calls:
+            - ['setContainer', ['@service_container']]

@@ -6,20 +6,20 @@ use Cron\CronExpression;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
-use Hanaboso\CommonsBundle\DatabaseManager\DatabaseManagerLocator;
+use Hanaboso\CommonsBundle\Database\Document\Embed\EmbedNode;
+use Hanaboso\CommonsBundle\Database\Document\Node;
+use Hanaboso\CommonsBundle\Database\Document\Topology;
+use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator;
+use Hanaboso\CommonsBundle\Database\Repository\TopologyRepository;
 use Hanaboso\CommonsBundle\Enum\HandlerEnum;
 use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\CommonsBundle\Exception\CronException;
 use Hanaboso\CommonsBundle\Exception\EnumException;
+use Hanaboso\CommonsBundle\Exception\NodeException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
-use Hanaboso\PipesFramework\Configurator\Document\Embed\EmbedNode;
-use Hanaboso\PipesFramework\Configurator\Document\Node;
-use Hanaboso\PipesFramework\Configurator\Document\Topology;
-use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
-use Hanaboso\PipesFramework\Configurator\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\Utils\Dto\NodeSchemaDto;
 use Hanaboso\PipesFramework\Utils\Dto\Schema;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
@@ -275,7 +275,7 @@ class TopologyManager
 
         foreach ($data as $item) {
             /** @var Topology[] $topologies */
-            $topologies = $this->topologyRepository->findBy(['name' => $item['topology'],'deleted' => FALSE]);
+            $topologies = $this->topologyRepository->findBy(['name' => $item['topology'], 'deleted' => FALSE]);
 
             foreach ($topologies as $topology) {
                 $result[] = [
@@ -341,7 +341,7 @@ class TopologyManager
         /** @var Node $node */
         foreach ($this->dm->getRepository(Node::class)->findBy(['topology' => $topology->getId()]) as $node) {
             $node->setDeleted(TRUE);
-            if($node->getType() === TypeEnum::CRON){
+            if ($node->getType() === TypeEnum::CRON) {
                 $this->cronManager->delete($node);
             }
         }

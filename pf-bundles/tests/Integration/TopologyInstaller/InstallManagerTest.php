@@ -4,14 +4,14 @@ namespace Tests\Integration\TopologyInstaller;
 
 use Exception;
 use FOS\RestBundle\Decoder\XmlDecoder;
+use Hanaboso\CommonsBundle\Database\Document\Topology;
 use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
-use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge;
-use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use Hanaboso\PipesFramework\TopologyInstaller\CategoryParser;
 use Hanaboso\PipesFramework\TopologyInstaller\InstallManager;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
+use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Client;
 use Tests\DatabaseTestCaseAbstract;

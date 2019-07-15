@@ -1,0 +1,13 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf.parser.table.handler:
+        class: Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler
+        arguments:
+            - '@hbpf.parser.table.service'
+            - '@hbpf.file_storage'
+
+    hbpf.parser.table.service:
+        class: Hanaboso\PipesPhpSdk\Parser\TableParser
+        arguments:

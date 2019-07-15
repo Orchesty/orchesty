@@ -1,0 +1,10 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Controller\TableParserController:
+        class: Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Controller\TableParserController
+        arguments:
+            - '@hbpf.parser.table.handler'
+        calls:
+            - ['setContainer', ['@service_container']]

@@ -10,8 +10,8 @@ use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
-use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
-use Hanaboso\PipesFramework\CustomNode\CustomNodeInterface;
+use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
+use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeInterface;
 
 /**
  * Class SendDutyEmail
@@ -51,10 +51,10 @@ class SendDutyEmail implements CustomNodeInterface
      * @param ProcessDto $dto
      *
      * @return ProcessDto
-     * @throws ConnectorException
      * @throws CurlException
      * @throws DateTimeException
      * @throws MailerException
+     * @throws ConnectorException
      */
     public function process(ProcessDto $dto): ProcessDto
     {

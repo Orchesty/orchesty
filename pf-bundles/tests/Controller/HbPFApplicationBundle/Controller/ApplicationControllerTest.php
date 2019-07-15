@@ -4,9 +4,9 @@ namespace Tests\Controller\HbPFApplicationBundle\Controller;
 
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\CommonsBundle\Utils\Base64;
-use Hanaboso\PipesFramework\Application\Base\Basic\BasicApplicationInterface;
-use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 use Hanaboso\PipesFramework\HbPFApplicationBundle\Handler\ApplicationHandler;
+use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
+use Hanaboso\PipesPhpSdk\Authorization\Document\ApplicationInstall;
 use ReflectionException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;

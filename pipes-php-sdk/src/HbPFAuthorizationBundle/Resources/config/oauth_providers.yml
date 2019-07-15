@@ -1,0 +1,19 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf.providers.oauth1_provider:
+        class: Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.redirect'
+        calls:
+            - ['setLogger', ['@monolog.logger.authorization']]
+
+    hbpf.providers.oauth2_provider:
+        class: Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider
+        arguments:
+            - '@hbpf.redirect'
+            - '%backend_host%'
+        calls:
+            - ['setLogger', ['@monolog.logger.authorization']]

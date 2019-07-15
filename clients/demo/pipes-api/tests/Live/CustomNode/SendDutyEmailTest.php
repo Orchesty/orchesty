@@ -2,12 +2,8 @@
 
 namespace Tests\Live\CustomNode;
 
-use EmailServiceBundle\Exception\MailerException;
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
+use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
-use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
-use ReflectionException;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 /**
@@ -27,11 +23,7 @@ class SendDutyEmailTest extends KernelTestCase
     }
 
     /**
-     * @throws MailerException
-     * @throws DateTimeException
-     * @throws CurlException
-     * @throws ConnectorException
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function testSend(): void
     {

@@ -4,8 +4,8 @@ namespace Hanaboso\PipesFramework\Application\Model\Webhook;
 
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
-use Hanaboso\PipesFramework\Application\Base\ApplicationInterface;
-use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Authorization\Base\ApplicationInterface;
+use Hanaboso\PipesPhpSdk\Authorization\Document\ApplicationInstall;
 
 /**
  * Interface WebhookApplicationInterface

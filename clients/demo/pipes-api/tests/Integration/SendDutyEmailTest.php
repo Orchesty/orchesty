@@ -3,15 +3,11 @@
 namespace Tests\Integration;
 
 use Demo\CustomNode\SendDutyEmail;
-use EmailServiceBundle\Exception\MailerException;
 use EmailServiceBundle\Mailer\Mailer;
 use EmailServiceBundle\Transport\TransportInterface;
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
+use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
-use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
 use PHPUnit\Framework\MockObject\MockObject;
-use ReflectionException;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 /**
@@ -31,11 +27,7 @@ final class SendDutyEmailTest extends KernelTestCase
     }
 
     /**
-     * @throws MailerException
-     * @throws DateTimeException
-     * @throws CurlException
-     * @throws ConnectorException
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function testSend(): void
     {
@@ -49,7 +41,7 @@ final class SendDutyEmailTest extends KernelTestCase
             'since' => '2019-04-19', 'until' => '2019-04-29',
         ]));
 
-        $data      = $result->process($dto)->getData();
+        $data = $result->process($dto)->getData();
         self::assertIsString($data);
     }
 

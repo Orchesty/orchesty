@@ -7,10 +7,10 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Exception;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
-use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 use Hanaboso\PipesFramework\Application\Document\Webhook;
-use Hanaboso\PipesFramework\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesFramework\Application\Model\Webhook\WebhookManager;
+use Hanaboso\PipesPhpSdk\Authorization\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Authorization\Exception\ApplicationInstallException;
 use PHPUnit\Framework\MockObject\MockObject;
 use Tests\DatabaseTestCaseAbstract;
 

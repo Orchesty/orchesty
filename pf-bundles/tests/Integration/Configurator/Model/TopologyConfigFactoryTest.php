@@ -3,11 +3,11 @@
 namespace Tests\Integration\Configurator\Model;
 
 use Exception;
+use Hanaboso\CommonsBundle\Database\Document\Dto\SystemConfigDto;
+use Hanaboso\CommonsBundle\Database\Document\Node;
+use Hanaboso\CommonsBundle\Database\Repository\NodeRepository;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
-use Hanaboso\PipesFramework\Configurator\Document\Node;
-use Hanaboso\PipesFramework\Configurator\Model\Dto\SystemConfigDto;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory;
-use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
 use Tests\DatabaseTestCaseAbstract;
 
 /**

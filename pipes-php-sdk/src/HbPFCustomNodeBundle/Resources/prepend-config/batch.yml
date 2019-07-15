@@ -1,0 +1,34 @@
+rabbit_mq:
+    exchanges:
+        pipes.test_batch:
+            durable: true
+            type: direct
+
+    consumers:
+        batch:
+            class: Hanaboso\PipesPhpSdk\CustomNode\Model\Batch\BatchConsumer
+            queue: pipes.batch
+            async: true
+            callback: hbpf.custom_nodes.batch_callback
+            prefetch_count: 10
+
+    publishers:
+        test_batch:
+            class: Hanaboso\PipesPhpSdk\CustomNode\Model\Batch\BatchProducer
+            exchange: pipes.test_batch
+
+services:
+    hbpf.custom_nodes.batch_action_callback:
+        class: Hanaboso\PipesPhpSdk\CustomNode\Model\Batch\BatchActionCallback
+        arguments:
+            - '@hbpf.loader.custom_node'
+        calls:
+            - [setLogger, ['@monolog.logger.rabbit_mq']]
+
+    hbpf.custom_nodes.batch_callback:
+        class: Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback
+        arguments:
+            - '@hbpf.custom_nodes.batch_action_callback'
+            - '@hbpf.influxdb_sender_monolith'
+        calls:
+            - [setLogger, ['@monolog.logger.rabbit_mq']]

@@ -12,8 +12,8 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
-use Hanaboso\PipesFramework\Connector\ConnectorInterface;
-use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
+use Hanaboso\PipesPhpSdk\Connector\ConnectorInterface;
+use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use JK\Utils\CzechHolidays;
 
 /**

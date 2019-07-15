@@ -4,7 +4,7 @@ namespace Hanaboso\PipesFramework\Logs\Document;
 
 use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Hanaboso\CommonsBundle\Traits\Document\IdTrait;
+use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
 
 /**
  * Class Logs

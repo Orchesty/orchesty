@@ -5,7 +5,7 @@ namespace Demo\CustomNode;
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
-use Hanaboso\PipesFramework\CustomNode\Impl\RabbitCustomNode;
+use Hanaboso\PipesPhpSdk\CustomNode\Impl\RabbitCustomNode;
 
 /**
  * Class SplitFileBatch2

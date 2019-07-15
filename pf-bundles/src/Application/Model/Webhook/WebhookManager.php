@@ -7,8 +7,8 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
-use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 use Hanaboso\PipesFramework\Application\Document\Webhook;
+use Hanaboso\PipesPhpSdk\Authorization\Document\ApplicationInstall;
 
 /**
  * Class WebhookManager

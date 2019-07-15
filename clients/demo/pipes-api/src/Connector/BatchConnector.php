@@ -3,10 +3,10 @@
 namespace Demo\Connector;
 
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\PipesFramework\Connector\ConnectorInterface;
-use Hanaboso\PipesFramework\Connector\Exception\ConnectorException;
-use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\BatchInterface;
-use Hanaboso\PipesFramework\RabbitMq\Impl\Batch\SuccessMessage;
+use Hanaboso\PipesPhpSdk\Connector\ConnectorInterface;
+use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
+use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchInterface;
+use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\SuccessMessage;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
 use function React\Promise\resolve;

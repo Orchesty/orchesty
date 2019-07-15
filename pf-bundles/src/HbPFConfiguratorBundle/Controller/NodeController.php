@@ -3,8 +3,8 @@
 namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller;
 
 use FOS\RestBundle\Controller\AbstractFOSRestController;
+use Hanaboso\CommonsBundle\Exception\NodeException;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
-use Hanaboso\PipesFramework\Configurator\Exception\NodeException;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

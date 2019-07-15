@@ -8,17 +8,17 @@ use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
-use Hanaboso\PipesFramework\Application\Base\ApplicationAbstract;
-use Hanaboso\PipesFramework\Application\Base\ApplicationInterface;
-use Hanaboso\PipesFramework\Application\Base\Basic\BasicApplicationInterface;
-use Hanaboso\PipesFramework\Application\Base\OAuth1\OAuth1ApplicationInterface;
-use Hanaboso\PipesFramework\Application\Base\OAuth2\OAuth2ApplicationInterface;
-use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
-use Hanaboso\PipesFramework\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesFramework\Application\Model\Webhook\WebhookApplicationInterface;
 use Hanaboso\PipesFramework\Application\Model\Webhook\WebhookManager;
-use Hanaboso\PipesFramework\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\PipesFramework\HbPFApplicationBundle\Loader\ApplicationLoader;
+use Hanaboso\PipesPhpSdk\Authorization\Base\ApplicationAbstract;
+use Hanaboso\PipesPhpSdk\Authorization\Base\ApplicationInterface;
+use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
+use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1\OAuth1ApplicationInterface;
+use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
+use Hanaboso\PipesPhpSdk\Authorization\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Authorization\Exception\ApplicationInstallException;
+use Hanaboso\PipesPhpSdk\Authorization\Repository\ApplicationInstallRepository;
 
 /**
  * Class ApplicationManager

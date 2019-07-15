@@ -1,0 +1,11 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Controller\CustomNodeController:
+        class: Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Controller\CustomNodeController
+        arguments:
+            - '@hbpf.handler.custom_node'
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]
+            - ['setContainer', ['@service_container']]

@@ -23,7 +23,7 @@ services:
     hbpf.system_metrics_listener:
         class: Hanaboso\CommonsBundle\Listener\SystemMetricsListener
         arguments:
-            - '@hbpf.influxdb_sender_monolith'
+            - '@hbpf.metrics_monolith.loader'
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
         tags:
@@ -31,7 +31,7 @@ services:
             - { name: kernel.event_subscriber, event: kernel.controller }
 
     udp_metrics_sender:
-        class: Hanaboso\CommonsBundle\Metrics\UDPSender
+        class: Hanaboso\CommonsBundle\Metrics\Impl\UDPSender
         arguments:
             - '%kapacitor.host%'
             - '%kapacitor.port%'
@@ -39,17 +39,42 @@ services:
             - ['setLogger', ['@monolog.logger.commons']]
 
     hbpf.influxdb_sender_connector:
-            class: Hanaboso\CommonsBundle\Metrics\InfluxDbSender
-            arguments:
-                - '@udp_metrics_sender'
-                - '%influx.connector_table%'
+        class: Hanaboso\CommonsBundle\Metrics\Impl\InfluxDbSender
+        arguments:
+            - '@udp_metrics_sender'
+            - '%influx.connector_table%'
 
     hbpf.influxdb_sender_monolith:
-        class: Hanaboso\CommonsBundle\Metrics\InfluxDbSender
+        class: Hanaboso\CommonsBundle\Metrics\Impl\InfluxDbSender
         arguments:
             - '@udp_metrics_sender'
             - '%influx.monolith_table%'
 
+    hbpf.metrics.mongodb_connector:
+        class: Hanaboso\CommonsBundle\Metrics\Impl\MongoDbSender
+        arguments:
+            - '@doctrine_mongodb.odm.default_connection'
+            - '%mongodb.monolith_table%'
+
+    hbpf.metrics.mongodb_monolith:
+        class: Hanaboso\CommonsBundle\Metrics\Impl\MongoDbSender
+        arguments:
+            - '@doctrine_mongodb.odm.default_connection'
+            - '%mongodb.connector_table%'
+
+    hbpf.metrics_connector.loader:
+        class: Hanaboso\CommonsBundle\Metrics\MetricsSenderLoader
+        arguments:
+            - '%metrics_service%'
+            - '@hbpf.influxdb_sender_connector'
+            - '@hbpf.metrics.mongodb_connector'
+
+    hbpf.metrics_monolith.loader:
+        class: Hanaboso\CommonsBundle\Metrics\MetricsSenderLoader
+        arguments:
+            - '%metrics_service%'
+            - '@hbpf.influxdb_sender_monolith'
+            - '@hbpf.metrics.mongodb_monolith'
 
     ##########################
     #      File Storage      #
@@ -84,7 +109,7 @@ services:
     ##########################
 
     hbpf.database_manager_locator:
-        class: Hanaboso\CommonsBundle\DatabaseManager\DatabaseManagerLocator
+        class: Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@doctrine.orm.default_entity_manager'
@@ -97,9 +122,14 @@ services:
     hbpf.acl.provider:
         class: Hanaboso\AclBundle\Provider\Impl\AclProvider
         arguments:
-        - '@hbpf.database_manager_locator'
-        - '@hbpf.user.provider.resource'
-        - '%resource_enum%'
-        - '%acl_use_cache%'
-        - '%redis_host%'
-        - '%redis_port%'
+            - '@hbpf.database_manager_locator'
+            - '@hbpf.user.provider.resource'
+            - '%resource_enum%'
+            - '%acl_use_cache%'
+            - '%redis_host%'
+            - '%redis_port%'
+
+parameters:
+    #MongoDb sender
+    mongodb.monolith_table: connector
+    mongodb.connector_table: monolith

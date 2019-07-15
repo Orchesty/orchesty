@@ -3,9 +3,9 @@
 namespace Hanaboso\PipesFramework\Application\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Hanaboso\CommonsBundle\Database\Traits\Document\CreatedTrait;
+use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
-use Hanaboso\CommonsBundle\Traits\Document\CreatedTrait;
-use Hanaboso\CommonsBundle\Traits\Document\IdTrait;
 use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
 
 /**

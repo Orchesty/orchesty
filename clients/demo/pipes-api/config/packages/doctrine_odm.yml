@@ -24,20 +24,15 @@ doctrine_mongodb:
         default:
             mappings:
                 HbPFUserBundle: ~
-                ConfiguratorDocument:
+                CommonsDocument:
                     type: annotation
                     is_bundle: false
-                    dir: "%kernel.root_dir%/../vendor/hanaboso/pipes-framework/src/Configurator/Document"
-                    prefix: Hanaboso\PipesFramework\Configurator\Document
-                CategoryDocument:
-                    type: annotation
-                    is_bundle: false
-                    dir: "%kernel.root_dir%/../vendor/hanaboso/pipes-framework/src/Category/Document"
-                    prefix: Hanaboso\PipesFramework\Category\Document
+                    dir: "%kernel.root_dir%/../vendor/hanaboso/commons-bundle/src/Database/Document"
+                    prefix: Hanaboso\CommonsBundle\Database\Document
                 LongRunningNodeDocument:
                     type: annotation
                     is_bundle: false
-                    dir: "%kernel.root_dir%/../vendor/hanaboso/pipes-framework/src/LongRunningNode/Document"
+                    dir: "%kernel.root_dir%/../vendor/hanaboso/pipes-php-sdk/src/LongRunningNode/Document"
                     prefix: Hanaboso\PipesFramework\LongRunningNode\Document
                 LogsDocument:
                     type: annotation
