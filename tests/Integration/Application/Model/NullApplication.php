@@ -8,13 +8,13 @@ use Hanaboso\CommonsBundle\Enum\AuthorizationTypeEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
-use Hanaboso\PipesFramework\Application\Base\Basic\BasicApplicationAbstract;
-use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
-use Hanaboso\PipesFramework\Application\Exception\ApplicationInstallException;
-use Hanaboso\PipesFramework\Application\Model\Form\Field;
-use Hanaboso\PipesFramework\Application\Model\Form\Form;
 use Hanaboso\PipesFramework\Application\Model\Webhook\WebhookApplicationInterface;
 use Hanaboso\PipesFramework\Application\Model\Webhook\WebhookSubscription;
+use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
+use Hanaboso\PipesPhpSdk\Authorization\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Authorization\Exception\ApplicationInstallException;
+use Hanaboso\PipesPhpSdk\Authorization\Model\Form\Field;
+use Hanaboso\PipesPhpSdk\Authorization\Model\Form\Form;
 
 /**
  * Class NullApplication
@@ -67,7 +67,8 @@ class NullApplication extends BasicApplicationAbstract implements WebhookApplica
      */
     public function getRequestDto(
         ApplicationInstall $applicationInstall,
-        string $method, ?string $url,
+        string $method,
+        ?string $url,
         ?string $data
     ): RequestDto
     {
@@ -186,7 +187,7 @@ class NullApplication extends BasicApplicationAbstract implements WebhookApplica
             Field::TEXT,
             'settings1',
             'Client 11',
-        );
+            );
 
         $field2 = new Field(
             Field::TEXT,

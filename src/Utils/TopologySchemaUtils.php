@@ -2,9 +2,9 @@
 
 namespace Hanaboso\PipesFramework\Utils;
 
+use Hanaboso\CommonsBundle\Database\Document\Dto\SystemConfigDto;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
-use Hanaboso\PipesFramework\Configurator\Model\Dto\SystemConfigDto;
 use Hanaboso\PipesFramework\Utils\Dto\NodeSchemaDto;
 use Hanaboso\PipesFramework\Utils\Dto\Schema;
 use Nette\Utils\Arrays;

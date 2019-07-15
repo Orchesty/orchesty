@@ -3,16 +3,16 @@
 namespace Tests\Integration\Configurator\Model;
 
 use Exception;
+use Hanaboso\CommonsBundle\Database\Document\Dto\SystemConfigDto;
+use Hanaboso\CommonsBundle\Database\Document\Embed\EmbedNode;
+use Hanaboso\CommonsBundle\Database\Document\Node;
+use Hanaboso\CommonsBundle\Database\Document\Topology;
 use Hanaboso\CommonsBundle\Enum\HandlerEnum;
 use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
-use Hanaboso\PipesFramework\Configurator\Document\Embed\EmbedNode;
-use Hanaboso\PipesFramework\Configurator\Document\Node;
-use Hanaboso\PipesFramework\Configurator\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
-use Hanaboso\PipesFramework\Configurator\Model\Dto\SystemConfigDto;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\PrivateTrait;
 
@@ -573,8 +573,9 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
 
         $manager->deleteTopology($top);
         $this->dm->clear();
-        self::assertEmpty($this->dm->getRepository(Topology::class)->findBy(['id'      => $top->getId(),
-                                                                             'deleted' => FALSE,
+        self::assertEmpty($this->dm->getRepository(Topology::class)->findBy([
+            'id'      => $top->getId(),
+            'deleted' => FALSE,
         ]));
         self::assertEmpty($this->dm->getRepository(Node::class)->findBy(['id' => $node->getId(), 'deleted' => FALSE]));
         self::assertEmpty($this->dm->getRepository(Node::class)->findBy(['id' => $node2->getId(), 'deleted' => FALSE]));
@@ -647,8 +648,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
      */
     public function testSystemConfig(): void
     {
-        $dto = new SystemConfigDto('host1', 'bridge1', 2, TRUE, 2, 2);
-
+        $dto  = new SystemConfigDto('host1', 'bridge1', 2, TRUE, 2, 2);
         $node = new Node();
         $node
             ->setName('node10')

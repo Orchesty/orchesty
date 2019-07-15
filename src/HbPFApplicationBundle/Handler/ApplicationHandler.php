@@ -4,9 +4,9 @@ namespace Hanaboso\PipesFramework\HbPFApplicationBundle\Handler;
 
 use Exception;
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
-use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
-use Hanaboso\PipesFramework\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesFramework\Application\Model\ApplicationManager;
+use Hanaboso\PipesPhpSdk\Authorization\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Authorization\Exception\ApplicationInstallException;
 use InvalidArgumentException;
 
 /**

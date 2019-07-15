@@ -2,7 +2,7 @@
 
 namespace Tests\Integration\HbPFMapperBundle\loader;
 
-use Hanaboso\PipesFramework\HbPFMapperBundle\Loader\MapperLoader;
+use Hanaboso\PipesPhpSdk\HbPFMapperBundle\Loader\MapperLoader;
 use Tests\KernelTestCaseAbstract;
 
 /**

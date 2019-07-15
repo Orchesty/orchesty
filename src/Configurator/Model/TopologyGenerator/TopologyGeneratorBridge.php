@@ -4,16 +4,16 @@ namespace Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Psr7\Uri;
-use Hanaboso\CommonsBundle\DatabaseManager\DatabaseManagerLocator;
+use Hanaboso\CommonsBundle\Database\Document\Node;
+use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator;
+use Hanaboso\CommonsBundle\Database\Repository\NodeRepository;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
-use Hanaboso\PipesFramework\Configurator\Document\Node;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyConfigException;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory;
-use Hanaboso\PipesFramework\Configurator\Repository\NodeRepository;
 
 /**
  * Class TopologyGeneratorBridge

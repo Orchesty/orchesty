@@ -4,7 +4,7 @@ namespace Tests\Controller\HbPFConfiguratorBundle\Controller;
 
 use Exception;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler;
-use Hanaboso\PipesFramework\HbPFConnectorBundle\Handler\ConnectorHandler;
+use Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Handler\ConnectorHandler;
 use PHPUnit\Framework\MockObject\MockObject;
 use ReflectionException;
 use Symfony\Component\DependencyInjection\ContainerInterface;

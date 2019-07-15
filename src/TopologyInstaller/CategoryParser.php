@@ -6,11 +6,11 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
-use Hanaboso\PipesFramework\Category\Document\Category;
-use Hanaboso\PipesFramework\Category\Exception\CategoryException;
-use Hanaboso\PipesFramework\Category\Model\CategoryManager;
-use Hanaboso\PipesFramework\Category\Repository\CategoryRepository;
-use Hanaboso\PipesFramework\Configurator\Document\Topology;
+use Hanaboso\CommonsBundle\Database\Document\Category;
+use Hanaboso\CommonsBundle\Database\Document\Topology;
+use Hanaboso\CommonsBundle\Database\Repository\CategoryRepository;
+use Hanaboso\CommonsBundle\Exception\CategoryException;
+use Hanaboso\PipesFramework\Configurator\Model\CategoryManager;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\TopologyFile;
 use RuntimeException;
 

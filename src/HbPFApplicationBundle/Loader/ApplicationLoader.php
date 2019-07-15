@@ -2,9 +2,9 @@
 
 namespace Hanaboso\PipesFramework\HbPFApplicationBundle\Loader;
 
-use Hanaboso\PipesFramework\Application\Base\ApplicationInterface;
-use Hanaboso\PipesFramework\Application\Exception\ApplicationInstallException;
-use Hanaboso\PipesFramework\Utils\NodeServiceLoaderUtil;
+use Hanaboso\CommonsBundle\Utils\NodeServiceLoaderUtil;
+use Hanaboso\PipesPhpSdk\Authorization\Base\ApplicationInterface;
+use Hanaboso\PipesPhpSdk\Authorization\Exception\ApplicationInstallException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**

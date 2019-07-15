@@ -2,8 +2,8 @@
 
 namespace Tests\Controller\HbPFConfiguratorBundle\Controller;
 
-use Hanaboso\PipesFramework\Category\Document\Category;
-use Hanaboso\PipesFramework\Category\Exception\CategoryException;
+use Hanaboso\CommonsBundle\Database\Document\Category;
+use Hanaboso\CommonsBundle\Exception\CategoryException;
 use Tests\ControllerTestCaseAbstract;
 
 /**

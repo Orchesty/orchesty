@@ -3,8 +3,8 @@
 namespace Hanaboso\PipesFramework\Configurator\StatusService;
 
 use Bunny\Message;
+use Hanaboso\CommonsBundle\Event\ProcessStatusEvent;
 use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
-use Hanaboso\PipesFramework\Configurator\Event\ProcessStatusEvent;
 use RabbitMqBundle\Connection\Connection;
 use RabbitMqBundle\Consumer\CallbackInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
