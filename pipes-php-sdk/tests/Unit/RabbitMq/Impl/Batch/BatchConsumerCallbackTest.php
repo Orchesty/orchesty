@@ -7,6 +7,7 @@ use Bunny\Client;
 use Bunny\Message;
 use Exception;
 use Hanaboso\CommonsBundle\Metrics\Impl\InfluxDbSender;
+use Hanaboso\CommonsBundle\Metrics\MetricsSenderLoader;
 use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchActionInterface;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback;
@@ -65,7 +66,8 @@ final class BatchConsumerCallbackTest extends TestCase
         $channel->method('publish')->willReturn(resolve());
         /** @var InfluxDbSender|MockObject $influxSender */
         $influxSender = self::createMock(InfluxDbSender::class);
-        $callback     = new BatchConsumerCallback($batchAction, $influxSender);
+        $loader       = new MetricsSenderLoader('influx', $influxSender, NULL);
+        $callback     = new BatchConsumerCallback($batchAction, $loader);
         /** @var Connection|MockObject $connection */
         $connection = self::createMock(Connection::class);
         $connection->expects(self::any())->method('getChannel')->willReturn($channel);
@@ -164,7 +166,8 @@ final class BatchConsumerCallbackTest extends TestCase
         $client->method('channel')->willReturn($channel);
         /** @var InfluxDbSender|MockObject $influxSender */
         $influxSender = self::createMock(InfluxDbSender::class);
-        $callback     = new BatchConsumerCallback($batchAction, $influxSender);
+        $loader       = new MetricsSenderLoader('influx', $influxSender, NULL);
+        $callback     = new BatchConsumerCallback($batchAction, $loader);
         /** @var Connection|MockObject $connection */
         $connection = self::createMock(Connection::class);
         $connection->expects(self::any())->method('getChannel')->willReturn($channel);
@@ -216,7 +219,8 @@ final class BatchConsumerCallbackTest extends TestCase
         $client->method('channel')->willReturn($channel);
         /** @var InfluxDbSender|MockObject $influxSender */
         $influxSender = self::createMock(InfluxDbSender::class);
-        $callback     = new BatchConsumerCallback($batchAction, $influxSender);
+        $loader       = new MetricsSenderLoader('influx', $influxSender, NULL);
+        $callback     = new BatchConsumerCallback($batchAction, $loader);
         /** @var Connection|MockObject $connection */
         $connection = self::createMock(Connection::class);
         $connection->expects(self::any())->method('getChannel')->willReturn($channel);
@@ -269,7 +273,8 @@ final class BatchConsumerCallbackTest extends TestCase
         $client->method('channel')->willReturn($channel);
         /** @var InfluxDbSender|MockObject $influxSender */
         $influxSender = self::createMock(InfluxDbSender::class);
-        $callback     = new BatchConsumerCallback($batchAction, $influxSender);
+        $loader       = new MetricsSenderLoader('influx', $influxSender, NULL);
+        $callback     = new BatchConsumerCallback($batchAction, $loader);
         /** @var Connection|MockObject $connection */
         $connection = self::createMock(Connection::class);
         $connection->expects(self::any())->method('getChannel')->willReturn($channel);
@@ -321,7 +326,9 @@ final class BatchConsumerCallbackTest extends TestCase
         $client->method('channel')->willReturn($channel);
         /** @var InfluxDbSender|MockObject $influxSender */
         $influxSender = self::createMock(InfluxDbSender::class);
-        $callback     = new BatchConsumerCallback($batchAction, $influxSender);
+        $loader       = new MetricsSenderLoader('influx', $influxSender, NULL);
+
+        $callback = new BatchConsumerCallback($batchAction, $loader);
         /** @var Connection|MockObject $connection */
         $connection = self::createMock(Connection::class);
         $connection->expects(self::any())->method('getChannel')->willReturn($channel);

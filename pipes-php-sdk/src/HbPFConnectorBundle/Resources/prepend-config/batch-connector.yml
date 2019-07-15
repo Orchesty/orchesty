@@ -19,6 +19,6 @@ services:
         class: Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback
         arguments:
             - '@hbpf.custom_nodes.batch_connector_action_callback'
-            - '@hbpf.influxdb_sender_monolith'
+            - '@hbpf.metrics_connector.loader'
         calls:
             - [setLogger, ['@monolog.logger.rabbit_mq']]

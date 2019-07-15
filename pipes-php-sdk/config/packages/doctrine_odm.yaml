@@ -23,7 +23,7 @@ doctrine_mongodb:
                     type: annotation
                     is_bundle: false
                     dir: "%kernel.root_dir%/../vendor/hanaboso/commons-bundle/src/Database/Document"
-                    prefix: Hanaboso\CommonsBundle\Document
+                    prefix: Hanaboso\CommonsBundle\Database\Document
                 AuthorizationDocument:
                     type: annotation
                     is_bundle: false

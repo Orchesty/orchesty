@@ -7,7 +7,7 @@ use Bunny\Message;
 use Exception;
 use Hanaboso\CommonsBundle\Enum\MetricsEnum;
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
-use Hanaboso\CommonsBundle\Metrics\Impl\InfluxDbSender;
+use Hanaboso\CommonsBundle\Metrics\MetricsSenderLoader;
 use Hanaboso\CommonsBundle\Utils\CurlMetricUtils;
 use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use InvalidArgumentException;
@@ -44,7 +44,7 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
     private $batchAction;
 
     /**
-     * @var InfluxDbSender
+     * @var MetricsSenderLoader
      */
     private $sender;
 
@@ -62,9 +62,9 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
      * BatchConsumerCallback constructor.
      *
      * @param BatchActionInterface $batchAction
-     * @param InfluxDbSender       $sender
+     * @param MetricsSenderLoader  $sender
      */
-    public function __construct(BatchActionInterface $batchAction, InfluxDbSender $sender)
+    public function __construct(BatchActionInterface $batchAction, MetricsSenderLoader $sender)
     {
         $this->batchAction = $batchAction;
         $this->sender      = $sender;
@@ -468,7 +468,7 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
     private function sendMetrics(Message $message, array $startMetrics): void
     {
         $times = CurlMetricUtils::getTimes($startMetrics);
-        $this->sender->send(
+        $this->sender->getSender()->send(
             [
                 MetricsEnum::REQUEST_TOTAL_DURATION => $times[CurlMetricUtils::KEY_REQUEST_DURATION],
                 MetricsEnum::CPU_USER_TIME          => $times[CurlMetricUtils::KEY_USER_TIME],
