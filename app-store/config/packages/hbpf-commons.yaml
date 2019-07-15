@@ -39,10 +39,10 @@ services:
             - ['setLogger', ['@monolog.logger.commons']]
 
     hbpf.influxdb_sender_connector:
-            class: Hanaboso\CommonsBundle\Metrics\Impl\InfluxDbSender
-            arguments:
-                - '@udp_metrics_sender'
-                - '%influx.connector_table%'
+        class: Hanaboso\CommonsBundle\Metrics\Impl\InfluxDbSender
+        arguments:
+            - '@udp_metrics_sender'
+            - '%influx.connector_table%'
 
     hbpf.influxdb_sender_monolith:
         class: Hanaboso\CommonsBundle\Metrics\Impl\InfluxDbSender
@@ -77,8 +77,6 @@ services:
             - '%metrics_service%'
             - '@hbpf.influxdb_sender_monolith'
             - '@hbpf.metrics.mongodb_monolith'
-
-
 
     ##########################
     #      File Storage      #

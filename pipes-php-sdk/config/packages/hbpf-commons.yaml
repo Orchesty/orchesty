@@ -6,15 +6,15 @@ services:
     #    Session Handlers    #
     ##########################
 
-    hbpf.commons.session_handler:
-        class: Hanaboso\CommonsBundle\Session\Handler\CachedSessionHandler
-        arguments:
-            - '@hbpf.commons.redis_session_handler'
-
-    hbpf.commons.redis_session_handler:
-        class: Hanaboso\CommonsBundle\Session\Handler\RedisSessionHandler
-        arguments:
-            - '@snc_redis.sessions'
+#    hbpf.commons.session_handler:
+#        class: Hanaboso\CommonsBundle\Session\Handler\CachedSessionHandler
+#        arguments:
+#            - '@hbpf.commons.redis_session_handler'
+#
+#    hbpf.commons.redis_session_handler:
+#        class: Hanaboso\CommonsBundle\Session\Handler\RedisSessionHandler
+#        arguments:
+#            - '@snc_redis.sessions'
 
     ##########################
     #        Metrics         #
