@@ -188,6 +188,16 @@ pipes-php-sdk-test:
     - export COMPOSE_FILE=docker-compose.ci.yml                      # CLEANUP pipes-php-sdk
     - make ${COMPOSE_FILE} test
 
+pipes-connectors-test:
+  stage: stage2
+  script:
+    - DIR=pipes-connectors
+    - skip_unmodified $DIR
+    - cd $REPO_ROOT/$DIR
+    - export COMPOSE_PROJECT_NAME="p${CI_PIPELINE_ID}-pipes-connectors" # CLEANUP pipes-connectors
+    - export COMPOSE_FILE=docker-compose.ci.yml                         # CLEANUP pipes-connectors
+    - make ${COMPOSE_FILE} test
+
 demo-pipes-api-test:
   stage: stage2
   script:
@@ -348,6 +358,21 @@ git-pipes-php-sdk:
     - git remote add dest git@gitlab.hanaboso.net:pipes/pipes-php-sdk.git
     - git push --mirror dest
 
+git-pipes-connectors:
+  stage: stage3
+  when: always
+  only:
+    - dev
+    - master
+  script:
+    - skip_unmodified pipes-connectors
+    - rm -rf _tmp_pipes
+    - git clone --bare git@gitlab.hanaboso.net:pipes/pipes.git _tmp_pipes
+    - cd _tmp_pipes
+    - git filter-branch -f --prune-empty --subdirectory-filter pipes-connectors -- -q --all
+    - git remote add dest git@gitlab.hanaboso.net:pipes/pipes-connectors.git
+    - git push --mirror dest
+
 cleanup:
   stage: cleanup
   when: always
@@ -378,6 +403,12 @@ cleanup:
     - export COMPOSE_PROJECT_NAME=p${CI_PIPELINE_ID}-pipes-php-sdk
     - export COMPOSE_FILE=docker-compose.ci.yml
     - make ${COMPOSE_FILE} docker-down-clean || echo "pipes-php-sdk cleanup phase failed"
+
+    - ": pipes-connectors"
+    - cd $REPO_ROOT/pipes-connectors
+    - export COMPOSE_PROJECT_NAME=p${CI_PIPELINE_ID}-pipes-connectors
+    - export COMPOSE_FILE=docker-compose.ci.yml
+    - make ${COMPOSE_FILE} docker-down-clean || echo "pipes-connectors cleanup phase failed"
 
     - ": demo-pipes-api-test"
     - cd $REPO_ROOT/clients/demo/pipes-api

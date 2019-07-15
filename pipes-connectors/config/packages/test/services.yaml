@@ -1,0 +1,6 @@
+parameters:
+    public.services: true
+
+services:
+    _defaults:
+        public: '%public.services%'
