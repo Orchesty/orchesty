@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3d2979da5b64674c8bf13b2fc0df2777",
+    "content-hash": "11906a4fa8d44395cf18e16d95cb195b",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
-            "version": "1.1.7",
+            "version": "1.1.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/alcaeus/mongo-php-adapter.git",
-                "reference": "b4c2f0d30dbddd624d3bc2a27175e6eb602241d4"
+                "reference": "b230e1fabd7e4c5e284619029c667fdfb53b3e3d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/alcaeus/mongo-php-adapter/zipball/b4c2f0d30dbddd624d3bc2a27175e6eb602241d4",
-                "reference": "b4c2f0d30dbddd624d3bc2a27175e6eb602241d4",
+                "url": "https://api.github.com/repos/alcaeus/mongo-php-adapter/zipball/b230e1fabd7e4c5e284619029c667fdfb53b3e3d",
+                "reference": "b230e1fabd7e4c5e284619029c667fdfb53b3e3d",
                 "shasum": ""
             },
             "require": {
@@ -70,20 +70,20 @@
                 "database",
                 "mongodb"
             ],
-            "time": "2019-04-06T08:08:09+00:00"
+            "time": "2019-07-14T21:02:07+00:00"
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.106.1",
+            "version": "3.107.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "ed3bd17b8a6caa5c99ed5fe559d061a1f9fc2c8c"
+                "reference": "ccd3d13ae49a45bdf6a394d701f207c276dbf05a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/ed3bd17b8a6caa5c99ed5fe559d061a1f9fc2c8c",
-                "reference": "ed3bd17b8a6caa5c99ed5fe559d061a1f9fc2c8c",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/ccd3d13ae49a45bdf6a394d701f207c276dbf05a",
+                "reference": "ccd3d13ae49a45bdf6a394d701f207c276dbf05a",
                 "shasum": ""
             },
             "require": {
@@ -153,7 +153,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2019-07-10T18:29:49+00:00"
+            "time": "2019-07-12T18:07:41+00:00"
         },
         {
             "name": "aws/aws-sdk-php-symfony",
@@ -2126,18 +2126,18 @@
         },
         {
             "name": "hanaboso/commons-bundle",
-            "version": "1.1.15",
+            "version": "1.1.16",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.hanaboso.net:hanaboso/commons-bundle.git",
-                "reference": "2e434c8ed1f06e5b1c1fd10c443a788f00488572"
+                "reference": "139f34c2c3339374beb26b55c31e268df4e5906b"
             },
             "require": {
                 "alcaeus/mongo-php-adapter": "^1.1",
                 "aws/aws-sdk-php-symfony": "^2.0",
                 "clue/buzz-react": "^2.6",
                 "doctrine/doctrine-bundle": "^1.11",
-                "doctrine/doctrine-fixtures-bundle": "^3.1",
+                "doctrine/doctrine-fixtures-bundle": "^3.2",
                 "doctrine/mongodb-odm-bundle": "^3.5",
                 "doctrine/orm": "^2.6",
                 "ext-apcu": "*",
@@ -2160,8 +2160,8 @@
                 "friendsofsymfony/rest-bundle": "^2.5",
                 "hanaboso/php-check-utils": "^1.0",
                 "snc/redis-bundle": "^2.1",
-                "symfony/monolog-bundle": "^3.3",
-                "symfony/symfony": "^4.2"
+                "symfony/monolog-bundle": "^3.4",
+                "symfony/symfony": "^4.3"
             },
             "type": "library",
             "autoload": {
@@ -2177,7 +2177,7 @@
             "license": [
                 "proprietary"
             ],
-            "time": "2019-05-24T12:29:17+00:00"
+            "time": "2019-07-15T13:14:11+00:00"
         },
         {
             "name": "hanaboso/mongo-data-grid",
@@ -2215,11 +2215,11 @@
         },
         {
             "name": "hanaboso/pipes-php-sdk",
-            "version": "1.0.1",
+            "version": "1.0.2",
             "dist": {
                 "type": "path",
                 "url": "../pipes-php-sdk",
-                "reference": "d5232b2b4f8d994453033e9107dc85c86dfaa93a"
+                "reference": "1f532cb09100c659b8dfb0d5cc5d1f98144bd173"
             },
             "require": {
                 "ext-json": "*",
@@ -3067,16 +3067,16 @@
         },
         {
             "name": "php-imap/php-imap",
-            "version": "3.0.26",
+            "version": "3.0.27",
             "source": {
                 "type": "git",
                 "url": "https://github.com/barbushin/php-imap.git",
-                "reference": "62664de68468d67050e99ae0ece4ccaf0211155a"
+                "reference": "bb357ef8b7daa44ab8c3c0e4791b1f61ac167949"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/barbushin/php-imap/zipball/62664de68468d67050e99ae0ece4ccaf0211155a",
-                "reference": "62664de68468d67050e99ae0ece4ccaf0211155a",
+                "url": "https://api.github.com/repos/barbushin/php-imap/zipball/bb357ef8b7daa44ab8c3c0e4791b1f61ac167949",
+                "reference": "bb357ef8b7daa44ab8c3c0e4791b1f61ac167949",
                 "shasum": ""
             },
             "require": {
@@ -3116,7 +3116,7 @@
                 "pop3",
                 "receive emails"
             ],
-            "time": "2019-06-14T11:09:59+00:00"
+            "time": "2019-07-13T15:21:56+00:00"
         },
         {
             "name": "phpcollection/phpcollection",
@@ -3312,16 +3312,16 @@
         },
         {
             "name": "phpseclib/phpseclib",
-            "version": "2.0.20",
+            "version": "2.0.21",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpseclib/phpseclib.git",
-                "reference": "d6819a55b05e123db1e881d8b230d57f912126be"
+                "reference": "9f1287e68b3f283339a9f98f67515dd619e5bf9d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/d6819a55b05e123db1e881d8b230d57f912126be",
-                "reference": "d6819a55b05e123db1e881d8b230d57f912126be",
+                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/9f1287e68b3f283339a9f98f67515dd619e5bf9d",
+                "reference": "9f1287e68b3f283339a9f98f67515dd619e5bf9d",
                 "shasum": ""
             },
             "require": {
@@ -3400,7 +3400,7 @@
                 "x.509",
                 "x509"
             ],
-            "time": "2019-06-23T16:33:11+00:00"
+            "time": "2019-07-12T12:53:49+00:00"
         },
         {
             "name": "predis/predis",
@@ -3783,16 +3783,16 @@
         },
         {
             "name": "react/cache",
-            "version": "v0.6.0",
+            "version": "v1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/cache.git",
-                "reference": "a42d149e15b8312918327d5be2ba757cd2f23ff9"
+                "reference": "aa10d63a1b40a36a486bdf527f28bac607ee6466"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/cache/zipball/a42d149e15b8312918327d5be2ba757cd2f23ff9",
-                "reference": "a42d149e15b8312918327d5be2ba757cd2f23ff9",
+                "url": "https://api.github.com/repos/reactphp/cache/zipball/aa10d63a1b40a36a486bdf527f28bac607ee6466",
+                "reference": "aa10d63a1b40a36a486bdf527f28bac607ee6466",
                 "shasum": ""
             },
             "require": {
@@ -3819,20 +3819,20 @@
                 "promise",
                 "reactphp"
             ],
-            "time": "2019-07-04T14:45:59+00:00"
+            "time": "2019-07-11T13:45:28+00:00"
         },
         {
             "name": "react/dns",
-            "version": "v0.4.19",
+            "version": "v1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/dns.git",
-                "reference": "6852fb98e22d2e5bb35fe5aeeaa96551b120e7c9"
+                "reference": "26c3e7b86f139217b6acc1bc160e2019787555fb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/dns/zipball/6852fb98e22d2e5bb35fe5aeeaa96551b120e7c9",
-                "reference": "6852fb98e22d2e5bb35fe5aeeaa96551b120e7c9",
+                "url": "https://api.github.com/repos/reactphp/dns/zipball/26c3e7b86f139217b6acc1bc160e2019787555fb",
+                "reference": "26c3e7b86f139217b6acc1bc160e2019787555fb",
                 "shasum": ""
             },
             "require": {
@@ -3864,7 +3864,7 @@
                 "dns-resolver",
                 "reactphp"
             ],
-            "time": "2019-07-10T21:00:53+00:00"
+            "time": "2019-07-11T14:58:39+00:00"
         },
         {
             "name": "react/event-loop",
@@ -7050,16 +7050,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "8.2.4",
+            "version": "8.2.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "25fe0b5031b24722f66a75ad479a074cccc1bb37"
+                "reference": "c1b8534b3730f20f58600124129197bf1183dc92"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/25fe0b5031b24722f66a75ad479a074cccc1bb37",
-                "reference": "25fe0b5031b24722f66a75ad479a074cccc1bb37",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/c1b8534b3730f20f58600124129197bf1183dc92",
+                "reference": "c1b8534b3730f20f58600124129197bf1183dc92",
                 "shasum": ""
             },
             "require": {
@@ -7129,7 +7129,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2019-07-03T08:30:33+00:00"
+            "time": "2019-07-15T06:26:24+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",
