@@ -17,6 +17,7 @@
     "php": "^7.3",
     "ext-json": "*",
     "hanaboso/commons-bundle": "^1.1",
+    "jms/serializer-bundle": "^3.4",
     "hanaboso/pipes-php-sdk": "^1.0",
     "symfony/monolog-bundle": "^3.4",
     "friendsofsymfony/rest-bundle": "^2.5",

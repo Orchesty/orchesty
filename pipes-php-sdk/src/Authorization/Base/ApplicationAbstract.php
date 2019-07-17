@@ -65,7 +65,7 @@ abstract class ApplicationAbstract implements ApplicationInterface
         $preparedSetting = [];
         foreach ($this->getSettingsForm()->getFields() as $field) {
             if (array_key_exists($field->getKey(), $settings)) {
-                $preparedSetting[$field->getKey()] = $settings[$field->getKey()];
+                $preparedSetting[$field->getKey()] = $settings[$field->getValue()];
             }
         }
 

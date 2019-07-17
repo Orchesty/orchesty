@@ -53,13 +53,13 @@ services:
     hbpf.metrics.mongodb_connector:
         class: Hanaboso\CommonsBundle\Metrics\Impl\MongoDbSender
         arguments:
-            - '@doctrine_mongodb.odm.default_connection'
+            - '@doctrine_mongodb.odm.default_document_manager'#TODO prepsat na metrics manager
             - '%mongodb.monolith_table%'
 
     hbpf.metrics.mongodb_monolith:
         class: Hanaboso\CommonsBundle\Metrics\Impl\MongoDbSender
         arguments:
-            - '@doctrine_mongodb.odm.default_connection'
+            - '@doctrine_mongodb.odm.default_document_manager'
             - '%mongodb.connector_table%'
 
     hbpf.metrics_connector.loader:

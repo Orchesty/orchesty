@@ -1,3 +1,27 @@
 services:
     _defaults:
         public: '%public.services%'
+    hbpf.application.hubspot:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\HubspotApplication
+        arguments:
+            - '@hbpf.providers.oauth2_provider'
+
+    hbpf.application.mailchimp:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\MailchimpApplication
+        arguments:
+            - '@hbpf.providers.oauth2_provider'
+            - '@hbpf.transport.curl_manager'
+
+    hbpf.connectors.hubspot_create_contact:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Connector\HubspotCreateContactConnector
+        arguments:
+            - '@hbpf.application.hubspot'
+            - '@hbpf.transport.curl_manager'
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.connectors.mailchimp_create_contact:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\Connector\MailchimpCreateContactConnector
+        arguments:
+            - '@hbpf.application.mailchimp'
+            - '@hbpf.transport.curl_manager'
+            - '@doctrine_mongodb.odm.default_document_manager'

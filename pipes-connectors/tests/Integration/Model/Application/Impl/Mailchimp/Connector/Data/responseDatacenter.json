@@ -1,0 +1,16 @@
+{
+  "dc": "us3",
+  "role": "owner",
+  "accountname": "HH",
+  "user_id": 120298570,
+  "login": {
+    "email": "bellerova.k@hanaboso.com",
+    "avatar": null,
+    "login_id": 129484086,
+    "login_name": "TestHana",
+    "login_email": "bellerova.k@hanaboso.com"
+  },
+  "login_url": "https:\/\/login.mailchimp.com",
+  "api_endpoint": "https:\/\/us3.api.mailchimp.com"
+}
+

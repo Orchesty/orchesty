@@ -1,0 +1,10 @@
+{
+  "title": "Invalid Resource",
+  "status": 400,
+  "errors": [
+    {
+      "field": "email_address",
+      "message": "This value should not be blank."
+    }
+  ]
+}

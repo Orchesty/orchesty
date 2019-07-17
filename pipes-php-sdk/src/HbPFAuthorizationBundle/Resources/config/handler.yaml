@@ -1,0 +1,8 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf.authorization.handler:
+        class: Hanaboso\PipesPhpSdk\HbPFAuthorizationBundle\Handler\ApplicationHandler
+        arguments:
+            - '@hbpf.authorization.manager'

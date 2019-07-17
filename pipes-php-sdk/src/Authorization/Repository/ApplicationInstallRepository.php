@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesPhpSdk\Authorization\Repository;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesPhpSdk\Authorization\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\ApplicationInstallException;
 
@@ -37,6 +38,20 @@ class ApplicationInstallRepository extends DocumentRepository
         }
 
         return $app;
+    }
+
+    /**
+     * @param ProcessDto $dto
+     *
+     * @return ApplicationInstall
+     * @throws ApplicationInstallException
+     */
+    public function findUsersAppDefaultHeaders(ProcessDto $dto): ApplicationInstall
+    {
+        return $this->findUserApp(
+            (string) $dto->getHeader('pf-key', ''),
+            (string) $dto->getHeader('pf-user', '')
+        );
     }
 
 }

@@ -16,6 +16,7 @@ interface OAuth2ApplicationInterface extends ApplicationInterface
     public const  CLIENT_ID             = 'client_id';
     public const  CLIENT_SECRET         = 'client_secret';
     public const  FRONTEND_REDIRECT_URL = 'frontend_redirect_url';
+    public const  API_KEYPOINT          = 'api_keypoint';
 
     /**
      * @param ApplicationInstall $applicationInstall

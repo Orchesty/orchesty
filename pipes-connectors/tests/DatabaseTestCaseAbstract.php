@@ -46,11 +46,16 @@ abstract class DatabaseTestCaseAbstract extends KernelTestCaseAbstract
 
     /**
      * @param object $document
+     * @param bool   $clear
      */
-    protected function persistAndFlush($document): void
+    protected function pf($document, bool $clear = TRUE): void
     {
         $this->dm->persist($document);
         $this->dm->flush($document);
+
+        if ($clear) {
+            $this->dm->clear();
+        }
     }
 
     /**
