@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <phpdoc>
-    <title>Pipes SDK API Documentation</title>
+    <title>Pipes generated SDK API</title>
     <parser>
         <target>/tmp/phpdoc</target>
     </parser>
@@ -8,9 +8,26 @@
         <target>/tmp/phpdoc-build</target>
     </transformer>
     <transformations>
-        <template name="/root/.composer/vendor/cvuorinen/phpdoc-markdown-public/data/templates/markdown-public" />
+        <template name="responsive" />
+        <template name="/root/.composer/vendor/cvuorinen/phpdoc-markdown-public/data/templates/markdown-public"/>
     </transformations>
     <files>
-        <directory>../pf-bundles/src</directory>
+        <directory>../pipes-php-sdk/src/Application</directory>
+        <ignore>../pipes-php-sdk/src/Application/Loader</ignore>
+        <ignore>../pipes-php-sdk/src/Application/Manager</ignore>
+        <ignore>../pipes-php-sdk/src/Application/Repository</ignore>
+        <directory>../pipes-php-sdk/src/Authorization</directory>
+        <directory>../pipes-php-sdk/src/Connector</directory>
+        <directory>../pipes-php-sdk/src/CustomNode</directory>
+<!--        <directory>../pipes-php-sdk/src/Joiner</directory>-->
+        <directory>../pipes-php-sdk/src/LongRunningNode</directory>
+        <ignore>../pipes-php-sdk/src/LongRunningNode/Repository</ignore>
+<!--        <directory>../pipes-php-sdk/src/Mapper</directory>-->
+        <directory>../pipes-php-sdk/src/Parser</directory>
+        <ignore>../pipes-php-sdk/src/Command</ignore>
+        <ignore>../pipes-php-sdk/src/Bundle</ignore>
+        <ignore>../pipes-php-sdk/src/Rabbit</ignore>
     </files>
 </phpdoc>
+
+

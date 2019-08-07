@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>PIPES - DOCS </title>
+    <meta name="keywords" content="">
+    <meta name="description" content=""/>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel=stylesheet>
+
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+    <style>
+        body {
+            display: flex;
+            min-height: 100vh;
+            flex-direction: column;
+            text-align: justify;
+        }
+
+        main {
+            flex: 1 0 auto;
+        }
+
+        .sticky-nav {
+            position: fixed;
+        }
+
+        .sticky-nav a:hover {
+            color: lightcoral;
+            font-weight: bold;
+        }
+
+        /* CSS Pre Code */
+        pre {
+            background: #333;
+            white-space: pre;
+            word-wrap: break-word;
+            overflow: auto;
+        }
+
+        pre.code {
+            margin: 20px 25px;
+            border-radius: 4px;
+            border: 1px solid #292929;
+            position: relative;
+        }
+
+        pre.code label {
+            font-family: sans-serif;
+            font-weight: bold;
+            font-size: 13px;
+            color: #ddd;
+            position: absolute;
+            left: 1px;
+            top: 15px;
+            text-align: center;
+            width: 60px;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            pointer-events: none;
+        }
+
+        pre.code code {
+            font-family: "Inconsolata", "Courier New", Courier, monospace;
+            display: block;
+            margin: 0 0 0 60px;
+            padding: 15px 16px 14px;
+            border-left: 1px solid #555;
+            overflow-x: auto;
+            font-size: 13px;
+            line-height: 19px;
+            color: #ddd;
+
+        }
+
+        pre::after {
+            content: "Copy";
+            padding: 0;
+            width: auto;
+            height: auto;
+            position: absolute;
+            right: 18px;
+            top: 14px;
+            font-size: 12px;
+            color: #ddd;
+            line-height: 20px;
+            overflow: hidden;
+            -webkit-backface-visibility: hidden;
+            transition: all 0.1s ease;
+        }
+
+        pre:hover::after {
+            cursor: pointer;
+        }
+
+        pre.code-ruby code {
+            color: #91a7ff;
+        }
+
+        pre.code-html code {
+            color: #aed581;
+        }
+
+        pre.code-javascript code {
+            color: #ffa726;
+        }
+
+        pre.code-jquery code {
+            color: #4dd0e1;
+        }
+
+        pre.code-go code {
+            color: #00B7EB;
+        }
+    </style>
+
+</head>
+<body>
+<main>
+
+    <!-- TOP NAV -->
+    <div class="navbar-fixed">
+        <nav>
+            <div class="container nav-wrapper">
+                <a href="#!" class="brand-logo">LOGO</a>
+                <ul class="right hide-on-med-and-down">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/docs">Docs</a></li>
+                    <li><a href="/example">Download</a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+
+    <!-- COLAPS NAV -->
+    <ul class="collapsible hide-on-large-only">
+        <li>
+            <div class="collapsible-header"><i class="material-icons">filter_drama</i>Data</div>
+            <div class="collapsible-body"><span>Menu</span></div>
+        </li>
+        <li>
+            <div class="collapsible-header"><i class="material-icons">place</i>Admin</div>
+            <div class="collapsible-body"><span>Menu</span></div>
+        </li>
+        <li>
+            <div class="collapsible-header"><i class="material-icons">whatshot</i>API</div>
+            <div class="collapsible-body"><span>Menu</span></div>
+        </li>
+    </ul>
+
+
+    <div class="container">
+        <div class="row">
+            <div class="col l2 hide-on-med-and-down table-of-contents" style="position: sticky; overflow: hidden; top: 50px;">
+                <ul class="left section">
+                    <h4>MENU</h4>
+                    <li class="divider"></li>
+                    <!--                    Generating left menu name is set in YAML head in each .MD / to set value of menu change YAML-->
+                    {{#each collections}}
+                        {{#each this}}
+                            <li><a href="/{{this.path}}" class="leftNav" class="level_{{this.level}}">{{this.name}}</a></li>
+                        {{/each}}
+                    {{/each}}
+                </ul>
+            </div>
+
+
+            <!--    Content-->
+            <div class="container col s12 m12 l8">
+                <div class="row">
+                    {{#if contents}}
+                        {{#each code}}
+                            <div code="1"></div>
+                        {{/each}}
+                    {{/if}}
+
+                    {{{contents}}}
+
+                </div>
+            </div>
+
+
+            <!--    Right Scrollspy   -->
+            <div class="col l2 hide-on-med-and-down" style="position: sticky; overflow: hidden; top: 50px; text-align: left">
+                <ul class="right section table-of-contents">
+                    <h4>CONTENTS</h4>
+                    <li class="divider"></li>
+                    <!--    Generating list of headings from object " " -->
+                    {{#if headings}}
+                        <!--    Write "log this" into two curly brackets to "debug" the handelbars objects-->
+                        {{#each headings}}
+                            <li><a href="#{{id}}">{{text}}</a></li>
+                        {{/each}}
+                    {{/if}}
+                </ul>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!--FOOTER-->
+<footer class="page-footer">
+    <div class="row">
+        <div class="container">
+            <div class="col l6 s12">
+                <h5 class="white-text">Hanaboso footer</h5>
+                <p class="grey-text text-lighten-4">You can use rows and columns here to organize your footer
+                    content.</p>
+            </div>
+            <div class="col l4 offset-l2 s12 center-align">
+                <h5 class="white-text">Links</h5>
+                <ul>
+                    <li><a class="grey-text text-lighten-3" href="#!">Link 1</a></li>
+                    <li><a class="grey-text text-lighten-3" href="#!">Link 2</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+<script>
+    M.AutoInit();
+
+    // Click to select whole snippet - script
+    var pres = document.querySelectorAll('pre,kbd,blockquote');
+    for (var i = 0; i < pres.length; i++) {
+        pres[i].addEventListener('click', function () {
+            var selection = getSelection();
+            var range = document.createRange();
+            range.selectNodeContents(this);
+            document.execCommand('copy');
+            selection.removeAllRanges();
+            selection.addRange(range);
+        }, false);
+    }
+</script>
+
+</body>
+</html>
