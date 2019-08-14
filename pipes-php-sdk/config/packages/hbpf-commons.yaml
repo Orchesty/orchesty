@@ -50,18 +50,16 @@ services:
             - '@udp_metrics_sender'
             - '%influx.monolith_table%'
 
-    # TODO: David si to upraví
     hbpf.metrics.mongodb_connector:
         class: Hanaboso\CommonsBundle\Metrics\Impl\MongoDbSender
         arguments:
-            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@doctrine_mongodb.odm.metrics_document_manager'
             - '%mongodb.monolith_table%'
 
-    # TODO: David si to upraví
     hbpf.metrics.mongodb_monolith:
         class: Hanaboso\CommonsBundle\Metrics\Impl\MongoDbSender
         arguments:
-            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@doctrine_mongodb.odm.metrics_document_manager'
             - '%mongodb.connector_table%'
 
     hbpf.metrics_connector.loader:

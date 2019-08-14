@@ -1,0 +1,11 @@
+version: '2.2'
+services:
+  mongo:
+      image: mongo:3.6
+      ports:
+        - ${DEV_IP}:27017:27017
+      volumes:
+        - mongo:/data/db
+
+volumes:
+  mongo: {}

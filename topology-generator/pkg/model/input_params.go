@@ -16,6 +16,7 @@ const (
 	MultiProbePort = "MULTI_PROBE_PORT"
 	MetricsHost    = "METRICS_HOST"
 	MetricsPort    = "METRICS_PORT"
+	MetricsService = "METRICS_SERVICE"
 )
 
 type Adapter string
@@ -44,6 +45,8 @@ type Environment struct {
 	RabbitMqVHost       string  `json:"rabbitmq_vhost"`
 	MultiProbeHost      string  `json:"multi_probe_host"`
 	MetricsHost         string  `json:"metrics_host"`
+	MetricsPort         string  `json:"metrics_port"`
+	MetricsService      string  `json:"metrics_service"`
 	WorkerDefaultPort   int     `json:"worker_default_port"`
 	GeneratorMode       Adapter `json:"generator_mode"`
 }
@@ -115,9 +118,11 @@ func (e *Environment) GetEnvironment() (map[string]string, error) {
 		environment[MultiProbePort] = port
 	}
 
-	if host, port, err := net.SplitHostPort(e.MetricsHost); err == nil {
-		environment[MetricsHost] = host
-		environment[MetricsPort] = port
+	environment[MetricsHost] = e.MetricsHost
+	environment[MetricsPort] = e.MetricsPort
+	environment[MetricsService] = "influx"
+	if service := e.MetricsService; service != "" {
+		environment[MetricsService] = service
 	}
 
 	return environment, nil

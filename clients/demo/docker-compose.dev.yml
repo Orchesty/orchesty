@@ -162,12 +162,12 @@ services:
         REDIS_PASS: ''
         REDIS_DB: '0'
         COUNTER_PREFETCH: '100'
-        #METRICS_HOST: 'kapacitor'
-        #METRICS_PORT: '9092'
-        #METRICS_SERVICE: 'influx'
-        METRICS_HOST: 'mongo'
-        METRICS_PORT: '27017'
-        METRICS_SERVICE: 'mongo'
+        METRICS_HOST: 'kapacitor'
+        METRICS_PORT: '9100'
+        METRICS_SERVICE: 'influx'
+        #METRICS_HOST: 'mongo'
+        #METRICS_PORT: '27017'
+        #METRICS_SERVICE: 'mongo'
       command: './dist/src/bin/pipes.js start multi_counter'
       ports:
         - ${DEV_IP}:8005:8005
@@ -234,12 +234,12 @@ services:
           ELASTIC_INDEX: 'index'
           SMTP_USER: dev.email.hb@gmail.com
           SMTP_PASSWORD: jVME2RkX9xyYhj9v
-          #METRICS_HOST: 'kapacitor'
-          #METRICS_PORT: '9092'
-          #METRICS_SERVICE: 'influx'
-          METRICS_HOST: 'mongo'
-          METRICS_PORT: '27017'
-          METRICS_SERVICE: 'mongo'
+          METRICS_HOST: 'kapacitor'
+          METRICS_PORT: '9100'
+          METRICS_SERVICE: 'influx'
+          #METRICS_HOST: 'mongo'
+          #METRICS_PORT: '27017'
+          #METRICS_SERVICE: 'mongo'
         working_dir: /var/www/pipes/clients/demo/pipes-api
         volumes:
           - ../../:/var/www/pipes
@@ -465,7 +465,7 @@ services:
     tsa:
         image: timeseriesadmin/timeseriesadmin:latest
         ports:
-            - 8085:80
+          - 8085:80
         mem_limit: 128M
         restart: always
 

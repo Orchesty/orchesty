@@ -9,7 +9,7 @@ use Hanaboso\CommonsBundle\Database\Document\Node;
 use Hanaboso\CommonsBundle\Database\Document\Topology;
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\PipesFramework\Metrics\Exception\MetricsException;
-use Hanaboso\PipesFramework\Metrics\MetricsManager;
+use Hanaboso\PipesFramework\Metrics\Manager\MetricsManagerLoader;
 
 /**
  * Class MetricsHandler
@@ -25,20 +25,20 @@ class MetricsHandler
     private $dm;
 
     /**
-     * @var MetricsManager
+     * @var MetricsManagerLoader
      */
-    private $metricsManager;
+    private $loader;
 
     /**
      * MetricsHandler constructor.
      *
-     * @param DocumentManager $dm
-     * @param MetricsManager  $metricsManager
+     * @param DocumentManager      $dm
+     * @param MetricsManagerLoader $loader
      */
-    public function __construct(DocumentManager $dm, MetricsManager $metricsManager)
+    public function __construct(DocumentManager $dm, MetricsManagerLoader $loader)
     {
-        $this->dm             = $dm;
-        $this->metricsManager = $metricsManager;
+        $this->dm     = $dm;
+        $this->loader = $loader;
     }
 
     /**
@@ -53,7 +53,7 @@ class MetricsHandler
      */
     public function getTopologyMetrics(string $topologyId, array $params): array
     {
-        return $this->metricsManager->getTopologyMetrics($this->getTopologyById($topologyId), $params);
+        return $this->loader->getManager()->getTopologyMetrics($this->getTopologyById($topologyId), $params);
     }
 
     /**
@@ -69,7 +69,7 @@ class MetricsHandler
      */
     public function getNodeMetrics(string $topologyId, string $nodeId, array $params): array
     {
-        return $this->metricsManager->getNodeMetrics(
+        return $this->loader->getManager()->getNodeMetrics(
             $this->getNodeByTopologyAndNodeId($topologyId, $nodeId),
             $this->getTopologyById($topologyId),
             $params
@@ -88,7 +88,8 @@ class MetricsHandler
      */
     public function getRequestsCountMetrics(string $topologyId, array $params): array
     {
-        return $this->metricsManager->getTopologyRequestCountMetrics($this->getTopologyById($topologyId), $params);
+        return $this->loader->getManager()->getTopologyRequestCountMetrics($this->getTopologyById($topologyId),
+            $params);
     }
 
     /**

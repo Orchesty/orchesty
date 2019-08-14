@@ -182,7 +182,7 @@ class Node implements IStoppable {
             this.metrics.addTag("node_id", msg.getNodeLabel().node_id);
 
             logger.debug(`Sending metrics: ${JSON.stringify(measurements)}`, logger.ctxFromMsg(msg));
-            await this.metrics.send(measurements, false);
+            await this.metrics.send(measurements, process.env.METRICS_SERVICE === "mongo");
         } catch (err) {
             logger.warn("Unable to send metrics", logger.ctxFromMsg(msg, err));
         }

@@ -2,6 +2,8 @@ parameters:
     mongo_host: mongo
 
 doctrine_mongodb:
+    default_document_manager: default
+    default_connection: default
     auto_generate_proxy_classes: true
     auto_generate_hydrator_classes: true
     auto_generate_persistent_collection_classes: 3
@@ -11,6 +13,11 @@ doctrine_mongodb:
     hydrator_dir: "%kernel.cache_dir%/doctrine/odm/mongodb/Hydrators"
     connections:
         default:
+            server: "mongodb://%mongo_host%"
+            options:
+                connectTimeoutMS: 5000
+                socketTimeoutMS: 5000
+        metrics:
             server: "mongodb://%mongo_host%"
             options:
                 connectTimeoutMS: 5000
@@ -57,3 +64,12 @@ doctrine_mongodb:
                     is_bundle: false
                     dir: "%kernel.root_dir%/Logs/Document"
                     prefix: Hanaboso\PipesFramework\Logs\Document
+        metrics:
+            connection: metrics
+            database: metrics
+            mappings:
+                MetricsDocument:
+                    type: annotation
+                    is_bundle: false
+                    dir: "%kernel.root_dir%/Metrics/Document"
+                    prefix: Hanaboso\PipesFramework\Metrics\Document

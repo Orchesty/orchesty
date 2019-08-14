@@ -31,6 +31,10 @@ parameters:
     env(MONOLITH_API_HOST): monolith-api
     xml_parser_api_host: "%env(XML_PARSER_API_HOST)%"
     env(XML_PARSER_API_HOST): xml-parser-api
+    env(METRICS_HOST): "%kapacitor.host%"
+    metrics_host: "%env(METRICS_HOST)%"
+    env(METRICS_PORT): "%kapacitor.port%"
+    metrics_port: "%env(METRICS_PORT)%"
 
     topology_configs:
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::RABBITMQ_HOST: "%rabbit_host%"
@@ -40,7 +44,9 @@ parameters:
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::DOCKER_REGISTRY: "%docker_registry%"
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::DOCKER_PF_BRIDGE_IMAGE: "%docker_pf_bridge_image%"
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::MULTI_PROBE_HOST: "%multi_probe_host%"
-        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::METRICS_HOST: "%kapacitor.host%:%kapacitor.port%"
+        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::METRICS_HOST: "%metrics_host%"
+        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::METRICS_PORT: "%metrics_port%"
+        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::METRICS_SERVICE: "%metrics_service%"
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::WORKER_DEFAULT_PORT: "%worker_default_port%"
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::FTP_API_HOST: "%ftp_api_host%"
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::MAILER_API_HOST: "%mailer_api_host%"

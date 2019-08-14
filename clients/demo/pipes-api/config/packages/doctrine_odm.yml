@@ -6,6 +6,8 @@ parameters:
     database_password: root
 
 doctrine_mongodb:
+    default_document_manager: default
+    default_connection: default
     auto_generate_proxy_classes: true
     auto_generate_hydrator_classes: true
     auto_generate_persistent_collection_classes: 3
@@ -15,6 +17,11 @@ doctrine_mongodb:
     hydrator_dir: "%kernel.cache_dir%/doctrine/odm/mongodb/Hydrators"
     connections:
         default:
+            server: "mongodb://%database_host%"
+            options:
+                connectTimeoutMS: 60000
+                socketTimeoutMS: 60000
+        metrics:
             server: "mongodb://%database_host%"
             options:
                 connectTimeoutMS: 60000
@@ -49,3 +56,12 @@ doctrine_mongodb:
                     is_bundle: false
                     dir: "%kernel.root_dir%/../vendor/hanaboso/app-store/src/Document"
                     prefix: Hanaboso\HbPFApplication\Document
+        metrics:
+            connection: metrics
+            database: metrics
+            mappings:
+                MetricsDocument:
+                    type: annotation
+                    is_bundle: false
+                    dir: "%kernel.root_dir%/../vendor/hanaboso/pipes-framework/src/Metrics/Document"
+                    prefix: Hanaboso\PipesFramework\Metrics\Document
