@@ -25,6 +25,8 @@ class TopologyConfigFactory
     public const RABBITMQ_VHOST         = 'rabbitmq_vhost';
     public const MULTI_PROBE_HOST       = 'multi_probe_host';
     public const METRICS_HOST           = 'metrics_host';
+    public const METRICS_PORT           = 'metrics_port';
+    public const METRICS_SERVICE        = 'metrics_service';
     public const WORKER_DEFAULT_PORT    = 'worker_default_port';
     public const FTP_API_HOST           = 'ftp_api_host';
     public const MAILER_API_HOST        = 'mailer_api_host';
@@ -121,6 +123,8 @@ class TopologyConfigFactory
             self::RABBITMQ_VHOST         => $this->configs[self::RABBITMQ_VHOST],
             self::MULTI_PROBE_HOST       => $this->configs[self::MULTI_PROBE_HOST],
             self::METRICS_HOST           => $this->configs[self::METRICS_HOST],
+            self::METRICS_PORT           => $this->configs[self::METRICS_PORT],
+            self::METRICS_SERVICE        => $this->configs[self::METRICS_SERVICE],
             self::WORKER_DEFAULT_PORT    => (int) $this->configs[self::WORKER_DEFAULT_PORT],
         ];
     }

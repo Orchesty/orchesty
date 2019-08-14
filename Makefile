@@ -93,6 +93,7 @@ database-create:
 	$(DE) php bin/console doctrine:database:drop --force || true
 	$(DE) php bin/console doctrine:database:create
 	$(DE) php bin/console doctrine:schema:create
+	$(DE) php bin/console doctrine:mongodb:schema:create --dm=metrics
 
 .env:
 	sed -e "s|{DEV_UID}|$(shell id -u)|g" \
