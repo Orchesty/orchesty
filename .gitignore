@@ -6,3 +6,4 @@ tmp/*
 src/**/*.js
 package-lock.json
 topology/topology.json
+.env

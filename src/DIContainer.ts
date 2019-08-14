@@ -2,6 +2,7 @@ import {AssertionPublisher} from "amqplib-plus/dist/lib/AssertPublisher";
 import {Connection} from "amqplib-plus/dist/lib/Connection";
 import {Container} from "hb-utils/dist/lib/Container";
 import {Metrics} from "metrics-sender/dist/lib/metrics/Metrics";
+import {MongoMetrics} from "./mongo-metrics/MongoMetrics";
 import {
     amqpConnectionOptions, limiterOptions, metricsOptions, multiProbeOptions, persistentQueues, redisStorageOptions,
     topologyTerminatorOptions,
@@ -67,12 +68,22 @@ class DIContainer extends Container {
         });
 
         this.set("metrics", (topology: string, node: string, measurement: string) => {
-            return new Metrics(
-                measurement,
-                {topology_id: topology, node_id: node},
-                metricsOptions.server,
-                metricsOptions.port,
-            );
+            const env = process.env.METRICS_SERVICE;
+            if (env === "mongo") {
+                return new MongoMetrics(
+                    measurement,
+                    {topology_id: topology, node_id: node},
+                    metricsOptions.server,
+                    metricsOptions.port,
+                );
+            } else {
+                return new Metrics(
+                    measurement,
+                    {topology_id: topology, node_id: node},
+                    metricsOptions.server,
+                    metricsOptions.port,
+                );
+            }
         });
 
         this.set("limiter", new Limiter(
