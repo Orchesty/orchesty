@@ -462,11 +462,11 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
         $client = $this->getClient();
         $this->setMinimalFakeData($topology, $node);
 
-        $processes = $client->selectCollection('metrics', 'processes');
-        $monolith  = $client->selectCollection('metrics', 'monolith');
-        $bridge    = $client->selectCollection('metrics', 'bridges');
-        $connector = $client->selectCollection('metrics', 'connectors');
-        $rabbitmq  = $client->selectCollection('metrics', 'rabbitmq');
+        $processes = $client->selectCollection('metrics', self::$container->getParameter('mongodb.counter_table'));
+        $monolith  = $client->selectCollection('metrics', self::$container->getParameter('mongodb.monolith_table'));
+        $bridge    = $client->selectCollection('metrics', self::$container->getParameter('mongodb.node_table'));
+        $connector = $client->selectCollection('metrics', self::$container->getParameter('mongodb.connector_table'));
+        $rabbitmq  = $client->selectCollection('metrics', self::$container->getParameter('mongodb.rabbit_table'));
 
         $doc = [
             'tags'   => [
@@ -654,11 +654,11 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
     {
         $client = $this->getClient();
 
-        $processes = $client->selectCollection('metrics', 'processes');
-        $monolith  = $client->selectCollection('metrics', 'monolith');
-        $bridge    = $client->selectCollection('metrics', 'bridges');
-        $connector = $client->selectCollection('metrics', 'connectors');
-        $rabbitmq  = $client->selectCollection('metrics', 'rabbitmq');
+        $processes = $client->selectCollection('metrics', self::$container->getParameter('mongodb.counter_table'));
+        $monolith  = $client->selectCollection('metrics', self::$container->getParameter('mongodb.monolith_table'));
+        $bridge    = $client->selectCollection('metrics', self::$container->getParameter('mongodb.node_table'));
+        $connector = $client->selectCollection('metrics', self::$container->getParameter('mongodb.connector_table'));
+        $rabbitmq  = $client->selectCollection('metrics', self::$container->getParameter('mongodb.rabbit_table'));
 
         $doc = [
             'tags'   => [
@@ -739,11 +739,11 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
     private function ensureCollections(): void
     {
         $client = $this->getClient();
-        $client->selectDB('metrics')->createCollection('rabbitmq');
-        $client->selectDB('metrics')->createCollection('connectors');
-        $client->selectDB('metrics')->createCollection('processes');
-        $client->selectDB('metrics')->createCollection('bridges');
-        $client->selectDB('metrics')->createCollection('monolith');
+        $client->selectDB('metrics')->createCollection(self::$container->getParameter('mongodb.counter_table'));
+        $client->selectDB('metrics')->createCollection(self::$container->getParameter('mongodb.monolith_table'));
+        $client->selectDB('metrics')->createCollection(self::$container->getParameter('mongodb.node_table'));
+        $client->selectDB('metrics')->createCollection(self::$container->getParameter('mongodb.connector_table'));
+        $client->selectDB('metrics')->createCollection(self::$container->getParameter('mongodb.rabbit_table'));
     }
 
 }
