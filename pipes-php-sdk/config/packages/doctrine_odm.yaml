@@ -2,6 +2,9 @@ parameters:
     mongo_host: mongo
 
 doctrine_mongodb:
+    default_connection: default
+    default_document_manager: default
+    default_database: pipes-php-sdk
     auto_generate_proxy_classes: true
     auto_generate_hydrator_classes: true
     auto_generate_persistent_collection_classes: 3
@@ -15,7 +18,11 @@ doctrine_mongodb:
             options:
                 connectTimeoutMS: 5000
                 socketTimeoutMS: 5000
-    default_database: pipes-php-sdk
+        metrics:
+            server: "mongodb://%mongo_host%"
+            options:
+                connectTimeoutMS: 5000
+                socketTimeoutMS: 5000
     document_managers:
         default:
             mappings:
@@ -44,3 +51,6 @@ doctrine_mongodb:
                     is_bundle: false
                     dir: "%kernel.root_dir%/../vendor/hanaboso/commons-bundle/src/FileStorage/Driver/Impl/Mongo"
                     prefix: Hanaboso\CommonsBundle\FileStorage\Driver\Impl\Mongo
+        metrics:
+            connection: metrics
+            database: metrics

@@ -16,16 +16,16 @@ class MonolithMetricsFields
 {
 
     /**
-     * @var int
+     * @var float
      *
-     * @ODM\Field(type="int", name="fpm_cpu_kernel_time")
+     * @ODM\Field(type="float", name="fpm_cpu_kernel_time")
      */
     private $kernelTime;
 
     /**
-     * @var int
+     * @var float
      *
-     * @ODM\Field(type="int", name="fpm_cpu_user_time")
+     * @ODM\Field(type="float", name="fpm_cpu_user_time")
      */
     private $userTime;
 
@@ -37,17 +37,17 @@ class MonolithMetricsFields
     private $created;
 
     /**
-     * @return int
+     * @return float
      */
-    public function getKernelTime(): int
+    public function getKernelTime(): float
     {
         return $this->kernelTime;
     }
 
     /**
-     * @return int
+     * @return float
      */
-    public function getUserTime(): int
+    public function getUserTime(): float
     {
         return $this->userTime;
     }

@@ -71,11 +71,17 @@ class PagerDutyConnector implements ConnectorInterface
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
-        $requestDto = new RequestDto(CurlManager::METHOD_GET, $this->getUrl($dto));
-        $requestDto->setHeaders([
-            'Accept'        => 'application/vnd.pagerduty+json;version=2',
-            'Authorization' => 'Token token=pu51uTEKrZcUrS5a9ev4',
-        ]);
+        $requestDto = new RequestDto(
+            CurlManager::METHOD_GET,
+            $this->getUrl($dto),
+            array_merge(
+                $dto->getHeaders(),
+                [
+                    'Accept'        => 'application/vnd.pagerduty+json;version=2',
+                    'Authorization' => 'Token token=pu51uTEKrZcUrS5a9ev4',
+                ]
+            )
+        );
 
         $response = $this->curlManager->send($requestDto);
         if ($response->getStatusCode() !== 200) {
