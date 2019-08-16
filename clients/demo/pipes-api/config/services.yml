@@ -9,6 +9,7 @@ parameters:
     activateLink: '%backend_host%/user/%s/activate'
     access_token_refresh_interval: 3600
     node_services_dirs: ['%kernel.project_dir%/config']
+    applications: ['%kernel.root_dir%/../vendor/hanaboso/pipes-connectors/src/Resources/config/']
 
 services:
     _defaults:

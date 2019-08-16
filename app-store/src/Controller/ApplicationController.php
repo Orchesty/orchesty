@@ -6,10 +6,6 @@ use Exception;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\HbPFApplication\Handler\ApplicationHandler;
-use Hanaboso\PipesPhpSdk\Authorization\Base\ApplicationInterface;
-use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
-use InvalidArgumentException;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -195,70 +191,6 @@ class ApplicationController extends AbstractFOSRestController
             return $this->getErrorResponse($e, 500);
         }
 
-    }
-
-    /**
-     * @Route("/applications/{key}/users/{user}/authorize", methods={"POST"})
-     *
-     * @param Request $request
-     * @param string  $key
-     * @param string  $user
-     *
-     * @return Response
-     */
-    public function authorizeApplicationAction(Request $request, string $key, string $user): Response
-    {
-        try {
-            $redirectUrl = $request->query->get('redirect_url', NULL);
-            if (!$redirectUrl) {
-                throw new InvalidArgumentException('Missing "redirect_url" query parameter.');
-            }
-
-            $this->applicationHandler->authorizeApplication($key, $user, $redirectUrl);
-
-            return $this->getResponse([]);
-        } catch (Exception|Throwable $e) {
-            return $this->getErrorResponse($e, 500);
-        }
-    }
-
-    /**
-     * @Route("/applications/{key}/users/{user}/authorize/token", methods={"GET"})
-     *
-     * @param Request $request
-     * @param string  $key
-     * @param string  $user
-     *
-     * @return Response
-     */
-    public function setAuthorizationTokenAction(Request $request, string $key, string $user): Response
-    {
-        try {
-            $url = $this->applicationHandler->saveAuthToken($key, $user, $request->request->all());
-
-            return new RedirectResponse($url[ApplicationInterface::REDIRECT_URL]);
-        } catch (Exception|Throwable $e) {
-            return $this->getErrorResponse($e, 500);
-        }
-    }
-
-    /**
-     * @Route("/applications/authorize/token", methods={"GET"})
-     *
-     * @param Request $request
-     *
-     * @return Response
-     */
-    public function setAuthorizationTokenQueryAction(Request $request): Response
-    {
-        try {
-            [$user, $key] = OAuth2Provider::stateDecode($request->get('state'));
-            $url = $this->applicationHandler->saveAuthToken($key, $user, $request->query->all());
-
-            return new RedirectResponse($url[ApplicationInterface::REDIRECT_URL]);
-        } catch (Exception|Throwable $e) {
-            return $this->getErrorResponse($e, 500);
-        }
     }
 
 }

@@ -25,7 +25,7 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
         $this->mockRedirect(HubspotApplication::HUBSPOT_URL, self::CLIENT_ID, 'contacts');
         $hubspotApplication = self::$container->get('hbpf.application.hubspot');
         $applicationInstall = DataProvider::getOauth2AppInstall(
-            'hubspot',
+            $hubspotApplication->getKey(),
             'user',
             'token',
             self::CLIENT_ID

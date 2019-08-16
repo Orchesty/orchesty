@@ -21,19 +21,25 @@ interface WebhookApplicationInterface extends ApplicationInterface
     public function getWebhookSubscriptions(): array;
 
     /**
+     * @param ApplicationInstall  $applicationInstall
      * @param WebhookSubscription $subscription
      * @param string              $url
      *
      * @return RequestDto
      */
-    public function getWebhookSubscribeRequestDto(WebhookSubscription $subscription, string $url): RequestDto;
+    public function getWebhookSubscribeRequestDto(
+        ApplicationInstall $applicationInstall,
+        WebhookSubscription $subscription,
+        string $url
+    ): RequestDto;
 
     /**
-     * @param string $id
+     * @param ApplicationInstall $applicationInstall
+     * @param string             $id
      *
      * @return RequestDto
      */
-    public function getWebhookUnsubscribeRequestDto(string $id): RequestDto;
+    public function getWebhookUnsubscribeRequestDto(ApplicationInstall $applicationInstall, string $id): RequestDto;
 
     /**
      * @param ResponseDto        $dto

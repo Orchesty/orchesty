@@ -3,10 +3,8 @@
 namespace Tests\Integration\Model\Application\Impl\Mailchimp\Connector;
 
 use Exception;
-use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\Connector\MailchimpCreateContactConnector;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\MailchimpApplication;
-use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\DataProvider;
 use Tests\MockCurlMethod;
@@ -56,24 +54,18 @@ final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
         );
 
         $applicationInstall->setSettings([
-            MailchimpApplication::AUDIENCE_ID => 'c9e7f10c5b',
-        ]);
-
-        $applicationInstall->setSettings([
-            OAuth2ApplicationInterface::API_KEYPOINT => $app->getApiEndpoint($applicationInstall),
+            MailchimpApplication::AUDIENCE_ID  => 'c9e7f10c5b',
+            MailchimpApplication::API_KEYPOINT => $app->getApiEndpoint($applicationInstall),
         ]);
 
         $this->pf($applicationInstall);
 
-        $dto = new ProcessDto();
-        $dto->setHeaders(['pf-user' => 'user', 'pf-key' => 'key']);
-        $data = (string) file_get_contents(__DIR__ . sprintf('/Data/response%s.json', $code), TRUE);
-
-        $response = $mailchimpCreateContactConnector->processAction(DataProvider::getProcessDto(
+        $dto      = DataProvider::getProcessDto(
             $app->getKey(),
             'user',
-            $data
-        ));
+            (string) file_get_contents(__DIR__ . sprintf('/Data/response%s.json', $code), TRUE)
+        );
+        $response = $mailchimpCreateContactConnector->processAction($dto);
 
         if ($isValid) {
             self::assertSuccessProcessResponse(

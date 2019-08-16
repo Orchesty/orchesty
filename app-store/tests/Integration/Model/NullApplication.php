@@ -68,10 +68,9 @@ class NullApplication extends BasicApplicationAbstract implements WebhookApplica
     public function getRequestDto(
         ApplicationInstall $applicationInstall,
         string $method,
-        ?string $url,
-        ?string $data
-    ): RequestDto
-    {
+        ?string $url = NULL,
+        ?string $data = NULL
+    ): RequestDto {
         $applicationInstall;
         $data;
         $url;
@@ -116,14 +115,19 @@ class NullApplication extends BasicApplicationAbstract implements WebhookApplica
     }
 
     /**
+     * @param ApplicationInstall  $applicationInstall
      * @param WebhookSubscription $subscription
      * @param string              $url
      *
      * @return RequestDto
      * @throws CurlException
      */
-    public function getWebhookSubscribeRequestDto(WebhookSubscription $subscription, string $url): RequestDto
-    {
+    public function getWebhookSubscribeRequestDto(
+        ApplicationInstall $applicationInstall,
+        WebhookSubscription $subscription,
+        string $url
+    ): RequestDto {
+        $applicationInstall;
         $subscription;
         $url;
 
@@ -131,13 +135,15 @@ class NullApplication extends BasicApplicationAbstract implements WebhookApplica
     }
 
     /**
-     * @param string $id
+     * @param ApplicationInstall $applicationInstall
+     * @param string             $id
      *
      * @return RequestDto
      * @throws CurlException
      */
-    public function getWebhookUnsubscribeRequestDto(string $id): RequestDto
+    public function getWebhookUnsubscribeRequestDto(ApplicationInstall $applicationInstall, string $id): RequestDto
     {
+        $applicationInstall;
         $id;
 
         return new RequestDto('', new Uri(''));

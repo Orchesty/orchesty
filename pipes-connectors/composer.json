@@ -2,7 +2,7 @@
   "name": "hanaboso/pipes-connectors",
   "license": "proprietary",
   "description": "Connectors for PipesFramework",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "autoload": {
     "psr-4": {
       "Hanaboso\\HbPFConnectors\\": "src/"
@@ -16,6 +16,7 @@
   "require": {
     "php": "^7.3",
     "ext-json": "*",
+    "hanaboso/app-store": "^1.0",
     "hanaboso/commons-bundle": "^1.1",
     "hanaboso/pipes-php-sdk": "^1.0",
     "symfony/monolog-bundle": "^3.4",
@@ -28,6 +29,13 @@
     {
       "type": "path",
       "url": "../pipes-php-sdk",
+      "options": {
+        "symlink": true
+      }
+    },
+    {
+      "type": "path",
+      "url": "../app-store",
       "options": {
         "symlink": true
       }

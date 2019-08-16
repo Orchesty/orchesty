@@ -36,7 +36,7 @@ final class WebhookApplication extends ApplicationAbstract implements WebhookApp
      */
     public function __construct()
     {
-        $this->subscriptions[] = new WebhookSubscription('node', 'topology');
+        $this->subscriptions[] = new WebhookSubscription('name', 'node', 'topology');
     }
 
     /**
@@ -83,9 +83,9 @@ final class WebhookApplication extends ApplicationAbstract implements WebhookApp
     public function getRequestDto(
         ApplicationInstall $applicationInstall,
         string $method,
-        ?string $url,
-        ?string $data): RequestDto
-    {
+        ?string $url = NULL,
+        ?string $data = NULL
+    ): RequestDto {
         $applicationInstall;
         $method;
         $url;
@@ -128,14 +128,19 @@ final class WebhookApplication extends ApplicationAbstract implements WebhookApp
     }
 
     /**
+     * @param ApplicationInstall  $applicationInstall
      * @param WebhookSubscription $subscription
      * @param string              $url
      *
      * @return RequestDto
      * @throws CurlException
      */
-    public function getWebhookSubscribeRequestDto(WebhookSubscription $subscription, string $url): RequestDto
-    {
+    public function getWebhookSubscribeRequestDto(
+        ApplicationInstall $applicationInstall,
+        WebhookSubscription $subscription,
+        string $url
+    ): RequestDto {
+        $applicationInstall;
         $subscription;
 
         return (new RequestDto(CurlManager::METHOD_POST, new Uri(self::SUBSCRIBE)))->setBody(json_encode([
@@ -144,13 +149,16 @@ final class WebhookApplication extends ApplicationAbstract implements WebhookApp
     }
 
     /**
-     * @param string $id
+     * @param ApplicationInstall $applicationInstall
+     * @param string             $id
      *
      * @return RequestDto
      * @throws CurlException
      */
-    public function getWebhookUnsubscribeRequestDto(string $id): RequestDto
+    public function getWebhookUnsubscribeRequestDto(ApplicationInstall $applicationInstall, string $id): RequestDto
     {
+        $applicationInstall;
+
         return (new RequestDto(CurlManager::METHOD_POST, new Uri(self::UNSUBSCRIBE)))->setBody(json_encode([
             'id' => $id,
         ], JSON_THROW_ON_ERROR));

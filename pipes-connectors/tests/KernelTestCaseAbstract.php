@@ -48,7 +48,7 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
             $scopes = sprintf('&scope=%s', $scopes);
         }
 
-        $redirectUrl = 'https://127.0.0.11/applications/authorize/token';
+        $redirectUrl = 'https://127.0.0.11/api/applications/authorize/token';
         $expectedUrl = sprintf(
             '%s?response_type=code&approval_prompt=auto&redirect_uri=%s&client_id=%s%s&state=state&access_type=offline',
             $baseUrl,

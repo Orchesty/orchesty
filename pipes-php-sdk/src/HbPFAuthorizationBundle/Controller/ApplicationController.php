@@ -40,52 +40,8 @@ class ApplicationController extends AbstractFOSRestController
         $this->applicationHandler = $applicationHandler;
     }
 
-
-
     /**
-     * @Route("/applications/{key}/users/{user}/settings", methods={"PUT"})
-     *
-     * @param Request $request
-     * @param string  $key
-     * @param string  $user
-     *
-     * @return Response
-     */
-    public function updateApplicationSettingsAction(Request $request, string $key, string $user): Response
-    {
-        try {
-            $data = $this->applicationHandler->updateApplicationSettings($key, $user, $request->request->all());
-
-            return $this->getResponse($data);
-        } catch (Exception|Throwable $e) {
-            return $this->getErrorResponse($e, 500);
-        }
-
-    }
-
-    /**
-     * @Route("/applications/{key}/users/{user}/password", methods={"PUT"})
-     *
-     * @param Request $request
-     * @param string  $key
-     * @param string  $user
-     *
-     * @return Response
-     */
-    public function saveApplicationPasswordAction(Request $request, string $key, string $user): Response
-    {
-        try {
-            $data = $this->applicationHandler->updateApplicationPassword($key, $user, $request->request->all());
-
-            return $this->getResponse($data);
-        } catch (Exception|Throwable $e) {
-            return $this->getErrorResponse($e, 500);
-        }
-
-    }
-
-    /**
-     * @Route("/applications/{key}/users/{user}/authorize", methods={"POST"})
+     * @Route("/applications/{key}/users/{user}/authorize", methods={"GET"})
      *
      * @param Request $request
      * @param string  $key

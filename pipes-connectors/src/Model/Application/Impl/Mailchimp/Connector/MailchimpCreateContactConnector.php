@@ -10,7 +10,6 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\MailchimpApplication;
-use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Authorization\Repository\ApplicationInstallRepository;
@@ -90,7 +89,7 @@ class MailchimpCreateContactConnector extends ConnectorAbstract
     public function processAction(ProcessDto $dto): ProcessDto
     {
         $applicationInstall = $this->repository->findUsersAppDefaultHeaders($dto);
-        $apiEndpoint        = $applicationInstall->getSettings()[OAuth2ApplicationInterface::API_KEYPOINT];
+        $apiEndpoint        = $applicationInstall->getSettings()[MailchimpApplication::API_KEYPOINT];
         $return             = $this->curlManager->send($this->application->getRequestDto(
             $applicationInstall,
             CurlManager::METHOD_POST,

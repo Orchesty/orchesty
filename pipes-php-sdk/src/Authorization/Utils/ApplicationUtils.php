@@ -20,12 +20,12 @@ final class ApplicationUtils
     public static function generateUrl(?ApplicationInstall $systemInstall = NULL): string
     {
         if ($systemInstall) {
-            return sprintf('/applications/%s/users/%s/authorize/token',
+            return sprintf('/api/applications/%s/users/%s/authorize/token',
                 $systemInstall->getKey(),
                 $systemInstall->getUser(),
             );
         } else {
-            return '/applications/authorize/token';
+            return '/api/applications/authorize/token';
         }
     }
 

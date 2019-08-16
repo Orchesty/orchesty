@@ -5,7 +5,6 @@ namespace Tests\Live\Model\Application\Impl\Mailchimp\Connector;
 use Exception;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\Connector\MailchimpCreateContactConnector;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\MailchimpApplication;
-use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\DataProvider;
 
@@ -36,12 +35,10 @@ final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
         );
 
         $applicationInstall->setSettings([
-            MailchimpApplication::AUDIENCE_ID => 'c9e7f10c5b',
+            MailchimpApplication::AUDIENCE_ID  => 'c9e7f10c5b',
+            MailchimpApplication::API_KEYPOINT => $app->getApiEndpoint($applicationInstall),
         ]);
 
-        $applicationInstall->setSettings([
-            OAuth2ApplicationInterface::API_KEYPOINT => $app->getApiEndpoint($applicationInstall),
-        ]);
         $this->pf($applicationInstall);
         $this->dm->clear();
 

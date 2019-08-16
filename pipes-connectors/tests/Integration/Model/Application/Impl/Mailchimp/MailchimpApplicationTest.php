@@ -23,15 +23,15 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
     public function testAutorize(): void
     {
         $this->mockRedirect(MailchimpApplication::MAILCHIMP_URL, self::CLIENT_ID);
-        $mailchimpApplication = self::$container->get('hbpf.application.mailchimp');
-        $applicationInstall   = DataProvider::getOauth2AppInstall(
-            'mailchimp',
+        $app                = self::$container->get('hbpf.application.mailchimp');
+        $applicationInstall = DataProvider::getOauth2AppInstall(
+            $app->getKey(),
             'user',
             'token123',
             self::CLIENT_ID,
             );
         $this->pf($applicationInstall);
-        $mailchimpApplication->authorize($applicationInstall);
+        $app->authorize($applicationInstall);
     }
 
 }

@@ -10,6 +10,14 @@ namespace Hanaboso\HbPFApplication\Model\Webhook;
 final class WebhookSubscription
 {
 
+    public const NAME     = 'name';
+    public const TOPOLOGY = 'topology';
+
+    /**
+     * @var string
+     */
+    private $name;
+
     /**
      * @var string
      */
@@ -28,15 +36,25 @@ final class WebhookSubscription
     /**
      * WebhookSubscription constructor.
      *
+     * @param string $name
      * @param string $node
      * @param string $topology
      * @param array  $parameters
      */
-    public function __construct(string $node, string $topology, array $parameters = [])
+    public function __construct(string $name, string $node, string $topology, array $parameters = [])
     {
+        $this->name       = $name;
         $this->node       = $node;
         $this->topology   = $topology;
         $this->parameters = $parameters;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
     }
 
     /**

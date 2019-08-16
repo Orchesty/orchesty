@@ -177,14 +177,16 @@ class ApplicationInstall
      */
     public function toArray(): array
     {
+        $expires = $this->getExpires();
+
         return [
             'id'                     => $this->getId(),
             ApplicationInstall::USER => $this->getUser(),
             ApplicationInstall::KEY  => $this->getKey(),
-            'expires'                => $this->getExpires(),
             'settings'               => $this->getSettings(),
-            'create'                 => $this->getCreated()->format(DateTimeUtils::DATE_TIME),
+            'created'                => $this->getCreated()->format(DateTimeUtils::DATE_TIME),
             'updated'                => $this->getUpdated()->format(DateTimeUtils::DATE_TIME),
+            'expires'                => $expires ? $expires->format(DateTimeUtils::DATE_TIME) : NULL,
         ];
     }
 

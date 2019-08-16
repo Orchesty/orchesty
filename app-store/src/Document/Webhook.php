@@ -29,6 +29,13 @@ class Webhook
      *
      * @ODM\Field(type="string")
      */
+    private $name;
+
+    /**
+     * @var string
+     *
+     * @ODM\Field(type="string")
+     */
     private $user;
 
     /**
@@ -81,6 +88,26 @@ class Webhook
     public function __construct()
     {
         $this->created = DateTimeUtils::getUtcDateTime();
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return Webhook
+     */
+    public function setName(string $name): Webhook
+    {
+        $this->name = $name;
+
+        return $this;
     }
 
     /**

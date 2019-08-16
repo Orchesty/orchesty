@@ -12,6 +12,7 @@ services:
         class: Hanaboso\HbPFApplication\Handler\ApplicationHandler
         arguments:
             - '@hbpf._application.manager.application'
+            - '@hbpf._application.manager.webhook'
 
     hbpf._application.handler.webhook:
         class: Hanaboso\HbPFApplication\Handler\WebhookHandler

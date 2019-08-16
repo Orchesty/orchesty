@@ -1,10 +1,12 @@
 services:
     _defaults:
         public: '%public.services%'
+
     hbpf.application.hubspot:
         class: Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\HubspotApplication
         arguments:
             - '@hbpf.providers.oauth2_provider'
+            - '@hbpf.transport.curl_manager'
 
     hbpf.application.mailchimp:
         class: Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\MailchimpApplication

@@ -6,6 +6,7 @@ use Exception;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\HbPFApplication\Handler\WebhookHandler;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Throwable;
@@ -38,15 +39,16 @@ class WebhookController extends AbstractFOSRestController
     /**
      * @Route("/webhook/applications/{key}/users/{user}/subscribe", methods={"POST"})
      *
-     * @param string $key
-     * @param string $user
+     * @param Request $request
+     * @param string  $key
+     * @param string  $user
      *
      * @return Response
      */
-    public function subscribeWebhooksAction(string $key, string $user): Response
+    public function subscribeWebhooksAction(Request $request, string $key, string $user): Response
     {
         try {
-            $this->webhookHandler->subscribeWebhooks($key, $user);
+            $this->webhookHandler->subscribeWebhooks($key, $user, $request->request->all());
 
             return $this->getResponse([]);
         } catch (Exception|Throwable $e) {
@@ -57,15 +59,16 @@ class WebhookController extends AbstractFOSRestController
     /**
      * @Route("/webhook/applications/{key}/users/{user}/unsubscribe", methods={"POST"})
      *
-     * @param string $key
-     * @param string $user
+     * @param Request $request
+     * @param string  $key
+     * @param string  $user
      *
      * @return Response
      */
-    public function unsubscribeWebhooksAction(string $key, string $user): Response
+    public function unsubscribeWebhooksAction(Request $request, string $key, string $user): Response
     {
         try {
-            $this->webhookHandler->unsubscribeWebhooks($key, $user);
+            $this->webhookHandler->unsubscribeWebhooks($key, $user, $request->request->all());
 
             return $this->getResponse([]);
         } catch (Exception|Throwable $e) {

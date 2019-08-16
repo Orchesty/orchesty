@@ -55,8 +55,8 @@ interface ApplicationInterface
     (
         ApplicationInstall $applicationInstall,
         string $method,
-        ?string $url,
-        ?string $data
+        ?string $url = NULL,
+        ?string $data = NULL
     ): RequestDto;
 
     /**

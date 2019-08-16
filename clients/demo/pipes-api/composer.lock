@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f599ac23946e47d2216919a1607a7ada",
+    "content-hash": "df8821100215d739af4dc95ea57fb225",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -2274,6 +2274,45 @@
             "time": "2019-07-15T15:47:06+00:00"
         },
         {
+            "name": "hanaboso/app-store",
+            "version": "1.1.1",
+            "dist": {
+                "type": "path",
+                "url": "../../../app-store",
+                "reference": "114b5de7fe7341444bfceeb59c89f9c116735810"
+            },
+            "require": {
+                "ext-json": "*",
+                "friendsofsymfony/rest-bundle": "^2.5",
+                "hanaboso/commons-bundle": "^1.1",
+                "hanaboso/pipes-php-sdk": "^1.0",
+                "php": "^7.3",
+                "symfony/monolog-bundle": "^3.4",
+                "symfony/symfony": "^4.3"
+            },
+            "require-dev": {
+                "hanaboso/php-check-utils": "^1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Hanaboso\\HbPFApplication\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "proprietary"
+            ],
+            "description": "App store for PipesFramework",
+            "transport-options": {
+                "symlink": true
+            }
+        },
+        {
             "name": "hanaboso/commons-bundle",
             "version": "1.1.21",
             "source": {
@@ -2397,19 +2436,58 @@
             "time": "2019-08-16T06:56:05+00:00"
         },
         {
+            "name": "hanaboso/pipes-connectors",
+            "version": "1.1.2",
+            "dist": {
+                "type": "path",
+                "url": "../../../pipes-connectors",
+                "reference": "bbdcfb1efff2539eb7d97f92deff06635200e328"
+            },
+            "require": {
+                "ext-json": "*",
+                "hanaboso/app-store": "^1.0",
+                "hanaboso/commons-bundle": "^1.1",
+                "hanaboso/pipes-php-sdk": "^1.0",
+                "php": "^7.3",
+                "symfony/monolog-bundle": "^3.4",
+                "symfony/symfony": "^4.3"
+            },
+            "require-dev": {
+                "hanaboso/php-check-utils": "^1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Hanaboso\\HbPFConnectors\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "proprietary"
+            ],
+            "description": "Connectors for PipesFramework",
+            "transport-options": {
+                "symlink": true
+            }
+        },
+        {
             "name": "hanaboso/pipes-framework",
-            "version": "1.1.0",
+            "version": "1.1.2",
             "dist": {
                 "type": "path",
                 "url": "../../../pf-bundles",
-                "reference": "cd7955b609fdb6a59cc80bdfd18352762e8a1b9f"
+                "reference": "72b5d293b52c9ca7a95e57ec0edbff85f1116bc1"
             },
             "require": {
                 "ext-json": "*",
                 "ext-mongodb": "*",
                 "ext-oauth": "*",
-                "friendsofsymfony/rest-bundle": "^2.5",
-                "hanaboso/acl-bundle": "^1.0",
+                "hanaboso/acl-bundle": "^1.1",
+                "hanaboso/app-store": "^1.1",
                 "hanaboso/email-service-bundle": "^1.0",
                 "hanaboso/mongo-data-grid": "^1.1",
                 "hanaboso/pipes-php-sdk": "^1.0",
@@ -2451,11 +2529,11 @@
         },
         {
             "name": "hanaboso/pipes-php-sdk",
-            "version": "1.0.5",
+            "version": "1.0.6",
             "dist": {
                 "type": "path",
                 "url": "../../../pipes-php-sdk",
-                "reference": "95ab188cf5b70a5d2ed8a58016b29a856633f845"
+                "reference": "28981abfc8d037c82c1737c294eaa8bdde486cb7"
             },
             "require": {
                 "ext-json": "*",

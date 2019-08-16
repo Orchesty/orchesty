@@ -4,6 +4,8 @@ use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
 use EmailServiceBundle\EmailServiceBundle;
 use FOS\RestBundle\FOSRestBundle;
 use Hanaboso\CommonsBundle\HbPFCommonsBundle;
+use Hanaboso\HbPFApplication\HbPFApplicationBundle;
+use Hanaboso\HbPFConnectors\HbPFConnectorsBundle;
 use Hanaboso\PipesFramework\HbPFApiGatewayBundle\HbPFApiGatewayBundle;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\HbPFConfiguratorBundle;
 use Hanaboso\PipesFramework\HbPFLogsBundle\HbPFLogsBundle;
@@ -49,4 +51,6 @@ return [
     HbPFLogsBundle::class            => ['all' => TRUE],
     HbPFNotificationBundle::class    => ['all' => TRUE],
     HbPFLongRunningNodeBundle::class => ['all' => TRUE],
+    HbPFApplicationBundle::class     => ['all' => TRUE],
+    HbPFConnectorsBundle::class      => ['all' => TRUE],
 ];

@@ -3,8 +3,12 @@
 namespace Hanaboso\HbPFApplication\Handler;
 
 use Exception;
+use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\HbPFApplication\Model\ApplicationManager;
+use Hanaboso\HbPFApplication\Model\Webhook\WebhookApplicationInterface;
+use Hanaboso\HbPFApplication\Model\Webhook\WebhookManager;
+use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\ApplicationInstallException;
 use InvalidArgumentException;
@@ -17,19 +21,30 @@ use InvalidArgumentException;
 class ApplicationHandler
 {
 
+    private const AUTHORIZED           = 'authorized';
+    private const WEBHOOK_SETTINGS     = 'webhookSettings';
+    private const APPLICATION_SETTINGS = 'applicationSettings';
+
     /**
      * @var ApplicationManager
      */
     private $applicationManager;
 
     /**
+     * @var WebhookManager
+     */
+    private $webhookManager;
+
+    /**
      * ApplicationHandler constructor.
      *
      * @param ApplicationManager $applicationManager
+     * @param WebhookManager     $webhookManager
      */
-    public function __construct(ApplicationManager $applicationManager)
+    public function __construct(ApplicationManager $applicationManager, WebhookManager $webhookManager)
     {
         $this->applicationManager = $applicationManager;
+        $this->webhookManager     = $webhookManager;
     }
 
     /**
@@ -37,7 +52,11 @@ class ApplicationHandler
      */
     public function getApplications(): array
     {
-        return $this->applicationManager->getApplications();
+        return [
+            'items' => array_map(function (string $key): array {
+                return $this->applicationManager->getApplication($key)->toArray();
+            }, $this->applicationManager->getApplications()),
+        ];
     }
 
     /**
@@ -58,15 +77,16 @@ class ApplicationHandler
      */
     public function getApplicationsByUser(string $user): array
     {
-        $applications = $this->applicationManager->getInstalledApplications($user);
+        return [
+            'items' => array_map(function (ApplicationInstall $applicationInstall): array {
+                $application = $this->applicationManager->getApplication($applicationInstall->getKey());
 
-        $res = [];
-        /** @var ApplicationInstall $app */
-        foreach ($applications as $app) {
-            $res[] = $app->toArray();
-        }
-
-        return $res;
+                return array_merge(
+                    $applicationInstall->toArray(),
+                    [self::AUTHORIZED => $application->isAuthorized($applicationInstall)]
+                );
+            }, $this->applicationManager->getInstalledApplications($user)),
+        ];
     }
 
     /**
@@ -75,10 +95,24 @@ class ApplicationHandler
      *
      * @return array
      * @throws ApplicationInstallException
+     * @throws Exception
      */
     public function getApplicationByKeyAndUser(string $key, string $user): array
     {
-        return $this->applicationManager->getInstalledApplicationDetail($key, $user)->toArray();
+        /** @var BasicApplicationAbstract&WebhookApplicationInterface $application */
+        $application        = $this->applicationManager->getApplication($key);
+        $applicationInstall = $this->applicationManager->getInstalledApplicationDetail($key, $user);
+
+        return array_merge(
+            $application->toArray(),
+            [
+                self::AUTHORIZED           => $application->isAuthorized($applicationInstall),
+                self::APPLICATION_SETTINGS => $application->getApplicationForm($applicationInstall),
+                self::WEBHOOK_SETTINGS     => $application->getApplicationType() === ApplicationTypeEnum::WEBHOOK ?
+                    $this->webhookManager->getWebhooks($application, $user) :
+                    [],
+            ],
+        );
     }
 
     /**
@@ -88,10 +122,21 @@ class ApplicationHandler
      * @return array
      * @throws ApplicationInstallException
      * @throws DateTimeException
+     * @throws Exception
      */
     public function installApplication(string $key, string $user): array
     {
-        return $this->applicationManager->installApplication($key, $user)->toArray();
+        /** @var BasicApplicationAbstract $application */
+        $application        = $this->applicationManager->getApplication($key);
+        $applicationInstall = $this->applicationManager->installApplication($key, $user);
+
+        return array_merge(
+            $application->toArray(),
+            [
+                self::AUTHORIZED           => $application->isAuthorized($applicationInstall),
+                self::APPLICATION_SETTINGS => $application->getApplicationForm($applicationInstall),
+            ],
+        );
     }
 
     /**
@@ -103,7 +148,13 @@ class ApplicationHandler
      */
     public function uninstallApplication(string $key, string $user): array
     {
-        return $this->applicationManager->uninstallApplication($key, $user)->toArray();
+        return array_merge(
+            $this->applicationManager->uninstallApplication($key, $user)->toArray(),
+            [
+                self::AUTHORIZED           => FALSE,
+                self::APPLICATION_SETTINGS => NULL,
+            ],
+        );
     }
 
     /**
@@ -116,7 +167,10 @@ class ApplicationHandler
      */
     public function updateApplicationSettings(string $key, string $user, array $data): array
     {
-        return $this->applicationManager->saveApplicationSettings($key, $user, $data)->toArray();
+        return array_merge(
+            $this->applicationManager->saveApplicationSettings($key, $user, $data)->toArray(),
+            [self::APPLICATION_SETTINGS => $this->applicationManager->getApplicationSettings($key, $user)],
+        );
     }
 
     /**

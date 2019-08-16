@@ -231,32 +231,34 @@ class ApplicationManager
 
     /**
      * @param ApplicationInstall $applicationInstall
+     * @param array              $data
      *
-     * @throws Exception
+     * @throws ApplicationInstallException
      */
-    public function subscribeWebhooks(ApplicationInstall $applicationInstall): void
+    public function subscribeWebhooks(ApplicationInstall $applicationInstall, array $data = []): void
     {
         /** @var WebhookApplicationInterface $application */
         $application = $this->loader->getApplication($applicationInstall->getKey());
 
         if (ApplicationTypeEnum::isWebhook($application->getApplicationType()) && $application->isAuthorized($applicationInstall)) {
-            $this->webhook->subscribeWebhooks($application, $applicationInstall->getUser());
+            $this->webhook->subscribeWebhooks($application, $applicationInstall->getUser(), $data);
         }
     }
 
     /**
      * @param ApplicationInstall $applicationInstall
+     * @param array              $data
      *
      * @throws ApplicationInstallException
      * @throws CurlException
      */
-    public function unsubscribeWebhooks(ApplicationInstall $applicationInstall): void
+    public function unsubscribeWebhooks(ApplicationInstall $applicationInstall, array $data = []): void
     {
         /** @var WebhookApplicationInterface $application */
         $application = $this->loader->getApplication($applicationInstall->getKey());
 
         if (ApplicationTypeEnum::isWebhook($application->getApplicationType()) && $application->isAuthorized($applicationInstall)) {
-            $this->webhook->unsubscribeWebhooks($application, $applicationInstall->getUser());
+            $this->webhook->unsubscribeWebhooks($application, $applicationInstall->getUser(), $data);
         }
     }
 

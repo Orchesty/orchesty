@@ -3,9 +3,8 @@
 namespace Tests\Controller;
 
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
-use Hanaboso\CommonsBundle\Utils\Base64;
 use Hanaboso\HbPFApplication\Handler\ApplicationHandler;
-use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
+use Hanaboso\PipesPhpSdk\Authorization\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Document\ApplicationInstall;
 use ReflectionException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -78,10 +77,15 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @throws DateTimeException
+     * @throws ReflectionException
      */
     public function testGetApplicationDetail(): void
     {
         $this->insertApp();
+        $application = self::createMock(ApplicationAbstract::class);
+        $application->method('toArray')->willReturn(['user' => 'bar']);
+        $application->method('getApplicationForm')->willReturn([]);
+        self::$container->set('hbpf.application.someApp', $application);
 
         self::$client->request('GET', '/applications/someApp/users/bar');
         /** @var Response $response */
@@ -96,6 +100,10 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
      */
     public function testInstallApplication(): void
     {
+        $application = self::createMock(ApplicationAbstract::class);
+        $application->method('toArray')->willReturn(['user' => 'bar']);
+        self::$container->set('hbpf.application.example', $application);
+
         self::$client->request('POST', '/applications/example/users/bar/install');
         /** @var Response $response */
         $response = self::$client->getResponse();
@@ -154,53 +162,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         $response = self::$client->getResponse();
 
         self::assertEquals('200', $response->getStatusCode());
-    }
-
-    /**
-     * @throws DateTimeException
-     * @throws ReflectionException
-     */
-    public function testAuthorization(): void
-    {
-        $this->mockApplicationHandler();
-        $this->insertApp();
-        self::$client->request('POST', '/applications/someApp/users/bar/authorize?redirect_url=somewhere');
-        /** @var Response $response */
-        $response = self::$client->getResponse();
-
-        self::assertEquals('200', $response->getStatusCode());
-    }
-
-    /**
-     * @throws DateTimeException
-     * @throws ReflectionException
-     */
-    public function testSetAuthorizationToken(): void
-    {
-        $this->mockApplicationHandler([BasicApplicationInterface::REDIRECT_URL => 'somewhere']);
-        $this->insertApp();
-        self::$client->request('GET', '/applications/someApp/users/bar/authorize/token');
-        /** @var Response $response */
-        $response = self::$client->getResponse();
-
-        self::assertEquals('302', $response->getStatusCode());
-    }
-
-    /**
-     * @throws DateTimeException
-     * @throws ReflectionException
-     */
-    public function testSetAuthorizationTokenQuery(): void
-    {
-        $this->mockApplicationHandler([BasicApplicationInterface::REDIRECT_URL => 'somewhere']);
-        $this->insertApp();
-
-        $encodedQuery = Base64::base64UrlEncode('user=bar&key=someApp');
-        self::$client->request('GET', sprintf('/applications/authorize/token?state=%s', $encodedQuery));
-        /** @var Response $response */
-        $response = self::$client->getResponse();
-
-        self::assertEquals('302', $response->getStatusCode());
     }
 
     /**

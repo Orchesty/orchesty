@@ -7,6 +7,7 @@ use Hanaboso\CommonsBundle\Enum\AuthorizationTypeEnum;
 use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
 use Hanaboso\PipesPhpSdk\Authorization\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Base\ApplicationInterface;
+use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
@@ -114,9 +115,12 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
      */
     public function setFrontendRedirectUrl(
         ApplicationInstall $applicationInstall,
-        string $redirectUrl): OAuth2ApplicationInterface
+        string $redirectUrl
+    ): OAuth2ApplicationInterface
     {
-        $applicationInstall->setSettings([ApplicationInterface::AUTHORIZATION_SETTINGS => [ApplicationInterface::REDIRECT_URL => $redirectUrl]]);
+        $settings                                                                                   = $applicationInstall->getSettings();
+        $settings[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::REDIRECT_URL] = $redirectUrl;
+        $applicationInstall->setSettings($settings);
 
         return $this;
     }
@@ -130,14 +134,17 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
      */
     public function setAuthorizationToken(
         ApplicationInstall $applicationInstall,
-        array $token): OAuth2ApplicationInterface
+        array $token
+    ): OAuth2ApplicationInterface
     {
-        $accessToken = $this->provider->getAccessToken($this->createDto($applicationInstall), $token);
-        if (array_key_exists('expires', $accessToken)) {
-            $applicationInstall->setExpires(DateTimeUtils::getUtcDateTimeFromTimeStamp($accessToken['expires']));
+        $token = $this->provider->getAccessToken($this->createDto($applicationInstall), $token);
+        if (array_key_exists('expires', $token)) {
+            $applicationInstall->setExpires(DateTimeUtils::getUtcDateTimeFromTimeStamp($token['expires']));
         }
 
-        $applicationInstall->setSettings([ApplicationInterface::AUTHORIZATION_SETTINGS => [ApplicationInterface::TOKEN => $token]]);
+        $settings                                                                            = $applicationInstall->getSettings();
+        $settings[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN] = $token;
+        $applicationInstall->setSettings($settings);
 
         return $this;
     }
@@ -193,6 +200,30 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
     protected function getTokens(ApplicationInstall $applicationInstall): array
     {
         return $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN];
+    }
+
+    /**
+     * @param ApplicationInstall $applicationInstall
+     * @param array              $settings
+     *
+     * @return ApplicationInstall
+     */
+    public function setApplicationSettings(ApplicationInstall $applicationInstall, array $settings): ApplicationInstall
+    {
+        $applicationInstall = parent::setApplicationSettings($applicationInstall, $settings);
+
+        foreach ($applicationInstall->getSettings()[ApplicationAbstract::FORM] ?? [] as $key => $value) {
+            if (in_array($key, [
+                OAuth2ApplicationInterface::CLIENT_ID,
+                OAuth2ApplicationInterface::CLIENT_SECRET,
+            ], TRUE)) {
+                $settings                                                          = $applicationInstall->getSettings();
+                $settings[BasicApplicationInterface::AUTHORIZATION_SETTINGS][$key] = $value;
+                $applicationInstall->setSettings($settings);
+            }
+        }
+
+        return $applicationInstall;
     }
 
 }

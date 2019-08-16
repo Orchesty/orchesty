@@ -9,6 +9,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\HbPFApplication\Document\Webhook;
 use Hanaboso\PipesPhpSdk\Authorization\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Authorization\Exception\ApplicationInstallException;
 
 /**
  * Class WebhookManager
@@ -60,25 +61,70 @@ final class WebhookManager
      * @param WebhookApplicationInterface $application
      * @param string                      $userId
      *
+     * @return array
+     */
+    public function getWebhooks(WebhookApplicationInterface $application, string $userId): array
+    {
+        /** @var Webhook[] $webhooks */
+        $webhooks = $this->dm->getRepository(Webhook::class)->findBy([
+            'application' => $application->getKey(),
+            'user'        => $userId,
+        ]);
+
+        return array_map(function (WebhookSubscription $subscription) use ($webhooks): array {
+            $topology = $subscription->getTopology();
+            $enabled  = FALSE;
+
+            $webhooks = array_filter($webhooks, function (Webhook $webhook) use ($subscription): bool {
+                return $webhook->getName() === $subscription->getName();
+            });
+
+            if ($webhooks) {
+                $topology = array_values($webhooks)[0]->getTopology();
+                $enabled  = TRUE;
+            }
+
+            return [
+                'name'     => $subscription->getName(),
+                'default'  => $subscription->getTopology() !== '',
+                'enabled'  => $enabled,
+                'topology' => $topology,
+            ];
+        }, $application->getWebhookSubscriptions());
+    }
+
+    /**
+     * @param WebhookApplicationInterface $application
+     * @param string                      $userId
+     * @param array                       $data
+     *
      * @throws Exception
      */
-    public function subscribeWebhooks(WebhookApplicationInterface $application, string $userId): void
+    public function subscribeWebhooks(WebhookApplicationInterface $application, string $userId, array $data = []): void
     {
         foreach ($application->getWebhookSubscriptions() as $subscription) {
-            $token     = bin2hex(random_bytes(self::LENGTH));
-            $request   = $application->getWebhookSubscribeRequestDto(
+            if (!$data && !$subscription->getTopology() || $data && $data[WebhookSubscription::NAME] !== $subscription->getName()) {
+                continue;
+            }
+
+            $name               = $data[WebhookSubscription::TOPOLOGY] ?? $subscription->getTopology();
+            $token              = bin2hex(random_bytes(self::LENGTH));
+            $applicationInstall = $this->repository->findUserApp($application->getKey(), $userId);
+            $request            = $application->getWebhookSubscribeRequestDto(
+                $applicationInstall,
                 $subscription,
-                sprintf(self::URL, $this->hostname, $subscription->getTopology(), $subscription->getNode(), $token)
+                sprintf(self::URL, $this->hostname, $name, $subscription->getNode(), $token)
             );
-            $webhookId = $application->processWebhookSubscribeResponse(
+            $webhookId          = $application->processWebhookSubscribeResponse(
                 $this->manager->send($request),
-                $this->repository->findUserApp($application->getKey(), $userId)
+                $applicationInstall
             );
 
             $webhook = (new Webhook())
+                ->setName($subscription->getName())
                 ->setUser($userId)
                 ->setNode($subscription->getNode())
-                ->setTopology($subscription->getTopology())
+                ->setTopology($name)
                 ->setApplication($application->getKey())
                 ->setWebhookId($webhookId)
                 ->setToken($token);
@@ -91,11 +137,16 @@ final class WebhookManager
     /**
      * @param WebhookApplicationInterface $application
      * @param string                      $userId
+     * @param array                       $data
      *
      * @throws CurlException
+     * @throws ApplicationInstallException
      */
-    public function unsubscribeWebhooks(WebhookApplicationInterface $application, string $userId): void
-    {
+    public function unsubscribeWebhooks(
+        WebhookApplicationInterface $application,
+        string $userId,
+        array $data = []
+    ): void {
         /** @var Webhook[] $webhooks */
         $webhooks = $this->dm->getRepository(Webhook::class)->findBy([
             Webhook::APPLICATION => $application->getKey(),
@@ -103,7 +154,14 @@ final class WebhookManager
         ]);
 
         foreach ($webhooks as $webhook) {
-            $request = $application->getWebhookUnsubscribeRequestDto($webhook->getWebhookId());
+            if ($data && $data[WebhookSubscription::TOPOLOGY] !== $webhook->getTopology()) {
+                continue;
+            }
+
+            $request = $application->getWebhookUnsubscribeRequestDto(
+                $this->repository->findUserApp($application->getKey(), $userId),
+                $webhook->getWebhookId()
+            );
             if ($application->processWebhookUnsubscribeResponse($this->manager->send($request))) {
                 $this->dm->remove($webhook);
             } else {

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "635c34cf8664c14204889d717f0f8b73",
+    "content-hash": "221c35f25ebcdfb39f30fe6ffb4f8979",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -2127,6 +2127,45 @@
             "time": "2019-07-01T23:21:34+00:00"
         },
         {
+            "name": "hanaboso/app-store",
+            "version": "1.1.1",
+            "dist": {
+                "type": "path",
+                "url": "../app-store",
+                "reference": "114b5de7fe7341444bfceeb59c89f9c116735810"
+            },
+            "require": {
+                "ext-json": "*",
+                "friendsofsymfony/rest-bundle": "^2.5",
+                "hanaboso/commons-bundle": "^1.1",
+                "hanaboso/pipes-php-sdk": "^1.0",
+                "php": "^7.3",
+                "symfony/monolog-bundle": "^3.4",
+                "symfony/symfony": "^4.3"
+            },
+            "require-dev": {
+                "hanaboso/php-check-utils": "^1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Hanaboso\\HbPFApplication\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "proprietary"
+            ],
+            "description": "App store for PipesFramework",
+            "transport-options": {
+                "symlink": true
+            }
+        },
+        {
             "name": "hanaboso/commons-bundle",
             "version": "1.1.23",
             "source": {
@@ -2216,11 +2255,11 @@
         },
         {
             "name": "hanaboso/pipes-php-sdk",
-            "version": "1.0.5",
+            "version": "1.0.6",
             "dist": {
                 "type": "path",
                 "url": "../pipes-php-sdk",
-                "reference": "95ab188cf5b70a5d2ed8a58016b29a856633f845"
+                "reference": "28981abfc8d037c82c1737c294eaa8bdde486cb7"
             },
             "require": {
                 "ext-json": "*",
