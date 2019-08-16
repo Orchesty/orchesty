@@ -33,4 +33,9 @@ export default dispatch => [
     caption: 'Cron Tasks',
     action: () => dispatch(applicationActions.openPage('cron_tasks_list')),
   },
+  {
+    type: menuItemType.ACTION,
+    caption: 'Application Store',
+    action: () => dispatch(applicationActions.openPage('app_store_list')),
+  },
 ];
