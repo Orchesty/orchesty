@@ -78,6 +78,22 @@ export default {
     needAuth: true,
     simpleRoute: '/cron_tasks',
   },
+  app_store_list: {
+    key: 'app_store_list',
+    caption: 'Application Store',
+    needAuth: true,
+    simpleRoute: '/app_store',
+  },
+  app_store_detail: {
+    key: 'app_store_detail',
+    caption: 'Application Detail',
+    needAuth: true,
+    createUrl: ({ args: { application } }) => ({ path: `/app_store/${application}` }),
+    acceptUrl: path => {
+      const match = /\app_store\/(\w+)/g.exec(path);
+      return match && match[1] ? { args: { application: match[1] } } : false;
+    }
+  },
   log_list: {
     key: 'log_list',
     caption: 'Log list',

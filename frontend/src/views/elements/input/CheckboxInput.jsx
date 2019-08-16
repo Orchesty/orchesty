@@ -25,7 +25,7 @@ class CheckBoxInput extends React.Component {
   }
 
   render(){
-    const {input, label, readOnly, description, input: {value}} = this.props;
+    const {input, label, readOnly,  meta: { error } = {}, description, input: {value}, showErrors } = this.props;
 
     return (
         <div>
@@ -34,6 +34,7 @@ class CheckBoxInput extends React.Component {
             <ins className="iCheck-helper" onClick={this._redirectClick}/>
           </div>
           {description && <span className="icheckbox-description">{description}</span>}
+          {showErrors && error && <ul className="parsley-errors-list filled"><li>{error}</li></ul>}
         </div>
     );
   }

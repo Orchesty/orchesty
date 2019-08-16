@@ -11,6 +11,7 @@ import category from './category';
 import authorization from './authorization';
 import humanTask from './humanTask';
 import cronTask from './cronTasks';
+import appStore from './appStore';
 import auth from './auth';
 import process from './process';
 import server from './server';
@@ -32,6 +33,7 @@ const rootReducer = combineReducers({
   authorization,
   humanTask,
   cronTask,
+  appStore,
   process,
   server,
   form,
