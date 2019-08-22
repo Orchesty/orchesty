@@ -1,7 +1,7 @@
 parameters:
     # Kapacitor
     kapacitor.host: kapacitor
-    kapacitor.port: 9100
+    kapacitor.port: 9092
     # InfluxDb
     influx.host: influxdb
     influx.udp_port: 8089
