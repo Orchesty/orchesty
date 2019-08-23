@@ -56,6 +56,8 @@ class ConnectorController extends AbstractFOSRestController implements LoggerAwa
      * @param Request $request
      *
      * @return Response
+     * @throws OnRepeatException
+     * @throws PipesFrameworkExceptionAbstract
      */
     public function processEventAction(string $id, Request $request): Response
     {
@@ -63,6 +65,8 @@ class ConnectorController extends AbstractFOSRestController implements LoggerAwa
             $data = $this->connectorHandler->processEvent($id, $request);
 
             return $this->getResponse($data->getData(), 200, ControllerUtils::createHeaders($data->getHeaders()));
+        } catch (PipesFrameworkExceptionAbstract | OnRepeatException $e) {
+            throw $e;
         } catch (Exception|Throwable $e) {
             $this->logger->error($e->getMessage(), ['exception' => $e]);
 
