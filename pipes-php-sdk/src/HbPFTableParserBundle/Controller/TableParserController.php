@@ -4,6 +4,8 @@ namespace Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Controller;
 
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Hanaboso\CommonsBundle\Exception\FileStorageException;
+use Hanaboso\CommonsBundle\Exception\OnRepeatException;
+use Hanaboso\CommonsBundle\Exception\PipesFrameworkExceptionAbstract;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler;
 use Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandlerException;
@@ -44,12 +46,18 @@ class TableParserController extends AbstractFOSRestController
      * @param Request $request
      *
      * @return Response
+     * @throws OnRepeatException
+     * @throws PipesFrameworkExceptionAbstract
      */
     public function toJsonAction(Request $request): Response
     {
         try {
             return $this->getResponse($this->tableParserHandler->parseToJson($request->request->all()));
-        } catch (TableParserHandlerException | FileStorageException | Throwable $e) {
+        } catch (TableParserHandlerException | FileStorageException $e) {
+            return $this->getErrorResponse($e);
+        } catch (PipesFrameworkExceptionAbstract | OnRepeatException $e) {
+            throw $e;
+        } catch (Throwable $e) {
             return $this->getErrorResponse($e);
         }
     }
