@@ -2,7 +2,7 @@
 
 TAG?=dev
 IMAGE=dkr.hanaboso.net/pipes/pipes/php-dev:${TAG}
-BASE=dkr.hanaboso.net/hanaboso/symfony3-base:php-7.3
+BASE=dkr.hanaboso.net/hanaboso/php-base:php-7.3
 DC=docker-compose
 DE=docker-compose exec -T php-dev
 DEC=docker-compose exec -T php-dev composer

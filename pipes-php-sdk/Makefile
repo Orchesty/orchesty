@@ -1,8 +1,8 @@
 .PHONY: docker-up docker-up-force docker-down-clean test codesniffer phpstan phpunit
 
 TAG?=dev
-IMAGE=dkr.hanaboso.net/pipes/php-sdk/php-dev:${TAG}
-BASE=dkr.hanaboso.net/hanaboso/symfony3-base:php-7.3
+IMAGE=dkr.hanaboso.net/pipes/pipes/php-sdk/php-dev:${TAG}
+BASE=dkr.hanaboso.net/hanaboso/php-base:php-7.3
 DC=docker-compose
 DE=docker-compose exec -T php-dev
 DEC=docker-compose exec -T php-dev composer
@@ -31,12 +31,6 @@ composer-update:
 
 composer-outdated:
 	$(DEC) outdated
-
-composer-require:
-	$(DEC) require ${package}
-
-composer-require-dev:
-	$(DEC) require --dev ${package}
 
 composer-deploy:
 	$(DEC) update --prefer-dist --no-dev -o

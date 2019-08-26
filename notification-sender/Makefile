@@ -3,7 +3,7 @@
 DC=docker-compose
 DE=docker-compose exec -T app
 IMAGE=dkr.hanaboso.net/pipes/notification-sender
-BASE=dkr.hanaboso.net/hanaboso/symfony3-base:php-7.3
+BASE=dkr.hanaboso.net/hanaboso/php-base:php-7.3
 
 .env:
 	@if ! [ -f .env ]; then \

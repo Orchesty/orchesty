@@ -13,7 +13,6 @@ services:
     environment:
       - DEV_UID=${DEV_UID}
       - DEV_GID=${DEV_GID}
-      - COMPOSER_HOME=/home/dev/.composer
       - PHP_IDE_CONFIG=${PHP_IDE_CONFIG}
       - GENERATOR_PATH=${GENERATOR_PATH}
       - PROJECT_SOURCE_PATH=${PROJECT_SOURCE_PATH}
@@ -27,7 +26,7 @@ services:
         - mongo:/data/db
 
   mariadb:
-      image: mariadb:10.3
+      image: mariadb:latest
       command: "mysqld --innodb_flush_method=nosync"
       environment:
        MYSQL_ROOT_PASSWORD: root
