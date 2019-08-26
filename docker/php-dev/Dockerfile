@@ -1,4 +1,4 @@
-FROM dkr.hanaboso.net/hanaboso/symfony3-base:php-7.3
+FROM dkr.hanaboso.net/hanaboso/php-base:php-7.3
 
 RUN apt-get update && \
     apt-get install -y git mc sudo nginx-extras socat libpng-dev && \
