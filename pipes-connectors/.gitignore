@@ -3,3 +3,4 @@
 /app
 /vendor
 /var
+docker-compose.ci.yml

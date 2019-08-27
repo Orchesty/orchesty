@@ -12,6 +12,10 @@ BASE=dkr.hanaboso.net/hanaboso/php-base:php-7.3
 			.env.dist >> .env; \
 	fi;
 
+docker-compose.ci.yml:
+	# Comment out any port forwarding
+	sed -r 's/^(\s+ports:)$$/#\1/g; s/^(\s+- \$$\{DEV_IP\}.*)$$/#\1/g' docker-compose.yml > docker-compose.ci.yml
+
 # Docker
 dev-build: .env
 	cd ./docker/dev/ && docker pull $(BASE) && docker build -t $(IMAGE):dev . && docker push $(IMAGE):dev
