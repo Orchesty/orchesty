@@ -103,6 +103,8 @@ class RepeaterListener implements EventSubscriberInterface, LoggerAwareInterface
 
         if ($currentHop < $maxHop) {
             $dto->addHeader($repeatHops, (string) ++$currentHop);
+        } else {
+            $dto->setStopProcess(ProcessDto::STOP_AND_FAILED);
         }
 
         $this->logger->info(
