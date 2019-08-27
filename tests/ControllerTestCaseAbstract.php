@@ -148,7 +148,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     protected function processResponse(Response $response): ControllerResponse
     {
         try {
-            $content      = json_decode($response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR);
+            $content      = json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR);
             $innerContent = [];
 
             if (!is_array($content)) {
