@@ -2,7 +2,6 @@
 
 namespace Demo\CustomNode;
 
-use EmailServiceBundle\Utils\PipesHeaders;
 use Exception;
 use Hanaboso\CommonsBundle\Monolog\LoggerContext;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
@@ -70,8 +69,9 @@ class FilterStockExchange implements CustomNodeInterface, LoggerAwareInterface
         }
 
         $dto->setData('');
+        $dto->setStopProcess(ProcessDto::DO_NOT_CONTINUE);
 
-        return $dto->addHeader(PipesHeaders::createKey(PipesHeaders::RESULT_CODE), '1003');
+        return $dto;
     }
 
     /**

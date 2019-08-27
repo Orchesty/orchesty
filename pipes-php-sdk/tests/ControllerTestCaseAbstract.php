@@ -66,9 +66,6 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
         $cl           = self::createClient([], []);
         self::$client = $cl;
         $this->dm->getConnection()->dropDatabase('pipes-php-sdk');
-
-        // Login
-        //        $this->loginUser('test@example.com', 'password');
     }
 
     /**
@@ -150,7 +147,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
      */
     protected function returnResponse(Response $response): object
     {
-        $content = json_decode($response->getContent(), TRUE);
+        $content = json_decode((string) $response->getContent(), TRUE);
         if (isset($content['error_code'])) {
             $content['errorCode'] = $content['error_code'];
             unset($content['error_code']);

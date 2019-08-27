@@ -143,7 +143,7 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
         /** @var Response $response */
         $response = self::$client->getResponse();
 
-        $res = json_decode($response->getContent(), TRUE);
+        $res = json_decode((string) $response->getContent(), TRUE);
 
         if (isset($res['error_code'])) {
             return parent::sendPost($url, $parameters, $content);
@@ -151,7 +151,7 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
 
         return (object) [
             'status'  => $response->getStatusCode(),
-            'content' => json_decode($response->getContent()),
+            'content' => json_decode((string) $response->getContent()),
         ];
     }
 

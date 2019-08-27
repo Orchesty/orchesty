@@ -29,7 +29,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         /** @var Response $response */
         $response = self::$client->getResponse();
 
-        self::assertIsArray(json_decode($response->getContent(), TRUE));
+        self::assertIsArray(json_decode((string) $response->getContent(), TRUE));
         self::assertEquals(200, $response->getStatusCode());
 
         self::$client->request('GET', '/applicationsss');
@@ -50,7 +50,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         /** @var Response $response */
         $response = self::$client->getResponse();
 
-        self::assertTrue(in_array($application, json_decode($response->getContent(), TRUE)));
+        self::assertTrue(in_array($application, json_decode((string) $response->getContent(), TRUE)));
         self::assertEquals(200, $response->getStatusCode());
 
         self::$client->request('GET', sprintf('/applications/%s', 'example'));
@@ -72,7 +72,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         /** @var Response $response */
         $response = self::$client->getResponse();
 
-        self::assertEquals('bar', json_decode($response->getContent(), TRUE)[0][ApplicationInstall::USER]);
+        self::assertEquals('bar', json_decode((string) $response->getContent(), TRUE)[0][ApplicationInstall::USER]);
         self::assertEquals('200', $response->getStatusCode());
     }
 
@@ -87,7 +87,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         /** @var Response $response */
         $response = self::$client->getResponse();
 
-        self::assertEquals('bar', json_decode($response->getContent(), TRUE)[ApplicationInstall::USER]);
+        self::assertEquals('bar', json_decode((string) $response->getContent(), TRUE)[ApplicationInstall::USER]);
         self::assertEquals('200', $response->getStatusCode());
     }
 
@@ -100,7 +100,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         /** @var Response $response */
         $response = self::$client->getResponse();
 
-        self::assertEquals('bar', json_decode($response->getContent(), TRUE)[ApplicationInstall::USER]);
+        self::assertEquals('bar', json_decode((string) $response->getContent(), TRUE)[ApplicationInstall::USER]);
         self::assertEquals('200', $response->getStatusCode());
     }
 
@@ -115,7 +115,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         /** @var Response $response */
         $response = self::$client->getResponse();
 
-        self::assertEquals('bar', json_decode($response->getContent(), TRUE)[ApplicationInstall::USER]);
+        self::assertEquals('bar', json_decode((string) $response->getContent(), TRUE)[ApplicationInstall::USER]);
         self::assertEquals('200', $response->getStatusCode());
 
         $this->setupClient();
@@ -123,7 +123,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         /** @var Response $response */
         $response = self::$client->getResponse();
 
-        self::assertEquals('2001', json_decode($response->getContent(), TRUE)['error_code']);
+        self::assertEquals('2001', json_decode((string) $response->getContent(), TRUE)['error_code']);
 
     }
 
@@ -139,7 +139,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         $response = self::$client->getResponse();
 
         self::assertEquals('200', $response->getStatusCode());
-        self::assertEquals('test1', json_decode($response->getContent(), TRUE)['new_settings']);
+        self::assertEquals('test1', json_decode((string) $response->getContent(), TRUE)['new_settings']);
     }
 
     /**

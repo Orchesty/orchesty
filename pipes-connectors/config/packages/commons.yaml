@@ -16,3 +16,6 @@ parameters:
 
     cron_host: 'http://cron-api:5000'
     starting_point_host: 'http://starting-point'
+
+    backend_host: 'https://127.0.0.11'
+

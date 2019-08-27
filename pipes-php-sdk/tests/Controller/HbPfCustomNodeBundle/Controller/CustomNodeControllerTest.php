@@ -40,7 +40,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
         $response = self::$client->getResponse();
 
         self::assertEquals(200, $response->getStatusCode());
-        self::assertEquals(['test' => 'test'], json_decode($response->getContent(), TRUE));
+        self::assertEquals(['test' => 'test'], json_decode((string) $response->getContent(), TRUE));
     }
 
     /**
@@ -57,7 +57,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
         $response = self::$client->getResponse();
 
         self::assertEquals(200, $response->getStatusCode());
-        self::assertEquals([], json_decode($response->getContent(), TRUE));
+        self::assertEquals([], json_decode((string) $response->getContent(), TRUE));
     }
 
     /**
@@ -96,7 +96,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
         /** @var Response $response */
         $response = self::$client->getResponse();
 
-        self::assertTrue(in_array('microsleep500000', json_decode($response->getContent())));
+        self::assertTrue(in_array('microsleep500000', json_decode((string) $response->getContent())));
         self::assertEquals(200, $response->getStatusCode());
     }
 

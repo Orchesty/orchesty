@@ -33,7 +33,7 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
 
         /** @var JsonResponse $response */
         $response = self::$client->getResponse();
-        $content  = json_decode($response->getContent(), TRUE);
+        $content  = json_decode((string) $response->getContent(), TRUE);
 
         self::assertEquals(200, $response->getStatusCode());
         self::assertEquals($returnValue, $content);
@@ -53,7 +53,7 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
 
         /** @var JsonResponse $response */
         $response = self::$client->getResponse();
-        $content  = json_decode($response->getContent(), TRUE);
+        $content  = json_decode((string) $response->getContent(), TRUE);
 
         self::assertEquals(200, $response->getStatusCode());
         self::assertEquals($returnValue, $content);
@@ -73,7 +73,7 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
 
         /** @var JsonResponse $response */
         $response = self::$client->getResponse();
-        $content  = json_decode($response->getContent(), TRUE);
+        $content  = json_decode((string) $response->getContent(), TRUE);
 
         self::assertEquals(200, $response->getStatusCode());
         self::assertEquals($returnValue, $content);

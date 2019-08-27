@@ -65,14 +65,12 @@ class NodeController extends AbstractFOSRestController
             case 'connector':
                 return $this->forward('HbPFConnectorBundle:Connector:listOfConnectors');
                 break;
+            case 'joiner':
             case 'custom_node':
                 return $this->forward('HbPFCustomNodeBundle:CustomNode:listOfCustomNodes');
                 break;
             case 'long_running':
                 return $this->forward('HbPFLongRunningNodeBundle:LongRunningNode:listOfLongRunningNodes');
-                break;
-            case 'joiner':
-                return $this->forward('HbPFCustomNodeBundle:CustomNode:listOfCustomNodes');
                 break;
             case 'mapper':
                 return $this->forward('HbPFMapperBundle:Mapper:listOfMappers');
@@ -115,7 +113,7 @@ class NodeController extends AbstractFOSRestController
      */
     private function getForwardContent(string $path): array
     {
-        return json_decode($this->forward($path)->getContent(), TRUE, 512, JSON_THROW_ON_ERROR);
+        return json_decode((string) $this->forward($path)->getContent(), TRUE, 512, JSON_THROW_ON_ERROR);
     }
 
 }

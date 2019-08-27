@@ -12,6 +12,8 @@ services:
     environment:
       - DEV_UID=${DEV_UID}
       - DEV_GID=${DEV_GID}
+      - PHP_WEBROOT=/var/www/pipes/pipes-connectors/public
+      - PHP_IDE_CONFIG=${PHP_IDE_CONFIG}
 
   mongo:
       image: mongo:3.6

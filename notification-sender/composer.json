@@ -2,7 +2,7 @@
   "name": "hanaboso/notification-sender",
   "license": "proprietary",
   "description": "NotificationSender for Symfony",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "autoload": {
     "psr-4": {
       "Hanaboso\\NotificationSender\\": "src/"
@@ -23,6 +23,7 @@
     "hanaboso/commons-bundle": "^1.1",
     "hanaboso/email-service-bundle": "^1.0",
     "hanaboso/rabbit-mq-bundle": "^1.1",
+    "jms/serializer-bundle": "^3.4",
     "symfony/symfony": "^4.3"
   },
   "require-dev": {

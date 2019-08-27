@@ -62,13 +62,13 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
         /** @var Response $res */
         $res = self::$client->getResponse();
         self::assertEquals(200, $res->getStatusCode());
-        self::assertEquals(2, count(json_decode($res->getContent(), TRUE)['items']));
+        self::assertEquals(2, count(json_decode((string) $res->getContent(), TRUE)['items']));
 
         $this->sendGet('/longRunning/id/topology/topo/node/node0/getTasks');
         /** @var Response $res */
         $res = self::$client->getResponse();
         self::assertEquals(200, $res->getStatusCode());
-        self::assertEquals(1, count(json_decode($res->getContent(), TRUE)['items']));
+        self::assertEquals(1, count(json_decode((string) $res->getContent(), TRUE)['items']));
     }
 
 }

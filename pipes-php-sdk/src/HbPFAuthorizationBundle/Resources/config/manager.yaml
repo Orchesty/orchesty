@@ -1,0 +1,16 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf.authorization.manager:
+        class: Hanaboso\PipesPhpSdk\Authorization\Manager\ApplicationManager
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.authorization.loader'
+
+
+    hbpf.authorization.loader:
+        class: Hanaboso\PipesPhpSdk\Authorization\Loader\ApplicationLoader
+        public: true
+        arguments:
+            - '@service_container'
