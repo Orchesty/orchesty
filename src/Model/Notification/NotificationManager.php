@@ -111,6 +111,12 @@ final class NotificationManager implements LoggerAwareInterface
                 NotificationSettings::CLASS_NAME => $class,
             ]);
 
+            $this->logger->debug(sprintf(
+                'sending notification from sender manager: [settings=%s] [parentClass=%s]',
+                json_encode($settings->toArray($event, $class)),
+                get_parent_class($handler)
+            ));
+
             if ($settings) {
                 try {
                     switch (get_parent_class($handler)) {
