@@ -81,15 +81,16 @@ final class MailchimpCreateConntactConnectorTest extends DatabaseTestCaseAbstrac
             $data
         ));
 
-        self::assertProcessResponse(
-            $response,
-            sprintf('response%s.json', $code),
-            );
-
         if ($isValid) {
-            self::assertArrayNotHasKey('pf-result-code', $response->getHeaders());
+            self::assertSuccessProcessResponse(
+                $response,
+                sprintf('response%s.json', $code),
+            );
         } else{
-            self::assertEquals($response->getHeaders()['pf-result-code'], ProcessDto::STOP_AND_FAILED);
+            self::assertFailedProcessResponse(
+                $response,
+                sprintf('response%s.json', $code),
+            );
         }
     }
 

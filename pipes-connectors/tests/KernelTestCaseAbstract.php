@@ -100,20 +100,6 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
     }
 
     /**
-     * @param ProcessDto $response
-     * @param string     $fileName
-     */
-    protected function assertProcessResponse(ProcessDto $response, string $fileName): void
-    {
-        $json = $this->getFile($fileName);
-
-        $json         = json_decode((string) $json, TRUE, 512, JSON_THROW_ON_ERROR);
-        $responseJson = json_decode((string) $response->getData(), TRUE, 512, JSON_THROW_ON_ERROR);
-
-        self::assertEquals($json, $responseJson);
-    }
-
-    /**
      * @param string $fileName
      *
      * @return string
@@ -128,6 +114,48 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
             implode('/', $exploded),
             $fileName,
         ), TRUE);
+    }
+
+    /**
+     * @param ProcessDto $response
+     * @param string     $fileName
+     */
+    protected function assertSuccessProcessResponse(ProcessDto $response, string $fileName): void
+    {
+        self::assertProcessResponse(
+            $response,
+            $fileName,
+            );
+
+        self::assertArrayNotHasKey('pf-result-code', $response->getHeaders());
+    }
+
+    /**
+     * @param ProcessDto $response
+     * @param string     $fileName
+     */
+    protected function assertFailedProcessResponse(ProcessDto $response, string $fileName): void
+    {
+        self::assertProcessResponse(
+            $response,
+            $fileName,
+            );
+
+        self::assertEquals($response->getHeaders()['pf-result-code'], ProcessDto::STOP_AND_FAILED);
+    }
+
+    /**
+     * @param ProcessDto $response
+     * @param string     $fileName
+     */
+    private function assertProcessResponse(ProcessDto $response, string $fileName): void
+    {
+        $json = $this->getFile($fileName);
+
+        $json         = json_decode((string) $json, TRUE, 512, JSON_THROW_ON_ERROR);
+        $responseJson = json_decode((string) $response->getData(), TRUE, 512, JSON_THROW_ON_ERROR);
+
+        self::assertEquals($json, $responseJson);
     }
 
 }

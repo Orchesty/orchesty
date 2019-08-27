@@ -44,13 +44,16 @@ final class HubspotCreateContactConnectorTest extends DatabaseTestCaseAbstract
         $this->pf(DataProvider::getOauth2AppInstall($app->getKey()));
         $response = $hubspotCreateContactConnector->processAction(DataProvider::getProcessDto($app->getKey()));
 
-        self::assertProcessResponse(
-            $response,
-            sprintf('response%s.json', $code)
-        );
-
         if ($isValid) {
-            self::assertArrayNotHasKey('pf-result-code', $response->getHeaders());
+            self::assertSuccessProcessResponse(
+                $response,
+                sprintf('response%s.json', $code),
+                );
+        } else{
+            self::assertFailedProcessResponse(
+                $response,
+                sprintf('response%s.json', $code),
+                );
         }
     }
 
