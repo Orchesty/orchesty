@@ -7,3 +7,13 @@ monolog:
             path: "%kernel.logs_dir%/%kernel.environment%.log"
             level: warning
             max_files: 2
+        commons:
+            type: rotating_file
+            path: "%kernel.logs_dir%/%kernel.environment%.log"
+            level: debug
+            channels: [commons]
+        ftp:
+            type: service
+            id: udp_handler
+            level: info
+            channels: [ftp]
