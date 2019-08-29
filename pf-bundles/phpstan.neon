@@ -13,5 +13,6 @@ parameters:
 		- '#Call to function method_exists\(\) with string *#'
 		- '#ReflectionClass#'
 		- '#ReflectionObject#'
+		- '#Service \"snc_redis\.default\" is private\.#'
 	symfony:
 		container_xml_path: %rootDir%/../../../var/cache/test/srcHanaboso_PipesFramework_KernelTestDebugContainer.xml
