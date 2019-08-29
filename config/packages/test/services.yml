@@ -14,12 +14,3 @@ services:
     hbpf.connector.null:
         class: Tests\Unit\HbPFConnectorBundle\Loader\NullConnector
         arguments:
-
-    hbpf.application.webhook:
-        class: Tests\Integration\Application\Model\Webhook\WebhookApplication
-        arguments:
-
-    hbpf.application.null:
-        class: Tests\Integration\Application\Model\NullApplication
-        arguments:
-            - '@hbpf.providers.oauth2_provider'
