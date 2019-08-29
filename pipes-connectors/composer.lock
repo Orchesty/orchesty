@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "221c35f25ebcdfb39f30fe6ffb4f8979",
+    "content-hash": "299c0944e3fdf75f6bb797f0e660f4a7",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -74,16 +74,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.110.3",
+            "version": "3.110.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "ea9a67360bafee5570b3cd9cb1478b655a1f772c"
+                "reference": "e0c217851369efd42382c44b8c003db0b58abbdd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/ea9a67360bafee5570b3cd9cb1478b655a1f772c",
-                "reference": "ea9a67360bafee5570b3cd9cb1478b655a1f772c",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/e0c217851369efd42382c44b8c003db0b58abbdd",
+                "reference": "e0c217851369efd42382c44b8c003db0b58abbdd",
                 "shasum": ""
             },
             "require": {
@@ -153,7 +153,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2019-08-26T18:09:29+00:00"
+            "time": "2019-08-28T18:33:29+00:00"
         },
         {
             "name": "aws/aws-sdk-php-symfony",
@@ -2255,11 +2255,11 @@
         },
         {
             "name": "hanaboso/pipes-php-sdk",
-            "version": "1.0.6",
+            "version": "1.0.7",
             "dist": {
                 "type": "path",
                 "url": "../pipes-php-sdk",
-                "reference": "28981abfc8d037c82c1737c294eaa8bdde486cb7"
+                "reference": "c163bfcd26ac098313fb21f9b1f4011694c2689c"
             },
             "require": {
                 "ext-json": "*",

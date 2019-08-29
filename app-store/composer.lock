@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1d529f00fd7043e0bd6eb5367863aac0",
+    "content-hash": "a1dafbde587b55d7bd7b6dd8dbd09d86",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -74,16 +74,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.109.4",
+            "version": "3.110.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "c3c6772a7e975d763a232af118da3eaef8bf96b9"
+                "reference": "e0c217851369efd42382c44b8c003db0b58abbdd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/c3c6772a7e975d763a232af118da3eaef8bf96b9",
-                "reference": "c3c6772a7e975d763a232af118da3eaef8bf96b9",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/e0c217851369efd42382c44b8c003db0b58abbdd",
+                "reference": "e0c217851369efd42382c44b8c003db0b58abbdd",
                 "shasum": ""
             },
             "require": {
@@ -153,7 +153,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2019-08-14T18:14:46+00:00"
+            "time": "2019-08-28T18:33:29+00:00"
         },
         {
             "name": "aws/aws-sdk-php-symfony",
@@ -2128,11 +2128,11 @@
         },
         {
             "name": "hanaboso/commons-bundle",
-            "version": "1.1.21",
+            "version": "1.1.23",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.hanaboso.net:hanaboso/commons-bundle.git",
-                "reference": "98302458b266625bfd9a1fbc114ad214aea22a9b"
+                "reference": "df06785c2f60954e7443e86b7e44826bd9314bd6"
             },
             "require": {
                 "alcaeus/mongo-php-adapter": "^1.1",
@@ -2150,20 +2150,19 @@
                 "ext-soap": "*",
                 "ext-sockets": "*",
                 "guzzlehttp/guzzle": "^6.3",
-                "jms/serializer-bundle": "^3.4",
                 "mongodb/mongodb": "^1.4",
                 "php": "^7.3",
                 "php-imap/php-imap": "^3.0",
                 "phpseclib/phpseclib": "^2.0",
                 "predis/predis": "^1.1",
+                "snc/redis-bundle": "^3.1",
                 "windwalker/crypt": "^3.5"
             },
             "require-dev": {
-                "friendsofsymfony/rest-bundle": "^2.5",
                 "hanaboso/php-check-utils": "^1.0",
-                "snc/redis-bundle": "^3.1",
+                "symfony/browser-kit": "^4.3",
                 "symfony/monolog-bundle": "^3.4",
-                "symfony/symfony": "^4.3"
+                "symfony/yaml": "^4.3"
             },
             "type": "library",
             "autoload": {
@@ -2179,21 +2178,21 @@
             "license": [
                 "proprietary"
             ],
-            "time": "2019-08-15T09:29:58+00:00"
+            "time": "2019-08-23T08:48:01+00:00"
         },
         {
             "name": "hanaboso/mongo-data-grid",
-            "version": "1.1.5",
+            "version": "1.1.6",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.hanaboso.net:hanaboso/MongoDataGrid.git",
-                "reference": "ac607fb0633cacff763f13956307d3471d57e861"
+                "reference": "446a10d805b849bc074c73507e209865f0451348"
             },
             "require": {
                 "alcaeus/mongo-php-adapter": "^1.1",
                 "doctrine/mongodb-odm": "^1.2",
                 "ext-json": "*",
-                "php": "^7.1"
+                "php": "^7.3"
             },
             "require-dev": {
                 "hanaboso/php-check-utils": "^1.0"
@@ -2213,15 +2212,15 @@
                 "proprietary"
             ],
             "description": "MongoDataGrid",
-            "time": "2019-03-28T12:17:06+00:00"
+            "time": "2019-08-16T06:56:05+00:00"
         },
         {
             "name": "hanaboso/pipes-php-sdk",
-            "version": "1.0.2",
+            "version": "1.0.7",
             "dist": {
                 "type": "path",
                 "url": "../pipes-php-sdk",
-                "reference": "1f532cb09100c659b8dfb0d5cc5d1f98144bd173"
+                "reference": "c163bfcd26ac098313fb21f9b1f4011694c2689c"
             },
             "require": {
                 "ext-json": "*",
@@ -2230,12 +2229,12 @@
                 "hanaboso/commons-bundle": "^1.1",
                 "hanaboso/mongo-data-grid": "^1.1",
                 "hanaboso/rabbit-mq-bundle": "^1.1",
+                "jms/serializer-bundle": "^3.4",
                 "league/oauth2-client": "^2.4",
                 "php": "^7.3",
-                "phpoffice/phpspreadsheet": "^1.7",
-                "snc/redis-bundle": "^2.1",
-                "symfony/monolog-bundle": "^3.3",
-                "symfony/symfony": "^4.2"
+                "phpoffice/phpspreadsheet": "^1.9",
+                "symfony/monolog-bundle": "^3.4",
+                "symfony/symfony": "^4.3"
             },
             "require-dev": {
                 "hanaboso/php-check-utils": "^1.0"
@@ -3866,16 +3865,16 @@
         },
         {
             "name": "phpoffice/phpspreadsheet",
-            "version": "1.8.2",
+            "version": "1.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPOffice/PhpSpreadsheet.git",
-                "reference": "0c1346a1956347590b7db09533966307d20cb7cc"
+                "reference": "8dea03eaf60a349b6097e4bcad11f894668280df"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/0c1346a1956347590b7db09533966307d20cb7cc",
-                "reference": "0c1346a1956347590b7db09533966307d20cb7cc",
+                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/8dea03eaf60a349b6097e4bcad11f894668280df",
+                "reference": "8dea03eaf60a349b6097e4bcad11f894668280df",
                 "shasum": ""
             },
             "require": {
@@ -3894,17 +3893,16 @@
                 "ext-zlib": "*",
                 "markbaker/complex": "^1.4",
                 "markbaker/matrix": "^1.1",
-                "php": "^5.6|^7.0",
+                "php": "^7.1",
                 "psr/simple-cache": "^1.0"
             },
             "require-dev": {
-                "doctrine/instantiator": "^1.0.0",
                 "dompdf/dompdf": "^0.8.0",
                 "friendsofphp/php-cs-fixer": "@stable",
                 "jpgraph/jpgraph": "^4.0",
                 "mpdf/mpdf": "^7.0.0",
                 "phpcompatibility/php-compatibility": "^8.0",
-                "phpunit/phpunit": "^5.7",
+                "phpunit/phpunit": "^7.5",
                 "squizlabs/php_codesniffer": "^3.3",
                 "tecnickcom/tcpdf": "^6.2"
             },
@@ -3926,12 +3924,6 @@
             ],
             "authors": [
                 {
-                    "name": "Erik Tilt"
-                },
-                {
-                    "name": "Adrien Crivelli"
-                },
-                {
                     "name": "Maarten Balliauw",
                     "homepage": "https://blog.maartenballiauw.be"
                 },
@@ -3942,6 +3934,12 @@
                 {
                     "name": "Franck Lefevre",
                     "homepage": "https://rootslabs.net"
+                },
+                {
+                    "name": "Erik Tilt"
+                },
+                {
+                    "name": "Adrien Crivelli"
                 }
             ],
             "description": "PHPSpreadsheet - Read, Create and Write Spreadsheet documents in PHP - Spreadsheet engine",
@@ -3956,7 +3954,7 @@
                 "xls",
                 "xlsx"
             ],
-            "time": "2019-07-08T21:21:25+00:00"
+            "time": "2019-08-17T22:24:35+00:00"
         },
         {
             "name": "phpseclib/phpseclib",
@@ -4907,29 +4905,37 @@
         },
         {
             "name": "snc/redis-bundle",
-            "version": "2.1.11",
+            "version": "3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/snc/SncRedisBundle.git",
-                "reference": "217e34e0b027184be0a7d2ed1abc4f88c9b10ff6"
+                "reference": "ff2a3aa6e9933f0347e9fea0ffa367643d779c5c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/snc/SncRedisBundle/zipball/217e34e0b027184be0a7d2ed1abc4f88c9b10ff6",
-                "reference": "217e34e0b027184be0a7d2ed1abc4f88c9b10ff6",
+                "url": "https://api.github.com/repos/snc/SncRedisBundle/zipball/ff2a3aa6e9933f0347e9fea0ffa367643d779c5c",
+                "reference": "ff2a3aa6e9933f0347e9fea0ffa367643d779c5c",
                 "shasum": ""
             },
             "require": {
-                "php": "^5.3.3 || ^7.0",
-                "symfony/framework-bundle": "^2.7 || ^3.0 || ^4.0",
-                "symfony/yaml": "^2.7 || ^3.0 || ^4.0"
+                "php": "^7.1.3",
+                "symfony/framework-bundle": "^3.4 || ^4.0",
+                "symfony/http-foundation": "^3.4 || ^4.0",
+                "symfony/yaml": "^3.4 || ^4.0"
             },
             "require-dev": {
-                "doctrine/cache": "1.*",
-                "phpunit/phpunit": "^4.8.35 || ^5.7 || ^6.5",
-                "predis/predis": "^1.0",
-                "symfony/console": "^2.7 || ^3.0 || ^4.0",
-                "symfony/phpunit-bridge": "^2.7 || ^3.0 || ^4.0"
+                "doctrine/doctrine-bundle": "^1.6.10",
+                "doctrine/orm": "^2.5.11",
+                "ext-pdo_sqlite": "*",
+                "phpunit/phpunit": "^6.2 || ^7.1",
+                "predis/predis": "^1.1",
+                "swiftmailer/swiftmailer": "^6.0",
+                "symfony/browser-kit": "^3.4 || ^4.0",
+                "symfony/console": "^3.4 || ^4.0",
+                "symfony/phpunit-bridge": "^3.4 || ^4.0",
+                "symfony/profiler-pack": "^1.0",
+                "symfony/swiftmailer-bundle": "^2.0 || ^3.0",
+                "symfony/twig-bundle": "^3.4 || ^4.0"
             },
             "suggest": {
                 "monolog/monolog": "If you want to use the monolog redis handler.",
@@ -4940,13 +4946,16 @@
             "type": "symfony-bundle",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.x-dev"
+                    "dev-master": "3.x-dev"
                 }
             },
             "autoload": {
                 "psr-4": {
                     "Snc\\RedisBundle\\": ""
-                }
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -4969,20 +4978,20 @@
                 "redis",
                 "symfony"
             ],
-            "time": "2019-07-31T05:55:07+00:00"
+            "time": "2019-08-01T05:51:05+00:00"
         },
         {
             "name": "symfony/contracts",
-            "version": "v1.1.5",
+            "version": "v1.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/contracts.git",
-                "reference": "3f3f796d5f24a098a9da62828b8daa1b11494c1b"
+                "reference": "3692662d26cd9d204a69748792ae021c35313610"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/contracts/zipball/3f3f796d5f24a098a9da62828b8daa1b11494c1b",
-                "reference": "3f3f796d5f24a098a9da62828b8daa1b11494c1b",
+                "url": "https://api.github.com/repos/symfony/contracts/zipball/3692662d26cd9d204a69748792ae021c35313610",
+                "reference": "3692662d26cd9d204a69748792ae021c35313610",
                 "shasum": ""
             },
             "require": {
@@ -5046,7 +5055,7 @@
                 "interoperability",
                 "standards"
             ],
-            "time": "2019-06-20T06:46:26+00:00"
+            "time": "2019-08-21T15:14:41+00:00"
         },
         {
             "name": "symfony/monolog-bundle",
@@ -5463,16 +5472,16 @@
         },
         {
             "name": "symfony/symfony",
-            "version": "v4.3.3",
+            "version": "v4.3.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "dd4d355126184444fb3f940d17f83a9462f15be9"
+                "reference": "f1edae020d4109fcad3bd57810180a460aa4f20f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/dd4d355126184444fb3f940d17f83a9462f15be9",
-                "reference": "dd4d355126184444fb3f940d17f83a9462f15be9",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/f1edae020d4109fcad3bd57810180a460aa4f20f",
+                "reference": "f1edae020d4109fcad3bd57810180a460aa4f20f",
                 "shasum": ""
             },
             "require": {
@@ -5583,7 +5592,7 @@
                 "predis/predis": "~1.1",
                 "psr/http-client": "^1.0",
                 "psr/simple-cache": "^1.0",
-                "symfony/phpunit-bridge": "^3.4.19|^4.1.8|~5.0",
+                "symfony/phpunit-bridge": "^3.4.31|^4.3.4|~5.0",
                 "symfony/security-acl": "~2.8|~3.0"
             },
             "type": "library",
@@ -5602,7 +5611,8 @@
                     "Symfony\\Component\\": "src/Symfony/Component/"
                 },
                 "classmap": [
-                    "src/Symfony/Component/Intl/Resources/stubs"
+                    "src/Symfony/Component/Intl/Resources/stubs",
+                    "src/Symfony/Bridge/ProxyManager/Legacy/ProxiedMethodReturnExpression.php"
                 ],
                 "exclude-from-classmap": [
                     "**/Tests/"
@@ -5627,7 +5637,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2019-07-28T07:10:41+00:00"
+            "time": "2019-08-26T16:48:03+00:00"
         },
         {
             "name": "twig/twig",
@@ -5790,7 +5800,7 @@
         },
         {
             "name": "windwalker/crypt",
-            "version": "3.5.11",
+            "version": "3.5.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ventoviro/windwalker-crypt.git",
@@ -6054,26 +6064,27 @@
         },
         {
             "name": "hanaboso/php-check-utils",
-            "version": "1.0.24",
+            "version": "1.0.26",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/php-check-utils.git",
-                "reference": "5381cb9cefbca89e09522342a232b2874eb037b6"
+                "reference": "cc3e5507356d7a853766d40695d63bb655c4fb4b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/php-check-utils/zipball/5381cb9cefbca89e09522342a232b2874eb037b6",
-                "reference": "5381cb9cefbca89e09522342a232b2874eb037b6",
+                "url": "https://api.github.com/repos/hanaboso/php-check-utils/zipball/cc3e5507356d7a853766d40695d63bb655c4fb4b",
+                "reference": "cc3e5507356d7a853766d40695d63bb655c4fb4b",
                 "shasum": ""
             },
             "require": {
                 "brianium/paratest": "^3.0",
-                "php": ">=7.1",
+                "php": ">=7.2",
                 "phpstan/phpstan": "^0.11",
                 "phpstan/phpstan-doctrine": "^0.11",
+                "phpstan/phpstan-nette": "^0.11",
                 "phpstan/phpstan-phpunit": "^0.11",
                 "phpstan/phpstan-symfony": "^0.11",
-                "phpunit/phpunit": "^8.0",
+                "phpunit/phpunit": "^8.3",
                 "slevomat/coding-standard": "^5.0",
                 "squizlabs/php_codesniffer": "^3.4"
             },
@@ -6089,7 +6100,7 @@
                 }
             ],
             "description": "Utils for php development - CodeSniffer, PhpStan, PhpStorm",
-            "time": "2019-04-04T16:53:24+00:00"
+            "time": "2019-08-21T16:44:09+00:00"
         },
         {
             "name": "jean85/pretty-package-versions",
@@ -7181,16 +7192,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "0.11.13",
+            "version": "0.11.15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "493d12d4a98ba0d2a0b8e576d80e65c8e8068d08"
+                "reference": "1be5b3a706db16ac472a4c40ec03cf4c810b118d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/493d12d4a98ba0d2a0b8e576d80e65c8e8068d08",
-                "reference": "493d12d4a98ba0d2a0b8e576d80e65c8e8068d08",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/1be5b3a706db16ac472a4c40ec03cf4c810b118d",
+                "reference": "1be5b3a706db16ac472a4c40ec03cf4c810b118d",
                 "shasum": ""
             },
             "require": {
@@ -7252,7 +7263,7 @@
                 "MIT"
             ],
             "description": "PHPStan - PHP Static Analysis Tool",
-            "time": "2019-08-13T13:05:56+00:00"
+            "time": "2019-08-18T20:51:53+00:00"
         },
         {
             "name": "phpstan/phpstan-doctrine",
@@ -7317,6 +7328,75 @@
             ],
             "description": "Doctrine extensions for PHPStan",
             "time": "2019-05-29T06:01:20+00:00"
+        },
+        {
+            "name": "phpstan/phpstan-nette",
+            "version": "0.11.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phpstan/phpstan-nette.git",
+                "reference": "356ee9e80b07d46ac24f1bdbb8bc469e14bb9965"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phpstan/phpstan-nette/zipball/356ee9e80b07d46ac24f1bdbb8bc469e14bb9965",
+                "reference": "356ee9e80b07d46ac24f1bdbb8bc469e14bb9965",
+                "shasum": ""
+            },
+            "require": {
+                "nikic/php-parser": "^4.0",
+                "php": "~7.1",
+                "phpstan/phpstan": "^0.11.7"
+            },
+            "conflict": {
+                "nette/application": "<2.3.0",
+                "nette/component-model": "<2.3.0",
+                "nette/di": "<2.3.0",
+                "nette/forms": "<2.3.0",
+                "nette/http": "<2.3.0",
+                "nette/utils": "<2.3.0"
+            },
+            "require-dev": {
+                "consistence/coding-standard": "^3.0.1",
+                "dealerdirect/phpcodesniffer-composer-installer": "^0.4.4",
+                "jakub-onderka/php-parallel-lint": "^1.0",
+                "nette/application": "^2.3.0 || ^3.0.0",
+                "nette/component-model": "^2.3.0 || ^3.0.0",
+                "nette/di": "^2.3.0 || ^3.0.0",
+                "nette/forms": "^2.3.0 || ^3.0.0",
+                "nette/http": "^2.3.0 || ^3.0.0",
+                "nette/utils": "^2.3.0 || ^3.0.0",
+                "phing/phing": "^2.13.0",
+                "phpstan/phpstan-php-parser": "^0.11",
+                "phpstan/phpstan-phpunit": "^0.11",
+                "phpstan/phpstan-strict-rules": "^0.11",
+                "phpunit/phpunit": "^7.0",
+                "satooshi/php-coveralls": "^1.0",
+                "slevomat/coding-standard": "^4.5.2"
+            },
+            "type": "phpstan-extension",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.11-dev"
+                },
+                "phpstan": {
+                    "includes": [
+                        "extension.neon",
+                        "rules.neon"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "PHPStan\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Nette Framework class reflection extension for PHPStan",
+            "time": "2019-05-17T17:49:09+00:00"
         },
         {
             "name": "phpstan/phpstan-phpunit",
@@ -8527,16 +8607,16 @@
         },
         {
             "name": "webmozart/assert",
-            "version": "1.4.0",
+            "version": "1.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webmozart/assert.git",
-                "reference": "83e253c8e0be5b0257b881e1827274667c5c17a9"
+                "reference": "88e6d84706d09a236046d686bbea96f07b3a34f4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webmozart/assert/zipball/83e253c8e0be5b0257b881e1827274667c5c17a9",
-                "reference": "83e253c8e0be5b0257b881e1827274667c5c17a9",
+                "url": "https://api.github.com/repos/webmozart/assert/zipball/88e6d84706d09a236046d686bbea96f07b3a34f4",
+                "reference": "88e6d84706d09a236046d686bbea96f07b3a34f4",
                 "shasum": ""
             },
             "require": {
@@ -8544,8 +8624,7 @@
                 "symfony/polyfill-ctype": "^1.8"
             },
             "require-dev": {
-                "phpunit/phpunit": "^4.6",
-                "sebastian/version": "^1.0.1"
+                "phpunit/phpunit": "^4.8.36 || ^7.5.13"
             },
             "type": "library",
             "extra": {
@@ -8574,7 +8653,7 @@
                 "check",
                 "validate"
             ],
-            "time": "2018-12-25T11:19:39+00:00"
+            "time": "2019-08-24T08:43:50+00:00"
         }
     ],
     "aliases": [],
