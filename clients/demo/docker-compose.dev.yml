@@ -465,7 +465,7 @@ services:
     tsa:
         image: timeseriesadmin/timeseriesadmin:latest
         ports:
-          - 8085:80
+          - ${DEV_IP}:8085:80
         mem_limit: 128M
         restart: always
 
