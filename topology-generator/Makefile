@@ -20,7 +20,9 @@ docker-compose.ci.yml:
 
 ci-test:
 	docker-compose up -d --force-recreate
-	docker-compose exec -T topology-generator gofmt -w cmd pkg && go vet ./... && go test ./...
+	docker-compose exec -T topology-generator gofmt -w cmd pkg
+	docker-compose exec -T topology-generator go vet ./...
+	docker-compose exec -T topology-generator go test ./...
 
 run:
 	export DOCKER_API_VERSION=1.37
