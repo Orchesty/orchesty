@@ -4,11 +4,13 @@ namespace Tests\Integration\Configurator\Model;
 
 use Exception;
 use Hanaboso\CommonsBundle\Database\Document\Dto\SystemConfigDto;
+use Hanaboso\CommonsBundle\Database\Document\Embed\EmbedNode;
 use Hanaboso\CommonsBundle\Database\Document\Node;
 use Hanaboso\CommonsBundle\Database\Repository\NodeRepository;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory;
 use Tests\DatabaseTestCaseAbstract;
+use Tests\PrivateTrait;
 
 /**
  * Class TopologyConfigFactoryTest
@@ -18,6 +20,8 @@ use Tests\DatabaseTestCaseAbstract;
 class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
 {
 
+    use PrivateTrait;
+
     /**
      * @throws Exception
      */
@@ -25,15 +29,23 @@ class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
     {
         $settings = new SystemConfigDto('someSdkHost', '', 10);
 
-        $node1 = (new Node())->setTopology('123')->setType(TypeEnum::CUSTOM)->setName('example1');
+        $node1 = (new Node())->setTopology('123')->setType(TypeEnum::WEBHOOK)->setName('example1');
         $node2 = (new Node())->setTopology('123')->setName('example2')->setSystemConfigs($settings)
-            ->setType(TypeEnum::USER);
+            ->setType(TypeEnum::CONNECTOR);
         $node3 = (new Node())->setTopology('123')->setName('example3')->setType(TypeEnum::BATCH_CONNECTOR);
         $node4 = (new Node())->setTopology('123')->setName('example4')->setType(TypeEnum::CONNECTOR);
         $node5 = (new Node())->setTopology('123')->setName('example5')->setType(TypeEnum::USER);
 
         $this->persistAndFlush($node1);
         $this->persistAndFlush($node2);
+
+        $embedNode = new EmbedNode();
+        $embedNode->setName('embedNode2');
+        $this->setProperty($embedNode, 'id', $node2->getId());
+        $node1->addNext($embedNode);
+        $this->persistAndFlush($node1);
+
+        $this->persistAndFlush($embedNode);
         $this->persistAndFlush($node3);
         $this->persistAndFlush($node4);
         $this->persistAndFlush($node5);
@@ -46,16 +58,12 @@ class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
         $result        = $configFactory->create($nodes);
 
         self::assertIsString($result);
-
-        $nodes = $nodeRepository->findAll();
-
         $arr = json_decode($result, TRUE);
+
         self::assertArrayNotHasKey(TopologyConfigFactory::WORKER, $arr);
         self::assertArrayNotHasKey(TopologyConfigFactory::SETTINGS, $arr);
 
-        self::assertEquals('someSdkHost',
-            $arr[TopologyConfigFactory::NODE_CONFIG][$nodes[1]->getId()][TopologyConfigFactory::WORKER][TopologyConfigFactory::SETTINGS][TopologyConfigFactory::HOST]
-        );
+        $this->assertResult(__DIR__ . '/data/topologyConfigFactory.json', $arr);
         self::assertEquals(5, count($arr[TopologyConfigFactory::NODE_CONFIG]));
     }
 

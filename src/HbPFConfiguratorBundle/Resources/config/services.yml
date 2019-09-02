@@ -16,6 +16,7 @@ services:
         class: Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory
         arguments:
             - '%topology_configs%'
+            - '@doctrine_mongodb.odm.default_document_manager'
 
     hbpf.topology_generator.bridge:
         class: Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge
