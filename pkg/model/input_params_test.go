@@ -11,7 +11,6 @@ import (
 func TestEnvironment_GetEnvironment(t *testing.T) {
 	t.Run("Test get docker environment", func(t *testing.T) {
 		t.Run("Get full environment", getFullEnvironment)
-		t.Run("Get error environment", getErrEnvironment)
 	})
 }
 
@@ -123,15 +122,6 @@ func getNodeConfigs() map[string]NodeUserParams {
 	}
 }
 
-func getErrEnvironment(t *testing.T) {
-	environment := getEnvironment(ModeCompose)
-	environment.MultiProbeHost = "multiprobe"
-
-	result, err := environment.GetEnvironment()
-	assert.Error(t, err)
-	assert.Nil(t, result)
-}
-
 func getFullEnvironment(t *testing.T) {
 	environment := getEnvironment(ModeCompose)
 
@@ -143,6 +133,7 @@ func getFullEnvironment(t *testing.T) {
 	expected := map[string]string{
 		"METRICS_HOST":     "kapacitor",
 		"METRICS_PORT":     "9100",
+		"METRICS_SERVICE":  "influx",
 		"MULTI_PROBE_HOST": "multi-probe",
 		"MULTI_PROBE_PORT": "8007",
 		"RABBITMQ_HOST":    "rabbitmq",
@@ -165,7 +156,9 @@ func getEnvironment(mode Adapter) Environment {
 		RabbitMqPass:        "guest",
 		RabbitMqVHost:       "/",
 		MultiProbeHost:      "multi-probe:8007",
-		MetricsHost:         "kapacitor:9100",
+		MetricsHost:         "kapacitor",
+		MetricsPort:         "9100",
+		MetricsService:      "influx",
 		WorkerDefaultPort:   8808,
 		GeneratorMode:       mode,
 	}
