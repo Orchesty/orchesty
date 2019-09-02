@@ -3,7 +3,6 @@
 namespace Hanaboso\PipesPhpSdk\LongRunningNode\Repository;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
-use Doctrine\ODM\MongoDB\MongoDBException;
 
 /**
  * Class LongRunningNodeDataRepository
@@ -17,18 +16,14 @@ class LongRunningNodeDataRepository extends DocumentRepository
      * @param string $topo
      *
      * @return array
-     * @throws MongoDBException
      */
     public function getGroupStats(string $topo): array
     {
-        // TODO: not working with latest Mongo!
-        $arr = $this->createQueryBuilder()->hydrate(FALSE)
-            ->field('topologyName')->equals($topo)
-            ->group(['nodeName' => 1], ['value' => 0])
-            ->reduce('function (curr,result) {
-                result.value++;
-            }')
-            ->getQuery()
+        $arr = $this->createAggregationBuilder()
+            ->match()->field('topologyName')->equals($topo)
+            ->group()->field('id')->expression('$nodeName')
+            ->field('nodeName')->first('$nodeName')
+            ->field('value')->sum(1)
             ->execute()->toArray();
 
         $res = [];
