@@ -2,8 +2,13 @@
 
 namespace Hanaboso\PipesFramework\Configurator\Model;
 
+use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Hanaboso\CommonsBundle\Database\Document\Dto\SystemConfigDto;
 use Hanaboso\CommonsBundle\Database\Document\Node;
+use Hanaboso\CommonsBundle\Database\Repository\NodeRepository;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyConfigException;
@@ -63,19 +68,34 @@ class TopologyConfigFactory
     private $configs;
 
     /**
+     * @var DocumentManager
+     */
+    private $dm;
+
+    /**
+     * @var ObjectRepository|NodeRepository
+     */
+    private $nodeRepo;
+
+    /**
      * TopologyConfigFactory constructor.
      *
-     * @param array $configs
+     * @param array           $configs
+     * @param DocumentManager $dm
      */
-    public function __construct(array $configs)
+    public function __construct(array $configs, DocumentManager $dm)
     {
-        $this->configs = $configs;
+        $this->configs  = $configs;
+        $this->dm       = $dm;
+        $this->nodeRepo = $this->dm->getRepository(Node::class);
     }
 
     /**
      * @param array $nodes
      *
      * @return string
+     * @throws LockException
+     * @throws MappingException
      * @throws TopologyConfigException
      */
     public function create(array $nodes): string
@@ -93,16 +113,29 @@ class TopologyConfigFactory
      *
      * @return array
      * @throws TopologyConfigException
+     * @throws LockException
+     * @throws MappingException
      */
     private function loopNodes(array $nodes): array
     {
-        $arr = [];
+        $arr      = [];
+        $nextNode = NULL;
         /** @var Node $node */
         foreach ($nodes as $node) {
-            $arr[$node->getId()] = [self::WORKER => $this->getWorkers($node)];
+            if ($node->getType() === TypeEnum::WEBHOOK) {
+                $nextNode = $this->getNextNode($node);
+            }
+            $arr[$node->getId()] = [self::WORKER => $this->getWorkers($node, FALSE)];
 
             if (self::getFaucet($node)) {
                 $arr[$node->getId()][self::FAUCET] = $this->getFaucet($node);
+            }
+        }
+        if ($nextNode) {
+            $arr[$nextNode->getId()] = [self::WORKER => $this->getWorkers($nextNode, TRUE)];
+
+            if (self::getFaucet($nextNode)) {
+                $arr[$nextNode->getId()][self::FAUCET] = $this->getFaucet($nextNode);
             }
         }
 
@@ -150,12 +183,14 @@ class TopologyConfigFactory
     }
 
     /**
-     * @param Node $node
+     * @param Node      $node
+     *
+     * @param bool|null $nextConnector
      *
      * @return array
      * @throws TopologyConfigException
      */
-    private function getWorkers(Node $node): array
+    private function getWorkers(Node $node, ?bool $nextConnector): array
     {
         switch ($node->getType()) {
             case TypeEnum::WEBHOOK:
@@ -176,12 +211,14 @@ class TopologyConfigFactory
                     ],
                 ];
             default:
+                $path = $this->getPaths($node, $nextConnector);
+
                 return [
                     self::TYPE     => $this->getWorkerByType($node),
                     self::SETTINGS => [
                         self::HOST          => $this->getHost($node->getType(), $node->getSystemConfigs()),
-                        self::PROCESS_PATH  => $this->getPaths($node)[self::PROCESS_PATH],
-                        self::STATUS_PATH   => $this->getPaths($node)[self::STATUS_PATH],
+                        self::PROCESS_PATH  => $path[self::PROCESS_PATH],
+                        self::STATUS_PATH   => $path[self::STATUS_PATH],
                         self::METHOD        => CurlManager::METHOD_POST,
                         self::PORT          => $this->getPort($node->getType()),
                         self::PUBLISH_QUEUE => $this->getPublishQueue($node->getType()),
@@ -199,8 +236,6 @@ class TopologyConfigFactory
     {
         switch ($node->getType()) {
             case TypeEnum::BATCH:
-                $workerType = self::SPLITTER_AMQRPC;
-                break;
             case TypeEnum::BATCH_CONNECTOR:
                 $workerType = self::SPLITTER_AMQRPC;
                 break;
@@ -231,12 +266,14 @@ class TopologyConfigFactory
     }
 
     /**
-     * @param Node $node
+     * @param Node      $node
+     *
+     * @param bool|null $nextConnector
      *
      * @return array
      * @throws TopologyConfigException
      */
-    public function getPaths(Node $node): array
+    public function getPaths(Node $node, ?bool $nextConnector): array
     {
         switch ($node->getType()) {
             case TypeEnum::XML_PARSER:
@@ -271,6 +308,13 @@ class TopologyConfigFactory
                 break;
             case TypeEnum::CONNECTOR:
             case TypeEnum::BATCH_CONNECTOR:
+                if ($nextConnector) {
+                    $paths = [
+                        self::PROCESS_PATH => sprintf('/connector/%s/event', $node->getName()),
+                        self::STATUS_PATH  => sprintf('/connector/%s/event/test', $node->getName()),
+                    ];
+                    break;
+                }
                 $paths = [
                     self::PROCESS_PATH => sprintf('/connector/%s/action', $node->getName()),
                     self::STATUS_PATH  => sprintf('/connector/%s/action/test', $node->getName()),
@@ -394,6 +438,24 @@ class TopologyConfigFactory
                 throw new TopologyConfigException(sprintf('Unknown type for port [%s].', $nodeType));
 
         }
+    }
+
+    /**
+     * @param Node $node
+     *
+     * @return Node|null
+     * @throws LockException
+     * @throws MappingException
+     */
+    private function getNextNode(Node $node): ?Node
+    {
+        if ($node->getNext()) {
+            $id = $node->getNext()[0]->getId();
+
+            return $this->nodeRepo->find($id);
+        }
+
+        return NULL;
     }
 
 }

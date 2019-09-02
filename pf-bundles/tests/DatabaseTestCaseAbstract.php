@@ -46,4 +46,26 @@ abstract class DatabaseTestCaseAbstract extends KernelTestCaseAbstract
         $this->dm->flush($document);
     }
 
+    /**
+     * @param string $path
+     * @param array  $arrayResult
+     */
+    protected function assertResult(string $path, array $arrayResult): void
+    {
+        $fileContent = file_get_contents($path);
+        $i           = 0;
+
+        foreach ($arrayResult['node_config'] as $key => $value) {
+            $value;
+            if (strlen((string) $key) === 24) {
+                $arrayResult['node_config']
+                [sprintf('5d6d17e1e7ad880000000000%s', $i)] = $arrayResult['node_config'][$key];
+                $i++;
+                unset($arrayResult['node_config'][$key]);
+            }
+        }
+
+        self::assertEquals($fileContent, json_encode($arrayResult, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT));
+    }
+
 }
