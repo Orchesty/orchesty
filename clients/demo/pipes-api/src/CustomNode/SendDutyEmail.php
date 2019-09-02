@@ -77,13 +77,14 @@ class SendDutyEmail implements CustomNodeInterface
     /**
      * @param string $data
      * @param string $subject
+     * @param string $to
      *
      * @throws MailerException
      */
-    public function send(string $data, string $subject): void
+    private function send(string $data, string $subject, string $to = self::TO): void
     {
         $this->mailer->renderAndSend(
-            new GenericTransportMessage(self::FROM, self::TO, $subject, $data)
+            new GenericTransportMessage(self::FROM, $to, $subject, $data)
         );
     }
 
