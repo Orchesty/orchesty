@@ -35,6 +35,11 @@ class MongoMetricsManager extends MetricsManagerAbstract
     private $metricsDm;
 
     /**
+     * @var int
+     */
+    private $rabbitInterval;
+
+    /**
      * MongoMetricsManager constructor.
      *
      * @param DocumentManager $dm
@@ -44,6 +49,7 @@ class MongoMetricsManager extends MetricsManagerAbstract
      * @param string          $counterTable
      * @param string          $connectorTable
      * @param DocumentManager $metricsDm
+     * @param int             $rabbitInterval
      */
     public function __construct(
         DocumentManager $dm,
@@ -52,11 +58,13 @@ class MongoMetricsManager extends MetricsManagerAbstract
         string $rabbitTable,
         string $counterTable,
         string $connectorTable,
-        DocumentManager $metricsDm
+        DocumentManager $metricsDm,
+        int $rabbitInterval
     )
     {
         parent::__construct($dm, $nodeTable, $fpmTable, $rabbitTable, $counterTable, $connectorTable);
-        $this->metricsDm = $metricsDm;
+        $this->metricsDm      = $metricsDm;
+        $this->rabbitInterval = $rabbitInterval;
     }
 
     /**
@@ -245,7 +253,6 @@ class MongoMetricsManager extends MetricsManagerAbstract
                     return {
                         queue_max: Math.max(...vals),
                         queue_sum: Array.sum(vals),
-                        queue_count: vals.length,
                     };
                 }',
                 )
@@ -258,7 +265,6 @@ class MongoMetricsManager extends MetricsManagerAbstract
                     return {
                         queue_max: res,
                         queue_sum: res,
-                        queue_count: 1,
                     };
                 }'
             )
@@ -267,13 +273,20 @@ class MongoMetricsManager extends MetricsManagerAbstract
 
         if (!$res) {
             $res = [
-                'queue_max'   => 0,
-                'queue_sum'   => 0,
-                'queue_count' => 0,
+                'queue_max' => 0,
+                'queue_sum' => 0,
             ];
         } else {
             $res = $res['value'];
         }
+
+        $from = DateTimeUtils::getUtcDateTime($dateFrom);
+        $to   = DateTimeUtils::getUtcDateTime($dateTo);
+
+        $diff = $to->diff($from);
+        $secs = (($diff->days * 24 + $diff->h) * 60 + $diff->i) * 60 + $diff->s;
+
+        $res[self::QUEUE_COUNT] = $secs / $this->rabbitInterval;
 
         return (new MetricsDto())
             ->setMax($res[self::QUEUE_MAX])
