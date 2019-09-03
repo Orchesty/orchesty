@@ -1,3 +1,7 @@
+parameters:
+    env(METRICS_RABBIT_INTERVAL): 5
+    metrics_rabbit_interval: '%env(METRICS_RABBIT_INTERVAL)%'
+
 services:
     hbpf.metrics.metrics_client:
         class: Hanaboso\PipesFramework\Metrics\Client\MetricsClient
@@ -37,6 +41,7 @@ services:
             - "%mongodb.counter_table%"
             - "%mongodb.connector_table%"
             - '@doctrine_mongodb.odm.metrics_document_manager'
+            - '%metrics_rabbit_interval%'
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
 

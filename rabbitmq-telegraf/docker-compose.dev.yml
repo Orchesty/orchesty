@@ -1,0 +1,42 @@
+---
+version: '3'
+
+services:
+  app:
+    image: cmhanaboso.azurecr.io/clever-monitor/tracker:dev
+    user: ${DEV_UID}:${DEV_GID}
+    ports:
+      - ${DEV_IP}:8080:8080
+    environment:
+      DEV_UID: ${DEV_UID}
+      DEV_GID: ${DEV_GID}
+      APP_DEBUG: 'true'
+    volumes:
+      - ./:/var/www
+      - ${GOPATH}/:/go
+    working_dir: /var/www
+    #command: sh -c "while true;do sleep 10;done"
+    command: go run main.go
+
+  rabbitmq:
+    image: rabbitmq:management-alpine
+    ports:
+      - ${DEV_IP}:15672:15672
+      - ${DEV_IP}:5672:5672
+    volumes:
+      - rabbitmq:/var/lib/rabbitmq
+
+  mongodb:
+    image: mongo:3.4
+    ports:
+      - ${DEV_IP}:27017:27017
+    volumes:
+      - mongodb:/data/db
+
+  kapacitor:
+    image: dkr.hanaboso.net/pipes/pipes/kapacitor:dev
+    hostname: kapacitor
+
+volumes:
+  rabbitmq: {}
+  mongodb: {}

@@ -1,7 +1,7 @@
 ---
 
 ## BEGIN DEV
-version: '2'
+version: '2.2'
 ## END DEV
 ## BEGIN STAGE
 #version: '3.3'
@@ -436,16 +436,11 @@ services:
           - influxdb:/var/lib/influxdb
 
     telegraf:
-        image: telegraf:1.5-alpine
-        ## BEGIN DEV
-        volumes:
-          - ./stack/telegraf.conf:/etc/telegraf/telegraf.conf
-        ## END DEV
-        ## BEGIN STAGE
-        #configs:
-        #  - source: telegraf.conf
-        #    target: /etc/telegraf/telegraf.conf
-        ## END STAGE
+        image: dkr.hanaboso.net/pipes/pipes/rabbitmq-telegraf:dev
+        environment:
+            METRICS_SERVICE: 'influx'
+            #METRICS_SERVICE: 'mongo'
+            #MONGO_DSN: "mongodb://mongo:27017/"
 
     kapacitor:
         image: dkr.hanaboso.net/pipes/pipes/kapacitor:dev

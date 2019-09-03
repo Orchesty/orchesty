@@ -58,7 +58,7 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
         self::assertEquals([
             MongoMetricsManager::QUEUE_DEPTH  => [
                 'max' => '5',
-                'avg' => '4.00',
+                'avg' => '0.00',
             ],
             MongoMetricsManager::WAITING_TIME => [
                 'max' => '5',
@@ -126,7 +126,7 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
         self::assertEquals([
             MongoMetricsManager::QUEUE_DEPTH  => [
                 'max' => '3',
-                'avg' => '3.00',
+                'avg' => '0.00',
             ],
             MongoMetricsManager::WAITING_TIME => [
                 'max' => '5',
