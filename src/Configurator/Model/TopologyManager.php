@@ -275,7 +275,7 @@ class TopologyManager
 
         foreach ($data as $item) {
             /** @var Topology[] $topologies */
-            $topologies = $this->topologyRepository->findBy(['name' => $item['topology'], 'deleted' => FALSE]);
+            $topologies = $this->topologyRepository->findBy(['id' => $item['topology'], 'deleted' => FALSE]);
 
             foreach ($topologies as $topology) {
                 $result[] = [

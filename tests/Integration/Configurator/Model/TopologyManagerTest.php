@@ -586,15 +586,27 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
      */
     public function testGetCronTopologies(): void
     {
+        $tp  = (new Topology())->setName('Topology')->setVersion(1)->setEnabled(TRUE);
+        $tp2 = (new Topology())->setName('Topology')->setVersion(2)->setEnabled(FALSE);
+        $tp3 = (new Topology())->setName('Topology')->setVersion(2)->setEnabled(FALSE)->setDeleted(TRUE);
+        $this->dm->persist($tp);
+        $this->dm->persist($tp2);
+        $this->dm->persist($tp3);
+        $this->dm->flush();
+
         $cronManager = self::createMock(CronManager::class);
         $cronManager->method('getAll')->willReturn(
-            new ResponseDto(200, 'OK', '[{"topology":"Topology", "node":"Node", "time":"*/1 * * * *"}]', [])
+            new ResponseDto(
+                200,
+                'OK',
+                sprintf(
+                    '[{"topology":"%s", "node":"Node", "time":"*/1 * * * *"}, {"topology":"%s", "node":"Node", "time":"*/1 * * * *"}]',
+                    $tp->getId(),
+                    $tp2->getId()
+                ),
+                []
+            )
         );
-
-        $this->dm->persist((new Topology())->setName('Topology')->setVersion(1)->setEnabled(TRUE));
-        $this->dm->persist((new Topology())->setName('Topology')->setVersion(2)->setEnabled(FALSE));
-        $this->dm->persist((new Topology())->setName('Topology')->setVersion(2)->setEnabled(FALSE)->setDeleted(TRUE));
-        $this->dm->flush();
 
         $manager = self::$container->get('hbpf.configurator.manager.topology');
         $this->setProperty($manager, 'cronManager', $cronManager);
