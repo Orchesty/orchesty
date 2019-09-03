@@ -125,18 +125,11 @@ class TopologyConfigFactory
             if ($node->getType() === TypeEnum::WEBHOOK) {
                 $nextNode = $this->getNextNode($node);
             }
-            $arr[$node->getId()] = [self::WORKER => $this->getWorkers($node, FALSE)];
 
-            if (self::getFaucet($node)) {
-                $arr[$node->getId()][self::FAUCET] = $this->getFaucet($node);
-            }
+            $arr[$node->getId()] = $this->assembleNode($node, FALSE);
         }
         if ($nextNode) {
-            $arr[$nextNode->getId()] = [self::WORKER => $this->getWorkers($nextNode, TRUE)];
-
-            if (self::getFaucet($nextNode)) {
-                $arr[$nextNode->getId()][self::FAUCET] = $this->getFaucet($nextNode);
-            }
+            $arr[$nextNode->getId()] = $this->assembleNode($nextNode, TRUE);
         }
 
         return $arr;
@@ -183,14 +176,13 @@ class TopologyConfigFactory
     }
 
     /**
-     * @param Node      $node
-     *
-     * @param bool|null $nextConnector
+     * @param Node $node
+     * @param bool $nextConnector
      *
      * @return array
      * @throws TopologyConfigException
      */
-    private function getWorkers(Node $node, ?bool $nextConnector): array
+    private function getWorkers(Node $node, bool $nextConnector): array
     {
         switch ($node->getType()) {
             case TypeEnum::WEBHOOK:
@@ -266,14 +258,13 @@ class TopologyConfigFactory
     }
 
     /**
-     * @param Node      $node
-     *
-     * @param bool|null $nextConnector
+     * @param Node $node
+     * @param bool $nextConnector
      *
      * @return array
      * @throws TopologyConfigException
      */
-    public function getPaths(Node $node, ?bool $nextConnector): array
+    public function getPaths(Node $node, bool $nextConnector): array
     {
         switch ($node->getType()) {
             case TypeEnum::XML_PARSER:
@@ -456,6 +447,24 @@ class TopologyConfigFactory
         }
 
         return NULL;
+    }
+
+    /**
+     * @param Node $node
+     * @param bool $nextConnector
+     *
+     * @return array
+     * @throws TopologyConfigException
+     */
+    private function assembleNode(Node $node, bool $nextConnector): array
+    {
+        $arr[self::WORKER] = $this->getWorkers($node, $nextConnector);
+
+        if (self::getFaucet($node)) {
+            $arr[self::FAUCET] = $this->getFaucet($node);
+        }
+
+        return $arr;
     }
 
 }
