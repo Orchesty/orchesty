@@ -301,7 +301,7 @@ services:
     #      GENERATOR_NETWORK: ${DEPLOYMENT_PREFIX}_default
     #      GENERATOR_MODE: swarm
     #      GENERATOR_PATH: /tmp
-    #      MONGO_HOST: mongo
+    #      MONGO_HOST: mongodb://mongo
     #      MONGO_DATABASE: demo
     #      RABBITMQ_HOST: rabbitmq
     #    secrets:
