@@ -462,12 +462,14 @@ services:
         ports:
           - ${DEV_IP}:5000:5000
 
+    ## BEGIN DEV
     tsa:
         image: timeseriesadmin/timeseriesadmin:latest
         ports:
           - ${DEV_IP}:8085:80
         mem_limit: 128M
         restart: always
+    ## END DEV
 
 ## BEGIN DEV
 volumes:
