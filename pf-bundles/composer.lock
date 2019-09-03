@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "43329053d5e09bef53a524b9571b2978",
+    "content-hash": "2cf8f1a18761a93bf41b90ffce222833",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -1395,16 +1395,16 @@
         },
         {
             "name": "doctrine/mongodb-odm",
-            "version": "1.2.9",
+            "version": "1.2.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/mongodb-odm.git",
-                "reference": "bb503652c819d09420184d05718db1e572e278f8"
+                "reference": "1e6f9490456176ed25ba79c0230f24dd6be676df"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/mongodb-odm/zipball/bb503652c819d09420184d05718db1e572e278f8",
-                "reference": "bb503652c819d09420184d05718db1e572e278f8",
+                "url": "https://api.github.com/repos/doctrine/mongodb-odm/zipball/1e6f9490456176ed25ba79c0230f24dd6be676df",
+                "reference": "1e6f9490456176ed25ba79c0230f24dd6be676df",
                 "shasum": ""
             },
             "require": {
@@ -1414,7 +1414,7 @@
                 "doctrine/common": "~2.4",
                 "doctrine/inflector": "~1.0",
                 "doctrine/instantiator": "^1.0.1",
-                "doctrine/mongodb": "^1.6.3",
+                "doctrine/mongodb": "^1.6.4",
                 "php": "^5.6 || ^7.0",
                 "symfony/console": "~2.3|~3.0|^4.0"
             },
@@ -1443,20 +1443,20 @@
             ],
             "authors": [
                 {
-                    "name": "Jonathan H. Wage",
-                    "email": "jonwage@gmail.com"
-                },
-                {
-                    "name": "Jeremy Mikola",
-                    "email": "jmikola@gmail.com"
-                },
-                {
                     "name": "Bulat Shakirzyanov",
                     "email": "mallluhuct@gmail.com"
                 },
                 {
                     "name": "Kris Wallsmith",
                     "email": "kris.wallsmith@gmail.com"
+                },
+                {
+                    "name": "Jonathan H. Wage",
+                    "email": "jonwage@gmail.com"
+                },
+                {
+                    "name": "Jeremy Mikola",
+                    "email": "jmikola@gmail.com"
                 },
                 {
                     "name": "Maciej Malarz",
@@ -1475,7 +1475,7 @@
                 "odm",
                 "persistence"
             ],
-            "time": "2019-05-03T18:37:17+00:00"
+            "time": "2019-08-17T08:52:56+00:00"
         },
         {
             "name": "doctrine/mongodb-odm-bundle",
@@ -2238,11 +2238,11 @@
         },
         {
             "name": "hanaboso/acl-bundle",
-            "version": "1.1.1",
+            "version": "1.1.2",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.hanaboso.net:hanaboso/acl-bundle.git",
-                "reference": "db618cf0367f7c694282f60aa05d0f798ba4007a"
+                "reference": "8f2068318e11cb4ace9c3d957d76faa9a807e9c6"
             },
             "require": {
                 "ext-json": "*",
@@ -2269,24 +2269,21 @@
             "license": [
                 "proprietary"
             ],
-            "time": "2019-08-15T11:44:52+00:00"
+            "time": "2019-09-03T08:10:14+00:00"
         },
         {
             "name": "hanaboso/app-store",
-            "version": "1.1.2",
+            "version": "1.1.3",
             "dist": {
                 "type": "path",
                 "url": "../app-store",
-                "reference": "4e0f8581c884d38bfd36e511d0861843ffd6e82a"
+                "reference": "7a5f7a042df4428fcd3d020080dc0fa5faa5ee21"
             },
             "require": {
                 "ext-json": "*",
-                "friendsofsymfony/rest-bundle": "^2.5",
                 "hanaboso/commons-bundle": "^1.1",
                 "hanaboso/pipes-php-sdk": "^1.0",
-                "php": "^7.3",
-                "symfony/monolog-bundle": "^3.4",
-                "symfony/symfony": "^4.3"
+                "php": "^7.3"
             },
             "require-dev": {
                 "hanaboso/php-check-utils": "^1.0"
@@ -2312,11 +2309,11 @@
         },
         {
             "name": "hanaboso/commons-bundle",
-            "version": "1.1.23",
+            "version": "1.1.24",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.hanaboso.net:hanaboso/commons-bundle.git",
-                "reference": "df06785c2f60954e7443e86b7e44826bd9314bd6"
+                "reference": "d36e9cd415231f3e038235854bb1d71f4e5778d7"
             },
             "require": {
                 "alcaeus/mongo-php-adapter": "^1.1",
@@ -2362,7 +2359,7 @@
             "license": [
                 "proprietary"
             ],
-            "time": "2019-08-23T08:48:01+00:00"
+            "time": "2019-09-02T14:20:29+00:00"
         },
         {
             "name": "hanaboso/email-service-bundle",
@@ -2434,11 +2431,11 @@
         },
         {
             "name": "hanaboso/pipes-php-sdk",
-            "version": "1.0.7",
+            "version": "1.0.8",
             "dist": {
                 "type": "path",
                 "url": "../pipes-php-sdk",
-                "reference": "c163bfcd26ac098313fb21f9b1f4011694c2689c"
+                "reference": "070ba01431215e4f97ed3b95756b48f3bd171a7b"
             },
             "require": {
                 "ext-json": "*",
@@ -4853,28 +4850,28 @@
             "authors": [
                 {
                     "name": "Jim Wigginton",
-                    "role": "Lead Developer",
-                    "email": "terrafrost@php.net"
+                    "email": "terrafrost@php.net",
+                    "role": "Lead Developer"
                 },
                 {
                     "name": "Patrick Monnerat",
-                    "role": "Developer",
-                    "email": "pm@datasphere.ch"
+                    "email": "pm@datasphere.ch",
+                    "role": "Developer"
                 },
                 {
                     "name": "Andreas Fischer",
-                    "role": "Developer",
-                    "email": "bantu@phpbb.com"
+                    "email": "bantu@phpbb.com",
+                    "role": "Developer"
                 },
                 {
                     "name": "Hans-Jürgen Petrich",
-                    "role": "Developer",
-                    "email": "petrich@tronic-media.com"
+                    "email": "petrich@tronic-media.com",
+                    "role": "Developer"
                 },
                 {
                     "name": "Graham Campbell",
-                    "role": "Developer",
-                    "email": "graham@alt-three.com"
+                    "email": "graham@alt-three.com",
+                    "role": "Developer"
                 }
             ],
             "description": "PHP Secure Communications Library - Pure-PHP implementations of RSA, AES, SSH2, SFTP, X.509 etc.",
@@ -6722,19 +6719,19 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "role": "Lead Developer",
                     "email": "fabien@symfony.com",
-                    "homepage": "http://fabien.potencier.org"
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 },
                 {
                     "name": "Armin Ronacher",
-                    "role": "Project Founder",
-                    "email": "armin.ronacher@active-4.com"
+                    "email": "armin.ronacher@active-4.com",
+                    "role": "Project Founder"
                 },
                 {
                     "name": "Twig Team",
-                    "role": "Contributors",
-                    "homepage": "https://twig.symfony.com/contributors"
+                    "homepage": "https://twig.symfony.com/contributors",
+                    "role": "Contributors"
                 }
             ],
             "description": "Twig, the flexible, fast, and secure template language for PHP",
@@ -8461,8 +8458,8 @@
             "authors": [
                 {
                     "name": "Sebastian Bergmann",
-                    "email": "sebastian@phpunit.de",
-                    "role": "lead"
+                    "role": "lead",
+                    "email": "sebastian@phpunit.de"
                 }
             ],
             "description": "Library that provides collection, processing, and rendering functionality for PHP code coverage information.",
@@ -8733,8 +8730,8 @@
             "authors": [
                 {
                     "name": "Sebastian Bergmann",
-                    "email": "sebastian@phpunit.de",
-                    "role": "lead"
+                    "role": "lead",
+                    "email": "sebastian@phpunit.de"
                 }
             ],
             "description": "The PHP Unit Testing framework.",
@@ -9485,8 +9482,8 @@
             "authors": [
                 {
                     "name": "Arne Blankerts",
-                    "role": "Developer",
-                    "email": "arne@blankerts.de"
+                    "email": "arne@blankerts.de",
+                    "role": "Developer"
                 }
             ],
             "description": "A small library for converting tokenized PHP source code into XML and potentially other formats",

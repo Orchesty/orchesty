@@ -74,16 +74,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.110.3",
+            "version": "3.110.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "ea9a67360bafee5570b3cd9cb1478b655a1f772c"
+                "reference": "57d9dd171a5afe0b48ce44f05be2d8875c2f7b34"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/ea9a67360bafee5570b3cd9cb1478b655a1f772c",
-                "reference": "ea9a67360bafee5570b3cd9cb1478b655a1f772c",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/57d9dd171a5afe0b48ce44f05be2d8875c2f7b34",
+                "reference": "57d9dd171a5afe0b48ce44f05be2d8875c2f7b34",
                 "shasum": ""
             },
             "require": {
@@ -153,7 +153,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2019-08-26T18:09:29+00:00"
+            "time": "2019-08-30T18:07:59+00:00"
         },
         {
             "name": "aws/aws-sdk-php-symfony",
@@ -1395,16 +1395,16 @@
         },
         {
             "name": "doctrine/mongodb-odm",
-            "version": "1.2.9",
+            "version": "1.2.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/mongodb-odm.git",
-                "reference": "bb503652c819d09420184d05718db1e572e278f8"
+                "reference": "1e6f9490456176ed25ba79c0230f24dd6be676df"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/mongodb-odm/zipball/bb503652c819d09420184d05718db1e572e278f8",
-                "reference": "bb503652c819d09420184d05718db1e572e278f8",
+                "url": "https://api.github.com/repos/doctrine/mongodb-odm/zipball/1e6f9490456176ed25ba79c0230f24dd6be676df",
+                "reference": "1e6f9490456176ed25ba79c0230f24dd6be676df",
                 "shasum": ""
             },
             "require": {
@@ -1414,7 +1414,7 @@
                 "doctrine/common": "~2.4",
                 "doctrine/inflector": "~1.0",
                 "doctrine/instantiator": "^1.0.1",
-                "doctrine/mongodb": "^1.6.3",
+                "doctrine/mongodb": "^1.6.4",
                 "php": "^5.6 || ^7.0",
                 "symfony/console": "~2.3|~3.0|^4.0"
             },
@@ -1443,20 +1443,20 @@
             ],
             "authors": [
                 {
-                    "name": "Jonathan H. Wage",
-                    "email": "jonwage@gmail.com"
-                },
-                {
-                    "name": "Jeremy Mikola",
-                    "email": "jmikola@gmail.com"
-                },
-                {
                     "name": "Bulat Shakirzyanov",
                     "email": "mallluhuct@gmail.com"
                 },
                 {
                     "name": "Kris Wallsmith",
                     "email": "kris.wallsmith@gmail.com"
+                },
+                {
+                    "name": "Jonathan H. Wage",
+                    "email": "jonwage@gmail.com"
+                },
+                {
+                    "name": "Jeremy Mikola",
+                    "email": "jmikola@gmail.com"
                 },
                 {
                     "name": "Maciej Malarz",
@@ -1475,7 +1475,7 @@
                 "odm",
                 "persistence"
             ],
-            "time": "2019-05-03T18:37:17+00:00"
+            "time": "2019-08-17T08:52:56+00:00"
         },
         {
             "name": "doctrine/mongodb-odm-bundle",
@@ -2238,23 +2238,21 @@
         },
         {
             "name": "hanaboso/acl-bundle",
-            "version": "1.1.0",
+            "version": "1.1.2",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.hanaboso.net:hanaboso/acl-bundle.git",
-                "reference": "13bf4bf33a9dfa68924b1d3e94afb6e800ab664c"
+                "reference": "8f2068318e11cb4ace9c3d957d76faa9a807e9c6"
             },
             "require": {
                 "ext-json": "*",
-                "friendsofsymfony/rest-bundle": "^2.5",
                 "hanaboso/user-bundle": "^1.1",
                 "php": "^7.3",
-                "snc/redis-bundle": "^2.1",
+                "snc/redis-bundle": "^3.1",
                 "symfony/monolog-bundle": "^3.4",
                 "symfony/symfony": "^4.3"
             },
             "require-dev": {
-                "doctrine/orm": "^2.6",
                 "hanaboso/php-check-utils": "^1.0"
             },
             "type": "library",
@@ -2271,24 +2269,21 @@
             "license": [
                 "proprietary"
             ],
-            "time": "2019-07-15T15:47:06+00:00"
+            "time": "2019-09-03T08:10:14+00:00"
         },
         {
             "name": "hanaboso/app-store",
-            "version": "1.1.1",
+            "version": "1.1.3",
             "dist": {
                 "type": "path",
                 "url": "../../../app-store",
-                "reference": "114b5de7fe7341444bfceeb59c89f9c116735810"
+                "reference": "7a5f7a042df4428fcd3d020080dc0fa5faa5ee21"
             },
             "require": {
                 "ext-json": "*",
-                "friendsofsymfony/rest-bundle": "^2.5",
                 "hanaboso/commons-bundle": "^1.1",
                 "hanaboso/pipes-php-sdk": "^1.0",
-                "php": "^7.3",
-                "symfony/monolog-bundle": "^3.4",
-                "symfony/symfony": "^4.3"
+                "php": "^7.3"
             },
             "require-dev": {
                 "hanaboso/php-check-utils": "^1.0"
@@ -2314,11 +2309,11 @@
         },
         {
             "name": "hanaboso/commons-bundle",
-            "version": "1.1.21",
+            "version": "1.1.24",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.hanaboso.net:hanaboso/commons-bundle.git",
-                "reference": "98302458b266625bfd9a1fbc114ad214aea22a9b"
+                "reference": "d36e9cd415231f3e038235854bb1d71f4e5778d7"
             },
             "require": {
                 "alcaeus/mongo-php-adapter": "^1.1",
@@ -2336,20 +2331,19 @@
                 "ext-soap": "*",
                 "ext-sockets": "*",
                 "guzzlehttp/guzzle": "^6.3",
-                "jms/serializer-bundle": "^3.4",
                 "mongodb/mongodb": "^1.4",
                 "php": "^7.3",
                 "php-imap/php-imap": "^3.0",
                 "phpseclib/phpseclib": "^2.0",
                 "predis/predis": "^1.1",
+                "snc/redis-bundle": "^3.1",
                 "windwalker/crypt": "^3.5"
             },
             "require-dev": {
-                "friendsofsymfony/rest-bundle": "^2.5",
                 "hanaboso/php-check-utils": "^1.0",
-                "snc/redis-bundle": "^3.1",
+                "symfony/browser-kit": "^4.3",
                 "symfony/monolog-bundle": "^3.4",
-                "symfony/symfony": "^4.3"
+                "symfony/yaml": "^4.3"
             },
             "type": "library",
             "autoload": {
@@ -2365,7 +2359,7 @@
             "license": [
                 "proprietary"
             ],
-            "time": "2019-08-15T09:29:58+00:00"
+            "time": "2019-09-02T14:20:29+00:00"
         },
         {
             "name": "hanaboso/email-service-bundle",
@@ -2437,20 +2431,18 @@
         },
         {
             "name": "hanaboso/pipes-connectors",
-            "version": "1.1.2",
+            "version": "1.1.3",
             "dist": {
                 "type": "path",
                 "url": "../../../pipes-connectors",
-                "reference": "bbdcfb1efff2539eb7d97f92deff06635200e328"
+                "reference": "dd2a62a3997614d4055458b2a37e05b986735584"
             },
             "require": {
                 "ext-json": "*",
-                "hanaboso/app-store": "^1.0",
+                "hanaboso/app-store": "^1.1",
                 "hanaboso/commons-bundle": "^1.1",
                 "hanaboso/pipes-php-sdk": "^1.0",
-                "php": "^7.3",
-                "symfony/monolog-bundle": "^3.4",
-                "symfony/symfony": "^4.3"
+                "php": "^7.3"
             },
             "require-dev": {
                 "hanaboso/php-check-utils": "^1.0"
@@ -2476,11 +2468,11 @@
         },
         {
             "name": "hanaboso/pipes-framework",
-            "version": "1.1.2",
+            "version": "1.1.5",
             "dist": {
                 "type": "path",
                 "url": "../../../pf-bundles",
-                "reference": "72b5d293b52c9ca7a95e57ec0edbff85f1116bc1"
+                "reference": "27db752645d523011df5d97ca5b320941ec78d28"
             },
             "require": {
                 "ext-json": "*",
@@ -2493,17 +2485,12 @@
                 "hanaboso/pipes-php-sdk": "^1.0",
                 "hanaboso/rabbit-mq-bundle": "^1.1",
                 "influxdb/influxdb-php": "^1.15",
-                "league/oauth2-client": "^2.4",
                 "mtdowling/cron-expression": "^1.2",
                 "nette/utils": "^2.5",
                 "php": "^7.3",
                 "php-http/client-common": "^1.9",
                 "php-http/message": "^1.7",
-                "php-http/socket-client": "^1.4",
-                "phpoffice/phpspreadsheet": "^1.8",
-                "snc/redis-bundle": "^2.1",
-                "symfony/monolog-bundle": "^3.4",
-                "symfony/symfony": "^4.3"
+                "php-http/socket-client": "^1.4"
             },
             "require-dev": {
                 "hanaboso/php-check-utils": "^1.0"
@@ -2529,11 +2516,11 @@
         },
         {
             "name": "hanaboso/pipes-php-sdk",
-            "version": "1.0.6",
+            "version": "1.0.8",
             "dist": {
                 "type": "path",
                 "url": "../../../pipes-php-sdk",
-                "reference": "28981abfc8d037c82c1737c294eaa8bdde486cb7"
+                "reference": "070ba01431215e4f97ed3b95756b48f3bd171a7b"
             },
             "require": {
                 "ext-json": "*",
@@ -6095,29 +6082,37 @@
         },
         {
             "name": "snc/redis-bundle",
-            "version": "2.1.11",
+            "version": "3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/snc/SncRedisBundle.git",
-                "reference": "217e34e0b027184be0a7d2ed1abc4f88c9b10ff6"
+                "reference": "ff2a3aa6e9933f0347e9fea0ffa367643d779c5c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/snc/SncRedisBundle/zipball/217e34e0b027184be0a7d2ed1abc4f88c9b10ff6",
-                "reference": "217e34e0b027184be0a7d2ed1abc4f88c9b10ff6",
+                "url": "https://api.github.com/repos/snc/SncRedisBundle/zipball/ff2a3aa6e9933f0347e9fea0ffa367643d779c5c",
+                "reference": "ff2a3aa6e9933f0347e9fea0ffa367643d779c5c",
                 "shasum": ""
             },
             "require": {
-                "php": "^5.3.3 || ^7.0",
-                "symfony/framework-bundle": "^2.7 || ^3.0 || ^4.0",
-                "symfony/yaml": "^2.7 || ^3.0 || ^4.0"
+                "php": "^7.1.3",
+                "symfony/framework-bundle": "^3.4 || ^4.0",
+                "symfony/http-foundation": "^3.4 || ^4.0",
+                "symfony/yaml": "^3.4 || ^4.0"
             },
             "require-dev": {
-                "doctrine/cache": "1.*",
-                "phpunit/phpunit": "^4.8.35 || ^5.7 || ^6.5",
-                "predis/predis": "^1.0",
-                "symfony/console": "^2.7 || ^3.0 || ^4.0",
-                "symfony/phpunit-bridge": "^2.7 || ^3.0 || ^4.0"
+                "doctrine/doctrine-bundle": "^1.6.10",
+                "doctrine/orm": "^2.5.11",
+                "ext-pdo_sqlite": "*",
+                "phpunit/phpunit": "^6.2 || ^7.1",
+                "predis/predis": "^1.1",
+                "swiftmailer/swiftmailer": "^6.0",
+                "symfony/browser-kit": "^3.4 || ^4.0",
+                "symfony/console": "^3.4 || ^4.0",
+                "symfony/phpunit-bridge": "^3.4 || ^4.0",
+                "symfony/profiler-pack": "^1.0",
+                "symfony/swiftmailer-bundle": "^2.0 || ^3.0",
+                "symfony/twig-bundle": "^3.4 || ^4.0"
             },
             "suggest": {
                 "monolog/monolog": "If you want to use the monolog redis handler.",
@@ -6128,13 +6123,16 @@
             "type": "symfony-bundle",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.x-dev"
+                    "dev-master": "3.x-dev"
                 }
             },
             "autoload": {
                 "psr-4": {
                     "Snc\\RedisBundle\\": ""
-                }
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -6157,7 +6155,7 @@
                 "redis",
                 "symfony"
             ],
-            "time": "2019-07-31T05:55:07+00:00"
+            "time": "2019-08-01T05:51:05+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -7960,16 +7958,16 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v4.2.3",
+            "version": "v4.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "e612609022e935f3d0337c1295176505b41188c8"
+                "reference": "97e59c7a16464196a8b9c77c47df68e4a39a45c4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/e612609022e935f3d0337c1295176505b41188c8",
-                "reference": "e612609022e935f3d0337c1295176505b41188c8",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/97e59c7a16464196a8b9c77c47df68e4a39a45c4",
+                "reference": "97e59c7a16464196a8b9c77c47df68e4a39a45c4",
                 "shasum": ""
             },
             "require": {
@@ -8007,7 +8005,7 @@
                 "parser",
                 "php"
             ],
-            "time": "2019-08-12T20:17:41+00:00"
+            "time": "2019-09-01T07:51:21+00:00"
         },
         {
             "name": "ocramius/package-versions",

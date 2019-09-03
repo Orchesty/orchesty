@@ -458,6 +458,7 @@ class TopologyConfigFactory
      */
     private function assembleNode(Node $node, bool $nextConnector): array
     {
+        $arr               = [];
         $arr[self::WORKER] = $this->getWorkers($node, $nextConnector);
 
         if (self::getFaucet($node)) {

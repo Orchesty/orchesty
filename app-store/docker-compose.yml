@@ -14,7 +14,7 @@ services:
       - DEV_GID=${DEV_GID}
 
   mongo:
-      image: mongo:3.6
+      image: mongo:latest
       ports:
         - ${DEV_IP}:27017:27017
       volumes:
