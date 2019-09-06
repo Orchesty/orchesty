@@ -26,7 +26,14 @@ abstract class EmailHandlerAbstract
      */
     public final function getRequiredSettings(): array
     {
-        return [EmailDto::EMAILS];
+        return [
+            EmailDto::HOST,
+            EmailDto::PORT,
+            EmailDto::USERNAME,
+            EmailDto::PASSWORD,
+            EmailDto::ENCRYPTION,
+            EmailDto::EMAILS,
+        ];
     }
 
     /**

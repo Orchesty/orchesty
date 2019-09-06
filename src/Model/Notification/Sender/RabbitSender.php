@@ -2,9 +2,9 @@
 
 namespace Hanaboso\NotificationSender\Model\Notification\Sender;
 
+use Bunny\Channel;
+use Bunny\Client;
 use Hanaboso\NotificationSender\Model\Notification\Dto\RabbitDto;
-use RabbitMqBundle\Connection\Connection;
-use RabbitMqBundle\Connection\ConnectionManager;
 use Throwable;
 
 /**
@@ -16,21 +16,6 @@ final class RabbitSender
 {
 
     /**
-     * @var Connection
-     */
-    private $connection;
-
-    /**
-     * RabbitSender constructor.
-     *
-     * @param ConnectionManager $manager
-     */
-    public function __construct(ConnectionManager $manager)
-    {
-        $this->connection = $manager->getConnection();
-    }
-
-    /**
      * @param RabbitDto $dto
      * @param array     $settings
      *
@@ -38,14 +23,21 @@ final class RabbitSender
      */
     public function send(RabbitDto $dto, array $settings): void
     {
-        $channel = $this->connection->getChannel($this->connection->createChannel());
-        $channel->queueDeclare($settings[RabbitDto::QUEUE]);
+        $client = new Client([
+            'host'     => $settings[RabbitDto::HOST],
+            'port'     => $settings[RabbitDto::PORT],
+            'vhost'    => $settings[RabbitDto::VHOST],
+            'user'     => $settings[RabbitDto::USERNAME],
+            'password' => $settings[RabbitDto::PASSWORD],
+        ]);
 
-        try {
-            $channel->publish($dto->getJsonBody(), $dto->getHeaders(), '', $settings[RabbitDto::QUEUE]);
-        } finally {
-            $channel->close();
-        }
+        $client->connect();
+
+        /** @var Channel $channel */
+        $channel = $client->channel();
+        $channel->queueDeclare($settings[RabbitDto::QUEUE]);
+        $channel->publish($dto->getJsonBody(), $dto->getHeaders(), '', $settings[RabbitDto::QUEUE]);
+        $channel->close();
     }
 
 }

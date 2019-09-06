@@ -6,11 +6,11 @@ use Hanaboso\NotificationSender\Model\Notification\Dto\EmailDto;
 use Hanaboso\NotificationSender\Model\Notification\Handler\EmailHandlerAbstract;
 
 /**
- * Class HanabosoNotificationHandler
+ * Class EmailNotificationHandler
  *
  * @package Hanaboso\NotificationSender\Model\Notification\Handler\Impl
  */
-final class HanabosoNotificationHandler extends EmailHandlerAbstract
+final class EmailNotificationHandler extends EmailHandlerAbstract
 {
 
     /**
@@ -18,7 +18,7 @@ final class HanabosoNotificationHandler extends EmailHandlerAbstract
      */
     public function getName(): string
     {
-        return 'Hanaboso Email Sender';
+        return 'Email Sender';
     }
 
     /**

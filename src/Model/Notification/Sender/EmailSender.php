@@ -3,9 +3,10 @@
 namespace Hanaboso\NotificationSender\Model\Notification\Sender;
 
 use EmailServiceBundle\Exception\MailerException;
-use EmailServiceBundle\Mailer\Mailer;
-use EmailServiceBundle\MessageBuilder\Impl\GenericMessageBuilder\GenericTransportMessage;
 use Hanaboso\NotificationSender\Model\Notification\Dto\EmailDto;
+use Swift_Mailer;
+use Swift_Message;
+use Swift_SmtpTransport;
 
 /**
  * Class EmailSender
@@ -16,21 +17,6 @@ final class EmailSender
 {
 
     /**
-     * @var Mailer
-     */
-    private $mailer;
-
-    /**
-     * EmailSender constructor.
-     *
-     * @param Mailer $mailer
-     */
-    public function __construct(Mailer $mailer)
-    {
-        $this->mailer = $mailer;
-    }
-
-    /**
      * @param EmailDto $dto
      * @param array    $settings
      *
@@ -38,13 +24,18 @@ final class EmailSender
      */
     public function send(EmailDto $dto, array $settings): void
     {
+        $mailer = new Swift_Mailer((new Swift_SmtpTransport(
+            $settings[EmailDto::HOST],
+            $settings[EmailDto::PORT],
+            $settings[EmailDto::ENCRYPTION] === 'null' ? NULL : $settings[EmailDto::ENCRYPTION],
+        ))->setUsername($settings[EmailDto::USERNAME])->setPassword($settings[EmailDto::PASSWORD]));
+
         foreach ($settings[EmailDto::EMAILS] as $email) {
-            $this->mailer->renderAndSend(new GenericTransportMessage(
-                $dto->getFrom(),
-                $email,
-                $dto->getSubject(),
-                $dto->getBody()
-            ));
+            $mailer->send(
+                (new Swift_Message($dto->getSubject(), $dto->getBody()))
+                    ->setFrom($dto->getFrom())
+                    ->setTo($email)
+            );
         }
     }
 

@@ -26,7 +26,14 @@ abstract class RabbitHandlerAbstract
      */
     public final function getRequiredSettings(): array
     {
-        return [RabbitDto::QUEUE];
+        return [
+            RabbitDto::HOST,
+            RabbitDto::PORT,
+            RabbitDto::VHOST,
+            RabbitDto::USERNAME,
+            RabbitDto::PASSWORD,
+            RabbitDto::QUEUE,
+        ];
     }
 
     /**

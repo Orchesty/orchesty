@@ -9,7 +9,17 @@ services:
         arguments:
             - '@notification.manager.settings'
 
-    hbpf.notification.handler.hanaboso:
-        class: Hanaboso\NotificationSender\Model\Notification\Handler\Impl\HanabosoNotificationHandler
+    hbpf.notification.handler.curl:
+        class: Hanaboso\NotificationSender\Model\Notification\Handler\Impl\CurlNotificationHandler
+        arguments:
+        tags: ['hbpf.notification.handler']
+
+    hbpf.notification.handler.email:
+        class: Hanaboso\NotificationSender\Model\Notification\Handler\Impl\EmailNotificationHandler
+        arguments:
+        tags: ['hbpf.notification.handler']
+
+    hbpf.notification.handler.rabbit:
+        class: Hanaboso\NotificationSender\Model\Notification\Handler\Impl\RabbitNotificationHandler
         arguments:
         tags: ['hbpf.notification.handler']

@@ -10,7 +10,12 @@ namespace Hanaboso\NotificationSender\Model\Notification\Dto;
 final class RabbitDto
 {
 
-    public const QUEUE = 'queue';
+    public const QUEUE    = 'queue';
+    public const HOST     = 'host';
+    public const PORT     = 'port';
+    public const VHOST    = 'vhost';
+    public const USERNAME = 'user';
+    public const PASSWORD = 'password';
 
     /**
      * @var array
