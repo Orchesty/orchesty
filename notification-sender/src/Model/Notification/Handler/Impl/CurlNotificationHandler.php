@@ -1,16 +1,16 @@
 <?php declare(strict_types=1);
 
-namespace Demo\Model\Notification\Handler\Impl;
+namespace Hanaboso\NotificationSender\Model\Notification\Handler\Impl;
 
 use Hanaboso\NotificationSender\Model\Notification\Dto\CurlDto;
 use Hanaboso\NotificationSender\Model\Notification\Handler\CurlHandlerAbstract;
 
 /**
- * Class ExampleCurlNotificationHandler
+ * Class CurlNotificationHandler
  *
- * @package Demo\Model\Notification\Handler\Impl
+ * @package Hanaboso\NotificationSender\Model\Notification\Handler\Impl
  */
-final class ExampleCurlNotificationHandler extends CurlHandlerAbstract
+final class CurlNotificationHandler extends CurlHandlerAbstract
 {
 
     /**
@@ -18,7 +18,7 @@ final class ExampleCurlNotificationHandler extends CurlHandlerAbstract
      */
     public function getName(): string
     {
-        return 'Example Curl Sender';
+        return 'CURL Sender';
     }
 
     /**
@@ -28,7 +28,7 @@ final class ExampleCurlNotificationHandler extends CurlHandlerAbstract
      */
     public function process(array $data): CurlDto
     {
-        return new CurlDto($data, $data);
+        return new CurlDto($data, ['Content-Type' => 'application/json']);
     }
 
 }

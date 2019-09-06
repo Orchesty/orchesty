@@ -266,11 +266,32 @@ services:
     ## BEGIN DEV
     notification-sender-api:
         image: dkr.hanaboso.net/pipes/notification-sender:master
-        working_dir: /var/www/html
+        working_dir: /var/www
+        environment:
+          MONGO_HOST: mongo
     ## END DEV
     ## BEGIN STAGE
     #notification-sender-api:
     #    image: dkr.hanaboso.net/pipes/notification-sender:master
+    #    environment:
+    #      MONGO_HOST: mongo
+    ## END STAGE
+
+    # PHP Services monolith
+    ## BEGIN DEV
+    notification-sender-consumer:
+        image: dkr.hanaboso.net/pipes/notification-sender:master
+        command: bash -c 'while ! [ -f vendor/autoload.php ]; do sleep 1; echo "sleep 1"; done; bin/console rabbit_mq:consumer:notification'
+        working_dir: /var/www
+        environment:
+            MONGO_HOST: mongo
+    ## END DEV
+    ## BEGIN STAGE
+    #notification-sender-consumer:
+    #    image: dkr.hanaboso.net/pipes/notification-sender:master
+    #    command: bash -c 'while ! [ -f vendor/autoload.php ]; do sleep 1; echo "sleep 1"; done; bin/console rabbit_mq:consumer:notification'
+    #    environment:
+    #      MONGO_HOST: mongo
     ## END STAGE
 
     ## BEGIN DEV

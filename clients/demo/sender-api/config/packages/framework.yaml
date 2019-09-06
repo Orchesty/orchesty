@@ -1,5 +1,0 @@
-framework:
-    secret: '%secret%'
-
-    session:
-        handler_id: ~

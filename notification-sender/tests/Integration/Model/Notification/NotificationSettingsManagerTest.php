@@ -9,7 +9,9 @@ use Hanaboso\CommonsBundle\Enum\NotificationSenderEnum;
 use Hanaboso\NotificationSender\Document\NotificationSettings;
 use Hanaboso\NotificationSender\Exception\NotificationException;
 use Hanaboso\NotificationSender\Model\Notification\Dto\EmailDto;
-use Hanaboso\NotificationSender\Model\Notification\Handler\Impl\HanabosoNotificationHandler;
+use Hanaboso\NotificationSender\Model\Notification\Handler\Impl\CurlNotificationHandler;
+use Hanaboso\NotificationSender\Model\Notification\Handler\Impl\EmailNotificationHandler;
+use Hanaboso\NotificationSender\Model\Notification\Handler\Impl\RabbitNotificationHandler;
 use Hanaboso\NotificationSender\Model\Notification\NotificationSettingsManager;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\Integration\Model\Notification\Handler\Impl\NullCurlHandler;
@@ -54,7 +56,7 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
     {
         $this->dm->persist(
             (new NotificationSettings())
-                ->setClass(HanabosoNotificationHandler::class)
+                ->setClass(EmailNotificationHandler::class)
                 ->setEvents(self::EVENTS)
                 ->setSettings([EmailDto::EMAILS => ['one@example.com', 'two@example.com']])
         );
@@ -101,25 +103,39 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
                 'id'       => $handlers[3]['id'],
                 'created'  => $handlers[3]['created'],
                 'updated'  => $handlers[3]['updated'],
+                'type'     => NotificationSenderEnum::CURL,
+                'name'     => 'CURL Sender',
+                'class'    => CurlNotificationHandler::class,
+                'events'   => [],
+                'settings' => [],
+            ], [
+                'id'       => $handlers[4]['id'],
+                'created'  => $handlers[4]['created'],
+                'updated'  => $handlers[4]['updated'],
                 'type'     => NotificationSenderEnum::EMAIL,
-                'name'     => 'Hanaboso Email Sender',
-                'class'    => HanabosoNotificationHandler::class,
+                'name'     => 'Email Sender',
+                'class'    => EmailNotificationHandler::class,
                 'events'   => [
                     NotificationEventEnum::ACCESS_EXPIRATION,
                     NotificationEventEnum::DATA_ERROR,
                     NotificationEventEnum::SERVICE_UNAVAILABLE,
                 ],
                 'settings' => [
-                    'emails' =>
-                        [
-                            'one@example.com',
-                            'two@example.com',
-                        ],
+                    'emails' => ['one@example.com', 'two@example.com'],
                 ],
+            ], [
+                'id'       => $handlers[5]['id'],
+                'created'  => $handlers[5]['created'],
+                'updated'  => $handlers[5]['updated'],
+                'type'     => NotificationSenderEnum::RABBIT,
+                'name'     => 'ACMQ Sender',
+                'class'    => RabbitNotificationHandler::class,
+                'events'   => [],
+                'settings' => [],
             ],
         ], $handlers);
 
-        self::assertCount(4, $this->dm->getRepository(NotificationSettings::class)->findAll());
+        self::assertCount(6, $this->dm->getRepository(NotificationSettings::class)->findAll());
     }
 
     /**
@@ -130,7 +146,7 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
     public function testGetSettings(): void
     {
         $settings = (new NotificationSettings())
-            ->setClass(HanabosoNotificationHandler::class)
+            ->setClass(EmailNotificationHandler::class)
             ->setEvents(self::EVENTS)
             ->setSettings([EmailDto::EMAILS => ['one@example.com', 'two@example.com']]);
         $this->dm->persist($settings);
@@ -144,8 +160,8 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
             'created'  => $settings['created'],
             'updated'  => $settings['updated'],
             'type'     => NotificationSenderEnum::EMAIL,
-            'name'     => 'Hanaboso Email Sender',
-            'class'    => HanabosoNotificationHandler::class,
+            'name'     => 'Email Sender',
+            'class'    => EmailNotificationHandler::class,
             'events'   => [
                 NotificationEventEnum::ACCESS_EXPIRATION,
                 NotificationEventEnum::DATA_ERROR,
@@ -204,9 +220,16 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
     public function testSaveSettings(): void
     {
         $settings = (new NotificationSettings())
-            ->setClass(HanabosoNotificationHandler::class)
+            ->setClass(EmailNotificationHandler::class)
             ->setEvents(self::EVENTS)
-            ->setSettings([EmailDto::EMAILS => ['one@example.com', 'two@example.com']]);
+            ->setSettings([
+                EmailDto::HOST       => 'host',
+                EmailDto::PORT       => 'port',
+                EmailDto::USERNAME   => 'username',
+                EmailDto::PASSWORD   => 'password',
+                EmailDto::ENCRYPTION => 'encryption',
+                EmailDto::EMAILS     => ['one@example.com', 'two@example.com'],
+            ]);
         $this->dm->persist($settings);
         $this->dm->flush();
         $this->dm->clear();
@@ -214,7 +237,12 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
         $settings = $this->manager->saveSettings($settings->getId(), [
             NotificationSettings::EVENTS   => [NotificationEventEnum::ACCESS_EXPIRATION],
             NotificationSettings::SETTINGS => [
-                EmailDto::EMAILS => ['another-one@example.com', 'another-two@example.com'],
+                EmailDto::HOST       => 'host',
+                EmailDto::PORT       => 'port',
+                EmailDto::USERNAME   => 'username',
+                EmailDto::PASSWORD   => 'password',
+                EmailDto::ENCRYPTION => 'encryption',
+                EmailDto::EMAILS     => ['another-one@example.com', 'another-two@example.com'],
             ],
         ]);
 
@@ -223,15 +251,16 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
             'created'  => $settings['created'],
             'updated'  => $settings['updated'],
             'type'     => NotificationSenderEnum::EMAIL,
-            'name'     => 'Hanaboso Email Sender',
-            'class'    => HanabosoNotificationHandler::class,
+            'name'     => 'Email Sender',
+            'class'    => EmailNotificationHandler::class,
             'events'   => [NotificationEventEnum::ACCESS_EXPIRATION],
             'settings' => [
-                'emails' =>
-                    [
-                        'another-one@example.com',
-                        'another-two@example.com',
-                    ],
+                EmailDto::HOST       => 'host',
+                EmailDto::PORT       => 'port',
+                EmailDto::USERNAME   => 'username',
+                EmailDto::PASSWORD   => 'password',
+                EmailDto::ENCRYPTION => 'encryption',
+                EmailDto::EMAILS     => ['another-one@example.com', 'another-two@example.com'],
             ],
         ], $settings);
     }
@@ -257,7 +286,7 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
     public function testSaveSettingsNotFoundRequired(): void
     {
         $settings = (new NotificationSettings())
-            ->setClass(HanabosoNotificationHandler::class)
+            ->setClass(EmailNotificationHandler::class)
             ->setEvents(self::EVENTS)
             ->setSettings([EmailDto::EMAILS => ['one@example.com', 'two@example.com']]);
         $this->dm->persist($settings);
@@ -266,7 +295,7 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
 
         self::expectException(NotificationException::class);
         self::expectExceptionCode(NotificationException::NOTIFICATION_PARAMETER_NOT_FOUND);
-        self::expectExceptionMessage("Required settings 'emails' for type 'email' is missing!");
+        self::expectExceptionMessage("Required settings 'host' for type 'email' is missing!");
 
         $this->manager->saveSettings($settings->getId(), [NotificationSettings::SETTINGS => []]);
     }
