@@ -42,7 +42,7 @@ class NotificationSettingsChangeForm extends React.Component {
   }
 
   render() {
-    const { events, initialValues: { type } } = this.props;
+    const { initialValues: { type, eventOptions } } = this.props;
 
     const methods = [
       { value: 'GET', label: 'GET' },
@@ -51,21 +51,55 @@ class NotificationSettingsChangeForm extends React.Component {
       { value: 'DELETE', label: 'DELETE' },
     ];
 
+    const encryptions = [
+      { value: 'null', label: 'None' },
+      { value: 'ssl', label: 'SSL' },
+      { value: 'tls', label: 'TLS' },
+    ];
+
+    let settings = [];
+
+    switch (type) {
+      case "curl":
+        settings.push(
+          <Field key="method" name="method" component={FormSelectInput} label="Method" options={methods} />,
+          <Field key="url" name="url" component={FormTextInput} label="Url" />
+        );
+        break;
+      case "email":
+        settings.push(
+          <Field key="host" name="host" component={FormTextInput} label="Host" />,
+          <Field key="port" name="port" component={FormTextInput} label="Port" />,
+          <Field key="username" name="username" component={FormTextInput} label="Username" />,
+          <Field key="password" name="password" component={FormTextInput} label="Password" />,
+          <Field key="encryption" name="encryption" component={FormSelectInput} label="Encryption" options={encryptions} />,
+          <Field key="emails" name="emails" component={FormTextAreaInput} rows={10} label="Emails (one per line)" />,
+        );
+        break;
+      case "rabbit":
+        settings.push(
+          <Field key="host" name="host" component={FormTextInput} label="Host" />,
+          <Field key="port" name="port" component={FormTextInput} label="Port" />,
+          <Field key="vhost" name="vhost" component={FormTextInput} label="VHost" />,
+          <Field key="user" name="user" component={FormTextInput} label="Username" />,
+          <Field key="password" name="password" component={FormTextInput} label="Password" />,
+          <Field key="queue" name="queue" component={FormTextInput} label="Queue" />,
+        );
+        break;
+
+    }
+
     return (
       <form className="form-horizontal form-label-left" onSubmit={this.props.handleSubmit(this.onSubmit)}>
-        <Field name="events" component={FormSelectInput} label="Events" multiple={true} options={events} />
-        {type === "curl" && <Field name="method" component={FormSelectInput} label="Method" options={methods} />}
-        {type === "curl" && <Field name="url" component={FormTextInput} label="Url" />}
-        {type === "email" &&
-        <Field name="emails" component={FormTextAreaInput} rows={10} label="Emails (one per line)" />}
-        {type === "rabbit" && <Field name="queue" component={FormTextInput} label="Queue" />}
+        <Field name="events" component={FormSelectInput} label="Events" multiple={true} options={eventOptions} />
+        {settings}
         <button ref={this.setButton} className="hidden" />
       </form>
     );
   }
 }
 
-function validate({ type, method, url, emails, queue }) {
+function validate({ type, method, url, host, port, username, password, encryption, emails, vhost, user, queue }) {
   const errors = {};
 
   switch (type) {
@@ -80,12 +114,52 @@ function validate({ type, method, url, emails, queue }) {
       break;
 
     case 'email':
+      if (!host) {
+        errors.host = 'Host must be filled!';
+      }
+
+      if (!port) {
+        errors.port = 'Port must be filled!';
+      }
+
+      if (!username) {
+        errors.username = 'Username must be filled!';
+      }
+
+      if (!password) {
+        errors.password = 'Password must be filled!';
+      }
+
+      if (!encryption) {
+        errors.encryption = 'Encryption must be filled!';
+      }
+
       if (!emails) {
         errors.emails = 'Emails must be filled!';
       }
       break;
 
     case 'rabbit':
+      if (!host) {
+        errors.host = 'Host must be filled!';
+      }
+
+      if (!port) {
+        errors.port = 'Port must be filled!';
+      }
+
+      if (!vhost) {
+        errors.vhost = 'Vhost must be filled!';
+      }
+
+      if (!user) {
+        errors.user = 'User must be filled!';
+      }
+
+      if (!password) {
+        errors.password = 'Password must be filled!';
+      }
+
       if (!queue) {
         errors.queue = 'Queue must be filled!';
       }
@@ -101,12 +175,17 @@ NotificationSettingsChangeForm.propTypes = {
   handleSubmit: PropTypes.func.isRequired
 };
 
-function mapStateToProps({ notificationSettings: { events } }, { data }) {
-  const { settings: { method, url, emails, queue } } = data;
+function mapStateToProps({ notificationSettings: { events: eventOptions } }, { data }) {
+  const { type, events, settings, settings: { emails } } = data;
 
   return {
-    events: Object.entries(events).map(([value, label]) => ({ value, label })),
-    initialValues: { ...data, method, url, emails: emails && emails.join('\r\n'), queue }
+    initialValues: {
+      type,
+      events,
+      ...settings,
+      emails: emails && emails.join('\r\n'),
+      eventOptions: Object.entries(eventOptions).map(([value, label]) => ({ value, label })),
+    }
   };
 }
 
@@ -116,4 +195,9 @@ function mapActionsToProps(dispatch, ownProps) {
   }
 }
 
-export default connect(mapStateToProps, mapActionsToProps)(reduxForm({ validate })(NotificationSettingsChangeForm));
+const formConfig = {
+  validate,
+  form: 'notification_settings_form',
+};
+
+export default connect(mapStateToProps, mapActionsToProps)(reduxForm(formConfig)(NotificationSettingsChangeForm));
