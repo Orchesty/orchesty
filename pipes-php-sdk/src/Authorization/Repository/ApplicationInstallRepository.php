@@ -49,8 +49,8 @@ class ApplicationInstallRepository extends DocumentRepository
     public function findUsersAppDefaultHeaders(ProcessDto $dto): ApplicationInstall
     {
         return $this->findUserApp(
-            (string) $dto->getHeader('pf-key', ''),
-            (string) $dto->getHeader('pf-user', '')
+            (string) $dto->getHeader('pf-application', '')[0],
+            (string) $dto->getHeader('pf-user', '')[0]
         );
     }
 

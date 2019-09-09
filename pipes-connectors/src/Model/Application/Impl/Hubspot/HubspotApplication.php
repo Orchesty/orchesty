@@ -137,6 +137,8 @@ class HubspotApplication extends OAuth2ApplicationAbstract implements WebhookApp
     {
         $request = new RequestDto($method, $this->getUri($url));
         $request->setHeaders([
+            'Content-Type'  => 'application/json',
+            'Accept'        => 'application/json',
             'Authorization' => sprintf('Bearer %s', $this->getAccessToken($applicationInstall)),
         ]);
 

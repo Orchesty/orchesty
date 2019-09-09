@@ -2,14 +2,14 @@
 
 namespace Hanaboso\PipesPhpSdk\Mapper\Impl;
 
-use Hanaboso\PipesPhpSdk\Mapper\MapperInterface;
+use Hanaboso\PipesPhpSdk\Mapper\MapperAbstract;
 
 /**
  * Class NullMapper
  *
  * @package Hanaboso\PipesPhpSdk\Mapper\Impl
  */
-class NullMapper implements MapperInterface
+class NullMapper extends MapperAbstract
 {
 
     /**

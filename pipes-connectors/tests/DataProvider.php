@@ -4,7 +4,9 @@ namespace Tests;
 
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use Hanaboso\PipesPhpSdk\Authorization\Base\ApplicationInterface;
+use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Document\ApplicationInstall;
@@ -39,7 +41,31 @@ final class DataProvider
         $settings[BasicApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN][OAuth2Provider::ACCESS_TOKEN] = $accessToken;
         $settings[BasicApplicationInterface::AUTHORIZATION_SETTINGS][OAuth2ApplicationInterface::CLIENT_ID]                     = $clientId;
         $settings[BasicApplicationInterface::AUTHORIZATION_SETTINGS][OAuth2ApplicationInterface::CLIENT_SECRET]                 = $clientSecret;
-        $applicationInstall = new ApplicationInstall();
+        $applicationInstall                                                                                                     = new ApplicationInstall();
+
+        return $applicationInstall
+            ->setSettings($settings)
+            ->setUser($user)
+            ->setKey($key);
+    }
+
+    /**
+     * @param string $key
+     * @param string $user
+     * @param string $password
+     *
+     * @return ApplicationInstall
+     * @throws DateTimeException
+     */
+    public static function getBasicAppInstall(
+        string $key,
+        string $user = 'user',
+        string $password = 'pass123'
+    ): ApplicationInstall
+    {
+        $settings[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationAbstract::USER]     = $user;
+        $settings[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationAbstract::PASSWORD] = $password;
+        $applicationInstall                                                                              = new ApplicationInstall();
 
         return $applicationInstall
             ->setSettings($settings)
@@ -59,7 +85,10 @@ final class DataProvider
         $dto = new ProcessDto();
         $dto
             ->setData($body)
-            ->setHeaders(['pf-user' => $user, 'pf-key' => $key]);
+            ->setHeaders([
+                PipesHeaders::createKey(PipesHeaders::USER)        => [$user],
+                PipesHeaders::createKey(PipesHeaders::APPLICATION) => [$key],
+            ]);
 
         return $dto;
     }

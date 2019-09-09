@@ -6,14 +6,14 @@ use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
 use Hanaboso\CommonsBundle\Utils\PipesHeaders;
-use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeInterface;
+use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
 
 /**
  * Class DummyConnectorSplit
  *
  * @package Demo\CustomNode
  */
-class DummyConnectorSplit implements CustomNodeInterface
+class DummyConnectorSplit extends CustomNodeAbstract
 {
 
     /**

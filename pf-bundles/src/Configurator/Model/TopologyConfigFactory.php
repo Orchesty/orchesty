@@ -301,8 +301,8 @@ class TopologyConfigFactory
             case TypeEnum::BATCH_CONNECTOR:
                 if ($nextConnector) {
                     $paths = [
-                        self::PROCESS_PATH => sprintf('/connector/%s/event', $node->getName()),
-                        self::STATUS_PATH  => sprintf('/connector/%s/event/test', $node->getName()),
+                        self::PROCESS_PATH => sprintf('/connector/%s/webhook', $node->getName()),
+                        self::STATUS_PATH  => sprintf('/connector/%s/webhook/test', $node->getName()),
                     ];
                     break;
                 }

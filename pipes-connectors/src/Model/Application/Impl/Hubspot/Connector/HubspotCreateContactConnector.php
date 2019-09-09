@@ -25,11 +25,6 @@ class HubspotCreateContactConnector extends ConnectorAbstract
 {
 
     /**
-     * @var HubspotApplication
-     */
-    private $application;
-
-    /**
      * @var CurlManagerInterface
      */
     private $curlManager;
@@ -42,13 +37,11 @@ class HubspotCreateContactConnector extends ConnectorAbstract
     /**
      * HubspotCreateContactConnector constructor.
      *
-     * @param HubspotApplication   $application
      * @param CurlManagerInterface $curlManager
      * @param DocumentManager      $dm
      */
-    public function __construct(HubspotApplication $application, CurlManagerInterface $curlManager, DocumentManager $dm)
+    public function __construct(CurlManagerInterface $curlManager, DocumentManager $dm)
     {
-        $this->application = $application;
         $this->curlManager = $curlManager;
         $this->repository  = $dm->getRepository(ApplicationInstall::class);
     }
@@ -95,13 +88,13 @@ class HubspotCreateContactConnector extends ConnectorAbstract
 
         $json = $return->getJsonBody();
 
-        unset($json['correlationId']);
-        unset($json['requestId']);
+        unset($json['correlationId'], $json['requestId']);
 
         $dto->setData((string) json_encode($json, JSON_THROW_ON_ERROR, 512));
+        $message = $json['validationResults'][0]['message'] ?? NULL;
 
         $statusCode = $return->getStatusCode();
-        $this->evaluateStatusCode($statusCode, $dto);
+        $this->evaluateStatusCode($statusCode, $dto, $message);
 
         return $dto;
     }

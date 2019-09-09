@@ -115,7 +115,8 @@ final class WebhookManager
                 $subscription,
                 sprintf(self::URL, $this->hostname, $name, $subscription->getNode(), $token)
             );
-            $webhookId          = $application->processWebhookSubscribeResponse(
+
+            $webhookId = $application->processWebhookSubscribeResponse(
                 $this->manager->send($request),
                 $applicationInstall
             );
@@ -146,7 +147,8 @@ final class WebhookManager
         WebhookApplicationInterface $application,
         string $userId,
         array $data = []
-    ): void {
+    ): void
+    {
         /** @var Webhook[] $webhooks */
         $webhooks = $this->dm->getRepository(Webhook::class)->findBy([
             Webhook::APPLICATION => $application->getKey(),

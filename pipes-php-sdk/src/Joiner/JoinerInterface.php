@@ -2,6 +2,8 @@
 
 namespace Hanaboso\PipesPhpSdk\Joiner;
 
+use Hanaboso\PipesPhpSdk\Authorization\Base\ApplicationInterface;
+
 /**
  * Interface JoinerInterface
  *
@@ -34,5 +36,17 @@ interface JoinerInterface
      * @return string[]
      */
     public function process(array $data, int $count): array;
+
+    /**
+     * @param ApplicationInterface $application
+     *
+     * @return JoinerInterface
+     */
+    public function setApplication(ApplicationInterface $application): JoinerInterface;
+
+    /**
+     * @return string|null
+     */
+    public function getApplicationKey(): ?string;
 
 }

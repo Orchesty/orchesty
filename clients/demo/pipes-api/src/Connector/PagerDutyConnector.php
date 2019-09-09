@@ -12,7 +12,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
-use Hanaboso\PipesPhpSdk\Connector\ConnectorInterface;
+use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use JK\Utils\CzechHolidays;
 
@@ -21,7 +21,7 @@ use JK\Utils\CzechHolidays;
  *
  * @package Demo\Connector
  */
-class PagerDutyConnector implements ConnectorInterface
+class PagerDutyConnector extends ConnectorAbstract
 {
 
     /**

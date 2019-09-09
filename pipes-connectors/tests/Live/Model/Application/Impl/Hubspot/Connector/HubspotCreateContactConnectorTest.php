@@ -22,10 +22,11 @@ final class HubspotCreateContactConnectorTest extends DatabaseTestCaseAbstract
     {
         $app                           = self::$container->get('hbpf.application.hubspot');
         $hubspotCreateContactConnector = new HubspotCreateContactConnector(
-            $app,
             self::$container->get('hbpf.transport.curl_manager'),
             $this->dm
         );
+
+        $hubspotCreateContactConnector->setApplication($app);
 
         $this->pf(DataProvider::getOauth2AppInstall(
             $app->getKey(),
@@ -37,7 +38,7 @@ final class HubspotCreateContactConnectorTest extends DatabaseTestCaseAbstract
         $hubspotCreateContactConnector->processAction(DataProvider::getProcessDto(
             $app->getKey(),
             'user',
-            (string) file_get_contents(__DIR__ . sprintf('/Data/contactBody.json'), TRUE)
+            (string) file_get_contents(__DIR__ . sprintf('/Data/request.json'), TRUE)
         ));
     }
 

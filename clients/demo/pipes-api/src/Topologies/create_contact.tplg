@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:pipes="http://www.omg.org/spec/Pipes/20100524/MODEL" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="Process_1" isExecutable="false">
+    <bpmn:task id="Task_04uktik" pipes:pipesType="connector" name="shipstation_new_order">
+      <bpmn:incoming>SequenceFlow_03n1zok</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0bjzqms</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_1fn5oeo" pipes:pipesType="connector" name="hubspot_create_contact">
+      <bpmn:incoming>SequenceFlow_0tds41u</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0pdo5ih</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_06gwhk6" pipes:pipesType="custom" name="hubspot_create_contact">
+      <bpmn:incoming>SequenceFlow_0bjzqms</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0tds41u</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_1ip0ogj" pipes:pipesType="custom" name="mailchimp_create_contact">
+      <bpmn:incoming>SequenceFlow_0pdo5ih</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1xwvbo4</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_0axljl6" pipes:pipesType="connector" name="mailchimp_create_contact">
+      <bpmn:incoming>SequenceFlow_1xwvbo4</bpmn:incoming>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="SequenceFlow_0bjzqms" sourceRef="Task_04uktik" targetRef="Task_06gwhk6" />
+    <bpmn:sequenceFlow id="SequenceFlow_0tds41u" sourceRef="Task_06gwhk6" targetRef="Task_1fn5oeo" />
+    <bpmn:sequenceFlow id="SequenceFlow_0pdo5ih" sourceRef="Task_1fn5oeo" targetRef="Task_1ip0ogj" />
+    <bpmn:sequenceFlow id="SequenceFlow_1xwvbo4" sourceRef="Task_1ip0ogj" targetRef="Task_0axljl6" />
+    <bpmn:event id="Event_0ijr09o" pipes:pipesType="webhook" name="Webhook">
+      <bpmn:outgoing>SequenceFlow_03n1zok</bpmn:outgoing>
+    </bpmn:event>
+    <bpmn:sequenceFlow id="SequenceFlow_03n1zok" sourceRef="Event_0ijr09o" targetRef="Task_04uktik" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1">
+      <bpmndi:BPMNShape id="Task_04uktik_di" bpmnElement="Task_04uktik">
+        <dc:Bounds x="643" y="493" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_1fn5oeo_di" bpmnElement="Task_1fn5oeo">
+        <dc:Bounds x="901" y="493" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_06gwhk6_di" bpmnElement="Task_06gwhk6">
+        <dc:Bounds x="778" y="493" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_1ip0ogj_di" bpmnElement="Task_1ip0ogj">
+        <dc:Bounds x="1051" y="493" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_0axljl6_di" bpmnElement="Task_0axljl6">
+        <dc:Bounds x="1201" y="493" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0bjzqms_di" bpmnElement="SequenceFlow_0bjzqms">
+        <di:waypoint xsi:type="dc:Point" x="743" y="533" />
+        <di:waypoint xsi:type="dc:Point" x="778" y="533" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="716" y="512" width="90" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0tds41u_di" bpmnElement="SequenceFlow_0tds41u">
+        <di:waypoint xsi:type="dc:Point" x="878" y="533" />
+        <di:waypoint xsi:type="dc:Point" x="901" y="533" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="845" y="512" width="90" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0pdo5ih_di" bpmnElement="SequenceFlow_0pdo5ih">
+        <di:waypoint xsi:type="dc:Point" x="1001" y="533" />
+        <di:waypoint xsi:type="dc:Point" x="1051" y="533" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="981" y="512" width="90" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1xwvbo4_di" bpmnElement="SequenceFlow_1xwvbo4">
+        <di:waypoint xsi:type="dc:Point" x="1151" y="533" />
+        <di:waypoint xsi:type="dc:Point" x="1201" y="533" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1131" y="512" width="90" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_0ijr09o_di" bpmnElement="Event_0ijr09o">
+        <dc:Bounds x="519" y="489" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="512" y="529" width="49" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_03n1zok_di" bpmnElement="SequenceFlow_03n1zok">
+        <di:waypoint xsi:type="dc:Point" x="555" y="507" />
+        <di:waypoint xsi:type="dc:Point" x="605" y="507" />
+        <di:waypoint xsi:type="dc:Point" x="605" y="533" />
+        <di:waypoint xsi:type="dc:Point" x="643" y="533" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="575" y="514" width="90" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

@@ -3,7 +3,7 @@
 namespace Demo\Connector;
 
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\PipesPhpSdk\Connector\ConnectorInterface;
+use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\SuccessMessage;
@@ -16,7 +16,7 @@ use function React\Promise\resolve;
  *
  * @package Demo\Connector
  */
-final class BatchConnector implements BatchInterface, ConnectorInterface
+final class BatchConnector extends ConnectorAbstract implements BatchInterface
 {
 
     /**

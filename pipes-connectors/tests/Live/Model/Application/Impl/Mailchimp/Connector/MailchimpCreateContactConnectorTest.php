@@ -23,10 +23,11 @@ final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
     {
         $app                             = self::$container->get('hbpf.application.mailchimp');
         $mailchimpCreateContactConnector = new MailchimpCreateContactConnector(
-            $app,
             self::$container->get('hbpf.transport.curl_manager'),
             $this->dm
         );
+
+        $mailchimpCreateContactConnector->setApplication($app);
 
         $applicationInstall = DataProvider::getOauth2AppInstall(
             $app->getKey(),
@@ -41,14 +42,8 @@ final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
 
         $this->pf($applicationInstall);
         $this->dm->clear();
+        $data = (string) file_get_contents(sprintf('%s/Data/requestMailchimp.json', __DIR__), TRUE);
 
-        $data = '{
-                                "email_address": "urt.m@freddiesjokes.com",
-                                "status": "subscribed",
-                                "merge_fields": {
-                                    "FNAME": "U",
-                                    "LNAME": "M" }
-                              }';
         $mailchimpCreateContactConnector->processAction(DataProvider::getProcessDto(
             $app->getKey(),
             'user',

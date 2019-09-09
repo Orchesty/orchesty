@@ -4,6 +4,7 @@ namespace Hanaboso\PipesPhpSdk\LongRunningNode\Model;
 
 use Bunny\Message;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\PipesPhpSdk\Authorization\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData;
 
 /**
@@ -33,5 +34,17 @@ interface LongRunningNodeInterface
      * @return ProcessDto
      */
     public function afterAction(LongRunningNodeData $data, array $requestData): ProcessDto;
+
+    /**
+     * @param ApplicationInterface $application
+     *
+     * @return LongRunningNodeInterface
+     */
+    public function setApplication(ApplicationInterface $application): LongRunningNodeInterface;
+
+    /**
+     * @return string|null
+     */
+    public function getApplicationKey(): ?string;
 
 }

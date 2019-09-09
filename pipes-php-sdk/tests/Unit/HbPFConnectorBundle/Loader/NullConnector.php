@@ -3,14 +3,14 @@
 namespace Tests\Unit\HbPFConnectorBundle\Loader;
 
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\PipesPhpSdk\Connector\ConnectorInterface;
+use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
 
 /**
  * Class NullConnector
  *
  * @package Tests\Unit\HbPFConnectorBundle\Loader
  */
-class NullConnector implements ConnectorInterface
+class NullConnector extends ConnectorAbstract
 {
 
     /**

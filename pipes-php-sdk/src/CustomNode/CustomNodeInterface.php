@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesPhpSdk\CustomNode;
 
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\PipesPhpSdk\Authorization\Base\ApplicationInterface;
 
 /**
  * Interface CustomNodeInterface
@@ -18,5 +19,17 @@ interface CustomNodeInterface
      * @return ProcessDto
      */
     public function process(ProcessDto $dto): ProcessDto;
+
+    /**
+     * @param ApplicationInterface $application
+     *
+     * @return CustomNodeInterface
+     */
+    public function setApplication(ApplicationInterface $application): CustomNodeInterface;
+
+    /**
+     * @return string|null
+     */
+    public function getApplicationKey(): ?string;
 
 }

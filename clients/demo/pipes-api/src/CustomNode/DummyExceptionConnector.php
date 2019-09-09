@@ -6,7 +6,7 @@ use Exception;
 use Hanaboso\CommonsBundle\Monolog\LoggerContext;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Utils\PipesHeaders;
-use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeInterface;
+use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
 use Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Exception\CustomNodeException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
@@ -17,7 +17,7 @@ use Psr\Log\NullLogger;
  *
  * @package Demo\CustomNode
  */
-class DummyExceptionConnector implements CustomNodeInterface, LoggerAwareInterface
+class DummyExceptionConnector extends CustomNodeAbstract implements LoggerAwareInterface
 {
 
     /**

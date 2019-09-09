@@ -42,7 +42,11 @@ abstract class BasicApplicationAbstract extends ApplicationAbstract implements B
      */
     public function setApplicationPassword(ApplicationInstall $applicationInstall, string $password): ApplicationInstall
     {
-        return $applicationInstall->setSettings([ApplicationInterface::AUTHORIZATION_SETTINGS => [BasicApplicationInterface::PASSWORD => $password]]);
+        $settings                                                                                    = $applicationInstall->getSettings();
+        $settings[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::PASSWORD] = $password;
+
+        return $applicationInstall->setSettings($settings);
+
     }
 
     /**
@@ -53,7 +57,35 @@ abstract class BasicApplicationAbstract extends ApplicationAbstract implements B
      */
     public function setApplicationUser(ApplicationInstall $applicationInstall, string $user): ApplicationInstall
     {
-        return $applicationInstall->setSettings([ApplicationInterface::AUTHORIZATION_SETTINGS => [BasicApplicationInterface::USER => $user]]);
+        $settings                                                                                = $applicationInstall->getSettings();
+        $settings[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::USER] = $user;
+
+        return $applicationInstall->setSettings($settings);
+    }
+
+    /**
+     * @param ApplicationInstall $applicationInstall
+     * @param array              $settings
+     *
+     * @return ApplicationInstall
+     */
+    public function setApplicationSettings(ApplicationInstall $applicationInstall, array $settings): ApplicationInstall
+    {
+        $applicationInstall = parent::setApplicationSettings($applicationInstall, $settings);
+
+        foreach ($applicationInstall->getSettings()[ApplicationAbstract::FORM] ?? [] as $key => $value) {
+
+            if ($key === BasicApplicationInterface::USER) {
+                $this->setApplicationUser($applicationInstall, $value);
+                continue;
+            }
+            if ($key === BasicApplicationInterface::PASSWORD) {
+                $this->setApplicationPassword($applicationInstall, $value);
+                continue;
+            }
+        }
+
+        return $applicationInstall;
     }
 
 }

@@ -3,7 +3,7 @@
 namespace Demo\CustomNode;
 
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeInterface;
+use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\SuccessMessage;
 use React\EventLoop\LoopInterface;
@@ -15,7 +15,7 @@ use function React\Promise\resolve;
  *
  * @package Demo\CustomNode
  */
-final class BatchCustomNode implements BatchInterface, CustomNodeInterface
+final class BatchCustomNode  extends CustomNodeAbstract implements BatchInterface
 {
 
     /**

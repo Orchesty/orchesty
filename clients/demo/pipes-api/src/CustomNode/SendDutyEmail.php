@@ -11,14 +11,14 @@ use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
-use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeInterface;
+use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
 
 /**
  * Class SendDutyEmail
  *
  * @package Demo\CustomNode
  */
-class SendDutyEmail implements CustomNodeInterface
+class SendDutyEmail extends CustomNodeAbstract
 {
 
     private const FROM    = 'dev.email.hb@gmail.com';

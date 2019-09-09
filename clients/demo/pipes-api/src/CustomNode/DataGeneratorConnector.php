@@ -6,14 +6,14 @@ use DateTime;
 use DateTimeZone;
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeInterface;
+use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
 
 /**
  * Class DataGeneratorConnector
  *
  * @package Demo\CustomNode
  */
-final class DataGeneratorConnector implements CustomNodeInterface
+final class DataGeneratorConnector extends CustomNodeAbstract
 {
 
     /**

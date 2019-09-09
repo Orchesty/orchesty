@@ -2,13 +2,15 @@ parameters:
     locale: en
     secret: ThisTokenIsNotSoSecretChangeIt
 
-    backend_host: 127.0.0.66
+    backend_host: http://127.0.0.66
     cron_host: 'http://cron-api:5000'
     starting_point_host: 'http://starting-point'
     notification_host: 'http://notification-sender-api'
     activateLink: '%backend_host%/user/%s/activate'
     access_token_refresh_interval: 3600
-    node_services_dirs: ['%kernel.project_dir%/config']
+    node_services_dirs:
+        - '%kernel.project_dir%/config'
+        - '%kernel.root_dir%/../vendor/hanaboso/pipes-connectors/src/Resources/config/'
     applications: ['%kernel.root_dir%/../vendor/hanaboso/pipes-connectors/src/Resources/config/']
 
 services:

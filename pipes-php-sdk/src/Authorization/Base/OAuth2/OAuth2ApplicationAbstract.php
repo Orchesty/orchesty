@@ -2,7 +2,6 @@
 
 namespace Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2;
 
-use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Enum\AuthorizationTypeEnum;
 use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
 use Hanaboso\PipesPhpSdk\Authorization\Base\ApplicationAbstract;
@@ -143,6 +142,7 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
         }
 
         $settings                                                                            = $applicationInstall->getSettings();
+
         $settings[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN] = $token;
         $applicationInstall->setSettings($settings);
 
@@ -162,19 +162,10 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
             return $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN][OAuth2Provider::ACCESS_TOKEN];
 
         } else {
+
             throw new ApplicationInstallException('There is no access token',
                 ApplicationInstallException::AUTHORIZATION_OAUTH2_ERROR);
         }
-    }
-
-    /**
-     * @param string|null $url
-     *
-     * @return Uri
-     */
-    public function getUri(?string $url): Uri
-    {
-        return new Uri(sprintf('%s', ltrim($url ?? '', '/')));
     }
 
     /**

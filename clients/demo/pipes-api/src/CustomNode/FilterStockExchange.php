@@ -5,7 +5,7 @@ namespace Demo\CustomNode;
 use Exception;
 use Hanaboso\CommonsBundle\Monolog\LoggerContext;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeInterface;
+use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
 use Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Exception\CustomNodeException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
@@ -17,7 +17,7 @@ use Throwable;
  *
  * @package Demo\CustomNode
  */
-class FilterStockExchange implements CustomNodeInterface, LoggerAwareInterface
+class FilterStockExchange extends CustomNodeAbstract implements LoggerAwareInterface
 {
 
     /**

@@ -23,8 +23,8 @@
                 "type": "worker.http",
                 "settings": {
                     "host": "someSdkHost",
-                    "process_path": "\/connector\/example2\/event",
-                    "status_path": "\/connector\/example2\/event\/test",
+                    "process_path": "\/connector\/example2\/webhook",
+                    "status_path": "\/connector\/example2\/webhook\/test",
                     "method": "POST",
                     "port": 80,
                     "publish_queue": []

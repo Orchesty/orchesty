@@ -2,7 +2,6 @@
 
 namespace Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp;
 
-use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
@@ -119,8 +118,9 @@ class MailchimpApplication extends OAuth2ApplicationAbstract implements WebhookA
     {
         $request = new RequestDto($method, $this->getUri($url));
         $request->setHeaders([
-            'Authorization' => sprintf('OAuth %s', $this->getAccessToken($applicationInstall)),
+            'Content-Type'  => 'application/json',
             'Accept'        => 'application/json',
+            'Authorization' => sprintf('OAuth %s', $this->getAccessToken($applicationInstall)),
         ]);
 
         if (!empty($data)) {
@@ -230,10 +230,11 @@ class MailchimpApplication extends OAuth2ApplicationAbstract implements WebhookA
         string $url
     ): RequestDto
     {
-        $request = $this->getRequestDto(
+        return $this->getRequestDto(
             $applicationInstall,
             CurlManager::METHOD_POST,
-            sprintf('/lists/%s/webhooks',
+            sprintf('%s/3.0/lists/%s/webhooks',
+                $applicationInstall->getSettings()[self::API_KEYPOINT],
                 $applicationInstall->getSettings()[ApplicationAbstract::FORM][self::AUDIENCE_ID]),
             json_encode([
                 'url'     => $url,
@@ -247,15 +248,6 @@ class MailchimpApplication extends OAuth2ApplicationAbstract implements WebhookA
                 ],
             ], JSON_THROW_ON_ERROR)
         );
-
-        return $request->setUri(
-            new Uri(
-                str_replace(
-                    'https://api.mailchimp.com', $applicationInstall->getSettings()[self::API_KEYPOINT],
-                    (string) $request->getUri()
-                )
-            )
-        );
     }
 
     /**
@@ -268,22 +260,14 @@ class MailchimpApplication extends OAuth2ApplicationAbstract implements WebhookA
      */
     public function getWebhookUnsubscribeRequestDto(ApplicationInstall $applicationInstall, string $id): RequestDto
     {
-        $request = $this->getRequestDto(
+        return $this->getRequestDto(
             $applicationInstall,
             CurlManager::METHOD_DELETE,
             sprintf(
-                '/lists/%s/webhooks/%s',
+                '%s/3.0/lists/%s/webhooks/%s',
+                $applicationInstall->getSettings()[self::API_KEYPOINT],
                 $applicationInstall->getSettings()[ApplicationAbstract::FORM][self::AUDIENCE_ID],
                 $id
-            )
-        );
-
-        return $request->setUri(
-            new Uri(
-                str_replace(
-                    'https://api.mailchimp.com', $applicationInstall->getSettings()[self::API_KEYPOINT],
-                    (string) $request->getUri()
-                )
             )
         );
     }

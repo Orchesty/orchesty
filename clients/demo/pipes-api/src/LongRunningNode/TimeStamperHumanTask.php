@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData;
-use Hanaboso\PipesPhpSdk\LongRunningNode\Model\Impl\LongRunningNodeAbstract;
+use Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeAbstract;
 
 /**
  * Class TimeStamperHumanTask

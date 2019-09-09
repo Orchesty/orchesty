@@ -2,9 +2,13 @@
 
 namespace Tests\Integration\Model\Application\Impl\Mailchimp\Connector;
 
-use Exception;
+use Hanaboso\CommonsBundle\Exception\DateTimeException;
+use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\Connector\MailchimpCreateContactConnector;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\MailchimpApplication;
+use Hanaboso\PipesPhpSdk\Authorization\Base\ApplicationAbstract;
+use Hanaboso\PipesPhpSdk\Authorization\Exception\ApplicationInstallException;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\DataProvider;
 use Tests\MockCurlMethod;
@@ -21,7 +25,10 @@ final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
      * @param int  $code
      * @param bool $isValid
      *
-     * @throws Exception
+     * @throws DateTimeException
+     * @throws PipesFrameworkException
+     * @throws CurlException
+     * @throws ApplicationInstallException
      *
      * @dataProvider getDataProvider
      */
@@ -42,10 +49,11 @@ final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
 
         $app                             = self::$container->get('hbpf.application.mailchimp');
         $mailchimpCreateContactConnector = new MailchimpCreateContactConnector(
-            $app,
             self::$container->get('hbpf.transport.curl_manager'),
             $this->dm
         );
+
+        $mailchimpCreateContactConnector->setApplication($app);
 
         $applicationInstall = DataProvider::getOauth2AppInstall(
             $app->getKey(),
@@ -54,8 +62,11 @@ final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
         );
 
         $applicationInstall->setSettings([
-            MailchimpApplication::AUDIENCE_ID  => 'c9e7f10c5b',
+            ApplicationAbstract::FORM          => [
+                MailchimpApplication::AUDIENCE_ID => 'c9e7f10c5b',
+            ],
             MailchimpApplication::API_KEYPOINT => $app->getApiEndpoint($applicationInstall),
+
         ]);
 
         $this->pf($applicationInstall);

@@ -3,14 +3,14 @@
 namespace Hanaboso\PipesPhpSdk\CustomNode\Impl;
 
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeInterface;
+use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
 
 /**
  * Class Sleep02CustomNode
  *
  * @package Hanaboso\PipesPhpSdk\CustomNode\Impl
  */
-class Sleep02CustomNode implements CustomNodeInterface
+class Sleep02CustomNode extends CustomNodeAbstract
 {
 
     /**

@@ -7,14 +7,14 @@ use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
-use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeInterface;
+use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
 
 /**
  * Class RequestbinConnector
  *
  * @package Hanaboso\PipesPhpSdk\CustomNode\Impl
  */
-class RequestbinConnector implements CustomNodeInterface
+class RequestbinConnector extends CustomNodeAbstract
 {
 
     /**

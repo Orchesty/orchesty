@@ -14,16 +14,35 @@ services:
             - '@hbpf.providers.oauth2_provider'
             - '@hbpf.transport.curl_manager'
 
-    hbpf.connectors.hubspot_create_contact:
+    hbpf.application.shipstation:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\Shipstation\ShipstationApplication
+
+    hbpf.connector.hubspot_create_contact:
         class: Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Connector\HubspotCreateContactConnector
         arguments:
-            - '@hbpf.application.hubspot'
             - '@hbpf.transport.curl_manager'
             - '@doctrine_mongodb.odm.default_document_manager'
+        calls:
+            - ['setApplication',['@hbpf.application.hubspot']]
 
-    hbpf.connectors.mailchimp_create_contact:
+    hbpf.connector.mailchimp_create_contact:
         class: Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\Connector\MailchimpCreateContactConnector
         arguments:
-            - '@hbpf.application.mailchimp'
             - '@hbpf.transport.curl_manager'
             - '@doctrine_mongodb.odm.default_document_manager'
+        calls:
+            - ['setApplication',['@hbpf.application.mailchimp']]
+
+    hbpf.connector.shipstation_new_order:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\Shipstation\Connector\ShipstationNewOrderConnector
+        arguments:
+            - '@hbpf.transport.curl_manager'
+            - '@doctrine_mongodb.odm.default_document_manager'
+        calls:
+            - ['setApplication',['@hbpf.application.shipstation']]
+
+    hbpf.custom_node.hubspot_create_contact:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Mapper\HubspotCreateContactMapper
+
+    hbpf.custom_node.mailchimp_create_contact:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\Mapper\MailchimpCreateContactMapper

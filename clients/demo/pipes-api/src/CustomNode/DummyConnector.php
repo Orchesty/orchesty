@@ -3,14 +3,14 @@
 namespace Demo\CustomNode;
 
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeInterface;
+use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
 
 /**
  * Class DummyConnector
  *
  * @package Demo\CustomNode
  */
-class DummyConnector implements CustomNodeInterface
+class DummyConnector extends CustomNodeAbstract
 {
 
     /**

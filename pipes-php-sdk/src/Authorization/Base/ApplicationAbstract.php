@@ -2,6 +2,7 @@
 
 namespace Hanaboso\PipesPhpSdk\Authorization\Base;
 
+use GuzzleHttp\Psr7\Uri;
 use Hanaboso\PipesPhpSdk\Authorization\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Model\Form\Field;
 
@@ -70,6 +71,16 @@ abstract class ApplicationAbstract implements ApplicationInterface
         }
 
         return $applicationInstall->setSettings([self::FORM => $preparedSetting]);
+    }
+
+    /**
+     * @param string|null $url
+     *
+     * @return Uri
+     */
+    public function getUri(?string $url): Uri
+    {
+        return new Uri(sprintf('%s', ltrim($url ?? '', '/')));
     }
 
 }

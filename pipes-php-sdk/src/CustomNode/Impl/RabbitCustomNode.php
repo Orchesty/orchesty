@@ -14,7 +14,7 @@ use Hanaboso\CommonsBundle\Database\Repository\NodeRepository;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Utils\GeneratorUtils;
 use Hanaboso\CommonsBundle\Utils\PipesHeaders;
-use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeInterface;
+use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
 use Hanaboso\PipesPhpSdk\RabbitMq\Producer\AbstractProducer;
 use InvalidArgumentException;
 use Psr\Log\LoggerAwareInterface;
@@ -26,7 +26,7 @@ use Psr\Log\NullLogger;
  *
  * @package Hanaboso\PipesPhpSdk\CustomNode\Impl
  */
-abstract class RabbitCustomNode implements CustomNodeInterface, LoggerAwareInterface
+abstract class RabbitCustomNode extends CustomNodeAbstract implements LoggerAwareInterface
 {
 
     /**

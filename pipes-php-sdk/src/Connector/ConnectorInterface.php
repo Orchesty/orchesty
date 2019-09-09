@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesPhpSdk\Connector;
 
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\PipesPhpSdk\Authorization\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 
 /**
@@ -33,5 +34,17 @@ interface ConnectorInterface
      * @throws ConnectorException
      */
     public function processAction(ProcessDto $dto): ProcessDto;
+
+    /**
+     * @param ApplicationInterface $application
+     *
+     * @return ConnectorInterface
+     */
+    public function setApplication(ApplicationInterface $application): ConnectorInterface;
+
+    /**
+     * @return string|null
+     */
+    public function getApplicationKey(): ?string;
 
 }

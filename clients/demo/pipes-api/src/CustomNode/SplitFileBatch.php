@@ -5,7 +5,7 @@ namespace Demo\CustomNode;
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
-use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeInterface;
+use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\SuccessMessage;
 use React\EventLoop\LoopInterface;
@@ -17,7 +17,7 @@ use function React\Promise\resolve;
  *
  * @package Demo\CustomNode
  */
-class SplitFileBatch implements BatchInterface, CustomNodeInterface
+class SplitFileBatch  extends CustomNodeAbstract implements BatchInterface
 {
 
     /**
