@@ -15,6 +15,7 @@ TAG?=dev
 
 build-dev-image:
 	docker build -f docker/Dockerfile -t $(IMAGE):dev .
+	docker push $(IMAGE):dev
 
 build-binary: build-dev-image docker-up-force
 	$(DE) go build

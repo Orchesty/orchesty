@@ -3,7 +3,7 @@ version: '3'
 
 services:
   app:
-    image: cmhanaboso.azurecr.io/clever-monitor/tracker:dev
+    image: dkr.hanaboso.net/pipes/pipes/rabbitmq-telegraf:dev
     user: ${DEV_UID}:${DEV_GID}
     ports:
       - ${DEV_IP}:8080:8080
@@ -27,7 +27,7 @@ services:
       - rabbitmq:/var/lib/rabbitmq
 
   mongodb:
-    image: mongo:3.4
+    image: mongo:latest
     ports:
       - ${DEV_IP}:27017:27017
     volumes:

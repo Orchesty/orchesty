@@ -8,7 +8,7 @@ import (
 
 func TestNewInfluxDbSenderSvc_getUrl(t *testing.T) {
 	svc := NewInfluxDbSenderSvc().(*InfluxDbSender)
-	assert.Equal(t, "http://kapacitor:9092?db=pipes&rp=default", svc.getUrl())
+	assert.Equal(t, "http://kapacitor:9092/write?db=pipes&rp=default", svc.getUrl())
 }
 
 func TestNewInfluxDbSenderSvc_prepData(t *testing.T) {
