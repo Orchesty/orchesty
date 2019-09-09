@@ -3,6 +3,7 @@ version: '3.3'
 services:
   app:
     image: dkr.hanaboso.net/pipes/pipes/starting-point:app-dev
+    working_dir: /starting-point
     environment:
       APP_DEBUG: "false"
       GO111MODULE: "on"
@@ -20,7 +21,7 @@ services:
     command: go run cmd/starting-point.go
 
   mongodb:
-    image: mongo
+    image: mongo:latest
     ports:
       - ${DEV_IP}:27017:27017
     volumes:
