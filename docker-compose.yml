@@ -12,9 +12,9 @@ services:
       RABBIT_QUEUE_DURABLE: "true"
       RABBIT_DELIVERY_MODE: 2
       APP_CLEANUP_TIME: "300"
-    working_dir: /go/src/hanaboso/starting-point
+      GOROUTINE_LIMIT: 10000
     volumes:
-      - ./:/go/src/hanaboso/starting-point
+      - ./:/starting-point
     ports:
       - ${DEV_IP}:80:80
     command: go run cmd/starting-point.go
@@ -36,9 +36,9 @@ services:
   influxdb:
     image: dkr.hanaboso.net/pipes/pipes/influxdb:dev
 
-  test:
-    image: alpine
-    command: tail -f /dev/null
+  test: # Usage: docker-compose exec -T test wrk -t25 -c2500 -d1m --latency http://app/status
+    image: alpine:edge
+    command: /bin/sh -c 'apk update --no-cache && apk upgrade --no-cache && apk add --no-cache wrk && tail -f /dev/null'
 
 volumes:
   mongodb: {}

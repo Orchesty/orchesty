@@ -5,6 +5,7 @@ import (
 	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
 	"net/http"
+	"runtime"
 	"starting-point/pkg/config"
 	"starting-point/pkg/influx"
 	"starting-point/pkg/service"
@@ -28,8 +29,19 @@ func HandleClear(h http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		h.ServeHTTP(w, r)
+		HandleLimit(h, w, r)
 	}
+}
+
+// HandleLimit checks if there is not too many requests
+func HandleLimit(h http.HandlerFunc, w http.ResponseWriter, r *http.Request) {
+	if int16(runtime.NumGoroutine()) > config.Config.Limiter.GoroutineLimit {
+		w.WriteHeader(http.StatusTooManyRequests)
+
+		return
+	}
+
+	h.ServeHTTP(w, r)
 }
 
 // HandleStatus checks if HTTP is working correctly
