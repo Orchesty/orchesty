@@ -128,7 +128,7 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
                 'created'  => $handlers[5]['created'],
                 'updated'  => $handlers[5]['updated'],
                 'type'     => NotificationSenderEnum::RABBIT,
-                'name'     => 'ACMQ Sender',
+                'name'     => 'AMQP Sender',
                 'class'    => RabbitNotificationHandler::class,
                 'events'   => [],
                 'settings' => [],
