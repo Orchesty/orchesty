@@ -12,9 +12,7 @@ services:
     notification.sender.email:
         class: Hanaboso\NotificationSender\Model\Notification\Sender\EmailSender
         arguments:
-            - '@EmailServiceBundle\Mailer\Mailer'
 
     notification.sender.rabbit:
         class: Hanaboso\NotificationSender\Model\Notification\Sender\RabbitSender
         arguments:
-            - '@rabbit_mq.connection_manager'

@@ -208,16 +208,6 @@ demo-pipes-api-test:
     - export COMPOSE_FILE=docker-compose.ci.yml                       # CLEANUP bundles
     - make ${COMPOSE_FILE} test
 
-demo-notification-sender-test:
-  stage: stage2
-  script:
-    - DIR=clients/demo/sender-api
-    - skip_unmodified $DIR
-    - cd $REPO_ROOT/$DIR
-    - export COMPOSE_PROJECT_NAME="p${CI_PIPELINE_ID}-demo-sender-api" # CLEANUP notification-sender
-    - export COMPOSE_FILE=docker-compose.ci.yml                        # CLEANUP notification-sender
-    - make ${COMPOSE_FILE} test
-
 pf-bridge-test:
   stage: stage2
   script:
@@ -378,7 +368,7 @@ cleanup:
   when: always
   script:
     - ": TODO: we should do cleanups also in the end of every job that needs them,"
-    - ":       this shhould be only the last resort when a job fails"
+    - ":       this should be only the last resort when a job fails"
 
     - ": bundles"
     - cd $REPO_ROOT/pf-bundles
@@ -415,12 +405,6 @@ cleanup:
     - export COMPOSE_PROJECT_NAME=p${CI_PIPELINE_ID}-demo-pipes-api
     - export COMPOSE_FILE=docker-compose.ci.yml
     - make ${COMPOSE_FILE} docker-down-clean || echo "demo-pipes-api cleanup phase failed"
-
-    - ": demo-sender-api-test"
-    - cd $REPO_ROOT/clients/demo/sender-api
-    - export COMPOSE_PROJECT_NAME=p${CI_PIPELINE_ID}-demo-sender-api
-    - export COMPOSE_FILE=docker-compose.ci.yml
-    - make ${COMPOSE_FILE} docker-down-clean || echo "demo-sender-api cleanup phase failed"
 
     - ": bridge"
     - cd $REPO_ROOT/pf-bridge/test

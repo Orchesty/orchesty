@@ -9,7 +9,9 @@ use Hanaboso\CommonsBundle\Enum\NotificationSenderEnum;
 use Hanaboso\NotificationSender\Document\NotificationSettings;
 use Hanaboso\NotificationSender\Exception\NotificationException;
 use Hanaboso\NotificationSender\Model\Notification\Dto\EmailDto;
-use Hanaboso\NotificationSender\Model\Notification\Handler\Impl\HanabosoNotificationHandler;
+use Hanaboso\NotificationSender\Model\Notification\Handler\Impl\CurlNotificationHandler;
+use Hanaboso\NotificationSender\Model\Notification\Handler\Impl\EmailNotificationHandler;
+use Hanaboso\NotificationSender\Model\Notification\Handler\Impl\RabbitNotificationHandler;
 use Tests\ControllerTestCaseAbstract;
 use Tests\Integration\Model\Notification\Handler\Impl\NullCurlHandler;
 use Tests\Integration\Model\Notification\Handler\Impl\NullEmailHandler;
@@ -23,6 +25,11 @@ use Tests\Integration\Model\Notification\Handler\Impl\NullRabitHandler;
 final class NotificationSettingsControllerTest extends ControllerTestCaseAbstract
 {
 
+    private const ID      = 'id';
+    private const ITEMS   = 'items';
+    private const CREATED = 'created';
+    private const UPDATED = 'updated';
+
     /**
      * @covers NotificationSettingsController::listSettingsAction
      * @covers NotificationSettingsHandler::listSettings
@@ -35,43 +42,61 @@ final class NotificationSettingsControllerTest extends ControllerTestCaseAbstrac
         $response = $this->sendGet('/notifications/settings');
 
         $this->assertResponse($response, 200, [
-            'items' => [
+            self::ITEMS => [
                 [
-                    'id'       => $response->getContent()['items'][0]['id'],
-                    'created'  => $response->getContent()['items'][0]['created'],
-                    'updated'  => $response->getContent()['items'][0]['updated'],
-                    'type'     => NotificationSenderEnum::CURL,
-                    'name'     => 'Curl Test Sender',
-                    'class'    => NullCurlHandler::class,
-                    'events'   => [],
-                    'settings' => [],
+                    self::ID      => $response->getContent()[self::ITEMS][0][self::ID],
+                    self::CREATED => $response->getContent()[self::ITEMS][0][self::CREATED],
+                    self::UPDATED => $response->getContent()[self::ITEMS][0][self::UPDATED],
+                    'type'        => NotificationSenderEnum::CURL,
+                    'name'        => 'Curl Test Sender',
+                    'class'       => NullCurlHandler::class,
+                    'events'      => [],
+                    'settings'    => [],
                 ], [
-                    'id'       => $response->getContent()['items'][1]['id'],
-                    'created'  => $response->getContent()['items'][1]['created'],
-                    'updated'  => $response->getContent()['items'][1]['updated'],
-                    'type'     => NotificationSenderEnum::EMAIL,
-                    'name'     => 'Email Test Sender',
-                    'class'    => NullEmailHandler::class,
-                    'events'   => [],
-                    'settings' => [],
+                    self::ID      => $response->getContent()[self::ITEMS][1][self::ID],
+                    self::CREATED => $response->getContent()[self::ITEMS][1][self::CREATED],
+                    self::UPDATED => $response->getContent()[self::ITEMS][1][self::UPDATED],
+                    'type'        => NotificationSenderEnum::EMAIL,
+                    'name'        => 'Email Test Sender',
+                    'class'       => NullEmailHandler::class,
+                    'events'      => [],
+                    'settings'    => [],
                 ], [
-                    'id'       => $response->getContent()['items'][2]['id'],
-                    'created'  => $response->getContent()['items'][2]['created'],
-                    'updated'  => $response->getContent()['items'][2]['updated'],
-                    'type'     => NotificationSenderEnum::RABBIT,
-                    'name'     => 'Rabbit Test Sender',
-                    'class'    => NullRabitHandler::class,
-                    'events'   => [],
-                    'settings' => [],
+                    self::ID      => $response->getContent()[self::ITEMS][2][self::ID],
+                    self::CREATED => $response->getContent()[self::ITEMS][2][self::CREATED],
+                    self::UPDATED => $response->getContent()[self::ITEMS][2][self::UPDATED],
+                    'type'        => NotificationSenderEnum::RABBIT,
+                    'name'        => 'Rabbit Test Sender',
+                    'class'       => NullRabitHandler::class,
+                    'events'      => [],
+                    'settings'    => [],
                 ], [
-                    'id'       => $response->getContent()['items'][3]['id'],
-                    'created'  => $response->getContent()['items'][3]['created'],
-                    'updated'  => $response->getContent()['items'][3]['updated'],
-                    'type'     => NotificationSenderEnum::EMAIL,
-                    'name'     => 'Hanaboso Email Sender',
-                    'class'    => HanabosoNotificationHandler::class,
-                    'events'   => [],
-                    'settings' => [],
+                    self::ID      => $response->getContent()[self::ITEMS][3][self::ID],
+                    self::CREATED => $response->getContent()[self::ITEMS][3][self::CREATED],
+                    self::UPDATED => $response->getContent()[self::ITEMS][3][self::UPDATED],
+                    'type'        => NotificationSenderEnum::CURL,
+                    'name'        => 'CURL Sender',
+                    'class'       => CurlNotificationHandler::class,
+                    'events'      => [],
+                    'settings'    => [],
+                ], [
+                    self::ID      => $response->getContent()[self::ITEMS][4][self::ID],
+                    self::CREATED => $response->getContent()[self::ITEMS][4][self::CREATED],
+                    self::UPDATED => $response->getContent()[self::ITEMS][4][self::UPDATED],
+                    'type'        => NotificationSenderEnum::EMAIL,
+                    'name'        => 'Email Sender',
+                    'class'       => EmailNotificationHandler::class,
+                    'events'      => [],
+                    'settings'    => [],
+                ], [
+                    self::ID      => $response->getContent()[self::ITEMS][5][self::ID],
+                    self::CREATED => $response->getContent()[self::ITEMS][5][self::CREATED],
+                    self::UPDATED => $response->getContent()[self::ITEMS][5][self::UPDATED],
+                    'type'        => NotificationSenderEnum::RABBIT,
+                    'name'        => 'ACMQ Sender',
+                    'class'       => RabbitNotificationHandler::class,
+                    'events'      => [],
+                    'settings'    => [],
                 ],
             ],
         ]);
@@ -87,17 +112,18 @@ final class NotificationSettingsControllerTest extends ControllerTestCaseAbstrac
     public function testGetSettings(): void
     {
         $response = $this->sendGet('/notifications/settings');
-        $response = $this->sendGet(sprintf('/notifications/settings/%s', $response->getContent()['items'][1]['id']));
+        $response = $this->sendGet(sprintf('/notifications/settings/%s',
+            $response->getContent()[self::ITEMS][1][self::ID]));
 
         $this->assertResponse($response, 200, [
-            'id'       => $response->getContent()['id'],
-            'created'  => $response->getContent()['created'],
-            'updated'  => $response->getContent()['updated'],
-            'type'     => NotificationSenderEnum::EMAIL,
-            'name'     => 'Email Test Sender',
-            'class'    => NullEmailHandler::class,
-            'events'   => [],
-            'settings' => [],
+            self::ID      => $response->getContent()[self::ID],
+            self::CREATED => $response->getContent()[self::CREATED],
+            self::UPDATED => $response->getContent()[self::UPDATED],
+            'type'        => NotificationSenderEnum::EMAIL,
+            'name'        => 'Email Test Sender',
+            'class'       => NullEmailHandler::class,
+            'events'      => [],
+            'settings'    => [],
         ]);
     }
 
@@ -128,25 +154,37 @@ final class NotificationSettingsControllerTest extends ControllerTestCaseAbstrac
     public function testSaveSettings(): void
     {
         $response = $this->sendGet('/notifications/settings');
-        $response = $this->sendPut(sprintf('/notifications/settings/%s', $response->getContent()['items'][1]['id']), [
-            NotificationSettings::EVENTS   => [NotificationEventEnum::ACCESS_EXPIRATION],
-            NotificationSettings::SETTINGS => [
-                EmailDto::EMAILS => [
-                    'another-one@example.com', 'another-two@example.com',
+        $response = $this->sendPut(sprintf('/notifications/settings/%s',
+            $response->getContent()[self::ITEMS][1][self::ID]),
+            [
+                NotificationSettings::EVENTS   => [NotificationEventEnum::ACCESS_EXPIRATION],
+                NotificationSettings::SETTINGS => [
+                    EmailDto::HOST       => 'host',
+                    EmailDto::PORT       => 'port',
+                    EmailDto::USERNAME   => 'username',
+                    EmailDto::PASSWORD   => 'password',
+                    EmailDto::ENCRYPTION => 'ssl',
+                    EmailDto::EMAILS     => [
+                        'another-one@example.com', 'another-two@example.com',
+                    ],
                 ],
-            ],
-        ]);
+            ]);
 
         $this->assertResponse($response, 200, [
-            'id'       => $response->getContent()['id'],
-            'created'  => $response->getContent()['created'],
-            'updated'  => $response->getContent()['updated'],
-            'type'     => NotificationSenderEnum::EMAIL,
-            'name'     => 'Email Test Sender',
-            'class'    => NullEmailHandler::class,
-            'events'   => [NotificationEventEnum::ACCESS_EXPIRATION],
-            'settings' => [
-                EmailDto::EMAILS => [
+            self::ID      => $response->getContent()[self::ID],
+            self::CREATED => $response->getContent()[self::CREATED],
+            self::UPDATED => $response->getContent()[self::UPDATED],
+            'type'        => NotificationSenderEnum::EMAIL,
+            'name'        => 'Email Test Sender',
+            'class'       => NullEmailHandler::class,
+            'events'      => [NotificationEventEnum::ACCESS_EXPIRATION],
+            'settings'    => [
+                EmailDto::HOST       => 'host',
+                EmailDto::PORT       => 'port',
+                EmailDto::USERNAME   => 'username',
+                EmailDto::PASSWORD   => 'password',
+                EmailDto::ENCRYPTION => 'ssl',
+                EmailDto::EMAILS     => [
                     'another-one@example.com', 'another-two@example.com',
                 ],
             ],
@@ -180,15 +218,17 @@ final class NotificationSettingsControllerTest extends ControllerTestCaseAbstrac
     public function testSaveSettingsNotFoundRequired(): void
     {
         $response = $this->sendGet('/notifications/settings');
-        $response = $this->sendPut(sprintf('/notifications/settings/%s', $response->getContent()['items'][1]['id']), [
-            NotificationSettings::SETTINGS => [],
-        ]);
+        $response = $this->sendPut(sprintf('/notifications/settings/%s',
+            $response->getContent()[self::ITEMS][1][self::ID]),
+            [
+                NotificationSettings::SETTINGS => [],
+            ]);
 
         $this->assertResponse($response, 404, [
             'status'     => 'ERROR',
             'error_code' => 2001,
             'type'       => NotificationException::class,
-            'message'    => "Required settings 'emails' for type 'email' is missing!",
+            'message'    => "Required settings 'host' for type 'email' is missing!",
         ]);
     }
 

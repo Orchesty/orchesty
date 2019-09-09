@@ -1,16 +1,16 @@
 <?php declare(strict_types=1);
 
-namespace Demo\Model\Notification\Handler\Impl;
+namespace Hanaboso\NotificationSender\Model\Notification\Handler\Impl;
 
 use Hanaboso\NotificationSender\Model\Notification\Dto\RabbitDto;
 use Hanaboso\NotificationSender\Model\Notification\Handler\RabbitHandlerAbstract;
 
 /**
- * Class ExampleRabbitNotificationHandler
+ * Class RabbitNotificationHandler
  *
- * @package Demo\Model\Notification\Handler\Impl
+ * @package Hanaboso\NotificationSender\Model\Notification\Handler\Impl
  */
-final class ExampleRabbitNotificationHandler extends RabbitHandlerAbstract
+final class RabbitNotificationHandler extends RabbitHandlerAbstract
 {
 
     /**
@@ -18,7 +18,7 @@ final class ExampleRabbitNotificationHandler extends RabbitHandlerAbstract
      */
     public function getName(): string
     {
-        return 'Example Rabbit Sender';
+        return 'AMQP Sender';
     }
 
     /**
@@ -28,7 +28,7 @@ final class ExampleRabbitNotificationHandler extends RabbitHandlerAbstract
      */
     public function process(array $data): RabbitDto
     {
-        return new RabbitDto($data, $data);
+        return new RabbitDto($data, ['Content-Type' => 'application/json']);
     }
 
 }
