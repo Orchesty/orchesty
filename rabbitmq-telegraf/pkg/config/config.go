@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"github.com/jinzhu/configor"
 	log "github.com/sirupsen/logrus"
 	"time"
@@ -19,17 +20,23 @@ type (
 	}
 
 	mongoDb struct {
-		DSN               string `default:"mongodb://mongodb:27017/" env:"MONGO_DSN"`
+		Host              string `default:"mongo" env:"METRICS_HOST"`
+		Port              int    `default:"27017" env:"METRICS_PORT"`
 		MaxReconnectTries int    `default:"3" env:"MONGO_TRIES"`
 		Database          string `default:"metrics" env:"MONGO_DATABASE"`
 		Collection        string `default:"rabbitmq" env:"MONGO_COLLECTION"`
+
+		DSN string
 	}
 
 	influxDb struct {
-		DSN         string `default:"http://kapacitor:9092" env:"INFLUX_DSN"`
+		Host        string `default:"kapacitor" env:"METRICS_HOST"`
+		Port        int    `default:"9092" env:"METRICS_PORT"`
 		Database    string `default:"pipes" env:"INFLUX_DATABASE"`
 		Retention   string `default:"default" env:"INFLUX_RETENTION"`
 		Measurement string `default:"rabbitmq_queue" env:"INFLUX_MEASUREMENT"`
+
+		DSN string
 	}
 
 	app struct {
@@ -69,6 +76,9 @@ func init() {
 	if App.Output != OUTPUT_INFLUX && App.Output != OUTPUT_MONGO {
 		log.Fatalf("invalid output [type=%s], allowed [%s, %s]", App.Output, OUTPUT_INFLUX, OUTPUT_MONGO)
 	}
+
+	InfluxDb.DSN = fmt.Sprintf("http://%s:%d", InfluxDb.Host, InfluxDb.Port)
+	MongoDb.DSN = fmt.Sprintf("mongodb://%s:%d/", MongoDb.Host, MongoDb.Port)
 
 	if App.Debug {
 		log.SetLevel(log.DebugLevel)
