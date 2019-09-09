@@ -93,7 +93,7 @@ final class NotificationSettingsControllerTest extends ControllerTestCaseAbstrac
                     self::CREATED => $response->getContent()[self::ITEMS][5][self::CREATED],
                     self::UPDATED => $response->getContent()[self::ITEMS][5][self::UPDATED],
                     'type'        => NotificationSenderEnum::RABBIT,
-                    'name'        => 'ACMQ Sender',
+                    'name'        => 'AMQP Sender',
                     'class'       => RabbitNotificationHandler::class,
                     'events'      => [],
                     'settings'    => [],
