@@ -31,6 +31,16 @@ starting-point-dev-image:
     - dev
     - master
 
+rabbitmq-telegraf-dev-image:
+  stage: stage1
+  script:
+    - DIR=rabbitmq-telegraf
+    - cd $DIR
+    - make build-dev-image
+  only:
+    - dev
+    - master
+
 njs-build-image:
   stage: stage1
   script:
@@ -198,6 +208,16 @@ pipes-connectors-test:
     - export COMPOSE_FILE=docker-compose.ci.yml                         # CLEANUP pipes-connectors
     - make ${COMPOSE_FILE} test
 
+rabbitmq-telegraf-test:
+  stage: stage2
+  script:
+    - DIR=rabbitmq-telegraf
+    - skip_unmodified $DIR
+    - cd $REPO_ROOT/$DIR
+    - export COMPOSE_PROJECT_NAME="p${CI_PIPELINE_ID}-rabbitmq-telegraf" # CLEANUP rabbitmq-telegraf
+    - export COMPOSE_FILE=docker-compose.ci.yml                          # CLEANUP rabbitmq-telegraf
+    - make ${COMPOSE_FILE} test
+
 demo-pipes-api-test:
   stage: stage2
   script:
@@ -242,6 +262,17 @@ starting-point:
     - skip_unmodified $DIR
     - cd $DIR
     - make build-image push TAG=${CI_BUILD_REF_NAME}
+  only:
+    - dev
+    - master
+
+rabbitmq-telegraf:
+  stage: stage2
+  script:
+    - DIR=rabbitmq-telegraf
+    - skip_unmodified $DIR
+    - cd $DIR
+    - make build TAG=${CI_BUILD_REF_NAME}
   only:
     - dev
     - master
@@ -399,6 +430,12 @@ cleanup:
     - export COMPOSE_PROJECT_NAME=p${CI_PIPELINE_ID}-pipes-connectors
     - export COMPOSE_FILE=docker-compose.ci.yml
     - make ${COMPOSE_FILE} docker-down-clean || echo "pipes-connectors cleanup phase failed"
+
+    - ": rabbitmq-telegraf"
+    - cd $REPO_ROOT/rabbitmq-telegraf
+    - export COMPOSE_PROJECT_NAME=p${CI_PIPELINE_ID}-rabbitmq-telegraf
+    - export COMPOSE_FILE=docker-compose.ci.yml
+    - make ${COMPOSE_FILE} docker-down-clean || echo "rabbitmq-telegraf cleanup phase failed"
 
     - ": demo-pipes-api-test"
     - cd $REPO_ROOT/clients/demo/pipes-api
