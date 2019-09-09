@@ -308,16 +308,6 @@ monolith-demo:
     - dev
     - master
 
-notification-sender-demo:
-  stage: stage2
-  script:
-    - ": This job is being run all the time because the most changes happen in its dependencies. Can anyone come up with an optimization?"
-    - cd clients/demo
-    - make build-sender push-sender TAG=${CI_BUILD_REF_NAME}
-  only:
-    - dev
-    - master
-
 git-pf-bundles:
   stage: stage3
   when: always
