@@ -17,6 +17,7 @@ type config struct {
 	InfluxDB *influxDB
 	Logger   *log.Logger
 	Cleaner  *cleaner
+	Limiter  *limiter
 }
 
 type mongoDb struct {
@@ -58,6 +59,10 @@ type influxDB struct {
 type cleaner struct {
 	CleanUp         int16
 	CPUPercentLimit int16
+}
+
+type limiter struct {
+	GoroutineLimit int16
 }
 
 func init() {
@@ -105,6 +110,9 @@ func init() {
 		Cleaner: &cleaner{
 			CleanUp:         getEnvInt("APP_CLEANUP_TIME", 5*60),
 			CPUPercentLimit: getEnvInt("APP_CLEANUP_PERCENT", 1),
+		},
+		Limiter: &limiter{
+			GoroutineLimit: getEnvInt("GOROUTINE_LIMIT", 2000),
 		},
 	}
 }

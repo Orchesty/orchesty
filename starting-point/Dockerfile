@@ -1,21 +1,11 @@
-# Build stage
+FROM golang:alpine AS builder
+RUN apk update --no-cache && apk upgrade --no-cache && apk add --no-cache git upx
+ENV GOPATH /
+COPY . .
+RUN go build -ldflags='-s -w' -o /starting-point cmd/starting-point.go && upx /starting-point
 
-FROM golang:1.12-stretch as build
-RUN apt-get update && \
-    apt-get install -y make git && \
-    apt-get clean
-COPY go.mod go.sum /precache/
-WORKDIR /precache
-RUN go mod download
-COPY ./ /app
-WORKDIR /app
-RUN go mod download
-RUN go build -o build/starting-point cmd/starting-point.go
-
-
-# Package stage
-
-FROM debian:stretch
-COPY --from=build /app/build/starting-point /app/
-WORKDIR /app
-CMD ["./starting-point"]
+FROM alpine
+RUN apk update --no-cache && apk upgrade --no-cache
+COPY --from=builder /starting-point /bin/starting-point
+WORKDIR /bin
+CMD ./starting-point
