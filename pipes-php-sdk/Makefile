@@ -17,6 +17,7 @@ build-dev:
 docker-up-force: .env
 	$(DC) pull
 	$(DC) up -d --force-recreate --remove-orphans
+	sleep 10
 
 docker-down-clean: .env
 	$(DC) down -v
