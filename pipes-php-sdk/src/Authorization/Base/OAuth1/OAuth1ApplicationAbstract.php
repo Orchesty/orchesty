@@ -109,7 +109,7 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
             $this->getAccessTokenUrl()
         );
 
-        $settings = $applicationInstall->getSettings();
+        $settings                                                                            = $applicationInstall->getSettings();
         $settings[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN] = $token;
         $applicationInstall->setSettings($settings);
 
@@ -137,7 +137,7 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
         string $redirectUrl
     ): OAuth1ApplicationInterface
     {
-        $settings = $applicationInstall->getSettings();
+        $settings                                                                                   = $applicationInstall->getSettings();
         $settings[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::REDIRECT_URL] = $redirectUrl;
         $applicationInstall->setSettings($settings);
 

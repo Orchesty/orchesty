@@ -11,15 +11,13 @@ use Hanaboso\PipesPhpSdk\Authorization\Utils\ScopeFormatter;
 use OAuth;
 use OAuthException;
 use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 
 /**
  * Class OAuth1Provider
  *
  * @package Hanaboso\PipesPhpSdk\Authorization\Provider
  */
-class OAuth1Provider implements OAuth1ProviderInterface, LoggerAwareInterface
+class OAuth1Provider extends OAuthProviderAbstract implements OAuth1ProviderInterface, LoggerAwareInterface
 {
 
     public const OAUTH_TOKEN        = 'oauth_token';
@@ -33,16 +31,6 @@ class OAuth1Provider implements OAuth1ProviderInterface, LoggerAwareInterface
     private $dm;
 
     /**
-     * @var RedirectInterface
-     */
-    private $redirect;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
      * OAuth1Provider constructor.
      *
      * @param DocumentManager   $dm
@@ -50,21 +38,8 @@ class OAuth1Provider implements OAuth1ProviderInterface, LoggerAwareInterface
      */
     public function __construct(DocumentManager $dm, RedirectInterface $redirect)
     {
-        $this->dm       = $dm;
-        $this->redirect = $redirect;
-        $this->logger   = new NullLogger();
-    }
-
-    /**
-     * @param LoggerInterface $logger
-     *
-     * @return OAuth1Provider
-     */
-    public function setLogger(LoggerInterface $logger): OAuth1Provider
-    {
-        $this->logger = $logger;
-
-        return $this;
+        parent::__construct($redirect);
+        $this->dm = $dm;
     }
 
     /**
@@ -93,7 +68,8 @@ class OAuth1Provider implements OAuth1ProviderInterface, LoggerAwareInterface
         try {
             $requestToken = $client->getRequestToken($tokenUrl);
         } catch (Exception $e) {
-            $this->throwException(sprintf('OAuth error: %s', $e->getMessage()));
+            $this->throwException(sprintf('OAuth error: %s', $e->getMessage()),
+                AuthorizationException::AUTHORIZATION_OAUTH1_ERROR);
         }
 
         $this->tokenAndSecretChecker((array) $requestToken);
@@ -117,7 +93,8 @@ class OAuth1Provider implements OAuth1ProviderInterface, LoggerAwareInterface
     public function getAccessToken(OAuth1DtoInterface $dto, array $request, string $accessTokenUrl): array
     {
         if (!array_key_exists(self::OAUTH_VERIFIER, $request)) {
-            $this->throwException(sprintf('OAuth error: Data "%s" is missing.', self::OAUTH_VERIFIER));
+            $this->throwException(sprintf('OAuth error: Data "%s" is missing.', self::OAUTH_VERIFIER),
+                AuthorizationException::AUTHORIZATION_OAUTH1_ERROR);
         }
 
         $this->tokenAndSecretChecker($dto->getToken());
@@ -132,7 +109,7 @@ class OAuth1Provider implements OAuth1ProviderInterface, LoggerAwareInterface
         try {
             $token = $client->getAccessToken($accessTokenUrl, NULL, $request[self::OAUTH_VERIFIER]);
         } catch (Exception $e) {
-            $this->throwException($e->getMessage());
+            $this->throwException($e->getMessage(), AuthorizationException::AUTHORIZATION_OAUTH1_ERROR);
         }
 
         return (array) $token;
@@ -220,20 +197,10 @@ class OAuth1Provider implements OAuth1ProviderInterface, LoggerAwareInterface
                     'OAuth error: Data "%s" or "%s" is missing.',
                     self::OAUTH_TOKEN_SECRET,
                     self::OAUTH_TOKEN
-                )
+                ),
+                AuthorizationException::AUTHORIZATION_OAUTH1_ERROR
             );
         }
-    }
-
-    /**
-     * @param string $message
-     *
-     * @throws AuthorizationException
-     */
-    private function throwException(string $message): void
-    {
-        $this->logger->error($message);
-        throw new AuthorizationException($message, AuthorizationException::AUTHORIZATION_OAUTH1_ERROR);
     }
 
 }

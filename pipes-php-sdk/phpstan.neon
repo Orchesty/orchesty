@@ -7,8 +7,10 @@ includes:
 
 parameters:
 	excludes_analyse:
+	    - %rootDir%/../../../tests/PrivateTrait.php
 	ignoreErrors:
 		- '#Access to an undefined property*#'
 		- '#Parameter \#2 \$auth_session_handle of method OAuth::getAccessToken\(\) expects string, null given.#'
+		- '#Parameter \#1 \$stub of method PHPUnit\\Framework\\MockObject\\Builder\\InvocationMocker::will\(\) expects PHPUnit\\Framework\\MockObject\\Stub\\Stub, true given.#'
 	symfony:
 		container_xml_path: %rootDir%/../../../var/cache/test/srcHanaboso_PipesPhpSdk_KernelTestDebugContainer.xml

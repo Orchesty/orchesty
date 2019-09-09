@@ -10,8 +10,6 @@ use Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth2DtoInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Utils\ScopeFormatter;
 use Hanaboso\PipesPhpSdk\Authorization\Wrapper\OAuth2Wrapper;
 use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 use function GuzzleHttp\Psr7\build_query;
 use function GuzzleHttp\Psr7\parse_query;
 
@@ -20,7 +18,7 @@ use function GuzzleHttp\Psr7\parse_query;
  *
  * @package Hanaboso\PipesPhpSdk\Authorization\Provider
  */
-class OAuth2Provider implements OAuth2ProviderInterface, LoggerAwareInterface
+class OAuth2Provider extends OAuthProviderAbstract implements OAuth2ProviderInterface, LoggerAwareInterface
 {
 
     public const  REFRESH_TOKEN     = 'refresh_token';
@@ -29,16 +27,6 @@ class OAuth2Provider implements OAuth2ProviderInterface, LoggerAwareInterface
     private const RESOURCE_OWNER_ID = 'resource_owner_id';
     private const ACCESS_TYPE       = 'access_type';
     private const STATE             = 'state';
-
-    /**
-     * @var RedirectInterface
-     */
-    private $redirect;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
 
     /**
      * @var string
@@ -53,23 +41,8 @@ class OAuth2Provider implements OAuth2ProviderInterface, LoggerAwareInterface
      */
     public function __construct(RedirectInterface $redirect, string $backend)
     {
-        $this->redirect = $redirect;
-        $this->logger   = new NullLogger();
-        $this->backend  = $backend;
-    }
-
-    /**
-     * Sets a logger instance on the object.
-     *
-     * @param LoggerInterface $logger
-     *
-     * @return OAuth2Provider
-     */
-    public function setLogger(LoggerInterface $logger): OAuth2Provider
-    {
-        $this->logger = $logger;
-
-        return $this;
+        parent::__construct($redirect);
+        $this->backend = $backend;
     }
 
     /**
@@ -99,7 +72,7 @@ class OAuth2Provider implements OAuth2ProviderInterface, LoggerAwareInterface
     public function getAccessToken(OAuth2DtoInterface $dto, array $request): array
     {
         if (!isset($request['code'])) {
-            $this->throwException('Data from input is invalid! Field "code" is missing!');
+            $this->throwException('Data from input is invalid! Field "code" is missing!', AuthorizationException::AUTHORIZATION_OAUTH2_ERROR);
         }
 
         return $this->getTokenByGrant($dto, 'authorization_code', ['code' => $request['code']]);
@@ -116,7 +89,7 @@ class OAuth2Provider implements OAuth2ProviderInterface, LoggerAwareInterface
     {
 
         if (!isset($token[self::REFRESH_TOKEN])) {
-            $this->throwException('Refresh token not found! Refresh is not possible.');
+            $this->throwException('Refresh token not found! Refresh is not possible.', AuthorizationException::AUTHORIZATION_OAUTH2_ERROR);
         }
 
         $oldRefreshToken = $token[self::REFRESH_TOKEN];
@@ -243,21 +216,10 @@ class OAuth2Provider implements OAuth2ProviderInterface, LoggerAwareInterface
             $message = sprintf('OAuth2 Error: %s', $e->getMessage());
             $this->logger->error($message, ['exception' => $e]);
 
-            $this->throwException($message);
+            $this->throwException($message, AuthorizationException::AUTHORIZATION_OAUTH2_ERROR);
         }
 
         return $token;
-    }
-
-    /**
-     * @param string $message
-     *
-     * @throws AuthorizationException
-     */
-    private function throwException(string $message): void
-    {
-        $this->logger->error($message);
-        throw new AuthorizationException($message, AuthorizationException::AUTHORIZATION_OAUTH2_ERROR);
     }
 
 }

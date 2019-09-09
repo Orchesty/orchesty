@@ -16,6 +16,7 @@
   "require": {
     "php": "^7.3",
     "ext-json": "*",
+    "ext-oauth": "*",
     "ext-mongodb": "*",
     "friendsofsymfony/rest-bundle": "^2.5",
     "hanaboso/commons-bundle": "^1.1",

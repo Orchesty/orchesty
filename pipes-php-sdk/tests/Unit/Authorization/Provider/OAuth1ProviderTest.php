@@ -13,6 +13,7 @@ use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider;
 use OAuth;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Symfony\Bridge\Monolog\Logger;
 
 /**
  * Class OAuth1ProviderTest
@@ -36,7 +37,8 @@ final class OAuth1ProviderTest extends TestCase
         $install = new ApplicationInstall();
         /** @var OAuth1Provider|MockObject $provider */
         $provider = $this->getMockedProvider($data, $url);
-        $dto      = new OAuth1Dto($install);
+        $provider->setLogger(new Logger('logger'));
+        $dto = new OAuth1Dto($install);
 
         if ($exception) {
             self::expectException(AuthorizationException::class);
@@ -78,6 +80,7 @@ final class OAuth1ProviderTest extends TestCase
         );
         /** @var OAuth1Provider|MockObject $provider */
         $provider = $this->getMockedProvider(['token'], '');
+        $provider->setLogger(new Logger('logger'));
         $dto      = new OAuth1Dto($install);
 
         if ($exception) {
@@ -119,6 +122,7 @@ final class OAuth1ProviderTest extends TestCase
         );
         /** @var OAuth1Provider|MockObject $provider */
         $provider = $this->getMockedProvider(['token'], '');
+        $provider->setLogger(new Logger('logger'));
         $dto      = new OAuth1Dto($install);
 
         if ($exception) {

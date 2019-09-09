@@ -12,6 +12,7 @@ use Hanaboso\PipesPhpSdk\Authorization\Wrapper\OAuth2Wrapper;
 use League\OAuth2\Client\Token\AccessToken;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Symfony\Bridge\Monolog\Logger;
 
 /**
  * Class OAuth2ProviderTest
@@ -80,8 +81,9 @@ final class OAuth2ProviderTest extends TestCase
     {
         /** @var OAuth2Provider|MockObject $provider */
         $provider = $this->getMockedProvider('');
-        $install  = new ApplicationInstall();
-        $dto      = new OAuth2Dto($install, '127.0.0.4/red', 'authorize/url', 'token/url');
+        $provider->setLogger(new Logger('logger'));
+        $install = new ApplicationInstall();
+        $dto     = new OAuth2Dto($install, '127.0.0.4/red', 'authorize/url', 'token/url');
 
         if ($exception) {
             self::expectException(AuthorizationException::class);
@@ -117,8 +119,9 @@ final class OAuth2ProviderTest extends TestCase
     {
         /** @var OAuth2Provider|MockObject $provider */
         $provider = $this->getMockedProvider('');
-        $install  = new ApplicationInstall();
-        $dto      = new OAuth2Dto($install, '127.0.0.4/red', 'authorize/url', 'token/url');
+        $provider->setLogger(new Logger('logger'));
+        $install = new ApplicationInstall();
+        $dto     = new OAuth2Dto($install, '127.0.0.4/red', 'authorize/url', 'token/url');
 
         if ($exception) {
             self::expectException(AuthorizationException::class);
