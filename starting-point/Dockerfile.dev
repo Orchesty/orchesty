@@ -1,8 +1,10 @@
-FROM golang:1.11-stretch
+FROM golang:alpine
 
-RUN apt-get update && \
-    apt-get install -y vim git mc make && \
-    apt-get clean && \
+RUN apk update --no-cache && \
+    apk upgrade --no-cache && \
+    apk add --no-cache git && \
     go get -u golang.org/x/lint/golint
 
-WORKDIR /app
+ENV CGO_ENABLED 0
+
+WORKDIR /starting-point
