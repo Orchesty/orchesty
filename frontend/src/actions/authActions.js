@@ -35,9 +35,9 @@ export function login(data, processHash = 'default') {
         dispatch(userLogged(response));
         dispatch(applicationActions.openPage(config.params.mainPage));
 
-        return serverRequest(dispatch, 'GET', '/nodes/list/implementation').then((response) => {
+        return serverRequest(dispatch, 'GET', '/sdks').then((response) => {
           if (response) {
-            dispatch(nodeImplementation(response));
+            dispatch(nodeImplementation(response.items.map(({ key, value }) => ({ key, value }))));
           }
         });
       }
