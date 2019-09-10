@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\HbPFApplication\DependencyInjection;
+namespace Hanaboso\HbPFAppStore\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -8,7 +8,7 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 /**
  * Class Configuration
  *
- * @package Hanaboso\HbPFApplication\DependencyInjection
+ * @package Hanaboso\HbPFAppStore\DependencyInjection
  */
 class Configuration implements ConfigurationInterface
 {
@@ -22,7 +22,7 @@ class Configuration implements ConfigurationInterface
         $rootNode    = $treeBuilder->root('hbpf');
 
         $rootNode->children()
-            ->arrayNode('application');
+            ->arrayNode('appstore');
 
         return $treeBuilder;
     }

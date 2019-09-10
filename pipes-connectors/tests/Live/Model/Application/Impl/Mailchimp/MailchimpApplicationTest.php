@@ -4,7 +4,7 @@ namespace Tests\Live\Model\Application\Impl\Mailchimp;
 
 use Exception;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\MailchimpApplication;
-use Hanaboso\PipesPhpSdk\Authorization\Base\ApplicationInterface;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\DataProvider;

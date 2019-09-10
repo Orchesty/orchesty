@@ -1,18 +1,18 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\HbPFApplication\Handler;
+namespace Hanaboso\HbPFAppStore\Handler;
 
 use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Utils\ControllerUtils;
-use Hanaboso\HbPFApplication\Model\ApplicationManager;
-use Hanaboso\HbPFApplication\Model\Webhook\WebhookSubscription;
-use Hanaboso\PipesPhpSdk\Authorization\Exception\ApplicationInstallException;
+use Hanaboso\HbPFAppStore\Model\ApplicationManager;
+use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
+use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 
 /**
  * Class WebhookHandler
  *
- * @package Hanaboso\HbPFApplication\Handler
+ * @package Hanaboso\HbPFAppStore\Handler
  */
 class WebhookHandler
 {

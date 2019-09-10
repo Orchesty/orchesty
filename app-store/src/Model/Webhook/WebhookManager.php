@@ -1,20 +1,20 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\HbPFApplication\Model\Webhook;
+namespace Hanaboso\HbPFAppStore\Model\Webhook;
 
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
-use Hanaboso\HbPFApplication\Document\Webhook;
-use Hanaboso\PipesPhpSdk\Authorization\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Authorization\Exception\ApplicationInstallException;
+use Hanaboso\HbPFAppStore\Document\Webhook;
+use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 
 /**
  * Class WebhookManager
  *
- * @package Hanaboso\HbPFApplication\Model\Webhook
+ * @package Hanaboso\HbPFAppStore\Model\Webhook
  */
 final class WebhookManager
 {

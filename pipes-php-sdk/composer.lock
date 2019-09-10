@@ -2128,11 +2128,11 @@
         },
         {
             "name": "hanaboso/commons-bundle",
-            "version": "1.1.25",
+            "version": "1.1.26",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.hanaboso.net:hanaboso/commons-bundle.git",
-                "reference": "d22a04f00e0f2c0b94b6837b2409bcef4b8cba0f"
+                "reference": "230fb506763ab23bf8da6684fc5d31f9b4bfd06d"
             },
             "require": {
                 "alcaeus/mongo-php-adapter": "^1.1",
@@ -2178,15 +2178,15 @@
             "license": [
                 "proprietary"
             ],
-            "time": "2019-09-03T09:06:03+00:00"
+            "time": "2019-09-06T10:05:37+00:00"
         },
         {
             "name": "hanaboso/mongo-data-grid",
-            "version": "1.1.6",
+            "version": "1.1.8",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.hanaboso.net:hanaboso/MongoDataGrid.git",
-                "reference": "446a10d805b849bc074c73507e209865f0451348"
+                "reference": "9769344a158a20619565d5dd77c849053351d9f4"
             },
             "require": {
                 "alcaeus/mongo-php-adapter": "^1.1",
@@ -2212,15 +2212,15 @@
                 "proprietary"
             ],
             "description": "MongoDataGrid",
-            "time": "2019-08-16T06:56:05+00:00"
+            "time": "2019-09-06T10:54:51+00:00"
         },
         {
             "name": "hanaboso/rabbit-mq-bundle",
-            "version": "1.1.4",
+            "version": "1.1.5",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.hanaboso.net:hanaboso/rabbit-mq-bundle.git",
-                "reference": "2f9a2003916f5edd3e245f0425503d8ec84803f9"
+                "reference": "5557fe6c118f9111262a1690ebf1060b74d0b070"
             },
             "require": {
                 "bunny/bunny": "^0.4",
@@ -2247,7 +2247,7 @@
             "license": [
                 "proprietary"
             ],
-            "time": "2019-08-14T15:00:00+00:00"
+            "time": "2019-09-06T11:06:30+00:00"
         },
         {
             "name": "hoa/compiler",
@@ -3590,16 +3590,16 @@
         },
         {
             "name": "monolog/monolog",
-            "version": "1.24.0",
+            "version": "1.25.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Seldaek/monolog.git",
-                "reference": "bfc9ebb28f97e7a24c45bdc3f0ff482e47bb0266"
+                "reference": "70e65a5470a42cfec1a7da00d30edb6e617e8dcf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/bfc9ebb28f97e7a24c45bdc3f0ff482e47bb0266",
-                "reference": "bfc9ebb28f97e7a24c45bdc3f0ff482e47bb0266",
+                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/70e65a5470a42cfec1a7da00d30edb6e617e8dcf",
+                "reference": "70e65a5470a42cfec1a7da00d30edb6e617e8dcf",
                 "shasum": ""
             },
             "require": {
@@ -3664,7 +3664,7 @@
                 "logging",
                 "psr-3"
             ],
-            "time": "2018-11-05T09:00:11+00:00"
+            "time": "2019-09-06T13:49:17+00:00"
         },
         {
             "name": "mtdowling/jmespath.php",

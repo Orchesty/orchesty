@@ -5,10 +5,10 @@ namespace Tests\Integration\Model\Application\Impl\Mailchimp;
 use Exception;
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
-use Hanaboso\HbPFApplication\Model\Webhook\WebhookSubscription;
+use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\MailchimpApplication;
-use Hanaboso\PipesPhpSdk\Authorization\Base\ApplicationAbstract;
-use Hanaboso\PipesPhpSdk\Authorization\Exception\ApplicationInstallException;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
+use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\DataProvider;
 

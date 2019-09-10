@@ -1,22 +1,22 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\HbPFApplication\Handler;
+namespace Hanaboso\HbPFAppStore\Handler;
 
 use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
-use Hanaboso\HbPFApplication\Model\ApplicationManager;
-use Hanaboso\HbPFApplication\Model\Webhook\WebhookApplicationInterface;
-use Hanaboso\HbPFApplication\Model\Webhook\WebhookManager;
+use Hanaboso\HbPFAppStore\Model\ApplicationManager;
+use Hanaboso\HbPFAppStore\Model\Webhook\WebhookApplicationInterface;
+use Hanaboso\HbPFAppStore\Model\Webhook\WebhookManager;
+use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
-use Hanaboso\PipesPhpSdk\Authorization\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Authorization\Exception\ApplicationInstallException;
 use InvalidArgumentException;
 
 /**
  * Class ApplicationHandler
  *
- * @package Hanaboso\HbPFApplication\Handler
+ * @package Hanaboso\HbPFAppStore\Handler
  */
 class ApplicationHandler
 {
@@ -77,6 +77,7 @@ class ApplicationHandler
      */
     public function getApplicationsByUser(string $user): array
     {
+        /** @var BasicApplicationAbstract&WebhookApplicationInterface $application */
         return [
             'items' => array_map(function (ApplicationInstall $applicationInstall): array {
                 $application = $this->applicationManager->getApplication($applicationInstall->getKey());

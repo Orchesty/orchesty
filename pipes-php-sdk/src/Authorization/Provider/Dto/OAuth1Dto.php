@@ -2,9 +2,9 @@
 
 namespace Hanaboso\PipesPhpSdk\Authorization\Provider\Dto;
 
+use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1\OAuth1ApplicationInterface;
-use Hanaboso\PipesPhpSdk\Authorization\Document\ApplicationInstall;
 
 /**
  * Class OAuth1Dto

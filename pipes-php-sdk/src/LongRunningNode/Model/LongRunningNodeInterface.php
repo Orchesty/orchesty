@@ -4,7 +4,7 @@ namespace Hanaboso\PipesPhpSdk\LongRunningNode\Model;
 
 use Bunny\Message;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\PipesPhpSdk\Authorization\Base\ApplicationInterface;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData;
 
 /**

@@ -4,10 +4,10 @@ namespace Tests\Integration\Model;
 
 use Exception;
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
-use Hanaboso\HbPFApplication\Model\ApplicationManager;
-use Hanaboso\PipesPhpSdk\Authorization\Base\ApplicationInterface;
-use Hanaboso\PipesPhpSdk\Authorization\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Authorization\Exception\ApplicationInstallException;
+use Hanaboso\HbPFAppStore\Model\ApplicationManager;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
+use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Tests\DatabaseTestCaseAbstract;
 
 /**

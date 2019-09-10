@@ -1,16 +1,16 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\HbPFApplication\Model\Webhook;
+namespace Hanaboso\HbPFAppStore\Model\Webhook;
 
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
-use Hanaboso\PipesPhpSdk\Authorization\Base\ApplicationInterface;
-use Hanaboso\PipesPhpSdk\Authorization\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
+use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 
 /**
  * Interface WebhookApplicationInterface
  *
- * @package Hanaboso\HbPFApplication\Model\Webhook
+ * @package Hanaboso\HbPFAppStore\Model\Webhook
  */
 interface WebhookApplicationInterface extends ApplicationInterface
 {

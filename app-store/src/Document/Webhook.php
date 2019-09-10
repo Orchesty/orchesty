@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\HbPFApplication\Document;
+namespace Hanaboso\HbPFAppStore\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Hanaboso\CommonsBundle\Database\Traits\Document\CreatedTrait;
@@ -11,7 +11,7 @@ use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
 /**
  * Class Webhook
  *
- * @package Hanaboso\HbPFApplication\Document
+ * @package Hanaboso\HbPFAppStore\Document
  *
  * @ODM\Document()
  */

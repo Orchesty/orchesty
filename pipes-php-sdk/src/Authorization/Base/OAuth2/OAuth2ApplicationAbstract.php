@@ -4,15 +4,15 @@ namespace Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2;
 
 use Hanaboso\CommonsBundle\Enum\AuthorizationTypeEnum;
 use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
-use Hanaboso\PipesPhpSdk\Authorization\Base\ApplicationAbstract;
-use Hanaboso\PipesPhpSdk\Authorization\Base\ApplicationInterface;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
+use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
+use Hanaboso\PipesPhpSdk\Application\Utils\ApplicationUtils;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
-use Hanaboso\PipesPhpSdk\Authorization\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Authorization\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
-use Hanaboso\PipesPhpSdk\Authorization\Utils\ApplicationUtils;
 use Hanaboso\PipesPhpSdk\Authorization\Utils\ScopeFormatter;
 
 /**
@@ -93,7 +93,16 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
             $this->getTokens($applicationInstall)
         );
 
-        return $applicationInstall->setSettings([ApplicationInterface::AUTHORIZATION_SETTINGS => [ApplicationInterface::TOKEN => $token]]);
+        if (isset($token[OAuth2Provider::EXPIRES])) {
+            $applicationInstall->setExpires(DateTimeUtils::getUtcDateTime()
+                ->setTimestamp($token[OAuth2Provider::EXPIRES]));
+        }
+
+        $settings                                                                            = $applicationInstall->getSettings();
+        $settings[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN] = $token;
+        $applicationInstall->setSettings($settings);
+
+        return $applicationInstall;
     }
 
     /**
@@ -141,7 +150,7 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
             $applicationInstall->setExpires(DateTimeUtils::getUtcDateTimeFromTimeStamp($token['expires']));
         }
 
-        $settings                                                                            = $applicationInstall->getSettings();
+        $settings = $applicationInstall->getSettings();
 
         $settings[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN] = $token;
         $applicationInstall->setSettings($settings);

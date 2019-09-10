@@ -4,11 +4,11 @@ namespace Tests\Integration\Model\Application\Impl\Shipstation;
 
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
-use Hanaboso\HbPFApplication\Model\Webhook\WebhookSubscription;
+use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
+use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
-use Hanaboso\PipesPhpSdk\Authorization\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Authorization\Exception\ApplicationInstallException;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\DataProvider;
 

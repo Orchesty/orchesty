@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\HbPFApplication;
+namespace Hanaboso\HbPFAppStore;
 
 use Exception;
 use Generator;

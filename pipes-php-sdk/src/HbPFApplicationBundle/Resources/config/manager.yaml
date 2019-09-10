@@ -1,0 +1,16 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf.application.manager:
+        class: Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.application.loader'
+
+
+    hbpf.application.loader:
+        class: Hanaboso\PipesPhpSdk\Application\Loader\ApplicationLoader
+        public: true
+        arguments:
+            - '@service_container'

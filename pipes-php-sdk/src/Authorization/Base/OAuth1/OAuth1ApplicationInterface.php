@@ -2,8 +2,8 @@
 
 namespace Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1;
 
-use Hanaboso\PipesPhpSdk\Authorization\Base\ApplicationInterface;
-use Hanaboso\PipesPhpSdk\Authorization\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
+use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 
 /**
  * Interface OAuth1ApplicationInterface

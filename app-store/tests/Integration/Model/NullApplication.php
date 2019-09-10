@@ -8,13 +8,13 @@ use Hanaboso\CommonsBundle\Enum\AuthorizationTypeEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
-use Hanaboso\HbPFApplication\Model\Webhook\WebhookApplicationInterface;
-use Hanaboso\HbPFApplication\Model\Webhook\WebhookSubscription;
+use Hanaboso\HbPFAppStore\Model\Webhook\WebhookApplicationInterface;
+use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
+use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
+use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
+use Hanaboso\PipesPhpSdk\Application\Model\Form\Form;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
-use Hanaboso\PipesPhpSdk\Authorization\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Authorization\Exception\ApplicationInstallException;
-use Hanaboso\PipesPhpSdk\Authorization\Model\Form\Field;
-use Hanaboso\PipesPhpSdk\Authorization\Model\Form\Form;
 
 /**
  * Class NullApplication

@@ -4,7 +4,7 @@ namespace Tests\Unit\Authorization\Provider;
 
 use Exception;
 use Hanaboso\CommonsBundle\Redirect\RedirectInterface;
-use Hanaboso\PipesPhpSdk\Authorization\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;

@@ -1,0 +1,8 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController:
+        class: Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController
+        arguments:
+            - '@hbpf.application.handler'

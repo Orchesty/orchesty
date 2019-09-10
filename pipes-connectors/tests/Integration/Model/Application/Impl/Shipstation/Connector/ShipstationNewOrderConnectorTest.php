@@ -7,7 +7,7 @@ use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shipstation\Connector\ShipstationNewOrderConnector;
-use Hanaboso\PipesPhpSdk\Authorization\Exception\ApplicationInstallException;
+use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\DataProvider;
 use Tests\MockCurlMethod;

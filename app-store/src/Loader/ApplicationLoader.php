@@ -1,16 +1,16 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\HbPFApplication\Loader;
+namespace Hanaboso\HbPFAppStore\Loader;
 
 use Hanaboso\CommonsBundle\Utils\NodeServiceLoaderUtil;
-use Hanaboso\PipesPhpSdk\Authorization\Base\ApplicationInterface;
-use Hanaboso\PipesPhpSdk\Authorization\Exception\ApplicationInstallException;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
+use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class ApplicationLoader
  *
- * @package Hanaboso\HbPFApplication\Loader
+ * @package Hanaboso\HbPFAppStore\Loader
  */
 class ApplicationLoader
 {

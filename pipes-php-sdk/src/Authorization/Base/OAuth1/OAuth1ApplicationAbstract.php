@@ -4,9 +4,9 @@ namespace Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\CommonsBundle\Enum\AuthorizationTypeEnum;
-use Hanaboso\PipesPhpSdk\Authorization\Base\ApplicationAbstract;
-use Hanaboso\PipesPhpSdk\Authorization\Base\ApplicationInterface;
-use Hanaboso\PipesPhpSdk\Authorization\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
+use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth1Dto;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider;

@@ -31,11 +31,11 @@ doctrine_mongodb:
                     is_bundle: false
                     dir: "%kernel.root_dir%/../vendor/hanaboso/commons-bundle/src/Database/Document"
                     prefix: Hanaboso\CommonsBundle\Database\Document
-                AuthorizationDocument:
+                ApplicationDocument:
                     type: annotation
                     is_bundle: false
-                    dir: "%kernel.root_dir%/Authorization/Document"
-                    prefix: Hanaboso\PipesPhpSdk\Authorization\Document
+                    dir: "%kernel.root_dir%/Application/Document"
+                    prefix: Hanaboso\PipesPhpSdk\Application\Document
                 LongRunningNodeDocument:
                     type: annotation
                     is_bundle: false

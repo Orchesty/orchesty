@@ -10,4 +10,4 @@ parameters:
 	ignoreErrors:
 		- '#Access to an undefined property*#'
 	symfony:
-		container_xml_path: %rootDir%/../../../var/cache/test/srcHanaboso_HbPFApplication_KernelTestDebugContainer.xml
+		container_xml_path: %rootDir%/../../../var/cache/test/srcHanaboso_HbPFAppStore_KernelTestDebugContainer.xml

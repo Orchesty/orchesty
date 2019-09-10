@@ -3,8 +3,8 @@
 namespace Tests\Controller;
 
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
-use Hanaboso\HbPFApplication\Handler\WebhookHandler;
-use Hanaboso\PipesPhpSdk\Authorization\Document\ApplicationInstall;
+use Hanaboso\HbPFAppStore\Handler\WebhookHandler;
+use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use ReflectionException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;

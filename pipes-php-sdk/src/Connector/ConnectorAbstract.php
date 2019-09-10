@@ -4,7 +4,7 @@ namespace Hanaboso\PipesPhpSdk\Connector;
 
 use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\PipesPhpSdk\Authorization\Base\ApplicationInterface;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 
 /**
  * Class ConnectorAbstract

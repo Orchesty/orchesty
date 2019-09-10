@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\HbPFApplication\Model;
+namespace Hanaboso\HbPFAppStore\Model;
 
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -8,22 +8,22 @@ use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
-use Hanaboso\HbPFApplication\Loader\ApplicationLoader;
-use Hanaboso\HbPFApplication\Model\Webhook\WebhookApplicationInterface;
-use Hanaboso\HbPFApplication\Model\Webhook\WebhookManager;
-use Hanaboso\PipesPhpSdk\Authorization\Base\ApplicationAbstract;
-use Hanaboso\PipesPhpSdk\Authorization\Base\ApplicationInterface;
+use Hanaboso\HbPFAppStore\Loader\ApplicationLoader;
+use Hanaboso\HbPFAppStore\Model\Webhook\WebhookApplicationInterface;
+use Hanaboso\HbPFAppStore\Model\Webhook\WebhookManager;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
+use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
+use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1\OAuth1ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
-use Hanaboso\PipesPhpSdk\Authorization\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Authorization\Exception\ApplicationInstallException;
-use Hanaboso\PipesPhpSdk\Authorization\Repository\ApplicationInstallRepository;
 
 /**
  * Class ApplicationManager
  *
- * @package Hanaboso\HbPFApplication\Model
+ * @package Hanaboso\HbPFAppStore\Model
  */
 class ApplicationManager
 {

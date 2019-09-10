@@ -3,14 +3,14 @@ services:
         public: '%public.services%'
 
     hbpf._application.manager.webhook:
-        class: Hanaboso\HbPFApplication\Model\Webhook\WebhookManager
+        class: Hanaboso\HbPFAppStore\Model\Webhook\WebhookManager
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
             - '%backend_host%'
 
     hbpf._application.manager.application:
-        class: Hanaboso\HbPFApplication\Model\ApplicationManager
+        class: Hanaboso\HbPFAppStore\Model\ApplicationManager
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.loader.authorization'

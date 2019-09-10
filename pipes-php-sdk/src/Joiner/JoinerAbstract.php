@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesPhpSdk\Joiner;
 
-use Hanaboso\PipesPhpSdk\Authorization\Base\ApplicationInterface;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 
 /**
  * Class JoinerAbstract

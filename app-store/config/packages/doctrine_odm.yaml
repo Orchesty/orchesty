@@ -26,16 +26,16 @@ doctrine_mongodb:
     document_managers:
         default:
             mappings:
-                AuthorizationDocument:
-                    type: annotation
-                    is_bundle: false
-                    dir: "%kernel.root_dir%/../vendor/hanaboso/pipes-php-sdk/src/Authorization/Document"
-                    prefix: Hanaboso\PipesPhpSdk\Authorization\Document
                 ApplicationDocument:
                     type: annotation
                     is_bundle: false
+                    dir: "%kernel.root_dir%/../vendor/hanaboso/pipes-php-sdk/src/Application/Document"
+                    prefix: Hanaboso\PipesPhpSdk\Application\Document
+                AppStoreDocument:
+                    type: annotation
+                    is_bundle: false
                     dir: "%kernel.root_dir%/Document"
-                    prefix: Hanaboso\HbPFApplication\Document
+                    prefix: Hanaboso\HbPFAppStore\Document
         metrics:
             connection: metrics
             database: metrics

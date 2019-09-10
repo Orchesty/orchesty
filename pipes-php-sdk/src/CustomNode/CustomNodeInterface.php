@@ -3,7 +3,7 @@
 namespace Hanaboso\PipesPhpSdk\CustomNode;
 
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\PipesPhpSdk\Authorization\Base\ApplicationInterface;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 
 /**
  * Interface CustomNodeInterface

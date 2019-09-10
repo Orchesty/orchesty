@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesPhpSdk\LongRunningNode\Model;
 
-use Hanaboso\PipesPhpSdk\Authorization\Base\ApplicationInterface;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 
 /**
  * Class LongRunningNodeAbstract

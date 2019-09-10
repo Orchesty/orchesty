@@ -8,16 +8,16 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
-use Hanaboso\HbPFApplication\Model\Webhook\WebhookApplicationInterface;
-use Hanaboso\HbPFApplication\Model\Webhook\WebhookSubscription;
-use Hanaboso\PipesPhpSdk\Authorization\Base\ApplicationAbstract;
+use Hanaboso\HbPFAppStore\Model\Webhook\WebhookApplicationInterface;
+use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
+use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
+use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
+use Hanaboso\PipesPhpSdk\Application\Model\Form\Form;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
-use Hanaboso\PipesPhpSdk\Authorization\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Authorization\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
-use Hanaboso\PipesPhpSdk\Authorization\Model\Form\Field;
-use Hanaboso\PipesPhpSdk\Authorization\Model\Form\Form;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
 
 /**

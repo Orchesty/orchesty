@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesPhpSdk\CustomNode;
 
-use Hanaboso\PipesPhpSdk\Authorization\Base\ApplicationInterface;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 
 /**
  * Class CustomNodeAbstract

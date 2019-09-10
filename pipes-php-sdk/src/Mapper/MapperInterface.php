@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesPhpSdk\Mapper;
 
-use Hanaboso\PipesPhpSdk\Authorization\Base\ApplicationInterface;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 
 /**
  * Interface MapperInterface

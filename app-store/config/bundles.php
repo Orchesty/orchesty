@@ -3,8 +3,8 @@
 use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
 use FOS\RestBundle\FOSRestBundle;
 use Hanaboso\CommonsBundle\HbPFCommonsBundle;
-use Hanaboso\HbPFApplication\HbPFApplicationBundle;
-use Hanaboso\PipesPhpSdk\HbPFAuthorizationBundle\HbPFAuthorizationBundle;
+use Hanaboso\HbPFAppStore\HbPFAppStoreBundle;
+use Hanaboso\PipesPhpSdk\HbPFApplicationBundle\HbPFApplicationBundle;
 use Hanaboso\PipesPhpSdk\HbPFConnectorBundle\HbPFConnectorBundle;
 use Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\HbPFCustomNodeBundle;
 use Hanaboso\PipesPhpSdk\HbPFJoinerBundle\HbPFJoinerBundle;
@@ -28,7 +28,7 @@ return [
     JMSSerializerBundle::class                                     => ['all' => TRUE],
 
     HbPFCommonsBundle::class         => ['all' => TRUE],
-    HbPFAuthorizationBundle::class   => ['all' => TRUE],
+    HbPFAppStoreBundle::class        => ['all' => TRUE],
     HbPFApplicationBundle::class     => ['all' => TRUE],
     HbPFConnectorBundle::class       => ['all' => TRUE],
     HbPFCustomNodeBundle::class      => ['all' => TRUE],

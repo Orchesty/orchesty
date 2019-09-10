@@ -5,7 +5,7 @@
     <rule ref="SlevomatCodingStandard.Files.TypeNameMatchesFileName">
         <properties>
             <property name="rootNamespaces" type="array">
-                <element key="src" value="Hanaboso\HbPFApplication" />
+                <element key="src" value="Hanaboso\HbPFAppStore" />
                 <element key="tests" value="Tests" />
             </property>
         </properties>

@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\HbPFApplication\Model\Webhook;
+namespace Hanaboso\HbPFAppStore\Model\Webhook;
 
 /**
  * Class WebhookSubscription
  *
- * @package Hanaboso\HbPFApplication\Model\Webhook
+ * @package Hanaboso\HbPFAppStore\Model\Webhook
  */
 final class WebhookSubscription
 {

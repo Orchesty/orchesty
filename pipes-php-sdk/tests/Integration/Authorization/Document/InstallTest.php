@@ -3,7 +3,7 @@
 namespace Tests\Integration\Authorization\Document;
 
 use Exception;
-use Hanaboso\PipesPhpSdk\Authorization\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use MongoDB\BSON\ObjectId;
 use Tests\DatabaseTestCaseAbstract;
 

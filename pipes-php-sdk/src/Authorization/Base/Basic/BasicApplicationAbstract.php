@@ -3,9 +3,9 @@
 namespace Hanaboso\PipesPhpSdk\Authorization\Base\Basic;
 
 use Hanaboso\CommonsBundle\Enum\AuthorizationTypeEnum;
-use Hanaboso\PipesPhpSdk\Authorization\Base\ApplicationAbstract;
-use Hanaboso\PipesPhpSdk\Authorization\Base\ApplicationInterface;
-use Hanaboso\PipesPhpSdk\Authorization\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
+use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 
 /**
  * Class BasicApplicationAbstract
