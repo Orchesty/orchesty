@@ -94,6 +94,12 @@ export default {
       return match && match[1] ? { args: { application: match[1] } } : false;
     }
   },
+  sdk_impls_list: {
+    key: 'sdk_impls_list',
+    caption: 'SDK Implementations',
+    needAuth: true,
+    simpleRoute: '/sdk_implementations',
+  },
   log_list: {
     key: 'log_list',
     caption: 'Log list',

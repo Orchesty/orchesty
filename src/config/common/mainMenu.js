@@ -38,4 +38,9 @@ export default dispatch => [
     caption: 'Application Store',
     action: () => dispatch(applicationActions.openPage('app_store_list')),
   },
+  {
+    type: menuItemType.ACTION,
+    caption: 'SDK Implementations',
+    action: () => dispatch(applicationActions.openPage('sdk_impls_list')),
+  },
 ];
