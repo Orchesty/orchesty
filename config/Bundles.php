@@ -5,13 +5,13 @@ use EmailServiceBundle\EmailServiceBundle;
 use FOS\RestBundle\FOSRestBundle;
 use Hanaboso\AclBundle\HbPFAclBundle;
 use Hanaboso\CommonsBundle\HbPFCommonsBundle;
-use Hanaboso\HbPFApplication\HbPFApplicationBundle;
+use Hanaboso\HbPFAppStore\HbPFAppStoreBundle;
 use Hanaboso\PipesFramework\HbPFApiGatewayBundle\HbPFApiGatewayBundle;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\HbPFConfiguratorBundle;
 use Hanaboso\PipesFramework\HbPFLogsBundle\HbPFLogsBundle;
 use Hanaboso\PipesFramework\HbPFMetricsBundle\HbPFMetricsBundle;
 use Hanaboso\PipesFramework\HbPFNotificationBundle\HbPFNotificationBundle;
-use Hanaboso\PipesPhpSdk\HbPFAuthorizationBundle\HbPFAuthorizationBundle;
+use Hanaboso\PipesPhpSdk\HbPFApplicationBundle\HbPFApplicationBundle;
 use Hanaboso\PipesPhpSdk\HbPFConnectorBundle\HbPFConnectorBundle;
 use Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\HbPFCustomNodeBundle;
 use Hanaboso\PipesPhpSdk\HbPFJoinerBundle\HbPFJoinerBundle;
@@ -40,10 +40,10 @@ return [
     SncRedisBundle::class                                          => ['all' => TRUE],
 
     HbPFCommonsBundle::class         => ['all' => TRUE],
-    HbPFAuthorizationBundle::class   => ['all' => TRUE],
     HbPFAclBundle::class             => ['all' => TRUE],
     HbPFApiGatewayBundle::class      => ['all' => TRUE],
     HbPFApplicationBundle::class     => ['all' => TRUE],
+    HbPFAppStoreBundle::class     => ['all' => TRUE],
     HbPFConfiguratorBundle::class    => ['all' => TRUE],
     HbPFConnectorBundle::class       => ['all' => TRUE],
     HbPFCustomNodeBundle::class      => ['all' => TRUE],

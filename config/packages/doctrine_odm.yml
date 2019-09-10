@@ -32,8 +32,8 @@ doctrine_mongodb:
                 ApplicationDocument:
                     type: annotation
                     is_bundle: false
-                    dir: "%kernel.root_dir%/../vendor/hanaboso/pipes-php-sdk/src/Authorization/Document"
-                    prefix: Hanaboso\PipesPhpSdk\Authorization\Document
+                    dir: "%kernel.root_dir%/../vendor/hanaboso/pipes-php-sdk/src/Application/Document"
+                    prefix: Hanaboso\PipesPhpSdk\Application\Document
                 WebhookDocument:
                     type: annotation
                     is_bundle: false
