@@ -2,7 +2,7 @@
   "name": "hanaboso/pipes-framework",
   "license": "proprietary",
   "description": "PipesFramework for Symfony",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "autoload": {
     "psr-4": {
       "Hanaboso\\PipesFramework\\": "src/"
@@ -48,30 +48,6 @@
       "options": {
         "symlink": true
       }
-    },
-    {
-      "type": "git",
-      "url": "git@gitlab.hanaboso.net:hanaboso/commons-bundle.git"
-    },
-    {
-      "type": "git",
-      "url": "git@gitlab.hanaboso.net:hanaboso/user-bundle.git"
-    },
-    {
-      "type": "git",
-      "url": "git@gitlab.hanaboso.net:hanaboso/email-service-bundle.git"
-    },
-    {
-      "type": "git",
-      "url": "git@gitlab.hanaboso.net:hanaboso/rabbit-mq-bundle.git"
-    },
-    {
-      "type": "git",
-      "url": "git@gitlab.hanaboso.net:hanaboso/acl-bundle.git"
-    },
-    {
-      "type": "git",
-      "url": "git@gitlab.hanaboso.net:hanaboso/MongoDataGrid.git"
     }
   ]
 }
