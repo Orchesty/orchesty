@@ -20,3 +20,8 @@ services:
         arguments:
             - '@hbpf.database_manager_locator'
             - '@hbpf.configurator.manager.category'
+
+    hbpf.configurator.handler.sdk:
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\SdkHandler
+        arguments:
+            - '@hbpf.configurator.manager.sdk'

@@ -22,3 +22,10 @@ services:
             - '@hbpf.configurator.handler.topology'
         calls:
             - ['setContainer', ['@service_container']]
+
+    Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\SdkController:
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\SdkController
+        arguments:
+            - '@hbpf.configurator.handler.sdk'
+        calls:
+            - ['setContainer', ['@service_container']]

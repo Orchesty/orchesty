@@ -61,3 +61,9 @@ services:
         arguments:
         calls:
             - ['setContainer', ['@service_container']]
+
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\SdkController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\SdkController
+        arguments:
+        calls:
+            - ['setContainer', ['@service_container']]
