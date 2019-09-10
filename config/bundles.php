@@ -19,8 +19,8 @@ return [
     MonologBundle::class         => ['all' => TRUE],
     SwiftmailerBundle::class     => ['all' => TRUE],
 
-    HbPFCommonsBundle::class        => ['all' => TRUE],
     EmailServiceBundle::class       => ['all' => TRUE],
+    HbPFCommonsBundle::class        => ['all' => TRUE],
     NotificationSenderBundle::class => ['all' => TRUE],
     RabbitMqBundle::class           => ['all' => TRUE],
 ];
