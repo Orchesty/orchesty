@@ -2,8 +2,8 @@
 
 namespace Hanaboso\PipesPhpSdk\Command;
 
-use Hanaboso\PipesPhpSdk\Authorization\Exception\ApplicationInstallException;
-use Hanaboso\PipesPhpSdk\Authorization\Manager\ApplicationManager;
+use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
+use Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

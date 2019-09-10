@@ -6,11 +6,11 @@ use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
+use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
+use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
+use Hanaboso\PipesPhpSdk\Application\Model\Form\Form;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1\OAuth1ApplicationAbstract;
-use Hanaboso\PipesPhpSdk\Authorization\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Authorization\Exception\ApplicationInstallException;
-use Hanaboso\PipesPhpSdk\Authorization\Model\Form\Field;
-use Hanaboso\PipesPhpSdk\Authorization\Model\Form\Form;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth1DtoInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider;
 

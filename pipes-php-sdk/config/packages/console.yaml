@@ -3,5 +3,5 @@ services:
         class: Hanaboso\PipesPhpSdk\Command\AuthorizeUserCommand
         tags: [console.command]
         arguments:
-            - '@hbpf.authorization.manager'
+            - '@hbpf.application.manager'
             - '@doctrine_mongodb.odm.default_document_manager'
