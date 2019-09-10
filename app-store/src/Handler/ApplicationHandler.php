@@ -77,7 +77,6 @@ class ApplicationHandler
      */
     public function getApplicationsByUser(string $user): array
     {
-        /** @var BasicApplicationAbstract&WebhookApplicationInterface $application */
         return [
             'items' => array_map(function (ApplicationInstall $applicationInstall): array {
                 $application = $this->applicationManager->getApplication($applicationInstall->getKey());

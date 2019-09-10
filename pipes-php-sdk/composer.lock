@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8998602f4033e426919168461f639845",
+    "content-hash": "d7b3e7d2f934ebd368669c0075270e78",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -2131,8 +2131,14 @@
             "version": "1.1.26",
             "source": {
                 "type": "git",
-                "url": "git@gitlab.hanaboso.net:hanaboso/commons-bundle.git",
+                "url": "https://github.com/hanaboso/commons-bundle.git",
                 "reference": "230fb506763ab23bf8da6684fc5d31f9b4bfd06d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/hanaboso/commons-bundle/zipball/230fb506763ab23bf8da6684fc5d31f9b4bfd06d",
+                "reference": "230fb506763ab23bf8da6684fc5d31f9b4bfd06d",
+                "shasum": ""
             },
             "require": {
                 "alcaeus/mongo-php-adapter": "^1.1",
@@ -2170,11 +2176,7 @@
                     "Hanaboso\\CommonsBundle\\": "src/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Tests\\": "tests/"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "proprietary"
             ],
@@ -2185,8 +2187,14 @@
             "version": "1.1.8",
             "source": {
                 "type": "git",
-                "url": "git@gitlab.hanaboso.net:hanaboso/MongoDataGrid.git",
+                "url": "https://github.com/hanaboso/mongoDataGrid.git",
                 "reference": "9769344a158a20619565d5dd77c849053351d9f4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/hanaboso/mongoDataGrid/zipball/9769344a158a20619565d5dd77c849053351d9f4",
+                "reference": "9769344a158a20619565d5dd77c849053351d9f4",
+                "shasum": ""
             },
             "require": {
                 "alcaeus/mongo-php-adapter": "^1.1",
@@ -2203,11 +2211,7 @@
                     "Hanaboso\\MongoDataGrid\\": "src/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Tests\\": "tests/"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "proprietary"
             ],
@@ -2219,8 +2223,14 @@
             "version": "1.1.5",
             "source": {
                 "type": "git",
-                "url": "git@gitlab.hanaboso.net:hanaboso/rabbit-mq-bundle.git",
+                "url": "https://github.com/hanaboso/rabbit-mq-bundle.git",
                 "reference": "5557fe6c118f9111262a1690ebf1060b74d0b070"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/hanaboso/rabbit-mq-bundle/zipball/5557fe6c118f9111262a1690ebf1060b74d0b070",
+                "reference": "5557fe6c118f9111262a1690ebf1060b74d0b070",
+                "shasum": ""
             },
             "require": {
                 "bunny/bunny": "^0.4",
@@ -2239,11 +2249,7 @@
                     "RabbitMqBundle\\": "src/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Tests\\": "tests/"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "proprietary"
             ],

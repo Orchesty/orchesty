@@ -2,7 +2,7 @@
   "name": "hanaboso/pipes-connectors",
   "license": "proprietary",
   "description": "Connectors for PipesFramework",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "autoload": {
     "psr-4": {
       "Hanaboso\\HbPFConnectors\\": "src/"
@@ -37,18 +37,6 @@
       "options": {
         "symlink": true
       }
-    },
-    {
-      "type": "git",
-      "url": "git@gitlab.hanaboso.net:hanaboso/commons-bundle.git"
-    },
-    {
-      "type": "git",
-      "url": "git@gitlab.hanaboso.net:hanaboso/rabbit-mq-bundle.git"
-    },
-    {
-      "type": "git",
-      "url": "git@gitlab.hanaboso.net:hanaboso/MongoDataGrid.git"
     }
   ]
 }

@@ -81,7 +81,6 @@ clear-cache:
 	$(DE) php bin/console cache:warmup --env=test
 
 database-create:
-	sleep 5
 	$(DE) php bin/console doctrine:database:drop --force || true
 	$(DE) php bin/console doctrine:database:create
 	$(DE) php bin/console doctrine:schema:create

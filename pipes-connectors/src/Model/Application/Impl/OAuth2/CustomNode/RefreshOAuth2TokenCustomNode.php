@@ -16,11 +16,9 @@ use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
 
 /**
  * Class RefreshOAuth2TokenCustomNode
- *make
  *
  * @package Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\CustomNode
  */
-
 class RefreshOAuth2TokenCustomNode extends CustomNodeAbstract
 {
 
@@ -28,6 +26,7 @@ class RefreshOAuth2TokenCustomNode extends CustomNodeAbstract
      * @var DocumentManager
      */
     private $dm;
+
     /**
      * @var ApplicationLoader
      */

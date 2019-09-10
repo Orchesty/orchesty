@@ -2,7 +2,7 @@
   "name": "hanaboso/pipes-php-sdk",
   "license": "proprietary",
   "description": "PHP sdk for PipesFramework",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "autoload": {
     "psr-4": {
       "Hanaboso\\PipesPhpSdk\\": "src/"
@@ -30,19 +30,5 @@
   },
   "require-dev": {
     "hanaboso/php-check-utils": "^1.0"
-  },
-  "repositories": [
-    {
-      "type": "git",
-      "url": "git@gitlab.hanaboso.net:hanaboso/commons-bundle.git"
-    },
-    {
-      "type": "git",
-      "url": "git@gitlab.hanaboso.net:hanaboso/rabbit-mq-bundle.git"
-    },
-    {
-      "type": "git",
-      "url": "git@gitlab.hanaboso.net:hanaboso/MongoDataGrid.git"
-    }
-  ]
+  }
 }

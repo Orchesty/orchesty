@@ -2,7 +2,7 @@
   "name": "hanaboso/app-store",
   "license": "proprietary",
   "description": "App store for PipesFramework",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "autoload": {
     "psr-4": {
       "Hanaboso\\HbPFAppStore\\": "src/"
@@ -29,18 +29,6 @@
       "options": {
         "symlink": true
       }
-    },
-    {
-      "type": "git",
-      "url": "git@gitlab.hanaboso.net:hanaboso/commons-bundle.git"
-    },
-    {
-      "type": "git",
-      "url": "git@gitlab.hanaboso.net:hanaboso/rabbit-mq-bundle.git"
-    },
-    {
-      "type": "git",
-      "url": "git@gitlab.hanaboso.net:hanaboso/MongoDataGrid.git"
     }
   ]
 }

@@ -1,5 +1,7 @@
 <?php
 
+use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
+use Doctrine\Bundle\DoctrineCacheBundle\DoctrineCacheBundle;
 use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
 use EmailServiceBundle\EmailServiceBundle;
 use FOS\RestBundle\FOSRestBundle;
@@ -21,36 +23,42 @@ use JMS\SerializerBundle\JMSSerializerBundle;
 use Nelmio\CorsBundle\NelmioCorsBundle;
 use RabbitMqBundle\RabbitMqBundle;
 use Snc\RedisBundle\SncRedisBundle;
+use Symfony\Bundle\DebugBundle\DebugBundle;
+use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
+use Symfony\Bundle\MonologBundle\MonologBundle;
+use Symfony\Bundle\SecurityBundle\SecurityBundle;
+use Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle;
+use Symfony\Bundle\TwigBundle\TwigBundle;
 
 return [
-    Symfony\Bundle\FrameworkBundle\FrameworkBundle::class          => ['all' => TRUE],
-    Symfony\Bundle\SecurityBundle\SecurityBundle::class            => ['all' => TRUE],
-    Doctrine\Bundle\DoctrineCacheBundle\DoctrineCacheBundle::class => ['all' => TRUE],
-    Doctrine\Bundle\DoctrineBundle\DoctrineBundle::class           => ['all' => TRUE],
-    Symfony\Bundle\MonologBundle\MonologBundle::class              => ['all' => TRUE],
-    Symfony\Bundle\TwigBundle\TwigBundle::class                    => ['all' => TRUE],
-    Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle::class      => ['all' => TRUE],
-    Symfony\Bundle\DebugBundle\DebugBundle::class                  => ['dev' => TRUE, 'test' => TRUE],
-    DoctrineMongoDBBundle::class                                   => ['all' => TRUE],
-    FOSRestBundle::class                                           => ['all' => TRUE],
-    JMSSerializerBundle::class                                     => ['all' => TRUE],
-    NelmioCorsBundle::class                                        => ['all' => TRUE],
-    SncRedisBundle::class                                          => ['all' => TRUE],
+    DebugBundle::class           => ['dev' => TRUE, 'test' => TRUE],
+    DoctrineBundle::class        => ['all' => TRUE],
+    DoctrineCacheBundle::class   => ['all' => TRUE],
+    DoctrineMongoDBBundle::class => ['all' => TRUE],
+    FOSRestBundle::class         => ['all' => TRUE],
+    FrameworkBundle::class       => ['all' => TRUE],
+    JMSSerializerBundle::class   => ['all' => TRUE],
+    MonologBundle::class         => ['all' => TRUE],
+    NelmioCorsBundle::class      => ['all' => TRUE],
+    SecurityBundle::class        => ['all' => TRUE],
+    SncRedisBundle::class        => ['all' => TRUE],
+    SwiftmailerBundle::class     => ['all' => TRUE],
+    TwigBundle::class            => ['all' => TRUE],
 
+    EmailServiceBundle::class        => ['all' => TRUE],
     HbPFApiGatewayBundle::class      => ['all' => TRUE],
-    HbPFAppStoreBundle::class   => ['all' => TRUE],
-    HbPFConfiguratorBundle::class    => ['all' => TRUE],
+    HbPFApplicationBundle::class     => ['all' => TRUE],
+    HbPFAppStoreBundle::class        => ['all' => TRUE],
     HbPFCommonsBundle::class         => ['all' => TRUE],
+    HbPFConfiguratorBundle::class    => ['all' => TRUE],
     HbPFConnectorBundle::class       => ['all' => TRUE],
+    HbPFConnectorsBundle::class      => ['all' => TRUE],
     HbPFCustomNodeBundle::class      => ['all' => TRUE],
+    HbPFLogsBundle::class            => ['all' => TRUE],
+    HbPFLongRunningNodeBundle::class => ['all' => TRUE],
     HbPFMapperBundle::class          => ['all' => TRUE],
     HbPFMetricsBundle::class         => ['all' => TRUE],
+    HbPFNotificationBundle::class    => ['all' => TRUE],
     HbPFUserBundle::class            => ['all' => TRUE],
     RabbitMqBundle::class            => ['all' => TRUE],
-    EmailServiceBundle::class        => ['all' => TRUE],
-    HbPFLogsBundle::class            => ['all' => TRUE],
-    HbPFNotificationBundle::class    => ['all' => TRUE],
-    HbPFLongRunningNodeBundle::class => ['all' => TRUE],
-    HbPFApplicationBundle::class     => ['all' => TRUE],
-    HbPFConnectorsBundle::class      => ['all' => TRUE],
 ];

@@ -11,7 +11,3 @@ fos_rest:
         decoders:
             json: fos_rest.decoder.json
             xml: fos_rest.decoder.xml
-
-    exception:
-        enabled: true
-        exception_controller: 'fos_rest.exception.controller:showAction'
