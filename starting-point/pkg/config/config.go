@@ -7,29 +7,39 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+const (
+	// MetricsInflux ...
+	MetricsInflux = "influx"
+	// MetricsMongo ...
+	MetricsMongo = "mongo"
+)
+
 // Config represents config
 var Config config
 
 type config struct {
-	MongoDB  *mongoDb
-	RabbitMQ *rabbitMq
-	Cache    *cache
-	InfluxDB *influxDB
-	Logger   *log.Logger
-	Cleaner  *cleaner
-	Limiter  *limiter
+	MongoDB        *mongoDb
+	RabbitMQ       *rabbitMq
+	Cache          *cache
+	InfluxDB       *influxDB
+	Logger         *log.Logger
+	Cleaner        *cleaner
+	Limiter        *limiter
+	MetricsService string
 }
 
 type mongoDb struct {
-	Hostname      string
-	Username      string
-	Password      string
-	Database      string
-	NodeColl      string
-	TopologyColl  string
-	HumanTaskColl string
-	WebhookColl   string
-	Timeout       string
+	Hostname        string
+	Username        string
+	Password        string
+	Database        string
+	MetricsDatabase string
+	NodeColl        string
+	TopologyColl    string
+	HumanTaskColl   string
+	WebhookColl     string
+	Timeout         string
+	MeasurementColl string
 }
 
 type rabbitMq struct {
@@ -75,15 +85,17 @@ func init() {
 
 	Config = config{
 		MongoDB: &mongoDb{
-			Hostname:      getEnv("MONGO_HOSTNAME", ""),
-			Username:      getEnv("MONGO_USERNAME", ""),
-			Password:      getEnv("MONGO_PASSWORD", ""),
-			Database:      getEnv("MONGO_DATABASE", ""),
-			NodeColl:      getEnv("MONGO_NODE_COLL", "Node"),
-			TopologyColl:  getEnv("MONGO_TOPOLOGY_COLL", "Topology"),
-			HumanTaskColl: getEnv("MONGO_HUMAN_TASK_COLL", "LongRunningNodeData"),
-			WebhookColl:   getEnv("MONGO_WEBHOOK_COLL", "Webhook"),
-			Timeout:       getEnv("MONGO_TIMEOUT", "10"),
+			Hostname:        getEnv("MONGO_HOSTNAME", ""),
+			Username:        getEnv("MONGO_USERNAME", ""),
+			Password:        getEnv("MONGO_PASSWORD", ""),
+			Database:        getEnv("MONGO_DATABASE", ""),
+			MetricsDatabase: getEnv("MONGO_METRICS_DATABASE", "metrics"),
+			NodeColl:        getEnv("MONGO_NODE_COLL", "Node"),
+			TopologyColl:    getEnv("MONGO_TOPOLOGY_COLL", "Topology"),
+			HumanTaskColl:   getEnv("MONGO_HUMAN_TASK_COLL", "LongRunningNodeData"),
+			WebhookColl:     getEnv("MONGO_WEBHOOK_COLL", "Webhook"),
+			Timeout:         getEnv("MONGO_TIMEOUT", "10"),
+			MeasurementColl: getEnv("MONGO_MEASUREMENT", "monolith"),
 		},
 		RabbitMQ: &rabbitMq{
 			Hostname:             getEnv("RABBIT_HOSTNAME", "rabbitmq"),
@@ -114,12 +126,20 @@ func init() {
 		Limiter: &limiter{
 			GoroutineLimit: getEnvInt("GOROUTINE_LIMIT", 2000),
 		},
+		MetricsService: getEnv("METRICS_SERVICE", MetricsInflux),
 	}
 }
 
 // GetConfig getting Config, for test purpose
 func GetConfig() interface{} {
 	return Config
+}
+
+func init() {
+	if Config.MetricsService != MetricsInflux &&
+		Config.MetricsService != MetricsMongo {
+		Config.Logger.Fatalf("invalid metrics service [%s], valid options are: [%s, %s]", Config.MetricsService, MetricsInflux, MetricsMongo)
+	}
 }
 
 func getEnv(key string, defaultValue string) string {

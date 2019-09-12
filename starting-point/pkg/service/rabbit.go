@@ -6,7 +6,7 @@ import (
 	"github.com/streadway/amqp"
 	"net/http"
 	"starting-point/pkg/config"
-	"starting-point/pkg/influx"
+	"starting-point/pkg/metrics"
 	"starting-point/pkg/rabbitmq"
 	"starting-point/pkg/storage"
 	"starting-point/pkg/utils"
@@ -23,9 +23,10 @@ type Rabbit interface {
 
 // RabbitDefault interprets Rabbit
 type RabbitDefault struct {
-	publisher  rabbitmq.Publisher
-	connection rabbitmq.Connection
-	builder    utils.HeaderBuilder
+	publisher     rabbitmq.Publisher
+	connection    rabbitmq.Connection
+	builder       utils.HeaderBuilder
+	metricsSender metrics.Sender
 }
 
 // ProcessMessage  body structures
@@ -83,7 +84,7 @@ func (r *RabbitDefault) SndMessage(
 
 	// Send Metrics
 	corrID := m.Headers[utils.CorrelationID]
-	influx.SendMetrics(influx.GetTags(topology, corrID.(string)), influx.GetFields(init))
+	r.metricsSender.SendMetrics(metrics.GetTags(topology, corrID.(string)), metrics.GetFields(init))
 }
 
 // DisconnectRabbit disconnects RabbitMQ
@@ -132,5 +133,10 @@ func NewRabbit() Rabbit {
 	conn.Declare(rabbitmq.GetProcessCounterQueue())
 	conn.CloseChannel(config.Config.RabbitMQ.CounterQueueName)
 
-	return &RabbitDefault{publisher: publisher, connection: conn, builder: builder}
+	return &RabbitDefault{
+		publisher:     publisher,
+		connection:    conn,
+		builder:       builder,
+		metricsSender: metrics.NewSender(),
+	}
 }
