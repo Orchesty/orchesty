@@ -27,7 +27,7 @@ export default function (group, element, translate) {
     group.entries.push(entryFactory.selectBox({
       id: 'sdkHost',
       label: 'Implementation',
-      selectOptions: implementationTypes.map(item => ({ name: implementationTypesNames[item] || item, value: item })),
+      selectOptions: implementationTypesNames.map(({ key, value }) => ({ name: value, value: key })),
       modelProperty: 'sdkHost',
       getProperty(element) {
         return getBusinessObject(element).sdkHost;

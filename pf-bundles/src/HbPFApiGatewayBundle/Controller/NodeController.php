@@ -97,16 +97,6 @@ class NodeController extends AbstractFOSRestController
     }
 
     /**
-     * @Route("/nodes/list/implementation", methods={"GET"})
-     *
-     * @return Response
-     */
-    public function listNodesImplementationAction(): Response
-    {
-        return new JsonResponse(NodeImplementationEnum::getChoices());
-    }
-
-    /**
      * @param string $path
      *
      * @return array

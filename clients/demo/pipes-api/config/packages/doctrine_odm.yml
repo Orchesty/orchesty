@@ -51,6 +51,11 @@ doctrine_mongodb:
                     is_bundle: false
                     dir: "%kernel.root_dir%/../vendor/hanaboso/pipes-framework/src/Logs/Document"
                     prefix: Hanaboso\PipesFramework\Logs\Document
+                ConfiguratorDocument:
+                    type: annotation
+                    is_bundle: false
+                    dir: "%kernel.root_dir%/../vendor/hanaboso/pipes-framework/src/Configurator/Document"
+                    prefix: Hanaboso\PipesFramework\Configurator\Document
                 Webhook:
                     type: annotation
                     is_bundle: false

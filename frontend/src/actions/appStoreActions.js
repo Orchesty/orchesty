@@ -96,12 +96,16 @@ export const unsubscribeApplication = (application, user, data) => dispatch => s
 export const authorizeApplication = (application, user, redirect) => dispatch => window.location.href = makeUrl(`/applications/${application}/users/${user}/authorize?redirect_url=${redirect}`);
 
 const processApplication = (dispatch, method, application, user, data, message) => {
-  return serverRequest(dispatch, method, `/applications/${application}/users/${user}`, {}, data).then(data => {
-    dispatch({ type: types.APP_STORE_RECEIVE_APPLICATION, application, data });
-    if (message) {
-      dispatch(notificationActions.addNotification('success', message));
+  return serverRequest(dispatch, 'GET', `/applications/users/${user}`).then(response => {
+    if (method !== 'GET' || response.items.map(({  key }) => key).includes(application)) {
+      return serverRequest(dispatch, method, `/applications/${application}/users/${user}`, {}, data).then(data => {
+        dispatch({ type: types.APP_STORE_RECEIVE_APPLICATION, application, data });
+        if (message) {
+          dispatch(notificationActions.addNotification('success', message));
+        }
+      })
     }
-  })
+  });
 };
 
 const processItem = item => {

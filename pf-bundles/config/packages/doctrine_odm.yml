@@ -64,6 +64,11 @@ doctrine_mongodb:
                     is_bundle: false
                     dir: "%kernel.root_dir%/Logs/Document"
                     prefix: Hanaboso\PipesFramework\Logs\Document
+                ConfiguratorDocument:
+                    type: annotation
+                    is_bundle: false
+                    dir: "%kernel.root_dir%/Configurator/Document"
+                    prefix: Hanaboso\PipesFramework\Configurator\Document
         metrics:
             connection: metrics
             database: metrics
