@@ -57,3 +57,28 @@ services:
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.application.loader'
+
+    hbpf.application.s3:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\S3\S3Application
+        arguments:
+
+    hbpf.connector.s3-create-object:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\S3\Connector\CreateObjectConnector
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+        calls:
+            - ['setApplication', ['@hbpf.application.s3']]
+
+    hbpf.connector.s3-get-object:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\S3\Connector\GetObjectConnector
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+        calls:
+            - ['setApplication', ['@hbpf.application.s3']]
+
+    hbpf.connector.s3-delete-object:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\S3\Connector\DeleteObjectConnector
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+        calls:
+            - ['setApplication', ['@hbpf.application.s3']]

@@ -487,6 +487,13 @@ services:
         restart: always
     ## END DEV
 
+    ## BEGIN DEV
+    fakes3:
+        image: olalond3/fakes3
+        mem_limit: 128M
+        restart: always
+    ## END DEV
+
 ## BEGIN DEV
 volumes:
   mongodb: {}

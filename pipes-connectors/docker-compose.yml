@@ -22,5 +22,8 @@ services:
       volumes:
         - mongo:/data/db
 
+  fakes3:
+    image: olalond3/fakes3
+
 volumes:
   mongo: {}

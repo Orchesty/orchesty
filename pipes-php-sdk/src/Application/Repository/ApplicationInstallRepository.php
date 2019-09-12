@@ -4,6 +4,7 @@ namespace Hanaboso\PipesPhpSdk\Application\Repository;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 
@@ -49,8 +50,8 @@ class ApplicationInstallRepository extends DocumentRepository
     public function findUsersAppDefaultHeaders(ProcessDto $dto): ApplicationInstall
     {
         return $this->findUserApp(
-            (string) $dto->getHeader('pf-application', '')[0],
-            (string) $dto->getHeader('pf-user', '')[0]
+            (string) PipesHeaders::get('application', $dto->getHeaders()),
+            (string) PipesHeaders::get('user', $dto->getHeaders())
         );
     }
 
