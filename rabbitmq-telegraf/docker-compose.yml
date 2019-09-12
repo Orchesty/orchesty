@@ -4,18 +4,12 @@ version: '3'
 services:
   app:
     image: dkr.hanaboso.net/pipes/pipes/rabbitmq-telegraf:dev
-    user: ${DEV_UID}:${DEV_GID}
+    environment:
+      APP_DEBUG: "true"
+    volumes:
+      - ./:/rabbitmq-telegraf
     ports:
       - ${DEV_IP}:8080:8080
-    environment:
-      DEV_UID: ${DEV_UID}
-      DEV_GID: ${DEV_GID}
-      APP_DEBUG: 'true'
-    volumes:
-      - ./:/var/www
-      - ${GOPATH}/:/go
-    working_dir: /var/www
-    #command: sh -c "while true;do sleep 10;done"
     command: go run main.go
 
   rabbitmq:

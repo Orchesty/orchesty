@@ -1,0 +1,10 @@
+FROM golang:alpine
+
+RUN apk update --no-cache && \
+    apk upgrade --no-cache && \
+    apk add --no-cache git && \
+    go get -u golang.org/x/lint/golint
+
+ENV CGO_ENABLED 0
+
+WORKDIR /rabbitmq-telegraf

@@ -90,7 +90,7 @@ influxdb-build:
     stage: stage1
     script:
       - cd $REPO_ROOT/influxdb
-      - make docker-build docker-push
+      - make docker-build DOCKER_TAG=${CI_BUILD_REF_NAME} docker-push DOCKER_TAG=${CI_BUILD_REF_NAME}
     only:
       - dev
       - master
@@ -99,7 +99,7 @@ kapacitor-build:
     stage: stage1
     script:
       - cd $REPO_ROOT/kapacitor
-      - make docker-build docker-push
+      - make docker-build DOCKER_TAG=${CI_BUILD_REF_NAME} docker-push DOCKER_TAG=${CI_BUILD_REF_NAME}
     only:
       - dev
       - master

@@ -1,7 +1,7 @@
 .PHONY: init-dev test
 
-DC=docker-compose -f docker-compose.dev.yml
-DE=docker-compose -f docker-compose.dev.yml exec -T app
+DC=docker-compose
+DE=docker-compose exec -T app
 
 IMAGE=dkr.hanaboso.net/pipes/pipes/rabbitmq-telegraf
 TAG?=dev
@@ -14,14 +14,11 @@ TAG?=dev
 	fi;
 
 build-dev-image:
-	docker build -f docker/Dockerfile -t $(IMAGE):dev .
-	docker push $(IMAGE):dev
+	docker build -f Dockerfile.dev -t $(IMAGE):${TAG} .
+	docker push $(IMAGE):${TAG}
 
-build-binary: build-dev-image docker-up-force
-	$(DE) go build
-
-build: .env build-binary
-	docker build -f docker/Dockerfile.prod -t $(IMAGE):${TAG} .
+build: .env
+	docker build -t $(IMAGE):${TAG} .
 	docker push $(IMAGE):${TAG}
 
 docker-up-force: .env
@@ -40,3 +37,7 @@ test: docker-up-force
 fasttest:
 	$(DE) gofmt -w pkg
 	$(DE) go test ./...
+
+docker-compose.ci.yml:
+	# Comment out any port forwarding
+	sed -r 's/^(\s+ports:)$$/#\1/g; s/^(\s+- \$$\{DEV_IP\}.*)$$/#\1/g' docker-compose.yml > docker-compose.ci.yml

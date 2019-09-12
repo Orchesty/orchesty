@@ -1,6 +1,6 @@
 .PHONY: docker-build docker-push
 
-DOCKER_TAG = dev
+DOCKER_TAG? = dev
 DOCKER_REGISTRY := dkr.hanaboso.net/pipes/pipes
 
 docker-build:
