@@ -116,7 +116,7 @@ lib-python-build:
 topology-api:
   stage: stage1
   script:
-    -  cd topology-generator && make docker-push
+    -  cd topology-generator && make docker-push DOCKER_DEFAULT_TAG=${CI_BUILD_REF_NAME}
   only:
     - dev
     - master

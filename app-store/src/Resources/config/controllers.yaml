@@ -15,3 +15,10 @@ services:
             - '@hbpf._application.handler.webhook'
         calls:
             - ['setContainer', ['@service_container']]
+
+    Hanaboso\HbPFAppStore\Controller\StatisticsController:
+        class: Hanaboso\HbPFAppStore\Controller\StatisticsController
+        arguments:
+            - '@hbpf._application.handler.statistics'
+        calls:
+            - ['setContainer', ['@service_container']]
