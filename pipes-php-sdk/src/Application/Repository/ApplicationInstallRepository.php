@@ -59,26 +59,29 @@ class ApplicationInstallRepository extends DocumentRepository
      * @return array
      * @throws MongoDBException
      */
-    public function getApplicationScount(): array
+    public function getApplicationsCount(): array
     {
         return $this->createQueryBuilder()->mapReduce(
             'function() {
                     emit(this.key, this.expires);
                 }',
             'function(k, vals) {
-                let totalSum = 0;
-                let nonExpireSum = 0;
-
-                vals.forEach(val=>{
-                totalSum++;
-                if(val === null){
-                	nonExpireSum++;
+	
+                return vals.reduce((acc, val) => 
+                {
+                	acc.total_sum++; 
+                	if (val === null) { 
+                		acc.non_expire_sum++; 
+                	} 
+                	return acc;
+                }, 
+                {
+                	total_sum: 0, 
+                	non_expire_sum: 0
                 }
-                });
-                    return {
-                        total_sum: totalSum,
-                        non_expire_sum: nonExpireSum,
-                    };
+                )
+                
+
                 }',
             )
             ->finalize(
@@ -88,8 +91,8 @@ class ApplicationInstallRepository extends DocumentRepository
                     }
 
                     return {
-                         total_sum: 1,
-                        non_expire_sum: 1,
+                        total_sum: 1,
+                        non_expire_sum: res !== null ? 1 : 0
                     };
                 }'
             )
@@ -104,55 +107,31 @@ class ApplicationInstallRepository extends DocumentRepository
      * @return array
      * @throws MongoDBException
      */
-    public function getApplicationScountDetails(string $application): array
+    public function getApplicationsCountDetails(string $application): array
     {
 
         return $this->createQueryBuilder()->field('key')->equals($application)
             ->mapReduce(
-            'function() {
+
+                'function() {
 	                	 emit(this.key, this);
 
                 }',
-            'function(k, vals) {
-
-	                let user = [];
-	                let i = 0;
-	                
-                    vals.forEach(val=>{
-                	    let active = false;
-                	    if(val.expires !== null){
-                	    active = true;
-                	}
-                	
-                	user[i] = {active:active, name:val.user};
-                	i++;
-                    });
-                    
+                'function(k, vals) {
                     return {
-                        users: user
+                        users: vals.map(val => ({ active: val.expires !== null, name: val.user }))
                     };
                     }',
-            )
+                )
             ->finalize(
                 'function(k, res) {
                     if (res !== null && res.users !== undefined) {
                         return res;
                     }
-                    else{
-                    	let user = [];
-                    	let active = false;
-                    	
-                    	if(res.expires !== null){
-                	    active = true;
-                	}
-                	
-                    	user[0] = {active:active, name:res.user}
+                 return {
+                    	users: [{ active: res.expires !== null, name: res.user }]
+                    }
                     
-
-                    return {
-                        users: user
-                    };
-                	}
                 }'
             )
             ->getQuery()
