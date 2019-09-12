@@ -1,4 +1,4 @@
-package influx
+package metrics
 
 import (
 	"errors"
@@ -22,9 +22,11 @@ var f2 float32
 var b bool
 var s string
 
+type influx struct{}
+
 // SendMetrics sending metrics via UDP
-func SendMetrics(tags map[string]interface{}, fields map[string]interface{}) {
-	m, err := createMessage(tags, fields)
+func (inf influx) SendMetrics(tags map[string]interface{}, fields map[string]interface{}) {
+	m, err := inf.createMessage(tags, fields)
 	if err != nil {
 		log.Error(fmt.Sprintf("Creating data for Metrics failed. Error: %s", err))
 	}
@@ -32,18 +34,18 @@ func SendMetrics(tags map[string]interface{}, fields map[string]interface{}) {
 	udp.UDP.Send([]byte(m))
 }
 
-func createMessage(tags map[string]interface{}, fields map[string]interface{}) (m string, err error) {
+func (inf influx) createMessage(tags map[string]interface{}, fields map[string]interface{}) (m string, err error) {
 	if len(fields) == 0 {
 		return "", errors.New("fields must not be empty")
 	}
 
-	t := join(prepareItems(tags, false))
-	f := join(prepareItems(fields, true))
+	t := inf.join(inf.prepareItems(tags, false))
+	f := inf.join(inf.prepareItems(fields, true))
 
 	return fmt.Sprintf("%s,%s %s %d", config.Config.InfluxDB.Measurement, t, f, time.Now().UnixNano()), nil
 }
 
-func join(items map[string]interface{}) (res string) {
+func (inf influx) join(items map[string]interface{}) (res string) {
 	res = ""
 
 	if len(items) == 0 {
@@ -59,7 +61,7 @@ func join(items map[string]interface{}) (res string) {
 	return
 }
 
-func prepareItems(items map[string]interface{}, escape bool) map[string]interface{} {
+func (inf influx) prepareItems(items map[string]interface{}, escape bool) map[string]interface{} {
 	for k, item := range items {
 		t := reflect.TypeOf(item)
 
@@ -82,7 +84,7 @@ func prepareItems(items map[string]interface{}, escape bool) map[string]interfac
 			items[k] = "null"
 		} else if t == reflect.TypeOf(s) {
 			if escape == true {
-				items[k] = escapeString(fmt.Sprintf("%s", item))
+				items[k] = inf.escapeString(fmt.Sprintf("%s", item))
 			} else {
 				items[k] = fmt.Sprintf("%s", item)
 			}
@@ -94,8 +96,12 @@ func prepareItems(items map[string]interface{}, escape bool) map[string]interfac
 	return items
 }
 
-func escapeString(s string) string {
+func (inf influx) escapeString(s string) string {
 	s = strings.Replace(s, "\"", "\\\"", -1)
 
 	return fmt.Sprintf("\"%s\"", s)
+}
+
+func newInfluxSender() Sender {
+	return influx{}
 }

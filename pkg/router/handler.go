@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"runtime"
 	"starting-point/pkg/config"
-	"starting-point/pkg/influx"
+	"starting-point/pkg/metrics"
 	"starting-point/pkg/service"
 	"starting-point/pkg/storage"
 	"starting-point/pkg/utils"
@@ -100,7 +100,7 @@ func handleByID(w http.ResponseWriter, r *http.Request, isHumanTask, isStop bool
 		return
 	}
 
-	init := influx.InitFields()
+	init := metrics.InitFields()
 	vars := mux.Vars(r)
 	var topology *storage.Topology
 
@@ -138,7 +138,7 @@ func handleByName(w http.ResponseWriter, r *http.Request, isHumanTask, isStop bo
 		return
 	}
 
-	init := influx.InitFields()
+	init := metrics.InitFields()
 	vars := mux.Vars(r)
 	var topology *storage.Topology
 
@@ -171,7 +171,7 @@ func handleByApplication(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	init := influx.InitFields()
+	init := metrics.InitFields()
 	vars := mux.Vars(r)
 	var topology, webhook = service.Cache.FindTopologyByApplication(vars["topology"], vars["node"], vars["token"])
 

@@ -3,6 +3,7 @@ package storage
 import (
 	"context"
 	"fmt"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -23,11 +24,13 @@ type MongoInterface interface {
 	FindTopologyByName(topologyName, nodeName, processID string, isHumanTask bool) *Topology
 	FindTopologyByApplication(topologyName, nodeName, token string) (*Topology, *Webhook)
 	FindHumanTask(nodeID, topologyID, processID string) *HumanTask
+	SaveMetrics(doc bson.M) error
 }
 
 // MongoDefault represents default MongoDB implementation
 type MongoDefault struct {
 	mongo            *mongo.Database
+	metrics          *mongo.Database
 	keepAlive        *time.Ticker
 	log              *log.Logger
 	visibilityFilter primitive.E
@@ -53,7 +56,7 @@ func CreateMongo() {
 
 // Connect connects to database
 func (m *MongoDefault) Connect() {
-	client, err := mongo.NewClient(options.Client().ApplyURI(fmt.Sprintf("mongodb://%s", config.Config.MongoDB.Hostname)))
+	client, err := mongo.NewClient(options.Client().ApplyURI(fmt.Sprintf("mongodb://@%s/", config.Config.MongoDB.Hostname)))
 	if err != nil {
 		m.log.Errorf("MongoDB connect: %s", err.Error())
 	}
@@ -69,6 +72,7 @@ func (m *MongoDefault) Connect() {
 	}
 
 	m.mongo = client.Database(config.Config.MongoDB.Database)
+	m.metrics = client.Database(config.Config.MongoDB.MetricsDatabase)
 	m.keepAlive = time.NewTicker(timeoutDuration)
 
 	go func() {
@@ -287,6 +291,23 @@ func (m *MongoDefault) FindHumanTask(nodeID, topologyID, processID string) *Huma
 	}
 
 	return &humanTask
+}
+
+// SaveMetrics saves metrics
+func (m *MongoDefault) SaveMetrics(doc bson.M) error {
+	innerContext, cancel := createContextWithTimeout()
+	defer cancel()
+
+	err := m.metrics.Client().Ping(innerContext, nil)
+	_ = err
+
+	if _, err := m.metrics.Collection(config.Config.MongoDB.MeasurementColl).InsertOne(innerContext, doc); err != nil {
+		logMongoError(m.log, err, "failed to send metrics")
+
+		return err
+	}
+
+	return nil
 }
 
 func createContextWithTimeout() (context.Context, context.CancelFunc) {
