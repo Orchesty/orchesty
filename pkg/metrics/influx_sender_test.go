@@ -1,4 +1,4 @@
-package influx
+package metrics
 
 import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -21,13 +21,15 @@ func TestSendMetrics(t *testing.T) {
 	fields["null"] = nil
 	fields["func"] = func() {}
 
-	SendMetrics(tags, fields)
+	m := NewSender()
+	m.SendMetrics(tags, fields)
 }
 
 func TestEmptyFields(t *testing.T) {
 	udp.ConnectToUDP()
 
-	SendMetrics(make(map[string]interface{}), make(map[string]interface{}))
+	m := NewSender()
+	m.SendMetrics(make(map[string]interface{}), make(map[string]interface{}))
 }
 
 func TestEmptyTags(t *testing.T) {
@@ -35,5 +37,6 @@ func TestEmptyTags(t *testing.T) {
 
 	fields := GetFields(InitFields())
 
-	SendMetrics(make(map[string]interface{}), fields)
+	m := NewSender()
+	m.SendMetrics(make(map[string]interface{}), fields)
 }

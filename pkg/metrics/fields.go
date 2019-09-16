@@ -1,4 +1,4 @@
-package influx
+package metrics
 
 import (
 	"starting-point/pkg/utils"
