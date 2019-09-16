@@ -2,7 +2,7 @@
 
 namespace Tests\Controller;
 
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
+use Exception;
 use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,7 +17,54 @@ final class StatisticsControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @throws DateTimeException
+     * @throws Exception
+     */
+    public function testGetApplicationsBasicData(): void
+    {
+        $this->createApps();
+
+        self::$client->request('GET', '/statistics/applications');
+        /** @var Response $response */
+        $response = self::$client->getResponse();
+
+        self::assertEquals(200, $response->getStatusCode());
+        self::assertEquals($response->getContent(), file_get_contents(sprintf('%s/data/applications.json', __DIR__)));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetApplicationsBasicDataNotFound(): void
+    {
+        $this->createApps();
+
+        self::$client->request('GET', '/statistics/applicationssss');
+        /** @var Response $response */
+        $response = self::$client->getResponse();
+        self::assertEquals(404, $response->getStatusCode());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetApplicationsUsers(): void
+    {
+        $this->createApps();
+
+        self::$client->request('GET', '/statistics/applications/hubspot');
+        /** @var Response $response */
+        $response = self::$client->getResponse();
+
+        self::assertEquals(200, $response->getStatusCode());
+        self::assertEquals($response->getContent(), file_get_contents(sprintf('%s/data/appUsers.json', __DIR__)));
+    }
+
+    /**
+     * --------------------------------- HELPERS ------------------------
+     */
+
+    /**
+     * @throws Exception
      */
     private function createApps(): void
     {
@@ -40,41 +87,6 @@ final class StatisticsControllerTest extends ControllerTestCaseAbstract
         $this->dm->persist($applicationInstall3);
         $this->dm->persist($applicationInstall4);
         $this->dm->flush();
-    }
-
-    /**
-     *
-     */
-    public function testGetApplicationsBasicData(): void
-    {
-        $this->createApps();
-
-        self::$client->request('GET', '/statistics/applicationssss');
-        /** @var Response $response */
-        $response = self::$client->getResponse();
-        self::assertEquals(404, $response->getStatusCode());
-
-        self::$client->request('GET', '/statistics/applications');
-        /** @var Response $response */
-        $response = self::$client->getResponse();
-
-        self::assertEquals(200, $response->getStatusCode());
-        self::assertEquals($response->getContent(), file_get_contents(sprintf('%s/data/applications.json', __DIR__)));
-    }
-
-    /**
-     *
-     */
-    public function testGetApplicationsUsers(): void
-    {
-        $this->createApps();
-
-        self::$client->request('GET', '/statistics/applications/hubspot');
-        /** @var Response $response */
-        $response = self::$client->getResponse();
-
-        self::assertEquals(200, $response->getStatusCode());
-        self::assertEquals($response->getContent(), file_get_contents(sprintf('%s/data/appUsers.json', __DIR__)));
     }
 
 }

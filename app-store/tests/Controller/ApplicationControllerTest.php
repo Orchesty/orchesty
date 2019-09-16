@@ -2,7 +2,7 @@
 
 namespace Tests\Controller;
 
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
+use Exception;
 use Hanaboso\HbPFAppStore\Handler\ApplicationHandler;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
@@ -76,8 +76,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @throws DateTimeException
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function testGetApplicationDetail(): void
     {
@@ -113,7 +112,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @throws DateTimeException
+     * @throws Exception
      */
     public function testUninstallApplication(): void
     {
@@ -136,7 +135,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function testUpdateApplicationSettings(): void
     {
@@ -151,7 +150,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function testSaveApplicationPassword(): void
     {
@@ -167,7 +166,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     /**
      * @param array $returnValue
      *
-     * @throws ReflectionException
+     * @throws Exception
      */
     private function mockApplicationHandler(array $returnValue = []): void
     {
@@ -198,7 +197,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
      * @param string $key
      * @param string $user
      *
-     * @throws DateTimeException
+     * @throws Exception
      */
     private function insertApp(string $key = 'someApp', string $user = 'bar'): void
     {

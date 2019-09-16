@@ -33,7 +33,7 @@ final class WebhookManagerTest extends DatabaseTestCaseAbstract
     private $repository;
 
     /**
-     *
+     * @throws Exception
      */
     protected function setUp(): void
     {

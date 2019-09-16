@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2;
 
 use Hanaboso\CommonsBundle\Enum\AuthorizationTypeEnum;
+use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
@@ -85,6 +86,7 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
      *
      * @return ApplicationInstall
      * @throws AuthorizationException
+     * @throws DateTimeException
      */
     public function refreshAuthorization(ApplicationInstall $applicationInstall): ApplicationInstall
     {

@@ -233,7 +233,7 @@ class ApplicationManager
      * @param ApplicationInstall $applicationInstall
      * @param array              $data
      *
-     * @throws ApplicationInstallException
+     * @throws Exception
      */
     public function subscribeWebhooks(ApplicationInstall $applicationInstall, array $data = []): void
     {

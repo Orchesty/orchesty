@@ -45,7 +45,8 @@ composer-update:
 	$(DE) composer update --ignore-platform-reqs
 
 clear-cache:
-	$(DE) sudo rm -rf var
+	$(DE) sudo rm -rf var/log
+	$(DE) bin/console cache:clear
 	$(DE) bin/console cache:warmup --env=test
 
 # App

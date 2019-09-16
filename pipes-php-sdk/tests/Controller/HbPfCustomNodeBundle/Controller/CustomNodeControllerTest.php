@@ -6,7 +6,6 @@ use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Handler\CustomNodeHandler;
 use PHPUnit\Framework\MockObject\MockObject;
-use ReflectionException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\ControllerTestCaseAbstract;
@@ -86,7 +85,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function testGetListOfCustomNodes(): void
     {
@@ -101,7 +100,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @throws ReflectionException
+     * @throws Exception
      */
     private function mockNodeControllerHandler(): void
     {

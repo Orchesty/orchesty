@@ -5,7 +5,6 @@ namespace Tests\Controller\HbPFJoinerBundle\Controller;
 use Exception;
 use Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Handler\JoinerHandler;
 use PHPUnit\Framework\MockObject\MockObject;
-use ReflectionException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\ControllerTestCaseAbstract;
@@ -98,7 +97,7 @@ final class JoinerControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @throws ReflectionException
+     * @throws Exception
      */
     private function mockConnectorsHandler(): void
     {

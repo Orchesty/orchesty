@@ -3,7 +3,7 @@
 namespace Tests;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
@@ -54,7 +54,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     }
 
     /**
-     * @throws DateTimeException
+     * @throws Exception
      */
     protected function setUp(): void
     {

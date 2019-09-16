@@ -54,8 +54,6 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     public function __construct($name = NULL, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
-
-        self::bootKernel();
         $this->encoder = new BCryptPasswordEncoder(12);
     }
 
@@ -74,9 +72,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     protected function setupClient(): void
     {
         self::bootKernel();
-        /** @var Client $cl */
-        $cl           = self::createClient([], []);
-        self::$client = $cl;
+        self::$client = self::createClient([], []);
 
         $this->dm = self::$container->get('doctrine_mongodb.odm.default_document_manager');
         $this->dm->getConfiguration()->setDefaultDB($this->getMongoDatabaseName());

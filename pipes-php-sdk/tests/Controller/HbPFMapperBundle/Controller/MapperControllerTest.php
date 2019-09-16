@@ -5,7 +5,6 @@ namespace Tests\Controller\HbPFMapperBundle\Controller;
 use Exception;
 use Hanaboso\PipesPhpSdk\HbPFMapperBundle\Handler\MapperHandler;
 use PHPUnit\Framework\MockObject\MockObject;
-use ReflectionException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\ControllerTestCaseAbstract;
@@ -72,7 +71,7 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function testGetListOfCustomNodes(): void
     {
@@ -87,7 +86,7 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @throws ReflectionException
+     * @throws Exception
      */
     private function mockNodeControllerHandler(): void
     {

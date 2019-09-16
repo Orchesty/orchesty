@@ -2,11 +2,9 @@
 
 namespace Tests\Integration\Model\Application\Impl\Shipstation;
 
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
-use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
+use Exception;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Tests\DatabaseTestCaseAbstract;
@@ -26,12 +24,10 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
     public const token = 'ODkxOWJiMjEzYWFiNDdiNDhmN2JiMDdmMWNlMWUyNWM6OTk2YWIzMTUzZjE1NDQ5OWEzODIyMWQyMjM3NTQyNGI=';
 
     /**
-     * @throws DateTimeException
+     * @throws Exception
      */
     public function testAutorize(): void
     {
-        $shipstationApplication = self::$container->get('hbpf.application.shipstation');
-        $shipstationApplication;
         $applicationInstall = new ApplicationInstall();
         $applicationInstall = $applicationInstall->setSettings([
             BasicApplicationInterface::AUTHORIZATION_SETTINGS =>
@@ -47,9 +43,7 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws ApplicationInstallException
-     * @throws DateTimeException
-     * @throws CurlException
+     * @throws Exception
      */
     public function testWebhookSubscribeRequestDto(): void
     {

@@ -2,6 +2,7 @@
 
 namespace Tests\Controller;
 
+use Exception;
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\HbPFAppStore\Handler\WebhookHandler;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
@@ -51,7 +52,7 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @throws ReflectionException
+     * @throws Exception
      */
     private function mockApplicationHandler(): void
     {

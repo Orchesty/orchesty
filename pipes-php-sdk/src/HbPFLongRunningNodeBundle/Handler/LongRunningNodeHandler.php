@@ -3,17 +3,15 @@
 namespace Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Handler;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\MongoDBException;
+use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Utils\PipesHeaders;
-use Hanaboso\MongoDataGrid\Exception\GridException;
 use Hanaboso\MongoDataGrid\GridRequestDto;
 use Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Loader\LongRunningNodeLoader;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Exception\LongRunningNodeException;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeFilter;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeManager;
-use MongoException;
 
 /**
  * Class LongRunningNodeHandler
@@ -119,9 +117,7 @@ class LongRunningNodeHandler
      * @param null|string    $nodeId
      *
      * @return array
-     * @throws MongoDBException
-     * @throws GridException
-     * @throws MongoException
+     * @throws Exception
      */
     public function getTasksById(GridRequestDto $dto, string $topologyId, ?string $nodeId = NULL): array
     {
@@ -149,9 +145,7 @@ class LongRunningNodeHandler
      * @param null|string    $nodeName
      *
      * @return array
-     * @throws MongoDBException
-     * @throws GridException
-     * @throws MongoException
+     * @throws Exception
      */
     public function getTasks(GridRequestDto $dto, string $topologyName, ?string $nodeName = NULL): array
     {

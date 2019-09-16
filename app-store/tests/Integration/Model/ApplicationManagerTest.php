@@ -24,7 +24,7 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
     private $applicationManager;
 
     /**
-     *
+     * @throws Exception
      */
     protected function setUp(): void
     {

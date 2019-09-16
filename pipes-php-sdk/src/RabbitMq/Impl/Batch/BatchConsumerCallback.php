@@ -6,7 +6,6 @@ use Bunny\Channel;
 use Bunny\Message;
 use Exception;
 use Hanaboso\CommonsBundle\Enum\MetricsEnum;
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\CommonsBundle\Metrics\MetricsSenderLoader;
 use Hanaboso\CommonsBundle\Utils\CurlMetricUtils;
 use Hanaboso\CommonsBundle\Utils\PipesHeaders;
@@ -463,7 +462,7 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
      * @param Message $message
      * @param array   $startMetrics
      *
-     * @throws DateTimeException
+     * @throws Exception
      */
     private function sendMetrics(Message $message, array $startMetrics): void
     {

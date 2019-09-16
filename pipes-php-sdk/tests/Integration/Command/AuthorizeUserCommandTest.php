@@ -3,8 +3,6 @@
 namespace Tests\Integration\Command;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Exception;
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\CommonsBundle\Redirect\RedirectInterface;
@@ -32,9 +30,7 @@ final class AuthorizeUserCommandTest extends DatabaseTestCaseAbstract
     use PrivateTrait;
 
     /**
-     * @throws DateTimeException
-     * @throws ORMException
-     * @throws OptimisticLockException
+     * @throws Exception
      */
     public function testExecuteOauth2(): void
     {

@@ -4,6 +4,7 @@ namespace Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\CustomNode;
 
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use Hanaboso\HbPFAppStore\Loader\ApplicationLoader;
@@ -54,6 +55,7 @@ class RefreshOAuth2TokenCustomNode extends CustomNodeAbstract
      * @return ProcessDto
      * @throws ApplicationInstallException
      * @throws AuthorizationException
+     * @throws DateTimeException
      */
     public function process(ProcessDto $dto): ProcessDto
     {

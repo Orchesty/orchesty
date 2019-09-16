@@ -2,7 +2,7 @@
 
 namespace Tests\Integration\Application\Repository;
 
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
+use Exception;
 use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
@@ -17,7 +17,45 @@ final class ApplicationInstallRepositoryTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @throws DateTimeException
+     * @throws Exception
+     */
+    public function testGetApplicationsBasicData(): void
+    {
+        $this->createApps();
+        /** @var ApplicationInstallRepository $appInstallRepository */
+        $appInstallRepository = $this->dm->getRepository(ApplicationInstall::class);
+
+        self::assertEquals(
+            $appInstallRepository->getApplicationsCount(),
+            $this->getBasicData()
+        );
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetApplicationsUsers(): void
+    {
+        $this->createApps();
+        /** @var ApplicationInstallRepository $appInstallRepository */
+        $appInstallRepository = $this->dm->getRepository(ApplicationInstall::class);
+
+        self::assertEquals(
+            $appInstallRepository->getApplicationsCountDetails('mailchimp'),
+            $this->getApplicationsUsers('mailchimp')
+        );
+        self::assertEquals(
+            $appInstallRepository->getApplicationsCountDetails('hubspot'),
+            $this->getApplicationsUsers('hubspot')
+        );
+        self::assertEquals(
+            $appInstallRepository->getApplicationsCountDetails('shipstation'),
+            $this->getApplicationsUsers('shipstation')
+        );
+    }
+
+    /**
+     * @throws Exception
      */
     private function createApps(): void
     {
@@ -45,6 +83,10 @@ final class ApplicationInstallRepositoryTest extends DatabaseTestCaseAbstract
         $this->dm->persist($applicationInstall4);
         $this->dm->flush();
     }
+
+    /**
+     * ----------------------------------- HELPERS --------------------------------------
+     */
 
     /**
      * @return array
@@ -124,44 +166,6 @@ final class ApplicationInstallRepositoryTest extends DatabaseTestCaseAbstract
         ];
 
         return [$array[$key]];
-    }
-
-    /**
-     *
-     */
-    public function testGetApplicationsBasicData(): void
-    {
-        $this->createApps();
-        /** @var ApplicationInstallRepository $appInstallRepository */
-        $appInstallRepository = $this->dm->getRepository(ApplicationInstall::class);
-
-        self::assertEquals(
-            $appInstallRepository->getApplicationsCount(),
-            $this->getBasicData()
-        );
-    }
-
-    /**
-     *
-     */
-    public function testGetApplicationsUsers(): void
-    {
-        $this->createApps();
-        /** @var ApplicationInstallRepository $appInstallRepository */
-        $appInstallRepository = $this->dm->getRepository(ApplicationInstall::class);
-
-        self::assertEquals(
-            $appInstallRepository->getApplicationsCountDetails('mailchimp'),
-            $this->getApplicationsUsers('mailchimp')
-        );
-        self::assertEquals(
-            $appInstallRepository->getApplicationsCountDetails('hubspot'),
-            $this->getApplicationsUsers('hubspot')
-        );
-        self::assertEquals(
-            $appInstallRepository->getApplicationsCountDetails('shipstation'),
-            $this->getApplicationsUsers('shipstation')
-        );
     }
 
 }

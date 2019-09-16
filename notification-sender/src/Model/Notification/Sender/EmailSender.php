@@ -2,7 +2,6 @@
 
 namespace Hanaboso\NotificationSender\Model\Notification\Sender;
 
-use EmailServiceBundle\Exception\MailerException;
 use Hanaboso\NotificationSender\Model\Notification\Dto\EmailDto;
 use Swift_Mailer;
 use Swift_Message;
@@ -19,8 +18,6 @@ final class EmailSender
     /**
      * @param EmailDto $dto
      * @param array    $settings
-     *
-     * @throws MailerException
      */
     public function send(EmailDto $dto, array $settings): void
     {
