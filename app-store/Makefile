@@ -1,4 +1,4 @@
-.PHONY: .env docker-up docker-up-force docker-down-clean docker-build-php composer-install composer-update
+.PHONY: docker-up-force docker-down-clean test
 
 DC=docker-compose
 DE=docker-compose exec -T app
@@ -6,29 +6,20 @@ IMAGE=dkr.hanaboso.net/pipes/application
 BASE=dkr.hanaboso.net/hanaboso/php-base:php-7.3
 
 .env:
-	@if ! [ -f .env ]; then \
-		sed -e "s/{DEV_UID}/$(shell id -u)/g" \
-			-e "s/{DEV_GID}/$(shell id -u)/g" \
-			.env.dist >> .env; \
-	fi;
+	sed -e "s/{DEV_UID}/$(shell id -u)/g" \
+		-e "s/{DEV_GID}/$(shell id -u)/g" \
+		.env.dist >> .env; \
 
 docker-compose.ci.yml:
 	# Comment out any port forwarding
 	sed -r 's/^(\s+ports:)$$/#\1/g; s/^(\s+- \$$\{DEV_IP\}.*)$$/#\1/g' docker-compose.yml > docker-compose.ci.yml
 
 # Docker
-dev-build: .env
-	cd ./docker/dev/ && docker pull $(BASE) && docker build -t $(IMAGE):dev . && docker push $(IMAGE):dev
-
 prod-build: .env
 	docker pull $(IMAGE):dev
 	docker-compose -f docker-compose.yml run --rm --no-deps app  composer install --ignore-platform-reqs
 	docker build -t $(IMAGE):master .
 	docker push $(IMAGE):master
-
-docker-up: .env
-	$(DC) pull
-	$(DC) up -d
 
 docker-up-force: .env
 	$(DC) pull

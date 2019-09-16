@@ -1,21 +1,16 @@
-.PHONY: docker-up docker-up-force .env composer-install composer-update codesniffer phpstan phpunit init test
+.PHONY: docker-up-force docker-down-clean test
 
 DC=docker-compose
 DE=docker-compose exec -T pipes-api
 DEC=docker-compose exec -T pipes-api composer
 
 .env:
-	@if ! [ -f .env ]; then \
-		sed -e "s/{DEV_UID}/$(shell id -u)/g" \
-			-e "s/{DEV_GID}/$(shell id -u)/g" \
-			.env.dist >> .env; \
-	fi;
+	sed -e "s/{DEV_UID}/$(shell id -u)/g" \
+		-e "s/{DEV_GID}/$(shell id -u)/g" \
+		.env.dist >> .env; \
 
 docker-down-clean: .env
 	$(DC) down -v
-
-docker-up: .env
-	$(DC) up -d
 
 docker-up-force: .env
 	$(DC) up -d --force-recreate --remove-orphans

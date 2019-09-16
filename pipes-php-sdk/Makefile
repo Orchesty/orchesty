@@ -1,4 +1,4 @@
-.PHONY: docker-up docker-up-force docker-down-clean test codesniffer phpstan phpunit
+.PHONY: docker-up-force docker-down-clean test
 
 TAG?=dev
 IMAGE=dkr.hanaboso.net/pipes/pipes/php-sdk/php-dev:${TAG}
@@ -6,12 +6,6 @@ BASE=dkr.hanaboso.net/hanaboso/php-base:php-7.3
 DC=docker-compose
 DE=docker-compose exec -T php-dev
 DEC=docker-compose exec -T php-dev composer
-
-# Build
-build-dev:
-	docker pull ${BASE}
-	cd docker/php-dev/ && docker build -t ${IMAGE} .
-	docker push ${IMAGE}
 
 # Docker
 docker-up-force: .env

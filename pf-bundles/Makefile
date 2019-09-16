@@ -1,4 +1,4 @@
-.PHONY: docker-up docker-up-force docker-down-clean test codesniffer phpstan phpunit
+.PHONY: docker-up-force docker-down-clean test
 
 TAG?=dev
 IMAGE=dkr.hanaboso.net/pipes/pipes/php-dev:${TAG}
@@ -14,10 +14,6 @@ build-dev:
 	docker push ${IMAGE}
 
 # Docker
-docker-up: .env
-	$(DC) pull
-	$(DC) up -d
-
 docker-up-force: .env
 	$(DC) pull
 	$(DC) up -d --force-recreate --remove-orphans
