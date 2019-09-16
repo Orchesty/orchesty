@@ -1,4 +1,4 @@
-.PHONY: .env docker-up docker-up-force docker-down-clean docker-build-php composer-install composer-update
+.PHONY: docker-up-force docker-down-clean test
 
 DC=docker-compose
 DE=docker-compose exec -T app
@@ -6,14 +6,9 @@ IMAGE=dkr.hanaboso.net/pipes/notification-sender
 BASE=dkr.hanaboso.net/hanaboso/php-base:php-7.3
 
 .env:
-	@if ! [ -f .env ]; then \
-		sed -e "s/{DEV_UID}/$(shell id -u)/g" \
-			-e "s/{DEV_GID}/$(shell id -u)/g" \
-			.env.dist >> .env; \
-	fi;
-
-dev-build: .env
-	cd ./docker/dev/ && docker pull $(BASE) && docker build -t $(IMAGE):dev . && docker push $(IMAGE):dev
+	sed -e "s/{DEV_UID}/$(shell id -u)/g" \
+		-e "s/{DEV_GID}/$(shell id -u)/g" \
+		.env.dist >> .env; \
 
 prod-build: .env
 	docker pull $(IMAGE):dev
@@ -26,10 +21,6 @@ docker-compose.ci.yml:
 	sed -r 's/^(\s+ports:)$$/#\1/g; s/^(\s+- \$$\{DEV_IP\}.*)$$/#\1/g' docker-compose.yml > docker-compose.ci.yml
 
 # Docker
-docker-up: .env
-	$(DC) pull
-	$(DC) up -d
-
 docker-up-force: .env
 	$(DC) pull
 	$(DC) up -d --force-recreate --remove-orphans
