@@ -36,17 +36,15 @@ final class S3ApplicationTest extends DatabaseTestCaseAbstract
      */
     public function testIsAuthorized(): void
     {
-        $application = (new ApplicationInstall())->setSettings(
-            [
-                BasicApplicationAbstract::FORM => [
-                    S3Application::KEY      => 'Key',
-                    S3Application::SECRET   => 'Secret',
-                    S3Application::REGION   => 'eu-central-1',
-                    S3Application::BUCKET   => 'Bucket',
-                    S3Application::ENDPOINT => 'http://fakes3:4567',
-                ],
-            ]
-        );
+        $application = (new ApplicationInstall())->setSettings([
+            BasicApplicationAbstract::FORM => [
+                S3Application::KEY      => 'Key',
+                S3Application::SECRET   => 'Secret',
+                S3Application::REGION   => 'eu-central-1',
+                S3Application::BUCKET   => 'Bucket',
+                S3Application::ENDPOINT => 'http://fakes3:4567',
+            ],
+        ]);
 
         $this->dm->persist($application);
         $this->dm->flush();
