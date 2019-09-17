@@ -1,16 +1,16 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\HbPFConnectors\Model\Application\Impl\S3\Connector;
+namespace Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps;
 
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\HbPFConnectors\Model\Application\Impl\S3\S3Application;
+use Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\Redshift\RedshiftApplication;
+use Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\S3Application;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
-use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Throwable;
@@ -18,10 +18,13 @@ use Throwable;
 /**
  * Class ObjectConnectorAbstract
  *
- * @package Hanaboso\HbPFConnectors\Model\Application\Impl\S3\Connector
+ * @package Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps
  */
-abstract class ObjectConnectorAbstract extends ConnectorAbstract
+abstract class AwsObjectConnectorAbstract extends ConnectorAbstract
 {
+
+    protected const QUERY  = 'query';
+    protected const RESULT = 'result';
 
     protected const BUCKET = 'Bucket';
     protected const KEY    = 'Key';
@@ -44,14 +47,6 @@ abstract class ObjectConnectorAbstract extends ConnectorAbstract
     public function __construct(DocumentManager $dm)
     {
         $this->repository = $dm->getRepository(ApplicationInstall::class);
-    }
-
-    /**
-     * @return string
-     */
-    public function getId(): string
-    {
-        return sprintf('s3-%s', $this->getCustomId());
     }
 
     /**
@@ -82,45 +77,14 @@ abstract class ObjectConnectorAbstract extends ConnectorAbstract
     }
 
     /**
-     * @return S3Application
+     * @return RedshiftApplication|S3Application
      */
-    protected function getApplication(): S3Application
+    protected function getApplication()
     {
-        /** @var S3Application $application */
+        /** @var RedshiftApplication|S3Application $application */
         $application = $this->application;
 
         return $application;
-    }
-
-    /**
-     * @param ApplicationInstall $applicationInstall
-     *
-     * @return string
-     */
-    protected function getBucket(ApplicationInstall $applicationInstall): string
-    {
-        return $applicationInstall->getSettings()[BasicApplicationAbstract::FORM][S3Application::BUCKET];
-    }
-
-    /**
-     * @param ProcessDto $dto
-     *
-     * @return array
-     */
-    protected function getContent(ProcessDto $dto): array
-    {
-        return json_decode($dto->getData(), TRUE, 512, JSON_THROW_ON_ERROR);
-    }
-
-    /**
-     * @param ProcessDto $dto
-     * @param array      $content
-     *
-     * @return ProcessDto
-     */
-    protected function setContent(ProcessDto $dto, array $content): ProcessDto
-    {
-        return $dto->setData(json_encode($content, JSON_THROW_ON_ERROR));
     }
 
     /**
@@ -166,7 +130,8 @@ abstract class ObjectConnectorAbstract extends ConnectorAbstract
         ProcessDto $dto,
         Throwable $throwable,
         string ...$arguments
-    ): OnRepeatException {
+    ): OnRepeatException
+    {
         $message = sprintf("Connector '%s': %s: %s", $this->getId(), get_class($throwable), $throwable->getMessage());
 
         if ($arguments) {

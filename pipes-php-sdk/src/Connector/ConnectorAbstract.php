@@ -85,4 +85,25 @@ abstract class ConnectorAbstract implements ConnectorInterface
         return NULL;
     }
 
+    /**
+     * @param ProcessDto $dto
+     *
+     * @return array
+     */
+    protected function getJsonContent(ProcessDto $dto): array
+    {
+        return json_decode($dto->getData(), TRUE, 512, JSON_THROW_ON_ERROR);
+    }
+
+    /**
+     * @param ProcessDto $dto
+     * @param array      $content
+     *
+     * @return ProcessDto
+     */
+    protected function setJsonContent(ProcessDto $dto, array $content): ProcessDto
+    {
+        return $dto->setData(json_encode($content, JSON_THROW_ON_ERROR));
+    }
+
 }

@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Model\Application\Impl\S3\Connector;
+namespace Tests\Integration\Model\Application\Impl\AmazonApps\S3\Connector;
 
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\HbPFConnectors\Model\Application\Impl\S3\Connector\DeleteObjectConnector;
-use Hanaboso\HbPFConnectors\Model\Application\Impl\S3\S3Application;
+use Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\Connector\DeleteS3ObjectConnector;
+use Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\S3Application;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
@@ -23,7 +23,7 @@ final class DeleteObjectConnectorTest extends DatabaseTestCaseAbstract
     private const USER = 'user';
 
     /**
-     * @var DeleteObjectConnector
+     * @var DeleteS3ObjectConnector
      */
     private $connector;
 
@@ -48,7 +48,7 @@ final class DeleteObjectConnectorTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers DeleteObjectConnector::processAction
+     * @covers DeleteS3ObjectConnector::processAction
      * @throws Exception
      */
     public function testProcessAction(): void
@@ -64,7 +64,7 @@ final class DeleteObjectConnectorTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers DeleteObjectConnector::processAction
+     * @covers DeleteS3ObjectConnector::processAction
      * @throws Exception
      */
     public function testProcessActionMissingName(): void

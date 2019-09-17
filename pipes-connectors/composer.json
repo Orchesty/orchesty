@@ -16,6 +16,8 @@
   "require": {
     "php": "^7.3",
     "ext-json": "*",
+    "ext-pgsql": "*",
+    "ext-pdo": "*",
     "aws/aws-sdk-php": "^3.111",
     "hanaboso/app-store": "^1.1",
     "hanaboso/commons-bundle": "^1.1",

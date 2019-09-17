@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Model\Application\Impl\S3;
+namespace Tests\Integration\Model\Application\Impl\AmazonApps\S3;
 
 use Exception;
-use Hanaboso\HbPFConnectors\Model\Application\Impl\S3\S3Application;
+use Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\S3Application;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
 use Tests\DatabaseTestCaseAbstract;
