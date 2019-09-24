@@ -3,10 +3,13 @@
 namespace Hanaboso\PipesFramework\TopologyInstaller;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use FOS\RestBundle\Decoder\XmlDecoder;
 use Hanaboso\CommonsBundle\Database\Document\Topology;
 use Hanaboso\CommonsBundle\Database\Repository\TopologyRepository;
+use Hanaboso\CommonsBundle\Exception\CronException;
 use Hanaboso\CommonsBundle\Exception\EnumException;
 use Hanaboso\CommonsBundle\Exception\NodeException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
@@ -279,12 +282,15 @@ class InstallManager implements LoggerAwareInterface
      * @param string   $content
      *
      * @return Topology
-     * @throws MongoDBException
-     * @throws EnumException
      * @throws CurlException
+     * @throws EnumException
+     * @throws LockException
+     * @throws MappingException
+     * @throws MongoDBException
      * @throws NodeException
-     * @throws TopologyException
      * @throws TopologyConfigException
+     * @throws TopologyException
+     * @throws CronException
      */
     private function makeRunnable(Topology $topology, string $content): Topology
     {
@@ -300,6 +306,7 @@ class InstallManager implements LoggerAwareInterface
     /**
      * @param Topology $topology
      *
+     * @throws CronException
      * @throws CurlException
      * @throws MongoDBException
      * @throws TopologyException

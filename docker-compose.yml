@@ -19,6 +19,7 @@ services:
       - GENERATOR_PATH=${GENERATOR_PATH}
       - PROJECT_SOURCE_PATH=${PROJECT_SOURCE_PATH}
       - DEPLOYMENT_PREFIX=${DEPLOYMENT_PREFIX}
+      - FRONTEND_HOST=${DEV_IP}
 
   starting-point:
     image: dkr.hanaboso.net/pipes/pipes/starting-point:dev

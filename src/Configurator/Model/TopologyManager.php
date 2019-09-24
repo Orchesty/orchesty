@@ -115,9 +115,11 @@ class TopologyManager
      * @param array    $data
      *
      * @return Topology
+     * @throws CronException
+     * @throws CurlException
+     * @throws EnumException
      * @throws NodeException
      * @throws TopologyException
-     * @throws EnumException
      */
     public function saveTopologySchema(Topology $topology, string $content, array $data): Topology
     {
@@ -247,6 +249,8 @@ class TopologyManager
     /**
      * @param Topology $topology
      *
+     * @throws CronException
+     * @throws CurlException
      * @throws TopologyException
      */
     public function deleteTopology(Topology $topology): void
@@ -335,6 +339,9 @@ class TopologyManager
 
     /**
      * @param Topology $topology
+     *
+     * @throws CronException
+     * @throws CurlException
      */
     private function removeNodesByTopology(Topology $topology): void
     {

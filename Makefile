@@ -83,7 +83,8 @@ console:
 	$(DE) php bin/console ${command}
 
 clear-cache:
-	$(DE) sudo rm -rf var/cache
+	$(DE) sudo rm -rf var/log
+	$(DE) php bin/console cache:clear --env=test
 	$(DE) php bin/console cache:warmup --env=test
 
 database-create:

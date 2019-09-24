@@ -3,6 +3,8 @@
 namespace Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Database\Document\Node;
 use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator;
@@ -82,6 +84,8 @@ class TopologyGeneratorBridge
      * @return ResponseDto
      * @throws CurlException
      * @throws TopologyConfigException
+     * @throws LockException
+     * @throws MappingException
      */
     public function generateTopology(string $topologyId): ResponseDto
     {
@@ -106,7 +110,7 @@ class TopologyGeneratorBridge
     {
         $uri = sprintf(self::BASE_TOPOLOGY_URL, $this->configs[self::TOPOLOGY_API], $topologyId);
         $dto = new RequestDto(CurlManager::METHOD_PUT, new Uri($uri));
-        $dto->setBody((string) json_encode(['action' => 'start']))->setHeaders(self::HEADERS);
+        $dto->setBody((string) json_encode(['action' => 'start'], JSON_THROW_ON_ERROR))->setHeaders(self::HEADERS);
 
         return $this->curlManager->send($dto);
     }
@@ -121,7 +125,7 @@ class TopologyGeneratorBridge
     {
         $uri = sprintf(self::BASE_TOPOLOGY_URL, $this->configs[self::TOPOLOGY_API], $topologyId);
         $dto = new RequestDto(CurlManager::METHOD_PUT, new Uri($uri));
-        $dto->setBody((string) json_encode(['action' => 'stop']))->setHeaders(self::HEADERS);
+        $dto->setBody((string) json_encode(['action' => 'stop'], JSON_THROW_ON_ERROR))->setHeaders(self::HEADERS);
 
         return $this->curlManager->send($dto);
     }
@@ -167,7 +171,7 @@ class TopologyGeneratorBridge
         $responseDto = $this->curlManager->send($requestDto);
 
         if ($responseDto->getStatusCode() === 200) {
-            return json_decode($responseDto->getBody(), TRUE);
+            return json_decode($responseDto->getBody(), TRUE, 512, JSON_THROW_ON_ERROR);
         } else {
             throw new CurlException(sprintf('Request error: %s', $responseDto->getReasonPhrase()));
         }
@@ -186,7 +190,7 @@ class TopologyGeneratorBridge
         $responseDto = $this->curlManager->send($requestDto);
 
         if ($responseDto->getStatusCode() === 200) {
-            return json_decode($responseDto->getBody(), TRUE);
+            return json_decode($responseDto->getBody(), TRUE, 512, JSON_THROW_ON_ERROR);
         } else {
             throw new CurlException(sprintf('Request error: %s', $responseDto->getReasonPhrase()));
         }

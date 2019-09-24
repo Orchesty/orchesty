@@ -4,6 +4,8 @@ namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler;
 
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\CommonsBundle\Database\Document\Node;
 use Hanaboso\CommonsBundle\Database\Document\Topology;
@@ -185,10 +187,12 @@ class TopologyHandler
      * @param string $content
      * @param array  $data
      *
-     * @return string[]
+     * @return array
+     * @throws CronException
+     * @throws CurlException
+     * @throws EnumException
      * @throws NodeException
      * @throws TopologyException
-     * @throws EnumException
      */
     public function saveTopologySchema(string $id, string $content, array $data): array
     {
@@ -229,12 +233,19 @@ class TopologyHandler
         if ($code !== 200) {
             $this->manager->unPublishTopology($topology);
 
-            return new ResponseDto(400, '', (string) json_encode([
-                'generate_result' => $generateResultBody,
-                'run_result'      => $runResultBody,
-            ]), []);
+            return new ResponseDto(
+                400, '',
+                (string) json_encode(
+                    [
+                        'generate_result' => $generateResultBody,
+                        'run_result'      => $runResultBody,
+                    ],
+                    JSON_THROW_ON_ERROR
+                ),
+                []
+            );
         } else {
-            return new ResponseDto(200, '', (string) json_encode($data), []);
+            return new ResponseDto(200, '', (string) json_encode($data, JSON_THROW_ON_ERROR), []);
         }
     }
 
@@ -258,8 +269,9 @@ class TopologyHandler
      * @param string $id
      *
      * @return ResponseDto
-     * @throws TopologyException
+     * @throws CronException
      * @throws CurlException
+     * @throws TopologyException
      */
     public function deleteTopology(string $id): ResponseDto
     {
@@ -282,15 +294,17 @@ class TopologyHandler
      *
      * @return array
      * @throws CurlException
-     * @throws TopologyException
      * @throws TopologyConfigException
+     * @throws TopologyException
+     * @throws LockException
+     * @throws MappingException
      */
     public function runTest(string $topologyId): array
     {
         $startTopology = TRUE;
         $runningInfo   = $this->generatorBridge->infoTopology($topologyId);
         if ($runningInfo instanceof ResponseDto && $runningInfo->getBody()) {
-            $result = json_decode($runningInfo->getBody(), TRUE);
+            $result = json_decode($runningInfo->getBody(), TRUE, 512, JSON_THROW_ON_ERROR);
             if (array_key_exists('docker_info', $result) && count($result['docker_info'])) {
                 $startTopology = FALSE;
             }

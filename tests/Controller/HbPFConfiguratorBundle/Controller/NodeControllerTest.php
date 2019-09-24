@@ -6,7 +6,6 @@ use Exception;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler;
 use Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Handler\ConnectorHandler;
 use PHPUnit\Framework\MockObject\MockObject;
-use ReflectionException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Tests\ControllerTestCaseAbstract;
@@ -33,7 +32,7 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
 
         /** @var JsonResponse $response */
         $response = self::$client->getResponse();
-        $content  = json_decode((string) $response->getContent(), TRUE);
+        $content  = json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR);
 
         self::assertEquals(200, $response->getStatusCode());
         self::assertEquals($returnValue, $content);
@@ -53,7 +52,7 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
 
         /** @var JsonResponse $response */
         $response = self::$client->getResponse();
-        $content  = json_decode((string) $response->getContent(), TRUE);
+        $content  = json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR);
 
         self::assertEquals(200, $response->getStatusCode());
         self::assertEquals($returnValue, $content);
@@ -73,7 +72,7 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
 
         /** @var JsonResponse $response */
         $response = self::$client->getResponse();
-        $content  = json_decode((string) $response->getContent(), TRUE);
+        $content  = json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR);
 
         self::assertEquals(200, $response->getStatusCode());
         self::assertEquals($returnValue, $content);
@@ -123,8 +122,6 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
     /**
      * @param string $className
      * @param string $methodName
-     *
-     * @throws ReflectionException
      */
     private function prepareNodeMock(string $className, string $methodName): void
     {

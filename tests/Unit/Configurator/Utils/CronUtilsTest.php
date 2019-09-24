@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Configurator\Utils;
 
+use Exception;
 use Hanaboso\CommonsBundle\Database\Document\Node;
 use Hanaboso\CommonsBundle\Database\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Utils\CronUtils;
@@ -19,7 +20,7 @@ final class CronUtilsTest extends KernelTestCaseAbstract
     use PrivateTrait;
 
     /**
-     *
+     * @throws Exception
      */
     public function testGetTopologyUrl(): void
     {

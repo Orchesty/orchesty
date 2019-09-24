@@ -5,6 +5,7 @@ namespace Hanaboso\PipesFramework\Logs;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\MongoDBException;
+use Exception;
 use Hanaboso\CommonsBundle\Database\Document\Node;
 use Hanaboso\MongoDataGrid\Exception\GridException;
 use Hanaboso\MongoDataGrid\GridRequestDto;
@@ -69,6 +70,7 @@ class MongoDbLogs implements LogsInterface
      * @throws MongoDBException
      * @throws GridException
      * @throws MongoException
+     * @throws Exception
      */
     public function getData(GridRequestDto $dto): array
     {
@@ -119,9 +121,8 @@ class MongoDbLogs implements LogsInterface
      * @param array          $result
      *
      * @return array
-     * @throws GridException
      * @throws MongoDBException
-     * @throws MongoException
+     * @throws Exception
      */
     private function processStartingPoints(GridRequestDto $dto, array $result): array
     {

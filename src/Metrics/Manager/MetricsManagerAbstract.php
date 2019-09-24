@@ -7,9 +7,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\CommonsBundle\Database\Document\Node;
 use Hanaboso\CommonsBundle\Database\Document\Topology;
 use Hanaboso\CommonsBundle\Database\Repository\NodeRepository;
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\PipesFramework\Metrics\Dto\MetricsDto;
-use Hanaboso\PipesFramework\Metrics\Exception\MetricsException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -192,8 +190,6 @@ abstract class MetricsManagerAbstract implements LoggerAwareInterface
      * @param array    $params
      *
      * @return array
-     * @throws MetricsException
-     * @throws DateTimeException
      */
     public function getTopologyMetrics(Topology $topology, array $params): array
     {

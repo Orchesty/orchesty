@@ -106,7 +106,6 @@ class MongoMetricsManager extends MetricsManagerAbstract
      * @param array    $params
      *
      * @return array
-     * @throws MetricsException
      * @throws DateTimeException
      * @throws MongoDBException
      */
@@ -161,7 +160,6 @@ class MongoMetricsManager extends MetricsManagerAbstract
      *
      * @return MetricsDto
      * @throws DateTimeException
-     * @throws MongoDBException
      */
     private function connectorNodeMetrics(
         array $where,
@@ -232,7 +230,6 @@ class MongoMetricsManager extends MetricsManagerAbstract
      *
      * @return MetricsDto
      * @throws DateTimeException
-     * @throws MongoDBException
      */
     private function rabbitNodeMetrics(
         array $where,
@@ -304,7 +301,6 @@ class MongoMetricsManager extends MetricsManagerAbstract
      *
      * @return MetricsDto
      * @throws DateTimeException
-     * @throws MongoDBException
      */
     private function monolithNodeMetrics(
         array $where,
@@ -375,7 +371,6 @@ class MongoMetricsManager extends MetricsManagerAbstract
      *
      * @return array
      * @throws DateTimeException
-     * @throws MongoDBException
      */
     private function counterProcessMetrics(
         array $where,
@@ -471,7 +466,6 @@ class MongoMetricsManager extends MetricsManagerAbstract
      *
      * @return array
      * @throws DateTimeException
-     * @throws MongoDBException
      */
     private function bridgesNodeMetrics(
         array $where,
@@ -625,7 +619,7 @@ class MongoMetricsManager extends MetricsManagerAbstract
         $res = array_combine(
             array_column($res, '_id'),
             array_column($res, 'value'),
-            );
+        );
 
         $from = $dateTimeFrom->getTimestamp();
         $from -= $from % $ret;

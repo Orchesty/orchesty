@@ -14,7 +14,6 @@ use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -30,11 +29,6 @@ class RepeaterListener implements EventSubscriberInterface, LoggerAwareInterface
 {
 
     use ControllerTrait;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
 
     /**
      * @var ObjectRepository|NodeRepository
@@ -107,24 +101,16 @@ class RepeaterListener implements EventSubscriberInterface, LoggerAwareInterface
             $dto->setStopProcess(ProcessDto::STOP_AND_FAILED);
         }
 
-        $this->logger->info(
-            'Repeater info.',
-            ['currentHop' => $currentHop, 'interval' => $e->getInterval(), 'maxHops' => $maxHop]
-        );
+        if ($this->logger) {
+            $this->logger->info(
+                'Repeater info.',
+                ['currentHop' => $currentHop, 'interval' => $e->getInterval(), 'maxHops' => $maxHop]
+            );
+        }
 
         $response = new Response($dto->getData(), 200, $dto->getHeaders());
         $event->setResponse($response);
         $event->allowCustomResponseCode();
-    }
-
-    /**
-     * @param LoggerInterface $logger
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger): void
-    {
-        $this->logger = $logger;
     }
 
     /**

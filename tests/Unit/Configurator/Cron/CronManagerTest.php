@@ -65,7 +65,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
                 'node'     => 'node-1',
                 'time'     => '1 1 1 1 1',
                 'command'  => self::COM1,
-            ], json_decode($request->getBody(), TRUE));
+            ], json_decode($request->getBody(), TRUE, 512, JSON_THROW_ON_ERROR));
 
             return new ResponseDto(200, 'OK', '', []);
         })->create($this->getNode());
@@ -82,7 +82,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
             self::assertEquals([
                 'time'    => '1 1 1 1 1',
                 'command' => self::COM1,
-            ], json_decode($request->getBody(), TRUE));
+            ], json_decode($request->getBody(), TRUE, 512, JSON_THROW_ON_ERROR));
 
             return new ResponseDto(200, 'OK', '', []);
         })->update($this->getNode());
@@ -99,7 +99,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
             self::assertEquals([
                 'time'    => '1 1 1 1 1',
                 'command' => self::COM1,
-            ], json_decode($request->getBody(), TRUE));
+            ], json_decode($request->getBody(), TRUE, 512, JSON_THROW_ON_ERROR));
 
             return new ResponseDto(200, 'OK', '', []);
         })->patch($this->getNode());
@@ -144,7 +144,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
                     'time'     => '3 3 3 3 3',
                     'command'  => self::COM3,
                 ],
-            ], json_decode($request->getBody(), TRUE));
+            ], json_decode($request->getBody(), TRUE, 512, JSON_THROW_ON_ERROR));
 
             return new ResponseDto(200, 'OK', '', []);
         })->batchCreate($this->getNodes(3));
@@ -175,7 +175,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
                     'time'     => '3 3 3 3 3',
                     'command'  => self::COM3,
                 ],
-            ], json_decode($request->getBody(), TRUE));
+            ], json_decode($request->getBody(), TRUE, 512, JSON_THROW_ON_ERROR));
 
             return new ResponseDto(200, 'OK', '', []);
         })->batchUpdate($this->getNodes(3));
@@ -206,7 +206,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
                     'time'     => '3 3 3 3 3',
                     'command'  => self::COM3,
                 ],
-            ], json_decode($request->getBody(), TRUE));
+            ], json_decode($request->getBody(), TRUE, 512, JSON_THROW_ON_ERROR));
 
             return new ResponseDto(200, 'OK', '', []);
         })->batchPatch($this->getNodes(3));
@@ -224,7 +224,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
                 ['topology' => 'topology-1', 'node' => 'node-1'],
                 ['topology' => 'topology-1', 'node' => 'node-2'],
                 ['topology' => 'topology-1', 'node' => 'node-3'],
-            ], json_decode($request->getBody(), TRUE));
+            ], json_decode($request->getBody(), TRUE, 512, JSON_THROW_ON_ERROR));
 
             return new ResponseDto(200, 'OK', '', []);
         })->batchDelete($this->getNodes(3));

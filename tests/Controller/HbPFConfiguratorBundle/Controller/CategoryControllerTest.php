@@ -4,6 +4,7 @@ namespace Tests\Controller\HbPFConfiguratorBundle\Controller;
 
 use Hanaboso\CommonsBundle\Database\Document\Category;
 use Hanaboso\CommonsBundle\Exception\CategoryException;
+use Hanaboso\CommonsBundle\Utils\ControllerUtils;
 use Tests\ControllerTestCaseAbstract;
 
 /**
@@ -76,8 +77,8 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
 
         self::assertEquals(400, $response->status);
         self::assertEquals(CategoryException::class, $content->type);
-        self::assertEquals('ERROR', $content->status);
-        self::assertEquals(2001, $content->errorCode);
+        self::assertEquals(ControllerUtils::INTERNAL_SERVER_ERROR, $content->status);
+        self::assertEquals(2301, $content->errorCode);
     }
 
     /**

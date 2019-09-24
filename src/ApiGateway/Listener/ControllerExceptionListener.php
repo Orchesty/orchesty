@@ -21,7 +21,6 @@ use Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandlerExcepti
 use Hanaboso\PipesPhpSdk\LongRunningNode\Exception\LongRunningNodeException;
 use Hanaboso\PipesPhpSdk\Parser\Exception\TableParserException;
 use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
@@ -36,11 +35,6 @@ class ControllerExceptionListener implements EventSubscriberInterface, LoggerAwa
 {
 
     use ControllerTrait;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
 
     /**
      * @var array
@@ -95,7 +89,9 @@ class ControllerExceptionListener implements EventSubscriberInterface, LoggerAwa
             return;
         }
 
-        $this->logger->error('Controller exception.', ['exception' => $e]);
+        if ($this->logger) {
+            $this->logger->error('Controller exception.', ['exception' => $e]);
+        }
 
         $response = $this->getErrorResponse($e, 200);
 
@@ -105,16 +101,6 @@ class ControllerExceptionListener implements EventSubscriberInterface, LoggerAwa
         }
 
         $event->setResponse($response);
-    }
-
-    /**
-     * @param LoggerInterface $logger
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger): void
-    {
-        $this->logger = $logger;
     }
 
     /**

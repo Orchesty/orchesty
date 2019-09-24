@@ -65,7 +65,6 @@ class MetricsHandler
      * @throws LockException
      * @throws MappingException
      * @throws MetricsException
-     * @throws DateTimeException
      */
     public function getNodeMetrics(string $topologyId, string $nodeId, array $params): array
     {
@@ -84,7 +83,6 @@ class MetricsHandler
      * @throws LockException
      * @throws MappingException
      * @throws MetricsException
-     * @throws DateTimeException
      */
     public function getRequestsCountMetrics(string $topologyId, array $params): array
     {
