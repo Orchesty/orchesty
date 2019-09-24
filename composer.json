@@ -2,7 +2,7 @@
   "name": "hanaboso/notification-sender",
   "license": "proprietary",
   "description": "NotificationSender for Symfony",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "autoload": {
     "psr-4": {
       "Hanaboso\\NotificationSender\\": "src/"

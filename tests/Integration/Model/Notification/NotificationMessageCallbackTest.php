@@ -29,7 +29,7 @@ final class NotificationMessageCallbackTest extends DatabaseTestCaseAbstract
     private $connection;
 
     /**
-     *
+     * @throws Exception
      */
     protected function setUp(): void
     {
@@ -46,11 +46,26 @@ final class NotificationMessageCallbackTest extends DatabaseTestCaseAbstract
      */
     public function testProcessMessage(): void
     {
-        $this->callback->processMessage(new Message('', '', FALSE, '', '', [], json_encode([
-            'pipes' => [
-                'notification_type' => NotificationEventEnum::ACCESS_EXPIRATION,
-            ],
-        ], JSON_THROW_ON_ERROR)), $this->connection, $this->connection->createChannel());
+        $this->callback->processMessage(
+            new Message(
+                '',
+                '',
+                FALSE,
+                '',
+                '',
+                [],
+                json_encode(
+                    [
+                        'pipes' => [
+                            'notification_type' => NotificationEventEnum::ACCESS_EXPIRATION,
+                        ],
+                    ],
+                    JSON_THROW_ON_ERROR
+                )
+            ),
+            $this->connection,
+            $this->connection->createChannel()
+        );
 
         self::assertTrue(TRUE); // No exception were thrown...
     }
@@ -66,9 +81,19 @@ final class NotificationMessageCallbackTest extends DatabaseTestCaseAbstract
         self::expectExceptionCode(NotificationException::NOTIFICATION_EVENT_NOT_FOUND);
         self::expectExceptionMessage("Notification event not found: RabbitMQ message missing required property 'notification_type'!");
 
-        $this->callback->processMessage(new Message('', '', FALSE, '', '', [], json_encode([
-
-        ], JSON_THROW_ON_ERROR)), $this->connection, $this->connection->createChannel());
+        $this->callback->processMessage(
+            new Message(
+                '',
+                '',
+                FALSE,
+                '',
+                '',
+                [],
+                json_encode([], JSON_THROW_ON_ERROR)
+            ),
+            $this->connection,
+            $this->connection->createChannel()
+        );
     }
 
 }

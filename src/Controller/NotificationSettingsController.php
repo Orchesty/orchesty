@@ -2,9 +2,9 @@
 
 namespace Hanaboso\NotificationSender\Controller;
 
-use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
+use Hanaboso\CommonsBundle\Utils\ControllerUtils;
 use Hanaboso\NotificationSender\Exception\NotificationException;
 use Hanaboso\NotificationSender\Handler\NotificationSettingsHandler;
 use Symfony\Component\HttpFoundation\Request;
@@ -49,8 +49,8 @@ final class NotificationSettingsController extends AbstractFOSRestController
     {
         try {
             return $this->getResponse($this->handler->listSettings());
-        } catch (Throwable $t) {
-            return $this->getErrorResponse($t);
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
         }
     }
 
@@ -65,8 +65,8 @@ final class NotificationSettingsController extends AbstractFOSRestController
     {
         try {
             return $this->getResponse($this->handler->getSettings($id));
-        } catch (DocumentNotFoundException | NotificationException $e) {
-            return $this->getErrorResponse($e, 404);
+        } catch (NotificationException $e) {
+            return $this->getErrorResponse($e, 404, ControllerUtils::NOT_FOUND);
         } catch (Throwable $e) {
             return $this->getErrorResponse($e);
         }
@@ -84,10 +84,10 @@ final class NotificationSettingsController extends AbstractFOSRestController
     {
         try {
             return $this->getResponse($this->handler->saveSettings($id, $request->request->all()));
-        } catch (DocumentNotFoundException | NotificationException $e) {
-            return $this->getErrorResponse($e, 404);
+        } catch (NotificationException $e) {
+            return $this->getErrorResponse($e, 404, ControllerUtils::NOT_FOUND, $request->headers->all());
         } catch (Throwable $e) {
-            return $this->getErrorResponse($e);
+            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
         }
     }
 

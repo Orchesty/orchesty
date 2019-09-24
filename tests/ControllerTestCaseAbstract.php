@@ -2,10 +2,10 @@
 
 namespace Tests;
 
-use JsonException;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\Client;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 
 /**
  * Class ControllerTestCaseAbstract
@@ -154,7 +154,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
             if (!is_array($content)) {
                 $innerContent['message'] = $content;
             }
-        } catch (JsonException $e) {
+        } catch (Throwable $e) {
             return new ControllerResponse($response->getStatusCode(), [$response->getContent()]);
         }
 

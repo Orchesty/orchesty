@@ -34,7 +34,7 @@ final class NotificationManagerTest extends DatabaseTestCaseAbstract
     private $manager;
 
     /**
-     *
+     * @throws Exception
      */
     protected function setUp(): void
     {
