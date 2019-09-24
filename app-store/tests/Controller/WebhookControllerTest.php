@@ -3,10 +3,8 @@
 namespace Tests\Controller;
 
 use Exception;
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\HbPFAppStore\Handler\WebhookHandler;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use ReflectionException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\ControllerTestCaseAbstract;
@@ -20,8 +18,7 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @throws DateTimeException
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function testSubscribeWebhooksAction(): void
     {
@@ -36,8 +33,7 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @throws DateTimeException
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function testUnsubscribeWebhooksAction(): void
     {
@@ -76,7 +72,7 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
      * @param string $key
      * @param string $user
      *
-     * @throws DateTimeException
+     * @throws Exception
      */
     private function insertApp(string $key = 'null', string $user = 'bar'): void
     {

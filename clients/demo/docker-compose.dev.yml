@@ -14,6 +14,7 @@ services:
         user: ${DEV_UID}:${DEV_GID}
         environment:
           BACKEND_HOST: ${BACKEND_URL}/
+          FRONTEND_HOST: ${BACKEND_URL}/
           ELASTIC_HOST: elasticsearch
           ELASTIC_INDEX: 'index'
         command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console downloader:run'
@@ -29,6 +30,7 @@ services:
     #    command: bin/console downloader:run
     #    environment:
     #      BACKEND_HOST: ${BACKEND_URL}/
+    #      FRONTEND_HOST: ${BACKEND_URL}/
     #      ELASTIC_HOST: elasticsearch
     #      ELASTIC_INDEX: 'logstash-2018.01.31'
     ## END STAGE
@@ -39,6 +41,7 @@ services:
         user: ${DEV_UID}:${DEV_GID}
         environment:
           BACKEND_HOST: ${BACKEND_URL}/
+          FRONTEND_HOST: ${BACKEND_URL}/
           ELASTIC_HOST: elasticsearch
           ELASTIC_INDEX: 'index'
         command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit_mq:consumer:batch'
@@ -54,6 +57,7 @@ services:
     #    command: bin/console rabbit_mq:consumer:batch
     #    environment:
     #      BACKEND_HOST: ${BACKEND_URL}/
+    #      FRONTEND_HOST: ${BACKEND_URL}/
     #      ELASTIC_HOST: elasticsearch
     #      ELASTIC_INDEX: 'logstash-2018.01.31'
     #      PHP_FPM_MAX_REQUESTS: 5000
@@ -65,6 +69,7 @@ services:
         user: ${DEV_UID}:${DEV_GID}
         environment:
             BACKEND_HOST: ${BACKEND_URL}/
+            FRONTEND_HOST: ${BACKEND_URL}/
             ELASTIC_HOST: elasticsearch
             ELASTIC_INDEX: 'index'
         command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit_mq:consumer:batch-connector'
@@ -80,6 +85,7 @@ services:
     #    command: bin/console rabbit_mq:consumer:batch-connector
     #    environment:
     #      BACKEND_HOST: ${BACKEND_URL}/
+    #      FRONTEND_HOST: ${BACKEND_URL}/
     #      ELASTIC_HOST: elasticsearch
     #      ELASTIC_INDEX: 'logstash-2018.01.31'
     #      PHP_FPM_MAX_REQUESTS: 5000
@@ -93,6 +99,7 @@ services:
         working_dir: /var/www/pipes/clients/demo/pipes-api
         environment:
           BACKEND_HOST: ${BACKEND_URL}/
+          FRONTEND_HOST: ${BACKEND_URL}/
           ELASTIC_HOST: elasticsearch
           ELASTIC_INDEX: 'logstash-2018.01.31'
         volumes:
@@ -106,6 +113,7 @@ services:
     #    command: bin/console rabbit_mq:consumer:long-running-node
     #    environment:
     #      BACKEND_HOST: ${BACKEND_URL}/
+    #      FRONTEND_HOST: ${BACKEND_URL}/
     #      ELASTIC_HOST: elasticsearch
     #      ELASTIC_INDEX: 'logstash-2018.01.31'
     #      PHP_FPM_MAX_REQUESTS: 5000
@@ -117,6 +125,7 @@ services:
         user: ${DEV_UID}:${DEV_GID}
         environment:
           BACKEND_HOST: ${BACKEND_URL}/
+          FRONTEND_HOST: ${BACKEND_URL}/
           ELASTIC_HOST: elasticsearch
           ELASTIC_INDEX: 'index'
         command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit_mq:consumer:status-service'
@@ -132,6 +141,7 @@ services:
     #    command: bin/console rabbit_mq:consumer:status-service
     #    environment:
     #      BACKEND_HOST: ${BACKEND_URL}/
+    #      FRONTEND_HOST: ${BACKEND_URL}/
     #      ELASTIC_HOST: elasticsearch
     #      ELASTIC_INDEX: 'logstash-2018.01.31'
     #      PHP_FPM_MAX_REQUESTS: 5000
@@ -230,6 +240,7 @@ services:
         environment:
           PHP_WEBROOT: /var/www/pipes/clients/demo/pipes-api/public
           BACKEND_HOST: ${BACKEND_URL}/
+          FRONTEND_HOST: ${BACKEND_URL}/
           ELASTIC_HOST: elasticsearch
           ELASTIC_INDEX: 'index'
           SMTP_USER: dev.email.hb@gmail.com
@@ -251,6 +262,7 @@ services:
     #    image: dkr.hanaboso.net/pipes/demo/monolith:${TAG_MONOLITH}
     #    environment:
     #      BACKEND_HOST: ${BACKEND_URL}/
+    #      FRONTEND_HOST: ${BACKEND_URL}/
     #      ELASTIC_HOST: elasticsearch
     #      ELASTIC_INDEX: 'logstash-2018.01.31'
     #      SMTP_USER: dev.email.hb@gmail.com

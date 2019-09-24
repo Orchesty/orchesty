@@ -2,6 +2,7 @@
 
 namespace Hanaboso\HbPFAppStore\Handler;
 
+use Exception;
 use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Utils\ControllerUtils;
@@ -39,6 +40,7 @@ class WebhookHandler
      *
      * @throws ApplicationInstallException
      * @throws PipesFrameworkException
+     * @throws Exception
      */
     public function subscribeWebhooks(string $key, string $user, array $data = []): void
     {

@@ -46,7 +46,7 @@ final class CreateObjectConnectorTest extends DatabaseTestCaseAbstract
         $this->createApplication();
 
         $dto = (new ProcessDto())
-            ->setData((string) json_encode(['name' => 'Test', 'content' => 'Content']))
+            ->setData((string) json_encode(['name' => 'Test', 'content' => 'Content'], JSON_THROW_ON_ERROR))
             ->setHeaders(['pf-application' => self::KEY, 'pf-user' => self::USER]);
         $dto = $this->connector->processAction($dto);
 
@@ -62,7 +62,7 @@ final class CreateObjectConnectorTest extends DatabaseTestCaseAbstract
         $this->createApplication();
 
         $dto = (new ProcessDto())
-            ->setData((string) json_encode(['content' => 'Content']))
+            ->setData((string) json_encode(['content' => 'Content'], JSON_THROW_ON_ERROR))
             ->setHeaders(['pf-application' => self::KEY, 'pf-user' => self::USER]);
 
         self::expectException(ConnectorException::class);
@@ -81,7 +81,7 @@ final class CreateObjectConnectorTest extends DatabaseTestCaseAbstract
         $this->createApplication();
 
         $dto = (new ProcessDto())
-            ->setData((string) json_encode(['name' => 'Test']))
+            ->setData((string) json_encode(['name' => 'Test'], JSON_THROW_ON_ERROR))
             ->setHeaders(['pf-application' => self::KEY, 'pf-user' => self::USER]);
 
         self::expectException(ConnectorException::class);

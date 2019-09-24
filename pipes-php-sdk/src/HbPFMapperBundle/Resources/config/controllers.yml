@@ -8,3 +8,4 @@ services:
             - '@hbpf.mapper.handler.mapper'
         calls:
             - ['setContainer', ['@service_container']]
+            - ['setLogger', ['@monolog.logger.commons']]

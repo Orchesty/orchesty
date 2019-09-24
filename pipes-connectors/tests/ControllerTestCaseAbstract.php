@@ -119,7 +119,14 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
      */
     protected function sendPost(string $url, array $parameters, ?array $content = NULL): object
     {
-        self::$client->request('POST', $url, $parameters, [], [], $content ? (string) json_encode($content) : '');
+        self::$client->request(
+            'POST',
+            $url,
+            $parameters,
+            [],
+            [],
+            $content ? (string) json_encode($content, JSON_THROW_ON_ERROR) : ''
+        );
 
         /** @var Response $response */
         $response = self::$client->getResponse();
@@ -136,7 +143,13 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
      */
     protected function sendPut(string $url, array $parameters, ?array $content = NULL): object
     {
-        self::$client->request('PUT', $url, $parameters, [], [], $content ? (string) json_encode($content) : '');
+        self::$client->request(
+            'PUT',
+            $url,
+            $parameters,
+            [],
+            [], $content ? (string) json_encode($content, JSON_THROW_ON_ERROR) : ''
+        );
 
         /** @var Response $response */
         $response = self::$client->getResponse();
@@ -166,7 +179,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
      */
     protected function returnResponse(Response $response): object
     {
-        $content = json_decode((string) $response->getContent(), TRUE);
+        $content = json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR);
         if (isset($content['error_code'])) {
             $content['errorCode'] = $content['error_code'];
             unset($content['error_code']);

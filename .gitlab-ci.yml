@@ -48,6 +48,9 @@ njs-build-image:
     - IMAGE=dkr.hanaboso.net/pipes/pipes/nodejs-build:${CI_BUILD_REF_NAME}
     - docker build -t ${IMAGE} .
     - docker push ${IMAGE}
+    - IMAGE=hanabosocom/nodejs-build:${CI_BUILD_REF_NAME}
+    - docker build -t ${IMAGE} .
+    - docker push ${IMAGE}
   only:
     - dev
     - master

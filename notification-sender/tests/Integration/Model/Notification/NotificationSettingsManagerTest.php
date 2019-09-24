@@ -2,7 +2,6 @@
 
 namespace Tests\Integration\Model\Notification;
 
-use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Exception;
 use Hanaboso\CommonsBundle\Enum\NotificationEventEnum;
 use Hanaboso\CommonsBundle\Enum\NotificationSenderEnum;
@@ -38,7 +37,7 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
     private $manager;
 
     /**
-     *
+     * @throws Exception
      */
     protected function setUp(): void
     {
@@ -184,7 +183,8 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
      */
     public function testGetSettingsNotFound(): void
     {
-        self::expectException(DocumentNotFoundException::class);
+        self::expectException(NotificationException::class);
+        self::expectExceptionCode(NotificationException::NOTIFICATION_SETTINGS_NOT_FOUND);
         self::expectExceptionMessage("NotificationSettings with key 'Unknown' not found!");
 
         $this->manager->getSettings('Unknown');
@@ -272,7 +272,8 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
      */
     public function testSaveSettingsNotFound(): void
     {
-        self::expectException(DocumentNotFoundException::class);
+        self::expectException(NotificationException::class);
+        self::expectExceptionCode(NotificationException::NOTIFICATION_SETTINGS_NOT_FOUND);
         self::expectExceptionMessage("NotificationSettings with key 'Unknown' not found!");
 
         $this->manager->saveSettings('Unknown', []);

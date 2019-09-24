@@ -7,6 +7,7 @@ use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\CommonsBundle\Exception\PipesFrameworkExceptionAbstract;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
+use Hanaboso\CommonsBundle\Utils\ControllerUtils;
 use Hanaboso\PipesPhpSdk\HbPFMapperBundle\Exception\MapperException;
 use Hanaboso\PipesPhpSdk\HbPFMapperBundle\Handler\MapperHandler;
 use Symfony\Component\HttpFoundation\Request;
@@ -75,7 +76,7 @@ class MapperController extends AbstractFOSRestController
 
             return $this->getResponse([]);
         } catch (MapperException $e) {
-            return $this->getErrorResponse($e);
+            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
         }
     }
 
@@ -92,7 +93,7 @@ class MapperController extends AbstractFOSRestController
             return $this->getResponse($data);
         } catch (Exception|Throwable $e) {
 
-            return $this->getErrorResponse($e, 500);
+            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR);
         }
     }
 

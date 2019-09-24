@@ -52,7 +52,9 @@ final class TimeStamperHumanTask extends LongRunningNodeAbstract
     {
         $data = LongRunningNodeData::fromMessage($message);
 
-        return $data->setAuditLogs($this->createTimeStamp(json_decode($data->getData(), TRUE)));
+        return $data->setAuditLogs(
+            $this->createTimeStamp(json_decode($data->getData(), TRUE, 512, JSON_THROW_ON_ERROR))
+        );
     }
 
     /**
@@ -65,7 +67,9 @@ final class TimeStamperHumanTask extends LongRunningNodeAbstract
     public function afterAction(LongRunningNodeData $data, array $requestData): ProcessDto
     {
         $innerData = $this->createTimeStamp($data->getAuditLogs(), TRUE);
-        $data->setData((string) json_encode(array_merge($requestData, $innerData)))->setAuditLogs($innerData);
+        $data
+            ->setData((string) json_encode(array_merge($requestData, $innerData), JSON_THROW_ON_ERROR))
+            ->setAuditLogs($innerData);
         $this->dm->flush();
 
         return $data->toProcessDto();

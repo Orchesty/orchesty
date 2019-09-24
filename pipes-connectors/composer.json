@@ -2,7 +2,7 @@
   "name": "hanaboso/pipes-connectors",
   "license": "proprietary",
   "description": "Connectors for PipesFramework",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "autoload": {
     "psr-4": {
       "Hanaboso\\HbPFConnectors\\": "src/"
@@ -18,7 +18,6 @@
     "ext-json": "*",
     "ext-pgsql": "*",
     "ext-pdo": "*",
-    "aws/aws-sdk-php": "^3.111",
     "hanaboso/app-store": "^1.1",
     "hanaboso/commons-bundle": "^1.1",
     "hanaboso/pipes-php-sdk": "^1.0"

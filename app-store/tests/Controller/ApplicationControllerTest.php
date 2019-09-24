@@ -6,7 +6,6 @@ use Exception;
 use Hanaboso\HbPFAppStore\Handler\ApplicationHandler;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use ReflectionException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\ControllerTestCaseAbstract;
@@ -28,7 +27,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         /** @var Response $response */
         $response = self::$client->getResponse();
 
-        self::assertIsArray(json_decode((string) $response->getContent(), TRUE));
+        self::assertIsArray(json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR));
         self::assertEquals(200, $response->getStatusCode());
 
         self::$client->request('GET', '/applicationsss');
@@ -38,7 +37,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function testGetApplication(): void
     {
@@ -49,7 +48,12 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         /** @var Response $response */
         $response = self::$client->getResponse();
 
-        self::assertTrue(in_array($application, json_decode((string) $response->getContent(), TRUE)));
+        self::assertTrue(
+            in_array(
+                $application,
+                json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR)
+            )
+        );
         self::assertEquals(200, $response->getStatusCode());
 
         self::$client->request('GET', sprintf('/applications/%s', 'example'));
@@ -59,19 +63,27 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function testGetUsersApplication(): void
     {
         $this->mockApplicationHandler(
-            json_decode((string) file_get_contents(sprintf('%s/data/data.json', __DIR__)))
+            json_decode(
+                (string) file_get_contents(sprintf('%s/data/data.json', __DIR__)),
+                FALSE,
+                512,
+                JSON_THROW_ON_ERROR
+            )
         );
 
         self::$client->request('GET', '/applications/users/bar');
         /** @var Response $response */
         $response = self::$client->getResponse();
 
-        self::assertEquals('bar', json_decode((string) $response->getContent(), TRUE)[0][ApplicationInstall::USER]);
+        self::assertEquals(
+            'bar',
+            json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR)[0][ApplicationInstall::USER]
+        );
         self::assertEquals('200', $response->getStatusCode());
     }
 
@@ -90,7 +102,10 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         /** @var Response $response */
         $response = self::$client->getResponse();
 
-        self::assertEquals('bar', json_decode((string) $response->getContent(), TRUE)[ApplicationInstall::USER]);
+        self::assertEquals(
+            'bar',
+            json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR)[ApplicationInstall::USER]
+        );
         self::assertEquals('200', $response->getStatusCode());
     }
 
@@ -107,7 +122,10 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         /** @var Response $response */
         $response = self::$client->getResponse();
 
-        self::assertEquals('bar', json_decode((string) $response->getContent(), TRUE)[ApplicationInstall::USER]);
+        self::assertEquals(
+            'bar',
+            json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR)[ApplicationInstall::USER]
+        );
         self::assertEquals('200', $response->getStatusCode());
     }
 
@@ -122,7 +140,10 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         /** @var Response $response */
         $response = self::$client->getResponse();
 
-        self::assertEquals('bar', json_decode((string) $response->getContent(), TRUE)[ApplicationInstall::USER]);
+        self::assertEquals(
+            'bar',
+            json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR)[ApplicationInstall::USER]
+        );
         self::assertEquals('200', $response->getStatusCode());
 
         $this->setupClient();
@@ -130,7 +151,10 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         /** @var Response $response */
         $response = self::$client->getResponse();
 
-        self::assertEquals('2001', json_decode((string) $response->getContent(), TRUE)['error_code']);
+        self::assertEquals(
+            '3002',
+            json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR)['error_code']
+        );
 
     }
 
@@ -146,7 +170,10 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         $response = self::$client->getResponse();
 
         self::assertEquals('200', $response->getStatusCode());
-        self::assertEquals('test1', json_decode((string) $response->getContent(), TRUE)['new_settings']);
+        self::assertEquals(
+            'test1',
+            json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR)['new_settings']
+        );
     }
 
     /**

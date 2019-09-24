@@ -18,5 +18,6 @@ final class NotificationException extends PipesFrameworkExceptionAbstract
     public const NOTIFICATION_HANDLER_NOT_FOUND   = self::OFFSET + 2;
     public const NOTIFICATION_SENDER_NOT_FOUND    = self::OFFSET + 3;
     public const NOTIFICATION_EVENT_NOT_FOUND     = self::OFFSET + 4;
+    public const NOTIFICATION_SETTINGS_NOT_FOUND  = self::OFFSET + 5;
 
 }

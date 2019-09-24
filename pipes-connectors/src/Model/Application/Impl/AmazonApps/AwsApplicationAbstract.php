@@ -3,7 +3,6 @@
 namespace Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps;
 
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
-use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
@@ -64,7 +63,6 @@ abstract class AwsApplicationAbstract extends BasicApplicationAbstract
      * @param string|null        $data
      *
      * @return RequestDto
-     * @throws CurlException
      */
     public function getRequestDto
     (

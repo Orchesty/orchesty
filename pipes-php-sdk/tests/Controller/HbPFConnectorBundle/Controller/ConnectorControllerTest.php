@@ -31,7 +31,10 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
         $response = self::$client->getResponse();
 
         self::assertEquals(200, $response->getStatusCode());
-        self::assertEquals(['test' => 'test'], json_decode((string) $response->getContent(), TRUE));
+        self::assertEquals(
+            ['test' => 'test'],
+            json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR)
+        );
     }
 
     /**
@@ -48,7 +51,10 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
         $response = self::$client->getResponse();
 
         self::assertEquals(200, $response->getStatusCode());
-        self::assertEquals(['test' => 'test'], json_decode((string) $response->getContent(), TRUE));
+        self::assertEquals(
+            ['test' => 'test'],
+            json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR)
+        );
     }
 
     /**
@@ -65,7 +71,7 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
 
         $dto = new ProcessDto();
         $dto
-            ->setData((string) json_encode(['test' => 'test']))
+            ->setData((string) json_encode(['test' => 'test'], JSON_THROW_ON_ERROR))
             ->setHeaders([]);
         $handler->method($method)->willReturn($dto);
 
@@ -85,7 +91,12 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
         /** @var Response $response */
         $response = self::$client->getResponse();
 
-        self::assertTrue(in_array('null', json_decode((string) $response->getContent())));
+        self::assertTrue(
+            in_array(
+                'null',
+                json_decode((string) $response->getContent(), FALSE, 512, JSON_THROW_ON_ERROR)
+            )
+        );
         self::assertEquals(200, $response->getStatusCode());
     }
 

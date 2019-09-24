@@ -60,8 +60,12 @@ final class HubspotCreateContactMapperTest extends DatabaseTestCaseAbstract
 
         self::assertEquals(
             json_decode($dto->getData(), TRUE, 512, JSON_THROW_ON_ERROR),
-            json_decode((string) file_get_contents(__DIR__ . sprintf('/Data/requestHubspot.json'), TRUE), TRUE, 512,
-                JSON_THROW_ON_ERROR)
+            json_decode(
+                (string) file_get_contents(__DIR__ . sprintf('/Data/requestHubspot.json'), TRUE),
+                TRUE,
+                512,
+                JSON_THROW_ON_ERROR
+            )
         );
 
     }

@@ -17,7 +17,7 @@ use function React\Promise\resolve;
  *
  * @package Demo\CustomNode
  */
-class SplitFileBatch  extends CustomNodeAbstract implements BatchInterface
+class SplitFileBatch extends CustomNodeAbstract implements BatchInterface
 {
 
     /**
@@ -31,10 +31,10 @@ class SplitFileBatch  extends CustomNodeAbstract implements BatchInterface
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
         $loop;
-        $data = json_decode($dto->getData(), TRUE);
+        $data = json_decode($dto->getData(), TRUE, 512, JSON_THROW_ON_ERROR);
 
         if (array_key_exists('data', $data)) {
-            $data = json_decode($data['data'], TRUE);
+            $data = json_decode($data['data'], TRUE, 512, JSON_THROW_ON_ERROR);
 
             $datetime = DateTimeUtils::getUTCDateTime();
             if ($datetime->getTimestamp() % 2 == 0) {
@@ -45,7 +45,7 @@ class SplitFileBatch  extends CustomNodeAbstract implements BatchInterface
 
             return resolve()
                 ->then(function () use ($data) {
-                    return (new SuccessMessage(0))->setData((string) json_encode($data));
+                    return (new SuccessMessage(0))->setData((string) json_encode($data, JSON_THROW_ON_ERROR));
                 })
                 ->then($callbackItem);
         }

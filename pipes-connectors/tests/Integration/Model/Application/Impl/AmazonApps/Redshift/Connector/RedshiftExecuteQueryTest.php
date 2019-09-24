@@ -41,7 +41,7 @@ final class RedshiftExecuteQueryTest extends DatabaseTestCaseAbstract
     public function testProcessActionInsert(): void
     {
         $dto = (new ProcessDto())
-            ->setData((string) json_encode(['result' => [1, 'Some Title']]));
+            ->setData((string) json_encode(['result' => [1, 'Some Title']], JSON_THROW_ON_ERROR));
 
         $mock = $this->createPartialMock(RedshiftExecuteQueryConnector::class, ['processAction']);
         $mock
@@ -59,7 +59,7 @@ final class RedshiftExecuteQueryTest extends DatabaseTestCaseAbstract
     public function testProcessActionMissingName(): void
     {
         $dto = (new ProcessDto())
-            ->setData((string) json_encode(['content' => 'Content']))
+            ->setData((string) json_encode(['content' => 'Content'], JSON_THROW_ON_ERROR))
             ->setHeaders(['pf-application' => self::KEY, 'pf-user' => self::USER]);
 
         self::expectException(ConnectorException::class);

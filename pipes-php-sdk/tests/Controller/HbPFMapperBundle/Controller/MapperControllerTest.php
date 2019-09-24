@@ -48,7 +48,7 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
         $response = self::$client->getResponse();
 
         self::assertEquals(200, $response->getStatusCode());
-        self::assertEquals($params, json_decode((string) $response->getContent(), TRUE));
+        self::assertEquals($params, json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR));
     }
 
     /**
@@ -81,7 +81,12 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
         /** @var Response $response */
         $response = self::$client->getResponse();
 
-        self::assertTrue(in_array('handler.mapper', json_decode((string) $response->getContent())));
+        self::assertTrue(
+            in_array(
+                'handler.mapper',
+                json_decode((string) $response->getContent(), FALSE, 512, JSON_THROW_ON_ERROR)
+            )
+        );
         self::assertEquals(200, $response->getStatusCode());
     }
 

@@ -5,6 +5,7 @@ namespace Hanaboso\HbPFAppStore\Controller;
 use Exception;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
+use Hanaboso\CommonsBundle\Utils\ControllerUtils;
 use Hanaboso\HbPFAppStore\Handler\ApplicationHandler;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -167,7 +168,7 @@ class ApplicationController extends AbstractFOSRestController
 
             return $this->getResponse($data);
         } catch (Exception|Throwable $e) {
-            return $this->getErrorResponse($e, 500);
+            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
         }
 
     }
@@ -188,7 +189,7 @@ class ApplicationController extends AbstractFOSRestController
 
             return $this->getResponse($data);
         } catch (Exception|Throwable $e) {
-            return $this->getErrorResponse($e, 500);
+            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
         }
 
     }

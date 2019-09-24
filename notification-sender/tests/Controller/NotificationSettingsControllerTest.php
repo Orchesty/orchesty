@@ -2,10 +2,10 @@
 
 namespace Tests\Controller;
 
-use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Exception;
 use Hanaboso\CommonsBundle\Enum\NotificationEventEnum;
 use Hanaboso\CommonsBundle\Enum\NotificationSenderEnum;
+use Hanaboso\CommonsBundle\Utils\ControllerUtils;
 use Hanaboso\NotificationSender\Document\NotificationSettings;
 use Hanaboso\NotificationSender\Exception\NotificationException;
 use Hanaboso\NotificationSender\Model\Notification\Dto\EmailDto;
@@ -137,9 +137,9 @@ final class NotificationSettingsControllerTest extends ControllerTestCaseAbstrac
     public function testGetSettingsNotFound(): void
     {
         $this->assertResponse($this->sendGet('/notifications/settings/Unknown'), 404, [
-            'status'     => 'ERROR',
-            'error_code' => 2001,
-            'type'       => DocumentNotFoundException::class,
+            'status'     => ControllerUtils::NOT_FOUND,
+            'error_code' => 105,
+            'type'       => NotificationException::class,
             'message'    => "NotificationSettings with key 'Unknown' not found!",
         ]);
     }
@@ -201,9 +201,9 @@ final class NotificationSettingsControllerTest extends ControllerTestCaseAbstrac
     public function testSaveSettingsNotFound(): void
     {
         $this->assertResponse($this->sendPut('/notifications/settings/Unknown'), 404, [
-            'status'     => 'ERROR',
-            'error_code' => 2001,
-            'type'       => DocumentNotFoundException::class,
+            'status'     => ControllerUtils::NOT_FOUND,
+            'error_code' => 105,
+            'type'       => NotificationException::class,
             'message'    => "NotificationSettings with key 'Unknown' not found!",
         ]);
     }
@@ -225,8 +225,8 @@ final class NotificationSettingsControllerTest extends ControllerTestCaseAbstrac
             ]);
 
         $this->assertResponse($response, 404, [
-            'status'     => 'ERROR',
-            'error_code' => 2001,
+            'status'     => ControllerUtils::NOT_FOUND,
+            'error_code' => 101,
             'type'       => NotificationException::class,
             'message'    => "Required settings 'host' for type 'email' is missing!",
         ]);

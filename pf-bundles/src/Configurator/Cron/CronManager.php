@@ -106,12 +106,18 @@ class CronManager
     {
         [$topologyName, $nodeName] = $this->getTopologyAndNode($node);
         $url = $this->getUrl(self::CREATE);
-        $dto = (new RequestDto(CurlManager::METHOD_POST, $url))->setBody((string) json_encode([
-            'topology' => $topologyName,
-            'node'     => $nodeName,
-            'time'     => $node->getCron(),
-            'command'  => $this->getCommand($node),
-        ]));
+        $dto = (new RequestDto(CurlManager::METHOD_POST, $url))
+            ->setBody(
+                (string) json_encode(
+                    [
+                        'topology' => $topologyName,
+                        'node'     => $nodeName,
+                        'time'     => $node->getCron(),
+                        'command'  => $this->getCommand($node),
+                    ],
+                    JSON_THROW_ON_ERROR
+                )
+            );
 
         return $this->sendAndProcessRequest($dto);
     }
@@ -126,10 +132,16 @@ class CronManager
     public function update(Node $node): ResponseDto
     {
         $url = $this->getUrl(self::UPDATE, $this->getHash($node));
-        $dto = (new RequestDto(CurlManager::METHOD_POST, $url))->setBody((string) json_encode([
-            'time'    => $node->getCron(),
-            'command' => $this->getCommand($node),
-        ]));
+        $dto = (new RequestDto(CurlManager::METHOD_POST, $url))
+            ->setBody(
+                (string) json_encode(
+                    [
+                        'time'    => $node->getCron(),
+                        'command' => $this->getCommand($node),
+                    ],
+                    JSON_THROW_ON_ERROR
+                )
+            );
 
         return $this->sendAndProcessRequest($dto);
     }
@@ -154,7 +166,8 @@ class CronManager
         }
 
         $url = $this->getUrl(self::PATCH, $this->getHash($node));
-        $dto = (new RequestDto(CurlManager::METHOD_POST, $url))->setBody((string) json_encode($body));
+        $dto = (new RequestDto(CurlManager::METHOD_POST, $url))
+            ->setBody((string) json_encode($body, JSON_THROW_ON_ERROR));
 
         return $this->sendAndProcessRequest($dto);
     }
@@ -324,7 +337,7 @@ class CronManager
             }
         }
 
-        return (string) json_encode($processedNodes);
+        return (string) json_encode($processedNodes, JSON_THROW_ON_ERROR);
     }
 
     /**

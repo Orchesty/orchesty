@@ -17,6 +17,7 @@ services:
             TOPOLOGY_MODE: ${TOPOLOGY_MODE}
             SMTP_USER: dev.email.hb@gmail.com
             SMTP_PASSWORD: jVME2RkX9xyYhj9v
+            FRONTEND_HOST: ${DEV_IP}
         volumes:
             - ../../../:/var/www/pipes
             - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent

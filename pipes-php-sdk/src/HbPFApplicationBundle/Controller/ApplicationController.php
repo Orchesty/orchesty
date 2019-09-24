@@ -5,6 +5,7 @@ namespace Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller;
 use Exception;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
+use Hanaboso\CommonsBundle\Utils\ControllerUtils;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler;
@@ -61,7 +62,7 @@ class ApplicationController extends AbstractFOSRestController
 
             return $this->getResponse([]);
         } catch (Exception|Throwable $e) {
-            return $this->getErrorResponse($e, 500);
+            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
         }
     }
 
@@ -81,7 +82,7 @@ class ApplicationController extends AbstractFOSRestController
 
             return new RedirectResponse($url[ApplicationInterface::REDIRECT_URL]);
         } catch (Exception|Throwable $e) {
-            return $this->getErrorResponse($e, 500);
+            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
         }
     }
 
@@ -100,7 +101,7 @@ class ApplicationController extends AbstractFOSRestController
 
             return new RedirectResponse($url[ApplicationInterface::REDIRECT_URL]);
         } catch (Exception|Throwable $e) {
-            return $this->getErrorResponse($e, 500);
+            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
         }
     }
 

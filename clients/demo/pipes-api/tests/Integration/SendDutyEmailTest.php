@@ -37,9 +37,8 @@ final class SendDutyEmailTest extends KernelTestCase
 
         $pagerDuty = self::$container->get('hbpf.connector.pager-duty');
         $result    = new SendDutyEmail(new Mailer($transport), $pagerDuty);
-        $dto       = (new ProcessDto())->setData((string) json_encode([
-            'since' => '2019-04-19', 'until' => '2019-04-29',
-        ]));
+        $dto       = (new ProcessDto())
+            ->setData((string) json_encode(['since' => '2019-04-19', 'until' => '2019-04-29'], JSON_THROW_ON_ERROR));
 
         $data = $result->process($dto)->getData();
         self::assertIsString($data);

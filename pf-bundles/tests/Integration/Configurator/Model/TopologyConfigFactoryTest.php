@@ -58,7 +58,7 @@ class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
         $result        = $configFactory->create($nodes);
 
         self::assertIsString($result);
-        $arr = json_decode($result, TRUE);
+        $arr = json_decode($result, TRUE, 512, JSON_THROW_ON_ERROR);
 
         self::assertArrayNotHasKey(TopologyConfigFactory::WORKER, $arr);
         self::assertArrayNotHasKey(TopologyConfigFactory::SETTINGS, $arr);

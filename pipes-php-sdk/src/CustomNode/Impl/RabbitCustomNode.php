@@ -102,7 +102,7 @@ abstract class RabbitCustomNode extends CustomNodeAbstract implements LoggerAwar
     protected function publishMessage(array $message, array $headers): void
     {
         foreach ($this->queues as $que) {
-            $this->chann->publish((string) json_encode($message), $headers, $this->ex, $que);
+            $this->chann->publish((string) json_encode($message, JSON_THROW_ON_ERROR), $headers, $this->ex, $que);
         }
     }
 

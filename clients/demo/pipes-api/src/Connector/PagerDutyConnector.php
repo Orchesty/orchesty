@@ -88,7 +88,7 @@ class PagerDutyConnector extends ConnectorAbstract
             throw new ConnectorException(sprintf('Server response with status code [%s]', $response->getStatusCode()));
         }
         $json          = json_decode($response->getBody(), TRUE, 512, JSON_THROW_ON_ERROR);
-        $finalSchedule = $json['schedule']['final_schedule']['rendered_schedule_entries'] ?? '';
+        $finalSchedule = $json['schedule']['final_schedule']['rendered_schedule_entries'] ?? [''];
         array_shift($finalSchedule);
         array_pop($finalSchedule);
 
@@ -123,7 +123,7 @@ class PagerDutyConnector extends ConnectorAbstract
             }
         }
 
-        return $dto->setData((string) json_encode($res));
+        return $dto->setData((string) json_encode($res, JSON_THROW_ON_ERROR));
     }
 
     /**
@@ -197,7 +197,7 @@ class PagerDutyConnector extends ConnectorAbstract
                 'https://api.pagerduty.com/schedules/PUUDPGA?time_zone=CET&since=%s&until=%s',
                 $since,
                 $till,
-                )
+            )
         );
     }
 

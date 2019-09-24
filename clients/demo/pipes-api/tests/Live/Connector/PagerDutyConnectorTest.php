@@ -31,7 +31,7 @@ final class PagerDutyConnectorTest extends KernelTestCase
         $manager   = self::$container->get('hbpf.transport.curl_manager');
         $connector = new PagerDutyConnector($manager);
         $dto       = new ProcessDto();
-        $dto->setData((string) json_encode(['since' => '2019-04-19', 'until' => '2019-04-29']));
+        $dto->setData((string) json_encode(['since' => '2019-04-19', 'until' => '2019-04-29'], JSON_THROW_ON_ERROR));
         $data = $connector->processAction($dto)->getData();
         $arr  = json_decode($data, TRUE, 512, JSON_THROW_ON_ERROR);
         self::assertEquals(56, $arr['Radek Jirsa']['hours']);

@@ -53,11 +53,13 @@ final class MailchimpCreateContactMapperTest extends DatabaseTestCaseAbstract
 
         self::assertEquals(
             json_decode($dto->getData(), TRUE, 512, JSON_THROW_ON_ERROR),
-            json_decode((string) file_get_contents(
-                sprintf('%s/Data/requestMailchimp.json', __DIR__), TRUE),
+            json_decode(
+                (string) file_get_contents(
+                    sprintf('%s/Data/requestMailchimp.json', __DIR__), TRUE),
                 TRUE,
                 512,
-                JSON_THROW_ON_ERROR)
+                JSON_THROW_ON_ERROR
+            )
         );
     }
 

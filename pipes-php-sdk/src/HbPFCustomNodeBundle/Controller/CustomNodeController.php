@@ -8,11 +8,8 @@ use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\CommonsBundle\Exception\PipesFrameworkExceptionAbstract;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\CommonsBundle\Utils\ControllerUtils;
-use Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Exception\CustomNodeException;
 use Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Handler\CustomNodeHandler;
 use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -34,11 +31,6 @@ class CustomNodeController extends AbstractFOSRestController implements LoggerAw
     private $handler;
 
     /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
      * CustomNodeController constructor.
      *
      * @param CustomNodeHandler $customNodeHandler
@@ -46,7 +38,6 @@ class CustomNodeController extends AbstractFOSRestController implements LoggerAw
     public function __construct(CustomNodeHandler $customNodeHandler)
     {
         $this->handler = $customNodeHandler;
-        $this->logger  = new NullLogger();
     }
 
     /**
@@ -65,16 +56,10 @@ class CustomNodeController extends AbstractFOSRestController implements LoggerAw
             $data = $this->handler->process($nodeId, (string) $request->getContent(), $request->headers->all());
 
             return $this->getResponse($data->getData(), 200, ControllerUtils::createHeaders($data->getHeaders()));
-        } catch (CustomNodeException $e) {
-            $this->logger->error($e->getMessage(), ['exception' => $e]);
-
-            return $this->getErrorResponse($e, 200, ControllerUtils::createHeaders([], $e));
         } catch (PipesFrameworkExceptionAbstract | OnRepeatException $e) {
             throw $e;
         } catch (Throwable $e) {
-            $this->logger->error($e->getMessage(), ['exception' => $e]);
-
-            return $this->getErrorResponse($e, 500, ControllerUtils::createHeaders([], $e));
+            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
         }
     }
 
@@ -92,9 +77,7 @@ class CustomNodeController extends AbstractFOSRestController implements LoggerAw
 
             return $this->getResponse([]);
         } catch (Exception|Throwable $e) {
-            $this->logger->error($e->getMessage(), ['exception' => $e]);
-
-            return $this->getErrorResponse($e);
+            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -110,21 +93,8 @@ class CustomNodeController extends AbstractFOSRestController implements LoggerAw
 
             return $this->getResponse($data);
         } catch (Exception|Throwable $e) {
-            $this->logger->error($e->getMessage(), ['exception' => $e]);
-
-            return $this->getErrorResponse($e, 500);
+            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR);
         }
-
-    }
-
-    /**
-     * @param LoggerInterface $logger
-     *
-     * @required
-     */
-    public function setLogger(LoggerInterface $logger): void
-    {
-        $this->logger = $logger;
     }
 
 }

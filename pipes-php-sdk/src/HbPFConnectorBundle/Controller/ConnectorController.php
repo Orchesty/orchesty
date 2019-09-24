@@ -10,8 +10,6 @@ use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\CommonsBundle\Utils\ControllerUtils;
 use Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Handler\ConnectorHandler;
 use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -21,7 +19,6 @@ use Throwable;
  * Class ConnectorController
  *
  * @package Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Controller
- * @todo    remove logger
  */
 class ConnectorController extends AbstractFOSRestController implements LoggerAwareInterface
 {
@@ -34,11 +31,6 @@ class ConnectorController extends AbstractFOSRestController implements LoggerAwa
     private $connectorHandler;
 
     /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
      * ConnectorController constructor.
      *
      * @param ConnectorHandler $connectorHandler
@@ -46,7 +38,6 @@ class ConnectorController extends AbstractFOSRestController implements LoggerAwa
     public function __construct(ConnectorHandler $connectorHandler)
     {
         $this->connectorHandler = $connectorHandler;
-        $this->logger           = new NullLogger();
     }
 
     /**
@@ -68,9 +59,7 @@ class ConnectorController extends AbstractFOSRestController implements LoggerAwa
         } catch (PipesFrameworkExceptionAbstract | OnRepeatException $e) {
             throw $e;
         } catch (Exception|Throwable $e) {
-            $this->logger->error($e->getMessage(), ['exception' => $e]);
-
-            return $this->getErrorResponse($e, 500, ControllerUtils::createHeaders($request->headers->all(), $e));
+            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
         }
     }
 
@@ -89,9 +78,7 @@ class ConnectorController extends AbstractFOSRestController implements LoggerAwa
 
             return $this->getResponse('');
         } catch (Exception|Throwable $e) {
-            $this->logger->error($e->getMessage(), ['exception' => $e]);
-
-            return $this->getErrorResponse($e, 500, ControllerUtils::createHeaders($request->headers->all(), $e));
+            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
         }
     }
 
@@ -114,9 +101,7 @@ class ConnectorController extends AbstractFOSRestController implements LoggerAwa
         } catch (PipesFrameworkExceptionAbstract | OnRepeatException $e) {
             throw $e;
         } catch (Throwable $e) {
-            $this->logger->error($e->getMessage(), ['exception' => $e]);
-
-            return $this->getErrorResponse($e, 500, ControllerUtils::createHeaders($request->headers->all(), $e));
+            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
         }
     }
 
@@ -135,9 +120,7 @@ class ConnectorController extends AbstractFOSRestController implements LoggerAwa
 
             return $this->getResponse('');
         } catch (Exception|Throwable $e) {
-            $this->logger->error($e->getMessage(), ['exception' => $e]);
-
-            return $this->getErrorResponse($e, 500, ControllerUtils::createHeaders($request->headers->all(), $e));
+            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
         }
     }
 
@@ -153,20 +136,8 @@ class ConnectorController extends AbstractFOSRestController implements LoggerAwa
 
             return $this->getResponse($data);
         } catch (Exception|Throwable $e) {
-            $this->logger->error($e->getMessage(), ['exception' => $e]);
-
-            return $this->getErrorResponse($e, 500);
+            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR);
         }
-    }
-
-    /**
-     * @param LoggerInterface $logger
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger): void
-    {
-        $this->logger = $logger;
     }
 
 }

@@ -24,7 +24,7 @@ final class DataGeneratorConnector extends CustomNodeAbstract
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        $data = json_decode($dto->getData(), TRUE);
+        $data = json_decode($dto->getData(), TRUE, 512, JSON_THROW_ON_ERROR);
         $key  = (new DateTime('NOW', new DateTimeZone('UTC')))->format('d. m. Y H:i:s');
 
         $data['generator'][$key] = [
@@ -33,10 +33,7 @@ final class DataGeneratorConnector extends CustomNodeAbstract
             password_hash($key, PASSWORD_ARGON2I),
         ];
 
-        /** @var string $data */
-        $data = json_encode($data);
-
-        return $dto->setData($data);
+        return $dto->setData(json_encode($data, JSON_THROW_ON_ERROR));
     }
 
 }

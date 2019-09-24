@@ -7,6 +7,7 @@ use Hanaboso\CommonsBundle\Exception\FileStorageException;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\CommonsBundle\Exception\PipesFrameworkExceptionAbstract;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
+use Hanaboso\CommonsBundle\Utils\ControllerUtils;
 use Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler;
 use Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandlerException;
 use Hanaboso\PipesPhpSdk\Parser\Exception\TableParserException;
@@ -54,11 +55,11 @@ class TableParserController extends AbstractFOSRestController
         try {
             return $this->getResponse($this->tableParserHandler->parseToJson($request->request->all()));
         } catch (TableParserHandlerException | FileStorageException $e) {
-            return $this->getErrorResponse($e);
+            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
         } catch (PipesFrameworkExceptionAbstract | OnRepeatException $e) {
             throw $e;
         } catch (Throwable $e) {
-            return $this->getErrorResponse($e);
+            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
         }
     }
 
@@ -74,7 +75,7 @@ class TableParserController extends AbstractFOSRestController
 
             return $this->getResponse('');
         } catch (Throwable $e) {
-            return $this->getErrorResponse($e);
+            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -91,7 +92,7 @@ class TableParserController extends AbstractFOSRestController
         try {
             return $this->getResponse($this->tableParserHandler->parseFromJson($type, $request->request->all()));
         } catch (TableParserHandlerException | TableParserException | FileStorageException | Throwable $e) {
-            return $this->getErrorResponse($e);
+            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
         }
     }
 
@@ -107,7 +108,7 @@ class TableParserController extends AbstractFOSRestController
         try {
             return $this->getResponse($this->tableParserHandler->parseFromJsonTest($type));
         } catch (TableParserException $e) {
-            return $this->getErrorResponse($e);
+            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR);
         }
     }
 

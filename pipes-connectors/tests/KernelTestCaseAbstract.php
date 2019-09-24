@@ -60,7 +60,7 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
         $mock = self::createMock(RedirectInterface::class);
         $mock->method('make')->willReturnCallback(
             function (string $url) use ($expectedUrl): void {
-                $url = preg_replace('/state=[a-zA-Z0-9].*\&/', 'state=state&', $url, 1);
+                $url = preg_replace('/state=[a-zA-Z0-9].*&/', 'state=state&', $url, 1);
                 self::assertEquals($expectedUrl, $url);
             }
         );

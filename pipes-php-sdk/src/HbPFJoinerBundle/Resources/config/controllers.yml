@@ -8,3 +8,4 @@ services:
             - '@hbpf.handler.joiner'
         calls:
             - ['setContainer', ['@service_container']]
+            - ['setLogger', ['@monolog.logger.commons']]

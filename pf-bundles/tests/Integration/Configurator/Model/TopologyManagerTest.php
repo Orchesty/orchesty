@@ -681,7 +681,12 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
      */
     private function getSchema(string $name = 'schema.json'): array
     {
-        return json_decode((string) file_get_contents(sprintf('%s/data/%s', __DIR__, $name)), TRUE);
+        return json_decode(
+            (string) file_get_contents(sprintf('%s/data/%s', __DIR__, $name)),
+            TRUE,
+            512,
+            JSON_THROW_ON_ERROR
+        );
     }
 
     /**

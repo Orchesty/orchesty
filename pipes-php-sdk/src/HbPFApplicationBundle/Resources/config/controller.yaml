@@ -6,3 +6,5 @@ services:
         class: Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController
         arguments:
             - '@hbpf.application.handler'
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]

@@ -7,6 +7,7 @@ use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\CommonsBundle\Exception\PipesFrameworkExceptionAbstract;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
+use Hanaboso\CommonsBundle\Utils\ControllerUtils;
 use Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Exception\JoinerException;
 use Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Handler\JoinerHandler;
 use Symfony\Component\HttpFoundation\Request;
@@ -56,7 +57,7 @@ class JoinerController extends AbstractFOSRestController
 
             return $this->getResponse($data);
         } catch (JoinerException $e) {
-            return $this->getErrorResponse($e);
+            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
         } catch (PipesFrameworkExceptionAbstract | OnRepeatException $e) {
             throw $e;
         }
@@ -77,7 +78,7 @@ class JoinerController extends AbstractFOSRestController
 
             return $this->getResponse([]);
         } catch (JoinerException $e) {
-            return $this->getErrorResponse($e);
+            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
         }
     }
 
@@ -94,7 +95,7 @@ class JoinerController extends AbstractFOSRestController
             return $this->getResponse($data);
         } catch (Exception|Throwable $e) {
 
-            return $this->getErrorResponse($e, 500);
+            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR);
         }
     }
 

@@ -58,7 +58,7 @@ class LongRunningNodeController extends AbstractFOSRestController
         } catch (PipesFrameworkExceptionAbstract | OnRepeatException $e) {
             throw $e;
         } catch (Throwable $e) {
-            return $this->getErrorResponse($e, 200, ControllerUtils::createHeaders([], $e));
+            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
         }
     }
 
@@ -76,7 +76,7 @@ class LongRunningNodeController extends AbstractFOSRestController
 
             return $this->getResponse([]);
         } catch (Throwable $e) {
-            return $this->getErrorResponse($e, 200, ControllerUtils::createHeaders([], $e));
+            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -94,7 +94,7 @@ class LongRunningNodeController extends AbstractFOSRestController
             return $this->getResponse($this->handler->getTasksById(new GridRequestDto($request->headers->all()),
                 $topo));
         } catch (Throwable $e) {
-            return $this->getErrorResponse($e, 200, ControllerUtils::createHeaders([], $e));
+            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
         }
     }
 
@@ -111,7 +111,7 @@ class LongRunningNodeController extends AbstractFOSRestController
         try {
             return $this->getResponse($this->handler->getTasks(new GridRequestDto($request->headers->all()), $topo));
         } catch (Throwable $e) {
-            return $this->getErrorResponse($e, 200, ControllerUtils::createHeaders([], $e));
+            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
         }
     }
 
@@ -133,7 +133,7 @@ class LongRunningNodeController extends AbstractFOSRestController
                 $node
             ));
         } catch (Throwable $e) {
-            return $this->getErrorResponse($e, 200, ControllerUtils::createHeaders([], $e));
+            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
         }
     }
 
@@ -155,7 +155,7 @@ class LongRunningNodeController extends AbstractFOSRestController
                 $node
             ));
         } catch (Throwable $e) {
-            return $this->getErrorResponse($e, 200, ControllerUtils::createHeaders([], $e));
+            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
         }
     }
 
@@ -171,7 +171,7 @@ class LongRunningNodeController extends AbstractFOSRestController
 
             return $this->getResponse($data);
         } catch (Throwable $t) {
-            return $this->getErrorResponse($t);
+            return $this->getErrorResponse($t, 500, ControllerUtils::INTERNAL_SERVER_ERROR);
         }
     }
 

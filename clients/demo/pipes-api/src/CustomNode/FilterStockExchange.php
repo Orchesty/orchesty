@@ -49,10 +49,10 @@ class FilterStockExchange extends CustomNodeAbstract implements LoggerAwareInter
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        $data = json_decode($dto->getData(), TRUE);
+        $data = json_decode($dto->getData(), TRUE, 512, JSON_THROW_ON_ERROR);
 
         if (array_key_exists($this->key, $data)) {
-            return $dto->setData((string) json_encode($data[$this->key]));
+            return $dto->setData((string) json_encode($data[$this->key], JSON_THROW_ON_ERROR));
         }
 
         try {

@@ -72,16 +72,21 @@ class DownloaderCommand extends Command
             ->then(function (WebSocket $ws) use ($loop, $output, $uri, $browser): void {
 
                 $this->heartbeat = $loop->addPeriodicTimer(5, function () use ($ws): void {
-                    $ws->send(json_encode([
-                        'event' => 'pusher:ping', 'data' => [],
-                    ]));
+                    $ws->send(
+                        json_encode(
+                            [
+                                'event' => 'pusher:ping', 'data' => [],
+                            ],
+                            JSON_THROW_ON_ERROR
+                        )
+                    );
                 });
 
                 $ws->on('message', function (MessageInterface $json) use ($ws, $output, $uri, $browser): void {
 
                     $json = (string) $json;
 
-                    $data = json_decode($json, TRUE);
+                    $data = json_decode($json, TRUE, 512, JSON_THROW_ON_ERROR);
 
                     if (!array_key_exists('event', $data)) {
                         $output->writeln('Bad data - no event.');
@@ -102,9 +107,14 @@ class DownloaderCommand extends Command
                                 //'order_book_ltcbtc',
                             ];
                             foreach ($channels as $channel) {
-                                $ws->send(json_encode([
-                                    'event' => 'pusher:subscribe', 'data' => ['channel' => $channel],
-                                ]));
+                                $ws->send(
+                                    json_encode(
+                                        [
+                                            'event' => 'pusher:subscribe', 'data' => ['channel' => $channel],
+                                        ],
+                                        JSON_THROW_ON_ERROR
+                                    )
+                                );
                             }
                             break;
                         case 'pusher_internal:subscription_succeeded':
@@ -124,7 +134,9 @@ class DownloaderCommand extends Command
                                 $this->sendData($json, $output, $browser, 'demo-topology');
                                 $this->sendData($json, $output, $browser, 'shipping-process');
                             } else {
-                                $output->writeln(sprintf('Received unknown event: %s', json_encode($data)));
+                                $output->writeln(
+                                    sprintf('Received unknown event: %s', json_encode($data, JSON_THROW_ON_ERROR))
+                                );
                             }
                     }
 

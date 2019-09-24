@@ -62,7 +62,7 @@ final class TableParser implements TableParserInterface
             }
         }
 
-        return (string) json_encode($data);
+        return (string) json_encode($data, JSON_THROW_ON_ERROR);
     }
 
     /**
@@ -84,7 +84,7 @@ final class TableParser implements TableParserInterface
         $spreadsheet = new Spreadsheet();
         $worksheet   = $spreadsheet->setActiveSheetIndex(0);
         $writer      = $this->createWriter($spreadsheet, $type);
-        $data        = json_decode((string) file_get_contents($path));
+        $data        = json_decode((string) file_get_contents($path), FALSE, 512, JSON_THROW_ON_ERROR);
 
         $headers = [];
         if ($hasHeaders) {

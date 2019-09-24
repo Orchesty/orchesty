@@ -37,7 +37,7 @@ composer-update:
 
 clear-cache:
 	$(DE) sudo rm -rf var/log
-	$(DE) bin/console cache:clear
+	$(DE) bin/console cache:clear --env=test
 	$(DE) bin/console cache:warmup --env=test
 
 # App

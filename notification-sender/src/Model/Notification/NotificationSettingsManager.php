@@ -4,7 +4,6 @@ namespace Hanaboso\NotificationSender\Model\Notification;
 
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\NotificationSender\Document\NotificationSettings;
 use Hanaboso\NotificationSender\Exception\NotificationException;
@@ -91,7 +90,6 @@ final class NotificationSettingsManager
      * @param string $id
      *
      * @return array
-     * @throws DocumentNotFoundException
      * @throws NotificationException
      */
     public function getSettings(string $id): array
@@ -108,7 +106,6 @@ final class NotificationSettingsManager
      *
      * @return array
      * @throws NotificationException
-     * @throws DocumentNotFoundException
      */
     public function saveSettings(string $id, array $data): array
     {
@@ -147,7 +144,7 @@ final class NotificationSettingsManager
      * @param string $id
      *
      * @return NotificationSettings
-     * @throws DocumentNotFoundException
+     * @throws NotificationException
      */
     private function getById(string $id): NotificationSettings
     {
@@ -155,7 +152,10 @@ final class NotificationSettingsManager
         $settings = $this->repository->findOneBy([NotificationSettings::ID => $id]);
 
         if (!$settings) {
-            throw new DocumentNotFoundException(sprintf("NotificationSettings with key '%s' not found!", $id));
+            throw new NotificationException(
+                sprintf("NotificationSettings with key '%s' not found!", $id),
+                NotificationException::NOTIFICATION_SETTINGS_NOT_FOUND
+            );
         }
 
         return $settings;

@@ -14,7 +14,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
-use Symfony\Component\Security\Core\Encoder\BCryptPasswordEncoder;
+use Symfony\Component\Security\Core\Encoder\NativePasswordEncoder;
 
 /**
  * Class ControllerTestCaseAbstract
@@ -45,7 +45,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     protected $tokenStorage;
 
     /**
-     * @var BCryptPasswordEncoder
+     * @var NativePasswordEncoder
      */
     protected $encoder;
 
@@ -61,7 +61,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
         parent::__construct($name, $data, $dataName);
 
         self::bootKernel();
-        $this->encoder = new BCryptPasswordEncoder(12);
+        $this->encoder = new NativePasswordEncoder(3);
     }
 
     /**
@@ -152,7 +152,14 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
      */
     protected function sendPost(string $url, array $parameters, ?array $content = NULL): object
     {
-        self::$client->request('POST', $url, $parameters, [], [], $content ? (string) json_encode($content) : '');
+        self::$client->request(
+            'POST',
+            $url,
+            $parameters,
+            [],
+            [],
+            $content ? (string) json_encode($content, JSON_THROW_ON_ERROR) : ''
+        );
 
         /** @var Response $response */
         $response = self::$client->getResponse();
@@ -169,7 +176,14 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
      */
     protected function sendPut(string $url, array $parameters, ?array $content = NULL): object
     {
-        self::$client->request('PUT', $url, $parameters, [], [], $content ? (string) json_encode($content) : '');
+        self::$client->request(
+            'PUT',
+            $url,
+            $parameters,
+            [],
+            [],
+            $content ? (string) json_encode($content, JSON_THROW_ON_ERROR) : ''
+        );
 
         /** @var Response $response */
         $response = self::$client->getResponse();
@@ -199,7 +213,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
      */
     protected function returnResponse(Response $response): object
     {
-        $content = json_decode((string) $response->getContent(), TRUE);
+        $content = json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR);
         if (isset($content['error_code'])) {
             $content['errorCode'] = $content['error_code'];
             unset($content['error_code']);

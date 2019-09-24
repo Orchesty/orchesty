@@ -61,7 +61,7 @@ class SendDutyEmail extends CustomNodeAbstract
         $dates = json_decode($dto->getData(), TRUE, 512, JSON_THROW_ON_ERROR);
 
         $dataDto = $this->dutyConnector->processAction($dto);
-        $data    = json_decode($dataDto->getData());
+        $data    = json_decode($dataDto->getData(), FALSE, 512, JSON_THROW_ON_ERROR);
         $data    = json_encode($data, JSON_UNESCAPED_UNICODE);
         $data    = str_replace(['}', '{'], ['', ''], (string) $data);
         $data    = str_replace('"', '', $data);

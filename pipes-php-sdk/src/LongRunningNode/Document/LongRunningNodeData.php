@@ -383,7 +383,7 @@ class LongRunningNodeData
      */
     public function getHeaders(): array
     {
-        return is_array($this->headers) ? $this->headers : json_decode($this->headers, TRUE);
+        return is_array($this->headers) ? $this->headers : json_decode($this->headers, TRUE, 512, JSON_THROW_ON_ERROR);
     }
 
     /**
@@ -423,7 +423,10 @@ class LongRunningNodeData
      */
     public function getAuditLogs(): array
     {
-        return is_array($this->auditLogs) ? $this->auditLogs : json_decode($this->auditLogs, TRUE);
+        return
+            is_array($this->auditLogs) ?
+                $this->auditLogs :
+                json_decode($this->auditLogs, TRUE, 512, JSON_THROW_ON_ERROR);
     }
 
     /**
@@ -466,10 +469,10 @@ class LongRunningNodeData
     public function preFlush(): void
     {
         if (is_array($this->headers)) {
-            $this->headers = (string) json_encode($this->headers);
+            $this->headers = (string) json_encode($this->headers, JSON_THROW_ON_ERROR);
         }
         if (is_array($this->auditLogs)) {
-            $this->auditLogs = (string) json_encode($this->auditLogs);
+            $this->auditLogs = (string) json_encode($this->auditLogs, JSON_THROW_ON_ERROR);
         }
     }
 
@@ -479,10 +482,10 @@ class LongRunningNodeData
     public function postLoad(): void
     {
         if (!is_array($this->headers)) {
-            $this->headers = json_decode($this->headers, TRUE);
+            $this->headers = json_decode($this->headers, TRUE, 512, JSON_THROW_ON_ERROR);
         }
         if (!is_array($this->auditLogs)) {
-            $this->auditLogs = json_decode($this->auditLogs, TRUE);
+            $this->auditLogs = json_decode($this->auditLogs, TRUE, 512, JSON_THROW_ON_ERROR);
         }
     }
 
@@ -519,8 +522,14 @@ class LongRunningNodeData
             ->setProcessId((string) $message->getHeader(PipesHeaders::createKey(PipesHeaders::PROCESS_ID), ''))
             ->setSequenceId((string) $message->getHeader(PipesHeaders::createKey(PipesHeaders::SEQUENCE_ID), ''))
             ->setUpdatedBy((string) $message->getHeader(PipesHeaders::createKey(self::UPDATED_BY_HEADER), ''))
-            ->setAuditLogs(json_decode($message->getHeader(PipesHeaders::createKey(self::AUDIT_LOGS_HEADER), '{}'),
-                TRUE));
+            ->setAuditLogs(
+                json_decode(
+                    $message->getHeader(PipesHeaders::createKey(self::AUDIT_LOGS_HEADER), '{}'),
+                    TRUE,
+                    512,
+                    JSON_THROW_ON_ERROR
+                )
+            );
 
         return $ent;
     }

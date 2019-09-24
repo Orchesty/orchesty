@@ -26,7 +26,12 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
 
         self::assertEquals(200, $response->status);
         self::assertEquals(
-            json_decode((string) file_get_contents(__DIR__ . '/../../../Integration/Parser/data/output-10.json')),
+            json_decode(
+                (string) file_get_contents(__DIR__ . '/../../../Integration/Parser/data/output-10.json'),
+                FALSE,
+                512,
+                JSON_THROW_ON_ERROR
+            ),
             $response->content
         );
     }
@@ -41,7 +46,7 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
         self::assertEquals(500, $response->status);
         $content = $response->content;
         self::assertEquals(FileStorageException::class, $content->type);
-        self::assertEquals(2001, $content->errorCode);
+        self::assertEquals(1501, $content->errorCode);
     }
 
     /**
@@ -77,7 +82,7 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
 
         self::assertEquals(500, $response->status);
         self::assertEquals(FileStorageException::class, $content->type);
-        self::assertEquals(2001, $content->errorCode);
+        self::assertEquals(1501, $content->errorCode);
     }
 
     /**
@@ -92,7 +97,7 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
 
         self::assertEquals(500, $response->status);
         self::assertEquals(TableParserException::class, $content->type);
-        self::assertEquals(2001, $content->errorCode);
+        self::assertEquals(801, $content->errorCode);
     }
 
     /**
@@ -127,7 +132,7 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
 
         self::assertEquals(500, $response->status);
         self::assertEquals(TableParserException::class, $content->type);
-        self::assertEquals(2001, $content->errorCode);
+        self::assertEquals(801, $content->errorCode);
     }
 
     /**
@@ -139,11 +144,18 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
      */
     protected function sendPost(string $url, array $parameters, ?array $content = NULL): object
     {
-        self::$client->request('POST', $url, $parameters, [], [], $content ? (string) json_encode($content) : '');
+        self::$client->request(
+            'POST',
+            $url,
+            $parameters,
+            [],
+            [],
+            $content ? (string) json_encode($content, JSON_THROW_ON_ERROR) : ''
+        );
         /** @var Response $response */
         $response = self::$client->getResponse();
 
-        $res = json_decode((string) $response->getContent(), TRUE);
+        $res = json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR);
 
         if (isset($res['error_code'])) {
             return parent::sendPost($url, $parameters, $content);
@@ -151,7 +163,7 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
 
         return (object) [
             'status'  => $response->getStatusCode(),
-            'content' => json_decode((string) $response->getContent()),
+            'content' => json_decode((string) $response->getContent(), FALSE, 512, JSON_THROW_ON_ERROR),
         ];
     }
 

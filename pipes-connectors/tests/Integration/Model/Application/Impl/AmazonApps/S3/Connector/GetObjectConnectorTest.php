@@ -38,7 +38,7 @@ final class GetObjectConnectorTest extends DatabaseTestCaseAbstract
         $this->createApplication();
 
         $dto = (new ProcessDto())
-            ->setData((string) json_encode(['name' => 'Test', 'content' => 'Content']))
+            ->setData((string) json_encode(['name' => 'Test', 'content' => 'Content'], JSON_THROW_ON_ERROR))
             ->setHeaders(['pf-application' => self::KEY, 'pf-user' => self::USER]);
 
         self::$container
@@ -57,7 +57,7 @@ final class GetObjectConnectorTest extends DatabaseTestCaseAbstract
         $this->createApplication();
 
         $dto     = (new ProcessDto())
-            ->setData((string) json_encode(['name' => 'Test']))
+            ->setData((string) json_encode(['name' => 'Test'], JSON_THROW_ON_ERROR))
             ->setHeaders(['pf-application' => self::KEY, 'pf-user' => self::USER]);
         $dto     = $this->connector->processAction($dto);
         $content = json_decode($dto->getData(), TRUE, 512, JSON_THROW_ON_ERROR);
@@ -92,7 +92,7 @@ final class GetObjectConnectorTest extends DatabaseTestCaseAbstract
         $this->createApplication();
 
         $dto = (new ProcessDto())
-            ->setData((string) json_encode(['name' => 'Unknown']))
+            ->setData((string) json_encode(['name' => 'Unknown'], JSON_THROW_ON_ERROR))
             ->setHeaders(['pf-application' => self::KEY, 'pf-user' => self::USER]);
 
         self::expectException(OnRepeatException::class);
