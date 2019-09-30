@@ -38,8 +38,8 @@ class SdkImlChangeForm extends React.Component {
   render() {
     return (
       <form className="form-horizontal form-label-left" onSubmit={this.props.handleSubmit(this.onSubmit)}>
-        <Field name="key" component={FormTextInput} label="Key" autoFocus={true} />
-        <Field name="value" component={FormTextInput} label="Value" />
+        <Field name="value" component={FormTextInput} label="Name" autoFocus={true} />
+        <Field name="key" component={FormTextInput} label="URL" />
         <button ref={this.setButton} className="hidden" />
       </form>
     );
@@ -50,15 +50,15 @@ function validate(values, { keys, cKey }) {
   const errors = {};
 
   if (!values.key) {
-    errors.key = 'Key must be filled!';
+    errors.key = 'URL must be filled!';
   }
 
   if (keys.includes(values.key) && values.key !== cKey) {
-    errors.key = 'Key must be unique!';
+    errors.key = 'URL must be unique!';
   }
 
   if (!values.value) {
-    errors.value = 'Value must be filled!';
+    errors.value = 'Name must be filled!';
   }
 
   return errors;

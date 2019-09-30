@@ -16,8 +16,8 @@ class SdkImplsListTable extends AbstractTable {
 
     return (
       <tr>
-        <th className="col-md-4">Key</th>
-        <th className="col-md-4">Value</th>
+        <th className="col-md-4">Name</th>
+        <th className="col-md-4">URL</th>
         <th className="col-md-4">
           <button
             className="btn btn-primary"
@@ -48,8 +48,8 @@ class SdkImplsListTable extends AbstractTable {
 
       return (
         <tr key={key}>
-          <td className="col-md-4">{key}</td>
           <td className="col-md-4">{value}</td>
+          <td className="col-md-4">{key}</td>
           <td className="col-md-4">
             <ActionButtonPanel
               items={menuItems}
