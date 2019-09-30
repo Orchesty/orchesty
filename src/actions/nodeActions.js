@@ -86,10 +86,10 @@ export function nodeUpdate(id, data, silent = false) {
   };
 }
 
-export function nodeRun(nodeId, nodeName, nodeType, topologyId, topologyName, data, silent = false) {
+export function nodeRun(nodeId, nodeName, nodeType, topologyId, topologyName, userId, data, silent = false) {
   return dispatch => new Promise((resolve, reject) => {
     dispatch(processActions.startProcess(processes.nodeRun(nodeId)));
-    startingPointRequest(dispatch, 'POST', getNodeRunUrl(nodeId, nodeName, nodeType, topologyId, topologyName), null, data).then((response) => {
+    startingPointRequest(dispatch, 'POST', getNodeRunUrl(nodeId, nodeName, nodeType, topologyId, topologyName, userId), null, data).then((response) => {
       dispatch(processActions.finishProcess(processes.nodeRun(nodeId), response));
       if (response) {
         if (!silent) {
@@ -103,6 +103,8 @@ export function nodeRun(nodeId, nodeName, nodeType, topologyId, topologyName, da
   });
 }
 
-export function getNodeRunUrl(nodeId, nodeName, nodeType, topologyId, topologyName, data = {}) {
-  return nodeType === 'webhook' ? `/topologies/${topologyName}/nodes/${nodeName}/token/${data.token ? data.token : 'token'}/run` : `/topologies/${topologyId}/nodes/${nodeId}/run`;
+export function getNodeRunUrl(nodeId, nodeName, nodeType, topologyId, topologyName, userId, data = {}) {
+  return nodeType === 'webhook' ?
+    `/topologies/${topologyName}/nodes/${nodeName}/token/${data.token ? data.token : 'token'}/run` :
+    `/topologies/${topologyId}/nodes/${nodeId}/user/${userId}/run`;
 }

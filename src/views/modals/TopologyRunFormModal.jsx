@@ -7,11 +7,11 @@ import processes from 'rootApp/enums/processes';
 import { getNodeRunUrl } from '../../actions/nodeActions';
 import { makeStartingPointUrl } from '../../services/apiGatewayServer';
 
-function mapStateToProps(state, { nodeId, nodeName, nodeType, topologyId, topologyName, componentKey }) {
+function mapStateToProps({ auth: { user: { id: userId } } }, { nodeId, nodeName, nodeType, topologyId, topologyName, componentKey }) {
   return {
     form: componentKey,
     processId: processes.nodeRun(nodeId),
-    subTitle: makeStartingPointUrl(getNodeRunUrl(nodeId, nodeName, nodeType, topologyId, topologyName))
+    subTitle: makeStartingPointUrl(getNodeRunUrl(nodeId, nodeName, nodeType, topologyId, topologyName, userId))
   };
 }
 

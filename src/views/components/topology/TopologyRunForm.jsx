@@ -30,8 +30,9 @@ class TopologyRunForm extends React.Component {
   }
 
   onSubmit(data){
+    const {userId} = this.props;
     const {body} = data;
-    this.props.commitAction(body ? JSON.parse(body) : {}).then(
+    this.props.commitAction(userId, body ? JSON.parse(body) : {}).then(
       response => {
         const {onSuccess} = this.props;
         if (response){
@@ -64,18 +65,21 @@ function validate(values){
 }
 
 TopologyRunForm.propTypes = {
+  userId: PropTypes.string.isRequired,
   commitAction: PropTypes.func.isRequired,
   onSuccess: PropTypes.func,
   handleSubmit: PropTypes.func.isRequired
 };
 
-function mapStateToProps(state, ownProps) {
-  return {};
+function mapStateToProps({ auth: { user: { id: userId } } }, ownProps) {
+  return {
+    userId
+  };
 }
 
 function mapActionsToProps(dispatch, { nodeId, nodeName, nodeType, topologyId, topologyName }){
   return {
-    commitAction: (data) => dispatch(nodeActions.nodeRun(nodeId, nodeName, nodeType, topologyId, topologyName, data))
+    commitAction: (userId, data) => dispatch(nodeActions.nodeRun(nodeId, nodeName, nodeType, topologyId, topologyName, userId, data))
   }
 }
 
