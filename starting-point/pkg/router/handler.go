@@ -125,6 +125,10 @@ func handleByID(w http.ResponseWriter, r *http.Request, isHumanTask, isStop bool
 		return
 	}
 
+	if vars["user"] != "" {
+		r.Header.Set(utils.UserID, vars["user"])
+	}
+
 	go processMessage(isHumanTask, isStop, topology, r, init)
 
 	writeResponse(w, map[string]interface{}{"state": "ok", "started": 1})
@@ -156,6 +160,10 @@ func handleByName(w http.ResponseWriter, r *http.Request, isHumanTask, isStop bo
 			writeErrorResponse(w, http.StatusNotFound, fmt.Sprintf("Topology with name '%s', node with name '%s' and human task with token '%s' not found!", vars["topology"], vars["node"], vars["token"]))
 			return
 		}
+	}
+
+	if vars["user"] != "" {
+		r.Header.Set(utils.UserID, vars["user"])
 	}
 
 	go processMessage(isHumanTask, isStop, topology, r, init)

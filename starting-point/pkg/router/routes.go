@@ -16,9 +16,21 @@ func GetDefaultRoutes() Routes {
 			HandlerFunc: HandleClear(HandleRunByID),
 		},
 		Route{
+			Name:        "Run topology by ID with user",
+			Method:      "POST",
+			Pattern:     "/topologies/{topology}/nodes/{node}/user/{user}/run",
+			HandlerFunc: HandleClear(HandleRunByID),
+		},
+		Route{
 			Name:        "Run topology by name",
 			Method:      "POST",
 			Pattern:     "/topologies/{topology}/nodes/{node}/run-by-name",
+			HandlerFunc: HandleClear(HandleRunByName),
+		},
+		Route{
+			Name:        "Run topology by name with user",
+			Method:      "POST",
+			Pattern:     "/topologies/{topology}/nodes/{node}/user/{user}/run-by-name",
 			HandlerFunc: HandleClear(HandleRunByName),
 		},
 		Route{
