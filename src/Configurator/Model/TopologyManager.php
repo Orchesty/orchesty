@@ -201,6 +201,7 @@ class TopologyManager
      * @return Topology
      * @throws NodeException
      * @throws EnumException
+     * @throws TopologyException
      */
     public function cloneTopology(Topology $topology): Topology
     {
@@ -221,6 +222,8 @@ class TopologyManager
                 ->setCron($topologyNode->getCron())
                 ->setCronParams($topologyNode->getCronParams());
             $this->dm->persist($nodeCopy);
+
+            $this->makePatchRequestForCron($topologyNode, $topologyNode->getType(), $topology->getId());
 
             $nodesMap[$topologyNode->getId()] = ['orig' => $topologyNode, 'copy' => $nodeCopy];
         }
