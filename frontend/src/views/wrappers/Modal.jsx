@@ -59,7 +59,7 @@ export default (WrappedComponent, parameters) => {
                 <button type="button" className="close" onClick={this.closeClick}>
                   <span aria-hidden="true">×</span>
                 </button>
-                <h4 className="modal-title"><strong>{title}</strong> {subTitle && <small>{subTitle}</small>}</h4>
+                <h4 className="modal-title"><strong>{title}</strong> {subTitle && <small style={{ whiteSpace: 'nowrap' }}>{subTitle}</small>}</h4>
               </div>
               <div className="modal-body">
                 <WrappedComponent setSubmit={this.setSubmit} onSuccess={this.close} {...passProps}/>
