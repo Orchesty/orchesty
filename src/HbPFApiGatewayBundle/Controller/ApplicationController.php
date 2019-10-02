@@ -148,7 +148,7 @@ class ApplicationController extends AbstractFOSRestController
      */
     public function authorizeApplicationAction(Request $request, string $key, string $user): Response
     {
-        return $this->forward('HbPFAppStoreBundle:Application:authorizeApplication', [
+        return $this->forward('HbPFApplicationBundle:Application:authorizeApplication', [
             'request' => $request,
             'key'     => $key,
             'user'    => $user,
@@ -166,7 +166,7 @@ class ApplicationController extends AbstractFOSRestController
      */
     public function setAuthorizationTokenAction(Request $request, string $key, string $user): Response
     {
-        return $this->forward('HbPFAppStoreBundle:Application:setAuthorizationToken', [
+        return $this->forward('HbPFApplicationBundle:Application:setAuthorizationToken', [
             'request' => $request,
             'key'     => $key,
             'user'    => $user,
@@ -182,7 +182,7 @@ class ApplicationController extends AbstractFOSRestController
      */
     public function setAuthorizationTokenQueryAction(Request $request): Response
     {
-        return $this->forward('HbPFAppStoreBundle:Application:setAuthorizationTokenQuery', [
+        return $this->forward('HbPFApplicationBundle:Application:setAuthorizationTokenQuery', [
             'request' => $request,
         ]);
     }
