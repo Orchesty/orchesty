@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\Installer\Model;
+namespace Hanaboso\Portal\Model\Installer;
 
 use Exception;
 use Symfony\Component\Yaml\Yaml;
@@ -627,7 +627,7 @@ class Installer
     protected function getAllVolumes(): array
     {
 
-        return $this->logsVolumes + $this->metricsVolumes + $this->databasesVolumes;
+        return $this->logsVolumes + $this->metricsVolumes;
 
     }
 

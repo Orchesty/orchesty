@@ -2,18 +2,20 @@
 
 namespace Tests\Integration;
 
+use Tests\KernelTestCaseAbstract;
+
 /**
  * Class TemporaryTest
  */
-final class TemporaryTest
+final class TemporaryTest extends KernelTestCaseAbstract
 {
 
     /**
      *
      */
-    public function basic(): void
+    public function testBasic(): void
     {
-
+          self::assertCount(0,[]);
     }
 
 }

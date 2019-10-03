@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\Installer\Model;
+namespace Tests\Unit\Model\Installer;
 
-use Hanaboso\PipesFramework\Installer\Model\DataTransport;
-use Hanaboso\PipesFramework\Installer\Model\Installer;
+use Hanaboso\Portal\Model\Installer\DataTransport;
+use Hanaboso\Portal\Model\Installer\Installer;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -31,9 +31,7 @@ final class InstallerTest extends TestCase
      */
     public function testCreateArray(): void
     {
-
         $installer = new Installer();
-
         $dto = new DataTransport();
 
         $secondaryArray = $this->getSecondaryKeysSorted();
@@ -79,7 +77,7 @@ final class InstallerTest extends TestCase
             'version',
             'services',
             'volumes',
-            'networks'
+            'networks',
         ];
 
     }

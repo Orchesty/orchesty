@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\Installer\Model;
+namespace Hanaboso\Portal\Model\Installer;
 
-use Hanaboso\PipesFramework\Installer\Exception\InstallerException;
+use Hanaboso\Portal\Model\Installer\Exception\InstallerException;
 
 /**
  * Class Installer
@@ -11,6 +11,7 @@ use Hanaboso\PipesFramework\Installer\Exception\InstallerException;
  */
 class DataTransport
 {
+
     /**
      * @var string
      */

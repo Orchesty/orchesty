@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\Installer\Exception;
+namespace Hanaboso\Portal\Model\Installer\Exception;
 
 use Exception;
 

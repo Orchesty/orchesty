@@ -1,0 +1,10 @@
+services:
+    _defaults:
+        autowire: false
+        autoconfigure: false
+        public: '%service_visibility%'
+
+    portal.handler.installer:
+        class: Hanaboso\Portal\Handler\InstallerHandler
+        arguments:
+            - '@installer'

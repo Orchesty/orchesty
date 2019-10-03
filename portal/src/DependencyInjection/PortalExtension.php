@@ -28,6 +28,8 @@ class PortalExtension extends Extension
 
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('controllers.yaml');
+        $loader->load('handlers.yaml');
+        $loader->load('services.yaml');
     }
 
 }

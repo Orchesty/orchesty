@@ -12,4 +12,21 @@ use Tests\ControllerTestCaseAbstract;
 final class PortalControllerTest extends ControllerTestCaseAbstract
 {
 
+    /**
+     *
+     */
+    public function testIndex(): void
+    {
+        $response = $this->sendGet('/');
+
+        $this->assertEquals(200, $response->getStatus());
+        $this->assertEquals([
+            'name'    => 'portal',
+            'version' => '1.0.0',
+            'status'  => 'OK',
+        ],
+            $response->getContent()
+        );
+    }
+
 }
