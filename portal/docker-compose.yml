@@ -1,0 +1,16 @@
+version: '2.2'
+services:
+  app:
+    image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
+    user: ${DEV_UID}:${DEV_GID}
+    ports:
+      - ${DEV_IP}:8000:80
+    volumes:
+      - ./:/var/www
+      - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
+      - ${HOME}/.composer:/srv/.composer
+    environment:
+      - APP_ENV=dev
+      - DEV_UID=${DEV_UID}
+      - DEV_GID=${DEV_GID}
+      - PHP_IDE_CONFIG=${PHP_IDE_CONFIG}

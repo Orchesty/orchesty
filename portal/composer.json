@@ -1,0 +1,28 @@
+{
+  "name": "hanaboso/portal",
+  "license": "proprietary",
+  "description": "Pipes portal",
+  "version": "1.0.0",
+  "autoload": {
+    "psr-4": {
+      "Hanaboso\\Portal\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
+  "require": {
+    "php": "^7.3",
+    "ext-json": "*",
+    "friendsofsymfony/rest-bundle": "^2.5",
+    "hanaboso/commons-bundle": "^1.1",
+    "jms/serializer-bundle": "^3.4",
+    "symfony/monolog-bundle": "^3.4",
+    "symfony/symfony": "^4.3"
+  },
+  "require-dev": {
+    "hanaboso/php-check-utils": "^1.0"
+  }
+}
