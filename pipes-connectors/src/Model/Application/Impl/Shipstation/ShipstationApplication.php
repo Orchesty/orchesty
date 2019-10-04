@@ -91,7 +91,7 @@ class ShipstationApplication extends BasicApplicationAbstract implements Webhook
     public function getSettingsForm(): Form
     {
         $form        = new Form();
-        $field       = new Field(Field::TEXT, BasicApplicationAbstract::USER, 'API Keys', NULL, TRUE);
+        $field       = new Field(Field::TEXT, BasicApplicationAbstract::USER, 'API Key', NULL, TRUE);
         $fieldSecret = new Field(Field::TEXT, BasicApplicationAbstract::PASSWORD, 'API Secret', NULL, TRUE);
         $form->addField($field);
         $form->addField($fieldSecret);
