@@ -38,6 +38,7 @@ class InstallerController extends AbstractFOSRestController
 
     /**
      * @Route("/installer", methods={"POST"})
+     * @param Request $request
      *
      * @return Response
      */
