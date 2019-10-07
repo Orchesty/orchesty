@@ -22,7 +22,7 @@ class SendDutyEmail extends CustomNodeAbstract
 {
 
     private const FROM    = 'dev.email.hb@gmail.com';
-    private const TO      = 'jirsa.r@hanaboso.com';
+    private const TO      = ['jirsa.r@hanaboso.com', 'bucek.karel@gmail.com'];
     private const SUBJECT = 'Monitoring';
 
     /**
@@ -69,7 +69,9 @@ class SendDutyEmail extends CustomNodeAbstract
         $data    = str_replace(',', sprintf(',%s', PHP_EOL), $data);
 
         $subject = $this->getSubject($dates);
-        $this->send($data, $subject);
+        foreach (self::TO as $to) {
+            $this->send($data, $subject, $to);
+        }
 
         return $dataDto->setData($data);
     }
@@ -81,7 +83,7 @@ class SendDutyEmail extends CustomNodeAbstract
      *
      * @throws MailerException
      */
-    private function send(string $data, string $subject, string $to = self::TO): void
+    private function send(string $data, string $subject, string $to): void
     {
         $this->mailer->renderAndSend(
             new GenericTransportMessage(self::FROM, $to, $subject, $data)
