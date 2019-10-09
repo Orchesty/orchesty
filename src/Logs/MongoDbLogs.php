@@ -7,11 +7,9 @@ use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
 use Hanaboso\CommonsBundle\Database\Document\Node;
-use Hanaboso\MongoDataGrid\Exception\GridException;
 use Hanaboso\MongoDataGrid\GridRequestDto;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Driver\Exception\InvalidArgumentException;
-use MongoException;
 
 /**
  * Class MongoDbLogs
@@ -68,8 +66,6 @@ class MongoDbLogs implements LogsInterface
      *
      * @return array
      * @throws MongoDBException
-     * @throws GridException
-     * @throws MongoException
      * @throws Exception
      */
     public function getData(GridRequestDto $dto): array

@@ -2,6 +2,7 @@
 
 namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller;
 
+use Doctrine\ODM\MongoDB\MongoDBException;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
@@ -69,8 +70,6 @@ class TopologyController extends AbstractFOSRestController
     {
         try {
             return $this->getResponse($this->topologyHandler->getCronTopologies());
-        } catch (TopologyException $e) {
-            return $this->getErrorResponse($e, 404);
         } catch (Throwable $e) {
             return $this->getErrorResponse($e);
         }
@@ -87,7 +86,7 @@ class TopologyController extends AbstractFOSRestController
     {
         try {
             return $this->getResponse($this->topologyHandler->getTopology($id));
-        } catch (TopologyException $e) {
+        } catch (TopologyException | MongoDBException $e) {
             return $this->getErrorResponse($e);
         }
 

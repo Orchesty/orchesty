@@ -7,7 +7,6 @@ use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Hanaboso\CommonsBundle\Database\Document\Node;
 use Hanaboso\CommonsBundle\Database\Document\Topology;
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\PipesFramework\Metrics\Exception\MetricsException;
 use Hanaboso\PipesFramework\Metrics\Manager\MetricsManagerLoader;
 
@@ -49,7 +48,6 @@ class MetricsHandler
      * @throws LockException
      * @throws MappingException
      * @throws MetricsException
-     * @throws DateTimeException
      */
     public function getTopologyMetrics(string $topologyId, array $params): array
     {

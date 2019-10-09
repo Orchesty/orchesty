@@ -17,7 +17,6 @@ use Hanaboso\PipesFramework\Metrics\Document\ProcessesMetrics;
 use Hanaboso\PipesFramework\Metrics\Document\RabbitMetrics;
 use Hanaboso\PipesFramework\Metrics\Document\Tags;
 use Hanaboso\PipesFramework\Metrics\Dto\MetricsDto;
-use Hanaboso\PipesFramework\Metrics\Exception\MetricsException;
 use Hanaboso\PipesFramework\Metrics\Retention\RetentionFactory;
 use LogicException;
 
@@ -74,7 +73,6 @@ class MongoMetricsManager extends MetricsManagerAbstract
      *
      * @return array
      * @throws DateTimeException
-     * @throws MongoDBException
      */
     public function getNodeMetrics(Node $node, Topology $topology, array $params): array
     {
@@ -107,7 +105,6 @@ class MongoMetricsManager extends MetricsManagerAbstract
      *
      * @return array
      * @throws DateTimeException
-     * @throws MongoDBException
      */
     public function getTopologyProcessTimeMetrics(Topology $topology, array $params): array
     {
@@ -132,7 +129,6 @@ class MongoMetricsManager extends MetricsManagerAbstract
      * @param array    $params
      *
      * @return array
-     * @throws MetricsException
      * @throws DateTimeException
      * @throws MongoDBException
      */
@@ -585,7 +581,6 @@ class MongoMetricsManager extends MetricsManagerAbstract
      *
      * @return array
      * @throws DateTimeException
-     * @throws MongoDBException
      */
     private function requestsCountAggregation(
         array $where,

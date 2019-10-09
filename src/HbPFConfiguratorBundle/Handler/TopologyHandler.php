@@ -126,6 +126,7 @@ class TopologyHandler
      *
      * @return array
      * @throws TopologyException
+     * @throws MongoDBException
      */
     public function getTopology(string $id): array
     {
@@ -193,6 +194,7 @@ class TopologyHandler
      * @throws EnumException
      * @throws NodeException
      * @throws TopologyException
+     * @throws MongoDBException
      */
     public function saveTopologySchema(string $id, string $content, array $data): array
     {
@@ -208,6 +210,7 @@ class TopologyHandler
      * @return ResponseDto
      * @throws TopologyException
      * @throws EnumException
+     * @throws MongoDBException
      */
     public function publishTopology(string $id): ResponseDto
     {
@@ -256,6 +259,7 @@ class TopologyHandler
      * @throws EnumException
      * @throws NodeException
      * @throws TopologyException
+     * @throws MongoDBException
      */
     public function cloneTopology(string $id): array
     {
@@ -331,6 +335,7 @@ class TopologyHandler
      * @param Topology $topology
      *
      * @return array
+     * @throws MongoDBException
      */
     private function getTopologyData(Topology $topology): array
     {
