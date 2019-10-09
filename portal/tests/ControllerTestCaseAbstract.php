@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\Client;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,13 +22,14 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     protected static $client;
 
     /**
-     *
+     * @throws Exception
      */
     protected function setUp(): void
     {
         parent::setUp();
 
         self::bootKernel();
+        $this->setupClient();
 
     }
 
@@ -147,6 +149,16 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
         }
 
         return new ControllerResponse($response->getStatusCode(), $innerContent ?: $content);
+    }
+
+    /**
+     *
+     */
+    protected function setupClient(): void
+    {
+        self::bootKernel();
+        self::$client = self::createClient([], []);
+
     }
 
 }

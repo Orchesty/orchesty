@@ -67,7 +67,7 @@ final class NotificationManagerTest extends KernelTestCaseAbstract
     {
         self::expectException(NotificationException::class);
         self::expectExceptionCode(NotificationException::NOTIFICATION_EXCEPTION);
-        self::expectExceptionMessageRegExp('#Notification API failed: .+#');
+        self::expectExceptionMessageMatches('#Notification API failed: .+#');
 
         $this->getManager(function (RequestDto $request): void {
             $request;

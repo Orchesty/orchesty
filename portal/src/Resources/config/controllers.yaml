@@ -6,4 +6,8 @@ services:
 
     Hanaboso\Portal\Controller\PortalController:
         class: Hanaboso\Portal\Controller\PortalController
+
+    Hanaboso\Portal\Controller\InstallerController:
+        class: Hanaboso\Portal\Controller\InstallerController
         arguments:
+            - '@portal.handler.installer'

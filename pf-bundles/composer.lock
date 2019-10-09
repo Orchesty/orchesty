@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2addf0945cdb33c2309da55c051dfadc",
+    "content-hash": "7caa021a2d7169dc92d6fd6b5efd6de8",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -74,16 +74,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.112.15",
+            "version": "3.112.17",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "ccbfadde0ea60c5396e0408711a927200cb1898c"
+                "reference": "3f9a88fd8ae93f040d583d19b1b8242604d99080"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/ccbfadde0ea60c5396e0408711a927200cb1898c",
-                "reference": "ccbfadde0ea60c5396e0408711a927200cb1898c",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/3f9a88fd8ae93f040d583d19b1b8242604d99080",
+                "reference": "3f9a88fd8ae93f040d583d19b1b8242604d99080",
                 "shasum": ""
             },
             "require": {
@@ -153,7 +153,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2019-10-04T18:08:52+00:00"
+            "time": "2019-10-08T18:13:19+00:00"
         },
         {
             "name": "aws/aws-sdk-php-symfony",
@@ -2240,16 +2240,16 @@
         },
         {
             "name": "hanaboso/acl-bundle",
-            "version": "1.1.3",
+            "version": "1.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/acl-bundle.git",
-                "reference": "95a8c11650dbb4e982db167a74b34aff2d9ea1a8"
+                "reference": "098ad8a3b8b6de3455582151355e095f934000e7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/acl-bundle/zipball/95a8c11650dbb4e982db167a74b34aff2d9ea1a8",
-                "reference": "95a8c11650dbb4e982db167a74b34aff2d9ea1a8",
+                "url": "https://api.github.com/repos/hanaboso/acl-bundle/zipball/098ad8a3b8b6de3455582151355e095f934000e7",
+                "reference": "098ad8a3b8b6de3455582151355e095f934000e7",
                 "shasum": ""
             },
             "require": {
@@ -2258,7 +2258,9 @@
                 "php": "^7.3"
             },
             "require-dev": {
-                "hanaboso/php-check-utils": "^1.0"
+                "hanaboso/php-check-utils": "^1.0",
+                "symfony/browser-kit": "^4.3",
+                "symfony/security-bundle": "^4.3"
             },
             "type": "library",
             "autoload": {
@@ -2270,15 +2272,15 @@
             "license": [
                 "proprietary"
             ],
-            "time": "2019-09-06T15:41:26+00:00"
+            "time": "2019-10-08T06:31:40+00:00"
         },
         {
             "name": "hanaboso/app-store",
-            "version": "1.1.7",
+            "version": "1.1.8",
             "dist": {
                 "type": "path",
                 "url": "../app-store",
-                "reference": "55b9ed527abd11fd0fbcaedc2ddf2d3237d65e0f"
+                "reference": "3bce8ec026e08229fe98377c734180447354e8df"
             },
             "require": {
                 "ext-json": "*",
@@ -2310,16 +2312,16 @@
         },
         {
             "name": "hanaboso/commons-bundle",
-            "version": "1.1.32",
+            "version": "1.1.33",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/commons-bundle.git",
-                "reference": "24b468f8e39835754572095debd9caa8fcaa80ac"
+                "reference": "771dbc5df776e5db0e705b4c6acf523063ad1511"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/commons-bundle/zipball/24b468f8e39835754572095debd9caa8fcaa80ac",
-                "reference": "24b468f8e39835754572095debd9caa8fcaa80ac",
+                "url": "https://api.github.com/repos/hanaboso/commons-bundle/zipball/771dbc5df776e5db0e705b4c6acf523063ad1511",
+                "reference": "771dbc5df776e5db0e705b4c6acf523063ad1511",
                 "shasum": ""
             },
             "require": {
@@ -2362,7 +2364,7 @@
             "license": [
                 "proprietary"
             ],
-            "time": "2019-09-24T07:57:33+00:00"
+            "time": "2019-10-08T07:58:47+00:00"
         },
         {
             "name": "hanaboso/email-service-bundle",
@@ -2438,11 +2440,11 @@
         },
         {
             "name": "hanaboso/pipes-php-sdk",
-            "version": "1.0.11",
+            "version": "1.0.12",
             "dist": {
                 "type": "path",
                 "url": "../pipes-php-sdk",
-                "reference": "71798285239b63c87b0e54a5a5abb88000609bd2"
+                "reference": "97596655e4051b927d1b1b82e042888cd9021547"
             },
             "require": {
                 "ext-json": "*",
@@ -2520,16 +2522,16 @@
         },
         {
             "name": "hanaboso/user-bundle",
-            "version": "1.1.4",
+            "version": "1.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/user-bundle.git",
-                "reference": "3fbc5350023e0bcdb1a8fd1879dbd5ed94ab9a74"
+                "reference": "92507b35a8d29501ab808c2973c9f48449eb0286"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/user-bundle/zipball/3fbc5350023e0bcdb1a8fd1879dbd5ed94ab9a74",
-                "reference": "3fbc5350023e0bcdb1a8fd1879dbd5ed94ab9a74",
+                "url": "https://api.github.com/repos/hanaboso/user-bundle/zipball/92507b35a8d29501ab808c2973c9f48449eb0286",
+                "reference": "92507b35a8d29501ab808c2973c9f48449eb0286",
                 "shasum": ""
             },
             "require": {
@@ -2557,7 +2559,7 @@
             "license": [
                 "proprietary"
             ],
-            "time": "2019-10-02T06:39:15+00:00"
+            "time": "2019-10-08T08:23:51+00:00"
         },
         {
             "name": "hoa/compiler",
@@ -5773,16 +5775,16 @@
         },
         {
             "name": "snc/redis-bundle",
-            "version": "3.1.0",
+            "version": "3.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/snc/SncRedisBundle.git",
-                "reference": "ff2a3aa6e9933f0347e9fea0ffa367643d779c5c"
+                "reference": "21d9d6fdb0d38d751d02b3fe875cb19a5641ce64"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/snc/SncRedisBundle/zipball/ff2a3aa6e9933f0347e9fea0ffa367643d779c5c",
-                "reference": "ff2a3aa6e9933f0347e9fea0ffa367643d779c5c",
+                "url": "https://api.github.com/repos/snc/SncRedisBundle/zipball/21d9d6fdb0d38d751d02b3fe875cb19a5641ce64",
+                "reference": "21d9d6fdb0d38d751d02b3fe875cb19a5641ce64",
                 "shasum": ""
             },
             "require": {
@@ -5846,7 +5848,7 @@
                 "redis",
                 "symfony"
             ],
-            "time": "2019-08-01T05:51:05+00:00"
+            "time": "2019-10-09T07:21:37+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -5912,16 +5914,16 @@
         },
         {
             "name": "symfony/contracts",
-            "version": "v1.1.6",
+            "version": "v1.1.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/contracts.git",
-                "reference": "3692662d26cd9d204a69748792ae021c35313610"
+                "reference": "9cb52490dd60e0f50dbcdbdb3a6dbcb31f3a363e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/contracts/zipball/3692662d26cd9d204a69748792ae021c35313610",
-                "reference": "3692662d26cd9d204a69748792ae021c35313610",
+                "url": "https://api.github.com/repos/symfony/contracts/zipball/9cb52490dd60e0f50dbcdbdb3a6dbcb31f3a363e",
+                "reference": "9cb52490dd60e0f50dbcdbdb3a6dbcb31f3a363e",
                 "shasum": ""
             },
             "require": {
@@ -5985,7 +5987,7 @@
                 "interoperability",
                 "standards"
             ],
-            "time": "2019-08-21T15:14:41+00:00"
+            "time": "2019-10-04T21:43:27+00:00"
         },
         {
             "name": "symfony/monolog-bundle",
@@ -6526,16 +6528,16 @@
         },
         {
             "name": "symfony/symfony",
-            "version": "v4.3.4",
+            "version": "v4.3.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "f1edae020d4109fcad3bd57810180a460aa4f20f"
+                "reference": "931fecb0887b6d580b2dd5425833bee06d97ed24"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/f1edae020d4109fcad3bd57810180a460aa4f20f",
-                "reference": "f1edae020d4109fcad3bd57810180a460aa4f20f",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/931fecb0887b6d580b2dd5425833bee06d97ed24",
+                "reference": "931fecb0887b6d580b2dd5425833bee06d97ed24",
                 "shasum": ""
             },
             "require": {
@@ -6665,8 +6667,7 @@
                     "Symfony\\Component\\": "src/Symfony/Component/"
                 },
                 "classmap": [
-                    "src/Symfony/Component/Intl/Resources/stubs",
-                    "src/Symfony/Bridge/ProxyManager/Legacy/ProxiedMethodReturnExpression.php"
+                    "src/Symfony/Component/Intl/Resources/stubs"
                 ],
                 "exclude-from-classmap": [
                     "**/Tests/"
@@ -6691,7 +6692,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2019-08-26T16:48:03+00:00"
+            "time": "2019-10-07T15:14:38+00:00"
         },
         {
             "name": "twig/twig",

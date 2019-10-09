@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9eef076c5e91238f0cf518501345f4ec",
+    "content-hash": "7c4faf9ad2353c415c5cbd2d53e1dcd0",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -74,16 +74,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.112.15",
+            "version": "3.112.17",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "ccbfadde0ea60c5396e0408711a927200cb1898c"
+                "reference": "3f9a88fd8ae93f040d583d19b1b8242604d99080"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/ccbfadde0ea60c5396e0408711a927200cb1898c",
-                "reference": "ccbfadde0ea60c5396e0408711a927200cb1898c",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/3f9a88fd8ae93f040d583d19b1b8242604d99080",
+                "reference": "3f9a88fd8ae93f040d583d19b1b8242604d99080",
                 "shasum": ""
             },
             "require": {
@@ -153,7 +153,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2019-10-04T18:08:52+00:00"
+            "time": "2019-10-08T18:13:19+00:00"
         },
         {
             "name": "aws/aws-sdk-php-symfony",
@@ -2130,16 +2130,16 @@
         },
         {
             "name": "hanaboso/commons-bundle",
-            "version": "1.1.32",
+            "version": "1.1.33",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/commons-bundle.git",
-                "reference": "24b468f8e39835754572095debd9caa8fcaa80ac"
+                "reference": "771dbc5df776e5db0e705b4c6acf523063ad1511"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/commons-bundle/zipball/24b468f8e39835754572095debd9caa8fcaa80ac",
-                "reference": "24b468f8e39835754572095debd9caa8fcaa80ac",
+                "url": "https://api.github.com/repos/hanaboso/commons-bundle/zipball/771dbc5df776e5db0e705b4c6acf523063ad1511",
+                "reference": "771dbc5df776e5db0e705b4c6acf523063ad1511",
                 "shasum": ""
             },
             "require": {
@@ -2182,7 +2182,7 @@
             "license": [
                 "proprietary"
             ],
-            "time": "2019-09-24T07:57:33+00:00"
+            "time": "2019-10-08T07:58:47+00:00"
         },
         {
             "name": "hanaboso/mongo-data-grid",
@@ -4876,16 +4876,16 @@
         },
         {
             "name": "snc/redis-bundle",
-            "version": "3.1.0",
+            "version": "3.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/snc/SncRedisBundle.git",
-                "reference": "ff2a3aa6e9933f0347e9fea0ffa367643d779c5c"
+                "reference": "21d9d6fdb0d38d751d02b3fe875cb19a5641ce64"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/snc/SncRedisBundle/zipball/ff2a3aa6e9933f0347e9fea0ffa367643d779c5c",
-                "reference": "ff2a3aa6e9933f0347e9fea0ffa367643d779c5c",
+                "url": "https://api.github.com/repos/snc/SncRedisBundle/zipball/21d9d6fdb0d38d751d02b3fe875cb19a5641ce64",
+                "reference": "21d9d6fdb0d38d751d02b3fe875cb19a5641ce64",
                 "shasum": ""
             },
             "require": {
@@ -4949,20 +4949,20 @@
                 "redis",
                 "symfony"
             ],
-            "time": "2019-08-01T05:51:05+00:00"
+            "time": "2019-10-09T07:21:37+00:00"
         },
         {
             "name": "symfony/contracts",
-            "version": "v1.1.6",
+            "version": "v1.1.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/contracts.git",
-                "reference": "3692662d26cd9d204a69748792ae021c35313610"
+                "reference": "9cb52490dd60e0f50dbcdbdb3a6dbcb31f3a363e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/contracts/zipball/3692662d26cd9d204a69748792ae021c35313610",
-                "reference": "3692662d26cd9d204a69748792ae021c35313610",
+                "url": "https://api.github.com/repos/symfony/contracts/zipball/9cb52490dd60e0f50dbcdbdb3a6dbcb31f3a363e",
+                "reference": "9cb52490dd60e0f50dbcdbdb3a6dbcb31f3a363e",
                 "shasum": ""
             },
             "require": {
@@ -5026,7 +5026,7 @@
                 "interoperability",
                 "standards"
             ],
-            "time": "2019-08-21T15:14:41+00:00"
+            "time": "2019-10-04T21:43:27+00:00"
         },
         {
             "name": "symfony/monolog-bundle",
@@ -5443,16 +5443,16 @@
         },
         {
             "name": "symfony/symfony",
-            "version": "v4.3.4",
+            "version": "v4.3.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "f1edae020d4109fcad3bd57810180a460aa4f20f"
+                "reference": "931fecb0887b6d580b2dd5425833bee06d97ed24"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/f1edae020d4109fcad3bd57810180a460aa4f20f",
-                "reference": "f1edae020d4109fcad3bd57810180a460aa4f20f",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/931fecb0887b6d580b2dd5425833bee06d97ed24",
+                "reference": "931fecb0887b6d580b2dd5425833bee06d97ed24",
                 "shasum": ""
             },
             "require": {
@@ -5582,8 +5582,7 @@
                     "Symfony\\Component\\": "src/Symfony/Component/"
                 },
                 "classmap": [
-                    "src/Symfony/Component/Intl/Resources/stubs",
-                    "src/Symfony/Bridge/ProxyManager/Legacy/ProxiedMethodReturnExpression.php"
+                    "src/Symfony/Component/Intl/Resources/stubs"
                 ],
                 "exclude-from-classmap": [
                     "**/Tests/"
@@ -5608,7 +5607,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2019-08-26T16:48:03+00:00"
+            "time": "2019-10-07T15:14:38+00:00"
         },
         {
             "name": "twig/twig",

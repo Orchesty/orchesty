@@ -8,7 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\Security\Core\Encoder\BCryptPasswordEncoder;
+use Symfony\Component\Security\Core\Encoder\NativePasswordEncoder;
 
 /**
  * Class ControllerTestCaseAbstract
@@ -34,7 +34,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     protected $session;
 
     /**
-     * @var BCryptPasswordEncoder
+     * @var NativePasswordEncoder
      */
     protected $encoder;
 
@@ -50,7 +50,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
         parent::__construct($name, $data, $dataName);
 
         self::bootKernel();
-        $this->encoder = new BCryptPasswordEncoder(12);
+        $this->encoder = new NativePasswordEncoder(3);
     }
 
     /**

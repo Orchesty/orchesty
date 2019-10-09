@@ -3,7 +3,6 @@
 namespace Tests\Integration\Model;
 
 use Exception;
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\HbPFAppStore\Model\ApplicationManager;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
@@ -202,7 +201,7 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
      * @param string $key
      * @param string $user
      *
-     * @throws DateTimeException
+     * @throws Exception
      */
     private function createApp(string $key = 'some app', string $user = 'example1'): void
     {

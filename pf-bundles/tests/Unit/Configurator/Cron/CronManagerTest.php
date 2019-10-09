@@ -237,7 +237,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
     {
         self::expectException(CronException::class);
         self::expectExceptionCode(CronException::CRON_EXCEPTION);
-        self::expectExceptionMessageRegExp('#Cron API failed: .+#');
+        self::expectExceptionMessageMatches('#Cron API failed: .+#');
 
         $this->getManager(function (RequestDto $request): void {
             $request;

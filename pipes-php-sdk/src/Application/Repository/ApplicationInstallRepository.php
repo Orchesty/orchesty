@@ -3,7 +3,6 @@
 namespace Hanaboso\PipesPhpSdk\Application\Repository;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
-use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
@@ -58,7 +57,6 @@ class ApplicationInstallRepository extends DocumentRepository
 
     /**
      * @return array
-     * @throws MongoDBException
      */
     public function getApplicationsCount(): array
     {
@@ -106,7 +104,6 @@ class ApplicationInstallRepository extends DocumentRepository
      * @param string $application
      *
      * @return array
-     * @throws MongoDBException
      */
     public function getApplicationsCountDetails(string $application): array
     {
