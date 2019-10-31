@@ -46,9 +46,17 @@ var messagesMax = rabbitMqData
     |delete().field('messages_redeliver_rate')
     |delete().field('messages_unack')
 
+var messSum = rabbitMqData
+    |sum('messages')
+        .as('time')
+
+var messCount = rabbitMqData
+    |count('messages')
+        .as('time')
+
 messagesAvg
-   |join(messagesMax)
-       .as('avg', 'max')
+   |join(messagesMax, messSum, messCount)
+       .as('avg', 'max', 'sum', 'count')
    |influxDBOut()
        .database('pipes')
        .measurement('rabbitmq')
