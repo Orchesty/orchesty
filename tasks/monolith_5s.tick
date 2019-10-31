@@ -51,9 +51,17 @@ var cpuUserAvg = monolithData
     |mean('fpm_cpu_user_time')
         .as('avg')
 
+var cpuSum = monolithData
+    |sum('fpm_cpu_kernel_time')
+        .as('time')
+
+var cpuCount = monolithData
+    |count('fpm_cpu_kernel_time')
+        .as('time')
+
 cpuKernelAvg
-   |join(cpuMin, cpuMax, cpuUserAvg)
-       .as('cpu_kernel', 'cpu_min', 'cpu_max', 'cpu_user')
+   |join(cpuMin, cpuMax, cpuUserAvg, cpuSum, cpuCount)
+       .as('cpu_kernel', 'cpu_min', 'cpu_max', 'cpu_user', 'sum', 'count')
    |influxDBOut()
        .database('pipes')
        .measurement('monolith')

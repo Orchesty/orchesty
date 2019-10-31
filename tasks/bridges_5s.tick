@@ -60,9 +60,17 @@ var processTimeAvg = bridgeData
     |mean('bridge_job_total_duration')
         .as('time')
 
+var jobSum = bridgeData
+    |sum('bridge_job_total_duration')
+        .as('time')
+
+var jobCount = bridgeData
+    |count('bridge_job_total_duration')
+        .as('time')
+
 total
-   |join(totalFailed, waitingTimeAvg, timeMin, timeMax, processTimeAvg)
-       .as('total', 'failed', 'avg_waiting', 'job_min', 'job_max', 'avg_process')
+   |join(totalFailed, waitingTimeAvg, timeMin, timeMax, processTimeAvg, jobSum, jobCount)
+       .as('total', 'failed', 'avg_waiting', 'job_min', 'job_max', 'avg_process', 'sum', 'count')
    |influxDBOut()
        .database('pipes')
        .measurement('bridges')

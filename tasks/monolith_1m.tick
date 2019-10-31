@@ -4,7 +4,7 @@ var sample = 1m
 var retention = '1m'
 
 batch
-   |query('SELECT mean("cpu_kernel.avg") as "cpu_kernel.avg",  max("cpu_max.kernel") as "cpu_max.kernel", max("cpu_max.user") as "cpu_max.user", min(cpu_min.kernel) as "cpu_min.kernel", min("cpu_min.user") as "cpu_min.user", mean("cpu_user.avg") as "cpu_user.avg" FROM "pipes"."5s"."monolith"')
+   |query('SELECT (sum("sum.time") / count("count.time")) as "cpu_kernel.avg",  max("cpu_max.kernel") as "cpu_max.kernel", max("cpu_max.user") as "cpu_max.user", min(cpu_min.kernel) as "cpu_min.kernel", min("cpu_min.user") as "cpu_min.user", mean("cpu_user.avg") as "cpu_user.avg", sum("sum.time") as "sum.time", count("count.time") as "count.time" FROM "pipes"."5s"."monolith"')
        .period(sample)
        .every(sample)
        .groupBy('topology_id', 'node_id')

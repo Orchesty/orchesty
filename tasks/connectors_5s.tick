@@ -28,9 +28,17 @@ var reqMax = connectorData
     |max('sent_request_total_duration')
         .as('time')
 
+var reqSum = connectorData
+    |sum('sent_request_total_duration')
+        .as('time')
+
+var reqCount = connectorData
+    |count('sent_request_total_duration')
+        .as('time')
+
 reqAvg
-   |join(reqMin, reqMax)
-       .as('avg', 'min', 'max')
+   |join(reqMin, reqMax, reqSum, reqCount)
+       .as('avg', 'min', 'max', 'sum', 'count')
    |influxDBOut()
        .database('pipes')
        .measurement('connectors')

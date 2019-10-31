@@ -40,9 +40,17 @@ var timeMax = data
     |delete().field('counter_process_ok_count')
     |delete().field('counter_process_result')
 
+var processSum = data
+    |sum('counter_process_duration')
+        .as('time')
+
+var processCount = data
+    |count('counter_process_duration')
+        .as('time')
+
 total
-    |join(totalFailed, timeAvg, timeMin, timeMax)
-        .as('total', 'failed', 'avg', 'min', 'max')
+    |join(totalFailed, timeAvg, timeMin, timeMax, processSum, processCount)
+        .as('total', 'failed', 'avg', 'min', 'max', 'sum', 'count')
     |influxDBOut()
         .database('pipes')
         .measurement('processes')
