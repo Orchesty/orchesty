@@ -22,7 +22,14 @@ class SendDutyEmail extends CustomNodeAbstract
 {
 
     private const FROM    = 'dev.email.hb@gmail.com';
-    private const TO      = ['jirsa.r@hanaboso.com', 'bucek.karel@gmail.com'];
+    private const TO      = [
+        'pavlicek.m@hanaboso.com',
+        'husak.j@hanaboso.com',
+        'jirsa.r@hanaboso.com',
+        'prochazka.t@hanaboso.com',
+        'krecl.v@hanaboso.com',
+        'info@hanaboso.com',
+    ];
     private const SUBJECT = 'Monitoring';
 
     /**
