@@ -1,0 +1,52 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: influxdb
+  labels:
+    app: influxdb
+spec:
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: influxdb
+  template:
+    metadata:
+      labels:
+        app: influxdb
+    spec:
+      hostname: influxdb
+      containers:
+        - name: influxdb
+          image: dkr.hanaboso.net/pipes/pipes/influxdb:dev
+          ports:
+            - containerPort: 8086
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: 100m
+            limits:
+              memory: 256Mi
+              cpu: "1"
+          volumeMounts:
+            - name: influxdb-data
+              mountPath: /var/lib/influxdb
+      volumes:
+        - name: influxdb-data
+          persistentVolumeClaim:
+            claimName: influxdb-data
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: influxdb
+spec:
+  selector:
+    app: influxdb
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 8086
+      nodePort: 30354

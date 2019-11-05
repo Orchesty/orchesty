@@ -1,0 +1,42 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cron-api
+  labels:
+    app: cron-api
+spec:
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: cron-api
+  template:
+    metadata:
+      labels:
+        app: cron-api
+    spec:
+      containers:
+        - name: cron-api
+          image: dkr.hanaboso.net/pipes/pipes/python-cron:dev
+          ports:
+            - containerPort: 5000
+          resources:
+            requests:
+              memory: 32Mi
+              cpu: 100m
+            limits:
+              memory: 128Mi
+              cpu: "1"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cron-api
+spec:
+  selector:
+    app: cron-api
+  ports:
+    - protocol: TCP
+      port: 5000

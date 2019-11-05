@@ -1,0 +1,57 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: batch
+  labels:
+    app: batch
+spec:
+  selector:
+    matchLabels:
+      app: batch
+  template:
+    metadata:
+      labels:
+        app: batch
+    spec:
+      containers:
+        - name: php-w-nginx
+          image: dkr.hanaboso.net/pipes/demo/monolith:dev
+          args: ["bin/console", "rabbit_mq:consumer:batch"]
+          ports:
+            - containerPort: 80
+          env:
+            - name: __BACKEND_URL
+              valueFrom:
+                configMapKeyRef:
+                  key: backend_url
+                  name: pipes-config
+            - name: BACKEND_HOST
+              value: "$(__BACKEND_URL)/"
+            - name: FRONTEND_HOST
+              value: "$(__BACKEND_URL)/"
+            - name: ELASTIC_HOST
+              value: elasticsearch
+            - name: ELASTIC_INDEX
+              value: index
+            - name: PHP_FPM_MAX_REQUESTS
+              value: "5000"
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 250m
+            limits:
+              memory: 1Gi
+              cpu: "2"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: batch
+spec:
+  selector:
+    app: batch
+  ports:
+    - protocol: TCP
+      port: 80
