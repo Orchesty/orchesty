@@ -29,11 +29,6 @@ class OAuth2Provider extends OAuthProviderAbstract implements OAuth2ProviderInte
     private const STATE             = 'state';
 
     /**
-     * @var string
-     */
-    private $backend;
-
-    /**
      * OAuth2Provider constructor.
      *
      * @param RedirectInterface $redirect
@@ -41,7 +36,7 @@ class OAuth2Provider extends OAuthProviderAbstract implements OAuth2ProviderInte
      */
     public function __construct(RedirectInterface $redirect, string $backend)
     {
-        parent::__construct($redirect);
+        parent::__construct($redirect, $backend);
         $this->backend = $backend;
     }
 
@@ -72,7 +67,10 @@ class OAuth2Provider extends OAuthProviderAbstract implements OAuth2ProviderInte
     public function getAccessToken(OAuth2DtoInterface $dto, array $request): array
     {
         if (!isset($request['code'])) {
-            $this->throwException('Data from input is invalid! Field "code" is missing!', AuthorizationException::AUTHORIZATION_OAUTH2_ERROR);
+            $this->throwException(
+                'Data from input is invalid! Field "code" is missing!',
+                AuthorizationException::AUTHORIZATION_OAUTH2_ERROR
+            );
         }
 
         return $this->getTokenByGrant($dto, 'authorization_code', ['code' => $request['code']]);
@@ -89,7 +87,10 @@ class OAuth2Provider extends OAuthProviderAbstract implements OAuth2ProviderInte
     {
 
         if (!isset($token[self::REFRESH_TOKEN])) {
-            $this->throwException('Refresh token not found! Refresh is not possible.', AuthorizationException::AUTHORIZATION_OAUTH2_ERROR);
+            $this->throwException(
+                'Refresh token not found! Refresh is not possible.',
+                AuthorizationException::AUTHORIZATION_OAUTH2_ERROR
+            );
         }
 
         $oldRefreshToken = $token[self::REFRESH_TOKEN];
@@ -147,9 +148,7 @@ class OAuth2Provider extends OAuthProviderAbstract implements OAuth2ProviderInte
         return new OAuth2Wrapper([
             'clientId'                => $dto->getClientId(),
             'clientSecret'            => $dto->getClientSecret(),
-            'redirectUri'             => sprintf('%s/%s',
-                rtrim($this->backend, '/'),
-                ltrim($dto->getRedirectUrl(), '/')),
+            'redirectUri'             => $this->getRedirectUri(),
             'urlAuthorize'            => $dto->getAuthorizeUrl(),
             'urlAccessToken'          => $dto->getTokenUrl(),
             'urlResourceOwnerDetails' => $dto->getAuthorizeUrl(),

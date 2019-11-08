@@ -10,7 +10,7 @@ use Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth2DtoInterface;
  *
  * @package Hanaboso\PipesPhpSdk\Authorization\Provider
  */
-interface OAuth2ProviderInterface
+interface OAuth2ProviderInterface extends OAuthProviderInterface
 {
 
     /**

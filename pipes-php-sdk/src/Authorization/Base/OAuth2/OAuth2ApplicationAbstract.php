@@ -9,6 +9,7 @@ use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
+use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Application\Utils\ApplicationUtils;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
@@ -80,6 +81,30 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
     {
         return isset($applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS][OAuth2ApplicationInterface::TOKEN]);
     }
+
+    /**
+     * @param ApplicationInstall $applicationInstall
+     *
+     * @return array
+     * @throws ApplicationInstallException
+     */
+    public function getApplicationForm(ApplicationInstall $applicationInstall): array
+    {
+        $form = parent::getApplicationForm($applicationInstall);
+
+        return array_merge(
+            $form,
+            [
+                (new Field(
+                    Field::TEXT,
+                    ApplicationInterface::REDIRECT_URL,
+                    'Redirect URL',
+                    $this->provider->getRedirectUri())
+                )->setReadOnly(TRUE)->toArray(),
+            ]
+        );
+    }
+
 
     /**
      * @param ApplicationInstall $applicationInstall

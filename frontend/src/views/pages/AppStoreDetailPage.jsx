@@ -10,7 +10,7 @@ const mapStateToProps = () => ({ state: stateType.SUCCESS });
 
 const mapActionsToProps = dispatch => ({
   getApplication: (application, user) => dispatch(appStoreActions.getApplication(application, user)),
-  changeApplication: (application, user, data) => dispatch(appStoreActions.changeApplication(application, user, data)),
+  changeApplication: (application, user, data, settings) => dispatch(appStoreActions.changeApplication(application, user, data, settings)),
   installApplication: (application, user) => dispatch(appStoreActions.installApplication(application, user)),
   uninstallApplication: (application, user) => dispatch(appStoreActions.uninstallApplication(application, user)),
   authorizeApplication: (application, user, redirect) => dispatch(appStoreActions.authorizeApplication(application, user, redirect)),

@@ -35,10 +35,11 @@ class OAuth1Provider extends OAuthProviderAbstract implements OAuth1ProviderInte
      *
      * @param DocumentManager   $dm
      * @param RedirectInterface $redirect
+     * @param string            $backend
      */
-    public function __construct(DocumentManager $dm, RedirectInterface $redirect)
+    public function __construct(DocumentManager $dm, RedirectInterface $redirect, string $backend)
     {
-        parent::__construct($redirect);
+        parent::__construct($redirect, $backend);
         $this->dm = $dm;
     }
 
@@ -46,7 +47,6 @@ class OAuth1Provider extends OAuthProviderAbstract implements OAuth1ProviderInte
      * @param OAuth1DtoInterface $dto
      * @param string             $tokenUrl
      * @param string             $authorizeUrl
-     * @param string             $redirectUrl
      * @param callable           $saveOauthStuffs
      * @param array              $scopes
      *
@@ -57,7 +57,6 @@ class OAuth1Provider extends OAuthProviderAbstract implements OAuth1ProviderInte
         OAuth1DtoInterface $dto,
         string $tokenUrl,
         string $authorizeUrl,
-        string $redirectUrl,
         callable $saveOauthStuffs,
         array $scopes = []
     ): void
@@ -76,7 +75,7 @@ class OAuth1Provider extends OAuthProviderAbstract implements OAuth1ProviderInte
 
         $saveOauthStuffs($this->dm, $dto, $requestToken);
 
-        $authorizeUrl = $this->getAuthorizeUrl($authorizeUrl, $redirectUrl, $requestToken[self::OAUTH_TOKEN], $scopes);
+        $authorizeUrl = $this->getAuthorizeUrl($authorizeUrl, $this->getRedirectUri(), $requestToken[self::OAUTH_TOKEN], $scopes);
 
         $this->redirect->make($authorizeUrl);
     }

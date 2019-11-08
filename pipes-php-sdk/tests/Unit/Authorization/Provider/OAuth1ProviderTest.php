@@ -45,8 +45,7 @@ final class OAuth1ProviderTest extends TestCase
             self::expectExceptionCode(AuthorizationException::AUTHORIZATION_OAUTH1_ERROR);
         }
 
-        $provider->authorize($dto, 'token/url', 'authorize/url', '127.0.0.4', function (): void {
-        }, []);
+        $provider->authorize($dto, 'token/url', 'authorize/url', function (): void {}, []);
     }
 
     /**
@@ -58,7 +57,8 @@ final class OAuth1ProviderTest extends TestCase
             [[], '', TRUE],
             [
                 ['oauth_token' => 'token', 'oauth_token_secret' => 'secret'],
-                'authorize/url?oauth_callback=127.0.0.4&oauth_token=token', FALSE,
+                'authorize/url?oauth_callback=https://example.com/api/applications/authorize/token&oauth_token=token',
+                FALSE,
             ],
         ];
     }
@@ -179,7 +179,7 @@ final class OAuth1ProviderTest extends TestCase
         $oauth->method('getRequestHeader')->with('GET', 'someEndpoint/Url')->willReturn('generatedUrl');
 
         $client = self::getMockBuilder(OAuth1Provider::class)
-            ->setConstructorArgs([$dm, $redirect])
+            ->setConstructorArgs([$dm, $redirect, 'https://example.com'])
             ->setMethods(['createClient'])
             ->getMock();
 

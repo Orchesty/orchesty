@@ -151,7 +151,7 @@ class AppStoreDetail extends Component {
               <br />
               <br />
               <div className="col-md-6 col-md-offset-3">
-                <form onSubmit={handleSubmit(data => changeApplication(application, userId, data))}>
+                <form onSubmit={handleSubmit(data => changeApplication(application, userId, data, applicationSettings))}>
                   {applicationSettings && applicationSettings.map(setting => AppStoreDetail.createRow(setting))}
                   <div className="text-center">
                     <button type="submit" className="btn btn-lg btn-primary">Save Settings</button>

@@ -10,14 +10,13 @@ use Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth1DtoInterface;
  *
  * @package Hanaboso\PipesPhpSdk\Authorization\Provider
  */
-interface OAuth1ProviderInterface
+interface OAuth1ProviderInterface extends OAuthProviderInterface
 {
 
     /**
      * @param OAuth1DtoInterface $dto
      * @param string             $tokenUrl
      * @param string             $authorizeUrl
-     * @param string             $redirectUrl
      * @param callable           $saveOauthStuffs
      * @param array              $scopes
      *
@@ -27,7 +26,6 @@ interface OAuth1ProviderInterface
         OAuth1DtoInterface $dto,
         string $tokenUrl,
         string $authorizeUrl,
-        string $redirectUrl,
         callable $saveOauthStuffs,
         array $scopes = []
     ): void;

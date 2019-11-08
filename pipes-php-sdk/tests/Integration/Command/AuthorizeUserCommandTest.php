@@ -82,7 +82,7 @@ final class AuthorizeUserCommandTest extends DatabaseTestCaseAbstract
         );
         $dto      = new OAuth1Dto($install);
 
-        $provider->authorize($dto, 'token/url', 'authorize/url', '127.0.0.4', function (): void {
+        $provider->authorize($dto, 'token/url', 'authorize/url', function (): void {
         }, []);
 
         $this->expectOutputString('authorize/url?oauth_callback=127.0.0.4&oauth_token=aabbcc');

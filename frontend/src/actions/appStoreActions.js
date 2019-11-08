@@ -81,7 +81,19 @@ export const getApplication = (application, user) => dispatch => {
 
 export const installApplication = (application, user) => dispatch => processApplication(dispatch, 'POST', application, user, {}, 'Application installed');
 
-export const changeApplication = (application, user, data) => dispatch => processApplication(dispatch, 'PUT', application, user, data, 'Settings saved');
+export const changeApplication = (application, user, data, settings) => dispatch => {
+  const doNotSend = settings.reduce((accumulator, { key, disabled, readOnly }) => ({ ...accumulator, [key]: disabled || readOnly }), {});
+
+  for (let property in data) {
+    if (data.hasOwnProperty(property)) {
+      if (doNotSend[property]) {
+        delete data[property]
+      }
+    }
+  }
+
+  processApplication(dispatch, 'PUT', application, user, data, 'Settings saved');
+};
 
 export const uninstallApplication = (application, user) => dispatch => processApplication(dispatch, 'DELETE', application, user, {}, 'Application uninstalled');
 

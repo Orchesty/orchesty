@@ -7,6 +7,8 @@ use Hanaboso\CommonsBundle\Enum\AuthorizationTypeEnum;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
+use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth1Dto;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider;
@@ -76,6 +78,29 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
     /**
      * @param ApplicationInstall $applicationInstall
      *
+     * @return array
+     * @throws ApplicationInstallException
+     */
+    public function getApplicationForm(ApplicationInstall $applicationInstall): array
+    {
+        $form = parent::getApplicationForm($applicationInstall);
+
+        return array_merge(
+            $form,
+            [
+                (new Field(
+                    Field::TEXT,
+                    ApplicationInterface::REDIRECT_URL,
+                    'Redirect URL',
+                    $this->provider->getRedirectUri())
+                )->setReadOnly(TRUE)->toArray(),
+            ]
+        );
+    }
+
+    /**
+     * @param ApplicationInstall $applicationInstall
+     *
      * @throws AuthorizationException
      * @throws OAuthException
      */
@@ -85,9 +110,8 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
             $this->createDto($applicationInstall),
             $this->getTokenUrl(),
             $this->getAuthorizeUrl(),
-            $this->getRedirectUrl(),
-            $this->saveOauthStuff(),
-            );
+            $this->saveOauthStuff()
+        );
     }
 
     /**
