@@ -20,9 +20,12 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
      */
     public function testToJson(): void
     {
-        $response = $this->sendPost('/parser/csv/to/json', [
-            'file_id' => sprintf('%s/../../../Integration/Parser/data/input-10.csv', __DIR__),
-        ]);
+        $response = $this->sendPost(
+            '/parser/csv/to/json',
+            [
+                'file_id' => sprintf('%s/../../../Integration/Parser/data/input-10.csv', __DIR__),
+            ]
+        );
 
         self::assertEquals(200, $response->status);
         self::assertEquals(
@@ -64,9 +67,12 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
      */
     public function testFromJson(): void
     {
-        $response = $this->sendPost('/parser/json/to/csv', [
-            'file_id' => sprintf('%s/../../../Integration/Parser/data/output-10.json', __DIR__),
-        ]);
+        $response = $this->sendPost(
+            '/parser/json/to/csv',
+            [
+                'file_id' => sprintf('%s/../../../Integration/Parser/data/output-10.json', __DIR__),
+            ]
+        );
 
         self::assertEquals(200, $response->status);
         self::assertRegExp('#\/tmp\/\d+\.\d+\.csv#i', $response->content);
@@ -90,9 +96,12 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
      */
     public function testFromJsonNotFoundWriter(): void
     {
-        $response = $this->sendPost('/parser/json/to/unknown', [
-            'file_id' => sprintf('%s/../../../Integration/Parser/data/output-10.json', __DIR__),
-        ]);
+        $response = $this->sendPost(
+            '/parser/json/to/unknown',
+            [
+                'file_id' => sprintf('%s/../../../Integration/Parser/data/output-10.json', __DIR__),
+            ]
+        );
         $content  = $response->content;
 
         self::assertEquals(500, $response->status);
@@ -125,9 +134,12 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
      */
     public function testFromJsonTestNotFoundWriter(): void
     {
-        $response = $this->sendPost('/parser/json/to/unknown', [
-            'file_id' => sprintf('%s/../../../Integration/Parser/data/output-10.json', __DIR__),
-        ]);
+        $response = $this->sendPost(
+            '/parser/json/to/unknown',
+            [
+                'file_id' => sprintf('%s/../../../Integration/Parser/data/output-10.json', __DIR__),
+            ]
+        );
         $content  = $response->content;
 
         self::assertEquals(500, $response->status);

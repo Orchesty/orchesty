@@ -66,12 +66,14 @@ final class AuthorizeUserCommandTest extends DatabaseTestCaseAbstract
         $app = (new ApplicationInstall())
             ->setKey('null1')
             ->setUser('user')
-            ->setSettings([
-                BasicApplicationInterface::AUTHORIZATION_SETTINGS => [
-                    OAuth1ApplicationInterface::CONSUMER_KEY => 'consumer.key',
-                    OAuth1ApplicationInterface::TOKEN        => 'secret.key',
-                ],
-            ]);
+            ->setSettings(
+                [
+                    BasicApplicationInterface::AUTHORIZATION_SETTINGS => [
+                        OAuth1ApplicationInterface::CONSUMER_KEY => 'consumer.key',
+                        OAuth1ApplicationInterface::TOKEN        => 'secret.key',
+                    ],
+                ]
+            );
         $this->persistAndFlush($app);
 
         $install = new ApplicationInstall();
@@ -82,8 +84,14 @@ final class AuthorizeUserCommandTest extends DatabaseTestCaseAbstract
         );
         $dto      = new OAuth1Dto($install);
 
-        $provider->authorize($dto, 'token/url', 'authorize/url', function (): void {
-        }, []);
+        $provider->authorize(
+            $dto,
+            'token/url',
+            'authorize/url',
+            function (): void {
+            },
+            []
+        );
 
         $this->expectOutputString('authorize/url?oauth_callback=127.0.0.4&oauth_token=aabbcc');
     }
@@ -110,9 +118,11 @@ final class AuthorizeUserCommandTest extends DatabaseTestCaseAbstract
             ['getRequestToken']
         );
         $oauth->method('getRequestToken')->willReturn($data);
-        sprintf('#Parameter #1 $stub of method                                           
+        sprintf(
+            '#Parameter #1 $stub of method                                           
          PHPUnit\Framework\MockObject\Builder\InvocationMocker::will() expects  
-         PHPUnit\Framework\MockObject\Stub\Stub, true given#');
+         PHPUnit\Framework\MockObject\Stub\Stub, true given#'
+        );
 
         $client = self::getMockBuilder(OAuth1Provider::class)
             ->setConstructorArgs([$dm, $redirect])

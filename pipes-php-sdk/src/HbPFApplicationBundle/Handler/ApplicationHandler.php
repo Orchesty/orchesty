@@ -38,7 +38,6 @@ class ApplicationHandler
         return $this->applicationManager->getApplications();
     }
 
-
     /**
      * @param string $key
      * @param string $user

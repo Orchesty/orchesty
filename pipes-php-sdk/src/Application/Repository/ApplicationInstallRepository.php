@@ -65,24 +65,23 @@ class ApplicationInstallRepository extends DocumentRepository
                     emit(this.key, this.expires);
                 }',
             'function(k, vals) {
-	
-                return vals.reduce((acc, val) => 
-                {
-                	acc.total_sum++; 
-                	if (val === null) { 
-                		acc.non_expire_sum++; 
-                	} 
-                	return acc;
-                }, 
-                {
-                	total_sum: 0, 
-                	non_expire_sum: 0
-                }
-                )
-                
-
-                }',
-            )
+                return vals.reduce(
+                    (acc, val) => 
+                        {
+                            acc.total_sum++; 
+                            if (val === null) { 
+                                acc.non_expire_sum++; 
+                            } 
+    
+                            return acc;
+                        }, 
+                        {
+                            total_sum: 0, 
+                            non_expire_sum: 0
+                        }
+                    )
+                }'
+        )
             ->finalize(
                 'function(k, res) {
                     if (res !== null && res.total_sum !== undefined) {
@@ -96,7 +95,8 @@ class ApplicationInstallRepository extends DocumentRepository
                 }'
             )
             ->getQuery()
-            ->execute()->toArray();
+            ->execute()
+            ->toArray();
 
     }
 
@@ -110,31 +110,29 @@ class ApplicationInstallRepository extends DocumentRepository
 
         return $this->createQueryBuilder()->field('key')->equals($application)
             ->mapReduce(
-
                 'function() {
-	                	 emit(this.key, this);
-
+                         emit(this.key, this);
                 }',
                 'function(k, vals) {
                     return {
                         users: vals.map(val => ({ active: val.expires !== null, name: val.user }))
                     };
-                    }',
-                )
+                }'
+            )
             ->finalize(
                 'function(k, res) {
                     if (res !== null && res.users !== undefined) {
                         return res;
                     }
-                 return {
-                    	users: [{ active: res.expires !== null, name: res.user }]
+
+                    return {
+                        users: [{ active: res.expires !== null, name: res.user }]
                     }
-                    
                 }'
             )
             ->getQuery()
-            ->execute()->toArray();
-
+            ->execute()
+            ->toArray();
     }
 
 }

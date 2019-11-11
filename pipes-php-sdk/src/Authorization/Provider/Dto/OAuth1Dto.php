@@ -55,8 +55,10 @@ final class OAuth1Dto implements OAuth1DtoInterface
         $this->applicationInstall = $applicationInstall;
         $this->signatureMethod    = $signatureMethod;
         $this->authType           = $authType;
-        $this->consumerKey        = $applicationInstall->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][OAuth1ApplicationInterface::CONSUMER_KEY] ?? '';
-        $this->consumerSecret     = $applicationInstall->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][OAuth1ApplicationInterface::CONSUMER_SECRET] ?? '';
+        $this->consumerKey        = $applicationInstall->getSettings()
+                                    [BasicApplicationInterface::AUTHORIZATION_SETTINGS][OAuth1ApplicationInterface::CONSUMER_KEY] ?? '';
+        $this->consumerSecret     = $applicationInstall->getSettings()
+                                    [BasicApplicationInterface::AUTHORIZATION_SETTINGS][OAuth1ApplicationInterface::CONSUMER_SECRET] ?? '';
     }
 
     /**
@@ -104,7 +106,8 @@ final class OAuth1Dto implements OAuth1DtoInterface
      */
     public function getToken(): array
     {
-        return $this->applicationInstall->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::TOKEN] ?? [];
+        return $this->applicationInstall->getSettings()
+               [BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::TOKEN] ?? [];
     }
 
 }

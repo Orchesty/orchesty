@@ -79,7 +79,10 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
      */
     public function isAuthorize(ApplicationInstall $applicationInstall): bool
     {
-        return isset($applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS][OAuth2ApplicationInterface::TOKEN]);
+        return isset(
+            $applicationInstall->getSettings(
+            )[ApplicationInterface::AUTHORIZATION_SETTINGS][OAuth2ApplicationInterface::TOKEN]
+        );
     }
 
     /**
@@ -99,12 +102,12 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
                     Field::TEXT,
                     ApplicationInterface::REDIRECT_URL,
                     'Redirect URL',
-                    $this->provider->getRedirectUri())
+                    $this->provider->getRedirectUri()
+                )
                 )->setReadOnly(TRUE)->toArray(),
             ]
         );
     }
-
 
     /**
      * @param ApplicationInstall $applicationInstall
@@ -121,11 +124,14 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
         );
 
         if (isset($token[OAuth2Provider::EXPIRES])) {
-            $applicationInstall->setExpires(DateTimeUtils::getUtcDateTime()
-                ->setTimestamp($token[OAuth2Provider::EXPIRES]));
+            $applicationInstall->setExpires(
+                DateTimeUtils::getUtcDateTime()
+                    ->setTimestamp($token[OAuth2Provider::EXPIRES])
+            );
         }
 
-        $settings                                                                            = $applicationInstall->getSettings();
+        $settings                                                                            = $applicationInstall->getSettings(
+        );
         $settings[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN] = $token;
         $applicationInstall->setSettings($settings);
 
@@ -139,7 +145,8 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
      */
     public function getFrontendRedirectUrl(ApplicationInstall $applicationInstall): string
     {
-        return $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::REDIRECT_URL];
+        return $applicationInstall->getSettings(
+        )[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::REDIRECT_URL];
     }
 
     /**
@@ -153,7 +160,8 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
         string $redirectUrl
     ): OAuth2ApplicationInterface
     {
-        $settings                                                                                   = $applicationInstall->getSettings();
+        $settings                                                                                   = $applicationInstall->getSettings(
+        );
         $settings[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::REDIRECT_URL] = $redirectUrl;
         $applicationInstall->setSettings($settings);
 
@@ -193,14 +201,20 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
      */
     public function getAccessToken(ApplicationInstall $applicationInstall): string
     {
-        if (isset($applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN][OAuth2Provider::ACCESS_TOKEN])) {
+        if (isset(
+            $applicationInstall->getSettings(
+            )[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN][OAuth2Provider::ACCESS_TOKEN]
+        )) {
 
-            return $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN][OAuth2Provider::ACCESS_TOKEN];
+            return $applicationInstall->getSettings(
+            )[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN][OAuth2Provider::ACCESS_TOKEN];
 
         } else {
 
-            throw new ApplicationInstallException('There is no access token',
-                ApplicationInstallException::AUTHORIZATION_OAUTH2_ERROR);
+            throw new ApplicationInstallException(
+                'There is no access token',
+                ApplicationInstallException::AUTHORIZATION_OAUTH2_ERROR
+            );
         }
     }
 
@@ -226,7 +240,8 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
      */
     protected function getTokens(ApplicationInstall $applicationInstall): array
     {
-        return $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN];
+        return $applicationInstall->getSettings(
+        )[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN];
     }
 
     /**
@@ -240,10 +255,14 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
         $applicationInstall = parent::setApplicationSettings($applicationInstall, $settings);
 
         foreach ($applicationInstall->getSettings()[ApplicationAbstract::FORM] ?? [] as $key => $value) {
-            if (in_array($key, [
-                OAuth2ApplicationInterface::CLIENT_ID,
-                OAuth2ApplicationInterface::CLIENT_SECRET,
-            ], TRUE)) {
+            if (in_array(
+                $key,
+                [
+                    OAuth2ApplicationInterface::CLIENT_ID,
+                    OAuth2ApplicationInterface::CLIENT_SECRET,
+                ],
+                TRUE
+            )) {
                 $settings                                                          = $applicationInstall->getSettings();
                 $settings[BasicApplicationInterface::AUTHORIZATION_SETTINGS][$key] = $value;
                 $applicationInstall->setSettings($settings);

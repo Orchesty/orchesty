@@ -72,7 +72,10 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
      */
     public function isAuthorize(ApplicationInstall $applicationInstall): bool
     {
-        return isset($applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS][OAuth1ApplicationInterface::TOKEN]);
+        return isset(
+            $applicationInstall->getSettings(
+            )[ApplicationInterface::AUTHORIZATION_SETTINGS][OAuth1ApplicationInterface::TOKEN]
+        );
     }
 
     /**
@@ -92,7 +95,8 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
                     Field::TEXT,
                     ApplicationInterface::REDIRECT_URL,
                     'Redirect URL',
-                    $this->provider->getRedirectUri())
+                    $this->provider->getRedirectUri()
+                )
                 )->setReadOnly(TRUE)->toArray(),
             ]
         );
@@ -133,7 +137,8 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
             $this->getAccessTokenUrl()
         );
 
-        $settings                                                                            = $applicationInstall->getSettings();
+        $settings                                                                            = $applicationInstall->getSettings(
+        );
         $settings[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN] = $token;
         $applicationInstall->setSettings($settings);
 
@@ -147,7 +152,8 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
      */
     public function getFrontendRedirectUrl(ApplicationInstall $applicationInstall): string
     {
-        return $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::REDIRECT_URL];
+        return $applicationInstall->getSettings(
+        )[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::REDIRECT_URL];
     }
 
     /**
@@ -161,7 +167,8 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
         string $redirectUrl
     ): OAuth1ApplicationInterface
     {
-        $settings                                                                                   = $applicationInstall->getSettings();
+        $settings                                                                                   = $applicationInstall->getSettings(
+        );
         $settings[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::REDIRECT_URL] = $redirectUrl;
         $applicationInstall->setSettings($settings);
 

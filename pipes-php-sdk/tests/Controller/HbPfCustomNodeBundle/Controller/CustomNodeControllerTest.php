@@ -79,8 +79,10 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
             ->willReturn($dto);
         $joinerHandlerMock
             ->method('processTest')
-            ->willReturnCallback(function (): void {
-            });
+            ->willReturnCallback(
+                function (): void {
+                }
+            );
 
         /** @var ContainerInterface $container */
         $container = self::$client->getContainer();

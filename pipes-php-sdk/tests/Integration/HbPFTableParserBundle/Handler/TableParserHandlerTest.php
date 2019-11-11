@@ -56,16 +56,20 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
 
         self::$container->get('hbpf.database_manager_locator');
 
-        $result = $this->handler->parseToJson([
-            'file_id'     => sprintf('%s/input-10.xlsx', $this->path),
-            'has_headers' => FALSE,
-        ]);
+        $result = $this->handler->parseToJson(
+            [
+                'file_id'     => sprintf('%s/input-10.xlsx', $this->path),
+                'has_headers' => FALSE,
+            ]
+        );
         self::assertEquals(file_get_contents(sprintf('%s/output-10.json', $this->path)), $result);
 
-        $result = $this->handler->parseToJson([
-            'file_id'     => sprintf('%s/input-10h.xlsx', $this->path),
-            'has_headers' => TRUE,
-        ]);
+        $result = $this->handler->parseToJson(
+            [
+                'file_id'     => sprintf('%s/input-10h.xlsx', $this->path),
+                'has_headers' => TRUE,
+            ]
+        );
         self::assertEquals(file_get_contents(sprintf('%s/output-10h.json', $this->path)), $result);
     }
 
@@ -96,25 +100,35 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
      */
     public function testParseFromJson(): void
     {
-        $resultPath = $this->handler->parseFromJson(TableParserInterface::XLSX, [
-            'file_id'     => sprintf('%s/output-10.json', $this->path),
-            'has_headers' => FALSE,
-        ]);
-        $result     = $this->handler->parseToJson([
-            'file_id'     => $resultPath,
-            'has_headers' => FALSE,
-        ]);
+        $resultPath = $this->handler->parseFromJson(
+            TableParserInterface::XLSX,
+            [
+                'file_id'     => sprintf('%s/output-10.json', $this->path),
+                'has_headers' => FALSE,
+            ]
+        );
+        $result     = $this->handler->parseToJson(
+            [
+                'file_id'     => $resultPath,
+                'has_headers' => FALSE,
+            ]
+        );
         self::assertEquals(file_get_contents(sprintf('%s/output-10.json', $this->path)), $result);
         unlink($resultPath);
 
-        $resultPath = $this->handler->parseFromJson(TableParserInterface::XLSX, [
-            'file_id'     => sprintf('%s/output-10h.json', $this->path),
-            'has_headers' => TRUE,
-        ]);
-        $result     = $this->handler->parseToJson([
-            'file_id'     => $resultPath,
-            'has_headers' => TRUE,
-        ]);
+        $resultPath = $this->handler->parseFromJson(
+            TableParserInterface::XLSX,
+            [
+                'file_id'     => sprintf('%s/output-10h.json', $this->path),
+                'has_headers' => TRUE,
+            ]
+        );
+        $result     = $this->handler->parseToJson(
+            [
+                'file_id'     => $resultPath,
+                'has_headers' => TRUE,
+            ]
+        );
         self::assertEquals(file_get_contents(sprintf('%s/output-10h.json', $this->path)), $result);
         unlink($resultPath);
     }
@@ -128,13 +142,18 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
         $content = (string) file_get_contents(sprintf('%s/output-10.json', $this->path));
         $file    = $this->storage->saveFileFromContent(new FileContentDto($content, 'json'));
 
-        $resultPath = $this->handler->parseFromJson(TableParserInterface::XLSX, [
-            'file_id' => $file->getId(),
-        ]);
-        $result     = $this->handler->parseToJson([
-            'file_id'     => $resultPath,
-            'has_headers' => FALSE,
-        ]);
+        $resultPath = $this->handler->parseFromJson(
+            TableParserInterface::XLSX,
+            [
+                'file_id' => $file->getId(),
+            ]
+        );
+        $result     = $this->handler->parseToJson(
+            [
+                'file_id'     => $resultPath,
+                'has_headers' => FALSE,
+            ]
+        );
         self::assertEquals(file_get_contents(sprintf('%s/output-10.json', $this->path)), $result);
         unlink($resultPath);
     }

@@ -94,40 +94,56 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
     private function validate(Message $message): PromiseInterface
     {
         if ($this->isEmpty($message->getHeader(self::REPLY_TO))) {
-            return reject(new InvalidArgumentException(
-                sprintf('Missing "%s" in the message header.', self::REPLY_TO)
-            ));
+            return reject(
+                new InvalidArgumentException(
+                    sprintf('Missing "%s" in the message header.', self::REPLY_TO)
+                )
+            );
         }
         if ($this->isEmpty($message->getHeader(self::TYPE))) {
-            return reject(new InvalidArgumentException(
+            return reject(
+                new InvalidArgumentException(
                     sprintf('Missing "%s" in the message header.', self::TYPE)
                 )
             );
         }
         if ($this->isEmpty(PipesHeaders::get(PipesHeaders::NODE_ID, $message->headers))) {
-            return reject(new InvalidArgumentException(
-                sprintf('Missing "%s" in the message header.', PipesHeaders::createKey(PipesHeaders::NODE_ID))
-            ));
+            return reject(
+                new InvalidArgumentException(
+                    sprintf('Missing "%s" in the message header.', PipesHeaders::createKey(PipesHeaders::NODE_ID))
+                )
+            );
         }
         if ($this->isEmpty(PipesHeaders::get(PipesHeaders::TOPOLOGY_ID, $message->headers))) {
-            return reject(new InvalidArgumentException(
-                sprintf('Missing "%s" in the message header.', PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID))
-            ));
+            return reject(
+                new InvalidArgumentException(
+                    sprintf('Missing "%s" in the message header.', PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID))
+                )
+            );
         }
         if ($this->isEmpty(PipesHeaders::get(PipesHeaders::CORRELATION_ID, $message->headers))) {
-            return reject(new InvalidArgumentException(
-                sprintf('Missing "%s" in the message header.', PipesHeaders::createKey(PipesHeaders::CORRELATION_ID))
-            ));
+            return reject(
+                new InvalidArgumentException(
+                    sprintf(
+                        'Missing "%s" in the message header.',
+                        PipesHeaders::createKey(PipesHeaders::CORRELATION_ID)
+                    )
+                )
+            );
         }
         if ($this->isEmpty(PipesHeaders::get(PipesHeaders::PROCESS_ID, $message->headers))) {
-            return reject(new InvalidArgumentException(
-                sprintf('Missing "%s" in the message header.', PipesHeaders::createKey(PipesHeaders::PROCESS_ID))
-            ));
+            return reject(
+                new InvalidArgumentException(
+                    sprintf('Missing "%s" in the message header.', PipesHeaders::createKey(PipesHeaders::PROCESS_ID))
+                )
+            );
         }
         if (!array_key_exists(PipesHeaders::createKey(PipesHeaders::PARENT_ID), $message->headers)) {
-            return reject(new InvalidArgumentException(
-                sprintf('Missing "%s" in the message header.', PipesHeaders::createKey(PipesHeaders::PARENT_ID))
-            ));
+            return reject(
+                new InvalidArgumentException(
+                    sprintf('Missing "%s" in the message header.', PipesHeaders::createKey(PipesHeaders::PARENT_ID))
+                )
+            );
         }
 
         return resolve();
@@ -155,7 +171,8 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
         Message $message,
         Connection $connection,
         int $channelId,
-        LoopInterface $loop): PromiseInterface
+        LoopInterface $loop
+    ): PromiseInterface
     {
         $this->startMetrics();
 
@@ -165,76 +182,97 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
 
         return $this
             ->validate($message)
-            ->then(function () use ($message): void {
-                $this->logger->debug(
-                    'Batch consumer received message',
-                    array_merge(
-                        $this->prepareBunnyMessage($message),
-                        PipesHeaders::debugInfo($message->headers)
-                    ));
-            })
-            ->then(function () use ($connection): Channel {
-                /** @var Channel $channel */
-                $channel = $connection->getClient()->channel();
+            ->then(
+                function () use ($message): void {
+                    $this->logger->debug(
+                        'Batch consumer received message',
+                        array_merge(
+                            $this->prepareBunnyMessage($message),
+                            PipesHeaders::debugInfo($message->headers)
+                        )
+                    );
+                }
+            )
+            ->then(
+                function () use ($connection): Channel {
+                    /** @var Channel $channel */
+                    $channel = $connection->getClient()->channel();
 
-                return $channel;
-            })
-            ->then(function (Channel $channel) use ($message, &$replyChannel) {
-                $replyChannel = $channel;
+                    return $channel;
+                }
+            )
+            ->then(
+                function (Channel $channel) use ($message, &$replyChannel) {
+                    $replyChannel = $channel;
 
-                $channel->queueDeclare($message->getHeader(self::REPLY_TO));
+                    $channel->queueDeclare($message->getHeader(self::REPLY_TO));
 
-                return $channel;
-            })
-            ->then(function (Channel $channel) use ($message, $loop) {
-                switch ($message->getHeader(self::TYPE)) {
-                    case 'test':
-                        return $this->testAction($channel, $message);
-                        break;
-                    case 'batch':
-                        return $this->batchAction($message, $channel, $loop);
-                        break;
-                    default:
-                        return reject(
-                            new InvalidArgumentException(sprintf(
-                                'Unsupported type "%s".',
-                                $message->getHeader(self::TYPE)
-                            ))
+                    return $channel;
+                }
+            )
+            ->then(
+                function (Channel $channel) use ($message, $loop) {
+                    switch ($message->getHeader(self::TYPE)) {
+                        case 'test':
+                            return $this->testAction($channel, $message);
+                            break;
+                        case 'batch':
+                            return $this->batchAction($message, $channel, $loop);
+                            break;
+                        default:
+                            return reject(
+                                new InvalidArgumentException(
+                                    sprintf(
+                                        'Unsupported type "%s".',
+                                        $message->getHeader(self::TYPE)
+                                    )
+                                )
+                            );
+                    }
+                }
+            )->otherwise(
+                function (Throwable $e) use ($replyChannel, $connection, $channelId, $message) {
+                    if ($replyChannel === NULL) {
+                        // @todo create new channel
+                        $replyChannel = $connection->getChannel($channelId);
+                    }
+
+                    return $this
+                        ->batchErrorCallback(
+                            $replyChannel,
+                            $message,
+                            new ErrorMessage(2001, $e->getMessage())
+                        )
+                        ->then(
+                            function () use ($e, $message) {
+                                $this->logger->error(
+                                    sprintf('Batch action error: %s', $e->getMessage()),
+                                    array_merge(
+                                        ['exception' => $e],
+                                        PipesHeaders::debugInfo($message->headers)
+                                    )
+                                );
+
+                                return reject($e);
+                            }
                         );
                 }
-            })->otherwise(function (Throwable $e) use ($replyChannel, $connection, $channelId, $message) {
-                if ($replyChannel === NULL) {
-                    // @todo create new channel
-                    $replyChannel = $connection->getChannel($channelId);
+            )->always(
+                function () use ($message, &$replyChannel, $connection, $channelId): void {
+                    /** @var Channel|null $channel */
+                    $channel      = $replyChannel;
+                    $replyChannel = $channel;
+                    $connection->getChannel($channelId)->ack($message);
+
+                    if ($replyChannel !== NULL) {
+                        $replyChannel->close();
+                        unset($replyChannel);
+                        unset($channel);
+                    }
+
+                    $this->sendMetrics($message, $this->currentMetrics);
                 }
-
-                return $this
-                    ->batchErrorCallback(
-                        $replyChannel,
-                        $message,
-                        new ErrorMessage(2001, $e->getMessage()))
-                    ->then(function () use ($e, $message) {
-                        $this->logger->error(sprintf('Batch action error: %s', $e->getMessage()), array_merge(
-                            ['exception' => $e],
-                            PipesHeaders::debugInfo($message->headers)
-                        ));
-
-                        return reject($e);
-                    });
-            })->always(function () use ($message, &$replyChannel, $connection, $channelId): void {
-                /** @var Channel|null $channel */
-                $channel      = $replyChannel;
-                $replyChannel = $channel;
-                $connection->getChannel($channelId)->ack($message);
-
-                if ($replyChannel !== NULL) {
-                    $replyChannel->close();
-                    unset($replyChannel);
-                    unset($channel);
-                }
-
-                $this->sendMetrics($message, $this->currentMetrics);
-            });
+            );
     }
 
     /**
@@ -264,23 +302,30 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
      */
     private function publishSuccessTestMessage(Channel $channel, Message $message): PromiseInterface
     {
-        $headers = array_merge($message->headers, [
-            PipesHeaders::createKey(PipesHeaders::RESULT_CODE) => 0,
-        ]);
+        $headers = array_merge(
+            $message->headers,
+            [
+                PipesHeaders::createKey(PipesHeaders::RESULT_CODE) => 0,
+            ]
+        );
 
         $channel->publish('', $headers, '', $message->getHeader(self::REPLY_TO));
 
-        return (new Promise(function (callable $resolve): void {
-            $resolve();
-        }))->then(function () use ($message, $headers): void {
-            $this->logger->debug(
-                'Published test item.',
-                array_merge(
-                    $this->prepareMessage('', '', $message->getHeader(self::REPLY_TO), $headers),
-                    PipesHeaders::debugInfo($headers)
-                )
-            );
-        });
+        return (new Promise(
+            function (callable $resolve): void {
+                $resolve();
+            }
+        ))->then(
+            function () use ($message, $headers): void {
+                $this->logger->debug(
+                    'Published test item.',
+                    array_merge(
+                        $this->prepareMessage('', '', $message->getHeader(self::REPLY_TO), $headers),
+                        PipesHeaders::debugInfo($headers)
+                    )
+                );
+            }
+        );
     }
 
     /**
@@ -292,24 +337,31 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
      */
     public function publishErrorTestMessage(Channel $channel, Message $message, Exception $e): PromiseInterface
     {
-        $headers = array_merge($message->headers, [
-            PipesHeaders::createKey(PipesHeaders::RESULT_CODE)    => 2001,
-            PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE) => $e->getMessage(),
-        ]);
+        $headers = array_merge(
+            $message->headers,
+            [
+                PipesHeaders::createKey(PipesHeaders::RESULT_CODE)    => 2001,
+                PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE) => $e->getMessage(),
+            ]
+        );
 
         $channel->publish('', $headers, '', $message->getHeader(self::REPLY_TO));
 
-        return (new Promise(function (callable $resolve): void {
-            $resolve();
-        }))->then(function () use ($message, $headers): void {
-            $this->logger->error(
-                'Published test item error.',
-                array_merge(
-                    $this->prepareMessage('', '', $message->getHeader(self::REPLY_TO), $headers),
-                    PipesHeaders::debugInfo($headers)
-                )
-            );
-        });
+        return (new Promise(
+            function (callable $resolve): void {
+                $resolve();
+            }
+        ))->then(
+            function () use ($message, $headers): void {
+                $this->logger->error(
+                    'Published test item error.',
+                    array_merge(
+                        $this->prepareMessage('', '', $message->getHeader(self::REPLY_TO), $headers),
+                        PipesHeaders::debugInfo($headers)
+                    )
+                );
+            }
+        );
     }
 
     /**
@@ -328,9 +380,11 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
 
         return $this->batchAction
             ->batchAction($message, $loop, $itemCallBack)
-            ->then(function () use ($channel, $message) {
-                return $this->batchCallback($channel, $message);
-            });
+            ->then(
+                function () use ($channel, $message) {
+                    return $this->batchCallback($channel, $message);
+                }
+            );
     }
 
     /**
@@ -340,9 +394,11 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
      *
      * @return PromiseInterface
      */
-    private function itemCallback(Channel $channel,
-                                  Message $message,
-                                  SuccessMessage $successMessage): PromiseInterface
+    private function itemCallback(
+        Channel $channel,
+        Message $message,
+        SuccessMessage $successMessage
+    ): PromiseInterface
     {
         // Limiter
         if (
@@ -372,17 +428,21 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
         $headers[PipesHeaders::createKey(PipesHeaders::TIMESTAMP)] = (string) round(microtime(TRUE) * 1000);
         $channel->publish($successMessage->getData(), $headers, '', $message->getHeader(self::REPLY_TO));
 
-        return (new Promise(function (callable $resolve): void {
-            $resolve();
-        }))->then(function () use ($successMessage, $message, $headers): void {
-            $this->logger->debug(
-                sprintf('Published batch item %s.', $successMessage->getSequenceId()),
-                array_merge(
-                    $this->prepareMessage('', '', $message->getHeader(self::REPLY_TO), $headers),
-                    PipesHeaders::debugInfo($headers)
-                )
-            );
-        });
+        return (new Promise(
+            function (callable $resolve): void {
+                $resolve();
+            }
+        ))->then(
+            function () use ($successMessage, $message, $headers): void {
+                $this->logger->debug(
+                    sprintf('Published batch item %s.', $successMessage->getSequenceId()),
+                    array_merge(
+                        $this->prepareMessage('', '', $message->getHeader(self::REPLY_TO), $headers),
+                        PipesHeaders::debugInfo($headers)
+                    )
+                );
+            }
+        );
     }
 
     /**
@@ -399,10 +459,13 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
             PipesHeaders::get(PipesHeaders::NODE_NAME, $message->headers)
         );
 
-        $headers = array_merge($message->headers, [
-            self::TYPE                                            => 'batch_end',
-            PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE) => $resultMessage,
-        ]);
+        $headers = array_merge(
+            $message->headers,
+            [
+                self::TYPE                                            => 'batch_end',
+                PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE) => $resultMessage,
+            ]
+        );
 
         if (!$message->hasHeader(PipesHeaders::createKey(PipesHeaders::RESULT_CODE))) {
             $headers[PipesHeaders::createKey(PipesHeaders::RESULT_CODE)] = 0;
@@ -410,17 +473,21 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
 
         $channel->publish('', $headers, '', $message->getHeader(self::REPLY_TO));
 
-        return (new Promise(function (callable $resolve): void {
-            $resolve();
-        }))->then(function () use ($message, $headers): void {
-            $this->logger->debug(
-                'Published batch end.',
-                array_merge(
-                    $this->prepareMessage('', '', $message->getHeader(self::REPLY_TO), $headers),
-                    PipesHeaders::debugInfo($headers)
-                )
-            );
-        });
+        return (new Promise(
+            function (callable $resolve): void {
+                $resolve();
+            }
+        ))->then(
+            function () use ($message, $headers): void {
+                $this->logger->debug(
+                    'Published batch end.',
+                    array_merge(
+                        $this->prepareMessage('', '', $message->getHeader(self::REPLY_TO), $headers),
+                        PipesHeaders::debugInfo($headers)
+                    )
+                );
+            }
+        );
     }
 
     /**
@@ -434,28 +501,36 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
     private function batchErrorCallback(
         Channel $channel,
         Message $message,
-        ErrorMessage $errorMessage): PromiseInterface
+        ErrorMessage $errorMessage
+    ): PromiseInterface
     {
-        $headers = array_merge($message->headers, [
-            self::TYPE                                            => 'batch_end',
-            PipesHeaders::createKey(PipesHeaders::RESULT_CODE)    => $errorMessage->getCode(),
-            PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE) => $errorMessage->getMessage(),
-            PipesHeaders::createKey(PipesHeaders::RESULT_DETAIL)  => $errorMessage->getDetail(),
-        ]);
+        $headers = array_merge(
+            $message->headers,
+            [
+                self::TYPE                                            => 'batch_end',
+                PipesHeaders::createKey(PipesHeaders::RESULT_CODE)    => $errorMessage->getCode(),
+                PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE) => $errorMessage->getMessage(),
+                PipesHeaders::createKey(PipesHeaders::RESULT_DETAIL)  => $errorMessage->getDetail(),
+            ]
+        );
 
         $channel->publish('', $headers, '', $message->getHeader(self::REPLY_TO));
 
-        return (new Promise(function (callable $resolve): void {
-            $resolve();
-        }))->then(function () use ($message, $headers): void {
-            $this->logger->error(
-                'Published batch error end.',
-                array_merge(
-                    $this->prepareMessage('', '', $message->getHeader(self::REPLY_TO), $headers),
-                    PipesHeaders::debugInfo($headers)
-                )
-            );
-        });
+        return (new Promise(
+            function (callable $resolve): void {
+                $resolve();
+            }
+        ))->then(
+            function () use ($message, $headers): void {
+                $this->logger->error(
+                    'Published batch error end.',
+                    array_merge(
+                        $this->prepareMessage('', '', $message->getHeader(self::REPLY_TO), $headers),
+                        PipesHeaders::debugInfo($headers)
+                    )
+                );
+            }
+        );
     }
 
     /**
@@ -476,7 +551,9 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
             [
                 MetricsEnum::HOST           => gethostname(),
                 MetricsEnum::TOPOLOGY_ID    => $message->getHeader(PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID)),
-                MetricsEnum::CORRELATION_ID => $message->getHeader(PipesHeaders::createKey(PipesHeaders::CORRELATION_ID)),
+                MetricsEnum::CORRELATION_ID => $message->getHeader(
+                    PipesHeaders::createKey(PipesHeaders::CORRELATION_ID)
+                ),
                 MetricsEnum::NODE_ID        => $message->getHeader(PipesHeaders::createKey(PipesHeaders::NODE_ID)),
             ]
         );

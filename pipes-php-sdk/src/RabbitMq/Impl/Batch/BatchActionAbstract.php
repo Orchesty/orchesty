@@ -51,9 +51,11 @@ abstract class BatchActionAbstract implements BatchActionInterface, LoggerAwareI
     private function validateHeaders(Message $message): PromiseInterface
     {
         if ($this->isEmpty(PipesHeaders::get(PipesHeaders::NODE_NAME, $message->headers))) {
-            return reject(new InvalidArgumentException(
-                sprintf('Missing "%s" in the message header.', PipesHeaders::NODE_NAME)
-            ));
+            return reject(
+                new InvalidArgumentException(
+                    sprintf('Missing "%s" in the message header.', PipesHeaders::NODE_NAME)
+                )
+            );
         }
 
         return resolve(PipesHeaders::get(PipesHeaders::NODE_NAME, $message->headers));
@@ -92,11 +94,15 @@ abstract class BatchActionAbstract implements BatchActionInterface, LoggerAwareI
     {
         return $this
             ->validateHeaders($message)
-            ->then(function (string $serviceName) {
-                return $this->getBatchService($serviceName);
-            })->then(function (BatchInterface $node) use ($message, $loop, $itemCallBack) {
-                return $node->processBatch($this->createProcessDto($message), $loop, $itemCallBack);
-            });
+            ->then(
+                function (string $serviceName) {
+                    return $this->getBatchService($serviceName);
+                }
+            )->then(
+                function (BatchInterface $node) use ($message, $loop, $itemCallBack) {
+                    return $node->processBatch($this->createProcessDto($message), $loop, $itemCallBack);
+                }
+            );
     }
 
 }

@@ -2,7 +2,7 @@
   "name": "hanaboso/pipes-php-sdk",
   "license": "proprietary",
   "description": "PHP sdk for PipesFramework",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "autoload": {
     "psr-4": {
       "Hanaboso\\PipesPhpSdk\\": "src/"
@@ -18,8 +18,8 @@
     "ext-json": "*",
     "ext-oauth": "*",
     "ext-mongodb": "*",
-    "friendsofsymfony/rest-bundle": "^2.5",
-    "hanaboso/commons-bundle": "^1.1",
+    "friendsofsymfony/rest-bundle": "^2.6",
+    "hanaboso/commons-bundle": "^1.2",
     "hanaboso/mongo-data-grid": "^1.1",
     "hanaboso/rabbit-mq-bundle": "^1.1",
     "jms/serializer-bundle": "^3.4",

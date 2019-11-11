@@ -73,8 +73,10 @@ final class JoinerControllerTest extends ControllerTestCaseAbstract
             ->willReturn($returnValue);
         $joinerHandlerMock
             ->method('processJoinerTest')
-            ->willReturnCallback(function (): void {
-            });
+            ->willReturnCallback(
+                function (): void {
+                }
+            );
 
         /** @var ContainerInterface $container */
         $container = self::$client->getContainer();

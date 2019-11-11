@@ -91,8 +91,12 @@ class LongRunningNodeController extends AbstractFOSRestController
     public function getTasksByIdAction(Request $request, string $topo): Response
     {
         try {
-            return $this->getResponse($this->handler->getTasksById(new GridRequestDto($request->headers->all()),
-                $topo));
+            return $this->getResponse(
+                $this->handler->getTasksById(
+                    new GridRequestDto($request->headers->all()),
+                    $topo
+                )
+            );
         } catch (Throwable $e) {
             return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
         }
@@ -127,11 +131,13 @@ class LongRunningNodeController extends AbstractFOSRestController
     public function getNodeTasksByIdAction(Request $request, string $topo, string $node): Response
     {
         try {
-            return $this->getResponse($this->handler->getTasksById(
-                new GridRequestDto($request->headers->all()),
-                $topo,
-                $node
-            ));
+            return $this->getResponse(
+                $this->handler->getTasksById(
+                    new GridRequestDto($request->headers->all()),
+                    $topo,
+                    $node
+                )
+            );
         } catch (Throwable $e) {
             return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
         }
@@ -149,11 +155,13 @@ class LongRunningNodeController extends AbstractFOSRestController
     public function getNodeTasksAction(Request $request, string $topo, string $node): Response
     {
         try {
-            return $this->getResponse($this->handler->getTasks(
-                new GridRequestDto($request->headers->all()),
-                $topo,
-                $node
-            ));
+            return $this->getResponse(
+                $this->handler->getTasks(
+                    new GridRequestDto($request->headers->all()),
+                    $topo,
+                    $node
+                )
+            );
         } catch (Throwable $e) {
             return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
         }

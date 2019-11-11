@@ -49,17 +49,19 @@ final class LongRunningNodeFilter extends GridFilterAbstract
         $this->searchQuery = $this
             ->getRepository()
             ->createQueryBuilder()
-            ->select([
-                LongRunningNodeData::CREATED,
-                LongRunningNodeData::UPDATED,
-                LongRunningNodeData::DATA,
-                LongRunningNodeData::AUDIT_LOGS,
-                LongRunningNodeData::TOPOLOGY_ID,
-                LongRunningNodeData::TOPOLOGY_NAME,
-                LongRunningNodeData::NODE_ID,
-                LongRunningNodeData::NODE_NAME,
-                LongRunningNodeData::PROCESS_ID,
-            ]);
+            ->select(
+                [
+                    LongRunningNodeData::CREATED,
+                    LongRunningNodeData::UPDATED,
+                    LongRunningNodeData::DATA,
+                    LongRunningNodeData::AUDIT_LOGS,
+                    LongRunningNodeData::TOPOLOGY_ID,
+                    LongRunningNodeData::TOPOLOGY_NAME,
+                    LongRunningNodeData::NODE_ID,
+                    LongRunningNodeData::NODE_NAME,
+                    LongRunningNodeData::PROCESS_ID,
+                ]
+            );
     }
 
     /**

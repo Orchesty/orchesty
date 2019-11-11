@@ -239,7 +239,9 @@ class BunnyManager
                     throw new BunnyException(
                         sprintf(
                             'Could not bind queue \'%s\' to \'%s\' with routing key \'%s\'.',
-                            $queueName, $binding['exchange'], $binding['routing_key']
+                            $queueName,
+                            $binding['exchange'],
+                            $binding['routing_key']
                         )
                     );
                 }

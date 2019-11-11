@@ -67,15 +67,22 @@ class OAuth1Provider extends OAuthProviderAbstract implements OAuth1ProviderInte
         try {
             $requestToken = $client->getRequestToken($tokenUrl);
         } catch (Exception $e) {
-            $this->throwException(sprintf('OAuth error: %s', $e->getMessage()),
-                AuthorizationException::AUTHORIZATION_OAUTH1_ERROR);
+            $this->throwException(
+                sprintf('OAuth error: %s', $e->getMessage()),
+                AuthorizationException::AUTHORIZATION_OAUTH1_ERROR
+            );
         }
 
         $this->tokenAndSecretChecker((array) $requestToken);
 
         $saveOauthStuffs($this->dm, $dto, $requestToken);
 
-        $authorizeUrl = $this->getAuthorizeUrl($authorizeUrl, $this->getRedirectUri(), $requestToken[self::OAUTH_TOKEN], $scopes);
+        $authorizeUrl = $this->getAuthorizeUrl(
+            $authorizeUrl,
+            $this->getRedirectUri(),
+            $requestToken[self::OAUTH_TOKEN],
+            $scopes
+        );
 
         $this->redirect->make($authorizeUrl);
     }
@@ -92,8 +99,10 @@ class OAuth1Provider extends OAuthProviderAbstract implements OAuth1ProviderInte
     public function getAccessToken(OAuth1DtoInterface $dto, array $request, string $accessTokenUrl): array
     {
         if (!array_key_exists(self::OAUTH_VERIFIER, $request)) {
-            $this->throwException(sprintf('OAuth error: Data "%s" is missing.', self::OAUTH_VERIFIER),
-                AuthorizationException::AUTHORIZATION_OAUTH1_ERROR);
+            $this->throwException(
+                sprintf('OAuth error: Data "%s" is missing.', self::OAUTH_VERIFIER),
+                AuthorizationException::AUTHORIZATION_OAUTH1_ERROR
+            );
         }
 
         $this->tokenAndSecretChecker($dto->getToken());

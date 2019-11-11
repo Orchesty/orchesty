@@ -49,7 +49,7 @@ class ConnectorManager
 
         $key = $conn->getApplicationKey();
         if ($key) {
-            $headers                   = $dto->getHeaders();
+            $headers                                                     = $dto->getHeaders();
             $headers[PipesHeaders::createKey(PipesHeaders::APPLICATION)] = [$key];
             $dto->setHeaders($headers);
         }

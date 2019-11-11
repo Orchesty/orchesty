@@ -74,11 +74,14 @@ final class BatchConsumerCallbackTest extends TestCase
 
         $callback
             ->processMessage($this->createMessage($headers), $connection, 1, $loop)
-            ->then(NULL, function (Exception $e) use ($loop, $message): void {
-                self::assertInstanceOf(InvalidArgumentException::class, $e);
-                self::assertSame($message, $e->getMessage());
-                $loop->stop();
-            })
+            ->then(
+                NULL,
+                function (Exception $e) use ($loop, $message): void {
+                    self::assertInstanceOf(InvalidArgumentException::class, $e);
+                    self::assertSame($message, $e->getMessage());
+                    $loop->stop();
+                }
+            )
             ->done();
 
         $loop->run();
@@ -184,15 +187,18 @@ final class BatchConsumerCallbackTest extends TestCase
         ];
         $callback
             ->processMessage($this->createMessage($headers), $connection, 1, $loop)
-            ->then(function () use ($loop): void {
-                // Test if resolve
-                self::assertTrue(TRUE);
-                $loop->stop();
-            }, function () use ($loop): void {
-                // Test if reject
-                self::fail();
-                $loop->stop();
-            })
+            ->then(
+                function () use ($loop): void {
+                    // Test if resolve
+                    self::assertTrue(TRUE);
+                    $loop->stop();
+                },
+                function () use ($loop): void {
+                    // Test if reject
+                    self::fail();
+                    $loop->stop();
+                }
+            )
             ->done();
 
         $loop->run();
@@ -238,15 +244,18 @@ final class BatchConsumerCallbackTest extends TestCase
         ];
         $callback
             ->processMessage($this->createMessage($headers), $connection, 1, $loop)
-            ->then(function () use ($loop): void {
-                // Test if resolve
-                self::assertTrue(TRUE);
-                $loop->stop();
-            }, function () use ($loop): void {
-                // Test if reject
-                self::fail();
-                $loop->stop();
-            })
+            ->then(
+                function () use ($loop): void {
+                    // Test if resolve
+                    self::assertTrue(TRUE);
+                    $loop->stop();
+                },
+                function () use ($loop): void {
+                    // Test if reject
+                    self::fail();
+                    $loop->stop();
+                }
+            )
             ->done();
 
         $loop->run();
@@ -292,15 +301,18 @@ final class BatchConsumerCallbackTest extends TestCase
         ];
         $callback
             ->processMessage($this->createMessage($headers), $connection, 1, $loop)
-            ->then(function () use ($loop): void {
-                // Test if resolve
-                self::assertTrue(TRUE);
-                $loop->stop();
-            }, function () use ($loop): void {
-                // Test if reject
-                self::fail();
-                $loop->stop();
-            })
+            ->then(
+                function () use ($loop): void {
+                    // Test if resolve
+                    self::assertTrue(TRUE);
+                    $loop->stop();
+                },
+                function () use ($loop): void {
+                    // Test if reject
+                    self::fail();
+                    $loop->stop();
+                }
+            )
             ->done();
 
         $loop->run();
@@ -345,11 +357,14 @@ final class BatchConsumerCallbackTest extends TestCase
         ];
         $callback
             ->processMessage($this->createMessage($headers), $connection, 1, $loop)
-            ->then(NULL, function (Exception $e) use ($loop): void {
-                self::assertInstanceOf(InvalidArgumentException::class, $e);
-                self::assertSame('Unsupported type "unknown".', $e->getMessage());
-                $loop->stop();
-            })
+            ->then(
+                NULL,
+                function (Exception $e) use ($loop): void {
+                    self::assertInstanceOf(InvalidArgumentException::class, $e);
+                    self::assertSame('Unsupported type "unknown".', $e->getMessage());
+                    $loop->stop();
+                }
+            )
             ->done();
 
         $loop->run();

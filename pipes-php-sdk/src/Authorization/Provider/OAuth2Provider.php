@@ -145,14 +145,16 @@ class OAuth2Provider extends OAuthProviderAbstract implements OAuth2ProviderInte
      */
     protected function createClient(OAuth2DtoInterface $dto): OAuth2Wrapper
     {
-        return new OAuth2Wrapper([
-            'clientId'                => $dto->getClientId(),
-            'clientSecret'            => $dto->getClientSecret(),
-            'redirectUri'             => $this->getRedirectUri(),
-            'urlAuthorize'            => $dto->getAuthorizeUrl(),
-            'urlAccessToken'          => $dto->getTokenUrl(),
-            'urlResourceOwnerDetails' => $dto->getAuthorizeUrl(),
-        ]);
+        return new OAuth2Wrapper(
+            [
+                'clientId'                => $dto->getClientId(),
+                'clientSecret'            => $dto->getClientSecret(),
+                'redirectUri'             => $this->getRedirectUri(),
+                'urlAuthorize'            => $dto->getAuthorizeUrl(),
+                'urlAccessToken'          => $dto->getTokenUrl(),
+                'urlResourceOwnerDetails' => $dto->getAuthorizeUrl(),
+            ]
+        );
     }
 
     /**

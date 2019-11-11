@@ -93,15 +93,18 @@ final class AbstractProducerTest extends KernelTestCaseAbstract
     ): AbstractProducer
     {
         /** @var MockObject|AbstractProducer $producer */
-        $producer = $this->getMockForAbstractClass(AbstractProducer::class, [
-            'foo',
-            '*.*',
-            FALSE,
-            TRUE,
-            $beforeExecute,
-            ContentTypes::APPLICATION_JSON,
-            $bunnyManager,
-        ]);
+        $producer = $this->getMockForAbstractClass(
+            AbstractProducer::class,
+            [
+                'foo',
+                '*.*',
+                FALSE,
+                TRUE,
+                $beforeExecute,
+                ContentTypes::APPLICATION_JSON,
+                $bunnyManager,
+            ]
+        );
 
         return $producer;
     }

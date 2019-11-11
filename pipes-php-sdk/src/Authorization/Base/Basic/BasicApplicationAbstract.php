@@ -30,8 +30,16 @@ abstract class BasicApplicationAbstract extends ApplicationAbstract implements B
      */
     public function isAuthorized(ApplicationInstall $applicationInstall): bool
     {
-        return isset($applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::PASSWORD])
-            && isset($applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::USER]);
+        return
+            isset(
+                $applicationInstall->getSettings(
+                )[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::PASSWORD]
+            )
+            &&
+            isset(
+                $applicationInstall->getSettings(
+                )[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::USER]
+            );
     }
 
     /**
@@ -42,7 +50,8 @@ abstract class BasicApplicationAbstract extends ApplicationAbstract implements B
      */
     public function setApplicationPassword(ApplicationInstall $applicationInstall, string $password): ApplicationInstall
     {
-        $settings                                                                                    = $applicationInstall->getSettings();
+        $settings = $applicationInstall->getSettings();
+
         $settings[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::PASSWORD] = $password;
 
         return $applicationInstall->setSettings($settings);
@@ -57,7 +66,8 @@ abstract class BasicApplicationAbstract extends ApplicationAbstract implements B
      */
     public function setApplicationUser(ApplicationInstall $applicationInstall, string $user): ApplicationInstall
     {
-        $settings                                                                                = $applicationInstall->getSettings();
+        $settings = $applicationInstall->getSettings();
+
         $settings[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::USER] = $user;
 
         return $applicationInstall->setSettings($settings);

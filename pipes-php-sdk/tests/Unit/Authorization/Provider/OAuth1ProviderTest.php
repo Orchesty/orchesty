@@ -45,7 +45,14 @@ final class OAuth1ProviderTest extends TestCase
             self::expectExceptionCode(AuthorizationException::AUTHORIZATION_OAUTH1_ERROR);
         }
 
-        $provider->authorize($dto, 'token/url', 'authorize/url', function (): void {}, []);
+        $provider->authorize(
+            $dto,
+            'token/url',
+            'authorize/url',
+            function (): void {
+            },
+            []
+        );
     }
 
     /**
@@ -81,7 +88,7 @@ final class OAuth1ProviderTest extends TestCase
         /** @var OAuth1Provider|MockObject $provider */
         $provider = $this->getMockedProvider(['token'], '');
         $provider->setLogger(new Logger('logger'));
-        $dto      = new OAuth1Dto($install);
+        $dto = new OAuth1Dto($install);
 
         if ($exception) {
             self::expectException(AuthorizationException::class);
@@ -123,7 +130,7 @@ final class OAuth1ProviderTest extends TestCase
         /** @var OAuth1Provider|MockObject $provider */
         $provider = $this->getMockedProvider(['token'], '');
         $provider->setLogger(new Logger('logger'));
-        $dto      = new OAuth1Dto($install);
+        $dto = new OAuth1Dto($install);
 
         if ($exception) {
             self::expectException(AuthorizationException::class);
@@ -166,8 +173,10 @@ final class OAuth1ProviderTest extends TestCase
         $dm->method('flush')->willReturn(TRUE);
 
         $redirect = self::createMock(RedirectInterface::class);
-        $redirect->method('make')->with($authorizeUrl)->willReturnCallback(function (): void {
-        });
+        $redirect->method('make')->with($authorizeUrl)->willReturnCallback(
+            function (): void {
+            }
+        );
 
         $oauth = self::createPartialMock(
             OAuth::class,
