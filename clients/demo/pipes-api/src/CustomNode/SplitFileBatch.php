@@ -44,9 +44,11 @@ class SplitFileBatch extends CustomNodeAbstract implements BatchInterface
             }
 
             return resolve()
-                ->then(function () use ($data) {
-                    return (new SuccessMessage(0))->setData((string) json_encode($data, JSON_THROW_ON_ERROR));
-                })
+                ->then(
+                    function () use ($data) {
+                        return (new SuccessMessage(0))->setData((string) json_encode($data, JSON_THROW_ON_ERROR));
+                    }
+                )
                 ->then($callbackItem);
         }
 

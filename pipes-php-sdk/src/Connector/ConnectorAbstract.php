@@ -46,16 +46,13 @@ abstract class ConnectorAbstract implements ConnectorInterface
     public function evaluateStatusCode(int $statusCode, ProcessDto $dto, ?string $message = NULL): bool
     {
         if (in_array($statusCode, $this->okStatuses)) {
+
             return TRUE;
-        } elseif (in_array($statusCode, $this->badStatuses)) {
-            $dto->setStopProcess(ProcessDto::STOP_AND_FAILED, $message);
-
-            return FALSE;
-        } else {
-            $dto->setStopProcess(ProcessDto::STOP_AND_FAILED);
-
-            return FALSE;
         }
+
+        $dto->setStopProcess(ProcessDto::STOP_AND_FAILED, $message);
+
+        return FALSE;
     }
 
     /**

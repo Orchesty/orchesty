@@ -15,7 +15,7 @@ use function React\Promise\resolve;
  *
  * @package Demo\CustomNode
  */
-final class BatchCustomNode  extends CustomNodeAbstract implements BatchInterface
+final class BatchCustomNode extends CustomNodeAbstract implements BatchInterface
 {
 
     /**

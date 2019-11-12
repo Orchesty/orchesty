@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
-            "version": "1.1.10",
+            "version": "1.1.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/alcaeus/mongo-php-adapter.git",
-                "reference": "d949a7b2048af3e32518cc0fde43321524d657d2"
+                "reference": "43b6add94c8b4cb9890d662cba4c0defde733dcf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/alcaeus/mongo-php-adapter/zipball/d949a7b2048af3e32518cc0fde43321524d657d2",
-                "reference": "d949a7b2048af3e32518cc0fde43321524d657d2",
+                "url": "https://api.github.com/repos/alcaeus/mongo-php-adapter/zipball/43b6add94c8b4cb9890d662cba4c0defde733dcf",
+                "reference": "43b6add94c8b4cb9890d662cba4c0defde733dcf",
                 "shasum": ""
             },
             "require": {
@@ -70,20 +70,20 @@
                 "database",
                 "mongodb"
             ],
-            "time": "2019-11-06T19:47:30+00:00"
+            "time": "2019-11-11T20:47:32+00:00"
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.115.1",
+            "version": "3.115.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "43407075f446c202d9520498d4ebcbc5de439690"
+                "reference": "15792196be1b3b1b5663bca7b6cd021d005e2265"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/43407075f446c202d9520498d4ebcbc5de439690",
-                "reference": "43407075f446c202d9520498d4ebcbc5de439690",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/15792196be1b3b1b5663bca7b6cd021d005e2265",
+                "reference": "15792196be1b3b1b5663bca7b6cd021d005e2265",
                 "shasum": ""
             },
             "require": {
@@ -153,7 +153,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2019-11-08T19:17:23+00:00"
+            "time": "2019-11-11T19:22:34+00:00"
         },
         {
             "name": "aws/aws-sdk-php-symfony",
@@ -5464,16 +5464,16 @@
         },
         {
             "name": "symfony/symfony",
-            "version": "v4.3.6",
+            "version": "v4.3.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "7e98605f0e11979e6735dfefc6dad11977d8f5e7"
+                "reference": "fb4065ac95f08ca26ee605936e537ba2cd4a6bb7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/7e98605f0e11979e6735dfefc6dad11977d8f5e7",
-                "reference": "7e98605f0e11979e6735dfefc6dad11977d8f5e7",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/fb4065ac95f08ca26ee605936e537ba2cd4a6bb7",
+                "reference": "fb4065ac95f08ca26ee605936e537ba2cd4a6bb7",
                 "shasum": ""
             },
             "require": {
@@ -5628,20 +5628,20 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2019-11-01T10:00:21+00:00"
+            "time": "2019-11-11T16:39:14+00:00"
         },
         {
             "name": "twig/twig",
-            "version": "v2.12.1",
+            "version": "v2.12.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "ddd4134af9bfc6dba4eff7c8447444ecc45b9ee5"
+                "reference": "d761fd1f1c6b867ae09a7d8119a6d95d06dc44ed"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/ddd4134af9bfc6dba4eff7c8447444ecc45b9ee5",
-                "reference": "ddd4134af9bfc6dba4eff7c8447444ecc45b9ee5",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/d761fd1f1c6b867ae09a7d8119a6d95d06dc44ed",
+                "reference": "d761fd1f1c6b867ae09a7d8119a6d95d06dc44ed",
                 "shasum": ""
             },
             "require": {
@@ -5695,7 +5695,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2019-10-17T07:34:53+00:00"
+            "time": "2019-11-11T16:52:09+00:00"
         },
         {
             "name": "willdurand/jsonp-callback-validator",

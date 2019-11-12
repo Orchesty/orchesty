@@ -69,100 +69,127 @@ class DownloaderCommand extends Command
 
         /** @var ExtendedPromiseInterface $promise */
         $promise = $connector($uri)
-            ->then(function (WebSocket $ws) use ($loop, $output, $uri, $browser): void {
+            ->then(
+                function (WebSocket $ws) use ($loop, $output, $uri, $browser): void {
 
-                $this->heartbeat = $loop->addPeriodicTimer(5, function () use ($ws): void {
-                    $ws->send(
-                        json_encode(
-                            [
-                                'event' => 'pusher:ping', 'data' => [],
-                            ],
-                            JSON_THROW_ON_ERROR
-                        )
+                    $this->heartbeat = $loop->addPeriodicTimer(
+                        5,
+                        function () use ($ws): void {
+                            $ws->send(
+                                json_encode(
+                                    [
+                                        'event' => 'pusher:ping', 'data' => [],
+                                    ],
+                                    JSON_THROW_ON_ERROR
+                                )
+                            );
+                        }
                     );
-                });
 
-                $ws->on('message', function (MessageInterface $json) use ($ws, $output, $uri, $browser): void {
+                    $ws->on(
+                        'message',
+                        function (MessageInterface $json) use ($ws, $output, $uri, $browser): void {
 
-                    $json = (string) $json;
+                            $json = (string) $json;
 
-                    $data = json_decode($json, TRUE, 512, JSON_THROW_ON_ERROR);
+                            $data = json_decode($json, TRUE, 512, JSON_THROW_ON_ERROR);
 
-                    if (!array_key_exists('event', $data)) {
-                        $output->writeln('Bad data - no event.');
-                    }
-
-                    switch ($data['event']) {
-                        case 'pusher:connection_established':
-                            $output->writeln(sprintf('Connection created: %s', $uri));
-                            $channels = [
-                                'order_book', // btcusd
-                                'order_book_eurusd',
-                                'order_book_btceur',
-                                'order_book_xrpusd',
-                                'order_book_xrpeur',
-                                //'order_book_xrpbtc',
-                                //'order_book_ltcusd',
-                                //'order_book_ltceur',
-                                //'order_book_ltcbtc',
-                            ];
-                            foreach ($channels as $channel) {
-                                $ws->send(
-                                    json_encode(
-                                        [
-                                            'event' => 'pusher:subscribe', 'data' => ['channel' => $channel],
-                                        ],
-                                        JSON_THROW_ON_ERROR
-                                    )
-                                );
+                            if (!array_key_exists('event', $data)) {
+                                $output->writeln('Bad data - no event.');
                             }
-                            break;
-                        case 'pusher_internal:subscription_succeeded':
-                            $output->writeln(sprintf('Success subscribe to channel: %s', $data['channel']));
-                            break;
-                        case 'pusher:pong':
-                            $output->writeln('Received pong event.');
-                            break;
-                        default:
-                            if (array_key_exists('event', $data) && array_key_exists('channel', $data)) {
-                                $output->writeln(sprintf(
-                                    'Received event: %s for channel %s.',
-                                    $data['event'],
-                                    $data['channel']
-                                ));
-                                $this->sendData($json, $output, $browser, 'stock-exchange');
-                                $this->sendData($json, $output, $browser, 'demo-topology');
-                                $this->sendData($json, $output, $browser, 'shipping-process');
-                            } else {
-                                $output->writeln(
-                                    sprintf('Received unknown event: %s', json_encode($data, JSON_THROW_ON_ERROR))
-                                );
+
+                            switch ($data['event']) {
+                                case 'pusher:connection_established':
+                                    $output->writeln(sprintf('Connection created: %s', $uri));
+                                    $channels = [
+                                        'order_book', // btcusd
+                                        'order_book_eurusd',
+                                        'order_book_btceur',
+                                        'order_book_xrpusd',
+                                        'order_book_xrpeur',
+                                        //'order_book_xrpbtc',
+                                        //'order_book_ltcusd',
+                                        //'order_book_ltceur',
+                                        //'order_book_ltcbtc',
+                                    ];
+                                    foreach ($channels as $channel) {
+                                        $ws->send(
+                                            json_encode(
+                                                [
+                                                    'event' => 'pusher:subscribe', 'data' => ['channel' => $channel],
+                                                ],
+                                                JSON_THROW_ON_ERROR
+                                            )
+                                        );
+                                    }
+                                    break;
+                                case 'pusher_internal:subscription_succeeded':
+                                    $output->writeln(sprintf('Success subscribe to channel: %s', $data['channel']));
+                                    break;
+                                case 'pusher:pong':
+                                    $output->writeln('Received pong event.');
+                                    break;
+                                default:
+                                    if (array_key_exists('event', $data) && array_key_exists('channel', $data)) {
+                                        $output->writeln(
+                                            sprintf(
+                                                'Received event: %s for channel %s.',
+                                                $data['event'],
+                                                $data['channel']
+                                            )
+                                        );
+                                        $this->sendData($json, $output, $browser, 'stock-exchange');
+                                        $this->sendData($json, $output, $browser, 'demo-topology');
+                                        $this->sendData($json, $output, $browser, 'shipping-process');
+                                    } else {
+                                        $output->writeln(
+                                            sprintf(
+                                                'Received unknown event: %s',
+                                                json_encode($data, JSON_THROW_ON_ERROR)
+                                            )
+                                        );
+                                    }
                             }
-                    }
 
-                });
+                        }
+                    );
 
-                $ws->on('error', function (Exception $e) use ($ws, $loop, $output): void {
-                    $output->writeln(sprintf('WS error: %s', $e->getMessage()));
-                    $loop->cancelTimer($this->heartbeat);
-                    $loop->addTimer(1, function () use ($ws, $loop, $output): void {
-                        $this->reconnect($ws, $loop, $output);
-                    });
-                });
+                    $ws->on(
+                        'error',
+                        function (Exception $e) use ($ws, $loop, $output): void {
+                            $output->writeln(sprintf('WS error: %s', $e->getMessage()));
+                            $loop->cancelTimer($this->heartbeat);
+                            $loop->addTimer(
+                                1,
+                                function () use ($ws, $loop, $output): void {
+                                    $this->reconnect($ws, $loop, $output);
+                                }
+                            );
+                        }
+                    );
 
-                $ws->on('close', function ($code, $reason) use ($ws, $output, $loop): void {
-                    $output->writeln(sprintf('WS close with code %s: %s', $code, $reason));
-                    $loop->cancelTimer($this->heartbeat);
-                    $loop->addTimer(1, function () use ($ws, $loop, $output): void {
-                        $this->reconnect($ws, $loop, $output);
-                    });
-                });
+                    $ws->on(
+                        'close',
+                        function ($code, $reason) use ($ws, $output, $loop): void {
+                            $output->writeln(sprintf('WS close with code %s: %s', $code, $reason));
+                            $loop->cancelTimer($this->heartbeat);
+                            $loop->addTimer(
+                                1,
+                                function () use ($ws, $loop, $output): void {
+                                    $this->reconnect($ws, $loop, $output);
+                                }
+                            );
+                        }
+                    );
 
-            });
+                }
+            );
 
-        $promise->otherwise(function (Throwable $e) use ($output): void {
-            $output->writeln(sprintf('Connection error: %s', $e->getMessage()));
-        });
+        $promise->otherwise(
+            function (Throwable $e) use ($output): void {
+                $output->writeln(sprintf('Connection error: %s', $e->getMessage()));
+            }
+        );
     }
 
     /**
@@ -196,18 +223,24 @@ class DownloaderCommand extends Command
             $data
         );
 
-        $browser->send($request)->then(function (ResponseInterface $response) use ($output): void {
-            if ($response->getStatusCode() === 200) {
-                $output->writeln('Send success request to pipes.');
-            } else {
-                $output->writeln(sprintf('Request Error with code %s: %s',
-                    $response->getStatusCode(),
-                    $response->getReasonPhrase()
-                ));
+        $browser->send($request)->then(
+            function (ResponseInterface $response) use ($output): void {
+                if ($response->getStatusCode() === 200) {
+                    $output->writeln('Send success request to pipes.');
+                } else {
+                    $output->writeln(
+                        sprintf(
+                            'Request Error with code %s: %s',
+                            $response->getStatusCode(),
+                            $response->getReasonPhrase()
+                        )
+                    );
+                }
+            },
+            function (Exception $e) use ($output): void {
+                $output->writeln(sprintf('Request Error: %s', $e->getMessage()));
             }
-        }, function (Exception $e) use ($output): void {
-            $output->writeln(sprintf('Request Error: %s', $e->getMessage()));
-        });
+        );
     }
 
 }

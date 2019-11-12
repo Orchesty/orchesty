@@ -1,1 +1,508 @@
-{"schedule":{"id":"PUUDPGA","type":"schedule","summary":"Mall","self":"https://api.pagerduty.com/schedules/PUUDPGA","html_url":"https://hanaboso.pagerduty.com/schedules/PUUDPGA","name":"Mall","time_zone":"Europe/Prague","description":null,"web_cal_url":"webcal://hanaboso.pagerduty.com/private/c0f8e5629ec6b4464b77fdff7778869dec8b8c8b8811d2477f084966ca1902f8/feed/PUUDPGA","http_cal_url":"https://hanaboso.pagerduty.com/private/c0f8e5629ec6b4464b77fdff7778869dec8b8c8b8811d2477f084966ca1902f8/feed/PUUDPGA","personal_web_cal_url":"webcal://hanaboso.pagerduty.com/private/c0f8e5629ec6b4464b77fdff7778869dec8b8c8b8811d2477f084966ca1902f8/feed/PUUDPGA?user_id=POGM8WH","personal_http_cal_url":"https://hanaboso.pagerduty.com/private/c0f8e5629ec6b4464b77fdff7778869dec8b8c8b8811d2477f084966ca1902f8/feed/PUUDPGA?user_id=POGM8WH","users":[{"id":"PX7GSAY","type":"user_reference","summary":"Jakub Hus\u00e1k","self":"https://api.pagerduty.com/users/PX7GSAY","html_url":"https://hanaboso.pagerduty.com/users/PX7GSAY"},{"id":"PSTN997","type":"user_reference","summary":"Marcel Pavl\u00ed\u010dek","self":"https://api.pagerduty.com/users/PSTN997","html_url":"https://hanaboso.pagerduty.com/users/PSTN997"},{"id":"POGM8WH","type":"user_reference","summary":"Radek Jirsa","self":"https://api.pagerduty.com/users/POGM8WH","html_url":"https://hanaboso.pagerduty.com/users/POGM8WH"},{"id":"P87B7HU","type":"user_reference","summary":"Tom\u00e1\u0161 Proch\u00e1zka","self":"https://api.pagerduty.com/users/P87B7HU","html_url":"https://hanaboso.pagerduty.com/users/P87B7HU"},{"id":"P4YQ754","type":"user_reference","summary":"V\u00e1clav Krecl","self":"https://api.pagerduty.com/users/P4YQ754","html_url":"https://hanaboso.pagerduty.com/users/P4YQ754"}],"escalation_policies":[{"id":"P0WDN84","type":"escalation_policy_reference","summary":"Default","self":"https://api.pagerduty.com/escalation_policies/P0WDN84","html_url":"https://hanaboso.pagerduty.com/escalation_policies/P0WDN84"}],"schedule_layers":[{"name":"Layer 1","rendered_schedule_entries":[{"start":"2019-04-19T00:00:00+02:00","end":"2019-04-19T09:00:00+02:00","user":{"id":"PX7GSAY","type":"user_reference","summary":"Jakub Hus\u00e1k","self":"https://api.pagerduty.com/users/PX7GSAY","html_url":"https://hanaboso.pagerduty.com/users/PX7GSAY"},"id":"Q1B4KBG8KDMB41"},{"start":"2019-04-19T09:00:00+02:00","end":"2019-04-20T09:00:00+02:00","user":{"id":"PSTN997","type":"user_reference","summary":"Marcel Pavl\u00ed\u010dek","self":"https://api.pagerduty.com/users/PSTN997","html_url":"https://hanaboso.pagerduty.com/users/PSTN997"},"id":"Q0G24GI2YT2AXM"},{"start":"2019-04-20T09:00:00+02:00","end":"2019-04-21T09:00:00+02:00","user":{"id":"POGM8WH","type":"user_reference","summary":"Radek Jirsa","self":"https://api.pagerduty.com/users/POGM8WH","html_url":"https://hanaboso.pagerduty.com/users/POGM8WH"},"id":"Q0TVQ3W0CHR7AJ"},{"start":"2019-04-21T09:00:00+02:00","end":"2019-04-22T09:00:00+02:00","user":{"id":"P87B7HU","type":"user_reference","summary":"Tom\u00e1\u0161 Proch\u00e1zka","self":"https://api.pagerduty.com/users/P87B7HU","html_url":"https://hanaboso.pagerduty.com/users/P87B7HU"},"id":"Q03LYQ6LH8CEDG"},{"start":"2019-04-22T09:00:00+02:00","end":"2019-04-23T09:00:00+02:00","user":{"id":"P4YQ754","type":"user_reference","summary":"V\u00e1clav Krecl","self":"https://api.pagerduty.com/users/P4YQ754","html_url":"https://hanaboso.pagerduty.com/users/P4YQ754"},"id":"Q3AX7AIM4EGFZ6"},{"start":"2019-04-23T09:00:00+02:00","end":"2019-04-24T09:00:00+02:00","user":{"id":"PX7GSAY","type":"user_reference","summary":"Jakub Hus\u00e1k","self":"https://api.pagerduty.com/users/PX7GSAY","html_url":"https://hanaboso.pagerduty.com/users/PX7GSAY"},"id":"Q3O0SKWK965PC3"},{"start":"2019-04-24T09:00:00+02:00","end":"2019-04-25T09:00:00+02:00","user":{"id":"PSTN997","type":"user_reference","summary":"Marcel Pavl\u00ed\u010dek","self":"https://api.pagerduty.com/users/PSTN997","html_url":"https://hanaboso.pagerduty.com/users/PSTN997"},"id":"Q2LTB77IQXTJF0"},{"start":"2019-04-25T09:00:00+02:00","end":"2019-04-26T09:00:00+02:00","user":{"id":"POGM8WH","type":"user_reference","summary":"Radek Jirsa","self":"https://api.pagerduty.com/users/POGM8WH","html_url":"https://hanaboso.pagerduty.com/users/POGM8WH"},"id":"Q2YJJTIGULFTHK"},{"start":"2019-04-26T09:00:00+02:00","end":"2019-04-27T09:00:00+02:00","user":{"id":"P87B7HU","type":"user_reference","summary":"Tom\u00e1\u0161 Proch\u00e1zka","self":"https://api.pagerduty.com/users/P87B7HU","html_url":"https://hanaboso.pagerduty.com/users/P87B7HU"},"id":"Q29Q4DWEZQ40KH"},{"start":"2019-04-27T09:00:00+02:00","end":"2019-04-28T09:00:00+02:00","user":{"id":"P4YQ754","type":"user_reference","summary":"V\u00e1clav Krecl","self":"https://api.pagerduty.com/users/P4YQ754","html_url":"https://hanaboso.pagerduty.com/users/P4YQ754"},"id":"Q1JGQ07CDESY0E"},{"start":"2019-04-28T09:00:00+02:00","end":"2019-04-29T00:00:00+02:00","user":{"id":"PX7GSAY","type":"user_reference","summary":"Jakub Hus\u00e1k","self":"https://api.pagerduty.com/users/PX7GSAY","html_url":"https://hanaboso.pagerduty.com/users/PX7GSAY"},"id":"Q1X9Y9IAI5E53B"}],"rendered_coverage_percentage":100.0,"id":"PS7TG4B","start":"2019-04-18T14:30:34+02:00","end":null,"rotation_virtual_start":"2019-04-18T09:00:00+02:00","rotation_turn_length_seconds":86400,"users":[{"user":{"id":"PX7GSAY","type":"user_reference","summary":"Jakub Hus\u00e1k","self":"https://api.pagerduty.com/users/PX7GSAY","html_url":"https://hanaboso.pagerduty.com/users/PX7GSAY"}},{"user":{"id":"PSTN997","type":"user_reference","summary":"Marcel Pavl\u00ed\u010dek","self":"https://api.pagerduty.com/users/PSTN997","html_url":"https://hanaboso.pagerduty.com/users/PSTN997"}},{"user":{"id":"POGM8WH","type":"user_reference","summary":"Radek Jirsa","self":"https://api.pagerduty.com/users/POGM8WH","html_url":"https://hanaboso.pagerduty.com/users/POGM8WH"}},{"user":{"id":"P87B7HU","type":"user_reference","summary":"Tom\u00e1\u0161 Proch\u00e1zka","self":"https://api.pagerduty.com/users/P87B7HU","html_url":"https://hanaboso.pagerduty.com/users/P87B7HU"}},{"user":{"id":"P4YQ754","type":"user_reference","summary":"V\u00e1clav Krecl","self":"https://api.pagerduty.com/users/P4YQ754","html_url":"https://hanaboso.pagerduty.com/users/P4YQ754"}}],"restrictions":[]}],"overrides_subschedule":{"name":"Overrides","rendered_schedule_entries":[{"start":"2019-04-27T15:40:00+02:00","end":"2019-04-27T15:41:55+02:00","user":{"id":"PX7GSAY","type":"user_reference","summary":"Jakub Hus\u00e1k","self":"https://api.pagerduty.com/users/PX7GSAY","html_url":"https://hanaboso.pagerduty.com/users/PX7GSAY"},"id":null},{"start":"2019-04-27T15:42:33+02:00","end":"2019-04-27T15:43:52+02:00","user":{"id":"PX7GSAY","type":"user_reference","summary":"Jakub Hus\u00e1k","self":"https://api.pagerduty.com/users/PX7GSAY","html_url":"https://hanaboso.pagerduty.com/users/PX7GSAY"},"id":null},{"start":"2019-04-27T16:00:00+02:00","end":"2019-04-27T18:00:00+02:00","user":{"id":"PX7GSAY","type":"user_reference","summary":"Jakub Hus\u00e1k","self":"https://api.pagerduty.com/users/PX7GSAY","html_url":"https://hanaboso.pagerduty.com/users/PX7GSAY"},"id":null}],"rendered_coverage_percentage":0.9},"final_schedule":{"name":"Final Schedule","rendered_schedule_entries":[{"start":"2019-04-19T00:00:00+02:00","end":"2019-04-19T09:00:00+02:00","user":{"id":"PX7GSAY","type":"user_reference","summary":"Jakub Hus\u00e1k","self":"https://api.pagerduty.com/users/PX7GSAY","html_url":"https://hanaboso.pagerduty.com/users/PX7GSAY"},"id":"Q19XM4IXE38FBV"},{"start":"2019-04-19T09:00:00+02:00","end":"2019-04-20T09:00:00+02:00","user":{"id":"PSTN997","type":"user_reference","summary":"Marcel Pavl\u00ed\u010dek","self":"https://api.pagerduty.com/users/PSTN997","html_url":"https://hanaboso.pagerduty.com/users/PSTN997"},"id":"Q0RV69KRRFOF5T"},{"start":"2019-04-20T09:00:00+02:00","end":"2019-04-21T09:00:00+02:00","user":{"id":"POGM8WH","type":"user_reference","summary":"Radek Jirsa","self":"https://api.pagerduty.com/users/POGM8WH","html_url":"https://hanaboso.pagerduty.com/users/POGM8WH"},"id":"Q01LRWYPW6AP8Q"},{"start":"2019-04-21T09:00:00+02:00","end":"2019-04-22T09:00:00+02:00","user":{"id":"P87B7HU","type":"user_reference","summary":"Tom\u00e1\u0161 Proch\u00e1zka","self":"https://api.pagerduty.com/users/P87B7HU","html_url":"https://hanaboso.pagerduty.com/users/P87B7HU"},"id":"Q3YX0HNPGCEQ3D"},{"start":"2019-04-22T09:00:00+02:00","end":"2019-04-23T09:00:00+02:00","user":{"id":"P4YQ754","type":"user_reference","summary":"V\u00e1clav Krecl","self":"https://api.pagerduty.com/users/P4YQ754","html_url":"https://hanaboso.pagerduty.com/users/P4YQ754"},"id":"Q39093LNL42K6A"},{"start":"2019-04-23T09:00:00+02:00","end":"2019-04-24T09:00:00+02:00","user":{"id":"PX7GSAY","type":"user_reference","summary":"Jakub Hus\u00e1k","self":"https://api.pagerduty.com/users/PX7GSAY","html_url":"https://hanaboso.pagerduty.com/users/PX7GSAY"},"id":"Q2JTUQZ92VRU9X"},{"start":"2019-04-24T09:00:00+02:00","end":"2019-04-25T09:00:00+02:00","user":{"id":"PSTN997","type":"user_reference","summary":"Marcel Pavl\u00ed\u010dek","self":"https://api.pagerduty.com/users/PSTN997","html_url":"https://hanaboso.pagerduty.com/users/PSTN997"},"id":"Q08MUJ2BUD3T0V"},{"start":"2019-04-25T09:00:00+02:00","end":"2019-04-26T09:00:00+02:00","user":{"id":"POGM8WH","type":"user_reference","summary":"Radek Jirsa","self":"https://api.pagerduty.com/users/POGM8WH","html_url":"https://hanaboso.pagerduty.com/users/POGM8WH"},"id":"Q3FY46EBF97TII"},{"start":"2019-04-26T09:00:00+02:00","end":"2019-04-27T09:00:00+02:00","user":{"id":"P87B7HU","type":"user_reference","summary":"Tom\u00e1\u0161 Proch\u00e1zka","self":"https://api.pagerduty.com/users/P87B7HU","html_url":"https://hanaboso.pagerduty.com/users/P87B7HU"},"id":"Q3T1PTSZJAW0LF"},{"start":"2019-04-27T09:00:00+02:00","end":"2019-04-27T15:40:00+02:00","user":{"id":"P4YQ754","type":"user_reference","summary":"V\u00e1clav Krecl","self":"https://api.pagerduty.com/users/P4YQ754","html_url":"https://hanaboso.pagerduty.com/users/P4YQ754"},"id":"Q33UXD3Y11HY1C"},{"start":"2019-04-27T15:40:00+02:00","end":"2019-04-27T15:41:55+02:00","user":{"id":"PX7GSAY","type":"user_reference","summary":"Jakub Hus\u00e1k","self":"https://api.pagerduty.com/users/PX7GSAY","html_url":"https://hanaboso.pagerduty.com/users/PX7GSAY"},"id":"Q2MT3V2DV4ZUNO"},{"start":"2019-04-27T15:41:55+02:00","end":"2019-04-27T15:42:33+02:00","user":{"id":"P4YQ754","type":"user_reference","summary":"V\u00e1clav Krecl","self":"https://api.pagerduty.com/users/P4YQ754","html_url":"https://hanaboso.pagerduty.com/users/P4YQ754"},"id":"Q2ZJOEDBZVL1Q8"},{"start":"2019-04-27T15:42:33+02:00","end":"2019-04-27T15:43:52+02:00","user":{"id":"PX7GSAY","type":"user_reference","summary":"Jakub Hus\u00e1k","self":"https://api.pagerduty.com/users/PX7GSAY","html_url":"https://hanaboso.pagerduty.com/users/PX7GSAY"},"id":"Q3RKYUD7WHAJ8Y"},{"start":"2019-04-27T15:43:52+02:00","end":"2019-04-27T16:00:00+02:00","user":{"id":"P4YQ754","type":"user_reference","summary":"V\u00e1clav Krecl","self":"https://api.pagerduty.com/users/P4YQ754","html_url":"https://hanaboso.pagerduty.com/users/P4YQ754"},"id":"Q32QGER5B8MTOV"},{"start":"2019-04-27T16:00:00+02:00","end":"2019-04-27T18:00:00+02:00","user":{"id":"PX7GSAY","type":"user_reference","summary":"Jakub Hus\u00e1k","self":"https://api.pagerduty.com/users/PX7GSAY","html_url":"https://hanaboso.pagerduty.com/users/PX7GSAY"},"id":"Q03IQN60VG3T9S"},{"start":"2019-04-27T18:00:00+02:00","end":"2019-04-28T09:00:00+02:00","user":{"id":"P4YQ754","type":"user_reference","summary":"V\u00e1clav Krecl","self":"https://api.pagerduty.com/users/P4YQ754","html_url":"https://hanaboso.pagerduty.com/users/P4YQ754"},"id":"Q3ATMXI0GP7U4F"},{"start":"2019-04-28T09:00:00+02:00","end":"2019-04-29T00:00:00+02:00","user":{"id":"PX7GSAY","type":"user_reference","summary":"Jakub Hus\u00e1k","self":"https://api.pagerduty.com/users/PX7GSAY","html_url":"https://hanaboso.pagerduty.com/users/PX7GSAY"},"id":"Q3NK7HVLKDW17C"}],"rendered_coverage_percentage":100.0},"teams":[]}}
+{
+    "schedule": {
+        "id": "PUUDPGA",
+        "type": "schedule",
+        "summary": "Mall",
+        "self": "https://api.pagerduty.com/schedules/PUUDPGA",
+        "html_url": "https://hanaboso.pagerduty.com/schedules/PUUDPGA",
+        "name": "Mall",
+        "time_zone": "Europe/Prague",
+        "description": null,
+        "web_cal_url": "webcal://hanaboso.pagerduty.com/private/c0f8e5629ec6b4464b77fdff7778869dec8b8c8b8811d2477f084966ca1902f8/feed/PUUDPGA",
+        "http_cal_url": "https://hanaboso.pagerduty.com/private/c0f8e5629ec6b4464b77fdff7778869dec8b8c8b8811d2477f084966ca1902f8/feed/PUUDPGA",
+        "personal_web_cal_url": "webcal://hanaboso.pagerduty.com/private/c0f8e5629ec6b4464b77fdff7778869dec8b8c8b8811d2477f084966ca1902f8/feed/PUUDPGA?user_id=POGM8WH",
+        "personal_http_cal_url": "https://hanaboso.pagerduty.com/private/c0f8e5629ec6b4464b77fdff7778869dec8b8c8b8811d2477f084966ca1902f8/feed/PUUDPGA?user_id=POGM8WH",
+        "users": [
+            {
+                "id": "PX7GSAY",
+                "type": "user_reference",
+                "summary": "Jakub Hus\u00e1k",
+                "self": "https://api.pagerduty.com/users/PX7GSAY",
+                "html_url": "https://hanaboso.pagerduty.com/users/PX7GSAY"
+            },
+            {
+                "id": "PSTN997",
+                "type": "user_reference",
+                "summary": "Marcel Pavl\u00ed\u010dek",
+                "self": "https://api.pagerduty.com/users/PSTN997",
+                "html_url": "https://hanaboso.pagerduty.com/users/PSTN997"
+            },
+            {
+                "id": "POGM8WH",
+                "type": "user_reference",
+                "summary": "Radek Jirsa",
+                "self": "https://api.pagerduty.com/users/POGM8WH",
+                "html_url": "https://hanaboso.pagerduty.com/users/POGM8WH"
+            },
+            {
+                "id": "P87B7HU",
+                "type": "user_reference",
+                "summary": "Tom\u00e1\u0161 Proch\u00e1zka",
+                "self": "https://api.pagerduty.com/users/P87B7HU",
+                "html_url": "https://hanaboso.pagerduty.com/users/P87B7HU"
+            },
+            {
+                "id": "P4YQ754",
+                "type": "user_reference",
+                "summary": "V\u00e1clav Krecl",
+                "self": "https://api.pagerduty.com/users/P4YQ754",
+                "html_url": "https://hanaboso.pagerduty.com/users/P4YQ754"
+            }
+        ],
+        "escalation_policies": [
+            {
+                "id": "P0WDN84",
+                "type": "escalation_policy_reference",
+                "summary": "Default",
+                "self": "https://api.pagerduty.com/escalation_policies/P0WDN84",
+                "html_url": "https://hanaboso.pagerduty.com/escalation_policies/P0WDN84"
+            }
+        ],
+        "schedule_layers": [
+            {
+                "name": "Layer 1",
+                "rendered_schedule_entries": [
+                    {
+                        "start": "2019-04-19T00:00:00+02:00",
+                        "end": "2019-04-19T09:00:00+02:00",
+                        "user": {
+                            "id": "PX7GSAY",
+                            "type": "user_reference",
+                            "summary": "Jakub Hus\u00e1k",
+                            "self": "https://api.pagerduty.com/users/PX7GSAY",
+                            "html_url": "https://hanaboso.pagerduty.com/users/PX7GSAY"
+                        },
+                        "id": "Q1B4KBG8KDMB41"
+                    },
+                    {
+                        "start": "2019-04-19T09:00:00+02:00",
+                        "end": "2019-04-20T09:00:00+02:00",
+                        "user": {
+                            "id": "PSTN997",
+                            "type": "user_reference",
+                            "summary": "Marcel Pavl\u00ed\u010dek",
+                            "self": "https://api.pagerduty.com/users/PSTN997",
+                            "html_url": "https://hanaboso.pagerduty.com/users/PSTN997"
+                        },
+                        "id": "Q0G24GI2YT2AXM"
+                    },
+                    {
+                        "start": "2019-04-20T09:00:00+02:00",
+                        "end": "2019-04-21T09:00:00+02:00",
+                        "user": {
+                            "id": "POGM8WH",
+                            "type": "user_reference",
+                            "summary": "Radek Jirsa",
+                            "self": "https://api.pagerduty.com/users/POGM8WH",
+                            "html_url": "https://hanaboso.pagerduty.com/users/POGM8WH"
+                        },
+                        "id": "Q0TVQ3W0CHR7AJ"
+                    },
+                    {
+                        "start": "2019-04-21T09:00:00+02:00",
+                        "end": "2019-04-22T09:00:00+02:00",
+                        "user": {
+                            "id": "P87B7HU",
+                            "type": "user_reference",
+                            "summary": "Tom\u00e1\u0161 Proch\u00e1zka",
+                            "self": "https://api.pagerduty.com/users/P87B7HU",
+                            "html_url": "https://hanaboso.pagerduty.com/users/P87B7HU"
+                        },
+                        "id": "Q03LYQ6LH8CEDG"
+                    },
+                    {
+                        "start": "2019-04-22T09:00:00+02:00",
+                        "end": "2019-04-23T09:00:00+02:00",
+                        "user": {
+                            "id": "P4YQ754",
+                            "type": "user_reference",
+                            "summary": "V\u00e1clav Krecl",
+                            "self": "https://api.pagerduty.com/users/P4YQ754",
+                            "html_url": "https://hanaboso.pagerduty.com/users/P4YQ754"
+                        },
+                        "id": "Q3AX7AIM4EGFZ6"
+                    },
+                    {
+                        "start": "2019-04-23T09:00:00+02:00",
+                        "end": "2019-04-24T09:00:00+02:00",
+                        "user": {
+                            "id": "PX7GSAY",
+                            "type": "user_reference",
+                            "summary": "Jakub Hus\u00e1k",
+                            "self": "https://api.pagerduty.com/users/PX7GSAY",
+                            "html_url": "https://hanaboso.pagerduty.com/users/PX7GSAY"
+                        },
+                        "id": "Q3O0SKWK965PC3"
+                    },
+                    {
+                        "start": "2019-04-24T09:00:00+02:00",
+                        "end": "2019-04-25T09:00:00+02:00",
+                        "user": {
+                            "id": "PSTN997",
+                            "type": "user_reference",
+                            "summary": "Marcel Pavl\u00ed\u010dek",
+                            "self": "https://api.pagerduty.com/users/PSTN997",
+                            "html_url": "https://hanaboso.pagerduty.com/users/PSTN997"
+                        },
+                        "id": "Q2LTB77IQXTJF0"
+                    },
+                    {
+                        "start": "2019-04-25T09:00:00+02:00",
+                        "end": "2019-04-26T09:00:00+02:00",
+                        "user": {
+                            "id": "POGM8WH",
+                            "type": "user_reference",
+                            "summary": "Radek Jirsa",
+                            "self": "https://api.pagerduty.com/users/POGM8WH",
+                            "html_url": "https://hanaboso.pagerduty.com/users/POGM8WH"
+                        },
+                        "id": "Q2YJJTIGULFTHK"
+                    },
+                    {
+                        "start": "2019-04-26T09:00:00+02:00",
+                        "end": "2019-04-27T09:00:00+02:00",
+                        "user": {
+                            "id": "P87B7HU",
+                            "type": "user_reference",
+                            "summary": "Tom\u00e1\u0161 Proch\u00e1zka",
+                            "self": "https://api.pagerduty.com/users/P87B7HU",
+                            "html_url": "https://hanaboso.pagerduty.com/users/P87B7HU"
+                        },
+                        "id": "Q29Q4DWEZQ40KH"
+                    },
+                    {
+                        "start": "2019-04-27T09:00:00+02:00",
+                        "end": "2019-04-28T09:00:00+02:00",
+                        "user": {
+                            "id": "P4YQ754",
+                            "type": "user_reference",
+                            "summary": "V\u00e1clav Krecl",
+                            "self": "https://api.pagerduty.com/users/P4YQ754",
+                            "html_url": "https://hanaboso.pagerduty.com/users/P4YQ754"
+                        },
+                        "id": "Q1JGQ07CDESY0E"
+                    },
+                    {
+                        "start": "2019-04-28T09:00:00+02:00",
+                        "end": "2019-04-29T00:00:00+02:00",
+                        "user": {
+                            "id": "PX7GSAY",
+                            "type": "user_reference",
+                            "summary": "Jakub Hus\u00e1k",
+                            "self": "https://api.pagerduty.com/users/PX7GSAY",
+                            "html_url": "https://hanaboso.pagerduty.com/users/PX7GSAY"
+                        },
+                        "id": "Q1X9Y9IAI5E53B"
+                    }
+                ],
+                "rendered_coverage_percentage": 100.0,
+                "id": "PS7TG4B",
+                "start": "2019-04-18T14:30:34+02:00",
+                "end": null,
+                "rotation_virtual_start": "2019-04-18T09:00:00+02:00",
+                "rotation_turn_length_seconds": 86400,
+                "users": [
+                    {
+                        "user": {
+                            "id": "PX7GSAY",
+                            "type": "user_reference",
+                            "summary": "Jakub Hus\u00e1k",
+                            "self": "https://api.pagerduty.com/users/PX7GSAY",
+                            "html_url": "https://hanaboso.pagerduty.com/users/PX7GSAY"
+                        }
+                    },
+                    {
+                        "user": {
+                            "id": "PSTN997",
+                            "type": "user_reference",
+                            "summary": "Marcel Pavl\u00ed\u010dek",
+                            "self": "https://api.pagerduty.com/users/PSTN997",
+                            "html_url": "https://hanaboso.pagerduty.com/users/PSTN997"
+                        }
+                    },
+                    {
+                        "user": {
+                            "id": "POGM8WH",
+                            "type": "user_reference",
+                            "summary": "Radek Jirsa",
+                            "self": "https://api.pagerduty.com/users/POGM8WH",
+                            "html_url": "https://hanaboso.pagerduty.com/users/POGM8WH"
+                        }
+                    },
+                    {
+                        "user": {
+                            "id": "P87B7HU",
+                            "type": "user_reference",
+                            "summary": "Tom\u00e1\u0161 Proch\u00e1zka",
+                            "self": "https://api.pagerduty.com/users/P87B7HU",
+                            "html_url": "https://hanaboso.pagerduty.com/users/P87B7HU"
+                        }
+                    },
+                    {
+                        "user": {
+                            "id": "P4YQ754",
+                            "type": "user_reference",
+                            "summary": "V\u00e1clav Krecl",
+                            "self": "https://api.pagerduty.com/users/P4YQ754",
+                            "html_url": "https://hanaboso.pagerduty.com/users/P4YQ754"
+                        }
+                    }
+                ],
+                "restrictions": []
+            }
+        ],
+        "overrides_subschedule": {
+            "name": "Overrides",
+            "rendered_schedule_entries": [
+                {
+                    "start": "2019-04-27T15:40:00+02:00",
+                    "end": "2019-04-27T15:41:55+02:00",
+                    "user": {
+                        "id": "PX7GSAY",
+                        "type": "user_reference",
+                        "summary": "Jakub Hus\u00e1k",
+                        "self": "https://api.pagerduty.com/users/PX7GSAY",
+                        "html_url": "https://hanaboso.pagerduty.com/users/PX7GSAY"
+                    },
+                    "id": null
+                },
+                {
+                    "start": "2019-04-27T15:42:33+02:00",
+                    "end": "2019-04-27T15:43:52+02:00",
+                    "user": {
+                        "id": "PX7GSAY",
+                        "type": "user_reference",
+                        "summary": "Jakub Hus\u00e1k",
+                        "self": "https://api.pagerduty.com/users/PX7GSAY",
+                        "html_url": "https://hanaboso.pagerduty.com/users/PX7GSAY"
+                    },
+                    "id": null
+                },
+                {
+                    "start": "2019-04-27T16:00:00+02:00",
+                    "end": "2019-04-27T18:00:00+02:00",
+                    "user": {
+                        "id": "PX7GSAY",
+                        "type": "user_reference",
+                        "summary": "Jakub Hus\u00e1k",
+                        "self": "https://api.pagerduty.com/users/PX7GSAY",
+                        "html_url": "https://hanaboso.pagerduty.com/users/PX7GSAY"
+                    },
+                    "id": null
+                }
+            ],
+            "rendered_coverage_percentage": 0.9
+        },
+        "final_schedule": {
+            "name": "Final Schedule",
+            "rendered_schedule_entries": [
+                {
+                    "start": "2019-04-19T00:00:00+02:00",
+                    "end": "2019-04-19T09:00:00+02:00",
+                    "user": {
+                        "id": "PX7GSAY",
+                        "type": "user_reference",
+                        "summary": "Jakub Hus\u00e1k",
+                        "self": "https://api.pagerduty.com/users/PX7GSAY",
+                        "html_url": "https://hanaboso.pagerduty.com/users/PX7GSAY"
+                    },
+                    "id": "Q19XM4IXE38FBV"
+                },
+                {
+                    "start": "2019-04-19T09:00:00+02:00",
+                    "end": "2019-04-20T09:00:00+02:00",
+                    "user": {
+                        "id": "PSTN997",
+                        "type": "user_reference",
+                        "summary": "Marcel Pavl\u00ed\u010dek",
+                        "self": "https://api.pagerduty.com/users/PSTN997",
+                        "html_url": "https://hanaboso.pagerduty.com/users/PSTN997"
+                    },
+                    "id": "Q0RV69KRRFOF5T"
+                },
+                {
+                    "start": "2019-04-20T09:00:00+02:00",
+                    "end": "2019-04-21T09:00:00+02:00",
+                    "user": {
+                        "id": "POGM8WH",
+                        "type": "user_reference",
+                        "summary": "Radek Jirsa",
+                        "self": "https://api.pagerduty.com/users/POGM8WH",
+                        "html_url": "https://hanaboso.pagerduty.com/users/POGM8WH"
+                    },
+                    "id": "Q01LRWYPW6AP8Q"
+                },
+                {
+                    "start": "2019-04-21T09:00:00+02:00",
+                    "end": "2019-04-22T09:00:00+02:00",
+                    "user": {
+                        "id": "P87B7HU",
+                        "type": "user_reference",
+                        "summary": "Tom\u00e1\u0161 Proch\u00e1zka",
+                        "self": "https://api.pagerduty.com/users/P87B7HU",
+                        "html_url": "https://hanaboso.pagerduty.com/users/P87B7HU"
+                    },
+                    "id": "Q3YX0HNPGCEQ3D"
+                },
+                {
+                    "start": "2019-04-22T09:00:00+02:00",
+                    "end": "2019-04-23T09:00:00+02:00",
+                    "user": {
+                        "id": "P4YQ754",
+                        "type": "user_reference",
+                        "summary": "V\u00e1clav Krecl",
+                        "self": "https://api.pagerduty.com/users/P4YQ754",
+                        "html_url": "https://hanaboso.pagerduty.com/users/P4YQ754"
+                    },
+                    "id": "Q39093LNL42K6A"
+                },
+                {
+                    "start": "2019-04-23T09:00:00+02:00",
+                    "end": "2019-04-24T09:00:00+02:00",
+                    "user": {
+                        "id": "PX7GSAY",
+                        "type": "user_reference",
+                        "summary": "Jakub Hus\u00e1k",
+                        "self": "https://api.pagerduty.com/users/PX7GSAY",
+                        "html_url": "https://hanaboso.pagerduty.com/users/PX7GSAY"
+                    },
+                    "id": "Q2JTUQZ92VRU9X"
+                },
+                {
+                    "start": "2019-04-24T09:00:00+02:00",
+                    "end": "2019-04-25T09:00:00+02:00",
+                    "user": {
+                        "id": "PSTN997",
+                        "type": "user_reference",
+                        "summary": "Marcel Pavl\u00ed\u010dek",
+                        "self": "https://api.pagerduty.com/users/PSTN997",
+                        "html_url": "https://hanaboso.pagerduty.com/users/PSTN997"
+                    },
+                    "id": "Q08MUJ2BUD3T0V"
+                },
+                {
+                    "start": "2019-04-25T09:00:00+02:00",
+                    "end": "2019-04-26T09:00:00+02:00",
+                    "user": {
+                        "id": "POGM8WH",
+                        "type": "user_reference",
+                        "summary": "Radek Jirsa",
+                        "self": "https://api.pagerduty.com/users/POGM8WH",
+                        "html_url": "https://hanaboso.pagerduty.com/users/POGM8WH"
+                    },
+                    "id": "Q3FY46EBF97TII"
+                },
+                {
+                    "start": "2019-04-26T09:00:00+02:00",
+                    "end": "2019-04-27T09:00:00+02:00",
+                    "user": {
+                        "id": "P87B7HU",
+                        "type": "user_reference",
+                        "summary": "Tom\u00e1\u0161 Proch\u00e1zka",
+                        "self": "https://api.pagerduty.com/users/P87B7HU",
+                        "html_url": "https://hanaboso.pagerduty.com/users/P87B7HU"
+                    },
+                    "id": "Q3T1PTSZJAW0LF"
+                },
+                {
+                    "start": "2019-04-27T09:00:00+02:00",
+                    "end": "2019-04-27T15:40:00+02:00",
+                    "user": {
+                        "id": "P4YQ754",
+                        "type": "user_reference",
+                        "summary": "V\u00e1clav Krecl",
+                        "self": "https://api.pagerduty.com/users/P4YQ754",
+                        "html_url": "https://hanaboso.pagerduty.com/users/P4YQ754"
+                    },
+                    "id": "Q33UXD3Y11HY1C"
+                },
+                {
+                    "start": "2019-04-27T15:40:00+02:00",
+                    "end": "2019-04-27T15:41:55+02:00",
+                    "user": {
+                        "id": "PX7GSAY",
+                        "type": "user_reference",
+                        "summary": "Jakub Hus\u00e1k",
+                        "self": "https://api.pagerduty.com/users/PX7GSAY",
+                        "html_url": "https://hanaboso.pagerduty.com/users/PX7GSAY"
+                    },
+                    "id": "Q2MT3V2DV4ZUNO"
+                },
+                {
+                    "start": "2019-04-27T15:41:55+02:00",
+                    "end": "2019-04-27T15:42:33+02:00",
+                    "user": {
+                        "id": "P4YQ754",
+                        "type": "user_reference",
+                        "summary": "V\u00e1clav Krecl",
+                        "self": "https://api.pagerduty.com/users/P4YQ754",
+                        "html_url": "https://hanaboso.pagerduty.com/users/P4YQ754"
+                    },
+                    "id": "Q2ZJOEDBZVL1Q8"
+                },
+                {
+                    "start": "2019-04-27T15:42:33+02:00",
+                    "end": "2019-04-27T15:43:52+02:00",
+                    "user": {
+                        "id": "PX7GSAY",
+                        "type": "user_reference",
+                        "summary": "Jakub Hus\u00e1k",
+                        "self": "https://api.pagerduty.com/users/PX7GSAY",
+                        "html_url": "https://hanaboso.pagerduty.com/users/PX7GSAY"
+                    },
+                    "id": "Q3RKYUD7WHAJ8Y"
+                },
+                {
+                    "start": "2019-04-27T15:43:52+02:00",
+                    "end": "2019-04-27T16:00:00+02:00",
+                    "user": {
+                        "id": "P4YQ754",
+                        "type": "user_reference",
+                        "summary": "V\u00e1clav Krecl",
+                        "self": "https://api.pagerduty.com/users/P4YQ754",
+                        "html_url": "https://hanaboso.pagerduty.com/users/P4YQ754"
+                    },
+                    "id": "Q32QGER5B8MTOV"
+                },
+                {
+                    "start": "2019-04-27T16:00:00+02:00",
+                    "end": "2019-04-27T18:00:00+02:00",
+                    "user": {
+                        "id": "PX7GSAY",
+                        "type": "user_reference",
+                        "summary": "Jakub Hus\u00e1k",
+                        "self": "https://api.pagerduty.com/users/PX7GSAY",
+                        "html_url": "https://hanaboso.pagerduty.com/users/PX7GSAY"
+                    },
+                    "id": "Q03IQN60VG3T9S"
+                },
+                {
+                    "start": "2019-04-27T18:00:00+02:00",
+                    "end": "2019-04-28T09:00:00+02:00",
+                    "user": {
+                        "id": "P4YQ754",
+                        "type": "user_reference",
+                        "summary": "V\u00e1clav Krecl",
+                        "self": "https://api.pagerduty.com/users/P4YQ754",
+                        "html_url": "https://hanaboso.pagerduty.com/users/P4YQ754"
+                    },
+                    "id": "Q3ATMXI0GP7U4F"
+                },
+                {
+                    "start": "2019-04-28T09:00:00+02:00",
+                    "end": "2019-04-29T00:00:00+02:00",
+                    "user": {
+                        "id": "PX7GSAY",
+                        "type": "user_reference",
+                        "summary": "Jakub Hus\u00e1k",
+                        "self": "https://api.pagerduty.com/users/PX7GSAY",
+                        "html_url": "https://hanaboso.pagerduty.com/users/PX7GSAY"
+                    },
+                    "id": "Q3NK7HVLKDW17C"
+                }
+            ],
+            "rendered_coverage_percentage": 100.0
+        },
+        "teams": []
+    }
+}
