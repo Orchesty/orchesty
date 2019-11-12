@@ -70,69 +70,72 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
         $this->dm->flush();
 
         $handlers = $this->manager->listSettings();
-        self::assertEquals([
+        self::assertEquals(
             [
-                'id'       => $handlers[0]['id'],
-                'created'  => $handlers[0]['created'],
-                'updated'  => $handlers[0]['updated'],
-                'type'     => NotificationSenderEnum::CURL,
-                'name'     => 'Curl Test Sender',
-                'class'    => NullCurlHandler::class,
-                'events'   => [],
-                'settings' => [],
-            ], [
-                'id'       => $handlers[1]['id'],
-                'created'  => $handlers[1]['created'],
-                'updated'  => $handlers[1]['updated'],
-                'type'     => NotificationSenderEnum::EMAIL,
-                'name'     => 'Email Test Sender',
-                'class'    => NullEmailHandler::class,
-                'events'   => [],
-                'settings' => [],
-            ], [
-                'id'       => $handlers[2]['id'],
-                'created'  => $handlers[2]['created'],
-                'updated'  => $handlers[2]['updated'],
-                'type'     => NotificationSenderEnum::RABBIT,
-                'name'     => 'Rabbit Test Sender',
-                'class'    => NullRabitHandler::class,
-                'events'   => [],
-                'settings' => [],
-            ], [
-                'id'       => $handlers[3]['id'],
-                'created'  => $handlers[3]['created'],
-                'updated'  => $handlers[3]['updated'],
-                'type'     => NotificationSenderEnum::CURL,
-                'name'     => 'CURL Sender',
-                'class'    => CurlNotificationHandler::class,
-                'events'   => [],
-                'settings' => [],
-            ], [
-                'id'       => $handlers[4]['id'],
-                'created'  => $handlers[4]['created'],
-                'updated'  => $handlers[4]['updated'],
-                'type'     => NotificationSenderEnum::EMAIL,
-                'name'     => 'Email Sender',
-                'class'    => EmailNotificationHandler::class,
-                'events'   => [
-                    NotificationEventEnum::ACCESS_EXPIRATION,
-                    NotificationEventEnum::DATA_ERROR,
-                    NotificationEventEnum::SERVICE_UNAVAILABLE,
+                [
+                    'id'       => $handlers[0]['id'],
+                    'created'  => $handlers[0]['created'],
+                    'updated'  => $handlers[0]['updated'],
+                    'type'     => NotificationSenderEnum::CURL,
+                    'name'     => 'Curl Test Sender',
+                    'class'    => NullCurlHandler::class,
+                    'events'   => [],
+                    'settings' => [],
+                ], [
+                    'id'       => $handlers[1]['id'],
+                    'created'  => $handlers[1]['created'],
+                    'updated'  => $handlers[1]['updated'],
+                    'type'     => NotificationSenderEnum::EMAIL,
+                    'name'     => 'Email Test Sender',
+                    'class'    => NullEmailHandler::class,
+                    'events'   => [],
+                    'settings' => [],
+                ], [
+                    'id'       => $handlers[2]['id'],
+                    'created'  => $handlers[2]['created'],
+                    'updated'  => $handlers[2]['updated'],
+                    'type'     => NotificationSenderEnum::RABBIT,
+                    'name'     => 'Rabbit Test Sender',
+                    'class'    => NullRabitHandler::class,
+                    'events'   => [],
+                    'settings' => [],
+                ], [
+                    'id'       => $handlers[3]['id'],
+                    'created'  => $handlers[3]['created'],
+                    'updated'  => $handlers[3]['updated'],
+                    'type'     => NotificationSenderEnum::CURL,
+                    'name'     => 'CURL Sender',
+                    'class'    => CurlNotificationHandler::class,
+                    'events'   => [],
+                    'settings' => [],
+                ], [
+                    'id'       => $handlers[4]['id'],
+                    'created'  => $handlers[4]['created'],
+                    'updated'  => $handlers[4]['updated'],
+                    'type'     => NotificationSenderEnum::EMAIL,
+                    'name'     => 'Email Sender',
+                    'class'    => EmailNotificationHandler::class,
+                    'events'   => [
+                        NotificationEventEnum::ACCESS_EXPIRATION,
+                        NotificationEventEnum::DATA_ERROR,
+                        NotificationEventEnum::SERVICE_UNAVAILABLE,
+                    ],
+                    'settings' => [
+                        'emails' => ['one@example.com', 'two@example.com'],
+                    ],
+                ], [
+                    'id'       => $handlers[5]['id'],
+                    'created'  => $handlers[5]['created'],
+                    'updated'  => $handlers[5]['updated'],
+                    'type'     => NotificationSenderEnum::RABBIT,
+                    'name'     => 'AMQP Sender',
+                    'class'    => RabbitNotificationHandler::class,
+                    'events'   => [],
+                    'settings' => [],
                 ],
-                'settings' => [
-                    'emails' => ['one@example.com', 'two@example.com'],
-                ],
-            ], [
-                'id'       => $handlers[5]['id'],
-                'created'  => $handlers[5]['created'],
-                'updated'  => $handlers[5]['updated'],
-                'type'     => NotificationSenderEnum::RABBIT,
-                'name'     => 'AMQP Sender',
-                'class'    => RabbitNotificationHandler::class,
-                'events'   => [],
-                'settings' => [],
             ],
-        ], $handlers);
+            $handlers
+        );
 
         self::assertCount(6, $this->dm->getRepository(NotificationSettings::class)->findAll());
     }
@@ -154,26 +157,29 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
 
         $settings = $this->manager->getSettings($settings->getId());
 
-        self::assertEquals([
-            'id'       => $settings['id'],
-            'created'  => $settings['created'],
-            'updated'  => $settings['updated'],
-            'type'     => NotificationSenderEnum::EMAIL,
-            'name'     => 'Email Sender',
-            'class'    => EmailNotificationHandler::class,
-            'events'   => [
-                NotificationEventEnum::ACCESS_EXPIRATION,
-                NotificationEventEnum::DATA_ERROR,
-                NotificationEventEnum::SERVICE_UNAVAILABLE,
+        self::assertEquals(
+            [
+                'id'       => $settings['id'],
+                'created'  => $settings['created'],
+                'updated'  => $settings['updated'],
+                'type'     => NotificationSenderEnum::EMAIL,
+                'name'     => 'Email Sender',
+                'class'    => EmailNotificationHandler::class,
+                'events'   => [
+                    NotificationEventEnum::ACCESS_EXPIRATION,
+                    NotificationEventEnum::DATA_ERROR,
+                    NotificationEventEnum::SERVICE_UNAVAILABLE,
+                ],
+                'settings' => [
+                    'emails' =>
+                        [
+                            'one@example.com',
+                            'two@example.com',
+                        ],
+                ],
             ],
-            'settings' => [
-                'emails' =>
-                    [
-                        'one@example.com',
-                        'two@example.com',
-                    ],
-            ],
-        ], $settings);
+            $settings
+        );
     }
 
     /**
@@ -222,47 +228,55 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
         $settings = (new NotificationSettings())
             ->setClass(EmailNotificationHandler::class)
             ->setEvents(self::EVENTS)
-            ->setSettings([
-                EmailDto::HOST       => 'host',
-                EmailDto::PORT       => 'port',
-                EmailDto::USERNAME   => 'username',
-                EmailDto::PASSWORD   => 'password',
-                EmailDto::ENCRYPTION => 'encryption',
-                EmailDto::EMAILS     => ['one@example.com', 'two@example.com'],
-            ]);
+            ->setSettings(
+                [
+                    EmailDto::HOST       => 'host',
+                    EmailDto::PORT       => 'port',
+                    EmailDto::USERNAME   => 'username',
+                    EmailDto::PASSWORD   => 'password',
+                    EmailDto::ENCRYPTION => 'encryption',
+                    EmailDto::EMAILS     => ['one@example.com', 'two@example.com'],
+                ]
+            );
         $this->dm->persist($settings);
         $this->dm->flush();
         $this->dm->clear();
 
-        $settings = $this->manager->saveSettings($settings->getId(), [
-            NotificationSettings::EVENTS   => [NotificationEventEnum::ACCESS_EXPIRATION],
-            NotificationSettings::SETTINGS => [
-                EmailDto::HOST       => 'host',
-                EmailDto::PORT       => 'port',
-                EmailDto::USERNAME   => 'username',
-                EmailDto::PASSWORD   => 'password',
-                EmailDto::ENCRYPTION => 'encryption',
-                EmailDto::EMAILS     => ['another-one@example.com', 'another-two@example.com'],
-            ],
-        ]);
+        $settings = $this->manager->saveSettings(
+            $settings->getId(),
+            [
+                NotificationSettings::EVENTS   => [NotificationEventEnum::ACCESS_EXPIRATION],
+                NotificationSettings::SETTINGS => [
+                    EmailDto::HOST       => 'host',
+                    EmailDto::PORT       => 'port',
+                    EmailDto::USERNAME   => 'username',
+                    EmailDto::PASSWORD   => 'password',
+                    EmailDto::ENCRYPTION => 'encryption',
+                    EmailDto::EMAILS     => ['another-one@example.com', 'another-two@example.com'],
+                ],
+            ]
+        );
 
-        self::assertEquals([
-            'id'       => $settings['id'],
-            'created'  => $settings['created'],
-            'updated'  => $settings['updated'],
-            'type'     => NotificationSenderEnum::EMAIL,
-            'name'     => 'Email Sender',
-            'class'    => EmailNotificationHandler::class,
-            'events'   => [NotificationEventEnum::ACCESS_EXPIRATION],
-            'settings' => [
-                EmailDto::HOST       => 'host',
-                EmailDto::PORT       => 'port',
-                EmailDto::USERNAME   => 'username',
-                EmailDto::PASSWORD   => 'password',
-                EmailDto::ENCRYPTION => 'encryption',
-                EmailDto::EMAILS     => ['another-one@example.com', 'another-two@example.com'],
+        self::assertEquals(
+            [
+                'id'       => $settings['id'],
+                'created'  => $settings['created'],
+                'updated'  => $settings['updated'],
+                'type'     => NotificationSenderEnum::EMAIL,
+                'name'     => 'Email Sender',
+                'class'    => EmailNotificationHandler::class,
+                'events'   => [NotificationEventEnum::ACCESS_EXPIRATION],
+                'settings' => [
+                    EmailDto::HOST       => 'host',
+                    EmailDto::PORT       => 'port',
+                    EmailDto::USERNAME   => 'username',
+                    EmailDto::PASSWORD   => 'password',
+                    EmailDto::ENCRYPTION => 'encryption',
+                    EmailDto::EMAILS     => ['another-one@example.com', 'another-two@example.com'],
+                ],
             ],
-        ], $settings);
+            $settings
+        );
     }
 
     /**

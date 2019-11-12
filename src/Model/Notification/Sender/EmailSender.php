@@ -21,11 +21,13 @@ final class EmailSender
      */
     public function send(EmailDto $dto, array $settings): void
     {
-        $mailer = new Swift_Mailer((new Swift_SmtpTransport(
-            $settings[EmailDto::HOST],
-            $settings[EmailDto::PORT],
-            $settings[EmailDto::ENCRYPTION] === 'null' ? NULL : $settings[EmailDto::ENCRYPTION],
-        ))->setUsername($settings[EmailDto::USERNAME])->setPassword($settings[EmailDto::PASSWORD]));
+        $mailer = new Swift_Mailer(
+            (new Swift_SmtpTransport(
+                $settings[EmailDto::HOST],
+                $settings[EmailDto::PORT],
+                $settings[EmailDto::ENCRYPTION] === 'null' ? NULL : $settings[EmailDto::ENCRYPTION],
+            ))->setUsername($settings[EmailDto::USERNAME])->setPassword($settings[EmailDto::PASSWORD])
+        );
 
         foreach ($settings[EmailDto::EMAILS] as $email) {
             $mailer->send(

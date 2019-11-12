@@ -106,22 +106,28 @@ final class NotificationManager implements LoggerAwareInterface
             $class = get_class($handler);
 
             /** @var NotificationSettings|NULL $settings */
-            $settings = $this->dm->getRepository(NotificationSettings::class)->findOneBy([
-                NotificationSettings::EVENTS     => $event,
-                NotificationSettings::CLASS_NAME => $class,
-            ]);
+            $settings = $this->dm->getRepository(NotificationSettings::class)->findOneBy(
+                [
+                    NotificationSettings::EVENTS     => $event,
+                    NotificationSettings::CLASS_NAME => $class,
+                ]
+            );
 
             if ($settings) {
-                $this->logger->debug(sprintf(
-                    'sending notification from sender manager: [settings=%s] [parentClass=%s]',
-                    json_encode($settings->toArray($event, $class), JSON_THROW_ON_ERROR),
-                    get_parent_class($handler)
-                ));
+                $this->logger->debug(
+                    sprintf(
+                        'sending notification from sender manager: [settings=%s] [parentClass=%s]',
+                        json_encode($settings->toArray($event, $class), JSON_THROW_ON_ERROR),
+                        get_parent_class($handler)
+                    )
+                );
             } else {
-                $this->logger->debug(sprintf(
-                    'No settings found: [parentClass=%s]',
-                    get_parent_class($handler)
-                ));
+                $this->logger->debug(
+                    sprintf(
+                        'No settings found: [parentClass=%s]',
+                        get_parent_class($handler)
+                    )
+                );
             }
 
             if ($settings) {

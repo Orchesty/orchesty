@@ -35,7 +35,7 @@ final class NotificationMessageCallbackTest extends DatabaseTestCaseAbstract
     {
         parent::setUp();
 
-        $this->callback   = self::$container->get('notification.callback.message');
+        $this->callback = self::$container->get('notification.callback.message');
         $this->connection = self::$container->get('rabbit_mq.connection_manager')->getConnection();
     }
 
@@ -79,7 +79,9 @@ final class NotificationMessageCallbackTest extends DatabaseTestCaseAbstract
     {
         self::expectException(NotificationException::class);
         self::expectExceptionCode(NotificationException::NOTIFICATION_EVENT_NOT_FOUND);
-        self::expectExceptionMessage("Notification event not found: RabbitMQ message missing required property 'notification_type'!");
+        self::expectExceptionMessage(
+            "Notification event not found: RabbitMQ message missing required property 'notification_type'!"
+        );
 
         $this->callback->processMessage(
             new Message(

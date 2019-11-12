@@ -39,10 +39,12 @@ final class CurlSender
      */
     public function send(CurlDto $dto, array $settings): void
     {
-        $this->manager->send((new RequestDto(
-            $settings[CurlDto::METHOD],
-            new Uri($settings[CurlDto::URL])
-        ))->setBody($dto->getJsonBody())->setHeaders($dto->getHeaders()));
+        $this->manager->send(
+            (new RequestDto(
+                $settings[CurlDto::METHOD],
+                new Uri($settings[CurlDto::URL])
+            ))->setBody($dto->getJsonBody())->setHeaders($dto->getHeaders())
+        );
     }
 
 }

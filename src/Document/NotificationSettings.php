@@ -100,9 +100,12 @@ class NotificationSettings
      */
     public function setEvents(array $events): NotificationSettings
     {
-        $this->events = array_map(function (string $event): string {
-            return NotificationEventEnum::isValid($event);
-        }, $events);
+        $this->events = array_map(
+            function (string $event): string {
+                return NotificationEventEnum::isValid($event);
+            },
+            $events
+        );
 
         return $this;
     }

@@ -50,7 +50,9 @@ final class NotificationMessageCallback implements CallbackInterface
 
         if (!$event) {
             throw new NotificationException(
-                sprintf("Notification event not found: RabbitMQ message missing required property 'notification_type'!"),
+                sprintf(
+                    "Notification event not found: RabbitMQ message missing required property 'notification_type'!"
+                ),
                 NotificationException::NOTIFICATION_EVENT_NOT_FOUND
             );
         }
