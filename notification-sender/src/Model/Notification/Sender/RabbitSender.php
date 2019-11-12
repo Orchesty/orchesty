@@ -23,13 +23,15 @@ final class RabbitSender
      */
     public function send(RabbitDto $dto, array $settings): void
     {
-        $client = new Client([
-            'host'     => $settings[RabbitDto::HOST],
-            'port'     => $settings[RabbitDto::PORT],
-            'vhost'    => $settings[RabbitDto::VHOST],
-            'user'     => $settings[RabbitDto::USERNAME],
-            'password' => $settings[RabbitDto::PASSWORD],
-        ]);
+        $client = new Client(
+            [
+                'host'     => $settings[RabbitDto::HOST],
+                'port'     => $settings[RabbitDto::PORT],
+                'vhost'    => $settings[RabbitDto::VHOST],
+                'user'     => $settings[RabbitDto::USERNAME],
+                'password' => $settings[RabbitDto::PASSWORD],
+            ]
+        );
 
         $client->connect();
 

@@ -91,7 +91,8 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
         string $url,
         array $parameters = [],
         array $headers = [],
-        array $files = []): ControllerResponse
+        array $files = []
+    ): ControllerResponse
     {
         $this->prepareClient();
 
