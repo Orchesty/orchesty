@@ -46,39 +46,42 @@ final class InfluxMetricsManagerTest extends KernelTestCaseAbstract
         self::assertArrayHasKey(InfluxMetricsManager::REQUEST_TIME, $result);
         self::assertArrayHasKey(InfluxMetricsManager::PROCESS, $result);
 
-        self::assertEquals([
-            InfluxMetricsManager::QUEUE_DEPTH  => [
-                'max' => '10',
-                'avg' => '5.00',
+        self::assertEquals(
+            [
+                InfluxMetricsManager::QUEUE_DEPTH  => [
+                    'max' => '10',
+                    'avg' => '5.00',
+                ],
+                InfluxMetricsManager::WAITING_TIME => [
+                    'max' => '10',
+                    'avg' => '6.00',
+                    'min' => '2',
+                ],
+                InfluxMetricsManager::PROCESS_TIME => [
+                    'max' => '10',
+                    'avg' => '6.00',
+                    'min' => '2',
+                ],
+                InfluxMetricsManager::CPU_TIME     => [
+                    'max' => '10',
+                    'avg' => '6.00',
+                    'min' => '2',
+                ],
+                InfluxMetricsManager::REQUEST_TIME => [
+                    'max' => '10',
+                    'avg' => '6.00',
+                    'min' => '2',
+                ],
+                InfluxMetricsManager::PROCESS      => [
+                    'max'    => '0',
+                    'avg'    => '0.00',
+                    'min'    => '0',
+                    'total'  => '4',
+                    'errors' => '2',
+                ],
             ],
-            InfluxMetricsManager::WAITING_TIME => [
-                'max' => '10',
-                'avg' => '6.00',
-                'min' => '2',
-            ],
-            InfluxMetricsManager::PROCESS_TIME => [
-                'max' => '10',
-                'avg' => '6.00',
-                'min' => '2',
-            ],
-            InfluxMetricsManager::CPU_TIME     => [
-                'max' => '10',
-                'avg' => '6.00',
-                'min' => '2',
-            ],
-            InfluxMetricsManager::REQUEST_TIME => [
-                'max' => '10',
-                'avg' => '6.00',
-                'min' => '2',
-            ],
-            InfluxMetricsManager::PROCESS      => [
-                'max'    => '0',
-                'avg'    => '0.00',
-                'min'    => '0',
-                'total'  => '4',
-                'errors' => '2',
-            ],
-        ], $result);
+            $result
+        );
     }
 
     /**
@@ -101,17 +104,20 @@ final class InfluxMetricsManagerTest extends KernelTestCaseAbstract
         self::assertTrue(is_array($result));
         self::assertCount(4, $result);
         self::assertArrayHasKey($node->getId(), $result);
-        self::assertEquals([
-            InfluxMetricsManager::PROCESS_TIME => [
-                'min' => '1',
-                'avg' => '3.50',
-                'max' => '10',
+        self::assertEquals(
+            [
+                InfluxMetricsManager::PROCESS_TIME => [
+                    'min' => '1',
+                    'avg' => '3.50',
+                    'max' => '10',
+                ],
+                InfluxMetricsManager::PROCESS      => [
+                    'total'  => '1200',
+                    'errors' => '120',
+                ],
             ],
-            InfluxMetricsManager::PROCESS      => [
-                'total'  => '1200',
-                'errors' => '120',
-            ],
-        ], $result['topology']);
+            $result['topology']
+        );
         $result = $result[$node->getId()];
 
         self::assertTrue(is_array($result));
@@ -137,24 +143,30 @@ final class InfluxMetricsManagerTest extends KernelTestCaseAbstract
         $this->setFakeData($topo, $this->createNode($topo));
 
         $manager = $this->getManager();
-        $result  = $manager->getTopologyRequestCountMetrics($topo, [
-            'from' => '-10 day',
-            'to'   => '+10 day',
-        ]);
+        $result  = $manager->getTopologyRequestCountMetrics(
+            $topo,
+            [
+                'from' => '-10 day',
+                'to'   => '+10 day',
+            ]
+        );
 
         self::assertTrue(is_array($result));
         self::assertCount(5, $result);
-        self::assertEquals([
-            InfluxMetricsManager::PROCESS_TIME => [
-                'min' => '1',
-                'avg' => '3.50',
-                'max' => '10',
+        self::assertEquals(
+            [
+                InfluxMetricsManager::PROCESS_TIME => [
+                    'min' => '1',
+                    'avg' => '3.50',
+                    'max' => '10',
+                ],
+                InfluxMetricsManager::PROCESS      => [
+                    'total'  => '1200',
+                    'errors' => '120',
+                ],
             ],
-            InfluxMetricsManager::PROCESS      => [
-                'total'  => '1200',
-                'errors' => '120',
-            ],
-        ], $result['topology']);
+            $result['topology']
+        );
         self::assertCount(117, $result['requests']);
     }
 

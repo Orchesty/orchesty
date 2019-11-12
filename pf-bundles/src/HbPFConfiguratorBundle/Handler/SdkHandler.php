@@ -37,9 +37,12 @@ final class SdkHandler
     public function getAll(): array
     {
         return [
-            'items' => array_map(function (Sdk $sdk): array {
-                return $sdk->toArray();
-            }, $this->manager->getAll()),
+            'items' => array_map(
+                function (Sdk $sdk): array {
+                    return $sdk->toArray();
+                },
+                $this->manager->getAll()
+            ),
         ];
     }
 

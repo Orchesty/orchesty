@@ -34,9 +34,12 @@ class ApplicationController extends AbstractFOSRestController
      */
     public function getApplicationAction(string $key): Response
     {
-        return $this->forward('HbPFAppStoreBundle:Application:getApplication', [
-            'key' => $key,
-        ]);
+        return $this->forward(
+            'HbPFAppStoreBundle:Application:getApplication',
+            [
+                'key' => $key,
+            ]
+        );
     }
 
     /**
@@ -48,9 +51,12 @@ class ApplicationController extends AbstractFOSRestController
      */
     public function getUsersApplicationAction(string $user): Response
     {
-        return $this->forward('HbPFAppStoreBundle:Application:getUsersApplication', [
-            'user' => $user,
-        ]);
+        return $this->forward(
+            'HbPFAppStoreBundle:Application:getUsersApplication',
+            [
+                'user' => $user,
+            ]
+        );
     }
 
     /**
@@ -63,10 +69,13 @@ class ApplicationController extends AbstractFOSRestController
      */
     public function getApplicationDetailAction(string $key, string $user): Response
     {
-        return $this->forward('HbPFAppStoreBundle:Application:getApplicationDetail', [
-            'key'  => $key,
-            'user' => $user,
-        ]);
+        return $this->forward(
+            'HbPFAppStoreBundle:Application:getApplicationDetail',
+            [
+                'key'  => $key,
+                'user' => $user,
+            ]
+        );
     }
 
     /**
@@ -79,10 +88,13 @@ class ApplicationController extends AbstractFOSRestController
      */
     public function installApplicationAction(string $key, string $user): Response
     {
-        return $this->forward('HbPFAppStoreBundle:Application:installApplication', [
-            'key'  => $key,
-            'user' => $user,
-        ]);
+        return $this->forward(
+            'HbPFAppStoreBundle:Application:installApplication',
+            [
+                'key'  => $key,
+                'user' => $user,
+            ]
+        );
     }
 
     /**
@@ -96,11 +108,14 @@ class ApplicationController extends AbstractFOSRestController
      */
     public function updateApplicationSettingsAction(Request $request, string $key, string $user): Response
     {
-        return $this->forward('HbPFAppStoreBundle:Application:updateApplicationSettings', [
-            'request' => $request,
-            'key'     => $key,
-            'user'    => $user,
-        ]);
+        return $this->forward(
+            'HbPFAppStoreBundle:Application:updateApplicationSettings',
+            [
+                'request' => $request,
+                'key'     => $key,
+                'user'    => $user,
+            ]
+        );
     }
 
     /**
@@ -113,10 +128,13 @@ class ApplicationController extends AbstractFOSRestController
      */
     public function uninstallApplicationAction(string $key, string $user): Response
     {
-        return $this->forward('HbPFAppStoreBundle:Application:uninstallApplication', [
-            'key'  => $key,
-            'user' => $user,
-        ]);
+        return $this->forward(
+            'HbPFAppStoreBundle:Application:uninstallApplication',
+            [
+                'key'  => $key,
+                'user' => $user,
+            ]
+        );
     }
 
     /**
@@ -130,11 +148,14 @@ class ApplicationController extends AbstractFOSRestController
      */
     public function saveApplicationPasswordAction(Request $request, string $key, string $user): Response
     {
-        return $this->forward('HbPFAppStoreBundle:Application:saveApplicationPassword', [
-            'request' => $request,
-            'key'     => $key,
-            'user'    => $user,
-        ]);
+        return $this->forward(
+            'HbPFAppStoreBundle:Application:saveApplicationPassword',
+            [
+                'request' => $request,
+                'key'     => $key,
+                'user'    => $user,
+            ]
+        );
     }
 
     /**
@@ -148,11 +169,14 @@ class ApplicationController extends AbstractFOSRestController
      */
     public function authorizeApplicationAction(Request $request, string $key, string $user): Response
     {
-        return $this->forward('HbPFApplicationBundle:Application:authorizeApplication', [
-            'request' => $request,
-            'key'     => $key,
-            'user'    => $user,
-        ]);
+        return $this->forward(
+            'HbPFApplicationBundle:Application:authorizeApplication',
+            [
+                'request' => $request,
+                'key'     => $key,
+                'user'    => $user,
+            ]
+        );
     }
 
     /**
@@ -166,11 +190,14 @@ class ApplicationController extends AbstractFOSRestController
      */
     public function setAuthorizationTokenAction(Request $request, string $key, string $user): Response
     {
-        return $this->forward('HbPFApplicationBundle:Application:setAuthorizationToken', [
-            'request' => $request,
-            'key'     => $key,
-            'user'    => $user,
-        ]);
+        return $this->forward(
+            'HbPFApplicationBundle:Application:setAuthorizationToken',
+            [
+                'request' => $request,
+                'key'     => $key,
+                'user'    => $user,
+            ]
+        );
     }
 
     /**
@@ -182,9 +209,12 @@ class ApplicationController extends AbstractFOSRestController
      */
     public function setAuthorizationTokenQueryAction(Request $request): Response
     {
-        return $this->forward('HbPFApplicationBundle:Application:setAuthorizationTokenQuery', [
-            'request' => $request,
-        ]);
+        return $this->forward(
+            'HbPFApplicationBundle:Application:setAuthorizationTokenQuery',
+            [
+                'request' => $request,
+            ]
+        );
     }
 
 }

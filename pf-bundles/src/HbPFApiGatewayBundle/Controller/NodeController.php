@@ -87,13 +87,21 @@ class NodeController extends AbstractFOSRestController
      */
     public function listNodesNamesAction(): Response
     {
-        return new JsonResponse([
-            NodeImplementationEnum::PHP => [
-                NodeImplementationEnum::CONNECTOR => $this->getForwardContent('HbPFConnectorBundle:Connector:listOfConnectors'),
-                NodeImplementationEnum::CUSTOM    => $this->getForwardContent('HbPFCustomNodeBundle:CustomNode:listOfCustomNodes'),
-                NodeImplementationEnum::USER      => $this->getForwardContent('HbPFLongRunningNodeBundle:LongRunningNode:listOfLongRunningNodes'),
-            ],
-        ]);
+        return new JsonResponse(
+            [
+                NodeImplementationEnum::PHP => [
+                    NodeImplementationEnum::CONNECTOR => $this->getForwardContent(
+                        'HbPFConnectorBundle:Connector:listOfConnectors'
+                    ),
+                    NodeImplementationEnum::CUSTOM    => $this->getForwardContent(
+                        'HbPFCustomNodeBundle:CustomNode:listOfCustomNodes'
+                    ),
+                    NodeImplementationEnum::USER      => $this->getForwardContent(
+                        'HbPFLongRunningNodeBundle:LongRunningNode:listOfLongRunningNodes'
+                    ),
+                ],
+            ]
+        );
     }
 
     /**

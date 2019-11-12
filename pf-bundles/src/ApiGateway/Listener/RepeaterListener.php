@@ -75,7 +75,10 @@ class RepeaterListener implements EventSubscriberInterface, LoggerAwareInterface
         $repeatCode     = PipesHeaders::createKey(PipesHeaders::RESULT_CODE);
         $dto            = $e->getProcessDto();
 
-        if ((!$dto->getHeader($repeatHops) && $dto->getHeader($repeatHops) <= 0) && !$dto->getHeader($repeatMaxHops) && !$dto->getHeader($repeatInterval)) {
+        if (
+            (!$dto->getHeader($repeatHops) && $dto->getHeader($repeatHops) <= 0) &&
+            !$dto->getHeader($repeatMaxHops) && !$dto->getHeader($repeatInterval)
+        ) {
 
             [$interval, $hops, $enabled] = $this->getRepeaterStuff($e, $dto);
 

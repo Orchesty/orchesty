@@ -30,9 +30,9 @@ final class RetentionFactory
 
         if ($diff->d > 0) {
             return self::FOUR_HOUR;
-        } elseif ($diff->h > 0) {
+        } else if ($diff->h > 0) {
             return self::HALF_HOUR;
-        } elseif ($diff->i > 0) {
+        } else if ($diff->i > 0) {
             return self::MIN;
         } else {
             return self::SEC;

@@ -30,7 +30,6 @@ class LogsCompilerPass implements CompilerPassInterface
         $config = $container->getParameter(HbPFLogsBundle::KEY);
 
         if ($config['type'] == 'mongodb') {
-
             $dm                   = $container->getDefinition('doctrine_mongodb.odm.default_document_manager');
             $logsFilter           = new Definition(LogsFilter::class, [$dm]);
             $startingPointsFilter = new Definition(StartingPointsFilter::class, [$dm]);
@@ -40,14 +39,16 @@ class LogsCompilerPass implements CompilerPassInterface
         }
 
         if ($config['type'] == 'elastic') {
-            $elastic = new Definition(ElasticLogs::class, [
-                //@todo add elastic manager
-                $config['storage_name'],
-            ]);
+            $elastic = new Definition(
+                ElasticLogs::class,
+                [
+                    //@todo add elastic manager
+                    $config['storage_name'],
+                ]
+            );
 
             $container->setDefinition(LogsInterface::class, $elastic);
         }
-
     }
 
 }

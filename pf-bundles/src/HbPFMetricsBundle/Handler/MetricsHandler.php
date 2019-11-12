@@ -84,8 +84,10 @@ class MetricsHandler
      */
     public function getRequestsCountMetrics(string $topologyId, array $params): array
     {
-        return $this->loader->getManager()->getTopologyRequestCountMetrics($this->getTopologyById($topologyId),
-            $params);
+        return $this->loader->getManager()->getTopologyRequestCountMetrics(
+            $this->getTopologyById($topologyId),
+            $params
+        );
     }
 
     /**

@@ -70,7 +70,7 @@ final class TopologyFile
             error_reporting($level);
             if ($content === FALSE) {
                 $error = error_get_last();
-                throw new RuntimeException($error['message']);
+                throw new RuntimeException($error['message'] ?? 'Unknown Error');
             }
 
             return $content;

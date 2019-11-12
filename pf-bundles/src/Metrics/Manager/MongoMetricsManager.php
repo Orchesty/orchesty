@@ -179,8 +179,8 @@ class MongoMetricsManager extends MetricsManagerAbstract
                         request_max: Math.max(...vals),
                         request_min: Math.min(...vals),
                     };
-                }',
-                )
+                }'
+            )
             ->finalize(
                 'function(k, res) {
                     if (typeof res === "object") {
@@ -247,8 +247,8 @@ class MongoMetricsManager extends MetricsManagerAbstract
                         queue_max: Math.max(...vals),
                         queue_sum: Array.sum(vals),
                     };
-                }',
-                )
+                }'
+            )
             ->finalize(
                 'function(k, res) {
                     if (typeof res === "object") {
@@ -320,8 +320,8 @@ class MongoMetricsManager extends MetricsManagerAbstract
                         cpu_max: Math.max(...vals),
                         cpu_min: Math.min(...vals),
                     };
-                }',
-                )
+                }'
+            )
             ->finalize(
                 'function(k, res) {
                     if (typeof res === "object") {
@@ -405,8 +405,8 @@ class MongoMetricsManager extends MetricsManagerAbstract
                     });
                     
                     return res;
-                }',
-                )
+                }'
+            )
             ->finalize(
                 'function(k, res) {
                     if (res.hasOwnProperty("total_count")) {
@@ -510,8 +510,8 @@ class MongoMetricsManager extends MetricsManagerAbstract
                     });
                 
                     return res;
-                }',
-                )
+                }'
+            )
             ->finalize(
                 'function(k, res) {
                     if (res.hasOwnProperty("wait_count")) {
@@ -597,15 +597,18 @@ class MongoMetricsManager extends MetricsManagerAbstract
 
         $res = $qb
             ->mapReduce(
-                sprintf('function() {
+                sprintf(
+                    'function() {
                     const time = this.fields.created;
                 
                     emit(time - time %% %s, 1);
-                }', $ret),
+                }',
+                    $ret
+                ),
                 'function(k, vals) {
                     return vals.length;
-                }',
-                )
+                }'
+            )
             ->getQuery()
             ->execute()
             ->toArray();

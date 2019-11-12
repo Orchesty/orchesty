@@ -223,7 +223,7 @@ class CategoryParser
     {
         if ($root === self::ALL) {
             $this->removePartsOfPath(next($this->tmpPath));
-        } elseif ($root === reset($this->tmpFilePath)) {
+        } else if ($root === reset($this->tmpFilePath)) {
             array_shift($this->tmpFilePath);
         } else {
             return FALSE;

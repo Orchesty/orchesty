@@ -117,8 +117,18 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
         $topology
             ->setName('file')
             ->setRawBpmn($this->load('file.tplg', TRUE))
-            ->setContentHash(TopologySchemaUtils::getIndexHash(TopologySchemaUtils::getSchemaObject($xmlDecoder->decode($this->load('file.tplg',
-                TRUE)))))
+            ->setContentHash(
+                TopologySchemaUtils::getIndexHash(
+                    TopologySchemaUtils::getSchemaObject(
+                        $xmlDecoder->decode(
+                            $this->load(
+                                'file.tplg',
+                                TRUE
+                            )
+                        )
+                    )
+                )
+            )
             ->setEnabled(TRUE)
             ->setVisibility(TopologyStatusEnum::PUBLIC);
         $this->dm->persist($topology);
@@ -127,8 +137,18 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
         $topology3
             ->setName('file2')
             ->setRawBpmn($this->load('file2.tplg', FALSE))
-            ->setContentHash(TopologySchemaUtils::getIndexHash(TopologySchemaUtils::getSchemaObject($xmlDecoder->decode($this->load('file2.tplg',
-                FALSE)))))
+            ->setContentHash(
+                TopologySchemaUtils::getIndexHash(
+                    TopologySchemaUtils::getSchemaObject(
+                        $xmlDecoder->decode(
+                            $this->load(
+                                'file2.tplg',
+                                FALSE
+                            )
+                        )
+                    )
+                )
+            )
             ->setEnabled(TRUE)
             ->setVisibility(TopologyStatusEnum::PUBLIC);
         $this->dm->persist($topology3);

@@ -8,4 +8,4 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.cron.manager'
         tags:
-            -  { name: console.command }
+            - { name: console.command }

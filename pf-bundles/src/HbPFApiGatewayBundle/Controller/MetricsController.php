@@ -25,7 +25,8 @@ class MetricsController extends AbstractFOSRestController
      */
     public function topologyMetricsAction(Request $request, string $topologyId): Response
     {
-        return $this->forward('HbPFMetricsBundle:Metrics:topologyMetrics',
+        return $this->forward(
+            'HbPFMetricsBundle:Metrics:topologyMetrics',
             ['query' => $request->query, 'topologyId' => $topologyId]
         );
     }
@@ -41,7 +42,8 @@ class MetricsController extends AbstractFOSRestController
      */
     public function nodeMetricsAction(Request $request, string $topologyId, string $nodeId): Response
     {
-        return $this->forward('HbPFMetricsBundle:Metrics:nodeMetrics',
+        return $this->forward(
+            'HbPFMetricsBundle:Metrics:nodeMetrics',
             ['query' => $request->query, 'topologyId' => $topologyId, 'nodeId' => $nodeId]
         );
     }
@@ -56,7 +58,8 @@ class MetricsController extends AbstractFOSRestController
      */
     public function topologyRequestsCountMetricsAction(Request $request, string $topologyId): Response
     {
-        return $this->forward('HbPFMetricsBundle:Metrics:topologyRequestsCountMetrics',
+        return $this->forward(
+            'HbPFMetricsBundle:Metrics:topologyRequestsCountMetrics',
             ['query' => $request->query, 'topologyId' => $topologyId]
         );
     }

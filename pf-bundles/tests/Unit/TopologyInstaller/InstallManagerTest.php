@@ -109,8 +109,10 @@ final class InstallManagerTest extends TestCase
         $topologyManager->method('publishTopology')->willReturn(new Topology());
         $topologyManager->method('updateTopology')->willReturn($savedTopo);
         $topologyManager->method('saveTopologySchema')->willReturn($savedTopo);
-        $topologyManager->method('deleteTopology')->willReturnCallback(function (): void {
-        });
+        $topologyManager->method('deleteTopology')->willReturnCallback(
+            function (): void {
+            }
+        );
 
         /** @var TopologyGeneratorBridge|MockObject $requestHandler */
         $requestHandler = $this->createMock(TopologyGeneratorBridge::class);
@@ -119,8 +121,10 @@ final class InstallManagerTest extends TestCase
 
         /** @var CategoryParser|MockObject $categoryParser */
         $categoryParser = $this->createMock(CategoryParser::class);
-        $categoryParser->method('classifyTopology')->willReturnCallback(function (): void {
-        });
+        $categoryParser->method('classifyTopology')->willReturnCallback(
+            function (): void {
+            }
+        );
 
         return new InstallManager($dm, $client, $topologyManager, $requestHandler, $categoryParser, $dirs);
     }

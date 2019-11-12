@@ -300,15 +300,18 @@ class TopologyManager
             }
         }
 
-        usort($result, function (array $one, array $two): int {
-            $result = $one['topology']['status'] <=> $two['topology']['status'];
+        usort(
+            $result,
+            function (array $one, array $two): int {
+                $result = $one['topology']['status'] <=> $two['topology']['status'];
 
-            if (!$result) {
-                $result = $one['topology']['version'] <=> $two['topology']['version'];
+                if (!$result) {
+                    $result = $one['topology']['version'] <=> $two['topology']['version'];
+                }
+
+                return $result * -1;
             }
-
-            return $result * -1;
-        });
+        );
 
         return $result;
     }
@@ -550,11 +553,13 @@ class TopologyManager
     private function getNodeBySchemaId(Topology $topology, string $schemaId): Node
     {
         /** @var Node|null $node */
-        $node = $this->dm->getRepository(Node::class)->findOneBy([
-            'topology' => $topology->getId(),
-            'schemaId' => $schemaId,
-            'deleted'  => FALSE,
-        ]);
+        $node = $this->dm->getRepository(Node::class)->findOneBy(
+            [
+                'topology' => $topology->getId(),
+                'schemaId' => $schemaId,
+                'deleted'  => FALSE,
+            ]
+        );
 
         if (!$node) {
             throw new NodeException(

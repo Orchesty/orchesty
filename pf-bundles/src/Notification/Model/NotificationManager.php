@@ -115,15 +115,18 @@ class NotificationManager implements LoggerAwareInterface
      */
     private function sendAndProcessRequest(RequestDto $dto): ResponseDto
     {
-        $dto->setHeaders([
-            'Accept' => 'application/json',
-            'Content-Type' => 'application/json',
-        ]);
+        $dto->setHeaders(
+            [
+                'Accept'       => 'application/json',
+                'Content-Type' => 'application/json',
+            ]
+        );
 
         try {
             return $this->curlManager->send($dto);
         } catch (Throwable $e) {
-            $this->logger->error('Notification sender error.',
+            $this->logger->error(
+                'Notification sender error.',
                 [
                     'Exception' => json_encode($e, JSON_THROW_ON_ERROR),
                     'Request'   => json_encode($dto, JSON_THROW_ON_ERROR),
