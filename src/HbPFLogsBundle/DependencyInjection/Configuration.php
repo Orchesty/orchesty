@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesFramework\HbPFLogsBundle\DependencyInjection;
 
 use Hanaboso\PipesFramework\HbPFLogsBundle\HbPFLogsBundle;
+use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -20,7 +21,8 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode    = $treeBuilder->root(HbPFLogsBundle::KEY);
+        /** @var ArrayNodeDefinition $rootNode */
+        $rootNode = $treeBuilder->root(HbPFLogsBundle::KEY);
 
         $rootNode->children()
             ->enumNode('type')->values(['mongodb', 'elastic'])->isRequired()

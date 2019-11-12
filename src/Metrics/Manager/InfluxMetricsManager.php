@@ -74,38 +74,56 @@ class InfluxMetricsManager extends MetricsManagerAbstract
             $this->connectorTable
         );
 
-        $select = self::addStringSeparator(self::getFunctionForSelect([
-            self::AVG_PROCESS_TIME => self::PROCESSED_COUNT,
-            self::AVG_WAIT_TIME    => self::WAIT_COUNT,
-            self::CPU_KERNEL_AVG   => self::CPU_COUNT,
-            self::AVG_TIME         => self::REQUEST_COUNT,
-            self::AVG_MESSAGES     => self::QUEUE_COUNT,
-        ], self::COUNT));
+        $select = self::addStringSeparator(
+            self::getFunctionForSelect(
+                [
+                    self::AVG_PROCESS_TIME => self::PROCESSED_COUNT,
+                    self::AVG_WAIT_TIME    => self::WAIT_COUNT,
+                    self::CPU_KERNEL_AVG   => self::CPU_COUNT,
+                    self::AVG_TIME         => self::REQUEST_COUNT,
+                    self::AVG_MESSAGES     => self::QUEUE_COUNT,
+                ],
+                self::COUNT
+            )
+        );
 
-        $select .= self::addStringSeparator(self::getFunctionForSelect([
-            self::AVG_PROCESS_TIME => self::PROCESSED_SUM,
-            self::AVG_WAIT_TIME    => self::WAIT_SUM,
-            self::CPU_KERNEL_AVG   => self::CPU_SUM,
-            self::AVG_TIME         => self::REQUEST_SUM,
-            self::FAILED_COUNT     => self::NODE_ERROR_SUM,
-            self::TOTAL_COUNT      => self::NODE_TOTAL_SUM,
-            self::AVG_MESSAGES     => self::QUEUE_SUM,
-        ], self::SUM));
+        $select .= self::addStringSeparator(
+            self::getFunctionForSelect(
+                [
+                    self::AVG_PROCESS_TIME => self::PROCESSED_SUM,
+                    self::AVG_WAIT_TIME    => self::WAIT_SUM,
+                    self::CPU_KERNEL_AVG   => self::CPU_SUM,
+                    self::AVG_TIME         => self::REQUEST_SUM,
+                    self::FAILED_COUNT     => self::NODE_ERROR_SUM,
+                    self::TOTAL_COUNT      => self::NODE_TOTAL_SUM,
+                    self::AVG_MESSAGES     => self::QUEUE_SUM,
+                ],
+                self::SUM
+            )
+        );
 
-        $select .= self::addStringSeparator(self::getFunctionForSelect([
-            self::MIN_PROCESS_TIME => self::PROCESSED_MIN,
-            self::MIN_WAIT_TIME    => self::WAIT_MIN,
-            self::CPU_KERNEL_MIN   => self::CPU_MIN,
-            self::MIN_TIME         => self::REQUEST_MIN,
-        ], self::MIN));
+        $select .= self::addStringSeparator(
+            self::getFunctionForSelect(
+                [
+                    self::MIN_PROCESS_TIME => self::PROCESSED_MIN,
+                    self::MIN_WAIT_TIME    => self::WAIT_MIN,
+                    self::CPU_KERNEL_MIN   => self::CPU_MIN,
+                    self::MIN_TIME         => self::REQUEST_MIN,
+                ],
+                self::MIN
+            )
+        );
 
-        $select .= self::getFunctionForSelect([
-            self::MAX_PROCESS_TIME => self::PROCESSED_MAX,
-            self::MAX_WAIT_TIME    => self::WAIT_MAX,
-            self::CPU_KERNEL_MAX   => self::CPU_MAX,
-            self::MAX_TIME         => self::REQUEST_MAX,
-            self::MAX_MESSAGES     => self::QUEUE_MAX,
-        ], self::MAX);
+        $select .= self::getFunctionForSelect(
+            [
+                self::MAX_PROCESS_TIME => self::PROCESSED_MAX,
+                self::MAX_WAIT_TIME    => self::WAIT_MAX,
+                self::CPU_KERNEL_MAX   => self::CPU_MAX,
+                self::MAX_TIME         => self::REQUEST_MAX,
+                self::MAX_MESSAGES     => self::QUEUE_MAX,
+            ],
+            self::MAX
+        );
 
         $where = [
             self::NODE  => $node->getId(),
@@ -363,9 +381,12 @@ class InfluxMetricsManager extends MetricsManagerAbstract
      */
     private static function getConditions(array $data, string $delimiter = 'or'): array
     {
-        array_walk($data, function (string &$value, string $key): void {
-            $value = sprintf('%s = \'%s\'', $key, $value);
-        });
+        array_walk(
+            $data,
+            function (string &$value, string $key): void {
+                $value = sprintf('%s = \'%s\'', $key, $value);
+            }
+        );
 
         return [implode(sprintf(' %s ', $delimiter), $data)];
     }
@@ -399,9 +420,12 @@ class InfluxMetricsManager extends MetricsManagerAbstract
      */
     private static function createQuery(array $data, string $function): string
     {
-        array_walk($data, function (string &$value, string $key) use ($function): void {
-            $value = sprintf('%s("%s") AS %s', $function, $key, $value);
-        });
+        array_walk(
+            $data,
+            function (string &$value, string $key) use ($function): void {
+                $value = sprintf('%s("%s") AS %s', $function, $key, $value);
+            }
+        );
 
         return implode(', ', $data);
     }
@@ -417,9 +441,15 @@ class InfluxMetricsManager extends MetricsManagerAbstract
     {
         $retention = RetentionFactory::getRetention($from, $to);
 
-        return implode(', ', array_map(function (string $item) use ($retention): string {
-            return sprintf('"%s".%s', $retention, $item);
-        }, explode(',', $fromTables)));
+        return implode(
+            ', ',
+            array_map(
+                function (string $item) use ($retention): string {
+                    return sprintf('"%s".%s', $retention, $item);
+                },
+                explode(',', $fromTables)
+            )
+        );
     }
 
 }

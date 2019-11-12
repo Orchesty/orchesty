@@ -51,8 +51,12 @@ class InstallTopologyCommand extends Command
         $this->addOption(self::UPDATE, 'u', InputOption::VALUE_NONE, 'Update');
         $this->addOption(self::DELETE, 'd', InputOption::VALUE_NONE, 'Delete');
         $this->addOption(self::FORCE, 'force', InputOption::VALUE_NONE, 'Force');
-        $this->setDescription('Possible params are: -c for create, -u for update, -d for delete, --force for apply your changes.');
-        $this->setHelp('Possible params are: -c for create, -u for update, -d for delete, --force for apply your changes.');
+        $this->setDescription(
+            'Possible params are: -c for create, -u for update, -d for delete, --force for apply your changes.'
+        );
+        $this->setHelp(
+            'Possible params are: -c for create, -u for update, -d for delete, --force for apply your changes.'
+        );
     }
 
     /**

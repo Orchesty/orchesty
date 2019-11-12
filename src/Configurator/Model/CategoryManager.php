@@ -90,8 +90,10 @@ class CategoryManager
             $this->dm->remove($category);
             $this->dm->flush();
         } else {
-            throw new CategoryException('Category used by topology cannot be remove.',
-                CategoryException::CATEGORY_USED);
+            throw new CategoryException(
+                'Category used by topology cannot be remove.',
+                CategoryException::CATEGORY_USED
+            );
         }
     }
 

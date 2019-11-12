@@ -7,7 +7,6 @@ use Hanaboso\CommonsBundle\Database\Document\Topology;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler;
-use Nette\Utils\Json;
 use stdClass;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -73,11 +72,14 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
      */
     public function testCreateTopology(): void
     {
-        $response = $this->sendPost('/api/topologies', [
-            'name'    => 'Topology',
-            'descr'   => 'Topology',
-            'enabled' => TRUE,
-        ]);
+        $response = $this->sendPost(
+            '/api/topologies',
+            [
+                'name'    => 'Topology',
+                'descr'   => 'Topology',
+                'enabled' => TRUE,
+            ]
+        );
 
         self::assertEquals(200, $response->status);
         self::assertEquals('topology', $response->content->name);
@@ -95,11 +97,14 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             ->setDescr('Topology');
         $this->persistAndFlush($topology);
 
-        $response = $this->sendPut(sprintf('/api/topologies/%s', $topology->getId()), [
-            'name'    => 'Topology 2',
-            'descr'   => 'Topology 2',
-            'enabled' => TRUE,
-        ]);
+        $response = $this->sendPut(
+            sprintf('/api/topologies/%s', $topology->getId()),
+            [
+                'name'    => 'Topology 2',
+                'descr'   => 'Topology 2',
+                'enabled' => TRUE,
+            ]
+        );
 
         self::assertEquals(200, $response->status);
         self::assertEquals('topology-2', $response->content->name);
@@ -112,11 +117,14 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
      */
     public function testUpdateTopologyNotFound(): void
     {
-        $response = $this->sendPut(sprintf('/api/topologies/999'), [
-            'name'    => 'Topology 2',
-            'descr'   => 'Topology 2',
-            'enabled' => TRUE,
-        ]);
+        $response = $this->sendPut(
+            sprintf('/api/topologies/999'),
+            [
+                'name'    => 'Topology 2',
+                'descr'   => 'Topology 2',
+                'enabled' => TRUE,
+            ]
+        );
         $content  = $response->content;
 
         self::assertEquals(500, $response->status);
@@ -285,7 +293,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         $response = self::$client->getResponse();
         $response = (object) [
             'status'  => $response->getStatusCode(),
-            'content' => Json::decode($response->getContent()),
+            'content' => json_decode((string) $response->getContent()),
         ];
 
         self::assertEquals(400, $response->status);
@@ -391,33 +399,39 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetCronTopologies(): void
     {
-        $this->mockHandler('getCronTopologies', [
-            'items' => [
-                [
-                    'name'            => 'Topology-Node',
-                    'time'            => '*/1 * * * *',
-                    'topology_status' => TRUE,
-                    'topology_id'     => 'Topology ID',
-                    'topology'        => 'Topology',
-                    'node'            => 'Node',
+        $this->mockHandler(
+            'getCronTopologies',
+            [
+                'items' => [
+                    [
+                        'name'            => 'Topology-Node',
+                        'time'            => '*/1 * * * *',
+                        'topology_status' => TRUE,
+                        'topology_id'     => 'Topology ID',
+                        'topology'        => 'Topology',
+                        'node'            => 'Node',
+                    ],
                 ],
-            ],
-        ]);
+            ]
+        );
         $response = $this->sendGet('/api/topologies/cron');
 
         self::assertEquals(200, $response->status);
-        self::assertEquals((object) [
-            'items' => [
-                [
-                    'name'            => 'Topology-Node',
-                    'time'            => '*/1 * * * *',
-                    'topology_status' => TRUE,
-                    'topology_id'     => 'Topology ID',
-                    'topology'        => 'Topology',
-                    'node'            => 'Node',
+        self::assertEquals(
+            (object) [
+                'items' => [
+                    [
+                        'name'            => 'Topology-Node',
+                        'time'            => '*/1 * * * *',
+                        'topology_status' => TRUE,
+                        'topology_id'     => 'Topology ID',
+                        'topology'        => 'Topology',
+                        'node'            => 'Node',
+                    ],
                 ],
             ],
-        ], $response->content);
+            $response->content
+        );
     }
 
     /**
@@ -470,7 +484,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
      */
     private function getBpmnArray(): array
     {
-        return Json::decode(file_get_contents(sprintf('%s/data/schema.json', __DIR__)), Json::FORCE_ARRAY);
+        return json_decode((string) file_get_contents(sprintf('%s/data/schema.json', __DIR__)), TRUE);
     }
 
     /**

@@ -25,12 +25,14 @@ final class NotificationManagerTest extends KernelTestCaseAbstract
      */
     public function testReadSettings(): void
     {
-        $this->getManager(function (RequestDto $request): ResponseDto {
-            self::assertEquals(CurlManager::METHOD_GET, $request->getMethod());
-            self::assertEquals('http://example.com/notifications/settings', $request->getUri(TRUE));
+        $this->getManager(
+            function (RequestDto $request): ResponseDto {
+                self::assertEquals(CurlManager::METHOD_GET, $request->getMethod());
+                self::assertEquals('http://example.com/notifications/settings', $request->getUri(TRUE));
 
-            return new ResponseDto(200, 'OK', '', []);
-        })->getSettings();
+                return new ResponseDto(200, 'OK', '', []);
+            }
+        )->getSettings();
     }
 
     /**
@@ -38,12 +40,14 @@ final class NotificationManagerTest extends KernelTestCaseAbstract
      */
     public function testReadSetting(): void
     {
-        $this->getManager(function (RequestDto $request): ResponseDto {
-            self::assertEquals(CurlManager::METHOD_GET, $request->getMethod());
-            self::assertEquals('http://example.com/notifications/settings/id', $request->getUri(TRUE));
+        $this->getManager(
+            function (RequestDto $request): ResponseDto {
+                self::assertEquals(CurlManager::METHOD_GET, $request->getMethod());
+                self::assertEquals('http://example.com/notifications/settings/id', $request->getUri(TRUE));
 
-            return new ResponseDto(200, 'OK', '', []);
-        })->getSetting('id');
+                return new ResponseDto(200, 'OK', '', []);
+            }
+        )->getSetting('id');
     }
 
     /**
@@ -51,13 +55,15 @@ final class NotificationManagerTest extends KernelTestCaseAbstract
      */
     public function testUpdateSettings(): void
     {
-        $this->getManager(function (RequestDto $request): ResponseDto {
-            self::assertEquals(CurlManager::METHOD_PUT, $request->getMethod());
-            self::assertEquals('http://example.com/notifications/settings/id', $request->getUri(TRUE));
-            self::assertEquals('{"type":"Type"}', $request->getBody());
+        $this->getManager(
+            function (RequestDto $request): ResponseDto {
+                self::assertEquals(CurlManager::METHOD_PUT, $request->getMethod());
+                self::assertEquals('http://example.com/notifications/settings/id', $request->getUri(TRUE));
+                self::assertEquals('{"type":"Type"}', $request->getBody());
 
-            return new ResponseDto(200, 'OK', '', []);
-        })->updateSettings('id', ['type' => 'Type']);
+                return new ResponseDto(200, 'OK', '', []);
+            }
+        )->updateSettings('id', ['type' => 'Type']);
     }
 
     /**
@@ -69,14 +75,16 @@ final class NotificationManagerTest extends KernelTestCaseAbstract
         self::expectExceptionCode(NotificationException::NOTIFICATION_EXCEPTION);
         self::expectExceptionMessageMatches('#Notification API failed: .+#');
 
-        $this->getManager(function (RequestDto $request): void {
-            $request;
+        $this->getManager(
+            function (RequestDto $request): void {
+                $request;
 
-            throw new NotificationException(
-                'Client error: `GET http://example.com/notification_settings` resulted in a `404 Not Found` response: Response',
-                CurlException::REQUEST_FAILED
-            );
-        })->getSettings();
+                throw new NotificationException(
+                    'Client error: `GET http://example.com/notification_settings` resulted in a `404 Not Found` response: Response',
+                    CurlException::REQUEST_FAILED
+                );
+            }
+        )->getSettings();
     }
 
     /**

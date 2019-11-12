@@ -57,10 +57,13 @@ class NotificationController extends AbstractFOSRestController
      */
     public function updateSettingsAction(Request $request, string $id): Response
     {
-        return $this->forward('HbPFNotificationBundle:Notification:updateSettings', [
-            'request' => $request,
-            'id'      => $id,
-        ]);
+        return $this->forward(
+            'HbPFNotificationBundle:Notification:updateSettings',
+            [
+                'request' => $request,
+                'id'      => $id,
+            ]
+        );
     }
 
 }

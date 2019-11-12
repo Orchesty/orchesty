@@ -26,11 +26,14 @@ class WebhookController extends AbstractFOSRestController
      */
     public function subscribeWebhooksAction(Request $request, string $key, string $user): Response
     {
-        return $this->forward('HbPFApplicationBundle:Webhook:subscribeWebhooks', [
-            'request' => $request,
-            'key'     => $key,
-            'user'    => $user,
-        ]);
+        return $this->forward(
+            'HbPFApplicationBundle:Webhook:subscribeWebhooks',
+            [
+                'request' => $request,
+                'key'     => $key,
+                'user'    => $user,
+            ]
+        );
     }
 
     /**
@@ -44,11 +47,14 @@ class WebhookController extends AbstractFOSRestController
      */
     public function unsubscribeWebhooksAction(Request $request, string $key, string $user): Response
     {
-        return $this->forward('HbPFApplicationBundle:Webhook:unsubscribeWebhooks', [
-            'request' => $request,
-            'key'     => $key,
-            'user'    => $user,
-        ]);
+        return $this->forward(
+            'HbPFApplicationBundle:Webhook:unsubscribeWebhooks',
+            [
+                'request' => $request,
+                'key'     => $key,
+                'user'    => $user,
+            ]
+        );
     }
 
 }

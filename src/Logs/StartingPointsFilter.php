@@ -42,11 +42,13 @@ final class StartingPointsFilter extends GridFilterAbstract
         $this->searchQuery = $this
             ->getRepository()
             ->createQueryBuilder()
-            ->select([
-                Logs::PIPES_CORRELATION_ID,
-                Logs::PIPES_TOPOLOGY_ID,
-                Logs::PIPES_TOPOLOGY_NAME,
-            ])
+            ->select(
+                [
+                    Logs::PIPES_CORRELATION_ID,
+                    Logs::PIPES_TOPOLOGY_ID,
+                    Logs::PIPES_TOPOLOGY_NAME,
+                ]
+            )
             ->field(Logs::PIPES_TYPE)->equals('starting_point')
             ->sort(Logs::MONGO_ID, 'DESC');
     }

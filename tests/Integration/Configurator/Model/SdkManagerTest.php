@@ -69,10 +69,12 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
      */
     public function testCreate(): void
     {
-        $data = $this->manager->create([
-            Sdk::KEY   => 'Key',
-            Sdk::VALUE => 'Value',
-        ]);
+        $data = $this->manager->create(
+            [
+                Sdk::KEY   => 'Key',
+                Sdk::VALUE => 'Value',
+            ]
+        );
 
         $this->dm->clear();
         self::assertCount(1, $this->dm->getRepository(Sdk::class)->findAll());
@@ -86,10 +88,13 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
      */
     public function testUpdate(): void
     {
-        $data = $this->manager->update($this->createSdk('One'), [
-            Sdk::KEY   => 'Key',
-            Sdk::VALUE => 'Value',
-        ]);
+        $data = $this->manager->update(
+            $this->createSdk('One'),
+            [
+                Sdk::KEY   => 'Key',
+                Sdk::VALUE => 'Value',
+            ]
+        );
 
         $this->dm->clear();
         self::assertCount(1, $this->dm->getRepository(Sdk::class)->findAll());

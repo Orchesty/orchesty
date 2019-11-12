@@ -348,10 +348,12 @@ class CronManager
      */
     private function sendAndProcessRequest(RequestDto $dto): ResponseDto
     {
-        $dto->setHeaders([
-            'Accept'       => 'application/json',
-            'Content-Type' => 'application/json',
-        ]);
+        $dto->setHeaders(
+            [
+                'Accept'       => 'application/json',
+                'Content-Type' => 'application/json',
+            ]
+        );
 
         try {
             return $this->curlManager->send($dto);

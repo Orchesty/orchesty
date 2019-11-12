@@ -41,10 +41,14 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
         $this->setFakeData($topo, $node);
 
         $manager = $this->getManager();
-        $result  = $manager->getNodeMetrics($node, $topo, [
-            'from' => '-2 days',
-            'to'   => '+2 days',
-        ]);
+        $result  = $manager->getNodeMetrics(
+            $node,
+            $topo,
+            [
+                'from' => '-2 days',
+                'to'   => '+2 days',
+            ]
+        );
 
         self::assertTrue(is_array($result));
         self::assertCount(6, $result);
@@ -55,39 +59,42 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
         self::assertArrayHasKey(MongoMetricsManager::REQUEST_TIME, $result);
         self::assertArrayHasKey(MongoMetricsManager::PROCESS, $result);
 
-        self::assertEquals([
-            MongoMetricsManager::QUEUE_DEPTH  => [
-                'max' => '5',
-                'avg' => '0.00',
+        self::assertEquals(
+            [
+                MongoMetricsManager::QUEUE_DEPTH  => [
+                    'max' => '5',
+                    'avg' => '0.00',
+                ],
+                MongoMetricsManager::WAITING_TIME => [
+                    'max' => '5',
+                    'avg' => '2.50',
+                    'min' => '0',
+                ],
+                MongoMetricsManager::PROCESS_TIME => [
+                    'max' => '10',
+                    'avg' => '7.00',
+                    'min' => '4',
+                ],
+                MongoMetricsManager::CPU_TIME     => [
+                    'max' => '15',
+                    'avg' => '10.00',
+                    'min' => '5',
+                ],
+                MongoMetricsManager::REQUEST_TIME => [
+                    'max' => '15',
+                    'avg' => '10.00',
+                    'min' => '5',
+                ],
+                MongoMetricsManager::PROCESS      => [
+                    'max'    => '0',
+                    'avg'    => '0.00',
+                    'min'    => '0',
+                    'total'  => '2',
+                    'errors' => '1',
+                ],
             ],
-            MongoMetricsManager::WAITING_TIME => [
-                'max' => '5',
-                'avg' => '2.50',
-                'min' => '0',
-            ],
-            MongoMetricsManager::PROCESS_TIME => [
-                'max' => '10',
-                'avg' => '7.00',
-                'min' => '4',
-            ],
-            MongoMetricsManager::CPU_TIME     => [
-                'max' => '15',
-                'avg' => '10.00',
-                'min' => '5',
-            ],
-            MongoMetricsManager::REQUEST_TIME => [
-                'max' => '15',
-                'avg' => '10.00',
-                'min' => '5',
-            ],
-            MongoMetricsManager::PROCESS      => [
-                'max'    => '0',
-                'avg'    => '0.00',
-                'min'    => '0',
-                'total'  => '2',
-                'errors' => '1',
-            ],
-        ], $result);
+            $result
+        );
     }
 
     /**
@@ -109,10 +116,14 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
         $this->setMinimalFakeData($topo, $node);
 
         $manager = $this->getManager();
-        $result  = $manager->getNodeMetrics($node, $topo, [
-            'from' => '-2 days',
-            'to'   => '+2 days',
-        ]);
+        $result  = $manager->getNodeMetrics(
+            $node,
+            $topo,
+            [
+                'from' => '-2 days',
+                'to'   => '+2 days',
+            ]
+        );
 
         self::assertTrue(is_array($result));
         self::assertCount(6, $result);
@@ -123,39 +134,42 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
         self::assertArrayHasKey(MongoMetricsManager::REQUEST_TIME, $result);
         self::assertArrayHasKey(MongoMetricsManager::PROCESS, $result);
 
-        self::assertEquals([
-            MongoMetricsManager::QUEUE_DEPTH  => [
-                'max' => '3',
-                'avg' => '0.00',
+        self::assertEquals(
+            [
+                MongoMetricsManager::QUEUE_DEPTH  => [
+                    'max' => '3',
+                    'avg' => '0.00',
+                ],
+                MongoMetricsManager::WAITING_TIME => [
+                    'max' => '5',
+                    'avg' => '5.00',
+                    'min' => '5',
+                ],
+                MongoMetricsManager::PROCESS_TIME => [
+                    'max' => '10',
+                    'avg' => '10.00',
+                    'min' => '10',
+                ],
+                MongoMetricsManager::CPU_TIME     => [
+                    'max' => '15',
+                    'avg' => '15.00',
+                    'min' => '15',
+                ],
+                MongoMetricsManager::REQUEST_TIME => [
+                    'max' => '5',
+                    'avg' => '5.00',
+                    'min' => '5',
+                ],
+                MongoMetricsManager::PROCESS      => [
+                    'max'    => '0',
+                    'avg'    => '0.00',
+                    'min'    => '0',
+                    'total'  => '1',
+                    'errors' => '0',
+                ],
             ],
-            MongoMetricsManager::WAITING_TIME => [
-                'max' => '5',
-                'avg' => '5.00',
-                'min' => '5',
-            ],
-            MongoMetricsManager::PROCESS_TIME => [
-                'max' => '10',
-                'avg' => '10.00',
-                'min' => '10',
-            ],
-            MongoMetricsManager::CPU_TIME     => [
-                'max' => '15',
-                'avg' => '15.00',
-                'min' => '15',
-            ],
-            MongoMetricsManager::REQUEST_TIME => [
-                'max' => '5',
-                'avg' => '5.00',
-                'min' => '5',
-            ],
-            MongoMetricsManager::PROCESS      => [
-                'max'    => '0',
-                'avg'    => '0.00',
-                'min'    => '0',
-                'total'  => '1',
-                'errors' => '0',
-            ],
-        ], $result);
+            $result
+        );
     }
 
     /**
@@ -175,10 +189,14 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
         $node = $this->createNode($topo);
 
         $manager = $this->getManager();
-        $result  = $manager->getNodeMetrics($node, $topo, [
-            'from' => '-2 days',
-            'to'   => '+2 days',
-        ]);
+        $result  = $manager->getNodeMetrics(
+            $node,
+            $topo,
+            [
+                'from' => '-2 days',
+                'to'   => '+2 days',
+            ]
+        );
 
         self::assertTrue(is_array($result));
         self::assertCount(6, $result);
@@ -189,39 +207,42 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
         self::assertArrayHasKey(MongoMetricsManager::REQUEST_TIME, $result);
         self::assertArrayHasKey(MongoMetricsManager::PROCESS, $result);
 
-        self::assertEquals([
-            MongoMetricsManager::QUEUE_DEPTH  => [
-                'max' => '0',
-                'avg' => '0.00',
+        self::assertEquals(
+            [
+                MongoMetricsManager::QUEUE_DEPTH  => [
+                    'max' => '0',
+                    'avg' => '0.00',
+                ],
+                MongoMetricsManager::WAITING_TIME => [
+                    'max' => '0',
+                    'avg' => '0.00',
+                    'min' => '0',
+                ],
+                MongoMetricsManager::PROCESS_TIME => [
+                    'max' => '0',
+                    'avg' => '0.00',
+                    'min' => '0',
+                ],
+                MongoMetricsManager::CPU_TIME     => [
+                    'max' => '0',
+                    'avg' => '0.00',
+                    'min' => '0',
+                ],
+                MongoMetricsManager::REQUEST_TIME => [
+                    'max' => '0',
+                    'avg' => 'n/a',
+                    'min' => '0',
+                ],
+                MongoMetricsManager::PROCESS      => [
+                    'max'    => '0',
+                    'avg'    => '0.00',
+                    'min'    => '0',
+                    'total'  => '0',
+                    'errors' => '0',
+                ],
             ],
-            MongoMetricsManager::WAITING_TIME => [
-                'max' => '0',
-                'avg' => '0.00',
-                'min' => '0',
-            ],
-            MongoMetricsManager::PROCESS_TIME => [
-                'max' => '0',
-                'avg' => '0.00',
-                'min' => '0',
-            ],
-            MongoMetricsManager::CPU_TIME     => [
-                'max' => '0',
-                'avg' => '0.00',
-                'min' => '0',
-            ],
-            MongoMetricsManager::REQUEST_TIME => [
-                'max' => '0',
-                'avg' => 'n/a',
-                'min' => '0',
-            ],
-            MongoMetricsManager::PROCESS      => [
-                'max'    => '0',
-                'avg'    => '0.00',
-                'min'    => '0',
-                'total'  => '0',
-                'errors' => '0',
-            ],
-        ], $result);
+            $result
+        );
     }
 
     /**
@@ -239,24 +260,30 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
         $this->setFakeData($topo, $nodeThree);
 
         $manager = $this->getManager();
-        $result  = $manager->getTopologyMetrics($topo, [
-            'from' => '-2 days',
-            'to'   => '+2 days',
-        ]);
+        $result  = $manager->getTopologyMetrics(
+            $topo,
+            [
+                'from' => '-2 days',
+                'to'   => '+2 days',
+            ]
+        );
 
         self::assertTrue(is_array($result));
         self::assertCount(4, $result);
-        self::assertEquals([
-            MongoMetricsManager::PROCESS_TIME => [
-                'min' => '2',
-                'avg' => '2.00',
-                'max' => '2',
+        self::assertEquals(
+            [
+                MongoMetricsManager::PROCESS_TIME => [
+                    'min' => '2',
+                    'avg' => '2.00',
+                    'max' => '2',
+                ],
+                MongoMetricsManager::PROCESS      => [
+                    'total'  => '6',
+                    'errors' => '3',
+                ],
             ],
-            MongoMetricsManager::PROCESS      => [
-                'total'  => '6',
-                'errors' => '3',
-            ],
-        ], $result['topology']);
+            $result['topology']
+        );
         self::assertArrayHasKey($node->getId(), $result);
         $result = $result[$node->getId()];
 
@@ -281,24 +308,30 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
         $this->setMinimalFakeData($topo, $node);
 
         $manager = $this->getManager();
-        $result  = $manager->getTopologyMetrics($topo, [
-            'from' => '-2 days',
-            'to'   => '+2 days',
-        ]);
+        $result  = $manager->getTopologyMetrics(
+            $topo,
+            [
+                'from' => '-2 days',
+                'to'   => '+2 days',
+            ]
+        );
 
         self::assertTrue(is_array($result));
         self::assertCount(2, $result);
-        self::assertEquals([
-            MongoMetricsManager::PROCESS_TIME => [
-                'min' => '2',
-                'avg' => '2.00',
-                'max' => '2',
+        self::assertEquals(
+            [
+                MongoMetricsManager::PROCESS_TIME => [
+                    'min' => '2',
+                    'avg' => '2.00',
+                    'max' => '2',
+                ],
+                MongoMetricsManager::PROCESS      => [
+                    'total'  => '1',
+                    'errors' => '0',
+                ],
             ],
-            MongoMetricsManager::PROCESS      => [
-                'total'  => '1',
-                'errors' => '0',
-            ],
-        ], $result['topology']);
+            $result['topology']
+        );
         self::assertArrayHasKey($node->getId(), $result);
     }
 
@@ -310,24 +343,30 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
         $topo = $this->createTopo();
 
         $manager = $this->getManager();
-        $result  = $manager->getTopologyMetrics($topo, [
-            'from' => '-2 days',
-            'to'   => '+2 days',
-        ]);
+        $result  = $manager->getTopologyMetrics(
+            $topo,
+            [
+                'from' => '-2 days',
+                'to'   => '+2 days',
+            ]
+        );
 
         self::assertTrue(is_array($result));
         self::assertCount(1, $result);
-        self::assertEquals([
-            MongoMetricsManager::PROCESS_TIME => [
-                'min' => '0',
-                'avg' => '0.00',
-                'max' => '0',
+        self::assertEquals(
+            [
+                MongoMetricsManager::PROCESS_TIME => [
+                    'min' => '0',
+                    'avg' => '0.00',
+                    'max' => '0',
+                ],
+                MongoMetricsManager::PROCESS      => [
+                    'total'  => '0',
+                    'errors' => '0',
+                ],
             ],
-            MongoMetricsManager::PROCESS      => [
-                'total'  => '0',
-                'errors' => '0',
-            ],
-        ], $result['topology']);
+            $result['topology']
+        );
     }
 
     /**
@@ -343,10 +382,13 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
         $this->setFakeData($topo, $this->createNode($topo), '+2 days');
 
         $manager = $this->getManager();
-        $result  = $manager->getTopologyRequestCountMetrics($topo, [
-            'from' => '-10 day',
-            'to'   => '+10 day',
-        ]);
+        $result  = $manager->getTopologyRequestCountMetrics(
+            $topo,
+            [
+                'from' => '-10 day',
+                'to'   => '+10 day',
+            ]
+        );
 
         self::assertTrue(is_array($result));
         self::assertCount(5, $result);
@@ -365,10 +407,13 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
         $this->setMinimalFakeData($topo, $node);
 
         $manager = $this->getManager();
-        $result  = $manager->getTopologyRequestCountMetrics($topo, [
-            'from' => '-10 day',
-            'to'   => '+10 day',
-        ]);
+        $result  = $manager->getTopologyRequestCountMetrics(
+            $topo,
+            [
+                'from' => '-10 day',
+                'to'   => '+10 day',
+            ]
+        );
 
         self::assertTrue(is_array($result));
         self::assertCount(3, $result);
@@ -385,10 +430,13 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
         $this->createNode($topo);
 
         $manager = $this->getManager();
-        $result  = $manager->getTopologyRequestCountMetrics($topo, [
-            'from' => '-10 day',
-            'to'   => '+10 day',
-        ]);
+        $result  = $manager->getTopologyRequestCountMetrics(
+            $topo,
+            [
+                'from' => '-10 day',
+                'to'   => '+10 day',
+            ]
+        );
 
         self::assertTrue(is_array($result));
         self::assertCount(3, $result);

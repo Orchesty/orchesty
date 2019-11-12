@@ -20,9 +20,13 @@ class StringUtil
      */
     public static function toCamelCase(string $string, bool $firstLower = FALSE): string
     {
-        $camelCase = Strings::replace($string, '#(\.\w|_\w)#', function ($matches) {
-            return Strings::firstUpper(Strings::substring($matches[0], 1));
-        });
+        $camelCase = Strings::replace(
+            $string,
+            '#(\.\w|_\w)#',
+            function ($matches) {
+                return Strings::firstUpper(Strings::substring($matches[0], 1));
+            }
+        );
 
         if ($firstLower === TRUE) {
             return Strings::firstLower($camelCase);

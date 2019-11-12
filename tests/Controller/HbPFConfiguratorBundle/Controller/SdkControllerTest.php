@@ -77,10 +77,14 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
      */
     public function testCreate(): void
     {
-        self::$client->request('POST', '/api/sdks', [
-            Sdk::KEY   => 'Key',
-            Sdk::VALUE => 'Value',
-        ]);
+        self::$client->request(
+            'POST',
+            '/api/sdks',
+            [
+                Sdk::KEY   => 'Key',
+                Sdk::VALUE => 'Value',
+            ]
+        );
 
         /** @var JsonResponse $response */
         $response = self::$client->getResponse();
@@ -101,10 +105,14 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
      */
     public function testUpdate(): void
     {
-        self::$client->request('PUT', sprintf('/api/sdks/%s', $this->createSdk('One')->getId()), [
-            Sdk::KEY   => 'Key',
-            Sdk::VALUE => 'Value',
-        ]);
+        self::$client->request(
+            'PUT',
+            sprintf('/api/sdks/%s', $this->createSdk('One')->getId()),
+            [
+                Sdk::KEY   => 'Key',
+                Sdk::VALUE => 'Value',
+            ]
+        );
 
         /** @var JsonResponse $response */
         $response = self::$client->getResponse();

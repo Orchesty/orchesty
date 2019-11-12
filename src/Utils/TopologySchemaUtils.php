@@ -84,7 +84,7 @@ class TopologySchemaUtils
             $outgoing     = self::OUTGOING;
             $incoming     = self::INCOMING;
             $sequenceFlow = self::SEQUENCE_FLOW;
-        } elseif (isset($data[self::BPMN_PROCESS])) {
+        } else if (isset($data[self::BPMN_PROCESS])) {
             $processes    = $data[self::BPMN_PROCESS];
             $handlers     = self::$bpmnHandlers;
             $outgoing     = self::BPMN_OUTGOING;

@@ -237,7 +237,8 @@ class TopologyHandler
             $this->manager->unPublishTopology($topology);
 
             return new ResponseDto(
-                400, '',
+                400,
+                '',
                 (string) json_encode(
                     [
                         'generate_result' => $generateResultBody,

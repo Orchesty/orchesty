@@ -30,30 +30,37 @@ final class MongoDbLogsTest extends DatabaseTestCaseAbstract
     {
         $this->prepareData();
 
-        $result = self::$container->get('hbpf.mongodb.logs')->getData(new GridRequestDto([
-            'filter' => '{"correlation_id":"Correlation ID 5"}',
-        ]));
-
-        self::assertEquals([
-            'limit'  => 10,
-            'offset' => 0,
-            'count'  => 1,
-            'total'  => 1,
-            'items'  => [
+        $result = self::$container->get('hbpf.mongodb.logs')->getData(
+            new GridRequestDto(
                 [
-                    'id'             => $result['items'][0]['id'],
-                    'severity'       => 'ERROR',
-                    'message'        => 'Message 5',
-                    'type'           => 'starting_point',
-                    'correlation_id' => 'Correlation ID 5',
-                    'topology_id'    => 'Topology ID 5',
-                    'topology_name'  => 'Topology Name 5',
-                    'node_id'        => $result['items'][0]['node_id'],
-                    'node_name'      => 'Node',
-                    'timestamp'      => $result['items'][0]['timestamp'],
+                    'filter' => '{"correlation_id":"Correlation ID 5"}',
+                ]
+            )
+        );
+
+        self::assertEquals(
+            [
+                'limit'  => 10,
+                'offset' => 0,
+                'count'  => 1,
+                'total'  => 1,
+                'items'  => [
+                    [
+                        'id'             => $result['items'][0]['id'],
+                        'severity'       => 'ERROR',
+                        'message'        => 'Message 5',
+                        'type'           => 'starting_point',
+                        'correlation_id' => 'Correlation ID 5',
+                        'topology_id'    => 'Topology ID 5',
+                        'topology_name'  => 'Topology Name 5',
+                        'node_id'        => $result['items'][0]['node_id'],
+                        'node_name'      => 'Node',
+                        'timestamp'      => $result['items'][0]['timestamp'],
+                    ],
                 ],
             ],
-        ], $result);
+            $result
+        );
     }
 
     /**

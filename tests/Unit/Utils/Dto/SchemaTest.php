@@ -91,17 +91,21 @@ final class SchemaTest extends TestCase
      */
     private function getExpected(): string
     {
-        return md5(Json::encode([
-            0 => 'cleverconnectors-create-subscriptions-connector:connector',
-            1 => 'cleverconnectors-delete-subscriptions-connector:connector',
-            2 => 'cleverconnectors-update-subscriptions-connector:connector',
-            3 => 'hubspot-created-contact-mapper:custom',
-            4 => 'hubspot-deleted-contact-mapper:custom',
-            5 => 'hubspot-get-contact-connector:connector',
-            6 => 'hubspot-updated-contact-connector:webhook',
-            7 => 'hubspot-updated-contact-mapper:custom',
-            8 => 'universal-splitter:splitter',
-        ]));
+        return md5(
+            Json::encode(
+                [
+                    0 => 'cleverconnectors-create-subscriptions-connector:connector',
+                    1 => 'cleverconnectors-delete-subscriptions-connector:connector',
+                    2 => 'cleverconnectors-update-subscriptions-connector:connector',
+                    3 => 'hubspot-created-contact-mapper:custom',
+                    4 => 'hubspot-deleted-contact-mapper:custom',
+                    5 => 'hubspot-get-contact-connector:connector',
+                    6 => 'hubspot-updated-contact-connector:webhook',
+                    7 => 'hubspot-updated-contact-mapper:custom',
+                    8 => 'universal-splitter:splitter',
+                ]
+            )
+        );
     }
 
     /**

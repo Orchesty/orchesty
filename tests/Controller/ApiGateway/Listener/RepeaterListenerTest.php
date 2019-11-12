@@ -89,17 +89,22 @@ final class RepeaterListenerTest extends ControllerTestCaseAbstract
         /** @var Response $response */
         $response = $eventMock->getResponse();
 
-        self::assertEquals(0, (int) $response->headers->get(
-            PipesHeaders::createKey(PipesHeaders::REPEAT_INTERVAL)
-        ));
+        self::assertEquals(
+            0,
+            (int) $response->headers->get(
+                PipesHeaders::createKey(PipesHeaders::REPEAT_INTERVAL)
+            )
+        );
 
         self::assertArrayNotHasKey(
             PipesHeaders::createKey(PipesHeaders::REPEAT_MAX_HOPS),
-            $response->headers->all());
+            $response->headers->all()
+        );
 
         self::assertArrayHasKey(
             PipesHeaders::createKey(PipesHeaders::REPEAT_HOPS),
-            $response->headers->all());
+            $response->headers->all()
+        );
 
         self::assertEquals(200, $response->getStatusCode());
     }

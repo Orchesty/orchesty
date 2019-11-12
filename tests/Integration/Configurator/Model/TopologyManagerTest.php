@@ -257,13 +257,13 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         foreach ($nodes as $node) {
             if ($node->getName() == 'node1') {
                 self::assertNodeAfterClone($node1, $node, $res, 1);
-            } elseif ($node->getName() == 'node2') {
+            } else if ($node->getName() == 'node2') {
                 self::assertNodeAfterClone($node2, $node, $res, 2);
-            } elseif ($node->getName() == 'node3') {
+            } else if ($node->getName() == 'node3') {
                 self::assertNodeAfterClone($node3, $node, $res, 0);
-            } elseif ($node->getName() == 'node4') {
+            } else if ($node->getName() == 'node4') {
                 self::assertNodeAfterClone($node4, $node, $res, 1);
-            } elseif ($node->getName() == 'node5') {
+            } else if ($node->getName() == 'node5') {
                 self::assertNodeAfterClone($node5, $node, $res, 0);
             }
         }
@@ -296,7 +296,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         if ($nextCount == 1) {
             self::assertFalse($expNext[0]->getId() == $actNext[0]->getId());
             self::assertEquals($expNext[0]->getName(), $actNext[0]->getName());
-        } elseif ($nextCount == 2) {
+        } else if ($nextCount == 2) {
             self::assertFalse($expNext[0]->getId() == $actNext[0]->getId());
             self::assertEquals($expNext[0]->getName(), $actNext[0]->getName());
             self::assertEquals($expNext[1]->getName(), $actNext[1]->getName());
@@ -573,10 +573,14 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
 
         $manager->deleteTopology($top);
         $this->dm->clear();
-        self::assertEmpty($this->dm->getRepository(Topology::class)->findBy([
-            'id'      => $top->getId(),
-            'deleted' => FALSE,
-        ]));
+        self::assertEmpty(
+            $this->dm->getRepository(Topology::class)->findBy(
+                [
+                    'id'      => $top->getId(),
+                    'deleted' => FALSE,
+                ]
+            )
+        );
         self::assertEmpty($this->dm->getRepository(Node::class)->findBy(['id' => $node->getId(), 'deleted' => FALSE]));
         self::assertEmpty($this->dm->getRepository(Node::class)->findBy(['id' => $node2->getId(), 'deleted' => FALSE]));
     }
@@ -612,31 +616,34 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $this->setProperty($manager, 'cronManager', $cronManager);
         $topologies = $manager->getCronTopologies();
 
-        self::assertEquals([
+        self::assertEquals(
             [
-                'topology' => [
-                    'id'      => $topologies[0]['topology']['id'],
-                    'name'    => 'Topology',
-                    'status'  => TRUE,
-                    'version' => 1,
+                [
+                    'topology' => [
+                        'id'      => $topologies[0]['topology']['id'],
+                        'name'    => 'Topology',
+                        'status'  => TRUE,
+                        'version' => 1,
+                    ],
+                    'node'     => [
+                        'name' => 'Node',
+                    ],
+                    'time'     => '*/1 * * * *',
+                ], [
+                    'topology' => [
+                        'id'      => $topologies[1]['topology']['id'],
+                        'name'    => 'Topology',
+                        'status'  => FALSE,
+                        'version' => 2,
+                    ],
+                    'node'     => [
+                        'name' => 'Node',
+                    ],
+                    'time'     => '*/1 * * * *',
                 ],
-                'node'     => [
-                    'name' => 'Node',
-                ],
-                'time'     => '*/1 * * * *',
-            ], [
-                'topology' => [
-                    'id'      => $topologies[1]['topology']['id'],
-                    'name'    => 'Topology',
-                    'status'  => FALSE,
-                    'version' => 2,
-                ],
-                'node'     => [
-                    'name' => 'Node',
-                ],
-                'time'     => '*/1 * * * *',
             ],
-        ], $topologies);
+            $topologies
+        );
     }
 
     /**

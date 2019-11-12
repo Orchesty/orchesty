@@ -25,8 +25,10 @@ class LongRunningNodeController extends AbstractFOSRestController
      */
     public function processAction(Request $request, string $nodeId): Response
     {
-        return $this->forward('HbPFLongRunningNodeBundle:LongRunningNode:process',
-            ['request' => $request, 'nodeId' => $nodeId]);
+        return $this->forward(
+            'HbPFLongRunningNodeBundle:LongRunningNode:process',
+            ['request' => $request, 'nodeId' => $nodeId]
+        );
     }
 
     /**
@@ -50,8 +52,10 @@ class LongRunningNodeController extends AbstractFOSRestController
      */
     public function getTasksByAction(string $topo): Response
     {
-        return $this->forward('HbPFLongRunningNodeBundle:LongRunningNode:getTasksById',
-            ['topo' => $topo]);
+        return $this->forward(
+            'HbPFLongRunningNodeBundle:LongRunningNode:getTasksById',
+            ['topo' => $topo]
+        );
     }
 
     /**
@@ -63,8 +67,10 @@ class LongRunningNodeController extends AbstractFOSRestController
      */
     public function getTasksAction(string $topo): Response
     {
-        return $this->forward('HbPFLongRunningNodeBundle:LongRunningNode:getTasks',
-            ['topo' => $topo]);
+        return $this->forward(
+            'HbPFLongRunningNodeBundle:LongRunningNode:getTasks',
+            ['topo' => $topo]
+        );
     }
 
     /**
@@ -77,8 +83,10 @@ class LongRunningNodeController extends AbstractFOSRestController
      */
     public function getNodeTasksByIdAction(string $topo, string $node): Response
     {
-        return $this->forward('HbPFLongRunningNodeBundle:LongRunningNode:getNodeTasksById',
-            ['topo' => $topo, 'node' => $node]);
+        return $this->forward(
+            'HbPFLongRunningNodeBundle:LongRunningNode:getNodeTasksById',
+            ['topo' => $topo, 'node' => $node]
+        );
     }
 
     /**
@@ -91,8 +99,10 @@ class LongRunningNodeController extends AbstractFOSRestController
      */
     public function getNodeTasksAction(string $topo, string $node): Response
     {
-        return $this->forward('HbPFLongRunningNodeBundle:LongRunningNode:getNodeTasks',
-            ['topo' => $topo, 'node' => $node]);
+        return $this->forward(
+            'HbPFLongRunningNodeBundle:LongRunningNode:getNodeTasks',
+            ['topo' => $topo, 'node' => $node]
+        );
     }
 
     /**
@@ -105,10 +115,13 @@ class LongRunningNodeController extends AbstractFOSRestController
      */
     public function updateLongRunningAction(Request $request, string $id): Response
     {
-        return $this->forward('HbPFLongRunningNodeBundle:LongRunningNode:updateLongRunning', [
-            'request' => $request,
-            'id'      => $id,
-        ]);
+        return $this->forward(
+            'HbPFLongRunningNodeBundle:LongRunningNode:updateLongRunning',
+            [
+                'request' => $request,
+                'id'      => $id,
+            ]
+        );
     }
 
 }
