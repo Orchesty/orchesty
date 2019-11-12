@@ -15,7 +15,7 @@ final class TemporaryTest extends KernelTestCaseAbstract
      */
     public function testBasic(): void
     {
-          self::assertCount(0,[]);
+        self::assertCount(0, []);
     }
 
 }

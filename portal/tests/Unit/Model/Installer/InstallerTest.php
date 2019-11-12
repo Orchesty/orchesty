@@ -32,38 +32,57 @@ final class InstallerTest extends TestCase
     public function testCreateArray(): void
     {
         $installer = new Installer();
-        $dto = new DataTransport();
+        $dto       = new DataTransport();
 
         $secondaryArray = $this->getSecondaryKeysSorted();
         $primaryArray   = $this->getPrimaryKeys();
 
-        $secondaryArray = $this->createTestArray($dto->getLog(), $dto->getMetric(), $dto->getDatabase(),
-            $secondaryArray);
+        $secondaryArray = $this->createTestArray(
+            $dto->getLog(),
+            $dto->getMetric(),
+            $dto->getDatabase(),
+            $secondaryArray
+        );
 
         $array          = $installer->createArray($dto);
         $installerArray = $array[0];
 
-        file_put_contents(sprintf('%s/docker-compose.yml',__DIR__),$installer->createInstaller($dto));
+        file_put_contents(sprintf('%s/docker-compose.yml', __DIR__), $installer->createInstaller($dto));
         foreach ($primaryArray as $value) {
             self::assertArrayHasKey($value, $installerArray, sprintf('%s is missing in prime keys', $value));
         }
 
         foreach ($secondaryArray as $value) {
-            self::assertArrayHasKey($value, $installerArray['services'],
-                sprintf('%s is missing in secondary keys', $value));
+            self::assertArrayHasKey(
+                $value,
+                $installerArray['services'],
+                sprintf('%s is missing in secondary keys', $value)
+            );
         }
 
         foreach ($installerArray['services'] as $key => $service) {
             self::assertArrayHasKey(self::IMAGE, $service, sprintf('%s is missing the %s key', $key, self::IMAGE));
         }
 
-        self::assertEquals(count($installerArray), count($primaryArray),
-            sprintf('The amount of prime keys (%d) is different from the required amount (%d)', count($installerArray),
-                count($primaryArray)));
+        self::assertEquals(
+            count($installerArray),
+            count($primaryArray),
+            sprintf(
+                'The amount of prime keys (%d) is different from the required amount (%d)',
+                count($installerArray),
+                count($primaryArray)
+            )
+        );
 
-        self::assertEquals(count($installerArray['services']), count($secondaryArray),
-            sprintf('The amount of secondary keys (%d) is different from the required amount (%d)',
-                count($installerArray['services']), count($secondaryArray)));
+        self::assertEquals(
+            count($installerArray['services']),
+            count($secondaryArray),
+            sprintf(
+                'The amount of secondary keys (%d) is different from the required amount (%d)',
+                count($installerArray['services']),
+                count($secondaryArray)
+            )
+        );
 
     }
 
@@ -142,7 +161,7 @@ final class InstallerTest extends TestCase
         if ($valueMetric === Installer::INFLUXDB) {
             $newArray[] = $array['metrics'];
 
-        } elseif ($valueMetric === Installer::MONGO) {
+        } else if ($valueMetric === Installer::MONGO) {
 
             $keys = [Installer::INFLUXDB, Installer::KAPACITOR];
             foreach ($keys as $key) {

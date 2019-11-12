@@ -24,11 +24,13 @@ final class PortalController extends AbstractFOSRestController
      */
     public function indexAction(): Response
     {
-        return $this->getResponse([
-            'name'    => 'portal',
-            'version' => '1.0.0',
-            'status'  => 'OK',
-        ]);
+        return $this->getResponse(
+            [
+                'name'    => 'portal',
+                'version' => '1.0.0',
+                'status'  => 'OK',
+            ]
+        );
     }
 
 }

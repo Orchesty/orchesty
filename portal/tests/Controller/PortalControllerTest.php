@@ -20,11 +20,12 @@ final class PortalControllerTest extends ControllerTestCaseAbstract
         $response = $this->sendGet('/');
 
         $this->assertEquals(200, $response->getStatus());
-        $this->assertEquals([
-            'name'    => 'portal',
-            'version' => '1.0.0',
-            'status'  => 'OK',
-        ],
+        $this->assertEquals(
+            [
+                'name'    => 'portal',
+                'version' => '1.0.0',
+                'status'  => 'OK',
+            ],
             $response->getContent()
         );
     }

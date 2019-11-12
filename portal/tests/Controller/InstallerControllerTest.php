@@ -18,23 +18,32 @@ final class InstallerControllerTest extends ControllerTestCaseAbstract
      */
     public function testInstaller(): void
     {
-        $response1 = $this->sendPost('/installer', [
-            'first'  => Installer::LOGSTASH,
-            'second' => Installer::INFLUXDB,
-            'third'  => FALSE,
-        ]);
+        $response1 = $this->sendPost(
+            '/installer',
+            [
+                'first'  => Installer::LOGSTASH,
+                'second' => Installer::INFLUXDB,
+                'third'  => FALSE,
+            ]
+        );
 
-        $response2 = $this->sendPost('/installer', [
-            'first'  => Installer::ELASTICSEARCH,
-            'second' => Installer::MONGO,
-            'third'  => TRUE,
-        ]);
+        $response2 = $this->sendPost(
+            '/installer',
+            [
+                'first'  => Installer::ELASTICSEARCH,
+                'second' => Installer::MONGO,
+                'third'  => TRUE,
+            ]
+        );
 
-        $response3 = $this->sendPost('/installer', [
-            'first'  => 'xx',
-            'second'  => 'yy',
-            'third'  => TRUE,
-        ]);
+        $response3 = $this->sendPost(
+            '/installer',
+            [
+                'first'  => 'xx',
+                'second' => 'yy',
+                'third'  => TRUE,
+            ]
+        );
 
         $this->assertEquals(200, $response1->getStatus());
         $this->assertEquals($this->getInstallerLogstashInfluxFalse(), $response1->getContent()['message']);
@@ -45,7 +54,6 @@ final class InstallerControllerTest extends ControllerTestCaseAbstract
         $this->assertEquals(200, $response3->getStatus());
         $this->assertEquals('Insert correct value to log', $response3->getContent()['message']);
     }
-
 
     /**
      * it was not possible to load required string from installer.yaml due to white space differences, the required string is in this method
@@ -254,7 +262,6 @@ networks:
                 name: pipes_default
 ';
     }
-
 
     /**
      * it was not possible to load required string from installer.yaml due to white space differences, the required string is in this method

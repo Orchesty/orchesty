@@ -85,7 +85,8 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
         string $url,
         array $parameters = [],
         array $headers = [],
-        array $files = []): ControllerResponse
+        array $files = []
+    ): ControllerResponse
     {
         self::$client->request('PUT', $url, $parameters, $files, $headers);
         /** @var Response $response */

@@ -688,7 +688,7 @@ class Installer
         if ($dto->getMetric() === self::INFLUXDB) {
 
             $array = array_merge($array, $this->$metricsName['metrics']);
-        } elseif ($dto->getMetric() === self::MONGO) {
+        } else if ($dto->getMetric() === self::MONGO) {
 
             $keys = [self::INFLUXDB, self::KAPACITOR];
             foreach ($keys as $key) {
