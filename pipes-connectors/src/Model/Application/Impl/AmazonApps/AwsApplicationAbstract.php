@@ -78,10 +78,13 @@ abstract class AwsApplicationAbstract extends BasicApplicationAbstract
         $data;
         $method;
 
-        throw new LogicException(sprintf(
-            "Method '%s' is not supported! Use '%s' instead!",
-            __METHOD__,
-            str_replace('getRequestDto', 'getConnection', __METHOD__)));
+        throw new LogicException(
+            sprintf(
+                "Method '%s' is not supported! Use '%s' instead!",
+                __METHOD__,
+                str_replace('getRequestDto', 'getConnection', __METHOD__)
+            )
+        );
     }
 
 }

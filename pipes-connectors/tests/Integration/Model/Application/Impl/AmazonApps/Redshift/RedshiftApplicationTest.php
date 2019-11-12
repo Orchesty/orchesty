@@ -36,14 +36,16 @@ final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
      */
     public function testIsAuthorized(): void
     {
-        $application = (new ApplicationInstall())->setSettings([
-            BasicApplicationAbstract::FORM => [
-                RedshiftApplication::KEY         => 'Key',
-                RedshiftApplication::SECRET      => 'Secret',
-                RedshiftApplication::REGION      => 'eu-central-1',
-                RedshiftApplication::DB_PASSWORD => 'dbPasswd',
-            ],
-        ]);
+        $application = (new ApplicationInstall())->setSettings(
+            [
+                BasicApplicationAbstract::FORM => [
+                    RedshiftApplication::KEY         => 'Key',
+                    RedshiftApplication::SECRET      => 'Secret',
+                    RedshiftApplication::REGION      => 'eu-central-1',
+                    RedshiftApplication::DB_PASSWORD => 'dbPasswd',
+                ],
+            ]
+        );
 
         $this->dm->persist($application);
         $this->dm->flush();

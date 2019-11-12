@@ -88,10 +88,12 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
         $this->applicationManager->installApplication('something', 'example3');
 
         $repository = $this->dm->getRepository(ApplicationInstall::class);
-        $app        = $repository->findOneBy([
-            ApplicationInstall::USER => 'example3',
-            ApplicationInstall::KEY  => 'something',
-        ]);
+        $app        = $repository->findOneBy(
+            [
+                ApplicationInstall::USER => 'example3',
+                ApplicationInstall::KEY  => 'something',
+            ]
+        );
 
         self::assertIsObject($app);
     }
@@ -123,8 +125,10 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
         /** @var ApplicationInstall $app */
         $app = $repository->findOneBy(['key' => 'null']);
 
-        self::assertEquals('password123',
-            $app->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS]['password']);
+        self::assertEquals(
+            'password123',
+            $app->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS]['password']
+        );
     }
 
     /**

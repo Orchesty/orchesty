@@ -57,11 +57,15 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
             ->getMock();
 
         $handler->method('subscribeWebhooks')
-            ->willReturnCallback(function (): void {
-            });
+            ->willReturnCallback(
+                function (): void {
+                }
+            );
         $handler->method('unsubscribeWebhooks')
-            ->willReturnCallback(function (): void {
-            });
+            ->willReturnCallback(
+                function (): void {
+                }
+            );
 
         /** @var ContainerInterface $container */
         $container = self::$client->getContainer();

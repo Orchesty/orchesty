@@ -30,8 +30,8 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
             $app->getKey(),
             'user',
             'token123',
-            self::CLIENT_ID,
-            );
+            self::CLIENT_ID
+        );
         $this->pf($applicationInstall);
         $app->authorize($applicationInstall);
     }
@@ -47,27 +47,33 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
             'user',
             'fa830d8d4308625bac307906e83de659'
         );
-        $applicationInstall->setSettings([
-            ApplicationAbstract::FORM          => [MailchimpApplication::AUDIENCE_ID => 'c9e7f10c5b'],
-            MailchimpApplication::API_KEYPOINT => $application->getApiEndpoint($applicationInstall),
-        ]);
+        $applicationInstall->setSettings(
+            [
+                ApplicationAbstract::FORM          => [MailchimpApplication::AUDIENCE_ID => 'c9e7f10c5b'],
+                MailchimpApplication::API_KEYPOINT => $application->getApiEndpoint($applicationInstall),
+            ]
+        );
 
         $subscription = new WebhookSubscription('test', 'node', 'xxx', ['name' => 0]);
 
         $request = $application->getWebhookSubscribeRequestDto(
             $applicationInstall,
             $subscription,
-            sprintf('%s/webhook/topologies/%s/nodes/%s/token/%s',
+            sprintf(
+                '%s/webhook/topologies/%s/nodes/%s/token/%s',
                 rtrim('www.xx.cz', '/'),
                 $subscription->getTopology(),
                 $subscription->getNode(),
-                bin2hex(random_bytes(25)))
+                bin2hex(random_bytes(25))
+            )
         );
         self::assertEquals(
             $request->getUriString(),
-            sprintf('%s/3.0/lists/%s/webhooks',
+            sprintf(
+                '%s/3.0/lists/%s/webhooks',
                 $applicationInstall->getSettings()[MailchimpApplication::API_KEYPOINT],
-                $applicationInstall->getSettings()[ApplicationAbstract::FORM][MailchimpApplication::AUDIENCE_ID])
+                $applicationInstall->getSettings()[ApplicationAbstract::FORM][MailchimpApplication::AUDIENCE_ID]
+            )
         );
     }
 

@@ -52,8 +52,8 @@ class MailchimpCreateContactMapper extends CustomNodeAbstract
         $return = $data['properties'];
 
         $address = [
-            'addr1' => $data['properties']['address']['value'] ??  '',
-            'city'  => $data['properties']['city']['value'] ??  '',
+            'addr1' => $data['properties']['address']['value'] ?? '',
+            'city'  => $data['properties']['city']['value'] ?? '',
             'state' => $data['properties']['state']['value'] ?? '',
             'zip'   => $data['properties']['zip']['value'] ?? '',
         ];

@@ -88,15 +88,17 @@ final class DeleteObjectConnectorTest extends DatabaseTestCaseAbstract
         $application = (new ApplicationInstall())
             ->setKey(self::KEY)
             ->setUser(self::USER)
-            ->setSettings([
-                BasicApplicationAbstract::FORM => [
-                    S3Application::KEY      => 'Key',
-                    S3Application::SECRET   => 'Secret',
-                    S3Application::REGION   => 'eu-central-1',
-                    S3Application::BUCKET   => 'Bucket',
-                    S3Application::ENDPOINT => 'http://fakes3:4567',
-                ],
-            ]);
+            ->setSettings(
+                [
+                    BasicApplicationAbstract::FORM => [
+                        S3Application::KEY      => 'Key',
+                        S3Application::SECRET   => 'Secret',
+                        S3Application::REGION   => 'eu-central-1',
+                        S3Application::BUCKET   => 'Bucket',
+                        S3Application::ENDPOINT => 'http://fakes3:4567',
+                    ],
+                ]
+            );
 
         $this->dm->persist($application);
         $this->dm->flush();

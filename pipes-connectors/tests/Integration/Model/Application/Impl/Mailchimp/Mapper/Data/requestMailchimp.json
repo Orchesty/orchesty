@@ -1,16 +1,16 @@
 {
-  "email_address": "fumanchu@hubspot.com",
-  "status": "subscribed",
-  "merge_fields": {
-    "FNAME": "Adrian",
-    "LNAME": "Mott",
-    "ADDRESS": {
-      "addr1": "25 First Street",
-      "city": "Cambridge",
-      "state": "MA",
-      "zip": "02139"
-    },
-    "PHONE": "5551222323",
-    "HUBSPOTID": 61574
-  }
+    "email_address": "fumanchu@hubspot.com",
+    "status": "subscribed",
+    "merge_fields": {
+        "FNAME": "Adrian",
+        "LNAME": "Mott",
+        "ADDRESS": {
+            "addr1": "25 First Street",
+            "city": "Cambridge",
+            "state": "MA",
+            "zip": "02139"
+        },
+        "PHONE": "5551222323",
+        "HUBSPOTID": 61574
+    }
 }

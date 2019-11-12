@@ -63,11 +63,13 @@ class ShipstationNewOrderConnector extends ConnectorAbstract
             return $dto;
         }
 
-        $return = $this->curlManager->send($this->application->getRequestDto(
-            $applicationInstall,
-            CurlManager::METHOD_GET,
-            $url,
-            NULL)
+        $return = $this->curlManager->send(
+            $this->application->getRequestDto(
+                $applicationInstall,
+                CurlManager::METHOD_GET,
+                $url,
+                NULL
+            )
         );
 
         $statusCode = $return->getStatusCode();
@@ -89,8 +91,10 @@ class ShipstationNewOrderConnector extends ConnectorAbstract
     {
         $dto;
 
-        throw new ConnectorException('ProcessAction is not implemented',
-            ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_ACTION);
+        throw new ConnectorException(
+            'ProcessAction is not implemented',
+            ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_ACTION
+        );
 
     }
 

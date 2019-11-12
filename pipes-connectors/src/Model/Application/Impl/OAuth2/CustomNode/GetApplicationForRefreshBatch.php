@@ -85,8 +85,10 @@ class GetApplicationForRefreshBatch extends CustomNodeAbstract implements BatchI
     public function process(ProcessDto $dto): ProcessDto
     {
         $dto;
-        throw new ConnectorException('Process is not implemented',
-            ConnectorException::CUSTOM_NODE_DOES_NOT_HAVE_PROCESS_ACTION);
+        throw new ConnectorException(
+            'Process is not implemented',
+            ConnectorException::CUSTOM_NODE_DOES_NOT_HAVE_PROCESS_ACTION
+        );
     }
 
 }

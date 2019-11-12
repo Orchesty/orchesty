@@ -68,15 +68,21 @@ class ShipstationApplication extends BasicApplicationAbstract implements Webhook
      * @return RequestDto
      * @throws CurlException
      */
-    public function getRequestDto(ApplicationInstall $applicationInstall, string $method, ?string $url = NULL,
-                                  ?string $data = NULL): RequestDto
+    public function getRequestDto(
+        ApplicationInstall $applicationInstall,
+        string $method,
+        ?string $url = NULL,
+        ?string $data = NULL
+    ): RequestDto
     {
         $request = new RequestDto($method, $this->getUri($url));
-        $request->setHeaders([
-            'Content-Type'  => 'application/json',
-            'Accept'        => 'application/json',
-            'Authorization' => sprintf('Basic %s', $this->getToken($applicationInstall)),
-        ]);
+        $request->setHeaders(
+            [
+                'Content-Type'  => 'application/json',
+                'Accept'        => 'application/json',
+                'Authorization' => sprintf('Basic %s', $this->getToken($applicationInstall)),
+            ]
+        );
         if (isset($data)) {
             $request->setBody($data);
         }
@@ -106,11 +112,15 @@ class ShipstationApplication extends BasicApplicationAbstract implements Webhook
      */
     public function getToken(ApplicationInstall $applicationInstall): string
     {
-        return base64_encode(sprintf(
-            '%s:%s',
-            $applicationInstall->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationAbstract::USER],
-            $applicationInstall->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationAbstract::PASSWORD]
-        ));
+        return base64_encode(
+            sprintf(
+                '%s:%s',
+                $applicationInstall->getSettings(
+                )[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationAbstract::USER],
+                $applicationInstall->getSettings(
+                )[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationAbstract::PASSWORD]
+            )
+        );
     }
 
     /**
@@ -140,14 +150,19 @@ class ShipstationApplication extends BasicApplicationAbstract implements Webhook
         return $this->getRequestDto(
             $applicationInstall,
             CurlManager::METHOD_POST,
-            sprintf('%s/webhooks/subscribe',
-                ShipstationApplication::SHIPSSTATION_URL),
-            json_encode([
-                'target_url' => $url,
-                'event'      => self::ORDER_NOTIFY,
-                'store_id'   => NULL,
-                'name'       => $subscription->getParameters()['name'],
-            ], JSON_THROW_ON_ERROR)
+            sprintf(
+                '%s/webhooks/subscribe',
+                ShipstationApplication::SHIPSSTATION_URL
+            ),
+            json_encode(
+                [
+                    'target_url' => $url,
+                    'event'      => self::ORDER_NOTIFY,
+                    'store_id'   => NULL,
+                    'name'       => $subscription->getParameters()['name'],
+                ],
+                JSON_THROW_ON_ERROR
+            )
         );
     }
 
@@ -163,9 +178,11 @@ class ShipstationApplication extends BasicApplicationAbstract implements Webhook
         return $this->getRequestDto(
             $applicationInstall,
             CurlManager::METHOD_DELETE,
-            sprintf('%s/webhooks/%s',
+            sprintf(
+                '%s/webhooks/%s',
                 ShipstationApplication::SHIPSSTATION_URL,
-                $id)
+                $id
+            )
         );
     }
 

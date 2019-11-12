@@ -47,11 +47,13 @@ final class HubspotCreateContactMapperTest extends DatabaseTestCaseAbstract
 
         $this->pf($applicationInstall);
 
-        $response = $shipstationNewOrderConnector->processEvent(DataProvider::getProcessDto(
-            $shipstation->getKey(),
-            self::API_KEY,
-            (string) file_get_contents(sprintf('%s/Data/newOrderShipstation.json', __DIR__), TRUE)
-        ));
+        $response = $shipstationNewOrderConnector->processEvent(
+            DataProvider::getProcessDto(
+                $shipstation->getKey(),
+                self::API_KEY,
+                (string) file_get_contents(sprintf('%s/Data/newOrderShipstation.json', __DIR__), TRUE)
+            )
+        );
 
         $response->setData((string) file_get_contents(sprintf('%s/Data/responseShipstation.json', __DIR__), TRUE));
 

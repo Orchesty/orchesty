@@ -103,14 +103,16 @@ class RedshiftApplication extends AwsApplicationAbstract
         $region     = $settings[self::REGION];
         $dbPassword = $settings[self::DB_PASSWORD];
 
-        $client = RedshiftClient::factory([
-            self::CREDENTIALS => [
-                self::KEY    => $key,
-                self::SECRET => $secret,
-            ],
-            self::REGION      => $region,
-            self::VERSION     => 'latest',
-        ]);
+        $client = RedshiftClient::factory(
+            [
+                self::CREDENTIALS => [
+                    self::KEY    => $key,
+                    self::SECRET => $secret,
+                ],
+                self::REGION      => $region,
+                self::VERSION     => 'latest',
+            ]
+        );
 
         $cluster = $client->describeClusters()->get('Clusters')[0];
 
@@ -118,14 +120,16 @@ class RedshiftApplication extends AwsApplicationAbstract
             throw new ApplicationInstallException('Login into application was unsuccessful.');
         }
 
-        return $applicationInstall->setSettings([
-            RedshiftApplication::CLUSTER_IDENTIFIER => $cluster[RedshiftApplication::CLUSTER_IDENTIFIER],
-            RedshiftApplication::MASTER_USER        => $cluster[RedshiftApplication::MASTER_USER],
-            RedshiftApplication::DB_PASSWORD        => $dbPassword,
-            RedshiftApplication::DBNAME             => $cluster[RedshiftApplication::DBNAME],
-            RedshiftApplication::HOST               => $cluster[RedshiftApplication::ENDPOINT][RedshiftApplication::ADDRESS],
-            RedshiftApplication::PORT               => $cluster[RedshiftApplication::ENDPOINT][RedshiftApplication::PORT],
-        ]);
+        return $applicationInstall->setSettings(
+            [
+                RedshiftApplication::CLUSTER_IDENTIFIER => $cluster[RedshiftApplication::CLUSTER_IDENTIFIER],
+                RedshiftApplication::MASTER_USER        => $cluster[RedshiftApplication::MASTER_USER],
+                RedshiftApplication::DB_PASSWORD        => $dbPassword,
+                RedshiftApplication::DBNAME             => $cluster[RedshiftApplication::DBNAME],
+                RedshiftApplication::HOST               => $cluster[RedshiftApplication::ENDPOINT][RedshiftApplication::ADDRESS],
+                RedshiftApplication::PORT               => $cluster[RedshiftApplication::ENDPOINT][RedshiftApplication::PORT],
+            ]
+        );
 
     }
 

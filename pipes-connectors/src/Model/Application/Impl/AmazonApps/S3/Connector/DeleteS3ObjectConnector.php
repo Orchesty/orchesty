@@ -44,10 +44,12 @@ final class DeleteS3ObjectConnector extends S3ObjectConnectorAbstract
         $client      = $application->getS3Client($applicationInstall);
 
         try {
-            $client->deleteObject([
-                self::BUCKET => $this->getBucket($applicationInstall),
-                self::KEY    => $content[self::NAME],
-            ]);
+            $client->deleteObject(
+                [
+                    self::BUCKET => $this->getBucket($applicationInstall),
+                    self::KEY    => $content[self::NAME],
+                ]
+            );
         } catch (AwsException $e) {
             throw $this->createRepeatException($dto, $e);
         }

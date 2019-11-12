@@ -97,7 +97,9 @@ final class GetObjectConnectorTest extends DatabaseTestCaseAbstract
 
         self::expectException(OnRepeatException::class);
         self::expectExceptionCode(0);
-        self::expectExceptionMessage("Connector 's3-get-object': Aws\S3\Exception\S3Exception: Error executing \"GetObject\" on \"http://fakes3:4567/Bucket/Unknown\"; AWS HTTP error: Client error: `GET http://fakes3:4567/Bucket/Unknown` resulted in a `404 Not Found`");
+        self::expectExceptionMessage(
+            "Connector 's3-get-object': Aws\S3\Exception\S3Exception: Error executing \"GetObject\" on \"http://fakes3:4567/Bucket/Unknown\"; AWS HTTP error: Client error: `GET http://fakes3:4567/Bucket/Unknown` resulted in a `404 Not Found`"
+        );
 
         $this->connector->processAction($dto);
     }
@@ -110,15 +112,17 @@ final class GetObjectConnectorTest extends DatabaseTestCaseAbstract
         $application = (new ApplicationInstall())
             ->setKey(self::KEY)
             ->setUser(self::USER)
-            ->setSettings([
-                BasicApplicationAbstract::FORM => [
-                    S3Application::KEY      => 'Key',
-                    S3Application::SECRET   => 'Secret',
-                    S3Application::REGION   => 'eu-central-1',
-                    S3Application::BUCKET   => 'Bucket',
-                    S3Application::ENDPOINT => 'http://fakes3:4567',
-                ],
-            ]);
+            ->setSettings(
+                [
+                    BasicApplicationAbstract::FORM => [
+                        S3Application::KEY      => 'Key',
+                        S3Application::SECRET   => 'Secret',
+                        S3Application::REGION   => 'eu-central-1',
+                        S3Application::BUCKET   => 'Bucket',
+                        S3Application::ENDPOINT => 'http://fakes3:4567',
+                    ],
+                ]
+            );
 
         $this->dm->persist($application);
         $this->dm->flush();

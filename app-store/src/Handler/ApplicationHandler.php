@@ -53,9 +53,12 @@ class ApplicationHandler
     public function getApplications(): array
     {
         return [
-            'items' => array_map(function (string $key): array {
-                return $this->applicationManager->getApplication($key)->toArray();
-            }, $this->applicationManager->getApplications()),
+            'items' => array_map(
+                function (string $key): array {
+                    return $this->applicationManager->getApplication($key)->toArray();
+                },
+                $this->applicationManager->getApplications()
+            ),
         ];
     }
 
@@ -78,14 +81,17 @@ class ApplicationHandler
     public function getApplicationsByUser(string $user): array
     {
         return [
-            'items' => array_map(function (ApplicationInstall $applicationInstall): array {
-                $application = $this->applicationManager->getApplication($applicationInstall->getKey());
+            'items' => array_map(
+                function (ApplicationInstall $applicationInstall): array {
+                    $application = $this->applicationManager->getApplication($applicationInstall->getKey());
 
-                return array_merge(
-                    $applicationInstall->toArray(),
-                    [self::AUTHORIZED => $application->isAuthorized($applicationInstall)]
-                );
-            }, $this->applicationManager->getInstalledApplications($user)),
+                    return array_merge(
+                        $applicationInstall->toArray(),
+                        [self::AUTHORIZED => $application->isAuthorized($applicationInstall)]
+                    );
+                },
+                $this->applicationManager->getInstalledApplications($user)
+            ),
         ];
     }
 

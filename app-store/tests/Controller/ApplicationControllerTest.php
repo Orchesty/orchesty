@@ -212,8 +212,10 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         $handler->method('getApplicationByKey')
             ->willReturn($returnValue);
         $handler->method('authorizeApplication')
-            ->willReturnCallback(function (): void {
-            });
+            ->willReturnCallback(
+                function (): void {
+                }
+            );
 
         /** @var ContainerInterface $container */
         $container = self::$client->getContainer();

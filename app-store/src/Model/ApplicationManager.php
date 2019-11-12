@@ -240,7 +240,10 @@ class ApplicationManager
         /** @var WebhookApplicationInterface $application */
         $application = $this->loader->getApplication($applicationInstall->getKey());
 
-        if (ApplicationTypeEnum::isWebhook($application->getApplicationType()) && $application->isAuthorized($applicationInstall)) {
+        if (
+            ApplicationTypeEnum::isWebhook($application->getApplicationType()) &&
+            $application->isAuthorized($applicationInstall)
+        ) {
             $this->webhook->subscribeWebhooks($application, $applicationInstall->getUser(), $data);
         }
     }
@@ -257,7 +260,10 @@ class ApplicationManager
         /** @var WebhookApplicationInterface $application */
         $application = $this->loader->getApplication($applicationInstall->getKey());
 
-        if (ApplicationTypeEnum::isWebhook($application->getApplicationType()) && $application->isAuthorized($applicationInstall)) {
+        if (
+            ApplicationTypeEnum::isWebhook($application->getApplicationType()) &&
+            $application->isAuthorized($applicationInstall)
+        ) {
             $this->webhook->unsubscribeWebhooks($application, $applicationInstall->getUser(), $data);
         }
     }

@@ -35,20 +35,24 @@ final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
             'fa830d8d4308625bac307906e83de659'
         );
 
-        $applicationInstall->setSettings([
-            MailchimpApplication::AUDIENCE_ID  => 'c9e7f10c5b',
-            MailchimpApplication::API_KEYPOINT => $app->getApiEndpoint($applicationInstall),
-        ]);
+        $applicationInstall->setSettings(
+            [
+                MailchimpApplication::AUDIENCE_ID  => 'c9e7f10c5b',
+                MailchimpApplication::API_KEYPOINT => $app->getApiEndpoint($applicationInstall),
+            ]
+        );
 
         $this->pf($applicationInstall);
         $this->dm->clear();
         $data = (string) file_get_contents(sprintf('%s/Data/requestMailchimp.json', __DIR__), TRUE);
 
-        $mailchimpCreateContactConnector->processAction(DataProvider::getProcessDto(
-            $app->getKey(),
-            'user',
-            $data
-        ));
+        $mailchimpCreateContactConnector->processAction(
+            DataProvider::getProcessDto(
+                $app->getKey(),
+                'user',
+                $data
+            )
+        );
     }
 
 }

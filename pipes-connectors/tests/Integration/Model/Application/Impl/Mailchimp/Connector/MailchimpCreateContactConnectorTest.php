@@ -34,18 +34,20 @@ final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
      */
     public function testProcessAction(int $code, bool $isValid): void
     {
-        $this->mockCurl([
-            new MockCurlMethod(
-                $code,
-                'responseDatacenter.json',
-                []
-            ),
-            new MockCurlMethod(
-                $code,
-                sprintf('response%s.json', $code),
-                []
-            ),
-        ]);
+        $this->mockCurl(
+            [
+                new MockCurlMethod(
+                    $code,
+                    'responseDatacenter.json',
+                    []
+                ),
+                new MockCurlMethod(
+                    $code,
+                    sprintf('response%s.json', $code),
+                    []
+                ),
+            ]
+        );
 
         $app                             = self::$container->get('hbpf.application.mailchimp');
         $mailchimpCreateContactConnector = new MailchimpCreateContactConnector(
@@ -61,13 +63,15 @@ final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
             'fa830d8d4308625bac307906e83de659'
         );
 
-        $applicationInstall->setSettings([
-            ApplicationAbstract::FORM          => [
-                MailchimpApplication::AUDIENCE_ID => 'c9e7f10c5b',
-            ],
-            MailchimpApplication::API_KEYPOINT => $app->getApiEndpoint($applicationInstall),
+        $applicationInstall->setSettings(
+            [
+                ApplicationAbstract::FORM          => [
+                    MailchimpApplication::AUDIENCE_ID => 'c9e7f10c5b',
+                ],
+                MailchimpApplication::API_KEYPOINT => $app->getApiEndpoint($applicationInstall),
 
-        ]);
+            ]
+        );
 
         $this->pf($applicationInstall);
 
@@ -81,13 +85,13 @@ final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
         if ($isValid) {
             self::assertSuccessProcessResponse(
                 $response,
-                sprintf('response%s.json', $code),
-                );
+                sprintf('response%s.json', $code)
+            );
         } else {
             self::assertFailedProcessResponse(
                 $response,
-                sprintf('response%s.json', $code),
-                );
+                sprintf('response%s.json', $code)
+            );
         }
     }
 

@@ -67,8 +67,10 @@ class MailchimpCreateContactConnector extends ConnectorAbstract
     public function processEvent(ProcessDto $dto): ProcessDto
     {
         $dto;
-        throw new ConnectorException('ProcessEvent is not implemented',
-            ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_EVENT);
+        throw new ConnectorException(
+            'ProcessEvent is not implemented',
+            ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_EVENT
+        );
     }
 
     /**
@@ -85,18 +87,20 @@ class MailchimpCreateContactConnector extends ConnectorAbstract
 
         $apiEndpoint = $applicationInstall->getSettings()[MailchimpApplication::API_KEYPOINT];
 
-        $return = $this->curlManager->send($this->application->getRequestDto(
-            $applicationInstall,
-            CurlManager::METHOD_POST,
-            sprintf(
-                '%s/3.0/lists/%s/members/',
-                $apiEndpoint,
-                $applicationInstall->getSettings()[ApplicationAbstract::FORM][MailchimpApplication::AUDIENCE_ID]
-            ),
-            $dto->getData())
+        $return = $this->curlManager->send(
+            $this->application->getRequestDto(
+                $applicationInstall,
+                CurlManager::METHOD_POST,
+                sprintf(
+                    '%s/3.0/lists/%s/members/',
+                    $apiEndpoint,
+                    $applicationInstall->getSettings()[ApplicationAbstract::FORM][MailchimpApplication::AUDIENCE_ID]
+                ),
+                $dto->getData()
+            )
         );
 
-        $json   = $return->getJsonBody();
+        $json = $return->getJsonBody();
 
         unset($json['type'], $json['detail'], $json['instance']);
 

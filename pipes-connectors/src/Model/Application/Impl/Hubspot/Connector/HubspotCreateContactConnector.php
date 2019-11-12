@@ -63,8 +63,10 @@ class HubspotCreateContactConnector extends ConnectorAbstract
     public function processEvent(ProcessDto $dto): ProcessDto
     {
         $dto;
-        throw new ConnectorException('ProcessEvent is not implemented',
-            ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_EVENT);
+        throw new ConnectorException(
+            'ProcessEvent is not implemented',
+            ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_EVENT
+        );
     }
 
     /**
@@ -79,12 +81,14 @@ class HubspotCreateContactConnector extends ConnectorAbstract
     {
         $applicationInstall = $this->repository->findUsersAppDefaultHeaders($dto);
 
-        $return = $this->curlManager->send($this->application->getRequestDto(
-            $applicationInstall,
-            CurlManager::METHOD_POST,
-            sprintf('%s/contacts/v1/contact/', HubspotApplication::BASE_URL),
-            $dto->getData(),
-            ));
+        $return = $this->curlManager->send(
+            $this->application->getRequestDto(
+                $applicationInstall,
+                CurlManager::METHOD_POST,
+                sprintf('%s/contacts/v1/contact/', HubspotApplication::BASE_URL),
+                $dto->getData()
+            )
+        );
 
         $json = $return->getJsonBody();
 

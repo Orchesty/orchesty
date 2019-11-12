@@ -35,10 +35,12 @@ final class MailchimpCreateContactMapperTest extends DatabaseTestCaseAbstract
             'fa830d8d4308625bac307906e83de659'
         );
 
-        $applicationInstall->setSettings([
-            MailchimpApplication::AUDIENCE_ID  => 'c9e7f10c5b',
-            MailchimpApplication::API_KEYPOINT => $app->getApiEndpoint($applicationInstall),
-        ]);
+        $applicationInstall->setSettings(
+            [
+                MailchimpApplication::AUDIENCE_ID  => 'c9e7f10c5b',
+                MailchimpApplication::API_KEYPOINT => $app->getApiEndpoint($applicationInstall),
+            ]
+        );
 
         $this->pf($applicationInstall);
 
@@ -55,7 +57,9 @@ final class MailchimpCreateContactMapperTest extends DatabaseTestCaseAbstract
             json_decode($dto->getData(), TRUE, 512, JSON_THROW_ON_ERROR),
             json_decode(
                 (string) file_get_contents(
-                    sprintf('%s/Data/requestMailchimp.json', __DIR__), TRUE),
+                    sprintf('%s/Data/requestMailchimp.json', __DIR__),
+                    TRUE
+                ),
                 TRUE,
                 512,
                 JSON_THROW_ON_ERROR

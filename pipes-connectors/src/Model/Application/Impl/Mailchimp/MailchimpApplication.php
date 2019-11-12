@@ -117,11 +117,13 @@ class MailchimpApplication extends OAuth2ApplicationAbstract implements WebhookA
     ): RequestDto
     {
         $request = new RequestDto($method, $this->getUri($url));
-        $request->setHeaders([
-            'Content-Type'  => 'application/json',
-            'Accept'        => 'application/json',
-            'Authorization' => sprintf('OAuth %s', $this->getAccessToken($applicationInstall)),
-        ]);
+        $request->setHeaders(
+            [
+                'Content-Type'  => 'application/json',
+                'Accept'        => 'application/json',
+                'Authorization' => sprintf('OAuth %s', $this->getAccessToken($applicationInstall)),
+            ]
+        );
 
         if (!empty($data)) {
             $request->setBody($data);
@@ -177,9 +179,11 @@ class MailchimpApplication extends OAuth2ApplicationAbstract implements WebhookA
     {
         parent::setAuthorizationToken($applicationInstall, $token);
 
-        $applicationInstall->setSettings([
-            self::API_KEYPOINT => $this->getApiEndpoint($applicationInstall),
-        ]);
+        $applicationInstall->setSettings(
+            [
+                self::API_KEYPOINT => $this->getApiEndpoint($applicationInstall),
+            ]
+        );
 
         return $this;
 
@@ -194,11 +198,13 @@ class MailchimpApplication extends OAuth2ApplicationAbstract implements WebhookA
      */
     public function getApiEndpoint(ApplicationInstall $applicationInstall): string
     {
-        $return = $this->curlManager->send($this->getRequestDto(
-            $applicationInstall,
-            CurlManager::METHOD_GET,
-            sprintf('%s/oauth2/metadata', self::MAILCHIMP_DATACENTER_URL),
-            ));
+        $return = $this->curlManager->send(
+            $this->getRequestDto(
+                $applicationInstall,
+                CurlManager::METHOD_GET,
+                sprintf('%s/oauth2/metadata', self::MAILCHIMP_DATACENTER_URL)
+            )
+        );
 
         return $return->getJsonBody()['api_endpoint'];
     }
@@ -233,20 +239,25 @@ class MailchimpApplication extends OAuth2ApplicationAbstract implements WebhookA
         return $this->getRequestDto(
             $applicationInstall,
             CurlManager::METHOD_POST,
-            sprintf('%s/3.0/lists/%s/webhooks',
+            sprintf(
+                '%s/3.0/lists/%s/webhooks',
                 $applicationInstall->getSettings()[self::API_KEYPOINT],
-                $applicationInstall->getSettings()[ApplicationAbstract::FORM][self::AUDIENCE_ID]),
-            json_encode([
-                'url'     => $url,
-                'events'  => [
-                    $subscription->getParameters()['name'] => TRUE,
+                $applicationInstall->getSettings()[ApplicationAbstract::FORM][self::AUDIENCE_ID]
+            ),
+            json_encode(
+                [
+                    'url'     => $url,
+                    'events'  => [
+                        $subscription->getParameters()['name'] => TRUE,
+                    ],
+                    'sources' => [
+                        'user'  => TRUE,
+                        'admin' => TRUE,
+                        'api'   => TRUE,
+                    ],
                 ],
-                'sources' => [
-                    'user'  => TRUE,
-                    'admin' => TRUE,
-                    'api'   => TRUE,
-                ],
-            ], JSON_THROW_ON_ERROR)
+                JSON_THROW_ON_ERROR
+            )
         );
     }
 

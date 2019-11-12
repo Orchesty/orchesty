@@ -28,18 +28,22 @@ final class HubspotCreateContactConnectorTest extends DatabaseTestCaseAbstract
 
         $hubspotCreateContactConnector->setApplication($app);
 
-        $this->pf(DataProvider::getOauth2AppInstall(
-            $app->getKey(),
-            'user',
-            'CPn036zALRICAQEYu_j2AiDpsIEEKJSQDDIZAAoa8Oq06qseob1dXiP5KB1H3dY5AG0ShToPAAoCQQAADIADAAgAAAABQhkAChrw6vXLFCILvuPoTaMFCHwh43lT3Ura'
-        ));
+        $this->pf(
+            DataProvider::getOauth2AppInstall(
+                $app->getKey(),
+                'user',
+                'CPn036zALRICAQEYu_j2AiDpsIEEKJSQDDIZAAoa8Oq06qseob1dXiP5KB1H3dY5AG0ShToPAAoCQQAADIADAAgAAAABQhkAChrw6vXLFCILvuPoTaMFCHwh43lT3Ura'
+            )
+        );
         $this->dm->clear();
 
-        $hubspotCreateContactConnector->processAction(DataProvider::getProcessDto(
-            $app->getKey(),
-            'user',
-            (string) file_get_contents(__DIR__ . sprintf('/Data/request.json'), TRUE)
-        ));
+        $hubspotCreateContactConnector->processAction(
+            DataProvider::getProcessDto(
+                $app->getKey(),
+                'user',
+                (string) file_get_contents(__DIR__ . sprintf('/Data/request.json'), TRUE)
+            )
+        );
     }
 
 }

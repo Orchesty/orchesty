@@ -1,24 +1,24 @@
 {
-  "message": "Contact already exists",
-  "identityProfile": {
-    "vid": 101,
-    "identity": [
-      {
-        "value": "testingapis@hubspot.com",
-        "type": "EMAIL",
-        "timestamp": 1563442104407,
-        "isPrimary": true
-      },
-      {
-        "value": "756823fa-ec8d-4ebf-9974-c407654e1895",
-        "type": "LEAD_GUID",
-        "timestamp": 1563442104498
-      }
-    ],
-    "linkedVid": [],
-    "isContact": true,
-    "savedAtTimestamp": 1563442104501
-  },
-  "status": "error",
-  "error": "CONTACT_EXISTS"
+    "message": "Contact already exists",
+    "identityProfile": {
+        "vid": 101,
+        "identity": [
+            {
+                "value": "testingapis@hubspot.com",
+                "type": "EMAIL",
+                "timestamp": 1563442104407,
+                "isPrimary": true
+            },
+            {
+                "value": "756823fa-ec8d-4ebf-9974-c407654e1895",
+                "type": "LEAD_GUID",
+                "timestamp": 1563442104498
+            }
+        ],
+        "linkedVid": [],
+        "isContact": true,
+        "savedAtTimestamp": 1563442104501
+    },
+    "status": "error",
+    "error": "CONTACT_EXISTS"
 }

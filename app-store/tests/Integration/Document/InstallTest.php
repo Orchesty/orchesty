@@ -30,9 +30,11 @@ final class InstallTest extends DatabaseTestCaseAbstract
         $this->dm->flush();
         $this->dm->clear();
 
-        $data = $this->dm->getDocumentCollection(ApplicationInstall::class)->find([
-            '_id' => new ObjectID($applicationInstall->getId()),
-        ])->toArray();
+        $data = $this->dm->getDocumentCollection(ApplicationInstall::class)->find(
+            [
+                '_id' => new ObjectID($applicationInstall->getId()),
+            ]
+        )->toArray();
 
         self::assertArrayHasKey($applicationInstall->getId(), $data);
         self::assertArrayHasKey('user', $data[$applicationInstall->getId()]);

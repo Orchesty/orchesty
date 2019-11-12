@@ -1,154 +1,154 @@
 {
-  "identity-profiles": [
-    {
-      "identities": [
+    "identity-profiles": [
         {
-          "timestamp": 1331075050646,
-          "type": "EMAIL",
-          "value": "fumanchu@hubspot.com"
+            "identities": [
+                {
+                    "timestamp": 1331075050646,
+                    "type": "EMAIL",
+                    "value": "fumanchu@hubspot.com"
+                },
+                {
+                    "timestamp": 1331075050681,
+                    "type": "LEAD_GUID",
+                    "value": "22a26060-c9d7-44b0-9f07-aa40488cfa3a"
+                }
+            ],
+            "vid": 61574
+        }
+    ],
+    "properties": {
+        "website": {
+            "value": "http: //hubspot.com",
+            "versions": [
+                {
+                    "timestamp": 1331075050646,
+                    "selected": false,
+                    "source-label": null,
+                    "value": "http: //hubspot.com",
+                    "source-type": "API",
+                    "source-id": null
+                }
+            ]
         },
-        {
-          "timestamp": 1331075050681,
-          "type": "LEAD_GUID",
-          "value": "22a26060-c9d7-44b0-9f07-aa40488cfa3a"
+        "city": {
+            "value": "Cambridge",
+            "versions": [
+                {
+                    "timestamp": 1331075050646,
+                    "selected": false,
+                    "source-label": null,
+                    "value": "Cambridge",
+                    "source-type": "API",
+                    "source-id": null
+                }
+            ]
+        },
+        "firstname": {
+            "value": "Adrian",
+            "versions": [
+                {
+                    "timestamp": 1331075050646,
+                    "selected": false,
+                    "source-label": null,
+                    "value": "Adrian",
+                    "source-type": "API",
+                    "source-id": null
+                }
+            ]
+        },
+        "zip": {
+            "value": "02139",
+            "versions": [
+                {
+                    "timestamp": 1331075050646,
+                    "selected": false,
+                    "source-label": null,
+                    "value": "02139",
+                    "source-type": "API",
+                    "source-id": null
+                }
+            ]
+        },
+        "lastname": {
+            "value": "Mott",
+            "versions": [
+                {
+                    "timestamp": 1331075050646,
+                    "selected": false,
+                    "source-label": null,
+                    "value": "Mott",
+                    "source-type": "API",
+                    "source-id": null
+                }
+            ]
+        },
+        "company": {
+            "value": "HubSpot",
+            "versions": [
+                {
+                    "timestamp": 1331075050646,
+                    "selected": false,
+                    "source-label": null,
+                    "value": "HubSpot",
+                    "source-type": "API",
+                    "source-id": null
+                }
+            ]
+        },
+        "phone": {
+            "value": "555-122-2323",
+            "versions": [
+                {
+                    "timestamp": 1331075050646,
+                    "selected": false,
+                    "source-label": null,
+                    "value": "555-122-2323",
+                    "source-type": "API",
+                    "source-id": null
+                }
+            ]
+        },
+        "state": {
+            "value": "MA",
+            "versions": [
+                {
+                    "timestamp": 1331075050646,
+                    "selected": false,
+                    "source-label": null,
+                    "value": "MA",
+                    "source-type": "API",
+                    "source-id": null
+                }
+            ]
+        },
+        "address": {
+            "value": "25 First Street",
+            "versions": [
+                {
+                    "timestamp": 1331075050646,
+                    "selected": false,
+                    "source-label": null,
+                    "value": "25 First Street",
+                    "source-type": "API",
+                    "source-id": null
+                }
+            ]
+        },
+        "email": {
+            "value": "fumanchu@hubspot.com",
+            "versions": [
+                {
+                    "timestamp": 1331075050646,
+                    "selected": false,
+                    "source-label": null,
+                    "value": "fumanchu@hubspot.com",
+                    "source-type": "API",
+                    "source-id": null
+                }
+            ]
         }
-      ],
-      "vid": 61574
-    }
-  ],
-  "properties": {
-    "website": {
-      "value": "http: //hubspot.com",
-      "versions": [
-        {
-          "timestamp": 1331075050646,
-          "selected": false,
-          "source-label": null,
-          "value": "http: //hubspot.com",
-          "source-type": "API",
-          "source-id": null
-        }
-      ]
     },
-    "city": {
-      "value": "Cambridge",
-      "versions": [
-        {
-          "timestamp": 1331075050646,
-          "selected": false,
-          "source-label": null,
-          "value": "Cambridge",
-          "source-type": "API",
-          "source-id": null
-        }
-      ]
-    },
-    "firstname": {
-      "value": "Adrian",
-      "versions": [
-        {
-          "timestamp": 1331075050646,
-          "selected": false,
-          "source-label": null,
-          "value": "Adrian",
-          "source-type": "API",
-          "source-id": null
-        }
-      ]
-    },
-    "zip": {
-      "value": "02139",
-      "versions": [
-        {
-          "timestamp": 1331075050646,
-          "selected": false,
-          "source-label": null,
-          "value": "02139",
-          "source-type": "API",
-          "source-id": null
-        }
-      ]
-    },
-    "lastname": {
-      "value": "Mott",
-      "versions": [
-        {
-          "timestamp": 1331075050646,
-          "selected": false,
-          "source-label": null,
-          "value": "Mott",
-          "source-type": "API",
-          "source-id": null
-        }
-      ]
-    },
-    "company": {
-      "value": "HubSpot",
-      "versions": [
-        {
-          "timestamp": 1331075050646,
-          "selected": false,
-          "source-label": null,
-          "value": "HubSpot",
-          "source-type": "API",
-          "source-id": null
-        }
-      ]
-    },
-    "phone": {
-      "value": "555-122-2323",
-      "versions": [
-        {
-          "timestamp": 1331075050646,
-          "selected": false,
-          "source-label": null,
-          "value": "555-122-2323",
-          "source-type": "API",
-          "source-id": null
-        }
-      ]
-    },
-    "state": {
-      "value": "MA",
-      "versions": [
-        {
-          "timestamp": 1331075050646,
-          "selected": false,
-          "source-label": null,
-          "value": "MA",
-          "source-type": "API",
-          "source-id": null
-        }
-      ]
-    },
-    "address": {
-      "value": "25 First Street",
-      "versions": [
-        {
-          "timestamp": 1331075050646,
-          "selected": false,
-          "source-label": null,
-          "value": "25 First Street",
-          "source-type": "API",
-          "source-id": null
-        }
-      ]
-    },
-    "email": {
-      "value": "fumanchu@hubspot.com",
-      "versions": [
-        {
-          "timestamp": 1331075050646,
-          "selected": false,
-          "source-label": null,
-          "value": "fumanchu@hubspot.com",
-          "source-type": "API",
-          "source-id": null
-        }
-      ]
-    }
-  },
-  "form-submissions": [
-  ],
-  "vid": 61574
+    "form-submissions": [
+    ],
+    "vid": 61574
 }

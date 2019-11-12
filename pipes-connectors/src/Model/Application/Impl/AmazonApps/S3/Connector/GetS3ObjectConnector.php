@@ -49,11 +49,13 @@ final class GetS3ObjectConnector extends S3ObjectConnectorAbstract
         file_put_contents($path, '');
 
         try {
-            $client->getObject([
-                self::BUCKET => $this->getBucket($applicationInstall),
-                self::KEY    => $content[self::NAME],
-                self::TARGET => $path,
-            ]);
+            $client->getObject(
+                [
+                    self::BUCKET => $this->getBucket($applicationInstall),
+                    self::KEY    => $content[self::NAME],
+                    self::TARGET => $path,
+                ]
+            );
         } catch (AwsException $e) {
             throw $this->createRepeatException($dto, $e);
         } finally {

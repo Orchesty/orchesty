@@ -29,13 +29,15 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
     public function testAutorize(): void
     {
         $applicationInstall = new ApplicationInstall();
-        $applicationInstall = $applicationInstall->setSettings([
-            BasicApplicationInterface::AUTHORIZATION_SETTINGS =>
-                [
-                    BasicApplicationAbstract::USER     => self::API_KEY,
-                    BasicApplicationAbstract::PASSWORD => self::API_SECRET,
-                ],
-        ]);
+        $applicationInstall = $applicationInstall->setSettings(
+            [
+                BasicApplicationInterface::AUTHORIZATION_SETTINGS =>
+                    [
+                        BasicApplicationAbstract::USER     => self::API_KEY,
+                        BasicApplicationAbstract::PASSWORD => self::API_SECRET,
+                    ],
+            ]
+        );
 
         $applicationInstall->setUser('user');
         $applicationInstall->setKey('shipstation');
@@ -54,23 +56,27 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
             self::API_SECRET
         );
 
-        $applicationInstall = $applicationInstall->setSettings([
-            BasicApplicationInterface::AUTHORIZATION_SETTINGS =>
-                [
-                    BasicApplicationAbstract::USER     => self::API_KEY,
-                    BasicApplicationAbstract::PASSWORD => self::API_SECRET,
-                ],
-        ]);
+        $applicationInstall = $applicationInstall->setSettings(
+            [
+                BasicApplicationInterface::AUTHORIZATION_SETTINGS =>
+                    [
+                        BasicApplicationAbstract::USER     => self::API_KEY,
+                        BasicApplicationAbstract::PASSWORD => self::API_SECRET,
+                    ],
+            ]
+        );
         $subscription       = new WebhookSubscription('test', 'node', 'xxx', ['name' => 0]);
 
         $requestSub = $application->getWebhookSubscribeRequestDto(
             $applicationInstall,
             $subscription,
-            sprintf('%s/webhook/topologies/%s/nodes/%s/token/%s',
+            sprintf(
+                '%s/webhook/topologies/%s/nodes/%s/token/%s',
                 rtrim('www.xx.cz', '/'),
                 $subscription->getTopology(),
                 $subscription->getNode(),
-                bin2hex(random_bytes(25)))
+                bin2hex(random_bytes(25))
+            )
         );
 
         $requestUn = $application->getWebhookUnsubscribeRequestDto(

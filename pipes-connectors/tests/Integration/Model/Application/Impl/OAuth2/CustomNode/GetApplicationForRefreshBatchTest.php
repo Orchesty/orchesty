@@ -38,12 +38,19 @@ class GetApplicationForRefreshBatchTest extends DatabaseTestCaseAbstract
 
         $dto = new ProcessDto();
 
-        $getAppForRefreshBatchCreateContactConnector->processBatch($dto, $loop, function (): void {
-        })->then(function (): void {
-            self::assertTrue(TRUE);
-        }, function (): void {
-            self::fail('Something gone wrong!');
-        });
+        $getAppForRefreshBatchCreateContactConnector->processBatch(
+            $dto,
+            $loop,
+            function (): void {
+            }
+        )->then(
+            function (): void {
+                self::assertTrue(TRUE);
+            },
+            function (): void {
+                self::fail('Something gone wrong!');
+            }
+        );
         $loop->run();
 
     }

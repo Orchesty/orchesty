@@ -148,7 +148,8 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
             $url,
             $parameters,
             [],
-            [], $content ? (string) json_encode($content, JSON_THROW_ON_ERROR) : ''
+            [],
+            $content ? (string) json_encode($content, JSON_THROW_ON_ERROR) : ''
         );
 
         /** @var Response $response */

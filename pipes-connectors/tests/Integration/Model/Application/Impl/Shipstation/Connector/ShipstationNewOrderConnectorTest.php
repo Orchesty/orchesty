@@ -36,13 +36,15 @@ final class ShipstationNewOrderConnectorTest extends DatabaseTestCaseAbstract
      */
     public function testProcessAction(int $code, bool $isValid): void
     {
-        $this->mockCurl([
-            new MockCurlMethod(
-                $code,
-                sprintf('response%s.json', $code),
-                []
-            ),
-        ]);
+        $this->mockCurl(
+            [
+                new MockCurlMethod(
+                    $code,
+                    sprintf('response%s.json', $code),
+                    []
+                ),
+            ]
+        );
 
         $app                          = self::$container->get('hbpf.application.shipstation');
         $shipstationNewOrderConnector = new ShipstationNewOrderConnector(
@@ -59,28 +61,32 @@ final class ShipstationNewOrderConnectorTest extends DatabaseTestCaseAbstract
         );
 
         $this->pf($applicationInstall);
-        $response = $shipstationNewOrderConnector->processEvent(DataProvider::getProcessDto(
-            $app->getKey(),
-            self::API_KEY,
-            (string) file_get_contents(sprintf('%s/Data/newOrder.json', __DIR__), TRUE)
-        ));
+        $response = $shipstationNewOrderConnector->processEvent(
+            DataProvider::getProcessDto(
+                $app->getKey(),
+                self::API_KEY,
+                (string) file_get_contents(sprintf('%s/Data/newOrder.json', __DIR__), TRUE)
+            )
+        );
 
-        $responseNoUrl = $shipstationNewOrderConnector->processEvent(DataProvider::getProcessDto(
-            $app->getKey(),
-            self::API_KEY,
-            (string) file_get_contents(sprintf('%s/Data/newOrderNoUrl.json', __DIR__), TRUE)
-        ));
+        $responseNoUrl = $shipstationNewOrderConnector->processEvent(
+            DataProvider::getProcessDto(
+                $app->getKey(),
+                self::API_KEY,
+                (string) file_get_contents(sprintf('%s/Data/newOrderNoUrl.json', __DIR__), TRUE)
+            )
+        );
 
         if ($isValid) {
             self::assertSuccessProcessResponse(
                 $response,
-                sprintf('response%s.json', $code),
-                );
+                sprintf('response%s.json', $code)
+            );
         } else {
             self::assertFailedProcessResponse(
                 $response,
-                sprintf('response%s.json', $code),
-                );
+                sprintf('response%s.json', $code)
+            );
         }
 
         self::assertEquals($responseNoUrl->getHeaders()['pf-result-code'], ProcessDto::STOP_AND_FAILED);

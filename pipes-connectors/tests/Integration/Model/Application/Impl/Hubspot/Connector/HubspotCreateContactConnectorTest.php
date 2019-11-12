@@ -26,13 +26,15 @@ final class HubspotCreateContactConnectorTest extends DatabaseTestCaseAbstract
      */
     public function testProcessAction(int $code, bool $isValid): void
     {
-        $this->mockCurl([
-            new MockCurlMethod(
-                $code,
-                sprintf('response%s.json', $code),
-                []
-            ),
-        ]);
+        $this->mockCurl(
+            [
+                new MockCurlMethod(
+                    $code,
+                    sprintf('response%s.json', $code),
+                    []
+                ),
+            ]
+        );
 
         $app                           = self::$container->get('hbpf.application.hubspot');
         $hubspotCreateContactConnector = new HubspotCreateContactConnector(
@@ -48,13 +50,13 @@ final class HubspotCreateContactConnectorTest extends DatabaseTestCaseAbstract
         if ($isValid) {
             self::assertSuccessProcessResponse(
                 $response,
-                sprintf('response%s.json', $code),
-                );
+                sprintf('response%s.json', $code)
+            );
         } else {
             self::assertFailedProcessResponse(
                 $response,
-                sprintf('response%s.json', $code),
-                );
+                sprintf('response%s.json', $code)
+            );
         }
     }
 

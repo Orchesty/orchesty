@@ -110,10 +110,14 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
         array_pop($exploded);
         array_shift($exploded);
 
-        return (string) file_get_contents(sprintf('%s/Data/%s',
-            implode('/', $exploded),
-            $fileName,
-        ), TRUE);
+        return (string) file_get_contents(
+            sprintf(
+                '%s/Data/%s',
+                implode('/', $exploded),
+                $fileName,
+            ),
+            TRUE
+        );
     }
 
     /**
@@ -124,8 +128,8 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
     {
         self::assertProcessResponse(
             $response,
-            $fileName,
-            );
+            $fileName
+        );
 
         self::assertArrayNotHasKey('pf-result-code', $response->getHeaders());
     }
@@ -138,8 +142,8 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
     {
         self::assertProcessResponse(
             $response,
-            $fileName,
-            );
+            $fileName
+        );
 
         self::assertEquals($response->getHeaders()['pf-result-code'], ProcessDto::STOP_AND_FAILED);
     }

@@ -136,11 +136,13 @@ class HubspotApplication extends OAuth2ApplicationAbstract implements WebhookApp
     ): RequestDto
     {
         $request = new RequestDto($method, $this->getUri($url));
-        $request->setHeaders([
-            'Content-Type'  => 'application/json',
-            'Accept'        => 'application/json',
-            'Authorization' => sprintf('Bearer %s', $this->getAccessToken($applicationInstall)),
-        ]);
+        $request->setHeaders(
+            [
+                'Content-Type'  => 'application/json',
+                'Accept'        => 'application/json',
+                'Authorization' => sprintf('Bearer %s', $this->getAccessToken($applicationInstall)),
+            ]
+        );
 
         if (isset($data)) {
             $request->setBody($data);
@@ -207,18 +209,23 @@ class HubspotApplication extends OAuth2ApplicationAbstract implements WebhookApp
         string $url
     ): RequestDto
     {
-        $this->manager->send($this->getRequestDto(
-            $applicationInstall,
-            CurlManager::METHOD_PUT,
-            sprintf(
-                '/webhooks/v1/%s/settings',
-                $applicationInstall->getSettings()[ApplicationAbstract::FORM][self::APP_ID]
-            ),
-            json_encode([
-                'webhookUrl'            => $url,
-                'maxConcurrentRequests' => 100,
-            ], JSON_THROW_ON_ERROR)
-        ));
+        $this->manager->send(
+            $this->getRequestDto(
+                $applicationInstall,
+                CurlManager::METHOD_PUT,
+                sprintf(
+                    '/webhooks/v1/%s/settings',
+                    $applicationInstall->getSettings()[ApplicationAbstract::FORM][self::APP_ID]
+                ),
+                json_encode(
+                    [
+                        'webhookUrl'            => $url,
+                        'maxConcurrentRequests' => 100,
+                    ],
+                    JSON_THROW_ON_ERROR
+                )
+            )
+        );
 
         return $this->getRequestDto(
             $applicationInstall,
@@ -227,13 +234,16 @@ class HubspotApplication extends OAuth2ApplicationAbstract implements WebhookApp
                 '/webhooks/v1/%s/subscriptions',
                 $applicationInstall->getSettings()[ApplicationAbstract::FORM][self::APP_ID]
             ),
-            json_encode([
-                'subscriptionDetails' => [
-                    'subscriptionType' => $subscription->getParameters()['name'],
-                    'propertyName'     => 'email',
-                    'enabled'          => TRUE,
+            json_encode(
+                [
+                    'subscriptionDetails' => [
+                        'subscriptionType' => $subscription->getParameters()['name'],
+                        'propertyName'     => 'email',
+                        'enabled'          => TRUE,
+                    ],
                 ],
-            ], JSON_THROW_ON_ERROR)
+                JSON_THROW_ON_ERROR
+            )
         );
     }
 

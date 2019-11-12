@@ -66,31 +66,39 @@ final class WebhookManager
     public function getWebhooks(WebhookApplicationInterface $application, string $userId): array
     {
         /** @var Webhook[] $webhooks */
-        $webhooks = $this->dm->getRepository(Webhook::class)->findBy([
-            'application' => $application->getKey(),
-            'user'        => $userId,
-        ]);
+        $webhooks = $this->dm->getRepository(Webhook::class)->findBy(
+            [
+                'application' => $application->getKey(),
+                'user'        => $userId,
+            ]
+        );
 
-        return array_map(function (WebhookSubscription $subscription) use ($webhooks): array {
-            $topology = $subscription->getTopology();
-            $enabled  = FALSE;
+        return array_map(
+            function (WebhookSubscription $subscription) use ($webhooks): array {
+                $topology = $subscription->getTopology();
+                $enabled  = FALSE;
 
-            $webhooks = array_filter($webhooks, function (Webhook $webhook) use ($subscription): bool {
-                return $webhook->getName() === $subscription->getName();
-            });
+                $webhooks = array_filter(
+                    $webhooks,
+                    function (Webhook $webhook) use ($subscription): bool {
+                        return $webhook->getName() === $subscription->getName();
+                    }
+                );
 
-            if ($webhooks) {
-                $topology = array_values($webhooks)[0]->getTopology();
-                $enabled  = TRUE;
-            }
+                if ($webhooks) {
+                    $topology = array_values($webhooks)[0]->getTopology();
+                    $enabled  = TRUE;
+                }
 
-            return [
-                'name'     => $subscription->getName(),
-                'default'  => $subscription->getTopology() !== '',
-                'enabled'  => $enabled,
-                'topology' => $topology,
-            ];
-        }, $application->getWebhookSubscriptions());
+                return [
+                    'name'     => $subscription->getName(),
+                    'default'  => $subscription->getTopology() !== '',
+                    'enabled'  => $enabled,
+                    'topology' => $topology,
+                ];
+            },
+            $application->getWebhookSubscriptions()
+        );
     }
 
     /**
@@ -103,7 +111,10 @@ final class WebhookManager
     public function subscribeWebhooks(WebhookApplicationInterface $application, string $userId, array $data = []): void
     {
         foreach ($application->getWebhookSubscriptions() as $subscription) {
-            if (!$data && !$subscription->getTopology() || $data && $data[WebhookSubscription::NAME] !== $subscription->getName()) {
+            if (
+                !$data && !$subscription->getTopology() ||
+                $data && $data[WebhookSubscription::NAME] !== $subscription->getName()
+            ) {
                 continue;
             }
 
@@ -150,10 +161,12 @@ final class WebhookManager
     ): void
     {
         /** @var Webhook[] $webhooks */
-        $webhooks = $this->dm->getRepository(Webhook::class)->findBy([
-            Webhook::APPLICATION => $application->getKey(),
-            Webhook::USER        => $userId,
-        ]);
+        $webhooks = $this->dm->getRepository(Webhook::class)->findBy(
+            [
+                Webhook::APPLICATION => $application->getKey(),
+                Webhook::USER        => $userId,
+            ]
+        );
 
         foreach ($webhooks as $webhook) {
             if ($data && $data[WebhookSubscription::TOPOLOGY] !== $webhook->getTopology()) {

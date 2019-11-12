@@ -31,13 +31,15 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
             '105786712126',
             '0ce41fc44d0b2998026961b7c6e8ba88be60277c7c16d6f5a0'
         );
-        $applicationInstall = $applicationInstall->setSettings([
-            BasicApplicationInterface::AUTHORIZATION_SETTINGS =>
-                [
-                    ApplicationInterface::REDIRECT_URL => 'xxxx',
-                ],
-            MailchimpApplication::AUDIENCE_ID                 => 'c9e7f10c5b',
-        ]);
+        $applicationInstall = $applicationInstall->setSettings(
+            [
+                BasicApplicationInterface::AUTHORIZATION_SETTINGS =>
+                    [
+                        ApplicationInterface::REDIRECT_URL => 'xxxx',
+                    ],
+                MailchimpApplication::AUDIENCE_ID                 => 'c9e7f10c5b',
+            ]
+        );
         $this->pf($applicationInstall);
         $app->authorize($applicationInstall);
     }

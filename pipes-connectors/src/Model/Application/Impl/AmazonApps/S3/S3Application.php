@@ -88,14 +88,19 @@ final class S3Application extends AwsApplicationAbstract
         $settings = $applicationInstall->getSettings()[BasicApplicationAbstract::FORM];
         $endpoint = $settings[self::ENDPOINT];
 
-        return new S3Client(array_merge([
-            self::CREDENTIALS => [
-                self::KEY    => $settings[self::KEY],
-                self::SECRET => $settings[self::SECRET],
-            ],
-            self::REGION      => $settings[self::REGION],
-            self::VERSION     => 'latest',
-        ], $endpoint ? [self::ENDPOINT => $settings[self::ENDPOINT]] : []));
+        return new S3Client(
+            array_merge(
+                [
+                    self::CREDENTIALS => [
+                        self::KEY    => $settings[self::KEY],
+                        self::SECRET => $settings[self::SECRET],
+                    ],
+                    self::REGION      => $settings[self::REGION],
+                    self::VERSION     => 'latest',
+                ],
+                $endpoint ? [self::ENDPOINT => $settings[self::ENDPOINT]] : []
+            )
+        );
     }
 
 }

@@ -31,9 +31,9 @@ class HubspotCreateContactMapper extends CustomNodeAbstract
             $array[$i]['property'] = $key;
             if (key_exists($field, $data)) {
                 $array[$i]['value'] = $data[$field];
-            } elseif (key_exists($field, $data['billTo']) && $data['billTo'][$field] !== NULL) {
+            } else if (key_exists($field, $data['billTo']) && $data['billTo'][$field] !== NULL) {
                 $array[$i]['value'] = $data['billTo'][$field];
-            } elseif (key_exists($field, $data['shipTo'])) {
+            } else if (key_exists($field, $data['shipTo'])) {
                 $array[$i]['value'] = $data['shipTo'][$field];
             } else {
                 $array[$i]['value'] = NULL;
@@ -53,17 +53,27 @@ class HubspotCreateContactMapper extends CustomNodeAbstract
      */
     private function formatData(array $data): array
     {
-        $data['billTo']['streets'] = implode(', ', array_filter([
-            $data['billTo']['street1'] ?? NULL,
-            $data['billTo']['street2'] ?? NULL,
-            $data['billTo']['street3'] ?? NULL,
-        ]));
+        $data['billTo']['streets'] = implode(
+            ', ',
+            array_filter(
+                [
+                    $data['billTo']['street1'] ?? NULL,
+                    $data['billTo']['street2'] ?? NULL,
+                    $data['billTo']['street3'] ?? NULL,
+                ]
+            )
+        );
 
-        $data['billTo']['streets'] = implode(',', array_filter([
-            $data['shipTo']['street1'] ?? NULL,
-            $data['shipTo']['street2'] ?? NULL,
-            $data['shipTo']['street3'] ?? NULL,
-        ]));
+        $data['billTo']['streets'] = implode(
+            ',',
+            array_filter(
+                [
+                    $data['shipTo']['street1'] ?? NULL,
+                    $data['shipTo']['street2'] ?? NULL,
+                    $data['shipTo']['street3'] ?? NULL,
+                ]
+            )
+        );
 
         $data['shipTo']['firstName'] = $this->splitName($data['shipTo']['name'] ?? NULL)[0];
         $data['shipTo']['lastName']  = $this->splitName($data['shipTo']['name'] ?? NULL)[1];

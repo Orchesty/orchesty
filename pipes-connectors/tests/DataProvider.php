@@ -41,7 +41,8 @@ final class DataProvider
         $settings[BasicApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN][OAuth2Provider::ACCESS_TOKEN] = $accessToken;
         $settings[BasicApplicationInterface::AUTHORIZATION_SETTINGS][OAuth2ApplicationInterface::CLIENT_ID]                     = $clientId;
         $settings[BasicApplicationInterface::AUTHORIZATION_SETTINGS][OAuth2ApplicationInterface::CLIENT_SECRET]                 = $clientSecret;
-        $applicationInstall                                                                                                     = new ApplicationInstall();
+
+        $applicationInstall = new ApplicationInstall();
 
         return $applicationInstall
             ->setSettings($settings)
@@ -65,7 +66,8 @@ final class DataProvider
     {
         $settings[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationAbstract::USER]     = $user;
         $settings[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationAbstract::PASSWORD] = $password;
-        $applicationInstall                                                                              = new ApplicationInstall();
+
+        $applicationInstall = new ApplicationInstall();
 
         return $applicationInstall
             ->setSettings($settings)
@@ -85,10 +87,12 @@ final class DataProvider
         $dto = new ProcessDto();
         $dto
             ->setData($body)
-            ->setHeaders([
-                PipesHeaders::createKey(PipesHeaders::USER)        => [$user],
-                PipesHeaders::createKey(PipesHeaders::APPLICATION) => [$key],
-            ]);
+            ->setHeaders(
+                [
+                    PipesHeaders::createKey(PipesHeaders::USER)        => [$user],
+                    PipesHeaders::createKey(PipesHeaders::APPLICATION) => [$key],
+                ]
+            );
 
         return $dto;
     }
