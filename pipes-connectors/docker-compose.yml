@@ -9,11 +9,13 @@ services:
     volumes:
       - ../:/var/www/pipes
       - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
+      - ${HOME}/dev/.composer:${HOME}/dev/.composer
     environment:
       - DEV_UID=${DEV_UID}
       - DEV_GID=${DEV_GID}
       - PHP_WEBROOT=/var/www/pipes/pipes-connectors/public
       - PHP_IDE_CONFIG=${PHP_IDE_CONFIG}
+      - COMPOSER_HOME=${HOME}/dev/.composer
 
   mongo:
       image: mongo:latest

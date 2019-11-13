@@ -13,5 +13,4 @@ echo "gitlab.hanaboso.net ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDIwOgk1SAbzW3WX/
 sudo chmod -R 774 /var/www/var/log && sudo chown -R dev:dev /var/www/var/log
 sudo chmod -R 774 /var/www/var/cache && sudo chown -R dev:dev /var/www/var/cache
 
-
 exec "$@"

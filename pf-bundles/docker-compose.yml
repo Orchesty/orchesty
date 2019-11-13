@@ -10,7 +10,7 @@ services:
       - ../:/var/www/pipes
       - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
       - ./topology:${GENERATOR_PATH}
-      - ${HOME}/.composer:/srv/.composer
+      - ${HOME}/dev/.composer:${HOME}/dev/.composer
     environment:
       - DEV_UID=${DEV_UID}
       - DEV_GID=${DEV_GID}
@@ -20,6 +20,7 @@ services:
       - PROJECT_SOURCE_PATH=${PROJECT_SOURCE_PATH}
       - DEPLOYMENT_PREFIX=${DEPLOYMENT_PREFIX}
       - FRONTEND_HOST=${DEV_IP}
+      - COMPOSER_HOME=${HOME}/dev/.composer
 
   starting-point:
     image: dkr.hanaboso.net/pipes/pipes/starting-point:dev

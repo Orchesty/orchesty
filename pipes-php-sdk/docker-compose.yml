@@ -9,7 +9,7 @@ services:
       - ./:/var/www
       - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
       - ./topology:${GENERATOR_PATH}
-      - ${HOME}/.composer:/srv/.composer
+      - ${HOME}/dev/.composer:${HOME}/dev/.composer
     environment:
       - DEV_UID=${DEV_UID}
       - DEV_GID=${DEV_GID}
@@ -17,6 +17,7 @@ services:
       - GENERATOR_PATH=${GENERATOR_PATH}
       - PROJECT_SOURCE_PATH=${PROJECT_SOURCE_PATH}
       - DEPLOYMENT_PREFIX=${DEPLOYMENT_PREFIX}
+      - COMPOSER_HOME=${HOME}/dev/.composer
 
   mongo:
       image: mongo:latest

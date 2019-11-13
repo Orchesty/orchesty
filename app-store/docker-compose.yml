@@ -9,9 +9,11 @@ services:
     volumes:
       - ../:/var/www/pipes
       - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
+      - ${HOME}/dev/.composer:${HOME}/dev/.composer
     environment:
       - DEV_UID=${DEV_UID}
       - DEV_GID=${DEV_GID}
+      - COMPOSER_HOME=${HOME}/dev/.composer
 
   mongo:
       image: mongo:latest
