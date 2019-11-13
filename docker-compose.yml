@@ -21,12 +21,13 @@ services:
     volumes:
       - ./:/var/www
       - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
-      - ${HOME}/.composer:/srv/.composer
+      - ${HOME}/dev/.composer:${HOME}/dev/.composer
     environment:
       - APP_ENV=dev
       - DEV_UID=${DEV_UID}
       - DEV_GID=${DEV_GID}
       - PHP_IDE_CONFIG=${PHP_IDE_CONFIG}
+      - COMPOSER_HOME=${HOME}/dev/.composer
 
   mongodb:
     image: mongo:latest
