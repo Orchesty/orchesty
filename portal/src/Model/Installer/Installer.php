@@ -3,7 +3,9 @@
 namespace Hanaboso\Portal\Model\Installer;
 
 use Exception;
+use Hanaboso\Portal\Model\Installer\Exception\InstallerException;
 use Symfony\Component\Yaml\Yaml;
+use Throwable;
 
 /**
  * Class Installer
@@ -632,37 +634,50 @@ class Installer
     }
 
     /**
-     * @param string $str
-     * @param string $delim
-     *
-     * @return string
-     */
-    public function convertToCamel(string $str, string $delim): string
-    {
-        $explodedStr      = explode($delim, $str);
-        $explodedStrCamel = array_map('ucwords', (array) $explodedStr);
-
-        return implode('', $explodedStrCamel);
-    }
-
-    /**
-     * @param string $value
-     * @param array  $array
-     *
      * @return array
-     * @throws Exception
      */
-    public function unsetValue(string $value, array $array): array
+    protected function getVolumes3(): array
     {
-        $key = array_search($value, $array);
-        if ($key !== FALSE) {
-            unset($array[$key]);
+        return [
+            'volumes' => [
+                self::INFLUXDB => [
+                    'driver'      => 'local',
+                    'driver_opts' => [
+                        'type'   => 'none',
+                        'device' => '/srv/persistent-data/${DEPLOYMENT_PREFIX}/influxdb',
+                        'o'      => 'bind',
 
-        } else {
-            throw new Exception('Value is wrong and couldnt be unset.');
-        }
+                    ],
+                ],
+                self::MONGO    => [
+                    'driver'      => 'local',
+                    'driver_opts' => [
+                        'type'   => 'none',
+                        'device' => '/srv/persistent-data/${DEPLOYMENT_PREFIX}/mongodb',
+                        'o'      => 'bind',
 
-        return $array;
+                    ],
+                ],
+                self::RABBITMQ => [
+                    'driver'      => 'local',
+                    'driver_opts' => [
+                        'type'   => 'none',
+                        'device' => sprintf('/srv/persistent-data/${DEPLOYMENT_PREFIX}/%s', self::RABBITMQ),
+                        'o'      => 'bind',
+
+                    ],
+                ],
+                self::REDIS    => [
+                    'driver'      => 'local',
+                    'driver_opts' => [
+                        'type'   => 'none',
+                        'device' => sprintf('/srv/persistent-data/${DEPLOYMENT_PREFIX}/%s', self::REDIS),
+                        'o'      => 'bind',
+
+                    ],
+                ],
+            ],
+        ];
     }
 
     /**
@@ -688,7 +703,7 @@ class Installer
         if ($dto->getMetric() === self::INFLUXDB) {
 
             $array = array_merge($array, $this->$metricsName['metrics']);
-        } elseif ($dto->getMetric() === self::MONGO) {
+        } else if ($dto->getMetric() === self::MONGO) {
 
             $keys = [self::INFLUXDB, self::KAPACITOR];
             foreach ($keys as $key) {
@@ -785,6 +800,40 @@ class Installer
     }
 
     /**
+     * @param string $str
+     * @param string $delim
+     *
+     * @return string
+     */
+    public function convertToCamel(string $str, string $delim): string
+    {
+        $explodedStr      = explode($delim, $str);
+        $explodedStrCamel = array_map('ucwords', (array) $explodedStr);
+
+        return implode('', $explodedStrCamel);
+    }
+
+    /**
+     * @param string $value
+     * @param array  $array
+     *
+     * @return array
+     * @throws Exception
+     */
+    public function unsetValue(string $value, array $array): array
+    {
+        $key = array_search($value, $array);
+        if ($key !== FALSE) {
+            unset($array[$key]);
+
+        } else {
+            throw new Exception('Value is wrong and couldnt be unset.');
+        }
+
+        return $array;
+    }
+
+    /**
      * @param DataTransport $dto
      *
      * @return array
@@ -808,68 +857,23 @@ class Installer
             PUBLISH_HTTP_PORT=80';
 
         return $installer;
-
     }
 
     /**
      * @param DataTransport $dto
      *
      * @return string
+     * @throws InstallerException
      */
-    public function createInstaller(DataTransport $dto): string
+    public function generate(DataTransport $dto): string
     {
-        $installer = $this->createArray($dto);
+        try {
+            $installer = $this->createArray($dto);
 
-        return Yaml::dump($installer[0], 8, 8);
-
-    }
-
-    /**
-     * @return array
-     */
-    protected function getVolumes3(): array
-    {
-        return [
-            'volumes' => [
-                self::INFLUXDB => [
-                    'driver'      => 'local',
-                    'driver_opts' => [
-                        'type'   => 'none',
-                        'device' => '/srv/persistent-data/${DEPLOYMENT_PREFIX}/influxdb',
-                        'o'      => 'bind',
-
-                    ],
-                ],
-                self::MONGO    => [
-                    'driver'      => 'local',
-                    'driver_opts' => [
-                        'type'   => 'none',
-                        'device' => '/srv/persistent-data/${DEPLOYMENT_PREFIX}/mongodb',
-                        'o'      => 'bind',
-
-                    ],
-                ],
-                self::RABBITMQ => [
-                    'driver'      => 'local',
-                    'driver_opts' => [
-                        'type'   => 'none',
-                        'device' => sprintf('/srv/persistent-data/${DEPLOYMENT_PREFIX}/%s', self::RABBITMQ),
-                        'o'      => 'bind',
-
-                    ],
-                ],
-                self::REDIS    => [
-                    'driver'      => 'local',
-                    'driver_opts' => [
-                        'type'   => 'none',
-                        'device' => sprintf('/srv/persistent-data/${DEPLOYMENT_PREFIX}/%s', self::REDIS),
-                        'o'      => 'bind',
-
-                    ],
-                ],
-            ],
-        ];
-
+            return Yaml::dump($installer[0], 8, 8);
+        } catch (Exception|Throwable $e) {
+            throw new InstallerException($e->getMessage(), $e->getCode());
+        }
     }
 
 }

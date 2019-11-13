@@ -8,6 +8,7 @@ use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\Portal\Handler\InstallerHandler;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Annotation\Route;
 use Throwable;
 
@@ -47,7 +48,15 @@ class InstallerController extends AbstractFOSRestController
         try {
             $data = $this->installerHandler->getInstaller($request->request->all());
 
-            return $this->getResponse($data);
+            $response = new Response($data);
+
+            return $this->getResponse(
+                $response->headers->makeDisposition(
+                    ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+                    'docker-compose.yml'
+                )
+            );
+
         } catch (Exception|Throwable $e) {
             return $this->getErrorResponse($e, 500);
         }
