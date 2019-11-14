@@ -18,7 +18,8 @@ services:
             SMTP_USER: dev.email.hb@gmail.com
             SMTP_PASSWORD: jVME2RkX9xyYhj9v
             FRONTEND_HOST: ${DEV_IP}
+            COMPOSER_HOME: ${HOME}/dev/.composer
         volumes:
             - ../../../:/var/www/pipes
             - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
-            - ${HOME}/.composer:/srv/.composer
+            - ${HOME}/dev/.composer:${HOME}/dev/.composer

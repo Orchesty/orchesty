@@ -17,12 +17,13 @@ services:
           FRONTEND_HOST: ${BACKEND_URL}/
           ELASTIC_HOST: elasticsearch
           ELASTIC_INDEX: 'index'
+          COMPOSER_HOME: ${HOME}/dev/.composer
         command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console downloader:run'
         working_dir: /var/www/pipes/clients/demo/pipes-api
         volumes:
           - ../../:/var/www/pipes
           - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
-          - ${HOME}/.composer:/srv/.composer
+          - ${HOME}/dev/.composer:${HOME}/dev/.composer
     ## END DEV
     ## BEGIN STAGE
     #donwlader:
@@ -44,12 +45,13 @@ services:
           FRONTEND_HOST: ${BACKEND_URL}/
           ELASTIC_HOST: elasticsearch
           ELASTIC_INDEX: 'index'
+          COMPOSER_HOME: ${HOME}/dev/.composer
         command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit_mq:consumer:batch'
         working_dir: /var/www/pipes/clients/demo/pipes-api
         volumes:
           - ../../:/var/www/pipes
           - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
-          - ${HOME}/.composer:/srv/.composer
+          - ${HOME}/dev/.composer:${HOME}/dev/.composer
     ## END DEV
     ## BEGIN STAGE
     #batch:
@@ -72,12 +74,13 @@ services:
             FRONTEND_HOST: ${BACKEND_URL}/
             ELASTIC_HOST: elasticsearch
             ELASTIC_INDEX: 'index'
+            COMPOSER_HOME: ${HOME}/dev/.composer
         command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit_mq:consumer:batch-connector'
         working_dir: /var/www/pipes/clients/demo/pipes-api
         volumes:
             - ../../:/var/www/pipes
             - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
-            - ${HOME}/.composer:/srv/.composer
+            - ${HOME}/dev/.composer:${HOME}/dev/.composer
     ## END DEV
     ## BEGIN STAGE
     #batch-connector:
@@ -102,10 +105,11 @@ services:
           FRONTEND_HOST: ${BACKEND_URL}/
           ELASTIC_HOST: elasticsearch
           ELASTIC_INDEX: 'logstash-2018.01.31'
+          COMPOSER_HOME: ${HOME}/dev/.composer
         volumes:
           - ../../:/var/www/pipes
           - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
-          - ${HOME}/.composer:/srv/.composer
+          - ${HOME}/dev/.composer:${HOME}/dev/.composer
     ## END DEV
     ## BEGIN STAGE
     #long-running-node:
@@ -128,12 +132,13 @@ services:
           FRONTEND_HOST: ${BACKEND_URL}/
           ELASTIC_HOST: elasticsearch
           ELASTIC_INDEX: 'index'
+          COMPOSER_HOME: ${HOME}/dev/.composer
         command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit_mq:consumer:status-service'
         working_dir: /var/www/pipes/clients/demo/pipes-api
         volumes:
           - ../../:/var/www/pipes
           - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
-          - ${HOME}/.composer:/srv/.composer
+          - ${HOME}/dev/.composer:${HOME}/dev/.composer
     ## END DEV
     ## BEGIN STAGE
     #status-service:
@@ -248,6 +253,7 @@ services:
           METRICS_HOST: 'kapacitor'
           METRICS_PORT: '9100'
           METRICS_SERVICE: 'influx'
+          COMPOSER_HOME: ${HOME}/dev/.composer
           #METRICS_HOST: 'mongo'
           #METRICS_PORT: '27017'
           #METRICS_SERVICE: 'mongo'
@@ -255,7 +261,7 @@ services:
         volumes:
           - ../../:/var/www/pipes
           - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
-          - ${HOME}/.composer:/srv/.composer
+          - ${HOME}/dev/.composer:${HOME}/dev/.composer
     ## END DEV
     ## BEGIN STAGE
     #monolith-api:

@@ -65,11 +65,12 @@ build-monolith:
 		-u $$(id -u):$$(id -g) \
 		-v $$(pwd)/../../../:/build \
 		-v $${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent \
-		-v $${HOME}/.composer:/srv/.composer \
+		-v $${HOME}/dev/.composer:$${HOME}/dev/.composer \
 		-w /build/${CLIENT_DIR}/pipes-api \
 		-e COMPOSER=composer.prod.json \
 		-e APP_ENV=prod \
 		-e APP_DEBUG=0 \
+		-e COMPOSER_HOME=$${HOME}/dev/.composer \
 		${IMAGE_PHP_DEV} \
 		bash -c 'composer install --no-dev --optimize-autoloader --ignore-platform-reqs && bin/console cache:warmup' && \
 	: Build an app docker image from the artifacts && \
@@ -89,7 +90,7 @@ build-sender:
 		-u $$(id -u):$$(id -g) \
 		-v $$(pwd)/../../../:/build \
 		-v $${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent \
-		-v $${HOME}/.composer:/srv/.composer \
+		-v $${HOME}/dev/.composer:${HOME}/dev/.composer \
 		-w /build/${CLIENT_DIR}/sender-api \
 		-e COMPOSER=composer.prod.json \
 		-e APP_ENV=prod \
