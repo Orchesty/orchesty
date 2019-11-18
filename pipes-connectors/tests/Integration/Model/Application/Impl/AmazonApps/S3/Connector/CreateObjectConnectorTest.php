@@ -46,7 +46,7 @@ final class CreateObjectConnectorTest extends DatabaseTestCaseAbstract
         $this->createApplication();
 
         $dto = (new ProcessDto())
-            ->setData((string) json_encode(['name' => 'Test', 'content' => 'Content']))
+            ->setData((string) json_encode(['name' => 'Test', 'content' => 'Content'], JSON_THROW_ON_ERROR))
             ->setHeaders(['pf-application' => self::KEY, 'pf-user' => self::USER]);
         $dto = $this->connector->processAction($dto);
 
@@ -62,7 +62,7 @@ final class CreateObjectConnectorTest extends DatabaseTestCaseAbstract
         $this->createApplication();
 
         $dto = (new ProcessDto())
-            ->setData((string) json_encode(['content' => 'Content']))
+            ->setData((string) json_encode(['content' => 'Content'], JSON_THROW_ON_ERROR))
             ->setHeaders(['pf-application' => self::KEY, 'pf-user' => self::USER]);
 
         self::expectException(ConnectorException::class);
@@ -81,7 +81,7 @@ final class CreateObjectConnectorTest extends DatabaseTestCaseAbstract
         $this->createApplication();
 
         $dto = (new ProcessDto())
-            ->setData((string) json_encode(['name' => 'Test']))
+            ->setData((string) json_encode(['name' => 'Test'], JSON_THROW_ON_ERROR))
             ->setHeaders(['pf-application' => self::KEY, 'pf-user' => self::USER]);
 
         self::expectException(ConnectorException::class);
@@ -99,15 +99,17 @@ final class CreateObjectConnectorTest extends DatabaseTestCaseAbstract
         $application = (new ApplicationInstall())
             ->setKey(self::KEY)
             ->setUser(self::USER)
-            ->setSettings([
-                BasicApplicationAbstract::FORM => [
-                    S3Application::KEY      => 'Key',
-                    S3Application::SECRET   => 'Secret',
-                    S3Application::REGION   => 'eu-central-1',
-                    S3Application::BUCKET   => 'Bucket',
-                    S3Application::ENDPOINT => 'http://fakes3:4567',
-                ],
-            ]);
+            ->setSettings(
+                [
+                    BasicApplicationAbstract::FORM => [
+                        S3Application::KEY      => 'Key',
+                        S3Application::SECRET   => 'Secret',
+                        S3Application::REGION   => 'eu-central-1',
+                        S3Application::BUCKET   => 'Bucket',
+                        S3Application::ENDPOINT => 'http://fakes3:4567',
+                    ],
+                ]
+            );
 
         $this->dm->persist($application);
         $this->dm->flush();

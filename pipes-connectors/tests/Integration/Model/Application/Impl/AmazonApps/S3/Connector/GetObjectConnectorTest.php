@@ -38,7 +38,7 @@ final class GetObjectConnectorTest extends DatabaseTestCaseAbstract
         $this->createApplication();
 
         $dto = (new ProcessDto())
-            ->setData((string) json_encode(['name' => 'Test', 'content' => 'Content']))
+            ->setData((string) json_encode(['name' => 'Test', 'content' => 'Content'], JSON_THROW_ON_ERROR))
             ->setHeaders(['pf-application' => self::KEY, 'pf-user' => self::USER]);
 
         self::$container
@@ -57,7 +57,7 @@ final class GetObjectConnectorTest extends DatabaseTestCaseAbstract
         $this->createApplication();
 
         $dto     = (new ProcessDto())
-            ->setData((string) json_encode(['name' => 'Test']))
+            ->setData((string) json_encode(['name' => 'Test'], JSON_THROW_ON_ERROR))
             ->setHeaders(['pf-application' => self::KEY, 'pf-user' => self::USER]);
         $dto     = $this->connector->processAction($dto);
         $content = json_decode($dto->getData(), TRUE, 512, JSON_THROW_ON_ERROR);
@@ -92,12 +92,14 @@ final class GetObjectConnectorTest extends DatabaseTestCaseAbstract
         $this->createApplication();
 
         $dto = (new ProcessDto())
-            ->setData((string) json_encode(['name' => 'Unknown']))
+            ->setData((string) json_encode(['name' => 'Unknown'], JSON_THROW_ON_ERROR))
             ->setHeaders(['pf-application' => self::KEY, 'pf-user' => self::USER]);
 
         self::expectException(OnRepeatException::class);
         self::expectExceptionCode(0);
-        self::expectExceptionMessage("Connector 's3-get-object': Aws\S3\Exception\S3Exception: Error executing \"GetObject\" on \"http://fakes3:4567/Bucket/Unknown\"; AWS HTTP error: Client error: `GET http://fakes3:4567/Bucket/Unknown` resulted in a `404 Not Found`");
+        self::expectExceptionMessage(
+            "Connector 's3-get-object': Aws\S3\Exception\S3Exception: Error executing \"GetObject\" on \"http://fakes3:4567/Bucket/Unknown\"; AWS HTTP error: Client error: `GET http://fakes3:4567/Bucket/Unknown` resulted in a `404 Not Found`"
+        );
 
         $this->connector->processAction($dto);
     }
@@ -110,15 +112,17 @@ final class GetObjectConnectorTest extends DatabaseTestCaseAbstract
         $application = (new ApplicationInstall())
             ->setKey(self::KEY)
             ->setUser(self::USER)
-            ->setSettings([
-                BasicApplicationAbstract::FORM => [
-                    S3Application::KEY      => 'Key',
-                    S3Application::SECRET   => 'Secret',
-                    S3Application::REGION   => 'eu-central-1',
-                    S3Application::BUCKET   => 'Bucket',
-                    S3Application::ENDPOINT => 'http://fakes3:4567',
-                ],
-            ]);
+            ->setSettings(
+                [
+                    BasicApplicationAbstract::FORM => [
+                        S3Application::KEY      => 'Key',
+                        S3Application::SECRET   => 'Secret',
+                        S3Application::REGION   => 'eu-central-1',
+                        S3Application::BUCKET   => 'Bucket',
+                        S3Application::ENDPOINT => 'http://fakes3:4567',
+                    ],
+                ]
+            );
 
         $this->dm->persist($application);
         $this->dm->flush();
