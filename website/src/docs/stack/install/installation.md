@@ -1,7 +1,8 @@
 ---
 layout: main.hbs
 collection: install
-name: installation
+name: Installation
+level: 1
 ---
 
 ### Instalace
