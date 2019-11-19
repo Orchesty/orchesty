@@ -2,7 +2,7 @@
   "name": "hanaboso/pipes-framework",
   "license": "proprietary",
   "description": "PipesFramework for Symfony",
-  "version": "1.1.12",
+  "version": "1.1.13",
   "autoload": {
     "psr-4": {
       "Hanaboso\\PipesFramework\\": "src/"
@@ -27,7 +27,7 @@
     "influxdb/influxdb-php": "^1.15",
     "mtdowling/cron-expression": "^1.2",
     "nette/utils": "^3.0",
-    "php-http/client-common": "^1.9",
+    "php-http/client-common": "^1.10",
     "php-http/message": "^1.8",
     "php-http/socket-client": "^1.4"
   },
