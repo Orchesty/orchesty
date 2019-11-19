@@ -28,7 +28,7 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
     /**
      * @var OAuth2Provider
      */
-    private $provider;
+    protected $provider;
 
     /**
      * OAuth2ApplicationAbstract constructor.

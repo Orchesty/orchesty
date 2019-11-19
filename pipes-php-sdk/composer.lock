@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "94bb15601ca92190b68c7f689df78312",
+    "content-hash": "a6e0a69d5388d35ed992e9884b9cbc50",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -2158,16 +2158,16 @@
         },
         {
             "name": "hanaboso/commons-bundle",
-            "version": "1.2.3",
+            "version": "1.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/commons-bundle.git",
-                "reference": "d4e48656fc624102b75c401aff1b1616f80a26cf"
+                "reference": "c2abf5aafacbe61b302391a86e71f7aa66f00250"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/commons-bundle/zipball/d4e48656fc624102b75c401aff1b1616f80a26cf",
-                "reference": "d4e48656fc624102b75c401aff1b1616f80a26cf",
+                "url": "https://api.github.com/repos/hanaboso/commons-bundle/zipball/c2abf5aafacbe61b302391a86e71f7aa66f00250",
+                "reference": "c2abf5aafacbe61b302391a86e71f7aa66f00250",
                 "shasum": ""
             },
             "require": {
@@ -2209,7 +2209,7 @@
             "license": [
                 "proprietary"
             ],
-            "time": "2019-11-19T14:52:20+00:00"
+            "time": "2019-11-19T17:02:23+00:00"
         },
         {
             "name": "hanaboso/mongo-data-grid",
