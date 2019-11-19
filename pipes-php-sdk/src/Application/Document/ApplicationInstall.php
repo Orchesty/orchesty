@@ -66,6 +66,13 @@ class ApplicationInstall
     private $encryptedSettings;
 
     /**
+     * @var array
+     *
+     * @ODM\Field(type="hash")
+     */
+    private $nonEncryptedSettings = [];
+
+    /**
      * ApplicationInstall constructor.
      *
      * @throws DateTimeException
@@ -157,6 +164,26 @@ class ApplicationInstall
     }
 
     /**
+     * @return array
+     */
+    public function getNonEncryptedSettings(): array
+    {
+        return $this->nonEncryptedSettings;
+    }
+
+    /**
+     * @param array $nonEncryptedSettings
+     *
+     * @return ApplicationInstall
+     */
+    public function setNonEncryptedSettings(array $nonEncryptedSettings): ApplicationInstall
+    {
+        $this->nonEncryptedSettings = $nonEncryptedSettings;
+
+        return $this;
+    }
+
+    /**
      * @ODM\PreFlush
      * @throws CryptException
      */
@@ -186,6 +213,7 @@ class ApplicationInstall
             ApplicationInstall::USER => $this->getUser(),
             ApplicationInstall::KEY  => $this->getKey(),
             'settings'               => $this->getSettings(),
+            'nonEncryptedSettings'   => $this->getNonEncryptedSettings(),
             'created'                => $this->getCreated()->format(DateTimeUtils::DATE_TIME),
             'updated'                => $this->getUpdated()->format(DateTimeUtils::DATE_TIME),
             'expires'                => $expires ? $expires->format(DateTimeUtils::DATE_TIME) : NULL,
