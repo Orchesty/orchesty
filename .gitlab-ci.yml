@@ -169,7 +169,7 @@ pf-bundles-test:
     - cd $REPO_ROOT/$DIR
     - export COMPOSE_PROJECT_NAME="p${CI_PIPELINE_ID}-bundles" # CLEANUP bundles
     - export COMPOSE_FILE=docker-compose.ci.yml                # CLEANUP bundles
-    - make ${COMPOSE_FILE} docker-up-force composer-install test
+    - make ${COMPOSE_FILE} test
 
 notification-sender-test:
   stage: stage2
