@@ -1,0 +1,71 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: multi-counter
+  labels:
+    app: multi-counter
+spec:
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: multi-counter
+  template:
+    metadata:
+      labels:
+        app: multi-counter
+    spec:
+      containers:
+        - name: multi-counter
+          args: ["./dist/src/bin/pipes.js", "start", "multi_counter"]
+          image: dkr.hanaboso.net/pipes/pipes/pf-bridge:dev
+          ports:
+            - containerPort: 8005
+          env:
+            - name: RABBITMQ_HOST
+              value: rabbitmq
+            - name: RABBITMQ_PORT
+              value: "5672"
+            - name: RABBITMQ_USER
+              value: guest
+            - name: RABBITMQ_PASS
+              value: guest
+            - name: RABBITMQ_VHOST
+              value: "/"
+            - name: REDIS_HOST
+              value: redis
+            - name: REDIS_PORT
+              value: "6379"
+            - name: REDIS_PASS
+              value: ""
+            - name: REDIS_DB
+              value: "0"
+            - name: COUNTER_PREFETCH
+              value: "100"
+            - name: METRICS_HOST
+              value: kapacitor
+            - name: METRICS_PORT
+              value: "9100"
+            - name: METRICS_SERVICE
+              value: influx
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: 100m
+            limits:
+              memory: 128Mi
+              cpu: "2"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: multi-counter
+spec:
+  selector:
+    app: multi-counter
+  ports:
+    - protocol: TCP
+      targetPort: 8005
+      port: 80

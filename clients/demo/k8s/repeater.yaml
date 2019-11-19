@@ -1,0 +1,44 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: repeater
+  labels:
+    app: repeater
+spec:
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: repeater
+  template:
+    metadata:
+      labels:
+        app: repeater
+    spec:
+      containers:
+        - name: repeater
+          image: dkr.hanaboso.net/pipes/pipes/pf-bridge:dev
+          args: ["./dist/src/bin/pipes.js", "start", "repeater"]
+          env:
+            - name: RABBITMQ_HOST
+              value: rabbitmq
+            - name: RABBITMQ_PORT
+              value: "5672"
+            - name: RABBITMQ_USER
+              value: guest
+            - name: RABBITMQ_PASS
+              value: guest
+            - name: RABBITMQ_VHOST
+              value: "/"
+            - name: MONGO_HOST
+              value: mongo
+            - name: REPEATER_CHECK_TIMEOUT
+              value: "5000"
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: 250m
+            limits:
+              memory: 128Mi
+              cpu: "2"

@@ -1,0 +1,43 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-sender-api
+  labels:
+    app: notification-sender-api
+spec:
+  selector:
+    matchLabels:
+      app: notification-sender-api
+  template:
+    metadata:
+      labels:
+        app: notification-sender-api
+    spec:
+      containers:
+        - name: php-w-nginx
+          image: dkr.hanaboso.net/pipes/notification-sender:master
+          ports:
+            - containerPort: 80
+          env:
+            - name: MONGO_HOST
+              value: mongo
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: "250m"
+            limits:
+              memory: 512Mi
+              cpu: "1"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification-sender-api
+spec:
+  selector:
+    app: notification-sender-api
+  ports:
+    - protocol: TCP
+      port: 80

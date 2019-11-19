@@ -1,0 +1,57 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: starting-point
+  labels:
+    app: starting-point
+spec:
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: starting-point
+  template:
+    metadata:
+      labels:
+        app: starting-point
+    spec:
+      containers:
+        - name: starting-point
+          image: dkr.hanaboso.net/pipes/pipes/starting-point:master
+          ports:
+            - containerPort: 80
+          env:
+            - name: APP_DEBUG
+              value: "false"
+            - name: MONGO_HOSTNAME
+              value: mongo
+            - name: MONGO_DATABASE
+              value: demo
+            - name: RABBIT_COUNTER_QUEUE_DURABLE
+              value: "true"
+            - name: RABBIT_QUEUE_DURABLE
+              value: "true"
+            - name: RABBIT_DELIVERY_MODE
+              value: "2"
+            - name: APP_CLEANUP_TIME
+              value: "300"
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: 100m
+            limits:
+              memory: 128Mi
+              cpu: "2"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: starting-point
+spec:
+  selector:
+    app: starting-point
+  ports:
+    - protocol: TCP
+      port: 80
