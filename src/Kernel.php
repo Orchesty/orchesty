@@ -21,7 +21,7 @@ final class Kernel extends BaseKernel
 
     use MicroKernelTrait;
 
-    public const CONFIG_EXTS = '.{php,xml,yaml,yml}';
+    public const CONFIG_EXTS = '.{yaml}';
 
     /**
      * @return iterable
