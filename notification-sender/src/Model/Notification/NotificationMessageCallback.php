@@ -5,6 +5,7 @@ namespace Hanaboso\NotificationSender\Model\Notification;
 use Bunny\Message;
 use Hanaboso\CommonsBundle\Enum\NotificationEventEnum;
 use Hanaboso\CommonsBundle\Exception\EnumException;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\NotificationSender\Exception\NotificationException;
 use RabbitMqBundle\Connection\Connection;
 use RabbitMqBundle\Consumer\CallbackInterface;
@@ -45,7 +46,7 @@ final class NotificationMessageCallback implements CallbackInterface
      */
     public function processMessage(Message $message, Connection $connection, int $channelId): void
     {
-        $data  = json_decode($message->content, TRUE, 512, JSON_THROW_ON_ERROR);
+        $data  = Json::decode($message->content);
         $event = $data[self::PIPE][self::TYPE] ?? '';
 
         if (!$event) {

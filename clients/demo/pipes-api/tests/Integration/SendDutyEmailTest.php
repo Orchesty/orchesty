@@ -7,6 +7,7 @@ use EmailServiceBundle\Mailer\Mailer;
 use EmailServiceBundle\Transport\TransportInterface;
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Utils\Json;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -38,7 +39,7 @@ final class SendDutyEmailTest extends KernelTestCase
         $pagerDuty = self::$container->get('hbpf.connector.pager-duty');
         $result    = new SendDutyEmail(new Mailer($transport), $pagerDuty);
         $dto       = (new ProcessDto())
-            ->setData((string) json_encode(['since' => '2019-04-19', 'until' => '2019-04-29'], JSON_THROW_ON_ERROR));
+            ->setData(Json::encode(['since' => '2019-04-19', 'until' => '2019-04-29']));
 
         $data = $result->process($dto)->getData();
         self::assertIsString($data);

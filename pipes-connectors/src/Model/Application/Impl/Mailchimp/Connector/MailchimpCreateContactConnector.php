@@ -9,6 +9,7 @@ use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\MailchimpApplication;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
@@ -84,8 +85,7 @@ class MailchimpCreateContactConnector extends ConnectorAbstract
     public function processAction(ProcessDto $dto): ProcessDto
     {
         $applicationInstall = $this->repository->findUsersAppDefaultHeaders($dto);
-
-        $apiEndpoint = $applicationInstall->getSettings()[MailchimpApplication::API_KEYPOINT];
+        $apiEndpoint        = $applicationInstall->getSettings()[MailchimpApplication::API_KEYPOINT];
 
         $return = $this->curlManager->send(
             $this->application->getRequestDto(
@@ -104,10 +104,8 @@ class MailchimpCreateContactConnector extends ConnectorAbstract
 
         unset($json['type'], $json['detail'], $json['instance']);
 
-        $dto->setData((string) json_encode($json, JSON_THROW_ON_ERROR, 512));
-
+        $dto->setData(Json::encode($json));
         $statusCode = $return->getStatusCode();
-
         $this->evaluateStatusCode($statusCode, $dto);
 
         return $dto;

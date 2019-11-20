@@ -9,6 +9,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookApplicationInterface;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
@@ -146,7 +147,7 @@ final class WebhookApplication extends ApplicationAbstract implements WebhookApp
         $subscription;
 
         return (new RequestDto(CurlManager::METHOD_POST, new Uri(self::SUBSCRIBE)))
-            ->setBody(json_encode(['url' => $url,], JSON_THROW_ON_ERROR));
+            ->setBody(Json::encode(['url' => $url,]));
     }
 
     /**
@@ -161,7 +162,7 @@ final class WebhookApplication extends ApplicationAbstract implements WebhookApp
         $applicationInstall;
 
         return (new RequestDto(CurlManager::METHOD_POST, new Uri(self::UNSUBSCRIBE)))
-            ->setBody(json_encode(['id' => $id,], JSON_THROW_ON_ERROR));
+            ->setBody(Json::encode(['id' => $id,]));
     }
 
     /**
@@ -174,7 +175,7 @@ final class WebhookApplication extends ApplicationAbstract implements WebhookApp
     {
         $install;
 
-        return json_decode($dto->getBody(), TRUE, 512, JSON_THROW_ON_ERROR)['id'];
+        return Json::decode($dto->getBody())['id'];
     }
 
     /**
@@ -184,7 +185,7 @@ final class WebhookApplication extends ApplicationAbstract implements WebhookApp
      */
     public function processWebhookUnsubscribeResponse(ResponseDto $dto): bool
     {
-        return json_decode($dto->getBody(), TRUE, 512, JSON_THROW_ON_ERROR)['success'] ?? FALSE;
+        return Json::decode($dto->getBody())['success'] ?? FALSE;
     }
 
     /**

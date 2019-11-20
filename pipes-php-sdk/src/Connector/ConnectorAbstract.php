@@ -4,6 +4,7 @@ namespace Hanaboso\PipesPhpSdk\Connector;
 
 use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 
 /**
@@ -89,7 +90,7 @@ abstract class ConnectorAbstract implements ConnectorInterface
      */
     protected function getJsonContent(ProcessDto $dto): array
     {
-        return json_decode($dto->getData(), TRUE, 512, JSON_THROW_ON_ERROR);
+        return Json::decode($dto->getData());
     }
 
     /**
@@ -100,7 +101,7 @@ abstract class ConnectorAbstract implements ConnectorInterface
      */
     protected function setJsonContent(ProcessDto $dto, array $content): ProcessDto
     {
-        return $dto->setData(json_encode($content, JSON_THROW_ON_ERROR));
+        return $dto->setData(Json::encode($content));
     }
 
 }

@@ -5,6 +5,7 @@ namespace Tests\Integration\Model\Application\Impl\AmazonApps\S3\Connector;
 use Exception;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\Connector\GetS3ObjectConnector;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\S3Application;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
@@ -38,7 +39,7 @@ final class GetObjectConnectorTest extends DatabaseTestCaseAbstract
         $this->createApplication();
 
         $dto = (new ProcessDto())
-            ->setData((string) json_encode(['name' => 'Test', 'content' => 'Content'], JSON_THROW_ON_ERROR))
+            ->setData(Json::encode(['name' => 'Test', 'content' => 'Content']))
             ->setHeaders(['pf-application' => self::KEY, 'pf-user' => self::USER]);
 
         self::$container
@@ -57,10 +58,10 @@ final class GetObjectConnectorTest extends DatabaseTestCaseAbstract
         $this->createApplication();
 
         $dto     = (new ProcessDto())
-            ->setData((string) json_encode(['name' => 'Test'], JSON_THROW_ON_ERROR))
+            ->setData(Json::encode(['name' => 'Test']))
             ->setHeaders(['pf-application' => self::KEY, 'pf-user' => self::USER]);
         $dto     = $this->connector->processAction($dto);
-        $content = json_decode($dto->getData(), TRUE, 512, JSON_THROW_ON_ERROR);
+        $content = Json::decode($dto->getData());
 
         self::assertEquals('Test', $content['name']);
         self::assertEquals('Content', $content['content']);
@@ -92,7 +93,7 @@ final class GetObjectConnectorTest extends DatabaseTestCaseAbstract
         $this->createApplication();
 
         $dto = (new ProcessDto())
-            ->setData((string) json_encode(['name' => 'Unknown'], JSON_THROW_ON_ERROR))
+            ->setData(Json::encode(['name' => 'Unknown']))
             ->setHeaders(['pf-application' => self::KEY, 'pf-user' => self::USER]);
 
         self::expectException(OnRepeatException::class);

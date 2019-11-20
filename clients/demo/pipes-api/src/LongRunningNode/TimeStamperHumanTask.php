@@ -3,11 +3,11 @@
 namespace Demo\LongRunningNode;
 
 use Bunny\Message;
-use DateTime;
-use DateTimeZone;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeAbstract;
 
@@ -53,7 +53,7 @@ final class TimeStamperHumanTask extends LongRunningNodeAbstract
         $data = LongRunningNodeData::fromMessage($message);
 
         return $data->setAuditLogs(
-            $this->createTimeStamp(json_decode($data->getData(), TRUE, 512, JSON_THROW_ON_ERROR))
+            $this->createTimeStamp(Json::decode($data->getData()))
         );
     }
 
@@ -68,7 +68,7 @@ final class TimeStamperHumanTask extends LongRunningNodeAbstract
     {
         $innerData = $this->createTimeStamp($data->getAuditLogs(), TRUE);
         $data
-            ->setData((string) json_encode(array_merge($requestData, $innerData), JSON_THROW_ON_ERROR))
+            ->setData(Json::encode(array_merge($requestData, $innerData)))
             ->setAuditLogs($innerData);
         $this->dm->flush();
 
@@ -84,7 +84,7 @@ final class TimeStamperHumanTask extends LongRunningNodeAbstract
      */
     private function createTimeStamp(array $data, bool $isAfter = FALSE): array
     {
-        $dateTime = new DateTime('NOW', new DateTimeZone('UTC'));
+        $dateTime = DateTimeUtils::getUtcDateTime();
         $key      = sprintf('%s%s', $isAfter ? '[A] ' : '[B] ', $dateTime->format('U'));
 
         $data['timestamp'][$key] = $dateTime->format('d. m. Y H:i:s');

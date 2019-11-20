@@ -3,6 +3,7 @@
 namespace Tests;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Symfony\Component\HttpFoundation\Session\Session;
 
 /**
@@ -65,7 +66,7 @@ abstract class DatabaseTestCaseAbstract extends KernelTestCaseAbstract
             }
         }
 
-        self::assertEquals($fileContent, json_encode($arrayResult, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT));
+        self::assertEquals($fileContent, Json::encode($arrayResult));
     }
 
 }

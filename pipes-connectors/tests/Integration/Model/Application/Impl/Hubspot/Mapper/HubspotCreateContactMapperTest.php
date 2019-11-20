@@ -5,6 +5,7 @@ namespace Tests\Integration\Model\Application\Impl\Hubspot\Mapper;
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Mapper\HubspotCreateContactMapper;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shipstation\Connector\ShipstationNewOrderConnector;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
@@ -61,12 +62,9 @@ final class HubspotCreateContactMapperTest extends DatabaseTestCaseAbstract
         $dto                        = $hubspotCreateContactMapper->process($response);
 
         self::assertEquals(
-            json_decode($dto->getData(), TRUE, 512, JSON_THROW_ON_ERROR),
-            json_decode(
-                (string) file_get_contents(__DIR__ . sprintf('/Data/requestHubspot.json'), TRUE),
-                TRUE,
-                512,
-                JSON_THROW_ON_ERROR
+            Json::decode($dto->getData()),
+            Json::decode(
+                (string) file_get_contents(__DIR__ . sprintf('/Data/requestHubspot.json'), TRUE)
             )
         );
 

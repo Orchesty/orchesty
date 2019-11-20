@@ -13,6 +13,7 @@ use Hanaboso\CommonsBundle\Database\Document\Node;
 use Hanaboso\CommonsBundle\Database\Repository\NodeRepository;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Utils\GeneratorUtils;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
 use Hanaboso\PipesPhpSdk\RabbitMq\Producer\AbstractProducer;
@@ -102,7 +103,7 @@ abstract class RabbitCustomNode extends CustomNodeAbstract implements LoggerAwar
     protected function publishMessage(array $message, array $headers): void
     {
         foreach ($this->queues as $que) {
-            $this->chann->publish((string) json_encode($message, JSON_THROW_ON_ERROR), $headers, $this->ex, $que);
+            $this->chann->publish(Json::encode($message), $headers, $this->ex, $que);
         }
     }
 

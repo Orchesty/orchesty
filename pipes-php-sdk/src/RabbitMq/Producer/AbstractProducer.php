@@ -5,6 +5,7 @@ namespace Hanaboso\PipesPhpSdk\RabbitMq\Producer;
 use Bunny\Channel;
 use Bunny\Exception\BunnyException;
 use Exception;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesPhpSdk\RabbitMq\BunnyManager;
 use Hanaboso\PipesPhpSdk\RabbitMq\ContentTypes;
 use Psr\Log\LoggerAwareInterface;
@@ -108,7 +109,7 @@ class AbstractProducer implements LoggerAwareInterface
     public function beforeSerializer($message): array
     {
         if (is_string($message)) {
-            $message = json_decode($message, TRUE, 512, JSON_THROW_ON_ERROR);
+            $message = Json::decode($message);
         }
 
         if ($this->getBeforeMethod()) {
@@ -130,7 +131,7 @@ class AbstractProducer implements LoggerAwareInterface
     {
         switch ($this->getContentType()) {
             case ContentTypes::APPLICATION_JSON:
-                $message = json_encode($this->beforeSerializer($message), JSON_THROW_ON_ERROR);
+                $message = Json::encode($this->beforeSerializer($message));
                 break;
             case ContentTypes::TEXT_PLAIN:
                 break;

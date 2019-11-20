@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d1558638f1419a9cdf37a51394dc5328",
+    "content-hash": "e2ca94fa5aabbd86f23cf1e5bfbb1be5",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -2124,16 +2124,16 @@
         },
         {
             "name": "hanaboso/commons-bundle",
-            "version": "1.2.5",
+            "version": "1.2.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/commons-bundle.git",
-                "reference": "b3d61f9d6ad150f0673a109e96822d4c50e1313e"
+                "reference": "0cc407e5c66c5a74143508f32f6dc15b1abcf197"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/commons-bundle/zipball/b3d61f9d6ad150f0673a109e96822d4c50e1313e",
-                "reference": "b3d61f9d6ad150f0673a109e96822d4c50e1313e",
+                "url": "https://api.github.com/repos/hanaboso/commons-bundle/zipball/0cc407e5c66c5a74143508f32f6dc15b1abcf197",
+                "reference": "0cc407e5c66c5a74143508f32f6dc15b1abcf197",
                 "shasum": ""
             },
             "require": {
@@ -2175,7 +2175,7 @@
             "license": [
                 "proprietary"
             ],
-            "time": "2019-11-20T07:29:52+00:00"
+            "time": "2019-11-20T12:41:52+00:00"
         },
         {
             "name": "hanaboso/email-service-bundle",

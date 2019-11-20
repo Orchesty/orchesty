@@ -8,6 +8,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookApplicationInterface;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
@@ -244,7 +245,7 @@ class MailchimpApplication extends OAuth2ApplicationAbstract implements WebhookA
                 $applicationInstall->getSettings()[self::API_KEYPOINT],
                 $applicationInstall->getSettings()[ApplicationAbstract::FORM][self::AUDIENCE_ID]
             ),
-            json_encode(
+            Json::encode(
                 [
                     'url'     => $url,
                     'events'  => [
@@ -255,8 +256,7 @@ class MailchimpApplication extends OAuth2ApplicationAbstract implements WebhookA
                         'admin' => TRUE,
                         'api'   => TRUE,
                     ],
-                ],
-                JSON_THROW_ON_ERROR
+                ]
             )
         );
     }
@@ -293,7 +293,7 @@ class MailchimpApplication extends OAuth2ApplicationAbstract implements WebhookA
     {
         $install;
 
-        return json_decode($dto->getBody(), TRUE, 512, JSON_THROW_ON_ERROR)['id'];
+        return Json::decode($dto->getBody())['id'];
     }
 
     /**

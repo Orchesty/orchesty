@@ -2211,11 +2211,11 @@
         },
         {
             "name": "hanaboso/app-store",
-            "version": "1.1.12",
+            "version": "1.1.13",
             "dist": {
                 "type": "path",
                 "url": "../../../app-store",
-                "reference": "435bc4291fbf27205a7c5b2b5bfd2408113664e9"
+                "reference": "5858fda270d28c03abb5ba93c882ecb650352f78"
             },
             "require": {
                 "ext-json": "*",
@@ -2247,16 +2247,16 @@
         },
         {
             "name": "hanaboso/commons-bundle",
-            "version": "1.2.5",
+            "version": "1.2.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/commons-bundle.git",
-                "reference": "b3d61f9d6ad150f0673a109e96822d4c50e1313e"
+                "reference": "0cc407e5c66c5a74143508f32f6dc15b1abcf197"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/commons-bundle/zipball/b3d61f9d6ad150f0673a109e96822d4c50e1313e",
-                "reference": "b3d61f9d6ad150f0673a109e96822d4c50e1313e",
+                "url": "https://api.github.com/repos/hanaboso/commons-bundle/zipball/0cc407e5c66c5a74143508f32f6dc15b1abcf197",
+                "reference": "0cc407e5c66c5a74143508f32f6dc15b1abcf197",
                 "shasum": ""
             },
             "require": {
@@ -2298,7 +2298,7 @@
             "license": [
                 "proprietary"
             ],
-            "time": "2019-11-20T07:29:52+00:00"
+            "time": "2019-11-20T12:41:52+00:00"
         },
         {
             "name": "hanaboso/email-service-bundle",
@@ -2374,11 +2374,11 @@
         },
         {
             "name": "hanaboso/pipes-connectors",
-            "version": "1.1.9",
+            "version": "1.1.10",
             "dist": {
                 "type": "path",
                 "url": "../../../pipes-connectors",
-                "reference": "34cda88c57a1278e431d9e10152c961d82d937db"
+                "reference": "88bfb8ff9e067eb912d7fd12c95108b47544f504"
             },
             "require": {
                 "ext-json": "*",
@@ -2413,11 +2413,11 @@
         },
         {
             "name": "hanaboso/pipes-framework",
-            "version": "1.1.15",
+            "version": "1.1.16",
             "dist": {
                 "type": "path",
                 "url": "../../../pf-bundles",
-                "reference": "32fb3f1805b52e2b3c5f080a520ba6117e6e54f4"
+                "reference": "ce1704eff57f3e7fb19639767bbe696565ae41d6"
             },
             "require": {
                 "ext-json": "*",
@@ -2461,11 +2461,11 @@
         },
         {
             "name": "hanaboso/pipes-php-sdk",
-            "version": "1.0.17",
+            "version": "1.0.18",
             "dist": {
                 "type": "path",
                 "url": "../../../pipes-php-sdk",
-                "reference": "e8915234ebfb436769384e31bd863c5d311c565b"
+                "reference": "8adc7710023bd5b35697936249cdcd7e302ea298"
             },
             "require": {
                 "ext-json": "*",

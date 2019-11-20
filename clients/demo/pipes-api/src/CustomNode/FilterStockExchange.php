@@ -5,6 +5,7 @@ namespace Demo\CustomNode;
 use Exception;
 use Hanaboso\CommonsBundle\Monolog\LoggerContext;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
 use Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Exception\CustomNodeException;
 use Psr\Log\LoggerAwareInterface;
@@ -49,10 +50,10 @@ class FilterStockExchange extends CustomNodeAbstract implements LoggerAwareInter
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        $data = json_decode($dto->getData(), TRUE, 512, JSON_THROW_ON_ERROR);
+        $data = Json::decode($dto->getData());
 
         if (array_key_exists($this->key, $data)) {
-            return $dto->setData((string) json_encode($data[$this->key], JSON_THROW_ON_ERROR));
+            return $dto->setData(Json::encode($data[$this->key]));
         }
 
         try {

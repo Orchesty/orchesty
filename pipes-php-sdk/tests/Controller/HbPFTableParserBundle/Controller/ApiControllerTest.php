@@ -3,6 +3,7 @@
 namespace Tests\Controller\HbPFTableParserBundle\Controller;
 
 use Hanaboso\CommonsBundle\Exception\FileStorageException;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesPhpSdk\Parser\Exception\TableParserException;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\ControllerTestCaseAbstract;
@@ -29,11 +30,8 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
 
         self::assertEquals(200, $response->status);
         self::assertEquals(
-            json_decode(
-                (string) file_get_contents(__DIR__ . '/../../../Integration/Parser/data/output-10.json'),
-                FALSE,
-                512,
-                JSON_THROW_ON_ERROR
+            Json::decode(
+                (string) file_get_contents(__DIR__ . '/../../../Integration/Parser/data/output-10.json')
             ),
             $response->content
         );
@@ -162,12 +160,11 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
             $parameters,
             [],
             [],
-            $content ? (string) json_encode($content, JSON_THROW_ON_ERROR) : ''
+            $content ? Json::encode($content) : ''
         );
         /** @var Response $response */
         $response = self::$client->getResponse();
-
-        $res = json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR);
+        $res      = Json::decode((string) $response->getContent());
 
         if (isset($res['error_code'])) {
             return parent::sendPost($url, $parameters, $content);

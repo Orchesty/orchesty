@@ -5,6 +5,7 @@ namespace Demo\Command;
 use Clue\React\Buzz\Browser;
 use Exception;
 use GuzzleHttp\Psr7\Request;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Psr\Http\Message\ResponseInterface;
 use Ratchet\Client\Connector;
 use Ratchet\Client\WebSocket;
@@ -76,11 +77,10 @@ class DownloaderCommand extends Command
                         5,
                         function () use ($ws): void {
                             $ws->send(
-                                json_encode(
+                                Json::encode(
                                     [
                                         'event' => 'pusher:ping', 'data' => [],
-                                    ],
-                                    JSON_THROW_ON_ERROR
+                                    ]
                                 )
                             );
                         }
@@ -92,7 +92,7 @@ class DownloaderCommand extends Command
 
                             $json = (string) $json;
 
-                            $data = json_decode($json, TRUE, 512, JSON_THROW_ON_ERROR);
+                            $data = Json::decode($json);
 
                             if (!array_key_exists('event', $data)) {
                                 $output->writeln('Bad data - no event.');
@@ -114,11 +114,10 @@ class DownloaderCommand extends Command
                                     ];
                                     foreach ($channels as $channel) {
                                         $ws->send(
-                                            json_encode(
+                                            Json::encode(
                                                 [
                                                     'event' => 'pusher:subscribe', 'data' => ['channel' => $channel],
-                                                ],
-                                                JSON_THROW_ON_ERROR
+                                                ]
                                             )
                                         );
                                     }
@@ -143,10 +142,7 @@ class DownloaderCommand extends Command
                                         $this->sendData($json, $output, $browser, 'shipping-process');
                                     } else {
                                         $output->writeln(
-                                            sprintf(
-                                                'Received unknown event: %s',
-                                                json_encode($data, JSON_THROW_ON_ERROR)
-                                            )
+                                            sprintf('Received unknown event: %s', Json::encode($data))
                                         );
                                     }
                             }

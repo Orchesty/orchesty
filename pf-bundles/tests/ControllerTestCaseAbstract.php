@@ -4,6 +4,7 @@ namespace Tests;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\UserBundle\Document\User;
 use Hanaboso\UserBundle\Model\Security\SecurityManager;
 use Hanaboso\UserBundle\Model\Token;
@@ -158,7 +159,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
             $parameters,
             [],
             [],
-            $content ? (string) json_encode($content, JSON_THROW_ON_ERROR) : ''
+            $content ? Json::encode($content) : ''
         );
 
         /** @var Response $response */
@@ -182,7 +183,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
             $parameters,
             [],
             [],
-            $content ? (string) json_encode($content, JSON_THROW_ON_ERROR) : ''
+            $content ? Json::encode($content) : ''
         );
 
         /** @var Response $response */
@@ -213,7 +214,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
      */
     protected function returnResponse(Response $response): object
     {
-        $content = json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR);
+        $content = Json::decode((string) $response->getContent());
         if (isset($content['error_code'])) {
             $content['errorCode'] = $content['error_code'];
             unset($content['error_code']);

@@ -14,6 +14,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyConfigException;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory;
 
@@ -110,7 +111,7 @@ class TopologyGeneratorBridge
     {
         $uri = sprintf(self::BASE_TOPOLOGY_URL, $this->configs[self::TOPOLOGY_API], $topologyId);
         $dto = new RequestDto(CurlManager::METHOD_PUT, new Uri($uri));
-        $dto->setBody((string) json_encode(['action' => 'start'], JSON_THROW_ON_ERROR))->setHeaders(self::HEADERS);
+        $dto->setBody(Json::encode(['action' => 'start']))->setHeaders(self::HEADERS);
 
         return $this->curlManager->send($dto);
     }
@@ -125,7 +126,7 @@ class TopologyGeneratorBridge
     {
         $uri = sprintf(self::BASE_TOPOLOGY_URL, $this->configs[self::TOPOLOGY_API], $topologyId);
         $dto = new RequestDto(CurlManager::METHOD_PUT, new Uri($uri));
-        $dto->setBody((string) json_encode(['action' => 'stop'], JSON_THROW_ON_ERROR))->setHeaders(self::HEADERS);
+        $dto->setBody(Json::encode(['action' => 'stop']))->setHeaders(self::HEADERS);
 
         return $this->curlManager->send($dto);
     }
@@ -171,7 +172,7 @@ class TopologyGeneratorBridge
         $responseDto = $this->curlManager->send($requestDto);
 
         if ($responseDto->getStatusCode() === 200) {
-            return json_decode($responseDto->getBody(), TRUE, 512, JSON_THROW_ON_ERROR);
+            return Json::decode($responseDto->getBody());
         } else {
             throw new CurlException(sprintf('Request error: %s', $responseDto->getReasonPhrase()));
         }
@@ -190,7 +191,7 @@ class TopologyGeneratorBridge
         $responseDto = $this->curlManager->send($requestDto);
 
         if ($responseDto->getStatusCode() === 200) {
-            return json_decode($responseDto->getBody(), TRUE, 512, JSON_THROW_ON_ERROR);
+            return Json::decode($responseDto->getBody());
         } else {
             throw new CurlException(sprintf('Request error: %s', $responseDto->getReasonPhrase()));
         }

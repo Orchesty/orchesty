@@ -4,6 +4,7 @@ namespace Tests\Controller\HbPfCustomNodeBundle\Controller;
 
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Handler\CustomNodeHandler;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -32,7 +33,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
             [],
             [],
             [],
-            (string) json_encode(['test' => 'test'], JSON_THROW_ON_ERROR)
+            Json::encode(['test' => 'test'])
         );
 
         /** @var Response $response */
@@ -41,7 +42,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
         self::assertEquals(200, $response->getStatusCode());
         self::assertEquals(
             ['test' => 'test'],
-            json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR)
+            Json::decode((string) $response->getContent())
         );
     }
 
@@ -59,7 +60,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
         $response = self::$client->getResponse();
 
         self::assertEquals(200, $response->getStatusCode());
-        self::assertEquals([], json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR));
+        self::assertEquals([], Json::decode((string) $response->getContent()));
     }
 
     /**
@@ -70,7 +71,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
         $dto = new ProcessDto();
         $dto
             ->setHeaders(['test' => 'test'])
-            ->setData((string) json_encode(['test' => 'test'], JSON_THROW_ON_ERROR));
+            ->setData(Json::encode(['test' => 'test']));
 
         /** @var CustomNodeHandler|MockObject $joinerHandlerMock */
         $joinerHandlerMock = self::createMock(CustomNodeHandler::class);
@@ -103,7 +104,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
         self::assertTrue(
             in_array(
                 'microsleep500000',
-                json_decode((string) $response->getContent(), FALSE, 512, JSON_THROW_ON_ERROR)
+                Json::decode((string) $response->getContent())
             )
         );
         self::assertEquals(200, $response->getStatusCode());

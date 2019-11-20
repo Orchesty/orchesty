@@ -8,6 +8,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookApplicationInterface;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
@@ -217,12 +218,11 @@ class HubspotApplication extends OAuth2ApplicationAbstract implements WebhookApp
                     '/webhooks/v1/%s/settings',
                     $applicationInstall->getSettings()[ApplicationAbstract::FORM][self::APP_ID]
                 ),
-                json_encode(
+                Json::encode(
                     [
                         'webhookUrl'            => $url,
                         'maxConcurrentRequests' => 100,
-                    ],
-                    JSON_THROW_ON_ERROR
+                    ]
                 )
             )
         );
@@ -234,15 +234,14 @@ class HubspotApplication extends OAuth2ApplicationAbstract implements WebhookApp
                 '/webhooks/v1/%s/subscriptions',
                 $applicationInstall->getSettings()[ApplicationAbstract::FORM][self::APP_ID]
             ),
-            json_encode(
+            Json::encode(
                 [
                     'subscriptionDetails' => [
                         'subscriptionType' => $subscription->getParameters()['name'],
                         'propertyName'     => 'email',
                         'enabled'          => TRUE,
                     ],
-                ],
-                JSON_THROW_ON_ERROR
+                ]
             )
         );
     }

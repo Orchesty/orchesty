@@ -5,6 +5,7 @@ namespace Demo\CustomNode;
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\SuccessMessage;
@@ -31,10 +32,10 @@ class SplitFileBatch extends CustomNodeAbstract implements BatchInterface
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
         $loop;
-        $data = json_decode($dto->getData(), TRUE, 512, JSON_THROW_ON_ERROR);
+        $data = Json::decode($dto->getData());
 
         if (array_key_exists('data', $data)) {
-            $data = json_decode($data['data'], TRUE, 512, JSON_THROW_ON_ERROR);
+            $data = Json::decode($data['data']);
 
             $datetime = DateTimeUtils::getUTCDateTime();
             if ($datetime->getTimestamp() % 2 == 0) {
@@ -46,7 +47,7 @@ class SplitFileBatch extends CustomNodeAbstract implements BatchInterface
             return resolve()
                 ->then(
                     function () use ($data) {
-                        return (new SuccessMessage(0))->setData((string) json_encode($data, JSON_THROW_ON_ERROR));
+                        return (new SuccessMessage(0))->setData(Json::encode($data));
                     }
                 )
                 ->then($callbackItem);

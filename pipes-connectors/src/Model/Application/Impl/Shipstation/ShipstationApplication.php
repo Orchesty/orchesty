@@ -7,6 +7,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookApplicationInterface;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
@@ -154,14 +155,13 @@ class ShipstationApplication extends BasicApplicationAbstract implements Webhook
                 '%s/webhooks/subscribe',
                 ShipstationApplication::SHIPSSTATION_URL
             ),
-            json_encode(
+            Json::encode(
                 [
                     'target_url' => $url,
                     'event'      => self::ORDER_NOTIFY,
                     'store_id'   => NULL,
                     'name'       => $subscription->getParameters()['name'],
-                ],
-                JSON_THROW_ON_ERROR
+                ]
             )
         );
     }
@@ -196,7 +196,7 @@ class ShipstationApplication extends BasicApplicationAbstract implements Webhook
     {
         $install;
 
-        return (string) json_decode($dto->getBody(), TRUE, 512, JSON_THROW_ON_ERROR)['id'];
+        return Json::decode($dto->getBody())['id'];
     }
 
     /**

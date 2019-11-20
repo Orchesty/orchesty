@@ -10,6 +10,7 @@ use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
 use Hanaboso\CommonsBundle\Database\Traits\Document\UpdatedTrait;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 
 /**
@@ -383,7 +384,7 @@ class LongRunningNodeData
      */
     public function getHeaders(): array
     {
-        return is_array($this->headers) ? $this->headers : json_decode($this->headers, TRUE, 512, JSON_THROW_ON_ERROR);
+        return is_array($this->headers) ? $this->headers : Json::decode($this->headers);
     }
 
     /**
@@ -423,10 +424,7 @@ class LongRunningNodeData
      */
     public function getAuditLogs(): array
     {
-        return
-            is_array($this->auditLogs) ?
-                $this->auditLogs :
-                json_decode($this->auditLogs, TRUE, 512, JSON_THROW_ON_ERROR);
+        return is_array($this->auditLogs) ? $this->auditLogs : Json::decode($this->auditLogs);
     }
 
     /**
@@ -469,10 +467,10 @@ class LongRunningNodeData
     public function preFlush(): void
     {
         if (is_array($this->headers)) {
-            $this->headers = (string) json_encode($this->headers, JSON_THROW_ON_ERROR);
+            $this->headers = (string) Json::encode($this->headers);
         }
         if (is_array($this->auditLogs)) {
-            $this->auditLogs = (string) json_encode($this->auditLogs, JSON_THROW_ON_ERROR);
+            $this->auditLogs = (string) Json::encode($this->auditLogs);
         }
     }
 
@@ -482,10 +480,10 @@ class LongRunningNodeData
     public function postLoad(): void
     {
         if (!is_array($this->headers)) {
-            $this->headers = json_decode($this->headers, TRUE, 512, JSON_THROW_ON_ERROR);
+            $this->headers = Json::decode($this->headers);
         }
         if (!is_array($this->auditLogs)) {
-            $this->auditLogs = json_decode($this->auditLogs, TRUE, 512, JSON_THROW_ON_ERROR);
+            $this->auditLogs = Json::decode($this->auditLogs);
         }
     }
 
@@ -522,14 +520,7 @@ class LongRunningNodeData
             ->setProcessId((string) $message->getHeader(PipesHeaders::createKey(PipesHeaders::PROCESS_ID), ''))
             ->setSequenceId((string) $message->getHeader(PipesHeaders::createKey(PipesHeaders::SEQUENCE_ID), ''))
             ->setUpdatedBy((string) $message->getHeader(PipesHeaders::createKey(self::UPDATED_BY_HEADER), ''))
-            ->setAuditLogs(
-                json_decode(
-                    $message->getHeader(PipesHeaders::createKey(self::AUDIT_LOGS_HEADER), '{}'),
-                    TRUE,
-                    512,
-                    JSON_THROW_ON_ERROR
-                )
-            );
+            ->setAuditLogs(Json::decode($message->getHeader(PipesHeaders::createKey(self::AUDIT_LOGS_HEADER), '{}')));
 
         return $ent;
     }

@@ -8,6 +8,7 @@ use Hanaboso\CommonsBundle\Enum\AuthorizationTypeEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookApplicationInterface;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
@@ -161,7 +162,7 @@ class NullApplication extends BasicApplicationAbstract implements WebhookApplica
     {
         $install;
 
-        return json_decode($dto->getBody(), TRUE, 512, JSON_THROW_ON_ERROR)['id'];
+        return Json::decode($dto->getBody())['id'];
     }
 
     /**

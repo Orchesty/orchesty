@@ -2,7 +2,7 @@
   "name": "hanaboso/pipes-php-sdk",
   "license": "proprietary",
   "description": "PHP sdk for PipesFramework",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "autoload": {
     "psr-4": {
       "Hanaboso\\PipesPhpSdk\\": "src/"

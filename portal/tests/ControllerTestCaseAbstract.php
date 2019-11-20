@@ -3,6 +3,7 @@
 namespace Tests;
 
 use Exception;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\Client;
 use Symfony\Component\HttpFoundation\Response;
@@ -121,7 +122,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
         $responseContent = $response->getContent();
 
         if ($responseStatus !== $status) {
-            $message = sprintf('%s%s', json_encode($responseContent, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL);
+            $message = sprintf('%s%s', Json::encode($responseContent), PHP_EOL);
         }
 
         $this->assertEquals($status, $responseStatus, $message ?? '');

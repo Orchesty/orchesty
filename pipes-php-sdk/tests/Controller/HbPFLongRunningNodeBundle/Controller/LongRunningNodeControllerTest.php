@@ -3,6 +3,7 @@
 namespace Tests\Controller\HbPFLongRunningNodeBundle\Controller;
 
 use Exception;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Handler\LongRunningNodeHandler;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -30,7 +31,7 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
         $handler->method('process')->willReturnCallback(
             function (string $nodeId, string $data, array $headers): void {
                 $headers;
-                self::assertEquals(json_encode(['cont'], JSON_THROW_ON_ERROR), $data);
+                self::assertEquals(Json::encode(['cont']), $data);
                 self::assertEquals('node', $nodeId);
             }
         );
@@ -62,13 +63,13 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
         /** @var Response $res */
         $res = self::$client->getResponse();
         self::assertEquals(200, $res->getStatusCode());
-        self::assertEquals(2, count(json_decode((string) $res->getContent(), TRUE, 512, JSON_THROW_ON_ERROR)['items']));
+        self::assertEquals(2, count(Json::decode((string) $res->getContent())['items']));
 
         $this->sendGet('/longRunning/id/topology/topo/node/node0/getTasks');
         /** @var Response $res */
         $res = self::$client->getResponse();
         self::assertEquals(200, $res->getStatusCode());
-        self::assertEquals(1, count(json_decode((string) $res->getContent(), TRUE, 512, JSON_THROW_ON_ERROR)['items']));
+        self::assertEquals(1, count(Json::decode((string) $res->getContent())['items']));
     }
 
 }

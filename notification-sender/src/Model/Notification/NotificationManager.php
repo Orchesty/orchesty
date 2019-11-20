@@ -3,6 +3,7 @@
 namespace Hanaboso\NotificationSender\Model\Notification;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\NotificationSender\Document\NotificationSettings;
 use Hanaboso\NotificationSender\Exception\NotificationException;
 use Hanaboso\NotificationSender\Model\Notification\Dto\CurlDto;
@@ -117,7 +118,7 @@ final class NotificationManager implements LoggerAwareInterface
                 $this->logger->debug(
                     sprintf(
                         'sending notification from sender manager: [settings=%s] [parentClass=%s]',
-                        json_encode($settings->toArray($event, $class), JSON_THROW_ON_ERROR),
+                        Json::encode($settings->toArray($event, $class)),
                         get_parent_class($handler)
                     )
                 );

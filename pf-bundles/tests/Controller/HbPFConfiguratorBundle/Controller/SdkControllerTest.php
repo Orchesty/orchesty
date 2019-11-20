@@ -5,6 +5,7 @@ namespace Tests\Controller\HbPFConfiguratorBundle\Controller;
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Exception;
 use Hanaboso\CommonsBundle\Utils\ControllerUtils;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesFramework\Configurator\Document\Sdk;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Tests\ControllerTestCaseAbstract;
@@ -31,7 +32,7 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
 
         /** @var JsonResponse $response */
         $response = self::$client->getResponse();
-        $content  = json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR);
+        $content  = Json::decode((string) $response->getContent());
 
         self::assertEquals(200, $response->getStatusCode());
         self::assertEquals('One', $content['items'][0]['key']);
@@ -53,7 +54,7 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
 
         /** @var JsonResponse $response */
         $response = self::$client->getResponse();
-        $content  = json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR);
+        $content  = Json::decode((string) $response->getContent());
 
         self::assertEquals('One', $content['key']);
         self::assertEquals('One', $content['value']);
@@ -62,7 +63,7 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
 
         /** @var JsonResponse $response */
         $response = self::$client->getResponse();
-        $content  = json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR);
+        $content  = Json::decode((string) $response->getContent());
 
         self::assertEquals(404, $response->getStatusCode());
         self::assertEquals(ControllerUtils::INTERNAL_SERVER_ERROR, $content['status']);
@@ -88,7 +89,7 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
 
         /** @var JsonResponse $response */
         $response = self::$client->getResponse();
-        $content  = json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR);
+        $content  = Json::decode((string) $response->getContent());
 
         $this->dm->clear();
         self::assertCount(1, $this->dm->getRepository(Sdk::class)->findAll());
@@ -116,7 +117,7 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
 
         /** @var JsonResponse $response */
         $response = self::$client->getResponse();
-        $content  = json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR);
+        $content  = Json::decode((string) $response->getContent());
 
         $this->dm->clear();
         self::assertCount(1, $this->dm->getRepository(Sdk::class)->findAll());
@@ -137,7 +138,7 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
 
         /** @var JsonResponse $response */
         $response = self::$client->getResponse();
-        $content  = json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR);
+        $content  = Json::decode((string) $response->getContent());
 
         $this->dm->clear();
         self::assertCount(0, $this->dm->getRepository(Sdk::class)->findAll());

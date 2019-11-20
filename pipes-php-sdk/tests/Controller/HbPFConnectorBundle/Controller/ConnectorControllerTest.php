@@ -4,6 +4,7 @@ namespace Tests\Controller\HbPFConnectorBundle\Controller;
 
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Handler\ConnectorHandler;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,7 +34,7 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
         self::assertEquals(200, $response->getStatusCode());
         self::assertEquals(
             ['test' => 'test'],
-            json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR)
+            Json::decode((string) $response->getContent())
         );
     }
 
@@ -53,7 +54,7 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
         self::assertEquals(200, $response->getStatusCode());
         self::assertEquals(
             ['test' => 'test'],
-            json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR)
+            Json::decode((string) $response->getContent())
         );
     }
 
@@ -71,7 +72,7 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
 
         $dto = new ProcessDto();
         $dto
-            ->setData((string) json_encode(['test' => 'test'], JSON_THROW_ON_ERROR))
+            ->setData(Json::encode(['test' => 'test']))
             ->setHeaders([]);
         $handler->method($method)->willReturn($dto);
 
@@ -94,7 +95,7 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
         self::assertTrue(
             in_array(
                 'null',
-                json_decode((string) $response->getContent(), FALSE, 512, JSON_THROW_ON_ERROR)
+                Json::decode((string) $response->getContent())
             )
         );
         self::assertEquals(200, $response->getStatusCode());

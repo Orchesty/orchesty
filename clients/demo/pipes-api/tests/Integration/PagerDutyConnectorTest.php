@@ -7,6 +7,7 @@ use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
+use Hanaboso\CommonsBundle\Utils\Json;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -39,7 +40,7 @@ final class PagerDutyConnectorTest extends KernelTestCase
 
         $connector = new PagerDutyConnector($curl);
         $data      = $connector->processAction(new ProcessDto())->getData();
-        $arr       = json_decode($data, TRUE, 512, JSON_THROW_ON_ERROR);
+        $arr       = Json::decode($data);
         self::assertEquals(40, $arr['Radek Jirsa']['hours']);
         self::assertEquals(40, $arr['Marcel Pavlíček']['hours']);
         self::assertEquals(40, $arr['Tomáš Procházka']['hours']);

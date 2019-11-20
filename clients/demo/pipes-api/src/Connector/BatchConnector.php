@@ -3,6 +3,7 @@
 namespace Demo\Connector;
 
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchInterface;
@@ -63,7 +64,7 @@ final class BatchConnector extends ConnectorAbstract implements BatchInterface
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
         $loop;
-        $messages = json_decode($dto->getData(), TRUE, 512, JSON_THROW_ON_ERROR)['messages'] ?? 10;
+        $messages = Json::decode($dto->getData())['messages'] ?? 10;
 
         for ($i = 0; $i < $messages; $i++) {
             $callbackItem((new SuccessMessage($i))->setData($dto->getData()));

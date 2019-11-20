@@ -12,6 +12,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use JK\Utils\CzechHolidays;
@@ -88,7 +89,7 @@ class PagerDutyConnector extends ConnectorAbstract
         if ($response->getStatusCode() !== 200) {
             throw new ConnectorException(sprintf('Server response with status code [%s]', $response->getStatusCode()));
         }
-        $json          = json_decode($response->getBody(), TRUE, 512, JSON_THROW_ON_ERROR);
+        $json          = Json::decode($response->getBody());
         $finalSchedule = $json['schedule']['final_schedule']['rendered_schedule_entries'] ?? [''];
         array_shift($finalSchedule);
         array_pop($finalSchedule);
@@ -124,7 +125,7 @@ class PagerDutyConnector extends ConnectorAbstract
             }
         }
 
-        return $dto->setData((string) json_encode($res, JSON_THROW_ON_ERROR));
+        return $dto->setData(Json::encode($res));
     }
 
     /**
@@ -185,7 +186,7 @@ class PagerDutyConnector extends ConnectorAbstract
      */
     private function getUrl(ProcessDto $dto): Uri
     {
-        $data  = json_decode($dto->getData(), TRUE, 512, JSON_THROW_ON_ERROR);
+        $data  = Json::decode($dto->getData());
         $since = $data['since'] ??
             DateTimeUtils::getUtcDateTime('first day of last month')->format(DateTimeUtils::DATE);
         $till  = $data['until'] ??

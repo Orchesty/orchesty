@@ -8,6 +8,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesFramework\Notification\Exception\NotificationException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
@@ -91,7 +92,7 @@ class NotificationManager implements LoggerAwareInterface
     public function updateSettings(string $id, array $data): ResponseDto
     {
         $dto = (new RequestDto(CurlManager::METHOD_PUT, $this->getUrl(self::SAVE, $id)))
-            ->setBody((string) json_encode($data, JSON_THROW_ON_ERROR));
+            ->setBody(Json::encode($data));
 
         return $this->sendAndProcessRequest($dto);
     }
@@ -128,8 +129,8 @@ class NotificationManager implements LoggerAwareInterface
             $this->logger->error(
                 'Notification sender error.',
                 [
-                    'Exception' => json_encode($e, JSON_THROW_ON_ERROR),
-                    'Request'   => json_encode($dto, JSON_THROW_ON_ERROR),
+                    'Exception' => Json::encode($e),
+                    'Request'   => Json::encode($dto),
                 ]
             );
 

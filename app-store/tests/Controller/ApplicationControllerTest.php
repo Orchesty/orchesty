@@ -3,6 +3,7 @@
 namespace Tests\Controller;
 
 use Exception;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\HbPFAppStore\Handler\ApplicationHandler;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
@@ -27,7 +28,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         /** @var Response $response */
         $response = self::$client->getResponse();
 
-        self::assertIsArray(json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR));
+        self::assertIsArray(Json::decode((string) $response->getContent()));
         self::assertEquals(200, $response->getStatusCode());
 
         self::$client->request('GET', '/applicationsss');
@@ -51,7 +52,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         self::assertTrue(
             in_array(
                 $application,
-                json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR)
+                Json::decode((string) $response->getContent())
             )
         );
         self::assertEquals(200, $response->getStatusCode());
@@ -68,12 +69,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     public function testGetUsersApplication(): void
     {
         $this->mockApplicationHandler(
-            json_decode(
-                (string) file_get_contents(sprintf('%s/data/data.json', __DIR__)),
-                FALSE,
-                512,
-                JSON_THROW_ON_ERROR
-            )
+            Json::decode((string) file_get_contents(sprintf('%s/data/data.json', __DIR__)))
         );
 
         self::$client->request('GET', '/applications/users/bar');
@@ -82,7 +78,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
 
         self::assertEquals(
             'bar',
-            json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR)[0][ApplicationInstall::USER]
+            Json::decode((string) $response->getContent())[0][ApplicationInstall::USER]
         );
         self::assertEquals('200', $response->getStatusCode());
     }
@@ -104,7 +100,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
 
         self::assertEquals(
             'bar',
-            json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR)[ApplicationInstall::USER]
+            Json::decode((string) $response->getContent())[ApplicationInstall::USER]
         );
         self::assertEquals('200', $response->getStatusCode());
     }
@@ -124,7 +120,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
 
         self::assertEquals(
             'bar',
-            json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR)[ApplicationInstall::USER]
+            Json::decode((string) $response->getContent())[ApplicationInstall::USER]
         );
         self::assertEquals('200', $response->getStatusCode());
     }
@@ -142,7 +138,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
 
         self::assertEquals(
             'bar',
-            json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR)[ApplicationInstall::USER]
+            Json::decode((string) $response->getContent())[ApplicationInstall::USER]
         );
         self::assertEquals('200', $response->getStatusCode());
 
@@ -153,7 +149,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
 
         self::assertEquals(
             '3002',
-            json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR)['error_code']
+            Json::decode((string) $response->getContent())['error_code']
         );
 
     }
@@ -172,7 +168,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         self::assertEquals('200', $response->getStatusCode());
         self::assertEquals(
             'test1',
-            json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR)['new_settings']
+            Json::decode((string) $response->getContent())['new_settings']
         );
     }
 

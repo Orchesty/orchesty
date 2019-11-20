@@ -8,6 +8,7 @@ use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
@@ -56,7 +57,7 @@ class ShipstationNewOrderConnector extends ConnectorAbstract
     {
         $applicationInstall = $this->repository->findUsersAppDefaultHeaders($dto);
 
-        $url = json_decode($dto->getData(), TRUE, 512, JSON_THROW_ON_ERROR)['resource_url'] ?? NULL;
+        $url = Json::decode($dto->getData())['resource_url'] ?? NULL;
         if (!$url) {
             $dto->setStopProcess(ProcessDto::STOP_AND_FAILED);
 
@@ -73,9 +74,7 @@ class ShipstationNewOrderConnector extends ConnectorAbstract
         );
 
         $statusCode = $return->getStatusCode();
-
         $this->evaluateStatusCode($statusCode, $dto);
-
         $dto->setData($return->getBody());
 
         return $dto;

@@ -3,6 +3,7 @@
 namespace Tests\Controller\HbPFJoinerBundle\Controller;
 
 use Exception;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Handler\JoinerHandler;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -35,7 +36,7 @@ final class JoinerControllerTest extends ControllerTestCaseAbstract
         $response = self::$client->getResponse();
 
         self::assertEquals(200, $response->getStatusCode());
-        self::assertEquals($params, json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR));
+        self::assertEquals($params, Json::decode((string) $response->getContent()));
     }
 
     /**
@@ -56,7 +57,7 @@ final class JoinerControllerTest extends ControllerTestCaseAbstract
         $response = self::$client->getResponse();
 
         self::assertEquals(200, $response->getStatusCode());
-        self::assertEquals([], json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR));
+        self::assertEquals([], Json::decode((string) $response->getContent()));
     }
 
     /**
@@ -97,7 +98,7 @@ final class JoinerControllerTest extends ControllerTestCaseAbstract
         self::assertTrue(
             in_array(
                 'null',
-                json_decode((string) $response->getContent(), FALSE, 512, JSON_THROW_ON_ERROR)
+                Json::decode((string) $response->getContent())
             )
         );
         self::assertEquals(200, $response->getStatusCode());

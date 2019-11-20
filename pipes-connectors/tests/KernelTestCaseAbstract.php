@@ -8,6 +8,7 @@ use Hanaboso\CommonsBundle\Redirect\RedirectInterface;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
+use Hanaboso\CommonsBundle\Utils\Json;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -156,8 +157,8 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
     {
         $json = $this->getFile($fileName);
 
-        $json         = json_decode((string) $json, TRUE, 512, JSON_THROW_ON_ERROR);
-        $responseJson = json_decode((string) $response->getData(), TRUE, 512, JSON_THROW_ON_ERROR);
+        $json         = Json::decode((string) $json);
+        $responseJson = Json::decode((string) $response->getData());
 
         self::assertEquals($json, $responseJson);
     }

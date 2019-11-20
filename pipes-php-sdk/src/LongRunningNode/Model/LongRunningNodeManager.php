@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesPhpSdk\LongRunningNode\Model;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData;
 
 /**
@@ -70,7 +71,7 @@ class LongRunningNodeManager
     public function update(LongRunningNodeData $node, array $data): LongRunningNodeData
     {
         if (isset($data['data'])) {
-            $node->setData(json_encode($data['data'], JSON_THROW_ON_ERROR));
+            $node->setData(Json::encode($data['data']));
         }
 
         $this->dm->flush();

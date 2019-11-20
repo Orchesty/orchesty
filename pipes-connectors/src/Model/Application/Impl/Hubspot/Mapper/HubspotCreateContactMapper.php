@@ -4,6 +4,7 @@ namespace Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Mapper;
 
 use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
 
 /**
@@ -131,7 +132,7 @@ class HubspotCreateContactMapper extends CustomNodeAbstract
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        $body = json_decode($dto->getData(), TRUE, 512, JSON_THROW_ON_ERROR)['orders'][0] ?? NULL;
+        $body = Json::decode($dto->getData())['orders'][0] ?? NULL;
 
         if (!$body) {
             $message = 'The body of ProcessDto couldnt be decoded from json.';
@@ -140,7 +141,7 @@ class HubspotCreateContactMapper extends CustomNodeAbstract
             return $dto;
         }
 
-        $dto->setData((string) json_encode($this->createBody((array) $body), JSON_THROW_ON_ERROR, 512));
+        $dto->setData(Json::encode($this->createBody((array) $body)));
 
         return $dto;
     }

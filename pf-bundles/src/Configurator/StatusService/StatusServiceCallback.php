@@ -5,6 +5,7 @@ namespace Hanaboso\PipesFramework\Configurator\StatusService;
 use Bunny\Message;
 use Hanaboso\CommonsBundle\Event\ProcessStatusEvent;
 use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
+use Hanaboso\CommonsBundle\Utils\Json;
 use RabbitMqBundle\Connection\Connection;
 use RabbitMqBundle\Consumer\CallbackInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -42,7 +43,7 @@ class StatusServiceCallback implements CallbackInterface
      */
     public function processMessage(Message $message, Connection $connection, int $channelId): void
     {
-        $data = json_decode($message->content, TRUE, 512, JSON_THROW_ON_ERROR);
+        $data = Json::decode($message->content);
 
         if (!isset($data['process_id'])) {
             throw new PipesFrameworkException(

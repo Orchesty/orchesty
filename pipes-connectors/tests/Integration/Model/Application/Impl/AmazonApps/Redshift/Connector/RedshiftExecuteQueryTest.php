@@ -4,6 +4,7 @@ namespace Tests\Integration\Model\Application\Impl\AmazonApps\Redshift\Connector
 
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\Redshift\Connector\RedshiftExecuteQueryConnector;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Tests\DatabaseTestCaseAbstract;
@@ -41,7 +42,7 @@ final class RedshiftExecuteQueryTest extends DatabaseTestCaseAbstract
     public function testProcessActionInsert(): void
     {
         $dto = (new ProcessDto())
-            ->setData((string) json_encode(['result' => [1, 'Some Title']], JSON_THROW_ON_ERROR));
+            ->setData(Json::encode(['result' => [1, 'Some Title']]));
 
         $mock = $this->createPartialMock(RedshiftExecuteQueryConnector::class, ['processAction']);
         $mock
@@ -49,7 +50,7 @@ final class RedshiftExecuteQueryTest extends DatabaseTestCaseAbstract
             ->willReturn($dto);
         $dto = $mock->processAction($dto);
 
-        self::assertEquals([1, 'Some Title'], json_decode($dto->getData(), TRUE, 512, JSON_THROW_ON_ERROR)['result']);
+        self::assertEquals([1, 'Some Title'], Json::decode($dto->getData())['result']);
     }
 
     /**
@@ -59,7 +60,7 @@ final class RedshiftExecuteQueryTest extends DatabaseTestCaseAbstract
     public function testProcessActionMissingName(): void
     {
         $dto = (new ProcessDto())
-            ->setData((string) json_encode(['content' => 'Content'], JSON_THROW_ON_ERROR))
+            ->setData(Json::encode(['content' => 'Content']))
             ->setHeaders(['pf-application' => self::KEY, 'pf-user' => self::USER]);
 
         self::expectException(ConnectorException::class);

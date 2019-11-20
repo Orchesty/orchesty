@@ -4,6 +4,7 @@ namespace Tests\Integration\Model\Application\Impl\AmazonApps\S3\Connector;
 
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\Connector\DeleteS3ObjectConnector;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\S3Application;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
@@ -37,7 +38,7 @@ final class DeleteObjectConnectorTest extends DatabaseTestCaseAbstract
         $this->createApplication();
 
         $dto = (new ProcessDto())
-            ->setData((string) json_encode(['name' => 'Test', 'content' => 'Content'], JSON_THROW_ON_ERROR))
+            ->setData(Json::encode(['name' => 'Test', 'content' => 'Content']))
             ->setHeaders(['pf-application' => self::KEY, 'pf-user' => self::USER]);
 
         self::$container
@@ -56,11 +57,11 @@ final class DeleteObjectConnectorTest extends DatabaseTestCaseAbstract
         $this->createApplication();
 
         $dto = (new ProcessDto())
-            ->setData((string) json_encode(['name' => 'Test'], JSON_THROW_ON_ERROR))
+            ->setData(Json::encode(['name' => 'Test']))
             ->setHeaders(['pf-application' => self::KEY, 'pf-user' => self::USER]);
         $dto = $this->connector->processAction($dto);
 
-        self::assertEquals('Test', json_decode($dto->getData(), TRUE, 512, JSON_THROW_ON_ERROR)['name']);
+        self::assertEquals('Test', Json::decode($dto->getData())['name']);
     }
 
     /**

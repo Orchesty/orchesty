@@ -10,6 +10,7 @@ use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
 
@@ -65,11 +66,11 @@ class SendDutyEmail extends CustomNodeAbstract
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        $dates = json_decode($dto->getData(), TRUE, 512, JSON_THROW_ON_ERROR);
+        $dates = Json::decode($dto->getData());
 
         $dataDto = $this->dutyConnector->processAction($dto);
-        $data    = json_decode($dataDto->getData(), FALSE, 512, JSON_THROW_ON_ERROR);
-        $data    = json_encode($data, JSON_UNESCAPED_UNICODE);
+        $data    = Json::decode($dataDto->getData());
+        $data    = Json::encode($data);
         $data    = str_replace(['}', '{'], ['', ''], (string) $data);
         $data    = str_replace('"', '', $data);
         $data    = str_replace(':hours:', ': ', $data);

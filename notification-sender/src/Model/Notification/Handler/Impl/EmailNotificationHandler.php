@@ -2,6 +2,7 @@
 
 namespace Hanaboso\NotificationSender\Model\Notification\Handler\Impl;
 
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\NotificationSender\Model\Notification\Dto\EmailDto;
 use Hanaboso\NotificationSender\Model\Notification\Handler\EmailHandlerAbstract;
 
@@ -31,7 +32,7 @@ final class EmailNotificationHandler extends EmailHandlerAbstract
         return new EmailDto(
             'no-reply@hanaboso.com',
             'Something gone terribly wrong',
-            json_encode($data, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT)
+            Json::encode($data)
         );
     }
 

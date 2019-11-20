@@ -5,6 +5,7 @@ namespace Tests\Live\Connector;
 use Demo\Connector\PagerDutyConnector;
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 /**
@@ -31,9 +32,9 @@ final class PagerDutyConnectorTest extends KernelTestCase
         $manager   = self::$container->get('hbpf.transport.curl_manager');
         $connector = new PagerDutyConnector($manager);
         $dto       = new ProcessDto();
-        $dto->setData((string) json_encode(['since' => '2019-04-19', 'until' => '2019-04-29'], JSON_THROW_ON_ERROR));
+        $dto->setData(Json::encode(['since' => '2019-04-19', 'until' => '2019-04-29']));
         $data = $connector->processAction($dto)->getData();
-        $arr  = json_decode($data, TRUE, 512, JSON_THROW_ON_ERROR);
+        $arr  = Json::decode($data);
         self::assertEquals(56, $arr['Radek Jirsa']['hours']);
         self::assertEquals(55, $arr['Marcel Pavlíček']['hours']);
         self::assertEquals(40, $arr['Tomáš Procházka']['hours']);

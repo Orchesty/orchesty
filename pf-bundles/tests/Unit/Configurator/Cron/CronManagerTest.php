@@ -13,6 +13,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
 use PHPUnit\Framework\MockObject\MockObject;
 use Tests\KernelTestCaseAbstract;
@@ -53,7 +54,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
                     'time' => '*/1 * * * *',
                 ],
             ],
-            json_decode($data->getBody(), TRUE, 512, JSON_THROW_ON_ERROR)
+            Json::decode($data->getBody())
         );
     }
 
@@ -73,7 +74,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
                         'time'     => '1 1 1 1 1',
                         'command'  => self::COM1,
                     ],
-                    json_decode($request->getBody(), TRUE, 512, JSON_THROW_ON_ERROR)
+                    Json::decode($request->getBody())
                 );
 
                 return new ResponseDto(200, 'OK', '', []);
@@ -95,7 +96,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
                         'time'    => '1 1 1 1 1',
                         'command' => self::COM1,
                     ],
-                    json_decode($request->getBody(), TRUE, 512, JSON_THROW_ON_ERROR)
+                    Json::decode($request->getBody())
                 );
 
                 return new ResponseDto(200, 'OK', '', []);
@@ -117,7 +118,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
                         'time'    => '1 1 1 1 1',
                         'command' => self::COM1,
                     ],
-                    json_decode($request->getBody(), TRUE, 512, JSON_THROW_ON_ERROR)
+                    Json::decode($request->getBody())
                 );
 
                 return new ResponseDto(200, 'OK', '', []);
@@ -169,7 +170,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
                             'command'  => self::COM3,
                         ],
                     ],
-                    json_decode($request->getBody(), TRUE, 512, JSON_THROW_ON_ERROR)
+                    Json::decode($request->getBody())
                 );
 
                 return new ResponseDto(200, 'OK', '', []);
@@ -205,7 +206,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
                             'command'  => self::COM3,
                         ],
                     ],
-                    json_decode($request->getBody(), TRUE, 512, JSON_THROW_ON_ERROR)
+                    Json::decode($request->getBody())
                 );
 
                 return new ResponseDto(200, 'OK', '', []);
@@ -241,7 +242,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
                             'command'  => self::COM3,
                         ],
                     ],
-                    json_decode($request->getBody(), TRUE, 512, JSON_THROW_ON_ERROR)
+                    Json::decode($request->getBody())
                 );
 
                 return new ResponseDto(200, 'OK', '', []);
@@ -264,7 +265,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
                         ['topology' => 'topology-1', 'node' => 'node-2'],
                         ['topology' => 'topology-1', 'node' => 'node-3'],
                     ],
-                    json_decode($request->getBody(), TRUE, 512, JSON_THROW_ON_ERROR)
+                    Json::decode($request->getBody())
                 );
 
                 return new ResponseDto(200, 'OK', '', []);

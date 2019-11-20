@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller;
 
 use FOS\RestBundle\Controller\AbstractFOSRestController;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesFramework\Configurator\Enum\NodeImplementationEnum;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -111,7 +112,7 @@ class NodeController extends AbstractFOSRestController
      */
     private function getForwardContent(string $path): array
     {
-        return json_decode((string) $this->forward($path)->getContent(), TRUE, 512, JSON_THROW_ON_ERROR);
+        return Json::decode((string) $this->forward($path)->getContent());
     }
 
 }
