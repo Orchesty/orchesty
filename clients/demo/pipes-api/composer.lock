@@ -2211,11 +2211,11 @@
         },
         {
             "name": "hanaboso/app-store",
-            "version": "1.1.11",
+            "version": "1.1.12",
             "dist": {
                 "type": "path",
                 "url": "../../../app-store",
-                "reference": "3918cbf87f50dbcb8bc4a7f2d393761c6bed70fe"
+                "reference": "435bc4291fbf27205a7c5b2b5bfd2408113664e9"
             },
             "require": {
                 "ext-json": "*",
@@ -2374,11 +2374,11 @@
         },
         {
             "name": "hanaboso/pipes-connectors",
-            "version": "1.1.8",
+            "version": "1.1.9",
             "dist": {
                 "type": "path",
                 "url": "../../../pipes-connectors",
-                "reference": "cf717758d73cff9158d94e2b23b13bbf954f62a4"
+                "reference": "34cda88c57a1278e431d9e10152c961d82d937db"
             },
             "require": {
                 "ext-json": "*",
@@ -2413,11 +2413,11 @@
         },
         {
             "name": "hanaboso/pipes-framework",
-            "version": "1.1.14",
+            "version": "1.1.15",
             "dist": {
                 "type": "path",
                 "url": "../../../pf-bundles",
-                "reference": "81cfa1de72cb1e8145caa958a950d87f6589c330"
+                "reference": "32fb3f1805b52e2b3c5f080a520ba6117e6e54f4"
             },
             "require": {
                 "ext-json": "*",
@@ -2461,11 +2461,11 @@
         },
         {
             "name": "hanaboso/pipes-php-sdk",
-            "version": "1.0.16",
+            "version": "1.0.17",
             "dist": {
                 "type": "path",
                 "url": "../../../pipes-php-sdk",
-                "reference": "a28c4f17b5a10186ffe446a202f39c2a6d8d48ca"
+                "reference": "e8915234ebfb436769384e31bd863c5d311c565b"
             },
             "require": {
                 "ext-json": "*",

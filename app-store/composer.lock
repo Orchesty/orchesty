@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e0ecf618098af599de47fe1687ceefe3",
+    "content-hash": "aea69f2ea87cbf1379dfd80eb7898085",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -2157,11 +2157,11 @@
         },
         {
             "name": "hanaboso/pipes-php-sdk",
-            "version": "1.0.16",
+            "version": "1.0.17",
             "dist": {
                 "type": "path",
                 "url": "../pipes-php-sdk",
-                "reference": "a28c4f17b5a10186ffe446a202f39c2a6d8d48ca"
+                "reference": "e8915234ebfb436769384e31bd863c5d311c565b"
             },
             "require": {
                 "ext-json": "*",

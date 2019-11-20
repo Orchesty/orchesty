@@ -77,7 +77,7 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
      *
      * @return bool
      */
-    public function isAuthorize(ApplicationInstall $applicationInstall): bool
+    public function isAuthorized(ApplicationInstall $applicationInstall): bool
     {
         return isset(
             $applicationInstall->getSettings(
