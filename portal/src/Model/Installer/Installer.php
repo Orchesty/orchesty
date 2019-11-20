@@ -3,7 +3,9 @@
 namespace Hanaboso\Portal\Model\Installer;
 
 use Exception;
+use Hanaboso\Portal\Model\Installer\Exception\InstallerException;
 use Symfony\Component\Yaml\Yaml;
+use Throwable;
 
 /**
  * Class Installer
@@ -146,29 +148,80 @@ class Installer
     ];
 
     /**
-     * @return array
+     * @param string $str
+     * @param string $delim
+     *
+     * @return string
      */
-    private function getVersion(): array
+    public function convertToCamel(string $str, string $delim): string
     {
+        $explodedStr      = explode($delim, $str);
+        $explodedStrCamel = array_map('ucwords', (array) $explodedStr);
 
-        return [
-            'version' => '3.5',
-        ];
+        return implode('', $explodedStrCamel);
     }
 
     /**
+     * @param string $value
+     * @param array  $array
+     *
+     * @return array
+     * @throws Exception
+     */
+    public function unsetValue(string $value, array $array): array
+    {
+        $key = array_search($value, $array);
+        if ($key !== FALSE) {
+            unset($array[$key]);
+
+        } else {
+            throw new Exception('Value is wrong and couldnt be unset.');
+        }
+
+        return $array;
+    }
+
+    /**
+     * @param DataTransport $dto
+     *
      * @return array
      */
-    public function getNetwork(): array
+    public function createArray(DataTransport $dto): array
     {
 
-        return [
-            'networks' => [
-                'default' => [
-                    'name' => 'pipes_default',
-                ],
-            ],
-        ];
+        $installer = [];
+
+        $installer[0] = array_merge(
+            $this->getVersion(),
+            $this->getComponent('services', $dto),
+            $this->getComponent('volumes', $dto),
+            $this->getNetwork()
+        );
+
+        $installer[1] =
+            'BACKEND_URL=test
+            DEPLOYMENT_PREFIX=compose
+            TAG_MONOLITH=dev
+            PUBLISH_HTTP_PORT=80';
+
+        return $installer;
+    }
+
+    /**
+     * @param DataTransport $dto
+     *
+     * @return string
+     * @throws InstallerException
+     */
+    public function generate(DataTransport $dto): string
+    {
+        try {
+            $installer = $this->createArray($dto);
+
+            return Yaml::dump($installer[0], 8, 8);
+        } catch (Exception|Throwable $e) {
+            throw new InstallerException($e->getMessage(), $e->getCode());
+        }
     }
 
     /**
@@ -632,37 +685,76 @@ class Installer
     }
 
     /**
-     * @param string $str
-     * @param string $delim
-     *
-     * @return string
+     * @return array
      */
-    public function convertToCamel(string $str, string $delim): string
+    protected function getVolumes3(): array
     {
-        $explodedStr      = explode($delim, $str);
-        $explodedStrCamel = array_map('ucwords', (array) $explodedStr);
+        return [
+            'volumes' => [
+                self::INFLUXDB => [
+                    'driver'      => 'local',
+                    'driver_opts' => [
+                        'type'   => 'none',
+                        'device' => '/srv/persistent-data/${DEPLOYMENT_PREFIX}/influxdb',
+                        'o'      => 'bind',
 
-        return implode('', $explodedStrCamel);
+                    ],
+                ],
+                self::MONGO    => [
+                    'driver'      => 'local',
+                    'driver_opts' => [
+                        'type'   => 'none',
+                        'device' => '/srv/persistent-data/${DEPLOYMENT_PREFIX}/mongodb',
+                        'o'      => 'bind',
+
+                    ],
+                ],
+                self::RABBITMQ => [
+                    'driver'      => 'local',
+                    'driver_opts' => [
+                        'type'   => 'none',
+                        'device' => sprintf('/srv/persistent-data/${DEPLOYMENT_PREFIX}/%s', self::RABBITMQ),
+                        'o'      => 'bind',
+
+                    ],
+                ],
+                self::REDIS    => [
+                    'driver'      => 'local',
+                    'driver_opts' => [
+                        'type'   => 'none',
+                        'device' => sprintf('/srv/persistent-data/${DEPLOYMENT_PREFIX}/%s', self::REDIS),
+                        'o'      => 'bind',
+
+                    ],
+                ],
+            ],
+        ];
     }
 
     /**
-     * @param string $value
-     * @param array  $array
-     *
      * @return array
-     * @throws Exception
      */
-    public function unsetValue(string $value, array $array): array
+    private function getVersion(): array
     {
-        $key = array_search($value, $array);
-        if ($key !== FALSE) {
-            unset($array[$key]);
 
-        } else {
-            throw new Exception('Value is wrong and couldnt be unset.');
-        }
+        return [
+            'version' => '3.5',
+        ];
+    }
 
-        return $array;
+    /**
+     * @return array
+     */
+    private function getNetwork(): array
+    {
+
+        return [
+            'networks' => [
+                'default' => [
+                    'name' => 'pipes_default',
+                ],
+            ],
+        ];
     }
 
     /**
@@ -782,94 +874,6 @@ class Installer
         }
 
         return $list;
-    }
-
-    /**
-     * @param DataTransport $dto
-     *
-     * @return array
-     */
-    public function createArray(DataTransport $dto): array
-    {
-
-        $installer = [];
-
-        $installer[0] = array_merge(
-            $this->getVersion(),
-            $this->getComponent('services', $dto),
-            $this->getComponent('volumes', $dto),
-            $this->getNetwork()
-        );
-
-        $installer[1] =
-            'BACKEND_URL=test
-            DEPLOYMENT_PREFIX=compose
-            TAG_MONOLITH=dev
-            PUBLISH_HTTP_PORT=80';
-
-        return $installer;
-
-    }
-
-    /**
-     * @param DataTransport $dto
-     *
-     * @return string
-     */
-    public function createInstaller(DataTransport $dto): string
-    {
-        $installer = $this->createArray($dto);
-
-        return Yaml::dump($installer[0], 8, 8);
-
-    }
-
-    /**
-     * @return array
-     */
-    protected function getVolumes3(): array
-    {
-        return [
-            'volumes' => [
-                self::INFLUXDB => [
-                    'driver'      => 'local',
-                    'driver_opts' => [
-                        'type'   => 'none',
-                        'device' => '/srv/persistent-data/${DEPLOYMENT_PREFIX}/influxdb',
-                        'o'      => 'bind',
-
-                    ],
-                ],
-                self::MONGO    => [
-                    'driver'      => 'local',
-                    'driver_opts' => [
-                        'type'   => 'none',
-                        'device' => '/srv/persistent-data/${DEPLOYMENT_PREFIX}/mongodb',
-                        'o'      => 'bind',
-
-                    ],
-                ],
-                self::RABBITMQ => [
-                    'driver'      => 'local',
-                    'driver_opts' => [
-                        'type'   => 'none',
-                        'device' => sprintf('/srv/persistent-data/${DEPLOYMENT_PREFIX}/%s', self::RABBITMQ),
-                        'o'      => 'bind',
-
-                    ],
-                ],
-                self::REDIS    => [
-                    'driver'      => 'local',
-                    'driver_opts' => [
-                        'type'   => 'none',
-                        'device' => sprintf('/srv/persistent-data/${DEPLOYMENT_PREFIX}/%s', self::REDIS),
-                        'o'      => 'bind',
-
-                    ],
-                ],
-            ],
-        ];
-
     }
 
 }

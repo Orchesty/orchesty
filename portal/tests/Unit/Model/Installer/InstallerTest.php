@@ -47,7 +47,6 @@ final class InstallerTest extends TestCase
         $array          = $installer->createArray($dto);
         $installerArray = $array[0];
 
-        file_put_contents(sprintf('%s/docker-compose.yml', __DIR__), $installer->createInstaller($dto));
         foreach ($primaryArray as $value) {
             self::assertArrayHasKey($value, $installerArray, sprintf('%s is missing in prime keys', $value));
         }

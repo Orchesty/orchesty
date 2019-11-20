@@ -2,8 +2,8 @@
 
 namespace Hanaboso\Portal\Handler;
 
-use Exception;
 use Hanaboso\Portal\Model\Installer\DataTransport;
+use Hanaboso\Portal\Model\Installer\Exception\InstallerException;
 use Hanaboso\Portal\Model\Installer\Installer;
 
 /**
@@ -33,16 +33,13 @@ class InstallerHandler
      * @param array $data
      *
      * @return string
+     * @throws InstallerException
      */
     public function getInstaller(array $data): string
     {
-        try {
-            $dto = new DataTransport($data['first'], $data['second'], $data['third']);
+        $dto = new DataTransport($data['logs'], $data['metrics'], $data['database'] ?? FALSE);
 
-            return $this->installer->createInstaller($dto);
-        } catch (Exception $e) {
-            return $e->getMessage();
-        }
+        return $this->installer->generate($dto);
     }
 
 }
