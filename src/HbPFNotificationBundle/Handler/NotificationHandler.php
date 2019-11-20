@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesFramework\HbPFNotificationBundle\Handler;
 
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesFramework\Notification\Exception\NotificationException;
 use Hanaboso\PipesFramework\Notification\Model\NotificationManager;
 
@@ -36,7 +37,7 @@ class NotificationHandler
      */
     public function getSettings(): array
     {
-        return json_decode($this->manager->getSettings()->getBody(), TRUE, 512, JSON_THROW_ON_ERROR);
+        return Json::decode($this->manager->getSettings()->getBody());
     }
 
     /**
@@ -48,7 +49,7 @@ class NotificationHandler
      */
     public function getSetting(string $id): array
     {
-        return json_decode($this->manager->getSetting($id)->getBody(), TRUE, 512, JSON_THROW_ON_ERROR);
+        return Json::decode($this->manager->getSetting($id)->getBody());
     }
 
     /**
@@ -61,7 +62,7 @@ class NotificationHandler
      */
     public function updateSettings(string $id, array $data): array
     {
-        return json_decode($this->manager->updateSettings($id, $data)->getBody(), TRUE, 512, JSON_THROW_ON_ERROR);
+        return Json::decode($this->manager->updateSettings($id, $data)->getBody());
     }
 
 }

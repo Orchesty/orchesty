@@ -14,6 +14,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesFramework\Configurator\Utils\CronUtils;
 use stdClass;
 use Throwable;
@@ -108,14 +109,13 @@ class CronManager
         $url = $this->getUrl(self::CREATE);
         $dto = (new RequestDto(CurlManager::METHOD_POST, $url))
             ->setBody(
-                (string) json_encode(
+                Json::encode(
                     [
                         'topology' => $topologyName,
                         'node'     => $nodeName,
                         'time'     => $node->getCron(),
                         'command'  => $this->getCommand($node),
-                    ],
-                    JSON_THROW_ON_ERROR
+                    ]
                 )
             );
 
@@ -134,12 +134,11 @@ class CronManager
         $url = $this->getUrl(self::UPDATE, $this->getHash($node));
         $dto = (new RequestDto(CurlManager::METHOD_POST, $url))
             ->setBody(
-                (string) json_encode(
+                Json::encode(
                     [
                         'time'    => $node->getCron(),
                         'command' => $this->getCommand($node),
-                    ],
-                    JSON_THROW_ON_ERROR
+                    ]
                 )
             );
 
@@ -167,7 +166,7 @@ class CronManager
 
         $url = $this->getUrl(self::PATCH, $this->getHash($node));
         $dto = (new RequestDto(CurlManager::METHOD_POST, $url))
-            ->setBody((string) json_encode($body, JSON_THROW_ON_ERROR));
+            ->setBody(Json::encode($body));
 
         return $this->sendAndProcessRequest($dto);
     }
@@ -337,7 +336,7 @@ class CronManager
             }
         }
 
-        return (string) json_encode($processedNodes, JSON_THROW_ON_ERROR);
+        return Json::encode($processedNodes);
     }
 
     /**

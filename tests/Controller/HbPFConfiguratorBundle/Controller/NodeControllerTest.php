@@ -3,6 +3,7 @@
 namespace Tests\Controller\HbPFConfiguratorBundle\Controller;
 
 use Exception;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler;
 use Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Handler\ConnectorHandler;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -32,7 +33,7 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
 
         /** @var JsonResponse $response */
         $response = self::$client->getResponse();
-        $content  = json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR);
+        $content  = Json::decode((string) $response->getContent());
 
         self::assertEquals(200, $response->getStatusCode());
         self::assertEquals($returnValue, $content);
@@ -52,7 +53,7 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
 
         /** @var JsonResponse $response */
         $response = self::$client->getResponse();
-        $content  = json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR);
+        $content  = Json::decode((string) $response->getContent());
 
         self::assertEquals(200, $response->getStatusCode());
         self::assertEquals($returnValue, $content);
@@ -72,7 +73,7 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
 
         /** @var JsonResponse $response */
         $response = self::$client->getResponse();
-        $content  = json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR);
+        $content  = Json::decode((string) $response->getContent());
 
         self::assertEquals(200, $response->getStatusCode());
         self::assertEquals($returnValue, $content);

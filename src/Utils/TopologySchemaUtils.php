@@ -4,6 +4,7 @@ namespace Hanaboso\PipesFramework\Utils;
 
 use Hanaboso\CommonsBundle\Database\Document\Dto\SystemConfigDto;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Utils\Dto\NodeSchemaDto;
 use Hanaboso\PipesFramework\Utils\Dto\Schema;
@@ -152,7 +153,7 @@ class TopologySchemaUtils
      */
     public static function getIndexHash(Schema $schema): string
     {
-        return md5((string) json_encode($schema->buildIndex(), JSON_THROW_ON_ERROR));
+        return md5(Json::encode($schema->buildIndex()));
     }
 
     /**

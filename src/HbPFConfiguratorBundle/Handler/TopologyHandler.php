@@ -21,6 +21,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\CommonsBundle\Utils\ControllerUtils;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\CommonsBundle\Utils\UriParams;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyConfigException;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
@@ -239,17 +240,16 @@ class TopologyHandler
             return new ResponseDto(
                 400,
                 '',
-                (string) json_encode(
+                Json::encode(
                     [
                         'generate_result' => $generateResultBody,
                         'run_result'      => $runResultBody,
-                    ],
-                    JSON_THROW_ON_ERROR
+                    ]
                 ),
                 []
             );
         } else {
-            return new ResponseDto(200, '', (string) json_encode($data, JSON_THROW_ON_ERROR), []);
+            return new ResponseDto(200, '', Json::encode($data), []);
         }
     }
 
@@ -309,7 +309,7 @@ class TopologyHandler
         $startTopology = TRUE;
         $runningInfo   = $this->generatorBridge->infoTopology($topologyId);
         if ($runningInfo instanceof ResponseDto && $runningInfo->getBody()) {
-            $result = json_decode($runningInfo->getBody(), TRUE, 512, JSON_THROW_ON_ERROR);
+            $result = Json::decode($runningInfo->getBody());
             if (array_key_exists('docker_info', $result) && count($result['docker_info'])) {
                 $startTopology = FALSE;
             }

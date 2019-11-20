@@ -11,6 +11,7 @@ use Hanaboso\CommonsBundle\Enum\HandlerEnum;
 use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Tests\DatabaseTestCaseAbstract;
@@ -688,12 +689,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
      */
     private function getSchema(string $name = 'schema.json'): array
     {
-        return json_decode(
-            (string) file_get_contents(sprintf('%s/data/%s', __DIR__, $name)),
-            TRUE,
-            512,
-            JSON_THROW_ON_ERROR
-        );
+        return Json::decode((string) file_get_contents(sprintf('%s/data/%s', __DIR__, $name)));
     }
 
     /**

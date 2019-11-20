@@ -8,6 +8,7 @@ use Hanaboso\CommonsBundle\Database\Document\Embed\EmbedNode;
 use Hanaboso\CommonsBundle\Database\Document\Node;
 use Hanaboso\CommonsBundle\Database\Repository\NodeRepository;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\PrivateTrait;
@@ -58,7 +59,7 @@ class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
         $result        = $configFactory->create($nodes);
 
         self::assertIsString($result);
-        $arr = json_decode($result, TRUE, 512, JSON_THROW_ON_ERROR);
+        $arr = Json::decode($result);
 
         self::assertArrayNotHasKey(TopologyConfigFactory::WORKER, $arr);
         self::assertArrayNotHasKey(TopologyConfigFactory::SETTINGS, $arr);

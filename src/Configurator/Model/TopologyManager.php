@@ -18,6 +18,7 @@ use Hanaboso\CommonsBundle\Exception\CronException;
 use Hanaboso\CommonsBundle\Exception\EnumException;
 use Hanaboso\CommonsBundle\Exception\NodeException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Utils\Dto\NodeSchemaDto;
@@ -277,7 +278,7 @@ class TopologyManager
      */
     public function getCronTopologies(): array
     {
-        $data   = json_decode($this->cronManager->getAll()->getBody(), TRUE, 512, JSON_THROW_ON_ERROR);
+        $data   = Json::decode($this->cronManager->getAll()->getBody());
         $result = [];
 
         foreach ($data as $item) {

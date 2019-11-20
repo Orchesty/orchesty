@@ -5,6 +5,7 @@ namespace Tests\Controller\HbPFConfiguratorBundle\Controller;
 use Exception;
 use Hanaboso\CommonsBundle\Database\Document\Topology;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler;
 use stdClass;
@@ -293,7 +294,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         $response = self::$client->getResponse();
         $response = (object) [
             'status'  => $response->getStatusCode(),
-            'content' => json_decode((string) $response->getContent()),
+            'content' => Json::decode((string) $response->getContent()),
         ];
 
         self::assertEquals(400, $response->status);
@@ -484,7 +485,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
      */
     private function getBpmnArray(): array
     {
-        return json_decode((string) file_get_contents(sprintf('%s/data/schema.json', __DIR__)), TRUE);
+        return Json::decode((string) file_get_contents(sprintf('%s/data/schema.json', __DIR__)));
     }
 
     /**
