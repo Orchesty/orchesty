@@ -7,6 +7,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Hanaboso\CommonsBundle\Crypt\CryptManager;
 use Hanaboso\CommonsBundle\Crypt\Exceptions\CryptException;
 use Hanaboso\CommonsBundle\Database\Traits\Document\CreatedTrait;
+use Hanaboso\CommonsBundle\Database\Traits\Document\DeletedTrait;
 use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
 use Hanaboso\CommonsBundle\Database\Traits\Document\UpdatedTrait;
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
@@ -31,6 +32,7 @@ class ApplicationInstall
     use IdTrait;
     use CreatedTrait;
     use UpdatedTrait;
+    use DeletedTrait;
 
     /**
      * @var string

@@ -1,7 +1,6 @@
-<?php
+<?php declare(strict_types=1);
 
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
-use Doctrine\Bundle\DoctrineCacheBundle\DoctrineCacheBundle;
 use Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle;
 use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
 use EmailServiceBundle\EmailServiceBundle;
@@ -35,7 +34,6 @@ use Symfony\Bundle\TwigBundle\TwigBundle;
 return [
     DebugBundle::class            => ['dev' => TRUE, 'test' => TRUE],
     DoctrineBundle::class         => ['all' => TRUE],
-    DoctrineCacheBundle::class    => ['all' => TRUE],
     DoctrineFixturesBundle::class => ['all' => TRUE],
     DoctrineMongoDBBundle::class  => ['all' => TRUE],
     FOSRestBundle::class          => ['all' => TRUE],

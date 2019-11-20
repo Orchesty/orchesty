@@ -82,6 +82,7 @@ class PagerDutyConnector extends ConnectorAbstract
                 ]
             )
         );
+        $requestDto->setDebugInfo($dto);
 
         $response = $this->curlManager->send($requestDto);
         if ($response->getStatusCode() !== 200) {

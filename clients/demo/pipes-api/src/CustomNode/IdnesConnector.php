@@ -7,7 +7,6 @@ use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
-use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
 
 /**
@@ -42,7 +41,7 @@ class IdnesConnector extends CustomNodeAbstract
     public function process(ProcessDto $dto): ProcessDto
     {
         $requestDto = new RequestDto('GET', new Uri('https://www.idnes.cz/'));
-        $requestDto->setDebugInfo(PipesHeaders::debugInfo($dto->getHeaders()));
+        $requestDto->setDebugInfo($dto);
 
         $this->curlManager->send($requestDto);
 

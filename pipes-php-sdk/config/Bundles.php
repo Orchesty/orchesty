@@ -1,7 +1,6 @@
-<?php
+<?php declare(strict_types=1);
 
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
-use Doctrine\Bundle\DoctrineCacheBundle\DoctrineCacheBundle;
 use Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle;
 use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
 use FOS\RestBundle\FOSRestBundle;
@@ -24,7 +23,6 @@ use Symfony\Bundle\SecurityBundle\SecurityBundle;
 return [
     FrameworkBundle::class        => ['all' => TRUE],
     SecurityBundle::class         => ['all' => TRUE],
-    DoctrineCacheBundle::class    => ['all' => TRUE],
     DoctrineBundle::class         => ['all' => TRUE],
     DoctrineFixturesBundle::class => ['all' => TRUE],
     MonologBundle::class          => ['all' => TRUE],
