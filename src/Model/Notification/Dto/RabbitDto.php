@@ -2,6 +2,8 @@
 
 namespace Hanaboso\NotificationSender\Model\Notification\Dto;
 
+use Hanaboso\CommonsBundle\Utils\Json;
+
 /**
  * Class RabbitDto
  *
@@ -52,7 +54,7 @@ final class RabbitDto
      */
     public function getJsonBody(): string
     {
-        return json_encode($this->body, JSON_THROW_ON_ERROR) ?: '{}';
+        return Json::encode($this->body) ?: '{}';
     }
 
 }

@@ -5,6 +5,7 @@ namespace Tests\Integration\Model\Notification;
 use Bunny\Message;
 use Exception;
 use Hanaboso\CommonsBundle\Enum\NotificationEventEnum;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\NotificationSender\Exception\NotificationException;
 use Hanaboso\NotificationSender\Model\Notification\NotificationMessageCallback;
 use RabbitMqBundle\Connection\Connection;
@@ -35,7 +36,7 @@ final class NotificationMessageCallbackTest extends DatabaseTestCaseAbstract
     {
         parent::setUp();
 
-        $this->callback = self::$container->get('notification.callback.message');
+        $this->callback   = self::$container->get('notification.callback.message');
         $this->connection = self::$container->get('rabbit_mq.connection_manager')->getConnection();
     }
 
@@ -54,13 +55,12 @@ final class NotificationMessageCallbackTest extends DatabaseTestCaseAbstract
                 '',
                 '',
                 [],
-                json_encode(
+                Json::encode(
                     [
                         'pipes' => [
                             'notification_type' => NotificationEventEnum::ACCESS_EXPIRATION,
                         ],
-                    ],
-                    JSON_THROW_ON_ERROR
+                    ]
                 )
             ),
             $this->connection,
@@ -91,7 +91,7 @@ final class NotificationMessageCallbackTest extends DatabaseTestCaseAbstract
                 '',
                 '',
                 [],
-                json_encode([], JSON_THROW_ON_ERROR)
+                Json::encode([])
             ),
             $this->connection,
             $this->connection->createChannel()
