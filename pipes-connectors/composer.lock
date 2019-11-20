@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "19297e7f6fddb114fec06ba617fa55fb",
+    "content-hash": "e39534e578b4a039ca5ddceb6c46de95",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -7986,16 +7986,16 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "7.0.9",
+            "version": "7.0.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "075572dd777ea8317196838f8b59b1de2a642abc"
+                "reference": "f1884187926fbb755a9aaf0b3836ad3165b478bf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/075572dd777ea8317196838f8b59b1de2a642abc",
-                "reference": "075572dd777ea8317196838f8b59b1de2a642abc",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/f1884187926fbb755a9aaf0b3836ad3165b478bf",
+                "reference": "f1884187926fbb755a9aaf0b3836ad3165b478bf",
                 "shasum": ""
             },
             "require": {
@@ -8045,7 +8045,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2019-11-20T08:52:29+00:00"
+            "time": "2019-11-20T13:55:58+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",

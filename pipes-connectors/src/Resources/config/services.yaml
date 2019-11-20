@@ -33,6 +33,14 @@ services:
         calls:
             - ['setApplication',['@hbpf.application.mailchimp']]
 
+    hbpf.connector.mailchimp_tag_contact:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\Connector\MailchimpTagContactConnector
+        arguments:
+            - '@hbpf.transport.curl_manager'
+            - '@doctrine_mongodb.odm.default_document_manager'
+        calls:
+            - ['setApplication',['@hbpf.application.mailchimp']]
+
     hbpf.connector.shipstation_new_order:
         class: Hanaboso\HbPFConnectors\Model\Application\Impl\Shipstation\Connector\ShipstationNewOrderConnector
         arguments:

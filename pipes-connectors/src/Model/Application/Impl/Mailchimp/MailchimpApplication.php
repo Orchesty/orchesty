@@ -34,6 +34,7 @@ class MailchimpApplication extends OAuth2ApplicationAbstract implements WebhookA
     public const AUDIENCE_ID              = 'audience_id';
     public const TOKEN_URL                = 'https://login.mailchimp.com/oauth2/token';
     public const API_KEYPOINT             = 'api_keypoint';
+    public const SEGMENT_ID               = 'segment_id';
 
     /**
      * @var CurlManagerInterface
