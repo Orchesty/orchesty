@@ -5,33 +5,47 @@ layout: main.hbs
 level: 1
 ---
 
- <form action="http://127.0.0.88:8000/installer" method="post" class="col-lg-6">
+ <form action="http://127.0.0.88:8000/installer" target="_blank">
             <div class="col-lg-12">
-                <h1>Installer</h1>
+                <h4>Installer</h4>
             </div>
             <div>
                 <div class="col-lg-12">
-                    <h3>Choose Logs</h3>
+                    <h4>Choose Logs</h4>
                     <div class="col-lg-6">
-                        <input type="radio" name="logs" value="elasticsearch" checked>Elasticsearch
+                    <label>
+                        <input type="radio" class="with-gap" name="logs" checked/> 
+                        <span>Elasticsearch</span>
+                    </label>    
                     </div>
                     <div class="col-lg-6">
-                        <input type="radio" name="logs" value="logstash">Logstash
-                    </div>
-                </div>
-                <div class="col-lg-12">
-                    <h3>Choose metrics</h3>
-                    <div class="col-lg-6">
-                        <input type="radio" name="metrics" value="influxdb" checked>Influx
-                    </div>
-                    <div class="col-lg-6">
-                        <input type="radio" name="metrics" value="mongo">Mongo
+                    <label>
+                        <input type="radio" class="with-gap" name="logs" value="logstash">
+                        <span>Logstash</span>
+                    </label>    
                     </div>
                 </div>
                 <div class="col-lg-12">
-                    <h3>Choose database</h3>
+                    <h4>Choose metrics</h4>
                     <div class="col-lg-6">
+                    <label>
+                        <input type="radio" class="with-gap" name="metrics" checked> 
+                        <span>Influx</span>
+                    </label>    
+                    </div>
+                    <div class="col-lg-6">
+                    <label>
+                        <input type="radio" class="with-gap" name="metrics"> 
+                        <span>Mongo</span>
+                    </label>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <h4>Choose database</h4>
+                    <div class="col-lg-6">
+                    <label>
                         <input id="database_input" type="checkbox" name="database" value="true" checked/>Database
+                    </label>    
                     </div>
                 </div>
             </div>
