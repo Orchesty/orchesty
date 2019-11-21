@@ -1,6 +1,7 @@
 const Metalsmith = require('metalsmith')
 const collections = require('metalsmith-collections')
 const assets = require('metalsmith-assets')
+const replace = require('metalsmith-one-replace')
 const layouts = require('metalsmith-layouts')
 const markdown = require('metalsmith-markdown')
 const mdpartials = require('metalsmith-markdown-partials')
@@ -59,6 +60,14 @@ let ms = Metalsmith(__dirname)
             }
         },
 
+    }))
+    .use(replace({
+        actions:[{
+            type:'var',
+            varValues: {
+                'page_url':'http://127.0.0.88:8000/installer'
+            }
+        }]
     }))
     .use(mdpartials({
         libraryPath: 'src/'

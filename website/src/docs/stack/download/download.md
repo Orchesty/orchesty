@@ -5,7 +5,7 @@ layout: main.hbs
 level: 1
 ---
 
- <form action="http://127.0.0.88:8000/installer" target="_blank">
+ <form action="{#var page_url}" target="_blank">
             <div class="col-lg-12">
                 <h4>Installer</h4>
             </div>
