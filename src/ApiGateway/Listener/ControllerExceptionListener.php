@@ -101,6 +101,7 @@ class ControllerExceptionListener implements EventSubscriberInterface, LoggerAwa
         }
 
         $event->setResponse($response);
+        $event->allowCustomResponseCode();
     }
 
     /**

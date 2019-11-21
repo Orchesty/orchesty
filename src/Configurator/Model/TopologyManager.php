@@ -19,12 +19,12 @@ use Hanaboso\CommonsBundle\Exception\EnumException;
 use Hanaboso\CommonsBundle\Exception\NodeException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Utils\Json;
+use Hanaboso\CommonsBundle\Utils\Strings;
 use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Utils\Dto\NodeSchemaDto;
 use Hanaboso\PipesFramework\Utils\Dto\Schema;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
-use Nette\Utils\Strings;
 
 /**
  * Class TopologyManager

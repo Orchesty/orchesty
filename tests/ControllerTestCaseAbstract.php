@@ -14,7 +14,7 @@ use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\UsageTrackingTokenStorage;
 use Symfony\Component\Security\Core\Encoder\NativePasswordEncoder;
 
 /**
@@ -41,7 +41,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     protected $session;
 
     /**
-     * @var TokenStorage
+     * @var UsageTrackingTokenStorage
      */
     protected $tokenStorage;
 
@@ -60,8 +60,6 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     public function __construct($name = NULL, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
-
-        self::bootKernel();
         $this->encoder = new NativePasswordEncoder(3);
     }
 
@@ -72,11 +70,8 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     {
         parent::setUp();
 
-        self::bootKernel();
-        $this->dm = self::$container->get('doctrine_mongodb.odm.default_document_manager');
-        /** @var Client $cl */
-        $cl           = self::createClient([], []);
-        self::$client = $cl;
+        self::$client = self::createClient([], []);
+        $this->dm     = self::$container->get('doctrine_mongodb.odm.default_document_manager');
         $this->dm->getConnection()->dropDatabase('pipes');
 
         // Login
@@ -115,7 +110,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
 
         $this->persistAndFlush($user);
 
-        $token = new Token($user, $password, SecurityManager::SECURED_AREA, ['test']);
+        $token = new Token($user, $password, SecurityManager::SECURED_AREA, ['admin']);
         $this->tokenStorage->setToken($token);
 
         $this->session->set(
