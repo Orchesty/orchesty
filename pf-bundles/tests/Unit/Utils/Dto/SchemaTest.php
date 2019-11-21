@@ -4,10 +4,10 @@ namespace Tests\Unit\Utils\Dto;
 
 use Exception;
 use FOS\RestBundle\Decoder\XmlDecoder;
+use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Utils\Dto\Schema;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
-use Nette\Utils\Json;
 use PHPUnit\Framework\TestCase;
 
 /**

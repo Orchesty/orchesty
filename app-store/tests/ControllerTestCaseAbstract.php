@@ -10,7 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
-use Symfony\Component\Security\Core\Encoder\BCryptPasswordEncoder;
+use Symfony\Component\Security\Core\Encoder\NativePasswordEncoder;
 
 /**
  * Class ControllerTestCaseAbstract
@@ -41,7 +41,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     protected $tokenStorage;
 
     /**
-     * @var BCryptPasswordEncoder
+     * @var NativePasswordEncoder
      */
     protected $encoder;
 
@@ -55,7 +55,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     public function __construct($name = NULL, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
-        $this->encoder = new BCryptPasswordEncoder(12);
+        $this->encoder = new NativePasswordEncoder(3);
     }
 
     /**
@@ -72,7 +72,6 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
      */
     protected function setupClient(): void
     {
-        self::bootKernel();
         self::$client = self::createClient([], []);
 
         $this->dm = self::$container->get('doctrine_mongodb.odm.default_document_manager');

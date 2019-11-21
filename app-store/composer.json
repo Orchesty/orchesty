@@ -1,34 +1,34 @@
 {
-  "name": "hanaboso/app-store",
-  "license": "proprietary",
-  "description": "App store for PipesFramework",
-  "version": "1.1.13",
-  "autoload": {
-    "psr-4": {
-      "Hanaboso\\HbPFAppStore\\": "src/"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "Tests\\": "tests/"
-    }
-  },
-  "require": {
-    "php": "^7.3",
-    "ext-json": "*",
-    "hanaboso/commons-bundle": "^1.2",
-    "hanaboso/pipes-php-sdk": "^1.0"
-  },
-  "require-dev": {
-    "hanaboso/php-check-utils": "^1.0"
-  },
-  "repositories": [
-    {
-      "type": "path",
-      "url": "../pipes-php-sdk",
-      "options": {
-        "symlink": true
-      }
-    }
-  ]
+    "name": "hanaboso/app-store",
+    "license": "proprietary",
+    "description": "App store for PipesFramework",
+    "version": "1.1.14",
+    "autoload": {
+        "psr-4": {
+            "Hanaboso\\HbPFAppStore\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "php": "^7.3",
+        "ext-json": "*",
+        "hanaboso/commons-bundle": "^1.2",
+        "hanaboso/pipes-php-sdk": "^1.0"
+    },
+    "require-dev": {
+        "hanaboso/php-check-utils": "^1.0"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../pipes-php-sdk",
+            "options": {
+                "symlink": true
+            }
+        }
+    ]
 }

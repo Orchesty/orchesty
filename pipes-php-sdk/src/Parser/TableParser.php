@@ -3,8 +3,8 @@
 namespace Hanaboso\PipesPhpSdk\Parser;
 
 use Hanaboso\CommonsBundle\Utils\Json;
+use Hanaboso\CommonsBundle\Utils\Strings;
 use Hanaboso\PipesPhpSdk\Parser\Exception\TableParserException;
-use Nette\Utils\Strings;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;

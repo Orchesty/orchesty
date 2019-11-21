@@ -1,44 +1,44 @@
 {
-  "name": "hanaboso/pipes-connectors",
-  "license": "proprietary",
-  "description": "Connectors for PipesFramework",
-  "version": "1.1.11",
-  "autoload": {
-    "psr-4": {
-      "Hanaboso\\HbPFConnectors\\": "src/"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "Tests\\": "tests/"
-    }
-  },
-  "require": {
-    "php": "^7.3",
-    "ext-json": "*",
-    "ext-pgsql": "*",
-    "ext-pdo": "*",
-    "hanaboso/app-store": "^1.1",
-    "hanaboso/commons-bundle": "^1.2",
-    "hanaboso/pipes-php-sdk": "^1.0"
-  },
-  "require-dev": {
-    "hanaboso/php-check-utils": "^1.0"
-  },
-  "repositories": [
-    {
-      "type": "path",
-      "url": "../pipes-php-sdk",
-      "options": {
-        "symlink": true
-      }
+    "name": "hanaboso/pipes-connectors",
+    "license": "proprietary",
+    "description": "Connectors for PipesFramework",
+    "version": "1.1.12",
+    "autoload": {
+        "psr-4": {
+            "Hanaboso\\HbPFConnectors\\": "src/"
+        }
     },
-    {
-      "type": "path",
-      "url": "../app-store",
-      "options": {
-        "symlink": true
-      }
-    }
-  ]
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "php": "^7.3",
+        "ext-json": "*",
+        "ext-pgsql": "*",
+        "ext-pdo": "*",
+        "hanaboso/app-store": "^1.1",
+        "hanaboso/commons-bundle": "^1.2",
+        "hanaboso/pipes-php-sdk": "^1.0"
+    },
+    "require-dev": {
+        "hanaboso/php-check-utils": "^1.0"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../pipes-php-sdk",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../app-store",
+            "options": {
+                "symlink": true
+            }
+        }
+    ]
 }

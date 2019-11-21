@@ -27,7 +27,6 @@ use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\MonologBundle\MonologBundle;
 use Symfony\Bundle\SecurityBundle\SecurityBundle;
 use Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle;
-use Symfony\Bundle\TwigBundle\TwigBundle;
 
 return [
     DebugBundle::class           => ['dev' => TRUE, 'test' => TRUE],
@@ -41,7 +40,6 @@ return [
     SecurityBundle::class        => ['all' => TRUE],
     SncRedisBundle::class        => ['all' => TRUE],
     SwiftmailerBundle::class     => ['all' => TRUE],
-    TwigBundle::class            => ['all' => TRUE],
 
     EmailServiceBundle::class        => ['all' => TRUE],
     HbPFApiGatewayBundle::class      => ['all' => TRUE],

@@ -49,8 +49,6 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     public function __construct($name = NULL, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
-
-        self::bootKernel();
         $this->encoder = new NativePasswordEncoder(3);
     }
 
@@ -60,12 +58,8 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     protected function setUp(): void
     {
         parent::setUp();
-
-        self::bootKernel();
-        $this->dm = self::$container->get('doctrine_mongodb.odm.default_document_manager');
-        /** @var Client $cl */
-        $cl           = self::createClient([], []);
-        self::$client = $cl;
+        self::$client = self::createClient([], []);
+        $this->dm     = self::$container->get('doctrine_mongodb.odm.default_document_manager');
         $this->dm->getConnection()->dropDatabase('pipes-php-sdk');
     }
 

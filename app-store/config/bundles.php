@@ -18,7 +18,6 @@ use Symfony\Bundle\DebugBundle\DebugBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\MonologBundle\MonologBundle;
 use Symfony\Bundle\SecurityBundle\SecurityBundle;
-use Symfony\Bundle\TwigBundle\TwigBundle;
 
 return [
     DebugBundle::class           => ['dev' => TRUE, 'test' => TRUE],
@@ -29,7 +28,6 @@ return [
     JMSSerializerBundle::class   => ['all' => TRUE],
     MonologBundle::class         => ['all' => TRUE],
     SecurityBundle::class        => ['all' => TRUE],
-    TwigBundle::class            => ['all' => TRUE],
 
     HbPFApplicationBundle::class     => ['all' => TRUE],
     HbPFAppStoreBundle::class        => ['all' => TRUE],

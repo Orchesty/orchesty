@@ -1,29 +1,27 @@
 {
-  "name": "hanaboso/portal",
-  "license": "proprietary",
-  "description": "Pipes portal",
-  "version": "1.0.5",
-  "autoload": {
-    "psr-4": {
-      "Hanaboso\\Portal\\": "src/"
+    "name": "hanaboso/portal",
+    "license": "proprietary",
+    "description": "Pipes portal",
+    "version": "1.0.6",
+    "autoload": {
+        "psr-4": {
+            "Hanaboso\\Portal\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "php": "^7.3",
+        "ext-json": "*",
+        "friendsofsymfony/rest-bundle": "^2.6",
+        "hanaboso/commons-bundle": "^1.2",
+        "jms/serializer-bundle": "^3.4",
+        "symfony/monolog-bundle": "^3.5"
+    },
+    "require-dev": {
+        "hanaboso/php-check-utils": "^1.0"
     }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "Tests\\": "tests/"
-    }
-  },
-  "require": {
-    "php": "^7.3",
-    "ext-json": "*",
-    "friendsofsymfony/rest-bundle": "^2.6",
-    "hanaboso/commons-bundle": "^1.2",
-    "jms/serializer-bundle": "^3.4",
-    "monolog/monolog": "^1.25",
-    "symfony/monolog-bundle": "^3.5",
-    "symfony/symfony": "^4.3"
-  },
-  "require-dev": {
-    "hanaboso/php-check-utils": "^1.0"
-  }
 }

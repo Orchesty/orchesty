@@ -1,35 +1,37 @@
 {
-  "name": "hanaboso/pipes-php-sdk",
-  "license": "proprietary",
-  "description": "PHP sdk for PipesFramework",
-  "version": "1.0.18",
-  "autoload": {
-    "psr-4": {
-      "Hanaboso\\PipesPhpSdk\\": "src/"
+    "name": "hanaboso/pipes-php-sdk",
+    "license": "proprietary",
+    "description": "PHP sdk for PipesFramework",
+    "version": "1.0.18",
+    "autoload": {
+        "psr-4": {
+            "Hanaboso\\PipesPhpSdk\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "php": "^7.3",
+        "ext-json": "*",
+        "ext-oauth": "*",
+        "ext-mongodb": "*",
+        "friendsofsymfony/rest-bundle": "^2.6",
+        "hanaboso/commons-bundle": "^1.2",
+        "hanaboso/mongo-data-grid": "^1.1",
+        "hanaboso/rabbit-mq-bundle": "^1.1",
+        "jms/serializer-bundle": "^3.4",
+        "league/oauth2-client": "^2.4",
+        "phpoffice/phpspreadsheet": "^1.10",
+        "symfony/debug-bundle": "^4.4",
+        "symfony/mailer": "^4.4",
+        "symfony/monolog-bundle": "^3.5",
+        "symfony/security-bundle": "^4.4",
+        "symfony/yaml": "^4.4"
+    },
+    "require-dev": {
+        "hanaboso/php-check-utils": "^1.0"
     }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "Tests\\": "tests/"
-    }
-  },
-  "require": {
-    "php": "^7.3",
-    "ext-json": "*",
-    "ext-oauth": "*",
-    "ext-mongodb": "*",
-    "friendsofsymfony/rest-bundle": "^2.6",
-    "hanaboso/commons-bundle": "^1.2",
-    "hanaboso/mongo-data-grid": "^1.1",
-    "hanaboso/rabbit-mq-bundle": "^1.1",
-    "jms/serializer-bundle": "^3.4",
-    "league/oauth2-client": "^2.4",
-    "monolog/monolog": "^1.25",
-    "phpoffice/phpspreadsheet": "^1.10",
-    "symfony/monolog-bundle": "^3.5",
-    "symfony/symfony": "^4.3"
-  },
-  "require-dev": {
-    "hanaboso/php-check-utils": "^1.0"
-  }
 }

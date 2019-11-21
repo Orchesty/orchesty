@@ -28,8 +28,6 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     protected function setUp(): void
     {
         parent::setUp();
-
-        self::bootKernel();
         $this->setupClient();
 
     }
@@ -158,9 +156,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
      */
     protected function setupClient(): void
     {
-        self::bootKernel();
         self::$client = self::createClient([], []);
-
     }
 
 }
