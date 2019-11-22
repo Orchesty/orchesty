@@ -12,6 +12,9 @@ const autotoc = require('metalsmith-autotoc')
 const debug = require('metalsmith-debug')
 const s3 = require('metalsmith-s3')
 const watch = require('metalsmith-watch')
+const dotenv = require('dotenv')
+
+dotenv.config()
 
 require('handlebars-helpers')();
 
@@ -65,7 +68,7 @@ let ms = Metalsmith(__dirname)
         actions:[{
             type:'var',
             varValues: {
-                'page_url':'http://127.0.0.88:8000/installer'
+                'page_url': process.env.PORTAL_URL ? process.env.PORTAL_URL :'http://127.0.0.88:8000/installer'
             }
         }]
     }))
@@ -107,10 +110,10 @@ let ms = Metalsmith(__dirname)
         source: './src/assets/css',
         destination: 'css'
     }))
-    .use(assets({
-        source: './src/docs/images',
-        destination: 'images'
-    }))
+    // .use(assets({
+    //     source: './src/docs/images',
+    //     destination: 'images'
+    // }))
     //.use(s3({
     //  action: 'write',
     //  bucket: 'pipes-website',

@@ -14,6 +14,11 @@
   dependencies:
     "@types/babel-types" "*"
 
+"@types/minimatch@^3.0.3":
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/@types/minimatch/-/minimatch-3.0.3.tgz#3dca0e3f33b200fc7d1139c0cd96c1268cadfd9d"
+  integrity sha512-tHq6qdbT9U1IRSGf14CL0pUlULksvY9OZ+5eEgl1N7t+OA3tGvNpxJCzuKQlsNgCVwbAs670L1vcVQi8j9HjnA==
+
 CSSselect@~0.4.0:
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/CSSselect/-/CSSselect-0.4.1.tgz#f8ab7e1f8418ce63cda6eb7bd778a85d7ec492b2"
@@ -366,10 +371,10 @@ array-differ@^1.0.0:
   resolved "https://registry.yarnpkg.com/array-differ/-/array-differ-1.0.0.tgz#eff52e3758249d33be402b8bb8e564bb2b5d4031"
   integrity sha1-7/UuN1gknTO+QCuLuOVkuytdQDE=
 
-array-differ@^2.0.3:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/array-differ/-/array-differ-2.1.0.tgz#4b9c1c3f14b906757082925769e8ab904f4801b1"
-  integrity sha512-KbUpJgx909ZscOc/7CLATBFam7P1Z1QRQInvgT0UztM9Q72aGKCunKASAl7WNW0tnPmPyEMeMhdsfWhfmW037w==
+array-differ@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/array-differ/-/array-differ-3.0.0.tgz#3cbb3d0f316810eafcc47624734237d6aee4ae6b"
+  integrity sha512-THtfYS6KtME/yIAhKjZ2ul7XI96lQGHRputJQHO80LAWQnuGP4iCIN8vdMRboGbIEYBwU33q8Tch1os2+X0kMg==
 
 array-equal@^1.0.0:
   version "1.0.0"
@@ -385,12 +390,17 @@ array-sort@^0.1.4:
     get-value "^2.0.6"
     kind-of "^5.0.2"
 
-array-union@^1.0.1, array-union@^1.0.2:
+array-union@^1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/array-union/-/array-union-1.0.2.tgz#9a34410e4f4e3da23dea375be5be70f24778ec39"
   integrity sha1-mjRBDk9OPaI96jdb5b5w8kd47Dk=
   dependencies:
     array-uniq "^1.0.1"
+
+array-union@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/array-union/-/array-union-2.1.0.tgz#b798420adbeb1de828d84acd8a2e23d3efe85e8d"
+  integrity sha512-HGyxoOTYUyCM6stUe6EJgnd4EoewAI7zMdfqO+kGjnlZmBDz/cR5pf8r/cR4Wq60sL/p0IkcjUEEPwS3GFrIyw==
 
 array-uniq@^1.0.1:
   version "1.0.3"
@@ -402,10 +412,15 @@ array-unique@^0.3.2:
   resolved "https://registry.yarnpkg.com/array-unique/-/array-unique-0.3.2.tgz#a894b75d4bc4f6cd679ef3244a9fd8f46ae2d428"
   integrity sha1-qJS3XUvE9s1nnvMkSp/Y9Gri1Cg=
 
-arrify@^1.0.0, arrify@^1.0.1:
+arrify@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/arrify/-/arrify-1.0.1.tgz#898508da2226f380df904728456849c1501a4b0d"
   integrity sha1-iYUI2iIm84DfkEcoRWhJwVAaSw0=
+
+arrify@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/arrify/-/arrify-2.0.1.tgz#c9655e9331e0abcd588d2a7cad7e9956f66701fa"
+  integrity sha512-3duEwti880xqi4eAMN8AyR4a0ByT90zoYdLlevfrvU43vb0YZwZVfxOgxWrLXXXpyugL0hNZc9G6BiB5B3nUug==
 
 asap@~2.0.3:
   version "2.0.6"
@@ -1066,6 +1081,11 @@ domutils@^1.5.1:
     dom-serializer "0"
     domelementtype "1"
 
+dotenv@^8.2.0:
+  version "8.2.0"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-8.2.0.tgz#97e619259ada750eea3e4ea3e26bceea5424b16a"
+  integrity sha512-8sJ78ElpbDJBHNeBzUbUVLsqKdccaa/BXF1uPTw3GrvQTBgrQrtObr2mUrE38vzYd8cEv+m/JBfDLioYcfXoaw==
+
 ecc-jsbn@~0.1.1:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/ecc-jsbn/-/ecc-jsbn-0.1.2.tgz#3a83a904e54353287874c564b7549386849a98c9"
@@ -1432,10 +1452,21 @@ handlebars-utils@^1.0.2, handlebars-utils@^1.0.4, handlebars-utils@^1.0.6:
     kind-of "^6.0.0"
     typeof-article "^0.1.1"
 
-handlebars@^4.0.1, handlebars@^4.0.11, handlebars@^4.1.2:
+handlebars@^4.0.1, handlebars@^4.0.11:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/handlebars/-/handlebars-4.1.2.tgz#b6b37c1ced0306b221e094fc7aca3ec23b131b67"
   integrity sha512-nvfrjqvt9xQ8Z/w0ijewdD/vvWDTOweBUm96NTr66Wfvo1mJenBLwcYmPs3TIBP5ruzYGD7Hx/DaM9RmhroGPw==
+  dependencies:
+    neo-async "^2.6.0"
+    optimist "^0.6.1"
+    source-map "^0.6.1"
+  optionalDependencies:
+    uglify-js "^3.1.4"
+
+handlebars@^4.5.3:
+  version "4.5.3"
+  resolved "https://registry.yarnpkg.com/handlebars/-/handlebars-4.5.3.tgz#5cf75bd8714f7605713511a56be7c349becb0482"
+  integrity sha512-3yPecJoJHK/4c6aZhSvxOyG4vJKDshV36VHp0iVCDVh7o9w2vwi3NSnL2MMPj3YdduqaBcu7cGbggJQM0br9xA==
   dependencies:
     neo-async "^2.6.0"
     optimist "^0.6.1"
@@ -2156,10 +2187,10 @@ map-visit@^1.0.0:
   dependencies:
     object-visit "^1.0.0"
 
-marked@^0.6.1:
-  version "0.6.3"
-  resolved "https://registry.yarnpkg.com/marked/-/marked-0.6.3.tgz#79babad78af638ba4d522a9e715cdfdd2429e946"
-  integrity sha512-Fqa7eq+UaxfMriqzYLayfqAE40WN03jf+zHjT18/uXNuzjq3TY0XTbrAoPeqSJrAmPz11VuUA+kBPYOhHt9oOQ==
+marked@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/marked/-/marked-0.7.0.tgz#b64201f051d271b1edc10a04d1ae9b74bb8e5c0e"
+  integrity sha512-c+yYdCZJQrsRjTPhUx7VKkApw9bwDkNbHUKo1ovgcfDjb2kc8rLuRbIFyXL5WOEUwzSSKo3IXpph2K6DqB/KZg==
 
 media-typer@0.3.0:
   version "0.3.0"
@@ -2246,17 +2277,17 @@ metalsmith-headings@^0.2.0:
   dependencies:
     cheerio "^0.14.0"
 
-metalsmith-in-place@^4.4.0:
-  version "4.4.0"
-  resolved "https://registry.yarnpkg.com/metalsmith-in-place/-/metalsmith-in-place-4.4.0.tgz#cd12376d886fdc7d7d26e0c50933e20c4138e0ec"
-  integrity sha512-ua9GLhSfWZHPduN3h/dqd44Mcg3BhYLXUW2FNOUR4wrUfoLNTuzM1aNRFqdCgC5zHKyM5VadarY4Y+gQD82/Wg==
+metalsmith-in-place@^4.4.1:
+  version "4.4.1"
+  resolved "https://registry.yarnpkg.com/metalsmith-in-place/-/metalsmith-in-place-4.4.1.tgz#45289b34625500fd910c6f48deff0099ad7d9736"
+  integrity sha512-YTeh/axdMaPvFSMhqoj6ZRpeOyrlD7Uxa6GDfwpX9nDpso5A+UaRRacsoD6Pckn0RCkv3MMTJYOvIRCGodW78w==
   dependencies:
     debug "^4.0.0"
     inputformat-to-jstransformer "^1.2.1"
     is-utf8 "^0.2.1"
     jstransformer "^1.0.0"
     jstransformer-pug "^0.3.0"
-    multimatch "^3.0.0"
+    multimatch "^4.0.0"
 
 metalsmith-layouts@^2.3.1:
   version "2.3.1"
@@ -2274,13 +2305,13 @@ metalsmith-markdown-partials@^1.0.0:
   resolved "https://registry.yarnpkg.com/metalsmith-markdown-partials/-/metalsmith-markdown-partials-1.0.0.tgz#ac93d087af66517732bd58a476089102c325b3ef"
   integrity sha1-rJPQh69mUXcyvVikdgiRAsMls+8=
 
-metalsmith-markdown@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/metalsmith-markdown/-/metalsmith-markdown-1.2.0.tgz#47429e687a582bdfd93ca8048dd5fc1141badb94"
-  integrity sha512-YAZZ1G4Y+AfnlJEoba6sr8zGBxg2xiAetf2xvGCTOpUR5CKV6G+X3Oq0BcS1aKBLYf86rWmm6Nu0Wq/5O2CEMQ==
+metalsmith-markdown@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/metalsmith-markdown/-/metalsmith-markdown-1.3.0.tgz#c250da93d5eb48f91bb2bea7b943f46f0672dc83"
+  integrity sha512-wStYRbJIYwNTDtHmVfb6RjNfFB+DkloIoQr600pXT2QRnbqMsdnAdSVfPjXX+vP7upCulZmp/xlcYzfDxKpx1w==
   dependencies:
     debug "^4.1.1"
-    marked "^0.6.1"
+    marked "^0.7.0"
 
 metalsmith-metallic@^2.0.3:
   version "2.0.3"
@@ -2290,6 +2321,11 @@ metalsmith-metallic@^2.0.3:
     debug "~2.6.7"
     entities "~1.1"
     highlight.js "~9.15.6"
+
+metalsmith-one-replace@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/metalsmith-one-replace/-/metalsmith-one-replace-0.1.2.tgz#2f1730fbe60466d754c9e5175c099da68d548ee1"
+  integrity sha512-xe+Kdgjuu5Pz3lYi859WW8Ve0P3ol3f+35cMd2YZanaqEVmkY0TUhizOzVHzyT3Q5hb/+Jgbb64eBnD3IjvubA==
 
 metalsmith-permalinks@^2.2.0:
   version "2.2.0"
@@ -2455,14 +2491,15 @@ multimatch@^2.0.0, multimatch@^2.1.0:
     arrify "^1.0.0"
     minimatch "^3.0.0"
 
-multimatch@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/multimatch/-/multimatch-3.0.0.tgz#0e2534cc6bc238d9ab67e1b9cd5fcd85a6dbf70b"
-  integrity sha512-22foS/gqQfANZ3o+W7ST2x25ueHDVNWl/b9OlGcLpy/iKxjCpvcNCM51YCenUi7Mt/jAjjqv8JwZRs8YP5sRjA==
+multimatch@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/multimatch/-/multimatch-4.0.0.tgz#8c3c0f6e3e8449ada0af3dd29efb491a375191b3"
+  integrity sha512-lDmx79y1z6i7RNx0ZGCPq1bzJ6ZoDDKbvh7jxr9SJcWLkShMzXrHbYVpTdnhNM5MXpDUxCQ4DgqVttVXlBgiBQ==
   dependencies:
-    array-differ "^2.0.3"
-    array-union "^1.0.2"
-    arrify "^1.0.1"
+    "@types/minimatch" "^3.0.3"
+    array-differ "^3.0.0"
+    array-union "^2.1.0"
+    arrify "^2.0.1"
     minimatch "^3.0.4"
 
 nanomatch@^1.2.9:
