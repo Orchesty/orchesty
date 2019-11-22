@@ -1,5 +1,8 @@
 ---
 layout: main.hbs
+name: Example
+collection: example
+level: 1
 ---
 
 #### CSS snippet

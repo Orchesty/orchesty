@@ -11,7 +11,8 @@
     "dev-server": "yarn run static-server ./build"
   },
   "dependencies": {
-    "handlebars": "^4.1.2",
+    "dotenv": "^8.2.0",
+    "handlebars": "^4.5.3",
     "handlebars-assets": "^0.1.0",
     "handlebars-helpers": "^0.10.0",
     "jstransformer-handlebars": "^1.1.0",
@@ -23,12 +24,13 @@
     "metalsmith-debug": "^1.2.0",
     "metalsmith-headings": "^0.2.0",
     "metalsmith-headings-identifier": "^0.0.11",
-    "metalsmith-in-place": "^4.4.0",
+    "metalsmith-in-place": "^4.4.1",
     "metalsmith-layouts": "^2.3.1",
-    "metalsmith-markdown": "^1.2.0",
+    "metalsmith-markdown": "^1.3.0",
     "metalsmith-markdown-partials": "^1.0.0",
     "metalsmith-metallic": "^2.0.3",
     "metalsmith-permalinks": "^2.2.0",
+    "metalsmith-one-replace": "^0.1.2",
     "metalsmith-s3": "^0.1.0",
     "metalsmith-watch": "^1.0.3",
     "static-server": "^2.2.1"

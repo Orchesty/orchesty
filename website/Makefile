@@ -5,7 +5,7 @@ builder-image:
 	docker build -t pipes-docs-builder .
 
 build: builder-image
-	docker run -t --rm -v $(shell pwd)/../:/build -w /build/website -u $(shell id -u):$(shell id -g) pipes-docs-builder bash -xc ' \
+	docker run -t --rm -v $(shell pwd)/../:/build -w /build/website -u $(shell id -u):$(shell id -g) -e PORTAL_URL=http://127.0.0.88:8000/installer pipes-docs-builder bash -xc ' \
 	  phpdoc && \
 	  mv /tmp/phpdoc-build/README.md src/docs/sdk/api/index.md && \
 	  cat <(echo -e "--- \nautotoc: true \nlayout: main.hbs	\n---") \

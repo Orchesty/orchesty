@@ -1,7 +1,5 @@
-```
-if (!empty(stomach)) {
-    code();
-} else {
-    orderPizza();
-}
-```
+---
+layout: main.hbs
+---
+
+#### Application handler
