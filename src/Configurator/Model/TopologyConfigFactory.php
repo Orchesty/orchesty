@@ -11,7 +11,6 @@ use Hanaboso\CommonsBundle\Database\Document\Node;
 use Hanaboso\CommonsBundle\Database\Repository\NodeRepository;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
-use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyConfigException;
 
 /**
@@ -106,7 +105,7 @@ class TopologyConfigFactory
             self::NODE_CONFIG => $this->loopNodes($nodes),
         ];
 
-        return Json::encode($result);
+        return (string) json_encode($result, JSON_FORCE_OBJECT | JSON_THROW_ON_ERROR);
     }
 
     /**
