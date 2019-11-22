@@ -74,16 +74,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.120.0",
+            "version": "3.121.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "289d716c7a418fc30a530ca83107e738f8dd1ebc"
+                "reference": "7c89b0f455d7b2b36e09080adf72861888725ba5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/289d716c7a418fc30a530ca83107e738f8dd1ebc",
-                "reference": "289d716c7a418fc30a530ca83107e738f8dd1ebc",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/7c89b0f455d7b2b36e09080adf72861888725ba5",
+                "reference": "7c89b0f455d7b2b36e09080adf72861888725ba5",
                 "shasum": ""
             },
             "require": {
@@ -153,7 +153,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2019-11-20T19:17:55+00:00"
+            "time": "2019-11-21T19:10:15+00:00"
         },
         {
             "name": "aws/aws-sdk-php-symfony",
@@ -2409,16 +2409,16 @@
         },
         {
             "name": "hanaboso/user-bundle",
-            "version": "1.2.3",
+            "version": "1.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/user-bundle.git",
-                "reference": "821bdf31658b00e08c3b3d677698f64a658fd993"
+                "reference": "4eb9b713a1ebc2564a662712fcac08e5f4c31957"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/user-bundle/zipball/821bdf31658b00e08c3b3d677698f64a658fd993",
-                "reference": "821bdf31658b00e08c3b3d677698f64a658fd993",
+                "url": "https://api.github.com/repos/hanaboso/user-bundle/zipball/4eb9b713a1ebc2564a662712fcac08e5f4c31957",
+                "reference": "4eb9b713a1ebc2564a662712fcac08e5f4c31957",
                 "shasum": ""
             },
             "require": {
@@ -2446,7 +2446,7 @@
             "license": [
                 "proprietary"
             ],
-            "time": "2019-11-21T15:26:39+00:00"
+            "time": "2019-11-22T10:33:58+00:00"
         },
         {
             "name": "hoa/compiler",
@@ -9636,16 +9636,16 @@
         },
         {
             "name": "nette/php-generator",
-            "version": "v3.2.3",
+            "version": "v3.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/php-generator.git",
-                "reference": "aea6e81437bb238e5f0e5b5ce06337433908e63b"
+                "reference": "4240fd7adf499138c07b814ef9b9a6df9f6d7187"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/php-generator/zipball/aea6e81437bb238e5f0e5b5ce06337433908e63b",
-                "reference": "aea6e81437bb238e5f0e5b5ce06337433908e63b",
+                "url": "https://api.github.com/repos/nette/php-generator/zipball/4240fd7adf499138c07b814ef9b9a6df9f6d7187",
+                "reference": "4240fd7adf499138c07b814ef9b9a6df9f6d7187",
                 "shasum": ""
             },
             "require": {
@@ -9659,7 +9659,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.2-dev"
+                    "dev-master": "3.3-dev"
                 }
             },
             "autoload": {
@@ -9691,7 +9691,7 @@
                 "php",
                 "scaffolding"
             ],
-            "time": "2019-07-05T13:01:56+00:00"
+            "time": "2019-11-22T11:12:11+00:00"
         },
         {
             "name": "nette/reflection",
