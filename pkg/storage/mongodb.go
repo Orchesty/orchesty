@@ -30,6 +30,7 @@ type MongoDefault struct {
 	visibilityFilter primitive.E
 	enabledFilter    primitive.E
 	deletedFilter    primitive.E
+	MongoInterface
 }
 
 // Mongo represents default MongoDB implementation
@@ -60,6 +61,7 @@ func (m *MongoDefault) Connect() {
 	client, err := mongo.NewClient(options.Client().ApplyURI(ds))
 	if err != nil {
 		m.log.Errorf("MongoDB connect: %s", err.Error())
+		return
 	}
 
 	timeoutDuration := config.Mongo.Timeout * time.Minute
@@ -69,6 +71,7 @@ func (m *MongoDefault) Connect() {
 	err = client.Connect(innerContext)
 	if err != nil {
 		m.log.Errorf("MongoDB connect: %s", err.Error())
+		return
 	}
 
 	ctx, cancelFunc := context.WithTimeout(context.Background(), 10*time.Second)
@@ -76,7 +79,6 @@ func (m *MongoDefault) Connect() {
 	defer cancelFunc()
 	e := client.Ping(ctx, readpref.Primary())
 	log.Debugf("Connecting MongoDB ping result: %b...", e)
-
 	m.mongo = client.Database(config.Mongo.Database)
 	m.keepAlive = time.NewTicker(timeoutDuration)
 

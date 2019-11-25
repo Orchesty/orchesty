@@ -56,7 +56,7 @@ func getBridgesEmptyNodes(t *testing.T) {
 }
 
 func getBridges(t *testing.T) {
-	topologyJson := []byte(`[{"id":"5cc047dd4e9acc002a200c12-sta","label":{"id":"5cc047dd4e9acc002a200c12-sta","node_id":"5cc047dd4e9acc002a200c12","node_name":"Start"},"faucet":{},"worker":{"type":"worker.null","settings":{"publish_queue":{}}},"next":["5cc047dd4e9acc002a200c14-xml"],"debug":{"port":8088,"host":"5cc0474e4e9acc00282bb942_mb","url":"http://5cc0474e4e9acc00282bb942_mb:8088/status"}},{"id":"5cc047dd4e9acc002a200c13-web","label":{"id":"5cc047dd4e9acc002a200c13-web","node_id":"5cc047dd4e9acc002a200c13","node_name":"Webhook"},"faucet":{"settings":{"prefetch":10}},"worker":{"type":"worker.http","settings":{"host":"monolith-api","process_path":"/connector/Webhook/webhook","status_path":"/connector/Webhook/webhook/test","method":"POST","port":80,"publish_queue":{}}},"next":[],"debug":{"port":8089,"host":"5cc0474e4e9acc00282bb942_mb","url":"http://5cc0474e4e9acc00282bb942_mb:8089/status"}},{"id":"5cc047dd4e9acc002a200c14-xml","label":{"id":"5cc047dd4e9acc002a200c14-xml","node_id":"5cc047dd4e9acc002a200c14","node_name":"Xml_parser"},"faucet":{},"worker":{"type":"worker.http_xml_parser","settings":{"host":"xml-parser-api","process_path":"/Xml_parser","status_path":"/Xml_parser/test","method":"POST","port":80,"publish_queue":{}}},"next":["5cc047dd4e9acc002a200c13-web"],"debug":{"port":8090,"host":"5cc0474e4e9acc00282bb942_mb","url":"http://5cc0474e4e9acc00282bb942_mb:8090/status"}}]`)
+	topologyJson := []byte(`[{"id":"5cc047dd4e9acc002a200c12-sta","label":{"id":"5cc047dd4e9acc002a200c12-sta","node_id":"5cc047dd4e9acc002a200c12","node_name":"start"},"faucet":{},"worker":{"type":"worker.null","settings":{"publish_queue":{}}},"next":["5cc047dd4e9acc002a200c14-xml"],"debug":{"port":8088,"host":"5cc0474e4e9acc00282bb942_mb","url":"http://5cc0474e4e9acc00282bb942_mb:8088/status"}},{"id":"5cc047dd4e9acc002a200c13-web","label":{"id":"5cc047dd4e9acc002a200c13-web","node_id":"5cc047dd4e9acc002a200c13","node_name":"Webhook"},"faucet":{"settings":{"prefetch":10}},"worker":{"type":"worker.http","settings":{"host":"monolith-api","process_path":"/connector/Webhook/webhook","status_path":"/connector/Webhook/webhook/test","method":"POST","port":80,"publish_queue":{}}},"next":[],"debug":{"port":8089,"host":"5cc0474e4e9acc00282bb942_mb","url":"http://5cc0474e4e9acc00282bb942_mb:8089/status"}},{"id":"5cc047dd4e9acc002a200c14-xml","label":{"id":"5cc047dd4e9acc002a200c14-xml","node_id":"5cc047dd4e9acc002a200c14","node_name":"Xml_parser"},"faucet":{},"worker":{"type":"worker.http_xml_parser","settings":{"host":"xml-parser-api","process_path":"/Xml_parser","status_path":"/Xml_parser/test","method":"POST","port":80,"publish_queue":{}}},"next":["5cc047dd4e9acc002a200c13-web"],"debug":{"port":8090,"host":"5cc0474e4e9acc00282bb942_mb","url":"http://5cc0474e4e9acc00282bb942_mb:8090/status"}}]`)
 
 	topology := getTestTopology()
 	nodes := getTestNodes()
@@ -136,11 +136,7 @@ func getFullEnvironment(t *testing.T) {
 		"METRICS_SERVICE":  "influx",
 		"MULTI_PROBE_HOST": "multi-probe",
 		"MULTI_PROBE_PORT": "8007",
-		"RABBITMQ_HOST":    "rabbitmq",
-		"RABBITMQ_PASS":    "guest",
-		"RABBITMQ_PORT":    "5672",
-		"RABBITMQ_USER":    "guest",
-		"RABBITMQ_VHOST":   "/",
+		"RABBITMQ_DSN":     "rabbitmq",
 	}
 
 	assert.Equal(t, result, expected)
@@ -151,10 +147,7 @@ func getEnvironment(mode Adapter) Environment {
 	return Environment{
 		DockerRegistry:      "dkr.hanaboso.net/pipes/pipes",
 		DockerPfBridgeImage: "pf-bridge:dev",
-		RabbitMqHost:        "rabbitmq:5672",
-		RabbitMqUser:        "guest",
-		RabbitMqPass:        "guest",
-		RabbitMqVHost:       "/",
+		RabbitMqDsn:         "rabbitmq",
 		MultiProbeHost:      "multi-probe:8007",
 		MetricsHost:         "kapacitor",
 		MetricsPort:         "9100",
@@ -178,7 +171,7 @@ func getTestNodes() []Node {
 
 	nodes = append(nodes, Node{
 		ID:       id,
-		Name:     "Start",
+		Name:     "start",
 		Topology: "5cc0474e4e9acc00282bb942",
 		Next:     next,
 		Type:     "start",

@@ -1,6 +1,8 @@
 package services
 
 import (
+	"fmt"
+	"github.com/stretchr/testify/require"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -105,12 +107,27 @@ func TestGetDockerServiceConfigs(t *testing.T) {
 
 func TestGetComposeCommand(t *testing.T) {
 	t.Run("Get docker compose start command", func(t *testing.T) {
-		assert.Equal(t, "./dist/src/bin/pipes.js start multi_bridge", getComposeCommand())
+		assert.Equal(t, "./dist/src/bin/pipes.js start multi_bridge", getMultiBridgeStartCommand())
 	})
 }
 
 func TestGetSwarmCommand(t *testing.T) {
 	t.Run("Get swarm start command", func(t *testing.T) {
-		assert.Equal(t, "./dist/src/bin/pipes.js start node --id test", getSwarmCommand("test"))
+		assert.Equal(t, "./dist/src/bin/pipes.js start bridge --id test", getSingleBridgeStartCommand("test"))
 	})
+}
+
+func TestGetConfigMapName(t *testing.T) {
+	n := GetConfigMapName(topologyId)
+	require.Equal(t, fmt.Sprintf("configmap-%s", topologyId), n)
+}
+
+func TestGetDeploymentName(t *testing.T) {
+	n := GetDeploymentName(topologyId)
+	require.Equal(t, fmt.Sprintf("topology-%s", topologyId), n)
+}
+
+func TestGetPodName(t *testing.T) {
+	n := getPodName(topologyId)
+	require.Equal(t, fmt.Sprintf("pod%s", topologyId), n)
 }

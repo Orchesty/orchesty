@@ -2,22 +2,25 @@ package cmd
 
 import (
 	"context"
+	"fmt"
+	"github.com/docker/docker/client"
+	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
+	"k8s.io/client-go/kubernetes"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
-
-	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
-	"github.com/spf13/cobra"
-
-	"topology-generator/pkg/docker_client"
+	"topology-generator/pkg/config"
+	"topology-generator/pkg/model"
 	"topology-generator/pkg/server"
+	"topology-generator/pkg/services"
 	"topology-generator/pkg/storage"
 )
 
-func startServer(mongo *storage.MongoDefault, docker *docker_client.DockerApiClient) *http.Server {
-	s := server.New(mongo, docker)
+func startServer(sc *services.ServiceContainer) *http.Server {
+	s := server.New(sc)
 
 	go func() {
 		log.WithField("address", s.Addr).Info("Starting API server...")
@@ -30,14 +33,35 @@ func startServer(mongo *storage.MongoDefault, docker *docker_client.DockerApiCli
 	return s
 }
 
-func serverCommand(cmd *cobra.Command, args []string) {
-	mongo := storage.CreateMongo()
+func serverCommand(cmd *cobra.Command, args []string) error {
 
-	docker, err := docker_client.CreateClient()
-	if err != nil {
+	var docker *client.Client
+	var clientSet *kubernetes.Clientset
+	var err error
 
+	switch config.Generator.Mode {
+	case model.ModeKubernetes:
+		cfg, err := services.GetKubernetesConfig(config.Generator)
+		if err != nil {
+			return fmt.Errorf("APi server shutdown, reason: %v", err)
+		}
+		clientSet, err = kubernetes.NewForConfig(cfg)
+		if err != nil {
+			return fmt.Errorf("APi server shutdown, reason: %v", err)
+		}
+	case model.ModeCompose:
+	case model.ModeSwarm:
+		docker, err = services.DockerConnect()
+		if err != nil {
+			return fmt.Errorf("APi server shutdown, reason: %v", err)
+		}
+	default:
+		return fmt.Errorf("Uknown generator mode %s", config.Generator.Mode)
 	}
-	s := startServer(mongo, docker)
+
+	mongo := storage.CreateMongo()
+	sc := services.NewServiceContainer(mongo, docker, clientSet, config.Generator)
+	s := startServer(sc)
 
 	// Wait for interrupt signal to gracefully shutdown the server with
 	// a timeout of 5 seconds.
@@ -51,9 +75,10 @@ func serverCommand(cmd *cobra.Command, args []string) {
 	defer cancel()
 
 	if err := s.Shutdown(shutdownCtx); err != nil {
-		log.Fatal("API server shutdown failed, reason:", err)
+		return fmt.Errorf("API server shutdown failed, reason: %v", err)
 	}
 	log.Info("Server exiting")
+	return nil
 }
 
 func init() {
@@ -63,8 +88,8 @@ func init() {
 
 	rootCmd.AddCommand(&cobra.Command{
 		Use:   "server",
-		Short: "Start API server",
+		Short: "start API server",
 		Long:  ``,
-		Run:   serverCommand,
+		RunE:  serverCommand,
 	})
 }

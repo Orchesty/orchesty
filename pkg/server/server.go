@@ -1,34 +1,30 @@
 package server
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
-
+	"net/http"
 	"topology-generator/pkg/config"
-	"topology-generator/pkg/docker_client"
-	"topology-generator/pkg/storage"
+	"topology-generator/pkg/services"
 )
 
-// New Create new http.Server
-func New(mongo *storage.MongoDefault, docker *docker_client.DockerApiClient) *http.Server {
+// New create new http.Server
+func New(sc *services.ServiceContainer) *http.Server {
 	return &http.Server{
 		Addr:    config.API.Host,
-		Handler: newMux(mongo, docker),
+		Handler: newMux(sc),
 	}
 }
 
 type mux struct {
 	*gin.Engine
-	mongo  *storage.MongoDefault
-	docker *docker_client.DockerApiClient
+	Sc *services.ServiceContainer
 }
 
-func newMux(mongo *storage.MongoDefault, docker *docker_client.DockerApiClient) http.Handler {
+func newMux(sc *services.ServiceContainer) http.Handler {
 	r := gin.New()
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
-	m := mux{Engine: r, mongo: mongo, docker: docker}
+	m := mux{Engine: r, Sc: sc}
 	m.version1()
 
 	return r
@@ -36,17 +32,17 @@ func newMux(mongo *storage.MongoDefault, docker *docker_client.DockerApiClient) 
 
 // V1 routes
 func (m *mux) version1() {
-	handler, err := GetHandlerAdapter(config.Generator.Mode, m.mongo, m.docker)
+	handler, err := GetHandlerAdapter(config.Generator.Mode)
 	if err != nil {
 		panic(err)
 	}
 
 	v1 := m.Group("/v1", apiVersion("1", "0"))
 	{
-		v1.GET("/status", Wrap(func(c *contextWrapper) { c.OK("ok") }))
-		v1.POST("/api/topologies/:topologyId", Wrap(handler.GenerateAction))
-		v1.PUT("/api/topologies/:topologyId", Wrap(handler.RunStopAction))
-		v1.DELETE("/api/topologies/:topologyId", Wrap(handler.DeleteAction))
-		v1.GET("/api/topologies/:topologyId", Wrap(handler.InfoAction))
+		v1.GET("/status", Wrap(func(c *ContextWrapper) { c.OK("ok") }, m.Sc))
+		v1.POST("/api/topologies/:topologyId", Wrap(handler.GenerateAction, m.Sc))
+		v1.PUT("/api/topologies/:topologyId", Wrap(handler.RunStopAction, m.Sc))
+		v1.DELETE("/api/topologies/:topologyId", Wrap(handler.DeleteAction, m.Sc))
+		v1.GET("/api/topologies/:topologyId", Wrap(handler.InfoAction, m.Sc))
 	}
 }

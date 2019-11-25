@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"strings"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -112,8 +113,7 @@ func (t *Topology) NormalizeName() string {
 }
 
 func (t *Topology) GetDockerName() string {
-	//TODO: add dockerize
-	return fmt.Sprintf("%s%s", t.ID.Hex(), t.Name)
+	return fmt.Sprintf("%s-%s", t.ID.Hex(), strings.ToLower(strings.ReplaceAll(t.Name, " ", "")))
 }
 
 func (t *Topology) GetMultiNodeName() string {

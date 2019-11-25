@@ -8,10 +8,10 @@ docker-compose.ci.yml:
 	sed -r 's/^(\s+ports:)$$/#\1/g; s/^(\s+- \$$\{DEV_IP\}.*)$$/#\1/g' docker-compose.yml > docker-compose.ci.yml
 
 docker-build:
-	docker build -t topology-api-v1:$(DOCKER_DEFAULT_TAG) -t $(DOCKER_REGISTRY)topology-api-v1:$(DOCKER_DEFAULT_TAG) -f docker/build/Dockerfile .
+	docker build -t topology-api-v2:$(DOCKER_DEFAULT_TAG) -t $(DOCKER_REGISTRY)topology-api-v2:$(DOCKER_DEFAULT_TAG) -f docker/build/Dockerfile .
  
 docker-push: docker-build
-	docker push $(DOCKER_REGISTRY)topology-api-v1:$(DOCKER_DEFAULT_TAG)
+	docker push $(DOCKER_REGISTRY)topology-api-v2:$(DOCKER_DEFAULT_TAG)
 
 go-test:
 	gofmt -w cmd pkg

@@ -29,6 +29,8 @@ type (
 		TopologyPath      string        `default:"/srv/app/topology/topology.json" env:"TOPOLOGY_PATH"` // for node configuration, path in docker
 		ProjectSourcePath string        `default:"/" env:"PROJECT_SOURCE_PATH"`                         // path where is stored local files relevant to docker.sock
 		Mode              model.Adapter `default:"compose" env:"GENERATOR_MODE"`
+		ClusterConfig     string        `default:"" env:"K8S_CLUSTER_CONFIG"`
+		Namespace         string        `default:"default" env:"K8S_NAMESPACE"`
 		Prefix            string        `default:"dev" env:"DEPLOYMENT_PREFIX"`
 		Network           string        `default:"client" env:"GENERATOR_NETWORK"`
 		MultiNode         bool          `default:"true" env:"MULTI_NODE"`
@@ -56,7 +58,7 @@ func init() {
 	if err := configor.Load(&c); err != nil {
 		panic(err)
 	}
-	 if !strings.HasPrefix(Mongo.Host, "mongodb://") {
-            Mongo.Host = fmt.Sprintf("mongodb://%s/", Mongo.Host)
-     }
+	if !strings.HasPrefix(Mongo.Host, "mongodb://") {
+		Mongo.Host = fmt.Sprintf("mongodb://%s/", Mongo.Host)
+	}
 }
