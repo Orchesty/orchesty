@@ -1,6 +1,8 @@
 package services
 
 import (
+	"fmt"
+	"github.com/stretchr/testify/require"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -19,7 +21,6 @@ func TestGetDockerServices(t *testing.T) {
 func getAllDockerServices(t *testing.T) {
 	t.SkipNow()
 
-	topology := getTestTopology()
 	nodeConfig := model.NodeConfig{
 		NodeConfig:  getNodeConfigs(),
 		Environment: getEnvironment(model.ModeCompose),
@@ -37,7 +38,7 @@ func getAllDockerServices(t *testing.T) {
 	}
 
 	expected := map[string]*model.Service{
-		"5cc047dd4e9acc002a200c12-Start": {
+		"5cc047dd4e9acc002a200c12-start": {
 			Image:       "",
 			WorkingDir:  "",
 			User:        "",
@@ -69,8 +70,10 @@ func getAllDockerServices(t *testing.T) {
 		},
 	}
 
-	ts := NewTopologyService(&topology, getTestNodes(), nodeConfig, generatorConfig)
-
+	ts, err := NewTopologyService(nodeConfig, generatorConfig, nil, "")
+	if err != nil {
+		t.Fatal(err)
+	}
 	result, err := ts.getDockerServices(model.ModeCompose)
 
 	assert.Equal(t, expected, result)
@@ -93,62 +96,6 @@ func getTestTopology() model.Topology {
 		RawBpmn:    "",
 		Deleted:    false,
 	}
-}
-
-func getTestNodes() []model.Node {
-
-	var nodes = make([]model.Node, 0)
-
-	id, _ := primitive.ObjectIDFromHex("5cc047dd4e9acc002a200c12")
-	var next = []model.NodeNext{
-		{
-			ID:   "5cc047dd4e9acc002a200c14",
-			Name: "Xml_parser",
-		},
-	}
-
-	nodes = append(nodes, model.Node{
-		ID:       id,
-		Name:     "Start",
-		Topology: "5cc0474e4e9acc00282bb942",
-		Next:     next,
-		Type:     "start",
-		Handler:  "event",
-		Enabled:  true,
-		Deleted:  false,
-	})
-
-	id, _ = primitive.ObjectIDFromHex("5cc047dd4e9acc002a200c13")
-	nodes = append(nodes, model.Node{
-		ID:       id,
-		Name:     "Webhook",
-		Topology: "5cc0474e4e9acc00282bb942",
-		Type:     "webhook",
-		Handler:  "event",
-		Enabled:  true,
-		Deleted:  false,
-	})
-
-	id, _ = primitive.ObjectIDFromHex("5cc047dd4e9acc002a200c14")
-	next = []model.NodeNext{
-		{
-			ID:   "5cc047dd4e9acc002a200c13",
-			Name: "Webhook",
-		},
-	}
-
-	nodes = append(nodes, model.Node{
-		ID:       id,
-		Name:     "Xml_parser",
-		Topology: "5cc0474e4e9acc00282bb942",
-		Next:     next,
-		Type:     "xml_parser",
-		Handler:  "action",
-		Enabled:  true,
-		Deleted:  false,
-	})
-
-	return nodes
 }
 
 func getNodeConfigs() map[string]model.NodeUserParams {
@@ -200,13 +147,159 @@ func getEnvironment(mode model.Adapter) model.Environment {
 	return model.Environment{
 		DockerRegistry:      "dkr.hanaboso.net/pipes/pipes",
 		DockerPfBridgeImage: "pf-bridge:dev",
-		RabbitMqHost:        "rabbitmq:5672",
-		RabbitMqUser:        "guest",
-		RabbitMqPass:        "guest",
-		RabbitMqVHost:       "/",
+		RabbitMqDsn:         "rabbitmq:5672",
 		MultiProbeHost:      "multi-probe:8007",
 		MetricsHost:         "kapacitor:9100",
 		WorkerDefaultPort:   8808,
 		GeneratorMode:       mode,
 	}
+}
+
+func TestTopologyService_CreateTopologyJsonFails(t *testing.T) {
+	nodeConfig := model.NodeConfig{
+		NodeConfig: getNodeConfigs(),
+		Environment: model.Environment{
+			DockerRegistry:      "testregistry",
+			DockerPfBridgeImage: "testimages",
+			RabbitMqDsn:         "",
+			MultiProbeHost:      "",
+			MetricsHost:         "",
+			MetricsPort:         "",
+			MetricsService:      "",
+			WorkerDefaultPort:   8888,
+			GeneratorMode:       "",
+		},
+	}
+
+	// check that creating topology fails
+	ts, err := NewTopologyService(nodeConfig, testConfigGenerator, testDb{
+		mockGetTopology: func(id string) (topology *model.Topology, e error) {
+			return getMockTopology(), nil
+		},
+		mockGetTopologyNodes: func(id string) (nodes []model.Node, e error) {
+			return []model.Node{}, nil
+		},
+	}, "topologyId")
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = ts.GenerateTopology()
+	require.NotNil(t, err)
+
+	errorConfigGenerator := config.GeneratorConfig{
+		Path:              "/non/existing",
+		TopologyPath:      "/srv/app/topology/topology.json",
+		ProjectSourcePath: "/",
+		Mode:              "compose",
+		ClusterConfig:     "",
+		Namespace:         "",
+		Prefix:            "",
+		Network:           "demo_default",
+		MultiNode:         true,
+		WorkerDefaultPort: 0,
+	}
+
+	// check that writing topology.json fails
+	ts, err = NewTopologyService(nodeConfig, errorConfigGenerator, testDb{
+		mockGetTopology: func(id string) (topology *model.Topology, e error) {
+			return getMockTopology(), nil
+		},
+		mockGetTopologyNodes: func(id string) (nodes []model.Node, e error) {
+			return getTestNodes(), nil
+		},
+	}, "topologyId")
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = ts.GenerateTopology()
+	require.NotNil(t, err)
+
+}
+
+func TestNewTopologyServiceFails(t *testing.T) {
+	// check that NewTopologyService returns errors
+	ts, err := NewTopologyService(model.NodeConfig{}, testConfigGenerator, testDb{
+		mockGetTopology: func(id string) (topology *model.Topology, e error) {
+			return nil, fmt.Errorf("test error")
+		},
+		mockGetTopologyNodes: func(id string) (nodes []model.Node, e error) {
+			return []model.Node{}, nil
+		},
+	}, "unknownTopologyId")
+	require.NotNil(t, err)
+	require.Nil(t, ts)
+
+	// check that NewTopologyService returns errors
+	ts, err = NewTopologyService(model.NodeConfig{}, testConfigGenerator, testDb{
+		mockGetTopology: func(id string) (topology *model.Topology, e error) {
+			return getMockTopology(), nil
+		},
+		mockGetTopologyNodes: func(id string) (nodes []model.Node, e error) {
+			return []model.Node{}, fmt.Errorf("test error")
+		},
+	}, "unknownTopologyId")
+	require.NotNil(t, err)
+	require.Nil(t, ts)
+}
+
+func TestGetDockerServicesFails(t *testing.T) {
+	// check that NewTopologyService returns errors
+	ts, err := NewTopologyService(model.NodeConfig{
+		NodeConfig: nil,
+		Environment: model.Environment{
+			DockerRegistry:      "",
+			DockerPfBridgeImage: "",
+			RabbitMqDsn:         "[x:",
+			MultiProbeHost:      "[y:",
+			MetricsHost:         "",
+			MetricsPort:         "",
+			MetricsService:      "",
+			WorkerDefaultPort:   0,
+			GeneratorMode:       "",
+		},
+	}, testConfigGenerator, testDb{
+		mockGetTopology: func(id string) (topology *model.Topology, e error) {
+			return getMockTopology(), nil
+		},
+		mockGetTopologyNodes: func(id string) (nodes []model.Node, e error) {
+			return []model.Node{}, nil
+		},
+	}, topologyId)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = ts.getDockerServices(model.ModeCompose)
+	require.NotNil(t, err)
+}
+
+func TestTopologyService_CreateDockerComposeFails(t *testing.T) {
+	// check that NewTopologyService returns errors
+	ts, err := NewTopologyService(model.NodeConfig{
+		NodeConfig: nil,
+		Environment: model.Environment{
+			DockerRegistry:      "",
+			DockerPfBridgeImage: "",
+			RabbitMqDsn:         "[x:",
+			MultiProbeHost:      "[y:",
+			MetricsHost:         "",
+			MetricsPort:         "",
+			MetricsService:      "",
+			WorkerDefaultPort:   0,
+			GeneratorMode:       "",
+		},
+	}, testConfigGenerator, testDb{
+		mockGetTopology: func(id string) (topology *model.Topology, e error) {
+			return getMockTopology(), nil
+		},
+		mockGetTopologyNodes: func(id string) (nodes []model.Node, e error) {
+			return []model.Node{}, nil
+		},
+	}, topologyId)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = ts.CreateDockerCompose(model.ModeCompose)
+	require.NotNil(t, err)
 }

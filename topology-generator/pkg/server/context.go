@@ -1,20 +1,21 @@
 package server
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
+	"net/http"
+	"topology-generator/pkg/services"
 
 	"topology-generator/pkg/model"
 )
 
-type contextWrapper struct {
+type ContextWrapper struct {
 	*gin.Context
+	Sc *services.ServiceContainer
 }
 
-func (w *contextWrapper) OK(obj ...interface{}) {
+func (w *ContextWrapper) OK(obj ...interface{}) {
 	if len(obj) > 0 {
 		w.JSON(http.StatusOK, obj[0])
 	} else {
@@ -22,11 +23,11 @@ func (w *contextWrapper) OK(obj ...interface{}) {
 	}
 }
 
-func (w *contextWrapper) WithCode(code int, obj ...interface{}) {
+func (w *ContextWrapper) WithCode(code int, obj ...interface{}) {
 	w.JSON(code, obj[0])
 }
 
-func (w *contextWrapper) NOK(err error) {
+func (w *ContextWrapper) NOK(err error) {
 	code := http.StatusInternalServerError
 	resp := gin.H{
 		"code":            "INTERNAL_SERVER_ERROR",
@@ -54,9 +55,9 @@ func (w *contextWrapper) NOK(err error) {
 }
 
 // Wrap gin Context with convenient methods
-func Wrap(handler func(*contextWrapper)) func(*gin.Context) {
+func Wrap(handler func(*ContextWrapper), sc *services.ServiceContainer) func(*gin.Context) {
 	return func(c *gin.Context) {
-		handler(&contextWrapper{c})
+		handler(&ContextWrapper{Context: c, Sc: sc})
 	}
 }
 

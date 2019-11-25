@@ -122,7 +122,7 @@ func getMultiNodeName(t *testing.T) {
 }
 
 func getDockerName(t *testing.T) {
-	expected := "5cc0474e4e9acc00282bb942test"
+	expected := "5cc0474e4e9acc00282bb942-test"
 	topology := getTestTopology()
 	result := topology.GetDockerName()
 
@@ -162,7 +162,7 @@ func getNextNodeEmpty(t *testing.T) {
 }
 
 func getServiceName(t *testing.T) {
-	expected := "5cc047dd4e9acc002a200c12-Start"
+	expected := "5cc047dd4e9acc002a200c12-start"
 	node := getTestNode()
 	result := node.GetServiceName()
 
@@ -201,7 +201,7 @@ func getTestNode() Node {
 
 	return Node{
 		ID:       id,
-		Name:     "Start",
+		Name:     "start",
 		Topology: "5cc0474e4e9acc00282bb942",
 		Next:     next,
 		Type:     "start",
