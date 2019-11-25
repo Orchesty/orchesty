@@ -52,15 +52,7 @@ final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
 
         $eventMock = $this->mockEvent(new CallbackException());
         $controller->onKernelException($eventMock);
-        self::assertInstanceOf(Response::class, $eventMock->getResponse());
-        self::assertArrayHasKey(
-            PipesHeaders::createKey(PipesHeaders::RESULT_CODE),
-            $eventMock->getResponse()->headers->all()
-        );
-        self::assertNotEquals(
-            '1006',
-            $eventMock->getResponse()->headers->get(PipesHeaders::createKey(PipesHeaders::RESULT_CODE))
-        );
+        self::assertNull($eventMock->getResponse());
 
         $eventMock = $this->mockEvent(new EnumException());
         $controller->onKernelException($eventMock);

@@ -12,6 +12,7 @@ use Hanaboso\CommonsBundle\Transport\Ftp\Exception\FtpException;
 use Hanaboso\CommonsBundle\Transport\Soap\SoapException;
 use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use Hanaboso\PipesFramework\Notification\Exception\NotificationException;
+use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\CustomNode\Exception\CustomNodeException;
@@ -40,22 +41,22 @@ class ControllerExceptionListener implements EventSubscriberInterface, LoggerAwa
      * @var array
      */
     protected $exceptionClasses = [
-        SoapException::class,
-        FtpException::class,
-        PipesFrameworkException::class,
-        FileStorageException::class,
+        ApplicationInstallException::class,
+        AuthorizationException::class,
+        ConnectorException::class,
         CryptException::class,
-        EnumException::class,
-        TableParserHandlerException::class,
         CustomNodeException::class,
-        MapperException::class,
+        EnumException::class,
+        FileStorageException::class,
+        FtpException::class,
         JoinerException::class,
         LongRunningNodeException::class,
-        AuthorizationException::class,
+        MapperException::class,
         NotificationException::class,
-        CustomNodeException::class,
-        ConnectorException::class,
+        PipesFrameworkException::class,
+        SoapException::class,
         TableParserException::class,
+        TableParserHandlerException::class,
     ];
 
     /**
@@ -93,12 +94,13 @@ class ControllerExceptionListener implements EventSubscriberInterface, LoggerAwa
             $this->logger->error('Controller exception.', ['exception' => $e]);
         }
 
-        $response = $this->getErrorResponse($e, 200);
-
-        if (in_array(get_class($e), $this->exceptionClasses)) {
-            $response->headers->add(PipesHeaders::clear($event->getRequest()->headers->all()));
-            $response->headers->set(PipesHeaders::createKey(PipesHeaders::RESULT_CODE), '1006');
+        if (!in_array(get_class($e), $this->exceptionClasses)) {
+            return;
         }
+
+        $response = $this->getErrorResponse($e, 200);
+        $response->headers->add(PipesHeaders::clear($event->getRequest()->headers->all()));
+        $response->headers->set(PipesHeaders::createKey(PipesHeaders::RESULT_CODE), '1006');
 
         $event->setResponse($response);
         $event->allowCustomResponseCode();
