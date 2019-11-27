@@ -65,7 +65,7 @@ build-monolith: .env
 		--rm \
 		-u $$(id -u):$$(id -g) \
 		-v $$(pwd)/../../../:/build \
-		-v $${SSH_AUTH_SOCK}:$${SSH_AUTH} \
+		-v $${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent \
 		-v $${HOME}/dev/.composer:$${HOME}/dev/.composer \
 		-w /build/${CLIENT_DIR}/pipes-api \
 		-e COMPOSER=composer.prod.json \
@@ -90,7 +90,7 @@ build-sender:  .env
 		--rm \
 		-u $$(id -u):$$(id -g) \
 		-v $$(pwd)/../../../:/build \
-		-v $${HOME}/dev/.composer:$${HOME}/dev/.composer \
+		-v $${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent \
 		-v $${HOME}/dev/.composer:${HOME}/dev/.composer \
 		-w /build/${CLIENT_DIR}/sender-api \
 		-e COMPOSER=composer.prod.json \
