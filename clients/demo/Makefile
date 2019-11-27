@@ -14,7 +14,7 @@ IMAGE_SENDER_API=dkr.hanaboso.net/pipes/notification-sender:$(TAG_SENDER_API)
 
 # Generic vars
 
-IMAGE_PHP_DEV=dkr.hanaboso.net/pipes/pipes/php-dev:dev
+IMAGE_PHP_DEV=hanabosocom/php-dev:php-7.3
 
 DEV_YML?="docker-compose.dev.yml"
 
@@ -27,6 +27,7 @@ DE_DEVT=docker-compose -f $(DEV_YML) exec
 		-e "s|{DEV_GID}|$(shell id -u)|g" \
 		-e "s|{DOCKER_SOCKET_PATH}|$(shell test -S /var/run/docker-$${USER}.sock && echo /var/run/docker-$${USER}.sock || echo /var/run/docker.sock)|g" \
 		-e "s|{PROJECT_SOURCE_PATH}|$(shell pwd)|g" \
+		-e "s/{SSH_AUTH}/$(shell if [ "$(shell uname)" = "Linux" ]; then echo "\/tmp\/.ssh-auth-sock"; else echo '\/tmp\/.nope'; fi)/g" \
 		.env.dist > .env && \
 	../../build/bin/map-branch-image-tags.sh ./branch-image-tag-map $(shell git rev-parse --symbolic-full-name --abbrev-ref HEAD) >> .env
 
@@ -64,7 +65,7 @@ build-monolith:
 		--rm \
 		-u $$(id -u):$$(id -g) \
 		-v $$(pwd)/../../../:/build \
-		-v $${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent \
+		-v $${SSH_AUTH_SOCK}:$${SSH_AUTH} \
 		-v $${HOME}/dev/.composer:$${HOME}/dev/.composer \
 		-w /build/${CLIENT_DIR}/pipes-api \
 		-e COMPOSER=composer.prod.json \
@@ -89,7 +90,7 @@ build-sender:
 		--rm \
 		-u $$(id -u):$$(id -g) \
 		-v $$(pwd)/../../../:/build \
-		-v $${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent \
+		-v $${HOME}/dev/.composer:$${HOME}/dev/.composer \
 		-v $${HOME}/dev/.composer:${HOME}/dev/.composer \
 		-w /build/${CLIENT_DIR}/sender-api \
 		-e COMPOSER=composer.prod.json \

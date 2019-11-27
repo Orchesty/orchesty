@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "531d735b22927c85b5284e2947c2767b",
+    "content-hash": "3d085a2f81da138e098fe85d8a10eaa5",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -74,16 +74,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.121.1",
+            "version": "3.123.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "d766697d06ee0abff255f6c6d522c6e65a4cc767"
+                "reference": "3bf671629a3b2a5a5694f8dfee15686e586b33b6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/d766697d06ee0abff255f6c6d522c6e65a4cc767",
-                "reference": "d766697d06ee0abff255f6c6d522c6e65a4cc767",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/3bf671629a3b2a5a5694f8dfee15686e586b33b6",
+                "reference": "3bf671629a3b2a5a5694f8dfee15686e586b33b6",
                 "shasum": ""
             },
             "require": {
@@ -153,33 +153,33 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2019-11-22T19:14:53+00:00"
+            "time": "2019-11-26T19:08:40+00:00"
         },
         {
             "name": "aws/aws-sdk-php-symfony",
-            "version": "2.0.2",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php-symfony.git",
-                "reference": "86bed6e529f8d371cb81331b31785b6a69a20b0a"
+                "reference": "fecf71dfda5baa2b31504222e52acc38effa00f4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php-symfony/zipball/86bed6e529f8d371cb81331b31785b6a69a20b0a",
-                "reference": "86bed6e529f8d371cb81331b31785b6a69a20b0a",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php-symfony/zipball/fecf71dfda5baa2b31504222e52acc38effa00f4",
+                "reference": "fecf71dfda5baa2b31504222e52acc38effa00f4",
                 "shasum": ""
             },
             "require": {
                 "aws/aws-sdk-php": "^3.2.6",
                 "php": ">=5.5",
-                "symfony/config": "~2.3|~3.0|~4.0",
-                "symfony/dependency-injection": "~2.3|~3.0|~4.0",
-                "symfony/http-kernel": "~2.3|~3.0|~4.0"
+                "symfony/config": "~2.3|~3.0|~4.0|~5.0",
+                "symfony/dependency-injection": "~2.3|~3.0|~4.0|~5.0",
+                "symfony/http-kernel": "~2.3|~3.0|~4.0|~5.0"
             },
             "require-dev": {
                 "phpunit/phpunit": "^4.8.35|^5.4.0|^6.0.0",
-                "symfony/framework-bundle": "~2.3|~3.0|~4.0",
-                "symfony/yaml": "~2.3|~3.0|~4.0"
+                "symfony/framework-bundle": "~2.3|~3.0|~4.0|~5.0",
+                "symfony/yaml": "~2.3|~3.0|~4.0|~5.0"
             },
             "type": "symfony-bundle",
             "autoload": {
@@ -206,7 +206,7 @@
                 "symfony",
                 "symfony3"
             ],
-            "time": "2019-11-07T19:11:43+00:00"
+            "time": "2019-11-25T18:06:25+00:00"
         },
         {
             "name": "bunny/bunny",
@@ -1331,16 +1331,16 @@
         },
         {
             "name": "doctrine/mongodb-odm",
-            "version": "1.3.4",
+            "version": "1.3.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/mongodb-odm.git",
-                "reference": "8cf8fa0188139be70de76b2315fc78a751db5d24"
+                "reference": "3bfedc0347245682ac134b949bf97d00b6a4638c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/mongodb-odm/zipball/8cf8fa0188139be70de76b2315fc78a751db5d24",
-                "reference": "8cf8fa0188139be70de76b2315fc78a751db5d24",
+                "url": "https://api.github.com/repos/doctrine/mongodb-odm/zipball/3bfedc0347245682ac134b949bf97d00b6a4638c",
+                "reference": "3bfedc0347245682ac134b949bf97d00b6a4638c",
                 "shasum": ""
             },
             "require": {
@@ -1352,7 +1352,7 @@
                 "doctrine/instantiator": "^1.0.1",
                 "doctrine/mongodb": "^1.6.4",
                 "php": "^5.6 || ^7.0",
-                "symfony/console": "~2.3|~3.0|^4.0"
+                "symfony/console": "~2.3|~3.0|^4.0|^5.0"
             },
             "require-dev": {
                 "phpbench/phpbench": "^0.13.0",
@@ -1412,7 +1412,7 @@
                 "odm",
                 "persistence"
             ],
-            "time": "2019-11-13T11:59:57+00:00"
+            "time": "2019-11-25T22:42:07+00:00"
         },
         {
             "name": "doctrine/mongodb-odm-bundle",
@@ -2122,16 +2122,16 @@
         },
         {
             "name": "hanaboso/acl-bundle",
-            "version": "1.2.1",
+            "version": "1.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/acl-bundle.git",
-                "reference": "c3461311c566634b117575df56a6990ba62d759b"
+                "reference": "e49e7e276d43d420a3828792aeb3d16bb0329d3d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/acl-bundle/zipball/c3461311c566634b117575df56a6990ba62d759b",
-                "reference": "c3461311c566634b117575df56a6990ba62d759b",
+                "url": "https://api.github.com/repos/hanaboso/acl-bundle/zipball/e49e7e276d43d420a3828792aeb3d16bb0329d3d",
+                "reference": "e49e7e276d43d420a3828792aeb3d16bb0329d3d",
                 "shasum": ""
             },
             "require": {
@@ -2141,7 +2141,7 @@
             },
             "require-dev": {
                 "hanaboso/php-check-utils": "^1.0",
-                "symfony/security-bundle": "^4.3"
+                "symfony/security-bundle": "^4.4"
             },
             "type": "library",
             "autoload": {
@@ -2153,15 +2153,15 @@
             "license": [
                 "proprietary"
             ],
-            "time": "2019-11-11T08:58:57+00:00"
+            "time": "2019-11-27T11:53:46+00:00"
         },
         {
             "name": "hanaboso/app-store",
-            "version": "1.1.14",
+            "version": "1.1.15",
             "dist": {
                 "type": "path",
                 "url": "../app-store",
-                "reference": "a22849cca4f9111bdf1bbbcc90558ae02db225a0"
+                "reference": "7d2c82eb47f36c030daa7f5f82c4c2a06ac62447"
             },
             "require": {
                 "ext-json": "*",
@@ -2193,21 +2193,21 @@
         },
         {
             "name": "hanaboso/commons-bundle",
-            "version": "1.2.10",
+            "version": "1.2.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/commons-bundle.git",
-                "reference": "930021ed55ff10e75a861e185a41f30b2ad2512d"
+                "reference": "f20fa3e65f1b85bf6762a26521725e8108d83d3e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/commons-bundle/zipball/930021ed55ff10e75a861e185a41f30b2ad2512d",
-                "reference": "930021ed55ff10e75a861e185a41f30b2ad2512d",
+                "url": "https://api.github.com/repos/hanaboso/commons-bundle/zipball/f20fa3e65f1b85bf6762a26521725e8108d83d3e",
+                "reference": "f20fa3e65f1b85bf6762a26521725e8108d83d3e",
                 "shasum": ""
             },
             "require": {
                 "alcaeus/mongo-php-adapter": "^1.1",
-                "aws/aws-sdk-php-symfony": "^2.0",
+                "aws/aws-sdk-php-symfony": "^2.1",
                 "clue/buzz-react": "^2.6",
                 "doctrine/doctrine-bundle": "^2.0",
                 "doctrine/doctrine-fixtures-bundle": "^3.3",
@@ -2247,20 +2247,20 @@
             "license": [
                 "proprietary"
             ],
-            "time": "2019-11-21T12:38:56+00:00"
+            "time": "2019-11-27T11:17:55+00:00"
         },
         {
             "name": "hanaboso/email-service-bundle",
-            "version": "1.0.10",
+            "version": "1.0.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/email-service-bundle.git",
-                "reference": "e2853e577bf864f06203bfa861f9b9ae95ea0275"
+                "reference": "34442fcc5db0691932af8163e5484319fe58b5d3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/email-service-bundle/zipball/e2853e577bf864f06203bfa861f9b9ae95ea0275",
-                "reference": "e2853e577bf864f06203bfa861f9b9ae95ea0275",
+                "url": "https://api.github.com/repos/hanaboso/email-service-bundle/zipball/34442fcc5db0691932af8163e5484319fe58b5d3",
+                "reference": "34442fcc5db0691932af8163e5484319fe58b5d3",
                 "shasum": ""
             },
             "require": {
@@ -2284,25 +2284,25 @@
             "license": [
                 "proprietary"
             ],
-            "time": "2019-11-21T13:27:58+00:00"
+            "time": "2019-11-27T11:30:51+00:00"
         },
         {
             "name": "hanaboso/mongo-data-grid",
-            "version": "1.1.9",
+            "version": "1.1.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/mongo-data-grid.git",
-                "reference": "e93a8519a1f78f1c85908236123ebcdf8e99a4c5"
+                "reference": "f0ebf06b1f3496399efe90acf36bf2307dace424"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/mongo-data-grid/zipball/e93a8519a1f78f1c85908236123ebcdf8e99a4c5",
-                "reference": "e93a8519a1f78f1c85908236123ebcdf8e99a4c5",
+                "url": "https://api.github.com/repos/hanaboso/mongo-data-grid/zipball/f0ebf06b1f3496399efe90acf36bf2307dace424",
+                "reference": "f0ebf06b1f3496399efe90acf36bf2307dace424",
                 "shasum": ""
             },
             "require": {
                 "alcaeus/mongo-php-adapter": "^1.1",
-                "doctrine/mongodb-odm": "^1.2",
+                "doctrine/mongodb-odm": "^1.3",
                 "ext-json": "*",
                 "php": "^7.3"
             },
@@ -2320,15 +2320,15 @@
                 "proprietary"
             ],
             "description": "MongoDataGrid",
-            "time": "2019-10-17T10:15:38+00:00"
+            "time": "2019-11-27T12:15:13+00:00"
         },
         {
             "name": "hanaboso/pipes-php-sdk",
-            "version": "1.0.18",
+            "version": "1.0.19",
             "dist": {
                 "type": "path",
                 "url": "../pipes-php-sdk",
-                "reference": "4c01620de479e2ac56e71ef8ae07311910499f24"
+                "reference": "364f0ac1d75f5b0125525471b404ceab98d38adc"
             },
             "require": {
                 "ext-json": "*",
@@ -2372,16 +2372,16 @@
         },
         {
             "name": "hanaboso/rabbit-mq-bundle",
-            "version": "1.1.7",
+            "version": "1.1.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/rabbit-mq-bundle.git",
-                "reference": "1247cd5ae4b523692cea04751202bb2611658b48"
+                "reference": "dc338e10462833d082d54d821a947a4cccf06dc4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/rabbit-mq-bundle/zipball/1247cd5ae4b523692cea04751202bb2611658b48",
-                "reference": "1247cd5ae4b523692cea04751202bb2611658b48",
+                "url": "https://api.github.com/repos/hanaboso/rabbit-mq-bundle/zipball/dc338e10462833d082d54d821a947a4cccf06dc4",
+                "reference": "dc338e10462833d082d54d821a947a4cccf06dc4",
                 "shasum": ""
             },
             "require": {
@@ -2405,24 +2405,24 @@
             "license": [
                 "proprietary"
             ],
-            "time": "2019-11-21T13:17:44+00:00"
+            "time": "2019-11-27T11:25:13+00:00"
         },
         {
             "name": "hanaboso/user-bundle",
-            "version": "1.2.4",
+            "version": "1.2.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/user-bundle.git",
-                "reference": "4eb9b713a1ebc2564a662712fcac08e5f4c31957"
+                "reference": "331d8d8d31cbbb738eb1e99f508843639105f066"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/user-bundle/zipball/4eb9b713a1ebc2564a662712fcac08e5f4c31957",
-                "reference": "4eb9b713a1ebc2564a662712fcac08e5f4c31957",
+                "url": "https://api.github.com/repos/hanaboso/user-bundle/zipball/331d8d8d31cbbb738eb1e99f508843639105f066",
+                "reference": "331d8d8d31cbbb738eb1e99f508843639105f066",
                 "shasum": ""
             },
             "require": {
-                "doctrine/orm": "^2.6",
+                "doctrine/orm": "^2.7",
                 "ext-json": "*",
                 "ext-readline": "*",
                 "friendsofsymfony/rest-bundle": "^2.6",
@@ -2433,8 +2433,8 @@
             },
             "require-dev": {
                 "hanaboso/php-check-utils": "^1.0",
-                "symfony/monolog-bundle": "^3.4",
-                "symfony/security-bundle": "^4.3"
+                "symfony/monolog-bundle": "^3.5",
+                "symfony/security-bundle": "^4.4"
             },
             "type": "library",
             "autoload": {
@@ -2446,7 +2446,7 @@
             "license": [
                 "proprietary"
             ],
-            "time": "2019-11-22T10:33:58+00:00"
+            "time": "2019-11-27T11:41:19+00:00"
         },
         {
             "name": "hoa/compiler",
@@ -9145,16 +9145,16 @@
         },
         {
             "name": "hanaboso/php-check-utils",
-            "version": "1.0.45",
+            "version": "1.0.46",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/php-check-utils.git",
-                "reference": "f054f6d154879f9c812891ea332746153a675c8c"
+                "reference": "fb949da43e2b3cb567561516ec4df091c0021738"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/php-check-utils/zipball/f054f6d154879f9c812891ea332746153a675c8c",
-                "reference": "f054f6d154879f9c812891ea332746153a675c8c",
+                "url": "https://api.github.com/repos/hanaboso/php-check-utils/zipball/fb949da43e2b3cb567561516ec4df091c0021738",
+                "reference": "fb949da43e2b3cb567561516ec4df091c0021738",
                 "shasum": ""
             },
             "require": {
@@ -9195,7 +9195,7 @@
                 }
             ],
             "description": "Utils for php development - CodeSniffer, PhpStan, PhpStorm",
-            "time": "2019-11-21T15:04:36+00:00"
+            "time": "2019-11-26T15:41:53+00:00"
         },
         {
             "name": "jean85/pretty-package-versions",

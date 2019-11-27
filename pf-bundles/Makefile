@@ -1,8 +1,9 @@
 .PHONY: docker-up-force docker-down-clean test
 
-TAG?=dev
-IMAGE=dkr.hanaboso.net/pipes/pipes/php-dev:${TAG}
-BASE=dkr.hanaboso.net/hanaboso/php-base:php-7.3
+TAG?=php-7.3
+GITLAB=dkr.hanaboso.net/pipes/pipes/php-dev:${TAG}
+DOCKERHUB=hanabosocom/php-dev:${TAG}
+BASE=hanabosocom/php-base:php-7.3-alpine
 DC=docker-compose
 DE=docker-compose exec -T php-dev
 DEC=docker-compose exec -T php-dev composer
@@ -10,8 +11,10 @@ DEC=docker-compose exec -T php-dev composer
 # Build
 build-dev:
 	docker pull ${BASE}
-	cd docker/php-dev/ && docker build -t ${IMAGE} .
-	docker push ${IMAGE}
+	cd docker/php-dev/ && docker build -t ${GITLAB} .
+	cd docker/php-dev/ && docker build -t ${DOCKERHUB} .
+	docker push ${GITLAB}
+	docker push ${DOCKERHUB}
 
 # Docker
 docker-up-force: .env
@@ -83,7 +86,7 @@ console:
 	$(DE) php bin/console ${command}
 
 clear-cache:
-	$(DE) sudo rm -rf var/log
+	$(DE) rm -rf var/log
 	$(DE) php bin/console cache:clear --env=test
 	$(DE) php bin/console cache:warmup --env=test
 
@@ -97,4 +100,5 @@ database-create:
 	sed -e "s|{DEV_UID}|$(shell id -u)|g" \
 		-e "s|{DEV_GID}|$(shell id -u)|g" \
 		-e "s|{PROJECT_SOURCE_PATH}|$(shell pwd)|g" \
+		-e "s/{SSH_AUTH}/$(shell if [ "$(shell uname)" = "Linux" ]; then echo "\/tmp\/.ssh-auth-sock"; else echo '\/tmp\/.nope'; fi)/g" \
 		.env.dist >> .env; \

@@ -1,10 +1,10 @@
 ---
 
-version: '2'
+version: '3.5'
 
 services:
     pipes-api:
-        image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
+        image: hanabosocom/php-dev:php-7.3
         user: ${DEV_UID}:${DEV_GID}
         ports:
             - ${DEV_IP}:8000:80
@@ -21,5 +21,5 @@ services:
             COMPOSER_HOME: ${HOME}/dev/.composer
         volumes:
             - ../../../:/var/www/pipes
-            - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
+            - ${SSH_AUTH_SOCK}:${SSH_AUTH}
             - ${HOME}/dev/.composer:${HOME}/dev/.composer

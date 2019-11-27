@@ -7,6 +7,7 @@ DEC=docker-compose exec -T pipes-api composer
 .env:
 	sed -e "s/{DEV_UID}/$(shell id -u)/g" \
 		-e "s/{DEV_GID}/$(shell id -u)/g" \
+		-e "s/{SSH_AUTH}/$(shell if [ "$(shell uname)" = "Linux" ]; then echo "\/tmp\/.ssh-auth-sock"; else echo '\/tmp\/.nope'; fi)/g" \
 		.env.dist >> .env; \
 
 docker-down-clean: .env
@@ -22,7 +23,8 @@ composer-update:
 	$(DEC) update --ignore-platform-reqs
 
 clear-cache:
-	$(DE) sudo rm -rf var/cache
+	$(DE) rm -rf var/log
+	$(DE) php bin/console cache:clear --env=test
 	$(DE) php bin/console cache:warmup --env=test
 
 codesniffer:

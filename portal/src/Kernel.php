@@ -74,4 +74,30 @@ class Kernel extends BaseKernel
         return sprintf('%s/config', $this->getProjectDir());
     }
 
+    /**
+     * @return string
+     */
+    public function getLogDir(): string
+    {
+        // When on the lambda only /tmp is writeable
+        if (getenv('LAMBDA_TASK_ROOT') !== FALSE) {
+            return '/tmp/log/';
+        }
+
+        return parent::getLogDir();
+    }
+
+    /**
+     * @return string
+     */
+    public function getCacheDir(): string
+    {
+        // When on the lambda only /tmp is writeable
+        if (getenv('LAMBDA_TASK_ROOT') !== FALSE) {
+            return sprintf('/tmp/cache/%s', $this->environment);
+        }
+
+        return parent::getCacheDir();
+    }
+
 }

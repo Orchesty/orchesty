@@ -3,11 +3,12 @@
 DC=docker-compose
 DE=docker-compose exec -T app
 IMAGE=dkr.hanaboso.net/pipes/notification-sender
-BASE=dkr.hanaboso.net/hanaboso/php-base:php-7.3
+BASE=hanabosocom/php-dev:php-7.3
 
 .env:
 	sed -e "s/{DEV_UID}/$(shell id -u)/g" \
 		-e "s/{DEV_GID}/$(shell id -u)/g" \
+		-e "s/{SSH_AUTH}/$(shell if [ "$(shell uname)" = "Linux" ]; then echo "\/tmp\/.ssh-auth-sock"; else echo '\/tmp\/.nope'; fi)/g" \
 		.env.dist >> .env; \
 
 prod-build: .env
@@ -36,7 +37,7 @@ composer-update:
 	$(DE) composer update --ignore-platform-reqs
 
 clear-cache:
-	$(DE) sudo rm -rf var/log
+	$(DE) rm -rf var/log
 	$(DE) bin/console cache:clear --env=test
 	$(DE) bin/console cache:warmup --env=test
 

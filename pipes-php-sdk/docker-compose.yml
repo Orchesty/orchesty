@@ -1,13 +1,13 @@
-version: '2.2'
+version: '3.5'
 services:
   php-dev:
-    image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
+    image: hanabosocom/php-dev:php-7.3
     user: ${DEV_UID}:${DEV_GID}
     ports:
       - ${DEV_IP}:8000:80
     volumes:
       - ./:/var/www
-      - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
+      - ${SSH_AUTH_SOCK}:${SSH_AUTH}
       - ./topology:${GENERATOR_PATH}
       - ${HOME}/dev/.composer:${HOME}/dev/.composer
     environment:

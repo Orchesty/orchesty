@@ -1,0 +1,19 @@
+monolog:
+    handlers:
+        stdout:
+            type: stream
+            path: "php://stderr"
+            lever: warning
+        main:
+            type: rotating_file
+            path: "%kernel.logs_dir%/%kernel.environment%.log"
+            level: warning
+            max_files: 2
+        commons:
+            type: rotating_file
+            path: "%kernel.logs_dir%/%kernel.environment%.commons.log"
+            level: debug
+            channels: [commons]
+        deprecation:
+            type: stream
+            path: "%kernel.logs_dir%/%kernel.environment%.deprecations.log"
