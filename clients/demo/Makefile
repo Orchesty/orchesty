@@ -52,7 +52,7 @@ composer-update-dev:
 	$(DE_DEV) monolith-api composer global require hirak/prestissimo
 	$(DE_DEV) monolith-api composer update --ignore-platform-reqs
 
-build-monolith:
+build-monolith: .env
 	cd pipes-api && \
 	: Disable dependency symlinking in composer and do a fresh install && \
 	rm -rf vendor && \
@@ -77,7 +77,7 @@ build-monolith:
 	: Build an app docker image from the artifacts && \
 	docker build -f docker/Dockerfile.monolith -t ${IMAGE_MONOLITH} .
 
-build-sender:
+build-sender:  .env
 	cd sender-api && \
 	: Disable dependency symlinking in composer and do a fresh install && \
 	rm -rf vendor && \
