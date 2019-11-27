@@ -1,21 +1,33 @@
 ---
 site build:
-  stage: stage1
+  stage: stage2
   only:
     changes:
       - website/**/*
   script:
     - cd website
     - make build
+  cache:
+    key: "$CI_COMMIT_REF_SLUG"
+    paths:
+      - website/node_modules
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - website/build
 
 site deploy stage:
   stage: stage3
   only:
     changes:
       - website/**/*
+  dependencies:
+    - site build
   script:
+    - ENV=stage
     - cd website
-    - make deploy BUCKET=pipes-website
+    - make deploy BUCKET=pipes-website-${ENV}
+    - ": Deployed to http://pipes-website-${ENV}.s3-website-eu-west-1.amazonaws.com/"
 
 site deploy prod:
   stage: stage3
@@ -25,6 +37,9 @@ site deploy prod:
     changes:
       - website/**/*
   when: manual
+  dependencies:
+    - site build
   script:
+    - ENV=prod
     - cd website
-    - make deploy BUCKET=pipes-website-prod
+    - make deploy BUCKET=pipes-website-${ENV}
