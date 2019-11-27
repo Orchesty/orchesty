@@ -10,7 +10,6 @@ const headingsidentifier = require('metalsmith-headings-identifier')
 const headings = require('metalsmith-headings')
 const autotoc = require('metalsmith-autotoc')
 const debug = require('metalsmith-debug')
-const s3 = require('metalsmith-s3')
 const watch = require('metalsmith-watch')
 const dotenv = require('dotenv')
 
@@ -123,8 +122,8 @@ let ms = Metalsmith(__dirname)
     //}))
     .use(debug())
 
-if (process.argv.includes('--dev-server'))
-    ms = ms.use(
+if (process.argv.includes('--dev-server')) {
+    ms.use(
         watch({
             paths: {
                 "${source}/**/*": true, // rebuild the file when it changed
@@ -133,6 +132,7 @@ if (process.argv.includes('--dev-server'))
             livereload: false, // not yet ;)
         })
     )
+}
 
 ms.build((err) => {
     if (err) throw err

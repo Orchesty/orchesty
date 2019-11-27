@@ -1,0 +1,30 @@
+---
+site build:
+  stage: stage1
+  only:
+    changes:
+      - website/**/*
+  script:
+    - cd website
+    - make build
+
+site deploy stage:
+  stage: stage3
+  only:
+    changes:
+      - website/**/*
+  script:
+    - cd website
+    - make deploy BUCKET=pipes-website
+
+site deploy prod:
+  stage: stage3
+  only:
+    refs:
+      - master
+    changes:
+      - website/**/*
+  when: manual
+  script:
+    - cd website
+    - make deploy BUCKET=pipes-website-prod

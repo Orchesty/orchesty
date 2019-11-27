@@ -11,8 +11,14 @@ build: builder-image
 	  cat <(echo -e "--- \nautotoc: true \nlayout: main.hbs	\n---") \
 	  src/docs/sdk/api/index.md > /tmp/index && \
 	  mv /tmp/index src/docs/sdk/api/index.md && \
-	  yarn run build' # && \
-	  #aws s3 sync --delete ./build/ s3://pipes-website/'
+	  yarn run build'
+
+deploy:
+	@if [ $(shell ls -1 ./build/ | wc -l) -lt 4 ]; then \
+		echo "./build/ is not populted, not deploying"; \
+		exit 1; \
+	fi
+	aws s3 sync --acl public-read --delete ./build/ s3://pipes-website/
 
 dev-server: builder-image
 	docker run -t --rm -p 127.0.0.1:9084:9080 -v $(shell pwd)/../:/build -w /build/website -u $(shell id -u):$(shell id -g) pipes-docs-builder bash -xc ' \

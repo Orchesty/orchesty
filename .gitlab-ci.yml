@@ -10,6 +10,9 @@ before_script:
   - eval $(ssh-agent)
   - ssh-add ~/.ssh/bob_the_builder_hanaboso
 
+include:
+  - local: '/website/.gitlab-ci.yml'
+
 php-dev-image:
   stage: stage1
   script:
