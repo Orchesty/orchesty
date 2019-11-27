@@ -1,7 +1,7 @@
-version: '2.2'
+version: '3.5'
 services:
   consumer:
-    image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
+    image: hanabosocom/php-dev:php-7.3
     user: ${DEV_UID}:${DEV_GID}
     working_dir: /var/www
     environment:
@@ -10,7 +10,7 @@ services:
       - DEV_GID=${DEV_GID}
     volumes:
       - ./:/var/www
-      - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
+      - ${SSH_AUTH_SOCK}:${SSH_AUTH}
     command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit_mq:consumer:notification'
 
   app:
@@ -20,7 +20,7 @@ services:
       - ${DEV_IP}:8000:80
     volumes:
       - ./:/var/www
-      - ${SSH_AUTH_SOCK}:/tmp/bound-ssh-agent
+      - ${SSH_AUTH_SOCK}:${SSH_AUTH}
       - ${HOME}/dev/.composer:${HOME}/dev/.composer
     environment:
       - APP_ENV=dev
