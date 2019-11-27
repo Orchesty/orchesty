@@ -1,23 +1,19 @@
-FROM dkr.hanaboso.net/hanaboso/php-base:php-7.3
+FROM hanabosocom/php-base:php-7.3-alpine
 
-RUN apt-get update && \
-    apt-get install -y git mc sudo nginx-extras socat libpng-dev && \
+# PHP
+RUN apk update && apk upgrade && apk add --no-cache \
+    autoconf build-base g++ && \
+    pecl install pcov && \
     pecl install xdebug && \
-    docker-php-ext-install gd && \
-    apt-get clean && apt-get autoremove -y && \
-    rm -rf /var/lib/apt/lists/* /var/lib/log/* /var/log/* /tmp/* /var/tmp/*
+    docker-php-ext-enable pcov && \
+    apk del autoconf build-base g++ && \
+    rm -rf /var/cache/apk/* /var/log/* /tmp/*
 
 # Container has the same ssh as the host machine
-ENV SSH_AUTH_SOCK=/tmp/bound-ssh-agent
+ENV SSH_AUTH_SOCK=/tmp/.ssh-auth-sock
+LABEL com.ensody.ssh-agent-inject=true
 
 ENV TERM=xterm
-
-# Allow these binaries to be executed with root privileges (Don't you dare use this in prod image!)
-RUN chmod u+s /usr/sbin/useradd && \
-    chmod u+s /usr/sbin/groupadd
-
-# Enable paswordless sudo for the dev user
-RUN echo "dev ALL=NOPASSWD: ALL" > /etc/sudoers.d/dev
 
 COPY php-local.ini /usr/local/etc/php/conf.d/zz_local.ini
 
@@ -29,4 +25,4 @@ ENTRYPOINT [ "/entrypoint.sh" ]
 
 WORKDIR /var/www
 
-CMD sudo -E php-xdebug-w-nginx.sh
+CMD su-exec root php-xdebug-w-nginx.sh
