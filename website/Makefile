@@ -1,5 +1,7 @@
 .PHONY: builder-image build
 
+ENV?=stage
+
 builder-image:
 	cd builder-image && \
 	docker build -t pipes-docs-builder .
@@ -18,7 +20,7 @@ deploy:
 		echo "./build/ is not populted, not deploying"; \
 		exit 1; \
 	fi
-	aws s3 sync --acl public-read --delete ./build/ s3://pipes-website/
+	aws s3 sync --acl public-read --delete ./build/ s3://pipes-website-${ENV}/
 
 dev-server: builder-image
 	docker run -t --rm -p 127.0.0.1:9084:9080 -v $(shell pwd)/../:/build -w /build/website -u $(shell id -u):$(shell id -g) pipes-docs-builder bash -xc ' \
