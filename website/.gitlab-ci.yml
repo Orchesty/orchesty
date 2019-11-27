@@ -27,7 +27,7 @@ site deploy stage:
     - ENV=stage
     - cd website
     - make deploy BUCKET=pipes-website-${ENV}
-    - ": Deployed to http://pipes-website-${ENV}.s3-website-eu-west-1.amazonaws.com/"
+    - echo Deployed to http://pipes-website-${ENV}.s3-website-eu-west-1.amazonaws.com/
 
 site deploy prod:
   stage: stage3
