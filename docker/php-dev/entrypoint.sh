@@ -3,9 +3,6 @@
 DEV_UID=$(id -u)
 DEV_GID=$(id -g)
 
-# CI Gitlab runner hack :/
-su-exec root sed -i "s/999/99/" /etc/group
-
 su-exec root addgroup -g ${DEV_GID} dev
 su-exec root adduser -u ${DEV_UID} -D -G dev dev
 su-exec root chown -R dev:dev /var/www /home/dev /opt
