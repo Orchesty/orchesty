@@ -10,20 +10,20 @@ version: '2.2'
 services:
     ## BEGIN DEV
     downloader:
-        image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
+        image: hanabosocom/php-dev:php-7.3
         user: ${DEV_UID}:${DEV_GID}
         environment:
-          BACKEND_HOST: ${BACKEND_URL}/
-          FRONTEND_HOST: ${BACKEND_URL}/
-          ELASTIC_HOST: elasticsearch
-          ELASTIC_INDEX: 'index'
-          COMPOSER_HOME: ${HOME}/dev/.composer
+            BACKEND_HOST: ${BACKEND_URL}/
+            FRONTEND_HOST: ${BACKEND_URL}/
+            ELASTIC_HOST: elasticsearch
+            ELASTIC_INDEX: 'index'
+            COMPOSER_HOME: ${HOME}/dev/.composer
         command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console downloader:run'
         working_dir: /var/www/pipes/clients/demo/pipes-api
         volumes:
-          - ../../:/var/www/pipes
-          - ${SSH_AUTH_SOCK}:${SSH_AUTH}
-          - ${HOME}/dev/.composer:${HOME}/dev/.composer
+            - ../../:/var/www/pipes
+            - ${SSH_AUTH_SOCK}:${SSH_AUTH}
+            - ${HOME}/dev/.composer:${HOME}/dev/.composer
     ## END DEV
     ## BEGIN STAGE
     #donwlader:
@@ -38,20 +38,20 @@ services:
 
     ## BEGIN DEV
     batch:
-        image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
+        image: hanabosocom/php-dev:php-7.3
         user: ${DEV_UID}:${DEV_GID}
         environment:
-          BACKEND_HOST: ${BACKEND_URL}/
-          FRONTEND_HOST: ${BACKEND_URL}/
-          ELASTIC_HOST: elasticsearch
-          ELASTIC_INDEX: 'index'
-          COMPOSER_HOME: ${HOME}/dev/.composer
+            BACKEND_HOST: ${BACKEND_URL}/
+            FRONTEND_HOST: ${BACKEND_URL}/
+            ELASTIC_HOST: elasticsearch
+            ELASTIC_INDEX: 'index'
+            COMPOSER_HOME: ${HOME}/dev/.composer
         command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit_mq:consumer:batch'
         working_dir: /var/www/pipes/clients/demo/pipes-api
         volumes:
-          - ../../:/var/www/pipes
-          - ${SSH_AUTH_SOCK}:${SSH_AUTH}
-          - ${HOME}/dev/.composer:${HOME}/dev/.composer
+            - ../../:/var/www/pipes
+            - ${SSH_AUTH_SOCK}:${SSH_AUTH}
+            - ${HOME}/dev/.composer:${HOME}/dev/.composer
     ## END DEV
     ## BEGIN STAGE
     #batch:
@@ -67,7 +67,7 @@ services:
 
     ## BEGIN DEV
     batch-connector:
-        image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
+        image: hanabosocom/php-dev:php-7.3
         user: ${DEV_UID}:${DEV_GID}
         environment:
             BACKEND_HOST: ${BACKEND_URL}/
@@ -96,20 +96,20 @@ services:
 
     ## BEGIN DEV
     long-running-node:
-        image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
+        image: hanabosocom/php-dev:php-7.3
         user: ${DEV_UID}:${DEV_GID}
         command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit_mq:consumer:long-running-node'
         working_dir: /var/www/pipes/clients/demo/pipes-api
         environment:
-          BACKEND_HOST: ${BACKEND_URL}/
-          FRONTEND_HOST: ${BACKEND_URL}/
-          ELASTIC_HOST: elasticsearch
-          ELASTIC_INDEX: 'logstash-2018.01.31'
-          COMPOSER_HOME: ${HOME}/dev/.composer
+            BACKEND_HOST: ${BACKEND_URL}/
+            FRONTEND_HOST: ${BACKEND_URL}/
+            ELASTIC_HOST: elasticsearch
+            ELASTIC_INDEX: 'logstash-2018.01.31'
+            COMPOSER_HOME: ${HOME}/dev/.composer
         volumes:
-          - ../../:/var/www/pipes
-          - ${SSH_AUTH_SOCK}:${SSH_AUTH}
-          - ${HOME}/dev/.composer:${HOME}/dev/.composer
+            - ../../:/var/www/pipes
+            - ${SSH_AUTH_SOCK}:${SSH_AUTH}
+            - ${HOME}/dev/.composer:${HOME}/dev/.composer
     ## END DEV
     ## BEGIN STAGE
     #long-running-node:
@@ -125,20 +125,20 @@ services:
 
     ## BEGIN DEV
     status-service:
-        image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
+        image: hanabosocom/php-dev:php-7.3
         user: ${DEV_UID}:${DEV_GID}
         environment:
-          BACKEND_HOST: ${BACKEND_URL}/
-          FRONTEND_HOST: ${BACKEND_URL}/
-          ELASTIC_HOST: elasticsearch
-          ELASTIC_INDEX: 'index'
-          COMPOSER_HOME: ${HOME}/dev/.composer
+            BACKEND_HOST: ${BACKEND_URL}/
+            FRONTEND_HOST: ${BACKEND_URL}/
+            ELASTIC_HOST: elasticsearch
+            ELASTIC_INDEX: 'index'
+            COMPOSER_HOME: ${HOME}/dev/.composer
         command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit_mq:consumer:status-service'
         working_dir: /var/www/pipes/clients/demo/pipes-api
         volumes:
-          - ../../:/var/www/pipes
-          - ${SSH_AUTH_SOCK}:${SSH_AUTH}
-          - ${HOME}/dev/.composer:${HOME}/dev/.composer
+            - ../../:/var/www/pipes
+            - ${SSH_AUTH_SOCK}:${SSH_AUTH}
+            - ${HOME}/dev/.composer:${HOME}/dev/.composer
     ## END DEV
     ## BEGIN STAGE
     #status-service:
@@ -153,63 +153,63 @@ services:
     ## END STAGE
 
     multi-probe:
-      image: 'dkr.hanaboso.net/pipes/pipes/multi-probe:dev'
-      environment:
-        REDIS_HOST: 'redis'
-        REDIS_PORT: '6379'
-        REDIS_PASS: ''
-        REDIS_DB: '0'
-      ports:
-        - ${DEV_IP}:8007:8007
+        image: 'dkr.hanaboso.net/pipes/pipes/multi-probe:dev'
+        environment:
+            REDIS_HOST: 'redis'
+            REDIS_PORT: '6379'
+            REDIS_PASS: ''
+            REDIS_DB: '0'
+        ports:
+            - ${DEV_IP}:8007:8007
 
     multi-counter:
-      image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
-      user: ${DEV_UID}:${DEV_GID}
-      environment:
-        # NODE_ENV: debug
-        RABBITMQ_HOST: rabbitmq
-        RABBITMQ_PORT: '5672'
-        RABBITMQ_USER: guest
-        RABBITMQ_PASS: guest
-        RABBITMQ_VHOST: /
-        REDIS_HOST: 'redis'
-        REDIS_PORT: '6379'
-        REDIS_PASS: ''
-        REDIS_DB: '0'
-        COUNTER_PREFETCH: '100'
-        METRICS_HOST: 'kapacitor'
-        METRICS_PORT: '9100'
-        METRICS_SERVICE: 'influx'
-        #METRICS_HOST: 'mongo'
-        #METRICS_PORT: '27017'
-        #METRICS_SERVICE: 'mongo'
-      command: './dist/src/bin/pipes.js start multi_counter'
-      ports:
-        - ${DEV_IP}:8005:8005
-      # TODO: unify usages and remove the alias
-      networks:
-        default:
-          aliases:
-            - multi-counter-api
+        image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
+        user: ${DEV_UID}:${DEV_GID}
+        environment:
+            # NODE_ENV: debug
+            RABBITMQ_HOST: rabbitmq
+            RABBITMQ_PORT: '5672'
+            RABBITMQ_USER: guest
+            RABBITMQ_PASS: guest
+            RABBITMQ_VHOST: /
+            REDIS_HOST: 'redis'
+            REDIS_PORT: '6379'
+            REDIS_PASS: ''
+            REDIS_DB: '0'
+            COUNTER_PREFETCH: '100'
+            METRICS_HOST: 'kapacitor'
+            METRICS_PORT: '9100'
+            METRICS_SERVICE: 'influx'
+            #METRICS_HOST: 'mongo'
+            #METRICS_PORT: '27017'
+            #METRICS_SERVICE: 'mongo'
+        command: './dist/src/bin/pipes.js start multi_counter'
+        ports:
+            - ${DEV_IP}:8005:8005
+        # TODO: unify usages and remove the alias
+        networks:
+            default:
+                aliases:
+                    - multi-counter-api
 
     ## BEGIN DEV
     starting-point:
-      image: dkr.hanaboso.net/pipes/pipes/starting-point:app-dev
-      environment:
-        APP_DEBUG: "false"
-        GO111MODULE: "on"
-        MONGO_HOSTNAME: mongo
-        MONGO_DATABASE: demo
-        RABBIT_COUNTER_QUEUE_DURABLE: "true"
-        RABBIT_QUEUE_DURABLE: "true"
-        RABBIT_DELIVERY_MODE: 2
-        APP_CLEANUP_TIME: "300"
-      working_dir: /go/src/hanaboso/starting-point
-      volumes:
-        - ./../../starting-point/:/go/src/hanaboso/starting-point
-      ports:
-        - ${DEV_IP}:8000:80
-      command: go run cmd/starting-point.go
+        image: dkr.hanaboso.net/pipes/pipes/starting-point:app-dev
+        environment:
+            APP_DEBUG: "false"
+            GO111MODULE: "on"
+            MONGO_HOSTNAME: mongo
+            MONGO_DATABASE: demo
+            RABBIT_COUNTER_QUEUE_DURABLE: "true"
+            RABBIT_QUEUE_DURABLE: "true"
+            RABBIT_DELIVERY_MODE: 2
+            APP_CLEANUP_TIME: "300"
+        working_dir: /go/src/hanaboso/starting-point
+        volumes:
+            - ./../../starting-point/:/go/src/hanaboso/starting-point
+        ports:
+            - ${DEV_IP}:8000:80
+        command: go run cmd/starting-point.go
     ## END DEV
     ## BEGIN STAGE
     #starting-point:
@@ -225,43 +225,45 @@ services:
     ## END STAGE
 
     repeater:
-      image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
-      user: ${DEV_UID}:${DEV_GID}
-      command: './dist/src/bin/pipes.js start repeater'
-      environment:
-        RABBITMQ_HOST: rabbitmq
-        RABBITMQ_PORT: '5672'
-        RABBITMQ_USER: guest
-        RABBITMQ_PASS: guest
-        RABBITMQ_VHOST: /
-        MONGO_HOST: mongo
-        REPEATER_CHECK_TIMEOUT: '5000'
+        image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
+        user: ${DEV_UID}:${DEV_GID}
+        command: './dist/src/bin/pipes.js start repeater'
+        environment:
+            RABBITMQ_HOST: rabbitmq
+            RABBITMQ_PORT: '5672'
+            RABBITMQ_USER: guest
+            RABBITMQ_PASS: guest
+            RABBITMQ_VHOST: /
+            MONGO_HOST: mongo
+            REPEATER_CHECK_TIMEOUT: '5000'
 
     # PHP Services monolith
     ## BEGIN DEV
     monolith-api:
-        image: dkr.hanaboso.net/pipes/pipes/php-dev:dev
+        image: hanabosocom/php-dev:php-7.3
         user: ${DEV_UID}:${DEV_GID}
+        ports:
+            - ${DEV_IP}:80:80
         environment:
-          PHP_WEBROOT: /var/www/pipes/clients/demo/pipes-api/public
-          BACKEND_HOST: ${BACKEND_URL}/
-          FRONTEND_HOST: ${BACKEND_URL}/
-          ELASTIC_HOST: elasticsearch
-          ELASTIC_INDEX: 'index'
-          SMTP_USER: dev.email.hb@gmail.com
-          SMTP_PASSWORD: jVME2RkX9xyYhj9v
-          METRICS_HOST: 'kapacitor'
-          METRICS_PORT: '9100'
-          METRICS_SERVICE: 'influx'
-          COMPOSER_HOME: ${HOME}/dev/.composer
-          #METRICS_HOST: 'mongo'
-          #METRICS_PORT: '27017'
-          #METRICS_SERVICE: 'mongo'
+            PHP_WEBROOT: /var/www/pipes/clients/demo/pipes-api/public
+            BACKEND_HOST: ${BACKEND_URL}/
+            FRONTEND_HOST: ${BACKEND_URL}/
+            ELASTIC_HOST: elasticsearch
+            ELASTIC_INDEX: 'index'
+            SMTP_USER: dev.email.hb@gmail.com
+            SMTP_PASSWORD: jVME2RkX9xyYhj9v
+            METRICS_HOST: 'kapacitor'
+            METRICS_PORT: '9100'
+            METRICS_SERVICE: 'influx'
+            COMPOSER_HOME: ${HOME}/dev/.composer
+            #METRICS_HOST: 'mongo'
+            #METRICS_PORT: '27017'
+            #METRICS_SERVICE: 'mongo'
         working_dir: /var/www/pipes/clients/demo/pipes-api
         volumes:
-          - ../../:/var/www/pipes
-          - ${SSH_AUTH_SOCK}:${SSH_AUTH}
-          - ${HOME}/dev/.composer:${HOME}/dev/.composer
+            - ../../:/var/www/pipes
+            - ${SSH_AUTH_SOCK}:${SSH_AUTH}
+            - ${HOME}/dev/.composer:${HOME}/dev/.composer
     ## END DEV
     ## BEGIN STAGE
     #monolith-api:
@@ -286,7 +288,7 @@ services:
         image: dkr.hanaboso.net/pipes/notification-sender:master
         working_dir: /var/www
         environment:
-          MONGO_HOST: mongo
+            MONGO_HOST: mongo
     ## END DEV
     ## BEGIN STAGE
     #notification-sender-api:
@@ -317,17 +319,17 @@ services:
         user: ${DEV_UID}:${DEV_GID}
         image: dkr.hanaboso.net/pipes/pipes/topology-api-v1:dev
         environment:
-          DEPLOYMENT_PREFIX: demo
-          GENERATOR_NETWORK: demo_default
-          GENERATOR_MODE: compose
-          GENERATOR_PATH: /srv/topology
-          MONGO_HOST: mongodb://mongo
-          MONGO_DATABASE: demo
-          RABBITMQ_HOST: rabbitmq
-          PROJECT_SOURCE_PATH: ${PROJECT_SOURCE_PATH}/../topology
+            DEPLOYMENT_PREFIX: demo
+            GENERATOR_NETWORK: demo_default
+            GENERATOR_MODE: compose
+            GENERATOR_PATH: /srv/topology
+            MONGO_HOST: mongodb://mongo
+            MONGO_DATABASE: demo
+            RABBITMQ_HOST: rabbitmq
+            PROJECT_SOURCE_PATH: ${PROJECT_SOURCE_PATH}/../topology
         volumes:
-          - ${DOCKER_SOCKET_PATH}:/var/run/docker.sock
-          - ../topology:/srv/topology
+            - ${DOCKER_SOCKET_PATH}:/var/run/docker.sock
+            - ../topology:/srv/topology
     ## END DEV
     ## BEGIN STAGE
     #topology-api:
@@ -355,25 +357,19 @@ services:
     ## END STAGE
 
     frontend:
-    ## BEGIN DEV
+        ## BEGIN DEV
         image: dkr.hanaboso.net/pipes/pipes/nodejs-build:dev
         user: ${DEV_UID}:${DEV_GID}
         working_dir: /var/www/pipes/frontend
         environment:
-          PHP_WEBROOT: /var/www/pipes/clients/demo/pipes-api/public
-          NPM_INSTALL: ${NPM_INSTALL}
-          NPM_START: "yes" # webpackserver
+            NPM_INSTALL: ${NPM_INSTALL}
+            NPM_START: "yes" # webpackserver
         ports:
-          - ${DEV_IP}:80:80
-          - ${DEV_IP}:81:8080
+            - ${DEV_IP}:81:8080
         volumes:
-          - ../../:/var/www/pipes
-          - ${SSH_AUTH_SOCK}:${SSH_AUTH}
-          - ./stack/nginx.conf:/etc/nginx/nginx.conf
+            - ../../:/var/www/pipes
+            - ./stack/nginx.conf:/etc/nginx/nginx.conf
         # TODO: Use dynamic dns resolution in Nginx instead
-        depends_on:
-          - monolith-api
-          - topology-api
     ## END DEV
     ## BEGIN STAGE
     #    image: dkr.hanaboso.net/pipes/pipes/frontend:${TAG_FRONTEND}
@@ -384,33 +380,25 @@ services:
     #    ports:
     #      - ${PUBLISH_HTTP_PORT}:80
     ## END STAGE
-    # TODO: check if we can move some of these aliases directly to monolith-api
-        networks:
-          default:
-            aliases:
-              - connector-api
-              - mailer-api
-              - ftp-api
-              - mapper-api
 
     stream:
         image: dkr.hanaboso.net/pipes/pipes/stream:dev
         environment:
-          - RABBITMQ_HOST=rabbitmq
-          - STREAM_WS_PORT=80
-          - STREAM_HTTP_PORT=3030
-          - STREAM_QUEUE=pipes.stream
+            - RABBITMQ_HOST=rabbitmq
+            - STREAM_WS_PORT=80
+            - STREAM_HTTP_PORT=3030
+            - STREAM_QUEUE=pipes.stream
         ports:
-          - ${DEV_IP}:3030:3030
+            - ${DEV_IP}:3030:3030
         # - ${DEV_IP}:8080:80
 
     # RabbitMQ
     rabbitmq:
         image: rabbitmq:3-management-alpine
         ports:
-          - ${DEV_IP}:15672:15672
+            - ${DEV_IP}:15672:15672
         volumes:
-          - rabbitmq:/var/lib/rabbitmq
+            - rabbitmq:/var/lib/rabbitmq
     ## BEGIN STAGE
     #    deploy:
     #      resources:
@@ -422,9 +410,9 @@ services:
     mongo:
         image: mongo:3.4
         ports:
-          - ${DEV_IP}:27017:27017
+            - ${DEV_IP}:27017:27017
         volumes:
-          - mongodb:/data/db
+            - mongodb:/data/db
     ## BEGIN STAGE
     #    deploy:
     #      resources:
@@ -435,23 +423,21 @@ services:
     redis:
         image: redis:3.2-alpine
         ports:
-        - ${DEV_IP}:6379:6379
+            - ${DEV_IP}:6379:6379
         volumes:
-        - redis:/data
+            - redis:/data
 
     logstash:
         image: dkr.hanaboso.net/pipes/pipes/logstash:dev
         environment:
-          - MONGO_HOST=mongo
-          - MONGO_DATABASE=demo
-          - MONGO_COLLECTION=Logs
-          - LS_JAVA_OPTS=-Xms512m -Xmx512m
+            - MONGO_HOST=mongo
+            - MONGO_DATABASE=demo
+            - MONGO_COLLECTION=Logs
+            - LS_JAVA_OPTS=-Xms512m -Xmx512m
         #command: --log.level debug
         ## BEGIN DEV
         volumes:
-          - ./stack/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
-        depends_on:
-          - mongo
+            - ./stack/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
         ## END DEV
         ## BEGIN STAGE
         #deploy:
@@ -466,13 +452,13 @@ services:
     influxdb:
         image: dkr.hanaboso.net/pipes/pipes/influxdb:dev
         environment:
-          - INFLUXDB_DB=pipes
+            - INFLUXDB_DB=pipes
         ports:
-          - ${DEV_IP}:8083:8083
-          - ${DEV_IP}:8086:8086
-          - ${DEV_IP}:8089:8089/udp
+            - ${DEV_IP}:8083:8083
+            - ${DEV_IP}:8086:8086
+            - ${DEV_IP}:8089:8089/udp
         volumes:
-          - influxdb:/var/lib/influxdb
+            - influxdb:/var/lib/influxdb
 
     telegraf:
         image: dkr.hanaboso.net/pipes/pipes/rabbitmq-telegraf:dev
@@ -490,17 +476,17 @@ services:
         ## BEGIN DEV
         user: ${DEV_UID}:${DEV_GID}
         environment:
-          - DEV_UID={DEV_UID}
-          - DEV_GID={DEV_GID}
+            - DEV_UID={DEV_UID}
+            - DEV_GID={DEV_GID}
         ## END DEV
         ports:
-          - ${DEV_IP}:5000:5000
+            - ${DEV_IP}:5000:5000
 
     ## BEGIN DEV
     tsa:
         image: timeseriesadmin/timeseriesadmin:latest
         ports:
-          - ${DEV_IP}:8085:80
+            - ${DEV_IP}:8085:80
         mem_limit: 128M
         restart: always
     ## END DEV
@@ -514,10 +500,10 @@ services:
 
 ## BEGIN DEV
 volumes:
-  mongodb: {}
-  rabbitmq: {}
-  redis: {}
-  influxdb: {}
+    mongodb: {}
+    rabbitmq: {}
+    redis: {}
+    influxdb: {}
 ## END DEV
 
 ## BEGIN STAGE

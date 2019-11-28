@@ -67,7 +67,7 @@ let ms = Metalsmith(__dirname)
         actions:[{
             type:'var',
             varValues: {
-                'page_url': process.env.PORTAL_URL ? process.env.PORTAL_URL :'http://127.0.0.88:8000/installer'
+                'portal_host': process.env.PORTAL_HOST
             }
         }]
     }))

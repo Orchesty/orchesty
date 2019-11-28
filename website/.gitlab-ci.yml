@@ -6,7 +6,7 @@ site build:
       - website/**/*
   script:
     - cd website
-    - make build
+    - make build PORTAL_HOST=https://4fn8kxtodc.execute-api.eu-west-1.amazonaws.com/dev
   cache:
     key: "$CI_COMMIT_REF_SLUG"
     paths:

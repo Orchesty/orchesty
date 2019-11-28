@@ -43,7 +43,7 @@ init-dev: .env
 	rm -rf pipes-api/var/cache/*
 	$(DC_DEV) up -d --force-recreate --remove-orphans
 	$(DE_DEV) monolith-api composer install --ignore-platform-reqs
-	$(DE_DEV) monolith-api sudo rm -rf var/cache/*
+	$(DE_DEV) monolith-api rm -rf var/cache/*
 
 destroy-dev:
 	$(DC_DEV) down -v
