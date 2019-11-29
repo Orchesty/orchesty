@@ -11,6 +11,7 @@ before_script:
   - ssh-add ~/.ssh/bob_the_builder_hanaboso
 
 include:
+  - local: '/portal/.gitlab-ci.yml'
   - local: '/website/.gitlab-ci.yml'
 
 php-dev-image:

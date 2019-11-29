@@ -3,7 +3,7 @@ monolog:
         stdout:
             type: stream
             path: "php://stderr"
-            lever: warning
+            level: warning
         main:
             type: rotating_file
             path: "%kernel.logs_dir%/%kernel.environment%.log"

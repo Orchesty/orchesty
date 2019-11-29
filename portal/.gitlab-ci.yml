@@ -1,0 +1,39 @@
+---
+
+portal-api-build:
+  stage: stage2
+  only:
+    changes:
+      - portal/**/*
+  cache:
+    key: "$CI_COMMIT_REF_SLUG"
+    paths:
+      - vendor
+  script:
+    - cd portal
+    - make build-sls
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - portal
+
+portal-api-deploy-stage:
+  stage: stage3
+  when: manual
+  dependencies:
+    - portal-api-build
+  script:
+    - cd portal
+    - make deploy-sls SLS_ENV=stage
+
+portal-api-deploy-prod:
+  stage: stage3
+  when: manual
+  only:
+    refs:
+      - master
+  dependencies:
+    - portal-api-build
+  script:
+    - cd portal
+    - make deploy-sls SLS_ENV=prod
