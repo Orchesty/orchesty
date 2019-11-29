@@ -61,7 +61,7 @@ const main = async () => {
         // DEPRECATED
         case "bridge":
             logger.error(`Deprecated service: "${argv.service}". Use multi_bridge instead.`);
-            process.exit(126);
+            // process.exit(126);
 
             pipes = new Pipes(loadTopologyConfigFromFile());
             toStop.push(await pipes.startBridge(argv.id));
