@@ -1,8 +1,9 @@
-service: pipes-portal
+service: pipes-portal-api
 
 provider:
     name: aws
     region: eu-west-1
+    stage: stage
     runtime: provided
     environment:
         # Symfony environment variables

@@ -2,3 +2,4 @@
 .idea
 var
 vendor
+.serverless

@@ -5,17 +5,39 @@ DE=docker-compose exec -T app
 IMAGE=dkr.hanaboso.net/pipes/portal
 BASE=hanabosocom/php-dev:php-7.3
 
+SLS_ENV?=
+
 .env:
 	sed -e "s/{DEV_UID}/$(shell id -u)/g" \
 		-e "s/{DEV_GID}/$(shell id -u)/g" \
 		-e "s/{SSH_AUTH}/$(shell if [ "$(shell uname)" = "Linux" ]; then echo "\/tmp\/.ssh-auth-sock"; else echo '\/tmp\/.nope'; fi)/g" \
 		.env.dist >> .env; \
 
-prod-build: .env
+build: .env
 	docker pull $(IMAGE):dev
 	docker-compose -f docker-compose.yml run --rm --no-deps app  composer install --ignore-platform-reqs
 	docker build -t $(IMAGE):master .
 	docker push $(IMAGE):master
+
+build-sls: .env
+	$(DC) run --rm --no-deps app composer install --prefer-dist --optimize-autoloader --no-dev --ignore-platform-reqs
+	$(DC) run --rm --no-deps -e APP_ENV=serverless -e APP_DEBUG=0 app bin/console cache:warmup
+
+deploy-sls:
+ifndef SLS_ENV
+	$(error SLS_ENV must be specified)
+endif
+	# Can't echo this command, because it would reweal AWS key
+	@docker run \
+	  --rm \
+	  -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
+	  -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
+	  -e HOME=/tmp \
+	  -u $(shell id -u):$(shell id -g) \
+	  -v $(shell pwd):/app \
+	  -w /app \
+	  fjferrer/serverless-docker:3.0.1 \
+	  sls deploy --stage ${SLS_ENV}
 
 docker-compose.ci.yml:
 	# Comment out any port forwarding
