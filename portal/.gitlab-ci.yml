@@ -17,23 +17,24 @@ portal-api-build:
     paths:
       - portal
 
-portal-api-deploy-stage:
+.portal-api-deploy:
   stage: stage3
   when: manual
   dependencies:
     - portal-api-build
   script:
     - cd portal
-    - make deploy-sls SLS_ENV=stage
+    - make deploy-sls SLS_ENV=${ENV}
+
+portal-api-deploy-stage:
+  variables:
+    ENV: stage
+  extends: .portal-api-deploy
 
 portal-api-deploy-prod:
-  stage: stage3
-  when: manual
+  variables:
+    ENV: prod
+  extends: .portal-api-deploy
   only:
     refs:
       - master
-  dependencies:
-    - portal-api-build
-  script:
-    - cd portal
-    - make deploy-sls SLS_ENV=prod

@@ -6,7 +6,7 @@ site build:
       - website/**/*
   script:
     - cd website
-    - make build PORTAL_HOST=https://4fn8kxtodc.execute-api.eu-west-1.amazonaws.com/dev
+    - make build PORTAL_API_URL=%PORTAL_API_URL% # placeholder to be replaced by deploy job (Makefile)
   cache:
     key: "$CI_COMMIT_REF_SLUG"
     paths:
@@ -16,30 +16,30 @@ site build:
     paths:
       - website/build
 
-site deploy stage:
+.site_deploy:
   stage: stage3
+  when: manual
   only:
     changes:
       - website/**/*
   dependencies:
     - site build
   script:
-    - ENV=stage
     - cd website
-    - make deploy BUCKET=pipes-website-${ENV}
+    - make deploy BUCKET=pipes-website-${ENV} PORTAL_API_URL=${PORTAL_API_URL}
     - echo Deployed to http://pipes-website-${ENV}.s3-website-eu-west-1.amazonaws.com/
 
+site deploy stage:
+  variables:
+    ENV: stage
+    PORTAL_API_URL: "${PORTAL_API_URL_STAGE}"
+  extends: .site_deploy
+
 site deploy prod:
-  stage: stage3
+  variables:
+    ENV: prod
+    PORTAL_API_URL: ${PORTAL_API_URL_PROD}
+  extends: .site_deploy
   only:
     refs:
       - master
-    changes:
-      - website/**/*
-  when: manual
-  dependencies:
-    - site build
-  script:
-    - ENV=prod
-    - cd website
-    - make deploy BUCKET=pipes-website-${ENV}
