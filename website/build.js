@@ -67,7 +67,7 @@ let ms = Metalsmith(__dirname)
         actions:[{
             type:'var',
             varValues: {
-                'portal_host': process.env.PORTAL_HOST
+                'portal_api_url': process.env.PORTAL_API_URL
             }
         }]
     }))
