@@ -50,12 +50,14 @@ class InstallerController extends AbstractFOSRestController
 
             $response = new Response($data);
 
-            return $this->getResponse(
-                $response->headers->makeDisposition(
-                    ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-                    'docker-compose.yml'
-                )
+            $disposition = $response->headers->makeDisposition(
+                ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+                'docker-compose.yml'
             );
+
+            $response->headers->set('Content-Disposition', $disposition);
+
+            return $response;
 
         } catch (Exception|Throwable $e) {
             return $this->getErrorResponse($e, 500);
