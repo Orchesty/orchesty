@@ -22,7 +22,7 @@ use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
  *
  * @package Hanaboso\HbPFConnectors\Model\Application\Impl\Shipstation
  */
-class ShipstationApplication extends BasicApplicationAbstract implements WebhookApplicationInterface
+final class ShipstationApplication extends BasicApplicationAbstract implements WebhookApplicationInterface
 {
 
     public const SHIPSSTATION_URL = 'https://ssapi.shipstation.com';

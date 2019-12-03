@@ -71,7 +71,7 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
     }
 
     /**
-     * @param array $array
+     * @param mixed[] $array
      *
      * @return MockObject
      */

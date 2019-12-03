@@ -16,9 +16,9 @@ class MailchimpCreateContactMapper extends CustomNodeAbstract
 {
 
     /**
-     * @param array $data
+     * @param mixed[] $data
      *
-     * @return array
+     * @return mixed[]
      */
     private function createBody(array $data): array
     {
@@ -44,9 +44,9 @@ class MailchimpCreateContactMapper extends CustomNodeAbstract
     }
 
     /**
-     * @param array $data
+     * @param mixed[] $data
      *
-     * @return array
+     * @return mixed[]
      */
     private function formatData(array $data): array
     {
@@ -69,7 +69,7 @@ class MailchimpCreateContactMapper extends CustomNodeAbstract
     }
 
     /**
-     * @return array
+     * @return mixed[]
      *
      * keys (on the left) are required Mailchimp fields, values (on the right) are provided Hubspot fields
      * field email_address is processed in createBody method

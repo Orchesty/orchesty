@@ -6,8 +6,10 @@ includes:
 	- vendor/hanaboso/php-check-utils/phpstan.neon # hanaboso rules
 
 parameters:
-	excludes_analyse:
+	doctrine:
+		objectManagerLoader: tests/DocumentManagerLoader.php
 	ignoreErrors:
 		- '#Access to an undefined property*#'
+		- '#Unreachable statement \- code above always terminates.#'
 	symfony:
 		container_xml_path: %rootDir%/../../../var/cache/test/srcHanaboso_HbPFConnectors_KernelTestDebugContainer.xml

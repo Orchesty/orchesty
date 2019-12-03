@@ -29,7 +29,7 @@ class HbPFConnectorsExtension extends Extension implements PrependExtensionInter
     }
 
     /**
-     * @param array            $configs
+     * @param mixed[]          $configs
      * @param ContainerBuilder $container
      *
      * @throws Exception
@@ -41,6 +41,10 @@ class HbPFConnectorsExtension extends Extension implements PrependExtensionInter
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yaml');
+        $loader->load('hubspot.yaml');
+        $loader->load('mailchimp.yaml');
+        $loader->load('shipstation.yaml');
+        $loader->load('airtable.yaml');
     }
 
 }

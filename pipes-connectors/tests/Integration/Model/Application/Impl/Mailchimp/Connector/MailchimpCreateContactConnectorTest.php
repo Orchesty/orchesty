@@ -96,7 +96,7 @@ final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getDataProvider(): array
     {

@@ -17,6 +17,9 @@ services:
     hbpf.application.shipstation:
         class: Hanaboso\HbPFConnectors\Model\Application\Impl\Shipstation\ShipstationApplication
 
+    hbpf.application.airtable:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\Airtable\AirtableApplication
+
     hbpf.connector.hubspot_create_contact:
         class: Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Connector\HubspotCreateContactConnector
         arguments:
@@ -48,6 +51,14 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
         calls:
             - ['setApplication',['@hbpf.application.shipstation']]
+
+    hbpf.connector.airtable_new_record:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\Airtable\Connector\AirtableNewRecordConnector
+        arguments:
+            - '@hbpf.transport.curl_manager'
+            - '@doctrine_mongodb.odm.default_document_manager'
+        calls:
+            - ['setApplication',['@hbpf.application.airtable']]
 
     hbpf.custom_node.hubspot_create_contact:
         class: Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Mapper\HubspotCreateContactMapper

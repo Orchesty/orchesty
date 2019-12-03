@@ -22,7 +22,7 @@ use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
  *
  * @package Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Connector
  */
-class HubspotCreateContactConnector extends ConnectorAbstract
+final class HubspotCreateContactConnector extends ConnectorAbstract
 {
 
     /**
@@ -31,7 +31,7 @@ class HubspotCreateContactConnector extends ConnectorAbstract
     private $curlManager;
 
     /**
-     * @var ObjectRepository|ApplicationInstallRepository
+     * @var ApplicationInstallRepository&ObjectRepository<ApplicationInstall>
      */
     private $repository;
 

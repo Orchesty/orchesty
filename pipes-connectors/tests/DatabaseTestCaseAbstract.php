@@ -20,7 +20,7 @@ abstract class DatabaseTestCaseAbstract extends KernelTestCaseAbstract
     protected $dm;
 
     /**
-     * @var Session
+     * @var mixed
      */
     protected $session;
 

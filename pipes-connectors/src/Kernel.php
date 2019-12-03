@@ -3,7 +3,6 @@
 namespace Hanaboso\HbPFConnectors;
 
 use Exception;
-use Generator;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Exception\LoaderLoadException;
 use Symfony\Component\Config\Loader\LoaderInterface;
@@ -25,7 +24,7 @@ class Kernel extends BaseKernel
     public const CONFIG_EXTS = '.{yaml}';
 
     /**
-     * @return Generator
+     * @return mixed[]
      */
     public function registerBundles(): iterable
     {

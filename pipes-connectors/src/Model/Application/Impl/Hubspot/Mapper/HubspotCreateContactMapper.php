@@ -12,13 +12,13 @@ use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
  *
  * @package Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Mapper
  */
-class HubspotCreateContactMapper extends CustomNodeAbstract
+final class HubspotCreateContactMapper extends CustomNodeAbstract
 {
 
     /**
-     * @param array $data
+     * @param mixed[] $data
      *
-     * @return array
+     * @return mixed[]
      */
     private function createBody(array $data): array
     {
@@ -48,9 +48,9 @@ class HubspotCreateContactMapper extends CustomNodeAbstract
     }
 
     /**
-     * @param array $data
+     * @param mixed[] $data
      *
-     * @return array
+     * @return mixed[]
      */
     private function formatData(array $data): array
     {
@@ -88,7 +88,7 @@ class HubspotCreateContactMapper extends CustomNodeAbstract
     /**
      * @param string $name
      *
-     * @return array
+     * @return mixed[]
      */
     private function splitName(?string $name): array
     {
@@ -103,7 +103,7 @@ class HubspotCreateContactMapper extends CustomNodeAbstract
     }
 
     /**
-     * @return array
+     * @return mixed[]
      *
      * keys (on the left) are required Hubspot fields, values (on the right) are provided Shipstation fields
      * Shipstation fields are processed in formatData method

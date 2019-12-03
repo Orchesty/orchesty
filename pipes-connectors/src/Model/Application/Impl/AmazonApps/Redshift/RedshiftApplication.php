@@ -88,7 +88,7 @@ class RedshiftApplication extends AwsApplicationAbstract
 
     /**
      * @param ApplicationInstall $applicationInstall
-     * @param array              $settings
+     * @param mixed[]            $settings
      *
      * @return ApplicationInstall
      * @throws ApplicationInstallException

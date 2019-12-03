@@ -23,7 +23,7 @@ use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
  *
  * @package Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\Connector
  */
-class MailchimpCreateContactConnector extends ConnectorAbstract
+final class MailchimpCreateContactConnector extends ConnectorAbstract
 {
 
     /**
@@ -32,7 +32,7 @@ class MailchimpCreateContactConnector extends ConnectorAbstract
     private $curlManager;
 
     /**
-     * @var ObjectRepository|ApplicationInstallRepository
+     * @var ObjectRepository<ApplicationInstall>&ApplicationInstallRepository
      */
     private $repository;
 

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\HbPFConnectors\Model\Application\Impl\Shipstation\Connector;
+namespace Hanaboso\HbPFConnectors\Model\Application\Impl\Airtable\Connector;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
@@ -8,24 +8,24 @@ use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
-use Hanaboso\CommonsBundle\Utils\Json;
+use Hanaboso\HbPFConnectors\Model\Application\Impl\Airtable\AirtableApplication;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
-use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessActionNotSupportedTrait;
+use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessEventNotSupportedTrait;
 
 /**
- * Class ShipstationNewOrderConnector
+ * Class AirtableNewRecordConnector
  *
- * @package Hanaboso\HbPFConnectors\Model\Application\Impl\Shipstation\Connector
+ * @package Hanaboso\HbPFConnectors\Model\Application\Impl\Airtable\Connector
  */
-final class ShipstationNewOrderConnector extends ConnectorAbstract
+final class AirtableNewRecordConnector extends ConnectorAbstract
 {
 
-    use ProcessActionNotSupportedTrait;
+    use ProcessEventNotSupportedTrait;
 
     /**
-     * ShipstationNewOrderConnector constructor.
+     * AirtableNewRecordConnector constructor.
      *
      * @param CurlManagerInterface $curlManager
      * @param DocumentManager      $dm
@@ -44,39 +44,47 @@ final class ShipstationNewOrderConnector extends ConnectorAbstract
      */
     public function getId(): string
     {
-        return 'shipstation_new_order';
+        return 'airtable_new_record';
     }
 
     /**
      * @param ProcessDto $dto
      *
      * @return ProcessDto
-     * @throws ApplicationInstallException
-     * @throws CurlException
      * @throws PipesFrameworkException
+     * @throws CurlException
+     * @throws ApplicationInstallException
      */
-    public function processEvent(ProcessDto $dto): ProcessDto
+    public function processAction(ProcessDto $dto): ProcessDto
     {
         $applicationInstall = $this->repository->findUsersAppDefaultHeaders($dto);
 
-        $url = Json::decode($dto->getData())['resource_url'] ?? NULL;
-        if (!$url) {
+        /** @var AirtableApplication $app */
+        $app = $this->application;
+        if (!$app->getValue($applicationInstall, AirtableApplication::BASE_ID)
+            || !$app->getValue($applicationInstall, AirtableApplication::TABLE_NAME)) {
+
             $dto->setStopProcess(ProcessDto::STOP_AND_FAILED);
 
             return $dto;
         }
 
+        $url    = sprintf(
+            '%s/%s/%s',
+            AirtableApplication::BASE_URL,
+            $app->getValue($applicationInstall, AirtableApplication::BASE_ID),
+            $app->getValue($applicationInstall, AirtableApplication::TABLE_NAME)
+        );
         $return = $this->curlManager->send(
             $this->application->getRequestDto(
                 $applicationInstall,
-                CurlManager::METHOD_GET,
+                CurlManager::METHOD_POST,
                 $url,
-                NULL
+                $dto->getData()
             )
         );
 
-        $statusCode = $return->getStatusCode();
-        $this->evaluateStatusCode($statusCode, $dto);
+        $this->evaluateStatusCode($return->getStatusCode(), $dto);
         $dto->setData($return->getBody());
 
         return $dto;

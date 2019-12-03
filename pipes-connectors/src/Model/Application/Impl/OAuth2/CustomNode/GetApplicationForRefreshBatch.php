@@ -30,7 +30,7 @@ class GetApplicationForRefreshBatch extends CustomNodeAbstract implements BatchI
     public const APPLICATION_ID = 'application-id';
 
     /**
-     * @var ObjectRepository|ApplicationInstallRepository
+     * @var ObjectRepository<ApplicationInstall>&ApplicationInstallRepository
      */
     private $repository;
 

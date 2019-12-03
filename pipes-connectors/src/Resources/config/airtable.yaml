@@ -1,0 +1,15 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf.application.airtable:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\Airtable\AirtableApplication
+
+    hbpf.connector.airtable_new_record:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\Airtable\Connector\AirtableNewRecordConnector
+        arguments:
+            - '@hbpf.transport.curl_manager'
+            - '@doctrine_mongodb.odm.default_document_manager'
+        calls:
+            - ['setApplication',['@hbpf.application.airtable']]
+

@@ -21,16 +21,16 @@ class MockCurlMethod
     private $fileName;
 
     /**
-     * @var array
+     * @var mixed[]
      */
     private $headers = [];
 
     /**
      * MockCurlMethod constructor.
      *
-     * @param int    $code
-     * @param string $fileName
-     * @param array  $headers
+     * @param int     $code
+     * @param string  $fileName
+     * @param mixed[] $headers
      */
     public function __construct(int $code, string $fileName, array $headers = [])
     {
@@ -56,7 +56,7 @@ class MockCurlMethod
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getHeaders(): array
     {

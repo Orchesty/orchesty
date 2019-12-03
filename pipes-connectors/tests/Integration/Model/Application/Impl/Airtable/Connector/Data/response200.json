@@ -1,0 +1,29 @@
+{
+    "id": "recOiLfrpAtLpW6Iq",
+    "fields": {
+        "Headline": "headline",
+        "Section": "Our Picks",
+        "Sub-head": "Our hotel picks that we think you'll love too",
+        "Author": {
+            "id": "usrBGLfFsqp7QN5Yl",
+            "email": "shani+kayla@airtable.com",
+            "name": "Kayla Barton"
+        },
+        "Publication Date": "2017-05-12",
+        "Link": "https://voyager.com/fakelink",
+        "Social Posts": [
+            "recbgoD3nzt2k3HkT",
+            "reckKJRpD4ULm0k6Q"
+        ],
+        "Status": "Published",
+        "Draft Due": "2017-05-04",
+        "Header Image": [
+            {
+                "id": "attvXjRFhW2BKUF47",
+                "url": "https://dl.airtable.com/RgTWUUeSSm4qiGebiGEA_pexels-photo-205342.jpeg%3Fw%3D940%26h%3D650%26auto%3Dcompress%26cs%3Dtinysrgb",
+                "filename": "RgTWUUeSSm4qiGebiGEA_pexels-photo-205342.jpeg%3Fw%3D940%26h%3D650%26auto%3Dcompress%26cs%3Dtinysrgb"
+            }
+        ]
+    },
+    "createdTime": "2019-12-03T14:36:41.000Z"
+}

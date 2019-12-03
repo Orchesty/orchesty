@@ -26,7 +26,7 @@ use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
  *
  * @package Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp
  */
-class MailchimpApplication extends OAuth2ApplicationAbstract implements WebhookApplicationInterface
+final class MailchimpApplication extends OAuth2ApplicationAbstract implements WebhookApplicationInterface
 {
 
     public const MAILCHIMP_URL            = 'https://login.mailchimp.com/oauth2/authorize';
@@ -167,7 +167,7 @@ class MailchimpApplication extends OAuth2ApplicationAbstract implements WebhookA
 
     /**
      * @param ApplicationInstall $applicationInstall
-     * @param array              $token
+     * @param mixed[]            $token
      *
      * @return OAuth2ApplicationInterface
      * @throws ApplicationInstallException

@@ -26,7 +26,7 @@ use Hanaboso\PipesPhpSdk\Authorization\Utils\ScopeFormatter;
  *
  * @package Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot
  */
-class HubspotApplication extends OAuth2ApplicationAbstract implements WebhookApplicationInterface
+final class HubspotApplication extends OAuth2ApplicationAbstract implements WebhookApplicationInterface
 {
 
     public const  BASE_URL    = 'https://api.hubapi.com';
@@ -104,7 +104,7 @@ class HubspotApplication extends OAuth2ApplicationAbstract implements WebhookApp
 
     /**
      * @param ApplicationInstall $applicationInstall
-     * @param array              $scopes
+     * @param mixed[]            $scopes
      * @param string             $separator
      */
     public function authorize(
@@ -185,7 +185,7 @@ class HubspotApplication extends OAuth2ApplicationAbstract implements WebhookApp
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getWebhookSubscriptions(): array
     {

@@ -8,7 +8,6 @@ use Hanaboso\CommonsBundle\Utils\Json;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Security\Core\Encoder\NativePasswordEncoder;
 
@@ -31,7 +30,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     protected $dm;
 
     /**
-     * @var Session
+     * @var mixed[]
      */
     protected $session;
 
@@ -48,9 +47,9 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     /**
      * ControllerTestCaseAbstract constructor.
      *
-     * @param null   $name
-     * @param array  $data
-     * @param string $dataName
+     * @param null    $name
+     * @param mixed[] $data
+     * @param string  $dataName
      */
     public function __construct($name = NULL, array $data = [], $dataName = '')
     {
@@ -109,9 +108,9 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     }
 
     /**
-     * @param string     $url
-     * @param array      $parameters
-     * @param array|null $content
+     * @param string       $url
+     * @param mixed[]      $parameters
+     * @param mixed[]|null $content
      *
      * @return object
      */
@@ -133,9 +132,9 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     }
 
     /**
-     * @param string     $url
-     * @param array      $parameters
-     * @param array|null $content
+     * @param string       $url
+     * @param mixed[]      $parameters
+     * @param mixed[]|null $content
      *
      * @return object
      */

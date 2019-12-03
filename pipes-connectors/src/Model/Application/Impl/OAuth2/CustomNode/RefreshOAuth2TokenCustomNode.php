@@ -34,7 +34,7 @@ class RefreshOAuth2TokenCustomNode extends CustomNodeAbstract
     private $loader;
 
     /**
-     * @var ObjectRepository|ApplicationInstallRepository
+     * @var ObjectRepository<ApplicationInstall>|ApplicationInstallRepository
      */
     private $repository;
 

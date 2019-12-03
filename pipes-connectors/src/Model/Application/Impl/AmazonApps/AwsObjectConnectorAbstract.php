@@ -35,7 +35,7 @@ abstract class AwsObjectConnectorAbstract extends ConnectorAbstract
     protected const CONTENT = 'content';
 
     /**
-     * @var ApplicationInstallRepository|ObjectRepository
+     * @var ObjectRepository<ApplicationInstall>&ApplicationInstallRepository
      */
     protected $repository;
 
@@ -88,8 +88,8 @@ abstract class AwsObjectConnectorAbstract extends ConnectorAbstract
     }
 
     /**
-     * @param array $parameters
-     * @param array $content
+     * @param mixed[] $parameters
+     * @param mixed[] $content
      *
      * @throws ConnectorException
      */
