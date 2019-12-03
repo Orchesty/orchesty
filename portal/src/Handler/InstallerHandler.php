@@ -37,7 +37,7 @@ class InstallerHandler
      */
     public function getInstaller(array $data): string
     {
-        $dto = new DataTransport($data['logs'], $data['metrics'], $data['database'] ?? FALSE);
+        $dto = new DataTransport($data['logs'], $data['metrics'], (bool) ($data['database'] ?? FALSE));
 
         return $this->installer->generate($dto);
     }

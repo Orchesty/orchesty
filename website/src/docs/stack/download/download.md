@@ -5,7 +5,7 @@ layout: main.hbs
 level: 1
 ---
 
- <form action="{#var portal_api_url}/installer" target="_blank">
+ <form action="{#var portal_api_url}/installer" method="post" target="_blank">
             <div class="col-lg-12">
                 <h4>Installer</h4>
             </div>
@@ -44,7 +44,8 @@ level: 1
                     <h4>Choose database</h4>
                     <div class="col-lg-6">
                     <label>
-                        <input id="database_input" type="checkbox" name="database" value="true" checked/>Database
+                        <input id="database_input" type="checkbox" name="database" value="true" checked/>
+                       <span>Database</span>
                     </label>    
                     </div>
                 </div>
