@@ -14,7 +14,7 @@ level: 1
                     <h4>Choose Logs</h4>
                     <div class="col-lg-6">
                     <label>
-                        <input type="radio" class="with-gap" name="logs" checked/> 
+                        <input type="radio" class="with-gap" name="logs" value="elasticsearch" checked/> 
                         <span>Elasticsearch</span>
                     </label>    
                     </div>
@@ -29,13 +29,13 @@ level: 1
                     <h4>Choose metrics</h4>
                     <div class="col-lg-6">
                     <label>
-                        <input type="radio" class="with-gap" name="metrics" checked> 
+                        <input type="radio" class="with-gap" name="metrics" value="influxdb" checked> 
                         <span>Influx</span>
                     </label>    
                     </div>
                     <div class="col-lg-6">
                     <label>
-                        <input type="radio" class="with-gap" name="metrics"> 
+                        <input type="radio" class="with-gap" name="metrics" value="mongo"> 
                         <span>Mongo</span>
                     </label>
                     </div>
