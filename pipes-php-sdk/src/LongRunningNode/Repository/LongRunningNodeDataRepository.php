@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesPhpSdk\LongRunningNode\Repository;
 
-use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 
 /**
  * Class LongRunningNodeDataRepository

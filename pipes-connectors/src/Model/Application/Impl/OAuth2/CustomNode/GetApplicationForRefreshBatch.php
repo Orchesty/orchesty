@@ -22,7 +22,7 @@ use function React\Promise\resolve;
 /**
  * Class GetApplicationForRefreshBatch
  *
- * @package Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\Connector
+ * @package Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\CustomNode
  */
 class GetApplicationForRefreshBatch extends CustomNodeAbstract implements BatchInterface
 {
@@ -35,13 +35,13 @@ class GetApplicationForRefreshBatch extends CustomNodeAbstract implements BatchI
     private $repository;
 
     /**
+     * GetApplicationForRefreshBatch constructor.
+     *
      * @param DocumentManager $dm
      */
     public function __construct(DocumentManager $dm)
     {
-
         $this->repository = $dm->getRepository(ApplicationInstall::class);
-
     }
 
     /**

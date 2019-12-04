@@ -20,14 +20,14 @@ class ConnectorsMetrics
     /**
      * @var ConnectorsMetricsFields
      *
-     * @ODM\EmbedOne(targetDocument="ConnectorsMetricsFields")
+     * @ODM\EmbedOne(targetDocument="Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetricsFields")
      */
     private $fields;
 
     /**
      * @var Tags
      *
-     * @ODM\EmbedOne(targetDocument="Tags")
+     * @ODM\EmbedOne(targetDocument="Hanaboso\PipesFramework\Metrics\Document\Tags")
      */
     private $tags;
 

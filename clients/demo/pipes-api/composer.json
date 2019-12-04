@@ -1,65 +1,65 @@
 {
-  "name": "hanaboso/demo",
-  "license": "proprietary",
-  "type": "project",
-  "autoload": {
-    "psr-4": {
-      "Demo\\": "src/"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "Tests\\": "tests/"
-    }
-  },
-  "require": {
-    "php": "^7.3",
-    "ext-json": "*",
-    "hanaboso/acl-bundle": "^1.2",
-    "hanaboso/app-store": "^1.1",
-    "hanaboso/commons-bundle": "^1.2",
-    "hanaboso/email-service-bundle": "^1.0",
-    "hanaboso/pipes-connectors": "^1.1",
-    "hanaboso/pipes-framework": "^1.1",
-    "hanaboso/pipes-php-sdk": "^1.0",
-    "hanaboso/rabbit-mq-bundle": "^1.1",
-    "hanaboso/user-bundle": "^1.2",
-    "kucharovic/czech-holidays": "^1.0",
-    "nelmio/cors-bundle": "^1.5",
-    "ratchet/pawl": "^0.3",
-    "react/child-process": "^0.5"
-  },
-  "require-dev": {
-    "hanaboso/php-check-utils": "^1.0"
-  },
-  "repositories": [
-    {
-      "type": "path",
-      "url": "../../../pf-bundles",
-      "options": {
-        "symlink": true
-      }
+    "name": "hanaboso/demo",
+    "license": "proprietary",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Demo\\": "src/"
+        }
     },
-    {
-      "type": "path",
-      "url": "../../../pipes-php-sdk",
-      "options": {
-        "symlink": true
-      }
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
     },
-    {
-      "type": "path",
-      "url": "../../../app-store",
-      "options": {
-        "symlink": true
-      }
+    "require": {
+        "php": "^7.4",
+        "ext-json": "*",
+        "hanaboso/acl-bundle": "^1.2",
+        "hanaboso/app-store": "^1.2",
+        "hanaboso/commons-bundle": "^1.3",
+        "hanaboso/email-service-bundle": "^1.0",
+        "hanaboso/pipes-connectors": "^1.2",
+        "hanaboso/pipes-framework": "^1.2",
+        "hanaboso/pipes-php-sdk": "^1.1",
+        "hanaboso/rabbit-mq-bundle": "^1.1",
+        "hanaboso/user-bundle": "^1.2",
+        "kucharovic/czech-holidays": "^1.0",
+        "nelmio/cors-bundle": "^1.5",
+        "ratchet/pawl": "^0.3",
+        "react/child-process": "^0.5"
     },
-    {
-      "type": "path",
-      "url": "../../../pipes-connectors",
-      "options": {
-        "symlink": true
-      }
-    }
-  ]
+    "require-dev": {
+        "hanaboso/php-check-utils": "^1.0"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../../../pf-bundles",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../../../pipes-php-sdk",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../../../app-store",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../../../pipes-connectors",
+            "options": {
+                "symlink": true
+            }
+        }
+    ]
 }

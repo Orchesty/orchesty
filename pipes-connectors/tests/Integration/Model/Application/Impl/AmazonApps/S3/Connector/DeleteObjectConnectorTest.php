@@ -15,7 +15,7 @@ use Tests\DatabaseTestCaseAbstract;
 /**
  * Class DeleteObjectConnectorTest
  *
- * @package Tests\Integration\Model\Application\Impl\S3\Connector
+ * @package Tests\Integration\Model\Application\Impl\AmazonApps\S3\Connector
  */
 final class DeleteObjectConnectorTest extends DatabaseTestCaseAbstract
 {

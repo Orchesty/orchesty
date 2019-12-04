@@ -6,6 +6,7 @@ use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Hanaboso\CommonsBundle\Exception\CategoryException;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler;
+use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -34,6 +35,7 @@ class CategoryController extends AbstractFOSRestController
     public function __construct(CategoryHandler $categoryHandler)
     {
         $this->categoryHandler = $categoryHandler;
+        $this->logger          = new NullLogger();
     }
 
     /**

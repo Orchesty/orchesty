@@ -4,6 +4,7 @@ namespace Hanaboso\HbPFAppStore\Model;
 
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
@@ -111,6 +112,7 @@ class ApplicationManager
      * @return ApplicationInstall
      * @throws ApplicationInstallException
      * @throws DateTimeException
+     * @throws MongoDBException
      */
     public function installApplication(string $key, string $user): ApplicationInstall
     {
@@ -126,7 +128,7 @@ class ApplicationManager
             ->setUser($user)
             ->setKey($key);
         $this->dm->persist($applicationInstall);
-        $this->dm->flush($applicationInstall);
+        $this->dm->flush();
 
         return $applicationInstall;
     }
@@ -144,7 +146,7 @@ class ApplicationManager
         $this->unsubscribeWebhooks($applicationInstall);
 
         $this->dm->remove($applicationInstall);
-        $this->dm->flush($applicationInstall);
+        $this->dm->flush();
 
         return $applicationInstall;
     }
@@ -164,7 +166,7 @@ class ApplicationManager
                 $this->repository->findUserApp($key, $user),
                 $data
             );
-        $this->dm->flush($application);
+        $this->dm->flush();
 
         return $application;
     }
@@ -185,7 +187,7 @@ class ApplicationManager
             $this->repository->findUserApp($key, $user),
             $password
         );
-        $this->dm->flush($application);
+        $this->dm->flush();
 
         return $application;
     }
@@ -196,6 +198,7 @@ class ApplicationManager
      * @param string $redirectUrl
      *
      * @throws ApplicationInstallException
+     * @throws MongoDBException
      */
     public function authorizeApplication(string $key, string $user, string $redirectUrl): void
     {
@@ -216,6 +219,7 @@ class ApplicationManager
      *
      * @return array
      * @throws ApplicationInstallException
+     * @throws MongoDBException
      */
     public function saveAuthorizationToken(string $key, string $user, array $token): array
     {

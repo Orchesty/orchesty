@@ -196,7 +196,7 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
             );
 
             $dm->persist($dto->getApplicationInstall());
-            $dm->flush($dto->getApplicationInstall());
+            $dm->flush();
         };
     }
 

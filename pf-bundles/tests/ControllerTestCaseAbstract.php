@@ -3,6 +3,7 @@
 namespace Tests;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Exception;
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\UserBundle\Document\User;
@@ -72,7 +73,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
 
         self::$client = self::createClient([], []);
         $this->dm     = self::$container->get('doctrine_mongodb.odm.default_document_manager');
-        $this->dm->getConnection()->dropDatabase('pipes');
+        $this->dm->getClient()->dropDatabase('pipes');
 
         // Login
         $this->loginUser('test@example.com', 'password');
@@ -80,11 +81,13 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
 
     /**
      * @param object $document
+     *
+     * @throws Exception
      */
     protected function persistAndFlush($document): void
     {
         $this->dm->persist($document);
-        $this->dm->flush($document);
+        $this->dm->flush();
     }
 
     /**
@@ -92,7 +95,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
      * @param string $password
      *
      * @return User
-     * @throws DateTimeException
+     * @throws Exception
      */
     protected function loginUser(string $username, string $password): User
     {

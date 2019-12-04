@@ -20,14 +20,14 @@ class MonolithMetrics
     /**
      * @var MonolithMetricsFields
      *
-     * @ODM\EmbedOne(targetDocument="MonolithMetricsFields")
+     * @ODM\EmbedOne(targetDocument="Hanaboso\PipesFramework\Metrics\Document\MonolithMetricsFields")
      */
     private $fields;
 
     /**
      * @var Tags
      *
-     * @ODM\EmbedOne(targetDocument="Tags")
+     * @ODM\EmbedOne(targetDocument="Hanaboso\PipesFramework\Metrics\Document\Tags")
      */
     private $tags;
 

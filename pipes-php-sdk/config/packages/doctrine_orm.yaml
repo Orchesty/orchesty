@@ -17,4 +17,4 @@ doctrine:
         mappings:
             HbPFCommonsBundle: ~
         proxy_dir: "%kernel.cache_dir%/doctrine/orm/Proxies"
-        proxy_namespace: Proxies
+        proxy_namespace: OrmProxies

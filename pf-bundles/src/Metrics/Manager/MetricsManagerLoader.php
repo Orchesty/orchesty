@@ -28,7 +28,7 @@ final class MetricsManagerLoader
     private $mongoManager;
 
     /**
-     * MetricsLoader constructor.
+     * MetricsManagerLoader constructor.
      *
      * @param string                 $metricsService
      * @param MetricsManagerAbstract $influxManager

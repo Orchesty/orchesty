@@ -10,7 +10,7 @@ use Throwable;
 /**
  * Class Installer
  *
- * @package Hanaboso\PipesFramework\Installer\Model
+ * @package Hanaboso\Portal\Model\Installer
  */
 class Installer
 {

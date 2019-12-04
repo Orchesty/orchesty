@@ -6,6 +6,8 @@ use Tests\KernelTestCaseAbstract;
 
 /**
  * Class TemporaryTest
+ *
+ * @package Tests\Integration
  */
 final class TemporaryTest extends KernelTestCaseAbstract
 {

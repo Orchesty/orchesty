@@ -20,14 +20,14 @@ class BridgesMetrics
     /**
      * @var BridgesMetricsFields
      *
-     * @ODM\EmbedOne(targetDocument="BridgesMetricsFields")
+     * @ODM\EmbedOne(targetDocument="Hanaboso\PipesFramework\Metrics\Document\BridgesMetricsFields")
      */
     private $fields;
 
     /**
      * @var Tags
      *
-     * @ODM\EmbedOne(targetDocument="Tags")
+     * @ODM\EmbedOne(targetDocument="Hanaboso\PipesFramework\Metrics\Document\Tags")
      */
     private $tags;
 

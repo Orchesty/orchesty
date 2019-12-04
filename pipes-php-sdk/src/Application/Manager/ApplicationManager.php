@@ -4,6 +4,7 @@ namespace Hanaboso\PipesPhpSdk\Application\Manager;
 
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
@@ -17,7 +18,7 @@ use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
 /**
  * Class ApplicationManager
  *
- * @package Hanaboso\HbPFAppStore\Model
+ * @package Hanaboso\PipesPhpSdk\Application\Manager
  */
 class ApplicationManager
 {
@@ -73,7 +74,7 @@ class ApplicationManager
                 $this->repository->findUserApp($key, $user),
                 $data
             );
-        $this->dm->flush($application);
+        $this->dm->flush();
 
         return $application;
     }
@@ -94,7 +95,7 @@ class ApplicationManager
             $this->repository->findUserApp($key, $user),
             $password
         );
-        $this->dm->flush($application);
+        $this->dm->flush();
 
         return $application;
     }
@@ -105,6 +106,7 @@ class ApplicationManager
      * @param string $redirectUrl
      *
      * @throws ApplicationInstallException
+     * @throws MongoDBException
      */
     public function authorizeApplication(string $key, string $user, string $redirectUrl): void
     {
@@ -125,6 +127,7 @@ class ApplicationManager
      *
      * @return array
      * @throws ApplicationInstallException
+     * @throws MongoDBException
      */
     public function saveAuthorizationToken(string $key, string $user, array $token): array
     {

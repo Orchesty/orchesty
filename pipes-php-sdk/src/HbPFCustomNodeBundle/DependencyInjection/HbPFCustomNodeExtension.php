@@ -30,7 +30,7 @@ class HbPFCustomNodeExtension extends Extension implements PrependExtensionInter
         }
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/prepend-config'));
-        $loader->load('batch.yml');
+        $loader->load('batch.yaml');
     }
 
     /**
@@ -45,9 +45,9 @@ class HbPFCustomNodeExtension extends Extension implements PrependExtensionInter
         $this->processConfiguration($configuration, $configs);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
-        $loader->load('controllers.yml');
-        $loader->load('handlers.yml');
-        $loader->load('services.yml');
+        $loader->load('controllers.yaml');
+        $loader->load('handlers.yaml');
+        $loader->load('services.yaml');
     }
 
 }

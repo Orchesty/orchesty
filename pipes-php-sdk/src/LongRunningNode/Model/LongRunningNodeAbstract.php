@@ -6,6 +6,8 @@ use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 
 /**
  * Class LongRunningNodeAbstract
+ *
+ * @package Hanaboso\PipesPhpSdk\LongRunningNode\Model
  */
 abstract class LongRunningNodeAbstract implements LongRunningNodeInterface
 {

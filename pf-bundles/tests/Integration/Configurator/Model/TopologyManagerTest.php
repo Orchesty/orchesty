@@ -176,7 +176,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
             ->setRawBpmn('asd');
 
         $this->dm->persist($top);
-        $this->dm->flush($top);
+        $this->dm->flush();
 
         /**
          * 1 -> 2 -> 3
@@ -317,7 +317,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
             ->setDescr('desc');
 
         $this->dm->persist($top);
-        $this->dm->flush($top);
+        $this->dm->flush();
         $this->dm->clear();
 
         /** @var Topology $res */

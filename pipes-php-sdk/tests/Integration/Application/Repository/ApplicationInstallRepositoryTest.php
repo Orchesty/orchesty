@@ -11,7 +11,7 @@ use Tests\DatabaseTestCaseAbstract;
 /**
  * Class ApplicationInstallRepositoryTest
  *
- * @package Tests\Integration\Controller\Application\Repository
+ * @package Tests\Integration\Application\Repository
  */
 final class ApplicationInstallRepositoryTest extends DatabaseTestCaseAbstract
 {
@@ -26,8 +26,8 @@ final class ApplicationInstallRepositoryTest extends DatabaseTestCaseAbstract
         $appInstallRepository = $this->dm->getRepository(ApplicationInstall::class);
 
         self::assertEquals(
-            $appInstallRepository->getApplicationsCount(),
-            $this->getBasicData()
+            $this->getBasicData(),
+            $appInstallRepository->getApplicationsCount()
         );
     }
 
@@ -41,16 +41,16 @@ final class ApplicationInstallRepositoryTest extends DatabaseTestCaseAbstract
         $appInstallRepository = $this->dm->getRepository(ApplicationInstall::class);
 
         self::assertEquals(
-            $appInstallRepository->getApplicationsCountDetails('mailchimp'),
-            $this->getApplicationsUsers('mailchimp')
+            $this->getApplicationsUsers('mailchimp'),
+            $appInstallRepository->getApplicationsCountDetails('mailchimp')
         );
         self::assertEquals(
-            $appInstallRepository->getApplicationsCountDetails('hubspot'),
-            $this->getApplicationsUsers('hubspot')
+            $this->getApplicationsUsers('hubspot'),
+            $appInstallRepository->getApplicationsCountDetails('hubspot')
         );
         self::assertEquals(
-            $appInstallRepository->getApplicationsCountDetails('shipstation'),
-            $this->getApplicationsUsers('shipstation')
+            $this->getApplicationsUsers('shipstation'),
+            $appInstallRepository->getApplicationsCountDetails('shipstation')
         );
     }
 
@@ -62,26 +62,28 @@ final class ApplicationInstallRepositoryTest extends DatabaseTestCaseAbstract
         $applicationInstall = new ApplicationInstall();
         $applicationInstall->setKey('hubspot');
         $applicationInstall->setUser('user2');
-
-        $applicationInstall3 = new ApplicationInstall();
-        $applicationInstall3->setKey('hubspot');
-        $applicationInstall3->setUser('user3');
-        $applicationInstall3->setExpires(DateTimeUtils::getUtcDateTime());
+        $applicationInstall->setExpires(DateTimeUtils::getUtcDateTime('- 10 Days'));
 
         $applicationInstall2 = new ApplicationInstall();
         $applicationInstall2->setKey('mailchimp');
         $applicationInstall2->setUser('user2');
 
+        $applicationInstall3 = new ApplicationInstall();
+        $applicationInstall3->setKey('hubspot');
+        $applicationInstall3->setUser('user3');
+        $applicationInstall3->setExpires(DateTimeUtils::getUtcDateTime('+ 1 Day'));
+
         $applicationInstall4 = new ApplicationInstall();
         $applicationInstall4->setKey('shipstation');
         $applicationInstall4->setUser('user2');
-        $applicationInstall4->setExpires(DateTimeUtils::getUtcDateTime());
+        $applicationInstall4->setExpires(DateTimeUtils::getUtcDateTime('+ 1 Day'));
 
         $this->dm->persist($applicationInstall);
         $this->dm->persist($applicationInstall2);
         $this->dm->persist($applicationInstall3);
         $this->dm->persist($applicationInstall4);
         $this->dm->flush();
+        $this->dm->clear();
     }
 
     /**
@@ -97,22 +99,22 @@ final class ApplicationInstallRepositoryTest extends DatabaseTestCaseAbstract
             0 => [
                 '_id'   => 'hubspot',
                 'value' => [
-                    'total_sum'      => 2.0,
-                    'non_expire_sum' => 1.0,
+                    'total_sum'      => 2,
+                    'non_expire_sum' => 1,
                 ],
             ],
             1 => [
                 '_id'   => 'mailchimp',
                 'value' => [
-                    'total_sum'      => 1.0,
-                    'non_expire_sum' => 0.0,
+                    'total_sum'      => 1,
+                    'non_expire_sum' => 1,
                 ],
             ],
             2 => [
                 '_id'   => 'shipstation',
                 'value' => [
-                    'total_sum'      => 1.0,
-                    'non_expire_sum' => 1.0,
+                    'total_sum'      => 1,
+                    'non_expire_sum' => 1,
                 ],
             ],
         ];
@@ -146,7 +148,7 @@ final class ApplicationInstallRepositoryTest extends DatabaseTestCaseAbstract
                 'value' => [
                     'users' => [
                         0 => [
-                            'active' => FALSE,
+                            'active' => TRUE,
                             'name'   => 'user2',
                         ],
                     ],

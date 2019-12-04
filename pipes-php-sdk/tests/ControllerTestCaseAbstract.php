@@ -60,7 +60,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
         parent::setUp();
         self::$client = self::createClient([], []);
         $this->dm     = self::$container->get('doctrine_mongodb.odm.default_document_manager');
-        $this->dm->getConnection()->dropDatabase('pipes-php-sdk');
+        $this->dm->getClient()->dropDatabase('pipes-php-sdk');
     }
 
     /**
@@ -69,7 +69,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     protected function persistAndFlush($document): void
     {
         $this->dm->persist($document);
-        $this->dm->flush($document);
+        $this->dm->flush();
     }
 
     /**

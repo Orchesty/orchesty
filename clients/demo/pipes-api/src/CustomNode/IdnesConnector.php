@@ -23,7 +23,7 @@ class IdnesConnector extends CustomNodeAbstract
     private $curlManager;
 
     /**
-     * GoogleConnector constructor.
+     * IdnesConnector constructor.
      *
      * @param CurlManager $curlManager
      */

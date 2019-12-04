@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Loader;
 
-use Hanaboso\CommonsBundle\Utils\NodeServiceLoaderUtil;
+use Hanaboso\CommonsBundle\Utils\NodeServiceLoader;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Exception\LongRunningNodeException;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -63,7 +63,7 @@ final class LongRunningNodeLoader
     {
         $dirs = $this->container->getParameter('node_services_dirs');
 
-        return NodeServiceLoaderUtil::getServices($dirs, self::PREFIX, $exclude);
+        return NodeServiceLoader::getServices($dirs, self::PREFIX, $exclude);
     }
 
 }

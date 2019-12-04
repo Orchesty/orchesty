@@ -11,7 +11,7 @@ use Tests\DatabaseTestCaseAbstract;
 /**
  * Class S3ApplicationTest
  *
- * @package Tests\Integration\Model\Application\Impl\S3
+ * @package Tests\Integration\Model\Application\Impl\AmazonApps\S3
  */
 final class S3ApplicationTest extends DatabaseTestCaseAbstract
 {

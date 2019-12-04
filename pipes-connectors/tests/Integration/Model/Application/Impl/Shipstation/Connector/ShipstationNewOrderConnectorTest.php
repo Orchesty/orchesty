@@ -15,7 +15,7 @@ use Tests\MockCurlMethod;
 /**
  * Class ShipstationNewOrderConnectorTest
  *
- * @package Tests\Integration\Model\Application\Impl\Mailchimp\Connector
+ * @package Tests\Integration\Model\Application\Impl\Shipstation\Connector
  */
 final class ShipstationNewOrderConnectorTest extends DatabaseTestCaseAbstract
 {

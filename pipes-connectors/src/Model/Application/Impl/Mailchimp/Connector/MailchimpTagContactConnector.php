@@ -36,7 +36,7 @@ class MailchimpTagContactConnector extends ConnectorAbstract
     private $repository;
 
     /**
-     * MailchimpCreateContactConnector constructor.
+     * MailchimpTagContactConnector constructor.
      *
      * @param CurlManagerInterface $curlManager
      * @param DocumentManager      $dm

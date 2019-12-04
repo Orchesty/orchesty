@@ -7,6 +7,7 @@ use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler;
+use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -35,6 +36,7 @@ class TopologyController extends AbstractFOSRestController
     public function __construct(TopologyHandler $topologyHandler)
     {
         $this->topologyHandler = $topologyHandler;
+        $this->logger          = new NullLogger();
     }
 
     /**

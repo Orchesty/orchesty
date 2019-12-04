@@ -15,7 +15,7 @@ use Tests\DataProvider;
 /**
  * Class HubspotCreateContactMapperTest
  *
- * @package Tests\Integration\Model\Application\Impl\Hubspot\Connector
+ * @package Tests\Integration\Model\Application\Impl\Hubspot\Mapper
  */
 final class HubspotCreateContactMapperTest extends DatabaseTestCaseAbstract
 {
