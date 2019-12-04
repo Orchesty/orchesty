@@ -14,7 +14,7 @@ IMAGE_SENDER_API=dkr.hanaboso.net/pipes/notification-sender:$(TAG_SENDER_API)
 
 # Generic vars
 
-IMAGE_PHP_DEV=hanabosocom/php-dev:php-7.3
+IMAGE_PHP_DEV=hanabosocom/php-dev:php-7.4
 
 DEV_YML?="docker-compose.dev.yml"
 
