@@ -73,7 +73,7 @@ class OAuth2Provider extends OAuthProviderAbstract implements OAuth2ProviderInte
             );
         }
 
-        return $this->getTokenByGrant($dto, 'authorization_code', ['code' => $request['code']]);
+        return $this->getTokenByGrant($dto, 'authorization_code',  $request);
     }
 
     /**
