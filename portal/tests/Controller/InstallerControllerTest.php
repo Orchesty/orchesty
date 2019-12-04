@@ -6,7 +6,7 @@ use Hanaboso\Portal\Model\Installer\Installer;
 use Tests\ControllerTestCaseAbstract;
 
 /**
- * Class PortalControllerTest
+ * Class InstallerControllerTest
  *
  * @package Tests\Controller
  */

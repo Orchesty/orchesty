@@ -1,4 +1,4 @@
-FROM hanabosocom/php-base:php-7.3-alpine
+FROM hanabosocom/php-base:php-7.4-alpine
 
 # PHP
 RUN apk update && apk upgrade && apk add --no-cache \

@@ -79,17 +79,19 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
 
         $documents = $this->dm->getMetadataFactory()->getAllMetadata();
         foreach ($documents as $document) {
-            $this->dm->getDocumentCollection($document->getName())->remove([]);
+            $this->dm->getDocumentCollection($document->getName())->drop();
         }
     }
 
     /**
      * @param object $document
+     *
+     * @throws Exception
      */
     protected function persistAndFlush($document): void
     {
         $this->dm->persist($document);
-        $this->dm->flush($document);
+        $this->dm->flush();
     }
 
     /**

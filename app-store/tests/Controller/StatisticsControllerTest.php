@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Tests\ControllerTestCaseAbstract;
 
 /**
- * Class StatisticControllerTest
+ * Class StatisticsControllerTest
  *
  * @package Tests\Controller
  */
@@ -71,17 +71,18 @@ final class StatisticsControllerTest extends ControllerTestCaseAbstract
         $applicationInstall = new ApplicationInstall();
         $applicationInstall->setKey('hubspot');
         $applicationInstall->setUser('user2');
+        $applicationInstall->setExpires(DateTimeUtils::getUtcDateTime('- 1 Day'));
         $applicationInstall3 = new ApplicationInstall();
         $applicationInstall3->setKey('hubspot');
         $applicationInstall3->setUser('user3');
-        $applicationInstall3->setExpires(DateTimeUtils::getUtcDateTime());
+        $applicationInstall3->setExpires(DateTimeUtils::getUtcDateTime('+ 1 Day'));
         $applicationInstall2 = new ApplicationInstall();
         $applicationInstall2->setKey('mailchimp');
         $applicationInstall2->setUser('user2');
         $applicationInstall4 = new ApplicationInstall();
         $applicationInstall4->setKey('shipstation');
         $applicationInstall4->setUser('user2');
-        $applicationInstall4->setExpires(DateTimeUtils::getUtcDateTime());
+        $applicationInstall4->setExpires(DateTimeUtils::getUtcDateTime('+ 1 Day'));
         $this->dm->persist($applicationInstall);
         $this->dm->persist($applicationInstall2);
         $this->dm->persist($applicationInstall3);

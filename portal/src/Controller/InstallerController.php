@@ -6,6 +6,7 @@ use Exception;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\Portal\Handler\InstallerHandler;
+use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
@@ -35,6 +36,7 @@ class InstallerController extends AbstractFOSRestController
     public function __construct(InstallerHandler $installerHandler)
     {
         $this->installerHandler = $installerHandler;
+        $this->logger           = new NullLogger();
     }
 
     /**

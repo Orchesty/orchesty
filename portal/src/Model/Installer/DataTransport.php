@@ -5,9 +5,9 @@ namespace Hanaboso\Portal\Model\Installer;
 use Hanaboso\Portal\Model\Installer\Exception\InstallerException;
 
 /**
- * Class Installer
+ * Class DataTransport
  *
- * @package Hanaboso\PipesFramework\Installer\Model
+ * @package Hanaboso\Portal\Model\Installer
  */
 class DataTransport
 {

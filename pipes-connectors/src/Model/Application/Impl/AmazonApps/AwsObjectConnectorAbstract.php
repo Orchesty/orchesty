@@ -16,7 +16,7 @@ use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Throwable;
 
 /**
- * Class ObjectConnectorAbstract
+ * Class AwsObjectConnectorAbstract
  *
  * @package Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps
  */
@@ -40,7 +40,7 @@ abstract class AwsObjectConnectorAbstract extends ConnectorAbstract
     protected $repository;
 
     /**
-     * ObjectConnectorAbstract constructor.
+     * AwsObjectConnectorAbstract constructor.
      *
      * @param DocumentManager $dm
      */

@@ -2,6 +2,7 @@
 
 namespace Hanaboso\PipesPhpSdk\LongRunningNode\Model;
 
+use Doctrine\ODM\MongoDB\Query\Builder;
 use Hanaboso\MongoDataGrid\GridFilterAbstract;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData;
 
@@ -14,39 +15,56 @@ final class LongRunningNodeFilter extends GridFilterAbstract
 {
 
     /**
-     * @var array
+     * @return array
      */
-    protected $filterCols = [
-        LongRunningNodeData::CREATED       => LongRunningNodeData::CREATED,
-        LongRunningNodeData::UPDATED       => LongRunningNodeData::UPDATED,
-        LongRunningNodeData::TOPOLOGY_ID   => LongRunningNodeData::TOPOLOGY_ID,
-        LongRunningNodeData::TOPOLOGY_NAME => LongRunningNodeData::TOPOLOGY_NAME,
-        LongRunningNodeData::NODE_ID       => LongRunningNodeData::NODE_ID,
-        LongRunningNodeData::NODE_NAME     => LongRunningNodeData::NODE_NAME,
-        LongRunningNodeData::AUDIT_LOGS    => LongRunningNodeData::AUDIT_LOGS,
-    ];
-
-    /**
-     * @var array
-     */
-    protected $orderCols = [
-        LongRunningNodeData::CREATED   => LongRunningNodeData::CREATED,
-        LongRunningNodeData::NODE_NAME => LongRunningNodeData::NODE_NAME,
-    ];
-
-    /**
-     * @var array
-     */
-    protected $searchableCols = [
-        LongRunningNodeData::AUDIT_LOGS,
-    ];
-
-    /**
-     *
-     */
-    protected function prepareSearchQuery(): void
+    protected function filterCols(): array
     {
-        $this->searchQuery = $this
+        return [
+            LongRunningNodeData::CREATED       => LongRunningNodeData::CREATED,
+            LongRunningNodeData::UPDATED       => LongRunningNodeData::UPDATED,
+            LongRunningNodeData::TOPOLOGY_ID   => LongRunningNodeData::TOPOLOGY_ID,
+            LongRunningNodeData::TOPOLOGY_NAME => LongRunningNodeData::TOPOLOGY_NAME,
+            LongRunningNodeData::NODE_ID       => LongRunningNodeData::NODE_ID,
+            LongRunningNodeData::NODE_NAME     => LongRunningNodeData::NODE_NAME,
+            LongRunningNodeData::AUDIT_LOGS    => LongRunningNodeData::AUDIT_LOGS,
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    protected function orderCols(): array
+    {
+        return [
+            LongRunningNodeData::CREATED   => LongRunningNodeData::CREATED,
+            LongRunningNodeData::NODE_NAME => LongRunningNodeData::NODE_NAME,
+        ];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function searchableCols(): array
+    {
+        return [
+            LongRunningNodeData::AUDIT_LOGS,
+        ];
+    }
+
+    /**
+     * @return bool
+     */
+    protected function useTextSearch(): bool
+    {
+        return TRUE;
+    }
+
+    /**
+     * @return Builder
+     */
+    protected function prepareSearchQuery(): Builder
+    {
+        return $this
             ->getRepository()
             ->createQueryBuilder()
             ->select(

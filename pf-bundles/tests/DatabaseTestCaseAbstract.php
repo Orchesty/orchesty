@@ -3,6 +3,7 @@
 namespace Tests;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Exception;
 use Hanaboso\CommonsBundle\Utils\Json;
 use Symfony\Component\HttpFoundation\Session\Session;
 
@@ -32,7 +33,7 @@ abstract class DatabaseTestCaseAbstract extends KernelTestCaseAbstract
         parent::setUp();
 
         $this->dm = self::$container->get('doctrine_mongodb.odm.default_document_manager');
-        $this->dm->getConnection()->dropDatabase('pipes');
+        $this->dm->getClient()->dropDatabase('pipes');
         $this->session = new Session();
         $this->session->invalidate();
         $this->session->clear();
@@ -40,11 +41,13 @@ abstract class DatabaseTestCaseAbstract extends KernelTestCaseAbstract
 
     /**
      * @param object $document
+     *
+     * @throws Exception
      */
     protected function persistAndFlush($document): void
     {
         $this->dm->persist($document);
-        $this->dm->flush($document);
+        $this->dm->flush();
     }
 
     /**

@@ -55,7 +55,7 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
      */
     public function testMakeInstall(): void
     {
-        $this->dm->getConnection()->dropDatabase('pipes');
+        $this->dm->getClient()->dropDatabase('pipes');
         $this->createTopologies();
         $manager = $this->getManager();
         $manager->prepareInstall(TRUE, TRUE, TRUE);
@@ -112,8 +112,7 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
     private function createTopologies(): void
     {
         $xmlDecoder = new XmlDecoder();
-
-        $topology = new Topology();
+        $topology   = new Topology();
         $topology
             ->setName('file')
             ->setRawBpmn($this->load('file.tplg', TRUE))

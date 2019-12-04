@@ -15,7 +15,7 @@ use Tests\DataProvider;
 /**
  * Class MailchimpCreateContactMapperTest
  *
- * @package Tests\Integration\Model\Application\Impl\Mailchimp\Connector
+ * @package Tests\Integration\Model\Application\Impl\Mailchimp\Mapper
  */
 final class MailchimpCreateContactMapperTest extends DatabaseTestCaseAbstract
 {

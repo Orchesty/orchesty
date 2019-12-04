@@ -7,7 +7,7 @@ use Exception;
 /**
  * Class InstallerException
  *
- * @package Hanaboso\PipesFramework\Installer\Exception
+ * @package Hanaboso\Portal\Model\Installer\Exception
  */
 class InstallerException extends Exception
 {

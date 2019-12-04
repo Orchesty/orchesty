@@ -8,7 +8,7 @@ use Hanaboso\CommonsBundle\Database\Document\Topology;
 use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
 use Hanaboso\CommonsBundle\Utils\GeneratorUtils;
 use Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager;
-use MongoClient;
+use MongoDB\Client;
 use Tests\KernelTestCaseAbstract;
 use Tests\PrivateTrait;
 
@@ -452,7 +452,7 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
         parent::setUp();
 
         $client = $this->getClient();
-        $client->selectDB('metrics')->drop();
+        $client->selectDatabase('metrics')->drop();
         $this->ensureCollections();
     }
 
@@ -462,13 +462,14 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
 
     /**
      * @return Topology
+     * @throws Exception
      */
     private function createTopo(): Topology
     {
         $topo = new Topology();
         $topo->setName(uniqid());
         $this->dm->persist($topo);
-        $this->dm->flush($topo);
+        $this->dm->flush();
 
         return $topo;
     }
@@ -477,6 +478,7 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
      * @param Topology $topology
      *
      * @return Node
+     * @throws Exception
      */
     private function createNode(Topology $topology): Node
     {
@@ -485,7 +487,7 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
             ->setTopology($topology->getId())
             ->setName(uniqid());
         $this->dm->persist($node);
-        $this->dm->flush($node);
+        $this->dm->flush();
 
         return $node;
     }
@@ -528,7 +530,7 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
                     ->getTimestamp(),
             ],
         ];
-        $bridge->insert($doc);
+        $bridge->insertOne($doc);
 
         $doc = [
             'tags'   => [
@@ -539,7 +541,7 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
                 'created'  => DateTimeUtils::getUtcDateTime('-1 days')->getTimestamp(),
             ],
         ];
-        $rabbitmq->insert($doc);
+        $rabbitmq->insertOne($doc);
 
         $doc = [
             'tags'   => [
@@ -552,7 +554,7 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
                     ->getTimestamp(),
             ],
         ];
-        $connector->insert($doc);
+        $connector->insertOne($doc);
 
         $doc = [
             'tags'   => [
@@ -564,7 +566,7 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
                 'created'             => DateTimeUtils::getUtcDateTime('-1 days')->getTimestamp(),
             ],
         ];
-        $monolith->insert($doc);
+        $monolith->insertOne($doc);
 
         $doc = [
             'tags'   => [
@@ -578,7 +580,7 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
                 'created'                     => DateTimeUtils::getUtcDateTime('+5 days')->getTimestamp(),
             ],
         ];
-        $bridge->insert($doc);
+        $bridge->insertOne($doc);
 
         $doc = [
             'tags'   => [
@@ -592,7 +594,7 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
                     ->getTimestamp(),
             ],
         ];
-        $bridge->insert($doc);
+        $bridge->insertOne($doc);
 
         $doc = [
             'tags'   => [
@@ -603,7 +605,7 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
                 'created'  => DateTimeUtils::getUtcDateTime('+5 days')->getTimestamp(),
             ],
         ];
-        $rabbitmq->insert($doc);
+        $rabbitmq->insertOne($doc);
 
         $doc = [
             'tags'   => [
@@ -614,7 +616,7 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
                 'created'  => DateTimeUtils::getUtcDateTime('-6 days')->getTimestamp(),
             ],
         ];
-        $rabbitmq->insert($doc);
+        $rabbitmq->insertOne($doc);
 
         $doc = [
             'tags'   => [
@@ -626,7 +628,7 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
                 'created'                     => DateTimeUtils::getUtcDateTime('+5 days')->getTimestamp(),
             ],
         ];
-        $connector->insert($doc);
+        $connector->insertOne($doc);
 
         $doc = [
             'tags'   => [
@@ -639,7 +641,7 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
                     ->getTimestamp(),
             ],
         ];
-        $connector->insert($doc);
+        $connector->insertOne($doc);
 
         $doc = [
             'tags'   => [
@@ -651,7 +653,7 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
                 'created'             => DateTimeUtils::getUtcDateTime('+5 days')->getTimestamp(),
             ],
         ];
-        $monolith->insert($doc);
+        $monolith->insertOne($doc);
 
         $doc = [
             'tags'   => [
@@ -663,7 +665,7 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
                 'created'             => DateTimeUtils::getUtcDateTime('-5 days')->getTimestamp(),
             ],
         ];
-        $monolith->insert($doc);
+        $monolith->insertOne($doc);
 
         $doc = [
             'tags'   => [
@@ -676,7 +678,7 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
                 'created'                  => DateTimeUtils::getUtcDateTime($dateOffset)->getTimestamp(),
             ],
         ];
-        $processes->insert($doc);
+        $processes->insertOne($doc);
 
         $doc = [
             'tags'   => [
@@ -689,7 +691,7 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
                 'created'                  => DateTimeUtils::getUtcDateTime('+55 days')->getTimestamp(),
             ],
         ];
-        $processes->insert($doc);
+        $processes->insertOne($doc);
     }
 
     /**
@@ -718,7 +720,7 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
                 'created'             => DateTimeUtils::getUtcDateTime()->getTimestamp(),
             ],
         ];
-        $monolith->insert($doc);
+        $monolith->insertOne($doc);
 
         $doc = [
             'tags'   => [
@@ -732,7 +734,7 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
                 'created'                     => DateTimeUtils::getUtcDateTime()->getTimestamp(),
             ],
         ];
-        $bridge->insert($doc);
+        $bridge->insertOne($doc);
 
         $doc = [
             'tags'   => [
@@ -743,7 +745,7 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
                 'created'  => DateTimeUtils::getUtcDateTime()->getTimestamp(),
             ],
         ];
-        $rabbitmq->insert($doc);
+        $rabbitmq->insertOne($doc);
 
         $doc = [
             'tags'   => [
@@ -755,7 +757,7 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
                 'created'                     => DateTimeUtils::getUtcDateTime()->getTimestamp(),
             ],
         ];
-        $connector->insert($doc);
+        $connector->insertOne($doc);
 
         $doc = [
             'tags'   => [
@@ -768,17 +770,16 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
                 'created'                  => DateTimeUtils::getUtcDateTime()->getTimestamp(),
             ],
         ];
-        $processes->insert($doc);
+        $processes->insertOne($doc);
     }
 
     /**
-     * @return MongoClient
+     * @return Client
      */
-    private function getClient(): MongoClient
+    private function getClient(): Client
     {
         return self::$container->get('doctrine_mongodb.odm.metrics_document_manager')
-            ->getConnection()
-            ->getMongoClient();
+            ->getClient();
     }
 
     /**
@@ -787,11 +788,11 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
     private function ensureCollections(): void
     {
         $client = $this->getClient();
-        $client->selectDB('metrics')->createCollection(self::$container->getParameter('mongodb.counter_table'));
-        $client->selectDB('metrics')->createCollection(self::$container->getParameter('mongodb.monolith_table'));
-        $client->selectDB('metrics')->createCollection(self::$container->getParameter('mongodb.node_table'));
-        $client->selectDB('metrics')->createCollection(self::$container->getParameter('mongodb.connector_table'));
-        $client->selectDB('metrics')->createCollection(self::$container->getParameter('mongodb.rabbit_table'));
+        $client->selectDatabase('metrics')->createCollection(self::$container->getParameter('mongodb.counter_table'));
+        $client->selectDatabase('metrics')->createCollection(self::$container->getParameter('mongodb.monolith_table'));
+        $client->selectDatabase('metrics')->createCollection(self::$container->getParameter('mongodb.node_table'));
+        $client->selectDatabase('metrics')->createCollection(self::$container->getParameter('mongodb.connector_table'));
+        $client->selectDatabase('metrics')->createCollection(self::$container->getParameter('mongodb.rabbit_table'));
     }
 
 }

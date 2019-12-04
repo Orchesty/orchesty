@@ -39,6 +39,8 @@ class RefreshOAuth2TokenCustomNode extends CustomNodeAbstract
     private $repository;
 
     /**
+     * RefreshOAuth2TokenCustomNode constructor.
+     *
      * @param DocumentManager   $dm
      * @param ApplicationLoader $loader
      */

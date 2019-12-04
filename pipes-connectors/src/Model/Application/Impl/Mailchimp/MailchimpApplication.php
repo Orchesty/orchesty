@@ -42,7 +42,7 @@ class MailchimpApplication extends OAuth2ApplicationAbstract implements WebhookA
     private $curlManager;
 
     /**
-     * OAuth2ApplicationAbstract constructor.
+     * MailchimpApplication constructor.
      *
      * @param OAuth2Provider       $provider
      * @param CurlManagerInterface $curlManager

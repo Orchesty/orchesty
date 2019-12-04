@@ -33,7 +33,7 @@ class HbPFConnectorExtension extends Extension implements PrependExtensionInterf
         }
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/prepend-config'));
-        $loader->load('batch-connector.yml');
+        $loader->load('batch-connector.yaml');
     }
 
     /**
@@ -51,9 +51,9 @@ class HbPFConnectorExtension extends Extension implements PrependExtensionInterf
         $this->processConfiguration($configuration, $configs);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
-        $loader->load('connectors.yml');
-        $loader->load('controllers.yml');
-        $loader->load('services.yml');
+        $loader->load('connectors.yaml');
+        $loader->load('controllers.yaml');
+        $loader->load('services.yaml');
     }
 
 }

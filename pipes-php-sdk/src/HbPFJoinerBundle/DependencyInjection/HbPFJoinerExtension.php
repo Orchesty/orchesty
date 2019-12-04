@@ -40,9 +40,9 @@ class HbPFJoinerExtension extends Extension implements PrependExtensionInterface
         $this->processConfiguration($configuration, $configs);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
-        $loader->load('controllers.yml');
-        $loader->load('handlers.yml');
-        $loader->load('services.yml');
+        $loader->load('controllers.yaml');
+        $loader->load('handlers.yaml');
+        $loader->load('services.yaml');
     }
 
 }

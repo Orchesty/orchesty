@@ -11,7 +11,7 @@ use Tests\DatabaseTestCaseAbstract;
 /**
  * Class RedshiftApplicationTest
  *
- * @package Tests\Integration\Model\Application\Impl\Redshift
+ * @package Tests\Integration\Model\Application\Impl\AmazonApps\Redshift
  */
 final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
 {

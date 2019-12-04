@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesPhpSdk\HbPFMapperBundle\Loader;
 
-use Hanaboso\CommonsBundle\Utils\NodeServiceLoaderUtil;
+use Hanaboso\CommonsBundle\Utils\NodeServiceLoader;
 use Hanaboso\PipesPhpSdk\HbPFMapperBundle\Exception\MapperException;
 use Hanaboso\PipesPhpSdk\Mapper\MapperInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -63,7 +63,7 @@ class MapperLoader
     {
         $dirs = $this->container->getParameter('node_services_dirs');
 
-        return NodeServiceLoaderUtil::getServices($dirs, self::PREFIX, $exclude);
+        return NodeServiceLoader::getServices($dirs, self::PREFIX, $exclude);
     }
 
 }

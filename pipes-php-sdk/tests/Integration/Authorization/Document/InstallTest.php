@@ -36,9 +36,10 @@ final class InstallTest extends DatabaseTestCaseAbstract
             ]
         )->toArray();
 
-        self::assertArrayHasKey($applicationInstall->getId(), $data);
-        self::assertArrayHasKey('user', $data[$applicationInstall->getId()]);
-        self::assertArrayHasKey('encryptedSettings', $data[$applicationInstall->getId()]);
+        $data = reset($data);
+        self::assertEquals($applicationInstall->getId(), $data['_id']);
+        self::assertArrayHasKey('user', $data);
+        self::assertArrayHasKey('encryptedSettings', $data);
 
         /** @var ApplicationInstall $loaded */
         $loaded = $this->dm->getRepository(ApplicationInstall::class)->find($applicationInstall->getId());

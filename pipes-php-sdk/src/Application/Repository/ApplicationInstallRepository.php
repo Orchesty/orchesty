@@ -2,11 +2,14 @@
 
 namespace Hanaboso\PipesPhpSdk\Application\Repository;
 
-use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
+use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
 use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
+use MongoDB\BSON\UTCDateTime;
 
 /**
  * Class ApplicationInstallRepository
@@ -57,82 +60,72 @@ class ApplicationInstallRepository extends DocumentRepository
 
     /**
      * @return array
+     * @throws DateTimeException
      */
     public function getApplicationsCount(): array
     {
-        return $this->createQueryBuilder()->mapReduce(
-            'function() {
-                    emit(this.key, this.expires);
-                }',
-            'function(k, vals) {
-                return vals.reduce(
-                    (acc, val) => 
-                        {
-                            acc.total_sum++; 
-                            if (val === null) { 
-                                acc.non_expire_sum++; 
-                            } 
-    
-                            return acc;
-                        }, 
-                        {
-                            total_sum: 0, 
-                            non_expire_sum: 0
-                        }
-                    )
-                }'
-        )
-            ->finalize(
-                'function(k, res) {
-                    if (res !== null && res.total_sum !== undefined) {
-                        return res;
-                    }
-
-                    return {
-                        total_sum: 1,
-                        non_expire_sum: res !== null ? 1 : 0
-                    };
-                }'
+        $ab  = $this->createAggregationBuilder();
+        $res = $ab
+            ->group()->field('id')
+            ->expression('$key')
+            ->field('total_sum')->sum(1)
+            ->field('non_expire_sum')->sum(
+                $ab->expr()->cond(
+                    $ab->expr()->addOr(
+                        $ab->expr()->gte('$expires', new UTCDateTime(DateTimeUtils::getUtcDateTime())),
+                        $ab->expr()->eq('$expires', NULL)
+                    ),
+                    1,
+                    0
+                )
             )
-            ->getQuery()
+            ->sort('id', 'ASC')
             ->execute()
             ->toArray();
 
+        $ret = [];
+        foreach ($res as $item) {
+            $ret[] = [
+                '_id'   => $item['_id'],
+                'value' => ['total_sum' => $item['total_sum'], 'non_expire_sum' => $item['non_expire_sum']],
+            ];
+        }
+
+        return $ret;
     }
 
     /**
      * @param string $application
      *
      * @return array
+     * @throws DateTimeException
      */
     public function getApplicationsCountDetails(string $application): array
     {
-
-        return $this->createQueryBuilder()->field('key')->equals($application)
-            ->mapReduce(
-                'function() {
-                         emit(this.key, this);
-                }',
-                'function(k, vals) {
-                    return {
-                        users: vals.map(val => ({ active: val.expires !== null, name: val.user }))
-                    };
-                }'
+        $ab  = $this->createAggregationBuilder();
+        $res = $ab
+            ->match()->field('key')->equals($application)
+            ->group()->field('id')
+            ->expression(
+                $ab->expr()
+                    ->field('active')->expression(
+                        $ab->expr()->addOr(
+                            $ab->expr()->gte('$expires', new UTCDateTime(DateTimeUtils::getUtcDateTime())),
+                            $ab->expr()->eq('$expires', NULL)
+                        )
+                    )
+                    ->field('name')->ifNull('$user', '')
             )
-            ->finalize(
-                'function(k, res) {
-                    if (res !== null && res.users !== undefined) {
-                        return res;
-                    }
-
-                    return {
-                        users: [{ active: res.expires !== null, name: res.user }]
-                    }
-                }'
-            )
-            ->getQuery()
+            ->sort('id', 'ASC')
             ->execute()
             ->toArray();
+
+        $ret = ['_id' => $application];
+        foreach ($res as $item) {
+            $ret['value']['users'][] = ['active' => $item['_id']['active'], 'name' => $item['_id']['name']];
+        }
+
+        return [$ret];
     }
 
 }

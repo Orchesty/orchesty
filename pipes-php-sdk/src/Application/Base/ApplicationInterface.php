@@ -9,7 +9,7 @@ use Hanaboso\PipesPhpSdk\Application\Model\Form\Form;
 /**
  * Interface ApplicationInterface
  *
- * @package Hanaboso\PipesPhpSdk\Authorization\Base
+ * @package Hanaboso\PipesPhpSdk\Application\Base
  */
 interface ApplicationInterface
 {

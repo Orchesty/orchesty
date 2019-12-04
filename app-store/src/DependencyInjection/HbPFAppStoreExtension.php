@@ -11,7 +11,7 @@ use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 /**
- * Class HbPFApplicationExtension
+ * Class HbPFAppStoreExtension
  *
  * @package Hanaboso\HbPFAppStore\DependencyInjection
  */

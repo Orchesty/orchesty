@@ -33,7 +33,7 @@ class HbPFLongRunningNodeExtension extends Extension implements PrependExtension
         }
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/prepend-config'));
-        $loader->load('rabbitmq.yml');
+        $loader->load('rabbitmq.yaml');
 
         $container->setParameter('src_dir', __DIR__ . '/../..');
     }
@@ -53,8 +53,8 @@ class HbPFLongRunningNodeExtension extends Extension implements PrependExtension
         $this->processConfiguration($configuration, $configs);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
-        $loader->load('services.yml');
-        $loader->load('controllers.yml');
+        $loader->load('services.yaml');
+        $loader->load('controllers.yaml');
     }
 
 }

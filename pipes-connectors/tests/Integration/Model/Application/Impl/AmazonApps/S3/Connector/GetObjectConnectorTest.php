@@ -16,7 +16,7 @@ use Tests\DatabaseTestCaseAbstract;
 /**
  * Class GetObjectConnectorTest
  *
- * @package Tests\Integration\Model\Application\Impl\S3\Connector
+ * @package Tests\Integration\Model\Application\Impl\AmazonApps\S3\Connector
  */
 final class GetObjectConnectorTest extends DatabaseTestCaseAbstract
 {

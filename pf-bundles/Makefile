@@ -1,9 +1,9 @@
 .PHONY: docker-up-force docker-down-clean test
 
-TAG?=php-7.3
+TAG?=php-7.4
 GITLAB=dkr.hanaboso.net/pipes/pipes/php-dev:${TAG}
 DOCKERHUB=hanabosocom/php-dev:${TAG}
-BASE=hanabosocom/php-base:php-7.3-alpine
+BASE=hanabosocom/php-base:php-7.4-alpine
 DC=docker-compose
 DE=docker-compose exec -T php-dev
 DEC=docker-compose exec -T php-dev composer
@@ -94,7 +94,7 @@ database-create:
 	$(DE) php bin/console doctrine:database:drop --force || true
 	$(DE) php bin/console doctrine:database:create
 	$(DE) php bin/console doctrine:schema:create
-	$(DE) php bin/console doctrine:mongodb:schema:create --dm=metrics
+	$(DE) php bin/console doctrine:mongodb:schema:create --dm=metrics || true
 
 .env:
 	sed -e "s|{DEV_UID}|$(shell id -u)|g" \

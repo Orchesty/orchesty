@@ -9,7 +9,7 @@ use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 /**
  * Class ApplicationAbstract
  *
- * @package Hanaboso\PipesPhpSdk\Authorization\Base
+ * @package Hanaboso\PipesPhpSdk\Application\Base
  */
 abstract class ApplicationAbstract implements ApplicationInterface
 {

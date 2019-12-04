@@ -9,7 +9,7 @@ use Tests\DatabaseTestCaseAbstract;
 use Tests\DataProvider;
 
 /**
- * Class MailchimpCreateContactConnectorTest
+ * Class MailchimpTagContactConnectorTest
  *
  * @package Tests\Live\Model\Application\Impl\Mailchimp\Connector
  */

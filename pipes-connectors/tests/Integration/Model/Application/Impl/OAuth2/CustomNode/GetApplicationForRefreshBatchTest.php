@@ -14,7 +14,7 @@ use Tests\DatabaseTestCaseAbstract;
 /**
  * Class GetApplicationForRefreshBatchTest
  *
- * @package Tests\Integration\Model\Application\Impl\OAuth2\Connector
+ * @package Tests\Integration\Model\Application\Impl\OAuth2\CustomNode
  */
 class GetApplicationForRefreshBatchTest extends DatabaseTestCaseAbstract
 {

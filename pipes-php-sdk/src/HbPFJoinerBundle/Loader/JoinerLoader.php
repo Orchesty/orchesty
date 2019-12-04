@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Loader;
 
-use Hanaboso\CommonsBundle\Utils\NodeServiceLoaderUtil;
+use Hanaboso\CommonsBundle\Utils\NodeServiceLoader;
 use Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Exception\JoinerException;
 use Hanaboso\PipesPhpSdk\Joiner\JoinerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -63,7 +63,7 @@ final class JoinerLoader
     {
         $dirs = $this->container->getParameter('node_services_dirs');
 
-        return NodeServiceLoaderUtil::getServices($dirs, self::PREFIX, $exclude);
+        return NodeServiceLoader::getServices($dirs, self::PREFIX, $exclude);
     }
 
 }

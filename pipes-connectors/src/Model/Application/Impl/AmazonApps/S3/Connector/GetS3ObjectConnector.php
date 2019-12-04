@@ -11,9 +11,9 @@ use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 
 /**
- * Class GetObjectConnector
+ * Class GetS3ObjectConnector
  *
- * @package Hanaboso\HbPFConnectors\Model\Application\Impl\S3\Connector
+ * @package Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\Connector
  */
 final class GetS3ObjectConnector extends S3ObjectConnectorAbstract
 {

@@ -40,18 +40,20 @@ abstract class DatabaseTestCaseAbstract extends KernelTestCaseAbstract
 
         $documents = $this->dm->getMetadataFactory()->getAllMetadata();
         foreach ($documents as $document) {
-            $this->dm->getDocumentCollection($document->getName())->remove([]);
+            $this->dm->getDocumentCollection($document->getName())->drop();
         }
     }
 
     /**
      * @param object $document
      * @param bool   $clear
+     *
+     * @throws Exception
      */
     protected function pf($document, bool $clear = TRUE): void
     {
         $this->dm->persist($document);
-        $this->dm->flush($document);
+        $this->dm->flush();
 
         if ($clear) {
             $this->dm->clear();

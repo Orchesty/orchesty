@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesPhpSdk\Application\Loader;
 
-use Hanaboso\CommonsBundle\Utils\NodeServiceLoaderUtil;
+use Hanaboso\CommonsBundle\Utils\NodeServiceLoader;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -64,7 +64,7 @@ class ApplicationLoader
     {
         $dirs = $this->container->getParameter('applications');
 
-        return NodeServiceLoaderUtil::getServices($dirs, self::APPLICATION_PREFIX, $exclude);
+        return NodeServiceLoader::getServices($dirs, self::APPLICATION_PREFIX, $exclude);
     }
 
 }

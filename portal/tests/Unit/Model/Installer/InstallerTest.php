@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * Class InstallerTest
  *
- * @package Tests\Unit\Installer\Model
+ * @package Tests\Unit\Model\Installer
  */
 final class InstallerTest extends TestCase
 {

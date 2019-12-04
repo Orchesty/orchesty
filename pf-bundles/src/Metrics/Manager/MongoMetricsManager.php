@@ -2,9 +2,9 @@
 
 namespace Hanaboso\PipesFramework\Metrics\Manager;
 
+use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
-use Doctrine\ODM\MongoDB\Query\Builder;
 use Hanaboso\CommonsBundle\Database\Document\Node;
 use Hanaboso\CommonsBundle\Database\Document\Topology;
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
@@ -163,40 +163,15 @@ class MongoMetricsManager extends MetricsManagerAbstract
         string $dateTo
     ): MetricsDto
     {
-        $qb = $this->metricsDm->createQueryBuilder(ConnectorsMetrics::class);
+        $qb = $this->metricsDm->createAggregationBuilder(ConnectorsMetrics::class);
         $this->addConditions($qb, $dateFrom, $dateTo, $where, ConnectorsMetrics::class);
-
-        /** @var array $res */
-        $res = $qb
-            ->mapReduce(
-                'function() {
-                    emit(null, this.fields.sent_request_total_duration);
-                }',
-                'function(k, vals) {
-                    return {
-                        request_count: vals.length,
-                        request_sum: Array.sum(vals),
-                        request_max: Math.max(...vals),
-                        request_min: Math.min(...vals),
-                    };
-                }'
-            )
-            ->finalize(
-                'function(k, res) {
-                    if (typeof res === "object") {
-                        return res;
-                    }
-                    
-                    return {
-                        request_count: 1,
-                        request_sum: res,
-                        request_max: res,
-                        request_min: res,
-                    };
-                }'
-            )
-            ->getQuery()
-            ->getSingleResult();
+        $res = $qb->group()->field('id')->ifNull(NULL, '')
+            ->field('request_sum')->sum('$fields.sent_request_total_duration')
+            ->field('request_count')->sum(1)
+            ->field('request_max')->max('$fields.sent_request_total_duration')
+            ->field('request_min')->min('$fields.sent_request_total_duration')
+            ->execute()
+            ->toArray();
 
         if (!$res) {
             $res = [
@@ -206,7 +181,7 @@ class MongoMetricsManager extends MetricsManagerAbstract
                 'request_min'   => 0,
             ];
         } else {
-            $res = $res['value'];
+            $res = reset($res);
         }
 
         return (new MetricsDto())
@@ -233,36 +208,13 @@ class MongoMetricsManager extends MetricsManagerAbstract
         string $dateTo
     ): MetricsDto
     {
-        $qb = $this->metricsDm->createQueryBuilder(RabbitMetrics::class);
+        $qb = $this->metricsDm->createAggregationBuilder(RabbitMetrics::class);
         $this->addConditions($qb, $dateFrom, $dateTo, $where, RabbitMetrics::class);
-
-        /** @var array $res */
-        $res = $qb
-            ->mapReduce(
-                'function() {
-                    emit(null, this.fields.messages);
-                }',
-                'function(k, vals) {
-                    return {
-                        queue_max: Math.max(...vals),
-                        queue_sum: Array.sum(vals),
-                    };
-                }'
-            )
-            ->finalize(
-                'function(k, res) {
-                    if (typeof res === "object") {
-                        return res;
-                    }
-                    
-                    return {
-                        queue_max: res,
-                        queue_sum: res,
-                    };
-                }'
-            )
-            ->getQuery()
-            ->getSingleResult();
+        $res = $qb->group()->field('id')->ifNull(NULL, '')
+            ->field('queue_max')->max('$fields.messages')
+            ->field('queue_sum')->sum('$fields.messages')
+            ->execute()
+            ->toArray();
 
         if (!$res) {
             $res = [
@@ -270,7 +222,7 @@ class MongoMetricsManager extends MetricsManagerAbstract
                 'queue_sum' => 0,
             ];
         } else {
-            $res = $res['value'];
+            $res = reset($res);
         }
 
         $from = DateTimeUtils::getUtcDateTime($dateFrom);
@@ -304,40 +256,15 @@ class MongoMetricsManager extends MetricsManagerAbstract
         string $dateTo
     ): MetricsDto
     {
-        $qb = $this->metricsDm->createQueryBuilder(MonolithMetrics::class);
+        $qb = $this->metricsDm->createAggregationBuilder(MonolithMetrics::class);
         $this->addConditions($qb, $dateFrom, $dateTo, $where, MonolithMetrics::class);
-
-        /** @var array $res */
-        $res = $qb
-            ->mapReduce(
-                'function() {
-                    emit(null, this.fields.fpm_cpu_kernel_time);
-                }',
-                'function(k, vals) {
-                    return {
-                        cpu_count: vals.length,
-                        cpu_sum: Array.sum(vals),
-                        cpu_max: Math.max(...vals),
-                        cpu_min: Math.min(...vals),
-                    };
-                }'
-            )
-            ->finalize(
-                'function(k, res) {
-                    if (typeof res === "object") {
-                        return res;
-                    }
-                    
-                    return {
-                        cpu_count: 1,
-                        cpu_sum: res,
-                        cpu_max: res,
-                        cpu_min: res,
-                    };
-                }'
-            )
-            ->getQuery()
-            ->getSingleResult();
+        $res = $qb->group()->field('id')->ifNull(NULL, '')
+            ->field('cpu_sum')->sum('$fields.fpm_cpu_kernel_time')
+            ->field('cpu_count')->sum(1)
+            ->field('cpu_max')->max('$fields.fpm_cpu_kernel_time')
+            ->field('cpu_min')->min('$fields.fpm_cpu_kernel_time')
+            ->execute()
+            ->toArray();
 
         if (!$res) {
             $res = [
@@ -347,7 +274,7 @@ class MongoMetricsManager extends MetricsManagerAbstract
                 'cpu_min'   => 0,
             ];
         } else {
-            $res = $res['value'];
+            $res = reset($res);
         }
 
         return (new MetricsDto())
@@ -374,57 +301,23 @@ class MongoMetricsManager extends MetricsManagerAbstract
         string $dateTo
     ): array
     {
-        $qb = $this->metricsDm->createQueryBuilder(ProcessesMetrics::class);
+        $qb = $this->metricsDm->createAggregationBuilder(ProcessesMetrics::class);
         $this->addConditions($qb, $dateFrom, $dateTo, $where, ProcessesMetrics::class);
-
-        /** @var array $res */
-        $res = $qb
-            ->mapReduce(
-                'function() {
-                    emit(null, this.fields);
-                }',
-                'function(k, vals) {
-                    let res = {
-                        process_time_count: 0,
-                        process_time_sum: 0,
-                        process_time_max: 0,
-                        total_count: 0,
-                        request_error_sum: 0,
-                        process_time_min: vals[0].counter_process_duration,
-                    };
-
-                    vals.forEach(x => {
-                        res.process_time_count++;    
-                        res.process_time_sum += x.counter_process_duration;
-                        res.process_time_max = Math.max(res.process_time_max, x.counter_process_duration);
-                        res.total_count++;
-                        if (!x.counter_process_result) {
-                            res.request_error_sum++;
-                        }
-                        res.process_time_min = Math.min(res.process_time_min, x.counter_process_duration);
-                    });
-                    
-                    return res;
-                }'
+        $res = $qb->group()->field('id')->ifNull(NULL, '')
+            ->field('process_time_sum')->sum('$fields.counter_process_duration')
+            ->field('process_time_count')->sum(1)
+            ->field('process_time_max')->max('$fields.counter_process_duration')
+            ->field('process_time_min')->min('$fields.counter_process_duration')
+            ->field('total_count')->sum(1)
+            ->field('request_error_sum')->sum(
+                $qb->expr()->cond(
+                    $qb->expr()->eq('$fields.counter_process_result', FALSE),
+                    1,
+                    0
+                )
             )
-            ->finalize(
-                'function(k, res) {
-                    if (res.hasOwnProperty("total_count")) {
-                        return res;
-                    }
-                    
-                    return {
-                        process_time_count: 1,
-                        process_time_sum: res.counter_process_duration,
-                        process_time_min: res.counter_process_duration,
-                        process_time_max: res.counter_process_duration,
-                        total_count: 1,
-                        request_error_sum: res.counter_process_result ? 0 : 1,
-                    };
-                }'
-            )
-            ->getQuery()
-            ->getSingleResult();
+            ->execute()
+            ->toArray();
 
         if (!$res) {
             $res = [
@@ -436,7 +329,7 @@ class MongoMetricsManager extends MetricsManagerAbstract
                 'request_error_sum'  => 0,
             ];
         } else {
-            $res = $res['value'];
+            $res = reset($res);
         }
 
         // Process time, Error
@@ -469,71 +362,29 @@ class MongoMetricsManager extends MetricsManagerAbstract
         string $dateTo
     ): array
     {
-        $qb = $this->metricsDm->createQueryBuilder(BridgesMetrics::class);
+        $qb = $this->metricsDm->createAggregationBuilder(BridgesMetrics::class);
         $this->addConditions($qb, $dateFrom, $dateTo, $where, BridgesMetrics::class);
-
-        /** @var array $res */
-        $res = $qb
-            ->mapReduce(
-                'function() {
-                    emit(null, this.fields);
-                }',
-                'function(k, vals) {
-                    let res = {
-                        top_processed_count: 0,
-                        wait_count: 0,
-                        top_processed_sum: 0,
-                        wait_sum: 0,
-                        request_error_sum: 0,
-                        total_count: 0,
-                        top_processed_max: 0,
-                        wait_max: 0,
-                        wait_min: vals[0].bridge_job_waiting_duration,
-                        top_processed_min: vals[0].bridge_job_total_duration,
-                    };
-                    
-                    vals.forEach(x => {
-                        const waiting = x.bridge_job_waiting_duration ? x.bridge_job_waiting_duration : 0;
-                    
-                        res.top_processed_count++;
-                        res.wait_count++;
-                        res.wait_sum += waiting;
-                        res.top_processed_sum += x.bridge_job_total_duration;
-                        res.total_count++;
-                        if (!x.bridge_job_result_success) {
-                            res.request_error_sum++;
-                        }
-                        res.top_processed_max = Math.max(res.top_processed_max, x.bridge_job_total_duration);
-                        res.top_processed_min = Math.min(res.top_processed_min, x.bridge_job_total_duration);
-                        res.wait_max = Math.max(res.wait_max, waiting);
-                        res.wait_min = Math.min(res.wait_min, waiting);
-                    });
-                
-                    return res;
-                }'
+        $res = $qb->group()->field('id')->ifNull(NULL, '')
+            ->field('top_processed_sum')->sum('$fields.bridge_job_total_duration')
+            ->field('top_processed_count')->sum(1)
+            ->field('top_processed_max')->max('$fields.bridge_job_total_duration')
+            ->field('top_processed_min')->min('$fields.bridge_job_total_duration')
+            ->field('wait_sum')->sum('$fields.bridge_job_waiting_duration')
+            ->field('wait_count')->sum(1)
+            ->field('wait_max')->max('$fields.bridge_job_waiting_duration')
+            ->field('wait_min')->min(
+                $qb->expr()->ifNull('$fields.bridge_job_waiting_duration', 0)
             )
-            ->finalize(
-                'function(k, res) {
-                    if (res.hasOwnProperty("wait_count")) {
-                        return res;
-                    }
-                    
-                    return {
-                        top_processed_count: 1,
-                        wait_count: (res.bridge_job_waiting_duration ? res.bridge_job_waiting_duration : 0) > 0 ? 1 : 0,
-                        top_processed_sum: res.bridge_job_total_duration,
-                        wait_sum: res.bridge_job_waiting_duration ? res.bridge_job_waiting_duration : 0,
-                        request_error_sum: res.bridge_job_result_success ? 0 : 1,
-                        total_count: 1,
-                        top_processed_max: res.bridge_job_total_duration,
-                        wait_max: res.bridge_job_waiting_duration ? res.bridge_job_waiting_duration : 0,
-                        wait_min: res.bridge_job_waiting_duration ? res.bridge_job_waiting_duration : 0, 
-                        top_processed_min: res.bridge_job_total_duration, 
-                    };
-                }'
+            ->field('total_count')->sum(1)
+            ->field('request_error_sum')->sum(
+                $qb->expr()->cond(
+                    $qb->expr()->eq('$fields.bridge_job_result_success', FALSE),
+                    1,
+                    0
+                )
             )
-            ->getQuery()
-            ->getSingleResult();
+            ->execute()
+            ->toArray();
 
         if (!$res) {
             $res = [
@@ -549,7 +400,7 @@ class MongoMetricsManager extends MetricsManagerAbstract
                 'top_processed_min'   => 0,
             ];
         } else {
-            $res = $res['value'];
+            $res = reset($res);
         }
 
         // Process time, Waiting time, Error
@@ -591,32 +442,21 @@ class MongoMetricsManager extends MetricsManagerAbstract
         $dateTimeFrom = DateTimeUtils::getUTCDateTime($dateFrom);
         $dateTimeTo   = DateTimeUtils::getUTCDateTime($dateTo);
 
-        $qb = $this->metricsDm->createQueryBuilder(ProcessesMetrics::class);
+        $qb = $this->metricsDm->createAggregationBuilder(ProcessesMetrics::class);
         $this->addConditions($qb, $dateFrom, $dateTo, $where, ProcessesMetrics::class);
         $ret = RetentionFactory::getRetentionInSeconds($dateTimeFrom, $dateTimeTo);
 
         $res = $qb
-            ->mapReduce(
-                sprintf(
-                    'function() {
-                    const time = this.fields.created;
-                
-                    emit(time - time %% %s, 1);
-                }',
-                    $ret
-                ),
-                'function(k, vals) {
-                    return vals.length;
-                }'
-            )
-            ->getQuery()
+            ->group()->field('id')
+            ->subtract('$fields.created', $qb->expr()->mod('$fields.created', $ret))
+            ->field('count')->sum(1)
             ->execute()
             ->toArray();
 
         /** @var array $res */
         $res = array_combine(
             array_column($res, '_id'),
-            array_column($res, 'value'),
+            array_column($res, 'count'),
         );
 
         $from = $dateTimeFrom->getTimestamp();
@@ -643,21 +483,20 @@ class MongoMetricsManager extends MetricsManagerAbstract
      */
     private function addConditions(Builder $qb, string $dateFrom, string $dateTo, array $where, string $document): void
     {
-        $qb->addAnd(
-            $qb->expr()
-                ->field('fields.created')
-                ->gte(DateTimeUtils::getUTCDateTime($dateFrom)->getTimestamp())
-        );
-        $qb->addAnd(
-            $qb->expr()
-                ->field('fields.created')
-                ->lt(DateTimeUtils::getUTCDateTime($dateTo)->getTimestamp())
-        );
+        $qb->match()
+            ->addAnd(
+                $qb->matchExpr()
+                    ->field('fields.created')
+                    ->gte(DateTimeUtils::getUTCDateTime($dateFrom)->getTimestamp()),
+                $qb->matchExpr()
+                    ->field('fields.created')
+                    ->lt(DateTimeUtils::getUTCDateTime($dateTo)->getTimestamp())
+            );
 
         $tags = $this->allowedTags($document);
         foreach ($where as $field => $value) {
             if (in_array($field, $tags)) {
-                $qb->addOr($qb->expr()->field(sprintf('tags.%s', $field))->equals($value));
+                $qb->match()->addOr($qb->matchExpr()->field(sprintf('tags.%s', $field))->equals($value));
             }
         }
     }

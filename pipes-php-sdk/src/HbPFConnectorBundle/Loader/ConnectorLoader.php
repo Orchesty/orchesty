@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Loader;
 
-use Hanaboso\CommonsBundle\Utils\NodeServiceLoaderUtil;
+use Hanaboso\CommonsBundle\Utils\NodeServiceLoader;
 use Hanaboso\PipesPhpSdk\Connector\ConnectorInterface;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -64,7 +64,7 @@ class ConnectorLoader
     {
         $dirs = $this->container->getParameter('node_services_dirs');
 
-        return NodeServiceLoaderUtil::getServices($dirs, self::CONNECTOR_PREFIX, $exclude);
+        return NodeServiceLoader::getServices($dirs, self::CONNECTOR_PREFIX, $exclude);
     }
 
 }
