@@ -1,100 +1,100 @@
 version: '3.5'
 services:
-  php-dev:
-    image: hanabosocom/php-dev:php-7.3
-    user: ${DEV_UID}:${DEV_GID}
-    ports:
-      - ${DEV_IP}:8000:80
-    working_dir: /var/www/pipes/pf-bundles
-    volumes:
-      - ../:/var/www/pipes
-      - ${SSH_AUTH_SOCK}:${SSH_AUTH}
-      - ./topology:${GENERATOR_PATH}
-      - ${HOME}/dev/.composer:${HOME}/dev/.composer
-    environment:
-      - DEV_UID=${DEV_UID}
-      - DEV_GID=${DEV_GID}
-      - COMPOSER_HOME=/home/dev/.composer
-      - PHP_IDE_CONFIG=${PHP_IDE_CONFIG}
-      - GENERATOR_PATH=${GENERATOR_PATH}
-      - PROJECT_SOURCE_PATH=${PROJECT_SOURCE_PATH}
-      - DEPLOYMENT_PREFIX=${DEPLOYMENT_PREFIX}
-      - FRONTEND_HOST=${DEV_IP}
-      - COMPOSER_HOME=${HOME}/dev/.composer
+    php-dev:
+        image: hanabosocom/php-dev:php-7.4
+        user: ${DEV_UID}:${DEV_GID}
+        ports:
+            - ${DEV_IP}:8000:80
+        working_dir: /var/www/pipes/pf-bundles
+        volumes:
+            - ../:/var/www/pipes
+            - ${SSH_AUTH_SOCK}:${SSH_AUTH}
+            - ./topology:${GENERATOR_PATH}
+            - ${HOME}/dev/.composer:${HOME}/dev/.composer
+        environment:
+            - DEV_UID=${DEV_UID}
+            - DEV_GID=${DEV_GID}
+            - COMPOSER_HOME=/home/dev/.composer
+            - PHP_IDE_CONFIG=${PHP_IDE_CONFIG}
+            - GENERATOR_PATH=${GENERATOR_PATH}
+            - PROJECT_SOURCE_PATH=${PROJECT_SOURCE_PATH}
+            - DEPLOYMENT_PREFIX=${DEPLOYMENT_PREFIX}
+            - FRONTEND_HOST=${DEV_IP}
+            - COMPOSER_HOME=${HOME}/dev/.composer
 
-  starting-point:
-    image: dkr.hanaboso.net/pipes/pipes/starting-point:dev
-    environment:
-      APP_DEBUG: "false"
-      MONGO_HOSTNAME: mongo
-      MONGO_DATABASE: pipes
-      RABBIT_COUNTER_QUEUE_DURABLE: "true"
-      RABBIT_QUEUE_DURABLE: "true"
-      RABBIT_DELIVERY_MODE: 2
-      APP_CLEANUP_TIME: "300"
+    starting-point:
+        image: dkr.hanaboso.net/pipes/pipes/starting-point:dev
+        environment:
+            APP_DEBUG: "false"
+            MONGO_HOSTNAME: mongo
+            MONGO_DATABASE: pipes
+            RABBIT_COUNTER_QUEUE_DURABLE: "true"
+            RABBIT_QUEUE_DURABLE: "true"
+            RABBIT_DELIVERY_MODE: 2
+            APP_CLEANUP_TIME: "300"
 
-  smtp:
-    image: mailhog/mailhog
-    ports:
-      - ${DEV_IP}:1025:1025
-      - ${DEV_IP}:8025:8025
+    smtp:
+        image: mailhog/mailhog
+        ports:
+            - ${DEV_IP}:1025:1025
+            - ${DEV_IP}:8025:8025
 
-  mongo:
-      image: mongo:latest
-      ports:
-        - ${DEV_IP}:27017:27017
-      volumes:
-        - mongo:/data/db
+    mongo:
+        image: mongo:latest
+        ports:
+            - ${DEV_IP}:27017:27017
+        volumes:
+            - mongo:/data/db
 
-  rabbitmq:
-    image: rabbitmq:management-alpine
-    volumes:
-       - rabbit-mq:/var/lib/rabbitmq
-    ports:
-      - ${DEV_IP}:15672:15672
-    environment:
-      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
-      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
-      - RABBITMQ_DEFAULT_VHOST=${RABBITMQ_DEFAULT_VHOST}
+    rabbitmq:
+        image: rabbitmq:management-alpine
+        volumes:
+            - rabbit-mq:/var/lib/rabbitmq
+        ports:
+            - ${DEV_IP}:15672:15672
+        environment:
+            - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+            - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+            - RABBITMQ_DEFAULT_VHOST=${RABBITMQ_DEFAULT_VHOST}
 
-  mariadb:
-      image: mariadb:latest
-      command: "mysqld --innodb_flush_method=nosync"
-      environment:
-       MYSQL_ROOT_PASSWORD: root
-      ports:
-       - ${DEV_IP}:3306:3306
-      volumes:
-       - mariadb:/var/lib/mysql
+    mariadb:
+        image: mariadb:latest
+        command: "mysqld --innodb_flush_method=nosync"
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+        ports:
+            - ${DEV_IP}:3306:3306
+        volumes:
+            - mariadb:/var/lib/mysql
 
-  redis:
-    image: redis:alpine
-    ports:
-      - ${DEV_IP}:6379:6379
-    volumes:
-      - redis:/data
+    redis:
+        image: redis:alpine
+        ports:
+            - ${DEV_IP}:6379:6379
+        volumes:
+            - redis:/data
 
-  cron-api:
-    user: ${DEV_UID}:${DEV_GID}
-    image: dkr.hanaboso.net/pipes/pipes/python-cron:dev
-    environment:
-      - DEV_UID={DEV_UID}
-      - DEV_GID={DEV_GID}
-    ports:
-      - ${DEV_IP}:8050:5000
+    cron-api:
+        user: ${DEV_UID}:${DEV_GID}
+        image: dkr.hanaboso.net/pipes/pipes/python-cron:dev
+        environment:
+            - DEV_UID={DEV_UID}
+            - DEV_GID={DEV_GID}
+        ports:
+            - ${DEV_IP}:8050:5000
 
-  influxdb:
-    image: dkr.hanaboso.net/pipes/pipes/influxdb:dev
-    ports:
-    - ${DEV_IP}:8083:8083
-    - ${DEV_IP}:8086:8086
-    - ${DEV_IP}:8089:8089/udp
-    volumes:
-    - influxdb:/var/lib/influxdb
+    influxdb:
+        image: dkr.hanaboso.net/pipes/pipes/influxdb:dev
+        ports:
+            - ${DEV_IP}:8083:8083
+            - ${DEV_IP}:8086:8086
+            - ${DEV_IP}:8089:8089/udp
+        volumes:
+            - influxdb:/var/lib/influxdb
 
 volumes:
-  mongo: {}
-  mariadb: {}
-  rabbit-mq: {}
-  redis: {}
-  influxdb: {}
+    mongo: {}
+    mariadb: {}
+    rabbit-mq: {}
+    redis: {}
+    influxdb: {}

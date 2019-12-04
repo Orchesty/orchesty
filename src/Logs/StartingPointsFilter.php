@@ -2,6 +2,7 @@
 
 namespace Hanaboso\PipesFramework\Logs;
 
+use Doctrine\ODM\MongoDB\Query\Builder;
 use Hanaboso\MongoDataGrid\GridFilterAbstract;
 use Hanaboso\PipesFramework\Logs\Document\Logs;
 
@@ -14,32 +15,49 @@ final class StartingPointsFilter extends GridFilterAbstract
 {
 
     /**
-     * @var array
+     * @return array
      */
-    protected $filterCols = [
-        'correlation_id' => Logs::PIPES_CORRELATION_ID,
-    ];
-
-    /**
-     * @var array
-     */
-    protected $searchableCols = [
-        'correlation_id' => Logs::PIPES_CORRELATION_ID,
-    ];
-
-    /**
-     * @var array
-     */
-    protected $orderCols = [
-        'correlation_id',
-    ];
-
-    /**
-     *
-     */
-    protected function prepareSearchQuery(): void
+    protected function filterCols(): array
     {
-        $this->searchQuery = $this
+        return [
+            'correlation_id' => Logs::PIPES_CORRELATION_ID,
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    protected function orderCols(): array
+    {
+        return [
+            'correlation_id' => Logs::PIPES_CORRELATION_ID,
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    protected function searchableCols(): array
+    {
+        return [
+            'correlation_id',
+        ];
+    }
+
+    /**
+     * @return bool
+     */
+    protected function useTextSearch(): bool
+    {
+        return FALSE;
+    }
+
+    /**
+     * @return Builder
+     */
+    protected function prepareSearchQuery(): Builder
+    {
+        return $this
             ->getRepository()
             ->createQueryBuilder()
             ->select(

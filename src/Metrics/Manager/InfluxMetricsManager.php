@@ -29,7 +29,7 @@ class InfluxMetricsManager extends MetricsManagerAbstract
     private $client;
 
     /**
-     * MetricsManager constructor.
+     * InfluxMetricsManager constructor.
      *
      * @param ClientInterface $client
      * @param DocumentManager $dm

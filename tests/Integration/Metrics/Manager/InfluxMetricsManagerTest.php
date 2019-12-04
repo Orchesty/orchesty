@@ -190,13 +190,14 @@ final class InfluxMetricsManagerTest extends KernelTestCaseAbstract
 
     /**
      * @return Topology
+     * @throws Exception
      */
     private function createTopo(): Topology
     {
         $topo = new Topology();
         $topo->setName(uniqid());
         $this->dm->persist($topo);
-        $this->dm->flush($topo);
+        $this->dm->flush();
 
         return $topo;
     }
@@ -205,6 +206,7 @@ final class InfluxMetricsManagerTest extends KernelTestCaseAbstract
      * @param Topology $topology
      *
      * @return Node
+     * @throws Exception
      */
     private function createNode(Topology $topology): Node
     {
@@ -213,7 +215,7 @@ final class InfluxMetricsManagerTest extends KernelTestCaseAbstract
             ->setTopology($topology->getId())
             ->setName(uniqid());
         $this->dm->persist($node);
-        $this->dm->flush($node);
+        $this->dm->flush();
 
         return $node;
     }

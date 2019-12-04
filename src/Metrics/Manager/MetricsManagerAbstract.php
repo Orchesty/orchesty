@@ -144,7 +144,7 @@ abstract class MetricsManagerAbstract implements LoggerAwareInterface
     protected $logger;
 
     /**
-     * MetricsManager constructor.
+     * MetricsManagerAbstract constructor.
      *
      * @param DocumentManager $dm
      * @param string          $nodeTable

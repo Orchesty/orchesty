@@ -20,14 +20,14 @@ class ProcessesMetrics
     /**
      * @var ProcessesMetricsFields
      *
-     * @ODM\EmbedOne(targetDocument="ProcessesMetricsFields")
+     * @ODM\EmbedOne(targetDocument="Hanaboso\PipesFramework\Metrics\Document\ProcessesMetricsFields")
      */
     private $fields;
 
     /**
      * @var Tags
      *
-     * @ODM\EmbedOne(targetDocument="Tags")
+     * @ODM\EmbedOne(targetDocument="Hanaboso\PipesFramework\Metrics\Document\Tags")
      */
     private $tags;
 
