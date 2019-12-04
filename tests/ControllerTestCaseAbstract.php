@@ -167,7 +167,6 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     private function prepareClient(): void
     {
         self::$client = self::createClient();
-        self::$container->set('doctrine_mongodb.odm.default_document_manager', $this->dm);
     }
 
 }

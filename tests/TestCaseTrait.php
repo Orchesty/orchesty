@@ -25,7 +25,7 @@ trait TestCaseTrait
         $database = sprintf('%s-%s', self::$container->getParameter('mongo_db'), getenv('TEST_TOKEN'));
 
         $this->dm = self::$container->get('doctrine_mongodb.odm.default_document_manager');
-        $this->dm->getConnection()->dropDatabase($database);
+        $this->dm->getClient()->dropDatabase($database);
         $this->dm->getConfiguration()->setDefaultDB($database);
     }
 

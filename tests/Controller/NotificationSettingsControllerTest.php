@@ -55,7 +55,8 @@ final class NotificationSettingsControllerTest extends ControllerTestCaseAbstrac
                         'class'       => NullCurlHandler::class,
                         'events'      => [],
                         'settings'    => [],
-                    ], [
+                    ],
+                    [
                         self::ID      => $response->getContent()[self::ITEMS][1][self::ID],
                         self::CREATED => $response->getContent()[self::ITEMS][1][self::CREATED],
                         self::UPDATED => $response->getContent()[self::ITEMS][1][self::UPDATED],
@@ -64,7 +65,8 @@ final class NotificationSettingsControllerTest extends ControllerTestCaseAbstrac
                         'class'       => NullEmailHandler::class,
                         'events'      => [],
                         'settings'    => [],
-                    ], [
+                    ],
+                    [
                         self::ID      => $response->getContent()[self::ITEMS][2][self::ID],
                         self::CREATED => $response->getContent()[self::ITEMS][2][self::CREATED],
                         self::UPDATED => $response->getContent()[self::ITEMS][2][self::UPDATED],

@@ -41,6 +41,9 @@ clear-cache:
 	$(DE) bin/console cache:clear --env=test
 	$(DE) bin/console cache:warmup --env=test
 
+database-clear:
+	$(DE) bin/console doctrine:mongodb:schema:drop || true
+
 # App
 init-dev: docker-up-force composer-install
 
@@ -56,8 +59,8 @@ phpstan:
 phpintegration:
 	$(DE) vendor/bin/paratest -c phpunit.xml.dist -p 4 --colors tests/Integration
 
-phpcontroller:
-	$(DE) vendor/bin/paratest -c phpunit.xml.dist -p 4 --colors tests/Controller
+phpcontroller: database-clear
+	$(DE) vendor/bin/paratest -c phpunit.xml.dist -p 1 --colors tests/Controller
 
 test: docker-up-force composer-install fasttest
 

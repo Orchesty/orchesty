@@ -7,6 +7,7 @@ use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\CommonsBundle\Utils\ControllerUtils;
 use Hanaboso\NotificationSender\Exception\NotificationException;
 use Hanaboso\NotificationSender\Handler\NotificationSettingsHandler;
+use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -37,6 +38,7 @@ final class NotificationSettingsController extends AbstractFOSRestController
     public function __construct(NotificationSettingsHandler $handler)
     {
         $this->handler = $handler;
+        $this->logger  = new NullLogger();
     }
 
     /**
