@@ -21,9 +21,21 @@ interface OAuth2DtoInterface
     public function getClientSecret(): string;
 
     /**
-     * @return string
+     * @param string $redirectUrl
+     *
+     * @return OAuth2DtoInterface
      */
-    public function getRedirectUrl(): string;
+    public function setRedirectUrl(string $redirectUrl): OAuth2DtoInterface;
+
+    /**
+     *
+     */
+    public function isRedirectUrl(): bool;
+
+    /**
+     * @return string|null
+     */
+    public function getRedirectUrl(): ?string;
 
     /**
      * @return string

@@ -10,7 +10,6 @@ use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
-use Hanaboso\PipesPhpSdk\Application\Utils\ApplicationUtils;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth2Dto;
@@ -220,15 +219,18 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
 
     /**
      * @param ApplicationInstall $applicationInstall
+     * @param string|null        $redirectUrl
      *
      * @return OAuth2Dto
      */
-    protected function createDto(ApplicationInstall $applicationInstall): OAuth2Dto
+    protected function createDto(ApplicationInstall $applicationInstall, ?string $redirectUrl = NULL): OAuth2Dto
     {
-        $redirectUrl = ApplicationUtils::generateUrl();
-
-        $dto = new OAuth2Dto($applicationInstall, $redirectUrl, $this->getAuthUrl(), $this->getTokenUrl());
+        $dto = new OAuth2Dto($applicationInstall, $this->getAuthUrl(), $this->getTokenUrl());
         $dto->setCustomAppDependencies($applicationInstall->getUser(), $applicationInstall->getKey());
+
+        if ($redirectUrl) {
+            $dto->setRedirectUrl($redirectUrl);
+        }
 
         return $dto;
     }

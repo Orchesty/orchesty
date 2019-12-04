@@ -73,7 +73,7 @@ class OAuth2Provider extends OAuthProviderAbstract implements OAuth2ProviderInte
             );
         }
 
-        return $this->getTokenByGrant($dto, 'authorization_code',  $request);
+        return $this->getTokenByGrant($dto, 'authorization_code', $request);
     }
 
     /**
@@ -149,7 +149,7 @@ class OAuth2Provider extends OAuthProviderAbstract implements OAuth2ProviderInte
             [
                 'clientId'                => $dto->getClientId(),
                 'clientSecret'            => $dto->getClientSecret(),
-                'redirectUri'             => $this->getRedirectUri(),
+                'redirectUri'             => $dto->isRedirectUrl() ? $dto->getRedirectUrl() : $this->getRedirectUri(),
                 'urlAuthorize'            => $dto->getAuthorizeUrl(),
                 'urlAccessToken'          => $dto->getTokenUrl(),
                 'urlResourceOwnerDetails' => $dto->getAuthorizeUrl(),

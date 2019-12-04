@@ -34,7 +34,7 @@ final class OAuth2ProviderTest extends TestCase
         /** @var MockObject|OAuth2Provider $provider */
         $provider = $this->getMockedProvider($url);
         $install  = new ApplicationInstall();
-        $dto      = new OAuth2Dto($install, '127.0.0.4/red', 'authorize/url', 'token/url');
+        $dto      = new OAuth2Dto($install, 'authorize/url', 'token/url');
         $dto->setCustomAppDependencies(uniqid(), 'magento');
 
         $provider->authorize($dto, []);
@@ -52,7 +52,7 @@ final class OAuth2ProviderTest extends TestCase
         /** @var MockObject|OAuth2Provider $provider */
         $provider = $this->getMockedProvider($url);
         $install  = new ApplicationInstall();
-        $dto      = new OAuth2Dto($install, '127.0.0.4/red', 'authorize/url', 'token/url');
+        $dto      = new OAuth2Dto($install, 'authorize/url', 'token/url');
 
         $provider->authorize($dto, []);
     }
@@ -83,7 +83,7 @@ final class OAuth2ProviderTest extends TestCase
         $provider = $this->getMockedProvider('');
         $provider->setLogger(new Logger('logger'));
         $install = new ApplicationInstall();
-        $dto     = new OAuth2Dto($install, '127.0.0.4/red', 'authorize/url', 'token/url');
+        $dto     = new OAuth2Dto($install, 'authorize/url', 'token/url');
 
         if ($exception) {
             self::expectException(AuthorizationException::class);
@@ -121,7 +121,7 @@ final class OAuth2ProviderTest extends TestCase
         $provider = $this->getMockedProvider('');
         $provider->setLogger(new Logger('logger'));
         $install = new ApplicationInstall();
-        $dto     = new OAuth2Dto($install, '127.0.0.4/red', 'authorize/url', 'token/url');
+        $dto     = new OAuth2Dto($install, 'authorize/url', 'token/url');
 
         if ($exception) {
             self::expectException(AuthorizationException::class);

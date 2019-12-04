@@ -25,7 +25,7 @@ class OAuth2Dto implements OAuth2DtoInterface
     private $clientSecret;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $redirectUrl;
 
@@ -53,18 +53,11 @@ class OAuth2Dto implements OAuth2DtoInterface
      * OAuth2Dto constructor.
      *
      * @param ApplicationInstall $authorization
-     * @param string             $redirectUrl
      * @param string             $authorizeUrl
      * @param string             $tokenUrl
      */
-    public function __construct(
-        ApplicationInstall $authorization,
-        string $redirectUrl,
-        string $authorizeUrl,
-        string $tokenUrl
-    )
+    public function __construct(ApplicationInstall $authorization, string $authorizeUrl, string $tokenUrl)
     {
-        $this->redirectUrl  = $redirectUrl;
         $this->authorizeUrl = $authorizeUrl;
         $this->tokenUrl     = $tokenUrl;
         $this->clientId     = $authorization->getSettings()
@@ -90,9 +83,29 @@ class OAuth2Dto implements OAuth2DtoInterface
     }
 
     /**
-     * @return string
+     * @param string $redirectUrl
+     *
+     * @return OAuth2DtoInterface
      */
-    public function getRedirectUrl(): string
+    public function setRedirectUrl(string $redirectUrl): OAuth2DtoInterface
+    {
+        $this->redirectUrl = $redirectUrl;
+
+        return $this;
+    }
+
+    /**
+     *
+     */
+    public function isRedirectUrl(): bool
+    {
+        return isset($this->redirectUrl);
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getRedirectUrl(): ?string
     {
         return $this->redirectUrl;
     }
