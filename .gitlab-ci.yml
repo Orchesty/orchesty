@@ -45,6 +45,15 @@ rabbitmq-telegraf-dev-image:
     - dev
     - master
 
+lib-python-dev-build:
+  stage: stage1
+  script:
+    - cd $REPO_ROOT/lib-python
+    - make docker-push-dev-all
+  only:
+    - dev
+    - master
+
 njs-build-image:
   stage: stage1
   script:
@@ -88,7 +97,7 @@ logstash-build:
     stage: stage1
     script:
       - cd $REPO_ROOT/logstash
-      - make docker-build docker-push
+      - make docker-build docker-push DOCKER_TAG=${CI_BUILD_REF_NAME}
     only:
       - dev
       - master
@@ -115,7 +124,7 @@ lib-python-build:
   stage: stage1
   script:
     - cd $REPO_ROOT/lib-python
-    - make docker-push-all
+    - make docker-push-all DOCKER_TAG=${CI_BUILD_REF_NAME}
   only:
     - dev
     - master
