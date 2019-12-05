@@ -11,6 +11,7 @@ use Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\Mapper\MailchimpCre
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\DataProvider;
+use Tests\MockCurlMethod;
 
 /**
  * Class MailchimpCreateContactMapperTest
@@ -28,17 +29,27 @@ final class MailchimpCreateContactMapperTest extends DatabaseTestCaseAbstract
      */
     public function testProcessAction(): void
     {
+        $this->mockCurl(
+            [
+                new MockCurlMethod(
+                    200,
+                    'responseDatacenter.json',
+                    []
+                ),
+            ]
+        );
+
         $app = self::$container->get('hbpf.application.mailchimp');
 
         $applicationInstall = DataProvider::getOauth2AppInstall(
             $app->getKey(),
             'user',
-            'fa830d8d4308625bac307906e83de659'
+            'fa830d8d43*****bac307906e83de659'
         );
 
         $applicationInstall->setSettings(
             [
-                MailchimpApplication::AUDIENCE_ID  => 'c9e7f10c5b',
+                MailchimpApplication::AUDIENCE_ID  => '2a8******8',
                 MailchimpApplication::API_KEYPOINT => $app->getApiEndpoint($applicationInstall),
             ]
         );

@@ -15,7 +15,7 @@ use Tests\DataProvider;
 final class HubspotApplicationTest extends DatabaseTestCaseAbstract
 {
 
-    private const CLIENT_ID = '39a37203-8278-4856-868e-02ae2e15959d';
+    private const CLIENT_ID = '3cc4771e-deb7-4905-8e6b-d2**********';
 
     /**
      * @throws Exception

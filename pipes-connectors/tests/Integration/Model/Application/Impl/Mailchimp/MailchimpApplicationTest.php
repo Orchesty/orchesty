@@ -8,6 +8,7 @@ use Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\MailchimpApplicatio
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\DataProvider;
+use Tests\MockCurlMethod;
 
 /**
  * Class MailchimpApplicationTest
@@ -17,7 +18,7 @@ use Tests\DataProvider;
 final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
 {
 
-    private const CLIENT_ID = '105786712126';
+    private const CLIENT_ID = '6748****7235';
 
     /**
      * @throws Exception
@@ -41,15 +42,25 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
      */
     public function testWebhookSubscribeRequestDto(): void
     {
+        $this->mockCurl(
+            [
+                new MockCurlMethod(
+                    200,
+                    'responseDatacenter.json',
+                    []
+                ),
+            ]
+        );
+
         $application        = self::$container->get('hbpf.application.mailchimp');
         $applicationInstall = DataProvider::getOauth2AppInstall(
             $application->getKey(),
             'user',
-            'fa830d8d4308625bac307906e83de659'
+            'fa830d8d4308*****c307906e83de659'
         );
         $applicationInstall->setSettings(
             [
-                ApplicationAbstract::FORM          => [MailchimpApplication::AUDIENCE_ID => 'c9e7f10c5b'],
+                ApplicationAbstract::FORM          => [MailchimpApplication::AUDIENCE_ID => '2a8******8'],
                 MailchimpApplication::API_KEYPOINT => $application->getApiEndpoint($applicationInstall),
             ]
         );

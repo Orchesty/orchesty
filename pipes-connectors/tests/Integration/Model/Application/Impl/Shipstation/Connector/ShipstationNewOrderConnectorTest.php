@@ -21,8 +21,8 @@ use Tests\MockCurlMethod;
 final class ShipstationNewOrderConnectorTest extends DatabaseTestCaseAbstract
 {
 
-    public const API_KEY    = '8919bb213aab47b48f7bb07f1ce1e25c';
-    public const API_SECRET = '996ab3153f154499a38221d22375424b';
+    public const API_KEY    = '79620d3760d**********18f8a35dec8';
+    public const API_SECRET = '9cabe470**********751904f45f80e2';
 
     /**
      * @param int  $code

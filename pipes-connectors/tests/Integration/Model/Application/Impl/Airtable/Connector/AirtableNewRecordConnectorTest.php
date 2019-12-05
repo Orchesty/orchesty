@@ -25,9 +25,9 @@ use Tests\MockCurlMethod;
 final class AirtableNewRecordConnectorTest extends DatabaseTestCaseAbstract
 {
 
-    public const API_KEY    = 'keyfbD12z74LvKNJI';
-    public const BASE_ID    = 'appXVdc9m3i7FKXpN';
-    public const TABLE_NAME = 'Voyager.com';
+    public const API_KEY    = 'keyfb******LvKNJI';
+    public const BASE_ID    = 'appX**********XpN';
+    public const TABLE_NAME = 'V******.com';
 
     /**
      * @param int  $code

@@ -11,6 +11,7 @@ use Hanaboso\HbPFConnectors\Model\Application\Impl\Shipstation\Connector\Shipsta
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\DataProvider;
+use Tests\MockCurlMethod;
 
 /**
  * Class HubspotCreateContactMapperTest
@@ -20,8 +21,8 @@ use Tests\DataProvider;
 final class HubspotCreateContactMapperTest extends DatabaseTestCaseAbstract
 {
 
-    public const API_KEY    = '8919bb213aab47b48f7bb07f1ce1e25c';
-    public const API_SECRET = '996ab3153f154499a38221d22375424b';
+    public const API_KEY = '3cc4771e-deb7-4905-8e6b-d2**********';
+    public const API_SECRET = '5ef27043-34cc-43d1-9751-65**********';
 
     /**
      * @throws DateTimeException
@@ -31,6 +32,15 @@ final class HubspotCreateContactMapperTest extends DatabaseTestCaseAbstract
      */
     public function testProcessAction(): void
     {
+        $this->mockCurl(
+            [
+                new MockCurlMethod(
+                    200,
+                    'responseShipstation.json',
+                    []
+                ),
+            ]
+        );
 
         $shipstation                  = self::$container->get('hbpf.application.shipstation');
         $shipstationNewOrderConnector = new ShipstationNewOrderConnector(

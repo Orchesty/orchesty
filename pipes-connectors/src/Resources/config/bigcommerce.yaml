@@ -1,0 +1,8 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf.application.bigcommerce:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\Bigcommerce\BigcommerceApplication
+        arguments:
+            - '@hbpf.providers.oauth2_provider'

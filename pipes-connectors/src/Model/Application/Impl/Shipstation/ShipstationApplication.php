@@ -25,7 +25,7 @@ use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 final class ShipstationApplication extends BasicApplicationAbstract implements WebhookApplicationInterface
 {
 
-    public const SHIPSSTATION_URL = 'https://ssapi.shipstation.com';
+    public const SHIPSTATION_URL = 'https://ssapi.shipstation.com';
     public const ORDER_NOTIFY     = 'ORDER_NOTIFY';
 
     /**
@@ -153,7 +153,7 @@ final class ShipstationApplication extends BasicApplicationAbstract implements W
             CurlManager::METHOD_POST,
             sprintf(
                 '%s/webhooks/subscribe',
-                ShipstationApplication::SHIPSSTATION_URL
+                ShipstationApplication::SHIPSTATION_URL
             ),
             Json::encode(
                 [
@@ -180,7 +180,7 @@ final class ShipstationApplication extends BasicApplicationAbstract implements W
             CurlManager::METHOD_DELETE,
             sprintf(
                 '%s/webhooks/%s',
-                ShipstationApplication::SHIPSSTATION_URL,
+                ShipstationApplication::SHIPSTATION_URL,
                 $id
             )
         );

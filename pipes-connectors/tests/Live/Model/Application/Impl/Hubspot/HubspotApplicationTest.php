@@ -24,8 +24,8 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
             $app->getKey(),
             'user',
             'token123',
-            '39a37203-8278-4856-868e-02ae2e15959d',
-            'd3cd7ff4-ebf3-4b12-8429-fc4a8d2aaeb0'
+            '3cc4771e-deb7-4905-8e6b-d2**********',
+            '5ef27043-34cc-43d1-9751-65**********'
         );
         $this->pf($applicationInstall);
         $app->authorize($applicationInstall);

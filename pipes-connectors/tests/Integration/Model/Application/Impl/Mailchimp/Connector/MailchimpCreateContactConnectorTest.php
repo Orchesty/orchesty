@@ -60,13 +60,13 @@ final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
         $applicationInstall = DataProvider::getOauth2AppInstall(
             $app->getKey(),
             'user',
-            'fa830d8d4308625bac307906e83de659'
+            'fa830d8d4308625ba**********de659'
         );
 
         $applicationInstall->setSettings(
             [
                 ApplicationAbstract::FORM          => [
-                    MailchimpApplication::AUDIENCE_ID => 'c9e7f10c5b',
+                    MailchimpApplication::AUDIENCE_ID => '2a8******8',
                 ],
                 MailchimpApplication::API_KEYPOINT => $app->getApiEndpoint($applicationInstall),
 
