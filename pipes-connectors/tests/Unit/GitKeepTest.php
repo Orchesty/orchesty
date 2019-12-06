@@ -17,7 +17,7 @@ final class GitKeepTest extends KernelTestCaseAbstract
      */
     public function test(): void
     {
-
+        self::assertEmpty([]);
     }
 
 }

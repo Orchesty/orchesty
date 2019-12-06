@@ -17,7 +17,7 @@ final class GitKeepTest extends ControllerTestCaseAbstract
      */
     public function test(): void
     {
-
+        self::assertEmpty([]);
     }
 
 }

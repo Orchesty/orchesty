@@ -16,6 +16,6 @@ echo "gitlab.hanaboso.net ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDIwOgk1SAbzW3WX/
 su-exec root mkdir -p /opt/phpstorm-coverage
 su-exec root chmod -R 774 /var/www/var/log && su-exec root chown -R dev:dev /var/www/var/log
 su-exec root chmod -R 774 /var/www/var/cache && su-exec root chown -R dev:dev /var/www/var/cache
-su-exec root chmod -R 774 /opt/phpstorm-coverage && su-exec root chown -R dev:dev /opt/phpstorm-coverage
+su-exec root chmod -R 777 /opt/phpstorm-coverage && su-exec root chown -R dev:dev /opt/phpstorm-coverage
 
 exec "$@"

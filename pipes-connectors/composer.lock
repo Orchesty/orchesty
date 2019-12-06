@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7f143c7abded05690fa97262ae1db132",
+    "content-hash": "be5cdacd116c5df760daae0947cc4231",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -1973,16 +1973,16 @@
         },
         {
             "name": "hanaboso/commons-bundle",
-            "version": "1.3",
+            "version": "1.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/commons-bundle.git",
-                "reference": "1af60a93fa7a563b40842cc717a35530c2a1bd5e"
+                "reference": "0cc64f8f71842af1bb7212501cd8e00329d5a834"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/commons-bundle/zipball/1af60a93fa7a563b40842cc717a35530c2a1bd5e",
-                "reference": "1af60a93fa7a563b40842cc717a35530c2a1bd5e",
+                "url": "https://api.github.com/repos/hanaboso/commons-bundle/zipball/0cc64f8f71842af1bb7212501cd8e00329d5a834",
+                "reference": "0cc64f8f71842af1bb7212501cd8e00329d5a834",
                 "shasum": ""
             },
             "require": {
@@ -2026,7 +2026,7 @@
             "license": [
                 "proprietary"
             ],
-            "time": "2019-12-03T18:23:25+00:00"
+            "time": "2019-12-05T17:06:30+00:00"
         },
         {
             "name": "hanaboso/mongo-data-grid",
@@ -2066,18 +2066,18 @@
         },
         {
             "name": "hanaboso/pipes-php-sdk",
-            "version": "1.1.0",
+            "version": "1.1.2",
             "dist": {
                 "type": "path",
                 "url": "../pipes-php-sdk",
-                "reference": "3263f913273aa47747b41a4779334930118d27be"
+                "reference": "8500b3935f6ddc16ecc7f1b0fb8062bc854162c8"
             },
             "require": {
                 "ext-json": "*",
                 "ext-mongodb": "*",
                 "ext-oauth": "*",
                 "friendsofsymfony/rest-bundle": "^2.6",
-                "hanaboso/commons-bundle": "^1.2",
+                "hanaboso/commons-bundle": "^1.3",
                 "hanaboso/mongo-data-grid": "^1.2",
                 "hanaboso/rabbit-mq-bundle": "^1.1",
                 "league/oauth2-client": "^2.4",
@@ -8132,6 +8132,7 @@
                 "phpdoc",
                 "reflection"
             ],
+            "abandoned": "nettrine/annotations",
             "time": "2019-06-28T19:09:34+00:00"
         },
         {
@@ -8255,16 +8256,16 @@
         },
         {
             "name": "hanaboso/php-check-utils",
-            "version": "1.1.0",
+            "version": "1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/php-check-utils.git",
-                "reference": "22ffd6ffc1aee71c72b31ce84ff557c5d07e44d9"
+                "reference": "29907fa28aa43c5ba924897bd511558a770e8b6c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/php-check-utils/zipball/22ffd6ffc1aee71c72b31ce84ff557c5d07e44d9",
-                "reference": "22ffd6ffc1aee71c72b31ce84ff557c5d07e44d9",
+                "url": "https://api.github.com/repos/hanaboso/php-check-utils/zipball/29907fa28aa43c5ba924897bd511558a770e8b6c",
+                "reference": "29907fa28aa43c5ba924897bd511558a770e8b6c",
                 "shasum": ""
             },
             "require": {
@@ -8282,7 +8283,7 @@
                 "phpstan/phpstan-nette": "^0.12",
                 "phpstan/phpstan-phpunit": "^0.12",
                 "phpstan/phpstan-symfony": "^0.12",
-                "phpunit/phpunit": "^8.4",
+                "phpunit/phpunit": "^8.5",
                 "slevomat/coding-standard": "^5.0",
                 "squizlabs/php_codesniffer": "^3.5",
                 "symfony/browser-kit": "^4.4 | ^5.0",
@@ -8307,7 +8308,7 @@
                 }
             ],
             "description": "Utils for php development - CodeSniffer, PhpStan, PhpStorm",
-            "time": "2019-12-04T09:53:41+00:00"
+            "time": "2019-12-06T09:44:23+00:00"
         },
         {
             "name": "myclabs/deep-copy",
@@ -9905,16 +9906,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "8.4.3",
+            "version": "8.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "67f9e35bffc0dd52d55d565ddbe4230454fd6a4e"
+                "reference": "3ee1c1fd6fc264480c25b6fb8285edefe1702dab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/67f9e35bffc0dd52d55d565ddbe4230454fd6a4e",
-                "reference": "67f9e35bffc0dd52d55d565ddbe4230454fd6a4e",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/3ee1c1fd6fc264480c25b6fb8285edefe1702dab",
+                "reference": "3ee1c1fd6fc264480c25b6fb8285edefe1702dab",
                 "shasum": ""
             },
             "require": {
@@ -9958,7 +9959,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "8.4-dev"
+                    "dev-master": "8.5-dev"
                 }
             },
             "autoload": {
@@ -9984,7 +9985,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2019-11-06T09:42:23+00:00"
+            "time": "2019-12-06T05:41:38+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",
