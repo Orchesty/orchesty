@@ -198,7 +198,7 @@ class NullOAuth1Application extends OAuth1ApplicationAbstract implements OAuth1D
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getToken(): array
     {

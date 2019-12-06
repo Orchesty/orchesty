@@ -34,7 +34,7 @@ class ApplicationManager
     private $dm;
 
     /**
-     * @var ObjectRepository|ApplicationInstallRepository
+     * @var ObjectRepository<ApplicationInstall>&ApplicationInstallRepository
      */
     private $repository;
 
@@ -52,7 +52,7 @@ class ApplicationManager
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getApplications(): array
     {
@@ -60,9 +60,9 @@ class ApplicationManager
     }
 
     /**
-     * @param string $key
-     * @param string $user
-     * @param array  $data
+     * @param string  $key
+     * @param string  $user
+     * @param mixed[] $data
      *
      * @return ApplicationInstall
      * @throws Exception
@@ -121,11 +121,11 @@ class ApplicationManager
     }
 
     /**
-     * @param string $key
-     * @param string $user
-     * @param array  $token
+     * @param string  $key
+     * @param string  $user
+     * @param mixed[] $token
      *
-     * @return array
+     * @return mixed[]
      * @throws ApplicationInstallException
      * @throws MongoDBException
      */

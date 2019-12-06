@@ -28,8 +28,8 @@ final class BatchConsumerCallbackTest extends TestCase
 {
 
     /**
-     * @param array  $headers
-     * @param string $content
+     * @param mixed[] $headers
+     * @param string  $content
      *
      * @return Message
      */
@@ -50,8 +50,8 @@ final class BatchConsumerCallbackTest extends TestCase
      * @covers       BatchConsumerCallback::validate()
      * @dataProvider validateMessageDataProvider
      *
-     * @param array  $headers
-     * @param string $message
+     * @param mixed[] $headers
+     * @param string  $message
      *
      * @throws Exception
      */
@@ -88,7 +88,7 @@ final class BatchConsumerCallbackTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function validateMessageDataProvider(): array
     {
@@ -194,9 +194,9 @@ final class BatchConsumerCallbackTest extends TestCase
                     $loop->stop();
                 },
                 function () use ($loop): void {
+                    $loop;
                     // Test if reject
                     self::fail();
-                    $loop->stop();
                 }
             )
             ->done();
@@ -251,9 +251,9 @@ final class BatchConsumerCallbackTest extends TestCase
                     $loop->stop();
                 },
                 function () use ($loop): void {
+                    $loop;
                     // Test if reject
                     self::fail();
-                    $loop->stop();
                 }
             )
             ->done();
@@ -308,9 +308,9 @@ final class BatchConsumerCallbackTest extends TestCase
                     $loop->stop();
                 },
                 function () use ($loop): void {
+                    $loop;
                     // Test if reject
                     self::fail();
-                    $loop->stop();
                 }
             )
             ->done();

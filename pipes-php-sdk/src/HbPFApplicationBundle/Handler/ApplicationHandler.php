@@ -2,6 +2,7 @@
 
 namespace Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler;
 
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager;
@@ -31,7 +32,7 @@ class ApplicationHandler
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getApplications(): array
     {
@@ -39,11 +40,11 @@ class ApplicationHandler
     }
 
     /**
-     * @param string $key
-     * @param string $user
-     * @param array  $data
+     * @param string  $key
+     * @param string  $user
+     * @param mixed[] $data
      *
-     * @return array
+     * @return mixed[]
      * @throws Exception
      */
     public function updateApplicationSettings(string $key, string $user, array $data): array
@@ -52,11 +53,11 @@ class ApplicationHandler
     }
 
     /**
-     * @param string $key
-     * @param string $user
-     * @param array  $data
+     * @param string  $key
+     * @param string  $user
+     * @param mixed[] $data
      *
-     * @return array
+     * @return mixed[]
      * @throws Exception
      */
     public function updateApplicationPassword(string $key, string $user, array $data): array
@@ -82,12 +83,13 @@ class ApplicationHandler
     }
 
     /**
-     * @param string $key
-     * @param string $user
-     * @param array  $token
+     * @param string  $key
+     * @param string  $user
+     * @param mixed[] $token
      *
-     * @return array
+     * @return mixed[]
      * @throws ApplicationInstallException
+     * @throws MongoDBException
      */
     public function saveAuthToken(string $key, string $user, array $token): array
     {

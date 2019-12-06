@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Handler;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Utils\PipesHeaders;
@@ -63,12 +64,13 @@ class LongRunningNodeHandler
     }
 
     /**
-     * @param string $nodeId
-     * @param array  $data
-     * @param array  $headers
+     * @param string  $nodeId
+     * @param mixed[] $data
+     * @param mixed[] $headers
      *
      * @return ProcessDto
      * @throws LongRunningNodeException
+     * @throws MongoDBException
      */
     public function process(string $nodeId, array $data, array $headers): ProcessDto
     {
@@ -101,7 +103,7 @@ class LongRunningNodeHandler
     /**
      * @param string $nodeId
      *
-     * @return array
+     * @return mixed[]
      * @throws LongRunningNodeException
      */
     public function test(string $nodeId): array
@@ -116,7 +118,7 @@ class LongRunningNodeHandler
      * @param string         $topologyId
      * @param null|string    $nodeId
      *
-     * @return array
+     * @return mixed[]
      * @throws Exception
      */
     public function getTasksById(GridRequestDto $dto, string $topologyId, ?string $nodeId = NULL): array
@@ -144,7 +146,7 @@ class LongRunningNodeHandler
      * @param string         $topologyName
      * @param null|string    $nodeName
      *
-     * @return array
+     * @return mixed[]
      * @throws Exception
      */
     public function getTasks(GridRequestDto $dto, string $topologyName, ?string $nodeName = NULL): array
@@ -168,7 +170,7 @@ class LongRunningNodeHandler
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getAllLongRunningNodes(): array
     {
@@ -176,10 +178,10 @@ class LongRunningNodeHandler
     }
 
     /**
-     * @param string $id
-     * @param array  $data
+     * @param string  $id
+     * @param mixed[] $data
      *
-     * @return array
+     * @return mixed[]
      * @throws LongRunningNodeException
      */
     public function updateLongRunningNode(string $id, array $data): array

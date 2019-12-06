@@ -21,7 +21,7 @@ abstract class ConnectorAbstract implements ConnectorInterface
     protected $application;
 
     /**
-     * @var array
+     * @var mixed[]
      */
     protected $okStatuses = [
         200,
@@ -29,7 +29,7 @@ abstract class ConnectorAbstract implements ConnectorInterface
     ];
 
     /**
-     * @var array
+     * @var mixed[]
      */
     protected $badStatuses = [
         409,
@@ -86,7 +86,7 @@ abstract class ConnectorAbstract implements ConnectorInterface
     /**
      * @param ProcessDto $dto
      *
-     * @return array
+     * @return mixed[]
      */
     protected function getJsonContent(ProcessDto $dto): array
     {
@@ -95,7 +95,7 @@ abstract class ConnectorAbstract implements ConnectorInterface
 
     /**
      * @param ProcessDto $dto
-     * @param array      $content
+     * @param mixed[]    $content
      *
      * @return ProcessDto
      */

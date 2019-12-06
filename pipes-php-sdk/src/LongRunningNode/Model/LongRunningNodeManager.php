@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesPhpSdk\LongRunningNode\Model;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData;
 
@@ -64,9 +65,10 @@ class LongRunningNodeManager
 
     /**
      * @param LongRunningNodeData $node
-     * @param array               $data
+     * @param mixed[]             $data
      *
      * @return LongRunningNodeData
+     * @throws MongoDBException
      */
     public function update(LongRunningNodeData $node, array $data): LongRunningNodeData
     {

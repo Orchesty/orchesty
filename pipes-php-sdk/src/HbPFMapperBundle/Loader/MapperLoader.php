@@ -55,9 +55,9 @@ class MapperLoader
     }
 
     /**
-     * @param array $exclude
+     * @param mixed[] $exclude
      *
-     * @return array
+     * @return mixed[]
      */
     public function getAllMappers(array $exclude = []): array
     {

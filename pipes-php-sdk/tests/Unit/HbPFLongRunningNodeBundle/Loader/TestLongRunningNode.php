@@ -39,7 +39,7 @@ final class TestLongRunningNode extends LongRunningNodeAbstract
 
     /**
      * @param LongRunningNodeData $data
-     * @param array               $requestData
+     * @param mixed[]             $requestData
      *
      * @return ProcessDto
      */

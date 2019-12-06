@@ -28,7 +28,7 @@ class Form
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function toArray(): array
     {

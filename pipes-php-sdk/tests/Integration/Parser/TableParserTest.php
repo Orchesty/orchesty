@@ -50,7 +50,7 @@ final class TableParserTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getParseToJsonData(): array
     {
@@ -69,7 +69,7 @@ final class TableParserTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getParseFromJsonData(): array
     {

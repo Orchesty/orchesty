@@ -47,7 +47,7 @@ class BunnyManager
     private $transactionalChannel;
 
     /**
-     * @var array
+     * @var mixed[]
      */
     private $config;
 
@@ -61,7 +61,7 @@ class BunnyManager
      *
      * @param ContainerInterface $container
      * @param string             $clientServiceId
-     * @param array              $config
+     * @param mixed[]            $config
      */
     public function __construct(ContainerInterface $container, string $clientServiceId, array $config)
     {
@@ -71,7 +71,7 @@ class BunnyManager
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getConfig(): array
     {

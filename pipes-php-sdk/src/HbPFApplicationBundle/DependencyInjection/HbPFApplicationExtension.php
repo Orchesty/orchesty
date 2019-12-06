@@ -14,6 +14,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
  * Class HbPFApplicationExtension
  *
  * @package Hanaboso\PipesPhpSdk\HbPFApplicationBundle\DependencyInjection
+ * @codeCoverageIgnore
  */
 class HbPFApplicationExtension extends Extension implements PrependExtensionInterface
 {
@@ -32,7 +33,7 @@ class HbPFApplicationExtension extends Extension implements PrependExtensionInte
     }
 
     /**
-     * @param array            $configs
+     * @param mixed[]          $configs
      * @param ContainerBuilder $container
      *
      * @throws Exception

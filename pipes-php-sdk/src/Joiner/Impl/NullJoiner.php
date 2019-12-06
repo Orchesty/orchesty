@@ -13,7 +13,7 @@ class NullJoiner extends JoinerAbstract
 {
 
     /**
-     * @param array $data
+     * @param mixed[] $data
      */
     public function save(array $data): void
     {

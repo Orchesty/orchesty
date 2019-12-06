@@ -13,7 +13,7 @@ interface JoinerInterface
 {
 
     /**
-     * @param array $data
+     * @param mixed[] $data
      */
     public function save(array $data): void;
 
@@ -30,8 +30,8 @@ interface JoinerInterface
     public function runCallback(): array;
 
     /**
-     * @param array $data
-     * @param int   $count
+     * @param mixed[] $data
+     * @param int     $count
      *
      * @return string[]
      */

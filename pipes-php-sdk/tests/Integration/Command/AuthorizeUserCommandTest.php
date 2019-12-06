@@ -97,8 +97,8 @@ final class AuthorizeUserCommandTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @param array  $data
-     * @param string $authorizeUrl
+     * @param mixed[] $data
+     * @param string  $authorizeUrl
      *
      * @return MockObject
      * @throws Exception
@@ -118,11 +118,6 @@ final class AuthorizeUserCommandTest extends DatabaseTestCaseAbstract
             ['getRequestToken']
         );
         $oauth->method('getRequestToken')->willReturn($data);
-        sprintf(
-            '#Parameter #1 $stub of method                                           
-         PHPUnit\Framework\MockObject\Builder\InvocationMocker::will() expects  
-         PHPUnit\Framework\MockObject\Stub\Stub, true given#'
-        );
 
         $client = self::getMockBuilder(OAuth1Provider::class)
             ->setConstructorArgs([$dm, $redirect])

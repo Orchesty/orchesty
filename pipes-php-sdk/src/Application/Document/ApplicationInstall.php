@@ -56,7 +56,7 @@ class ApplicationInstall
     private $expires;
 
     /**
-     * @var array
+     * @var mixed[]
      */
     private $settings = [];
 
@@ -68,7 +68,7 @@ class ApplicationInstall
     private $encryptedSettings;
 
     /**
-     * @var array
+     * @var mixed[]
      *
      * @ODM\Field(type="hash")
      */
@@ -86,7 +86,7 @@ class ApplicationInstall
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getSettings(): array
     {
@@ -94,7 +94,7 @@ class ApplicationInstall
     }
 
     /**
-     * @param array $settings
+     * @param mixed[] $settings
      *
      * @return ApplicationInstall
      */
@@ -166,7 +166,7 @@ class ApplicationInstall
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getNonEncryptedSettings(): array
     {
@@ -174,7 +174,7 @@ class ApplicationInstall
     }
 
     /**
-     * @param array $nonEncryptedSettings
+     * @param mixed[] $nonEncryptedSettings
      *
      * @return ApplicationInstall
      */
@@ -204,7 +204,7 @@ class ApplicationInstall
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function toArray(): array
     {

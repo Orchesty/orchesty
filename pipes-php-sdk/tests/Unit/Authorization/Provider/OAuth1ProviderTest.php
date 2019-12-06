@@ -26,9 +26,9 @@ final class OAuth1ProviderTest extends TestCase
     /**
      * @dataProvider authorizeDataProvider
      *
-     * @param array  $data
-     * @param string $url
-     * @param bool   $exception
+     * @param mixed[] $data
+     * @param string  $url
+     * @param bool    $exception
      *
      * @throws Exception
      */
@@ -53,10 +53,11 @@ final class OAuth1ProviderTest extends TestCase
             },
             []
         );
+        self::assertEmpty([]);
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function authorizeDataProvider(): array
     {
@@ -73,9 +74,9 @@ final class OAuth1ProviderTest extends TestCase
     /**
      * @dataProvider getAccessTokenDataProvider
      *
-     * @param array $data
-     * @param array $request
-     * @param bool  $exception
+     * @param mixed[] $data
+     * @param mixed[] $request
+     * @param bool    $exception
      *
      * @throws Exception
      */
@@ -102,7 +103,7 @@ final class OAuth1ProviderTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getAccessTokenDataProvider(): array
     {
@@ -116,8 +117,8 @@ final class OAuth1ProviderTest extends TestCase
     /**
      * @dataProvider getHeaderDataProvider
      *
-     * @param array $data
-     * @param bool  $exception
+     * @param mixed[] $data
+     * @param bool    $exception
      *
      * @throws Exception
      */
@@ -144,7 +145,7 @@ final class OAuth1ProviderTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getHeaderDataProvider(): array
     {
@@ -160,8 +161,8 @@ final class OAuth1ProviderTest extends TestCase
      */
 
     /**
-     * @param array  $data
-     * @param string $authorizeUrl
+     * @param mixed[] $data
+     * @param string  $authorizeUrl
      *
      * @return MockObject
      * @throws Exception

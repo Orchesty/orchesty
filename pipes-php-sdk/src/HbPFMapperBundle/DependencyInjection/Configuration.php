@@ -9,6 +9,7 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
  * Class Configuration
  *
  * @package Hanaboso\PipesPhpSdk\HbPFMapperBundle\DependencyInjection
+ * @codeCoverageIgnore
  */
 class Configuration implements ConfigurationInterface
 {

@@ -55,9 +55,9 @@ final class CustomNodeLoader
     }
 
     /**
-     * @param array $exclude
+     * @param mixed[] $exclude
      *
-     * @return array
+     * @return mixed[]
      */
     public function getAllCustomNodes(array $exclude = []): array
     {

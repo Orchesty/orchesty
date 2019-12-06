@@ -21,8 +21,8 @@ final class ScopeFormatter
     }
 
     /**
-     * @param array  $scopes
-     * @param string $separator
+     * @param string[] $scopes
+     * @param string   $separator
      *
      * @return string
      */

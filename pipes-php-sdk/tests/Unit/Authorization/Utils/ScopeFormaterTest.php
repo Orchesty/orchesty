@@ -16,8 +16,8 @@ final class ScopeFormaterTest extends TestCase
     /**
      * @dataProvider getScopeProvider
      *
-     * @param array  $scopes
-     * @param string $result
+     * @param string[] $scopes
+     * @param string   $result
      */
     public function testGetScopes(array $scopes, string $result): void
     {
@@ -27,7 +27,7 @@ final class ScopeFormaterTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getScopeProvider(): array
     {

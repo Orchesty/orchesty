@@ -75,7 +75,7 @@ abstract class BasicApplicationAbstract extends ApplicationAbstract implements B
 
     /**
      * @param ApplicationInstall $applicationInstall
-     * @param array              $settings
+     * @param mixed[]            $settings
      *
      * @return ApplicationInstall
      */

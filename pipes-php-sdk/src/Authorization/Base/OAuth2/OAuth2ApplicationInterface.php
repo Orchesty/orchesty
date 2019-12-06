@@ -49,7 +49,7 @@ interface OAuth2ApplicationInterface extends ApplicationInterface
 
     /**
      * @param ApplicationInstall $applicationInstall
-     * @param array              $token
+     * @param mixed[]            $token
      *
      * @return OAuth2ApplicationInterface
      */

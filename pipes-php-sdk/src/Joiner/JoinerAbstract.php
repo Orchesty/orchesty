@@ -18,8 +18,8 @@ abstract class JoinerAbstract implements JoinerInterface
     protected $application;
 
     /**
-     * @param array $data
-     * @param int   $count
+     * @param mixed[] $data
+     * @param int     $count
      *
      * @return string[]
      */

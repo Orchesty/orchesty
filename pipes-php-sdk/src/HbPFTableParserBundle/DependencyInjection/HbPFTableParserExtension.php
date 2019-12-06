@@ -14,6 +14,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
  * Class HbPFTableParserExtension
  *
  * @package Hanaboso\PipesPhpSdk\HbPFTableParserBundle\DependencyInjection
+ * @codeCoverageIgnore
  */
 class HbPFTableParserExtension extends Extension implements PrependExtensionInterface
 {
@@ -29,7 +30,7 @@ class HbPFTableParserExtension extends Extension implements PrependExtensionInte
     }
 
     /**
-     * @param array            $configs
+     * @param mixed[]          $configs
      * @param ContainerBuilder $container
      *
      * @throws Exception

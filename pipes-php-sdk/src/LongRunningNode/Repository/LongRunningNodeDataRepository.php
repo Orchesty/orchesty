@@ -7,7 +7,8 @@ use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 /**
  * Class LongRunningNodeDataRepository
  *
- * @package Hanaboso\PipesPhpSdk\LongRunningNode\Repository
+ * @package         Hanaboso\PipesPhpSdk\LongRunningNode\Repository
+ * @phpstan-extends DocumentRepository<\Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData>
  */
 class LongRunningNodeDataRepository extends DocumentRepository
 {
@@ -15,7 +16,7 @@ class LongRunningNodeDataRepository extends DocumentRepository
     /**
      * @param string $topo
      *
-     * @return array
+     * @return mixed[]
      */
     public function getGroupStats(string $topo): array
     {

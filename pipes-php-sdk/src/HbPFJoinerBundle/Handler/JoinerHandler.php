@@ -29,10 +29,10 @@ class JoinerHandler
     }
 
     /**
-     * @param string $joinerId
-     * @param array  $data
+     * @param string  $joinerId
+     * @param mixed[] $data
      *
-     * @return array
+     * @return mixed[]
      * @throws JoinerException
      */
     public function processJoiner(string $joinerId, array $data): array
@@ -43,8 +43,8 @@ class JoinerHandler
     }
 
     /**
-     * @param string $joinerId
-     * @param array  $data
+     * @param string  $joinerId
+     * @param mixed[] $data
      *
      * @throws JoinerException
      */
@@ -67,7 +67,7 @@ class JoinerHandler
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getJoiners(): array
     {

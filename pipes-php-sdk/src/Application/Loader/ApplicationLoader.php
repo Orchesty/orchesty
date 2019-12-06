@@ -56,9 +56,9 @@ class ApplicationLoader
     }
 
     /**
-     * @param array $exclude
+     * @param mixed[] $exclude
      *
-     * @return array
+     * @return mixed[]
      */
     public function getApplications($exclude = []): array
     {

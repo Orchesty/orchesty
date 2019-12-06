@@ -6,6 +6,8 @@ includes:
 	- vendor/hanaboso/php-check-utils/phpstan.neon # hanaboso rules
 
 parameters:
+	doctrine:
+		objectManagerLoader: tests/DocumentManagerLoader.php
 	excludes_analyse:
 	    - %rootDir%/../../../tests/PrivateTrait.php
 	ignoreErrors:

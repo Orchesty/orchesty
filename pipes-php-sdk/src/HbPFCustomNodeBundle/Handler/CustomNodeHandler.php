@@ -30,9 +30,9 @@ class CustomNodeHandler
     }
 
     /**
-     * @param string $nodeId
-     * @param string $data
-     * @param array  $headers
+     * @param string  $nodeId
+     * @param string  $data
+     * @param mixed[] $headers
      *
      * @return ProcessDto
      * @throws CustomNodeException
@@ -59,7 +59,7 @@ class CustomNodeHandler
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getCustomNodes(): array
     {

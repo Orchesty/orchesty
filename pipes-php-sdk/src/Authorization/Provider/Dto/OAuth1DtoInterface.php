@@ -31,7 +31,7 @@ interface OAuth1DtoInterface
     public function getAuthType(): int;
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getToken(): array;
 

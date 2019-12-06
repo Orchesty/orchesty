@@ -62,7 +62,6 @@ class ConnectorHandler
      */
     public function processTest(string $id): void
     {
-        /** @var ConnectorInterface $conn */
         $this->loader->getConnector($id);
     }
 
@@ -82,7 +81,7 @@ class ConnectorHandler
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getConnectors(): array
     {

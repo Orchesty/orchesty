@@ -29,10 +29,10 @@ class MapperHandler
     }
 
     /**
-     * @param string $id
-     * @param array  $data
+     * @param string  $id
+     * @param mixed[] $data
      *
-     * @return array
+     * @return mixed[]
      * @throws MapperException
      */
     public function process(string $id, array $data): array
@@ -41,10 +41,10 @@ class MapperHandler
     }
 
     /**
-     * @param string $id
-     * @param array  $data
+     * @param string  $id
+     * @param mixed[] $data
      *
-     * @return array
+     * @return mixed[]
      * @throws MapperException
      */
     public function processTest(string $id, array $data): array
@@ -55,7 +55,7 @@ class MapperHandler
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getMappers(): array
     {

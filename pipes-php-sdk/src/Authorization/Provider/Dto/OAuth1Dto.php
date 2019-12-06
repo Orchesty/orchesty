@@ -102,7 +102,7 @@ final class OAuth1Dto implements OAuth1DtoInterface
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getToken(): array
     {

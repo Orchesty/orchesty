@@ -121,7 +121,7 @@ class LongRunningNodeData
     private $data;
 
     /**
-     * @var array|string
+     * @var mixed[]|string
      *
      * @ODM\Field(type="string")
      */
@@ -135,7 +135,7 @@ class LongRunningNodeData
     private $updatedBy;
 
     /**
-     * @var array|string
+     * @var mixed[]|string
      *
      * @ODM\Field(type="string")
      */
@@ -380,7 +380,7 @@ class LongRunningNodeData
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getHeaders(): array
     {
@@ -388,7 +388,7 @@ class LongRunningNodeData
     }
 
     /**
-     * @param array $headers
+     * @param mixed[] $headers
      *
      * @return LongRunningNodeData
      */
@@ -420,7 +420,7 @@ class LongRunningNodeData
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getAuditLogs(): array
     {
@@ -428,7 +428,7 @@ class LongRunningNodeData
     }
 
     /**
-     * @param array $auditLogs
+     * @param mixed[] $auditLogs
      *
      * @return LongRunningNodeData
      */
@@ -526,7 +526,7 @@ class LongRunningNodeData
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function toArray(): array
     {

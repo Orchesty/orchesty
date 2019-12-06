@@ -36,12 +36,12 @@ abstract class RabbitCustomNode extends CustomNodeAbstract implements LoggerAwar
     private $producer;
 
     /**
-     * @var ObjectRepository|NodeRepository
+     * @var ObjectRepository<Node>|NodeRepository
      */
     private $nodeRepo;
 
     /**
-     * @var array
+     * @var mixed[]
      */
     private $queues = [];
 
@@ -97,8 +97,8 @@ abstract class RabbitCustomNode extends CustomNodeAbstract implements LoggerAwar
     abstract protected function processBatch(ProcessDto $dto): void;
 
     /**
-     * @param array $message
-     * @param array $headers
+     * @param mixed[] $message
+     * @param mixed[] $headers
      */
     protected function publishMessage(array $message, array $headers): void
     {

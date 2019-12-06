@@ -53,7 +53,7 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
     private $logger;
 
     /**
-     * @var array
+     * @var mixed[]
      */
     private $currentMetrics = [];
 
@@ -215,10 +215,8 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
                     switch ($message->getHeader(self::TYPE)) {
                         case 'test':
                             return $this->testAction($channel, $message);
-                            break;
                         case 'batch':
                             return $this->batchAction($message, $channel, $loop);
-                            break;
                         default:
                             return reject(
                                 new InvalidArgumentException(
@@ -535,7 +533,7 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
 
     /**
      * @param Message $message
-     * @param array   $startMetrics
+     * @param mixed[] $startMetrics
      *
      * @throws Exception
      */

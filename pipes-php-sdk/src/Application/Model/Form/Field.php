@@ -60,7 +60,7 @@ class Field
     private $disabled = FALSE;
 
     /**
-     * @var array
+     * @var mixed[]
      */
     private $choices = [];
 
@@ -172,7 +172,7 @@ class Field
     }
 
     /**
-     * @param array $choices
+     * @param mixed[] $choices
      *
      * @return Field
      */
@@ -240,7 +240,7 @@ class Field
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getChoices(): array
     {
@@ -248,7 +248,7 @@ class Field
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function toArray(): array
     {
@@ -266,7 +266,7 @@ class Field
     }
 
     /**
-     * @return array
+     * @return string[]
      */
     private function getTypes(): array
     {

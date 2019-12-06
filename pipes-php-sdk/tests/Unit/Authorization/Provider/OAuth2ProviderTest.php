@@ -38,6 +38,7 @@ final class OAuth2ProviderTest extends TestCase
         $dto->setCustomAppDependencies(uniqid(), 'magento');
 
         $provider->authorize($dto, []);
+        self::assertEmpty([]);
     }
 
     /**
@@ -55,10 +56,11 @@ final class OAuth2ProviderTest extends TestCase
         $dto      = new OAuth2Dto($install, 'authorize/url', 'token/url');
 
         $provider->authorize($dto, []);
+        self::assertEmpty([]);
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function authorizeDataProvider(): array
     {
@@ -72,8 +74,8 @@ final class OAuth2ProviderTest extends TestCase
     /**
      * @dataProvider getAccessTokenDataProvider
      *
-     * @param array $request
-     * @param bool  $exception
+     * @param mixed[] $request
+     * @param bool    $exception
      *
      * @throws Exception
      */
@@ -97,7 +99,7 @@ final class OAuth2ProviderTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getAccessTokenDataProvider(): array
     {
@@ -110,8 +112,8 @@ final class OAuth2ProviderTest extends TestCase
     /**
      * @dataProvider refreshTokenDataProvider
      *
-     * @param array $token
-     * @param bool  $exception
+     * @param mixed[] $token
+     * @param bool    $exception
      *
      * @throws Exception
      */
@@ -135,7 +137,7 @@ final class OAuth2ProviderTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function refreshTokenDataProvider(): array
     {

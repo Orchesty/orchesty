@@ -2,7 +2,7 @@
 
 TAG?=dev
 IMAGE=dkr.hanaboso.net/pipes/pipes/php-sdk/php-dev:${TAG}
-BASE=hanabosocom/php-dev:php-7.3
+BASE=hanabosocom/php-dev:php-7.4
 DC=docker-compose
 DE=docker-compose exec -T php-dev
 DEC=docker-compose exec -T php-dev composer
@@ -41,13 +41,19 @@ phpstan:
 	$(DE) ./vendor/bin/phpstan analyse -c phpstan.neon -l 7 src/ tests/
 
 phpunit:
-	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr tests/Unit
+	$(DE) ./vendor/bin/phpunit -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist --colors --stderr tests/Unit
 
 phpcontroller:
-	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr tests/Controller
+	$(DE) ./vendor/bin/phpunit -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist --colors --stderr tests/Controller
 
 phpintegration: database-create
-	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr tests/Integration
+	$(DE) ./vendor/bin/phpunit -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist --colors --stderr tests/Integration
+
+phpcoverage:
+	$(DE) php vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p 4 --coverage-html var/coverage --whitelist src tests
+
+phpcoverage-ci:
+	$(DE) ./vendor/hanaboso/php-check-utils/bin/coverage.sh 35
 
 phpmanual-up:
 	cd tests/Manual; $(MAKE) docker-up-force;
@@ -60,7 +66,7 @@ phpmanual-down:
 
 test: docker-up-force composer-install fasttest
 
-fasttest: codesniffer clear-cache phpstan phpunit phpintegration phpcontroller
+fasttest: codesniffer clear-cache phpstan phpunit phpintegration phpcontroller phpcoverage-ci
 
 docker-compose.ci.yml:
 	# Comment out any port forwarding

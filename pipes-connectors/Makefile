@@ -49,7 +49,7 @@ phpcodesniffer:
 	$(DE) vendor/bin/phpcs -p --standard=ruleset.xml --colors src tests
 
 phpstan:
-	$(DE) vendor/bin/phpstan analyse -c phpstan.neon -l 7 --memory-limit=512M src tests
+	$(DE) vendor/bin/phpstan analyse -c phpstan.neon -l 8 --memory-limit=512M src tests
 
 phpunit:
 	$(DE) vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p 4 --colors tests/Unit

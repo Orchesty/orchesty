@@ -3,6 +3,7 @@
 namespace Tests\Controller\HbPFLongRunningNodeBundle\Controller;
 
 use Exception;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Handler\LongRunningNodeHandler;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData;
@@ -29,10 +30,12 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
         /** @var LongRunningNodeHandler|MockObject $handler */
         $handler = self::createMock(LongRunningNodeHandler::class);
         $handler->method('process')->willReturnCallback(
-            function (string $nodeId, string $data, array $headers): void {
+            function (string $nodeId, array $data, array $headers): ProcessDto {
                 $headers;
-                self::assertEquals(Json::encode(['cont']), $data);
+                self::assertEquals(['cont'], $data);
                 self::assertEquals('node', $nodeId);
+
+                return new ProcessDto();
             }
         );
 
@@ -41,6 +44,9 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
         $c->set('hbpf.handler.long_running', $handler);
 
         $this->sendPost('/longRunning/node/process', ['cont']);
+        /** @var Response $res */
+        $res = self::$client->getResponse();
+        self::assertEquals(200, $res->getStatusCode());
     }
 
     /**

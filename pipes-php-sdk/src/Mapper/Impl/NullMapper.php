@@ -13,9 +13,9 @@ class NullMapper extends MapperAbstract
 {
 
     /**
-     * @param array $data
+     * @param mixed[] $data
      *
-     * @return array
+     * @return mixed[]
      */
     public function process(array $data): array
     {

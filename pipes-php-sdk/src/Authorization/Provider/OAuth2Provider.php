@@ -42,7 +42,7 @@ class OAuth2Provider extends OAuthProviderAbstract implements OAuth2ProviderInte
 
     /**
      * @param OAuth2DtoInterface $dto
-     * @param array              $scopes
+     * @param string[]           $scopes
      * @param string             $separator
      */
     public function authorize(
@@ -59,9 +59,9 @@ class OAuth2Provider extends OAuthProviderAbstract implements OAuth2ProviderInte
 
     /**
      * @param OAuth2DtoInterface $dto
-     * @param array              $request
+     * @param mixed[]            $request
      *
-     * @return array
+     * @return mixed[]
      * @throws AuthorizationException
      */
     public function getAccessToken(OAuth2DtoInterface $dto, array $request): array
@@ -78,9 +78,9 @@ class OAuth2Provider extends OAuthProviderAbstract implements OAuth2ProviderInte
 
     /**
      * @param OAuth2DtoInterface $dto
-     * @param array              $token
+     * @param mixed[]            $token
      *
-     * @return array
+     * @return mixed[]
      * @throws AuthorizationException
      */
     public function refreshAccessToken(OAuth2DtoInterface $dto, array $token): array
@@ -125,7 +125,7 @@ class OAuth2Provider extends OAuthProviderAbstract implements OAuth2ProviderInte
     /**
      * @param string $state
      *
-     * @return array
+     * @return mixed[]
      */
     public static function stateDecode(string $state): array
     {
@@ -160,7 +160,7 @@ class OAuth2Provider extends OAuthProviderAbstract implements OAuth2ProviderInte
     /**
      * @param OAuth2DtoInterface $dto
      * @param string             $authorizeUrl
-     * @param array              $scopes
+     * @param string[]           $scopes
      * @param string             $separator
      *
      * @return string
@@ -201,9 +201,9 @@ class OAuth2Provider extends OAuthProviderAbstract implements OAuth2ProviderInte
     /**
      * @param OAuth2DtoInterface $dto
      * @param string             $grant
-     * @param array              $data
+     * @param mixed[]            $data
      *
-     * @return array
+     * @return mixed[]
      * @throws AuthorizationException
      */
     private function getTokenByGrant(OAuth2DtoInterface $dto, string $grant, array $data = []): array

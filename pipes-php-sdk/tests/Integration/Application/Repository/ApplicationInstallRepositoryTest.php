@@ -91,7 +91,7 @@ final class ApplicationInstallRepositoryTest extends DatabaseTestCaseAbstract
      */
 
     /**
-     * @return array
+     * @return mixed[]
      */
     private function getBasicData(): array
     {
@@ -123,7 +123,7 @@ final class ApplicationInstallRepositoryTest extends DatabaseTestCaseAbstract
     /**
      * @param string $key
      *
-     * @return array
+     * @return mixed[]
      */
     private function getApplicationsUsers(string $key): array
     {

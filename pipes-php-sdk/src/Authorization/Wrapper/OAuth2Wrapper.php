@@ -18,8 +18,8 @@ class OAuth2Wrapper extends GenericProvider
     /**
      * OAuth2Wrapper constructor.
      *
-     * @param array $options
-     * @param array $collaborators
+     * @param mixed[] $options
+     * @param mixed[] $collaborators
      */
     public function __construct(array $options = [], array $collaborators = [])
     {
@@ -29,7 +29,7 @@ class OAuth2Wrapper extends GenericProvider
     /**
      * @param RequestInterface $request
      *
-     * @return array
+     * @return mixed[]
      * @throws AuthorizationException
      */
     public function getParsedResponse(RequestInterface $request): array

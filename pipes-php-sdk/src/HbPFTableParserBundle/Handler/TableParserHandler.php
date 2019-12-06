@@ -2,6 +2,8 @@
 
 namespace Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler;
 
+use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Hanaboso\CommonsBundle\Exception\FileStorageException;
 use Hanaboso\CommonsBundle\FileStorage\FileStorage;
 use Hanaboso\PipesPhpSdk\Parser\Exception\TableParserException;
@@ -43,7 +45,7 @@ class TableParserHandler
     }
 
     /**
-     * @param array $data
+     * @param mixed[] $data
      *
      * @return string
      * @throws TableParserHandlerException
@@ -73,8 +75,8 @@ class TableParserHandler
     }
 
     /**
-     * @param string $type
-     * @param array  $data
+     * @param string  $type
+     * @param mixed[] $data
      *
      * @return string
      * @throws Exception
@@ -111,13 +113,15 @@ class TableParserHandler
     }
 
     /**
-     * @param array           $data
+     * @param mixed[]         $data
      * @param bool            $isTmp
      * @param Filesystem|null $fs
      *
      * @return string
-     * @throws TableParserHandlerException
      * @throws FileStorageException
+     * @throws TableParserHandlerException
+     * @throws LockException
+     * @throws MappingException
      */
     private function getFile(array $data, bool &$isTmp, ?Filesystem $fs = NULL): string
     {

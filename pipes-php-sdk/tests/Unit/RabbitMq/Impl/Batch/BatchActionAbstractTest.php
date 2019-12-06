@@ -32,8 +32,8 @@ final class BatchActionAbstractTest extends TestCase
     }
 
     /**
-     * @param array  $headers
-     * @param string $content
+     * @param mixed[] $headers
+     * @param string  $content
      *
      * @return Message
      */
@@ -65,6 +65,7 @@ final class BatchActionAbstractTest extends TestCase
             )->done();
 
         $loop->run();
+        self::assertEmpty([]);
     }
 
     /**
@@ -91,6 +92,7 @@ final class BatchActionAbstractTest extends TestCase
             )->done();
 
         $loop->run();
+        self::assertEmpty([]);
     }
 
 }

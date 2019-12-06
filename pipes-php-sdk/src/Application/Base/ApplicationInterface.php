@@ -66,7 +66,7 @@ interface ApplicationInterface
 
     /**
      * @param ApplicationInstall $applicationInstall
-     * @param array              $settings
+     * @param mixed[]            $settings
      *
      * @return ApplicationInstall
      */
@@ -80,7 +80,7 @@ interface ApplicationInterface
     public function isAuthorized(ApplicationInstall $applicationInstall): bool;
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function toArray(): array;
 

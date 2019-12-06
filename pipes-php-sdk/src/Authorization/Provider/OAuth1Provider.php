@@ -48,7 +48,7 @@ class OAuth1Provider extends OAuthProviderAbstract implements OAuth1ProviderInte
      * @param string             $tokenUrl
      * @param string             $authorizeUrl
      * @param callable           $saveOauthStuffs
-     * @param array              $scopes
+     * @param string[]           $scopes
      *
      * @throws AuthorizationException
      * @throws OAuthException
@@ -65,6 +65,7 @@ class OAuth1Provider extends OAuthProviderAbstract implements OAuth1ProviderInte
         $requestToken = [];
 
         try {
+            /** @var mixed[] $requestToken */
             $requestToken = $client->getRequestToken($tokenUrl);
         } catch (Exception $e) {
             $this->throwException(
@@ -89,10 +90,10 @@ class OAuth1Provider extends OAuthProviderAbstract implements OAuth1ProviderInte
 
     /**
      * @param OAuth1DtoInterface $dto
-     * @param array              $request
+     * @param mixed[]            $request
      * @param string             $accessTokenUrl
      *
-     * @return array
+     * @return mixed[]
      * @throws AuthorizationException
      * @throws OAuthException
      */
@@ -166,10 +167,10 @@ class OAuth1Provider extends OAuthProviderAbstract implements OAuth1ProviderInte
     }
 
     /**
-     * @param string $authorizeUrl
-     * @param string $redirectUrl
-     * @param string $oauthToken
-     * @param array  $scopes
+     * @param string   $authorizeUrl
+     * @param string   $redirectUrl
+     * @param string   $oauthToken
+     * @param string[] $scopes
      *
      * @return string
      */
@@ -190,7 +191,7 @@ class OAuth1Provider extends OAuthProviderAbstract implements OAuth1ProviderInte
     }
 
     /**
-     * @param array $data
+     * @param mixed[] $data
      *
      * @throws AuthorizationException
      */

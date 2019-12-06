@@ -59,7 +59,7 @@ final class LongRunningNodeListener implements EventSubscriberInterface
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public static function getSubscribedEvents(): array
     {

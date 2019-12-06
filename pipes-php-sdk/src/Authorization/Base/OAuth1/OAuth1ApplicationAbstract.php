@@ -81,7 +81,7 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
     /**
      * @param ApplicationInstall $applicationInstall
      *
-     * @return array
+     * @return mixed[]
      * @throws ApplicationInstallException
      */
     public function getApplicationForm(ApplicationInstall $applicationInstall): array
@@ -120,7 +120,7 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
 
     /**
      * @param ApplicationInstall $applicationInstall
-     * @param array              $token
+     * @param mixed[]            $token
      *
      * @return OAuth1ApplicationInterface
      * @throws AuthorizationException

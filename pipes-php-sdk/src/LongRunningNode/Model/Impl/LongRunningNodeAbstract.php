@@ -29,7 +29,7 @@ abstract class LongRunningNodeAbstract implements LongRunningNodeInterface
 
     /**
      * @param LongRunningNodeData $data
-     * @param array               $requestData
+     * @param mixed[]             $requestData
      *
      * @return ProcessDto
      */

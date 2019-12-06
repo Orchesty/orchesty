@@ -15,7 +15,7 @@ final class LongRunningNodeFilter extends GridFilterAbstract
 {
 
     /**
-     * @return array
+     * @return mixed[]
      */
     protected function filterCols(): array
     {
@@ -31,7 +31,7 @@ final class LongRunningNodeFilter extends GridFilterAbstract
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     protected function orderCols(): array
     {
@@ -42,7 +42,7 @@ final class LongRunningNodeFilter extends GridFilterAbstract
     }
 
     /**
-     * @inheritDoc
+     * @return string[]
      */
     protected function searchableCols(): array
     {

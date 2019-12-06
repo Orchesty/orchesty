@@ -17,7 +17,7 @@ abstract class ApplicationAbstract implements ApplicationInterface
     public const FORM = 'form';
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function toArray(): array
     {
@@ -33,7 +33,7 @@ abstract class ApplicationAbstract implements ApplicationInterface
     /**
      * @param ApplicationInstall $applicationInstall
      *
-     * @return array
+     * @return mixed[]
      */
     public function getApplicationForm(ApplicationInstall $applicationInstall): array
     {
@@ -57,7 +57,7 @@ abstract class ApplicationAbstract implements ApplicationInterface
 
     /**
      * @param ApplicationInstall $applicationInstall
-     * @param array              $settings
+     * @param mixed[]            $settings
      *
      * @return ApplicationInstall
      */

@@ -18,7 +18,7 @@ interface OAuth1ProviderInterface extends OAuthProviderInterface
      * @param string             $tokenUrl
      * @param string             $authorizeUrl
      * @param callable           $saveOauthStuffs
-     * @param array              $scopes
+     * @param mixed[]            $scopes
      *
      * @throws AuthorizationException
      */
@@ -32,10 +32,10 @@ interface OAuth1ProviderInterface extends OAuthProviderInterface
 
     /**
      * @param OAuth1DtoInterface $dto
-     * @param array              $request
+     * @param mixed[]            $request
      * @param string             $accessTokenUrl
      *
-     * @return array
+     * @return mixed[]
      * @throws AuthorizationException
      */
     public function getAccessToken(OAuth1DtoInterface $dto, array $request, string $accessTokenUrl): array;

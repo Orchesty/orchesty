@@ -103,7 +103,7 @@ class AbstractProducer implements LoggerAwareInterface
     /**
      * @param mixed $message
      *
-     * @return array
+     * @return mixed[]
      * @throws Exception
      */
     public function beforeSerializer($message): array
@@ -122,7 +122,7 @@ class AbstractProducer implements LoggerAwareInterface
     /**
      * @param mixed       $message
      * @param string|null $routingKey
-     * @param array       $headers
+     * @param mixed[]     $headers
      *
      * @return void
      * @throws Exception

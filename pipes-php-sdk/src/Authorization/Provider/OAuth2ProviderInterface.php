@@ -15,7 +15,7 @@ interface OAuth2ProviderInterface extends OAuthProviderInterface
 
     /**
      * @param OAuth2DtoInterface $dto
-     * @param array              $scopes
+     * @param string[]           $scopes
      *
      * @throws AuthorizationException
      */
@@ -23,18 +23,18 @@ interface OAuth2ProviderInterface extends OAuthProviderInterface
 
     /**
      * @param OAuth2DtoInterface $dto
-     * @param array              $request
+     * @param mixed[]            $request
      *
-     * @return array
+     * @return mixed[]
      * @throws AuthorizationException
      */
     public function getAccessToken(OAuth2DtoInterface $dto, array $request): array;
 
     /**
      * @param OAuth2DtoInterface $dto
-     * @param array              $token
+     * @param mixed[]            $token
      *
-     * @return array
+     * @return mixed[]
      * @throws AuthorizationException
      */
     public function refreshAccessToken(OAuth2DtoInterface $dto, array $token): array;

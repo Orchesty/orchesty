@@ -55,9 +55,9 @@ final class JoinerLoader
     }
 
     /**
-     * @param array $exclude
+     * @param mixed[] $exclude
      *
-     * @return array
+     * @return mixed[]
      */
     public function getAllJoiners(array $exclude = []): array
     {

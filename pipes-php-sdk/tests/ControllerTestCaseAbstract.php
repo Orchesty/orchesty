@@ -30,7 +30,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     protected $dm;
 
     /**
-     * @var Session
+     * @var Session<mixed>
      */
     protected $session;
 
@@ -42,9 +42,9 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     /**
      * ControllerTestCaseAbstract constructor.
      *
-     * @param null   $name
-     * @param array  $data
-     * @param string $dataName
+     * @param null    $name
+     * @param mixed[] $data
+     * @param string  $dataName
      */
     public function __construct($name = NULL, array $data = [], $dataName = '')
     {
@@ -65,6 +65,8 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
 
     /**
      * @param object $document
+     *
+     * @throws Exception
      */
     protected function persistAndFlush($document): void
     {
@@ -87,9 +89,9 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     }
 
     /**
-     * @param string     $url
-     * @param array      $parameters
-     * @param array|null $content
+     * @param string       $url
+     * @param mixed[]      $parameters
+     * @param mixed[]|null $content
      *
      * @return object
      */
@@ -111,9 +113,9 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     }
 
     /**
-     * @param string     $url
-     * @param array      $parameters
-     * @param array|null $content
+     * @param string       $url
+     * @param mixed[]      $parameters
+     * @param mixed[]|null $content
      *
      * @return object
      */

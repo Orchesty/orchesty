@@ -146,9 +146,9 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @param string     $url
-     * @param array      $parameters
-     * @param array|null $content
+     * @param string       $url
+     * @param mixed[]      $parameters
+     * @param mixed[]|null $content
      *
      * @return object
      */

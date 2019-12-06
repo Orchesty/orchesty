@@ -14,7 +14,8 @@ use MongoDB\BSON\UTCDateTime;
 /**
  * Class ApplicationInstallRepository
  *
- * @package Hanaboso\PipesPhpSdk\Application\Repository
+ * @package         Hanaboso\PipesPhpSdk\Application\Repository
+ * @phpstan-extends DocumentRepository<ApplicationInstall>
  */
 class ApplicationInstallRepository extends DocumentRepository
 {
@@ -59,7 +60,7 @@ class ApplicationInstallRepository extends DocumentRepository
     }
 
     /**
-     * @return array
+     * @return mixed[]
      * @throws DateTimeException
      */
     public function getApplicationsCount(): array
@@ -97,7 +98,7 @@ class ApplicationInstallRepository extends DocumentRepository
     /**
      * @param string $application
      *
-     * @return array
+     * @return mixed[]
      * @throws DateTimeException
      */
     public function getApplicationsCountDetails(string $application): array

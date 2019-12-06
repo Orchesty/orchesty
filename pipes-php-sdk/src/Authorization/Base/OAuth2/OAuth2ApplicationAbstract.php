@@ -59,7 +59,7 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
 
     /**
      * @param ApplicationInstall $applicationInstall
-     * @param array              $scopes
+     * @param string[]           $scopes
      * @param string             $separator
      */
     public function authorize(
@@ -87,7 +87,7 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
     /**
      * @param ApplicationInstall $applicationInstall
      *
-     * @return array
+     * @return mixed[]
      * @throws ApplicationInstallException
      */
     public function getApplicationForm(ApplicationInstall $applicationInstall): array
@@ -169,7 +169,7 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
 
     /**
      * @param ApplicationInstall $applicationInstall
-     * @param array              $token
+     * @param mixed[]            $token
      *
      * @return OAuth2ApplicationInterface
      * @throws AuthorizationException
@@ -238,7 +238,7 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
     /**
      * @param ApplicationInstall $applicationInstall
      *
-     * @return array
+     * @return mixed[]
      */
     protected function getTokens(ApplicationInstall $applicationInstall): array
     {
@@ -248,7 +248,7 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
 
     /**
      * @param ApplicationInstall $applicationInstall
-     * @param array              $settings
+     * @param mixed[]            $settings
      *
      * @return ApplicationInstall
      */

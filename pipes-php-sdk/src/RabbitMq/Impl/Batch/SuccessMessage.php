@@ -24,7 +24,7 @@ class SuccessMessage
     private $data = '';
 
     /**
-     * @var array
+     * @var mixed[]
      */
     private $headers = [];
 
@@ -71,7 +71,7 @@ class SuccessMessage
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getHeaders(): array
     {

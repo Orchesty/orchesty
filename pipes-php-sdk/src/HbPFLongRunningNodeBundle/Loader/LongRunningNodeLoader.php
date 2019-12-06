@@ -55,9 +55,9 @@ final class LongRunningNodeLoader
     }
 
     /**
-     * @param array $exclude
+     * @param mixed[] $exclude
      *
-     * @return array
+     * @return mixed[]
      */
     public function getAllLongRunningNodes(array $exclude = []): array
     {
