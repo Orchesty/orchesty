@@ -16,6 +16,7 @@ use Symfony\Component\Routing\RouteCollectionBuilder;
  * Class Kernel
  *
  * @package Hanaboso\PipesFramework
+ * @codeCoverageIgnore
  */
 final class Kernel extends BaseKernel
 {
