@@ -47,6 +47,7 @@ class HbPFConnectorsExtension extends Extension implements PrependExtensionInter
         $loader->load('shipstation.yaml');
         $loader->load('airtable.yaml');
         $loader->load('bigcommerce.yaml');
+        $loader->load('nutshell.yaml');
     }
 
 }

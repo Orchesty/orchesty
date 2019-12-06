@@ -4,8 +4,6 @@ namespace Tests\Integration\Model\Application\Impl\Shipstation;
 
 use Exception;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
-use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
-use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\DataProvider;
 
@@ -22,7 +20,6 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
 
     public const token = 'ODkxOWJiMjEzYWFiNDdiNDhmN2JiMDdmMWNlMWUyNWM6OTk**********jE1NDQ5OWEzODIyMWQyMjM3NTQyNGI=';
 
-
     /**
      * @throws Exception
      */
@@ -35,16 +32,7 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
             self::API_SECRET
         );
 
-        $applicationInstall = $applicationInstall->setSettings(
-            [
-                BasicApplicationInterface::AUTHORIZATION_SETTINGS =>
-                    [
-                        BasicApplicationAbstract::USER     => self::API_KEY,
-                        BasicApplicationAbstract::PASSWORD => self::API_SECRET,
-                    ],
-            ]
-        );
-        $subscription       = new WebhookSubscription('test', 'node', 'xxx', ['name' => 0]);
+        $subscription = new WebhookSubscription('test', 'node', 'xxx', ['name' => 0]);
 
         $requestSub = $application->getWebhookSubscribeRequestDto(
             $applicationInstall,
