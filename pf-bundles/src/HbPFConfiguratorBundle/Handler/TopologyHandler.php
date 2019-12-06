@@ -38,7 +38,7 @@ class TopologyHandler
 {
 
     /**
-     * @var ObjectRepository|TopologyRepository
+     * @var ObjectRepository<Topology>&TopologyRepository
      */
     protected $topologyRepository;
 
@@ -88,7 +88,7 @@ class TopologyHandler
      * @param int  $offset
      * @param null $orderBy
      *
-     * @return array
+     * @return mixed[]
      * @throws MongoDBException
      */
     public function getTopologies(?int $limit = NULL, ?int $offset = NULL, $orderBy = NULL): array
@@ -113,7 +113,7 @@ class TopologyHandler
     }
 
     /**
-     * @return array
+     * @return mixed[]
      * @throws CurlException
      * @throws CronException
      */
@@ -125,7 +125,7 @@ class TopologyHandler
     /**
      * @param string $id
      *
-     * @return array
+     * @return mixed[]
      * @throws TopologyException
      * @throws MongoDBException
      */
@@ -137,9 +137,9 @@ class TopologyHandler
     }
 
     /**
-     * @param array $data
+     * @param mixed[] $data
      *
-     * @return array
+     * @return mixed[]
      * @throws PipesFrameworkException
      * @throws MongoDBException
      * @throws TopologyException
@@ -155,10 +155,10 @@ class TopologyHandler
     }
 
     /**
-     * @param string $id
-     * @param array  $data
+     * @param string  $id
+     * @param mixed[] $data
      *
-     * @return array
+     * @return mixed[]
      * @throws TopologyException
      * @throws MongoDBException
      * @throws CurlException
@@ -185,11 +185,11 @@ class TopologyHandler
     }
 
     /**
-     * @param string $id
-     * @param string $content
-     * @param array  $data
+     * @param string  $id
+     * @param string  $content
+     * @param mixed[] $data
      *
-     * @return array
+     * @return mixed[]
      * @throws CronException
      * @throws CurlException
      * @throws EnumException
@@ -297,7 +297,7 @@ class TopologyHandler
     /**
      * @param string $topologyId
      *
-     * @return array
+     * @return mixed[]
      * @throws CurlException
      * @throws TopologyConfigException
      * @throws TopologyException
@@ -335,7 +335,7 @@ class TopologyHandler
     /**
      * @param Topology $topology
      *
-     * @return array
+     * @return mixed[]
      * @throws MongoDBException
      */
     private function getTopologyData(Topology $topology): array

@@ -2,10 +2,12 @@
 
 namespace Tests\Integration\Configurator\Model;
 
+use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Exception;
 use Hanaboso\PipesFramework\Configurator\Document\Sdk;
 use Hanaboso\PipesFramework\Configurator\Model\SdkManager;
+use Hanaboso\PipesFramework\Configurator\Repository\SdkRepository;
 use Tests\DatabaseTestCaseAbstract;
 
 /**
@@ -22,6 +24,11 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
     private $manager;
 
     /**
+     * @var ObjectRepository<Sdk>&SdkRepository
+     */
+    private $sdkRepo;
+
+    /**
      * @throws Exception
      */
     protected function setUp(): void
@@ -29,10 +36,12 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
         parent::setUp();
 
         $this->manager = self::$container->get('hbpf.configurator.manager.sdk');
+        $this->sdkRepo = $this->dm->getRepository(Sdk::class);
     }
 
     /**
      * @covers SdkManager::getAll
+     * @throws Exception
      */
     public function testGetAll(): void
     {
@@ -66,6 +75,7 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers SdkManager::create
+     * @throws Exception
      */
     public function testCreate(): void
     {
@@ -77,7 +87,7 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
         );
 
         $this->dm->clear();
-        self::assertCount(1, $this->dm->getRepository(Sdk::class)->findAll());
+        self::assertCount(1, $this->sdkRepo->findAll());
 
         self::assertEquals('Key', $data->getKey());
         self::assertEquals('Value', $data->getValue());
@@ -85,6 +95,7 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers SdkManager::update
+     * @throws Exception
      */
     public function testUpdate(): void
     {
@@ -97,7 +108,7 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
         );
 
         $this->dm->clear();
-        self::assertCount(1, $this->dm->getRepository(Sdk::class)->findAll());
+        self::assertCount(1, $this->sdkRepo->findAll());
 
         self::assertEquals('Key', $data->getKey());
         self::assertEquals('Value', $data->getValue());
@@ -105,13 +116,15 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers SdkManager::delete
+     * @throws Exception
      */
     public function testDelete(): void
     {
         $data = $this->manager->delete($this->createSdk('One'));
 
         $this->dm->clear();
-        self::assertCount(0, $this->dm->getRepository(Sdk::class)->findAll());
+
+        self::assertCount(0, $this->sdkRepo->findAll());
 
         self::assertEquals('One', $data->getKey());
         self::assertEquals('One', $data->getValue());
@@ -121,6 +134,7 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
      * @param string $string
      *
      * @return Sdk
+     * @throws Exception
      */
     private function createSdk(string $string): Sdk
     {

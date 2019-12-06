@@ -15,7 +15,7 @@ class ElasticLogs implements LogsInterface
     /**
      * @param GridRequestDto $dto
      *
-     * @return array
+     * @return mixed[]
      */
     public function getData(GridRequestDto $dto): array
     {

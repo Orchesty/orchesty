@@ -69,9 +69,9 @@ class MongoMetricsManager extends MetricsManagerAbstract
     /**
      * @param Node     $node
      * @param Topology $topology
-     * @param array    $params
+     * @param mixed[]  $params
      *
-     * @return array
+     * @return mixed[]
      * @throws DateTimeException
      */
     public function getNodeMetrics(Node $node, Topology $topology, array $params): array
@@ -101,9 +101,9 @@ class MongoMetricsManager extends MetricsManagerAbstract
 
     /**
      * @param Topology $topology
-     * @param array    $params
+     * @param mixed[]  $params
      *
-     * @return array
+     * @return mixed[]
      * @throws DateTimeException
      */
     public function getTopologyProcessTimeMetrics(Topology $topology, array $params): array
@@ -126,9 +126,9 @@ class MongoMetricsManager extends MetricsManagerAbstract
 
     /**
      * @param Topology $topology
-     * @param array    $params
+     * @param mixed[]  $params
      *
-     * @return array
+     * @return mixed[]
      * @throws DateTimeException
      * @throws MongoDBException
      */
@@ -150,9 +150,9 @@ class MongoMetricsManager extends MetricsManagerAbstract
      */
 
     /**
-     * @param array  $where
-     * @param string $dateFrom
-     * @param string $dateTo
+     * @param mixed[] $where
+     * @param string  $dateFrom
+     * @param string  $dateTo
      *
      * @return MetricsDto
      * @throws DateTimeException
@@ -195,9 +195,9 @@ class MongoMetricsManager extends MetricsManagerAbstract
     }
 
     /**
-     * @param array  $where
-     * @param string $dateFrom
-     * @param string $dateTo
+     * @param mixed[] $where
+     * @param string  $dateFrom
+     * @param string  $dateTo
      *
      * @return MetricsDto
      * @throws DateTimeException
@@ -243,9 +243,9 @@ class MongoMetricsManager extends MetricsManagerAbstract
     }
 
     /**
-     * @param array  $where
-     * @param string $dateFrom
-     * @param string $dateTo
+     * @param mixed[] $where
+     * @param string  $dateFrom
+     * @param string  $dateTo
      *
      * @return MetricsDto
      * @throws DateTimeException
@@ -288,11 +288,11 @@ class MongoMetricsManager extends MetricsManagerAbstract
     }
 
     /**
-     * @param array  $where
-     * @param string $dateFrom
-     * @param string $dateTo
+     * @param mixed[] $where
+     * @param string  $dateFrom
+     * @param string  $dateTo
      *
-     * @return array
+     * @return mixed[]
      * @throws DateTimeException
      */
     private function counterProcessMetrics(
@@ -349,11 +349,11 @@ class MongoMetricsManager extends MetricsManagerAbstract
     }
 
     /**
-     * @param array  $where
-     * @param string $dateFrom
-     * @param string $dateTo
+     * @param mixed[] $where
+     * @param string  $dateFrom
+     * @param string  $dateTo
      *
-     * @return array
+     * @return mixed[]
      * @throws DateTimeException
      */
     private function bridgesNodeMetrics(
@@ -426,11 +426,11 @@ class MongoMetricsManager extends MetricsManagerAbstract
     }
 
     /**
-     * @param array  $where
-     * @param string $dateFrom
-     * @param string $dateTo
+     * @param mixed[] $where
+     * @param string  $dateFrom
+     * @param string  $dateTo
      *
-     * @return array
+     * @return mixed[]
      * @throws DateTimeException
      */
     private function requestsCountAggregation(
@@ -453,7 +453,7 @@ class MongoMetricsManager extends MetricsManagerAbstract
             ->execute()
             ->toArray();
 
-        /** @var array $res */
+        /** @var mixed[] $res */
         $res = array_combine(
             array_column($res, '_id'),
             array_column($res, 'count'),
@@ -476,7 +476,7 @@ class MongoMetricsManager extends MetricsManagerAbstract
      * @param Builder $qb
      * @param string  $dateFrom
      * @param string  $dateTo
-     * @param array   $where
+     * @param mixed[] $where
      * @param string  $document
      *
      * @throws DateTimeException
@@ -504,7 +504,7 @@ class MongoMetricsManager extends MetricsManagerAbstract
     /**
      * @param string $document
      *
-     * @return array
+     * @return mixed[]
      */
     private function allowedTags(string $document): array
     {
@@ -523,9 +523,9 @@ class MongoMetricsManager extends MetricsManagerAbstract
     }
 
     /**
-     * @param array $params
+     * @param mixed[] $params
      *
-     * @return array
+     * @return mixed[]
      */
     private function parseDateRange(array $params): array
     {

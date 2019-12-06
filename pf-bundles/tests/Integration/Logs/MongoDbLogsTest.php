@@ -11,7 +11,6 @@ use Hanaboso\PipesFramework\Logs\Document\Logs;
 use Hanaboso\PipesFramework\Logs\Document\Pipes;
 use Hanaboso\PipesFramework\Logs\Document\Stacktrace;
 use Tests\DatabaseTestCaseAbstract;
-use Tests\PrivateTrait;
 
 /**
  * Class MongoDbLogsTest
@@ -20,8 +19,6 @@ use Tests\PrivateTrait;
  */
 final class MongoDbLogsTest extends DatabaseTestCaseAbstract
 {
-
-    use PrivateTrait;
 
     /**
      * @throws Exception

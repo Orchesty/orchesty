@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesFramework\Configurator\Model;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\CommonsBundle\Database\Document\Node;
 use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator;
 use Hanaboso\CommonsBundle\Enum\HandlerEnum;
@@ -35,12 +36,13 @@ class NodeManager
     }
 
     /**
-     * @param Node  $node
-     * @param array $data
+     * @param Node    $node
+     * @param mixed[] $data
      *
      * @return Node
      * @throws NodeException
      * @throws EnumException
+     * @throws MongoDBException
      */
     public function updateNode(Node $node, array $data): Node
     {

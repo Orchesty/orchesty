@@ -38,7 +38,7 @@ class HbPFLogsExtension extends Extension implements PrependExtensionInterface
     }
 
     /**
-     * @param array            $configs
+     * @param mixed[]          $configs
      * @param ContainerBuilder $container
      *
      * @throws Exception

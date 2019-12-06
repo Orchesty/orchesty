@@ -22,7 +22,7 @@ class TopologiesComparator
 {
 
     /**
-     * @var array
+     * @var mixed[]
      */
     private $dirs;
 
@@ -35,7 +35,7 @@ class TopologiesComparator
      * TopologiesComparator constructor.
      *
      * @param TopologyRepository $repository
-     * @param array              $dirs
+     * @param mixed[]            $dirs
      */
     public function __construct(TopologyRepository $repository, array $dirs)
     {
@@ -73,7 +73,7 @@ class TopologiesComparator
     }
 
     /**
-     * @return array|SplFileInfo[]
+     * @return mixed[]|SplFileInfo[]
      */
     private function prepareFiles(): array
     {

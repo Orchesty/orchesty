@@ -14,6 +14,7 @@ services:
         environment:
             - DEV_UID=${DEV_UID}
             - DEV_GID=${DEV_GID}
+            - KERNEL_CLASS=Hanaboso\PipesFramework\Kernel
             - COMPOSER_HOME=/home/dev/.composer
             - PHP_IDE_CONFIG=${PHP_IDE_CONFIG}
             - GENERATOR_PATH=${GENERATOR_PATH}

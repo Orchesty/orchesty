@@ -51,7 +51,7 @@ class InstallManager implements LoggerAwareInterface
     private $comparator;
 
     /**
-     * @var Client
+     * @var Client<mixed>
      */
     private $client;
 
@@ -86,7 +86,7 @@ class InstallManager implements LoggerAwareInterface
      * @param bool $makeDelete
      * @param bool $force
      *
-     * @return array
+     * @return mixed[]
      * @throws ConnectorException
      * @throws MongoDBException
      * @throws TopologyException
@@ -107,11 +107,11 @@ class InstallManager implements LoggerAwareInterface
      * InstallManager constructor.
      *
      * @param DocumentManager         $dm
-     * @param Client                  $client
+     * @param Client<mixed>           $client
      * @param TopologyManager         $topologyManager
      * @param TopologyGeneratorBridge $requestHandler
      * @param CategoryParser          $categoryParser
-     * @param array                   $dirs
+     * @param mixed[]                 $dirs
      */
     public function __construct(
         DocumentManager $dm,
@@ -151,7 +151,7 @@ class InstallManager implements LoggerAwareInterface
      * @param bool $makeUpdate
      * @param bool $makeDelete
      *
-     * @return array
+     * @return mixed[]
      * @throws ConnectorException
      */
     public function makeInstall(bool $makeCreate, bool $makeUpdate, bool $makeDelete): array
@@ -189,7 +189,7 @@ class InstallManager implements LoggerAwareInterface
      * @param bool             $makeUpdate
      * @param bool             $makeDelete
      *
-     * @return array
+     * @return mixed[]
      */
     private function generateOutput(CompareResultDto $dto, bool $makeCreate, bool $makeUpdate, bool $makeDelete): array
     {
@@ -199,7 +199,7 @@ class InstallManager implements LoggerAwareInterface
     /**
      * @param CompareResultDto $dto
      *
-     * @return array
+     * @return mixed[]
      */
     private function makeCreate(CompareResultDto $dto): array
     {
@@ -226,7 +226,7 @@ class InstallManager implements LoggerAwareInterface
     /**
      * @param CompareResultDto $dto
      *
-     * @return array
+     * @return mixed[]
      */
     private function makeUpdate(CompareResultDto $dto): array
     {
@@ -256,7 +256,7 @@ class InstallManager implements LoggerAwareInterface
     /**
      * @param CompareResultDto $dto
      *
-     * @return array
+     * @return mixed[]
      */
     private function makeDelete(CompareResultDto $dto): array
     {

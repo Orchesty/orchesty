@@ -47,7 +47,7 @@ class HbPFConfiguratorExtension extends Extension implements PrependExtensionInt
     /**
      * Loads a specific configuration.
      *
-     * @param array            $configs   An array of configuration values
+     * @param mixed[]          $configs   An array of configuration values
      * @param ContainerBuilder $container A ContainerBuilder instance
      *
      * @throws InvalidArgumentException When provided tag is not defined in this extension

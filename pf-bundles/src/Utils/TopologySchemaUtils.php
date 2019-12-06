@@ -52,7 +52,7 @@ class TopologySchemaUtils
     private const REPEATER_INTERVAL = '@pipes:repeaterInterval';
 
     /**
-     * @var array
+     * @var mixed[]
      */
     private static $bpmnHandlers = [
         self::BPMN_START_EVENT,
@@ -64,14 +64,14 @@ class TopologySchemaUtils
     ];
 
     /**
-     * @var array
+     * @var mixed[]
      */
     private static $handlers = [
         self::START_EVENT, self::TASK, self::EVENT, self::END_EVENT, self::GATEWAY, self::EXCLUSIVE_GATEWAY,
     ];
 
     /**
-     * @param array $data
+     * @param mixed[] $data
      *
      * @return Schema
      */
@@ -180,7 +180,7 @@ class TopologySchemaUtils
     }
 
     /**
-     * @param array $data
+     * @param mixed[] $data
      *
      * @return SystemConfigDto
      */

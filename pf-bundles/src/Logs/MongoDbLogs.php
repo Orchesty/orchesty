@@ -64,7 +64,7 @@ class MongoDbLogs implements LogsInterface
     /**
      * @param GridRequestDto $dto
      *
-     * @return array
+     * @return mixed[]
      * @throws MongoDBException
      * @throws Exception
      */
@@ -114,9 +114,9 @@ class MongoDbLogs implements LogsInterface
 
     /**
      * @param GridRequestDto $dto
-     * @param array          $result
+     * @param mixed[]        $result
      *
-     * @return array
+     * @return mixed[]
      * @throws MongoDBException
      * @throws Exception
      */
@@ -172,10 +172,10 @@ class MongoDbLogs implements LogsInterface
     }
 
     /**
-     * @param array  $data
-     * @param string $property
+     * @param mixed[] $data
+     * @param string  $property
      *
-     * @return array|string|NULL
+     * @return mixed[]|string|NULL
      */
     private function getNonEmptyValue(array $data, string $property)
     {

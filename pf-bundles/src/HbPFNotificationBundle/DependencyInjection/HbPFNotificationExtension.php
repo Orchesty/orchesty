@@ -17,7 +17,7 @@ class HbPFNotificationExtension extends Extension
 {
 
     /**
-     * @param array            $configs
+     * @param mixed[]          $configs
      * @param ContainerBuilder $container
      *
      * @throws Exception

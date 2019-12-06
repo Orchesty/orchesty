@@ -10,7 +10,7 @@ use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
  *
  * @package Hanaboso\PipesFramework\Configurator\Document
  *
- * @ODM\Document()
+ * @ODM\Document(repositoryClass="Hanaboso\PipesFramework\Configurator\Repository\SdkRepository")
  */
 class Sdk
 {
@@ -76,7 +76,7 @@ class Sdk
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function toArray(): array
     {

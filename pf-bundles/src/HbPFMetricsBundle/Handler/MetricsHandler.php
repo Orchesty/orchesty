@@ -41,10 +41,10 @@ class MetricsHandler
     }
 
     /**
-     * @param string $topologyId
-     * @param array  $params
+     * @param string  $topologyId
+     * @param mixed[] $params
      *
-     * @return array
+     * @return mixed[]
      * @throws LockException
      * @throws MappingException
      * @throws MetricsException
@@ -55,11 +55,11 @@ class MetricsHandler
     }
 
     /**
-     * @param string $topologyId
-     * @param string $nodeId
-     * @param array  $params
+     * @param string  $topologyId
+     * @param string  $nodeId
+     * @param mixed[] $params
      *
-     * @return array
+     * @return mixed[]
      * @throws LockException
      * @throws MappingException
      * @throws MetricsException
@@ -74,10 +74,10 @@ class MetricsHandler
     }
 
     /**
-     * @param string $topologyId
-     * @param array  $params
+     * @param string  $topologyId
+     * @param mixed[] $params
      *
-     * @return array
+     * @return mixed[]
      * @throws LockException
      * @throws MappingException
      * @throws MetricsException

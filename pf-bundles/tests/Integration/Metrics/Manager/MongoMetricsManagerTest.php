@@ -10,7 +10,6 @@ use Hanaboso\CommonsBundle\Utils\GeneratorUtils;
 use Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager;
 use MongoDB\Client;
 use Tests\KernelTestCaseAbstract;
-use Tests\PrivateTrait;
 
 /**
  * Class MongoMetricsManagerTest
@@ -19,8 +18,6 @@ use Tests\PrivateTrait;
  */
 final class MongoMetricsManagerTest extends KernelTestCaseAbstract
 {
-
-    use PrivateTrait;
 
     /**
      * @covers MongoMetricsManager::getNodeMetrics

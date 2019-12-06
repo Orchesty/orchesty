@@ -15,7 +15,7 @@ class IncludeCommands extends BundleApplication
 {
 
     /**
-     * @var array
+     * @var mixed[]
      */
     protected $defaultCommands = [
         'user:create',
@@ -31,7 +31,7 @@ class IncludeCommands extends BundleApplication
     ];
 
     /**
-     * @var array
+     * @var mixed[]
      */
     protected $includedCommands = [];
 
@@ -48,7 +48,7 @@ class IncludeCommands extends BundleApplication
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getIncludedCommands(): array
     {

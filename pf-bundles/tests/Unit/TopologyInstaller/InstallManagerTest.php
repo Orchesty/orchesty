@@ -16,19 +16,16 @@ use Hanaboso\PipesFramework\TopologyInstaller\Dto\UpdateObject;
 use Hanaboso\PipesFramework\TopologyInstaller\InstallManager;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use Predis\Client;
-use Tests\PrivateTrait;
+use Tests\KernelTestCaseAbstract;
 
 /**
  * Class InstallManagerTest
  *
  * @package Tests\Unit\TopologyInstaller
  */
-final class InstallManagerTest extends TestCase
+final class InstallManagerTest extends KernelTestCaseAbstract
 {
-
-    use PrivateTrait;
 
     /**
      * @throws Exception
@@ -80,7 +77,7 @@ final class InstallManagerTest extends TestCase
     /**
      * @param string|null $redisResult
      * @param Topology    $savedTopo
-     * @param array       $dirs
+     * @param mixed[]     $dirs
      *
      * @return InstallManager
      * @throws Exception
@@ -91,13 +88,13 @@ final class InstallManagerTest extends TestCase
         array $dirs = []
     ): InstallManager
     {
-        /** @var DocumentManager|MockObject $dm */
         $repo = $this->createMock(TopologyRepository::class);
-        $dm   = $this->createMock(DocumentManager::class);
+        /** @var DocumentManager|MockObject $dm */
+        $dm = $this->createMock(DocumentManager::class);
         $dm->method('getRepository')->willReturn($repo);
         $dm->method('persist')->willReturn(TRUE);
 
-        /** @var Client|MockObject $client */
+        /** @var Client<mixed>|MockObject $client */
         $client = $this->getMockBuilder(Client::class)->setMethods(['set', 'get', 'del'])->getMock();
         $client->method('set')->willReturn(TRUE);
         $client->method('get')->willReturn($redisResult);

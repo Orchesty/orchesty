@@ -109,7 +109,7 @@ abstract class MetricsManagerAbstract implements LoggerAwareInterface
     protected const PROCESS_TIME_KEY = 'process_time_%s';
 
     /**
-     * @var NodeRepository|ObjectRepository
+     * @var ObjectRepository<Node>&NodeRepository
      */
     protected $nodeRepository;
 
@@ -187,9 +187,9 @@ abstract class MetricsManagerAbstract implements LoggerAwareInterface
 
     /**
      * @param Topology $topology
-     * @param array    $params
+     * @param mixed[]  $params
      *
-     * @return array
+     * @return mixed[]
      */
     public function getTopologyMetrics(Topology $topology, array $params): array
     {
@@ -215,25 +215,25 @@ abstract class MetricsManagerAbstract implements LoggerAwareInterface
     /**
      * @param Node     $node
      * @param Topology $topology
-     * @param array    $params
+     * @param mixed[]  $params
      *
-     * @return array
+     * @return mixed[]
      */
     public abstract function getNodeMetrics(Node $node, Topology $topology, array $params): array;
 
     /**
      * @param Topology $topology
-     * @param array    $params
+     * @param mixed[]  $params
      *
-     * @return array
+     * @return mixed[]
      */
     public abstract function getTopologyProcessTimeMetrics(Topology $topology, array $params): array;
 
     /**
      * @param Topology $topology
-     * @param array    $params
+     * @param mixed[]  $params
      *
-     * @return array
+     * @return mixed[]
      */
     public abstract function getTopologyRequestCountMetrics(Topology $topology, array $params): array;
 
@@ -246,7 +246,7 @@ abstract class MetricsManagerAbstract implements LoggerAwareInterface
      * @param MetricsDto $error
      * @param MetricsDto $counter
      *
-     * @return array
+     * @return mixed[]
      */
     protected function generateOutput(
         MetricsDto $queue,

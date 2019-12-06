@@ -27,7 +27,7 @@ class TplgLoader
     /**
      * @param string $dir
      *
-     * @return array
+     * @return mixed[]
      */
     public function load(string $dir): array
     {

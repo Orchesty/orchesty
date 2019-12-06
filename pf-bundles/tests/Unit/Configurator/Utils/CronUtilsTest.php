@@ -7,7 +7,6 @@ use Hanaboso\CommonsBundle\Database\Document\Node;
 use Hanaboso\CommonsBundle\Database\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Utils\CronUtils;
 use Tests\KernelTestCaseAbstract;
-use Tests\PrivateTrait;
 
 /**
  * Class CronUtilsTest
@@ -16,8 +15,6 @@ use Tests\PrivateTrait;
  */
 final class CronUtilsTest extends KernelTestCaseAbstract
 {
-
-    use PrivateTrait;
 
     /**
      * @throws Exception

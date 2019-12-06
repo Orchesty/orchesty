@@ -121,6 +121,8 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
+     * @phpstan-param class-string<mixed> $className
+     *
      * @param string $className
      * @param string $methodName
      */

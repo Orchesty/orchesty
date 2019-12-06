@@ -38,7 +38,7 @@ class ControllerExceptionListener implements EventSubscriberInterface, LoggerAwa
     use ControllerTrait;
 
     /**
-     * @var array
+     * @var mixed[]
      */
     protected $exceptionClasses = [
         ApplicationInstallException::class,
@@ -68,7 +68,7 @@ class ControllerExceptionListener implements EventSubscriberInterface, LoggerAwa
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public static function getSubscribedEvents(): array
     {
@@ -107,7 +107,7 @@ class ControllerExceptionListener implements EventSubscriberInterface, LoggerAwa
     }
 
     /**
-     * @param array $exceptionClasses
+     * @param mixed[] $exceptionClasses
      *
      * @return ControllerExceptionListener
      */

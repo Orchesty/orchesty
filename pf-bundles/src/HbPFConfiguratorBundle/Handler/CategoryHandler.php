@@ -44,7 +44,7 @@ class CategoryHandler
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getCategories(): array
     {
@@ -65,12 +65,13 @@ class CategoryHandler
     }
 
     /**
-     * @param array $data
+     * @param mixed[] $data
      *
-     * @return array
+     * @return mixed[]
      * @throws CategoryException
      * @throws LockException
      * @throws MappingException
+     * @throws MongoDBException
      */
     public function createCategory(array $data): array
     {
@@ -80,13 +81,14 @@ class CategoryHandler
     }
 
     /**
-     * @param string $id
-     * @param array  $data
+     * @param string  $id
+     * @param mixed[] $data
      *
-     * @return array
+     * @return mixed[]
      * @throws CategoryException
      * @throws LockException
      * @throws MappingException
+     * @throws MongoDBException
      */
     public function updateCategory(string $id, array $data): array
     {
@@ -100,7 +102,7 @@ class CategoryHandler
     /**
      * @param string $id
      *
-     * @return array
+     * @return mixed[]
      * @throws CategoryException
      * @throws MongoDBException
      * @throws MappingException
@@ -135,7 +137,7 @@ class CategoryHandler
     /**
      * @param Category $category
      *
-     * @return array
+     * @return mixed[]
      */
     private function getCategoryData(Category $category): array
     {

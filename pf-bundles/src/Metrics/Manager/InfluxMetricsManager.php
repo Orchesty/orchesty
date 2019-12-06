@@ -56,9 +56,9 @@ class InfluxMetricsManager extends MetricsManagerAbstract
     /**
      * @param Node     $node
      * @param Topology $topology
-     * @param array    $params
+     * @param mixed[]  $params
      *
-     * @return array
+     * @return mixed[]
      * @throws MetricsException
      * @throws DateTimeException
      */
@@ -135,9 +135,9 @@ class InfluxMetricsManager extends MetricsManagerAbstract
 
     /**
      * @param Topology $topology
-     * @param array    $params
+     * @param mixed[]  $params
      *
-     * @return array
+     * @return mixed[]
      * @throws MetricsException
      * @throws DateTimeException
      */
@@ -166,9 +166,9 @@ class InfluxMetricsManager extends MetricsManagerAbstract
 
     /**
      * @param Topology $topology
-     * @param array    $params
+     * @param mixed[]  $params
      *
-     * @return array
+     * @return mixed[]
      * @throws MetricsException
      * @throws DateTimeException
      */
@@ -206,13 +206,13 @@ class InfluxMetricsManager extends MetricsManagerAbstract
     /**
      * @param string      $select
      * @param string      $from
-     * @param array       $where
+     * @param mixed[]     $where
      * @param string|NULL $group
      * @param string|NULL $dateFrom
      * @param string|NULL $dateTo
      * @param bool        $forGraph
      *
-     * @return array
+     * @return mixed[]
      * @throws MetricsException
      * @throws DateTimeException
      */
@@ -258,9 +258,9 @@ class InfluxMetricsManager extends MetricsManagerAbstract
     }
 
     /**
-     * @param array $series
+     * @param mixed[] $series
      *
-     * @return array $points
+     * @return mixed[] $points
      */
     public function getPoints(array $series): array
     {
@@ -278,9 +278,9 @@ class InfluxMetricsManager extends MetricsManagerAbstract
     }
 
     /**
-     * @param array $serie
+     * @param mixed[] $serie
      *
-     * @return array
+     * @return mixed[]
      */
     private function getPointsFromSerie(array $serie): array
     {
@@ -295,7 +295,7 @@ class InfluxMetricsManager extends MetricsManagerAbstract
 
     /**
      * @param MetricsDto $dto
-     * @param array      $result
+     * @param mixed[]    $result
      * @param string     $type
      *
      * @return void
@@ -309,9 +309,9 @@ class InfluxMetricsManager extends MetricsManagerAbstract
     }
 
     /**
-     * @param array $result
+     * @param mixed[] $result
      *
-     * @return array
+     * @return mixed[]
      */
     private function processResultSet(array $result): array
     {
@@ -354,9 +354,9 @@ class InfluxMetricsManager extends MetricsManagerAbstract
     }
 
     /**
-     * @param array $series
+     * @param mixed[] $series
      *
-     * @return array
+     * @return mixed[]
      * @throws DateTimeException
      */
     private function processGraphResult(array $series): array
@@ -374,10 +374,10 @@ class InfluxMetricsManager extends MetricsManagerAbstract
     }
 
     /**
-     * @param array  $data
-     * @param string $delimiter
+     * @param mixed[] $data
+     * @param string  $delimiter
      *
-     * @return array
+     * @return mixed[]
      */
     private static function getConditions(array $data, string $delimiter = 'or'): array
     {
@@ -402,8 +402,8 @@ class InfluxMetricsManager extends MetricsManagerAbstract
     }
 
     /**
-     * @param array  $data
-     * @param string $function
+     * @param mixed[] $data
+     * @param string  $function
      *
      * @return string
      */
@@ -413,8 +413,8 @@ class InfluxMetricsManager extends MetricsManagerAbstract
     }
 
     /**
-     * @param array  $data
-     * @param string $function
+     * @param mixed[] $data
+     * @param string  $function
      *
      * @return string
      */

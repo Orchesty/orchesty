@@ -31,7 +31,7 @@ class NotificationHandler
     }
 
     /**
-     * @return array
+     * @return mixed[]
      * @throws NotificationException
      * @throws CurlException
      */
@@ -43,7 +43,7 @@ class NotificationHandler
     /**
      * @param string $id
      *
-     * @return array
+     * @return mixed[]
      * @throws CurlException
      * @throws NotificationException
      */
@@ -53,10 +53,10 @@ class NotificationHandler
     }
 
     /**
-     * @param string $id
-     * @param array  $data
+     * @param string  $id
+     * @param mixed[] $data
      *
-     * @return array
+     * @return mixed[]
      * @throws CurlException
      * @throws NotificationException
      */
