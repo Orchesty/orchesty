@@ -14,6 +14,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
  * Class HbPFAppStoreExtension
  *
  * @package Hanaboso\HbPFAppStore\DependencyInjection
+ * @codeCoverageIgnore
  */
 class HbPFAppStoreExtension extends Extension implements PrependExtensionInterface
 {

@@ -15,6 +15,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
  * Class HbPFLogsExtension
  *
  * @package Hanaboso\PipesFramework\HbPFLogsBundle\DependencyInjection
+ * @codeCoverageIgnore
  */
 class HbPFLogsExtension extends Extension implements PrependExtensionInterface
 {

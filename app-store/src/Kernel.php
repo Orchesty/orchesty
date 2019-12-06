@@ -16,6 +16,7 @@ use Symfony\Component\Routing\RouteCollectionBuilder;
  * Class Kernel
  *
  * @package Hanaboso\HbPFAppStore
+ * @codeCoverageIgnore
  */
 class Kernel extends BaseKernel
 {

@@ -4,8 +4,8 @@ namespace Tests;
 
 use Exception;
 use Hanaboso\CommonsBundle\Utils\Json;
+use Hanaboso\PhpCheckUtils\PhpUnit\Traits\ControllerTestTrait;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\BrowserKit\Client;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
@@ -17,10 +17,7 @@ use Throwable;
 abstract class ControllerTestCaseAbstract extends WebTestCase
 {
 
-    /**
-     * @var Client
-     */
-    protected static $client;
+    use ControllerTestTrait;
 
     /**
      * @throws Exception
@@ -28,32 +25,32 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->setupClient();
+        $this->startClient();
 
     }
 
     /**
-     * @param string $url
-     * @param array  $parameters
-     * @param array  $headers
+     * @param string  $url
+     * @param mixed[] $parameters
+     * @param mixed[] $headers
      *
      * @return ControllerResponse
      */
     protected function sendGet(string $url, array $parameters = [], array $headers = []): ControllerResponse
     {
-        self::$client->request('GET', $url, $parameters, [], $headers);
+        $this->client->request('GET', $url, $parameters, [], $headers);
         /** @var Response $response */
-        $response = self::$client->getResponse();
+        $response = $this->client->getResponse();
 
         return $this->processResponse($response);
     }
 
     /**
-     * @param string $url
-     * @param array  $parameters
-     * @param array  $headers
-     * @param string $content
-     * @param array  $files
+     * @param string  $url
+     * @param mixed[] $parameters
+     * @param mixed[] $headers
+     * @param string  $content
+     * @param mixed[] $files
      *
      * @return ControllerResponse
      */
@@ -65,18 +62,18 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
         array $files = []
     ): ControllerResponse
     {
-        self::$client->request('POST', $url, $parameters, $files, $headers, $content);
+        $this->client->request('POST', $url, $parameters, $files, $headers, $content);
         /** @var Response $response */
-        $response = self::$client->getResponse();
+        $response = $this->client->getResponse();
 
         return $this->processResponse($response);
     }
 
     /**
-     * @param string $url
-     * @param array  $parameters
-     * @param array  $headers
-     * @param array  $files
+     * @param string  $url
+     * @param mixed[] $parameters
+     * @param mixed[] $headers
+     * @param mixed[] $files
      *
      * @return ControllerResponse
      */
@@ -87,24 +84,24 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
         array $files = []
     ): ControllerResponse
     {
-        self::$client->request('PUT', $url, $parameters, $files, $headers);
+        $this->client->request('PUT', $url, $parameters, $files, $headers);
         /** @var Response $response */
-        $response = self::$client->getResponse();
+        $response = $this->client->getResponse();
 
         return $this->processResponse($response);
     }
 
     /**
-     * @param string $url
-     * @param array  $headers
+     * @param string  $url
+     * @param mixed[] $headers
      *
      * @return ControllerResponse
      */
     protected function sendDelete(string $url, array $headers = []): ControllerResponse
     {
-        self::$client->request('DELETE', $url, [], [], $headers);
+        $this->client->request('DELETE', $url, [], [], $headers);
         /** @var Response $response */
-        $response = self::$client->getResponse();
+        $response = $this->client->getResponse();
 
         return $this->processResponse($response);
     }
@@ -112,7 +109,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     /**
      * @param ControllerResponse $response
      * @param int                $status
-     * @param array              $content
+     * @param mixed[]            $content
      */
     protected function assertResponse(ControllerResponse $response, int $status = 200, array $content = []): void
     {
@@ -149,14 +146,6 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
         }
 
         return new ControllerResponse($response->getStatusCode(), $innerContent ?: $content);
-    }
-
-    /**
-     *
-     */
-    protected function setupClient(): void
-    {
-        self::$client = self::createClient([], []);
     }
 
 }

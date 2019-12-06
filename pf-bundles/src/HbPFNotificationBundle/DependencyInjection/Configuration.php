@@ -10,6 +10,7 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
  * Class Configuration
  *
  * @package Hanaboso\PipesFramework\HbPFNotificationBundle\DependencyInjection
+ * @codeCoverageIgnore
  */
 class Configuration implements ConfigurationInterface
 {

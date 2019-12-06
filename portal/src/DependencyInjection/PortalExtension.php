@@ -12,12 +12,13 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
  * Class PortalExtension
  *
  * @package Hanaboso\Portal\DependencyInjection
+ * @codeCoverageIgnore
  */
 class PortalExtension extends Extension
 {
 
     /**
-     * @param array            $configs
+     * @param mixed[]          $configs
      * @param ContainerBuilder $container
      *
      * @throws Exception

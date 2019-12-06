@@ -11,6 +11,7 @@ services:
             - ${HOME}/dev/.composer:${HOME}/dev/.composer
         environment:
             - APP_ENV=dev
+            - KERNEL_CLASS=Hanaboso\Portal\Kernel
             - DEV_UID=${DEV_UID}
             - DEV_GID=${DEV_GID}
             - PHP_IDE_CONFIG=${PHP_IDE_CONFIG}

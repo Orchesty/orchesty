@@ -31,7 +31,7 @@ class Installer
     public const LOGSTASH      = 'logstash';
 
     /**
-     * @var array
+     * @var mixed[]
      */
     protected $logsServices = [
         'logs' => [
@@ -41,7 +41,7 @@ class Installer
     ];
 
     /**
-     * @var array
+     * @var mixed[]
      */
     protected $metricsServices = [
         'metrics' => [
@@ -52,7 +52,7 @@ class Installer
     ];
 
     /**
-     * @var array
+     * @var mixed[]
      */
     protected $coreServices = [
         'core' => [
@@ -74,7 +74,7 @@ class Installer
     ];
 
     /**
-     * @var array
+     * @var mixed[]
      */
     protected $databases = [
         'databases' => [
@@ -85,7 +85,7 @@ class Installer
     ];
 
     /**
-     * @var array
+     * @var mixed[]
      */
     protected $logsVolumes = [
         'logs' => [
@@ -94,7 +94,7 @@ class Installer
     ];
 
     /**
-     * @var array
+     * @var mixed[]
      */
     protected $metricsVolumes = [
         'metrics' => [
@@ -103,7 +103,7 @@ class Installer
     ];
 
     /**
-     * @var array
+     * @var mixed[]
      */
     protected $monolithEnvironments = [
         'BACKEND_HOST'         => '${BACKEND_URL}/',
@@ -118,7 +118,7 @@ class Installer
     ];
 
     /**
-     * @var array
+     * @var mixed[]
      */
     protected $pfBridgeEnvironments = [
         'RABBITMQ_HOST'    => self::RABBITMQ,
@@ -137,7 +137,7 @@ class Installer
     ];
 
     /**
-     * @var array
+     * @var mixed[]
      */
     protected $notificationEnvironments = [
         'RABBIT_HOST' => self::RABBITMQ,
@@ -162,10 +162,10 @@ class Installer
     }
 
     /**
-     * @param string $value
-     * @param array  $array
+     * @param string  $value
+     * @param mixed[] $array
      *
-     * @return array
+     * @return mixed[]
      * @throws Exception
      */
     public function unsetValue(string $value, array $array): array
@@ -184,13 +184,11 @@ class Installer
     /**
      * @param DataTransport $dto
      *
-     * @return array
+     * @return mixed[]
      */
     public function createArray(DataTransport $dto): array
     {
-
-        $installer = [];
-
+        $installer    = [];
         $installer[0] = array_merge(
             $this->getVersion(),
             $this->getComponent('services', $dto),
@@ -225,7 +223,7 @@ class Installer
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     protected function getBatchServices(): array
     {
@@ -241,7 +239,7 @@ class Installer
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     protected function getBatchConnectorServices(): array
     {
@@ -256,7 +254,7 @@ class Installer
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     protected function getLongRunningNodeServices(): array
     {
@@ -270,7 +268,7 @@ class Installer
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     protected function getStatusServiceServices(): array
     {
@@ -284,7 +282,7 @@ class Installer
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     protected function getMultiProbeServices(): array
     {
@@ -305,7 +303,7 @@ class Installer
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     protected function getMultiCounterServices(): array
     {
@@ -320,7 +318,7 @@ class Installer
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     protected function getStartingPointServices(): array
     {
@@ -345,7 +343,7 @@ class Installer
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     protected function getRepeaterServices(): array
     {
@@ -360,7 +358,7 @@ class Installer
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     protected function getMonolithApiServices(): array
     {
@@ -375,7 +373,7 @@ class Installer
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     protected function getNotificationSenderApiServices(): array
     {
@@ -390,7 +388,7 @@ class Installer
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     protected function getTopologyApiServices(): array
     {
@@ -418,7 +416,7 @@ class Installer
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     protected function getNotificationSenderConsumerServices(): array
     {
@@ -432,7 +430,7 @@ class Installer
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     protected function getFrontendServices(): array
     {
@@ -454,7 +452,7 @@ class Installer
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     protected function getStreamServices(): array
     {
@@ -473,7 +471,7 @@ class Installer
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     protected function getRabbitmqServices(): array
     {
@@ -487,7 +485,7 @@ class Installer
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     protected function getMongoServices(): array
     {
@@ -501,7 +499,7 @@ class Installer
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     protected function getRedisServices(): array
     {
@@ -515,7 +513,7 @@ class Installer
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     protected function getLogstashServices(): array
     {
@@ -534,7 +532,7 @@ class Installer
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     protected function getInfluxdbServices(): array
     {
@@ -551,7 +549,7 @@ class Installer
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     protected function getTelegrafServices(): array
     {
@@ -569,7 +567,7 @@ class Installer
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     protected function getKapacitorServices(): array
     {
@@ -583,7 +581,7 @@ class Installer
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     protected function getCronApiServices(): array
     {
@@ -596,7 +594,7 @@ class Installer
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     protected function getElasticsearchServices(): array
     {
@@ -614,7 +612,7 @@ class Installer
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     protected function getInfluxdbVolumes(): array
     {
@@ -626,7 +624,7 @@ class Installer
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     protected function getMongoVolumes(): array
     {
@@ -638,7 +636,7 @@ class Installer
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     protected function getElasticsearchVolumes(): array
     {
@@ -650,7 +648,7 @@ class Installer
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     protected function getRabbitmqVolumes(): array
     {
@@ -662,7 +660,7 @@ class Installer
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     protected function getRedisVolumes(): array
     {
@@ -675,7 +673,7 @@ class Installer
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     protected function getAllVolumes(): array
     {
@@ -685,7 +683,7 @@ class Installer
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     protected function getVolumes3(): array
     {
@@ -732,7 +730,7 @@ class Installer
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     private function getVersion(): array
     {
@@ -743,7 +741,7 @@ class Installer
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     private function getNetwork(): array
     {
@@ -761,7 +759,7 @@ class Installer
      * @param string        $component
      * @param DataTransport $dto
      *
-     * @return array
+     * @return mixed[]
      * @var DataTransport   $dto
      */
     private function createBaseComponent(string $component, DataTransport $dto): array
@@ -811,9 +809,9 @@ class Installer
     }
 
     /**
-     * @param array $item
+     * @param mixed[] $item
      *
-     * @return array
+     * @return mixed[]
      */
     private function resetComponent(array $item): array
     {
@@ -833,9 +831,9 @@ class Installer
     }
 
     /**
-     * @param array $metricsName
+     * @param mixed[] $metricsName
      *
-     * @return array
+     * @return mixed[]
      */
     private function unsetMetrics(array $metricsName): array
     {
@@ -855,7 +853,7 @@ class Installer
      * @param string        $component
      * @param DataTransport $dto
      *
-     * @return array
+     * @return mixed[]
      */
     private function getComponent(string $component, DataTransport $dto): array
     {

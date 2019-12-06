@@ -12,6 +12,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
  * Class HbPFNotificationExtension
  *
  * @package Hanaboso\PipesFramework\HbPFNotificationBundle\DependencyInjection
+ * @codeCoverageIgnore
  */
 class HbPFNotificationExtension extends Extension
 {

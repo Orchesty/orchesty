@@ -17,7 +17,7 @@ final class InstallerTest extends TestCase
     private const IMAGE = 'image';
 
     /**
-     * @var array
+     * @var mixed[]
      */
     protected $logsServices = [
         'logs' => [
@@ -86,7 +86,7 @@ final class InstallerTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     private function getPrimaryKeys(): array
     {
@@ -101,7 +101,7 @@ final class InstallerTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     private function getSecondaryKeysSorted(): array
     {
@@ -141,12 +141,12 @@ final class InstallerTest extends TestCase
     }
 
     /**
-     * @param string $valueLog
-     * @param string $valueMetric
-     * @param bool   $valueDatabase
-     * @param array  $array
+     * @param string  $valueLog
+     * @param string  $valueMetric
+     * @param bool    $valueDatabase
+     * @param mixed[] $array
      *
-     * @return array
+     * @return mixed[]
      */
     private function createTestArray(string $valueLog, string $valueMetric, bool $valueDatabase, array $array): array
     {
@@ -185,9 +185,9 @@ final class InstallerTest extends TestCase
     }
 
     /**
-     * @param array $array
+     * @param mixed[] $array
      *
-     * @return array
+     * @return mixed[]
      */
     private function createFinalTestArray(array $array): array
     {

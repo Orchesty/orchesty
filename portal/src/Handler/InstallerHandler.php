@@ -30,7 +30,7 @@ class InstallerHandler
     }
 
     /**
-     * @param array $data
+     * @param mixed[] $data
      *
      * @return string
      * @throws InstallerException

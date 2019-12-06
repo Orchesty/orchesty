@@ -16,6 +16,7 @@ use Symfony\Component\DependencyInjection\Definition;
  * Class LogsCompilerPass
  *
  * @package Hanaboso\PipesFramework\HbPFLogsBundle\DependencyInjection\Compiler
+ * @codeCoverageIgnore
  */
 class LogsCompilerPass implements CompilerPassInterface
 {
