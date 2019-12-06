@@ -15,7 +15,7 @@ final class StartingPointsFilter extends GridFilterAbstract
 {
 
     /**
-     * @return array
+     * @return mixed[]
      */
     protected function filterCols(): array
     {
@@ -25,7 +25,7 @@ final class StartingPointsFilter extends GridFilterAbstract
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     protected function orderCols(): array
     {
@@ -35,7 +35,7 @@ final class StartingPointsFilter extends GridFilterAbstract
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     protected function searchableCols(): array
     {

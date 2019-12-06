@@ -63,7 +63,7 @@ class TopologyConfigFactory
     public const NAME          = 'name';
 
     /**
-     * @var array
+     * @var mixed[]
      */
     private $configs;
 
@@ -73,14 +73,14 @@ class TopologyConfigFactory
     private $dm;
 
     /**
-     * @var ObjectRepository|NodeRepository
+     * @var ObjectRepository<Node>&NodeRepository
      */
     private $nodeRepo;
 
     /**
      * TopologyConfigFactory constructor.
      *
-     * @param array           $configs
+     * @param mixed[]         $configs
      * @param DocumentManager $dm
      */
     public function __construct(array $configs, DocumentManager $dm)
@@ -91,7 +91,7 @@ class TopologyConfigFactory
     }
 
     /**
-     * @param array $nodes
+     * @param mixed[] $nodes
      *
      * @return string
      * @throws LockException
@@ -109,9 +109,9 @@ class TopologyConfigFactory
     }
 
     /**
-     * @param array $nodes
+     * @param mixed[] $nodes
      *
-     * @return array
+     * @return mixed[]
      * @throws TopologyConfigException
      * @throws LockException
      * @throws MappingException
@@ -136,7 +136,7 @@ class TopologyConfigFactory
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     private function getEnvParameters(): array
     {
@@ -158,7 +158,7 @@ class TopologyConfigFactory
     /**
      * @param Node $node
      *
-     * @return array|null
+     * @return mixed[]|null
      */
     private function getFaucet(Node $node): ?array
     {
@@ -179,7 +179,7 @@ class TopologyConfigFactory
      * @param Node $node
      * @param bool $nextConnector
      *
-     * @return array
+     * @return mixed[]
      * @throws TopologyConfigException
      */
     private function getWorkers(Node $node, bool $nextConnector): array
@@ -261,7 +261,7 @@ class TopologyConfigFactory
      * @param Node $node
      * @param bool $nextConnector
      *
-     * @return array
+     * @return mixed[]
      * @throws TopologyConfigException
      */
     public function getPaths(Node $node, bool $nextConnector): array
@@ -388,9 +388,9 @@ class TopologyConfigFactory
     /**
      * @param string $nodeType
      *
-     * @return array|null
+     * @return mixed[]
      */
-    private function getPublishQueue(string $nodeType): ?array
+    private function getPublishQueue(string $nodeType): array
     {
         switch ($nodeType) {
             case TypeEnum::BATCH:
@@ -453,7 +453,7 @@ class TopologyConfigFactory
      * @param Node $node
      * @param bool $nextConnector
      *
-     * @return array
+     * @return mixed[]
      * @throws TopologyConfigException
      */
     private function assembleNode(Node $node, bool $nextConnector): array

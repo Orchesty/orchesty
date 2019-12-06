@@ -5,7 +5,9 @@ namespace Hanaboso\PipesFramework\Configurator\Model;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\PipesFramework\Configurator\Document\Sdk;
+use Hanaboso\PipesFramework\Configurator\Repository\SdkRepository;
 
 /**
  * Class SdkManager
@@ -21,7 +23,7 @@ final class SdkManager
     private $dm;
 
     /**
-     * @var ObjectRepository
+     * @var ObjectRepository<Sdk>&SdkRepository
      */
     private $repository;
 
@@ -66,9 +68,10 @@ final class SdkManager
     }
 
     /**
-     * @param array $data
+     * @param mixed[] $data
      *
      * @return Sdk
+     * @throws MongoDBException
      */
     public function create(array $data): Sdk
     {
@@ -83,10 +86,11 @@ final class SdkManager
     }
 
     /**
-     * @param Sdk   $sdk
-     * @param array $data
+     * @param Sdk     $sdk
+     * @param mixed[] $data
      *
      * @return Sdk
+     * @throws MongoDBException
      */
     public function update(Sdk $sdk, array $data): Sdk
     {

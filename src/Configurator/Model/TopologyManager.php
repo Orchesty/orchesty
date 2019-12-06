@@ -42,7 +42,7 @@ class TopologyManager
     private $dm;
 
     /**
-     * @var TopologyRepository|ObjectRepository
+     * @var ObjectRepository<Topology>&TopologyRepository
      */
     private $topologyRepository;
 
@@ -67,7 +67,7 @@ class TopologyManager
     }
 
     /**
-     * @param array $data
+     * @param mixed[] $data
      *
      * @return Topology
      * @throws TopologyException
@@ -94,7 +94,7 @@ class TopologyManager
 
     /**
      * @param Topology $topology
-     * @param array    $data
+     * @param mixed[]  $data
      *
      * @return Topology
      * @throws TopologyException
@@ -113,7 +113,7 @@ class TopologyManager
     /**
      * @param Topology $topology
      * @param string   $content
-     * @param array    $data
+     * @param mixed[]  $data
      *
      * @return Topology
      * @throws CronException
@@ -229,7 +229,7 @@ class TopologyManager
             $nodesMap[$topologyNode->getId()] = ['orig' => $topologyNode, 'copy' => $nodeCopy];
         }
 
-        /** @var array $node */
+        /** @var mixed[] $node */
         foreach ($nodesMap as $node) {
 
             /** @var Node $orig */
@@ -272,7 +272,7 @@ class TopologyManager
     }
 
     /**
-     * @return array
+     * @return mixed[]
      * @throws CronException
      * @throws CurlException
      */
@@ -374,8 +374,8 @@ class TopologyManager
     private function generateNodes(Topology $topology, Schema $dto): void
     {
         /** @var Node[] $nodes */
+        $nodes = [];
         /** @var EmbedNode[] $embedNodes */
-        $nodes      = [];
         $embedNodes = [];
 
         foreach ($dto->getNodes() as $nodeSchemaDto) {
@@ -402,8 +402,8 @@ class TopologyManager
     private function updateNodes(Topology $topology, Schema $dto): void
     {
         /** @var Node[] $nodes */
+        $nodes = [];
         /** @var EmbedNode[] $embedNodes */
-        $nodes      = [];
         $embedNodes = [];
 
         foreach ($dto->getNodes() as $nodeSchemaDto) {
@@ -428,8 +428,8 @@ class TopologyManager
 
     /**
      * @param Topology      $topology
-     * @param array         $nodes
-     * @param array         $embedNodes
+     * @param mixed[]       $nodes
+     * @param mixed[]       $embedNodes
      * @param NodeSchemaDto $dto
      *
      * @return Node
@@ -455,8 +455,8 @@ class TopologyManager
 
     /**
      * @param Topology      $topology
-     * @param array         $nodes
-     * @param array         $embedNodes
+     * @param mixed[]       $nodes
+     * @param mixed[]       $embedNodes
      * @param NodeSchemaDto $dto
      *
      * @return Node
@@ -596,7 +596,7 @@ class TopologyManager
 
     /**
      * @param Topology $topology
-     * @param array    $data
+     * @param mixed[]  $data
      *
      * @return Topology
      */
@@ -623,7 +623,7 @@ class TopologyManager
 
     /**
      * @param Topology $topology
-     * @param array    $data
+     * @param mixed[]  $data
      *
      * @return Topology
      * @throws TopologyException
@@ -651,7 +651,7 @@ class TopologyManager
     }
 
     /**
-     * @param array $data
+     * @param mixed[] $data
      */
     private function normalizeName(array &$data): void
     {

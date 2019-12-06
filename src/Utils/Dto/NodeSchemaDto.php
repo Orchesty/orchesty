@@ -142,7 +142,7 @@ final class NodeSchemaDto
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function toArray(): array
     {

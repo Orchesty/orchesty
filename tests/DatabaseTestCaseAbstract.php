@@ -21,7 +21,7 @@ abstract class DatabaseTestCaseAbstract extends KernelTestCaseAbstract
     protected $dm;
 
     /**
-     * @var Session
+     * @var Session<mixed>
      */
     protected $session;
 
@@ -51,8 +51,8 @@ abstract class DatabaseTestCaseAbstract extends KernelTestCaseAbstract
     }
 
     /**
-     * @param string $path
-     * @param array  $arrayResult
+     * @param string  $path
+     * @param mixed[] $arrayResult
      */
     protected function assertResult(string $path, array $arrayResult): void
     {

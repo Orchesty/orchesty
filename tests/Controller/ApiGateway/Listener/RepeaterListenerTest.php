@@ -68,6 +68,7 @@ final class RepeaterListenerTest extends ControllerTestCaseAbstract
 
         $eventMock = $this->mockEvent(new OnRepeatException($dto));
         $listener->onRepeatableException($eventMock);
+        self::assertEmpty([]);
     }
 
     /**

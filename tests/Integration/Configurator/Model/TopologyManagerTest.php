@@ -15,7 +15,6 @@ use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Tests\DatabaseTestCaseAbstract;
-use Tests\PrivateTrait;
 
 /**
  * Class TopologyManagerTest
@@ -24,8 +23,6 @@ use Tests\PrivateTrait;
  */
 final class TopologyManagerTest extends DatabaseTestCaseAbstract
 {
-
-    use PrivateTrait;
 
     /**
      * @throws Exception
@@ -290,8 +287,8 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         self::assertEquals($nextCount, count($actual->getNext()));
 
         /** @var EmbedNode[] $expNext */
-        /** @var EmbedNode[] $actNext */
         $expNext = $expected->getNext();
+        /** @var EmbedNode[] $actNext */
         $actNext = $actual->getNext();
 
         if ($nextCount == 1) {
@@ -685,7 +682,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     /**
      * @param string $name
      *
-     * @return array
+     * @return mixed[]
      */
     private function getSchema(string $name = 'schema.json'): array
     {

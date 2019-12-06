@@ -39,12 +39,13 @@ class CategoryManager
     }
 
     /**
-     * @param array $data
+     * @param mixed[] $data
      *
      * @return Category
      * @throws CategoryException
      * @throws LockException
      * @throws MappingException
+     * @throws MongoDBException
      */
     public function createCategory(array $data): Category
     {
@@ -57,12 +58,13 @@ class CategoryManager
 
     /**
      * @param Category $category
-     * @param array    $data
+     * @param mixed[]  $data
      *
      * @return Category
      * @throws CategoryException
      * @throws LockException
      * @throws MappingException
+     * @throws MongoDBException
      */
     public function updateCategory(Category $category, array $data): Category
     {
@@ -99,7 +101,7 @@ class CategoryManager
 
     /**
      * @param Category $category
-     * @param array    $data
+     * @param mixed[]  $data
      *
      * @return Category
      * @throws CategoryException

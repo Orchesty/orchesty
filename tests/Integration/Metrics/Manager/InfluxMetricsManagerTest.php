@@ -12,7 +12,6 @@ use InfluxDB\Database;
 use InfluxDB\Database\RetentionPolicy;
 use InfluxDB\Point;
 use Tests\KernelTestCaseAbstract;
-use Tests\PrivateTrait;
 
 /**
  * Class InfluxMetricsManagerTest
@@ -21,8 +20,6 @@ use Tests\PrivateTrait;
  */
 final class InfluxMetricsManagerTest extends KernelTestCaseAbstract
 {
-
-    use PrivateTrait;
 
     /**
      * @throws Exception

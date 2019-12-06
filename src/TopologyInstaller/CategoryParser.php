@@ -6,6 +6,7 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\CommonsBundle\Database\Document\Category;
 use Hanaboso\CommonsBundle\Database\Document\Topology;
 use Hanaboso\CommonsBundle\Database\Repository\CategoryRepository;
@@ -25,32 +26,32 @@ class CategoryParser
     public const ALL = '*';
 
     /**
-     * @var array
+     * @var mixed[]
      */
     private $roots = [];
 
     /**
-     * @var array
+     * @var mixed[]
      */
     private $excludes = [];
 
     /**
-     * @var array
+     * @var mixed[]
      */
     private $aliases = [];
 
     /**
-     * @var array
+     * @var mixed[]
      */
     private $pathFromFile = [];
 
     /**
-     * @var array
+     * @var mixed[]
      */
     private $tmpFilePath = [];
 
     /**
-     * @var array
+     * @var mixed[]
      */
     private $tmpPath = [];
 
@@ -65,7 +66,7 @@ class CategoryParser
     private $dm;
 
     /**
-     * @var CategoryRepository|ObjectRepository
+     * @var ObjectRepository<Category>&CategoryRepository
      */
     private $categoryRepository;
 
@@ -138,6 +139,7 @@ class CategoryParser
      * @throws CategoryException
      * @throws LockException
      * @throws MappingException
+     * @throws MongoDBException
      */
     public function classifyTopology(Topology $topology, TopologyFile $file): void
     {
@@ -163,7 +165,7 @@ class CategoryParser
     /**
      * @param TopologyFile $file
      *
-     * @return array
+     * @return mixed[]
      */
     private function getCategories(TopologyFile $file): array
     {
@@ -179,7 +181,7 @@ class CategoryParser
     /**
      * @param string $path
      *
-     * @return array
+     * @return mixed[]
      */
     private function getParsedPath(string $path): array
     {
@@ -187,7 +189,7 @@ class CategoryParser
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     private function matchRoot(): array
     {
@@ -271,8 +273,8 @@ class CategoryParser
     }
 
     /**
-     * @param array  $array
-     * @param string $element
+     * @param mixed[] $array
+     * @param string  $element
      */
     private function removeElement(array &$array, string $element): void
     {
@@ -295,9 +297,9 @@ class CategoryParser
     }
 
     /**
-     * @param array  $array
-     * @param string $element
-     * @param string $replacement
+     * @param mixed[] $array
+     * @param string  $element
+     * @param string  $replacement
      */
     private function replaceElement(array &$array, string $element, string $replacement): void
     {
@@ -315,6 +317,7 @@ class CategoryParser
      * @throws CategoryException
      * @throws LockException
      * @throws MappingException
+     * @throws MongoDBException
      */
     private function createCategory(string $name, string $parent): Category
     {

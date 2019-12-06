@@ -13,7 +13,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Tests\ControllerTestCaseAbstract;
-use Tests\PrivateTrait;
 use Throwable;
 
 /**
@@ -23,8 +22,6 @@ use Throwable;
  */
 final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
 {
-
-    use PrivateTrait;
 
     /**
      *

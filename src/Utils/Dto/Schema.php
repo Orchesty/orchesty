@@ -15,12 +15,12 @@ class Schema
     private const LIMIT = 100;
 
     /**
-     * @var array|NodeSchemaDto[]
+     * @var NodeSchemaDto[]
      */
     private $nodes = [];
 
     /**
-     * @var array
+     * @var mixed[]
      */
     private $sequences = [];
 
@@ -30,7 +30,7 @@ class Schema
     private $startNode = '';
 
     /**
-     * @return array|NodeSchemaDto[]
+     * @return NodeSchemaDto[]
      */
     public function getNodes(): array
     {
@@ -94,7 +94,7 @@ class Schema
     /**
      * Creates index used to
      *
-     * @return array
+     * @return mixed[]
      * @throws TopologyException
      */
     public function buildIndex(): array

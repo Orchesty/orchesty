@@ -6,6 +6,7 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\CommonsBundle\Database\Document\Node;
 use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator;
 use Hanaboso\CommonsBundle\Database\Repository\NodeRepository;
@@ -22,7 +23,7 @@ class NodeHandler
 {
 
     /**
-     * @var ObjectRepository|NodeRepository
+     * @var ObjectRepository<Node>&NodeRepository
      */
     private $nodeRepository;
 
@@ -54,7 +55,7 @@ class NodeHandler
     /**
      * @param string $topologyId
      *
-     * @return array
+     * @return mixed[]
      */
     public function getNodes(string $topologyId): array
     {
@@ -71,7 +72,7 @@ class NodeHandler
     /**
      * @param string $id
      *
-     * @return array
+     * @return mixed[]
      * @throws LockException
      * @throws MappingException
      * @throws NodeException
@@ -82,14 +83,15 @@ class NodeHandler
     }
 
     /**
-     * @param string $id
-     * @param array  $data
+     * @param string  $id
+     * @param mixed[] $data
      *
-     * @return array
+     * @return mixed[]
      * @throws LockException
      * @throws MappingException
      * @throws NodeException
      * @throws EnumException
+     * @throws MongoDBException
      */
     public function updateNode(string $id, array $data): array
     {
@@ -101,7 +103,7 @@ class NodeHandler
     /**
      * @param Node $node
      *
-     * @return array
+     * @return mixed[]
      */
     private function getNodeData(Node $node): array
     {

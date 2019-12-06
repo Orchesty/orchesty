@@ -17,7 +17,6 @@ use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
 use PHPUnit\Framework\MockObject\MockObject;
 use Tests\KernelTestCaseAbstract;
-use Tests\PrivateTrait;
 
 /**
  * Class CronManagerTest
@@ -26,8 +25,6 @@ use Tests\PrivateTrait;
  */
 final class CronManagerTest extends KernelTestCaseAbstract
 {
-
-    use PrivateTrait;
 
     private const COM1 = 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d \'{"params":"abc"}\' http://example.com/topologies/test/nodes/id-1/run';
     private const COM2 = 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d \'{"params":"abc"}\' http://example.com/topologies/test/nodes/id-2/run';

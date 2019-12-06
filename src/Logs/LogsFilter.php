@@ -26,7 +26,7 @@ final class LogsFilter extends GridFilterAbstract
     ];
 
     /**
-     * @return array
+     * @return mixed[]
      */
     protected function filterCols(): array
     {
@@ -46,7 +46,7 @@ final class LogsFilter extends GridFilterAbstract
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     protected function orderCols(): array
     {
@@ -65,7 +65,7 @@ final class LogsFilter extends GridFilterAbstract
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     protected function searchableCols(): array
     {

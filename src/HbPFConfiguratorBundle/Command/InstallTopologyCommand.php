@@ -106,10 +106,10 @@ class InstallTopologyCommand extends Command
     }
 
     /**
-     * @param Table  $table
-     * @param array  $data
-     * @param string $action
-     * @param bool   $force
+     * @param Table   $table
+     * @param mixed[] $data
+     * @param string  $action
+     * @param bool    $force
      */
     private function insertRows(Table $table, array $data, string $action, bool $force): void
     {

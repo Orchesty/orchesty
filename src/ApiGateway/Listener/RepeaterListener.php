@@ -31,7 +31,7 @@ class RepeaterListener implements EventSubscriberInterface, LoggerAwareInterface
     use ControllerTrait;
 
     /**
-     * @var ObjectRepository|NodeRepository
+     * @var ObjectRepository<Node>|NodeRepository
      */
     private $repo;
 
@@ -47,7 +47,7 @@ class RepeaterListener implements EventSubscriberInterface, LoggerAwareInterface
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public static function getSubscribedEvents(): array
     {
@@ -120,7 +120,7 @@ class RepeaterListener implements EventSubscriberInterface, LoggerAwareInterface
      * @param OnRepeatException $e
      * @param ProcessDto        $dto
      *
-     * @return array
+     * @return mixed[]
      * @throws LockException
      * @throws MappingException
      */

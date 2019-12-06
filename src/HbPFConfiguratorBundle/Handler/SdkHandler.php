@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler;
 
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 use Hanaboso\CommonsBundle\Utils\ControllerUtils;
 use Hanaboso\PipesFramework\Configurator\Document\Sdk;
@@ -32,7 +33,7 @@ final class SdkHandler
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getAll(): array
     {
@@ -49,7 +50,7 @@ final class SdkHandler
     /**
      * @param string $id
      *
-     * @return array
+     * @return mixed[]
      * @throws DocumentNotFoundException
      */
     public function getOne(string $id): array
@@ -58,10 +59,11 @@ final class SdkHandler
     }
 
     /**
-     * @param array $data
+     * @param mixed[] $data
      *
-     * @return array
+     * @return mixed[]
      * @throws PipesFrameworkException
+     * @throws MongoDBException
      */
     public function create(array $data): array
     {
@@ -71,11 +73,12 @@ final class SdkHandler
     }
 
     /**
-     * @param string $id
-     * @param array  $data
+     * @param string  $id
+     * @param mixed[] $data
      *
-     * @return array
+     * @return mixed[]
      * @throws DocumentNotFoundException
+     * @throws MongoDBException
      */
     public function update(string $id, array $data): array
     {
@@ -85,7 +88,7 @@ final class SdkHandler
     /**
      * @param string $id
      *
-     * @return array
+     * @return mixed[]
      * @throws DocumentNotFoundException
      */
     public function delete(string $id): array

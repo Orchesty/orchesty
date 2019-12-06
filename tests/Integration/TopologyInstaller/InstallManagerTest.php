@@ -25,7 +25,7 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @var Client
+     * @var Client<mixed>
      */
     private $redis;
 

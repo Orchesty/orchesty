@@ -43,7 +43,7 @@ final class MetricsManagerLoaderTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function loaderDataProvider(): array
     {

@@ -14,22 +14,22 @@ final class CompareResultDto
 {
 
     /**
-     * @var array|Topology[]
+     * @var Topology[]
      */
     private $delete = [];
 
     /**
-     * @var array|TopologyFile[]
+     * @var TopologyFile[]
      */
     private $create = [];
 
     /**
-     * @var array|UpdateObject[]
+     * @var UpdateObject[]
      */
     private $update = [];
 
     /**
-     * @param array $topologies
+     * @param mixed[] $topologies
      */
     public function addDelete(array $topologies): void
     {
@@ -53,7 +53,7 @@ final class CompareResultDto
     }
 
     /**
-     * @return array|Topology[]
+     * @return Topology[]
      */
     public function getDelete(): array
     {
@@ -61,7 +61,7 @@ final class CompareResultDto
     }
 
     /**
-     * @return array|TopologyFile[]
+     * @return TopologyFile[]
      */
     public function getCreate(): array
     {
@@ -69,7 +69,7 @@ final class CompareResultDto
     }
 
     /**
-     * @return array|UpdateObject[]
+     * @return UpdateObject[]
      */
     public function getUpdate(): array
     {
@@ -81,7 +81,7 @@ final class CompareResultDto
      * @param bool $update
      * @param bool $delete
      *
-     * @return array
+     * @return mixed[]
      */
     public function toArray(bool $create, bool $update, bool $delete): array
     {
@@ -103,9 +103,9 @@ final class CompareResultDto
     }
 
     /**
-     * @param array| TopologyFile[] $arr
+     * @param TopologyFile[] $arr
      *
-     * @return array
+     * @return mixed[]
      */
     private function getArrayFromFiles(array $arr): array
     {
@@ -119,9 +119,9 @@ final class CompareResultDto
     }
 
     /**
-     * @param array| Topology[] $arr
+     * @param Topology[] $arr
      *
-     * @return array
+     * @return mixed[]
      */
     private function getArrayFromTopologies(array $arr): array
     {
@@ -135,9 +135,9 @@ final class CompareResultDto
     }
 
     /**
-     * @param array| UpdateObject[] $arr
+     * @param UpdateObject[] $arr
      *
-     * @return array
+     * @return mixed[]
      */
     private function getArrayFromObject(array $arr): array
     {

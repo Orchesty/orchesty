@@ -480,7 +480,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @return array
+     * @return mixed[]
      * @throws Exception
      */
     private function getBpmnArray(): array

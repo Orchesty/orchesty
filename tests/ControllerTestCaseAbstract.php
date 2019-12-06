@@ -6,6 +6,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\CommonsBundle\Utils\Json;
+use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
 use Hanaboso\UserBundle\Document\User;
 use Hanaboso\UserBundle\Model\Security\SecurityManager;
 use Hanaboso\UserBundle\Model\Token;
@@ -26,6 +27,8 @@ use Symfony\Component\Security\Core\Encoder\NativePasswordEncoder;
 abstract class ControllerTestCaseAbstract extends WebTestCase
 {
 
+    use PrivateTrait;
+
     /**
      * @var Client
      */
@@ -37,7 +40,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     protected $dm;
 
     /**
-     * @var Session
+     * @var Session<mixed>
      */
     protected $session;
 
@@ -54,9 +57,9 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     /**
      * ControllerTestCaseAbstract constructor.
      *
-     * @param null   $name
-     * @param array  $data
-     * @param string $dataName
+     * @param null    $name
+     * @param mixed[] $data
+     * @param string  $dataName
      */
     public function __construct($name = NULL, array $data = [], $dataName = '')
     {
@@ -143,9 +146,9 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     }
 
     /**
-     * @param string     $url
-     * @param array      $parameters
-     * @param array|null $content
+     * @param string       $url
+     * @param mixed[]      $parameters
+     * @param mixed[]|null $content
      *
      * @return object
      */
@@ -167,9 +170,9 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     }
 
     /**
-     * @param string     $url
-     * @param array      $parameters
-     * @param array|null $content
+     * @param string       $url
+     * @param mixed[]      $parameters
+     * @param mixed[]|null $content
      *
      * @return object
      */

@@ -6,6 +6,8 @@ includes:
 	- vendor/hanaboso/php-check-utils/phpstan.neon # hanaboso rules
 
 parameters:
+	doctrine:
+		objectManagerLoader: tests/DocumentManagerLoader.php
 	excludes_analyse:
 	ignoreErrors:
 		- '#Access to an undefined property*#'

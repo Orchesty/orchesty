@@ -82,8 +82,8 @@ class NotificationManager implements LoggerAwareInterface
     }
 
     /**
-     * @param string $id
-     * @param array  $data
+     * @param string  $id
+     * @param mixed[] $data
      *
      * @return ResponseDto
      * @throws CurlException

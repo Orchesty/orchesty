@@ -51,8 +51,9 @@ class TopologyGeneratorBridge
      * @var TopologyConfigFactory
      */
     private $configFactory;
+
     /**
-     * @var array
+     * @var mixed[]
      */
     private $configs;
 
@@ -62,7 +63,7 @@ class TopologyGeneratorBridge
      * @param DatabaseManagerLocator $dml
      * @param CurlManagerInterface   $curlManager
      * @param TopologyConfigFactory  $configFactory
-     * @param array                  $configs
+     * @param mixed[]                $configs
      */
     public function __construct(
         DatabaseManagerLocator $dml,
@@ -162,7 +163,7 @@ class TopologyGeneratorBridge
     /**
      * @param string $topologyId
      *
-     * @return array
+     * @return mixed[]
      * @throws CurlException
      */
     public function runTest(string $topologyId): array
@@ -181,7 +182,7 @@ class TopologyGeneratorBridge
     /**
      * @param string $topologyName
      *
-     * @return array
+     * @return mixed[]
      * @throws CurlException
      */
     public function invalidateTopologyCache(string $topologyName): array

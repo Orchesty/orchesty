@@ -11,7 +11,6 @@ use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory;
 use Tests\DatabaseTestCaseAbstract;
-use Tests\PrivateTrait;
 
 /**
  * Class TopologyConfigFactoryTest
@@ -20,8 +19,6 @@ use Tests\PrivateTrait;
  */
 class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
 {
-
-    use PrivateTrait;
 
     /**
      * @throws Exception

@@ -51,7 +51,7 @@ class CronManager
     private $curlManager;
 
     /**
-     * @var TopologyRepository|ObjectRepository
+     * @var ObjectRepository<Topology>&TopologyRepository
      */
     private $topologyRepository;
 
@@ -281,7 +281,7 @@ class CronManager
     /**
      * @param Node $node
      *
-     * @return array
+     * @return mixed[]
      */
     private function getTopologyAndNode(Node $node): array
     {
@@ -310,8 +310,8 @@ class CronManager
     }
 
     /**
-     * @param Node[] $nodes
-     * @param array  $exclude
+     * @param Node[]  $nodes
+     * @param mixed[] $exclude
      *
      * @return string
      */

@@ -19,7 +19,7 @@ class HbPFApiGatewayExtension extends Extension implements PrependExtensionInter
 {
 
     /**
-     * @param array            $configs
+     * @param mixed[]          $configs
      * @param ContainerBuilder $container
      *
      * @throws Exception
