@@ -64,11 +64,11 @@ final class NotificationManager implements LoggerAwareInterface
     /**
      * NotificationManager constructor.
      *
-     * @param DocumentManager     $dm
-     * @param RewindableGenerator $handlers
-     * @param CurlSender          $curlSender
-     * @param EmailSender         $emailSender
-     * @param RabbitSender        $rabbitSender
+     * @param DocumentManager            $dm
+     * @param RewindableGenerator<mixed> $handlers
+     * @param CurlSender                 $curlSender
+     * @param EmailSender                $emailSender
+     * @param RabbitSender               $rabbitSender
      */
     public function __construct(
         DocumentManager $dm,
@@ -95,8 +95,8 @@ final class NotificationManager implements LoggerAwareInterface
     }
 
     /**
-     * @param string $event
-     * @param array  $data
+     * @param string  $event
+     * @param mixed[] $data
      */
     public function send(string $event, array $data): void
     {

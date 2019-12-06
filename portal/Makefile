@@ -3,7 +3,7 @@
 DC=docker-compose
 DE=docker-compose exec -T app
 IMAGE=dkr.hanaboso.net/pipes/portal
-BASE=hanabosocom/php-dev:php-7.3
+BASE=hanabosocom/php-dev:php-7.4
 
 SLS_ENV?=
 

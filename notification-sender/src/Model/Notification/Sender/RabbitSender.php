@@ -17,7 +17,7 @@ final class RabbitSender
 
     /**
      * @param RabbitDto $dto
-     * @param array     $settings
+     * @param mixed[]   $settings
      *
      * @throws Throwable
      */

@@ -22,7 +22,7 @@ abstract class CurlHandlerAbstract
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public final function getRequiredSettings(): array
     {
@@ -35,7 +35,7 @@ abstract class CurlHandlerAbstract
     abstract public function getName(): string;
 
     /**
-     * @param array $data
+     * @param mixed[] $data
      *
      * @return CurlDto
      */

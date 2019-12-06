@@ -30,7 +30,7 @@ final class NotificationSettingsHandler
     }
 
     /**
-     * @return array
+     * @return mixed[]
      * @throws DateTimeException
      */
     public function listSettings(): array
@@ -41,7 +41,7 @@ final class NotificationSettingsHandler
     /**
      * @param string $id
      *
-     * @return array
+     * @return mixed[]
      * @throws NotificationException
      */
     public function getSettings(string $id): array
@@ -50,10 +50,10 @@ final class NotificationSettingsHandler
     }
 
     /**
-     * @param string $id
-     * @param array  $data
+     * @param string  $id
+     * @param mixed[] $data
      *
-     * @return array
+     * @return mixed[]
      * @throws NotificationException
      */
     public function saveSettings(string $id, array $data): array

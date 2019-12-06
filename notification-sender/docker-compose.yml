@@ -6,6 +6,7 @@ services:
         working_dir: /var/www
         environment:
             - APP_ENV=dev
+            - KERNEL_CLASS=Hanaboso\NotificationSender\Kernel
             - DEV_UID=${DEV_UID}
             - DEV_GID=${DEV_GID}
         volumes:
@@ -23,7 +24,8 @@ services:
             - ${SSH_AUTH_SOCK}:${SSH_AUTH}
             - ${HOME}/dev/.composer:${HOME}/dev/.composer
         environment:
-            - APP_ENV=dev
+            - APP_ENV=test
+            - KERNEL_CLASS=Hanaboso\NotificationSender\Kernel
             - DEV_UID=${DEV_UID}
             - DEV_GID=${DEV_GID}
             - PHP_IDE_CONFIG=${PHP_IDE_CONFIG}

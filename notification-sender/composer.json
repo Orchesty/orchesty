@@ -2,7 +2,7 @@
     "name": "hanaboso/notification-sender",
     "license": "proprietary",
     "description": "NotificationSender for Symfony",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "autoload": {
         "psr-4": {
             "Hanaboso\\NotificationSender\\": "src/"
@@ -24,6 +24,6 @@
         "hanaboso/rabbit-mq-bundle": "^1.1"
     },
     "require-dev": {
-        "hanaboso/php-check-utils": "^1.0"
+        "hanaboso/php-check-utils": "^1.1"
     }
 }

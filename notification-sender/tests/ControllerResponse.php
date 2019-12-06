@@ -16,15 +16,15 @@ final class ControllerResponse
     private $status;
 
     /**
-     * @var array
+     * @var mixed[]
      */
     private $content;
 
     /**
      * ControllerResponse constructor.
      *
-     * @param int   $status
-     * @param array $content
+     * @param int     $status
+     * @param mixed[] $content
      */
     public function __construct(int $status, array $content)
     {
@@ -41,7 +41,7 @@ final class ControllerResponse
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getContent(): array
     {

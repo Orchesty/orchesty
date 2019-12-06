@@ -22,7 +22,7 @@ final class NullRabitHandler extends RabbitHandlerAbstract
     }
 
     /**
-     * @param array $data
+     * @param mixed[] $data
      *
      * @return RabbitDto
      */

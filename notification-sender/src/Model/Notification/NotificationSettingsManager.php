@@ -4,12 +4,14 @@ namespace Hanaboso\NotificationSender\Model\Notification;
 
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\NotificationSender\Document\NotificationSettings;
 use Hanaboso\NotificationSender\Exception\NotificationException;
 use Hanaboso\NotificationSender\Model\Notification\Handler\CurlHandlerAbstract;
 use Hanaboso\NotificationSender\Model\Notification\Handler\EmailHandlerAbstract;
 use Hanaboso\NotificationSender\Model\Notification\Handler\RabbitHandlerAbstract;
+use Hanaboso\NotificationSender\Repository\NotificationSettingsRepository;
 use Symfony\Component\DependencyInjection\Argument\RewindableGenerator;
 
 /**
@@ -31,15 +33,15 @@ final class NotificationSettingsManager
     private $handlers;
 
     /**
-     * @var ObjectRepository
+     * @var ObjectRepository<NotificationSettings>&NotificationSettingsRepository
      */
     private $repository;
 
     /**
      * NotificationSettingsManager constructor.
      *
-     * @param DocumentManager     $dm
-     * @param RewindableGenerator $handlers
+     * @param DocumentManager            $dm
+     * @param RewindableGenerator<mixed> $handlers
      */
     public function __construct(DocumentManager $dm, RewindableGenerator $handlers)
     {
@@ -49,8 +51,9 @@ final class NotificationSettingsManager
     }
 
     /**
-     * @return array
+     * @return mixed[]
      * @throws DateTimeException
+     * @throws MongoDBException
      */
     public function listSettings(): array
     {
@@ -89,7 +92,7 @@ final class NotificationSettingsManager
     /**
      * @param string $id
      *
-     * @return array
+     * @return mixed[]
      * @throws NotificationException
      */
     public function getSettings(string $id): array
@@ -101,11 +104,12 @@ final class NotificationSettingsManager
     }
 
     /**
-     * @param string $id
-     * @param array  $data
+     * @param string  $id
+     * @param mixed[] $data
      *
-     * @return array
+     * @return mixed[]
      * @throws NotificationException
+     * @throws MongoDBException
      */
     public function saveSettings(string $id, array $data): array
     {
