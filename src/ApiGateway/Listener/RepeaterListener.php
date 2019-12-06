@@ -126,9 +126,8 @@ class RepeaterListener implements EventSubscriberInterface, LoggerAwareInterface
      */
     private function getRepeaterStuff(OnRepeatException $e, ProcessDto $dto): array
     {
-        $nodeId = PipesHeaders::createKey(PipesHeaders::NODE_ID);
         /** @var Node|null $node */
-        $node = $this->repo->find($dto->getHeaders()[$nodeId] ?? '');
+        $node = $this->repo->find(PipesHeaders::get(PipesHeaders::NODE_ID, $dto->getHeaders()) ?: '');
         if ($node) {
             $configs = $node->getSystemConfigs();
             if ($configs) {
