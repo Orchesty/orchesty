@@ -22,7 +22,7 @@ final class CurlNotificationHandler extends CurlHandlerAbstract
     }
 
     /**
-     * @param array $data
+     * @param mixed[] $data
      *
      * @return CurlDto
      */

@@ -15,7 +15,7 @@ use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
  *
  * @package Hanaboso\NotificationSender\Document
  *
- * @ODM\Document()
+ * @ODM\Document(repositoryClass="Hanaboso\NotificationSender\Repository\NotificationSettingsRepository")
  * @ODM\UniqueIndex(name="UK_notification_settings_name", keys={"name"="asc"})
  * @ODM\HasLifecycleCallbacks()
  */
@@ -41,14 +41,14 @@ class NotificationSettings
     private $class;
 
     /**
-     * @var array
+     * @var mixed[]
      *
      * @ODM\Field(type="collection")
      */
     private $events = [];
 
     /**
-     * @var array
+     * @var mixed[]
      *
      * @ODM\Field(type="hash")
      */
@@ -86,7 +86,7 @@ class NotificationSettings
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getEvents(): array
     {
@@ -94,7 +94,7 @@ class NotificationSettings
     }
 
     /**
-     * @param array $events
+     * @param mixed[] $events
      *
      * @return NotificationSettings
      */
@@ -111,7 +111,7 @@ class NotificationSettings
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getSettings(): array
     {
@@ -119,7 +119,7 @@ class NotificationSettings
     }
 
     /**
-     * @param array $settings
+     * @param mixed[] $settings
      *
      * @return NotificationSettings
      */
@@ -134,7 +134,7 @@ class NotificationSettings
      * @param string $type
      * @param string $name
      *
-     * @return array
+     * @return mixed[]
      */
     public function toArray(string $type, string $name): array
     {

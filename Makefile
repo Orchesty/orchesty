@@ -3,7 +3,7 @@
 DC=docker-compose
 DE=docker-compose exec -T app
 IMAGE=dkr.hanaboso.net/pipes/notification-sender
-BASE=hanabosocom/php-dev:php-7.3
+BASE=hanabosocom/php-dev:php-7.4
 
 .env:
 	sed -e "s/{DEV_UID}/$(shell id -u)/g" \
@@ -54,14 +54,20 @@ phpcodesniffer:
 	$(DE) vendor/bin/phpcs -p --standard=ruleset.xml --colors src tests
 
 phpstan:
-	$(DE) vendor/bin/phpstan analyse -c phpstan.neon -l 7 --memory-limit=512M src tests
+	$(DE) vendor/bin/phpstan analyse -c phpstan.neon -l 8 --memory-limit=512M src tests
 
 phpintegration:
-	$(DE) vendor/bin/paratest -c phpunit.xml.dist -p 4 --colors tests/Integration
+	$(DE) vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p 4 --colors tests/Integration
 
 phpcontroller: database-clear
-	$(DE) vendor/bin/paratest -c phpunit.xml.dist -p 1 --colors tests/Controller
+	$(DE) vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p 1 --colors tests/Controller
+
+phpcoverage:
+	$(DE) php vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p 4 --coverage-html var/coverage --whitelist src tests
+
+phpcoverage-ci:
+	$(DE) ./vendor/hanaboso/php-check-utils/bin/coverage.sh 60
 
 test: docker-up-force composer-install fasttest
 
-fasttest: phpcodesniffer clear-cache phpstan phpintegration phpcontroller
+fasttest: phpcodesniffer clear-cache phpstan phpintegration phpcontroller phpcoverage-ci

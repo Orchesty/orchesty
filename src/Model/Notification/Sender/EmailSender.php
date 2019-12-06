@@ -17,7 +17,7 @@ final class EmailSender
 
     /**
      * @param EmailDto $dto
-     * @param array    $settings
+     * @param mixed[]  $settings
      */
     public function send(EmailDto $dto, array $settings): void
     {

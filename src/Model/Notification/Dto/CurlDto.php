@@ -16,20 +16,20 @@ final class CurlDto
     public const URL    = 'url';
 
     /**
-     * @var array
+     * @var mixed[]
      */
     private $body;
 
     /**
-     * @var array
+     * @var mixed[]
      */
     private $headers;
 
     /**
      * CurlDto constructor.
      *
-     * @param array $body
-     * @param array $headers
+     * @param mixed[] $body
+     * @param mixed[] $headers
      */
     public function __construct(array $body, array $headers)
     {
@@ -38,7 +38,7 @@ final class CurlDto
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getHeaders(): array
     {

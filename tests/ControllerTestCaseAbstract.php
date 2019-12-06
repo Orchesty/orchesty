@@ -3,8 +3,8 @@
 namespace Tests;
 
 use Hanaboso\CommonsBundle\Utils\Json;
+use Hanaboso\PhpCheckUtils\PhpUnit\Traits\ControllerTestTrait;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\BrowserKit\Client;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
@@ -17,11 +17,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
 {
 
     use TestCaseTrait;
-
-    /**
-     * @var Client
-     */
-    protected static $client;
+    use ControllerTestTrait;
 
     /**
      *
@@ -35,9 +31,9 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     }
 
     /**
-     * @param string $url
-     * @param array  $parameters
-     * @param array  $headers
+     * @param string  $url
+     * @param mixed[] $parameters
+     * @param mixed[] $headers
      *
      * @return ControllerResponse
      */
@@ -45,19 +41,19 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     {
         $this->prepareClient();
 
-        self::$client->request('GET', $url, $parameters, [], $headers);
+        $this->client->request('GET', $url, $parameters, [], $headers);
         /** @var Response $response */
-        $response = self::$client->getResponse();
+        $response = $this->client->getResponse();
 
         return $this->processResponse($response);
     }
 
     /**
-     * @param string $url
-     * @param array  $parameters
-     * @param array  $headers
-     * @param string $content
-     * @param array  $files
+     * @param string  $url
+     * @param mixed[] $parameters
+     * @param mixed[] $headers
+     * @param string  $content
+     * @param mixed[] $files
      *
      * @return ControllerResponse
      */
@@ -71,18 +67,18 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     {
         $this->prepareClient();
 
-        self::$client->request('POST', $url, $parameters, $files, $headers, $content);
+        $this->client->request('POST', $url, $parameters, $files, $headers, $content);
         /** @var Response $response */
-        $response = self::$client->getResponse();
+        $response = $this->client->getResponse();
 
         return $this->processResponse($response);
     }
 
     /**
-     * @param string $url
-     * @param array  $parameters
-     * @param array  $headers
-     * @param array  $files
+     * @param string  $url
+     * @param mixed[] $parameters
+     * @param mixed[] $headers
+     * @param mixed[] $files
      *
      * @return ControllerResponse
      */
@@ -95,16 +91,16 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     {
         $this->prepareClient();
 
-        self::$client->request('PUT', $url, $parameters, $files, $headers);
+        $this->client->request('PUT', $url, $parameters, $files, $headers);
         /** @var Response $response */
-        $response = self::$client->getResponse();
+        $response = $this->client->getResponse();
 
         return $this->processResponse($response);
     }
 
     /**
-     * @param string $url
-     * @param array  $headers
+     * @param string  $url
+     * @param mixed[] $headers
      *
      * @return ControllerResponse
      */
@@ -112,9 +108,9 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     {
         $this->prepareClient();
 
-        self::$client->request('DELETE', $url, [], [], $headers);
+        $this->client->request('DELETE', $url, [], [], $headers);
         /** @var Response $response */
-        $response = self::$client->getResponse();
+        $response = $this->client->getResponse();
 
         return $this->processResponse($response);
     }
@@ -122,7 +118,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     /**
      * @param ControllerResponse $response
      * @param int                $status
-     * @param array              $content
+     * @param mixed[]            $content
      */
     protected function assertResponse(ControllerResponse $response, int $status = 200, array $content = []): void
     {
@@ -166,7 +162,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
      */
     private function prepareClient(): void
     {
-        self::$client = self::createClient();
+        $this->startClient();
     }
 
 }

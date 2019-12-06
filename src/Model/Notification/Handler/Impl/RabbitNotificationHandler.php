@@ -22,7 +22,7 @@ final class RabbitNotificationHandler extends RabbitHandlerAbstract
     }
 
     /**
-     * @param array $data
+     * @param mixed[] $data
      *
      * @return RabbitDto
      */

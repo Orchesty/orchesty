@@ -22,7 +22,7 @@ final class NullCurlHandler extends CurlHandlerAbstract
     }
 
     /**
-     * @param array $data
+     * @param mixed[] $data
      *
      * @return CurlDto
      */

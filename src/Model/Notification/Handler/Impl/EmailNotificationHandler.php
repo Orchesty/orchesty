@@ -23,7 +23,7 @@ final class EmailNotificationHandler extends EmailHandlerAbstract
     }
 
     /**
-     * @param array $data
+     * @param mixed[] $data
      *
      * @return EmailDto
      */

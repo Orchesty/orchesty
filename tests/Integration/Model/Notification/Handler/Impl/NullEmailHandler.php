@@ -22,7 +22,7 @@ final class NullEmailHandler extends EmailHandlerAbstract
     }
 
     /**
-     * @param array $data
+     * @param mixed[] $data
      *
      * @return EmailDto
      */

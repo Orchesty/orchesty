@@ -33,7 +33,7 @@ final class CurlSender
 
     /**
      * @param CurlDto $dto
-     * @param array   $settings
+     * @param mixed[] $settings
      *
      * @throws CurlException
      */

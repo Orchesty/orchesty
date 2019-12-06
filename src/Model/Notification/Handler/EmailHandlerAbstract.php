@@ -22,7 +22,7 @@ abstract class EmailHandlerAbstract
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public final function getRequiredSettings(): array
     {
@@ -42,7 +42,7 @@ abstract class EmailHandlerAbstract
     abstract public function getName(): string;
 
     /**
-     * @param array $data
+     * @param mixed[] $data
      *
      * @return EmailDto
      */
