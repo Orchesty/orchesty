@@ -2,7 +2,7 @@
     "name": "hanaboso/app-store",
     "license": "proprietary",
     "description": "App store for PipesFramework",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "autoload": {
         "psr-4": {
             "Hanaboso\\HbPFAppStore\\": "src/"
@@ -20,7 +20,7 @@
         "hanaboso/pipes-php-sdk": "^1.1"
     },
     "require-dev": {
-        "hanaboso/php-check-utils": "^1.0"
+        "hanaboso/php-check-utils": "^1.1"
     },
     "repositories": [
         {

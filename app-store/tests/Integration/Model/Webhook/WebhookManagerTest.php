@@ -9,6 +9,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\HbPFAppStore\Document\Webhook;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookManager;
+use Hanaboso\HbPFAppStore\Repository\WebhookRepository;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -28,7 +29,7 @@ final class WebhookManagerTest extends DatabaseTestCaseAbstract
     private $application;
 
     /**
-     * @var ObjectRepository
+     * @var ObjectRepository<Webhook>&WebhookRepository
      */
     private $repository;
 

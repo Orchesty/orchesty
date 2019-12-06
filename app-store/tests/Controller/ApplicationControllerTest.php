@@ -187,7 +187,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @param array $returnValue
+     * @param mixed[] $returnValue
      *
      * @throws Exception
      */

@@ -3,6 +3,7 @@
 namespace Hanaboso\HbPFAppStore\Handler;
 
 use Doctrine\ODM\MongoDB\MongoDBException;
+use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\HbPFAppStore\Model\StatisticsManager;
 
 /**
@@ -29,8 +30,9 @@ class StatisticsHandler
     }
 
     /**
-     * @return array
+     * @return mixed[]
      * @throws MongoDBException
+     * @throws DateTimeException
      */
     public function getApplicationsBasicData(): array
     {
@@ -40,8 +42,9 @@ class StatisticsHandler
     /**
      * @param string $application
      *
-     * @return array
+     * @return mixed[]
      * @throws MongoDBException
+     * @throws DateTimeException
      */
     public function getApplicationsUsers(string $application): array
     {

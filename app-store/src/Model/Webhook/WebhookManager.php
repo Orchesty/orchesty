@@ -4,12 +4,15 @@ namespace Hanaboso\HbPFAppStore\Model\Webhook;
 
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\HbPFAppStore\Document\Webhook;
+use Hanaboso\HbPFAppStore\Repository\WebhookRepository;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
+use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
 
 /**
  * Class WebhookManager
@@ -38,9 +41,14 @@ final class WebhookManager
     private $hostname;
 
     /**
-     * @var ObjectRepository
+     * @var ObjectRepository<ApplicationInstall>&ApplicationInstallRepository
      */
     private $repository;
+
+    /**
+     * @var ObjectRepository<Webhook>&WebhookRepository
+     */
+    private $webhookRepository;
 
     /**
      * WebhookManager constructor.
@@ -51,22 +59,23 @@ final class WebhookManager
      */
     public function __construct(DocumentManager $dm, CurlManagerInterface $manager, string $hostname)
     {
-        $this->dm         = $dm;
-        $this->manager    = $manager;
-        $this->hostname   = rtrim($hostname, '/');
-        $this->repository = $dm->getRepository(ApplicationInstall::class);
+        $this->dm                = $dm;
+        $this->manager           = $manager;
+        $this->hostname          = rtrim($hostname, '/');
+        $this->repository        = $dm->getRepository(ApplicationInstall::class);
+        $this->webhookRepository = $dm->getRepository(Webhook::class);
     }
 
     /**
      * @param WebhookApplicationInterface $application
      * @param string                      $userId
      *
-     * @return array
+     * @return mixed[]
      */
     public function getWebhooks(WebhookApplicationInterface $application, string $userId): array
     {
         /** @var Webhook[] $webhooks */
-        $webhooks = $this->dm->getRepository(Webhook::class)->findBy(
+        $webhooks = $this->webhookRepository->findBy(
             [
                 'application' => $application->getKey(),
                 'user'        => $userId,
@@ -104,7 +113,7 @@ final class WebhookManager
     /**
      * @param WebhookApplicationInterface $application
      * @param string                      $userId
-     * @param array                       $data
+     * @param mixed[]                     $data
      *
      * @throws Exception
      */
@@ -149,10 +158,11 @@ final class WebhookManager
     /**
      * @param WebhookApplicationInterface $application
      * @param string                      $userId
-     * @param array                       $data
+     * @param mixed[]                     $data
      *
      * @throws CurlException
      * @throws ApplicationInstallException
+     * @throws MongoDBException
      */
     public function unsubscribeWebhooks(
         WebhookApplicationInterface $application,
@@ -161,7 +171,7 @@ final class WebhookManager
     ): void
     {
         /** @var Webhook[] $webhooks */
-        $webhooks = $this->dm->getRepository(Webhook::class)->findBy(
+        $webhooks = $this->webhookRepository->findBy(
             [
                 Webhook::APPLICATION => $application->getKey(),
                 Webhook::USER        => $userId,

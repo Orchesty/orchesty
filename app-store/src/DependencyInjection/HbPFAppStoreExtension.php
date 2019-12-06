@@ -29,7 +29,7 @@ class HbPFAppStoreExtension extends Extension implements PrependExtensionInterfa
     }
 
     /**
-     * @param array            $configs
+     * @param mixed[]          $configs
      * @param ContainerBuilder $container
      *
      * @throws Exception

@@ -2,6 +2,7 @@
 
 namespace Hanaboso\HbPFAppStore\Handler;
 
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
@@ -48,7 +49,7 @@ class ApplicationHandler
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getApplications(): array
     {
@@ -65,7 +66,7 @@ class ApplicationHandler
     /**
      * @param string $key
      *
-     * @return array
+     * @return mixed[]
      * @throws Exception
      */
     public function getApplicationByKey(string $key): array
@@ -76,7 +77,7 @@ class ApplicationHandler
     /**
      * @param string $user
      *
-     * @return array
+     * @return mixed[]
      */
     public function getApplicationsByUser(string $user): array
     {
@@ -99,7 +100,7 @@ class ApplicationHandler
      * @param string $key
      * @param string $user
      *
-     * @return array
+     * @return mixed[]
      * @throws ApplicationInstallException
      * @throws Exception
      */
@@ -125,7 +126,7 @@ class ApplicationHandler
      * @param string $key
      * @param string $user
      *
-     * @return array
+     * @return mixed[]
      * @throws ApplicationInstallException
      * @throws DateTimeException
      * @throws Exception
@@ -149,7 +150,7 @@ class ApplicationHandler
      * @param string $key
      * @param string $user
      *
-     * @return array
+     * @return mixed[]
      * @throws Exception
      */
     public function uninstallApplication(string $key, string $user): array
@@ -164,11 +165,11 @@ class ApplicationHandler
     }
 
     /**
-     * @param string $key
-     * @param string $user
-     * @param array  $data
+     * @param string  $key
+     * @param string  $user
+     * @param mixed[] $data
      *
-     * @return array
+     * @return mixed[]
      * @throws Exception
      */
     public function updateApplicationSettings(string $key, string $user, array $data): array
@@ -180,11 +181,11 @@ class ApplicationHandler
     }
 
     /**
-     * @param string $key
-     * @param string $user
-     * @param array  $data
+     * @param string  $key
+     * @param string  $user
+     * @param mixed[] $data
      *
-     * @return array
+     * @return mixed[]
      * @throws Exception
      */
     public function updateApplicationPassword(string $key, string $user, array $data): array
@@ -210,12 +211,13 @@ class ApplicationHandler
     }
 
     /**
-     * @param string $key
-     * @param string $user
-     * @param array  $token
+     * @param string  $key
+     * @param string  $user
+     * @param mixed[] $token
      *
-     * @return array
+     * @return mixed[]
      * @throws ApplicationInstallException
+     * @throws MongoDBException
      */
     public function saveAuthToken(string $key, string $user, array $token): array
     {

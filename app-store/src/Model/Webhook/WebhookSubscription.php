@@ -29,17 +29,17 @@ final class WebhookSubscription
     private $topology;
 
     /**
-     * @var array
+     * @var mixed[]
      */
     private $parameters;
 
     /**
      * WebhookSubscription constructor.
      *
-     * @param string $name
-     * @param string $node
-     * @param string $topology
-     * @param array  $parameters
+     * @param string  $name
+     * @param string  $node
+     * @param string  $topology
+     * @param mixed[] $parameters
      */
     public function __construct(string $name, string $node, string $topology, array $parameters = [])
     {
@@ -74,7 +74,7 @@ final class WebhookSubscription
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getParameters(): array
     {

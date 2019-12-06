@@ -13,7 +13,7 @@ use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
  *
  * @package Hanaboso\HbPFAppStore\Document
  *
- * @ODM\Document()
+ * @ODM\Document(repositoryClass="Hanaboso\HbPFAppStore\Repository\WebhookRepository")
  */
 class Webhook
 {

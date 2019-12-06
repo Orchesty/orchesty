@@ -34,9 +34,9 @@ class WebhookHandler
     }
 
     /**
-     * @param string $key
-     * @param string $user
-     * @param array  $data
+     * @param string  $key
+     * @param string  $user
+     * @param mixed[] $data
      *
      * @throws ApplicationInstallException
      * @throws PipesFrameworkException
@@ -55,9 +55,9 @@ class WebhookHandler
     }
 
     /**
-     * @param string $key
-     * @param string $user
-     * @param array  $data
+     * @param string  $key
+     * @param string  $user
+     * @param mixed[] $data
      *
      * @throws ApplicationInstallException
      * @throws CurlException

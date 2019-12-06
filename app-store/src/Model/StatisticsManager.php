@@ -5,6 +5,7 @@ namespace Hanaboso\HbPFAppStore\Model;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
+use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
 
@@ -17,7 +18,7 @@ class StatisticsManager
 {
 
     /**
-     * @var ObjectRepository|ApplicationInstallRepository
+     * @var ObjectRepository<ApplicationInstall>&ApplicationInstallRepository
      */
     private $repository;
 
@@ -32,8 +33,9 @@ class StatisticsManager
     }
 
     /**
-     * @return array
+     * @return mixed[]
      * @throws MongoDBException
+     * @throws DateTimeException
      */
     public function getApplicationsBasicData(): array
     {
@@ -43,8 +45,9 @@ class StatisticsManager
     /**
      * @param string $application
      *
-     * @return array
+     * @return mixed[]
      * @throws MongoDBException
+     * @throws DateTimeException
      */
     public function getApplicationsUsers(string $application): array
     {

@@ -13,6 +13,7 @@ services:
         environment:
             - DEV_UID=${DEV_UID}
             - DEV_GID=${DEV_GID}
+            - KERNEL_CLASS=Hanaboso\HbPFAppStore\Kernel
             - COMPOSER_HOME=${HOME}/dev/.composer
 
     mongo:

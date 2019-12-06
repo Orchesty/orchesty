@@ -110,7 +110,7 @@ final class WebhookApplication extends ApplicationAbstract implements WebhookApp
 
     /**
      * @param ApplicationInstall $applicationInstall
-     * @param array              $settings
+     * @param mixed[]            $settings
      *
      * @return ApplicationInstall
      */

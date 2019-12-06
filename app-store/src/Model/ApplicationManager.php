@@ -40,7 +40,7 @@ class ApplicationManager
     private $dm;
 
     /**
-     * @var ObjectRepository|ApplicationInstallRepository
+     * @var ObjectRepository<ApplicationInstall>&ApplicationInstallRepository
      */
     private $repository;
 
@@ -65,7 +65,7 @@ class ApplicationManager
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getApplications(): array
     {
@@ -86,7 +86,7 @@ class ApplicationManager
     /**
      * @param string $user
      *
-     * @return array
+     * @return mixed[]
      */
     public function getInstalledApplications(string $user): array
     {
@@ -152,9 +152,9 @@ class ApplicationManager
     }
 
     /**
-     * @param string $key
-     * @param string $user
-     * @param array  $data
+     * @param string  $key
+     * @param string  $user
+     * @param mixed[] $data
      *
      * @return ApplicationInstall
      * @throws Exception
@@ -213,11 +213,11 @@ class ApplicationManager
     }
 
     /**
-     * @param string $key
-     * @param string $user
-     * @param array  $token
+     * @param string  $key
+     * @param string  $user
+     * @param mixed[] $token
      *
-     * @return array
+     * @return mixed[]
      * @throws ApplicationInstallException
      * @throws MongoDBException
      */
@@ -235,7 +235,7 @@ class ApplicationManager
 
     /**
      * @param ApplicationInstall $applicationInstall
-     * @param array              $data
+     * @param mixed[]            $data
      *
      * @throws Exception
      */
@@ -254,10 +254,11 @@ class ApplicationManager
 
     /**
      * @param ApplicationInstall $applicationInstall
-     * @param array              $data
+     * @param mixed[]            $data
      *
      * @throws ApplicationInstallException
      * @throws CurlException
+     * @throws MongoDBException
      */
     public function unsubscribeWebhooks(ApplicationInstall $applicationInstall, array $data = []): void
     {
@@ -276,7 +277,7 @@ class ApplicationManager
      * @param string $key
      * @param string $user
      *
-     * @return array
+     * @return mixed[]
      * @throws ApplicationInstallException
      */
     public function getApplicationSettings(string $key, string $user): array
