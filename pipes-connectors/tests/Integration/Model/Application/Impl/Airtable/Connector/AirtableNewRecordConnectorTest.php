@@ -30,47 +30,26 @@ final class AirtableNewRecordConnectorTest extends DatabaseTestCaseAbstract
     public const TABLE_NAME = 'V******.com';
 
     /**
-     * @param int  $code
-     * @param bool $isValid
-     *
      * @throws ApplicationInstallException
      * @throws CurlException
      * @throws DateTimeException
      * @throws PipesFrameworkException
-     *
-     * @dataProvider getDataProvider
      */
-    public function testProcessAction(int $code, bool $isValid): void
+    public function testProcessAction(): void
     {
         $this->mockCurl(
             [
                 new MockCurlMethod(
-                    $code,
-                    sprintf('response%s.json', $code),
+                    200,
+                    'response200.json',
                     []
                 ),
             ]
         );
 
-        $applicationInstall = new ApplicationInstall();
-        $applicationInstall = $applicationInstall->setSettings(
-            [
-                BasicApplicationInterface::AUTHORIZATION_SETTINGS =>
-                    [
-                        BasicApplicationAbstract::TOKEN => self::API_KEY,
-                        AirtableApplication::BASE_ID    => self::BASE_ID,
-                        AirtableApplication::TABLE_NAME => self::TABLE_NAME,
-                    ],
-            ]
-        );
-
-        $applicationInstall->setUser('user');
-        $applicationInstall->setKey('airtable');
+        $airtableNewRecordConnector = $this->setApplicationAndMock(self::API_KEY);
 
         $newRecordFile = file_get_contents(sprintf('%s/Data/newRecord.json', __DIR__), TRUE);
-
-        $this->pf($applicationInstall);
-        $airtableNewRecordConnector = $this->setApplication();
 
         $response = $airtableNewRecordConnector->processAction(
             DataProvider::getProcessDto(
@@ -80,8 +59,34 @@ final class AirtableNewRecordConnectorTest extends DatabaseTestCaseAbstract
             )
         );
 
-        $newRecordFileNoFields = file_get_contents(sprintf('%s/Data/newRecordNoFields.json', __DIR__), TRUE);
-        $responseNoFields      = $airtableNewRecordConnector->processAction(
+        self::assertSuccessProcessResponse(
+            $response,
+            'response200.json'
+        );
+
+    }
+
+    /**
+     * @throws ApplicationInstallException
+     * @throws CurlException
+     * @throws DateTimeException
+     * @throws PipesFrameworkException
+     */
+    public function testProcessActionNoFields(): void
+    {
+        $this->mockCurl(
+            [
+                new MockCurlMethod(
+                    500,
+                    'response500.json',
+                    []
+                ),
+            ]
+        );
+
+        $airtableNewRecordConnector = $this->setApplicationAndMock(self::API_KEY);
+        $newRecordFileNoFields      = file_get_contents(sprintf('%s/Data/newRecordNoFields.json', __DIR__), TRUE);
+        $response                   = $airtableNewRecordConnector->processAction(
             DataProvider::getProcessDto(
                 'airtable',
                 'user',
@@ -89,19 +94,41 @@ final class AirtableNewRecordConnectorTest extends DatabaseTestCaseAbstract
             )
         );
 
-        if ($isValid) {
-            self::assertSuccessProcessResponse(
-                $response,
-                sprintf('response%s.json', $code)
-            );
-        } else {
-            self::assertFailedProcessResponse(
-                $response,
-                sprintf('response%s.json', $code)
-            );
-        }
+        self::assertFailedProcessResponse(
+            $response,
+            'response500.json'
+        );
 
-        self::assertEquals($responseNoFields->getHeaders()['pf-result-code'], ProcessDto::STOP_AND_FAILED);
+        self::assertEquals($response->getHeaders()['pf-result-code'], ProcessDto::STOP_AND_FAILED);
+    }
+
+    /**
+     * @throws ApplicationInstallException
+     * @throws CurlException
+     * @throws DateTimeException
+     * @throws PipesFrameworkException
+     */
+    public function testProcessActionNoBaseId(): void
+    {
+        $airtableNewRecordConnector = $this->setApplicationAndMock(NULL);
+
+        $newRecordFile = file_get_contents(sprintf('%s/Data/newRecord.json', __DIR__), TRUE);
+
+        $response = $airtableNewRecordConnector->processAction(
+            DataProvider::getProcessDto(
+                'airtable',
+                'user',
+                (string) $newRecordFile
+            )
+        );
+
+        self::assertFailedProcessResponse(
+            $response,
+            'newRecord.json'
+        );
+
+        self::assertEquals($response->getHeaders()['pf-result-code'], ProcessDto::STOP_AND_FAILED);
+
     }
 
     /**
@@ -119,6 +146,18 @@ final class AirtableNewRecordConnectorTest extends DatabaseTestCaseAbstract
                 'user',
                 ''
             )
+        );
+    }
+
+    /**
+     *
+     */
+    public function testGetId(): void
+    {
+        $airtableNewRecordConnector = $this->setApplication();
+        self::assertEquals(
+            'airtable_new_record',
+            $airtableNewRecordConnector->getId()
         );
     }
 
@@ -147,6 +186,35 @@ final class AirtableNewRecordConnectorTest extends DatabaseTestCaseAbstract
         $airtableNewRecordConnector->setApplication($app);
 
         return $airtableNewRecordConnector;
+    }
+
+    /**
+     * @param string|null $baseId
+     *
+     * @return AirtableNewRecordConnector
+     * @throws DateTimeException
+     */
+    private function setApplicationAndMock(?string $baseId = NULL): AirtableNewRecordConnector
+    {
+
+        $applicationInstall = new ApplicationInstall();
+        $applicationInstall = $applicationInstall->setSettings(
+            [
+                BasicApplicationInterface::AUTHORIZATION_SETTINGS =>
+                    [
+                        BasicApplicationAbstract::TOKEN => self::API_KEY,
+                        AirtableApplication::BASE_ID    => $baseId,
+                        AirtableApplication::TABLE_NAME => self::TABLE_NAME,
+                    ],
+            ]
+        );
+
+        $applicationInstall->setUser('user');
+        $applicationInstall->setKey('airtable');
+        $this->pf($applicationInstall);
+        $this->dm->clear();
+
+        return $this->setApplication();
     }
 
 }
