@@ -27,20 +27,33 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
     public const token = 'ODkxOWJiMjEzYWFiNDdiNDhmN2JiMDdmMWNlMWUyNWM6OTk**********jE1NDQ5OWEzODIyMWQyMjM3NTQyNGI=';
 
     /**
+     * @var ShipstationApplication
+     */
+    private $application;
+
+    /**
+     * @throws Exception
+     */
+    public function setUp(): void
+    {
+        parent::setUp();
+        $this->application = self::$container->get('hbpf.application.shipstation');
+    }
+
+    /**
      * @throws Exception
      */
     public function testWebhookSubscribeRequestDto(): void
     {
-        $application        = self::$container->get('hbpf.application.shipstation');
         $applicationInstall = DataProvider::getBasicAppInstall(
-            $application->getKey(),
+            $this->application->getKey(),
             self::API_KEY,
             self::API_SECRET
         );
 
         $subscription = new WebhookSubscription('test', 'node', 'xxx', ['name' => 0]);
 
-        $requestSub = $application->getWebhookSubscribeRequestDto(
+        $requestSub = $this->application->getWebhookSubscribeRequestDto(
             $applicationInstall,
             $subscription,
             sprintf(
@@ -52,7 +65,7 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
             )
         );
 
-        $requestUn = $application->getWebhookUnsubscribeRequestDto(
+        $requestUn = $this->application->getWebhookUnsubscribeRequestDto(
             $applicationInstall,
             '358'
         );
@@ -74,10 +87,9 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
      */
     public function testName(): void
     {
-        $shipstation = self::$container->get('hbpf.application.shipstation');
         self::assertEquals(
             'Shipstation',
-            $shipstation->getName()
+            $this->application->getName()
         );
     }
 
@@ -86,10 +98,9 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
      */
     public function testGetApplicationType(): void
     {
-        $shipstation = self::$container->get('hbpf.application.shipstation');
         self::assertEquals(
             ApplicationTypeEnum::WEBHOOK,
-            $shipstation->getApplicationType()
+            $this->application->getApplicationType()
         );
     }
 
@@ -98,10 +109,9 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
      */
     public function testGetDescription(): void
     {
-        $shipstation = self::$container->get('hbpf.application.shipstation');
         self::assertEquals(
             'Shipstation v1',
-            $shipstation->getDescription()
+            $this->application->getDescription()
         );
     }
 
@@ -110,8 +120,7 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
      */
     public function testGetWebhookSubscriptions(): void
     {
-        $shipstation        = self::$container->get('hbpf.application.shipstation');
-        $webhookSubcription = $shipstation->getWebhookSubscriptions();
+        $webhookSubcription = $this->application->getWebhookSubscriptions();
         $this->assertInstanceOf(WebhookSubscription::class, $webhookSubcription[0]);
         $this->assertEquals(ShipstationApplication::ORDER_NOTIFY, $webhookSubcription[0]->getParameters()['name']);
     }
@@ -121,9 +130,7 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
      */
     public function testGetSettingsForm(): void
     {
-        $shipstation = self::$container->get('hbpf.application.shipstation');
-
-        $fields = $shipstation->getSettingsForm()->getFields();
+        $fields = $this->application->getSettingsForm()->getFields();
         foreach ($fields as $field) {
             self::assertInstanceOf(Field::class, $field);
             self::assertContains($field->getKey(), ['user', 'password']);
@@ -136,8 +143,7 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
      */
     public function testprocessWebhookSubscribeResponse(): void
     {
-        $shipstation = self::$container->get('hbpf.application.shipstation');
-        $response    = $shipstation->processWebhookSubscribeResponse(
+        $response = $this->application->processWebhookSubscribeResponse(
             new ResponseDto(200, '', '{"id":"id88"}', []),
             new ApplicationInstall()
         );
@@ -149,8 +155,7 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
      */
     public function testprocessWebhookUnsubscribeResponse(): void
     {
-        $shipstation = self::$container->get('hbpf.application.shipstation');
-        $response    = $shipstation->processWebhookUnsubscribeResponse(
+        $response = $this->application->processWebhookUnsubscribeResponse(
             new ResponseDto(200, '', '{"id":"id88"}', [])
         );
         $this->assertEquals(200, $response);

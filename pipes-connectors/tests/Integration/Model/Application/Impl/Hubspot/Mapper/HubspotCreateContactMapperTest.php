@@ -4,6 +4,7 @@ namespace Tests\Integration\Model\Application\Impl\Hubspot\Mapper;
 
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Mapper\HubspotCreateContactMapper;
@@ -66,10 +67,19 @@ final class HubspotCreateContactMapperTest extends DatabaseTestCaseAbstract
             )
         );
 
+        $responseNoBody = $shipstationNewOrderConnector->processEvent(
+            DataProvider::getProcessDto(
+                $shipstation->getKey(),
+                self::API_KEY,
+                '{}'
+            )
+        );
+
         $response->setData((string) file_get_contents(sprintf('%s/Data/responseShipstation.json', __DIR__), TRUE));
 
         $hubspotCreateContactMapper = new HubspotCreateContactMapper();
         $dto                        = $hubspotCreateContactMapper->process($response);
+        $dtoNoBody                        = $hubspotCreateContactMapper->process($responseNoBody);
 
         self::assertEquals(
             Json::decode($dto->getData()),
@@ -77,6 +87,8 @@ final class HubspotCreateContactMapperTest extends DatabaseTestCaseAbstract
                 (string) file_get_contents(__DIR__ . sprintf('/Data/requestHubspot.json'), TRUE)
             )
         );
+
+        self::assertEquals($dtoNoBody->getHeaders()['pf-result-code'], ProcessDto::STOP_AND_FAILED);
 
     }
 

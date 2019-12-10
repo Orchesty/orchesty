@@ -1,0 +1,210 @@
+{
+    "vid": 151,
+    "canonical-vid": 151,
+    "merged-vids": [],
+    "portal-id": 6143035,
+    "is-contact": true,
+    "properties": {
+        "zip": {
+            "value": "02139",
+            "versions": [
+                {
+                    "value": "02139",
+                    "source-type": "INTEGRATION",
+                    "source-id": "198676",
+                    "source-label": null,
+                    "timestamp": 1563457758840,
+                    "selected": false
+                }
+            ]
+        },
+        "website": {
+            "value": "http://hubspot.com",
+            "versions": [
+                {
+                    "value": "http://hubspot.com",
+                    "source-type": "INTEGRATION",
+                    "source-id": "198676",
+                    "source-label": null,
+                    "timestamp": 1563457758840,
+                    "selected": false
+                }
+            ]
+        },
+        "firstname": {
+            "value": "Adrian",
+            "versions": [
+                {
+                    "value": "Adrian",
+                    "source-type": "INTEGRATION",
+                    "source-id": "198676",
+                    "source-label": null,
+                    "timestamp": 1563457758840,
+                    "selected": false
+                }
+            ]
+        },
+        "address": {
+            "value": "25 First Street",
+            "versions": [
+                {
+                    "value": "25 First Street",
+                    "source-type": "INTEGRATION",
+                    "source-id": "198676",
+                    "source-label": null,
+                    "timestamp": 1563457758840,
+                    "selected": false
+                }
+            ]
+        },
+        "lastmodifieddate": {
+            "value": "1563457758985",
+            "versions": [
+                {
+                    "value": "1563457758985",
+                    "source-type": "CALCULATED",
+                    "source-id": null,
+                    "source-label": null,
+                    "timestamp": 1563457758985,
+                    "selected": false
+                }
+            ]
+        },
+        "num_unique_conversion_events": {
+            "value": "0",
+            "versions": [
+                {
+                    "value": "0",
+                    "source-type": "CALCULATED",
+                    "source-id": null,
+                    "source-label": null,
+                    "timestamp": 0,
+                    "selected": false
+                }
+            ]
+        },
+        "createdate": {
+            "value": "1563457758846",
+            "versions": [
+                {
+                    "value": "1563457758846",
+                    "source-type": "INTEGRATION",
+                    "source-id": "198676",
+                    "source-label": null,
+                    "timestamp": 1563457758846,
+                    "selected": false
+                }
+            ]
+        },
+        "hs_lifecyclestage_subscriber_date": {
+            "value": "1563457758846",
+            "versions": [
+                {
+                    "value": "1563457758846",
+                    "source-type": "INTEGRATION",
+                    "source-id": "198676",
+                    "source-label": null,
+                    "timestamp": 1563457758846,
+                    "selected": false
+                }
+            ]
+        },
+        "lastname": {
+            "value": "Mott",
+            "versions": [
+                {
+                    "value": "Mott",
+                    "source-type": "INTEGRATION",
+                    "source-id": "198676",
+                    "source-label": null,
+                    "timestamp": 1563457758840,
+                    "selected": false
+                }
+            ]
+        },
+        "hs_is_contact": {
+            "value": "true",
+            "versions": [
+                {
+                    "value": "true",
+                    "source-type": "CALCULATED",
+                    "source-id": null,
+                    "source-label": null,
+                    "timestamp": 0,
+                    "selected": false
+                }
+            ]
+        },
+        "phone": {
+            "value": "555-122-2323",
+            "versions": [
+                {
+                    "value": "555-122-2323",
+                    "source-type": "INTEGRATION",
+                    "source-id": "198676",
+                    "source-label": null,
+                    "timestamp": 1563457758840,
+                    "selected": false
+                }
+            ]
+        },
+        "num_conversion_events": {
+            "value": "0",
+            "versions": [
+                {
+                    "value": "0",
+                    "source-type": "CALCULATED",
+                    "source-id": null,
+                    "source-label": null,
+                    "timestamp": 0,
+                    "selected": false
+                }
+            ]
+        },
+        "hs_searchable_calculated_phone_number": {
+            "value": "5551222323",
+            "versions": [
+                {
+                    "value": "5551222323",
+                    "source-type": "CALCULATED",
+                    "source-id": null,
+                    "source-label": null,
+                    "timestamp": 1563457758840,
+                    "selected": false
+                }
+            ]
+        },
+        "company": {
+            "value": "HubSpot",
+            "versions": [
+                {
+                    "value": "HubSpot",
+                    "source-type": "INTEGRATION",
+                    "source-id": "198676",
+                    "source-label": null,
+                    "timestamp": 1563457758840,
+                    "selected": false
+                }
+            ]
+        },
+        "lifecyclestage": {
+            "value": "subscriber",
+            "versions": [
+                {
+                    "value": "subscriber",
+                    "source-type": "INTEGRATION",
+                    "source-id": "198676",
+                    "source-label": null,
+                    "timestamp": 1563457758846,
+                    "selected": false
+                }
+            ]
+        }
+    },
+    "form-submissions": [],
+    "list-memberships": [],
+    "identity-profiles": [],
+    "merge-audits": [],
+    "version": 4,
+    "versionTimestamp": 1563457759043
+}

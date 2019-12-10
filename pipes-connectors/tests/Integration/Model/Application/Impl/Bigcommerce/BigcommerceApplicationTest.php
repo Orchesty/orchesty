@@ -24,27 +24,40 @@ final class BigcommerceApplicationTest extends DatabaseTestCaseAbstract
     private const CLIENT_SECRET = '811a14ca490bbb2cd188cf4bd9bef795b35c9**********737e5b805038fecb4';
 
     /**
+     * @var BigcommerceApplication
+     */
+    private $application;
+
+    /**
+     * @throws Exception
+     */
+    public function setUp(): void
+    {
+        parent::setUp();
+        $this->mockRedirect(BigcommerceApplication::BIGCOMMERCE_URL, self::CLIENT_ID, 'store_v2_products');
+        $this->application = self::$container->get('hbpf.application.bigcommerce');
+    }
+
+    /**
      * @throws Exception
      */
     public function testAutorize(): void
     {
-        $this->mockRedirect(BigcommerceApplication::BIGCOMMERCE_URL, self::CLIENT_ID, 'store_v2_products');
-        $bigcommerceApplication = self::$container->get('hbpf.application.bigcommerce');
-        $applicationInstall     = DataProvider::getOauth2AppInstall(
-            $bigcommerceApplication->getKey(),
+        $applicationInstall = DataProvider::getOauth2AppInstall(
+            $this->application->getKey(),
             'user',
             'token',
             self::CLIENT_ID,
             self::CLIENT_SECRET
         );
-        $bigcommerceApplication->setFrontendRedirectUrl(
+        $this->application->setFrontendRedirectUrl(
             $applicationInstall,
             'http://127.0.0.11:8000/applications/authorize/token'
         );
 
         $this->pf($applicationInstall);
-        $this->assertEquals(TRUE, $bigcommerceApplication->isAuthorized($applicationInstall));
-        $bigcommerceApplication->authorize($applicationInstall, ['store_v2_products']);
+        $this->assertEquals(TRUE, $this->application->isAuthorized($applicationInstall));
+        $this->application->authorize($applicationInstall, ['store_v2_products']);
 
     }
 
@@ -53,7 +66,7 @@ final class BigcommerceApplicationTest extends DatabaseTestCaseAbstract
      */
     public function testIsAuthorizedNoToken(): void
     {
-        $bigcommerceApplication = self::$container->get('hbpf.application.bigcommerce');
+        $bigcommerceApplication = $this->application;
         $applicationInstall     = new ApplicationInstall();
         $this->pf($applicationInstall);
         $this->assertEquals(FALSE, $bigcommerceApplication->isAuthorized($applicationInstall));
@@ -64,16 +77,15 @@ final class BigcommerceApplicationTest extends DatabaseTestCaseAbstract
      */
     public function testRequestDto(): void
     {
-        $bigcommerceApplication = self::$container->get('hbpf.application.bigcommerce');
-        $applicationInstall     = DataProvider::getOauth2AppInstall(
-            $bigcommerceApplication->getKey(),
+        $applicationInstall = DataProvider::getOauth2AppInstall(
+            $this->application->getKey(),
             'user',
             'token',
             self::CLIENT_ID,
             self::CLIENT_SECRET
         );
         $this->pf($applicationInstall);
-        $dto = $bigcommerceApplication->getRequestDto(
+        $dto = $this->application->getRequestDto(
             $applicationInstall,
             'POST',
             'url',
@@ -88,10 +100,9 @@ final class BigcommerceApplicationTest extends DatabaseTestCaseAbstract
      */
     public function testGetApplicationType(): void
     {
-        $bigcommerce = self::$container->get('hbpf.application.bigcommerce');
         self::assertEquals(
             ApplicationTypeEnum::WEBHOOK,
-            $bigcommerce->getApplicationType()
+            $this->application->getApplicationType()
         );
     }
 
@@ -100,10 +111,9 @@ final class BigcommerceApplicationTest extends DatabaseTestCaseAbstract
      */
     public function testName(): void
     {
-        $bigcommerce = self::$container->get('hbpf.application.bigcommerce');
         self::assertEquals(
             'Bigcommerce',
-            $bigcommerce->getName()
+            $this->application->getName()
         );
     }
 
@@ -112,10 +122,9 @@ final class BigcommerceApplicationTest extends DatabaseTestCaseAbstract
      */
     public function testGetDescription(): void
     {
-        $bigcommerce = self::$container->get('hbpf.application.bigcommerce');
         self::assertEquals(
             'Bigcommerce v1',
-            $bigcommerce->getDescription()
+            $this->application->getDescription()
         );
     }
 
@@ -124,9 +133,7 @@ final class BigcommerceApplicationTest extends DatabaseTestCaseAbstract
      */
     public function testGetSettingsForm(): void
     {
-        $bigcommerce = self::$container->get('hbpf.application.bigcommerce');
-
-        $fields = $bigcommerce->getSettingsForm()->getFields();
+        $fields = $this->application->getSettingsForm()->getFields();
         foreach ($fields as $field) {
             self::assertInstanceOf(Field::class, $field);
             self::assertContains($field->getKey(), ['client_id', 'client_secret']);
