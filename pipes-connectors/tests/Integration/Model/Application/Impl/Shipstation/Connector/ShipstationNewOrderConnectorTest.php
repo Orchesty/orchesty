@@ -137,5 +137,20 @@ final class ShipstationNewOrderConnectorTest extends DatabaseTestCaseAbstract
         ];
     }
 
+    /**
+     *
+     */
+    public function testGetId(): void
+    {
+        $shipstationNewOrderConnector = new ShipstationNewOrderConnector(
+            self::$container->get('hbpf.transport.curl_manager'),
+            $this->dm
+        );
+        self::assertEquals(
+            'shipstation_new_order',
+            $shipstationNewOrderConnector->getId()
+        );
+    }
+
 }
 
