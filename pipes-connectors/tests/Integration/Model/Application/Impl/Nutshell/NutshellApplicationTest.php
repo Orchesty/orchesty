@@ -3,6 +3,9 @@
 namespace Tests\Integration\Model\Application\Impl\Nutshell;
 
 use Exception;
+use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
+use Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\NutshellApplication;
+use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\DataProvider;
 
@@ -19,14 +22,27 @@ final class NutshellApplicationTest extends DatabaseTestCaseAbstract
 
 
     /**
+     * @var NutshellApplication
+     */
+    private $application;
+
+    /**
+     * @throws Exception
+     */
+    public function setUp(): void
+    {
+        parent::setUp();
+        $this->application = self::$container->get('hbpf.application.nutshell');
+    }
+
+    /**
      * @throws Exception
      */
     public function testAuthorization(): void
     {
-        $nutshellApplication = self::$container->get('hbpf.application.nutshell');
-        $curl                = self::$container->get('hbpf.transport.curl_manager');
-        $applicationInstall  = DataProvider::getBasicAppInstall(
-            $nutshellApplication->getKey(),
+        $curl               = self::$container->get('hbpf.transport.curl_manager');
+        $applicationInstall = DataProvider::getBasicAppInstall(
+            $this->application->getKey(),
             self::USER,
             self::API_KEY
         );
@@ -34,7 +50,7 @@ final class NutshellApplicationTest extends DatabaseTestCaseAbstract
         $this->pf($applicationInstall);
 
         $result = $curl->send(
-            $nutshellApplication->getRequestDto(
+            $this->application->getRequestDto(
                 $applicationInstall,
                 'POST',
                 'http://api.nutshell.com/v1/json',
@@ -43,6 +59,52 @@ final class NutshellApplicationTest extends DatabaseTestCaseAbstract
         );
 
         $this->assertEquals(200, $result->getStatusCode());
+    }
+
+    /**
+     *
+     */
+    public function testGetApplicationType(): void
+    {
+        self::assertEquals(
+            ApplicationTypeEnum::WEBHOOK,
+            $this->application->getApplicationType()
+        );
+    }
+
+    /**
+     *
+     */
+    public function testName(): void
+    {
+        self::assertEquals(
+            'Nutshell',
+            $this->application->getName()
+        );
+    }
+
+    /**
+     *
+     */
+    public function testGetDescription(): void
+    {
+        self::assertEquals(
+            'Nutshell v1',
+            $this->application->getDescription()
+        );
+    }
+
+    /**
+     *
+     */
+    public function testGetSettingsForm(): void
+    {
+        $fields = $this->application->getSettingsForm()->getFields();
+        foreach ($fields as $field) {
+            self::assertInstanceOf(Field::class, $field);
+            self::assertContains($field->getKey(), ['user', 'password']);
+        }
+
     }
 
 }
