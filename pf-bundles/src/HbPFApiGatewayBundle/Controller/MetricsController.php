@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @package Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller
  */
-class MetricsController extends AbstractFOSRestController
+final class MetricsController extends AbstractFOSRestController
 {
 
     /**
@@ -26,7 +26,7 @@ class MetricsController extends AbstractFOSRestController
     public function topologyMetricsAction(Request $request, string $topologyId): Response
     {
         return $this->forward(
-            'HbPFMetricsBundle:Metrics:topologyMetrics',
+            'Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::topologyMetricsAction',
             ['query' => $request->query, 'topologyId' => $topologyId]
         );
     }
@@ -43,7 +43,7 @@ class MetricsController extends AbstractFOSRestController
     public function nodeMetricsAction(Request $request, string $topologyId, string $nodeId): Response
     {
         return $this->forward(
-            'HbPFMetricsBundle:Metrics:nodeMetrics',
+            'Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::nodeMetricsAction',
             ['query' => $request->query, 'topologyId' => $topologyId, 'nodeId' => $nodeId]
         );
     }
@@ -59,7 +59,7 @@ class MetricsController extends AbstractFOSRestController
     public function topologyRequestsCountMetricsAction(Request $request, string $topologyId): Response
     {
         return $this->forward(
-            'HbPFMetricsBundle:Metrics:topologyRequestsCountMetrics',
+            'Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::topologyRequestsCountMetricsAction',
             ['query' => $request->query, 'topologyId' => $topologyId]
         );
     }

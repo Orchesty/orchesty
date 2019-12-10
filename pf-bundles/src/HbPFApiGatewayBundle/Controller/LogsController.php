@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @package Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller
  */
-class LogsController extends AbstractFOSRestController
+final class LogsController extends AbstractFOSRestController
 {
 
     /**
@@ -24,7 +24,11 @@ class LogsController extends AbstractFOSRestController
      */
     public function topologyMetricsAction(Request $request): Response
     {
-        return $this->forward('HbPFLogsBundle:Logs:getDataForTable', [], $request->query->all());
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFLogsBundle\Controller\LogsController::getDataForTableAction',
+            [],
+            $request->query->all()
+        );
     }
 
 }

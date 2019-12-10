@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @package Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller
  */
-class CategoryController extends AbstractFOSRestController
+final class CategoryController extends AbstractFOSRestController
 {
 
     /**
@@ -23,7 +23,10 @@ class CategoryController extends AbstractFOSRestController
      */
     public function getCategoriesAction(Request $request): Response
     {
-        return $this->forward('HbPFConfiguratorBundle:Category:getCategories', ['query' => $request->query]);
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\CategoryController::getCategoriesAction',
+            ['query' => $request->query]
+        );
     }
 
     /**
@@ -33,7 +36,9 @@ class CategoryController extends AbstractFOSRestController
      */
     public function createCategoryAction(): Response
     {
-        return $this->forward('HbPFConfiguratorBundle:Category:createCategory');
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\CategoryController::createCategoryAction'
+        );
     }
 
     /**
@@ -45,7 +50,10 @@ class CategoryController extends AbstractFOSRestController
      */
     public function updateCategoryAction(string $id): Response
     {
-        return $this->forward('HbPFConfiguratorBundle:Category:updateCategory', ['id' => $id]);
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\CategoryController::updateCategoryAction',
+            ['id' => $id]
+        );
     }
 
     /**
@@ -57,7 +65,10 @@ class CategoryController extends AbstractFOSRestController
      */
     public function deleteCategoryAction(string $id): Response
     {
-        return $this->forward('HbPFConfiguratorBundle:Category:deleteCategory', ['id' => $id]);
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\CategoryController::deleteCategoryAction',
+            ['id' => $id]
+        );
     }
 
 }

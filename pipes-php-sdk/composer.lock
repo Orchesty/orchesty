@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "81c8d7b0340547d53fe237af212e5c73",
+    "content-hash": "ee84e424dfbc52805533c9969035d0af",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.128.0",
+            "version": "3.128.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "811e55f20b6455a0cce07ecdebe1398b9668c255"
+                "reference": "b550a939356fb66aadf8f92485b53046e1e60ee4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/811e55f20b6455a0cce07ecdebe1398b9668c255",
-                "reference": "811e55f20b6455a0cce07ecdebe1398b9668c255",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/b550a939356fb66aadf8f92485b53046e1e60ee4",
+                "reference": "b550a939356fb66aadf8f92485b53046e1e60ee4",
                 "shasum": ""
             },
             "require": {
@@ -88,7 +88,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2019-12-05T01:33:15+00:00"
+            "time": "2019-12-09T19:18:49+00:00"
         },
         {
             "name": "aws/aws-sdk-php-symfony",
@@ -1749,16 +1749,16 @@
         },
         {
             "name": "guzzlehttp/guzzle",
-            "version": "6.4.1",
+            "version": "6.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/guzzle.git",
-                "reference": "0895c932405407fd3a7368b6910c09a24d26db11"
+                "reference": "dbc2bc3a293ed6b1ae08a3651e2bfd213d19b6a5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/0895c932405407fd3a7368b6910c09a24d26db11",
-                "reference": "0895c932405407fd3a7368b6910c09a24d26db11",
+                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/dbc2bc3a293ed6b1ae08a3651e2bfd213d19b6a5",
+                "reference": "dbc2bc3a293ed6b1ae08a3651e2bfd213d19b6a5",
                 "shasum": ""
             },
             "require": {
@@ -1773,12 +1773,13 @@
                 "psr/log": "^1.1"
             },
             "suggest": {
+                "ext-intl": "Required for Internationalized Domain Name (IDN) support",
                 "psr/log": "Required for using the Log middleware"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "6.3-dev"
+                    "dev-master": "6.5-dev"
                 }
             },
             "autoload": {
@@ -1811,7 +1812,7 @@
                 "rest",
                 "web service"
             ],
-            "time": "2019-10-23T15:58:00+00:00"
+            "time": "2019-12-07T18:20:45+00:00"
         },
         {
             "name": "guzzlehttp/promises",
@@ -9271,16 +9272,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "0.12.0",
+            "version": "0.12.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "1cc06d8493917d16b1742f6c9fd2963c51a4e773"
+                "reference": "15a2c2b7d4195aa712506e14763ef7646ac6a08c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/1cc06d8493917d16b1742f6c9fd2963c51a4e773",
-                "reference": "1cc06d8493917d16b1742f6c9fd2963c51a4e773",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/15a2c2b7d4195aa712506e14763ef7646ac6a08c",
+                "reference": "15a2c2b7d4195aa712506e14763ef7646ac6a08c",
                 "shasum": ""
             },
             "require": {
@@ -9307,20 +9308,20 @@
                 "MIT"
             ],
             "description": "PHPStan - PHP Static Analysis Tool",
-            "time": "2019-12-04T00:09:47+00:00"
+            "time": "2019-12-09T09:13:49+00:00"
         },
         {
             "name": "phpstan/phpstan-doctrine",
-            "version": "0.12.0",
+            "version": "0.12.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-doctrine.git",
-                "reference": "1822c4d69d978a7753cd5be47c8b777a42084d6f"
+                "reference": "cab43df5287c3c142210704dbc3f1ea62d6dfd06"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-doctrine/zipball/1822c4d69d978a7753cd5be47c8b777a42084d6f",
-                "reference": "1822c4d69d978a7753cd5be47c8b777a42084d6f",
+                "url": "https://api.github.com/repos/phpstan/phpstan-doctrine/zipball/cab43df5287c3c142210704dbc3f1ea62d6dfd06",
+                "reference": "cab43df5287c3c142210704dbc3f1ea62d6dfd06",
                 "shasum": ""
             },
             "require": {
@@ -9371,7 +9372,7 @@
                 "MIT"
             ],
             "description": "Doctrine extensions for PHPStan",
-            "time": "2019-12-03T08:29:26+00:00"
+            "time": "2019-12-07T20:33:11+00:00"
         },
         {
             "name": "phpstan/phpstan-nette",
@@ -9444,16 +9445,16 @@
         },
         {
             "name": "phpstan/phpstan-phpunit",
-            "version": "0.12.0",
+            "version": "0.12.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-phpunit.git",
-                "reference": "a9790e1bee7feea2a9dac7e1f39fc9e6aac0b703"
+                "reference": "cc14b74ba437bb08ce189aada455946890a8414b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-phpunit/zipball/a9790e1bee7feea2a9dac7e1f39fc9e6aac0b703",
-                "reference": "a9790e1bee7feea2a9dac7e1f39fc9e6aac0b703",
+                "url": "https://api.github.com/repos/phpstan/phpstan-phpunit/zipball/cc14b74ba437bb08ce189aada455946890a8414b",
+                "reference": "cc14b74ba437bb08ce189aada455946890a8414b",
                 "shasum": ""
             },
             "require": {
@@ -9496,20 +9497,20 @@
                 "MIT"
             ],
             "description": "PHPUnit extensions and rules for PHPStan",
-            "time": "2019-11-27T16:24:02+00:00"
+            "time": "2019-12-07T20:34:22+00:00"
         },
         {
             "name": "phpstan/phpstan-symfony",
-            "version": "0.12.0",
+            "version": "0.12.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-symfony.git",
-                "reference": "8cdb0a66ac87f50a56a15b509ef6a2e2b62be049"
+                "reference": "548bd9cddbfc374ba2fa66ca915307398ba52c4c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-symfony/zipball/8cdb0a66ac87f50a56a15b509ef6a2e2b62be049",
-                "reference": "8cdb0a66ac87f50a56a15b509ef6a2e2b62be049",
+                "url": "https://api.github.com/repos/phpstan/phpstan-symfony/zipball/548bd9cddbfc374ba2fa66ca915307398ba52c4c",
+                "reference": "548bd9cddbfc374ba2fa66ca915307398ba52c4c",
                 "shasum": ""
             },
             "require": {
@@ -9566,7 +9567,7 @@
                 }
             ],
             "description": "Symfony Framework extensions and rules for PHPStan",
-            "time": "2019-12-02T18:38:39+00:00"
+            "time": "2019-12-10T10:36:24+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",

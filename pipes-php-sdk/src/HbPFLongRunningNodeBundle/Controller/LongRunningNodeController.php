@@ -69,7 +69,7 @@ class LongRunningNodeController extends AbstractFOSRestController
      *
      * @return Response
      */
-    public function test(string $nodeId): Response
+    public function testAction(string $nodeId): Response
     {
         try {
             $this->handler->test($nodeId);

@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @package Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller
  */
-class NodeController extends AbstractFOSRestController
+final class NodeController extends AbstractFOSRestController
 {
 
     /**
@@ -26,7 +26,10 @@ class NodeController extends AbstractFOSRestController
      */
     public function getNodesAction(string $id): Response
     {
-        return $this->forward('HbPFConfiguratorBundle:Node:getNodes', ['id' => $id]);
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController::getNodesAction',
+            ['id' => $id]
+        );
     }
 
     /**
@@ -38,7 +41,10 @@ class NodeController extends AbstractFOSRestController
      */
     public function getNodeAction(string $id): Response
     {
-        return $this->forward('HbPFConfiguratorBundle:Node:getNode', ['id' => $id]);
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController::getNodeAction',
+            ['id' => $id]
+        );
     }
 
     /**
@@ -50,7 +56,10 @@ class NodeController extends AbstractFOSRestController
      */
     public function updateNodeAction(string $id): Response
     {
-        return $this->forward('HbPFConfiguratorBundle:Node:updateNode', ['id' => $id]);
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController::updateNodeAction',
+            ['id' => $id]
+        );
     }
 
     /**
@@ -64,14 +73,22 @@ class NodeController extends AbstractFOSRestController
     {
         switch ($type) {
             case 'connector':
-                return $this->forward('HbPFConnectorBundle:Connector:listOfConnectors');
+                return $this->forward(
+                    'Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Controller\ConnectorController::listOfConnectorsAction'
+                );
             case 'joiner':
             case 'custom_node':
-                return $this->forward('HbPFCustomNodeBundle:CustomNode:listOfCustomNodes');
+                return $this->forward(
+                    'Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Controller\CustomNodeController::listOfCustomNodesAction'
+                );
             case 'long_running':
-                return $this->forward('HbPFLongRunningNodeBundle:LongRunningNode:listOfLongRunningNodes');
+                return $this->forward(
+                    'Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController::listOfLongRunningNodesAction'
+                );
             case 'mapper':
-                return $this->forward('HbPFMapperBundle:Mapper:listOfMappers');
+                return $this->forward(
+                    'Hanaboso\PipesPhpSdk\HbPFMapperBundle\Controller\MapperController::listOfMappersAction'
+                );
         }
 
         return new JsonResponse();
@@ -88,13 +105,13 @@ class NodeController extends AbstractFOSRestController
             [
                 NodeImplementationEnum::PHP => [
                     NodeImplementationEnum::CONNECTOR => $this->getForwardContent(
-                        'HbPFConnectorBundle:Connector:listOfConnectors'
+                        'Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Controller\ConnectorController::listOfConnectorsAction'
                     ),
                     NodeImplementationEnum::CUSTOM    => $this->getForwardContent(
-                        'HbPFCustomNodeBundle:CustomNode:listOfCustomNodes'
+                        'Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Controller\CustomNodeController::listOfCustomNodesAction'
                     ),
                     NodeImplementationEnum::USER      => $this->getForwardContent(
-                        'HbPFLongRunningNodeBundle:LongRunningNode:listOfLongRunningNodes'
+                        'Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController::listOfLongRunningNodesAction'
                     ),
                 ],
             ]

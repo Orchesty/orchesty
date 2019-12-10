@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @package Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller
  */
-class WebhookController extends AbstractFOSRestController
+final class WebhookController extends AbstractFOSRestController
 {
 
     /**
@@ -27,7 +27,7 @@ class WebhookController extends AbstractFOSRestController
     public function subscribeWebhooksAction(Request $request, string $key, string $user): Response
     {
         return $this->forward(
-            'HbPFAppStoreBundle:Webhook:subscribeWebhooks',
+            'Hanaboso\HbPFAppStore\Controller\WebhookController::subscribeWebhooksAction',
             [
                 'request' => $request,
                 'key'     => $key,
@@ -48,7 +48,7 @@ class WebhookController extends AbstractFOSRestController
     public function unsubscribeWebhooksAction(Request $request, string $key, string $user): Response
     {
         return $this->forward(
-            'HbPFAppStoreBundle:Webhook:unsubscribeWebhooks',
+            'Hanaboso\HbPFAppStore\Controller\WebhookController::unsubscribeWebhooksAction',
             [
                 'request' => $request,
                 'key'     => $key,

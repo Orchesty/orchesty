@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @package Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller
  */
-class LongRunningNodeController extends AbstractFOSRestController
+final class LongRunningNodeController extends AbstractFOSRestController
 {
 
     /**
@@ -26,7 +26,7 @@ class LongRunningNodeController extends AbstractFOSRestController
     public function processAction(Request $request, string $nodeId): Response
     {
         return $this->forward(
-            'HbPFLongRunningNodeBundle:LongRunningNode:process',
+            'Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController::processAction',
             ['request' => $request, 'nodeId' => $nodeId]
         );
     }
@@ -40,7 +40,10 @@ class LongRunningNodeController extends AbstractFOSRestController
      */
     public function testAction(string $nodeId): Response
     {
-        return $this->forward('HbPFLongRunningNodeBundle:LongRunningNode:test', ['nodeId' => $nodeId]);
+        return $this->forward(
+            'Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController::testAction',
+            ['nodeId' => $nodeId]
+        );
     }
 
     /**
@@ -53,7 +56,7 @@ class LongRunningNodeController extends AbstractFOSRestController
     public function getTasksByAction(string $topo): Response
     {
         return $this->forward(
-            'HbPFLongRunningNodeBundle:LongRunningNode:getTasksById',
+            'Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController::getTasksByIdAction',
             ['topo' => $topo]
         );
     }
@@ -68,7 +71,7 @@ class LongRunningNodeController extends AbstractFOSRestController
     public function getTasksAction(string $topo): Response
     {
         return $this->forward(
-            'HbPFLongRunningNodeBundle:LongRunningNode:getTasks',
+            'Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController::getTasksAction',
             ['topo' => $topo]
         );
     }
@@ -84,7 +87,7 @@ class LongRunningNodeController extends AbstractFOSRestController
     public function getNodeTasksByIdAction(string $topo, string $node): Response
     {
         return $this->forward(
-            'HbPFLongRunningNodeBundle:LongRunningNode:getNodeTasksById',
+            'Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController::getNodeTasksByIdAction',
             ['topo' => $topo, 'node' => $node]
         );
     }
@@ -100,7 +103,7 @@ class LongRunningNodeController extends AbstractFOSRestController
     public function getNodeTasksAction(string $topo, string $node): Response
     {
         return $this->forward(
-            'HbPFLongRunningNodeBundle:LongRunningNode:getNodeTasks',
+            'Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController::getNodeTasksAction',
             ['topo' => $topo, 'node' => $node]
         );
     }
@@ -116,7 +119,7 @@ class LongRunningNodeController extends AbstractFOSRestController
     public function updateLongRunningAction(Request $request, string $id): Response
     {
         return $this->forward(
-            'HbPFLongRunningNodeBundle:LongRunningNode:updateLongRunning',
+            'Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController::updateLongRunningAction',
             [
                 'request' => $request,
                 'id'      => $id,

@@ -14,12 +14,6 @@ services:
         calls:
             - ['setContainer', ['@service_container']]
 
-    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\GeneratorController:
-        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\GeneratorController
-        arguments:
-        calls:
-            - ['setContainer', ['@service_container']]
-
     Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\LogsController:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\LogsController
         arguments:
