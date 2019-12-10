@@ -4,7 +4,6 @@ namespace Hanaboso\PipesFramework\Metrics\Manager;
 
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\CommonsBundle\Database\Document\Node;
 use Hanaboso\CommonsBundle\Database\Document\Topology;
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
@@ -130,7 +129,6 @@ class MongoMetricsManager extends MetricsManagerAbstract
      *
      * @return mixed[]
      * @throws DateTimeException
-     * @throws MongoDBException
      */
     public function getTopologyRequestCountMetrics(Topology $topology, array $params): array
     {

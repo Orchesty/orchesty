@@ -84,7 +84,7 @@ class ControllerExceptionListener implements EventSubscriberInterface, LoggerAwa
      */
     public function onKernelException(GetResponseForExceptionEvent $event): void
     {
-        $e = $event->getException();
+        $e = $event->getThrowable();
 
         if (!$e instanceof PipesFrameworkExceptionAbstract) {
             return;

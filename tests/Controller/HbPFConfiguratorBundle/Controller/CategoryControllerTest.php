@@ -2,6 +2,7 @@
 
 namespace Tests\Controller\HbPFConfiguratorBundle\Controller;
 
+use Exception;
 use Hanaboso\CommonsBundle\Database\Document\Category;
 use Hanaboso\CommonsBundle\Exception\CategoryException;
 use Hanaboso\CommonsBundle\Utils\ControllerUtils;
@@ -17,6 +18,8 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers CategoryController::getCategoriesAction()
+     *
+     * @throws Exception
      */
     public function testGetCategories(): void
     {
@@ -35,6 +38,8 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers CategoryController::createCategoryAction()
+     *
+     * @throws Exception
      */
     public function testCreateTopology(): void
     {
@@ -52,6 +57,8 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers CategoryController::updateCategoryAction()
+     *
+     * @throws Exception
      */
     public function testUpdateCategory(): void
     {
@@ -73,6 +80,8 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers CategoryController::updateCategoryAction()
+     *
+     * @throws Exception
      */
     public function testUpdateCategoryNotFound(): void
     {
@@ -92,6 +101,8 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers CategoryController::deleteCategoryAction()
+     *
+     * @throws Exception
      */
     public function testDeleteCategory(): void
     {
@@ -106,6 +117,7 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
      * @param int $count
      *
      * @return Category[]
+     * @throws Exception
      */
     private function createCategories(int $count = 1): array
     {

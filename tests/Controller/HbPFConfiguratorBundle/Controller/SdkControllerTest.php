@@ -22,6 +22,8 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
      * @covers SdkController::getAllAction
      * @covers SdkHandler::getAll
      * @covers SdkManager::getAll
+     *
+     * @throws Exception
      */
     public function testGetAll(): void
     {
@@ -42,11 +44,11 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @throws Exception
-     *
      * @covers SdkController::getOneAction
      * @covers SdkHandler::getOne
      * @covers SdkManager::getOne
+     *
+     * @throws Exception
      */
     public function testGetOne(): void
     {
@@ -75,6 +77,8 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
      * @covers SdkController::createAction
      * @covers SdkHandler::create
      * @covers SdkManager::create
+     *
+     * @throws Exception
      */
     public function testCreate(): void
     {
@@ -103,6 +107,7 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
      * @covers SdkController::updateAction
      * @covers SdkHandler::update
      * @covers SdkManager::update
+     * @throws Exception
      */
     public function testUpdate(): void
     {
@@ -131,6 +136,8 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
      * @covers SdkController::deleteAction
      * @covers SdkHandler::delete
      * @covers SdkManager::delete
+     *
+     * @throws Exception
      */
     public function testDelete(): void
     {
@@ -152,6 +159,7 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
      * @param string $string
      *
      * @return Sdk
+     * @throws Exception
      */
     private function createSdk(string $string): Sdk
     {

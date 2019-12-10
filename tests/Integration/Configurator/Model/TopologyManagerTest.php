@@ -272,6 +272,8 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
      * @param Node     $actual
      * @param Topology $topology
      * @param int      $nextCount
+     *
+     * @throws Exception
      */
     private function assertNodeAfterClone(Node $expected, Node $actual, Topology $topology, int $nextCount): void
     {
@@ -661,7 +663,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testSystemConfig(): void
     {

@@ -4,7 +4,6 @@ namespace Tests;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
 use Hanaboso\UserBundle\Document\User;
@@ -68,7 +67,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     }
 
     /**
-     * @throws DateTimeException
+     * @throws Exception
      */
     protected function setUp(): void
     {

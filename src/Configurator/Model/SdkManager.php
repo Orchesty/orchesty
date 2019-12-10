@@ -111,6 +111,7 @@ final class SdkManager
      * @param Sdk $sdk
      *
      * @return Sdk
+     * @throws MongoDBException
      */
     public function delete(Sdk $sdk): Sdk
     {

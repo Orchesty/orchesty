@@ -75,11 +75,11 @@ final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
         /** @var GetResponseForExceptionEvent | MockObject $eventMock */
         $eventMock = self::createPartialMock(
             GetResponseForExceptionEvent::class,
-            ['getException']
+            ['getThrowable']
         );
 
         $eventMock
-            ->method('getException')
+            ->method('getThrowable')
             ->will($this->returnValue($exception));
 
         $this->setProperty($eventMock, 'request', new Request());
