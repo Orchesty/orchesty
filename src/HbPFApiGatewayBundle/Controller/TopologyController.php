@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @package Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller
  */
-class TopologyController extends AbstractFOSRestController
+final class TopologyController extends AbstractFOSRestController
 {
 
     use ControllerTrait;
@@ -27,7 +27,10 @@ class TopologyController extends AbstractFOSRestController
      */
     public function getTopologiesAction(Request $request): Response
     {
-        return $this->forward('HbPFConfiguratorBundle:Topology:getTopologies', ['query' => $request->query]);
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::getTopologiesAction',
+            ['query' => $request->query]
+        );
     }
 
     /**
@@ -37,7 +40,9 @@ class TopologyController extends AbstractFOSRestController
      */
     public function getCronTopologiesAction(): Response
     {
-        return $this->forward('HbPFConfiguratorBundle:Topology:getCronTopologies');
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::getCronTopologiesAction'
+        );
     }
 
     /**
@@ -49,7 +54,10 @@ class TopologyController extends AbstractFOSRestController
      */
     public function getTopologyAction(string $id): Response
     {
-        return $this->forward('HbPFConfiguratorBundle:Topology:getTopology', ['id' => $id]);
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::getTopologyAction',
+            ['id' => $id]
+        );
     }
 
     /**
@@ -59,7 +67,9 @@ class TopologyController extends AbstractFOSRestController
      */
     public function createTopologyAction(): Response
     {
-        return $this->forward('HbPFConfiguratorBundle:Topology:createTopology');
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::createTopologyAction'
+        );
     }
 
     /**
@@ -71,7 +81,10 @@ class TopologyController extends AbstractFOSRestController
      */
     public function updateTopologyAction(string $id): Response
     {
-        return $this->forward('HbPFConfiguratorBundle:Topology:updateTopology', ['id' => $id]);
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::updateTopologyAction',
+            ['id' => $id]
+        );
     }
 
     /**
@@ -83,7 +96,10 @@ class TopologyController extends AbstractFOSRestController
      */
     public function getTopologySchemaAction(string $id): Response
     {
-        return $this->forward('HbPFConfiguratorBundle:Topology:getTopologySchema', ['id' => $id]);
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::getTopologySchemaAction',
+            ['id' => $id]
+        );
     }
 
     /**
@@ -95,7 +111,10 @@ class TopologyController extends AbstractFOSRestController
      */
     public function saveTopologySchemaAction(string $id): Response
     {
-        return $this->forward('HbPFConfiguratorBundle:Topology:saveTopologySchema', ['id' => $id]);
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::saveTopologySchemaAction',
+            ['id' => $id]
+        );
     }
 
     /**
@@ -107,7 +126,10 @@ class TopologyController extends AbstractFOSRestController
      */
     public function publishTopologyAction(string $id): Response
     {
-        return $this->forward('HbPFConfiguratorBundle:Topology:publishTopology', ['id' => $id]);
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::publishTopologyAction',
+            ['id' => $id]
+        );
     }
 
     /**
@@ -119,7 +141,10 @@ class TopologyController extends AbstractFOSRestController
      */
     public function cloneTopologyAction(string $id): Response
     {
-        return $this->forward('HbPFConfiguratorBundle:Topology:cloneTopology', ['id' => $id]);
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::cloneTopologyAction',
+            ['id' => $id]
+        );
     }
 
     /**
@@ -131,7 +156,10 @@ class TopologyController extends AbstractFOSRestController
      */
     public function deleteTopologyAction(string $id): Response
     {
-        return $this->forward('HbPFConfiguratorBundle:Topology:deleteTopology', ['id' => $id]);
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::deleteTopologyAction',
+            ['id' => $id]
+        );
     }
 
     /**
@@ -143,7 +171,10 @@ class TopologyController extends AbstractFOSRestController
      */
     public function testAction(string $topologyId): Response
     {
-        return $this->forward('HbPFConfiguratorBundle:Topology:test', ['topologyId' => $topologyId]);
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::testAction',
+            ['topologyId' => $topologyId]
+        );
     }
 
 }

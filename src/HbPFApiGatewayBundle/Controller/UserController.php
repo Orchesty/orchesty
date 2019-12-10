@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @package Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller
  */
-class UserController extends AbstractFOSRestController
+final class UserController extends AbstractFOSRestController
 {
 
     /**
@@ -21,7 +21,7 @@ class UserController extends AbstractFOSRestController
      */
     public function loginAction(): Response
     {
-        return $this->forward('HbPFUserBundle:User:login');
+        return $this->forward('Hanaboso\UserBundle\Controller\UserController::loginAction');
     }
 
     /**
@@ -31,7 +31,7 @@ class UserController extends AbstractFOSRestController
      */
     public function logoutAction(): Response
     {
-        return $this->forward('HbPFUserBundle:User:logout');
+        return $this->forward('Hanaboso\UserBundle\Controller\UserController::logoutAction');
     }
 
     /**
@@ -41,7 +41,7 @@ class UserController extends AbstractFOSRestController
      */
     public function registerAction(): Response
     {
-        return $this->forward('HbPFUserBundle:User:register');
+        return $this->forward('Hanaboso\UserBundle\Controller\UserController::registerAction');
     }
 
     /**
@@ -53,7 +53,7 @@ class UserController extends AbstractFOSRestController
      */
     public function activateAction(string $token): Response
     {
-        return $this->forward('HbPFUserBundle:User:activate', ['token' => $token]);
+        return $this->forward('Hanaboso\UserBundle\Controller\UserController::activateAction', ['token' => $token]);
     }
 
     /**
@@ -65,7 +65,7 @@ class UserController extends AbstractFOSRestController
      */
     public function setPasswordAction(string $token): Response
     {
-        return $this->forward('HbPFUserBundle:User:setPassword', ['token' => $token]);
+        return $this->forward('Hanaboso\UserBundle\Controller\UserController::setPasswordAction', ['token' => $token]);
     }
 
     /**
@@ -75,7 +75,7 @@ class UserController extends AbstractFOSRestController
      */
     public function changePasswordAction(): Response
     {
-        return $this->forward('HbPFUserBundle:User:changePassword');
+        return $this->forward('Hanaboso\UserBundle\Controller\UserController::changePasswordAction');
     }
 
     /**
@@ -85,7 +85,7 @@ class UserController extends AbstractFOSRestController
      */
     public function resetPasswordAction(): Response
     {
-        return $this->forward('HbPFUserBundle:User:resetPassword');
+        return $this->forward('Hanaboso\UserBundle\Controller\UserController::resetPasswordAction');
     }
 
     /**
@@ -97,7 +97,7 @@ class UserController extends AbstractFOSRestController
      */
     public function deleteAction(string $id): Response
     {
-        return $this->forward('HbPFUserBundle:User:delete', ['id' => $id]);
+        return $this->forward('Hanaboso\UserBundle\Controller\UserController::deleteAction', ['id' => $id]);
     }
 
 }

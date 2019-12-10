@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @package Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller
  */
-class NotificationController extends AbstractFOSRestController
+final class NotificationController extends AbstractFOSRestController
 {
 
     /**
@@ -22,7 +22,9 @@ class NotificationController extends AbstractFOSRestController
      */
     public function getSettingsAction(): Response
     {
-        return $this->forward('HbPFNotificationBundle:Notification:getSettings');
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFNotificationBundle\Controller\NotificationController::getSettingsAction'
+        );
     }
 
     /**
@@ -32,7 +34,9 @@ class NotificationController extends AbstractFOSRestController
      */
     public function getSettingEventsAction(): Response
     {
-        return $this->forward('HbPFNotificationBundle:Notification:getSettingEvents');
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFNotificationBundle\Controller\NotificationController::getSettingEventsAction'
+        );
     }
 
     /**
@@ -44,7 +48,10 @@ class NotificationController extends AbstractFOSRestController
      */
     public function getSettingAction(string $id): Response
     {
-        return $this->forward('HbPFNotificationBundle:Notification:getSetting', ['id' => $id]);
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFNotificationBundle\Controller\NotificationController::getSettingAction',
+            ['id' => $id]
+        );
     }
 
     /**
@@ -58,7 +65,7 @@ class NotificationController extends AbstractFOSRestController
     public function updateSettingsAction(Request $request, string $id): Response
     {
         return $this->forward(
-            'HbPFNotificationBundle:Notification:updateSettings',
+            'Hanaboso\PipesFramework\HbPFNotificationBundle\Controller\NotificationController::updateSettingsAction',
             [
                 'request' => $request,
                 'id'      => $id,

@@ -22,7 +22,7 @@ final class SdkController extends AbstractFOSRestController
      */
     public function getAllAction(): Response
     {
-        return $this->forward('HbPFConfiguratorBundle:Sdk:getAll');
+        return $this->forward('Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\SdkController::getAllAction');
     }
 
     /**
@@ -34,7 +34,10 @@ final class SdkController extends AbstractFOSRestController
      */
     public function getOneAction(string $id): Response
     {
-        return $this->forward('HbPFConfiguratorBundle:Sdk:getOne', ['id' => $id]);
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\SdkController::getOneAction',
+            ['id' => $id]
+        );
     }
 
     /**
@@ -46,7 +49,10 @@ final class SdkController extends AbstractFOSRestController
      */
     public function createAction(Request $request): Response
     {
-        return $this->forward('HbPFConfiguratorBundle:Sdk:create', ['request' => $request]);
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\SdkController::createAction',
+            ['request' => $request]
+        );
     }
 
     /**
@@ -59,7 +65,10 @@ final class SdkController extends AbstractFOSRestController
      */
     public function updateAction(Request $request, string $id): Response
     {
-        return $this->forward('HbPFConfiguratorBundle:Sdk:update', ['request' => $request, 'id' => $id]);
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\SdkController::updateAction',
+            ['request' => $request, 'id' => $id]
+        );
     }
 
     /**
@@ -71,7 +80,10 @@ final class SdkController extends AbstractFOSRestController
      */
     public function deleteAction(string $id): Response
     {
-        return $this->forward('HbPFConfiguratorBundle:Sdk:delete', ['id' => $id]);
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\SdkController::deleteAction',
+            ['id' => $id]
+        );
     }
 
 }

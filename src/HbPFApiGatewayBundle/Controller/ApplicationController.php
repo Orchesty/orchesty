@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @package Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller
  */
-class ApplicationController extends AbstractFOSRestController
+final class ApplicationController extends AbstractFOSRestController
 {
 
     /**
@@ -22,7 +22,7 @@ class ApplicationController extends AbstractFOSRestController
      */
     public function listOfApplicationsAction(): Response
     {
-        return $this->forward('HbPFAppStoreBundle:Application:listOfApplications');
+        return $this->forward('Hanaboso\HbPFAppStore\Controller\ApplicationController::listOfApplicationsAction');
     }
 
     /**
@@ -35,7 +35,7 @@ class ApplicationController extends AbstractFOSRestController
     public function getApplicationAction(string $key): Response
     {
         return $this->forward(
-            'HbPFAppStoreBundle:Application:getApplication',
+            'Hanaboso\HbPFAppStore\Controller\ApplicationController::getApplicationAction',
             [
                 'key' => $key,
             ]
@@ -52,7 +52,7 @@ class ApplicationController extends AbstractFOSRestController
     public function getUsersApplicationAction(string $user): Response
     {
         return $this->forward(
-            'HbPFAppStoreBundle:Application:getUsersApplication',
+            'Hanaboso\HbPFAppStore\Controller\ApplicationController::getUsersApplicationAction',
             [
                 'user' => $user,
             ]
@@ -70,7 +70,7 @@ class ApplicationController extends AbstractFOSRestController
     public function getApplicationDetailAction(string $key, string $user): Response
     {
         return $this->forward(
-            'HbPFAppStoreBundle:Application:getApplicationDetail',
+            'Hanaboso\HbPFAppStore\Controller\ApplicationController::getApplicationDetailAction',
             [
                 'key'  => $key,
                 'user' => $user,
@@ -89,7 +89,7 @@ class ApplicationController extends AbstractFOSRestController
     public function installApplicationAction(string $key, string $user): Response
     {
         return $this->forward(
-            'HbPFAppStoreBundle:Application:installApplication',
+            'Hanaboso\HbPFAppStore\Controller\ApplicationController::installApplicationAction',
             [
                 'key'  => $key,
                 'user' => $user,
@@ -109,7 +109,7 @@ class ApplicationController extends AbstractFOSRestController
     public function updateApplicationSettingsAction(Request $request, string $key, string $user): Response
     {
         return $this->forward(
-            'HbPFAppStoreBundle:Application:updateApplicationSettings',
+            'Hanaboso\HbPFAppStore\Controller\ApplicationController::updateApplicationSettingsAction',
             [
                 'request' => $request,
                 'key'     => $key,
@@ -129,7 +129,7 @@ class ApplicationController extends AbstractFOSRestController
     public function uninstallApplicationAction(string $key, string $user): Response
     {
         return $this->forward(
-            'HbPFAppStoreBundle:Application:uninstallApplication',
+            'Hanaboso\HbPFAppStore\Controller\ApplicationController::uninstallApplicationAction',
             [
                 'key'  => $key,
                 'user' => $user,
@@ -149,7 +149,7 @@ class ApplicationController extends AbstractFOSRestController
     public function saveApplicationPasswordAction(Request $request, string $key, string $user): Response
     {
         return $this->forward(
-            'HbPFAppStoreBundle:Application:saveApplicationPassword',
+            'Hanaboso\HbPFAppStore\Controller\ApplicationController::saveApplicationPasswordAction',
             [
                 'request' => $request,
                 'key'     => $key,
@@ -170,7 +170,7 @@ class ApplicationController extends AbstractFOSRestController
     public function authorizeApplicationAction(Request $request, string $key, string $user): Response
     {
         return $this->forward(
-            'HbPFApplicationBundle:Application:authorizeApplication',
+            'Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::authorizeApplicationAction',
             [
                 'request' => $request,
                 'key'     => $key,
@@ -191,7 +191,7 @@ class ApplicationController extends AbstractFOSRestController
     public function setAuthorizationTokenAction(Request $request, string $key, string $user): Response
     {
         return $this->forward(
-            'HbPFApplicationBundle:Application:setAuthorizationToken',
+            'Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::setAuthorizationTokenAction',
             [
                 'request' => $request,
                 'key'     => $key,
@@ -210,7 +210,7 @@ class ApplicationController extends AbstractFOSRestController
     public function setAuthorizationTokenQueryAction(Request $request): Response
     {
         return $this->forward(
-            'HbPFApplicationBundle:Application:setAuthorizationTokenQuery',
+            'Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::setAuthorizationTokenQueryAction',
             [
                 'request' => $request,
             ]

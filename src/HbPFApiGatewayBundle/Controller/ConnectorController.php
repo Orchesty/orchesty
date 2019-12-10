@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @package Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller
  */
-class ConnectorController extends AbstractFOSRestController
+final class ConnectorController extends AbstractFOSRestController
 {
 
     /**
@@ -23,7 +23,10 @@ class ConnectorController extends AbstractFOSRestController
      */
     public function processEvent(string $id): Response
     {
-        $data = $this->forward('HbPFConnectorBundle:Connector:processEvent', ['id' => $id]);
+        $data = $this->forward(
+            'Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Controller\ConnectorController::processEventAction',
+            ['id' => $id]
+        );
 
         return new Response($data->getContent(), $data->getStatusCode(), $data->headers->all());
     }
@@ -37,7 +40,10 @@ class ConnectorController extends AbstractFOSRestController
      */
     public function processAction(string $id): Response
     {
-        $data = $this->forward('HbPFConnectorBundle:Connector:processAction', ['id' => $id]);
+        $data = $this->forward(
+            'Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Controller\ConnectorController::processActionAction',
+            ['id' => $id]
+        );
 
         return new Response($data->getContent(), $data->getStatusCode(), $data->headers->all());
     }
