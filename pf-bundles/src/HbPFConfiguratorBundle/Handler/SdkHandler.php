@@ -90,6 +90,7 @@ final class SdkHandler
      *
      * @return mixed[]
      * @throws DocumentNotFoundException
+     * @throws MongoDBException
      */
     public function delete(string $id): array
     {

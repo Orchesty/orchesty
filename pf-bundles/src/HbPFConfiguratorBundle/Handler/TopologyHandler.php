@@ -277,6 +277,7 @@ class TopologyHandler
      * @throws CronException
      * @throws CurlException
      * @throws TopologyException
+     * @throws MongoDBException
      */
     public function deleteTopology(string $id): ResponseDto
     {

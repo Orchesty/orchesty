@@ -23,6 +23,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers TopologyController::getTopologiesAction()
+     *
      * @throws Exception
      */
     public function testGetTopologies(): void
@@ -43,6 +44,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers TopologyController::getTopologyAction()
+     *
      * @throws Exception
      */
     public function testGetTopology(): void
@@ -57,6 +59,8 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers TopologyController::getTopologyAction()
+     *
+     * @throws Exception
      */
     public function testGetTopologyNotFound(): void
     {
@@ -70,6 +74,8 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers TopologyController::createTopologyAction()
+     *
+     * @throws Exception
      */
     public function testCreateTopology(): void
     {
@@ -90,6 +96,8 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers TopologyController::updateTopologyAction()
+     *
+     * @throws Exception
      */
     public function testUpdateTopology(): void
     {
@@ -115,6 +123,8 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers TopologyController::updateTopologyAction()
+     *
+     * @throws Exception
      */
     public function testUpdateTopologyNotFound(): void
     {
@@ -135,6 +145,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers TopologyController::getTopologySchemaAction()
+     *
      * @throws Exception
      */
     public function testGetTopologySchema(): void
@@ -159,6 +170,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers TopologyController::getTopologySchemaAction()
+     *
      * @throws Exception
      */
     public function testGetTopologySchemaNotFound(): void
@@ -180,6 +192,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers TopologyController::saveTopologySchemaAction()
+     *
      * @throws Exception
      */
     public function testSaveTopologySchema(): void
@@ -210,6 +223,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers TopologyController::saveTopologySchemaAction()
+     *
      * @throws Exception
      */
     public function testSaveTopologySchemaNotFound(): void
@@ -238,6 +252,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers TopologyController::saveTopologySchemaAction()
+     *
      * @throws Exception
      */
     public function testSaveTopologySchemaNameNotFound(): void
@@ -268,6 +283,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers TopologyController::saveTopologySchemaAction()
+     *
      * @throws Exception
      */
     public function testSaveTopologySchemaTypeNotExist(): void
@@ -302,6 +318,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers TopologyController::saveTopologySchemaAction()
+     *
      * @throws Exception
      */
     public function testSaveTopologySchemaCronNotValid(): void
@@ -333,6 +350,8 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     /**
      * @covers TopologyController::saveTopologySchemaAction()
      * @covers TopologyController::getTopologySchemaAction()
+     *
+     * @throws Exception
      */
     public function testSaveAndGetTopologySchema(): void
     {
@@ -371,6 +390,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers TopologyController::deleteTopologyAction()
+     *
      * @throws Exception
      */
     public function testDeleteTopology(): void
@@ -396,6 +416,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers TopologyController::getCronTopologiesAction()
+     *
      * @throws Exception
      */
     public function testGetCronTopologies(): void

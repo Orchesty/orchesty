@@ -121,11 +121,11 @@ final class RepeaterListenerTest extends ControllerTestCaseAbstract
         /** @var GetResponseForExceptionEvent | MockObject $eventMock */
         $eventMock = self::createPartialMock(
             GetResponseForExceptionEvent::class,
-            ['getException']
+            ['getThrowable']
         );
 
         $eventMock
-            ->method('getException')
+            ->method('getThrowable')
             ->will($this->returnValue($exception));
 
         return $eventMock;

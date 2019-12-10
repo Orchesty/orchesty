@@ -121,6 +121,7 @@ class TopologyManager
      * @throws EnumException
      * @throws NodeException
      * @throws TopologyException
+     * @throws MongoDBException
      */
     public function saveTopologySchema(Topology $topology, string $content, array $data): Topology
     {
@@ -165,6 +166,7 @@ class TopologyManager
      * @return Topology
      * @throws TopologyException
      * @throws EnumException
+     * @throws MongoDBException
      */
     public function publishTopology(Topology $topology): Topology
     {
@@ -187,6 +189,7 @@ class TopologyManager
      *
      * @return Topology
      * @throws EnumException
+     * @throws MongoDBException
      */
     public function unPublishTopology(Topology $topology): Topology
     {
@@ -203,6 +206,7 @@ class TopologyManager
      * @throws NodeException
      * @throws EnumException
      * @throws TopologyException
+     * @throws MongoDBException
      */
     public function cloneTopology(Topology $topology): Topology
     {
@@ -256,6 +260,7 @@ class TopologyManager
      * @throws CronException
      * @throws CurlException
      * @throws TopologyException
+     * @throws MongoDBException
      */
     public function deleteTopology(Topology $topology): void
     {
@@ -349,6 +354,7 @@ class TopologyManager
      *
      * @throws CronException
      * @throws CurlException
+     * @throws MongoDBException
      */
     private function removeNodesByTopology(Topology $topology): void
     {
@@ -370,6 +376,7 @@ class TopologyManager
      * @throws TopologyException
      * @throws NodeException
      * @throws EnumException
+     * @throws MongoDBException
      */
     private function generateNodes(Topology $topology, Schema $dto): void
     {
@@ -398,6 +405,7 @@ class TopologyManager
      * @throws NodeException
      * @throws TopologyException
      * @throws EnumException
+     * @throws MongoDBException
      */
     private function updateNodes(Topology $topology, Schema $dto): void
     {
@@ -436,6 +444,7 @@ class TopologyManager
      * @throws EnumException
      * @throws NodeException
      * @throws TopologyException
+     * @throws MongoDBException
      */
     private function createNode(Topology $topology, array &$nodes, array &$embedNodes, NodeSchemaDto $dto): Node
     {

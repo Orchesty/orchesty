@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller;
 
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 use Hanaboso\CommonsBundle\Traits\ControllerTrait;
@@ -75,7 +76,7 @@ final class SdkController extends AbstractFOSRestController
     {
         try {
             return $this->getResponse($this->handler->create($request->request->all()));
-        } catch (PipesFrameworkException $e) {
+        } catch (PipesFrameworkException | MongoDBException $e) {
             return $this->getErrorResponse($e, 400);
         }
     }
@@ -92,7 +93,7 @@ final class SdkController extends AbstractFOSRestController
     {
         try {
             return $this->getResponse($this->handler->update($id, $request->request->all()));
-        } catch (DocumentNotFoundException $e) {
+        } catch (DocumentNotFoundException | MongoDBException $e) {
             return $this->getErrorResponse($e, 404);
         }
     }
@@ -108,7 +109,7 @@ final class SdkController extends AbstractFOSRestController
     {
         try {
             return $this->getResponse($this->handler->delete($id));
-        } catch (DocumentNotFoundException $e) {
+        } catch (DocumentNotFoundException | MongoDBException $e) {
             return $this->getErrorResponse($e, 404);
         }
     }

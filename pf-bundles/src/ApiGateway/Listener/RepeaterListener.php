@@ -63,7 +63,7 @@ class RepeaterListener implements EventSubscriberInterface, LoggerAwareInterface
      */
     public function onRepeatableException(GetResponseForExceptionEvent $event): void
     {
-        $e = $event->getException();
+        $e = $event->getThrowable();
 
         if (!$e instanceof OnRepeatException) {
             return;
