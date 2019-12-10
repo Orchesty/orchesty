@@ -2,7 +2,9 @@
 
 namespace Tests\Integration\Model\Application\Impl\Airtable;
 
+use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
+use Hanaboso\HbPFConnectors\Model\Application\Impl\Airtable\AirtableApplication;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
@@ -17,15 +19,26 @@ final class AirtableApplicationTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     *
+     * @var AirtableApplication
+     */
+    private $app;
+
+    /**
+     * @throws Exception
+     */
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->app = self::$container->get('hbpf.application.airtable');
+    }
+
+    /**
+     * @throws Exception
      */
     public function testGetApplicationType(): void
     {
-        $airtable = self::$container->get('hbpf.application.airtable');
-        self::assertEquals(
-            ApplicationTypeEnum::CRON,
-            $airtable->getApplicationType()
-        );
+        self::assertEquals(ApplicationTypeEnum::CRON, $this->app->getApplicationType());
     }
 
     /**
@@ -33,62 +46,45 @@ final class AirtableApplicationTest extends DatabaseTestCaseAbstract
      */
     public function testGetKey(): void
     {
-        $airtable = self::$container->get('hbpf.application.airtable');
-        self::assertEquals(
-            'airtable',
-            $airtable->getKey()
-        );
+        self::assertEquals('airtable', $this->app->getKey());
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testName(): void
     {
-        $airtable = self::$container->get('hbpf.application.airtable');
-        self::assertEquals(
-            'Airtable',
-            $airtable->getName()
-        );
+        self::assertEquals('Airtable', $this->app->getName());
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testGetDescription(): void
     {
-        $airtable = self::$container->get('hbpf.application.airtable');
-        self::assertEquals(
-            'Airtable v1',
-            $airtable->getDescription()
-        );
+        self::assertEquals('Airtable v1', $this->app->getDescription());
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testGetSettingsForm(): void
     {
-        $airtable = self::$container->get('hbpf.application.airtable');
-
-        $fields = $airtable->getSettingsForm()->getFields();
+        $fields = $this->app->getSettingsForm()->getFields();
         foreach ($fields as $field) {
             self::assertInstanceOf(Field::class, $field);
             self::assertContains($field->getKey(), ['token', 'BASE_ID', 'TABLE_NAME']);
         }
-
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testGetAccessToken(): void
     {
-        $airtable           = self::$container->get('hbpf.application.airtable');
         $applicationInstall = new ApplicationInstall();
         $this->expectException(AuthorizationException::class);
-        $airtable->getAccessToken($applicationInstall);
-
+        $this->app->getAccessToken($applicationInstall);
     }
 
 }
