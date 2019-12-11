@@ -32,10 +32,10 @@ docker-down-clean: .env
 
 # Composer
 composer-install:
-	$(DE) composer install --ignore-platform-reqs
+	$(DE) composer install --ignore-platform-reqs --no-suggest
 
 composer-update:
-	$(DE) composer update --ignore-platform-reqs
+	$(DE) composer update --ignore-platform-reqs --no-suggest
 
 clear-cache:
 	$(DE) rm -rf var/log
@@ -64,7 +64,7 @@ phpcoverage:
 	$(DE) php vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p 4 --coverage-html var/coverage --whitelist src tests
 
 phpcoverage-ci:
-	$(DE) ./vendor/hanaboso/php-check-utils/bin/coverage.sh 50
+	$(DE) ./vendor/hanaboso/php-check-utils/bin/coverage.sh 85
 
 test: docker-up-force composer-install fasttest
 

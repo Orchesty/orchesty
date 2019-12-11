@@ -1,0 +1,39 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf.application.s3:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\S3Application
+        arguments:
+
+    hbpf.connector.s3-create-object:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\Connector\S3CreateObjectConnector
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+        calls:
+            - ['setApplication', ['@hbpf.application.s3']]
+
+    hbpf.connector.s3-get-object:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\Connector\S3GetObjectConnector
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+        calls:
+            - ['setApplication', ['@hbpf.application.s3']]
+
+    hbpf.connector.s3-delete-object:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\Connector\S3DeleteObjectConnector
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+        calls:
+            - ['setApplication', ['@hbpf.application.s3']]
+
+    hbpf.application.redshift:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\Redshift\RedshiftApplication
+        arguments:
+
+    hbpf.connector.redshift-execute-query:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\Redshift\Connector\RedshiftExecuteQueryConnector
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+        calls:
+            - ['setApplication',['@hbpf.application.redshift']]

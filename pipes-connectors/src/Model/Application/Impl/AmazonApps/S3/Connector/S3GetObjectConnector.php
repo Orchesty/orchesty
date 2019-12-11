@@ -11,11 +11,11 @@ use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 
 /**
- * Class GetS3ObjectConnector
+ * Class S3GetObjectConnector
  *
  * @package Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\Connector
  */
-final class GetS3ObjectConnector extends S3ObjectConnectorAbstract
+final class S3GetObjectConnector extends S3ObjectConnectorAbstract
 {
 
     /**

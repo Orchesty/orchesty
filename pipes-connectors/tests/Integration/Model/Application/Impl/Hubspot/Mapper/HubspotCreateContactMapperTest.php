@@ -2,14 +2,11 @@
 
 namespace Tests\Integration\Model\Application\Impl\Hubspot\Mapper;
 
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
-use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
+use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Mapper\HubspotCreateContactMapper;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shipstation\Connector\ShipstationNewOrderConnector;
-use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\DataProvider;
 use Tests\MockCurlMethod;
@@ -26,10 +23,7 @@ final class HubspotCreateContactMapperTest extends DatabaseTestCaseAbstract
     public const API_SECRET = '5ef27043-34cc-43d1-9751-65**********';
 
     /**
-     * @throws DateTimeException
-     * @throws PipesFrameworkException
-     * @throws CurlException
-     * @throws ApplicationInstallException
+     * @throws Exception
      */
     public function testProcessAction(): void
     {

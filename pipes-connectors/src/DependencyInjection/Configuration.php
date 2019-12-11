@@ -12,7 +12,7 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
  * @package Hanaboso\HbPFConnectors\DependencyInjection
  * @codeCoverageIgnore
  */
-class Configuration implements ConfigurationInterface
+final class Configuration implements ConfigurationInterface
 {
 
     /**
@@ -20,12 +20,10 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder(): TreeBuilder
     {
-        $treeBuilder = new TreeBuilder();
+        $treeBuilder = new TreeBuilder('hbpf');
         /** @var ArrayNodeDefinition $rootNode */
-        $rootNode = $treeBuilder->root('hbpf');
-
-        $rootNode->children()
-            ->arrayNode('connectors');
+        $rootNode = $treeBuilder->getRootNode();
+        $rootNode->children()->arrayNode('connectors');
 
         return $treeBuilder;
     }

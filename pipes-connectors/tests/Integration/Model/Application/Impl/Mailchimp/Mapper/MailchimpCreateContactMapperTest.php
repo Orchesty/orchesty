@@ -2,13 +2,10 @@
 
 namespace Tests\Integration\Model\Application\Impl\Mailchimp\Mapper;
 
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
-use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
-use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
+use Exception;
 use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\MailchimpApplication;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\Mapper\MailchimpCreateContactMapper;
-use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\DataProvider;
 use Tests\MockCurlMethod;
@@ -22,10 +19,7 @@ final class MailchimpCreateContactMapperTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @throws ApplicationInstallException
-     * @throws CurlException
-     * @throws DateTimeException
-     * @throws PipesFrameworkException
+     * @throws Exception
      */
     public function testProcessAction(): void
     {

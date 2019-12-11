@@ -95,7 +95,7 @@ final class NutshellApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testGetSettingsForm(): void
     {

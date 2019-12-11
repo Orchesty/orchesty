@@ -9,7 +9,6 @@ use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Form;
-use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
 
 /**
  * Class S3Application
@@ -85,7 +84,7 @@ final class S3Application extends AwsApplicationAbstract
      */
     public function getS3Client(ApplicationInstall $applicationInstall): S3Client
     {
-        $settings = $applicationInstall->getSettings()[BasicApplicationAbstract::FORM];
+        $settings = $applicationInstall->getSettings()[self::FORM];
         $endpoint = $settings[self::ENDPOINT];
 
         return new S3Client(
@@ -96,7 +95,7 @@ final class S3Application extends AwsApplicationAbstract
                         self::SECRET => $settings[self::SECRET],
                     ],
                     self::REGION      => $settings[self::REGION],
-                    self::VERSION     => 'latest',
+                    self::VERSION     => self::LATEST,
                 ],
                 $endpoint ? [self::ENDPOINT => $settings[self::ENDPOINT]] : []
             )

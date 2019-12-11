@@ -4,7 +4,6 @@ namespace Tests\Integration\Model\Application\Impl\Bigcommerce;
 
 use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Bigcommerce\BigcommerceApplication;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
@@ -62,7 +61,7 @@ final class BigcommerceApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws DateTimeException
+     * @throws Exception
      */
     public function testIsAuthorizedNoToken(): void
     {
@@ -129,7 +128,7 @@ final class BigcommerceApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testGetSettingsForm(): void
     {

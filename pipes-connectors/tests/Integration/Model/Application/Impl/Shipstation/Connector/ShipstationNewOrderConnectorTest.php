@@ -2,12 +2,9 @@
 
 namespace Tests\Integration\Model\Application\Impl\Shipstation\Connector;
 
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
-use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
+use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shipstation\Connector\ShipstationNewOrderConnector;
-use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\DataProvider;
@@ -28,10 +25,7 @@ final class ShipstationNewOrderConnectorTest extends DatabaseTestCaseAbstract
      * @param int  $code
      * @param bool $isValid
      *
-     * @throws ApplicationInstallException
-     * @throws CurlException
-     * @throws DateTimeException
-     * @throws PipesFrameworkException
+     * @throws Exception
      *
      * @dataProvider getDataProvider
      */
@@ -95,8 +89,7 @@ final class ShipstationNewOrderConnectorTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws ConnectorException
-     * @throws DateTimeException
+     * @throws Exception
      */
     public function testProcessAction(): void
     {

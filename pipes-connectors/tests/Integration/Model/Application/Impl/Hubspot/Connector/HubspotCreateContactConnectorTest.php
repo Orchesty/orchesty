@@ -84,7 +84,7 @@ final class HubspotCreateContactConnectorTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws ConnectorException
+     * @throws Exception
      */
     public function testProcessEvent(): void
     {

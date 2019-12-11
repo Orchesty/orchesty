@@ -2,29 +2,36 @@
 
 namespace Tests\Integration\Model\Application\Impl\AmazonApps\S3\Connector;
 
+use Aws\Command;
+use Aws\S3\Exception\S3Exception;
+use Aws\S3\S3Client;
 use Exception;
+use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Utils\Json;
-use Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\Connector\DeleteS3ObjectConnector;
+use Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\Connector\S3DeleteObjectConnector;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\S3Application;
+use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
+use PHPUnit\Framework\MockObject\MockObject;
 use Tests\DatabaseTestCaseAbstract;
 
 /**
- * Class DeleteObjectConnectorTest
+ * Class S3DeleteObjectConnectorTest
  *
  * @package Tests\Integration\Model\Application\Impl\AmazonApps\S3\Connector
  */
-final class DeleteObjectConnectorTest extends DatabaseTestCaseAbstract
+final class S3DeleteObjectConnectorTest extends DatabaseTestCaseAbstract
 {
+
+    use PrivateTrait;
 
     private const KEY  = 's3';
     private const USER = 'user';
 
     /**
-     * @var DeleteS3ObjectConnector
+     * @var S3DeleteObjectConnector
      */
     private $connector;
 
@@ -49,7 +56,7 @@ final class DeleteObjectConnectorTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers DeleteS3ObjectConnector::processAction
+     * @covers S3DeleteObjectConnector::processAction
      * @throws Exception
      */
     public function testProcessAction(): void
@@ -65,18 +72,54 @@ final class DeleteObjectConnectorTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers DeleteS3ObjectConnector::processAction
+     * @covers S3DeleteObjectConnector::processAction
      * @throws Exception
      */
     public function testProcessActionMissingName(): void
     {
+        self::assertException(
+            ConnectorException::class,
+            ConnectorException::CONNECTOR_FAILED_TO_PROCESS,
+            "Connector 's3-delete-object': Required parameter 'name' is not provided!"
+        );
+
         $this->createApplication();
 
         $dto = (new ProcessDto())->setHeaders(['pf-application' => self::KEY, 'pf-user' => self::USER]);
 
-        self::expectException(ConnectorException::class);
-        self::expectExceptionCode(ConnectorException::CONNECTOR_FAILED_TO_PROCESS);
-        self::expectExceptionMessage("Connector 's3-delete-object': Required parameter 'name' is not provided!");
+        $this->connector->processAction($dto);
+    }
+
+    /**
+     * @covers S3DeleteObjectConnector::processAction
+     * @throws Exception
+     */
+    public function testProcessActionException(): void
+    {
+        self::assertException(
+            OnRepeatException::class,
+            0,
+            "Connector 's3-delete-object': Aws\S3\Exception\S3Exception: Something gone wrong!"
+        );
+
+        $this->createApplication();
+
+        /** @var S3Client|MockObject $client */
+        $client = self::createPartialMock(S3Client::class, ['__call']);
+        $client->method('__call')->willReturnCallback(
+            function (): void {
+                throw new S3Exception('Something gone wrong!', new Command('Unknown'));
+            }
+        );
+
+        /** @var S3Application|MockObject $application */
+        $application = self::createPartialMock(S3Application::class, ['getS3Client']);
+        $application->method('getS3Client')->willReturn($client);
+        $this->setProperty($this->connector, 'application', $application);
+
+        $dto = (new ProcessDto())
+            ->setData(Json::encode(['name' => 'Test', 'content' => 'Content']))
+            ->setHeaders(['pf-application' => self::KEY, 'pf-user' => self::USER]);
 
         $this->connector->processAction($dto);
     }
@@ -91,7 +134,7 @@ final class DeleteObjectConnectorTest extends DatabaseTestCaseAbstract
             ->setUser(self::USER)
             ->setSettings(
                 [
-                    BasicApplicationAbstract::FORM => [
+                    S3Application::FORM => [
                         S3Application::KEY      => 'Key',
                         S3Application::SECRET   => 'Secret',
                         S3Application::REGION   => 'eu-central-1',

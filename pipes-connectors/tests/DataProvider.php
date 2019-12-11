@@ -2,7 +2,7 @@
 
 namespace Tests;
 
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
+use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
@@ -28,7 +28,7 @@ final class DataProvider
      * @param string $clientSecret
      *
      * @return ApplicationInstall
-     * @throws DateTimeException
+     * @throws Exception
      */
     public static function getOauth2AppInstall(
         string $key,
@@ -56,7 +56,7 @@ final class DataProvider
      * @param string $password
      *
      * @return ApplicationInstall
-     * @throws DateTimeException
+     * @throws Exception
      */
     public static function getBasicAppInstall(
         string $key,

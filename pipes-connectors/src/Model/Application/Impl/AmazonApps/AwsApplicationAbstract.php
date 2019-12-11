@@ -22,8 +22,7 @@ abstract class AwsApplicationAbstract extends BasicApplicationAbstract
     public const VERSION     = 'version';
     public const ENDPOINT    = 'endpoint';
     public const CREDENTIALS = 'credentials';
-
-    public const REGIONS = [
+    public const REGIONS     = [
         'us-east-2'      => 'US East (Ohio) - us-east-2',
         'us-east-1'      => 'US East (N. Virginia) - us-east-1',
         'us-west-1'      => 'US West (N. California) - us-west-1',
@@ -47,6 +46,8 @@ abstract class AwsApplicationAbstract extends BasicApplicationAbstract
         'us-gov-east-1'  => 'AWS GovCloud (US-East) - us-gov-east-1',
         'us-gov-west-1'  => 'AWS GovCloud (US-West) - us-gov-west-1',
     ];
+
+    protected const LATEST = 'latest';
 
     /**
      * @return string
@@ -80,9 +81,10 @@ abstract class AwsApplicationAbstract extends BasicApplicationAbstract
 
         throw new LogicException(
             sprintf(
-                "Method '%s' is not supported! Use '%s' instead!",
-                __METHOD__,
-                str_replace('getRequestDto', 'getConnection', __METHOD__)
+                "Method '%s::%s' is not supported! Use '%s::getConnection' instead!",
+                static::class,
+                __FUNCTION__,
+                static::class,
             )
         );
     }

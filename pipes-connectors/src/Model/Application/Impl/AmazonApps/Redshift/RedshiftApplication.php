@@ -15,18 +15,18 @@ use Hanaboso\PipesPhpSdk\Application\Model\Form\Form;
  *
  * @package Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\Redshift
  */
-class RedshiftApplication extends AwsApplicationAbstract
+final class RedshiftApplication extends AwsApplicationAbstract
 {
 
-    private const   HOST               = 'host';
-    private const   PORT               = 'Port';
-    private const   DBNAME             = 'DBName';
-    private const   ADDRESS            = 'Address';
-    private const   MASTER_USER        = 'MasterUsername';
-    private const   CLUSTER_IDENTIFIER = 'ClusterIdentifier';
+    public const ENDPOINT    = 'Endpoint';
+    public const DB_PASSWORD = 'DbPassword';
 
-    public const    ENDPOINT    = 'Endpoint';
-    public const    DB_PASSWORD = 'DbPassword';
+    private const HOST               = 'host';
+    private const PORT               = 'Port';
+    private const DBNAME             = 'DBName';
+    private const ADDRESS            = 'Address';
+    private const MASTER_USER        = 'MasterUsername';
+    private const CLUSTER_IDENTIFIER = 'ClusterIdentifier';
 
     /**
      * @return string
@@ -78,12 +78,34 @@ class RedshiftApplication extends AwsApplicationAbstract
         if (!isset($applicationInstall->getSettings()[ApplicationAbstract::FORM])) {
             return FALSE;
         }
-        $settings = $applicationInstall->getSettings()[ApplicationAbstract::FORM];
+
+        $settings = $applicationInstall->getSettings()[self::FORM];
 
         return isset($settings[self::KEY])
             && isset($settings[self::SECRET])
             && isset($settings[self::REGION])
             && isset($settings[self::DB_PASSWORD]);
+    }
+
+    /**
+     * @param ApplicationInstall $applicationInstall
+     *
+     * @return RedshiftClient
+     */
+    public function getRedshiftClient(ApplicationInstall $applicationInstall): RedshiftClient
+    {
+        $settings = $applicationInstall->getSettings()[self::FORM];
+
+        return new RedshiftClient(
+            [
+                self::CREDENTIALS => [
+                    self::KEY    => $settings[self::KEY],
+                    self::SECRET => $settings[self::SECRET],
+                ],
+                self::REGION      => $settings[self::REGION],
+                self::VERSION     => self::LATEST,
+            ]
+        );
     }
 
     /**
@@ -96,25 +118,7 @@ class RedshiftApplication extends AwsApplicationAbstract
     public function setApplicationSettings(ApplicationInstall $applicationInstall, array $settings): ApplicationInstall
     {
         $applicationInstall = parent::setApplicationSettings($applicationInstall, $settings);
-
-        $settings   = $applicationInstall->getSettings()[self::FORM];
-        $key        = $settings[self::KEY];
-        $secret     = $settings[self::SECRET];
-        $region     = $settings[self::REGION];
-        $dbPassword = $settings[self::DB_PASSWORD];
-
-        $client = RedshiftClient::factory(
-            [
-                self::CREDENTIALS => [
-                    self::KEY    => $key,
-                    self::SECRET => $secret,
-                ],
-                self::REGION      => $region,
-                self::VERSION     => 'latest',
-            ]
-        );
-
-        $cluster = $client->describeClusters()->get('Clusters')[0];
+        $cluster            = $this->getRedshiftClient($applicationInstall)->describeClusters()->get('Clusters')[0];
 
         if (!$cluster) {
             throw new ApplicationInstallException('Login into application was unsuccessful.');
@@ -124,13 +128,12 @@ class RedshiftApplication extends AwsApplicationAbstract
             [
                 RedshiftApplication::CLUSTER_IDENTIFIER => $cluster[RedshiftApplication::CLUSTER_IDENTIFIER],
                 RedshiftApplication::MASTER_USER        => $cluster[RedshiftApplication::MASTER_USER],
-                RedshiftApplication::DB_PASSWORD        => $dbPassword,
+                RedshiftApplication::DB_PASSWORD        => $applicationInstall->getSettings()[self::FORM][self::DB_PASSWORD],
                 RedshiftApplication::DBNAME             => $cluster[RedshiftApplication::DBNAME],
                 RedshiftApplication::HOST               => $cluster[RedshiftApplication::ENDPOINT][RedshiftApplication::ADDRESS],
                 RedshiftApplication::PORT               => $cluster[RedshiftApplication::ENDPOINT][RedshiftApplication::PORT],
             ]
         );
-
     }
 
     /**

@@ -23,7 +23,8 @@
         "hanaboso/pipes-php-sdk": "^1.1"
     },
     "require-dev": {
-        "hanaboso/php-check-utils": "^1.1"
+        "hanaboso/php-check-utils": "^1.1",
+        "php-mock/php-mock-phpunit": "^2.5"
     },
     "repositories": [
         {

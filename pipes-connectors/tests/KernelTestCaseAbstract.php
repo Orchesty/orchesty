@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use Closure;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Redirect\RedirectInterface;
@@ -9,7 +10,9 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\CommonsBundle\Utils\Json;
+use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchInterface;
 use PHPUnit\Framework\MockObject\MockObject;
+use React\EventLoop\Factory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 /**
@@ -161,6 +164,61 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
         $responseJson = Json::decode((string) $response->getData());
 
         self::assertEquals($json, $responseJson);
+    }
+
+    /**
+     * @phpstan-param class-string<\Throwable> $exception
+     *
+     * @param string      $exception
+     * @param int|null    $exceptionCode
+     * @param string|null $exceptionMessage
+     * @param bool        $isExact
+     */
+    protected function assertException(
+        string $exception,
+        ?int $exceptionCode = NULL,
+        ?string $exceptionMessage = NULL,
+        bool $isExact = TRUE
+    ): void
+    {
+        self::expectException($exception);
+
+        if ($exceptionCode) {
+            self::expectExceptionCode($exceptionCode);
+        }
+
+        if ($exceptionMessage) {
+            $isExact ?
+                self::expectExceptionMessageMatches(sprintf('/^%s$/', preg_quote($exceptionMessage))) :
+                self::expectExceptionMessageMatches($exceptionMessage);
+        }
+    }
+
+    /**
+     * @param BatchInterface $batch
+     * @param ProcessDto     $dto
+     * @param Closure|null   $closure
+     */
+    protected function assertBatch(BatchInterface $batch, ProcessDto $dto, ?Closure $closure = NULL): void
+    {
+        $loop = Factory::create();
+
+        $batch->processBatch(
+            $dto,
+            $loop,
+            $closure ?: function (): void {
+                self::assertTrue(TRUE);
+            }
+        )->then(
+            function (): void {
+                self::assertTrue(TRUE);
+            },
+            function (): void {
+                self::fail('Something gone wrong!');
+            }
+        );
+
+        $loop->run();
     }
 
 }

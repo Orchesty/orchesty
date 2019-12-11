@@ -4,7 +4,6 @@ namespace Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps;
 
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\Redshift\RedshiftApplication;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\S3Application;
@@ -13,7 +12,8 @@ use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
-use Throwable;
+use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessEventNotSupportedTrait;
+use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessExceptionTrait;
 
 /**
  * Class AwsObjectConnectorAbstract
@@ -22,6 +22,9 @@ use Throwable;
  */
 abstract class AwsObjectConnectorAbstract extends ConnectorAbstract
 {
+
+    use ProcessExceptionTrait;
+    use ProcessEventNotSupportedTrait;
 
     protected const QUERY  = 'query';
     protected const RESULT = 'result';
@@ -47,22 +50,6 @@ abstract class AwsObjectConnectorAbstract extends ConnectorAbstract
     public function __construct(DocumentManager $dm)
     {
         $this->repository = $dm->getRepository(ApplicationInstall::class);
-    }
-
-    /**
-     * @param ProcessDto $dto
-     *
-     * @return ProcessDto
-     * @throws ConnectorException
-     */
-    public function processEvent(ProcessDto $dto): ProcessDto
-    {
-        $dto;
-
-        throw new ConnectorException(
-            sprintf("Method '%s' is not implemented!", __METHOD__),
-            ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_EVENT
-        );
     }
 
     /**
@@ -100,47 +87,6 @@ abstract class AwsObjectConnectorAbstract extends ConnectorAbstract
                 throw $this->createException("Required parameter '%s' is not provided!", $parameter);
             }
         }
-    }
-
-    /**
-     * @param string $message
-     * @param string ...$arguments
-     *
-     * @return ConnectorException
-     */
-    protected function createException(string $message, string ...$arguments): ConnectorException
-    {
-        $message = sprintf("Connector '%s': %s", $this->getId(), $message);
-
-        if ($arguments) {
-            $message = sprintf($message, ...$arguments);
-        }
-
-        return new ConnectorException($message, ConnectorException::CONNECTOR_FAILED_TO_PROCESS);
-    }
-
-    /**
-     * @param ProcessDto $dto
-     * @param Throwable  $throwable
-     * @param string     ...$arguments
-     *
-     * @return OnRepeatException
-     */
-    protected function createRepeatException(
-        ProcessDto $dto,
-        Throwable $throwable,
-        string ...$arguments
-    ): OnRepeatException
-    {
-        $message = sprintf("Connector '%s': %s: %s", $this->getId(), get_class($throwable), $throwable->getMessage());
-
-        if ($arguments) {
-            $message = sprintf($message, ...$arguments);
-        }
-
-        return (new OnRepeatException($dto, $message, $throwable->getCode(), $throwable))
-            ->setInterval(60000)
-            ->setMaxHops(2);
     }
 
     /**

@@ -3,9 +3,12 @@
 namespace Tests\Integration\Model\Application\Impl\AmazonApps\S3;
 
 use Exception;
+use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\S3Application;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
+use LogicException;
 use Tests\DatabaseTestCaseAbstract;
 
 /**
@@ -32,7 +35,82 @@ final class S3ApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
+     * @covers S3Application::getKey
+     */
+    public function testGetKey(): void
+    {
+        self::assertEquals('s3', $this->application->getKey());
+    }
+
+    /**
+     * @covers S3Application::getApplicationType
+     */
+    public function testGetApplicationType(): void
+    {
+        self::assertEquals(ApplicationTypeEnum::CRON, $this->application->getApplicationType());
+    }
+
+    /**
+     * @covers S3Application::getName
+     */
+    public function testGetName(): void
+    {
+        self::assertEquals('Amazon Simple Storage Service', $this->application->getName());
+    }
+
+    /**
+     * @covers S3Application::getDescription
+     */
+    public function testGetDescription(): void
+    {
+        self::assertEquals(
+            'Amazon Simple Storage Service (Amazon S3) is an object storage service that offers industry-leading scalability, data availability, security, and performance.',
+            $this->application->getDescription()
+        );
+    }
+
+    /**
+     * @covers S3Application::getRequestDto
+     */
+    public function testGetRequestDto(): void
+    {
+        self::assertException(
+            LogicException::class,
+            0,
+            sprintf(
+                "Method '%s::getRequestDto' is not supported! Use '%s::getConnection' instead!",
+                S3Application::class,
+                S3Application::class
+            )
+        );
+
+        $this->application->getRequestDto(new ApplicationInstall(), '');
+    }
+
+    /**
+     * @covers S3Application::getSettingsForm
+     * @throws Exception
+     */
+    public function testGetSettingsForm(): void
+    {
+        foreach ($this->application->getSettingsForm()->getFields() as $field) {
+            self::assertInstanceOf(Field::class, $field);
+            self::assertContains(
+                $field->getKey(),
+                [
+                    S3Application::KEY,
+                    S3Application::SECRET,
+                    S3Application::BUCKET,
+                    S3Application::REGION,
+                    S3Application::ENDPOINT,
+                ]
+            );
+        }
+    }
+
+    /**
      * @covers S3Application::isAuthorized
+     * @throws Exception
      */
     public function testIsAuthorized(): void
     {
@@ -56,6 +134,7 @@ final class S3ApplicationTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers S3Application::isAuthorized
+     * @throws Exception
      */
     public function testIsNotAuthorized(): void
     {

@@ -4,7 +4,6 @@ namespace Tests\Integration\Model\Application\Impl\Shipstation;
 
 use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shipstation\ShipstationApplication;
@@ -126,7 +125,7 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testGetSettingsForm(): void
     {
@@ -139,7 +138,7 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws DateTimeException
+     * @throws Exception
      */
     public function testprocessWebhookSubscribeResponse(): void
     {

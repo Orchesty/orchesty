@@ -5,8 +5,6 @@ namespace Tests\Integration\Model\Application\Impl\Hubspot;
 use Exception;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
-use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Connector\HubspotCreateContactConnector;
@@ -14,7 +12,6 @@ use Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\HubspotApplication;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
@@ -68,7 +65,7 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testGetSettingsForm(): void
     {
@@ -106,7 +103,7 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws DateTimeException
+     * @throws Exception
      */
     public function testIsAuthorizedNoToken(): void
     {
@@ -130,7 +127,7 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws DateTimeException
+     * @throws Exception
      */
     public function testprocessWebhookSubscribeResponse(): void
     {
@@ -155,9 +152,7 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws DateTimeException
-     * @throws CurlException
-     * @throws ApplicationInstallException
+     * @throws Exception
      */
     public function testGetWebhookSubscribeRequestDto(): void
     {

@@ -2,14 +2,11 @@
 
 namespace Tests\Integration\Model\Application\Impl\Airtable\Connector;
 
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
-use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
+use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Airtable\AirtableApplication;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Airtable\Connector\AirtableNewRecordConnector;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
@@ -30,10 +27,7 @@ final class AirtableNewRecordConnectorTest extends DatabaseTestCaseAbstract
     public const TABLE_NAME = 'V******.com';
 
     /**
-     * @throws ApplicationInstallException
-     * @throws CurlException
-     * @throws DateTimeException
-     * @throws PipesFrameworkException
+     * @throws Exception
      */
     public function testProcessAction(): void
     {
@@ -67,10 +61,7 @@ final class AirtableNewRecordConnectorTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws ApplicationInstallException
-     * @throws CurlException
-     * @throws DateTimeException
-     * @throws PipesFrameworkException
+     * @throws Exception
      */
     public function testProcessActionNoFields(): void
     {
@@ -103,10 +94,7 @@ final class AirtableNewRecordConnectorTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws ApplicationInstallException
-     * @throws CurlException
-     * @throws DateTimeException
-     * @throws PipesFrameworkException
+     * @throws Exception
      */
     public function testProcessActionNoBaseId(): void
     {
@@ -132,8 +120,7 @@ final class AirtableNewRecordConnectorTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws ConnectorException
-     * @throws DateTimeException
+     * @throws Exception
      */
     public function testProcessEvent(): void
     {
@@ -192,7 +179,7 @@ final class AirtableNewRecordConnectorTest extends DatabaseTestCaseAbstract
      * @param string|null $baseId
      *
      * @return AirtableNewRecordConnector
-     * @throws DateTimeException
+     * @throws Exception
      */
     private function setApplicationAndMock(?string $baseId = NULL): AirtableNewRecordConnector
     {
