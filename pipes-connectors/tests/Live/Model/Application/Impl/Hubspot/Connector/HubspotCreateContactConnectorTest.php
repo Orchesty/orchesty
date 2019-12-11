@@ -41,7 +41,7 @@ final class HubspotCreateContactConnectorTest extends DatabaseTestCaseAbstract
             DataProvider::getProcessDto(
                 $app->getKey(),
                 'user',
-                (string) file_get_contents(__DIR__ . sprintf('/Data/request.json'), TRUE)
+                (string) file_get_contents(__DIR__ . '/Data/contactBody.json', TRUE)
             )
         );
     }

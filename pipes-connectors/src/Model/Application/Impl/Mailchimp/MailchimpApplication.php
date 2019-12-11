@@ -208,7 +208,7 @@ final class MailchimpApplication extends OAuth2ApplicationAbstract implements We
             )
         );
 
-        return $return->getJsonBody()['api_endpoint'];
+        return $return->getJsonBody()['api_endpoint'] ?? '';
     }
 
     /**
