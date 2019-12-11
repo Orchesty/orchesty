@@ -66,7 +66,7 @@ class RefreshOAuth2TokenCustomNode extends CustomNodeAbstract
         $applicationId = PipesHeaders::get(GetApplicationForRefreshBatch::APPLICATION_ID, $dto->getHeaders());
 
         /** @var ApplicationInstall $applicationInstall */
-        $applicationInstall = $this->repository->findOneBy(['_id' => $applicationId]);
+        $applicationInstall = $this->repository->findOneBy(['id' => $applicationId]);
 
         /** @var OAuth2ApplicationAbstract $application */
         $application = $this->loader->getApplication($applicationInstall->getKey());

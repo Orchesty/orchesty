@@ -5,7 +5,7 @@ namespace Tests\Integration\Model\Application\Impl\Mailchimp\Connector;
 use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
-use Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\Connector\MailchimpCreateContactConnector;
+use Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\Connector\MailchimpTagContactConnector;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\MailchimpApplication;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
@@ -15,11 +15,11 @@ use Tests\DataProvider;
 use Tests\MockCurlMethod;
 
 /**
- * Class MailchimpCreateContactConnectorTest
+ * Class MailchimpTagContactConnectorTest
  *
  * @package Tests\Integration\Model\Application\Impl\Mailchimp\Connector
  */
-final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
+final class MailchimpTagContactConnectorTest extends DatabaseTestCaseAbstract
 {
 
     /**
@@ -51,7 +51,7 @@ final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
         );
 
         $app                             = self::$container->get('hbpf.application.mailchimp');
-        $mailchimpCreateContactConnector = new MailchimpCreateContactConnector(
+        $mailchimpCreateContactConnector = new MailchimpTagContactConnector(
             self::$container->get('hbpf.transport.curl_manager'),
             $this->dm
         );
@@ -70,6 +70,7 @@ final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
                     MailchimpApplication::AUDIENCE_ID => '2a8******8',
                 ],
                 MailchimpApplication::API_KEYPOINT => $app->getApiEndpoint($applicationInstall),
+                MailchimpApplication::SEGMENT_ID => 'segment_id',
             ]
         );
 
@@ -96,15 +97,13 @@ final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws ApplicationInstallException
-     * @throws CurlException
+     * @throws ConnectorException
      * @throws DateTimeException
-     * @throws PipesFrameworkException
      */
     public function testProcessEvent(): void
     {
         $app                             = self::$container->get('hbpf.application.mailchimp');
-        $mailchimpCreateContactConnector = new MailchimpCreateContactConnector(
+        $mailchimpCreateContactConnector = new MailchimpTagContactConnector(
             self::$container->get('hbpf.transport.curl_manager'),
             $this->dm
         );
@@ -145,12 +144,12 @@ final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
      */
     public function testGetId(): void
     {
-        $mailchimpCreateContactConnector = new MailchimpCreateContactConnector(
+        $mailchimpCreateContactConnector = new MailchimpTagContactConnector(
             self::$container->get('hbpf.transport.curl_manager'),
             $this->dm
         );
         self::assertEquals(
-            'mailchimp_create_contact',
+            'mailchimp_tag_contact',
             $mailchimpCreateContactConnector->getId()
         );
     }

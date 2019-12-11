@@ -29,11 +29,7 @@ class MailchimpCreateContactMapper extends CustomNodeAbstract
         $data   = $this->formatData($data);
 
         foreach ($fields as $key => $field) {
-            if (isset($data[$field]['value'])) {
-                $array[$key] = $data[$field]['value'];
-            } else {
-                $array[$key] = '';
-            }
+            $array[$key] = $data[$field]['value'] ?? '';
         }
 
         $return['merge_fields']  = $array;

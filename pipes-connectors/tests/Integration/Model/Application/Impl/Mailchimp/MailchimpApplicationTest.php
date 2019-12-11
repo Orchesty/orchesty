@@ -3,9 +3,18 @@
 namespace Tests\Integration\Model\Application\Impl\Mailchimp;
 
 use Exception;
+use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
+use Hanaboso\CommonsBundle\Exception\DateTimeException;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\MailchimpApplication;
+use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
+use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
+use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract;
+use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
+use PHPUnit\Framework\MockObject\MockObject;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\DataProvider;
 use Tests\MockCurlMethod;
@@ -18,23 +27,41 @@ use Tests\MockCurlMethod;
 final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
 {
 
+    use PrivateTrait;
+
     private const CLIENT_ID = '6748****7235';
+
+    /**
+     * @var MailchimpApplication
+     */
+    private $application;
 
     /**
      * @throws Exception
      */
     public function testAutorize(): void
     {
-        $this->mockRedirect(MailchimpApplication::MAILCHIMP_URL, self::CLIENT_ID);
-        $app                = self::$container->get('hbpf.application.mailchimp');
+        $this->setApplication();
         $applicationInstall = DataProvider::getOauth2AppInstall(
-            $app->getKey(),
+            $this->application->getKey(),
             'user',
             'token123',
             self::CLIENT_ID
         );
         $this->pf($applicationInstall);
-        $app->authorize($applicationInstall);
+        $this->assertEquals(TRUE, $this->application->isAuthorized($applicationInstall));
+        $this->application->authorize($applicationInstall);
+    }
+
+    /**
+     * @throws DateTimeException
+     */
+    public function testIsAuthorizedNoToken(): void
+    {
+        $this->setApplication();
+        $applicationInstall = new ApplicationInstall();
+        $this->pf($applicationInstall);
+        $this->assertEquals(FALSE, $this->application->isAuthorized($applicationInstall));
     }
 
     /**
@@ -51,23 +78,22 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
                 ),
             ]
         );
-
-        $application        = self::$container->get('hbpf.application.mailchimp');
+        $this->setApplication();
         $applicationInstall = DataProvider::getOauth2AppInstall(
-            $application->getKey(),
+            $this->application->getKey(),
             'user',
             'fa830d8d4308*****c307906e83de659'
         );
         $applicationInstall->setSettings(
             [
                 ApplicationAbstract::FORM          => [MailchimpApplication::AUDIENCE_ID => '2a8******8'],
-                MailchimpApplication::API_KEYPOINT => $application->getApiEndpoint($applicationInstall),
+                MailchimpApplication::API_KEYPOINT => $this->application->getApiEndpoint($applicationInstall),
             ]
         );
 
         $subscription = new WebhookSubscription('test', 'node', 'xxx', ['name' => 0]);
 
-        $request = $application->getWebhookSubscribeRequestDto(
+        $request = $this->application->getWebhookSubscribeRequestDto(
             $applicationInstall,
             $subscription,
             sprintf(
@@ -78,14 +104,196 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
                 bin2hex(random_bytes(25))
             )
         );
+
+        $requestUn = $this->application->getWebhookUnsubscribeRequestDto(
+            $applicationInstall,
+            '358'
+        );
+
         self::assertEquals(
-            $request->getUriString(),
             sprintf(
                 '%s/3.0/lists/%s/webhooks',
                 $applicationInstall->getSettings()[MailchimpApplication::API_KEYPOINT],
                 $applicationInstall->getSettings()[ApplicationAbstract::FORM][MailchimpApplication::AUDIENCE_ID]
-            )
+            ),
+            $request->getUriString()
         );
+
+        self::assertEquals(
+            sprintf(
+                '%s/3.0/lists/%s/webhooks/358',
+                $applicationInstall->getSettings()[MailchimpApplication::API_KEYPOINT],
+                $applicationInstall->getSettings()[ApplicationAbstract::FORM][MailchimpApplication::AUDIENCE_ID]
+            ),
+            $requestUn->getUriString()
+        );
+
+    }
+
+    /**
+     *
+     */
+    public function testName(): void
+    {
+        $this->setApplication();
+        self::assertEquals(
+            'Mailchimp',
+            $this->application->getName()
+        );
+    }
+
+    /**
+     *
+     */
+    public function testGetDescription(): void
+    {
+        $this->setApplication();
+        self::assertEquals(
+            'Mailchimp v3',
+            $this->application->getDescription()
+        );
+    }
+
+    /**
+     *
+     */
+    public function testGetApplicationType(): void
+    {
+        $this->setApplication();
+        self::assertEquals(
+            ApplicationTypeEnum::WEBHOOK,
+            $this->application->getApplicationType()
+        );
+    }
+
+    /**
+     *
+     */
+    public function testGetSettingsForm(): void
+    {
+        $this->setApplication();
+        $fields = $this->application->getSettingsForm()->getFields();
+        foreach ($fields as $field) {
+            self::assertInstanceOf(Field::class, $field);
+            self::assertContains(
+                $field->getKey(),
+                [
+                    OAuth2ApplicationAbstract::CLIENT_ID,
+                    OAuth2ApplicationAbstract::CLIENT_SECRET,
+                    MailchimpApplication::AUDIENCE_ID,
+                ]
+            );
+        }
+
+    }
+
+    /**
+     * @throws DateTimeException
+     */
+    public function testProcessWebhookSubscribeResponse(): void
+    {
+        $this->setApplication();
+        $response = $this->application->processWebhookSubscribeResponse(
+            new ResponseDto(200, '', '{"id":"id88"}', []),
+            new ApplicationInstall()
+        );
+        $this->assertEquals('id88', $response);
+    }
+
+    /**
+     *
+     */
+    public function testProcessWebhookUnsubscribeResponse(): void
+    {
+        $this->setApplication();
+        $response = $this->application->processWebhookUnsubscribeResponse(
+            new ResponseDto(204, '', '{"id":"id88"}', [])
+        );
+        $this->assertEquals(TRUE, $response);
+    }
+
+    /**
+     *
+     */
+    public function testGetWebhookSubscriptions(): void
+    {
+        $this->setApplication();
+        $webhookSubcriptions = $this->application->getWebhookSubscriptions();
+        foreach ($webhookSubcriptions as $webhookSubscription) {
+            $this->assertInstanceOf(WebhookSubscription::class, $webhookSubscription);
+            self::assertContains(
+                $webhookSubscription->getParameters()['name'],
+                ['subscribe', 'upemail', 'unsubscribe']
+            );
+        }
+    }
+
+    /**
+     *
+     */
+    public function testSetAuthorization(): void
+    {
+        $this->mockCurl(
+            [
+                new MockCurlMethod(
+                    200,
+                    'responseDatacenter.json',
+                    []
+                ),
+            ]
+        );
+        /** @var OAuth2Provider|MockObject $providerMock */
+        $providerMock = self::createPartialMock(OAuth2Provider::class, ['getAccessToken']);
+        $providerMock->method('getAccessToken')->willReturn(
+            [
+                'code'         => 'code123',
+                'access_token' => 'token333',
+            ]
+        );
+        $this->setApplication();
+        $applicationInstall = DataProvider::getOauth2AppInstall(
+            $this->application->getKey(),
+            'user',
+            'fa830d8d4308*****c307906e83de659',
+            self::CLIENT_ID,
+            'secret'
+        );
+        $this->pf($applicationInstall);
+        $this->setProperty($this->application, 'provider', $providerMock);
+        $return = $this->application->setAuthorizationToken(
+            $applicationInstall,
+            [
+                'code'         => 'code123',
+                'access_token' => 'token333',
+            ]
+        );
+        $this->assertEquals(
+            MailchimpApplication::class,
+            get_class($return)
+        );
+        $this->assertEquals(
+            'https://us3.api.mailchimp.com',
+            $applicationInstall->getSettings()[MailchimpApplication::API_KEYPOINT]
+        );
+        $this->assertEquals(
+            'code123',
+            $applicationInstall->getSettings(
+            )[MailchimpApplication::AUTHORIZATION_SETTINGS][MailchimpApplication::TOKEN]['code']
+        );
+        $this->assertEquals(
+            'token333',
+            $applicationInstall->getSettings(
+            )[MailchimpApplication::AUTHORIZATION_SETTINGS][MailchimpApplication::TOKEN]['access_token']
+        );
+    }
+
+    /**
+     *
+     */
+    private function setApplication(): void
+    {
+        $this->mockRedirect(MailchimpApplication::MAILCHIMP_URL, self::CLIENT_ID);
+        $this->application = self::$container->get('hbpf.application.mailchimp');
     }
 
 }

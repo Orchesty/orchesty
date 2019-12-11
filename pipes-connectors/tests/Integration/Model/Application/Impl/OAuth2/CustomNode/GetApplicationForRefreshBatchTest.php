@@ -5,7 +5,9 @@ namespace Tests\Integration\Model\Application\Impl\OAuth2\CustomNode;
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
+use Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\CustomNode\GetApplicationForRefreshBatch;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\SuccessMessage;
 use Tests\DatabaseTestCaseAbstract;
 
@@ -32,6 +34,18 @@ class GetApplicationForRefreshBatchTest extends DatabaseTestCaseAbstract
                 self::assertEquals('', $successMessage->getData());
             }
         );
+    }
+
+    /**
+     * @throws ConnectorException
+     */
+    public function testProcess(): void
+    {
+        $getAppForRefreshBatchCreateContactConnector = new GetApplicationForRefreshBatch(
+            $this->dm
+        );
+        $this->expectException(ConnectorException::class);
+        $getAppForRefreshBatchCreateContactConnector->process(new ProcessDto());
     }
 
 }
