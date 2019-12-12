@@ -43,7 +43,7 @@ final class BatchActionAbstractTest extends TestCase
     }
 
     /**
-     * @covers BatchActionAbstract::validateHeaders()
+     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchActionAbstract::validateHeaders()
      * @throws Exception
      */
     public function testValidateHeaders(): void
@@ -69,7 +69,7 @@ final class BatchActionAbstractTest extends TestCase
     }
 
     /**
-     * @covers BatchActionAbstract::validateHeaders()
+     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchActionAbstract::validateHeaders()
      * @throws Exception
      */
     public function testBatchAction(): void

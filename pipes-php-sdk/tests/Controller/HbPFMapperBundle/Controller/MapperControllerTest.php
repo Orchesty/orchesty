@@ -19,23 +19,23 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers ::processTestAction()
+     * @covers \Hanaboso\PipesPhpSdk\HbPFMapperBundle\Controller\MapperController::processTestAction()
      * @throws Exception
      */
     public function testProcessTest(): void
     {
         $this->prepareMapperHandlerMock('processTest', []);
 
-        self::$client->request('POST', '/mapper/null/process/test', [], [], [], '{"test":1}');
+        $this->client->request('POST', '/mapper/null/process/test', [], [], [], '{"test":1}');
 
         /** @var Response $response */
-        $response = self::$client->getResponse();
+        $response = $this->client->getResponse();
 
         self::assertEquals(200, $response->getStatusCode());
     }
 
     /**
-     * @covers ::processAction()
+     * @covers \Hanaboso\PipesPhpSdk\HbPFMapperBundle\Controller\MapperController::processAction()
      * @throws Exception
      */
     public function testProcess(): void
@@ -43,10 +43,10 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
         $params = ['abc' => 'def'];
         $this->prepareMapperHandlerMock('process', $params);
 
-        self::$client->request('POST', '/mapper/null/process', $params, [], [], '{"test":1}');
+        $this->client->request('POST', '/mapper/null/process', $params, [], [], '{"test":1}');
 
         /** @var Response $response */
-        $response = self::$client->getResponse();
+        $response = $this->client->getResponse();
 
         self::assertEquals(200, $response->getStatusCode());
         self::assertEquals($params, Json::decode((string) $response->getContent()));
@@ -67,7 +67,7 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
             ->willReturn($returnValue);
 
         /** @var ContainerInterface $container */
-        $container = self::$client->getContainer();
+        $container = $this->client->getContainer();
         $container->set('hbpf.mapper.handler.mapper', $mapperHandlerMock);
     }
 
@@ -77,10 +77,10 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
     public function testGetListOfCustomNodes(): void
     {
         $this->mockNodeControllerHandler();
-        self::$client->request('GET', '/mapper/list');
+        $this->client->request('GET', '/mapper/list');
 
         /** @var Response $response */
-        $response = self::$client->getResponse();
+        $response = $this->client->getResponse();
 
         self::assertTrue(
             in_array(

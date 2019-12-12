@@ -20,14 +20,15 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers JoinerController::sendAction()
+     * @covers \Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Controller\CustomNodeController::sendAction()
+     *
      * @throws Exception
      */
     public function testSend(): void
     {
         $this->mockHandler();
 
-        self::$client->request(
+        $this->client->request(
             'POST',
             '/custom_node/null/process',
             [],
@@ -37,7 +38,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
         );
 
         /** @var Response $response */
-        $response = self::$client->getResponse();
+        $response = $this->client->getResponse();
 
         self::assertEquals(200, $response->getStatusCode());
         self::assertEquals(
@@ -47,17 +48,18 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers CustomNodeController::sendTestAction()
+     * @covers \Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Controller\CustomNodeController::sendTestAction()
+     *
      * @throws Exception
      */
     public function testSendActionTest(): void
     {
         $this->mockHandler();
 
-        self::$client->request('GET', '/custom_node/null/process/test', [], [], [], '');
+        $this->client->request('GET', '/custom_node/null/process/test', [], [], [], '');
 
         /** @var Response $response */
-        $response = self::$client->getResponse();
+        $response = $this->client->getResponse();
 
         self::assertEquals(200, $response->getStatusCode());
         self::assertEquals([], Json::decode((string) $response->getContent()));
@@ -86,7 +88,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
             );
 
         /** @var ContainerInterface $container */
-        $container = self::$client->getContainer();
+        $container = $this->client->getContainer();
         $container->set('hbpf.handler.custom_node', $joinerHandlerMock);
     }
 
@@ -96,10 +98,10 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
     public function testGetListOfCustomNodes(): void
     {
         $this->mockNodeControllerHandler();
-        self::$client->request('GET', '/custom_node/list');
+        $this->client->request('GET', '/custom_node/list');
 
         /** @var Response $response */
-        $response = self::$client->getResponse();
+        $response = $this->client->getResponse();
 
         self::assertTrue(
             in_array(

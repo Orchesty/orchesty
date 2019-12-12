@@ -32,10 +32,10 @@ docker-down-clean: .env
 
 # Composer
 composer-install:
-	$(DE) composer install --ignore-platform-reqs --no-suggest
+	$(DE) composer install
 
 composer-update:
-	$(DE) composer update --ignore-platform-reqs --no-suggest
+	$(DE) composer update
 
 clear-cache:
 	$(DE) rm -rf var/log

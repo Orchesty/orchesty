@@ -30,7 +30,7 @@ final class ConnectorLoaderTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers ConnectorLoader::getConnector()
+     * @covers \Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Loader\ConnectorLoader::getConnector()
      * @throws Exception
      */
     public function testGetConnector(): void

@@ -3,7 +3,6 @@
 namespace Tests\Integration\LongRunningNode\Model;
 
 use Exception;
-use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeManager;
 use Tests\DatabaseTestCaseAbstract;
@@ -17,8 +16,8 @@ final class LongRunningNodeManagerTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers LongRunningNodeManager::getDocument()
-     * @covers LongRunningNodeManager::saveDocument()
+     * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeManager::getDocument()
+     * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeManager::saveDocument()
      *
      * @throws Exception
      */
@@ -31,13 +30,14 @@ final class LongRunningNodeManagerTest extends DatabaseTestCaseAbstract
             ->setNodeName('node')
             ->setNodeId('node')
             ->setAuditLogs(['audit1', 'audit2'])
-            ->setTopologyName('topo')
-            ->setTopologyId('topo')
+            ->setTopologyName('topo-name-manager')
+            ->setTopologyId('topo-id-manager')
             ->setParentProcess('parent')
             ->setData('data')
             ->setHeaders(['head']);
-
         $manager->saveDocument($doc);
+        $this->dm->clear();
+
         $docs = $this->dm->getRepository(LongRunningNodeData::class)->findAll();
         /** @var LongRunningNodeData $doc */
         $doc = reset($docs);
@@ -46,25 +46,21 @@ final class LongRunningNodeManagerTest extends DatabaseTestCaseAbstract
         self::assertEquals('parent', $doc->getParentProcess());
         self::assertEquals(['head'], $doc->getHeaders());
         self::assertEquals('node', $doc->getNodeName());
-        self::assertEquals('topo', $doc->getTopologyName());
-
-        $headers                                                                   = [];
-        $headers[PipesHeaders::createKey(LongRunningNodeData::DOCUMENT_ID_HEADER)] = $doc->getid();
-        $headers[PipesHeaders::createKey(PipesHeaders::NODE_ID)]                   = 'newNode';
+        self::assertEquals('topo-name-manager', $doc->getTopologyName());
 
         $doc = new LongRunningNodeData();
         $doc->setProcessId('proc')
             ->setNodeName('node')
             ->setNodeId('node')
             ->setAuditLogs(['audit3'])
-            ->setTopologyName('topo')
-            ->setTopologyId('topo')
+            ->setTopologyName('topo-name-manager2')
+            ->setTopologyId('topo-id-manager2')
             ->setParentProcess('parent')
             ->setData('data2')
             ->setHeaders(['head2']);
         $manager->saveDocument($doc);
-
         $this->dm->clear();
+
         $docs = $this->dm->getRepository(LongRunningNodeData::class)->findAll();
         self::assertEquals(2, count($docs));
         /** @var LongRunningNodeData $doc */
@@ -73,11 +69,10 @@ final class LongRunningNodeManagerTest extends DatabaseTestCaseAbstract
         self::assertEquals('data', $doc->getData());
         self::assertEquals('proc', $doc->getProcessId());
         self::assertEquals('node', $doc->getNodeName());
-        self::assertEquals('topo', $doc->getTopologyName());
+        self::assertEquals('topo-name-manager', $doc->getTopologyName());
 
-        self::assertNotNull($manager->getDocument('topo', 'node'));
-        self::assertNotNull($manager->getDocument('topo', 'node', 'proc'));
-        self::assertEquals(2, count($this->dm->getRepository(LongRunningNodeData::class)->findAll()));
+        self::assertNotNull($manager->getDocument('topo-id-manager2', 'node'));
+        self::assertNotNull($manager->getDocument('topo-id-manager2', 'node', 'proc'));
     }
 
 }

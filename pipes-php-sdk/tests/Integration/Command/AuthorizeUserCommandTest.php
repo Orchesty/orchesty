@@ -16,7 +16,6 @@ use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use Tests\DatabaseTestCaseAbstract;
-use Tests\PrivateTrait;
 use TypeError;
 
 /**
@@ -27,22 +26,24 @@ use TypeError;
 final class AuthorizeUserCommandTest extends DatabaseTestCaseAbstract
 {
 
-    use PrivateTrait;
-
     /**
      * @throws Exception
      */
     public function testExecuteOauth2(): void
     {
-        $app = (new ApplicationInstall())
-            ->setKey('null2')
-            ->setUser('user');
-        $this->persistAndFlush($app);
-
         $kernel        = $this->createKernel(['environment' => 'oauthconsole']);
         $application   = new Application($kernel);
         $command       = $application->find('user:authorize');
         $commandTester = new CommandTester($command);
+
+        $this->dm = $kernel->getContainer()->get('doctrine_mongodb.odm.default_document_manager');
+        $this->clearMongo();
+
+        $app = (new ApplicationInstall())
+            ->setKey('null2')
+            ->setUser('user');
+        $this->pfd($app);
+        $this->dm->clear();
 
         $commandTester->setInputs(['null2', 'user']);
         ob_start();
@@ -74,7 +75,7 @@ final class AuthorizeUserCommandTest extends DatabaseTestCaseAbstract
                     ],
                 ]
             );
-        $this->persistAndFlush($app);
+        $this->pfd($app);
 
         $install = new ApplicationInstall();
         /** @var OAuth1Provider|MockObject $provider */
@@ -105,20 +106,24 @@ final class AuthorizeUserCommandTest extends DatabaseTestCaseAbstract
      */
     private function getMockedProvider(array $data, string $authorizeUrl): MockObject
     {
+        /** @var MockObject|DocumentManager $dm */
         $dm = self::createMock(DocumentManager::class);
         $dm->method('persist')->willReturn(TRUE);
         $dm->method('flush')->willReturn(TRUE);
 
+        /** @var MockObject|RedirectInterface $redirect */
         $redirect = self::createMock(RedirectInterface::class);
         $this->expectException(TypeError::class);
         $redirect->method('make')->will(print_r($authorizeUrl));
 
+        /** @var MockObject|OAuth $oauth */
         $oauth = self::createPartialMock(
             OAuth::class,
             ['getRequestToken']
         );
         $oauth->method('getRequestToken')->willReturn($data);
 
+        /** @var MockObject|OAuth1Provider $client */
         $client = self::getMockBuilder(OAuth1Provider::class)
             ->setConstructorArgs([$dm, $redirect])
             ->setMethods(['createClient'])

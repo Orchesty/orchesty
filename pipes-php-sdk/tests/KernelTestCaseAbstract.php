@@ -2,7 +2,7 @@
 
 namespace Tests;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
+use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 /**
@@ -13,10 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 abstract class KernelTestCaseAbstract extends KernelTestCase
 {
 
-    /**
-     * @var DocumentManager
-     */
-    protected $dm;
+    use PrivateTrait;
 
     /**
      *
@@ -26,7 +23,6 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
         parent::setUp();
 
         self::bootKernel();
-        $this->dm = self::$container->get('doctrine_mongodb.odm.default_document_manager');
     }
 
 }

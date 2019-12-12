@@ -47,7 +47,7 @@ final class BatchConsumerCallbackTest extends TestCase
     }
 
     /**
-     * @covers       BatchConsumerCallback::validate()
+     * @covers       \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::validate()
      * @dataProvider validateMessageDataProvider
      *
      * @param mixed[] $headers
@@ -150,7 +150,8 @@ final class BatchConsumerCallbackTest extends TestCase
     }
 
     /**
-     * @covers BatchConsumerCallback::processMessage()
+     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::processMessage()
+     *
      * @throws Exception
      */
     public function testProcessMessageBatchAction(): void
@@ -205,7 +206,8 @@ final class BatchConsumerCallbackTest extends TestCase
     }
 
     /**
-     * @covers BatchConsumerCallback::processMessage()
+     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::processMessage()
+     *
      * @throws Exception
      */
     public function testProcessMessageSuccessTestAction(): void
@@ -262,7 +264,8 @@ final class BatchConsumerCallbackTest extends TestCase
     }
 
     /**
-     * @covers BatchConsumerCallback::processMessage()
+     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::processMessage()
+     *
      * @throws Exception
      */
     public function testProcessErrorMessageTestAction(): void
@@ -319,7 +322,8 @@ final class BatchConsumerCallbackTest extends TestCase
     }
 
     /**
-     * @covers BatchConsumerCallback::processMessage()
+     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::processMessage()
+     *
      * @throws Exception
      */
     public function testProcessMessageBadType(): void

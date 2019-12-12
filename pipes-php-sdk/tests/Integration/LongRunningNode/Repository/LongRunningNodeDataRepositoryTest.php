@@ -16,16 +16,17 @@ final class LongRunningNodeDataRepositoryTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers LongRunningNodeDataRepository::getGroupStats()
+     * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Repository\LongRunningNodeDataRepository::getGroupStats()
      *
      * @throws Exception
      */
     public function testGroupStats(): void
     {
-        $this->prepData();
+        $name = sprintf('topo-%s', uniqid());
+        $this->prepData($name);
         /** @var LongRunningNodeDataRepository $repo */
         $repo = $this->dm->getRepository(LongRunningNodeData::class);
-        $res  = $repo->getGroupStats('topo');
+        $res  = $repo->getGroupStats($name);
         self::assertEquals(
             [
                 'node0' => 2,
@@ -36,18 +37,22 @@ final class LongRunningNodeDataRepositoryTest extends DatabaseTestCaseAbstract
     }
 
     /**
+     * @param string $name
+     *
      * @throws Exception
      */
-    private function prepData(): void
+    private function prepData(string $name): void
     {
         for ($i = 0; $i < 4; $i++) {
             $tmp = new LongRunningNodeData();
-            $tmp->setTopologyName($i < 3 ? 'topo' : 'asd')
+            $tmp
+                ->setTopologyName($i < 3 ? $name : 'asd')
                 ->setNodeName(sprintf('node%s', ($i % 2)));
             $this->dm->persist($tmp);
         }
 
         $this->dm->flush();
+        $this->dm->clear();
     }
 
 }

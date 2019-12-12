@@ -2,7 +2,7 @@ services:
     _defaults:
         public: '%public.services%'
 
-    hbpf.loader.authorization:
+    hbpf.loader.application:
         class: Hanaboso\HbPFAppStore\Loader\ApplicationLoader
         public: true
         arguments:

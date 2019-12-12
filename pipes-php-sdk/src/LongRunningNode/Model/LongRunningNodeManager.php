@@ -34,6 +34,7 @@ class LongRunningNodeManager
      * @param LongRunningNodeData $doc
      *
      * @return LongRunningNodeData
+     * @throws MongoDBException
      */
     public function saveDocument(LongRunningNodeData $doc): LongRunningNodeData
     {
@@ -83,6 +84,8 @@ class LongRunningNodeManager
 
     /**
      * @param LongRunningNodeData $doc
+     *
+     * @throws MongoDBException
      */
     public function delete(LongRunningNodeData $doc): void
     {

@@ -2,9 +2,8 @@
 
 namespace Tests;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
-use Symfony\Component\HttpFoundation\Session\Session;
+use Hanaboso\PhpCheckUtils\PhpUnit\Traits\DatabaseTestTrait;
 
 /**
  * Class DatabaseTestCaseAbstract
@@ -14,39 +13,17 @@ use Symfony\Component\HttpFoundation\Session\Session;
 abstract class DatabaseTestCaseAbstract extends KernelTestCaseAbstract
 {
 
-    /**
-     * @var DocumentManager
-     */
-    protected $dm;
+    use DatabaseTestTrait;
 
     /**
-     * @var Session<mixed>
-     */
-    protected $session;
-
-    /**
-     *
+     * @throws Exception
      */
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->dm = self::$container->get('doctrine_mongodb.odm.default_document_manager');
-        $this->dm->getClient()->dropDatabase('pipes-php-sdk');
-        $this->session = new Session();
-        $this->session->invalidate();
-        $this->session->clear();
-    }
-
-    /**
-     * @param object $document
-     *
-     * @throws Exception
-     */
-    protected function persistAndFlush(object $document): void
-    {
-        $this->dm->persist($document);
-        $this->dm->flush();
+        $this->clearMongo();
     }
 
 }

@@ -19,7 +19,7 @@ final class JoinerControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers JoinerController::sendAction()
+     * @covers \Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Controller\JoinerController::sendAction()
      * @throws Exception
      */
     public function testSend(): void
@@ -30,17 +30,17 @@ final class JoinerControllerTest extends ControllerTestCaseAbstract
         ];
         $this->prepareJoinerHandlerMock($params);
 
-        self::$client->request('POST', '/joiner/null/join', [], [], [], '{"test":1}');
+        $this->client->request('POST', '/joiner/null/join', [], [], [], '{"test":1}');
 
         /** @var Response $response */
-        $response = self::$client->getResponse();
+        $response = $this->client->getResponse();
 
         self::assertEquals(200, $response->getStatusCode());
         self::assertEquals($params, Json::decode((string) $response->getContent()));
     }
 
     /**
-     * @covers JoinerController::sendTestAction()
+     * @covers \Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Controller\JoinerController::sendTestAction()
      * @throws Exception
      */
     public function testSendTest(): void
@@ -51,10 +51,10 @@ final class JoinerControllerTest extends ControllerTestCaseAbstract
         ];
         $this->prepareJoinerHandlerMock($params);
 
-        self::$client->request('POST', '/joiner/null/join/test', [], [], [], '{"test":1}');
+        $this->client->request('POST', '/joiner/null/join/test', [], [], [], '{"test":1}');
 
         /** @var Response $response */
-        $response = self::$client->getResponse();
+        $response = $this->client->getResponse();
 
         self::assertEquals(200, $response->getStatusCode());
         self::assertEquals([], Json::decode((string) $response->getContent()));
@@ -80,7 +80,7 @@ final class JoinerControllerTest extends ControllerTestCaseAbstract
             );
 
         /** @var ContainerInterface $container */
-        $container = self::$client->getContainer();
+        $container = $this->client->getContainer();
         $container->set('hbpf.handler.joiner', $joinerHandlerMock);
     }
 
@@ -90,10 +90,10 @@ final class JoinerControllerTest extends ControllerTestCaseAbstract
     public function testGetListOfConnectors(): void
     {
         $this->mockConnectorsHandler();
-        self::$client->request('GET', '/joiner/list');
+        $this->client->request('GET', '/joiner/list');
 
         /** @var Response $response */
-        $response = self::$client->getResponse();
+        $response = $this->client->getResponse();
 
         self::assertTrue(
             in_array(

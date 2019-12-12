@@ -31,7 +31,7 @@ final class JoinerLoaderTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers JoinerLoader::get()
+     * @covers \Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Loader\JoinerLoader::get()
      * @throws Exception
      */
     public function testLoader(): void

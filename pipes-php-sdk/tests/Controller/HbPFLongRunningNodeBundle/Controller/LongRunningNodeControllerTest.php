@@ -8,7 +8,6 @@ use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Handler\LongRunningNodeHandler;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData;
 use PHPUnit\Framework\MockObject\MockObject;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\ControllerTestCaseAbstract;
 
@@ -21,7 +20,7 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers LongRunningNodeController::processAction()
+     * @covers \Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController::processAction()
      *
      * @throws Exception
      */
@@ -39,41 +38,43 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
             }
         );
 
-        /** @var ContainerInterface $c */
-        $c = self::$client->getContainer();
-        $c->set('hbpf.handler.long_running', $handler);
+        self::$container->set('hbpf.handler.long_running', $handler);
 
         $this->sendPost('/longRunning/node/process', ['cont']);
         /** @var Response $res */
-        $res = self::$client->getResponse();
+        $res = $this->client->getResponse();
         self::assertEquals(200, $res->getStatusCode());
     }
 
     /**
-     * @covers LongRunningNodeController::getTasksAction()
-     * @covers LongRunningNodeController::getNodeTasksAction()
+     * @covers \Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController::getTasksAction()
+     * @covers \Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController::getNodeTasksAction()
      *
      * @throws Exception
      */
     public function testGetTasks(): void
     {
+        $name = sprintf('topo-id-%s', uniqid());
+
         for ($i = 0; $i < 3; $i++) {
             $doc = new LongRunningNodeData();
-            $doc->setTopologyId($i < 2 ? 'topo' : 'anotherTopo')
+            $doc
+                ->setTopologyId($i < 2 ? $name : 'anotherTopo')
                 ->setNodeId(sprintf('node%s', $i));
             $this->dm->persist($doc);
         }
         $this->dm->flush();
+        $this->dm->clear();
 
-        $this->sendGet('/longRunning/id/topology/topo/getTasks');
+        $this->sendGet(sprintf('/longRunning/id/topology/%s/getTasks', $name));
         /** @var Response $res */
-        $res = self::$client->getResponse();
+        $res = $this->client->getResponse();
         self::assertEquals(200, $res->getStatusCode());
         self::assertEquals(2, count(Json::decode((string) $res->getContent())['items']));
 
-        $this->sendGet('/longRunning/id/topology/topo/node/node0/getTasks');
+        $this->sendGet(sprintf('/longRunning/id/topology/%s/node/node0/getTasks', $name));
         /** @var Response $res */
-        $res = self::$client->getResponse();
+        $res = $this->client->getResponse();
         self::assertEquals(200, $res->getStatusCode());
         self::assertEquals(1, count(Json::decode((string) $res->getContent())['items']));
     }

@@ -17,7 +17,7 @@ final class LongRunningNodeListenerTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers LongRunningNodeListener::onFinish()
+     * @covers \Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Listener\LongRunningNodeListener::onFinish()
      *
      * @throws Exception
      */

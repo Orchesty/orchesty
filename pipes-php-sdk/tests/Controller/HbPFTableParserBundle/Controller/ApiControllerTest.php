@@ -154,7 +154,7 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
      */
     protected function sendPost(string $url, array $parameters, ?array $content = NULL): object
     {
-        self::$client->request(
+        $this->client->request(
             'POST',
             $url,
             $parameters,
@@ -163,7 +163,7 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
             $content ? Json::encode($content) : ''
         );
         /** @var Response $response */
-        $response = self::$client->getResponse();
+        $response = $this->client->getResponse();
         $res      = Json::decode((string) $response->getContent());
 
         if (isset($res['error_code'])) {

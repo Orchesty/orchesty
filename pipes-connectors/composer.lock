@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "91645d22221e3a62766aecc45b0b76a1",
+    "content-hash": "5ccfcee9e79627aebe043017620c4d36",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.128.2",
+            "version": "3.128.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "a81485e12b2545aff17134bbf29442037f3fcadb"
+                "reference": "9e46eae4974542b8e3e6107de857668b6968081d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/a81485e12b2545aff17134bbf29442037f3fcadb",
-                "reference": "a81485e12b2545aff17134bbf29442037f3fcadb",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/9e46eae4974542b8e3e6107de857668b6968081d",
+                "reference": "9e46eae4974542b8e3e6107de857668b6968081d",
                 "shasum": ""
             },
             "require": {
@@ -88,7 +88,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2019-12-10T19:12:09+00:00"
+            "time": "2019-12-11T19:13:12+00:00"
         },
         {
             "name": "aws/aws-sdk-php-symfony",
@@ -1938,11 +1938,11 @@
         },
         {
             "name": "hanaboso/app-store",
-            "version": "1.2.1",
+            "version": "1.2.2",
             "dist": {
                 "type": "path",
                 "url": "../app-store",
-                "reference": "bf9f40413e4cc63b05fe953a265bf17ba6fee625"
+                "reference": "b0a9605c13fd9341f18c32bc80b5e3bf2ed21a1c"
             },
             "require": {
                 "ext-json": "*",
@@ -2067,11 +2067,11 @@
         },
         {
             "name": "hanaboso/pipes-php-sdk",
-            "version": "1.1.4",
+            "version": "1.1.5",
             "dist": {
                 "type": "path",
                 "url": "../pipes-php-sdk",
-                "reference": "dc536ee5e3deffcba4fd89935690820fa08f378d"
+                "reference": "38d9eaa618f78b78aeb74af3848b727a4dc07443"
             },
             "require": {
                 "ext-json": "*",
@@ -2084,8 +2084,8 @@
                 "league/oauth2-client": "^2.4",
                 "php": "^7.4",
                 "phpoffice/phpspreadsheet": "^1.10",
-                "symfony/debug-bundle": "^4.4  | ^5.0",
-                "symfony/mailer": "^4.4  | ^5.0",
+                "symfony/debug-bundle": "^4.4 | ^5.0",
+                "symfony/mailer": "^4.4 | ^5.0",
                 "symfony/monolog-bundle": "^3.5",
                 "symfony/security-bundle": "^4.4 | ^5.0",
                 "symfony/yaml": "^4.4 | ^5.0"
@@ -8260,16 +8260,16 @@
         },
         {
             "name": "hanaboso/php-check-utils",
-            "version": "1.1.2",
+            "version": "1.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/php-check-utils.git",
-                "reference": "e53a5bc36b79789a57215d969cc781bb704f53d0"
+                "reference": "8e41f514806ec0671f146a7b68f249d0a2d5f8ac"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/php-check-utils/zipball/e53a5bc36b79789a57215d969cc781bb704f53d0",
-                "reference": "e53a5bc36b79789a57215d969cc781bb704f53d0",
+                "url": "https://api.github.com/repos/hanaboso/php-check-utils/zipball/8e41f514806ec0671f146a7b68f249d0a2d5f8ac",
+                "reference": "8e41f514806ec0671f146a7b68f249d0a2d5f8ac",
                 "shasum": ""
             },
             "require": {
@@ -8282,6 +8282,7 @@
                 "ext-mongodb": "*",
                 "ext-pcov": "*",
                 "php": ">=7.4",
+                "php-mock/php-mock-phpunit": "^2.5",
                 "phpstan/phpstan": "^0.12",
                 "phpstan/phpstan-doctrine": "^0.12",
                 "phpstan/phpstan-nette": "^0.12",
@@ -8307,12 +8308,20 @@
             ],
             "authors": [
                 {
-                    "name": "Hanaboso, s.r.o.",
-                    "email": "venca.email@gmail.com"
+                    "name": "Hanaboso s.r.o.",
+                    "email": "info@hanaboso.com"
+                },
+                {
+                    "name": "Radek Jirsa",
+                    "email": "jirsa.r@hanaboso.com"
+                },
+                {
+                    "name": "Radek Brůha",
+                    "email": "bruha.r@hanaboso.com"
                 }
             ],
             "description": "Utils for php development - CodeSniffer, PhpStan, PhpStorm",
-            "time": "2019-12-06T12:47:56+00:00"
+            "time": "2019-12-12T08:17:53+00:00"
         },
         {
             "name": "myclabs/deep-copy",

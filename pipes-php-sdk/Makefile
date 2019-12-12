@@ -18,11 +18,10 @@ docker-down-clean: .env
 
 #Composer
 composer-install:
-	$(DEC) install --ignore-platform-reqs
+	$(DEC) install
 
 composer-update:
-	$(DEC) global require hirak/prestissimo
-	$(DEC) update --ignore-platform-reqs
+	$(DEC) update
 
 composer-outdated:
 	$(DEC) outdated
@@ -53,7 +52,7 @@ phpcoverage:
 	$(DE) php vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p 4 --coverage-html var/coverage --whitelist src tests
 
 phpcoverage-ci:
-	$(DE) ./vendor/hanaboso/php-check-utils/bin/coverage.sh 35
+	$(DE) ./vendor/hanaboso/php-check-utils/bin/coverage.sh 30
 
 phpmanual-up:
 	cd tests/Manual; $(MAKE) docker-up-force;
