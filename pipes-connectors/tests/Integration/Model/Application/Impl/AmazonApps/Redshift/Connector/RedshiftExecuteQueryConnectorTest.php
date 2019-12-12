@@ -45,7 +45,6 @@ final class RedshiftExecuteQueryConnectorTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers RedshiftExecuteQueryConnector::processAction
      * @throws Exception
      */
     public function testProcessActionInsert(): void
@@ -59,7 +58,6 @@ final class RedshiftExecuteQueryConnectorTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers RedshiftExecuteQueryConnector::processAction
      * @throws Exception
      */
     public function testProcessActionUpdate(): void
@@ -73,7 +71,6 @@ final class RedshiftExecuteQueryConnectorTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers RedshiftExecuteQueryConnector::processAction
      * @throws Exception
      */
     public function testProcessActionException(): void
@@ -99,7 +96,6 @@ final class RedshiftExecuteQueryConnectorTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers S3CreateObjectConnector::processAction
      * @throws Exception
      */
     public function testProcessActionMissingName(): void

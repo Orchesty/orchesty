@@ -20,7 +20,7 @@ class GetApplicationForRefreshBatchTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers GetApplicationForRefreshBatch::process
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\CustomNode\GetApplicationForRefreshBatch::processBatch
      * @throws Exception
      */
     public function testProcessBatch(): void

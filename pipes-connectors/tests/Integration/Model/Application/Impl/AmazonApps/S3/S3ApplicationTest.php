@@ -35,7 +35,7 @@ final class S3ApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers S3Application::getKey
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\S3Application::getKey
      */
     public function testGetKey(): void
     {
@@ -43,7 +43,7 @@ final class S3ApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers S3Application::getApplicationType
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\S3Application::getApplicationType
      */
     public function testGetApplicationType(): void
     {
@@ -51,7 +51,7 @@ final class S3ApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers S3Application::getName
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\S3Application::getName
      */
     public function testGetName(): void
     {
@@ -59,7 +59,7 @@ final class S3ApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers S3Application::getDescription
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\S3Application::getDescription
      */
     public function testGetDescription(): void
     {
@@ -70,7 +70,7 @@ final class S3ApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers S3Application::getRequestDto
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\S3Application::getRequestDto
      */
     public function testGetRequestDto(): void
     {
@@ -88,7 +88,8 @@ final class S3ApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers S3Application::getSettingsForm
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\S3Application::getSettingsForm
+     *
      * @throws Exception
      */
     public function testGetSettingsForm(): void
@@ -109,7 +110,8 @@ final class S3ApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers S3Application::isAuthorized
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\S3Application::isAuthorized
+     *
      * @throws Exception
      */
     public function testIsAuthorized(): void
@@ -133,7 +135,8 @@ final class S3ApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers S3Application::isAuthorized
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\S3Application::isAuthorized
+     *
      * @throws Exception
      */
     public function testIsNotAuthorized(): void

@@ -4,6 +4,7 @@ use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
 use FOS\RestBundle\FOSRestBundle;
 use Hanaboso\CommonsBundle\HbPFCommonsBundle;
+use Hanaboso\HbPFAppStore\HbPFAppStoreBundle;
 use Hanaboso\HbPFConnectors\HbPFConnectorsBundle;
 use Hanaboso\PipesPhpSdk\HbPFApplicationBundle\HbPFApplicationBundle;
 use Hanaboso\PipesPhpSdk\HbPFConnectorBundle\HbPFConnectorBundle;
@@ -30,6 +31,7 @@ return [
     SecurityBundle::class        => ['all' => TRUE],
 
     HbPFApplicationBundle::class     => ['all' => TRUE],
+    HbPFAppStoreBundle::class        => ['all' => TRUE],
     HbPFCommonsBundle::class         => ['all' => TRUE],
     HbPFConnectorBundle::class       => ['all' => TRUE],
     HbPFConnectorsBundle::class      => ['all' => TRUE],

@@ -46,7 +46,6 @@ final class S3CreateObjectConnectorTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers S3CreateObjectConnector::processAction
      * @throws Exception
      */
     public function testProcessAction(): void
@@ -62,7 +61,6 @@ final class S3CreateObjectConnectorTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers S3CreateObjectConnector::processAction
      * @throws Exception
      */
     public function testProcessActionMissingName(): void
@@ -83,7 +81,6 @@ final class S3CreateObjectConnectorTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers S3CreateObjectConnector::processAction
      * @throws Exception
      */
     public function testProcessActionMissingContent(): void
@@ -104,7 +101,6 @@ final class S3CreateObjectConnectorTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers S3CreateObjectConnector::processAction
      * @throws Exception
      */
     public function testProcessActionException(): void

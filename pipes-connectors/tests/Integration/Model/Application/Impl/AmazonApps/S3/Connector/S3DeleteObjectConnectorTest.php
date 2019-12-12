@@ -56,7 +56,6 @@ final class S3DeleteObjectConnectorTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers S3DeleteObjectConnector::processAction
      * @throws Exception
      */
     public function testProcessAction(): void
@@ -72,7 +71,6 @@ final class S3DeleteObjectConnectorTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers S3DeleteObjectConnector::processAction
      * @throws Exception
      */
     public function testProcessActionMissingName(): void
@@ -91,7 +89,6 @@ final class S3DeleteObjectConnectorTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers S3DeleteObjectConnector::processAction
      * @throws Exception
      */
     public function testProcessActionException(): void

@@ -46,7 +46,7 @@ final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers RedshiftApplication::getKey
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\Redshift\RedshiftApplication::getKey
      */
     public function testGetKey(): void
     {
@@ -54,7 +54,7 @@ final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers RedshiftApplication::getApplicationType
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\Redshift\RedshiftApplication::getApplicationType
      */
     public function testGetApplicationType(): void
     {
@@ -62,7 +62,7 @@ final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers RedshiftApplication::getName
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\Redshift\RedshiftApplication::getName
      */
     public function testGetName(): void
     {
@@ -70,7 +70,7 @@ final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers RedshiftApplication::getDescription
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\Redshift\RedshiftApplication::getDescription
      */
     public function testGetDescription(): void
     {
@@ -81,7 +81,7 @@ final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers RedshiftApplication::getRequestDto
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\Redshift\RedshiftApplication::getRequestDto
      */
     public function testGetRequestDto(): void
     {
@@ -99,7 +99,8 @@ final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers RedshiftApplication::getSettingsForm
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\Redshift\RedshiftApplication::getSettingsForm
+     *
      * @throws Exception
      */
     public function testGetSettingsForm(): void
@@ -119,7 +120,8 @@ final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers RedshiftApplication::isAuthorized
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\Redshift\RedshiftApplication::isAuthorized
+     *
      * @throws Exception
      */
     public function testIsAuthorized(): void
@@ -142,7 +144,8 @@ final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers RedshiftApplication::isAuthorized
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\Redshift\RedshiftApplication::isAuthorized
+     *
      * @throws Exception
      */
     public function testIsNotAuthorized(): void
@@ -156,7 +159,8 @@ final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers RedshiftApplication::getRedshiftClient
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\Redshift\RedshiftApplication::getRedshiftClient
+     *
      * @throws Exception
      */
     public function testGetRedshiftClientException(): void
@@ -174,7 +178,8 @@ final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers RedshiftApplication::setApplicationSettings
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\Redshift\RedshiftApplication::setApplicationSettings
+     *
      * @throws Exception
      */
     public function testSetApplicationInstall(): void
@@ -233,7 +238,8 @@ final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers RedshiftApplication::setApplicationSettings
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\Redshift\RedshiftApplication::setApplicationSettings
+     *
      * @throws Exception
      */
     public function testSetApplicationInstallException(): void
@@ -263,7 +269,8 @@ final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers RedshiftApplication::getConnection
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\Redshift\RedshiftApplication::getConnection
+     *
      * @throws Exception
      */
     public function testGetConnection(): void
@@ -284,7 +291,8 @@ final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers RedshiftApplication::getConnection
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\Redshift\RedshiftApplication::getConnection
+     *
      * @throws Exception
      */
     public function testGetConnectionException(): void

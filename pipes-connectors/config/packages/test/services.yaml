@@ -4,3 +4,12 @@ parameters:
 services:
     _defaults:
         public: '%public.services%'
+
+
+    hbpf.transport.curl_manager:
+        class: Hanaboso\CommonsBundle\Transport\Curl\CurlManager
+        arguments:
+            - '@hbpf.transport.curl_client_factory'
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]
+            - ['setTimeout', [2]]

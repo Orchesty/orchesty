@@ -56,7 +56,6 @@ final class S3GetObjectConnectorTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers S3GetObjectConnector::processAction
      * @throws Exception
      */
     public function testProcessAction(): void
@@ -98,7 +97,6 @@ final class S3GetObjectConnectorTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers S3GetObjectConnector::processAction
      * @throws Exception
      */
     public function testProcessActionMissingName(): void
@@ -117,7 +115,6 @@ final class S3GetObjectConnectorTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers S3GetObjectConnector::processAction
      * @throws Exception
      */
     public function testProcessActionException(): void
