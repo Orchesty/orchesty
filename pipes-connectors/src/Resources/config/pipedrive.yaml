@@ -1,0 +1,6 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf.application.pipedrive:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\Pipedrive\PipedriveApplication
