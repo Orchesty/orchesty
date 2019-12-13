@@ -49,6 +49,7 @@ class HbPFConnectorsExtension extends Extension implements PrependExtensionInter
         $loader->load('mailchimp.yaml');
         $loader->load('nutshell.yaml');
         $loader->load('shipstation.yaml');
+        $loader->load('quickbooks.yaml');
         $loader->load('pipedrive.yaml');
         $loader->load('salesforce.yaml');
         $loader->load('wisepops.yaml');
