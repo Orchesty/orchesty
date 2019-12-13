@@ -48,10 +48,12 @@ class TableParserHandler
      * @param mixed[] $data
      *
      * @return string
-     * @throws TableParserHandlerException
      * @throws Exception
-     * @throws ReaderException
      * @throws FileStorageException
+     * @throws LockException
+     * @throws MappingException
+     * @throws ReaderException
+     * @throws TableParserHandlerException
      */
     public function parseToJson(array $data): string
     {
@@ -80,10 +82,12 @@ class TableParserHandler
      *
      * @return string
      * @throws Exception
+     * @throws FileStorageException
+     * @throws LockException
+     * @throws MappingException
      * @throws TableParserException
      * @throws TableParserHandlerException
      * @throws WriterException
-     * @throws FileStorageException
      */
     public function parseFromJson(string $type, array $data): string
     {

@@ -5,6 +5,7 @@ namespace Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch;
 use Bunny\Message;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Utils\PipesHeaders;
+use Hanaboso\PipesPhpSdk\Utils\ProcessDtoFactory;
 use InvalidArgumentException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
@@ -78,9 +79,7 @@ abstract class BatchActionAbstract implements BatchActionInterface, LoggerAwareI
      */
     private function createProcessDto(Message $message): ProcessDto
     {
-        return (new ProcessDto())
-            ->setHeaders($message->headers)
-            ->setData($message->content);
+        return ProcessDtoFactory::createFromMessage($message);
     }
 
     /**

@@ -183,6 +183,7 @@ class LongRunningNodeHandler
      *
      * @return mixed[]
      * @throws LongRunningNodeException
+     * @throws MongoDBException
      */
     public function updateLongRunningNode(string $id, array $data): array
     {

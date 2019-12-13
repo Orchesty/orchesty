@@ -53,7 +53,7 @@ class CustomNodeController extends AbstractFOSRestController implements LoggerAw
     public function sendAction(Request $request, string $nodeId): Response
     {
         try {
-            $data = $this->handler->process($nodeId, (string) $request->getContent(), $request->headers->all());
+            $data = $this->handler->process($nodeId, $request);
 
             return $this->getResponse($data->getData(), 200, ControllerUtils::createHeaders($data->getHeaders()));
         } catch (PipesFrameworkExceptionAbstract | OnRepeatException $e) {

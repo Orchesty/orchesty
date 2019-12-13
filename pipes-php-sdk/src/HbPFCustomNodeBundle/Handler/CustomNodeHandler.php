@@ -5,6 +5,8 @@ namespace Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Handler;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Exception\CustomNodeException;
 use Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Loader\CustomNodeLoader;
+use Hanaboso\PipesPhpSdk\Utils\ProcessDtoFactory;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class CustomNodeHandler
@@ -31,18 +33,14 @@ class CustomNodeHandler
 
     /**
      * @param string  $nodeId
-     * @param string  $data
-     * @param mixed[] $headers
+     * @param Request $request
      *
      * @return ProcessDto
      * @throws CustomNodeException
      */
-    public function process(string $nodeId, $data, array $headers): ProcessDto
+    public function process(string $nodeId, Request $request): ProcessDto
     {
-        $dto = (new ProcessDto())
-            ->setData($data)
-            ->setHeaders($headers);
-
+        $dto  = ProcessDtoFactory::createFromRequest($request);
         $node = $this->loader->get($nodeId);
 
         return $node->process($dto);

@@ -6,6 +6,7 @@ use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use Hanaboso\PipesPhpSdk\Connector\ConnectorInterface;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
+use Hanaboso\PipesPhpSdk\Utils\ProcessDtoFactory;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -25,10 +26,7 @@ class ConnectorManager
      */
     public function processEvent(ConnectorInterface $conn, Request $request): ProcessDto
     {
-        $dto = new ProcessDto();
-        $dto
-            ->setData((string) $request->getContent())
-            ->setHeaders($request->headers->all());
+        $dto = ProcessDtoFactory::createFromRequest($request);
 
         return $conn->processEvent($dto);
     }
@@ -42,11 +40,7 @@ class ConnectorManager
      */
     public function processAction(ConnectorInterface $conn, Request $request): ProcessDto
     {
-        $dto = new ProcessDto();
-        $dto
-            ->setData((string) $request->getContent())
-            ->setHeaders($request->headers->all());
-
+        $dto = ProcessDtoFactory::createFromRequest($request);
         $key = $conn->getApplicationKey();
         if ($key) {
             $headers                                                     = $dto->getHeaders();
