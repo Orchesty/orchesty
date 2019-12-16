@@ -1,0 +1,21 @@
+{
+    "status": "ok",
+    "success": true,
+    "data": {
+        "id": 119904,
+        "company_id": 7397488,
+        "owner_id": 11281778,
+        "user_id": 11281778,
+        "event_action": "added",
+        "event_object": "activity",
+        "subscription_url": "https://seznam.cz",
+        "is_active": 1,
+        "add_time": "2019-12-12T15:07:05.000Z",
+        "remove_time": null,
+        "type": "general",
+        "http_auth_user": null,
+        "http_auth_password": null,
+        "additional_data": {},
+        "remove_reason": null
+    }
+}
