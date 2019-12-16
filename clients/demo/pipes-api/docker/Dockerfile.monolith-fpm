@@ -1,4 +1,4 @@
-FROM dkr.hanaboso.net/hanaboso/php-base:php-7.3
+FROM hanabosocom/php-dev:php-7.4
 
 RUN apt-get update && \
     apt-get install -y apt-transport-https && \
