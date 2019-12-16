@@ -69,7 +69,7 @@ phpmanual-tests:
 phpmanual-down:
 	cd tests/Manual; $(MAKE) docker-down-clean;
 
-test: docker-up-force composer-install fasttest
+test: docker-up-force composer-install fasttest docker-down-clean
 
 fasttest: codesniffer clear-cache phpstan phpunit phpintegration phpcontroller phpcoverage-ci
 
