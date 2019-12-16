@@ -27,23 +27,13 @@ docker-down-clean: .env
 
 #Composer
 composer-install:
-	$(DEC) install --ignore-platform-reqs
+	$(DEC) install
 
 composer-update:
-	$(DEC) global require hirak/prestissimo
-	$(DEC) update --ignore-platform-reqs
+	$(DEC) update
 
 composer-outdated:
 	$(DEC) outdated
-
-composer-require:
-	$(DEC) require ${package}
-
-composer-require-dev:
-	$(DEC) require --dev ${package}
-
-composer-deploy:
-	$(DEC) update --prefer-dist --no-dev -o
 
 # App
 init: .env docker-up-force composer-install
@@ -97,14 +87,10 @@ clear-cache:
 	$(DE) php bin/console cache:warmup --env=test
 
 database-create:
-	$(DE) php bin/console doctrine:database:drop --force || true
-	$(DE) php bin/console doctrine:database:create
-	$(DE) php bin/console doctrine:schema:create
 	$(DE) php bin/console doctrine:mongodb:schema:create --dm=metrics || true
 
 .env:
 	sed -e "s|{DEV_UID}|$(shell id -u)|g" \
 		-e "s|{DEV_GID}|$(shell id -u)|g" \
-		-e "s|{PROJECT_SOURCE_PATH}|$(shell pwd)|g" \
 		-e "s/{SSH_AUTH}/$(shell if [ "$(shell uname)" = "Linux" ]; then echo "\/tmp\/.ssh-auth-sock"; else echo '\/tmp\/.nope'; fi)/g" \
 		.env.dist >> .env; \

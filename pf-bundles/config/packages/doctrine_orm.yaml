@@ -1,12 +1,10 @@
-parameters:
-
 doctrine:
     dbal:
         default_connection: default
         connections:
             default:
                 driver:   pdo_mysql
-                host:     'mariadb'
+                host:     "%env(string:MARIADB_DSN)%"
                 dbname:   'pipes'
                 user:     'root'
                 password: 'root'

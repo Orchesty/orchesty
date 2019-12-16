@@ -31,7 +31,7 @@ codesniffer:
 	$(DE) php ./vendor/bin/phpcs --standard=./ruleset.xml --colors -p src/ tests/
 
 phpstan:
-	$(DE) php ./vendor/bin/phpstan analyse -c ./phpstan.neon -l 7 src/ tests/
+	$(DE) php ./vendor/bin/phpstan analyse -c ./phpstan.neon -l 8 src/ tests/
 
 phpcontroller:
 	$(DE) php ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr tests/Controller

@@ -40,7 +40,8 @@ class KapacitorCommand extends Command
 
         $sender = new InfluxDbSender(new UDPSender('kapacitor', 9100), 'test');
 
-        while (TRUE) {
+        $i = 0;
+        while ($i < 10000) {
             $sender->send(
                 [
                     MetricsEnum::REQUEST_TOTAL_DURATION => 123,
@@ -56,6 +57,7 @@ class KapacitorCommand extends Command
                 ]
             );
             usleep(1000);
+            $i++;
         }
 
         return 0;

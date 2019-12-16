@@ -9,36 +9,50 @@ services:
         volumes:
             - ../:/var/www/pipes
             - ${SSH_AUTH_SOCK}:${SSH_AUTH}
-            - ./topology:${GENERATOR_PATH}
             - ${HOME}/dev/.composer:${HOME}/dev/.composer
         environment:
             - DEV_UID=${DEV_UID}
             - DEV_GID=${DEV_GID}
             - KERNEL_CLASS=Hanaboso\PipesFramework\Kernel
-            - COMPOSER_HOME=/home/dev/.composer
             - PHP_IDE_CONFIG=${PHP_IDE_CONFIG}
-            - GENERATOR_PATH=${GENERATOR_PATH}
-            - PROJECT_SOURCE_PATH=${PROJECT_SOURCE_PATH}
-            - DEPLOYMENT_PREFIX=${DEPLOYMENT_PREFIX}
-            - FRONTEND_HOST=${DEV_IP}
             - COMPOSER_HOME=${HOME}/dev/.composer
+            - FRONTEND_DSN=${DEV_IP}
+            - FRONTEND_HOST=${DEV_IP}
+            - BACKEND_DSN=${DEV_IP}
+            - REDIS_DSN=redis://redis:6379/10
+            - MULTI_PROBE_DSN=multi-probe:8007
+            - TOPOLOGY_API_DSN=topology-api:80
+            - MONGODB_DSN=mongodb://mongo
+            - MARIADB_DSN=maria
+            - STARTING_POINT_DSN=starting-point:80
+            - CRON_DSN=http://cron-api:5000
+            - RABBITMQ_HOST=rabbitmq
+            - RABBITMQ_PORT=5672
+            - FTP_API_DSN=ftp-api
+            - MAILER_API_DSN=mailer-api
+            - MAPPER_API_DSN=mapper-api
+            - MONOLITH_API_DSN=${DEV_IP}
+            - XML_PARSER_API_DSN=xml-parser-api
 
     starting-point:
         image: dkr.hanaboso.net/pipes/pipes/starting-point:dev
         environment:
-            APP_DEBUG: "false"
-            MONGO_HOSTNAME: mongo
-            MONGO_DATABASE: pipes
-            RABBIT_COUNTER_QUEUE_DURABLE: "true"
-            RABBIT_QUEUE_DURABLE: "true"
-            RABBIT_DELIVERY_MODE: 2
-            APP_CLEANUP_TIME: "300"
+            - APP_DEBUG="false"
+            - MONGO_HOSTNAME=mongo
+            - MONGO_DATABASE=pipes
+            - RABBIT_COUNTER_QUEUE_DURABLE="true"
+            - RABBIT_QUEUE_DURABLE="true"
+            - RABBIT_DELIVERY_MODE=2
+            - APP_CLEANUP_TIME="300"
 
-    smtp:
-        image: mailhog/mailhog
+    cron-api:
+        user: ${DEV_UID}:${DEV_GID}
+        image: dkr.hanaboso.net/pipes/pipes/python-cron:dev
+        environment:
+            - DEV_UID={DEV_UID}
+            - DEV_GID={DEV_GID}
         ports:
-            - ${DEV_IP}:1025:1025
-            - ${DEV_IP}:8025:8025
+            - ${DEV_IP}:8050:5000
 
     mongo:
         image: mongo:latest
@@ -58,31 +72,12 @@ services:
             - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
             - RABBITMQ_DEFAULT_VHOST=${RABBITMQ_DEFAULT_VHOST}
 
-    mariadb:
-        image: mariadb:latest
-        command: "mysqld --innodb_flush_method=nosync"
-        environment:
-            MYSQL_ROOT_PASSWORD: root
-        ports:
-            - ${DEV_IP}:3306:3306
-        volumes:
-            - mariadb:/var/lib/mysql
-
     redis:
         image: redis:alpine
         ports:
             - ${DEV_IP}:6379:6379
         volumes:
             - redis:/data
-
-    cron-api:
-        user: ${DEV_UID}:${DEV_GID}
-        image: dkr.hanaboso.net/pipes/pipes/python-cron:dev
-        environment:
-            - DEV_UID={DEV_UID}
-            - DEV_GID={DEV_GID}
-        ports:
-            - ${DEV_IP}:8050:5000
 
     influxdb:
         image: dkr.hanaboso.net/pipes/pipes/influxdb:dev

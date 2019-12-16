@@ -26,9 +26,6 @@ composer-update:
 composer-outdated:
 	$(DEC) outdated
 
-composer-deploy:
-	$(DEC) update --prefer-dist --no-dev -o
-
 # App
 init: .env docker-up-force composer-install
 
@@ -45,11 +42,11 @@ phpunit:
 phpcontroller:
 	$(DE) ./vendor/bin/phpunit -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist --colors --stderr tests/Controller
 
-phpintegration: database-create
+phpintegration:
 	$(DE) ./vendor/bin/phpunit -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist --colors --stderr tests/Integration
 
 phpcoverage:
-	$(DE) php vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p 4 --coverage-html var/coverage --whitelist src tests
+	$(DE) php vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p 8 --coverage-html var/coverage --whitelist src tests
 
 phpcoverage-ci:
 	$(DE) ./vendor/hanaboso/php-check-utils/bin/coverage.sh 30
@@ -63,7 +60,7 @@ phpmanual-tests:
 phpmanual-down:
 	cd tests/Manual; $(MAKE) docker-down-clean;
 
-test: docker-up-force composer-install fasttest
+test: docker-up-force composer-install fasttest docker-down-clean
 
 fasttest: codesniffer clear-cache phpstan phpunit phpintegration phpcontroller phpcoverage-ci
 
@@ -80,14 +77,8 @@ clear-cache:
 	$(DE) php bin/console cache:clear --env=test
 	$(DE) php bin/console cache:warmup --env=test
 
-database-create:
-	$(DE) php bin/console doctrine:database:drop --force || true
-	$(DE) php bin/console doctrine:database:create
-	$(DE) php bin/console doctrine:schema:create
-
 .env:
 	sed -e "s|{DEV_UID}|$(shell id -u)|g" \
 		-e "s|{DEV_GID}|$(shell id -u)|g" \
-		-e "s|{PROJECT_SOURCE_PATH}|$(shell pwd)|g" \
 		-e "s/{SSH_AUTH}/$(shell if [ "$(shell uname)" = "Linux" ]; then echo "\/tmp\/.ssh-auth-sock"; else echo '\/tmp\/.nope'; fi)/g" \
 		.env.dist >> .env; \

@@ -99,7 +99,7 @@ class SendDutyEmail extends CustomNodeAbstract
     }
 
     /**
-     * @param array $date
+     * @param mixed[] $date
      *
      * @return string
      * @throws DateTimeException

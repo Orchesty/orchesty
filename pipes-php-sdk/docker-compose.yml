@@ -8,16 +8,12 @@ services:
         volumes:
             - ./:/var/www
             - ${SSH_AUTH_SOCK}:${SSH_AUTH}
-            - ./topology:${GENERATOR_PATH}
             - ${HOME}/dev/.composer:${HOME}/dev/.composer
         environment:
             - DEV_UID=${DEV_UID}
             - DEV_GID=${DEV_GID}
             - KERNEL_CLASS=Hanaboso\PipesPhpSdk\Kernel
             - PHP_IDE_CONFIG=${PHP_IDE_CONFIG}
-            - GENERATOR_PATH=${GENERATOR_PATH}
-            - PROJECT_SOURCE_PATH=${PROJECT_SOURCE_PATH}
-            - DEPLOYMENT_PREFIX=${DEPLOYMENT_PREFIX}
             - COMPOSER_HOME=${HOME}/dev/.composer
 
     mongo:
@@ -27,16 +23,5 @@ services:
         volumes:
             - mongo:/data/db
 
-    mariadb:
-        image: mariadb:latest
-        command: "mysqld --innodb_flush_method=nosync"
-        environment:
-            MYSQL_ROOT_PASSWORD: root
-        ports:
-            - ${DEV_IP}:3306:3306
-        volumes:
-            - mariadb:/var/lib/mysql
-
 volumes:
     mongo: {}
-    mariadb: {}

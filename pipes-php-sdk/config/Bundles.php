@@ -21,15 +21,15 @@ use Symfony\Bundle\MonologBundle\MonologBundle;
 use Symfony\Bundle\SecurityBundle\SecurityBundle;
 
 return [
-    FrameworkBundle::class        => ['all' => TRUE],
-    SecurityBundle::class         => ['all' => TRUE],
+    DebugBundle::class            => ['dev' => TRUE, 'test' => TRUE],
     DoctrineBundle::class         => ['all' => TRUE],
     DoctrineFixturesBundle::class => ['all' => TRUE],
-    MonologBundle::class          => ['all' => TRUE],
-    DebugBundle::class            => ['dev' => TRUE, 'test' => TRUE],
     DoctrineMongoDBBundle::class  => ['all' => TRUE],
-    JMSSerializerBundle::class    => ['all' => TRUE],
     FOSRestBundle::class          => ['all' => TRUE],
+    FrameworkBundle::class        => ['all' => TRUE],
+    JMSSerializerBundle::class    => ['all' => TRUE],
+    MonologBundle::class          => ['all' => TRUE],
+    SecurityBundle::class         => ['all' => TRUE],
     SncRedisBundle::class         => ['all' => TRUE],
 
     HbPFApplicationBundle::class     => ['all' => TRUE],

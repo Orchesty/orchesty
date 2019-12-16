@@ -2,7 +2,7 @@
     "name": "hanaboso/app-store",
     "license": "proprietary",
     "description": "App store for PipesFramework",
-    "version": "1.2.2",
+    "version": "1.2.4",
     "autoload": {
         "psr-4": {
             "Hanaboso\\HbPFAppStore\\": "src/"

@@ -59,7 +59,7 @@ final class TimeStamperHumanTask extends LongRunningNodeAbstract
 
     /**
      * @param LongRunningNodeData $data
-     * @param array               $requestData
+     * @param mixed[]             $requestData
      *
      * @return ProcessDto
      * @throws Exception
@@ -76,10 +76,10 @@ final class TimeStamperHumanTask extends LongRunningNodeAbstract
     }
 
     /**
-     * @param array $data
-     * @param bool  $isAfter
+     * @param mixed[] $data
+     * @param bool    $isAfter
      *
-     * @return array
+     * @return mixed[]
      * @throws Exception
      */
     private function createTimeStamp(array $data, bool $isAfter = FALSE): array

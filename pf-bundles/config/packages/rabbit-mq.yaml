@@ -1,6 +1,6 @@
 parameters:
-    rabbit_host: rabbitmq
-    rabbit_port: 5672
+    rabbit_host: "%env(string:RABBITMQ_HOST)%"
+    rabbit_port: "%env(int:RABBITMQ_PORT)%"
     rabbit_vhost: /
     rabbit_user: guest
     rabbit_password: guest

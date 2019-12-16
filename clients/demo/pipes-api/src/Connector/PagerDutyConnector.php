@@ -96,7 +96,8 @@ class PagerDutyConnector extends ConnectorAbstract
 
         $minuses = [];
         $res     = [];
-        /** @var array $day */
+
+        /** @var mixed[] $day */
         foreach ($finalSchedule as $day) {
             $user       = $day['user']['summary'] ?? '';
             $hours      = $this->getHours($day['start'] ?? '', $day['end'] ?? '');
