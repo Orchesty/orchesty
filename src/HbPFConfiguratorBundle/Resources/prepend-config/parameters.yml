@@ -1,40 +1,20 @@
 parameters:
-    generator_path: "%env(GENERATOR_PATH)%"
-    env(GENERATOR_PATH): "%kernel.project_dir%/topology"
-    docker_network: "%env(DOCKER_NETWORK)%"
-    env(DOCKER_NETWORK): "demo_default"
-    project_source_path: "%env(PROJECT_SOURCE_PATH)%"
-    env(PROJECT_SOURCE_PATH): null
-    deployment_prefix: "%env(DEPLOYMENT_PREFIX)%"
-    env(DEPLOYMENT_PREFIX): demo
-    topology_mode: "%env(TOPOLOGY_MODE)%"
-    env(TOPOLOGY_MODE): swarm
-    docker_registry: "%env(DOCKER_REGISTRY)%"
+    docker_registry: "%env(string:DOCKER_REGISTRY)%"
     env(DOCKER_REGISTRY): dkr.hanaboso.net/pipes/pipes
-    docker_pf_bridge_image: "%env(DOCKER_PF_BRIDGE_IMAGE)%"
+    docker_pf_bridge_image: "%env(string:DOCKER_PF_BRIDGE_IMAGE)%"
     env(DOCKER_PF_BRIDGE_IMAGE): pf-bridge:dev
-    multi_probe_host: "%env(MULTI_PROBE_HOST)%"
-    env(MULTI_PROBE_HOST): multi-probe:8007
-    worker_default_port: "%env(WORKER_DEFAULT_PORT)%"
+    worker_default_port: "%env(int:WORKER_DEFAULT_PORT)%"
     env(WORKER_DEFAULT_PORT): 8008
-    topology_api: "%env(TOPOLOGY_API)%"
-    env(TOPOLOGY_API): topology-api:80
-    starting_point: "%env(STARTING_POINT)%"
-    env(STARTING_POINT): starting-point:80
-    ftp_api_host: "%env(FTP_API_HOST)%"
-    env(FTP_API_HOST): ftp-api
-    mailer_api_host: "%env(MAILER_API_HOST)%"
-    env(MAILER_API_HOST): mailer-api
-    mapper_api_host: "%env(MAPPER_API_HOST)%"
-    env(MAPPER_API_HOST): mapper-api
-    monolith_api_host: "%env(MONOLITH_API_HOST)%"
-    env(MONOLITH_API_HOST): monolith-api
-    xml_parser_api_host: "%env(XML_PARSER_API_HOST)%"
-    env(XML_PARSER_API_HOST): xml-parser-api
-    env(METRICS_HOST): "%kapacitor.host%"
-    metrics_host: "%env(METRICS_HOST)%"
-    env(METRICS_PORT): "%kapacitor.port%"
-    metrics_port: "%env(METRICS_PORT)%"
+    multi_probe_host: "%env(string:MULTI_PROBE_DSN)%"
+    topology_api: "%env(string:TOPOLOGY_API_DSN)%"
+    starting_point: "%env(string:STARTING_POINT_DSN)%"
+    ftp_api_host: "%env(string:FTP_API_DSN)%"
+    mailer_api_host: "%env(string:MAILER_API_DSN)%"
+    mapper_api_host: "%env(string:MAPPER_API_DSN)%"
+    monolith_api_host: "%env(string:MONOLITH_API_DSN)%"
+    xml_parser_api_host: "%env(string:XML_PARSER_API_DSN)%"
+    metrics_host: "%kapacitor.host%"
+    metrics_port: "%kapacitor.port%"
 
     topology_configs:
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::RABBITMQ_HOST: "%rabbit_host%"

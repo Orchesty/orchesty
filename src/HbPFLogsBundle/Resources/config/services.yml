@@ -1,11 +1,10 @@
 services:
     _defaults:
         public: '%public.services%'
+        autowire: true
 
     hbpf.handler.logs:
         class: Hanaboso\PipesFramework\HbPFLogsBundle\Handler\LogsHandler
-        arguments:
-            - '@hbpf.mongodb.logs'
 
     hbpf.mongodb.logs:
         class: Hanaboso\PipesFramework\Logs\MongoDbLogs

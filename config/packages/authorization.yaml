@@ -1,3 +1,3 @@
 parameters:
-    frontend_host: 127.0.0.1
-    backend_host: 127.0.0.2
+    frontend_host: "%env(string:FRONTEND_DSN)%"
+    backend_host: "%env(string:BACKEND_DSN)%"
