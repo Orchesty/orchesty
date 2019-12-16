@@ -80,7 +80,7 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
     {
         return isset(
             $applicationInstall->getSettings(
-            )[ApplicationInterface::AUTHORIZATION_SETTINGS][OAuth2ApplicationInterface::TOKEN]
+            )[ApplicationInterface::AUTHORIZATION_SETTINGS][OAuth2ApplicationInterface::TOKEN][OAuth2Provider::ACCESS_TOKEN]
         );
     }
 

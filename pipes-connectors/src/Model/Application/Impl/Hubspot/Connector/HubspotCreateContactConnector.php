@@ -9,7 +9,6 @@ use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
-use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\HubspotApplication;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
@@ -95,13 +94,11 @@ final class HubspotCreateContactConnector extends ConnectorAbstract
 
         unset($json['correlationId'], $json['requestId']);
 
-        $dto->setData(Json::encode($json));
-        $message = $json['validationResults'][0]['message'] ?? NULL;
-
+        $message    = $json['validationResults'][0]['message'] ?? NULL;
         $statusCode = $return->getStatusCode();
         $this->evaluateStatusCode($statusCode, $dto, $message);
 
-        return $dto;
+        return $this->setJsonContent($dto, $json);
     }
 
 }

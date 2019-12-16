@@ -9,7 +9,6 @@ use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
-use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\MailchimpApplication;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
@@ -100,12 +99,11 @@ final class MailchimpTagContactConnector extends ConnectorAbstract
             )
         );
 
-        $json = $return->getJsonBody();
-        $dto->setData(Json::encode($json));
+        $json       = $return->getJsonBody();
         $statusCode = $return->getStatusCode();
         $this->evaluateStatusCode($statusCode, $dto);
 
-        return $dto;
+        return $this->setJsonContent($dto, $json);
     }
 
 }

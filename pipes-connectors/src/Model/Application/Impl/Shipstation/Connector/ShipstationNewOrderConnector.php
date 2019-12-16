@@ -3,14 +3,15 @@
 namespace Hanaboso\HbPFConnectors\Model\Application\Impl\Shipstation\Connector;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\Persistence\ObjectRepository;
 use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
-use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
+use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
 use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessActionNotSupportedTrait;
 
@@ -23,6 +24,16 @@ final class ShipstationNewOrderConnector extends ConnectorAbstract
 {
 
     use ProcessActionNotSupportedTrait;
+
+    /**
+     * @var CurlManagerInterface
+     */
+    private $curlManager;
+
+    /**
+     * @var ApplicationInstallRepository&ObjectRepository<ApplicationInstall>
+     */
+    private $repository;
 
     /**
      * ShipstationNewOrderConnector constructor.
@@ -59,7 +70,7 @@ final class ShipstationNewOrderConnector extends ConnectorAbstract
     {
         $applicationInstall = $this->repository->findUsersAppDefaultHeaders($dto);
 
-        $url = Json::decode($dto->getData())['resource_url'] ?? NULL;
+        $url = $this->getJsonContent($dto)['resource_url'] ?? NULL;
         if (!$url) {
             $dto->setStopProcess(ProcessDto::STOP_AND_FAILED);
 

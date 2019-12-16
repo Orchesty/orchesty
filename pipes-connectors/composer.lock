@@ -2068,11 +2068,11 @@
         },
         {
             "name": "hanaboso/pipes-php-sdk",
-            "version": "1.1.8",
+            "version": "1.1.9",
             "dist": {
                 "type": "path",
                 "url": "../pipes-php-sdk",
-                "reference": "0b668adccda51d83951883106081b57e99146c98"
+                "reference": "48c0f32b0a3c531792d519b24f5bcd9b7aa1476f"
             },
             "require": {
                 "ext-json": "*",
