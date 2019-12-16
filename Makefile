@@ -68,6 +68,6 @@ phpcoverage:
 phpcoverage-ci:
 	$(DE) ./vendor/hanaboso/php-check-utils/bin/coverage.sh 60
 
-test: docker-up-force composer-install fasttest
+test: docker-up-force composer-install fasttest docker-down-clean
 
 fasttest: phpcodesniffer clear-cache phpstan phpintegration phpcontroller phpcoverage-ci
