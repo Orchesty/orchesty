@@ -44,7 +44,7 @@ phplive:
 
 init: docker-up-force composer-install
 
-test: init fasttest
+test: init fasttest docker-down-clean
 
 fasttest: clear-cache codesniffer phpstan phpintegration phpcontroller
 
