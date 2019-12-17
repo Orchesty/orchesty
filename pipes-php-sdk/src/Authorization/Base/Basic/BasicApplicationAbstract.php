@@ -31,14 +31,20 @@ abstract class BasicApplicationAbstract extends ApplicationAbstract implements B
     public function isAuthorized(ApplicationInstall $applicationInstall): bool
     {
         return
+            (
+                isset(
+                    $applicationInstall->getSettings(
+                    )[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::PASSWORD]
+                )
+                &&
+                isset(
+                    $applicationInstall->getSettings(
+                    )[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::USER]
+                )
+            ) ||
             isset(
                 $applicationInstall->getSettings(
-                )[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::PASSWORD]
-            )
-            &&
-            isset(
-                $applicationInstall->getSettings(
-                )[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::USER]
+                )[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::TOKEN]
             );
     }
 
@@ -55,7 +61,6 @@ abstract class BasicApplicationAbstract extends ApplicationAbstract implements B
         $settings[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::PASSWORD] = $password;
 
         return $applicationInstall->setSettings($settings);
-
     }
 
     /**
@@ -75,6 +80,21 @@ abstract class BasicApplicationAbstract extends ApplicationAbstract implements B
 
     /**
      * @param ApplicationInstall $applicationInstall
+     * @param string             $token
+     *
+     * @return ApplicationInstall
+     */
+    public function setApplicationToken(ApplicationInstall $applicationInstall, string $token): ApplicationInstall
+    {
+        $settings = $applicationInstall->getSettings();
+
+        $settings[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::TOKEN] = $token;
+
+        return $applicationInstall->setSettings($settings);
+    }
+
+    /**
+     * @param ApplicationInstall $applicationInstall
      * @param mixed[]            $settings
      *
      * @return ApplicationInstall
@@ -84,13 +104,16 @@ abstract class BasicApplicationAbstract extends ApplicationAbstract implements B
         $applicationInstall = parent::setApplicationSettings($applicationInstall, $settings);
 
         foreach ($applicationInstall->getSettings()[ApplicationAbstract::FORM] ?? [] as $key => $value) {
-
             if ($key === BasicApplicationInterface::USER) {
                 $this->setApplicationUser($applicationInstall, $value);
                 continue;
             }
             if ($key === BasicApplicationInterface::PASSWORD) {
                 $this->setApplicationPassword($applicationInstall, $value);
+                continue;
+            }
+            if ($key === BasicApplicationInterface::TOKEN) {
+                $this->setApplicationToken($applicationInstall, $value);
                 continue;
             }
         }
