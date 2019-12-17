@@ -1,0 +1,2 @@
+parameters:
+    elasticsearch_dsn: "%env(string:ELASTICSEARCH_DSN)%"
