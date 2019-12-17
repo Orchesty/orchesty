@@ -50,6 +50,7 @@ class HbPFConnectorsExtension extends Extension implements PrependExtensionInter
         $loader->load('nutshell.yaml');
         $loader->load('shipstation.yaml');
         $loader->load('pipedrive.yaml');
+        $loader->load('salesforce.yaml');
     }
 
 }

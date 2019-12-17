@@ -1,0 +1,8 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf.application.salesforce:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\Salesforce\SalesforceApplication
+        arguments:
+            - '@hbpf.providers.oauth2_provider'
