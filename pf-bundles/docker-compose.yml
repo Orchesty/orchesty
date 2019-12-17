@@ -26,6 +26,7 @@ services:
             - MARIADB_DSN=maria
             - STARTING_POINT_DSN=starting-point:80
             - CRON_DSN=http://cron-api:5000
+            - ELASTICSEARCH_DSN=elasticsearch://elasticsearch
             - RABBITMQ_HOST=rabbitmq
             - RABBITMQ_PORT=5672
             - FTP_API_DSN=ftp-api
@@ -79,6 +80,14 @@ services:
         volumes:
             - redis:/data
 
+    elasticsearch:
+        image: elasticsearch:7.4.2
+        environment:
+            LS_JAVA_OPTS: -Xms512m -Xmx512m
+            discovery.type: single-node
+        volumes:
+            - elasticsearch:/usr/share/elasticsearch/data
+
     influxdb:
         image: dkr.hanaboso.net/pipes/pipes/influxdb:dev
         ports:
@@ -94,3 +103,4 @@ volumes:
     rabbit-mq: {}
     redis: {}
     influxdb: {}
+    elasticsearch: {}

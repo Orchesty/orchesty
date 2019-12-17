@@ -28,23 +28,25 @@ class LogsCompilerPass implements CompilerPassInterface
     {
         $config = $container->getParameter(HbPFLogsBundle::KEY);
 
+        $dm                   = $container->getDefinition('doctrine_mongodb.odm.default_document_manager');
+        $startingPointsFilter = new Definition(StartingPointsFilter::class, [$dm]);
+
         if ($config['type'] == 'mongodb') {
-            $dm                   = $container->getDefinition('doctrine_mongodb.odm.default_document_manager');
-            $logsFilter           = new Definition(LogsFilter::class, [$dm]);
-            $startingPointsFilter = new Definition(StartingPointsFilter::class, [$dm]);
-            $mongoDb              = new Definition(MongoDbLogs::class, [$dm, $logsFilter, $startingPointsFilter]);
+            $logsFilter = new Definition(LogsFilter::class, [$dm]);
+            $mongoDb    = new Definition(MongoDbLogs::class, [$dm, $logsFilter, $startingPointsFilter]);
 
             $container->setDefinition(LogsInterface::class, $mongoDb);
         }
 
         if ($config['type'] == 'elastic') {
-            $elastic = new Definition(
+            $elastic = (new Definition(
                 ElasticLogs::class,
                 [
-                    //@todo add elastic manager
-                    $config['storage_name'],
+                    $dm,
+                    $startingPointsFilter,
+                    $container->getDefinition('elastica.client'),
                 ]
-            );
+            ))->addMethodCall('setIndex', [$config['storage_name']]);
 
             $container->setDefinition(LogsInterface::class, $elastic);
         }

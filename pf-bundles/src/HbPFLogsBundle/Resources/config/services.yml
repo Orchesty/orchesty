@@ -12,6 +12,22 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.logs.filter'
             - '@hbpf.logs.startingpoint_filter'
+            - '@elastica.client'
+
+    elastica.client:
+        class: Elastica\Client
+        factory: Happyr\ElasticaDsn\ClientFactory::create
+        arguments:
+            - '%elasticsearch_dsn%'
+
+    Elastica\Client:
+        alias: elastica.client
+
+    hbpf.elastic.logs:
+        class: Hanaboso\PipesFramework\Logs\ElasticLogs
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.logs.startingpoint_filter'
 
     hbpf.logs.filter:
         class: Hanaboso\PipesFramework\Logs\LogsFilter
