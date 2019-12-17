@@ -37,10 +37,10 @@ final class ElasticLogs extends LogsAbstract
     private const CONVERT = [
         self::TIMESTAMP     => self::TIMESTAMP_PREFIX,
         self::SEVERITY      => self::PIPES_SEVERITY_KEYWORD,
-        self::TOPOLOGY_ID   => 'pipes.topology_id',
-        self::TOPOLOGY_NAME => 'pipes.topology_name',
-        self::NODE_ID       => 'pipes.node_id',
-        self::NODE_NAME     => 'pipes.node_name',
+        self::TOPOLOGY_ID   => 'pipes.topology_id.keyword',
+        self::TOPOLOGY_NAME => 'pipes.topology_name.keyword',
+        self::NODE_ID       => 'pipes.node_id.keyword',
+        self::NODE_NAME     => 'pipes.node_name.keyword',
         self::MESSAGE       => 'message.keyword',
     ];
 

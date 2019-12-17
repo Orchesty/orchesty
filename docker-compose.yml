@@ -34,6 +34,7 @@ services:
             - MAPPER_API_DSN=mapper-api
             - MONOLITH_API_DSN=${DEV_IP}
             - XML_PARSER_API_DSN=xml-parser-api
+            - METRICS_SERVICE=influx
 
     starting-point:
         image: dkr.hanaboso.net/pipes/pipes/starting-point:dev
