@@ -99,7 +99,6 @@ services:
 
 volumes:
     mongo: {}
-    mariadb: {}
     rabbit-mq: {}
     redis: {}
     influxdb: {}
