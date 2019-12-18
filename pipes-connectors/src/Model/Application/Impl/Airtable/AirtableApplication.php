@@ -5,6 +5,8 @@ namespace Hanaboso\HbPFConnectors\Model\Application\Impl\Airtable;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
@@ -22,8 +24,8 @@ final class AirtableApplication extends BasicApplicationAbstract
 {
 
     public const  BASE_URL   = 'https://api.airtable.com/v0';
-    public const  BASE_ID    = 'BASE_ID';
-    public const  TABLE_NAME = 'TABLE_NAME';
+    public const  BASE_ID    = 'base_id';
+    public const  TABLE_NAME = 'table_name';
 
     /**
      * @return string
@@ -106,21 +108,23 @@ final class AirtableApplication extends BasicApplicationAbstract
     /**
      * @param ApplicationInstall $applicationInstall
      *
-     * @return string
-     * @throws AuthorizationException
+     * @return bool
      */
-    public function getAccessToken(ApplicationInstall $applicationInstall): string
+    public function isAuthorized(ApplicationInstall $applicationInstall): bool
     {
-        $token = $this->getValue($applicationInstall, BasicApplicationInterface::TOKEN);
-        if ($token) {
-            return $token;
-        }
-
-        throw new AuthorizationException(
-            'There is no access token',
-            AuthorizationException::AUTHORIZATION_SETTINGS_NOT_FOUND
-        );
-
+        return
+            isset(
+                $applicationInstall->getSettings(
+                )[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::TOKEN]
+            )
+            &&
+            isset(
+                $applicationInstall->getSettings()[ApplicationAbstract::FORM][AirtableApplication::BASE_ID]
+            )
+            &&
+            isset(
+                $applicationInstall->getSettings()[ApplicationAbstract::FORM][AirtableApplication::TABLE_NAME]
+            );
     }
 
     /**
@@ -131,12 +135,34 @@ final class AirtableApplication extends BasicApplicationAbstract
      */
     public function getValue(ApplicationInstall $applicationInstall, string $value): ?string
     {
-
-        if (isset($applicationInstall->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][$value])) {
-            return $applicationInstall->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][$value];
+        if (isset($applicationInstall->getSettings()[ApplicationAbstract::FORM][$value])) {
+            return $applicationInstall->getSettings()[ApplicationAbstract::FORM][$value];
         }
 
         return NULL;
+    }
+
+    /**
+     * @param ApplicationInstall $applicationInstall
+     *
+     * @return string
+     * @throws AuthorizationException
+     */
+    private function getAccessToken(ApplicationInstall $applicationInstall): string
+    {
+        if (isset(
+            $applicationInstall->getSettings(
+            )  [ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::TOKEN]
+        )) {
+            return $applicationInstall->getSettings(
+            )  [ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::TOKEN];
+        }
+
+        throw new AuthorizationException(
+            'There is no access token',
+            AuthorizationException::AUTHORIZATION_SETTINGS_NOT_FOUND
+        );
+
     }
 
 }

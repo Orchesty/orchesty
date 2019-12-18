@@ -3,7 +3,6 @@
 namespace Tests\Integration\Model\Application\Impl\Hubspot;
 
 use Exception;
-use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
@@ -17,7 +16,6 @@ use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\DataProvider;
-use Tests\MockCurlMethod;
 
 /**
  * Class HubspotApplicationTest
@@ -76,7 +74,9 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
             self::assertContains(
                 $field->getKey(),
                 [
-                    'app_id',
+                    HubspotApplication::USER_ID,
+                    HubspotApplication::HAPI_KEY,
+                    HubspotApplication::APP_ID,
                     OAuth2ApplicationInterface::CLIENT_ID,
                     OAuth2ApplicationInterface::CLIENT_SECRET,
                 ]
@@ -129,24 +129,24 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
     /**
      * @throws Exception
      */
-    public function testprocessWebhookSubscribeResponse(): void
+    public function testProcessWebhookSubscribeResponse(): void
     {
         $this->setApplication();
         $response = $this->application->processWebhookSubscribeResponse(
             new ResponseDto(200, '', '{"id":"id88"}', []),
             new ApplicationInstall()
         );
-        $this->assertIsNumeric($response);
+        $this->assertEquals('id88', $response);
     }
 
     /**
      *
      */
-    public function testprocessWebhookUnsubscribeResponse(): void
+    public function testProcessWebhookUnsubscribeResponse(): void
     {
         $this->setApplication();
         $response = $this->application->processWebhookUnsubscribeResponse(
-            new ResponseDto(200, '', '{"id":"id88"}', [])
+            new ResponseDto(204, '', '{"id":"id88"}', [])
         );
         $this->assertEquals(TRUE, $response);
     }
@@ -156,15 +156,6 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
      */
     public function testGetWebhookSubscribeRequestDto(): void
     {
-        $this->mockCurl(
-            [
-                new MockCurlMethod(
-                    200,
-                    sprintf('response200.json'),
-                    []
-                ),
-            ]
-        );
         $this->setApplication();
         $hubspotCreateContactConnector = new HubspotCreateContactConnector(
             self::$container->get('hbpf.transport.curl_manager'),
@@ -175,7 +166,11 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
         $applicationInstall = new ApplicationInstall();
         $applicationInstall->setSettings(
             [
-                ApplicationAbstract::FORM                    => ['app_id' => '123xx'],
+                ApplicationAbstract::FORM                    => [
+                    HubspotApplication::APP_ID   => '123xx',
+                    HubspotApplication::HAPI_KEY => '21a0d413-e204-4138-9ede-************',
+                    HubspotApplication::USER_ID  => '89*****',
+                ],
                 ApplicationInterface::AUTHORIZATION_SETTINGS => [ApplicationInterface::TOKEN => [OAuth2Provider::ACCESS_TOKEN => 'token123']],
             ]
         );
@@ -196,18 +191,20 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
             'id123'
         );
 
-        /** @var Uri $uri */
-        $uri = $response->getUri();
         $this->assertEquals('POST', $response->getMethod());
-        $this->assertEquals('webhooks/v1/123xx/subscriptions', $uri->getPath());
+        $this->assertEquals('DELETE', $responseUn->getMethod());
         $this->assertEquals(
-            '{"subscriptionDetails":{"subscriptionType":"name2","propertyName":"email","enabled":true}}',
+            'https://api.hubapi.com/webhooks/v1/123xx/subscriptions?hapikey=21a0d413-e204-4138-9ede-************&userId=89*****',
+            $response->getUriString()
+        );
+        $this->assertEquals(
+            '{"subscriptionDetails":{"subscriptionType":"name2","propertyName":"email"},"enabled":false}',
             $response->getBody()
         );
-        /** @var Uri $uriUn */
-        $uriUn = $responseUn->getUri();
-        $this->assertEquals('DELETE', $responseUn->getMethod());
-        $this->assertEquals('webhooks/v1/123xx/subscriptions/id123', $uriUn->getPath());
+        $this->assertEquals(
+            'https://api.hubapi.com/webhooks/v1/123xx/subscriptions/id123?hapikey=21a0d413-e204-4138-9ede-************&userId=89*****',
+            $responseUn->getUriString()
+        );
 
     }
 

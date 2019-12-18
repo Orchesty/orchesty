@@ -28,7 +28,7 @@ final class NutshellApplication extends BasicApplicationAbstract
      */
     public function getApplicationType(): string
     {
-        return ApplicationTypeEnum::WEBHOOK;
+        return ApplicationTypeEnum::CRON;
     }
 
     /**
@@ -106,7 +106,7 @@ final class NutshellApplication extends BasicApplicationAbstract
      *
      * @return string
      */
-    public function getToken(ApplicationInstall $applicationInstall): string
+    private function getToken(ApplicationInstall $applicationInstall): string
     {
         return base64_encode(
             sprintf(

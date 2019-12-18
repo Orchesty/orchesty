@@ -26,7 +26,7 @@ final class ShipstationApplication extends BasicApplicationAbstract implements W
 {
 
     public const SHIPSTATION_URL = 'https://ssapi.shipstation.com';
-    public const ORDER_NOTIFY     = 'ORDER_NOTIFY';
+    public const ORDER_NOTIFY    = 'ORDER_NOTIFY';
 
     /**
      * @return string
@@ -104,24 +104,6 @@ final class ShipstationApplication extends BasicApplicationAbstract implements W
         $form->addField($fieldSecret);
 
         return $form;
-    }
-
-    /**
-     * @param ApplicationInstall $applicationInstall
-     *
-     * @return string
-     */
-    public function getToken(ApplicationInstall $applicationInstall): string
-    {
-        return base64_encode(
-            sprintf(
-                '%s:%s',
-                $applicationInstall->getSettings(
-                )[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationAbstract::USER],
-                $applicationInstall->getSettings(
-                )[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationAbstract::PASSWORD]
-            )
-        );
     }
 
     /**
@@ -207,6 +189,24 @@ final class ShipstationApplication extends BasicApplicationAbstract implements W
     public function processWebhookUnsubscribeResponse(ResponseDto $dto): bool
     {
         return $dto->getStatusCode() === 200;
+    }
+
+    /**
+     * @param ApplicationInstall $applicationInstall
+     *
+     * @return string
+     */
+    private function getToken(ApplicationInstall $applicationInstall): string
+    {
+        return base64_encode(
+            sprintf(
+                '%s:%s',
+                $applicationInstall->getSettings(
+                )[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationAbstract::USER],
+                $applicationInstall->getSettings(
+                )[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationAbstract::PASSWORD]
+            )
+        );
     }
 
 }

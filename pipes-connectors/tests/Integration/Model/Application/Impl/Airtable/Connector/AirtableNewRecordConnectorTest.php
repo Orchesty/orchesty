@@ -6,6 +6,7 @@ use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Airtable\AirtableApplication;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Airtable\Connector\AirtableNewRecordConnector;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
@@ -183,16 +184,17 @@ final class AirtableNewRecordConnectorTest extends DatabaseTestCaseAbstract
      */
     private function setApplicationAndMock(?string $baseId = NULL): AirtableNewRecordConnector
     {
-
         $applicationInstall = new ApplicationInstall();
-        $applicationInstall = $applicationInstall->setSettings(
+        $applicationInstall->setSettings(
             [
                 BasicApplicationInterface::AUTHORIZATION_SETTINGS =>
                     [
                         BasicApplicationAbstract::TOKEN => self::API_KEY,
-                        AirtableApplication::BASE_ID    => $baseId,
-                        AirtableApplication::TABLE_NAME => self::TABLE_NAME,
                     ],
+                ApplicationAbstract::FORM                         => [
+                    AirtableApplication::BASE_ID    => $baseId,
+                    AirtableApplication::TABLE_NAME => self::TABLE_NAME,
+                ],
             ]
         );
 

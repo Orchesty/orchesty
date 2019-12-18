@@ -140,7 +140,7 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
     /**
      * @throws Exception
      */
-    public function testprocessWebhookSubscribeResponse(): void
+    public function testProcessWebhookSubscribeResponse(): void
     {
         $response = $this->application->processWebhookSubscribeResponse(
             new ResponseDto(200, '', '{"id":"id88"}', []),
@@ -152,7 +152,7 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
     /**
      *
      */
-    public function testprocessWebhookUnsubscribeResponse(): void
+    public function testProcessWebhookUnsubscribeResponse(): void
     {
         $response = $this->application->processWebhookUnsubscribeResponse(
             new ResponseDto(200, '', '{"id":"id88"}', [])

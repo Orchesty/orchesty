@@ -100,7 +100,7 @@ final class BigcommerceApplicationTest extends DatabaseTestCaseAbstract
     public function testGetApplicationType(): void
     {
         self::assertEquals(
-            ApplicationTypeEnum::WEBHOOK,
+            ApplicationTypeEnum::CRON,
             $this->application->getApplicationType()
         );
     }
