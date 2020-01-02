@@ -15,6 +15,7 @@ services:
             - DEV_GID=${DEV_GID}
             - KERNEL_CLASS=Hanaboso\HbPFAppStore\Kernel
             - COMPOSER_HOME=${HOME}/dev/.composer
+            - METRICS_SERVICE=mongo
 
     mongo:
         image: mongo:latest
