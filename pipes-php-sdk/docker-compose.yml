@@ -15,6 +15,7 @@ services:
             - KERNEL_CLASS=Hanaboso\PipesPhpSdk\Kernel
             - PHP_IDE_CONFIG=${PHP_IDE_CONFIG}
             - COMPOSER_HOME=${HOME}/dev/.composer
+            - METRICS_SERVICE=mongo
 
     mongo:
         image: mongo:latest
