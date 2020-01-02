@@ -17,9 +17,8 @@ use Tests\DataProvider;
 final class NutshellApplicationTest extends DatabaseTestCaseAbstract
 {
 
-    public const USER    = 'user@user.com';
+    public const USER = 'user@user.com';
     public const API_KEY = '271cca5c67c**********427b659988cc38e2f78';
-
 
     /**
      * @var NutshellApplication
@@ -40,7 +39,6 @@ final class NutshellApplicationTest extends DatabaseTestCaseAbstract
      */
     public function testAuthorization(): void
     {
-        $curl               = self::$container->get('hbpf.transport.curl_manager');
         $applicationInstall = DataProvider::getBasicAppInstall(
             $this->application->getKey(),
             self::USER,
@@ -49,16 +47,19 @@ final class NutshellApplicationTest extends DatabaseTestCaseAbstract
 
         $this->pf($applicationInstall);
 
-        $result = $curl->send(
-            $this->application->getRequestDto(
-                $applicationInstall,
-                'POST',
-                'http://api.nutshell.com/v1/json',
-                '{"id": "apeye", "method": "getLead", "params": { "leadId": 1000 }, "data":{"username": "user@user.com"} }'
-            )
+        $dto = $this->application->getRequestDto(
+            $applicationInstall,
+            'POST',
+            'http://api.nutshell.com/v1/json',
+            '{"id": "apeye", "method": "getLead", "params": { "leadId": 1000 }, "data":{"username": "user@user.com"} }'
         );
 
-        $this->assertEquals(200, $result->getStatusCode());
+        $this->assertEquals('POST', $dto->getMethod());
+        $this->assertEquals('http://api.nutshell.com/v1/json', $dto->getUriString());
+        $this->assertEquals(
+            '{"id": "apeye", "method": "getLead", "params": { "leadId": 1000 }, "data":{"username": "user@user.com"} }',
+            $dto->getBody()
+        );
     }
 
     /**
@@ -67,7 +68,7 @@ final class NutshellApplicationTest extends DatabaseTestCaseAbstract
     public function testGetApplicationType(): void
     {
         self::assertEquals(
-            ApplicationTypeEnum::WEBHOOK,
+            ApplicationTypeEnum::CRON,
             $this->application->getApplicationType()
         );
     }

@@ -10,6 +10,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookApplicationInterface;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
@@ -109,9 +110,23 @@ final class PipedriveApplication extends BasicApplicationAbstract implements Web
     /**
      * @param ApplicationInstall $applicationInstall
      *
+     * @return bool
+     */
+    public function isAuthorized(ApplicationInstall $applicationInstall): bool
+    {
+        return
+            isset(
+                $applicationInstall->getSettings(
+                )[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::USER]
+            );
+    }
+
+    /**
+     * @param ApplicationInstall $applicationInstall
+     *
      * @return string
      */
-    public function getToken(ApplicationInstall $applicationInstall): string
+    private function getToken(ApplicationInstall $applicationInstall): string
     {
         return $applicationInstall->getSettings(
         )[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationAbstract::USER];

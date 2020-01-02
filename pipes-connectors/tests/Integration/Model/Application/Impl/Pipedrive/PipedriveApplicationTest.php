@@ -159,4 +159,19 @@ final class PipedriveApplicationTest extends DatabaseTestCaseAbstract
         $this->assertEquals(200, $response);
     }
 
+    /**
+     * @throws Exception
+     */
+    public function testIsAuthorized(): void
+    {
+        $applicationInstall = DataProvider::getBasicAppInstall(
+            $this->application->getKey(),
+            self::TOKEN
+        );
+        $this->pf($applicationInstall);
+        $this->dm->clear();
+
+        $this->assertEquals(TRUE, $this->application->isAuthorized($applicationInstall));
+    }
+
 }

@@ -150,23 +150,6 @@ final class MailchimpApplication extends OAuth2ApplicationAbstract implements We
 
     /**
      * @param ApplicationInstall $applicationInstall
-     *
-     * @return bool
-     */
-    public function isAuthorized(ApplicationInstall $applicationInstall): bool
-    {
-        try {
-            $this->getAccessToken($applicationInstall);
-
-            return TRUE;
-        } catch (ApplicationInstallException $e) {
-
-            return FALSE;
-        }
-    }
-
-    /**
-     * @param ApplicationInstall $applicationInstall
      * @param mixed[]            $token
      *
      * @return OAuth2ApplicationInterface
@@ -238,6 +221,7 @@ final class MailchimpApplication extends OAuth2ApplicationAbstract implements We
         string $url
     ): RequestDto
     {
+
         return $this->getRequestDto(
             $applicationInstall,
             CurlManager::METHOD_POST,

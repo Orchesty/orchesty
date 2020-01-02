@@ -246,6 +246,7 @@ services:
             - ${DEV_IP}:80:80
         environment:
             PHP_WEBROOT: /var/www/pipes/clients/demo/pipes-api/public
+            PHP_IDE_CONFIG: ${PHP_IDE_CONFIG}
             BACKEND_HOST: ${BACKEND_URL}/
             FRONTEND_HOST: ${BACKEND_URL}/
             ELASTIC_HOST: elasticsearch

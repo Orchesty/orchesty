@@ -11,6 +11,7 @@ use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Form;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
+use Hanaboso\PipesPhpSdk\Authorization\Utils\ScopeFormatter;
 
 /**
  * Class BigcommerceApplication
@@ -20,15 +21,16 @@ use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
 final class BigcommerceApplication extends OAuth2ApplicationAbstract
 {
 
-    public const  BIGCOMMERCE_URL = '"https://login.bigcommerce.com/oauth2/authorize';
+    public const  BIGCOMMERCE_URL = 'https://login.bigcommerce.com/oauth2/authorize';
     public const  TOKEN_URL       = 'https://login.bigcommerce.com/oauth2/token';
+    public const  SCOPES          = ['store_v2_products'];
 
     /**
      * @return string
      */
     public function getApplicationType(): string
     {
-        return ApplicationTypeEnum::WEBHOOK;
+        return ApplicationTypeEnum::CRON;
     }
 
     /**
@@ -69,6 +71,23 @@ final class BigcommerceApplication extends OAuth2ApplicationAbstract
     public function getTokenUrl(): string
     {
         return self::TOKEN_URL;
+    }
+
+    /**
+     * @param ApplicationInstall $applicationInstall
+     * @param mixed[]            $scopes
+     * @param string             $separator
+     */
+    public function authorize(
+        ApplicationInstall $applicationInstall,
+        array $scopes = [],
+        string $separator = ScopeFormatter::COMMA
+    ): void
+    {
+        $scopes;
+        $separator;
+
+        parent::authorize($applicationInstall, self::SCOPES, ScopeFormatter::SPACE);
     }
 
     /**
@@ -115,23 +134,6 @@ final class BigcommerceApplication extends OAuth2ApplicationAbstract
         $form->addField(new Field(Field::TEXT, OAuth2ApplicationInterface::CLIENT_SECRET, 'Client Secret', NULL, TRUE));
 
         return $form;
-    }
-
-    /**
-     * @param ApplicationInstall $applicationInstall
-     *
-     * @return bool
-     */
-    public function isAuthorized(ApplicationInstall $applicationInstall): bool
-    {
-        try {
-            $this->getAccessToken($applicationInstall);
-
-            return TRUE;
-        } catch (ApplicationInstallException $e) {
-
-            return FALSE;
-        }
     }
 
 }
