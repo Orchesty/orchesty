@@ -17,7 +17,7 @@ parameters:
     metrics_port: "%kapacitor.port%"
 
     topology_configs:
-        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::RABBITMQ_HOST: "%rabbit_host%"
+        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::RABBITMQ_HOST: "%rabbit_host%:%rabbit_port%"
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::RABBITMQ_USER: "%rabbit_user%"
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::RABBITMQ_PASS: "%rabbit_password%"
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::RABBITMQ_VHOST: "%rabbit_vhost%"
