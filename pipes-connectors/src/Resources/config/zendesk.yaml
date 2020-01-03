@@ -1,0 +1,8 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf.application.zendesk:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\Zendesk\ZendeskApplication
+        arguments:
+            - '@hbpf.providers.oauth2_provider'

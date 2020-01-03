@@ -52,6 +52,7 @@ class HbPFConnectorsExtension extends Extension implements PrependExtensionInter
         $loader->load('pipedrive.yaml');
         $loader->load('salesforce.yaml');
         $loader->load('wisepops.yaml');
+        $loader->load('zendesk.yaml');
     }
 
 }
