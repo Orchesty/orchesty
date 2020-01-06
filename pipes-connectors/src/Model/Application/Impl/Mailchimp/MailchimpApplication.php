@@ -171,7 +171,6 @@ final class MailchimpApplication extends OAuth2ApplicationAbstract implements We
         );
 
         return $this;
-
     }
 
     /**
@@ -221,7 +220,6 @@ final class MailchimpApplication extends OAuth2ApplicationAbstract implements We
         string $url
     ): RequestDto
     {
-
         return $this->getRequestDto(
             $applicationInstall,
             CurlManager::METHOD_POST,

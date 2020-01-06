@@ -63,6 +63,7 @@ final class HubspotCreateContactConnector extends ConnectorAbstract
     public function processEvent(ProcessDto $dto): ProcessDto
     {
         $dto;
+
         throw new ConnectorException(
             'ProcessEvent is not implemented',
             ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_EVENT

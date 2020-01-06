@@ -5,10 +5,10 @@
     <rule ref="SlevomatCodingStandard.Files.TypeNameMatchesFileName">
         <properties>
             <property name="rootNamespaces" type="array">
-                <element key="src" value="Hanaboso\HbPFConnectors" />
-                <element key="tests" value="Tests" />
+                <element key="src" value="Hanaboso\HbPFConnectors"/>
+                <element key="tests" value="Tests"/>
             </property>
         </properties>
     </rule>
-
+    <exclude-pattern>*/Redshift/Connector/RedshiftExecuteQueryConnectorTest.php</exclude-pattern>
 </ruleset>

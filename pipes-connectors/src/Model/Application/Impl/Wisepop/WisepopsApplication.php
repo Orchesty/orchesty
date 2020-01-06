@@ -132,7 +132,6 @@ final class WisepopsApplication extends BasicApplicationAbstract implements Webh
         string $url
     ): RequestDto
     {
-
         return $this->getRequestDto(
             $applicationInstall,
             CurlManager::METHOD_POST,
