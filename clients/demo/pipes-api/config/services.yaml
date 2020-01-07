@@ -2,6 +2,7 @@ parameters:
     locale: en
     secret: ThisTokenIsNotSoSecretChangeIt
 
+    frontendHost: http://127.0.0.66/ui
     env(BACKEND_HOST): http://127.0.0.66
     backend_host: '%env(BACKEND_HOST)%'
 
