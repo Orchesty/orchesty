@@ -14,6 +14,7 @@ use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
+use Hanaboso\Utils\String\Json;
 use Tests\DatabaseTestCaseAbstract;
 
 /**
@@ -135,7 +136,7 @@ final class WisepopsApplicationTest extends DatabaseTestCaseAbstract
         );
 
         self::assertEquals(
-            json_encode(['target_url' => 'www.target_url...', 'event' => 'email']),
+            Json::encode(['target_url' => 'www.target_url...', 'event' => 'email']),
             $dto->getBody()
         );
     }
