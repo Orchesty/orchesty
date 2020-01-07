@@ -30,7 +30,7 @@ use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
  *
  * @package Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet
  */
-class ShoptetApplication extends OAuth2ApplicationAbstract implements WebhookApplicationInterface
+final class ShoptetApplication extends OAuth2ApplicationAbstract implements WebhookApplicationInterface
 {
 
     public const  SHOPTET_KEY         = 'shoptet';

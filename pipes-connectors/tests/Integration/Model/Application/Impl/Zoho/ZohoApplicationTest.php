@@ -149,6 +149,7 @@ class ZohoApplicationTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Zoho\ZohoApplication::authorize
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Zoho\ZohoApplication::getScopes
      * @throws Exception
      */
     public function testAuthorize(): void

@@ -24,6 +24,8 @@ use Hanaboso\PipesPhpSdk\Authorization\Utils\ScopeFormatter;
 abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements OAuth2ApplicationInterface
 {
 
+    protected const SCOPE_SEPARATOR = ScopeFormatter::COMMA;
+
     /**
      * @var OAuth2Provider
      */
@@ -59,16 +61,14 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
 
     /**
      * @param ApplicationInstall $applicationInstall
-     * @param string[]           $scopes
-     * @param string             $separator
      */
-    public function authorize(
-        ApplicationInstall $applicationInstall,
-        array $scopes = [],
-        string $separator = ScopeFormatter::COMMA
-    ): void
+    public function authorize(ApplicationInstall $applicationInstall): void
     {
-        $this->provider->authorize($this->createDto($applicationInstall), $scopes, $separator);
+        $this->provider->authorize(
+            $this->createDto($applicationInstall),
+            $this->getScopes($applicationInstall),
+            static::SCOPE_SEPARATOR
+        );
     }
 
     /**
@@ -159,8 +159,8 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
         string $redirectUrl
     ): OAuth2ApplicationInterface
     {
-        $settings                                                                                   = $applicationInstall->getSettings(
-        );
+        $settings = $applicationInstall->getSettings();
+
         $settings[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::REDIRECT_URL] = $redirectUrl;
         $applicationInstall->setSettings($settings);
 
@@ -219,6 +219,34 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
 
     /**
      * @param ApplicationInstall $applicationInstall
+     * @param mixed[]            $settings
+     *
+     * @return ApplicationInstall
+     */
+    public function setApplicationSettings(ApplicationInstall $applicationInstall, array $settings): ApplicationInstall
+    {
+        $applicationInstall = parent::setApplicationSettings($applicationInstall, $settings);
+
+        foreach ($applicationInstall->getSettings()[ApplicationAbstract::FORM] ?? [] as $key => $value) {
+            if (in_array(
+                $key,
+                [
+                    OAuth2ApplicationInterface::CLIENT_ID,
+                    OAuth2ApplicationInterface::CLIENT_SECRET,
+                ],
+                TRUE
+            )) {
+                $settings                                                          = $applicationInstall->getSettings();
+                $settings[BasicApplicationInterface::AUTHORIZATION_SETTINGS][$key] = $value;
+                $applicationInstall->setSettings($settings);
+            }
+        }
+
+        return $applicationInstall;
+    }
+
+    /**
+     * @param ApplicationInstall $applicationInstall
      * @param string|null        $redirectUrl
      *
      * @return OAuth2Dto
@@ -248,30 +276,14 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
 
     /**
      * @param ApplicationInstall $applicationInstall
-     * @param mixed[]            $settings
      *
-     * @return ApplicationInstall
+     * @return mixed[]|string[]
      */
-    public function setApplicationSettings(ApplicationInstall $applicationInstall, array $settings): ApplicationInstall
+    protected function getScopes(ApplicationInstall $applicationInstall): array
     {
-        $applicationInstall = parent::setApplicationSettings($applicationInstall, $settings);
+        $applicationInstall;
 
-        foreach ($applicationInstall->getSettings()[ApplicationAbstract::FORM] ?? [] as $key => $value) {
-            if (in_array(
-                $key,
-                [
-                    OAuth2ApplicationInterface::CLIENT_ID,
-                    OAuth2ApplicationInterface::CLIENT_SECRET,
-                ],
-                TRUE
-            )) {
-                $settings                                                          = $applicationInstall->getSettings();
-                $settings[BasicApplicationInterface::AUTHORIZATION_SETTINGS][$key] = $value;
-                $applicationInstall->setSettings($settings);
-            }
-        }
-
-        return $applicationInstall;
+        return [];
     }
 
 }

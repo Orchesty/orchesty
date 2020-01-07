@@ -18,14 +18,14 @@ use Hanaboso\PipesPhpSdk\Authorization\Utils\ScopeFormatter;
  *
  * @package Hanaboso\HbPFConnectors\Model\Application\Impl\Zoho
  */
-class ZohoApplication extends OAuth2ApplicationAbstract
+final class ZohoApplication extends OAuth2ApplicationAbstract
 {
+
+    protected const SCOPE_SEPARATOR = ScopeFormatter::SPACE;
 
     private const AUTH_URL  = 'https://accounts.zoho.eu/oauth/v2/auth';
     private const TOKEN_URL = 'https://accounts.zoho.eu/oauth/v2/token';
-    private const SCOPES    = [
-        'ZohoCRM.modules.ALL', 'ZohoCRM.settings.ALL',
-    ];
+    private const SCOPES    = ['ZohoCRM.modules.ALL', 'ZohoCRM.settings.ALL'];
 
     /**
      * @return string
@@ -124,19 +124,14 @@ class ZohoApplication extends OAuth2ApplicationAbstract
 
     /**
      * @param ApplicationInstall $applicationInstall
-     * @param mixed[]            $scopes
-     * @param string             $separator
+     *
+     * @return string[]
      */
-    public function authorize(
-        ApplicationInstall $applicationInstall,
-        array $scopes = [],
-        string $separator = ScopeFormatter::COMMA
-    ): void
+    protected function getScopes(ApplicationInstall $applicationInstall): array
     {
-        $scopes;
-        $separator;
+        $applicationInstall;
 
-        parent::authorize($applicationInstall, self::SCOPES, ScopeFormatter::SPACE);
+        return self::SCOPES;
     }
 
 }

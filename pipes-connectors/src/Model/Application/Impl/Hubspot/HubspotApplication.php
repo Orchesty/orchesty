@@ -27,15 +27,16 @@ use Hanaboso\PipesPhpSdk\Authorization\Utils\ScopeFormatter;
 final class HubspotApplication extends OAuth2ApplicationAbstract implements WebhookApplicationInterface
 {
 
-    public const  BASE_URL    = 'https://api.hubapi.com';
-    public const  HUBSPOT_URL = 'https://app.hubspot.com/oauth/authorize';
-    public const  TOKEN_URL   = 'https://api.hubapi.com/oauth/v1/token';
-    private const SCOPES      = ['contacts'];
+    public const    BASE_URL    = 'https://api.hubapi.com';
+    public const    HUBSPOT_URL = 'https://app.hubspot.com/oauth/authorize';
+    public const    TOKEN_URL   = 'https://api.hubapi.com/oauth/v1/token';
+    public const    APP_ID      = 'app_id';
+    public const    HAPI_KEY    = 'hapi_key';
+    public const    USER_ID     = 'user_id';
 
-    public const APP_ID   = 'app_id';
-    public const HAPI_KEY = 'hapi_key';
-    public const USER_ID  = 'user_id';
+    protected const SCOPE_SEPARATOR = ScopeFormatter::SPACE;
 
+    private const SCOPES = ['contacts'];
 
     /**
      * @return string
@@ -83,23 +84,6 @@ final class HubspotApplication extends OAuth2ApplicationAbstract implements Webh
     public function getTokenUrl(): string
     {
         return self::TOKEN_URL;
-    }
-
-    /**
-     * @param ApplicationInstall $applicationInstall
-     * @param mixed[]            $scopes
-     * @param string             $separator
-     */
-    public function authorize(
-        ApplicationInstall $applicationInstall,
-        array $scopes = [],
-        string $separator = ScopeFormatter::COMMA
-    ): void
-    {
-        $scopes;
-        $separator;
-
-        parent::authorize($applicationInstall, self::SCOPES, ScopeFormatter::SPACE);
     }
 
     /**
@@ -258,6 +242,18 @@ final class HubspotApplication extends OAuth2ApplicationAbstract implements Webh
         $dto;
 
         return $dto->getStatusCode() === 204;
+    }
+
+    /**
+     * @param ApplicationInstall $applicationInstall
+     *
+     * @return string[]
+     */
+    protected function getScopes(ApplicationInstall $applicationInstall): array
+    {
+        $applicationInstall;
+
+        return self::SCOPES;
     }
 
 }

@@ -165,6 +165,7 @@ class ZendeskApplicationTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Zendesk\ZendeskApplication::authorize
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Zendesk\ZendeskApplication::getScopes
      *
      * @throws Exception
      */

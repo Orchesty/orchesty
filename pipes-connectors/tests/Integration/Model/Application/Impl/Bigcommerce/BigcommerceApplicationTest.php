@@ -56,7 +56,7 @@ final class BigcommerceApplicationTest extends DatabaseTestCaseAbstract
 
         $this->pf($applicationInstall);
         $this->assertEquals(TRUE, $this->application->isAuthorized($applicationInstall));
-        $this->application->authorize($applicationInstall, ['store_v2_products']);
+        $this->application->authorize($applicationInstall);
 
     }
 

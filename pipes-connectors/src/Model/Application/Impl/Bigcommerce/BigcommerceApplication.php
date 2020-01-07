@@ -21,9 +21,12 @@ use Hanaboso\PipesPhpSdk\Authorization\Utils\ScopeFormatter;
 final class BigcommerceApplication extends OAuth2ApplicationAbstract
 {
 
-    public const  BIGCOMMERCE_URL = 'https://login.bigcommerce.com/oauth2/authorize';
-    public const  TOKEN_URL       = 'https://login.bigcommerce.com/oauth2/token';
-    public const  SCOPES          = ['store_v2_products'];
+    public const    BIGCOMMERCE_URL = 'https://login.bigcommerce.com/oauth2/authorize';
+    public const    TOKEN_URL       = 'https://login.bigcommerce.com/oauth2/token';
+
+    protected const SCOPE_SEPARATOR = ScopeFormatter::SPACE;
+
+    private const  SCOPES = ['store_v2_products'];
 
     /**
      * @return string
@@ -75,23 +78,6 @@ final class BigcommerceApplication extends OAuth2ApplicationAbstract
 
     /**
      * @param ApplicationInstall $applicationInstall
-     * @param mixed[]            $scopes
-     * @param string             $separator
-     */
-    public function authorize(
-        ApplicationInstall $applicationInstall,
-        array $scopes = [],
-        string $separator = ScopeFormatter::COMMA
-    ): void
-    {
-        $scopes;
-        $separator;
-
-        parent::authorize($applicationInstall, self::SCOPES, ScopeFormatter::SPACE);
-    }
-
-    /**
-     * @param ApplicationInstall $applicationInstall
      * @param string             $method
      * @param string|null        $url
      * @param string|null        $data
@@ -134,6 +120,18 @@ final class BigcommerceApplication extends OAuth2ApplicationAbstract
         $form->addField(new Field(Field::TEXT, OAuth2ApplicationInterface::CLIENT_SECRET, 'Client Secret', NULL, TRUE));
 
         return $form;
+    }
+
+    /**
+     * @param ApplicationInstall $applicationInstall
+     *
+     * @return string[]
+     */
+    protected function getScopes(ApplicationInstall $applicationInstall): array
+    {
+        $applicationInstall;
+
+        return self::SCOPES;
     }
 
 }

@@ -20,8 +20,10 @@ use Hanaboso\PipesPhpSdk\Authorization\Utils\ScopeFormatter;
  *
  * @package Hanaboso\HbPFConnectors\Model\Application\Impl\Zendesk
  */
-class ZendeskApplication extends OAuth2ApplicationAbstract
+final class ZendeskApplication extends OAuth2ApplicationAbstract
 {
+
+    protected const SCOPE_SEPARATOR = ScopeFormatter::SPACE;
 
     private const AUTH_URL  = 'https://%s.zendesk.com/oauth/authorizations/new';
     private const TOKEN_URL = 'https://%s.zendesk.com/oauth/tokens';
@@ -127,23 +129,6 @@ class ZendeskApplication extends OAuth2ApplicationAbstract
     }
 
     /**
-     * @param ApplicationInstall $applicationInstall
-     * @param mixed[]            $scopes
-     * @param string             $separator
-     */
-    public function authorize(
-        ApplicationInstall $applicationInstall,
-        array $scopes = [],
-        string $separator = ScopeFormatter::COMMA
-    ): void
-    {
-        $scopes;
-        $separator;
-
-        parent::authorize($applicationInstall, self::SCOPES, ScopeFormatter::SPACE);
-    }
-
-    /**
      * @return string
      */
     public function getAuthUrl(): string
@@ -179,6 +164,18 @@ class ZendeskApplication extends OAuth2ApplicationAbstract
         }
 
         return $dto;
+    }
+
+    /**
+     * @param ApplicationInstall $applicationInstall
+     *
+     * @return string[]
+     */
+    protected function getScopes(ApplicationInstall $applicationInstall): array
+    {
+        $applicationInstall;
+
+        return self::SCOPES;
     }
 
 }
