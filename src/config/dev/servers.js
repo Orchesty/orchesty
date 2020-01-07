@@ -13,7 +13,7 @@ export default {
 			},
 			demo_dev_docker: {
 				url: 'http://127.0.0.66/api',
-				url_starting_point: 'http://127.0.0.66/starting-point',
+				url_starting_point: 'http://127.0.0.66:82/starting-point',
 				caption: 'Demo - Dev - docker',
 			},
 		},
