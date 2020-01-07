@@ -54,6 +54,7 @@ class HbPFConnectorsExtension extends Extension implements PrependExtensionInter
         $loader->load('wisepops.yaml');
         $loader->load('zendesk.yaml');
         $loader->load('zoho.yaml');
+        $loader->load('shoptet.yaml');
     }
 
 }

@@ -1,0 +1,10 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf.application.shoptet:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication
+        arguments:
+            - '@hbpf.providers.oauth2_provider'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
