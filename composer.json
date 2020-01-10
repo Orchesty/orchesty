@@ -21,7 +21,8 @@
         "friendsofsymfony/rest-bundle": "^2.6",
         "hanaboso/commons-bundle": "^1.3",
         "hanaboso/email-service-bundle": "^1.0",
-        "hanaboso/rabbit-mq-bundle": "^1.1"
+        "hanaboso/rabbit-mq-bundle": "^1.3",
+        "hanaboso/utils": "^1.0"
     },
     "require-dev": {
         "hanaboso/php-check-utils": "^1.1"

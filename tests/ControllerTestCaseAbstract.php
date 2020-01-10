@@ -2,8 +2,8 @@
 
 namespace Tests;
 
-use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\ControllerTestTrait;
+use Hanaboso\Utils\String\Json;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
@@ -144,17 +144,10 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     protected function processResponse(Response $response): ControllerResponse
     {
         try {
-            $content      = json_decode((string) $response->getContent(), TRUE, 512, JSON_THROW_ON_ERROR);
-            $innerContent = [];
-
-            if (!is_array($content)) {
-                $innerContent['message'] = $content;
-            }
+            return new ControllerResponse($response->getStatusCode(), Json::decode((string) $response->getContent()));
         } catch (Throwable $e) {
             return new ControllerResponse($response->getStatusCode(), [$response->getContent()]);
         }
-
-        return new ControllerResponse($response->getStatusCode(), $innerContent ?: $content);
     }
 
     /**

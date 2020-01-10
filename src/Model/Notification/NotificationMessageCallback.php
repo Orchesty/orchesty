@@ -2,13 +2,14 @@
 
 namespace Hanaboso\NotificationSender\Model\Notification;
 
-use Bunny\Message;
 use Hanaboso\CommonsBundle\Enum\NotificationEventEnum;
 use Hanaboso\CommonsBundle\Exception\EnumException;
 use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\NotificationSender\Exception\NotificationException;
+use PhpAmqpLib\Message\AMQPMessage;
 use RabbitMqBundle\Connection\Connection;
 use RabbitMqBundle\Consumer\CallbackInterface;
+use RabbitMqBundle\Utils\Message;
 
 /**
  * Class NotificationMessageCallback
@@ -37,16 +38,16 @@ final class NotificationMessageCallback implements CallbackInterface
     }
 
     /**
-     * @param Message    $message
-     * @param Connection $connection
-     * @param int        $channelId
+     * @param AMQPMessage $message
+     * @param Connection  $connection
+     * @param int         $channelId
      *
      * @throws NotificationException
      * @throws EnumException
      */
-    public function processMessage(Message $message, Connection $connection, int $channelId): void
+    public function processMessage(AMQPMessage $message, Connection $connection, int $channelId): void
     {
-        $data  = Json::decode($message->content);
+        $data  = Json::decode(Message::getBody($message));
         $event = $data[self::PIPE][self::TYPE] ?? '';
 
         if (!$event) {
@@ -59,7 +60,7 @@ final class NotificationMessageCallback implements CallbackInterface
         }
 
         $this->manager->send(NotificationEventEnum::isValid($event), $data);
-        $connection->getChannel($channelId)->ack($message);
+        Message::ack($message, $connection, $channelId);
     }
 
 }

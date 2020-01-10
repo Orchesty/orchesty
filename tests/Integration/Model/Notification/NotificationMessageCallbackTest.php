@@ -2,13 +2,12 @@
 
 namespace Tests\Integration\Model\Notification;
 
-use Bunny\Message;
 use Exception;
 use Hanaboso\CommonsBundle\Enum\NotificationEventEnum;
-use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\NotificationSender\Exception\NotificationException;
 use Hanaboso\NotificationSender\Model\Notification\NotificationMessageCallback;
 use RabbitMqBundle\Connection\Connection;
+use RabbitMqBundle\Utils\Message;
 use Tests\DatabaseTestCaseAbstract;
 
 /**
@@ -47,22 +46,13 @@ final class NotificationMessageCallbackTest extends DatabaseTestCaseAbstract
      */
     public function testProcessMessage(): void
     {
+        $message = Message::create(['pipes' => ['notification_type' => NotificationEventEnum::ACCESS_EXPIRATION]]);
+        // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+        $message->delivery_info['delivery_tag'] = 'delivery_tag';
+        // phpcs:enable
+
         $this->callback->processMessage(
-            new Message(
-                '',
-                '',
-                FALSE,
-                '',
-                '',
-                [],
-                Json::encode(
-                    [
-                        'pipes' => [
-                            'notification_type' => NotificationEventEnum::ACCESS_EXPIRATION,
-                        ],
-                    ]
-                )
-            ),
+            $message,
             $this->connection,
             $this->connection->createChannel()
         );
@@ -84,15 +74,7 @@ final class NotificationMessageCallbackTest extends DatabaseTestCaseAbstract
         );
 
         $this->callback->processMessage(
-            new Message(
-                '',
-                '',
-                FALSE,
-                '',
-                '',
-                [],
-                Json::encode([])
-            ),
+            Message::create('{}'),
             $this->connection,
             $this->connection->createChannel()
         );

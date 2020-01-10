@@ -2,9 +2,9 @@
 
 namespace Hanaboso\NotificationSender\Model\Notification\Sender;
 
-use Bunny\Channel;
-use Bunny\Client;
 use Hanaboso\NotificationSender\Model\Notification\Dto\RabbitDto;
+use PhpAmqpLib\Connection\AMQPStreamConnection;
+use RabbitMqBundle\Utils\Message;
 use Throwable;
 
 /**
@@ -23,23 +23,26 @@ final class RabbitSender
      */
     public function send(RabbitDto $dto, array $settings): void
     {
-        $client = new Client(
-            [
-                'host'     => $settings[RabbitDto::HOST],
-                'port'     => $settings[RabbitDto::PORT],
-                'vhost'    => $settings[RabbitDto::VHOST],
-                'user'     => $settings[RabbitDto::USERNAME],
-                'password' => $settings[RabbitDto::PASSWORD],
-            ]
+        $client = new AMQPStreamConnection(
+            $settings[RabbitDto::HOST],
+            $settings[RabbitDto::PORT],
+            $settings[RabbitDto::USERNAME],
+            $settings[RabbitDto::PASSWORD],
+            $settings[RabbitDto::VHOST]
         );
 
-        $client->connect();
+        $client->reconnect();
 
-        /** @var Channel $channel */
         $channel = $client->channel();
-        $channel->queueDeclare($settings[RabbitDto::QUEUE]);
-        $channel->publish($dto->getJsonBody(), $dto->getHeaders(), '', $settings[RabbitDto::QUEUE]);
+        $channel->queue_declare($settings[RabbitDto::QUEUE]);
+        $channel->basic_publish(
+            Message::create($dto->getJsonBody(), $dto->getHeaders()),
+            '',
+            $settings[RabbitDto::QUEUE]
+        );
+
         $channel->close();
+        $client->close();
     }
 
 }

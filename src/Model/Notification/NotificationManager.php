@@ -139,22 +139,22 @@ final class NotificationManager implements LoggerAwareInterface
                             $dto = $handler->process($data);
 
                             $this->curlSender->send($dto, $settings->getSettings());
-                            break;
 
+                            break;
                         case EmailHandlerAbstract::class:
                             /** @var EmailDto $dto */
                             $dto = $handler->process($data);
 
                             $this->emailSender->send($dto, $settings->getSettings());
-                            break;
 
+                            break;
                         case RabbitHandlerAbstract::class:
                             /** @var RabbitDto $dto */
                             $dto = $handler->process($data);
 
                             $this->rabbitSender->send($dto, $settings->getSettings());
-                            break;
 
+                            break;
                         default:
                             throw new NotificationException(
                                 sprintf("Notification sender for notification handler '%s' not found!", $class),
