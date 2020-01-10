@@ -2,7 +2,6 @@
 
 namespace Hanaboso\PipesFramework\Configurator\Model;
 
-use Cron\CronExpression;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
@@ -25,6 +24,7 @@ use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Utils\Dto\NodeSchemaDto;
 use Hanaboso\PipesFramework\Utils\Dto\Schema;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
+use Hanaboso\Utils\Cron\CronParser;
 
 /**
  * Class TopologyManager
@@ -545,7 +545,7 @@ class TopologyManager
             );
         }
 
-        if ($dto->getCronTime() && !CronExpression::isValidExpression($dto->getCronTime())) {
+        if ($dto->getCronTime() && !CronParser::isValidExpression($dto->getCronTime())) {
             throw new TopologyException(
                 sprintf('Node [%s] cron [%s] not valid', $dto->getId(), $dto->getPipesType()),
                 TopologyException::TOPOLOGY_NODE_CRON_NOT_VALID
