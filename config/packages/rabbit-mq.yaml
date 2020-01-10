@@ -10,8 +10,4 @@ parameters:
 rabbit_mq:
     connections:
         default:
-            host: '%rabbit_host%'
-            port: '%rabbit_port%'
-            vhost: '%rabbit_vhost%'
-            user: '%rabbit_user%'
-            password: '%rabbit_password%'
+            dsn: 'amqp://%rabbit_user%:%rabbit_password%@%rabbit_host%:%rabbit_port%/%rabbit_vhost%'

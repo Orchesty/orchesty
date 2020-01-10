@@ -12,7 +12,7 @@ use Hanaboso\CommonsBundle\Exception\PipesFrameworkExceptionAbstract;
 final class NotificationException extends PipesFrameworkExceptionAbstract
 {
 
-    protected const OFFSET = 2900;
+    protected const OFFSET = 2_900;
 
     public const NOTIFICATION_EXCEPTION = self::OFFSET + 1;
 

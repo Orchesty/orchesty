@@ -32,7 +32,7 @@ abstract class LogsAbstract implements LogsInterface
     protected const SEVERITY         = 'severity';
     protected const MESSAGE          = 'message';
     protected const TYPE             = 'type';
-    protected const LIMIT            = 1000;
+    protected const LIMIT            = 1_000;
 
     /**
      * @var DocumentManager
@@ -107,7 +107,9 @@ abstract class LogsAbstract implements LogsInterface
     {
         try {
             /** @var Node|NULL $node */
-            $node = $this->dm->getRepository(Node::class)->findOneBy(['_id' => new ObjectId(explode('-', $nodeId)[0])]);
+            $node = $this->dm->getRepository(Node::class)->findOneBy(
+                [self::ID => new ObjectId(explode('-', $nodeId)[0])]
+            );
 
             return $node ? $node->getName() : '';
         } catch (InvalidArgumentException $e) {

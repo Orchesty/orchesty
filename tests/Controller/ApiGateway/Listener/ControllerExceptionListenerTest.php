@@ -59,7 +59,7 @@ final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
             $eventMock->getResponse()->headers->all()
         );
         self::assertEquals(
-            1006,
+            1_006,
             $eventMock->getResponse()->headers->get(PipesHeaders::createKey(PipesHeaders::RESULT_CODE))
         );
     }

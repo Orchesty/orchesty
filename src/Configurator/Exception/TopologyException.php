@@ -12,7 +12,7 @@ use Hanaboso\CommonsBundle\Exception\PipesFrameworkExceptionAbstract;
 class TopologyException extends PipesFrameworkExceptionAbstract
 {
 
-    protected const OFFSET = 2400;
+    protected const OFFSET = 2_400;
 
     public const INVALID_TOPOLOGY_TYPE            = self::OFFSET + 1;
     public const TOPOLOGY_NOT_FOUND               = self::OFFSET + 2;

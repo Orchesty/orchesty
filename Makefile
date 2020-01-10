@@ -27,10 +27,10 @@ docker-down-clean: .env
 
 #Composer
 composer-install:
-	$(DEC) install
+	$(DEC) install --no-suggest
 
 composer-update:
-	$(DEC) update
+	$(DEC) update --no-suggest
 
 composer-outdated:
 	$(DEC) outdated
@@ -40,19 +40,19 @@ init: .env docker-up-force composer-install
 
 #CI
 codesniffer:
-	$(DE) ./vendor/bin/phpcs --standard=./ruleset.xml --colors -p src/ tests/
+	$(DE) ./vendor/bin/phpcs --standard=./ruleset.xml src/ tests/
 
 phpstan:
 	$(DE) ./vendor/bin/phpstan analyse -c phpstan.neon -l 8 src/ tests/
 
 phpunit:
-	$(DE) ./vendor/bin/phpunit -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist --colors --stderr tests/Unit
+	$(DE) ./vendor/bin/phpunit -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist --colors tests/Unit
 
 phpcontroller:
-	$(DE) ./vendor/bin/phpunit -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist --colors --stderr tests/Controller
+	$(DE) ./vendor/bin/phpunit -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist --colors tests/Controller
 
 phpintegration: database-create
-	$(DE) ./vendor/bin/phpunit -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist --colors --stderr tests/Integration
+	$(DE) ./vendor/bin/phpunit -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist --colors tests/Integration
 
 phpcoverage:
 	$(DE) php vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p 4 --coverage-html var/coverage --whitelist src tests
@@ -64,7 +64,7 @@ phpmanual-up:
 	cd tests/Manual; $(MAKE) docker-up-force;
 
 phpmanual-tests:
-	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr tests/Manual/
+	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors tests/Manual/
 
 phpmanual-down:
 	cd tests/Manual; $(MAKE) docker-down-clean;

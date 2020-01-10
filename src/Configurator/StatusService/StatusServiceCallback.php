@@ -2,12 +2,13 @@
 
 namespace Hanaboso\PipesFramework\Configurator\StatusService;
 
-use Bunny\Message;
 use Hanaboso\CommonsBundle\Event\ProcessStatusEvent;
 use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 use Hanaboso\CommonsBundle\Utils\Json;
+use PhpAmqpLib\Message\AMQPMessage;
 use RabbitMqBundle\Connection\Connection;
 use RabbitMqBundle\Consumer\CallbackInterface;
+use RabbitMqBundle\Utils\Message;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
@@ -35,15 +36,15 @@ class StatusServiceCallback implements CallbackInterface
     }
 
     /**
-     * @param Message    $message
-     * @param Connection $connection
-     * @param int        $channelId
+     * @param AMQPMessage $message
+     * @param Connection  $connection
+     * @param int         $channelId
      *
      * @throws PipesFrameworkException
      */
-    public function processMessage(Message $message, Connection $connection, int $channelId): void
+    public function processMessage(AMQPMessage $message, Connection $connection, int $channelId): void
     {
-        $data = Json::decode($message->content);
+        $data = Json::decode(Message::getBody($message));
 
         if (!isset($data['process_id'])) {
             throw new PipesFrameworkException(
@@ -66,7 +67,7 @@ class StatusServiceCallback implements CallbackInterface
             ProcessStatusEvent::PROCESS_FINISHED
         );
 
-        $connection->getChannel($channelId)->ack($message);
+        Message::ack($message, $connection, $channelId);
     }
 
 }

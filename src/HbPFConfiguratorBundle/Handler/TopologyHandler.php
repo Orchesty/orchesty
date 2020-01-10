@@ -151,7 +151,6 @@ class TopologyHandler
         $topology = $this->manager->createTopology($data);
 
         return $this->getTopologyData($topology);
-
     }
 
     /**
