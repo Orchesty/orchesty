@@ -5,7 +5,9 @@ RUN apk update && apk upgrade && apk add --no-cache \
     autoconf build-base g++ && \
     pecl install pcov && \
     pecl install xdebug && \
-    docker-php-ext-enable pcov && \
+    pear config-set preferred_state alpha && \
+    pecl install runkit7 && \
+    docker-php-ext-enable pcov runkit7 && \
     apk del autoconf build-base g++ && \
     rm -rf /var/cache/apk/* /var/log/* /tmp/*
 

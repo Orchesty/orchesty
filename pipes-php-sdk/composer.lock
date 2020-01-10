@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e5dc37e86d6339e0f113261a905eac0d",
+    "content-hash": "3a900f468c9aeadb92d74f70eb5f2f68",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -8521,16 +8521,16 @@
         },
         {
             "name": "hanaboso/php-check-utils",
-            "version": "1.1.8",
+            "version": "1.1.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/php-check-utils.git",
-                "reference": "f59e803c9953ba99d6c3e93e19392201f66b1b7c"
+                "reference": "9197e49f9507116a168dc438974f5655595c587e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/php-check-utils/zipball/f59e803c9953ba99d6c3e93e19392201f66b1b7c",
-                "reference": "f59e803c9953ba99d6c3e93e19392201f66b1b7c",
+                "url": "https://api.github.com/repos/hanaboso/php-check-utils/zipball/9197e49f9507116a168dc438974f5655595c587e",
+                "reference": "9197e49f9507116a168dc438974f5655595c587e",
                 "shasum": ""
             },
             "require": {
@@ -8586,7 +8586,7 @@
                 }
             ],
             "description": "Utils for php development - CodeSniffer, PhpStan, PhpStorm",
-            "time": "2020-01-09T12:18:47+00:00"
+            "time": "2020-01-10T11:37:17+00:00"
         },
         {
             "name": "myclabs/deep-copy",
@@ -9795,21 +9795,21 @@
         },
         {
             "name": "phpstan/phpstan-doctrine",
-            "version": "0.12.8",
+            "version": "0.12.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-doctrine.git",
-                "reference": "116392a861fb6b4741606448d8d6b07c09fee1ee"
+                "reference": "af14feb2ed259f9eb16d3107e63d85ed516e30af"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-doctrine/zipball/116392a861fb6b4741606448d8d6b07c09fee1ee",
-                "reference": "116392a861fb6b4741606448d8d6b07c09fee1ee",
+                "url": "https://api.github.com/repos/phpstan/phpstan-doctrine/zipball/af14feb2ed259f9eb16d3107e63d85ed516e30af",
+                "reference": "af14feb2ed259f9eb16d3107e63d85ed516e30af",
                 "shasum": ""
             },
             "require": {
                 "php": "~7.1",
-                "phpstan/phpstan": "^0.12.4"
+                "phpstan/phpstan": "^0.12.3"
             },
             "conflict": {
                 "doctrine/collections": "<1.0",
@@ -9855,7 +9855,7 @@
                 "MIT"
             ],
             "description": "Doctrine extensions for PHPStan",
-            "time": "2020-01-05T20:56:24+00:00"
+            "time": "2020-01-10T12:31:37+00:00"
         },
         {
             "name": "phpstan/phpstan-nette",
@@ -9928,21 +9928,21 @@
         },
         {
             "name": "phpstan/phpstan-phpunit",
-            "version": "0.12.5",
+            "version": "0.12.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-phpunit.git",
-                "reference": "fe49777a04d8dafcfb3958e3441d9c982a1e40ae"
+                "reference": "26394996368b6d033d012547d3197f4e07e23021"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-phpunit/zipball/fe49777a04d8dafcfb3958e3441d9c982a1e40ae",
-                "reference": "fe49777a04d8dafcfb3958e3441d9c982a1e40ae",
+                "url": "https://api.github.com/repos/phpstan/phpstan-phpunit/zipball/26394996368b6d033d012547d3197f4e07e23021",
+                "reference": "26394996368b6d033d012547d3197f4e07e23021",
                 "shasum": ""
             },
             "require": {
                 "php": "~7.1",
-                "phpstan/phpstan": "^0.12.3"
+                "phpstan/phpstan": "^0.12.4"
             },
             "conflict": {
                 "phpunit/phpunit": "<7.0"
@@ -9980,7 +9980,7 @@
                 "MIT"
             ],
             "description": "PHPUnit extensions and rules for PHPStan",
-            "time": "2020-01-03T10:04:21+00:00"
+            "time": "2020-01-10T12:07:21+00:00"
         },
         {
             "name": "phpstan/phpstan-symfony",
