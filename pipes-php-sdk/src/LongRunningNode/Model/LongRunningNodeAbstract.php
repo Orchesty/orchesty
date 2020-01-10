@@ -36,8 +36,8 @@ abstract class LongRunningNodeAbstract implements LongRunningNodeInterface
     {
         /** @var ApplicationInterface|null $application */
         $application = $this->application;
-        if ($application) {
 
+        if ($application) {
             return $application->getKey();
         }
 

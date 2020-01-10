@@ -57,9 +57,8 @@ class PagerDutyConnector extends ConnectorAbstract
     public function processEvent(ProcessDto $dto): ProcessDto
     {
         $dto;
-        throw new ConnectorException(
-            sprintf('Process not event is not implemented for PagerDutyConnector')
-        );
+
+        throw new ConnectorException(sprintf('Process not event is not implemented for PagerDutyConnector'));
     }
 
     /**

@@ -37,7 +37,6 @@ abstract class CustomNodeAbstract implements CustomNodeInterface
         /** @var ApplicationInterface|null $application */
         $application = $this->application;
         if ($application) {
-
             return $application->getKey();
         }
 

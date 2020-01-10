@@ -29,7 +29,6 @@ final class ScopeFormatter
     public static function getScopes(array $scopes, string $separator = self::COMMA): string
     {
         if (empty($scopes)) {
-
             return '';
         }
 

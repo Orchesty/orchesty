@@ -1,4 +1,7 @@
 rabbit_mq:
+    connections:
+        default:
+            dsn: 'amqp://rabbitmq'
     consumers:
         batch-connector:
             class: Hanaboso\PipesPhpSdk\Connector\Model\BatchConnector\BatchConnectorConsumer

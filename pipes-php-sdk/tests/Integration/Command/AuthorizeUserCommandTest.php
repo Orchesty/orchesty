@@ -79,10 +79,7 @@ final class AuthorizeUserCommandTest extends DatabaseTestCaseAbstract
 
         $install = new ApplicationInstall();
         /** @var OAuth1Provider|MockObject $provider */
-        $provider = $this->getMockedProvider(
-            ['oauth_token' => 'aabbcc', 'oauth_token_secret' => '112233'],
-            'authorize/url?oauth_callback=127.0.0.4&oauth_token=aabbcc'
-        );
+        $provider = $this->getMockedProvider(['oauth_token' => 'aabbcc', 'oauth_token_secret' => '112233']);
         $dto      = new OAuth1Dto($install);
 
         $provider->authorize(
@@ -99,12 +96,11 @@ final class AuthorizeUserCommandTest extends DatabaseTestCaseAbstract
 
     /**
      * @param mixed[] $data
-     * @param string  $authorizeUrl
      *
      * @return MockObject
      * @throws Exception
      */
-    private function getMockedProvider(array $data, string $authorizeUrl): MockObject
+    private function getMockedProvider(array $data): MockObject
     {
         /** @var MockObject|DocumentManager $dm */
         $dm = self::createMock(DocumentManager::class);
@@ -114,13 +110,9 @@ final class AuthorizeUserCommandTest extends DatabaseTestCaseAbstract
         /** @var MockObject|RedirectInterface $redirect */
         $redirect = self::createMock(RedirectInterface::class);
         $this->expectException(TypeError::class);
-        $redirect->method('make')->will(print_r($authorizeUrl));
 
         /** @var MockObject|OAuth $oauth */
-        $oauth = self::createPartialMock(
-            OAuth::class,
-            ['getRequestToken']
-        );
+        $oauth = self::createPartialMock(OAuth::class, ['getRequestToken']);
         $oauth->method('getRequestToken')->willReturn($data);
 
         /** @var MockObject|OAuth1Provider $client */

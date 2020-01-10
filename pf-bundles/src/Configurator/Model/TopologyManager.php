@@ -149,6 +149,7 @@ class TopologyManager
         } catch (TopologyException $e) {
             $topology->setContentHash('');
             $this->removeNodesByTopology($topology);
+
             throw $e;
         }
 
@@ -235,10 +236,9 @@ class TopologyManager
 
         /** @var mixed[] $node */
         foreach ($nodesMap as $node) {
-
             /** @var Node $orig */
-            /** @var Node $copy */
             $orig = $node['orig'];
+            /** @var Node $copy */
             $copy = $node['copy'];
 
             if (!empty($orig->getNext())) {

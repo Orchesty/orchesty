@@ -2,7 +2,6 @@
 
 namespace Demo\LongRunningNode;
 
-use Bunny\Message;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
@@ -10,6 +9,7 @@ use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
 use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeAbstract;
+use PhpAmqpLib\Message\AMQPMessage;
 
 /**
  * Class TimeStamperHumanTask
@@ -43,18 +43,16 @@ final class TimeStamperHumanTask extends LongRunningNodeAbstract
     }
 
     /**
-     * @param Message $message
+     * @param AMQPMessage $message
      *
      * @return LongRunningNodeData
      * @throws Exception
      */
-    public function beforeAction(Message $message): LongRunningNodeData
+    public function beforeAction(AMQPMessage $message): LongRunningNodeData
     {
         $data = LongRunningNodeData::fromMessage($message);
 
-        return $data->setAuditLogs(
-            $this->createTimeStamp(Json::decode($data->getData()))
-        );
+        return $data->setAuditLogs($this->createTimeStamp(Json::decode($data->getData())));
     }
 
     /**

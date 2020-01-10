@@ -20,8 +20,8 @@
         "ext-mongodb": "*",
         "friendsofsymfony/rest-bundle": "^2.6",
         "hanaboso/commons-bundle": "^1.3",
-        "hanaboso/mongo-data-grid": "^1.3",
-        "hanaboso/rabbit-mq-bundle": "^1.2",
+        "hanaboso/mongo-data-grid": "~1.3.0",
+        "hanaboso/rabbit-mq-bundle": "^1.3",
         "league/oauth2-client": "^2.4",
         "phpoffice/phpspreadsheet": "^1.10",
         "symfony/debug-bundle": "^4.4 | ^5.0",
@@ -31,6 +31,6 @@
         "symfony/yaml": "^4.4 | ^5.0"
     },
     "require-dev": {
-        "hanaboso/php-check-utils": "1.1.3"
+        "hanaboso/php-check-utils": "^1.1"
     }
 }

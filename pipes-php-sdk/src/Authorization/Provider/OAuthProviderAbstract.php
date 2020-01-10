@@ -72,6 +72,7 @@ abstract class OAuthProviderAbstract implements OAuthProviderInterface
     protected function throwException(string $message, int $code): void
     {
         $this->logger->error($message);
+
         throw new AuthorizationException($message, $code);
     }
 

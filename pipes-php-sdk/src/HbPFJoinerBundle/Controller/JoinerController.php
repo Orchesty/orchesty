@@ -94,7 +94,6 @@ class JoinerController extends AbstractFOSRestController
 
             return $this->getResponse($data);
         } catch (Exception|Throwable $e) {
-
             return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR);
         }
     }

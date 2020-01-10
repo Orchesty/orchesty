@@ -96,7 +96,7 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
         self::assertEquals(400, $response->status);
         self::assertEquals(CategoryException::class, $content->type);
         self::assertEquals(ControllerUtils::INTERNAL_SERVER_ERROR, $content->status);
-        self::assertEquals(2301, $content->errorCode);
+        self::assertEquals(2_301, $content->errorCode);
     }
 
     /**

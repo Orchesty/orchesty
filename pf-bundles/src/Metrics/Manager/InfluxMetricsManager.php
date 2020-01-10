@@ -247,6 +247,7 @@ class InfluxMetricsManager extends MetricsManagerAbstract
             $series = $qb->getResultSet()->getSeries();
         } catch (Throwable $e) {
             $this->logger->error($e->getMessage(), ['Exception' => $e]);
+
             throw new MetricsException('Unknown error occurred during query.', MetricsException::QUERY_ERROR);
         }
 
@@ -444,9 +445,7 @@ class InfluxMetricsManager extends MetricsManagerAbstract
         return implode(
             ', ',
             array_map(
-                function (string $item) use ($retention): string {
-                    return sprintf('"%s".%s', $retention, $item);
-                },
+                fn(string $item): string => sprintf('"%s".%s', $retention, $item),
                 explode(',', $fromTables)
             )
         );

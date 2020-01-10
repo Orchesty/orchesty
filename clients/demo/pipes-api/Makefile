@@ -17,10 +17,10 @@ docker-up-force: .env
 	$(DC) up -d --force-recreate --remove-orphans
 
 composer-install:
-	$(DEC) install --ignore-platform-reqs
+	$(DEC) install --no-suggest
 
 composer-update:
-	$(DEC) update --ignore-platform-reqs
+	$(DEC) update --no-suggest
 
 clear-cache:
 	$(DE) rm -rf var/log
@@ -28,19 +28,19 @@ clear-cache:
 	$(DE) php bin/console cache:warmup --env=test
 
 codesniffer:
-	$(DE) php ./vendor/bin/phpcs --standard=./ruleset.xml --colors -p src/ tests/
+	$(DE) php ./vendor/bin/phpcs --standard=./ruleset.xml src/ tests/
 
 phpstan:
 	$(DE) php ./vendor/bin/phpstan analyse -c ./phpstan.neon -l 8 src/ tests/
 
 phpcontroller:
-	$(DE) php ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr tests/Controller
+	$(DE) php ./vendor/bin/phpunit -c phpunit.xml.dist --colors tests/Controller
 
 phpintegration:
-	$(DE) php ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr tests/Integration
+	$(DE) php ./vendor/bin/phpunit -c phpunit.xml.dist --colors tests/Integration
 
 phplive:
-	$(DE) php ./vendor/bin/phpunit -c phpunit.xml.dist --colors --stderr tests/Live
+	$(DE) php ./vendor/bin/phpunit -c phpunit.xml.dist --colors tests/Live
 
 init: docker-up-force composer-install
 

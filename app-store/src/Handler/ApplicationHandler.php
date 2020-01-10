@@ -55,9 +55,7 @@ class ApplicationHandler
     {
         return [
             'items' => array_map(
-                function (string $key): array {
-                    return $this->applicationManager->getApplication($key)->toArray();
-                },
+                fn(string $key): array => $this->applicationManager->getApplication($key)->toArray(),
                 $this->applicationManager->getApplications()
             ),
         ];

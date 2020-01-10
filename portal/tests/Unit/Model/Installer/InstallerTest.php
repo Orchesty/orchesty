@@ -82,7 +82,6 @@ final class InstallerTest extends TestCase
                 count($secondaryArray)
             )
         );
-
     }
 
     /**
@@ -90,14 +89,12 @@ final class InstallerTest extends TestCase
      */
     private function getPrimaryKeys(): array
     {
-
         return [
             'version',
             'services',
             'volumes',
             'networks',
         ];
-
     }
 
     /**
@@ -137,7 +134,6 @@ final class InstallerTest extends TestCase
                 'rabbitmq',
             ],
         ];
-
     }
 
     /**
@@ -150,7 +146,6 @@ final class InstallerTest extends TestCase
      */
     private function createTestArray(string $valueLog, string $valueMetric, bool $valueDatabase, array $array): array
     {
-
         $newArray = [];
 
         if ($valueLog !== 'logs' && ($valueLog === 'elasticsearch' or $valueLog === 'logstash')) {
@@ -181,7 +176,6 @@ final class InstallerTest extends TestCase
         $newArray = $this->createFinalTestArray($newArray);
 
         return $newArray;
-
     }
 
     /**
@@ -202,7 +196,6 @@ final class InstallerTest extends TestCase
         }
 
         return $merge;
-
     }
 
 }

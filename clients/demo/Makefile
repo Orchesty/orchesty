@@ -42,7 +42,7 @@ init-dev: .env
 	$(DC_DEV) pull
 	rm -rf pipes-api/var/cache/*
 	$(DC_DEV) up -d --force-recreate --remove-orphans
-	$(DE_DEV) monolith-api composer install --ignore-platform-reqs
+	$(DE_DEV) monolith-api composer install --no-suggest
 	$(DE_DEV) monolith-api rm -rf var/cache/*
 
 destroy-dev:
@@ -50,7 +50,7 @@ destroy-dev:
 
 composer-update-dev:
 	$(DE_DEV) monolith-api composer global require hirak/prestissimo
-	$(DE_DEV) monolith-api composer update --ignore-platform-reqs
+	$(DE_DEV) monolith-api composer update --no-suggest
 
 build-monolith: .env
 	cd pipes-api && \

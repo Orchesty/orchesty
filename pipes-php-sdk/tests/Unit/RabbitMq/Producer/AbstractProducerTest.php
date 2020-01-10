@@ -2,13 +2,14 @@
 
 namespace Tests\Unit\RabbitMq\Producer;
 
-use Bunny\Channel;
 use Exception;
 use Hanaboso\PipesPhpSdk\RabbitMq\BunnyManager;
 use Hanaboso\PipesPhpSdk\RabbitMq\ContentTypes;
 use Hanaboso\PipesPhpSdk\RabbitMq\Producer\AbstractProducer;
 use JsonException;
+use PhpAmqpLib\Channel\AMQPChannel;
 use PHPUnit\Framework\MockObject\MockObject;
+use RabbitMqBundle\Utils\Message;
 use Tests\KernelTestCaseAbstract;
 
 /**
@@ -57,16 +58,16 @@ final class AbstractProducerTest extends KernelTestCaseAbstract
             ->disableOriginalConstructor()
             ->getMock();
 
-        $channel = self::getMockBuilder(Channel::class)
+        $channel = self::getMockBuilder(AMQPChannel::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $channel->expects($this->once())->method('publish')->with('[1,3,2]');
+        $channel->expects($this->once())->method('basic_publish')->with(Message::create('[1,2,3]', ['content-type' => 'application/json']));
 
         $bunnyManager->method('getChannel')->willReturn($channel);
 
         $publisher = $this->getPublisher($bunnyManager, '');
 
-        $publisher->publish('[1,3,2]');
+        $publisher->publish('[1,2,3]');
     }
 
     /**

@@ -1,18 +1,12 @@
 includes:
-	- vendor/phpstan/phpstan-symfony/extension.neon # symfony extension
-	- vendor/phpstan/phpstan-doctrine/extension.neon # doctrine extension
-	- vendor/phpstan/phpstan-phpunit/extension.neon # phpunit extension
-	- vendor/phpstan/phpstan-phpunit/rules.neon # phpunit rules
-	- vendor/hanaboso/php-check-utils/phpstan.neon # hanaboso rules
+    - vendor/hanaboso/php-check-utils/phpstan.neon
 
 parameters:
-	doctrine:
-		objectManagerLoader: tests/DocumentManagerLoader.php
-	excludes_analyse:
-	    - %rootDir%/../../../tests/PrivateTrait.php
-	ignoreErrors:
-		- '#Access to an undefined property*#'
-		- '#Parameter \#2 \$auth_session_handle of method OAuth::getAccessToken\(\) expects string, null given.#'
-		- '#Parameter \#1 \$stub of method PHPUnit\\Framework\\MockObject\\Builder\\InvocationMocker::will\(\) expects PHPUnit\\Framework\\MockObject\\Stub\\Stub, true given.#'
-	symfony:
-		container_xml_path: %rootDir%/../../../var/cache/test/srcHanaboso_PipesPhpSdk_KernelTestDebugContainer.xml
+    doctrine:
+        objectManagerLoader: tests/DocumentManagerLoader.php
+    symfony:
+        container_xml_path: %rootDir%/../../../var/cache/test/srcHanaboso_PipesPhpSdk_KernelTestDebugContainer.xml
+    ignoreErrors:
+        - '#Access to an undefined property#'
+        - '#PHPDoc tag @var for variable \$connection contains unresolvable type#'
+        - '#Parameter \#2 \$auth_session_handle of method OAuth::getAccessToken\(\) expects string, null given.#'

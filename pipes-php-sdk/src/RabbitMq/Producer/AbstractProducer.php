@@ -2,16 +2,16 @@
 
 namespace Hanaboso\PipesPhpSdk\RabbitMq\Producer;
 
-use Bunny\Channel;
-use Bunny\Exception\BunnyException;
 use Exception;
 use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesPhpSdk\RabbitMq\BunnyManager;
 use Hanaboso\PipesPhpSdk\RabbitMq\ContentTypes;
+use LogicException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use RabbitMqBundle\Consumer\DebugMessageTrait;
+use RabbitMqBundle\Utils\Message;
 
 /**
  * Class AbstractProducer
@@ -132,12 +132,12 @@ class AbstractProducer implements LoggerAwareInterface
         switch ($this->getContentType()) {
             case ContentTypes::APPLICATION_JSON:
                 $message = Json::encode($this->beforeSerializer($message));
+
                 break;
             case ContentTypes::TEXT_PLAIN:
                 break;
-
             default:
-                throw new BunnyException(
+                throw new LogicException(
                     sprintf('Unhandled content type \'%s\'.', $this->contentType)
                 );
         }
@@ -148,21 +148,17 @@ class AbstractProducer implements LoggerAwareInterface
 
         $headers['content-type'] = $this->contentType;
 
-        $this->getLogger()->debug(
-            'publish',
-            $this->prepareMessage('', $this->exchange, $routingKey, $headers)
-        );
+        $this->getLogger()->debug('publish', $this->prepareMessage('', $this->exchange, $routingKey, $headers));
 
-        /** @var Channel $channel */
-        $channel = $this->manager->getChannel();
-        $channel->publish(
-            $message,
-            $headers,
-            $this->exchange,
-            $routingKey,
-            $this->mandatory,
-            $this->immediate
-        );
+        $this->manager
+            ->getChannel()
+            ->basic_publish(
+                Message::create($message, $headers),
+                $this->exchange,
+                $routingKey,
+                $this->mandatory,
+                $this->immediate
+            );
     }
 
     /**

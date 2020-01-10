@@ -2,15 +2,10 @@
 
 namespace Hanaboso\PipesPhpSdk\RabbitMq;
 
-use Bunny\Channel;
-use Bunny\Client;
-use Bunny\Exception\BunnyException;
-use Bunny\Protocol\MethodExchangeBindOkFrame;
-use Bunny\Protocol\MethodExchangeDeclareOkFrame;
-use Bunny\Protocol\MethodQueueBindOkFrame;
-use Bunny\Protocol\MethodQueueDeclareOkFrame;
 use Exception;
-use React\Promise\PromiseInterface;
+use PhpAmqpLib\Channel\AMQPChannel;
+use PhpAmqpLib\Connection\AMQPSocketConnection;
+use PhpAmqpLib\Wire\AMQPTable;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -32,17 +27,17 @@ class BunnyManager
     private $container;
 
     /**
-     * @var Client
+     * @var AMQPSocketConnection
      */
     private $client;
 
     /**
-     * @var Channel|null
+     * @var AMQPChannel|null
      */
     private $channel = NULL;
 
     /**
-     * @var Channel|null
+     * @var AMQPChannel|null
      */
     private $transactionalChannel;
 
@@ -79,26 +74,28 @@ class BunnyManager
     }
 
     /**
-     * @return Client
+     * @return AMQPSocketConnection
+     * @throws Exception
      */
-    private function createClient(): Client
+    private function createClient(): AMQPSocketConnection
     {
-        return new Client($this->config);
+        return new AMQPSocketConnection(...$this->config);
     }
 
     /**
      * @param bool $force
      *
-     * @return Client
+     * @return AMQPSocketConnection
+     * @throws Exception
      */
-    public function getClient(bool $force = FALSE): Client
+    public function getClient(bool $force = FALSE): AMQPSocketConnection
     {
         if ($force === TRUE) {
             $this->client = $this->createClient();
         }
 
         if ($this->client === NULL) {
-            /** @var Client $client */
+            /** @var AMQPSocketConnection $client */
             $client       = $this->container->get($this->clientServiceId);
             $this->client = $client;
         }
@@ -107,28 +104,26 @@ class BunnyManager
     }
 
     /**
-     * @return Channel|PromiseInterface
+     * @return AMQPChannel
      * @throws Exception
      */
-    public function createChannel()
+    public function createChannel(): AMQPChannel
     {
         if (!$this->getClient()->isConnected()) {
-            $this->getClient()->connect();
+            $this->getClient()->reconnect();
         }
 
         return $this->getClient()->channel();
     }
 
     /**
-     * @return Channel
+     * @return AMQPChannel
      * @throws Exception
      */
-    public function getChannel(): Channel
+    public function getChannel(): AMQPChannel
     {
         if (!$this->channel) {
-            /** @var Channel $ch */
-            $ch            = $this->createChannel();
-            $this->channel = $ch;
+            $this->channel = $this->createChannel();
         }
 
         return $this->channel;
@@ -137,23 +132,16 @@ class BunnyManager
     /**
      * create/return transactional channel, where messages need to be commited
      *
-     * @return Channel
-     * @throws BunnyException
+     * @return AMQPChannel
      * @throws Exception
      */
-    public function getTransactionalChannel(): Channel
+    public function getTransactionalChannel(): AMQPChannel
     {
         if (!$this->transactionalChannel) {
-            /** @var Channel $ch */
-            $ch                         = $this->createChannel();
-            $this->transactionalChannel = $ch;
+            $this->transactionalChannel = $this->createChannel();
 
             // create transactional channel from normal one
-            try {
-                $this->transactionalChannel->txSelect();
-            } catch (Exception $e) {
-                throw new BunnyException('Cannot create transaction channel.');
-            }
+            $this->transactionalChannel->tx_select();
         }
 
         return $this->transactionalChannel;
@@ -172,7 +160,9 @@ class BunnyManager
         $channel = $this->getChannel();
 
         foreach ($this->config['exchanges'] as $exchangeName => $exchangeDefinition) {
-            $frame = $channel->exchangeDeclare(
+            /** @var mixed[] $arguments */
+            $arguments = new AMQPTable($exchangeDefinition['arguments']);
+            $channel->exchange_declare(
                 $exchangeName,
                 $exchangeDefinition['type'],
                 FALSE,
@@ -180,71 +170,47 @@ class BunnyManager
                 $exchangeDefinition['auto_delete'],
                 $exchangeDefinition['internal'],
                 FALSE,
-                $exchangeDefinition['arguments']
+                $arguments
             );
-
-            if (!($frame instanceof MethodExchangeDeclareOkFrame)) {
-                throw new BunnyException(sprintf('Could not declare exchange \'%s\'.', $exchangeName));
-            }
         }
 
         foreach ($this->config['exchanges'] as $exchangeName => $exchangeDefinition) {
             foreach ($exchangeDefinition['bindings'] as $binding) {
-                $frame = $channel->exchangeBind(
+                /** @var mixed[] $arguments */
+                $arguments = new AMQPTable($binding['arguments']);
+                $channel->exchange_bind(
                     $exchangeName,
                     $binding['exchange'],
                     $binding['routing_key'],
                     FALSE,
-                    $binding['arguments']
+                    $arguments
                 );
-
-                if (!($frame instanceof MethodExchangeBindOkFrame)) {
-                    throw new BunnyException(
-                        sprintf(
-                            'Could not bind exchange \'%s\' to \'%s\' with routing key \'%s\'.',
-                            $exchangeName,
-                            $binding['exchange'],
-                            $binding['routing_key']
-                        )
-                    );
-                }
             }
         }
 
         foreach ($this->config['queues'] as $queueName => $queueDefinition) {
-            $frame = $channel->queueDeclare(
+            /** @var mixed[] $arguments */
+            $arguments = new AMQPTable($queueDefinition['arguments']);
+            $channel->queue_declare(
                 $queueName,
                 FALSE,
                 $queueDefinition['durable'],
                 $queueDefinition['exclusive'],
                 $queueDefinition['auto_delete'],
                 FALSE,
-                $queueDefinition['arguments']
+                $arguments
             );
 
-            if (!($frame instanceof MethodQueueDeclareOkFrame)) {
-                throw new BunnyException(sprintf('Could not declare queue \'%s\'.', $queueName));
-            }
-
             foreach ($queueDefinition['bindings'] as $binding) {
-                $frame = $channel->queueBind(
+                /** @var mixed[] $arguments */
+                $arguments = new AMQPTable($binding['arguments']);
+                $channel->queue_bind(
                     $queueName,
                     $binding['exchange'],
                     $binding['routing_key'],
                     FALSE,
-                    $binding['arguments']
+                    $arguments
                 );
-
-                if (!($frame instanceof MethodQueueBindOkFrame)) {
-                    throw new BunnyException(
-                        sprintf(
-                            'Could not bind queue \'%s\' to \'%s\' with routing key \'%s\'.',
-                            $queueName,
-                            $binding['exchange'],
-                            $binding['routing_key']
-                        )
-                    );
-                }
             }
         }
 

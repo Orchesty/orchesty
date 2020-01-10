@@ -18,6 +18,7 @@ services:
             SMTP_USER: dev.email.hb@gmail.com
             SMTP_PASSWORD: jVME2RkX9xyYhj9v
             FRONTEND_HOST: ${DEV_IP}
+            METRICS_SERVICE: influx
             COMPOSER_HOME: ${HOME}/dev/.composer
         volumes:
             - ../../../:/var/www/pipes

@@ -230,6 +230,7 @@ class TopologyConfigFactory
             case TypeEnum::BATCH:
             case TypeEnum::BATCH_CONNECTOR:
                 $workerType = self::SPLITTER_AMQRPC;
+
                 break;
             case TypeEnum::WEBHOOK:
             case TypeEnum::GATEWAY:
@@ -237,18 +238,23 @@ class TopologyConfigFactory
             case TypeEnum::CRON:
             case TypeEnum::START:
                 $workerType = self::WORKER_NULL;
+
                 break;
             case TypeEnum::RESEQUENCER:
                 $workerType = self::WORKER_RESEQUENCER;
+
                 break;
             case TypeEnum::SPLITTER:
                 $workerType = self::SPLITTER_JSON;
+
                 break;
             case TypeEnum::XML_PARSER:
                 $workerType = self::WORKER_HTTP_XML_PARSER;
+
                 break;
             case TypeEnum::USER:
                 $workerType = self::WORKER_LONG_RUNNING;
+
                 break;
             default:
                 $workerType = self::WORKER_HTTP;
@@ -272,30 +278,35 @@ class TopologyConfigFactory
                     self::PROCESS_PATH => '/xml_parser',
                     self::STATUS_PATH  => '/xml_parser/test',
                 ];
+
                 break;
             case TypeEnum::TABLE_PARSER:
                 $paths = [
                     self::PROCESS_PATH => sprintf('/parser/json/to/%s/', $node->getName()),
                     self::STATUS_PATH  => sprintf('/parser/json/to/%s/test', $node->getName()),
                 ];
+
                 break;
             case TypeEnum::FTP:
                 $paths = [
                     self::PROCESS_PATH => '/connector/ftp/action',
                     self::STATUS_PATH  => '/connector/ftp/action/test',
                 ];
+
                 break;
             case TypeEnum::EMAIL:
                 $paths = [
                     self::PROCESS_PATH => '/mailer/email',
                     self::STATUS_PATH  => '/mailer/email/test',
                 ];
+
                 break;
             case TypeEnum::MAPPER:
                 $paths = [
                     self::PROCESS_PATH => sprintf('/mapper/%s/process', $node->getName()),
                     self::STATUS_PATH  => sprintf('/mapper/%s/test', $node->getName()),
                 ];
+
                 break;
             case TypeEnum::CONNECTOR:
             case TypeEnum::BATCH_CONNECTOR:
@@ -304,36 +315,42 @@ class TopologyConfigFactory
                         self::PROCESS_PATH => sprintf('/connector/%s/webhook', $node->getName()),
                         self::STATUS_PATH  => sprintf('/connector/%s/webhook/test', $node->getName()),
                     ];
+
                     break;
                 }
                 $paths = [
                     self::PROCESS_PATH => sprintf('/connector/%s/action', $node->getName()),
                     self::STATUS_PATH  => sprintf('/connector/%s/action/test', $node->getName()),
                 ];
+
                 break;
             case TypeEnum::CUSTOM:
                 $paths = [
                     self::PROCESS_PATH => sprintf('/custom_node/%s/process', $node->getName()),
                     self::STATUS_PATH  => sprintf('/custom_node/%s/process/test', $node->getName()),
                 ];
+
                 break;
             case TypeEnum::SIGNAL:
                 $paths = [
                     self::PROCESS_PATH => '/custom_node/signal/process',
                     self::STATUS_PATH  => '/custom_node/signal/process/test',
                 ];
+
                 break;
             case TypeEnum::USER:
                 $paths = [
                     self::PROCESS_PATH => sprintf('/longRunning/%s/process', $node->getName()),
                     self::STATUS_PATH  => sprintf('/longRunning/%s/process/test', $node->getName()),
                 ];
+
                 break;
             case TypeEnum::API:
                 $paths = [
                     self::PROCESS_PATH => '/connector/api/action',
                     self::STATUS_PATH  => '/connector/api/action/test',
                 ];
+
                 break;
             default:
                 throw new TopologyConfigException(sprintf('Unknown type of routing [%s].', $node->getType()));
@@ -358,15 +375,19 @@ class TopologyConfigFactory
         switch ($nodeType) {
             case TypeEnum::XML_PARSER:
                 $host = $this->configs[self::XML_PARSER_API_HOST];
+
                 break;
             case  TypeEnum::FTP:
                 $host = $this->configs[self::FTP_API_HOST];
+
                 break;
             case TypeEnum::EMAIL:
                 $host = $this->configs[self::MAILER_API_HOST];
+
                 break;
             case TypeEnum::MAPPER:
                 $host = $this->configs[self::MAPPER_API_HOST];
+
                 break;
             case TypeEnum::BATCH_CONNECTOR:
             case TypeEnum::TABLE_PARSER:
@@ -377,6 +398,7 @@ class TopologyConfigFactory
             case TypeEnum::USER:
             case TypeEnum::API:
                 $host = $this->configs[self::MONOLITH_API_HOST];
+
                 break;
             default:
                 throw new TopologyConfigException(sprintf('Unknown type of host [%s].', $nodeType));
@@ -427,7 +449,6 @@ class TopologyConfigFactory
                 return 80;
             default:
                 throw new TopologyConfigException(sprintf('Unknown type for port [%s].', $nodeType));
-
         }
     }
 

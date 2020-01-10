@@ -37,7 +37,6 @@ abstract class MapperAbstract implements MapperInterface
         /** @var ApplicationInterface|null $application */
         $application = $this->application;
         if ($application) {
-
             return $application->getKey();
         }
 

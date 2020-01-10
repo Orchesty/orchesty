@@ -2,10 +2,10 @@
 
 namespace Hanaboso\PipesPhpSdk\LongRunningNode\Model;
 
-use Bunny\Message;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData;
+use PhpAmqpLib\Message\AMQPMessage;
 
 /**
  * Interface LongRunningNodeInterface
@@ -21,11 +21,11 @@ interface LongRunningNodeInterface
     public function getId(): string;
 
     /**
-     * @param Message $message
+     * @param AMQPMessage $message
      *
      * @return LongRunningNodeData
      */
-    public function beforeAction(Message $message): LongRunningNodeData;
+    public function beforeAction(AMQPMessage $message): LongRunningNodeData;
 
     /**
      * @param LongRunningNodeData $data

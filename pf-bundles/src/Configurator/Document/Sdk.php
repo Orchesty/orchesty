@@ -17,7 +17,7 @@ class Sdk
 
     use IdTrait;
 
-    public const ID    = '_id';
+    public const ID    = 'id';
     public const KEY   = 'key';
     public const VALUE = 'value';
 
@@ -81,9 +81,9 @@ class Sdk
     public function toArray(): array
     {
         return [
-            'id'    => $this->id,
-            'key'   => $this->key,
-            'value' => $this->value,
+            self::ID    => $this->id,
+            self::KEY   => $this->key,
+            self::VALUE => $this->value,
         ];
     }
 

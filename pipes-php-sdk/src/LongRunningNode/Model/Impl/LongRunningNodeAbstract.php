@@ -2,11 +2,11 @@
 
 namespace Hanaboso\PipesPhpSdk\LongRunningNode\Model\Impl;
 
-use Bunny\Message;
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeInterface;
+use PhpAmqpLib\Message\AMQPMessage;
 
 /**
  * Class LongRunningNodeAbstract
@@ -17,12 +17,12 @@ abstract class LongRunningNodeAbstract implements LongRunningNodeInterface
 {
 
     /**
-     * @param Message $message
+     * @param AMQPMessage $message
      *
      * @return LongRunningNodeData
      * @throws Exception
      */
-    public function beforeAction(Message $message): LongRunningNodeData
+    public function beforeAction(AMQPMessage $message): LongRunningNodeData
     {
         return LongRunningNodeData::fromMessage($message);
     }

@@ -31,10 +31,10 @@ docker-down-clean: .env
 
 # Composer
 composer-install:
-	$(DE) composer install
+	$(DE) composer install --no-suggest
 
 composer-update:
-	$(DE) composer update
+	$(DE) composer update --no-suggest
 
 clear-cache:
 	$(DE) rm -rf var/log
@@ -45,10 +45,10 @@ clear-cache:
 init-dev: docker-up-force composer-install
 
 phpcodesniffer:
-	$(DE) vendor/bin/phpcs -p --standard=ruleset.xml --colors src tests
+	$(DE) vendor/bin/phpcs --standard=ruleset.xml src tests
 
 phpstan:
-	$(DE) vendor/bin/phpstan analyse -c phpstan.neon -l 8 --memory-limit=512M src tests
+	$(DE) vendor/bin/phpstan analyse -c phpstan.neon -l 8 src tests
 
 phpintegration:
 	$(DE) vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p 4 --colors tests/Integration

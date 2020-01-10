@@ -209,6 +209,7 @@ class CategoryParser
                 $this->matchedRootAlias = $alias;
                 $this->tmpFilePath      = array_unique($this->tmpFilePath);
                 array_unshift($categories, $alias);
+
                 break;
             }
         }
@@ -244,6 +245,7 @@ class CategoryParser
         foreach ($copy as $value) {
             if ($value === $stop) {
                 $this->tmpFilePath = $copy;
+
                 break;
             }
             array_shift($copy);

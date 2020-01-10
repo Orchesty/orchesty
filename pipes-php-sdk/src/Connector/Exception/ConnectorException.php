@@ -12,7 +12,7 @@ use Hanaboso\CommonsBundle\Exception\PipesFrameworkExceptionAbstract;
 final class ConnectorException extends PipesFrameworkExceptionAbstract
 {
 
-    protected const OFFSET = 1000;
+    protected const OFFSET = 1_000;
 
     public const CONNECTOR_SERVICE_NOT_FOUND              = self::OFFSET + 1;
     public const CONNECTOR_DOES_NOT_HAVE_PROCESS_EVENT    = self::OFFSET + 2;

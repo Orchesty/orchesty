@@ -2,7 +2,6 @@
 
 namespace Hanaboso\PipesPhpSdk\LongRunningNode\Document;
 
-use Bunny\Message;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Exception;
 use Hanaboso\CommonsBundle\Database\Traits\Document\CreatedTrait;
@@ -12,6 +11,8 @@ use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
 use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\CommonsBundle\Utils\PipesHeaders;
+use PhpAmqpLib\Message\AMQPMessage;
+use RabbitMqBundle\Utils\Message;
 
 /**
  * Class LongRunningNodeData
@@ -498,31 +499,30 @@ class LongRunningNodeData
     }
 
     /**
-     * @param Message $message
+     * @param AMQPMessage $message
      *
      * @return LongRunningNodeData
      * @throws Exception
      */
-    public static function fromMessage(Message $message): LongRunningNodeData
+    public static function fromMessage(AMQPMessage $message): LongRunningNodeData
     {
-        $ent = new LongRunningNodeData();
-        $ent
-            ->setContentType($message->getHeader(PipesHeaders::CONTENT_TYPE, 'application/json'))
-            ->setData($message->content)
-            ->setHeaders($message->headers)
-            ->setParentId((string) $message->getHeader(PipesHeaders::createKey(PipesHeaders::PARENT_ID), ''))
-            ->setCorrelationId((string) $message->getHeader(PipesHeaders::createKey(PipesHeaders::CORRELATION_ID), ''))
-            ->setTopologyId((string) $message->getHeader(PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID), ''))
-            ->setTopologyName((string) $message->getHeader(PipesHeaders::createKey(PipesHeaders::TOPOLOGY_NAME), ''))
-            ->setNodeId((string) $message->getHeader(PipesHeaders::createKey(PipesHeaders::NODE_ID), ''))
-            ->setNodeName((string) $message->getHeader(PipesHeaders::createKey(PipesHeaders::NODE_NAME), ''))
-            ->setParentProcess((string) $message->getHeader(PipesHeaders::createKey(self::PARENT_PROCESS_HEADER), ''))
-            ->setProcessId((string) $message->getHeader(PipesHeaders::createKey(PipesHeaders::PROCESS_ID), ''))
-            ->setSequenceId((string) $message->getHeader(PipesHeaders::createKey(PipesHeaders::SEQUENCE_ID), ''))
-            ->setUpdatedBy((string) $message->getHeader(PipesHeaders::createKey(self::UPDATED_BY_HEADER), ''))
-            ->setAuditLogs(Json::decode($message->getHeader(PipesHeaders::createKey(self::AUDIT_LOGS_HEADER), '{}')));
+        $headers = Message::getHeaders($message);
 
-        return $ent;
+        return (new LongRunningNodeData())
+            ->setContentType((string) ($headers[PipesHeaders::CONTENT_TYPE] ?? 'application/json'))
+            ->setData(Message::getBody($message))
+            ->setHeaders($headers)
+            ->setParentId((string) ($headers[PipesHeaders::createKey(PipesHeaders::PARENT_ID)] ?? ''))
+            ->setCorrelationId((string) ($headers[PipesHeaders::createKey(PipesHeaders::CORRELATION_ID)] ?? ''))
+            ->setTopologyId((string) ($headers[PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID)] ?? ''))
+            ->setTopologyName((string) ($headers[PipesHeaders::createKey(PipesHeaders::TOPOLOGY_NAME)] ?? ''))
+            ->setNodeId((string) ($headers[PipesHeaders::createKey(PipesHeaders::NODE_ID)] ?? ''))
+            ->setNodeName((string) ($headers[PipesHeaders::createKey(PipesHeaders::NODE_NAME)] ?? ''))
+            ->setParentProcess((string) ($headers[PipesHeaders::createKey(self::PARENT_PROCESS_HEADER)] ?? ''))
+            ->setProcessId((string) ($headers[PipesHeaders::createKey(PipesHeaders::PROCESS_ID)] ?? ''))
+            ->setSequenceId((string) ($headers[PipesHeaders::createKey(PipesHeaders::SEQUENCE_ID)] ?? ''))
+            ->setUpdatedBy((string) ($headers[PipesHeaders::createKey(self::UPDATED_BY_HEADER)] ?? ''))
+            ->setAuditLogs(Json::decode((string) ($headers[PipesHeaders::createKey(self::AUDIT_LOGS_HEADER)] ?? '')));
     }
 
     /**

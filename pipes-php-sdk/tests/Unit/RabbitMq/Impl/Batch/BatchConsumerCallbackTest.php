@@ -2,9 +2,6 @@
 
 namespace Tests\Unit\RabbitMq\Impl\Batch;
 
-use Bunny\Channel;
-use Bunny\Client;
-use Bunny\Message;
 use Exception;
 use Hanaboso\CommonsBundle\Metrics\Impl\InfluxDbSender;
 use Hanaboso\CommonsBundle\Metrics\MetricsSenderLoader;
@@ -13,10 +10,15 @@ use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchActionInterface;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchInterface;
 use InvalidArgumentException;
+use PhpAmqpLib\Channel\AMQPChannel;
+use PhpAmqpLib\Connection\AMQPSocketConnection;
+use PhpAmqpLib\Message\AMQPMessage;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use RabbitMqBundle\Connection\Connection;
+use RabbitMqBundle\Utils\Message;
 use React\EventLoop\Factory;
+use Throwable;
 use function React\Promise\resolve;
 
 /**
@@ -31,19 +33,16 @@ final class BatchConsumerCallbackTest extends TestCase
      * @param mixed[] $headers
      * @param string  $content
      *
-     * @return Message
+     * @return AMQPMessage
      */
-    private function createMessage(array $headers = [], string $content = ''): Message
+    private function createMessage(array $headers = [], string $content = ''): AMQPMessage
     {
-        return new Message(
-            'consumer_tag',
-            'delivery_tag',
-            FALSE,
-            'exchange',
-            'routing_key',
-            $headers,
-            $content
-        );
+        $message = Message::create($content, $headers);
+        // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+        $message->delivery_info['delivery_tag'] = 'delivery_tag';
+        // phpcs:enable
+
+        return $message;
     }
 
     /**
@@ -61,9 +60,9 @@ final class BatchConsumerCallbackTest extends TestCase
 
         /** @var BatchActionInterface|MockObject $batchAction */
         $batchAction = self::createMock(BatchActionInterface::class);
-        /** @var Channel|MockObject $channel */
-        $channel = self::createMock(Channel::class);
-        $channel->method('publish')->willReturn(resolve());
+        /** @var AMQPChannel|MockObject $channel */
+        $channel = self::createMock(AMQPChannel::class);
+        $channel->method('basic_publish')->willReturn(resolve());
         /** @var InfluxDbSender|MockObject $influxSender */
         $influxSender = self::createMock(InfluxDbSender::class);
         $loader       = new MetricsSenderLoader('influx', $influxSender, NULL);
@@ -161,12 +160,12 @@ final class BatchConsumerCallbackTest extends TestCase
         /** @var BatchActionInterface|MockObject $batchAction */
         $batchAction = self::createMock(BatchActionInterface::class);
         $batchAction->method('batchAction')->willReturn(resolve());
-        /** @var Channel|MockObject $channel */
-        $channel = self::createMock(Channel::class);
-        $channel->method('queueDeclare')->willReturn(resolve());
-        $channel->method('publish')->willReturn(resolve());
-        /** @var Client|MockObject $client */
-        $client = self::createMock(Client::class);
+        /** @var AMQPChannel|MockObject $channel */
+        $channel = self::createMock(AMQPChannel::class);
+        $channel->method('queue_declare')->willReturn(resolve());
+        $channel->method('basic_publish')->willReturn(resolve());
+        /** @var AMQPSocketConnection|MockObject $client */
+        $client = self::createMock(AMQPSocketConnection::class);
         $client->method('channel')->willReturn($channel);
         /** @var InfluxDbSender|MockObject $influxSender */
         $influxSender = self::createMock(InfluxDbSender::class);
@@ -190,14 +189,14 @@ final class BatchConsumerCallbackTest extends TestCase
             ->processMessage($this->createMessage($headers), $connection, 1, $loop)
             ->then(
                 function () use ($loop): void {
-                    // Test if resolve
                     self::assertTrue(TRUE);
+
                     $loop->stop();
                 },
-                function () use ($loop): void {
-                    $loop;
-                    // Test if reject
-                    self::fail();
+                function (Throwable $throwable) use ($loop): void {
+                    $loop->stop();
+
+                    self::fail(sprintf('%s%s%s', $throwable->getMessage(), PHP_EOL, $throwable->getTraceAsString()));
                 }
             )
             ->done();
@@ -218,12 +217,12 @@ final class BatchConsumerCallbackTest extends TestCase
         $batchAction = self::createMock(BatchActionInterface::class);
         $batchAction->method('batchAction')->willReturn(resolve());
         $batchAction->method('getBatchService')->willReturn(self::createMock(BatchInterface::class));
-        /** @var Channel|MockObject $channel */
-        $channel = self::createMock(Channel::class);
-        $channel->method('queueDeclare')->willReturn(resolve());
-        $channel->method('publish')->willReturn(resolve());
-        /** @var Client|MockObject $client */
-        $client = self::createMock(Client::class);
+        /** @var AMQPChannel|MockObject $channel */
+        $channel = self::createMock(AMQPChannel::class);
+        $channel->method('queue_declare')->willReturn(resolve());
+        $channel->method('basic_publish')->willReturn(resolve());
+        /** @var AMQPSocketConnection|MockObject $client */
+        $client = self::createMock(AMQPSocketConnection::class);
         $client->method('channel')->willReturn($channel);
         /** @var InfluxDbSender|MockObject $influxSender */
         $influxSender = self::createMock(InfluxDbSender::class);
@@ -248,14 +247,14 @@ final class BatchConsumerCallbackTest extends TestCase
             ->processMessage($this->createMessage($headers), $connection, 1, $loop)
             ->then(
                 function () use ($loop): void {
-                    // Test if resolve
                     self::assertTrue(TRUE);
+
                     $loop->stop();
                 },
-                function () use ($loop): void {
-                    $loop;
-                    // Test if reject
-                    self::fail();
+                function (Throwable $throwable) use ($loop): void {
+                    $loop->stop();
+
+                    self::fail(sprintf('%s%s%s', $throwable->getMessage(), PHP_EOL, $throwable->getTraceAsString()));
                 }
             )
             ->done();
@@ -276,12 +275,12 @@ final class BatchConsumerCallbackTest extends TestCase
         $batchAction = self::createMock(BatchActionInterface::class);
         $batchAction->method('batchAction')->willReturn(resolve());
         $batchAction->method('getBatchService')->willThrowException(new Exception());
-        /** @var Channel|MockObject $channel */
-        $channel = self::createMock(Channel::class);
-        $channel->method('queueDeclare')->willReturn(resolve());
-        $channel->method('publish')->willReturn(resolve());
-        /** @var Client|MockObject $client */
-        $client = self::createMock(Client::class);
+        /** @var AMQPChannel|MockObject $channel */
+        $channel = self::createMock(AMQPChannel::class);
+        $channel->method('queue_declare')->willReturn(resolve());
+        $channel->method('basic_publish')->willReturn(resolve());
+        /** @var AMQPSocketConnection|MockObject $client */
+        $client = self::createMock(AMQPSocketConnection::class);
         $client->method('channel')->willReturn($channel);
         /** @var InfluxDbSender|MockObject $influxSender */
         $influxSender = self::createMock(InfluxDbSender::class);
@@ -306,14 +305,14 @@ final class BatchConsumerCallbackTest extends TestCase
             ->processMessage($this->createMessage($headers), $connection, 1, $loop)
             ->then(
                 function () use ($loop): void {
-                    // Test if resolve
                     self::assertTrue(TRUE);
+
                     $loop->stop();
                 },
-                function () use ($loop): void {
-                    $loop;
-                    // Test if reject
-                    self::fail();
+                function (Throwable $throwable) use ($loop): void {
+                    $loop->stop();
+
+                    self::fail(sprintf('%s%s%s', $throwable->getMessage(), PHP_EOL, $throwable->getTraceAsString()));
                 }
             )
             ->done();
@@ -333,12 +332,12 @@ final class BatchConsumerCallbackTest extends TestCase
         /** @var BatchActionInterface|MockObject $batchAction */
         $batchAction = self::createMock(BatchActionInterface::class);
         $batchAction->method('batchAction')->willReturn(resolve());
-        /** @var Channel|MockObject $channel */
-        $channel = self::createMock(Channel::class);
-        $channel->method('queueDeclare')->willReturn(resolve());
-        $channel->method('publish')->willReturn(resolve());
-        /** @var Client|MockObject $client */
-        $client = self::createMock(Client::class);
+        /** @var AMQPChannel|MockObject $channel */
+        $channel = self::createMock(AMQPChannel::class);
+        $channel->method('queue_declare')->willReturn(resolve());
+        $channel->method('basic_publish')->willReturn(resolve());
+        /** @var AMQPSocketConnection|MockObject $client */
+        $client = self::createMock(AMQPSocketConnection::class);
         $client->method('channel')->willReturn($channel);
         /** @var InfluxDbSender|MockObject $influxSender */
         $influxSender = self::createMock(InfluxDbSender::class);

@@ -52,11 +52,8 @@ final class WebhookManagerTest extends DatabaseTestCaseAbstract
         $this->dm->persist((new ApplicationInstall())->setUser('User')->setKey('webhook'));
         $this->dm->flush();
 
-        $this->getService(
-            function (): ResponseDto {
-                return new ResponseDto(200, 'OK', '{"id":"id"}', []);
-            }
-        )->subscribeWebhooks($this->application, 'User');
+        $this->getService(fn(): ResponseDto => new ResponseDto(200, 'OK', '{"id":"id"}', []))
+            ->subscribeWebhooks($this->application, 'User');
         $this->dm->clear();
 
         /** @var Webhook[] $webhooks */
@@ -70,11 +67,8 @@ final class WebhookManagerTest extends DatabaseTestCaseAbstract
         self::assertEquals('id', $webhooks[0]->getWebhookId());
         self::assertEquals(FALSE, $webhooks[0]->isUnsubscribeFailed());
 
-        $this->getService(
-            function (): ResponseDto {
-                return new ResponseDto(200, 'OK', '{"success":true}', []);
-            }
-        )->unsubscribeWebhooks($this->application, 'User');
+        $this->getService(fn(): ResponseDto => new ResponseDto(200, 'OK', '{"success":true}', []))
+            ->unsubscribeWebhooks($this->application, 'User');
 
         self::assertCount(0, $this->repository->findAll());
     }
@@ -87,18 +81,12 @@ final class WebhookManagerTest extends DatabaseTestCaseAbstract
         $this->dm->persist((new ApplicationInstall())->setUser('User')->setKey('webhook'));
         $this->dm->flush();
 
-        $this->getService(
-            function (): ResponseDto {
-                return new ResponseDto(200, 'OK', '{"id":"id"}', []);
-            }
-        )->subscribeWebhooks($this->application, 'User');
+        $this->getService(fn(): ResponseDto => new ResponseDto(200, 'OK', '{"id":"id"}', []))
+            ->subscribeWebhooks($this->application, 'User');
         $this->dm->clear();
 
-        $this->getService(
-            function (): ResponseDto {
-                return new ResponseDto(200, 'OK', '{"success":false}', []);
-            }
-        )->unsubscribeWebhooks($this->application, 'User');
+        $this->getService(fn(): ResponseDto => new ResponseDto(200, 'OK', '{"success":false}', []))
+            ->unsubscribeWebhooks($this->application, 'User');
 
         /** @var Webhook[] $webhooks */
         $webhooks = $this->repository->findAll();
@@ -119,11 +107,8 @@ final class WebhookManagerTest extends DatabaseTestCaseAbstract
         self::expectException(ApplicationInstallException::class);
         self::expectExceptionCode(ApplicationInstallException::APP_WAS_NOT_FOUND);
 
-        $this->getService(
-            function (): ResponseDto {
-                return new ResponseDto(200, 'OK', '{"id":"id"}', []);
-            }
-        )->subscribeWebhooks($this->application, 'User');
+        $this->getService(fn(): ResponseDto => new ResponseDto(200, 'OK', '{"id":"id"}', []))
+            ->subscribeWebhooks($this->application, 'User');
     }
 
     /**

@@ -2,8 +2,8 @@
 
 namespace Hanaboso\PipesPhpSdk\Utils;
 
-use Bunny\Message;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use PhpAmqpLib\Message\AMQPMessage;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -25,13 +25,13 @@ final class ProcessDtoFactory
     }
 
     /**
-     * @param Message $message
+     * @param AMQPMessage $message
      *
      * @return ProcessDto
      */
-    public static function createFromMessage(Message $message): ProcessDto
+    public static function createFromMessage(AMQPMessage $message): ProcessDto
     {
-        return self::createDto((string) $message->content, $message->headers);
+        return self::createDto((string) $message->body, $message->get_properties());
     }
 
     /**

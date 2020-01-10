@@ -20,7 +20,7 @@ class Sleep05CustomNode extends CustomNodeAbstract
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        usleep(500000);
+        usleep(500_000);
 
         return $dto;
     }

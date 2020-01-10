@@ -3,8 +3,8 @@
 namespace Tests\Controller\HbPFTableParserBundle\Controller;
 
 use Hanaboso\CommonsBundle\Exception\FileStorageException;
-use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesPhpSdk\Parser\Exception\TableParserException;
+use Hanaboso\Utils\String\Json;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\ControllerTestCaseAbstract;
 
@@ -47,7 +47,7 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
         self::assertEquals(500, $response->status);
         $content = $response->content;
         self::assertEquals(FileStorageException::class, $content->type);
-        self::assertEquals(1501, $content->errorCode);
+        self::assertEquals(1_501, $content->errorCode);
     }
 
     /**
@@ -73,7 +73,7 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
         );
 
         self::assertEquals(200, $response->status);
-        self::assertRegExp('#\/tmp\/\d+\.\d+\.csv#i', $response->content);
+        self::assertRegExp('#\/tmp\/\d+\.\d+\.csv#i', $response->content[0]);
     }
 
     /**
@@ -86,7 +86,7 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
 
         self::assertEquals(500, $response->status);
         self::assertEquals(FileStorageException::class, $content->type);
-        self::assertEquals(1501, $content->errorCode);
+        self::assertEquals(1_501, $content->errorCode);
     }
 
     /**
@@ -172,7 +172,7 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
 
         return (object) [
             'status'  => $response->getStatusCode(),
-            'content' => json_decode((string) $response->getContent(), FALSE, 512, JSON_THROW_ON_ERROR),
+            'content' => Json::decode((string) $response->getContent()),
         ];
     }
 

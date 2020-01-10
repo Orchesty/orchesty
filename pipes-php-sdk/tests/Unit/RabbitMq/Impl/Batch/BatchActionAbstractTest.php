@@ -2,11 +2,13 @@
 
 namespace Tests\Unit\RabbitMq\Impl\Batch;
 
-use Bunny\Message;
 use Exception;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchActionAbstract;
+use PhpAmqpLib\Message\AMQPMessage;
 use PHPUnit\Framework\TestCase;
+use RabbitMqBundle\Utils\Message;
 use React\EventLoop\Factory;
+use Throwable;
 
 /**
  * Class BatchActionAbstractTest
@@ -35,11 +37,11 @@ final class BatchActionAbstractTest extends TestCase
      * @param mixed[] $headers
      * @param string  $content
      *
-     * @return Message
+     * @return AMQPMessage
      */
-    private function createMessage(array $headers = [], string $content = ''): Message
+    private function createMessage(array $headers = [], string $content = ''): AMQPMessage
     {
-        return new Message('', '', FALSE, '', '', $headers, $content);
+        return Message::create($content, $headers);
     }
 
     /**
@@ -84,10 +86,11 @@ final class BatchActionAbstractTest extends TestCase
             ->then(
                 function () use ($loop): void {
                     self::assertTrue(TRUE);
+
                     $loop->stop();
                 },
-                function (): void {
-                    self::fail();
+                function (Throwable $throwable): void {
+                    self::fail(sprintf('%s%s%s', $throwable->getMessage(), PHP_EOL, $throwable->getTraceAsString()));
                 }
             )->done();
 

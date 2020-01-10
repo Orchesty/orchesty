@@ -60,7 +60,6 @@ class InstallerController extends AbstractFOSRestController
             $response->headers->set('Content-Disposition', $disposition);
 
             return $response;
-
         } catch (Exception|Throwable $e) {
             return $this->getErrorResponse($e, 500);
         }

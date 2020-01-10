@@ -2,7 +2,6 @@
 
 namespace Hanaboso\PipesPhpSdk\CustomNode\Impl;
 
-use Bunny\Channel;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
@@ -13,14 +12,15 @@ use Hanaboso\CommonsBundle\Database\Document\Node;
 use Hanaboso\CommonsBundle\Database\Repository\NodeRepository;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Utils\GeneratorUtils;
-use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
 use Hanaboso\PipesPhpSdk\RabbitMq\Producer\AbstractProducer;
 use InvalidArgumentException;
+use PhpAmqpLib\Channel\AMQPChannel;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use RabbitMqBundle\Utils\Message;
 
 /**
  * Class RabbitCustomNode
@@ -51,7 +51,7 @@ abstract class RabbitCustomNode extends CustomNodeAbstract implements LoggerAwar
     private $ex = '';
 
     /**
-     * @var Channel
+     * @var AMQPChannel
      */
     private $chann;
 
@@ -103,7 +103,7 @@ abstract class RabbitCustomNode extends CustomNodeAbstract implements LoggerAwar
     protected function publishMessage(array $message, array $headers): void
     {
         foreach ($this->queues as $que) {
-            $this->chann->publish(Json::encode($message), $headers, $this->ex, $que);
+            $this->chann->basic_publish(Message::create($message, $headers), $this->ex, $que);
         }
     }
 
@@ -196,7 +196,7 @@ abstract class RabbitCustomNode extends CustomNodeAbstract implements LoggerAwar
             );
             $this->queues[] = $que;
 
-            $this->chann->queueBind($que, $this->ex, $que);
+            $this->chann->queue_bind($que, $this->ex, $que);
         }
     }
 
@@ -206,7 +206,7 @@ abstract class RabbitCustomNode extends CustomNodeAbstract implements LoggerAwar
     private function unbindChannels(): void
     {
         foreach ($this->queues as $que) {
-            $this->chann->queueUnbind($que, $this->ex, $que);
+            $this->chann->queue_unbind($que, $this->ex, $que);
         }
 
         $this->queues = [];

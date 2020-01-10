@@ -200,16 +200,9 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
      */
     public function getAccessToken(ApplicationInstall $applicationInstall): string
     {
-        if (isset(
-            $applicationInstall->getSettings(
-            )[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN][OAuth2Provider::ACCESS_TOKEN]
-        )) {
-
-            return $applicationInstall->getSettings(
-            )[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN][OAuth2Provider::ACCESS_TOKEN];
-
+        if (isset($applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN][OAuth2Provider::ACCESS_TOKEN])) {
+            return $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN][OAuth2Provider::ACCESS_TOKEN];
         } else {
-
             throw new ApplicationInstallException(
                 'There is no access token',
                 ApplicationInstallException::AUTHORIZATION_OAUTH2_ERROR

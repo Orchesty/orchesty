@@ -78,7 +78,7 @@ trait ProcessExceptionTrait
     protected function createRepeatException(
         ProcessDto $dto,
         Throwable $throwable,
-        int $interval = 60000,
+        int $interval = 60_000,
         int $maxHops = 10
     ): OnRepeatException
     {

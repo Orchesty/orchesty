@@ -13,7 +13,7 @@ class ErrorMessage
     /**
      * @var int
      */
-    private $code = 2001;
+    private $code = 2_001;
 
     /**
      * @var string

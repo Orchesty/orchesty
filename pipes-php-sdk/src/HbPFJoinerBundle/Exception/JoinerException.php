@@ -12,7 +12,7 @@ use Hanaboso\CommonsBundle\Exception\PipesFrameworkExceptionAbstract;
 final class JoinerException extends PipesFrameworkExceptionAbstract
 {
 
-    protected const OFFSET = 1600;
+    protected const OFFSET = 1_600;
 
     public const JOINER_SERVICE_NOT_FOUND = self::OFFSET + 1;
     public const MISSING_DATA_IN_REQUEST  = self::OFFSET + 2;

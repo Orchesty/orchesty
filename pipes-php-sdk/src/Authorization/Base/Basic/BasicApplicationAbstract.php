@@ -106,14 +106,17 @@ abstract class BasicApplicationAbstract extends ApplicationAbstract implements B
         foreach ($applicationInstall->getSettings()[ApplicationAbstract::FORM] ?? [] as $key => $value) {
             if ($key === BasicApplicationInterface::USER) {
                 $this->setApplicationUser($applicationInstall, $value);
+
                 continue;
             }
             if ($key === BasicApplicationInterface::PASSWORD) {
                 $this->setApplicationPassword($applicationInstall, $value);
+
                 continue;
             }
             if ($key === BasicApplicationInterface::TOKEN) {
                 $this->setApplicationToken($applicationInstall, $value);
+
                 continue;
             }
         }

@@ -2,11 +2,11 @@
 
 namespace Tests\Unit\HbPFLongRunningNodeBundle\Loader;
 
-use Bunny\Message;
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeAbstract;
+use PhpAmqpLib\Message\AMQPMessage;
 
 /**
  * Class TestLongRunningNode
@@ -25,12 +25,12 @@ final class TestLongRunningNode extends LongRunningNodeAbstract
     }
 
     /**
-     * @param Message $message
+     * @param AMQPMessage $message
      *
      * @return LongRunningNodeData
      * @throws Exception
      */
-    public function beforeAction(Message $message): LongRunningNodeData
+    public function beforeAction(AMQPMessage $message): LongRunningNodeData
     {
         $message;
 

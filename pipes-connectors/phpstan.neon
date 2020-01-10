@@ -1,12 +1,12 @@
 includes:
-	- vendor/hanaboso/php-check-utils/phpstan.neon # hanaboso rules
+	- vendor/hanaboso/php-check-utils/phpstan.neon
 
 parameters:
 	doctrine:
 		objectManagerLoader: tests/DocumentManagerLoader.php
+	symfony:
+		container_xml_path: %rootDir%/../../../var/cache/test/srcHanaboso_HbPFConnectors_KernelTestDebugContainer.xml
 	ignoreErrors:
 		- '#Access to an undefined property*#'
 		- '#Unreachable statement \- code above always terminates.#'
 		- '#PHPDoc tag @var for variable \$(application|innerApplication) contains unresolvable type#'
-	symfony:
-		container_xml_path: %rootDir%/../../../var/cache/test/srcHanaboso_HbPFConnectors_KernelTestDebugContainer.xml

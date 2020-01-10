@@ -45,6 +45,7 @@ abstract class ApplicationAbstract implements ApplicationInterface
             if (array_key_exists($field->getKey(), $settings)) {
                 if ($field->getType() === Field::PASSWORD) {
                     $field->setValue(TRUE);
+
                     continue;
                 }
 

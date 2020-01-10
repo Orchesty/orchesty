@@ -72,7 +72,6 @@ class DownloaderCommand extends Command
         $promise = $connector($uri)
             ->then(
                 function (WebSocket $ws) use ($loop, $output, $uri, $browser): void {
-
                     $this->heartbeat = $loop->addPeriodicTimer(
                         5,
                         function () use ($ws): void {
@@ -121,12 +120,15 @@ class DownloaderCommand extends Command
                                             )
                                         );
                                     }
+
                                     break;
                                 case 'pusher_internal:subscription_succeeded':
                                     $output->writeln(sprintf('Success subscribe to channel: %s', $data['channel']));
+
                                     break;
                                 case 'pusher:pong':
                                     $output->writeln('Received pong event.');
+
                                     break;
                                 default:
                                     if (array_key_exists('event', $data) && array_key_exists('channel', $data)) {

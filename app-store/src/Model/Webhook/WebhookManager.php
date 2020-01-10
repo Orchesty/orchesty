@@ -89,9 +89,7 @@ final class WebhookManager
 
                 $webhooks = array_filter(
                     $webhooks,
-                    function (Webhook $webhook) use ($subscription): bool {
-                        return $webhook->getName() === $subscription->getName();
-                    }
+                    fn(Webhook $webhook): bool => $webhook->getName() === $subscription->getName()
                 );
 
                 if ($webhooks) {

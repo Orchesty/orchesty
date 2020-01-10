@@ -265,36 +265,35 @@ networks:
      */
     public function getResponseLogstashInfluxb(): string
     {
-
-        return 'version: \'3.5\'
+        return "version: '3.5'
 services:
         logstash:
-                image: \'dkr.hanaboso.net/pipes/pipes/logstash:master\'
+                image: 'dkr.hanaboso.net/pipes/pipes/logstash:master'
                 environment:
                         MONGO_HOST: mongo
                         MONGO_DATABASE: demo
                         MONGO_COLLECTION: Logs
-                        LS_JAVA_OPTS: \'-Xms512m -Xmx512m\'
+                        LS_JAVA_OPTS: '-Xms512m -Xmx512m'
         influxdb:
-                image: \'dkr.hanaboso.net/pipes/pipes/influxdb:master\'
+                image: 'dkr.hanaboso.net/pipes/pipes/influxdb:master'
                 environment:
                         INFLUXDB_DB: pipes
                 volumes:
-                        - \'influxdb:/var/lib/influxdb\'
+                        - 'influxdb:/var/lib/influxdb'
         kapacitor:
-                image: \'dkr.hanaboso.net/pipes/pipes/kapacitor:master\'
+                image: 'dkr.hanaboso.net/pipes/pipes/kapacitor:master'
                 hostname: kapacitor
         telegraf:
-                image: \'dkr.hanaboso.net/pipes/pipes/rabbitmq-telegraf:master\'
+                image: 'dkr.hanaboso.net/pipes/pipes/rabbitmq-telegraf:master'
                 environment:
                         METRICS_SERVICE: influx
                         METRICS_HOST: kapacitor
                         METRICS_PORT: 9092
         batch:
-                image: \'dkr.hanaboso.net/pipes/demo/monolith:master\'
-                command: \'bin/console rabbit_mq:consumer:batch\'
+                image: 'dkr.hanaboso.net/pipes/demo/monolith:master'
+                command: 'bin/console rabbit_mq:consumer:batch'
                 environment:
-                        BACKEND_HOST: \'${BACKEND_URL}/\'
+                        BACKEND_HOST: '\${BACKEND_URL}/'
                         ELASTIC_HOST: elasticsearch
                         ELASTIC_INDEX: logstash-2018.01.31
                         PHP_FPM_MAX_REQUESTS: 5000
@@ -304,10 +303,10 @@ services:
                         METRICS_PORT: 9100
                         METRICS_SERVICE: influx
         batch-connector:
-                image: \'dkr.hanaboso.net/pipes/demo/monolith:master\'
-                command: \'bin/console rabbit_mq:consumer:batch-connector\'
+                image: 'dkr.hanaboso.net/pipes/demo/monolith:master'
+                command: 'bin/console rabbit_mq:consumer:batch-connector'
                 environment:
-                        BACKEND_HOST: \'${BACKEND_URL}/\'
+                        BACKEND_HOST: '\${BACKEND_URL}/'
                         ELASTIC_HOST: elasticsearch
                         ELASTIC_INDEX: logstash-2018.01.31
                         PHP_FPM_MAX_REQUESTS: 5000
@@ -317,10 +316,10 @@ services:
                         METRICS_PORT: 9100
                         METRICS_SERVICE: influx
         long-running-node:
-                image: \'dkr.hanaboso.net/pipes/demo/monolith:master\'
-                command: \'bin/console rabbit_mq:consumer:long-running-node\'
+                image: 'dkr.hanaboso.net/pipes/demo/monolith:master'
+                command: 'bin/console rabbit_mq:consumer:long-running-node'
                 environment:
-                        BACKEND_HOST: \'${BACKEND_URL}/\'
+                        BACKEND_HOST: '\${BACKEND_URL}/'
                         ELASTIC_HOST: elasticsearch
                         ELASTIC_INDEX: logstash-2018.01.31
                         PHP_FPM_MAX_REQUESTS: 5000
@@ -330,10 +329,10 @@ services:
                         METRICS_PORT: 9100
                         METRICS_SERVICE: influx
         status-service:
-                image: \'dkr.hanaboso.net/pipes/demo/monolith:master\'
-                command: \'bin/console rabbit_mq:consumer:status-service\'
+                image: 'dkr.hanaboso.net/pipes/demo/monolith:master'
+                command: 'bin/console rabbit_mq:consumer:status-service'
                 environment:
-                        BACKEND_HOST: \'${BACKEND_URL}/\'
+                        BACKEND_HOST: '\${BACKEND_URL}/'
                         ELASTIC_HOST: elasticsearch
                         ELASTIC_INDEX: logstash-2018.01.31
                         PHP_FPM_MAX_REQUESTS: 5000
@@ -343,14 +342,14 @@ services:
                         METRICS_PORT: 9100
                         METRICS_SERVICE: influx
         multi-probe:
-                image: \'dkr.hanaboso.net/pipes/pipes/multi-probe:master\'
+                image: 'dkr.hanaboso.net/pipes/pipes/multi-probe:master'
                 environment:
                         REDIS_HOST: redis
                         REDIS_PORT: 6379
-                        REDIS_PASS: \'\'
+                        REDIS_PASS: ''
                         REDIS_DB: 0
         multi-counter:
-                image: \'dkr.hanaboso.net/pipes/pipes/pf-bridge:master\'
+                image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:master'
                 environment:
                         RABBITMQ_HOST: rabbitmq
                         RABBITMQ_PORT: 5672
@@ -359,29 +358,29 @@ services:
                         RABBITMQ_VHOST: /
                         REDIS_HOST: redis
                         REDIS_PORT: 6379
-                        REDIS_PASS: \'\'
+                        REDIS_PASS: ''
                         REDIS_DB: 0
                         COUNTER_PREFETCH: 100
                         METRICS_HOST: kapacitor
                         METRICS_PORT: 9100
                         METRICS_SERVICE: influx
-                command: \'./dist/src/bin/pipes.js start multi_counter\'
+                command: './dist/src/bin/pipes.js start multi_counter'
         starting-point:
-                image: \'dkr.hanaboso.net/pipes/pipes/starting-point:master\'
+                image: 'dkr.hanaboso.net/pipes/pipes/starting-point:master'
                 environment:
-                        APP_DEBUG: \'false\'
+                        APP_DEBUG: 'false'
                         MONGO_HOSTNAME: mongo
                         MONGO_DATABASE: demo
-                        RABBIT_COUNTER_QUEUE_DURABLE: \'true\'
-                        RABBIT_QUEUE_DURABLE: \'true\'
+                        RABBIT_COUNTER_QUEUE_DURABLE: 'true'
+                        RABBIT_QUEUE_DURABLE: 'true'
                         RABBIT_DELIVERY_MODE: 2
                         APP_CLEANUP_TIME: 300
                         METRICS_HOST: kapacitor
                         METRICS_PORT: 9100
                         METRICS_SERVICE: influxdb
         repeater:
-                image: \'dkr.hanaboso.net/pipes/pipes/pf-bridge:master\'
-                command: \'./dist/src/bin/pipes.js start repeater\'
+                image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:master'
+                command: './dist/src/bin/pipes.js start repeater'
                 environment:
                         RABBITMQ_HOST: rabbitmq
                         RABBITMQ_PORT: 5672
@@ -390,16 +389,16 @@ services:
                         RABBITMQ_VHOST: /
                         REDIS_HOST: redis
                         REDIS_PORT: 6379
-                        REDIS_PASS: \'\'
+                        REDIS_PASS: ''
                         REDIS_DB: 0
                         COUNTER_PREFETCH: 100
                         METRICS_HOST: kapacitor
                         METRICS_PORT: 9100
                         METRICS_SERVICE: influx
         monolith-api:
-                image: \'dkr.hanaboso.net/pipes/demo/monolith:master\'
+                image: 'dkr.hanaboso.net/pipes/demo/monolith:master'
                 environment:
-                        BACKEND_HOST: \'${BACKEND_URL}/\'
+                        BACKEND_HOST: '\${BACKEND_URL}/'
                         ELASTIC_HOST: elasticsearch
                         ELASTIC_INDEX: logstash-2018.01.31
                         PHP_FPM_MAX_REQUESTS: 5000
@@ -409,7 +408,7 @@ services:
                         METRICS_PORT: 9100
                         METRICS_SERVICE: influx
         notification-sender-api:
-                image: \'dkr.hanaboso.net/pipes/notification-sender:master\'
+                image: 'dkr.hanaboso.net/pipes/notification-sender:master'
                 environment:
                         RABBIT_HOST: rabbitmq
                         RABBIT_PORT: 5672
@@ -417,7 +416,7 @@ services:
                         RABBIT_PASS: guest
                         MONGO_HOST: mongo
         notification-sender-consumer:
-                image: \'dkr.hanaboso.net/pipes/notification-sender:master\'
+                image: 'dkr.hanaboso.net/pipes/notification-sender:master'
                 environment:
                         RABBIT_HOST: rabbitmq
                         RABBIT_PORT: 5672
@@ -425,9 +424,9 @@ services:
                         RABBIT_PASS: guest
                         MONGO_HOST: mongo
         topology-api:
-                image: \'dkr.hanaboso.net/pipes/pipes/topology-api-v1:master\'
+                image: 'dkr.hanaboso.net/pipes/pipes/topology-api-v1:master'
                 environment:
-                        DEPLOYMENT_PREFIX: \'${DEPLOYMENT_PREFIX}\'
+                        DEPLOYMENT_PREFIX: '\${DEPLOYMENT_PREFIX}'
                         GENERATOR_NETWORK: pipes_default
                         GENERATOR_MODE: compose
                         GENERATOR_PATH: /tmp/topology
@@ -436,18 +435,18 @@ services:
                         MONGO_DATABASE: demo
                         RABBITMQ_HOST: rabbitmq
                 volumes:
-                        - \'/var/run/docker-katerina.bellerova.sock:/var/run/docker.sock\'
-                        - \'/tmp/topology:/tmp/topology\'
+                        - '/var/run/docker-katerina.bellerova.sock:/var/run/docker.sock'
+                        - '/tmp/topology:/tmp/topology'
         frontend:
-                image: \'dkr.hanaboso.net/pipes/pipes/frontend:master\'
+                image: 'dkr.hanaboso.net/pipes/pipes/frontend:master'
                 environment:
-                        BACKEND_URL: \'${BACKEND_URL}\'
-                        FRONTEND_URL: \'${BACKEND_URL}\'
+                        BACKEND_URL: '\${BACKEND_URL}'
+                        FRONTEND_URL: '\${BACKEND_URL}'
                         PHP_WEBROOT: /var/www/html/public
                 ports:
-                        - \'${PUBLISH_HTTP_PORT}:80\'
+                        - '\${PUBLISH_HTTP_PORT}:80'
         stream:
-                image: \'dkr.hanaboso.net/pipes/pipes/stream:master\'
+                image: 'dkr.hanaboso.net/pipes/pipes/stream:master'
                 environment:
                         RABBITMQ_HOST: rabbitmq
                         STREAM_WS_PORT: 80
@@ -458,8 +457,7 @@ volumes:
 networks:
         default:
                 name: pipes_default
-';
-
+";
     }
 
 }

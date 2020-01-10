@@ -69,7 +69,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
         self::assertEquals(500, $response->status);
         self::assertEquals(TopologyException::class, $content->type);
-        self::assertEquals(2402, $content->errorCode);
+        self::assertEquals(2_402, $content->errorCode);
     }
 
     /**
@@ -140,7 +140,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
         self::assertEquals(500, $response->status);
         self::assertEquals(TopologyException::class, $content->type);
-        self::assertEquals(2402, $content->errorCode);
+        self::assertEquals(2_402, $content->errorCode);
     }
 
     /**
@@ -187,7 +187,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
         self::assertEquals(500, $response->status);
         self::assertEquals(TopologyException::class, $content->type);
-        self::assertEquals(2402, $content->errorCode);
+        self::assertEquals(2_402, $content->errorCode);
     }
 
     /**
@@ -247,7 +247,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         $content  = $response->content;
         self::assertEquals(500, $response->status);
         self::assertEquals(TopologyException::class, $content->type);
-        self::assertEquals(2402, $content->errorCode);
+        self::assertEquals(2_402, $content->errorCode);
     }
 
     /**

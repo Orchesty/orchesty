@@ -2,14 +2,15 @@
 
 namespace Hanaboso\PipesPhpSdk\LongRunningNode\Consumer;
 
-use Bunny\Message;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Loader\LongRunningNodeLoader;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeManager;
+use PhpAmqpLib\Message\AMQPMessage;
 use RabbitMqBundle\Connection\Connection;
 use RabbitMqBundle\Consumer\CallbackInterface;
+use RabbitMqBundle\Utils\Message;
 use Throwable;
 
 /**
@@ -43,25 +44,27 @@ class LongRunningNodeCallback implements CallbackInterface
     }
 
     /**
-     * @param Message    $message
-     * @param Connection $connection
-     * @param int        $channelId
+     * @param AMQPMessage $message
+     * @param Connection  $connection
+     * @param int         $channelId
      *
      * @throws OnRepeatException
      */
-    public function processMessage(Message $message, Connection $connection, int $channelId): void
+    public function processMessage(AMQPMessage $message, Connection $connection, int $channelId): void
     {
+        $headers = Message::getHeaders($message);
+
         try {
             $this->manager->saveDocument(
                 $this->loader
-                    ->getLongRunningNode($message->getHeader(PipesHeaders::createKey(PipesHeaders::NODE_NAME)))
+                    ->getLongRunningNode($headers[PipesHeaders::createKey(PipesHeaders::NODE_NAME)] ?? '')
                     ->beforeAction($message)
             );
 
-            $connection->getChannel($channelId)->ack($message);
+            Message::ack($message, $connection, $channelId);
         } catch (Throwable $t) {
             throw new OnRepeatException(
-                (new ProcessDto())->setData($message->content)->setHeaders($message->headers),
+                (new ProcessDto())->setData(Message::getBody($message))->setHeaders($headers),
                 $t->getMessage(),
                 $t->getCode(),
                 $t

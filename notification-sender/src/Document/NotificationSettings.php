@@ -22,7 +22,7 @@ use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
 class NotificationSettings
 {
 
-    public const ID         = '_id';
+    public const ID         = 'id';
     public const TYPE       = 'type';
     public const NAME       = 'name';
     public const CLASS_NAME = 'class';
@@ -100,12 +100,7 @@ class NotificationSettings
      */
     public function setEvents(array $events): NotificationSettings
     {
-        $this->events = array_map(
-            function (string $event): string {
-                return NotificationEventEnum::isValid($event);
-            },
-            $events
-        );
+        $this->events = array_map(fn(string $event): string => NotificationEventEnum::isValid($event), $events);
 
         return $this;
     }
@@ -139,14 +134,14 @@ class NotificationSettings
     public function toArray(string $type, string $name): array
     {
         return [
-            'id'       => $this->id,
-            'created'  => $this->created->format(DateTimeUtils::DATE_TIME),
-            'updated'  => $this->updated->format(DateTimeUtils::DATE_TIME),
-            'name'     => $name,
-            'type'     => $type,
-            'class'    => $this->class,
-            'events'   => $this->events,
-            'settings' => $this->settings,
+            self::ID         => $this->id,
+            'created'        => $this->created->format(DateTimeUtils::DATE_TIME),
+            'updated'        => $this->updated->format(DateTimeUtils::DATE_TIME),
+            self::NAME       => $name,
+            self::TYPE       => $type,
+            self::CLASS_NAME => $this->class,
+            self::EVENTS     => $this->events,
+            self::SETTINGS   => $this->settings,
         ];
     }
 
