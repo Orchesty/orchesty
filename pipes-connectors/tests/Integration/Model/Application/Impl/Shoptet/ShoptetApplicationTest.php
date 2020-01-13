@@ -52,10 +52,10 @@ class ShoptetApplicationTest extends DatabaseTestCaseAbstract
         /** @var OAuth2Provider $provider */
         $provider = self::$container->get('hbpf.providers.oauth2_provider');
         /** @var DocumentManager $dm */
-        $dm       = self::$container->get('doctrine_mongodb.odm.default_document_manager');
+        $dm = self::$container->get('doctrine_mongodb.odm.default_document_manager');
         /** @var CurlManager $sender */
-        $sender   = self::$container->get('hbpf.transport.curl_manager');
-        $shoptet  = new ShoptetApplication($provider, $dm, $sender);
+        $sender  = self::$container->get('hbpf.transport.curl_manager');
+        $shoptet = new ShoptetApplication($provider, $dm, $sender);
 
         self::assertIsObject($shoptet);
     }
@@ -177,10 +177,14 @@ class ShoptetApplicationTest extends DatabaseTestCaseAbstract
     {
         $this->setApplication();
         $applicationInstall = DataProvider::getOauth2AppInstall($this->application->getKey())
-            ->setSettings([ApplicationAbstract::FORM => ['oauth_url' => 'https://12345.myshoptet.com/action/ApiOAuthServer/token']]);
+            ->setSettings(
+                [ApplicationAbstract::FORM => ['oauth_url' => 'https://12345.myshoptet.com/action/ApiOAuthServer/token']]
+            );
 
-        self::assertEquals('https://12345.myshoptet.com/action/ApiOAuthServer/token',
-            $this->application->getAuthUrlWithServerUrl($applicationInstall));
+        self::assertEquals(
+            'https://12345.myshoptet.com/action/ApiOAuthServer/token',
+            $this->application->getAuthUrlWithServerUrl($applicationInstall)
+        );
     }
 
     /**
@@ -191,10 +195,14 @@ class ShoptetApplicationTest extends DatabaseTestCaseAbstract
     {
         $this->setApplication();
         $applicationInstall = DataProvider::getOauth2AppInstall($this->application->getKey())
-            ->setSettings([ApplicationAbstract::FORM => ['api_token_url' => 'https://12345.myshoptet.com/action/ApiOAuthServer/getAccessToken']]);
+            ->setSettings(
+                [ApplicationAbstract::FORM => ['api_token_url' => 'https://12345.myshoptet.com/action/ApiOAuthServer/getAccessToken']]
+            );
 
-        self::assertEquals('https://12345.myshoptet.com/action/ApiOAuthServer/getAccessToken',
-            $this->application->getTokenUrlWithServerUrl($applicationInstall));
+        self::assertEquals(
+            'https://12345.myshoptet.com/action/ApiOAuthServer/getAccessToken',
+            $this->application->getTokenUrlWithServerUrl($applicationInstall)
+        );
     }
 
     /**
@@ -378,13 +386,15 @@ class ShoptetApplicationTest extends DatabaseTestCaseAbstract
     {
         $this->setApplication();
         $applicationInstall = DataProvider::getOauth2AppInstall($this->application->getKey())
-            ->setSettings([
-                ApplicationAbstract::FORM =>
-                    [
-                        'api_token_url' => 'https://12345.myshoptet.com/action/ApiOAuthServer/token',
-                        'oauth_url'     => 'https://12345.myshoptet.com/action/ApiOAuthServer/getAccessToken',
-                    ],
-            ]);
+            ->setSettings(
+                [
+                    ApplicationAbstract::FORM =>
+                        [
+                            'api_token_url' => 'https://12345.myshoptet.com/action/ApiOAuthServer/token',
+                            'oauth_url'     => 'https://12345.myshoptet.com/action/ApiOAuthServer/getAccessToken',
+                        ],
+                ]
+            );
 
         $crateDto = $this->invokeMethod(
             $this->application,
@@ -415,7 +425,7 @@ class ShoptetApplicationTest extends DatabaseTestCaseAbstract
             self::$container->get('hbpf.application.shoptet'),
             'sender',
             $this->prepareSender(
-                fn(): ResponseDto => new ResponseDto(
+                static fn(): ResponseDto => new ResponseDto(
                     200,
                     'api token',
                     $jsonContent,

@@ -135,4 +135,3 @@ final class AirtableApplicationTest extends DatabaseTestCaseAbstract
     }
 
 }
-

@@ -19,7 +19,7 @@ use Tests\MockCurlMethod;
 final class HubspotCreateContactMapperTest extends DatabaseTestCaseAbstract
 {
 
-    public const API_KEY = '3cc4771e-deb7-4905-8e6b-d2**********';
+    public const API_KEY    = '3cc4771e-deb7-4905-8e6b-d2**********';
     public const API_SECRET = '5ef27043-34cc-43d1-9751-65**********';
 
     /**
@@ -73,7 +73,7 @@ final class HubspotCreateContactMapperTest extends DatabaseTestCaseAbstract
 
         $hubspotCreateContactMapper = new HubspotCreateContactMapper();
         $dto                        = $hubspotCreateContactMapper->process($response);
-        $dtoNoBody                        = $hubspotCreateContactMapper->process($responseNoBody);
+        $dtoNoBody                  = $hubspotCreateContactMapper->process($responseNoBody);
 
         self::assertEquals(
             Json::decode($dto->getData()),
@@ -83,7 +83,6 @@ final class HubspotCreateContactMapperTest extends DatabaseTestCaseAbstract
         );
 
         self::assertEquals($dtoNoBody->getHeaders()['pf-result-code'], ProcessDto::STOP_AND_FAILED);
-
     }
 
 }

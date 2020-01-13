@@ -14,6 +14,7 @@ use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use React\EventLoop\Factory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Throwable;
 
 /**
  * Class KernelTestCaseAbstract
@@ -63,7 +64,7 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
 
         $mock = self::createMock(RedirectInterface::class);
         $mock->method('make')->willReturnCallback(
-            function (string $url) use ($expectedUrl): void {
+            static function (string $url) use ($expectedUrl): void {
                 $url = preg_replace('/state=[a-zA-Z0-9].*&/', 'state=state&', $url, 1);
                 self::assertEquals($expectedUrl, $url);
             }
@@ -206,15 +207,15 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
         $batch->processBatch(
             $dto,
             $loop,
-            $closure ?: function (): void {
+            $closure ?: static function (): void {
                 self::assertTrue(TRUE);
             }
         )->then(
-            function (): void {
+            static function (): void {
                 self::assertTrue(TRUE);
             },
-            function (): void {
-                self::fail('Something gone wrong!');
+            static function (Throwable $throwable): void {
+                self::fail(sprintf('%s%s%s', $throwable->getMessage(), PHP_EOL, $throwable->getTraceAsString()));
             }
         );
 

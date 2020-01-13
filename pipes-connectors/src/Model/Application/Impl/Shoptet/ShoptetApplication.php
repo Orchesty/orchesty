@@ -273,8 +273,10 @@ final class ShoptetApplication extends OAuth2ApplicationAbstract implements Webh
     {
         $oauthAccessToken = $this->getAccessToken($applicationInstall);
 
-        $request = new RequestDto(CurlManager::METHOD_POST,
-            $this->getUri($this->getTokenUrlWithServerUrl($applicationInstall)));
+        $request = new RequestDto(
+            CurlManager::METHOD_POST,
+            $this->getUri($this->getTokenUrlWithServerUrl($applicationInstall))
+        );
         $request->setHeaders(
             [
                 'Authorization' => sprintf('Bearer %s', $oauthAccessToken),

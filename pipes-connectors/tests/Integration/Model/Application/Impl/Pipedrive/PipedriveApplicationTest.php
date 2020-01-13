@@ -78,7 +78,6 @@ final class PipedriveApplicationTest extends DatabaseTestCaseAbstract
             'https://api.pipedrive.com/v1/webhooks/388?api_token=ebcebe5e73aa8ba62**********80c05377fcd63',
             $requestUn->getUriString()
         );
-
     }
 
     /**
@@ -133,7 +132,6 @@ final class PipedriveApplicationTest extends DatabaseTestCaseAbstract
         $field = $this->application->getSettingsForm()->getFields();
         self::assertInstanceOf(Field::class, $field[0]);
         self::assertContains($field[0]->getKey(), ['user']);
-
     }
 
     /**

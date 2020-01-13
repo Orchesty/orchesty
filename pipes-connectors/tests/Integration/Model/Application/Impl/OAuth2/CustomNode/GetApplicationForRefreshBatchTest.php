@@ -30,7 +30,7 @@ class GetApplicationForRefreshBatchTest extends DatabaseTestCaseAbstract
         $this->assertBatch(
             self::$container->get('hbpf.custom_node.get_application_for_refresh_batch'),
             new ProcessDto(),
-            function (SuccessMessage $successMessage): void {
+            static function (SuccessMessage $successMessage): void {
                 self::assertEquals('', $successMessage->getData());
             }
         );

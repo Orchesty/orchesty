@@ -92,6 +92,6 @@ abstract class AwsObjectConnectorAbstract extends ConnectorAbstract
     /**
      * @return string
      */
-    protected abstract function getCustomId(): string;
+    abstract protected function getCustomId(): string;
 
 }

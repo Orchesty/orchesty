@@ -108,4 +108,3 @@ final class MailchimpTagContactConnector extends ConnectorAbstract
     }
 
 }
-

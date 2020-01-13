@@ -32,33 +32,17 @@ final class AirtableNewRecordConnectorTest extends DatabaseTestCaseAbstract
      */
     public function testProcessAction(): void
     {
-        $this->mockCurl(
-            [
-                new MockCurlMethod(
-                    200,
-                    'response200.json',
-                    []
-                ),
-            ]
-        );
+        $this->mockCurl([new MockCurlMethod(200, 'response200.json', [])]);
 
         $airtableNewRecordConnector = $this->setApplicationAndMock(self::API_KEY);
 
         $newRecordFile = file_get_contents(sprintf('%s/Data/newRecord.json', __DIR__), TRUE);
 
         $response = $airtableNewRecordConnector->processAction(
-            DataProvider::getProcessDto(
-                'airtable',
-                'user',
-                (string) $newRecordFile
-            )
+            DataProvider::getProcessDto('airtable', 'user', (string) $newRecordFile)
         );
 
-        self::assertSuccessProcessResponse(
-            $response,
-            'response200.json'
-        );
-
+        self::assertSuccessProcessResponse($response, 'response200.json');
     }
 
     /**
@@ -66,30 +50,15 @@ final class AirtableNewRecordConnectorTest extends DatabaseTestCaseAbstract
      */
     public function testProcessActionNoFields(): void
     {
-        $this->mockCurl(
-            [
-                new MockCurlMethod(
-                    500,
-                    'response500.json',
-                    []
-                ),
-            ]
-        );
+        $this->mockCurl([new MockCurlMethod(500, 'response500.json', [])]);
 
         $airtableNewRecordConnector = $this->setApplicationAndMock(self::API_KEY);
         $newRecordFileNoFields      = file_get_contents(sprintf('%s/Data/newRecordNoFields.json', __DIR__), TRUE);
         $response                   = $airtableNewRecordConnector->processAction(
-            DataProvider::getProcessDto(
-                'airtable',
-                'user',
-                (string) $newRecordFileNoFields
-            )
+            DataProvider::getProcessDto('airtable', 'user', (string) $newRecordFileNoFields)
         );
 
-        self::assertFailedProcessResponse(
-            $response,
-            'response500.json'
-        );
+        self::assertFailedProcessResponse($response, 'response500.json');
 
         self::assertEquals($response->getHeaders()['pf-result-code'], ProcessDto::STOP_AND_FAILED);
     }
@@ -104,20 +73,12 @@ final class AirtableNewRecordConnectorTest extends DatabaseTestCaseAbstract
         $newRecordFile = file_get_contents(sprintf('%s/Data/newRecord.json', __DIR__), TRUE);
 
         $response = $airtableNewRecordConnector->processAction(
-            DataProvider::getProcessDto(
-                'airtable',
-                'user',
-                (string) $newRecordFile
-            )
+            DataProvider::getProcessDto('airtable', 'user', (string) $newRecordFile)
         );
 
-        self::assertFailedProcessResponse(
-            $response,
-            'newRecord.json'
-        );
+        self::assertFailedProcessResponse($response, 'newRecord.json');
 
         self::assertEquals($response->getHeaders()['pf-result-code'], ProcessDto::STOP_AND_FAILED);
-
     }
 
     /**
@@ -128,13 +89,7 @@ final class AirtableNewRecordConnectorTest extends DatabaseTestCaseAbstract
         $airtableNewRecordConnector = $this->setApplication();
 
         self::expectException(ConnectorException::class);
-        $airtableNewRecordConnector->processEvent(
-            DataProvider::getProcessDto(
-                'airtable',
-                'user',
-                ''
-            )
-        );
+        $airtableNewRecordConnector->processEvent(DataProvider::getProcessDto('airtable', 'user', ''));
     }
 
     /**
@@ -207,4 +162,3 @@ final class AirtableNewRecordConnectorTest extends DatabaseTestCaseAbstract
     }
 
 }
-

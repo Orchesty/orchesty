@@ -82,7 +82,6 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
                 ]
             );
         }
-
     }
 
     /**
@@ -205,7 +204,6 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
             'https://api.hubapi.com/webhooks/v1/123xx/subscriptions/id123?hapikey=21a0d413-e204-4138-9ede-************&userId=89*****',
             $responseUn->getUriString()
         );
-
     }
 
     /**

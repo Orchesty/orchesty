@@ -126,7 +126,6 @@ final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
                 ''
             )
         );
-
     }
 
     /**
@@ -156,4 +155,3 @@ final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
     }
 
 }
-

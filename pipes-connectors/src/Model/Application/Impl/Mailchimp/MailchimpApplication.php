@@ -290,4 +290,3 @@ final class MailchimpApplication extends OAuth2ApplicationAbstract implements We
     }
 
 }
-

@@ -127,7 +127,6 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
             ),
             $requestUn->getUriString()
         );
-
     }
 
     /**
@@ -184,7 +183,6 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
                 ]
             );
         }
-
     }
 
     /**

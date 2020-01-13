@@ -23,8 +23,6 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
     public const API_KEY    = '79620d3760d**********18f8a35dec8';
     public const API_SECRET = '9cabe470**********751904f45f80e2';
 
-    public const token = 'ODkxOWJiMjEzYWFiNDdiNDhmN2JiMDdmMWNlMWUyNWM6OTk**********jE1NDQ5OWEzODIyMWQyMjM3NTQyNGI=';
-
     /**
      * @var ShipstationApplication
      */
@@ -78,7 +76,6 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
             $requestUn->getUriString(),
             'https://ssapi.shipstation.com/webhooks/358'
         );
-
     }
 
     /**
@@ -134,7 +131,6 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
             self::assertInstanceOf(Field::class, $field);
             self::assertContains($field->getKey(), ['user', 'password']);
         }
-
     }
 
     /**

@@ -17,7 +17,7 @@ use Tests\DataProvider;
 final class NutshellApplicationTest extends DatabaseTestCaseAbstract
 {
 
-    public const USER = 'user@user.com';
+    public const USER    = 'user@user.com';
     public const API_KEY = '271cca5c67c**********427b659988cc38e2f78';
 
     /**
@@ -105,7 +105,6 @@ final class NutshellApplicationTest extends DatabaseTestCaseAbstract
             self::assertInstanceOf(Field::class, $field);
             self::assertContains($field->getKey(), ['user', 'password']);
         }
-
     }
 
 }

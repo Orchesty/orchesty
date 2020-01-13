@@ -85,7 +85,6 @@ final class ShipstationNewOrderConnectorTest extends DatabaseTestCaseAbstract
         }
 
         self::assertEquals($responseNoUrl->getHeaders()['pf-result-code'], ProcessDto::STOP_AND_FAILED);
-
     }
 
     /**
@@ -116,7 +115,6 @@ final class ShipstationNewOrderConnectorTest extends DatabaseTestCaseAbstract
                 (string) file_get_contents(sprintf('%s/Data/newOrder.json', __DIR__), TRUE)
             )
         );
-
     }
 
     /**
@@ -146,4 +144,3 @@ final class ShipstationNewOrderConnectorTest extends DatabaseTestCaseAbstract
     }
 
 }
-

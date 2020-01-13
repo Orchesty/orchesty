@@ -104,7 +104,7 @@ final class S3DeleteObjectConnectorTest extends DatabaseTestCaseAbstract
         /** @var S3Client|MockObject $client */
         $client = self::createPartialMock(S3Client::class, ['__call']);
         $client->method('__call')->willReturnCallback(
-            function (): void {
+            static function (): void {
                 throw new S3Exception('Something gone wrong!', new Command('Unknown'));
             }
         );

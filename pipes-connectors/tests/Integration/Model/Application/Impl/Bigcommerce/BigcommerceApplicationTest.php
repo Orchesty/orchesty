@@ -57,7 +57,6 @@ final class BigcommerceApplicationTest extends DatabaseTestCaseAbstract
         $this->pf($applicationInstall);
         $this->assertEquals(TRUE, $this->application->isAuthorized($applicationInstall));
         $this->application->authorize($applicationInstall);
-
     }
 
     /**
@@ -137,7 +136,6 @@ final class BigcommerceApplicationTest extends DatabaseTestCaseAbstract
             self::assertInstanceOf(Field::class, $field);
             self::assertContains($field->getKey(), ['client_id', 'client_secret']);
         }
-
     }
 
 }

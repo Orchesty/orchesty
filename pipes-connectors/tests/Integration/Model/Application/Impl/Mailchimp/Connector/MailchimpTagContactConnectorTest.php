@@ -125,7 +125,6 @@ final class MailchimpTagContactConnectorTest extends DatabaseTestCaseAbstract
                 ''
             )
         );
-
     }
 
     /**
@@ -155,4 +154,3 @@ final class MailchimpTagContactConnectorTest extends DatabaseTestCaseAbstract
     }
 
 }
-

@@ -111,7 +111,7 @@ class ZohoApplicationTest extends DatabaseTestCaseAbstract
             CurlManager::METHOD_POST,
             'https://www.zohoapis.com/crm/v2/settings/modules',
             'data'
-            );
+        );
 
         self::assertEquals(
             $dto->getHeaders(),
@@ -171,8 +171,12 @@ class ZohoApplicationTest extends DatabaseTestCaseAbstract
      */
     private function setApplication(): void
     {
-        $this->mockRedirect('https://accounts.zoho.eu/oauth/v2/auth', self::CLIENT_ID,
-            'ZohoCRM.modules.ALL ZohoCRM.settings.ALL');
+        $this->mockRedirect(
+            'https://accounts.zoho.eu/oauth/v2/auth',
+            self::CLIENT_ID,
+            'ZohoCRM.modules.ALL ZohoCRM.settings.ALL'
+        );
+
         $this->application = self::$container->get('hbpf.application.zoho');
     }
 

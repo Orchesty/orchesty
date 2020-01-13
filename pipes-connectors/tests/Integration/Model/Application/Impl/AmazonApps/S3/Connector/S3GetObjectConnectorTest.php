@@ -76,7 +76,7 @@ final class S3GetObjectConnectorTest extends DatabaseTestCaseAbstract
             /** @var S3Client|MockObject $client */
             $client = self::createPartialMock(S3Client::class, ['__call']);
             $client->method('__call')->willReturnCallback(
-                function (string $method, array $parameters): void {
+                static function (string $method, array $parameters): void {
                     $method;
 
                     file_put_contents($parameters[0]['SaveAs'], 'Content');

@@ -96,4 +96,3 @@ final class MailchimpCreateContactMapperTest extends DatabaseTestCaseAbstract
     }
 
 }
-

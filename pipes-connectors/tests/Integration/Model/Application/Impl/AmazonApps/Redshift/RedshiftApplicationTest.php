@@ -187,7 +187,7 @@ final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
         /** @var RedshiftClient|MockObject $client */
         $client = self::createPartialMock(RedshiftClient::class, ['__call']);
         $client->method('__call')->willReturnCallback(
-            fn(): Result => new Result(
+            static fn(): Result => new Result(
                 [
                     'Clusters' => [
                         [
@@ -252,7 +252,7 @@ final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
 
         /** @var RedshiftClient|MockObject $client */
         $client = self::createPartialMock(RedshiftClient::class, ['__call']);
-        $client->method('__call')->willReturnCallback(fn(): Result => new Result(['Clusters' => [FALSE]]));
+        $client->method('__call')->willReturnCallback(static fn(): Result => new Result(['Clusters' => [FALSE]]));
 
         /** @var RedshiftApplication|MockObject $innerApplication */
         $innerApplication = self::createPartialMock(RedshiftApplication::class, ['getRedshiftClient']);
@@ -275,7 +275,7 @@ final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
      */
     public function testGetConnection(): void
     {
-        $this->prepareConnection(fn() => TRUE);
+        $this->prepareConnection(static fn() => TRUE);
 
         $settings = [
             'host'           => '',
@@ -303,7 +303,7 @@ final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
             'Connection to Redshift db was unsuccessful.'
         );
 
-        $this->prepareConnection(fn() => FALSE);
+        $this->prepareConnection(static fn() => FALSE);
 
         $this->application->getConnection(
             (new ApplicationInstall())->setSettings(

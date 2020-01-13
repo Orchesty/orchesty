@@ -111,4 +111,3 @@ final class MailchimpCreateContactConnector extends ConnectorAbstract
     }
 
 }
-
