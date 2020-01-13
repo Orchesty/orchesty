@@ -97,7 +97,7 @@ class ApplicationController extends AbstractFOSRestController
     {
         try {
             [$user, $key] = OAuth2Provider::stateDecode($request->get('state'));
-            $url = $this->applicationHandler->saveAuthToken($key, $user, $request->query->all());
+            $url          = $this->applicationHandler->saveAuthToken($key, $user, $request->query->all());
 
             return new RedirectResponse($url[ApplicationInterface::REDIRECT_URL]);
         } catch (Exception|Throwable $e) {

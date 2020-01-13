@@ -6,7 +6,6 @@ rabbit_mq:
 
     consumers:
         batch:
-            class: Hanaboso\PipesPhpSdk\CustomNode\Model\Batch\BatchConsumer
             queue: pipes.batch
             async: true
             callback: hbpf.custom_nodes.batch_callback
@@ -14,7 +13,6 @@ rabbit_mq:
 
     publishers:
         test_batch:
-            class: Hanaboso\PipesPhpSdk\CustomNode\Model\Batch\BatchProducer
             exchange: pipes.test_batch
 
 services:

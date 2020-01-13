@@ -116,7 +116,7 @@ class LongRunningNodeHandler
     /**
      * @param GridRequestDto $dto
      * @param string         $topologyId
-     * @param null|string    $nodeId
+     * @param string|null    $nodeId
      *
      * @return mixed[]
      * @throws Exception
@@ -144,7 +144,7 @@ class LongRunningNodeHandler
     /**
      * @param GridRequestDto $dto
      * @param string         $topologyName
-     * @param null|string    $nodeName
+     * @param string|null    $nodeName
      *
      * @return mixed[]
      * @throws Exception
@@ -187,7 +187,7 @@ class LongRunningNodeHandler
      */
     public function updateLongRunningNode(string $id, array $data): array
     {
-        /** @var LongRunningNodeData|NULL $node */
+        /** @var LongRunningNodeData|null $node */
         $node = $this->dm->find(LongRunningNodeData::class, $id);
 
         if (!$node) {

@@ -86,7 +86,7 @@ final class AuthorizeUserCommandTest extends DatabaseTestCaseAbstract
             $dto,
             'token/url',
             'authorize/url',
-            function (): void {
+            static function (): void {
             },
             []
         );

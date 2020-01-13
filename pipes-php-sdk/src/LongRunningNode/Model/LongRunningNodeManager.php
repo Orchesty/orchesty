@@ -47,7 +47,7 @@ class LongRunningNodeManager
     /**
      * @param string      $topologyId
      * @param string      $nodeId
-     * @param null|string $token
+     * @param string|null $token
      *
      * @return LongRunningNodeData|null
      */

@@ -49,7 +49,7 @@ final class OAuth1ProviderTest extends TestCase
             $dto,
             'token/url',
             'authorize/url',
-            function (): void {
+            static function (): void {
             },
             []
         );
@@ -175,7 +175,7 @@ final class OAuth1ProviderTest extends TestCase
 
         $redirect = self::createMock(RedirectInterface::class);
         $redirect->method('make')->with($authorizeUrl)->willReturnCallback(
-            function (): void {
+            static function (): void {
             }
         );
 

@@ -75,7 +75,7 @@ final class BatchConsumerCallbackTest extends TestCase
             ->processMessage($this->createMessage($headers), $connection, 1, $loop)
             ->then(
                 NULL,
-                function (Exception $e) use ($loop, $message): void {
+                static function (Exception $e) use ($loop, $message): void {
                     self::assertInstanceOf(InvalidArgumentException::class, $e);
                     self::assertSame($message, $e->getMessage());
                     $loop->stop();
@@ -188,12 +188,12 @@ final class BatchConsumerCallbackTest extends TestCase
         $callback
             ->processMessage($this->createMessage($headers), $connection, 1, $loop)
             ->then(
-                function () use ($loop): void {
+                static function () use ($loop): void {
                     self::assertTrue(TRUE);
 
                     $loop->stop();
                 },
-                function (Throwable $throwable) use ($loop): void {
+                static function (Throwable $throwable) use ($loop): void {
                     $loop->stop();
 
                     self::fail(sprintf('%s%s%s', $throwable->getMessage(), PHP_EOL, $throwable->getTraceAsString()));
@@ -246,12 +246,12 @@ final class BatchConsumerCallbackTest extends TestCase
         $callback
             ->processMessage($this->createMessage($headers), $connection, 1, $loop)
             ->then(
-                function () use ($loop): void {
+                static function () use ($loop): void {
                     self::assertTrue(TRUE);
 
                     $loop->stop();
                 },
-                function (Throwable $throwable) use ($loop): void {
+                static function (Throwable $throwable) use ($loop): void {
                     $loop->stop();
 
                     self::fail(sprintf('%s%s%s', $throwable->getMessage(), PHP_EOL, $throwable->getTraceAsString()));
@@ -304,12 +304,12 @@ final class BatchConsumerCallbackTest extends TestCase
         $callback
             ->processMessage($this->createMessage($headers), $connection, 1, $loop)
             ->then(
-                function () use ($loop): void {
+                static function () use ($loop): void {
                     self::assertTrue(TRUE);
 
                     $loop->stop();
                 },
-                function (Throwable $throwable) use ($loop): void {
+                static function (Throwable $throwable) use ($loop): void {
                     $loop->stop();
 
                     self::fail(sprintf('%s%s%s', $throwable->getMessage(), PHP_EOL, $throwable->getTraceAsString()));
@@ -362,7 +362,7 @@ final class BatchConsumerCallbackTest extends TestCase
             ->processMessage($this->createMessage($headers), $connection, 1, $loop)
             ->then(
                 NULL,
-                function (Exception $e) use ($loop): void {
+                static function (Exception $e) use ($loop): void {
                     self::assertInstanceOf(InvalidArgumentException::class, $e);
                     self::assertSame('Unsupported type "unknown".', $e->getMessage());
                     $loop->stop();

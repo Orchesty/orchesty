@@ -162,7 +162,7 @@ final class OAuth2ProviderTest extends TestCase
     {
         $redirect = self::createMock(RedirectInterface::class);
         $redirect->method('make')->willReturnCallback(
-            function (): void {
+            static function (): void {
             }
         );
 

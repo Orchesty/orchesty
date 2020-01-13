@@ -67,11 +67,11 @@ class Field
     /**
      * Field constructor.
      *
-     * @param string       $type
-     * @param string       $key
-     * @param string       $label
-     * @param null | mixed $value
-     * @param bool         $required
+     * @param string $type
+     * @param string $key
+     * @param string $label
+     * @param mixed  $value
+     * @param bool   $required
      *
      * @throws ApplicationInstallException
      */

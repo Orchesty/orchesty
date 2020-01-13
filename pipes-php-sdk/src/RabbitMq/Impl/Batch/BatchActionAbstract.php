@@ -64,7 +64,7 @@ abstract class BatchActionAbstract implements BatchActionInterface, LoggerAwareI
     }
 
     /**
-     * @param null|string $value
+     * @param string|null $value
      *
      * @return bool
      */

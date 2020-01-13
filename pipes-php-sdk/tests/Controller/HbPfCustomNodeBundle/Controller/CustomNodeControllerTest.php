@@ -83,7 +83,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
         $joinerHandlerMock
             ->method('processTest')
             ->willReturnCallback(
-                function (): void {
+                static function (): void {
                 }
             );
 

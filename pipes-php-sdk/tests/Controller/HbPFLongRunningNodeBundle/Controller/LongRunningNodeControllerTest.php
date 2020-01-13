@@ -29,8 +29,7 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
         /** @var LongRunningNodeHandler|MockObject $handler */
         $handler = self::createMock(LongRunningNodeHandler::class);
         $handler->method('process')->willReturnCallback(
-            function (string $nodeId, array $data, array $headers): ProcessDto {
-                $headers;
+            static function (string $nodeId, array $data): ProcessDto {
                 self::assertEquals(['cont'], $data);
                 self::assertEquals('node', $nodeId);
 

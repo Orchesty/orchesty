@@ -1,9 +1,8 @@
 TEST=make test && make docker-down-clean
-CLEAN=rm -rf vendor && make docker-up-force
+VENDOR=rm -rf vendor
+DOCKER=make docker-up-force
+INSTALL=docker-compose exec -T app composer global require hirak/prestissimo
 COMPOSER=make composer-update
-INSTALL1=docker-compose exec -T app composer global require hirak/prestissimo
-INSTALL2=docker-compose exec -T php-dev composer global require hirak/prestissimo
-INSTALL3=docker-compose exec -T pipes-api composer global require hirak/prestissimo
 
 test: test-php
 
@@ -16,11 +15,20 @@ test-php:
 	cd notification-sender && $(TEST)
 	cd clients/demo/pipes-api && $(TEST)
 
+vendor-remove:
+	cd pipes-php-sdk && $(VENDOR)
+	cd app-store && $(VENDOR)
+	cd pipes-connectors && $(VENDOR)
+	cd pf-bundles && $(VENDOR)
+	cd portal && $(VENDOR)
+	cd notification-sender && $(VENDOR)
+	cd clients/demo/pipes-api && $(VENDOR)
+
 vendor-refresh:
-	cd pipes-php-sdk && $(CLEAN) && $(INSTALL2) && $(COMPOSER)
-	cd app-store && $(CLEAN) && $(INSTALL1) && $(COMPOSER)
-	cd pipes-connectors && $(CLEAN) && $(INSTALL1) && $(COMPOSER)
-	cd pf-bundles && $(CLEAN) && $(INSTALL2) && $(COMPOSER)
-	cd portal && $(CLEAN) && $(INSTALL1) && $(COMPOSER)
-	cd notification-sender && $(CLEAN) && $(INSTALL1) && $(COMPOSER)
-	cd clients/demo/pipes-api && $(CLEAN) && $(INSTALL3) && $(COMPOSER)
+	cd pipes-php-sdk && $(VENDOR) && $(DOCKER) && $(INSTALL) && $(COMPOSER)
+	cd app-store && $(VENDOR) && $(DOCKER) && $(INSTALL) && $(COMPOSER)
+	cd pipes-connectors && $(VENDOR) && $(DOCKER) && $(INSTALL) && $(COMPOSER)
+	cd pf-bundles && $(VENDOR) && $(DOCKER) && $(INSTALL) && $(COMPOSER)
+	cd portal && $(VENDOR) && $(DOCKER) && $(INSTALL) && $(COMPOSER)
+	cd notification-sender && $(VENDOR) && $(DOCKER) && $(INSTALL) && $(COMPOSER)
+	cd clients/demo/pipes-api && $(VENDOR) && $(DOCKER) && $(INSTALL) && $(COMPOSER)

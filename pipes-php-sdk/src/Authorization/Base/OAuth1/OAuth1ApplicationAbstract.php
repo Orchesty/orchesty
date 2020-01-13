@@ -190,7 +190,7 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
      */
     protected function saveOauthStuff(): callable
     {
-        return function (DocumentManager $dm, OAuth1Dto $dto, array $data): void {
+        return static function (DocumentManager $dm, OAuth1Dto $dto, array $data): void {
             $dto->getApplicationInstall()->setSettings(
                 [ApplicationInterface::AUTHORIZATION_SETTINGS => [OAuth1ApplicationInterface::OAUTH => $data]]
             );

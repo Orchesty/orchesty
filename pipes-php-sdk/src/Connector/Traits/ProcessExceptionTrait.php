@@ -18,7 +18,7 @@ trait ProcessExceptionTrait
     /**
      * @return string
      */
-    public abstract function getId(): string;
+    abstract public function getId(): string;
 
     /**
      * @param string $message

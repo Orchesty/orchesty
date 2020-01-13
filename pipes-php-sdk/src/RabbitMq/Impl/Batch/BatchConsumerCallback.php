@@ -153,7 +153,7 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
     }
 
     /**
-     * @param null|string $value
+     * @param string|null $value
      *
      * @return bool
      */
@@ -197,9 +197,9 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
                     );
                 }
             )
-            ->then(fn(): AMQPChannel => $connection->getClient()->channel())
+            ->then(static fn(): AMQPChannel => $connection->getClient()->channel())
             ->then(
-                function (AMQPChannel $channel) use ($headers, &$replyChannel): AMQPChannel {
+                static function (AMQPChannel $channel) use ($headers, &$replyChannel): AMQPChannel {
                     $replyChannel = $channel;
 
                     $channel->queue_declare($headers[self::REPLY_TO] ?? '', FALSE, FALSE, FALSE, FALSE);
@@ -293,7 +293,7 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
         $headers = array_merge($headers, [PipesHeaders::createKey(PipesHeaders::RESULT_CODE) => 0]);
         $channel->basic_publish(Message::create('', $headers), '', $headers[self::REPLY_TO] ?? '');
 
-        return (new Promise(fn(callable $resolve) => $resolve()))->then(
+        return (new Promise(static fn(callable $resolve) => $resolve()))->then(
             function () use ($headers): void {
                 $this->logger->debug(
                     'Published test item.',
@@ -327,7 +327,7 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
 
         $channel->basic_publish(Message::create('', $headers), '', $headers[self::REPLY_TO] ?? '');
 
-        return (new Promise(fn(callable $resolve) => $resolve()))->then(
+        return (new Promise(static fn(callable $resolve) => $resolve()))->then(
             function () use ($headers): void {
                 $this->logger->error(
                     'Published test item error.',
@@ -373,8 +373,7 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
         $headers = Message::getHeaders($message);
 
         // Limiter
-        if (
-            $successMessage->hasHeader(PipesHeaders::createKey(PipesHeaders::RESULT_CODE)) &&
+        if ($successMessage->hasHeader(PipesHeaders::createKey(PipesHeaders::RESULT_CODE)) &&
             $successMessage->getHeader(PipesHeaders::createKey(PipesHeaders::RESULT_CODE)) == 1_004
         ) {
             $message->set(
@@ -410,7 +409,7 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
             $headers[self::REPLY_TO] ?? ''
         );
 
-        return (new Promise(fn(callable $resolve) => $resolve()))->then(
+        return (new Promise(static fn(callable $resolve) => $resolve()))->then(
             function () use ($successMessage, $headers): void {
                 $this->logger->debug(
                     sprintf('Published batch item %s.', $successMessage->getSequenceId()),
@@ -452,7 +451,7 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
 
         $channel->basic_publish(Message::create('', $headers), '', $headers[self::REPLY_TO] ?? '');
 
-        return (new Promise(fn(callable $resolve) => $resolve()))->then(
+        return (new Promise(static fn(callable $resolve) => $resolve()))->then(
             function () use ($headers): void {
                 $this->logger->debug(
                     'Published batch end.',
@@ -492,7 +491,7 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
 
         $channel->basic_publish(Message::create('', $headers), '', $headers[self::REPLY_TO] ?? '');
 
-        return (new Promise(fn(callable $resolve) => $resolve()))->then(
+        return (new Promise(static fn(callable $resolve) => $resolve()))->then(
             function () use ($headers): void {
                 $this->logger->error(
                     'Published batch error end.',

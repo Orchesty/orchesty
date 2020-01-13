@@ -75,7 +75,7 @@ final class JoinerControllerTest extends ControllerTestCaseAbstract
         $joinerHandlerMock
             ->method('processJoinerTest')
             ->willReturnCallback(
-                function (): void {
+                static function (): void {
                 }
             );
 

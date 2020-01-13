@@ -14,12 +14,12 @@ use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Utils\GeneratorUtils;
 use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
-use Hanaboso\PipesPhpSdk\RabbitMq\Producer\AbstractProducer;
 use InvalidArgumentException;
-use PhpAmqpLib\Channel\AMQPChannel;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use RabbitMqBundle\Connection\Connection;
+use RabbitMqBundle\Publisher\Publisher;
 use RabbitMqBundle\Utils\Message;
 
 /**
@@ -31,9 +31,14 @@ abstract class RabbitCustomNode extends CustomNodeAbstract implements LoggerAwar
 {
 
     /**
-     * @var AbstractProducer
+     * @var Connection
      */
-    private $producer;
+    private $connection;
+
+    /**
+     * @var Publisher
+     */
+    private $publisher;
 
     /**
      * @var ObjectRepository<Node>|NodeRepository
@@ -51,7 +56,7 @@ abstract class RabbitCustomNode extends CustomNodeAbstract implements LoggerAwar
     private $ex = '';
 
     /**
-     * @var AMQPChannel
+     * @var int
      */
     private $chann;
 
@@ -63,14 +68,16 @@ abstract class RabbitCustomNode extends CustomNodeAbstract implements LoggerAwar
     /**
      * RabbitCustomNode constructor.
      *
-     * @param DocumentManager  $dm
-     * @param AbstractProducer $producer
+     * @param DocumentManager $dm
+     * @param Connection      $connection
+     * @param Publisher       $publisher
      */
-    public function __construct(DocumentManager $dm, AbstractProducer $producer)
+    public function __construct(DocumentManager $dm, Connection $connection, Publisher $publisher)
     {
-        $this->producer = $producer;
-        $this->nodeRepo = $dm->getRepository(Node::class);
-        $this->logger   = new NullLogger();
+        $this->publisher  = $publisher;
+        $this->connection = $connection;
+        $this->nodeRepo   = $dm->getRepository(Node::class);
+        $this->logger     = new NullLogger();
     }
 
     /**
@@ -102,8 +109,10 @@ abstract class RabbitCustomNode extends CustomNodeAbstract implements LoggerAwar
      */
     protected function publishMessage(array $message, array $headers): void
     {
+        $chann = $this->connection->getChannel($this->chann);
+
         foreach ($this->queues as $que) {
-            $this->chann->basic_publish(Message::create($message, $headers), $this->ex, $que);
+            $chann->basic_publish(Message::create($message, $headers), $this->ex, $que);
         }
     }
 
@@ -133,27 +142,30 @@ abstract class RabbitCustomNode extends CustomNodeAbstract implements LoggerAwar
                 sprintf('Missing "%s" in the message header.', PipesHeaders::createKey(PipesHeaders::NODE_ID))
             );
         }
+
         if ($this->isEmpty(PipesHeaders::get(PipesHeaders::TOPOLOGY_ID, $dto->getHeaders()))) {
             throw new InvalidArgumentException(
                 sprintf('Missing "%s" in the message header.', PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID))
             );
         }
+
         if ($this->isEmpty(PipesHeaders::get(PipesHeaders::CORRELATION_ID, $dto->getHeaders()))) {
             throw new InvalidArgumentException(
                 sprintf('Missing "%s" in the message header.', PipesHeaders::createKey(PipesHeaders::CORRELATION_ID))
             );
         }
+
         if ($this->isEmpty(PipesHeaders::get(PipesHeaders::PROCESS_ID, $dto->getHeaders()))) {
             throw new InvalidArgumentException(
                 sprintf('Missing "%s" in the message header.', PipesHeaders::createKey(PipesHeaders::PROCESS_ID))
             );
         }
+
         if (!array_key_exists(PipesHeaders::createKey(PipesHeaders::PARENT_ID), $dto->getHeaders())) {
             throw new InvalidArgumentException(
                 sprintf('Missing "%s" in the message header.', PipesHeaders::createKey(PipesHeaders::PARENT_ID))
             );
         }
-
     }
 
     /**
@@ -181,8 +193,9 @@ abstract class RabbitCustomNode extends CustomNodeAbstract implements LoggerAwar
         $topId  = PipesHeaders::get(PipesHeaders::TOPOLOGY_ID, $dto->getHeaders());
         $nodeId = PipesHeaders::get(PipesHeaders::NODE_ID, $dto->getHeaders());
 
-        $this->ex    = $this->producer->getExchange();
-        $this->chann = $this->producer->getManager()->getChannel();
+        $this->ex    = $this->publisher->getExchange();
+        $this->chann = $this->connection->createChannel();
+        $channel     = $this->connection->getChannel($this->chann);
 
         /** @var Node $node */
         $node = $this->nodeRepo->find($nodeId);
@@ -196,7 +209,7 @@ abstract class RabbitCustomNode extends CustomNodeAbstract implements LoggerAwar
             );
             $this->queues[] = $que;
 
-            $this->chann->queue_bind($que, $this->ex, $que);
+            $channel->queue_bind($que, $this->ex, $que);
         }
     }
 
@@ -205,15 +218,18 @@ abstract class RabbitCustomNode extends CustomNodeAbstract implements LoggerAwar
      */
     private function unbindChannels(): void
     {
+        $channel = $this->connection->getChannel($this->chann);
+
         foreach ($this->queues as $que) {
-            $this->chann->queue_unbind($que, $this->ex, $que);
+            $channel->queue_unbind($que, $this->ex, $que);
         }
 
+        $channel->close();
         $this->queues = [];
     }
 
     /**
-     * @param null|string $value
+     * @param string|null $value
      *
      * @return bool
      */

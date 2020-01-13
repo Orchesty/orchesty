@@ -197,10 +197,7 @@ class OAuth1Provider extends OAuthProviderAbstract implements OAuth1ProviderInte
      */
     private function tokenAndSecretChecker(array $data): void
     {
-        if (
-            !array_key_exists(self::OAUTH_TOKEN_SECRET, $data) ||
-            !array_key_exists(self::OAUTH_TOKEN, $data)
-        ) {
+        if (!array_key_exists(self::OAUTH_TOKEN_SECRET, $data) || !array_key_exists(self::OAUTH_TOKEN, $data)) {
             $this->throwException(
                 sprintf(
                     'OAuth error: Data "%s" or "%s" is missing.',
