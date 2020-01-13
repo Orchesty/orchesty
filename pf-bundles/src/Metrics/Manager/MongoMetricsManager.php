@@ -85,6 +85,7 @@ class MongoMetricsManager extends MetricsManagerAbstract
         $queue   = $this->rabbitNodeMetrics($where, $dateFrom, $dateTo);
         $request = $this->connectorNodeMetrics($where, $dateFrom, $dateTo);
         $cpu     = $this->monolithNodeMetrics($where, $dateFrom, $dateTo);
+
         [$processTime, $waitingTime, $error] = $this->bridgesNodeMetrics($where, $dateFrom, $dateTo);
 
         return $this->generateOutput(
@@ -108,6 +109,7 @@ class MongoMetricsManager extends MetricsManagerAbstract
     public function getTopologyProcessTimeMetrics(Topology $topology, array $params): array
     {
         [$dateFrom, $dateTo] = $this->parseDateRange($params);
+
         $where = [self::TOPOLOGY => $topology->getId()];
 
         [$process, $error] = $this->counterProcessMetrics($where, $dateFrom, $dateTo);
@@ -134,7 +136,9 @@ class MongoMetricsManager extends MetricsManagerAbstract
     {
         $params['from'] = $params['from'] ?? 'now - 1h';
         $params['to']   = $params['to'] ?? 'now';
+
         [$dateFrom, $dateTo] = $this->parseDateRange($params);
+
         $where = [self::TOPOLOGY => $topology->getId()];
 
         $res             = $this->getTopologyMetrics($topology, $params);
@@ -457,9 +461,9 @@ class MongoMetricsManager extends MetricsManagerAbstract
             array_column($res, 'count'),
         );
 
-        $from = $dateTimeFrom->getTimestamp();
+        $from  = $dateTimeFrom->getTimestamp();
         $from -= $from % $ret;
-        $to   = $dateTimeTo->getTimestamp();
+        $to    = $dateTimeTo->getTimestamp();
         $to   -= $to % $ret;
 
         $sorted = [];

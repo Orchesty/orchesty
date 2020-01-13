@@ -219,7 +219,7 @@ abstract class MetricsManagerAbstract implements LoggerAwareInterface
      *
      * @return mixed[]
      */
-    public abstract function getNodeMetrics(Node $node, Topology $topology, array $params): array;
+    abstract public function getNodeMetrics(Node $node, Topology $topology, array $params): array;
 
     /**
      * @param Topology $topology
@@ -227,7 +227,7 @@ abstract class MetricsManagerAbstract implements LoggerAwareInterface
      *
      * @return mixed[]
      */
-    public abstract function getTopologyProcessTimeMetrics(Topology $topology, array $params): array;
+    abstract public function getTopologyProcessTimeMetrics(Topology $topology, array $params): array;
 
     /**
      * @param Topology $topology
@@ -235,7 +235,7 @@ abstract class MetricsManagerAbstract implements LoggerAwareInterface
      *
      * @return mixed[]
      */
-    public abstract function getTopologyRequestCountMetrics(Topology $topology, array $params): array;
+    abstract public function getTopologyRequestCountMetrics(Topology $topology, array $params): array;
 
     /**
      * @param MetricsDto $queue

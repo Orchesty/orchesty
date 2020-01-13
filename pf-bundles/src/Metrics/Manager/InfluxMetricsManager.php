@@ -147,16 +147,16 @@ class InfluxMetricsManager extends MetricsManagerAbstract
         $dateTo   = $params['to'] ?? NULL;
         $from     = $this->counterTable;
 
-        $select = self::getFunctionForSelect([self::AVG_TIME => self::PROCESS_TIME_COUNT], self::COUNT);
-        $select = self::addStringSeparator($select);
+        $select  = self::getFunctionForSelect([self::AVG_TIME => self::PROCESS_TIME_COUNT], self::COUNT);
+        $select  = self::addStringSeparator($select);
         $select .= self::getFunctionForSelect([self::AVG_TIME => self::PROCESS_TIME_SUM], self::SUM);
-        $select = self::addStringSeparator($select);
+        $select  = self::addStringSeparator($select);
         $select .= self::getFunctionForSelect([self::MIN_TIME => self::PROCESS_TIME_MIN], self::MIN);
-        $select = self::addStringSeparator($select);
+        $select  = self::addStringSeparator($select);
         $select .= self::getFunctionForSelect([self::MAX_TIME => self::PROCESS_TIME_MAX], self::MAX);
-        $select = self::addStringSeparator($select);
+        $select  = self::addStringSeparator($select);
         $select .= self::getFunctionForSelect([self::TOTAL_COUNT => self::NODE_TOTAL_SUM], self::SUM);
-        $select = self::addStringSeparator($select);
+        $select  = self::addStringSeparator($select);
         $select .= self::getFunctionForSelect([self::FAILED_COUNT => self::NODE_ERROR_SUM], self::SUM);
 
         $where = [self::TOPOLOGY => $topology->getId()];
@@ -207,9 +207,9 @@ class InfluxMetricsManager extends MetricsManagerAbstract
      * @param string      $select
      * @param string      $from
      * @param mixed[]     $where
-     * @param string|NULL $group
-     * @param string|NULL $dateFrom
-     * @param string|NULL $dateTo
+     * @param string|null $group
+     * @param string|null $dateFrom
+     * @param string|null $dateTo
      * @param bool        $forGraph
      *
      * @return mixed[]
@@ -384,7 +384,7 @@ class InfluxMetricsManager extends MetricsManagerAbstract
     {
         array_walk(
             $data,
-            function (string &$value, string $key): void {
+            static function (string &$value, string $key): void {
                 $value = sprintf('%s = \'%s\'', $key, $value);
             }
         );
@@ -423,7 +423,7 @@ class InfluxMetricsManager extends MetricsManagerAbstract
     {
         array_walk(
             $data,
-            function (string &$value, string $key) use ($function): void {
+            static function (string &$value, string $key) use ($function): void {
                 $value = sprintf('%s("%s") AS %s', $function, $key, $value);
             }
         );
@@ -445,7 +445,7 @@ class InfluxMetricsManager extends MetricsManagerAbstract
         return implode(
             ', ',
             array_map(
-                fn(string $item): string => sprintf('"%s".%s', $retention, $item),
+                static fn(string $item): string => sprintf('"%s".%s', $retention, $item),
                 explode(',', $fromTables)
             )
         );

@@ -106,7 +106,7 @@ abstract class LogsAbstract implements LogsInterface
     protected function getNodeName(string $nodeId): string
     {
         try {
-            /** @var Node|NULL $node */
+            /** @var Node|null $node */
             $node = $this->dm->getRepository(Node::class)->findOneBy(
                 [self::ID => new ObjectId(explode('-', $nodeId)[0])]
             );
@@ -121,7 +121,7 @@ abstract class LogsAbstract implements LogsInterface
      * @param mixed[] $data
      * @param string  $property
      *
-     * @return mixed[]|string|NULL
+     * @return mixed[]|string|null
      */
     protected function getNonEmptyValue(array $data, string $property)
     {

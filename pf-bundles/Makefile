@@ -5,8 +5,8 @@ GITLAB=dkr.hanaboso.net/pipes/pipes/php-dev:${TAG}
 DOCKERHUB=hanabosocom/php-dev:${TAG}
 BASE=hanabosocom/php-base:php-7.4-alpine
 DC=docker-compose
-DE=docker-compose exec -T php-dev
-DEC=docker-compose exec -T php-dev composer
+DE=docker-compose exec -T app
+DEC=docker-compose exec -T app composer
 
 # Build
 build-dev:

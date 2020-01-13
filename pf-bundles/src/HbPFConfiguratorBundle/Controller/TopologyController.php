@@ -91,7 +91,6 @@ class TopologyController extends AbstractFOSRestController
         } catch (TopologyException | MongoDBException $e) {
             return $this->getErrorResponse($e);
         }
-
     }
 
     /**

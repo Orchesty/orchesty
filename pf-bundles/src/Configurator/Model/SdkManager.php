@@ -57,7 +57,7 @@ final class SdkManager
      */
     public function getOne(string $id): Sdk
     {
-        /** @var Sdk|NULL $sdk */
+        /** @var Sdk|null $sdk */
         $sdk = $this->repository->findOneBy([Sdk::ID => $id]);
 
         if (!$sdk) {

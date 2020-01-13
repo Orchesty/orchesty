@@ -308,7 +308,7 @@ class TopologyManager
 
         usort(
             $result,
-            function (array $one, array $two): int {
+            static function (array $one, array $two): int {
                 $result = $one['topology']['status'] <=> $two['topology']['status'];
 
                 if (!$result) {

@@ -52,7 +52,6 @@ final class RepeaterListenerTest extends ControllerTestCaseAbstract
             self::assertEquals(5, $maxHop);
             self::assertEquals(20, $repeaterInterval);
         }
-
     }
 
     /**

@@ -176,7 +176,6 @@ class TopologySchemaUtils
             default:
                 return '';
         }
-
     }
 
     /**

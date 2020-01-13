@@ -106,6 +106,7 @@ class CronManager
     public function create(Node $node): ResponseDto
     {
         [$topologyName, $nodeName] = $this->getTopologyAndNode($node);
+
         $url = $this->getUrl(self::CREATE);
         $dto = (new RequestDto(CurlManager::METHOD_POST, $url))
             ->setBody(
@@ -254,7 +255,7 @@ class CronManager
 
     /**
      * @param string      $url
-     * @param null|string $hash
+     * @param string|null $hash
      *
      * @return Uri
      */

@@ -107,7 +107,7 @@ final class InstallManagerTest extends KernelTestCaseAbstract
         $topologyManager->method('updateTopology')->willReturn($savedTopo);
         $topologyManager->method('saveTopologySchema')->willReturn($savedTopo);
         $topologyManager->method('deleteTopology')->willReturnCallback(
-            function (): void {
+            static function (): void {
             }
         );
 
@@ -119,7 +119,7 @@ final class InstallManagerTest extends KernelTestCaseAbstract
         /** @var CategoryParser|MockObject $categoryParser */
         $categoryParser = $this->createMock(CategoryParser::class);
         $categoryParser->method('classifyTopology')->willReturnCallback(
-            function (): void {
+            static function (): void {
             }
         );
 
