@@ -83,13 +83,13 @@ final class WebhookManager
         );
 
         return array_map(
-            function (WebhookSubscription $subscription) use ($webhooks): array {
+            static function (WebhookSubscription $subscription) use ($webhooks): array {
                 $topology = $subscription->getTopology();
                 $enabled  = FALSE;
 
                 $webhooks = array_filter(
                     $webhooks,
-                    fn(Webhook $webhook): bool => $webhook->getName() === $subscription->getName()
+                    static fn(Webhook $webhook): bool => $webhook->getName() === $subscription->getName()
                 );
 
                 if ($webhooks) {
@@ -118,8 +118,7 @@ final class WebhookManager
     public function subscribeWebhooks(WebhookApplicationInterface $application, string $userId, array $data = []): void
     {
         foreach ($application->getWebhookSubscriptions() as $subscription) {
-            if (
-                !$data && !$subscription->getTopology() ||
+            if (!$data && !$subscription->getTopology() ||
                 $data && $data[WebhookSubscription::NAME] !== $subscription->getName()
             ) {
                 continue;

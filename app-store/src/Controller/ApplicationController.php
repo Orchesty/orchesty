@@ -51,7 +51,6 @@ class ApplicationController extends AbstractFOSRestController
         } catch (Exception|Throwable $e) {
             return $this->getErrorResponse($e, 500);
         }
-
     }
 
     /**
@@ -70,7 +69,6 @@ class ApplicationController extends AbstractFOSRestController
         } catch (Exception|Throwable $e) {
             return $this->getErrorResponse($e, 500);
         }
-
     }
 
     /**
@@ -89,7 +87,6 @@ class ApplicationController extends AbstractFOSRestController
         } catch (Exception|Throwable $e) {
             return $this->getErrorResponse($e, 500);
         }
-
     }
 
     /**
@@ -109,7 +106,6 @@ class ApplicationController extends AbstractFOSRestController
         } catch (Exception|Throwable $e) {
             return $this->getErrorResponse($e, 500);
         }
-
     }
 
     /**
@@ -129,7 +125,6 @@ class ApplicationController extends AbstractFOSRestController
         } catch (Exception|Throwable $e) {
             return $this->getErrorResponse($e, 500);
         }
-
     }
 
     /**
@@ -149,7 +144,6 @@ class ApplicationController extends AbstractFOSRestController
         } catch (Exception|Throwable $e) {
             return $this->getErrorResponse($e, 500);
         }
-
     }
 
     /**
@@ -170,7 +164,6 @@ class ApplicationController extends AbstractFOSRestController
         } catch (Exception|Throwable $e) {
             return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
         }
-
     }
 
     /**
@@ -191,7 +184,6 @@ class ApplicationController extends AbstractFOSRestController
         } catch (Exception|Throwable $e) {
             return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
         }
-
     }
 
 }

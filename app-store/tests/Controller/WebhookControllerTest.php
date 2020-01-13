@@ -58,12 +58,12 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
 
         $handler->method('subscribeWebhooks')
             ->willReturnCallback(
-                function (): void {
+                static function (): void {
                 }
             );
         $handler->method('unsubscribeWebhooks')
             ->willReturnCallback(
-                function (): void {
+                static function (): void {
                 }
             );
 

@@ -13,4 +13,3 @@ class HbPFAppStoreBundle extends Bundle
 {
 
 }
-

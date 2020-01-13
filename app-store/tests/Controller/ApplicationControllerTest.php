@@ -147,11 +147,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         /** @var Response $response */
         $response = self::$client->getResponse();
 
-        self::assertEquals(
-            '3002',
-            Json::decode((string) $response->getContent())['error_code']
-        );
-
+        self::assertEquals('3002', Json::decode((string) $response->getContent())['error_code']);
     }
 
     /**
@@ -209,7 +205,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
             ->willReturn($returnValue);
         $handler->method('authorizeApplication')
             ->willReturnCallback(
-                function (): void {
+                static function (): void {
                 }
             );
 
