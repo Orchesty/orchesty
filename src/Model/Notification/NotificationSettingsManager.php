@@ -152,7 +152,7 @@ final class NotificationSettingsManager
      */
     private function getById(string $id): NotificationSettings
     {
-        /** @var NotificationSettings|NULL $settings */
+        /** @var NotificationSettings|null $settings */
         $settings = $this->repository->findOneBy([NotificationSettings::ID => $id]);
 
         if (!$settings) {

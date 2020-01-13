@@ -106,7 +106,7 @@ final class NotificationManager implements LoggerAwareInterface
         foreach ($this->handlers as $handler) {
             $class = get_class($handler);
 
-            /** @var NotificationSettings|NULL $settings */
+            /** @var NotificationSettings|null $settings */
             $settings = $this->dm->getRepository(NotificationSettings::class)->findOneBy(
                 [
                     NotificationSettings::EVENTS     => $event,

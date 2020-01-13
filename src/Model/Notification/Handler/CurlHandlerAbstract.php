@@ -16,7 +16,7 @@ abstract class CurlHandlerAbstract
     /**
      * @return string
      */
-    public final function getType(): string
+    final public function getType(): string
     {
         return NotificationSenderEnum::CURL;
     }
@@ -24,7 +24,7 @@ abstract class CurlHandlerAbstract
     /**
      * @return mixed[]
      */
-    public final function getRequiredSettings(): array
+    final public function getRequiredSettings(): array
     {
         return [CurlDto::METHOD, CurlDto::URL];
     }
