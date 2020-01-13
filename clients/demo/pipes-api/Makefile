@@ -1,8 +1,8 @@
 .PHONY: docker-up-force docker-down-clean test
 
 DC=docker-compose
-DE=docker-compose exec -T pipes-api
-DEC=docker-compose exec -T pipes-api composer
+DE=docker-compose exec -T app
+DEC=docker-compose exec -T app composer
 
 .env:
 	sed -e "s/{DEV_UID}/$(shell id -u)/g" \

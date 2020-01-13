@@ -74,14 +74,8 @@ class DownloaderCommand extends Command
                 function (WebSocket $ws) use ($loop, $output, $uri, $browser): void {
                     $this->heartbeat = $loop->addPeriodicTimer(
                         5,
-                        function () use ($ws): void {
-                            $ws->send(
-                                Json::encode(
-                                    [
-                                        'event' => 'pusher:ping', 'data' => [],
-                                    ]
-                                )
-                            );
+                        static function () use ($ws): void {
+                            $ws->send(Json::encode(['event' => 'pusher:ping', 'data' => []]));
                         }
                     );
 
@@ -148,7 +142,6 @@ class DownloaderCommand extends Command
                                         );
                                     }
                             }
-
                         }
                     );
 
@@ -179,12 +172,11 @@ class DownloaderCommand extends Command
                             );
                         }
                     );
-
                 }
             );
 
         $promise->otherwise(
-            function (Throwable $e) use ($output): void {
+            static function (Throwable $e) use ($output): void {
                 $output->writeln(sprintf('Connection error: %s', $e->getMessage()));
             }
         );
@@ -222,7 +214,7 @@ class DownloaderCommand extends Command
         );
 
         $browser->send($request)->then(
-            function (ResponseInterface $response) use ($output): void {
+            static function (ResponseInterface $response) use ($output): void {
                 if ($response->getStatusCode() === 200) {
                     $output->writeln('Send success request to pipes.');
                 } else {
@@ -235,7 +227,7 @@ class DownloaderCommand extends Command
                     );
                 }
             },
-            function (Exception $e) use ($output): void {
+            static function (Exception $e) use ($output): void {
                 $output->writeln(sprintf('Request Error: %s', $e->getMessage()));
             }
         );
