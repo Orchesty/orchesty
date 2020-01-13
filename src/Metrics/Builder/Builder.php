@@ -40,7 +40,7 @@ class Builder extends InfluxDbBuilder
             }
 
             $clause = $this->where[$i];
-            $query  .= sprintf(' %s %s', $selection, $clause);
+            $query .= sprintf(' %s %s', $selection, $clause);
 
         }
 

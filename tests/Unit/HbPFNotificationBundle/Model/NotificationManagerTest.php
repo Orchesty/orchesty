@@ -26,7 +26,7 @@ final class NotificationManagerTest extends KernelTestCaseAbstract
     public function testReadSettings(): void
     {
         $this->getManager(
-            function (RequestDto $request): ResponseDto {
+            static function (RequestDto $request): ResponseDto {
                 self::assertEquals(CurlManager::METHOD_GET, $request->getMethod());
                 self::assertEquals('http://example.com/notifications/settings', $request->getUri(TRUE));
 
@@ -41,7 +41,7 @@ final class NotificationManagerTest extends KernelTestCaseAbstract
     public function testReadSetting(): void
     {
         $this->getManager(
-            function (RequestDto $request): ResponseDto {
+            static function (RequestDto $request): ResponseDto {
                 self::assertEquals(CurlManager::METHOD_GET, $request->getMethod());
                 self::assertEquals('http://example.com/notifications/settings/id', $request->getUri(TRUE));
 
@@ -56,7 +56,7 @@ final class NotificationManagerTest extends KernelTestCaseAbstract
     public function testUpdateSettings(): void
     {
         $this->getManager(
-            function (RequestDto $request): ResponseDto {
+            static function (RequestDto $request): ResponseDto {
                 self::assertEquals(CurlManager::METHOD_PUT, $request->getMethod());
                 self::assertEquals('http://example.com/notifications/settings/id', $request->getUri(TRUE));
                 self::assertEquals('{"type":"Type"}', $request->getBody());
@@ -76,9 +76,7 @@ final class NotificationManagerTest extends KernelTestCaseAbstract
         self::expectExceptionMessageMatches('#Notification API failed: .+#');
 
         $this->getManager(
-            function (RequestDto $request): void {
-                $request;
-
+            static function (): void {
                 throw new NotificationException(
                     'Client error: `GET http://example.com/notification_settings` resulted in a `404 Not Found` response: Response',
                     CurlException::REQUEST_FAILED
