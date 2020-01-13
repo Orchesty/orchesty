@@ -16,7 +16,7 @@ abstract class EmailHandlerAbstract
     /**
      * @return string
      */
-    public final function getType(): string
+    final public function getType(): string
     {
         return NotificationSenderEnum::EMAIL;
     }
@@ -24,7 +24,7 @@ abstract class EmailHandlerAbstract
     /**
      * @return mixed[]
      */
-    public final function getRequiredSettings(): array
+    final public function getRequiredSettings(): array
     {
         return [
             EmailDto::HOST,
