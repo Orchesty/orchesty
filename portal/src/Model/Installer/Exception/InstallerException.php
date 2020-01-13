@@ -15,4 +15,3 @@ class InstallerException extends Exception
     public const INVALID_INPUT = 0;
 
 }
-

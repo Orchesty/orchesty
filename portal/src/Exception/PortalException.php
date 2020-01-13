@@ -13,4 +13,3 @@ final class PortalException extends PipesFrameworkExceptionAbstract
 {
 
 }
-

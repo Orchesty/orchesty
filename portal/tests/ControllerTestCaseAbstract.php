@@ -26,7 +26,6 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     {
         parent::setUp();
         $this->startClient();
-
     }
 
     /**
@@ -142,4 +141,3 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     }
 
 }
-
