@@ -176,7 +176,6 @@ class ZohoApplicationTest extends DatabaseTestCaseAbstract
             self::CLIENT_ID,
             'ZohoCRM.modules.ALL ZohoCRM.settings.ALL'
         );
-
         $this->application = self::$container->get('hbpf.application.zoho');
     }
 

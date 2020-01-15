@@ -1,0 +1,140 @@
+{
+    "data": {
+        "order": {
+            "code": "2017000092",
+            "creationTime": "2017-12-12T22:08:01+0100",
+            "changeTime": "2018-02-12T22:08:01+0100",
+            "email": "zakaznik@nejakymail.cz",
+            "phone": "+420604600444",
+            "birthDate": "1990-05-05",
+            "clientCode": "201869742",
+            "companyId": "123456",
+            "vatId": "CZ123456789",
+            "vatPayer": true,
+            "taxId": "123456",
+            "customerGuid": "747fb32d-73bc-11e8-8216-002590dad85e",
+            "addressesEqual": true,
+            "cashDeskOrder": false,
+            "stockId": 1,
+            "paid": true,
+            "adminUrl": "https://www.domena-eshopu.cz/admin/objednavky-detail?id=2",
+            "billingMethod": {
+                "name": "Hotově",
+                "id": 3
+            },
+            "billingAddress": {
+                "company": "Shoptet",
+                "fullName": "Jan Novák",
+                "street": "Francouzská",
+                "houseNumber": "28",
+                "city": "Praha 2",
+                "district": "null",
+                "additional": "null",
+                "zip": "120 00",
+                "countryCode": "CZ",
+                "regionName": "null",
+                "regionShortcut": "null"
+            },
+            "deliveryAddress": {
+                "company": "Shoptet",
+                "fullName": "Jan Novák",
+                "street": "Francouzská",
+                "houseNumber": "28",
+                "city": "Praha 2",
+                "district": "null",
+                "additional": "null",
+                "zip": "120 00",
+                "countryCode": "CZ",
+                "regionName": "null",
+                "regionShortcut": "null"
+            },
+            "status": {
+                "id": -1,
+                "name": "Vyřizuje se"
+            },
+            "price": {
+                "vat": "42.00",
+                "toPay": "242.00",
+                "currencyCode": "CZK",
+                "withVat": "242.00",
+                "withoutVat": "200.00",
+                "exchangeRate": "1.04568087"
+            },
+            "paymentMethod": {
+                "guid": "b57f91bb-e920-11e0-baa3-7dc668b75ca8",
+                "name": "Hotově"
+            },
+            "shipping": {
+                "guid": "2ec88ea7-3fb0-11e2-a723-705ab6a2ba75",
+                "name": "PPL"
+            },
+            "clientIPAddress": "213.46.237.24",
+            "items": [
+                {
+                    "productGuid": "937be4fd-7481-11e8-8216-002590dad85e",
+                    "code": "40/ZEL",
+                    "itemType": "product",
+                    "name": "Komplet  + Doplněk k názvu",
+                    "variantName": "null",
+                    "brand": "Test",
+                    "remark": "null",
+                    "weight": "2.5",
+                    "additionalField": "null",
+                    "amount": "1.000",
+                    "amountUnit": "ks",
+                    "priceRatio": "1.0000",
+                    "itemPrice": {
+                        "withVat": "121.00",
+                        "withoutVat": "100.00",
+                        "vat": "21.00",
+                        "vatRate": "21.00"
+                    },
+                    "buyPrice": {
+                        "withVat": "121.00",
+                        "withoutVat": "100.00",
+                        "vat": "21.00",
+                        "vatRate": "21.00"
+                    },
+                    "status": {
+                        "id": -1,
+                        "name": "Nevyřízená"
+                    },
+                    "mainImage": {
+                        "name": "100.jpg",
+                        "seoName": "100_purple-apple.jpg",
+                        "priority": 1,
+                        "description": "Fresh purple apple for Snow White",
+                        "changeTime": "2018-04-19T09:49:21+0200"
+                    },
+                    "stockLocation": "H6/M11/R13"
+                }
+            ],
+            "notes": {
+                "customerRemark": "Raději zelenou",
+                "eshopRemark": "Převézt s Plzně",
+                "trackingNumber": "DR123456",
+                "additionalFields": [
+                    {
+                        "index": 1,
+                        "label": "1. pole",
+                        "text": "ID dopravce"
+                    }
+                ]
+            },
+            "shippingDetails": {
+                "branchId": "4",
+                "name": "Hradec Králové, Nám. 5. května 888",
+                "note": "Pobočka se nachází v ulici Náměstí 5. května 888, vedle Novákových garáží.",
+                "place": "Tvořilka",
+                "street": "Náměstí 5. května 888",
+                "city": "Hradec Králové",
+                "zipCode": "50002",
+                "countryCode": "cz",
+                "link": "https://www.ulozenka.cz/pobocky/4/hradec-kralove-nam-5-kvetna-888",
+                "latitude": "50.213673",
+                "longitude": "15.825294"
+            }
+        }
+    },
+    "errors": null
+}

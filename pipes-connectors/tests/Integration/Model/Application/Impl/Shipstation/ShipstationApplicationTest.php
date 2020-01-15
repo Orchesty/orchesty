@@ -23,6 +23,8 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
     public const API_KEY    = '79620d3760d**********18f8a35dec8';
     public const API_SECRET = '9cabe470**********751904f45f80e2';
 
+    public const TOKEN = 'ODkxOWJiMjEzYWFiNDdiNDhmN2JiMDdmMWNlMWUyNWM6OTk**********jE1NDQ5OWEzODIyMWQyMjM3NTQyNGI=';
+
     /**
      * @var ShipstationApplication
      */

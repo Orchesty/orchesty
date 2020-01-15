@@ -1,0 +1,165 @@
+{
+    "data": {
+        "order": {
+            "code": "2019000004",
+            "email": "john@doe.tld",
+            "customerGuid": null,
+            "birthDate": null,
+            "phone": "+420296245025",
+            "addressesEqual": true,
+            "creationTime": "2019-11-22T11:44:50+0100",
+            "changeTime": "2019-11-22T11:44:50+0100",
+            "cashDeskOrder": false,
+            "stockId": 1,
+            "clientCode": null,
+            "companyId": null,
+            "vatPayer": false,
+            "paid": true,
+            "vatId": null,
+            "taxId": null,
+            "clientIPAddress": null,
+            "adminUrl": "http:\/\/ecommerceholding.myshoptet.com\/admin\/objednavky-detail?id=19",
+            "billingAddress": {
+                "company": "Company J. D.",
+                "fullName": "John Doe",
+                "street": "U Garazi",
+                "houseNumber": "1611",
+                "city": "Praha 7",
+                "district": null,
+                "additional": null,
+                "zip": "17000",
+                "countryCode": "CZ",
+                "regionName": null,
+                "regionShortcut": null
+            },
+            "deliveryAddress": null,
+            "billingMethod": {
+                "name": "P\u0159evodem",
+                "id": 2
+            },
+            "status": {
+                "id": -3,
+                "name": "Vy\u0159\u00edzena"
+            },
+            "price": {
+                "vat": "84.52",
+                "toPay": "487.00",
+                "currencyCode": "CZK",
+                "withVat": "487.00",
+                "withoutVat": "402.48",
+                "exchangeRate": "1.00000000"
+            },
+            "paymentMethod": {
+                "guid": "6f2c8e36-3faf-11e2-a723-705ab6a2ba75",
+                "name": "P\u0159evodem"
+            },
+            "shipping": {
+                "guid": "2f8f6b08-e5be-11e9-ac23-ac1f6b0076ec",
+                "name": "Ulo\u017eenka Partner"
+            },
+            "items": [
+                {
+                    "productGuid": "533bb41d-d978-11e0-b04f-57a43310b768",
+                    "itemType": "product",
+                    "name": "Velka cokolada",
+                    "variantName": null,
+                    "brand": "Nike",
+                    "remark": null,
+                    "weight": "0.000",
+                    "additionalField": "Some note about the order",
+                    "amount": "1.000",
+                    "amountUnit": null,
+                    "priceRatio": "1.0000",
+                    "code": "0021",
+                    "status": {
+                        "id": -3,
+                        "name": "Vy\u0159\u00edzena"
+                    },
+                    "itemPrice": {
+                        "withVat": "38.00",
+                        "withoutVat": "38.00",
+                        "vat": "0.00",
+                        "vatRate": "0.00"
+                    },
+                    "buyPrice": null
+                },
+                {
+                    "productGuid": "533bb41d-d978-11e0-b04f-57a43310b768",
+                    "itemType": "product",
+                    "name": "Auto",
+                    "variantName": null,
+                    "brand": "Nike",
+                    "remark": null,
+                    "weight": "0.000",
+                    "additionalField": "Some note about the order",
+                    "amount": "1.000",
+                    "amountUnit": null,
+                    "priceRatio": "1.0000",
+                    "code": "0021",
+                    "status": {
+                        "id": -3,
+                        "name": "Vy\u0159\u00edzena"
+                    },
+                    "itemPrice": {
+                        "withVat": "350.00",
+                        "withoutVat": "350.00",
+                        "vat": "0.00",
+                        "vatRate": "0.00"
+                    },
+                    "buyPrice": null
+                },
+                {
+                    "productGuid": null,
+                    "itemType": "shipping",
+                    "name": "Ulo\u017eenka Partner",
+                    "variantName": null,
+                    "brand": null,
+                    "remark": null,
+                    "weight": "0.000",
+                    "additionalField": null,
+                    "amount": "1.000",
+                    "amountUnit": null,
+                    "priceRatio": "1.0000",
+                    "code": null,
+                    "status": {
+                        "id": -3,
+                        "name": "Vy\u0159\u00edzena"
+                    },
+                    "itemPrice": {
+                        "withVat": "99.00",
+                        "withoutVat": "99.00",
+                        "vat": "0.00",
+                        "vatRate": "0.00"
+                    },
+                    "buyPrice": null
+                },
+                {
+                    "productGuid": null,
+                    "itemType": "billing",
+                    "name": "P\u0159evodem",
+                    "variantName": null,
+                    "brand": null,
+                    "remark": null,
+                    "weight": "0.000",
+                    "additionalField": null,
+                    "amount": "1.000",
+                    "amountUnit": null,
+                    "priceRatio": "1.0000",
+                    "code": null,
+                    "status": {
+                        "id": -3,
+                        "name": "Vy\u0159\u00edzena"
+                    },
+                    "itemPrice": {
+                        "withVat": "0.00",
+                        "withoutVat": "0.00",
+                        "vat": "0.00",
+                        "vatRate": "0.00"
+                    },
+                    "buyPrice": null
+                }
+            ]
+        }
+    },
+    "errors": null
+}

@@ -2,7 +2,6 @@
 
 namespace Tests\Integration\Model\Application\Impl\Shoptet;
 
-use Closure;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
@@ -22,7 +21,6 @@ use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
-use PHPUnit\Framework\MockObject\MockObject;
 use ReflectionException;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\DataProvider;
@@ -32,7 +30,7 @@ use Tests\DataProvider;
  *
  * @package Tests\Integration\Model\Application\Impl\Shoptet
  */
-class ShoptetApplicationTest extends DatabaseTestCaseAbstract
+final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
 {
 
     private const CLIENT_ID = '123****';
@@ -55,7 +53,7 @@ class ShoptetApplicationTest extends DatabaseTestCaseAbstract
         $dm = self::$container->get('doctrine_mongodb.odm.default_document_manager');
         /** @var CurlManager $sender */
         $sender  = self::$container->get('hbpf.transport.curl_manager');
-        $shoptet = new ShoptetApplication($provider, $dm, $sender);
+        $shoptet = new ShoptetApplication($provider, $dm, $sender, 'localhost');
 
         self::assertIsObject($shoptet);
     }
@@ -112,6 +110,7 @@ class ShoptetApplicationTest extends DatabaseTestCaseAbstract
                 [
                     OAuth2ApplicationAbstract::CLIENT_ID,
                     OAuth2ApplicationAbstract::CLIENT_SECRET,
+                    'eshopId',
                     'oauth_url',
                     'api_token_url',
                 ]
@@ -177,9 +176,7 @@ class ShoptetApplicationTest extends DatabaseTestCaseAbstract
     {
         $this->setApplication();
         $applicationInstall = DataProvider::getOauth2AppInstall($this->application->getKey())
-            ->setSettings(
-                [ApplicationAbstract::FORM => ['oauth_url' => 'https://12345.myshoptet.com/action/ApiOAuthServer/token']]
-            );
+            ->setSettings([ApplicationAbstract::FORM => ['oauth_url' => 'https://12345.myshoptet.com/action/ApiOAuthServer/token']]);
 
         self::assertEquals(
             'https://12345.myshoptet.com/action/ApiOAuthServer/token',
@@ -195,9 +192,7 @@ class ShoptetApplicationTest extends DatabaseTestCaseAbstract
     {
         $this->setApplication();
         $applicationInstall = DataProvider::getOauth2AppInstall($this->application->getKey())
-            ->setSettings(
-                [ApplicationAbstract::FORM => ['api_token_url' => 'https://12345.myshoptet.com/action/ApiOAuthServer/getAccessToken']]
-            );
+            ->setSettings([ApplicationAbstract::FORM => ['api_token_url' => 'https://12345.myshoptet.com/action/ApiOAuthServer/getAccessToken']]);
 
         self::assertEquals(
             'https://12345.myshoptet.com/action/ApiOAuthServer/getAccessToken',
@@ -406,6 +401,19 @@ class ShoptetApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication::getTopologyUrl
+     */
+    public function testGetTopologyUrl(): void
+    {
+        $this->setApplication();
+
+        self::assertEquals(
+            'http://starting-point/topologies/123/nodes/Start/run-by-name',
+            $this->application->getTopologyUrl('123')
+        );
+    }
+
+    /**
      *
      */
     private function setApplication(): void
@@ -436,24 +444,6 @@ class ShoptetApplicationTest extends DatabaseTestCaseAbstract
                 )
             )
         );
-    }
-
-    /**
-     * @param Closure ...$closures
-     *
-     * @return CurlManager
-     */
-    private function prepareSender(Closure ...$closures): CurlManager
-    {
-        /** @var CurlManager|MockObject $sender */
-        $sender = self::createPartialMock(CurlManager::class, ['send']);
-        $i      = 0;
-
-        foreach ($closures as $closure) {
-            $sender->expects(self::at($i++))->method('send')->willReturnCallback($closure);
-        }
-
-        return $sender;
     }
 
 }

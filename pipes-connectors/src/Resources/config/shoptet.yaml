@@ -8,3 +8,52 @@ services:
             - '@hbpf.providers.oauth2_provider'
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
+            - '%starting_point_host%'
+
+    hbpf.connector.shoptet-get-api-access-token:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetGetApiAccessTokenConnector
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setApplication', ['@hbpf.application.shoptet']]
+
+    hbpf.connector.shoptet-updated-order-connector:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetUpdatedOrderConnector
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setApplication', ['@hbpf.application.shoptet']]
+
+    hbpf.connector.shoptet-create-order:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetCreateOrderConnector
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setApplication', ['@hbpf.application.shoptet']]
+
+    hbpf.connector.shoptet-update-order:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetUpdateOrderConnector
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setApplication', ['@hbpf.application.shoptet']]
+
+    hbpf.connector.shoptet-get-eshop-info:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetGetEshopInfo
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setApplication', ['@hbpf.application.shoptet']]
+
+    hbpf.connector.shoptet-register-webhook:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetRegisterWebhookConnector
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setApplication', ['@hbpf.application.shoptet']]

@@ -33,13 +33,18 @@ use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
 final class ShoptetApplication extends OAuth2ApplicationAbstract implements WebhookApplicationInterface
 {
 
-    public const  SHOPTET_KEY         = 'shoptet';
+    public const SHOPTET_KEY   = 'shoptet';
+    public const SHOPTET_URL   = 'https://api.myshoptet.com';
+    public const CANCELLED     = 'cancelled';
+    public const ESHOP_ID      = 'eshopId';
+    public const API_TOKEN_URL = 'api_token_url';
+
+    private const BASE_TOPOLOGY_URL   = '%s/topologies/%s/nodes/%s/run-by-name';
     private const EXPIRES_IN          = 'expires_in';
     private const ACCESS_TOKEN        = 'access_token';
     private const CLIENT_SETTINGS     = 'clientSettings';
     private const SHOPTET_WEBHOOK_URL = 'https://api.myshoptet.com/api/webhooks';
     private const OAUTH_URL           = 'oauth_url';
-    private const API_TOKEN_URL       = 'api_token_url';
 
     /**
      * @var DocumentManager
@@ -52,17 +57,29 @@ final class ShoptetApplication extends OAuth2ApplicationAbstract implements Webh
     private $sender;
 
     /**
+     * @var string
+     */
+    private $startingPointHost;
+
+    /**
      * ShoptetApplication constructor.
      *
      * @param OAuth2Provider  $provider
      * @param DocumentManager $dm
      * @param CurlManager     $sender
+     * @param string          $startingPointHost
      */
-    public function __construct(OAuth2Provider $provider, DocumentManager $dm, CurlManager $sender)
+    public function __construct(
+        OAuth2Provider $provider,
+        DocumentManager $dm,
+        CurlManager $sender,
+        string $startingPointHost
+    )
     {
         parent::__construct($provider);
-        $this->dm     = $dm;
-        $this->sender = $sender;
+        $this->dm                = $dm;
+        $this->sender            = $sender;
+        $this->startingPointHost = $startingPointHost;
     }
 
     /**
@@ -142,6 +159,7 @@ final class ShoptetApplication extends OAuth2ApplicationAbstract implements Webh
         return $form
             ->addField(new Field(Field::TEXT, OAuth2ApplicationInterface::CLIENT_ID, 'Client Id', NULL, TRUE))
             ->addField(new Field(Field::TEXT, OAuth2ApplicationInterface::CLIENT_SECRET, 'Client Secret', NULL, TRUE))
+            ->addField(new Field(Field::TEXT, self::ESHOP_ID, 'Eshop Id', NULL, TRUE))
             ->addField(new Field(Field::TEXT, self::OAUTH_URL, 'Authorization url', NULL, TRUE))
             ->addField(new Field(Field::TEXT, self::API_TOKEN_URL, 'Api token url', NULL, TRUE));
     }
@@ -183,11 +201,24 @@ final class ShoptetApplication extends OAuth2ApplicationAbstract implements Webh
     }
 
     /**
+     * @param string $topology
+     * @param string $node
+     *
+     * @return string
+     */
+    public function getTopologyUrl(string $topology, string $node = 'Start'): string
+    {
+        return sprintf(self::BASE_TOPOLOGY_URL, $this->startingPointHost, $topology, $node);
+    }
+
+    /**
      * @return mixed[]
      */
     public function getWebhookSubscriptions(): array
     {
-        return [];
+        return [
+            new WebhookSubscription('Update Order', 'webhook', 'shoptet-order-update', ['event' => 'order:update']),
+        ];
     }
 
     /**

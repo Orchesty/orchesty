@@ -97,4 +97,27 @@ final class DataProvider
         return $dto;
     }
 
+    /**
+     * @param string  $key
+     * @param string  $user
+     * @param mixed[] $settings
+     * @param mixed[] $nonEncryptedSettings
+     *
+     * @return ApplicationInstall
+     * @throws Exception
+     */
+    public static function createApplicationInstall(
+        string $key,
+        string $user = 'user',
+        array $settings = [],
+        array $nonEncryptedSettings = []
+    ): ApplicationInstall
+    {
+        return (new ApplicationInstall())
+            ->setKey($key)
+            ->setUser($user)
+            ->setSettings($settings)
+            ->setNonEncryptedSettings($nonEncryptedSettings);
+    }
+
 }

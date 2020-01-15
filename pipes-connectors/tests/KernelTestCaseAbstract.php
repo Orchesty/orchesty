@@ -6,6 +6,8 @@ use Closure;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Redirect\RedirectInterface;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
@@ -14,7 +16,6 @@ use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use React\EventLoop\Factory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Throwable;
 
 /**
  * Class KernelTestCaseAbstract
@@ -214,12 +215,70 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
             static function (): void {
                 self::assertTrue(TRUE);
             },
-            static function (Throwable $throwable): void {
-                self::fail(sprintf('%s%s%s', $throwable->getMessage(), PHP_EOL, $throwable->getTraceAsString()));
+            static function (): void {
+                self::fail('Something gone wrong!');
             }
         );
 
         $loop->run();
+    }
+
+    /**
+     * @param Closure ...$closures
+     *
+     * @return CurlManager
+     */
+    protected function prepareSender(Closure ...$closures): CurlManager
+    {
+        /** @var CurlManager|MockObject $sender */
+        $sender = self::createPartialMock(CurlManager::class, ['send']);
+        $i      = 0;
+
+        foreach ($closures as $closure) {
+            $sender->expects(self::at($i++))->method('send')->willReturnCallback($closure);
+        }
+
+        return $sender;
+    }
+
+    /**
+     * @param mixed[]|string $data
+     * @param string|null    $url
+     *
+     * @return Closure
+     */
+    protected function prepareSenderResponse($data = '{}', ?string $url = NULL): Closure
+    {
+        return static function (RequestDto $dto) use ($data, $url): ResponseDto {
+            if ($url) {
+                self::assertEquals($url, sprintf('%s %s', $dto->getMethod(), $dto->getUri(TRUE)));
+            }
+
+            return new ResponseDto(200, 'OK', is_array($data) ? Json::encode($data) : $data, []);
+        };
+    }
+
+    /**
+     * @param string $message
+     *
+     * @return Closure
+     */
+    protected function prepareSenderErrorResponse(string $message = 'Something gone wrong!'): Closure
+    {
+        return static function () use ($message): void {
+            throw new CurlException($message, CurlException::REQUEST_FAILED);
+        };
+    }
+
+    /**
+     * @param mixed[]|string $data
+     * @param mixed[]        $headers
+     *
+     * @return ProcessDto
+     */
+    protected function prepareProcessDto($data = [], $headers = []): ProcessDto
+    {
+        return (new ProcessDto())->setData(is_array($data) ? Json::encode($data) : $data)->setHeaders($headers);
     }
 
 }

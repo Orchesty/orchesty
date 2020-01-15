@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fc5d809fc904d45d47947282f4c70943",
+    "content-hash": "5a69920a0ee70df6d6c36db10d2b626b",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.132.3",
+            "version": "3.132.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "f814995664d4ad616f674e664ae069b9f4e340bf"
+                "reference": "5dcf2fb87a3cde87a5fa0b9df03b8688dcfc4f19"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/f814995664d4ad616f674e664ae069b9f4e340bf",
-                "reference": "f814995664d4ad616f674e664ae069b9f4e340bf",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/5dcf2fb87a3cde87a5fa0b9df03b8688dcfc4f19",
+                "reference": "5dcf2fb87a3cde87a5fa0b9df03b8688dcfc4f19",
                 "shasum": ""
             },
             "require": {
@@ -88,7 +88,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2020-01-10T19:14:49+00:00"
+            "time": "2020-01-13T19:11:21+00:00"
         },
         {
             "name": "aws/aws-sdk-php-symfony",
@@ -509,20 +509,21 @@
         },
         {
             "name": "doctrine/data-fixtures",
-            "version": "1.4.0",
+            "version": "1.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/data-fixtures.git",
-                "reference": "608a35a3b5bcc4214d116603095f8b0c51091592"
+                "reference": "640ab13b91bac8925af3da94dee4daf96b62a428"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/data-fixtures/zipball/608a35a3b5bcc4214d116603095f8b0c51091592",
-                "reference": "608a35a3b5bcc4214d116603095f8b0c51091592",
+                "url": "https://api.github.com/repos/doctrine/data-fixtures/zipball/640ab13b91bac8925af3da94dee4daf96b62a428",
+                "reference": "640ab13b91bac8925af3da94dee4daf96b62a428",
                 "shasum": ""
             },
             "require": {
                 "doctrine/common": "^2.11",
+                "doctrine/persistence": "^1.3.3",
                 "php": "^7.2"
             },
             "conflict": {
@@ -533,7 +534,7 @@
                 "doctrine/coding-standard": "^6.0",
                 "doctrine/dbal": "^2.5.4",
                 "doctrine/mongodb-odm": "^1.3.0",
-                "doctrine/orm": "^2.5.4",
+                "doctrine/orm": "^2.7.0",
                 "phpunit/phpunit": "^7.0"
             },
             "suggest": {
@@ -568,7 +569,7 @@
             "keywords": [
                 "database"
             ],
-            "time": "2019-10-30T20:03:18+00:00"
+            "time": "2020-01-13T18:16:40+00:00"
         },
         {
             "name": "doctrine/dbal",
@@ -1083,16 +1084,16 @@
         },
         {
             "name": "doctrine/mongodb-odm",
-            "version": "2.0.3",
+            "version": "2.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/mongodb-odm.git",
-                "reference": "72ca04db10f68d3e6f442ab861add63ce6069670"
+                "reference": "608d94ffbc20a787a0f7d40d5f142f020e969d20"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/mongodb-odm/zipball/72ca04db10f68d3e6f442ab861add63ce6069670",
-                "reference": "72ca04db10f68d3e6f442ab861add63ce6069670",
+                "url": "https://api.github.com/repos/doctrine/mongodb-odm/zipball/608d94ffbc20a787a0f7d40d5f142f020e969d20",
+                "reference": "608d94ffbc20a787a0f7d40d5f142f020e969d20",
                 "shasum": ""
             },
             "require": {
@@ -1101,7 +1102,7 @@
                 "doctrine/collections": "^1.5",
                 "doctrine/event-manager": "^1.0",
                 "doctrine/instantiator": "^1.1",
-                "doctrine/persistence": "^1.1",
+                "doctrine/persistence": "^1.3.4",
                 "ext-mongodb": "^1.5",
                 "mongodb/mongodb": "^1.2.0",
                 "ocramius/proxy-manager": "^2.2",
@@ -1169,7 +1170,7 @@
                 "odm",
                 "php"
             ],
-            "time": "2019-11-26T08:29:21+00:00"
+            "time": "2020-01-13T18:53:20+00:00"
         },
         {
             "name": "doctrine/mongodb-odm-bundle",
@@ -1888,11 +1889,11 @@
         },
         {
             "name": "hanaboso/app-store",
-            "version": "1.2.7",
+            "version": "1.2.6",
             "dist": {
                 "type": "path",
                 "url": "../app-store",
-                "reference": "944a3897fae2ac6555de01a26c2cf9bbbbd5b038"
+                "reference": "e42830fbf35f7ad03bbf966620f4819391fa8e0e"
             },
             "require": {
                 "ext-json": "*",
@@ -1981,26 +1982,27 @@
         },
         {
             "name": "hanaboso/mongo-data-grid",
-            "version": "1.3.0",
+            "version": "1.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/mongo-data-grid.git",
-                "reference": "28953be071d1d202a3695a6297cc60ca076ca3df"
+                "reference": "ade13e3e19c3bfaf524e1b3bfc54eae511d11a4b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/mongo-data-grid/zipball/28953be071d1d202a3695a6297cc60ca076ca3df",
-                "reference": "28953be071d1d202a3695a6297cc60ca076ca3df",
+                "url": "https://api.github.com/repos/hanaboso/mongo-data-grid/zipball/ade13e3e19c3bfaf524e1b3bfc54eae511d11a4b",
+                "reference": "ade13e3e19c3bfaf524e1b3bfc54eae511d11a4b",
                 "shasum": ""
             },
             "require": {
                 "doctrine/mongodb-odm": "^2.0",
                 "ext-json": "*",
                 "ext-mongodb": "*",
+                "hanaboso/utils": "^1.0",
                 "php": "^7.4"
             },
             "require-dev": {
-                "hanaboso/php-check-utils": "^1.0"
+                "hanaboso/php-check-utils": "^1.1"
             },
             "type": "library",
             "autoload": {
@@ -2013,15 +2015,15 @@
                 "proprietary"
             ],
             "description": "MongoDataGrid",
-            "time": "2019-12-06T12:19:16+00:00"
+            "time": "2020-01-09T16:44:12+00:00"
         },
         {
             "name": "hanaboso/pipes-php-sdk",
-            "version": "1.1.12",
+            "version": "1.1.10",
             "dist": {
                 "type": "path",
                 "url": "../pipes-php-sdk",
-                "reference": "50d3748b1109d9246157a57efaf581440f5688ad"
+                "reference": "ef995fa0f78deddc4909d120eadb7f8809d5dc83"
             },
             "require": {
                 "ext-json": "*",
@@ -2029,8 +2031,8 @@
                 "ext-oauth": "*",
                 "friendsofsymfony/rest-bundle": "^2.6",
                 "hanaboso/commons-bundle": "^1.3",
-                "hanaboso/mongo-data-grid": "~1.3.0",
-                "hanaboso/rabbit-mq-bundle": "^1.3",
+                "hanaboso/mongo-data-grid": "^1.3",
+                "hanaboso/rabbit-mq-bundle": "^1.1",
                 "league/oauth2-client": "^2.4",
                 "php": "^7.4",
                 "phpoffice/phpspreadsheet": "^1.10",
@@ -4752,16 +4754,16 @@
         },
         {
             "name": "react/http-client",
-            "version": "v0.5.9",
+            "version": "v0.5.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/http-client.git",
-                "reference": "f8e81a022b61938e0b37c94c6351fc170b7d87f6"
+                "reference": "f16ab55150ec369f8f9b5db64972f248691093b0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/http-client/zipball/f8e81a022b61938e0b37c94c6351fc170b7d87f6",
-                "reference": "f8e81a022b61938e0b37c94c6351fc170b7d87f6",
+                "url": "https://api.github.com/repos/reactphp/http-client/zipball/f16ab55150ec369f8f9b5db64972f248691093b0",
+                "reference": "f16ab55150ec369f8f9b5db64972f248691093b0",
                 "shasum": ""
             },
             "require": {
@@ -4775,7 +4777,7 @@
             },
             "require-dev": {
                 "clue/block-react": "^1.2",
-                "phpunit/phpunit": "^6.4 || ^5.7 || ^4.8.35",
+                "phpunit/phpunit": "^7.0 || ^6.4 || ^5.7 || ^4.8.35",
                 "react/promise-stream": "^1.1"
             },
             "type": "library",
@@ -4792,7 +4794,7 @@
             "keywords": [
                 "http"
             ],
-            "time": "2018-04-10T11:38:54+00:00"
+            "time": "2020-01-14T08:36:16+00:00"
         },
         {
             "name": "react/promise",
@@ -5259,64 +5261,6 @@
             "time": "2019-12-12T13:03:32+00:00"
         },
         {
-            "name": "symfony/cache-contracts",
-            "version": "v2.0.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/cache-contracts.git",
-                "reference": "23ed8bfc1a4115feca942cb5f1aacdf3dcdf3c16"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/cache-contracts/zipball/23ed8bfc1a4115feca942cb5f1aacdf3dcdf3c16",
-                "reference": "23ed8bfc1a4115feca942cb5f1aacdf3dcdf3c16",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^7.2.5",
-                "psr/cache": "^1.0"
-            },
-            "suggest": {
-                "symfony/cache-implementation": ""
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.0-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Symfony\\Contracts\\Cache\\": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Nicolas Grekas",
-                    "email": "p@tchwork.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                }
-            ],
-            "description": "Generic abstractions related to caching",
-            "homepage": "https://symfony.com",
-            "keywords": [
-                "abstractions",
-                "contracts",
-                "decoupling",
-                "interfaces",
-                "interoperability",
-                "standards"
-            ],
-            "time": "2019-11-18T17:27:11+00:00"
-        },
-        {
             "name": "symfony/config",
             "version": "v4.4.2",
             "source": {
@@ -5455,6 +5399,83 @@
             "description": "Symfony Console Component",
             "homepage": "https://symfony.com",
             "time": "2019-12-17T10:32:23+00:00"
+        },
+        {
+            "name": "symfony/contracts",
+            "version": "v1.1.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/contracts.git",
+                "reference": "f51bca9de06b7a25b19a4155da7bebad099a5def"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/contracts/zipball/f51bca9de06b7a25b19a4155da7bebad099a5def",
+                "reference": "f51bca9de06b7a25b19a4155da7bebad099a5def",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.1.3",
+                "psr/cache": "^1.0",
+                "psr/container": "^1.0"
+            },
+            "replace": {
+                "symfony/cache-contracts": "self.version",
+                "symfony/event-dispatcher-contracts": "self.version",
+                "symfony/http-client-contracts": "self.version",
+                "symfony/service-contracts": "self.version",
+                "symfony/translation-contracts": "self.version"
+            },
+            "require-dev": {
+                "symfony/polyfill-intl-idn": "^1.10"
+            },
+            "suggest": {
+                "psr/event-dispatcher": "When using the EventDispatcher contracts",
+                "symfony/cache-implementation": "",
+                "symfony/event-dispatcher-implementation": "",
+                "symfony/http-client-implementation": "",
+                "symfony/service-implementation": "",
+                "symfony/translation-implementation": ""
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.1-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Contracts\\": ""
+                },
+                "exclude-from-classmap": [
+                    "**/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nicolas Grekas",
+                    "email": "p@tchwork.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "A set of abstractions extracted out of the Symfony components",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "abstractions",
+                "contracts",
+                "decoupling",
+                "interfaces",
+                "interoperability",
+                "standards"
+            ],
+            "time": "2019-11-07T12:44:51+00:00"
         },
         {
             "name": "symfony/debug",
@@ -5870,64 +5891,6 @@
             "description": "Symfony EventDispatcher Component",
             "homepage": "https://symfony.com",
             "time": "2019-11-28T13:33:56+00:00"
-        },
-        {
-            "name": "symfony/event-dispatcher-contracts",
-            "version": "v1.1.7",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/event-dispatcher-contracts.git",
-                "reference": "c43ab685673fb6c8d84220c77897b1d6cdbe1d18"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/event-dispatcher-contracts/zipball/c43ab685673fb6c8d84220c77897b1d6cdbe1d18",
-                "reference": "c43ab685673fb6c8d84220c77897b1d6cdbe1d18",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^7.1.3"
-            },
-            "suggest": {
-                "psr/event-dispatcher": "",
-                "symfony/event-dispatcher-implementation": ""
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.1-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Symfony\\Contracts\\EventDispatcher\\": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Nicolas Grekas",
-                    "email": "p@tchwork.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                }
-            ],
-            "description": "Generic abstractions related to dispatching event",
-            "homepage": "https://symfony.com",
-            "keywords": [
-                "abstractions",
-                "contracts",
-                "decoupling",
-                "interfaces",
-                "interoperability",
-                "standards"
-            ],
-            "time": "2019-09-17T09:54:03+00:00"
         },
         {
             "name": "symfony/filesystem",
@@ -7446,121 +7409,6 @@
             "time": "2019-12-13T12:11:48+00:00"
         },
         {
-            "name": "symfony/service-contracts",
-            "version": "v2.0.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/service-contracts.git",
-                "reference": "144c5e51266b281231e947b51223ba14acf1a749"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/service-contracts/zipball/144c5e51266b281231e947b51223ba14acf1a749",
-                "reference": "144c5e51266b281231e947b51223ba14acf1a749",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^7.2.5",
-                "psr/container": "^1.0"
-            },
-            "suggest": {
-                "symfony/service-implementation": ""
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.0-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Symfony\\Contracts\\Service\\": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Nicolas Grekas",
-                    "email": "p@tchwork.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                }
-            ],
-            "description": "Generic abstractions related to writing services",
-            "homepage": "https://symfony.com",
-            "keywords": [
-                "abstractions",
-                "contracts",
-                "decoupling",
-                "interfaces",
-                "interoperability",
-                "standards"
-            ],
-            "time": "2019-11-18T17:27:11+00:00"
-        },
-        {
-            "name": "symfony/translation-contracts",
-            "version": "v2.0.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/translation-contracts.git",
-                "reference": "8cc682ac458d75557203b2f2f14b0b92e1c744ed"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/translation-contracts/zipball/8cc682ac458d75557203b2f2f14b0b92e1c744ed",
-                "reference": "8cc682ac458d75557203b2f2f14b0b92e1c744ed",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^7.2.5"
-            },
-            "suggest": {
-                "symfony/translation-implementation": ""
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.0-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Symfony\\Contracts\\Translation\\": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Nicolas Grekas",
-                    "email": "p@tchwork.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                }
-            ],
-            "description": "Generic abstractions related to translation",
-            "homepage": "https://symfony.com",
-            "keywords": [
-                "abstractions",
-                "contracts",
-                "decoupling",
-                "interfaces",
-                "interoperability",
-                "standards"
-            ],
-            "time": "2019-11-18T17:27:11+00:00"
-        },
-        {
             "name": "symfony/twig-bridge",
             "version": "v5.0.2",
             "source": {
@@ -8218,9 +8066,9 @@
             "authors": [
                 {
                     "name": "Brian",
+                    "role": "Lead",
                     "email": "scaturrob@gmail.com",
-                    "homepage": "http://brianscaturro.com",
-                    "role": "Lead"
+                    "homepage": "http://brianscaturro.com"
                 }
             ],
             "description": "A dependable php environment",
@@ -11420,8 +11268,8 @@
             "authors": [
                 {
                     "name": "Arne Blankerts",
-                    "email": "arne@blankerts.de",
-                    "role": "Developer"
+                    "role": "Developer",
+                    "email": "arne@blankerts.de"
                 }
             ],
             "description": "A small library for converting tokenized PHP source code into XML and potentially other formats",

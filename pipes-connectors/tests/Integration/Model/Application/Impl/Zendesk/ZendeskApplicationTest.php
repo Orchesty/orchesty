@@ -21,7 +21,7 @@ use Tests\DataProvider;
  *
  * @package Tests\Integration\Model\Application\Impl\Zendesk
  */
-class ZendeskApplicationTest extends DatabaseTestCaseAbstract
+final class ZendeskApplicationTest extends DatabaseTestCaseAbstract
 {
 
     use PrivateTrait;

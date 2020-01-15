@@ -1,0 +1,172 @@
+{
+    "data": {
+        "contactInformation": {
+            "eshopId": 9993,
+            "eshopName": "Shoptet",
+            "eshopTitle": "Shoptet",
+            "eshopSubtitle": "Nakupujte snadno a rychle",
+            "url": "http://www.domena-eshopu.cz",
+            "contactPerson": "Jan Novák",
+            "email": "info@domena-eshopu.cz",
+            "phone": "+420777888999",
+            "mobilePhone": "+420777888999",
+            "skypeAccount": "shoptet_123",
+            "contactPhotoUrl": "http://www.domena-eshopu.cz/...picture.jpg"
+        },
+        "billingInformation": {
+            "companyId": "12345678",
+            "taxId": "CZ289324675",
+            "vatId": "CZ289324675",
+            "billingName": "Jan Novák",
+            "address": {
+                "streetAddress": "Roháčova 15",
+                "city": "Praha",
+                "zip": "130 00"
+            },
+            "country": {
+                "countryCode": "CZ",
+                "countryName": "Česká republika"
+            },
+            "registration": "C 12345",
+            "email": "novak@domena-eshopu.cz",
+            "phone": "+420777888999",
+            "billingEmail": "fakturace@domena-eshopu.cz"
+        },
+        "settings": {
+            "vatPayer": true,
+            "cashDeskOnly": false,
+            "maxProductAmount": 1000,
+            "maxEmailAmount": 2000,
+            "defaultPricelist": {
+                "id": 1,
+                "name": "Hlavní ceník"
+            },
+            "eshopLanguage": "cs",
+            "timezone": "Europe/Prague",
+            "dateFormat": "j.n.Y",
+            "timeFormat": "H:i"
+        },
+        "currencies": [
+            {
+                "code": "CZK",
+                "title": "Koruna",
+                "isDefault": true,
+                "isDefaultAdmin": true,
+                "isVisible": true,
+                "exchangeRate": "1.04568087"
+            }
+        ],
+        "taxClasses": [
+            {
+                "title": "Snížená sazba DPH",
+                "rates": [
+                    {
+                        "zone": "Výchozí zóna",
+                        "vatRate": "15.00"
+                    }
+                ],
+                "isDefault": false
+            }
+        ],
+        "activeModules": [
+            {
+                "name": "abandonedCart",
+                "title": "Opuštěný košík"
+            }
+        ],
+        "urls": [
+            {
+                "ident": "admin-orders-list",
+                "url": "https://mujobchod.myshoptet.com/admin/prehled-objednavek"
+            }
+        ],
+        "socialNetworks": {
+            "facebookUrl": "http://www.facebook.com/shoptet",
+            "facebookText": "Facebook profil",
+            "twitterAccount": "shoptet_sro",
+            "instagramAccount": "shoptet_sro"
+        },
+        "orderAdditionalFields": [
+            {
+                "index": 1,
+                "label": "1. pole"
+            }
+        ],
+        "orderStatuses": {
+            "statuses": [
+                {
+                    "id": -4,
+                    "order": 6,
+                    "name": "Stornována",
+                    "markAsPaid": true
+                }
+            ],
+            "defaultStatus": -1
+        },
+        "shippingMethods": {
+            "retail": {
+                "methods": [
+                    {
+                        "guid": "3d499cae-3af3-11e3-ab60-ac162d8a2454",
+                        "order": 1,
+                        "name": "Česká Pošta - Na poštu",
+                        "visible": true
+                    }
+                ],
+                "defaultShipping": "b57f91bb-e920-11e0-baa3-7dc668b75ca8"
+            },
+            "wholesale": {
+                "methods": [
+                    {
+                        "guid": "3d499cae-3af3-11e3-ab60-ac162d8a2454",
+                        "order": 1,
+                        "name": "Česká Pošta - Na poštu",
+                        "visible": true
+                    }
+                ],
+                "defaultShipping": "b57f91bb-e920-11e0-baa3-7dc668b75ca8"
+            },
+            "wholesaleActive": true
+        },
+        "paymentMethods": {
+            "retail": {
+                "methods": [
+                    {
+                        "guid": "3d499cae-3af3-11e3-ab60-ac162d8a2454",
+                        "order": 1,
+                        "name": "Česká Pošta - Na poštu",
+                        "visible": true
+                    }
+                ],
+                "defaultPayment": "b57f91bb-e920-11e0-baa3-7dc668b75ca8"
+            },
+            "wholesale": {
+                "methods": [
+                    {
+                        "guid": "3d499cae-3af3-11e3-ab60-ac162d8a2454",
+                        "order": 1,
+                        "name": "Česká Pošta - Na poštu",
+                        "visible": true
+                    }
+                ],
+                "defaultPayment": "b57f91bb-e920-11e0-baa3-7dc668b75ca8"
+            },
+            "wholesaleActive": true
+        },
+        "imageCuts": [
+            {
+                "name": "big",
+                "width": 1024,
+                "height": 768,
+                "urlPath": "https://classic.shoptet.cz/user/shop/detail/100.jpg"
+            }
+        ]
+    },
+    "errors": [
+        {
+            "errorCode": "",
+            "message": "",
+            "instance": ""
+        }
+    ]
+}
