@@ -3,8 +3,8 @@
 namespace Tests\Controller;
 
 use Exception;
-use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\Utils\Date\DateTimeUtils;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\ControllerTestCaseAbstract;
 

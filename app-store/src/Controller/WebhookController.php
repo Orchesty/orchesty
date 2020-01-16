@@ -4,9 +4,9 @@ namespace Hanaboso\HbPFAppStore\Controller;
 
 use Exception;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
-use Hanaboso\CommonsBundle\Traits\ControllerTrait;
-use Hanaboso\CommonsBundle\Utils\ControllerUtils;
 use Hanaboso\HbPFAppStore\Handler\WebhookHandler;
+use Hanaboso\Utils\System\ControllerUtils;
+use Hanaboso\Utils\Traits\ControllerTrait;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;

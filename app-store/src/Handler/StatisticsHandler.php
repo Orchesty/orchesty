@@ -3,8 +3,8 @@
 namespace Hanaboso\HbPFAppStore\Handler;
 
 use Doctrine\ODM\MongoDB\MongoDBException;
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\HbPFAppStore\Model\StatisticsManager;
+use Hanaboso\Utils\Exception\DateTimeException;
 
 /**
  * Class StatisticsHandler

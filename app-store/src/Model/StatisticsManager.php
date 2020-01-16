@@ -5,9 +5,9 @@ namespace Hanaboso\HbPFAppStore\Model;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
+use Hanaboso\Utils\Exception\DateTimeException;
 
 /**
  * Class StatisticsManager

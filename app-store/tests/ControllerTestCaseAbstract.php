@@ -4,7 +4,7 @@ namespace Tests;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
-use Hanaboso\CommonsBundle\Utils\Json;
+use Hanaboso\Utils\String\Json;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;

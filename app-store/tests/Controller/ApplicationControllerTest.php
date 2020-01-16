@@ -3,10 +3,10 @@
 namespace Tests\Controller;
 
 use Exception;
-use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\HbPFAppStore\Handler\ApplicationHandler;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\Utils\String\Json;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\ControllerTestCaseAbstract;

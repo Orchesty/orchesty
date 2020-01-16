@@ -6,8 +6,8 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Hanaboso\CommonsBundle\Database\Traits\Document\CreatedTrait;
 use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
 use Hanaboso\CommonsBundle\Database\Traits\Document\UpdatedTrait;
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
-use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
+use Hanaboso\Utils\Date\DateTimeUtils;
+use Hanaboso\Utils\Exception\DateTimeException;
 
 /**
  * Class Synchronization

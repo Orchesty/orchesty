@@ -7,7 +7,6 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\HbPFAppStore\Loader\ApplicationLoader;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookApplicationInterface;
@@ -20,6 +19,7 @@ use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1\OAuth1ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
+use Hanaboso\Utils\Exception\DateTimeException;
 
 /**
  * Class ApplicationManager
