@@ -5,9 +5,7 @@ namespace Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\CustomNode;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use Hanaboso\HbPFAppStore\Loader\ApplicationLoader;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
@@ -15,6 +13,8 @@ use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
+use Hanaboso\Utils\Exception\DateTimeException;
+use Hanaboso\Utils\System\PipesHeaders;
 
 /**
  * Class RefreshOAuth2TokenCustomNode

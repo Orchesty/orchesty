@@ -2,16 +2,14 @@
 
 namespace Tests\Integration\Model\Application\Impl\OAuth2\CustomNode;
 
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
+use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
-use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\CustomNode\GetApplicationForRefreshBatch;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
-use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
-use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
+use Hanaboso\Utils\Date\DateTimeUtils;
+use Hanaboso\Utils\System\PipesHeaders;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\DataProvider;
 
@@ -20,15 +18,13 @@ use Tests\DataProvider;
  *
  * @package Tests\Integration\Model\Application\Impl\OAuth2\CustomNode
  */
-class RefreshOAuth2TokenCustomNodeTest extends DatabaseTestCaseAbstract
+final class RefreshOAuth2TokenCustomNodeTest extends DatabaseTestCaseAbstract
 {
 
     use PrivateTrait;
 
     /**
-     * @throws ApplicationInstallException
-     * @throws AuthorizationException
-     * @throws DateTimeException
+     * @throws Exception
      */
     public function testProcess(): void
     {

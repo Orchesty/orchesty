@@ -4,15 +4,12 @@ namespace Tests\Integration\Model\Application\Impl\Wisepop;
 
 use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
-use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Wisepop\WisepopsApplication;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\Utils\String\Json;
 use Tests\DatabaseTestCaseAbstract;
@@ -74,7 +71,6 @@ final class WisepopsApplicationTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Wisepop\WisepopsApplication::getRequestDto
      *
-     * @throws CurlException
      * @throws Exception
      */
     public function testGetRequestDto(): void
@@ -99,7 +95,7 @@ final class WisepopsApplicationTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Wisepop\WisepopsApplication::getSettingsForm
      *
-     * @throws ApplicationInstallException
+     * @throws Exception
      */
     public function testGetSettingsForm(): void
     {
@@ -122,8 +118,7 @@ final class WisepopsApplicationTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Wisepop\WisepopsApplication::getWebhookSubscribeRequestDto
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Wisepop\WisepopsApplication::getRequestDto
      *
-     * @throws CurlException
-     * @throws DateTimeException
+     * @throws Exception
      */
     public function testGetWebhookSubscribeRequestDto(): void
     {
@@ -144,8 +139,7 @@ final class WisepopsApplicationTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Wisepop\WisepopsApplication::getWebhookUnsubscribeRequestDto
      *
-     * @throws CurlException
-     * @throws DateTimeException
+     * @throws Exception
      */
     public function testGetWebhookUnsubscribeRequestDto(): void
     {
@@ -158,7 +152,7 @@ final class WisepopsApplicationTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Wisepop\WisepopsApplication::processWebhookSubscribeResponse
      *
-     * @throws DateTimeException
+     * @throws Exception
      */
     public function testProcessWebhookSubscribeResponse(): void
     {
@@ -184,7 +178,7 @@ final class WisepopsApplicationTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Wisepop\WisepopsApplication::isAuthorized
      *
-     * @throws DateTimeException
+     * @throws Exception
      */
     public function testIsAuthorized(): void
     {
@@ -192,8 +186,6 @@ final class WisepopsApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @return ApplicationInstall
-     * @throws DateTimeException
      * @throws Exception
      */
     private function createApplicationInstall(): ApplicationInstall

@@ -13,7 +13,6 @@ use Hanaboso\PipesPhpSdk\HbPFJoinerBundle\HbPFJoinerBundle;
 use Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\HbPFLongRunningNodeBundle;
 use Hanaboso\PipesPhpSdk\HbPFMapperBundle\HbPFMapperBundle;
 use Hanaboso\PipesPhpSdk\HbPFTableParserBundle\HbPFTableParserBundle;
-use JMS\SerializerBundle\JMSSerializerBundle;
 use RabbitMqBundle\RabbitMqBundle;
 use Symfony\Bundle\DebugBundle\DebugBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
@@ -26,7 +25,6 @@ return [
     DoctrineMongoDBBundle::class => ['all' => TRUE],
     FOSRestBundle::class         => ['all' => TRUE],
     FrameworkBundle::class       => ['all' => TRUE],
-    JMSSerializerBundle::class   => ['all' => TRUE],
     MonologBundle::class         => ['all' => TRUE],
     SecurityBundle::class        => ['all' => TRUE],
 

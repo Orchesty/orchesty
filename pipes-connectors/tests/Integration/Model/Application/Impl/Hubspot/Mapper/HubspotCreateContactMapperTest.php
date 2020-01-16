@@ -4,9 +4,9 @@ namespace Tests\Integration\Model\Application\Impl\Hubspot\Mapper;
 
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Mapper\HubspotCreateContactMapper;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shipstation\Connector\ShipstationNewOrderConnector;
+use Hanaboso\Utils\String\Json;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\DataProvider;
 use Tests\MockCurlMethod;

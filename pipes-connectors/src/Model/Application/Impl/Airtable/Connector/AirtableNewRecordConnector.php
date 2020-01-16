@@ -4,7 +4,6 @@ namespace Hanaboso\HbPFConnectors\Model\Application\Impl\Airtable\Connector;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\Persistence\ObjectRepository;
-use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
@@ -15,6 +14,7 @@ use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
 use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessEventNotSupportedTrait;
+use Hanaboso\Utils\Exception\PipesFrameworkException;
 
 /**
  * Class AirtableNewRecordConnector

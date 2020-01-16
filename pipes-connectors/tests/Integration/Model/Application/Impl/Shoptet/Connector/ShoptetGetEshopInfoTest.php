@@ -3,19 +3,16 @@
 namespace Tests\Integration\Model\Application\Impl\Shoptet\Connector;
 
 use Exception;
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
-use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetGetEshopInfo;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
-use ReflectionException;
+use Hanaboso\Utils\Date\DateTimeUtils;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\DataProvider;
 
@@ -60,7 +57,7 @@ final class ShoptetGetEshopInfoTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetGetEshopInfo::processEvent()
      *
-     * @throws ConnectorException
+     * @throws Exception
      */
     public function testProcessEvent(): void
     {
@@ -71,10 +68,7 @@ final class ShoptetGetEshopInfoTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetGetEshopInfo::processAction()
      *
-     * @throws ApplicationInstallException
-     * @throws DateTimeException
-     * @throws OnRepeatException
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function testProcessAction(): void
     {
@@ -91,9 +85,7 @@ final class ShoptetGetEshopInfoTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetGetEshopInfo::processActionArray()
      *
-     * @throws CurlException
-     * @throws DateTimeException
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function testProcessActionArray(): void
     {
@@ -108,10 +100,7 @@ final class ShoptetGetEshopInfoTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetGetEshopInfo::processAction()
      *
-     * @throws ApplicationInstallException
-     * @throws DateTimeException
-     * @throws OnRepeatException
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function testProcessActionErr(): void
     {
@@ -133,7 +122,6 @@ final class ShoptetGetEshopInfoTest extends DatabaseTestCaseAbstract
 
     /**
      * @return ApplicationInstall
-     * @throws DateTimeException
      * @throws Exception
      */
     private function insertApplicationInstall(): ApplicationInstall
@@ -161,7 +149,6 @@ final class ShoptetGetEshopInfoTest extends DatabaseTestCaseAbstract
     /**
      * @param string $jsonContent
      *
-     * @throws ReflectionException
      * @throws Exception
      */
     private function mockSender(string $jsonContent): void

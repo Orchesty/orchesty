@@ -6,7 +6,6 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\CommonsBundle\Traits\UrlBuilderTrait;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
@@ -14,6 +13,7 @@ use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\Utils\ProcessHeaderTrait;
+use Hanaboso\Utils\Traits\UrlBuilderTrait;
 
 /**
  * Class ShoptetConnectorAbstract

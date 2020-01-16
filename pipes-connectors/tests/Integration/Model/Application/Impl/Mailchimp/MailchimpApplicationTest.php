@@ -4,7 +4,6 @@ namespace Tests\Integration\Model\Application\Impl\Mailchimp;
 
 use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\MailchimpApplication;
@@ -54,7 +53,7 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws DateTimeException
+     * @throws Exception
      */
     public function testIsAuthorizedNoToken(): void
     {
@@ -130,7 +129,7 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testName(): void
     {
@@ -142,7 +141,7 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testGetDescription(): void
     {
@@ -154,7 +153,7 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testGetApplicationType(): void
     {
@@ -166,7 +165,7 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testGetSettingsForm(): void
     {
@@ -186,7 +185,7 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws DateTimeException
+     * @throws Exception
      */
     public function testProcessWebhookSubscribeResponse(): void
     {
@@ -199,7 +198,7 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testProcessWebhookUnsubscribeResponse(): void
     {
@@ -211,7 +210,7 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testGetWebhookSubscriptions(): void
     {
@@ -227,7 +226,7 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testSetAuthorization(): void
     {
@@ -286,7 +285,7 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     private function setApplication(): void
     {

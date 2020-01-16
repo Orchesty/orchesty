@@ -2,13 +2,10 @@
 
 namespace Tests\Integration\Model\Application\Impl\Mailchimp\Connector;
 
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
-use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
-use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
+use Exception;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\Connector\MailchimpTagContactConnector;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\MailchimpApplication;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
-use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\DataProvider;
@@ -26,10 +23,7 @@ final class MailchimpTagContactConnectorTest extends DatabaseTestCaseAbstract
      * @param int  $code
      * @param bool $isValid
      *
-     * @throws DateTimeException
-     * @throws PipesFrameworkException
-     * @throws CurlException
-     * @throws ApplicationInstallException
+     * @throws Exception
      *
      * @dataProvider getDataProvider
      */
@@ -70,7 +64,7 @@ final class MailchimpTagContactConnectorTest extends DatabaseTestCaseAbstract
                     MailchimpApplication::AUDIENCE_ID => '2a8******8',
                 ],
                 MailchimpApplication::API_KEYPOINT => $app->getApiEndpoint($applicationInstall),
-                MailchimpApplication::SEGMENT_ID => 'segment_id',
+                MailchimpApplication::SEGMENT_ID   => 'segment_id',
             ]
         );
 
@@ -97,8 +91,7 @@ final class MailchimpTagContactConnectorTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws ConnectorException
-     * @throws DateTimeException
+     * @throws Exception
      */
     public function testProcessEvent(): void
     {
@@ -139,7 +132,7 @@ final class MailchimpTagContactConnectorTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testGetId(): void
     {

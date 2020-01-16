@@ -2,18 +2,14 @@
 
 namespace Tests\Integration\Model\Application\Impl\Shoptet\Connector;
 
-use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
-use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetRegisterWebhookConnector;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
-use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
-use ReflectionException;
+use Hanaboso\Utils\String\Json;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\DataProvider;
 
@@ -77,12 +73,6 @@ class ShoptetRegisterWebhookConnectorTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetRegisterWebhookConnector::processAction
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetConnectorAbstract::processResponse
      *
-     * @throws MongoDBException
-     * @throws DateTimeException
-     * @throws OnRepeatException
-     * @throws CurlException
-     * @throws ApplicationInstallException
-     * @throws ConnectorException
      * @throws Exception
      */
     public function testProcessAction(): void
@@ -117,13 +107,6 @@ class ShoptetRegisterWebhookConnectorTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetRegisterWebhookConnector::processAction
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetConnectorAbstract::processResponse
      *
-     * @throws ApplicationInstallException
-     * @throws ConnectorException
-     * @throws CurlException
-     * @throws DateTimeException
-     * @throws MongoDBException
-     * @throws OnRepeatException
-     * @throws ReflectionException
      * @throws Exception
      */
     public function testProcessActionException(): void

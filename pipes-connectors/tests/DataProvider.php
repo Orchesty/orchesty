@@ -4,13 +4,13 @@ namespace Tests;
 
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
+use Hanaboso\Utils\System\PipesHeaders;
 
 /**
  * Class DataProvider

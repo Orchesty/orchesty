@@ -4,11 +4,11 @@ namespace Tests\Integration\Model\Application\Impl\OAuth2\CustomNode;
 
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\CustomNode\GetApplicationForRefreshBatch;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\SuccessMessage;
+use Hanaboso\Utils\Date\DateTimeUtils;
 use Tests\DatabaseTestCaseAbstract;
 
 /**

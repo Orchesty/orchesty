@@ -3,14 +3,10 @@
 namespace Tests\Integration\Model\Application\Impl\Shoptet;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
-use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
-use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
@@ -21,7 +17,7 @@ use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
-use ReflectionException;
+use Hanaboso\Utils\Date\DateTimeUtils;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\DataProvider;
 
@@ -43,7 +39,7 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
     private $application;
 
     /**
-     *
+     * @throws Exception
      */
     public function testConstructor(): void
     {
@@ -176,7 +172,9 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
     {
         $this->setApplication();
         $applicationInstall = DataProvider::getOauth2AppInstall($this->application->getKey())
-            ->setSettings([ApplicationAbstract::FORM => ['oauth_url' => 'https://12345.myshoptet.com/action/ApiOAuthServer/token']]);
+            ->setSettings(
+                [ApplicationAbstract::FORM => ['oauth_url' => 'https://12345.myshoptet.com/action/ApiOAuthServer/token']]
+            );
 
         self::assertEquals(
             'https://12345.myshoptet.com/action/ApiOAuthServer/token',
@@ -192,7 +190,9 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
     {
         $this->setApplication();
         $applicationInstall = DataProvider::getOauth2AppInstall($this->application->getKey())
-            ->setSettings([ApplicationAbstract::FORM => ['api_token_url' => 'https://12345.myshoptet.com/action/ApiOAuthServer/getAccessToken']]);
+            ->setSettings(
+                [ApplicationAbstract::FORM => ['api_token_url' => 'https://12345.myshoptet.com/action/ApiOAuthServer/getAccessToken']]
+            );
 
         self::assertEquals(
             'https://12345.myshoptet.com/action/ApiOAuthServer/getAccessToken',
@@ -213,10 +213,7 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication::getWebhookSubscribeRequestDto
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication::getApiTokenFromSettings
      *
-     * @throws ApplicationInstallException
-     * @throws CurlException
-     * @throws DateTimeException
-     * @throws MongoDBException
+     * @throws Exception
      */
     public function testGetWebhookSubscribeRequestDto(): void
     {
@@ -250,10 +247,7 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication::getWebhookSubscribeRequestDto
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication::getApiTokenFromSettings
      *
-     * @throws ApplicationInstallException
-     * @throws CurlException
-     * @throws DateTimeException
-     * @throws MongoDBException
+     * @throws Exception
      */
     public function testGetWebhookSubscribeRequestDtoError(): void
     {
@@ -278,10 +272,7 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication::getWebhookUnsubscribeRequestDto
      *
-     * @throws ApplicationInstallException
-     * @throws CurlException
-     * @throws DateTimeException
-     * @throws MongoDBException
+     * @throws Exception
      */
     public function testGetWebhookUnsubscribeRequestDto(): void
     {
@@ -374,7 +365,6 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication::createDto
-     * @throws ReflectionException
      * @throws Exception
      */
     public function testCreateDto(): void
@@ -414,7 +404,7 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     private function setApplication(): void
     {
@@ -425,7 +415,7 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
     /**
      * @param string $jsonContent
      *
-     * @throws ReflectionException
+     * @throws Exception
      */
     private function mockSender(string $jsonContent): void
     {

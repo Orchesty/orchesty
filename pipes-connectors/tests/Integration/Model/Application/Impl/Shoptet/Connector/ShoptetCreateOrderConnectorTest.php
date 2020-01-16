@@ -6,11 +6,11 @@ use Exception;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
-use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetCreateOrderConnector;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
+use Hanaboso\Utils\String\Json;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\DataProvider;
 

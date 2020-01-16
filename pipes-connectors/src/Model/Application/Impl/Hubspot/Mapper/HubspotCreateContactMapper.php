@@ -2,10 +2,10 @@
 
 namespace Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Mapper;
 
-use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
+use Hanaboso\Utils\Exception\PipesFrameworkException;
+use Hanaboso\Utils\String\Json;
 
 /**
  * Class HubspotCreateContactMapper

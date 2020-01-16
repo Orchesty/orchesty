@@ -5,17 +5,17 @@ namespace Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector;
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
-use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
-use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessEventNotSupportedTrait;
 use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessExceptionTrait;
+use Hanaboso\Utils\Exception\PipesFrameworkException;
+use Hanaboso\Utils\String\Json;
 use JsonException;
 
 /**
@@ -65,7 +65,8 @@ final class ShoptetUpdateOrderConnector extends ShoptetConnectorAbstract
                             $this->host,
                             sprintf(
                                 self::URL,
-                                $applicationInstall->getSettings()[ApplicationAbstract::FORM][ShoptetApplication::ESHOP_ID]
+                                $applicationInstall->getSettings(
+                                )[ApplicationAbstract::FORM][ShoptetApplication::ESHOP_ID]
                             )
                         ),
                         Json::encode([self::DATA => [self::STATUS => $this->getStatus($dto)]])

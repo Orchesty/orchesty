@@ -4,7 +4,6 @@ namespace Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\Connector;
 
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
@@ -15,6 +14,7 @@ use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
+use Hanaboso\Utils\Exception\PipesFrameworkException;
 
 /**
  * Class MailchimpTagContactConnector

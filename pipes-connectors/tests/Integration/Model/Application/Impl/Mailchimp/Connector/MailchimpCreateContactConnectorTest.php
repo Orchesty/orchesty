@@ -2,13 +2,10 @@
 
 namespace Tests\Integration\Model\Application\Impl\Mailchimp\Connector;
 
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
-use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
-use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
+use Exception;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\Connector\MailchimpCreateContactConnector;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\MailchimpApplication;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
-use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\DataProvider;
@@ -26,10 +23,7 @@ final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
      * @param int  $code
      * @param bool $isValid
      *
-     * @throws DateTimeException
-     * @throws PipesFrameworkException
-     * @throws CurlException
-     * @throws ApplicationInstallException
+     * @throws Exception
      *
      * @dataProvider getDataProvider
      */
@@ -96,10 +90,7 @@ final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws ApplicationInstallException
-     * @throws CurlException
-     * @throws DateTimeException
-     * @throws PipesFrameworkException
+     * @throws Exception
      */
     public function testProcessEvent(): void
     {
@@ -140,7 +131,7 @@ final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function testGetId(): void
     {

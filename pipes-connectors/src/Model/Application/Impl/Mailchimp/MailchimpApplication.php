@@ -8,7 +8,6 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
-use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookApplicationInterface;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
@@ -20,6 +19,7 @@ use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
+use Hanaboso\Utils\String\Json;
 
 /**
  * Class MailchimpApplication
