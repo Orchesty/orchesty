@@ -6,15 +6,15 @@ services:
     #    Session Handlers    #
     ##########################
 
-#    hbpf.commons.session_handler:
-#        class: Hanaboso\CommonsBundle\Session\Handler\CachedSessionHandler
-#        arguments:
-#            - '@hbpf.commons.redis_session_handler'
-#
-#    hbpf.commons.redis_session_handler:
-#        class: Hanaboso\CommonsBundle\Session\Handler\RedisSessionHandler
-#        arguments:
-#            - '@snc_redis.sessions'
+    #    hbpf.commons.session_handler:
+    #        class: Hanaboso\CommonsBundle\Session\Handler\CachedSessionHandler
+    #        arguments:
+    #            - '@hbpf.commons.redis_session_handler'
+    #
+    #    hbpf.commons.redis_session_handler:
+    #        class: Hanaboso\CommonsBundle\Session\Handler\RedisSessionHandler
+    #        arguments:
+    #            - '%env(string:REDIS_DSN)%'
 
     ##########################
     #        Metrics         #
@@ -30,36 +30,30 @@ services:
             - { name: kernel.event_subscriber, event: kernel.terminate }
             - { name: kernel.event_subscriber, event: kernel.controller }
 
-    udp_metrics_sender:
-        class: Hanaboso\CommonsBundle\Metrics\Impl\UDPSender
-        arguments:
-            - '%kapacitor.host%'
-            - '%kapacitor.port%'
-        calls:
-            - ['setLogger', ['@monolog.logger.commons']]
-
     hbpf.influxdb_sender_connector:
         class: Hanaboso\CommonsBundle\Metrics\Impl\InfluxDbSender
         arguments:
-            - '@udp_metrics_sender'
+            - '@hbpf.transport.udp_sender'
+            - '%kapacitor.host%:%kapacitor.port%'
             - '%influx.connector_table%'
 
     hbpf.influxdb_sender_monolith:
         class: Hanaboso\CommonsBundle\Metrics\Impl\InfluxDbSender
         arguments:
-            - '@udp_metrics_sender'
+            - '@hbpf.transport.udp_sender'
+            - '%kapacitor.host%:%kapacitor.port%'
             - '%influx.monolith_table%'
 
     hbpf.metrics.mongodb_connector:
         class: Hanaboso\CommonsBundle\Metrics\Impl\MongoDbSender
         arguments:
-            - '@doctrine_mongodb.odm.metrics_document_manager'
+            - '@doctrine_mongodb.odm.default_document_manager'
             - '%mongodb.connector_table%'
 
     hbpf.metrics.mongodb_monolith:
         class: Hanaboso\CommonsBundle\Metrics\Impl\MongoDbSender
         arguments:
-            - '@doctrine_mongodb.odm.metrics_document_manager'
+            - '@doctrine_mongodb.odm.default_document_manager'
             - '%mongodb.monolith_table%'
 
     hbpf.metrics_connector.loader:
@@ -112,5 +106,30 @@ services:
         class: Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
-            - '@doctrine.orm.default_entity_manager'
+            - null
             - '%database_type%'
+
+    ##########################
+    #   Transport Services   #
+    ##########################
+
+    hbpf.transport.udp_sender:
+        class: Hanaboso\CommonsBundle\Transport\Udp\UDPSender
+        calls:
+    #            - ['setLogger', ['@monolog.logger.commons']]
+
+    hbpf.transport.curl_manager:
+        class: Hanaboso\CommonsBundle\Transport\Curl\CurlManager
+        arguments:
+            - '@hbpf.transport.curl_client_factory'
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]
+    #            - ['setMetricsSender', ['@hbpf.metrics_connector.loader']] ## Optional metrics sender
+
+#    hbpf.transport.soap_manager:
+#        class: Hanaboso\CommonsBundle\Transport\Soap\SoapManager
+#        arguments:
+#            - '@hbpf.transport.soap_client_factory'
+#        calls:
+#            - ['setLogger', ['@monolog.logger.commons']]
+#    #            - ['setMetricsSender', ['@hbpf.metrics_connector.loader']] ## Optional metrics sender

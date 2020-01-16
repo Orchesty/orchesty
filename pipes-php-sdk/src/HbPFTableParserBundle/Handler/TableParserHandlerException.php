@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler;
 
-use Hanaboso\CommonsBundle\Exception\PipesFrameworkExceptionAbstract;
+use Hanaboso\Utils\Exception\PipesFrameworkExceptionAbstract;
 
 /**
  * Class TableParserHandlerException

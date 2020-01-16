@@ -8,9 +8,9 @@ use Hanaboso\CommonsBundle\Database\Traits\Document\CreatedTrait;
 use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
 use Hanaboso\CommonsBundle\Database\Traits\Document\UpdatedTrait;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
-use Hanaboso\CommonsBundle\Utils\Json;
-use Hanaboso\CommonsBundle\Utils\PipesHeaders;
+use Hanaboso\Utils\Date\DateTimeUtils;
+use Hanaboso\Utils\String\Json;
+use Hanaboso\Utils\System\PipesHeaders;
 use PhpAmqpLib\Message\AMQPMessage;
 use RabbitMqBundle\Utils\Message;
 

@@ -3,8 +3,8 @@
 namespace Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch;
 
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use Hanaboso\PipesPhpSdk\Utils\ProcessDtoFactory;
+use Hanaboso\Utils\System\PipesHeaders;
 use InvalidArgumentException;
 use PhpAmqpLib\Message\AMQPMessage;
 use Psr\Log\LoggerAwareInterface;

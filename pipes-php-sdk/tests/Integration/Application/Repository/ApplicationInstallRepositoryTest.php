@@ -3,9 +3,9 @@
 namespace Tests\Integration\Application\Repository;
 
 use Exception;
-use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
+use Hanaboso\Utils\Date\DateTimeUtils;
 use Tests\DatabaseTestCaseAbstract;
 
 /**

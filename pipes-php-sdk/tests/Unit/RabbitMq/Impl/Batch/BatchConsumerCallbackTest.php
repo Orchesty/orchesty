@@ -5,10 +5,10 @@ namespace Tests\Unit\RabbitMq\Impl\Batch;
 use Exception;
 use Hanaboso\CommonsBundle\Metrics\Impl\InfluxDbSender;
 use Hanaboso\CommonsBundle\Metrics\MetricsSenderLoader;
-use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchActionInterface;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchInterface;
+use Hanaboso\Utils\System\PipesHeaders;
 use InvalidArgumentException;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPSocketConnection;
@@ -40,6 +40,7 @@ final class BatchConsumerCallbackTest extends TestCase
         $message = Message::create($content, $headers);
         // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
         $message->delivery_info['delivery_tag'] = 'delivery_tag';
+
         // phpcs:enable
 
         return $message;

@@ -29,8 +29,8 @@ doctrine_mongodb:
                 CommonsDocument:
                     type: annotation
                     is_bundle: false
-                    dir: "%kernel.root_dir%/../vendor/hanaboso/commons-bundle/src/Database/Document"
-                    prefix: Hanaboso\CommonsBundle\Database\Document
+                    dir: "%kernel.root_dir%/Database/Document"
+                    prefix: Hanaboso\PipesPhpSdk\Database\Document
                 ApplicationDocument:
                     type: annotation
                     is_bundle: false

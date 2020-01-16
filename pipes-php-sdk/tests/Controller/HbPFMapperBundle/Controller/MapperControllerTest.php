@@ -3,8 +3,8 @@
 namespace Tests\Controller\HbPFMapperBundle\Controller;
 
 use Exception;
-use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesPhpSdk\HbPFMapperBundle\Handler\MapperHandler;
+use Hanaboso\Utils\String\Json;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;

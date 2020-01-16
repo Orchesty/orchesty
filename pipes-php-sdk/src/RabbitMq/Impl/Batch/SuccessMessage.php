@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch;
 
-use Hanaboso\CommonsBundle\Utils\PipesHeaders;
+use Hanaboso\Utils\System\PipesHeaders;
 use InvalidArgumentException;
 
 /**

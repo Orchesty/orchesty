@@ -7,13 +7,13 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Exception;
-use Hanaboso\CommonsBundle\Database\Document\Embed\EmbedNode;
-use Hanaboso\CommonsBundle\Database\Document\Node;
-use Hanaboso\CommonsBundle\Database\Repository\NodeRepository;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\CommonsBundle\Utils\GeneratorUtils;
-use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
+use Hanaboso\PipesPhpSdk\Database\Document\Embed\EmbedNode;
+use Hanaboso\PipesPhpSdk\Database\Document\Node;
+use Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository;
+use Hanaboso\Utils\System\NodeGeneratorUtils;
+use Hanaboso\Utils\System\PipesHeaders;
 use InvalidArgumentException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
@@ -202,7 +202,7 @@ abstract class RabbitCustomNode extends CustomNodeAbstract implements LoggerAwar
 
         /** @var EmbedNode $next */
         foreach ($node->getNext() as $next) {
-            $que            = GeneratorUtils::generateQueueNameFromStrings(
+            $que            = NodeGeneratorUtils::generateQueueNameFromStrings(
                 (string) $topId,
                 $next->getId(),
                 $next->getName()

@@ -4,8 +4,8 @@ namespace Hanaboso\PipesPhpSdk\LongRunningNode\Model;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
-use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData;
+use Hanaboso\Utils\String\Json;
 
 /**
  * Class LongRunningNodeManager

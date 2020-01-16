@@ -66,16 +66,11 @@ services:
     logstash_formatter:
         class: Hanaboso\CommonsBundle\Monolog\LogstashFormatter
 
-    udp_sender:
-        class: Hanaboso\CommonsBundle\Metrics\Impl\UDPSender
-        arguments:
-            - 'logstash'
-            - '5120'
-
     udp_handler:
         class: Hanaboso\CommonsBundle\Monolog\UdpHandler
         arguments:
-            - '@udp_sender'
+            - '@hbpf.transport.udp_sender'
+            - 'logstash:5120'
             - 'info'
         calls:
             - ['setFormatter', ['@logstash_formatter']]

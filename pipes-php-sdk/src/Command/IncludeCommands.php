@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\Command;
+namespace Hanaboso\PipesPhpSdk\Command;
 
 use Symfony\Bundle\FrameworkBundle\Console\Application as BundleApplication;
 use Symfony\Component\Console\Command\Command;
@@ -9,7 +9,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Class IncludeCommands
  *
- * @package Hanaboso\PipesFramework\Command
+ * @package Hanaboso\PipesPhpSdk\Command
  */
 class IncludeCommands extends BundleApplication
 {

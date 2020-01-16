@@ -4,11 +4,11 @@ namespace Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller;
 
 use Exception;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
-use Hanaboso\CommonsBundle\Traits\ControllerTrait;
-use Hanaboso\CommonsBundle\Utils\ControllerUtils;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler;
+use Hanaboso\Utils\System\ControllerUtils;
+use Hanaboso\Utils\Traits\ControllerTrait;
 use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -97,7 +97,8 @@ class ApplicationController extends AbstractFOSRestController
     {
         try {
             [$user, $key] = OAuth2Provider::stateDecode($request->get('state'));
-            $url          = $this->applicationHandler->saveAuthToken($key, $user, $request->query->all());
+
+            $url = $this->applicationHandler->saveAuthToken($key, $user, $request->query->all());
 
             return new RedirectResponse($url[ApplicationInterface::REDIRECT_URL]);
         } catch (Exception|Throwable $e) {

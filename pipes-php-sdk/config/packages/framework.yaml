@@ -1,5 +1,6 @@
 framework:
     secret: "secret"
+    serializer:
 
 parameters:
     backend_host: 127.0.0.4

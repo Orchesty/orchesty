@@ -3,10 +3,10 @@
 namespace Hanaboso\PipesPhpSdk\Utils;
 
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessExceptionTrait;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\SuccessMessage;
+use Hanaboso\Utils\String\Json;
 
 /**
  * Trait ProcessContentTrait
@@ -27,7 +27,7 @@ trait ProcessContentTrait
      * @return mixed
      * @throws ConnectorException
      */
-    protected function  getContentByKey($dto, string $key, array $contents = [], bool $throw = TRUE)
+    protected function getContentByKey($dto, string $key, array $contents = [], bool $throw = TRUE)
     {
         $contents = $contents ?: Json::decode($dto->getData());
         $content  = $this->getByKey($contents, $key);

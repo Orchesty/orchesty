@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesPhpSdk\LongRunningNode\Enum;
 
-use Hanaboso\CommonsBundle\Enum\EnumAbstract;
+use Hanaboso\Utils\Enum\EnumAbstract;
 
 /**
  * Class StateEnum
@@ -18,7 +18,7 @@ final class StateEnum extends EnumAbstract
     /**
      * @var string[]
      */
-    protected static $choices = [
+    protected static array $choices = [
         self::PENDING     => self::PENDING,
         self::IN_PROGRESS => self::IN_PROGRESS,
     ];

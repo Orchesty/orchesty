@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Exception;
 
-use Hanaboso\CommonsBundle\Exception\PipesFrameworkExceptionAbstract;
+use Hanaboso\Utils\Exception\PipesFrameworkExceptionAbstract;
 
 /**
  * Class CustomNodeException

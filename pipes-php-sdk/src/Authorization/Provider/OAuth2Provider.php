@@ -4,11 +4,11 @@ namespace Hanaboso\PipesPhpSdk\Authorization\Provider;
 
 use Exception;
 use Hanaboso\CommonsBundle\Redirect\RedirectInterface;
-use Hanaboso\CommonsBundle\Utils\Base64;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth2DtoInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Utils\ScopeFormatter;
 use Hanaboso\PipesPhpSdk\Authorization\Wrapper\OAuth2Wrapper;
+use Hanaboso\Utils\String\Base64;
 use Psr\Log\LoggerAwareInterface;
 use function GuzzleHttp\Psr7\build_query;
 use function GuzzleHttp\Psr7\parse_query;
