@@ -69,7 +69,6 @@ final class ShoptetUpdateOrderConnector extends ShoptetConnectorAbstract
                                 )[ApplicationAbstract::FORM][ShoptetApplication::ESHOP_ID]
                             )
                         ),
-                        Json::encode([self::DATA => [self::STATUS => $this->getStatus($dto)]])
                     )->setDebugInfo($dto)
                 )->getJsonBody(),
                 $dto
@@ -79,23 +78,6 @@ final class ShoptetUpdateOrderConnector extends ShoptetConnectorAbstract
         } catch (ApplicationInstallException | CurlException | JsonException $e) {
             throw $this->createRepeatException($dto, $e, self::REPEATER_INTERVAL);
         }
-    }
-
-    /**
-     * @param ProcessDto $dto
-     *
-     * @return int
-     * @throws ConnectorException
-     */
-    private function getStatus(ProcessDto $dto): int
-    {
-        $settings = $this->getApplicationInstall($dto)->getSettings()[ShoptetApplication::FORM];
-
-        if (!isset($settings[ShoptetApplication::CANCELLED])) {
-            throw $this->createException("Unsupported order status '%s'!", ShoptetApplication::CANCELLED);
-        }
-
-        return (int) $settings[ShoptetApplication::CANCELLED];
     }
 
 }
