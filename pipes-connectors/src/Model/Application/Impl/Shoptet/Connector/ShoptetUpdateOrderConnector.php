@@ -15,7 +15,6 @@ use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessEventNotSupportedTrait;
 use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessExceptionTrait;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
-use Hanaboso\Utils\String\Json;
 use JsonException;
 
 /**
@@ -29,8 +28,7 @@ final class ShoptetUpdateOrderConnector extends ShoptetConnectorAbstract
     use ProcessEventNotSupportedTrait;
     use ProcessExceptionTrait;
 
-    private const URL    = '/api/orders/%s/status?suppressDocumentGeneration=true&suppressEmailSending=true&suppressSmsSending=true';
-    private const STATUS = 'statusId';
+    private const URL = '/api/orders/%s/status?suppressDocumentGeneration=true&suppressEmailSending=true&suppressSmsSending=true';
 
     /**
      * @return string
@@ -68,7 +66,7 @@ final class ShoptetUpdateOrderConnector extends ShoptetConnectorAbstract
                                 $applicationInstall->getSettings(
                                 )[ApplicationAbstract::FORM][ShoptetApplication::ESHOP_ID]
                             )
-                        ),
+                        )
                     )->setDebugInfo($dto)
                 )->getJsonBody(),
                 $dto

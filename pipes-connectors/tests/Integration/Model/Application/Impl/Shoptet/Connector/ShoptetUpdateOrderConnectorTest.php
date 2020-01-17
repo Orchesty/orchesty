@@ -160,38 +160,6 @@ final class ShoptetUpdateOrderConnectorTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetUpdateOrderConnector::processAction
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetUpdateOrderConnector::getStatus
-     *
-     * @throws Exception
-     */
-    public function testProcessActionUpdateMissingStatus(): void
-    {
-        self::assertException(
-            ConnectorException::class,
-            ConnectorException::CONNECTOR_FAILED_TO_PROCESS,
-            "Connector 'shoptet-update-order': Unsupported order status 'cancelled'!"
-        );
-
-        $applicationInstall = DataProvider::createApplicationInstall(
-            ShoptetApplication::SHOPTET_KEY,
-            self::USER,
-            array_merge(self::SETTINGS, [ShoptetApplication::FORM => [ShoptetApplication::ESHOP_ID => 125]]),
-            self::NON_ENCRYPTED_SETTINGS
-        );
-        $this->pf($applicationInstall);
-
-        $this->connector->processAction(
-            $this->prepareProcessDto(
-                [],
-                self::HEADERS + [
-                    self::ID => $applicationInstall->getId(),
-                ]
-            )
-        );
-    }
-
-    /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetUpdateOrderConnector::processAction
      *
      * @throws Exception
      */
