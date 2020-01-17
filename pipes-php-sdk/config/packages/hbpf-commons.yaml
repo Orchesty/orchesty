@@ -3,20 +3,6 @@ services:
         public: '%public.services%'
 
     ##########################
-    #    Session Handlers    #
-    ##########################
-
-    #    hbpf.commons.session_handler:
-    #        class: Hanaboso\CommonsBundle\Session\Handler\CachedSessionHandler
-    #        arguments:
-    #            - '@hbpf.commons.redis_session_handler'
-    #
-    #    hbpf.commons.redis_session_handler:
-    #        class: Hanaboso\CommonsBundle\Session\Handler\RedisSessionHandler
-    #        arguments:
-    #            - '%env(string:REDIS_DSN)%'
-
-    ##########################
     #        Metrics         #
     ##########################
 
@@ -125,11 +111,3 @@ services:
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
     #            - ['setMetricsSender', ['@hbpf.metrics_connector.loader']] ## Optional metrics sender
-
-#    hbpf.transport.soap_manager:
-#        class: Hanaboso\CommonsBundle\Transport\Soap\SoapManager
-#        arguments:
-#            - '@hbpf.transport.soap_client_factory'
-#        calls:
-#            - ['setLogger', ['@monolog.logger.commons']]
-#    #            - ['setMetricsSender', ['@hbpf.metrics_connector.loader']] ## Optional metrics sender

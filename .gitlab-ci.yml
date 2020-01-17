@@ -182,7 +182,7 @@ pf-bundles-test:
     - cd $REPO_ROOT/$DIR
     - export COMPOSE_PROJECT_NAME="p${CI_PIPELINE_ID}-bundles" # CLEANUP bundles
     - export COMPOSE_FILE=docker-compose.ci.yml                # CLEANUP bundles
-    - make ${COMPOSE_FILE} test
+    - make ${COMPOSE_FILE} test docker-down-clean
 
 notification-sender-test:
   stage: stage2
@@ -202,7 +202,7 @@ app-store-test:
     - cd $REPO_ROOT/$DIR
     - export COMPOSE_PROJECT_NAME="p${CI_PIPELINE_ID}-app-store" # CLEANUP app-store
     - export COMPOSE_FILE=docker-compose.ci.yml                  # CLEANUP app-store
-    - make ${COMPOSE_FILE} test
+    - make ${COMPOSE_FILE} test docker-down-clean
 
 pipes-php-sdk-test:
   stage: stage2
@@ -212,7 +212,7 @@ pipes-php-sdk-test:
     - cd $REPO_ROOT/$DIR
     - export COMPOSE_PROJECT_NAME="p${CI_PIPELINE_ID}-pipes-php-sdk" # CLEANUP pipes-php-sdk
     - export COMPOSE_FILE=docker-compose.ci.yml                      # CLEANUP pipes-php-sdk
-    - make ${COMPOSE_FILE} test
+    - make ${COMPOSE_FILE} test docker-down-clean
 
 pipes-connectors-test:
   stage: stage2
@@ -222,7 +222,7 @@ pipes-connectors-test:
     - cd $REPO_ROOT/$DIR
     - export COMPOSE_PROJECT_NAME="p${CI_PIPELINE_ID}-pipes-connectors" # CLEANUP pipes-connectors
     - export COMPOSE_FILE=docker-compose.ci.yml                         # CLEANUP pipes-connectors
-    - make ${COMPOSE_FILE} test
+    - make ${COMPOSE_FILE} test docker-down-clean
 
 rabbitmq-telegraf-test:
   stage: stage2

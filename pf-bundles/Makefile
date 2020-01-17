@@ -58,7 +58,7 @@ phpcoverage:
 	$(DE) php vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p 4 --coverage-html var/coverage --whitelist src tests
 
 phpcoverage-ci:
-	$(DE) ./vendor/hanaboso/php-check-utils/bin/coverage.sh 50
+	$(DE) ./vendor/hanaboso/php-check-utils/bin/coverage.sh -c 50
 
 phpmanual-up:
 	cd tests/Manual; $(MAKE) docker-up-force;
@@ -69,7 +69,7 @@ phpmanual-tests:
 phpmanual-down:
 	cd tests/Manual; $(MAKE) docker-down-clean;
 
-test: docker-up-force composer-install fasttest docker-down-clean
+test: docker-up-force composer-install fasttest
 
 fasttest: codesniffer clear-cache phpstan phpunit phpintegration phpcontroller phpcoverage-ci
 
