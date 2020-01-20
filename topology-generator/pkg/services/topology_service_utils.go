@@ -62,10 +62,26 @@ func getDockerServiceConfigs(adapter model.Adapter, topologyPath string, configN
 	return configs
 }
 
-func getComposeCommand() string {
+func getMultiBridgeStartCommand() string {
 	return "./dist/src/bin/pipes.js start multi_bridge"
 }
 
-func getSwarmCommand(serviceName string) string {
-	return fmt.Sprintf("./dist/src/bin/pipes.js start node --id %s", serviceName)
+func getSingleBridgeStartCommand(serviceName string) string {
+	return fmt.Sprintf("./dist/src/bin/pipes.js start bridge --id %s", serviceName)
+}
+
+func GetConfigMapName(topologyId string) string {
+	return fmt.Sprintf("configmap-%s", topologyId)
+}
+
+func GetDeploymentName(topologyId string) string {
+	return fmt.Sprintf("topology-%s", topologyId)
+}
+
+func getPodName(topologyId string) string {
+	return fmt.Sprintf("pod%s", topologyId)
+}
+
+func GetDstDir(path string, saveDir string) string {
+	return fmt.Sprintf("%s/%s", path, saveDir)
 }
