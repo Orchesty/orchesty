@@ -4,7 +4,6 @@ namespace Hanaboso\PipesPhpSdk\Command;
 
 use Symfony\Bundle\FrameworkBundle\Console\Application as BundleApplication;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class IncludeCommands
@@ -52,16 +51,11 @@ class IncludeCommands extends BundleApplication
      */
     public function getIncludedCommands(): array
     {
-        $return = [];
         // help and list commands are added before container instantiation
-        if ($this->getKernel()->getContainer() instanceof ContainerInterface) {
-            $return = array_merge(
-                $this->defaultCommands,
-                $this->includedCommands
-            );
-        }
-
-        return $return;
+        return array_merge(
+            $this->defaultCommands,
+            $this->includedCommands
+        );
     }
 
     /**

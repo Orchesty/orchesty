@@ -134,7 +134,7 @@ class LongRunningNodeHandler
 
         return [
             'limit'  => $dto->getLimit(),
-            'offset' => ((int) ($dto->getPage() ?? 1) - 1) * $dto->getLimit(),
+            'offset' => (($dto->getPage() ?? 1) - 1) * $dto->getLimit(),
             'count'  => count($result),
             'total'  => $count,
             'items'  => $result,
@@ -162,7 +162,7 @@ class LongRunningNodeHandler
 
         return [
             'limit'  => $dto->getLimit(),
-            'offset' => ((int) ($dto->getPage() ?? 1) - 1) * $dto->getLimit(),
+            'offset' => (($dto->getPage() ?? 1) - 1) * $dto->getLimit(),
             'count'  => count($result),
             'total'  => $count,
             'items'  => $result,

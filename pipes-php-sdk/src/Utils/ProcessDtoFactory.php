@@ -21,7 +21,7 @@ final class ProcessDtoFactory
      */
     public static function createFromRequest(Request $request): ProcessDto
     {
-        return self::createDto((string) $request->getContent(), $request->headers->all());
+        return self::createDto($request->getContent(), $request->headers->all());
     }
 
     /**
@@ -31,7 +31,7 @@ final class ProcessDtoFactory
      */
     public static function createFromMessage(AMQPMessage $message): ProcessDto
     {
-        return self::createDto((string) $message->body, $message->get_properties());
+        return self::createDto($message->body, $message->get_properties());
     }
 
     /**

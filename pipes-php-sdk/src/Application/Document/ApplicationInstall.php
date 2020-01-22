@@ -24,15 +24,15 @@ use Hanaboso\Utils\Exception\DateTimeException;
 class ApplicationInstall
 {
 
-    public const USER = 'user';
-    public const KEY  = 'key';
-
-    private const EMPTY = '01_N86jVkKpY154CDLSDO92ZLH4PVg3zxZ6ea83UBanK9o=:hUijwPbtwKyeK8Wa9WwWxOuJJ5CDRL2v9CJYYdAg1Fg=:LmP28iFgUwppq42xmve7tI+cnT+WD+sD:A4YIOJjqBHWm3WDTTu67jbHuPb+2Og==';
-
     use IdTrait;
     use CreatedTrait;
     use UpdatedTrait;
     use DeletedTrait;
+
+    public const USER = 'user';
+    public const KEY  = 'key';
+
+    private const EMPTY = '01_N86jVkKpY154CDLSDO92ZLH4PVg3zxZ6ea83UBanK9o=:hUijwPbtwKyeK8Wa9WwWxOuJJ5CDRL2v9CJYYdAg1Fg=:LmP28iFgUwppq42xmve7tI+cnT+WD+sD:A4YIOJjqBHWm3WDTTu67jbHuPb+2Og==';
 
     /**
      * @var string

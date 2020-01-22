@@ -3,10 +3,8 @@
 namespace Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller;
 
 use FOS\RestBundle\Controller\AbstractFOSRestController;
-use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\MongoDataGrid\GridRequestDto;
 use Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Handler\LongRunningNodeHandler;
-use Hanaboso\Utils\Exception\PipesFrameworkExceptionAbstract;
 use Hanaboso\Utils\System\ControllerUtils;
 use Hanaboso\Utils\Traits\ControllerTrait;
 use Symfony\Component\HttpFoundation\Request;
@@ -46,8 +44,6 @@ class LongRunningNodeController extends AbstractFOSRestController
      * @param string  $nodeId
      *
      * @return Response
-     * @throws OnRepeatException
-     * @throws PipesFrameworkExceptionAbstract
      */
     public function processAction(Request $request, string $nodeId): Response
     {
@@ -55,8 +51,6 @@ class LongRunningNodeController extends AbstractFOSRestController
             $data = $this->handler->process($nodeId, $request->request->all(), $request->headers->all());
 
             return $this->getResponse($data->getData(), 200, ControllerUtils::createHeaders($data->getHeaders()));
-        } catch (PipesFrameworkExceptionAbstract | OnRepeatException $e) {
-            throw $e;
         } catch (Throwable $e) {
             return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
         }

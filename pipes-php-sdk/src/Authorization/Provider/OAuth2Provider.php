@@ -37,6 +37,7 @@ class OAuth2Provider extends OAuthProviderAbstract implements OAuth2ProviderInte
     public function __construct(RedirectInterface $redirect, string $backend)
     {
         parent::__construct($redirect, $backend);
+
         $this->backend = $backend;
     }
 

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\HbPFLongRunningNodeBundle\Loader;
+namespace PipesPhpSdkTests\Unit\HbPFLongRunningNodeBundle\Loader;
 
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
@@ -11,7 +11,7 @@ use PhpAmqpLib\Message\AMQPMessage;
 /**
  * Class TestLongRunningNode
  *
- * @package Tests\Unit\HbPFLongRunningNodeBundle\Loader
+ * @package PipesPhpSdkTests\Unit\HbPFLongRunningNodeBundle\Loader
  */
 final class TestLongRunningNode extends LongRunningNodeAbstract
 {
@@ -21,7 +21,7 @@ final class TestLongRunningNode extends LongRunningNodeAbstract
      */
     public function getId(): string
     {
-        return '';
+        return 'test';
     }
 
     /**

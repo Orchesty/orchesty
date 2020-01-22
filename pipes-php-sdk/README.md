@@ -26,7 +26,7 @@ Dále je možné vytvořit Application, která poskytuje možnost autorizaci pro
 - KERNEL_CLASS 
     - Povinný: `ANO`
     - Namespace of Symfony Kernel File. 
-    - Například: `Hanaboso\PipesPhpSdk\Kernel`
+    - Například: `PipesPhpSdkTests\Kernel`
 - COMPOSER_HOME 
     - Povinný: `ANO`
     - Cesta k ComposerCache souborům

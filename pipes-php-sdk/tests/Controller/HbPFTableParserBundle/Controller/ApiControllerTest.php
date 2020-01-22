@@ -1,23 +1,23 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Controller\HbPFTableParserBundle\Controller;
+namespace PipesPhpSdkTests\Controller\HbPFTableParserBundle\Controller;
 
 use Hanaboso\CommonsBundle\Exception\FileStorageException;
 use Hanaboso\PipesPhpSdk\Parser\Exception\TableParserException;
 use Hanaboso\Utils\String\Json;
+use PipesPhpSdkTests\ControllerTestCaseAbstract;
 use Symfony\Component\HttpFoundation\Response;
-use Tests\ControllerTestCaseAbstract;
 
 /**
  * Class ApiControllerTest
  *
- * @package Tests\Controller\HbPFTableParserBundle\Controller
+ * @package PipesPhpSdkTests\Controller\HbPFTableParserBundle\Controller
  */
 final class ApiControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     *
+     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Controller\TableParserController::toJsonAction
      */
     public function testToJson(): void
     {

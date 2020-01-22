@@ -1,16 +1,16 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\LongRunningNode\Model;
+namespace PipesPhpSdkTests\Integration\LongRunningNode\Model;
 
 use Exception;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeManager;
-use Tests\DatabaseTestCaseAbstract;
+use PipesPhpSdkTests\DatabaseTestCaseAbstract;
 
 /**
  * Class LongRunningNodeManagerTest
  *
- * @package Tests\Integration\LongRunningNode\Model
+ * @package PipesPhpSdkTests\Integration\LongRunningNode\Model
  */
 final class LongRunningNodeManagerTest extends DatabaseTestCaseAbstract
 {

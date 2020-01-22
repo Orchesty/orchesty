@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\Authorization\Provider;
+namespace PipesPhpSdkTests\Unit\Authorization\Provider;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
@@ -18,7 +18,7 @@ use Symfony\Bridge\Monolog\Logger;
 /**
  * Class OAuth1ProviderTest
  *
- * @package Tests\Unit\Authorization\Provider
+ * @package PipesPhpSdkTests\Unit\Authorization\Provider
  */
 final class OAuth1ProviderTest extends TestCase
 {
@@ -99,7 +99,6 @@ final class OAuth1ProviderTest extends TestCase
         $token = $provider->getAccessToken($dto, $request, 'accesToken/Url');
 
         self::assertNotEmpty($token);
-        self::assertTrue(is_array($token));
     }
 
     /**

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Parser;
+namespace PipesPhpSdkTests\Integration\Parser;
 
 use Exception;
 use Hanaboso\PipesPhpSdk\Parser\TableParser;
@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * Class TableParserTest
  *
- * @package Tests\Integration\Parser
+ * @package PipesPhpSdkTests\Integration\Parser
  */
 final class TableParserTest extends TestCase
 {

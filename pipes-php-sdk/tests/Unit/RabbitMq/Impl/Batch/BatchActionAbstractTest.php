@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\RabbitMq\Impl\Batch;
+namespace PipesPhpSdkTests\Unit\RabbitMq\Impl\Batch;
 
 use Exception;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchActionAbstract;
 use PhpAmqpLib\Message\AMQPMessage;
-use PHPUnit\Framework\TestCase;
+use PipesPhpSdkTests\KernelTestCaseAbstract;
 use RabbitMqBundle\Utils\Message;
 use React\EventLoop\Factory;
 use Throwable;
@@ -13,9 +13,9 @@ use Throwable;
 /**
  * Class BatchActionAbstractTest
  *
- * @package Tests\Unit\RabbitMq\Impl\Batch
+ * @package PipesPhpSdkTests\Unit\RabbitMq\Impl\Batch
  */
-final class BatchActionAbstractTest extends TestCase
+final class BatchActionAbstractTest extends KernelTestCaseAbstract
 {
 
     /**
@@ -30,17 +30,6 @@ final class BatchActionAbstractTest extends TestCase
     {
         $this->callback = static function (): void {
         };
-    }
-
-    /**
-     * @param mixed[] $headers
-     * @param string  $content
-     *
-     * @return AMQPMessage
-     */
-    private function createMessage(array $headers = [], string $content = ''): AMQPMessage
-    {
-        return Message::create($content, $headers);
     }
 
     /**
@@ -59,14 +48,13 @@ final class BatchActionAbstractTest extends TestCase
             ->then(
                 NULL,
                 static function (Exception $e) use ($loop): void {
-                    self::assertInstanceOf(Exception::class, $e);
                     self::assertSame('Missing "node-name" in the message header.', $e->getMessage());
                     $loop->stop();
                 }
             )->done();
 
         $loop->run();
-        self::assertEmpty([]);
+        self::assertFake();
     }
 
     /**
@@ -94,7 +82,18 @@ final class BatchActionAbstractTest extends TestCase
             )->done();
 
         $loop->run();
-        self::assertEmpty([]);
+        self::assertFake();
+    }
+
+    /**
+     * @param mixed[] $headers
+     * @param string  $content
+     *
+     * @return AMQPMessage
+     */
+    private function createMessage(array $headers = [], string $content = ''): AMQPMessage
+    {
+        return Message::create($content, $headers);
     }
 
 }

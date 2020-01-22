@@ -1,15 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\HbPFConnectorBundle\Loader;
+namespace PipesPhpSdkTests\Unit\HbPFConnectorBundle\Loader;
 
 use Exception;
 use Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Loader\ConnectorLoader;
-use Tests\KernelTestCaseAbstract;
+use PipesPhpSdkTests\KernelTestCaseAbstract;
 
 /**
  * Class ConnectorLoaderTest
  *
- * @package Tests\Unit\HbPFConnectorBundle\Loader
+ * @package PipesPhpSdkTests\Unit\HbPFConnectorBundle\Loader
  */
 final class ConnectorLoaderTest extends KernelTestCaseAbstract
 {
@@ -20,16 +20,6 @@ final class ConnectorLoaderTest extends KernelTestCaseAbstract
     private $loader;
 
     /**
-     *
-     */
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->loader = self::$container->get('hbpf.loader.connector');
-    }
-
-    /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Loader\ConnectorLoader::getConnector()
      * @throws Exception
      */
@@ -37,6 +27,16 @@ final class ConnectorLoaderTest extends KernelTestCaseAbstract
     {
         $conn = $this->loader->getConnector('null');
         self::assertInstanceOf(NullConnector::class, $conn);
+    }
+
+    /**
+     *
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->loader = self::$container->get('hbpf.loader.connector');
     }
 
 }

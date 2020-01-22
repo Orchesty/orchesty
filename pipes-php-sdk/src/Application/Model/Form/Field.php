@@ -77,7 +77,7 @@ class Field
      */
     public function __construct(string $type, string $key, string $label, $value = NULL, bool $required = FALSE)
     {
-        if (!in_array($type, $this->getTypes())) {
+        if (!in_array($type, $this->getTypes(), TRUE)) {
             throw new ApplicationInstallException(
                 sprintf('Invalid field type "%s"', $type),
                 ApplicationInstallException::INVALID_FIELD_TYPE

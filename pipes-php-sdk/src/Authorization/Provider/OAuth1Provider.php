@@ -40,6 +40,7 @@ class OAuth1Provider extends OAuthProviderAbstract implements OAuth1ProviderInte
     public function __construct(DocumentManager $dm, RedirectInterface $redirect, string $backend)
     {
         parent::__construct($redirect, $backend);
+
         $this->dm = $dm;
     }
 
@@ -74,7 +75,7 @@ class OAuth1Provider extends OAuthProviderAbstract implements OAuth1ProviderInte
             );
         }
 
-        $this->tokenAndSecretChecker((array) $requestToken);
+        $this->tokenAndSecretChecker($requestToken);
 
         $saveOauthStuffs($this->dm, $dto, $requestToken);
 

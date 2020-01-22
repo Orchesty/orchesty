@@ -46,7 +46,7 @@ abstract class ConnectorAbstract implements ConnectorInterface
      */
     public function evaluateStatusCode(int $statusCode, ProcessDto $dto, ?string $message = NULL): bool
     {
-        if (in_array($statusCode, $this->okStatuses)) {
+        if (in_array($statusCode, $this->okStatuses, TRUE)) {
             return TRUE;
         }
 

@@ -1,14 +1,14 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\HbPFCustomNodeBundle\loader;
+namespace PipesPhpSdkTests\Integration\HbPFCustomNodeBundle\loader;
 
 use Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Loader\CustomNodeLoader;
-use Tests\KernelTestCaseAbstract;
+use PipesPhpSdkTests\KernelTestCaseAbstract;
 
 /**
  * Class CustomNodeLoaderTest
  *
- * @package Tests\Integration\HbPFCustomNodeBundle\loader
+ * @package PipesPhpSdkTests\Integration\HbPFCustomNodeBundle\loader
  */
 final class CustomNodeLoaderTest extends KernelTestCaseAbstract
 {
@@ -21,10 +21,10 @@ final class CustomNodeLoaderTest extends KernelTestCaseAbstract
         $connector = new CustomNodeLoader(self::$container);
 
         $fields = $connector->getAllCustomNodes();
-        self::assertCount(7, $fields);
+        self::assertCount(8, $fields);
 
         $fields = $connector->getAllCustomNodes(['null']);
-        self::assertCount(6, $fields);
+        self::assertCount(7, $fields);
     }
 
 }

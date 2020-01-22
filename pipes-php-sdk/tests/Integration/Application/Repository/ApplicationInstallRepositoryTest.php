@@ -1,22 +1,31 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Application\Repository;
+namespace PipesPhpSdkTests\Integration\Application\Repository;
 
 use Exception;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\Utils\Date\DateTimeUtils;
-use Tests\DatabaseTestCaseAbstract;
+use Hanaboso\Utils\Exception\DateTimeException;
+use PipesPhpSdkTests\DatabaseTestCaseAbstract;
 
 /**
  * Class ApplicationInstallRepositoryTest
  *
- * @package Tests\Integration\Application\Repository
+ * @package PipesPhpSdkTests\Integration\Application\Repository
  */
 final class ApplicationInstallRepositoryTest extends DatabaseTestCaseAbstract
 {
 
     /**
+     * @covers  \Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository::getApplicationsCount
+     * @covers  \Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall::setUser
+     * @covers  \Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall::setKey
+     * @covers  \Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall::setExpires
+     *
+     * @throws DateTimeException
      * @throws Exception
      */
     public function testGetApplicationsBasicData(): void
@@ -32,6 +41,11 @@ final class ApplicationInstallRepositoryTest extends DatabaseTestCaseAbstract
     }
 
     /**
+     * @covers  \Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository::getApplicationsCountDetails
+     * @covers  \Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall::setUser
+     * @covers  \Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall::setKey
+     * @covers  \Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall::setExpires
+     *
      * @throws Exception
      */
     public function testGetApplicationsUsers(): void
@@ -55,40 +69,36 @@ final class ApplicationInstallRepositoryTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws Exception
+     * @covers \Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository::findUserApp
+     *
+     * @throws ApplicationInstallException
      */
-    private function createApps(): void
+    public function testFindUserAppErr(): void
     {
-        $applicationInstall = new ApplicationInstall();
-        $applicationInstall->setKey('hubspot');
-        $applicationInstall->setUser('user2');
-        $applicationInstall->setExpires(DateTimeUtils::getUtcDateTime('- 10 Days'));
+        /** @var ApplicationInstallRepository $appInstallRepository */
+        $appInstallRepository = $this->dm->getRepository(ApplicationInstall::class);
 
-        $applicationInstall2 = new ApplicationInstall();
-        $applicationInstall2->setKey('mailchimp');
-        $applicationInstall2->setUser('user2');
-
-        $applicationInstall3 = new ApplicationInstall();
-        $applicationInstall3->setKey('hubspot');
-        $applicationInstall3->setUser('user3');
-        $applicationInstall3->setExpires(DateTimeUtils::getUtcDateTime('+ 1 Day'));
-
-        $applicationInstall4 = new ApplicationInstall();
-        $applicationInstall4->setKey('shipstation');
-        $applicationInstall4->setUser('user2');
-        $applicationInstall4->setExpires(DateTimeUtils::getUtcDateTime('+ 1 Day'));
-
-        $this->dm->persist($applicationInstall);
-        $this->dm->persist($applicationInstall2);
-        $this->dm->persist($applicationInstall3);
-        $this->dm->persist($applicationInstall4);
-        $this->dm->flush();
-        $this->dm->clear();
+        self::expectException(ApplicationInstallException::class);
+        $appInstallRepository->findUserApp('user', 'key');
     }
 
     /**
-     * ----------------------------------- HELPERS --------------------------------------
+     * @covers \Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository::findUsersAppDefaultHeaders
+     *
+     * @throws ApplicationInstallException
+     * @throws Exception
      */
+    public function testFindUsersAppDefaultHeaders(): void
+    {
+        $this->createApps();
+        $dto = (new ProcessDto())->setHeaders(['pf-application' => 'hubspot', 'pf-user' => 'user2']);
+
+        /** @var ApplicationInstallRepository $appInstallRepository */
+        $appInstallRepository = $this->dm->getRepository(ApplicationInstall::class);
+
+        $applicationInstall = $appInstallRepository->findUsersAppDefaultHeaders($dto);
+        self::assertFalse($applicationInstall->isDeleted());
+    }
 
     /**
      * @return mixed[]
@@ -168,6 +178,38 @@ final class ApplicationInstallRepositoryTest extends DatabaseTestCaseAbstract
         ];
 
         return [$array[$key]];
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function createApps(): void
+    {
+        $applicationInstall = new ApplicationInstall();
+        $applicationInstall->setKey('hubspot');
+        $applicationInstall->setUser('user2');
+        $applicationInstall->setExpires(DateTimeUtils::getUtcDateTime('- 10 Days'));
+
+        $applicationInstall2 = new ApplicationInstall();
+        $applicationInstall2->setKey('mailchimp');
+        $applicationInstall2->setUser('user2');
+
+        $applicationInstall3 = new ApplicationInstall();
+        $applicationInstall3->setKey('hubspot');
+        $applicationInstall3->setUser('user3');
+        $applicationInstall3->setExpires(DateTimeUtils::getUtcDateTime('+ 1 Day'));
+
+        $applicationInstall4 = new ApplicationInstall();
+        $applicationInstall4->setKey('shipstation');
+        $applicationInstall4->setUser('user2');
+        $applicationInstall4->setExpires(DateTimeUtils::getUtcDateTime('+ 1 Day'));
+
+        $this->dm->persist($applicationInstall);
+        $this->dm->persist($applicationInstall2);
+        $this->dm->persist($applicationInstall3);
+        $this->dm->persist($applicationInstall4);
+        $this->dm->flush();
+        $this->dm->clear();
     }
 
 }

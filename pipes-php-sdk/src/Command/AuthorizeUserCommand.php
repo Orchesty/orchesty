@@ -2,6 +2,7 @@
 
 namespace Hanaboso\PipesPhpSdk\Command;
 
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager;
 use Symfony\Component\Console\Command\Command;
@@ -30,6 +31,7 @@ class AuthorizeUserCommand extends Command
     public function __construct(ApplicationManager $applicationManager)
     {
         parent::__construct();
+
         $this->applicationManager = $applicationManager;
     }
 
@@ -48,16 +50,17 @@ class AuthorizeUserCommand extends Command
      * @param InputInterface  $input
      * @param OutputInterface $output
      *
-     * @return int|null
+     * @return int
      * @throws ApplicationInstallException
+     * @throws MongoDBException
      */
-    protected function execute(InputInterface $input, OutputInterface $output): ?int
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $env = $input->getParameterOption(['--env', '-e']);
         if ($env !== 'oauthconsole') {
             $output->writeln(sprintf('<error>Please make sure that your env is set to --env=oauthconsole.</error>'));
 
-            return NULL;
+            return 1;
         }
 
         $helper = $this->getHelper('question');
@@ -71,12 +74,12 @@ class AuthorizeUserCommand extends Command
         if (!is_string($key) || !is_string($user)) {
             $output->writeln(sprintf('Please make sure that input parameters are string.'));
 
-            return NULL;
+            return 1;
         }
 
         $this->applicationManager->authorizeApplication($key, $user, '');
 
-        return 1;
+        return 0;
     }
 
 }

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Command;
+namespace PipesPhpSdkTests\Integration\Command;
 
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
@@ -17,7 +17,7 @@ use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
 /**
  * Class NullOAuth2Application
  *
- * @package Tests\Integration\Command
+ * @package PipesPhpSdkTests\Integration\Command
  */
 class NullOAuth2Application extends OAuth2ApplicationAbstract
 {

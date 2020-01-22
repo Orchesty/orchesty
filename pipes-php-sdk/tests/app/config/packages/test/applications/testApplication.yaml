@@ -1,0 +1,6 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf.application.null:
+        class: PipesPhpSdkTests\Integration\Application\TestNullApplication

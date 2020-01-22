@@ -1,0 +1,8 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf.application.null3:
+        class: PipesPhpSdkTests\Integration\Command\NullOAuth1Application
+        arguments:
+            - '@hbpf.providers.oauth1_provider'

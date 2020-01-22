@@ -44,16 +44,13 @@ class TopologyRepository extends DocumentRepository
      */
     public function getTotalCount(): int
     {
+        /** @var int $result */
         $result = $this->createQueryBuilder()
             ->field('deleted')->equals(FALSE)
             ->count()
             ->getQuery()->execute();
 
-        if (is_scalar($result)) {
-            return $result;
-        }
-
-        return 0;
+        return $result;
     }
 
     /**
@@ -85,17 +82,14 @@ class TopologyRepository extends DocumentRepository
      */
     public function getTopologiesCountByName(string $topologyName): int
     {
+        /** @var int $result */
         $result = $this->createQueryBuilder()
             ->field('name')->equals($topologyName)
             ->field('deleted')->equals(FALSE)
             ->count()
             ->getQuery()->execute();
 
-        if (is_scalar($result)) {
-            return $result;
-        }
-
-        return 0;
+        return $result;
     }
 
     /**
@@ -104,14 +98,14 @@ class TopologyRepository extends DocumentRepository
      */
     public function getTopologies(): array
     {
-        /** @var Iterator<Topology> $result */
-        $result = $this->createQueryBuilder()
+        /** @var Iterator<Topology> $topology */
+        $topology = $this->createQueryBuilder()
             ->field('visibility')->equals(TopologyStatusEnum::PUBLIC)
             ->field('deleted')->equals(FALSE)
             ->sort('version', 1)
             ->getQuery()->execute();
         /** @var Topology[] $results */
-        $results = $result->toArray();
+        $results = $topology->toArray();
 
         $res = [];
         foreach ($results as $result) {

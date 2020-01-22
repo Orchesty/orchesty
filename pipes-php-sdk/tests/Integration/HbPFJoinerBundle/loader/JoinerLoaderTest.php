@@ -1,29 +1,41 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\HbPFJoinerBundle\loader;
+namespace PipesPhpSdkTests\Integration\HbPFJoinerBundle\loader;
 
-use Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Loader\JoinerLoader;
-use Tests\KernelTestCaseAbstract;
+use Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Exception\JoinerException;
+use PipesPhpSdkTests\KernelTestCaseAbstract;
 
 /**
  * Class JoinerLoaderTest
  *
- * @package Tests\Integration\HbPFJoinerBundle\loader
+ * @package PipesPhpSdkTests\Integration\HbPFJoinerBundle\loader
  */
 final class JoinerLoaderTest extends KernelTestCaseAbstract
 {
 
     /**
-     *
+     * @covers \Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Loader\JoinerLoader::get
+     */
+    public function testGetErr(): void
+    {
+        $loader = self::$container->get('hbpf.loader.joiner');
+
+        self::expectException(JoinerException::class);
+        $loader->get('null2');
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Loader\JoinerLoader
+     * @covers \Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Loader\JoinerLoader::getAllJoiners
      */
     public function testGetAllJoiners(): void
     {
-        $connector = new JoinerLoader(self::$container);
+        $loader = self::$container->get('hbpf.loader.joiner');
 
-        $fields = $connector->getAllJoiners();
+        $fields = $loader->getAllJoiners();
         self::assertCount(1, $fields);
 
-        $fields = $connector->getAllJoiners(['null']);
+        $fields = $loader->getAllJoiners(['null']);
         self::assertCount(0, $fields);
     }
 

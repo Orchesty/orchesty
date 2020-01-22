@@ -82,87 +82,6 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
     }
 
     /**
-     *
-     */
-    private function startMetrics(): void
-    {
-        $this->currentMetrics = CurlMetricUtils::getCurrentMetrics();
-    }
-
-    /**
-     * @param AMQPMessage $message
-     *
-     * @return PromiseInterface
-     */
-    private function validate(AMQPMessage $message): PromiseInterface
-    {
-        $headers = Message::getHeaders($message);
-
-        if ($this->isEmpty($headers[self::REPLY_TO] ?? '')) {
-            return reject(new InvalidArgumentException(sprintf(self::MISSING_HEADER, self::REPLY_TO)));
-        }
-
-        if ($this->isEmpty($headers[self::TYPE] ?? '')) {
-            return reject(new InvalidArgumentException(sprintf(self::MISSING_HEADER, self::TYPE)));
-        }
-
-        if ($this->isEmpty(PipesHeaders::get(PipesHeaders::NODE_ID, $headers))) {
-            return reject(
-                new InvalidArgumentException(
-                    sprintf(self::MISSING_HEADER, PipesHeaders::createKey(PipesHeaders::NODE_ID))
-                )
-            );
-        }
-
-        if ($this->isEmpty(PipesHeaders::get(PipesHeaders::TOPOLOGY_ID, $headers))) {
-            return reject(
-                new InvalidArgumentException(
-                    sprintf(self::MISSING_HEADER, PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID))
-                )
-            );
-        }
-
-        if ($this->isEmpty(PipesHeaders::get(PipesHeaders::CORRELATION_ID, $headers))) {
-            return reject(
-                new InvalidArgumentException(
-                    sprintf(
-                        self::MISSING_HEADER,
-                        PipesHeaders::createKey(PipesHeaders::CORRELATION_ID)
-                    )
-                )
-            );
-        }
-
-        if ($this->isEmpty(PipesHeaders::get(PipesHeaders::PROCESS_ID, $headers))) {
-            return reject(
-                new InvalidArgumentException(
-                    sprintf(self::MISSING_HEADER, PipesHeaders::createKey(PipesHeaders::PROCESS_ID))
-                )
-            );
-        }
-
-        if (!array_key_exists(PipesHeaders::createKey(PipesHeaders::PARENT_ID), $headers)) {
-            return reject(
-                new InvalidArgumentException(
-                    sprintf(self::MISSING_HEADER, PipesHeaders::createKey(PipesHeaders::PARENT_ID))
-                )
-            );
-        }
-
-        return resolve();
-    }
-
-    /**
-     * @param string|null $value
-     *
-     * @return bool
-     */
-    private function isEmpty(?string $value): bool
-    {
-        return $value === '' || $value === NULL;
-    }
-
-    /**
      * @param AMQPMessage   $message
      * @param Connection    $connection
      * @param int           $channelId
@@ -265,6 +184,121 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
     /**
      * @param AMQPChannel $channel
      * @param AMQPMessage $message
+     * @param Exception   $e
+     *
+     * @return PromiseInterface
+     */
+    public function publishErrorTestMessage(AMQPChannel $channel, AMQPMessage $message, Exception $e): PromiseInterface
+    {
+        $headers = Message::getHeaders($message);
+
+        $headers = array_merge(
+            $headers,
+            [
+                PipesHeaders::createKey(PipesHeaders::RESULT_CODE)    => 2_001,
+                PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE) => $e->getMessage(),
+            ]
+        );
+
+        $channel->basic_publish(Message::create('', $headers), '', $headers[self::REPLY_TO] ?? '');
+
+        return (new Promise(static fn(callable $resolve) => $resolve()))->then(
+            function () use ($headers): void {
+                $this->logger->error(
+                    'Published test item error.',
+                    array_merge(
+                        $this->prepareMessage('', '', $headers[self::REPLY_TO] ?? '', $headers),
+                        PipesHeaders::debugInfo($headers)
+                    )
+                );
+            }
+        );
+    }
+
+    /**
+     *
+     */
+    private function startMetrics(): void
+    {
+        $this->currentMetrics = CurlMetricUtils::getCurrentMetrics();
+    }
+
+    /**
+     * @param AMQPMessage $message
+     *
+     * @return PromiseInterface
+     */
+    private function validate(AMQPMessage $message): PromiseInterface
+    {
+        $headers = Message::getHeaders($message);
+
+        if ($this->isEmpty($headers[self::REPLY_TO] ?? '')) {
+            return reject(new InvalidArgumentException(sprintf(self::MISSING_HEADER, self::REPLY_TO)));
+        }
+
+        if ($this->isEmpty($headers[self::TYPE] ?? '')) {
+            return reject(new InvalidArgumentException(sprintf(self::MISSING_HEADER, self::TYPE)));
+        }
+
+        if ($this->isEmpty(PipesHeaders::get(PipesHeaders::NODE_ID, $headers))) {
+            return reject(
+                new InvalidArgumentException(
+                    sprintf(self::MISSING_HEADER, PipesHeaders::createKey(PipesHeaders::NODE_ID))
+                )
+            );
+        }
+
+        if ($this->isEmpty(PipesHeaders::get(PipesHeaders::TOPOLOGY_ID, $headers))) {
+            return reject(
+                new InvalidArgumentException(
+                    sprintf(self::MISSING_HEADER, PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID))
+                )
+            );
+        }
+
+        if ($this->isEmpty(PipesHeaders::get(PipesHeaders::CORRELATION_ID, $headers))) {
+            return reject(
+                new InvalidArgumentException(
+                    sprintf(
+                        self::MISSING_HEADER,
+                        PipesHeaders::createKey(PipesHeaders::CORRELATION_ID)
+                    )
+                )
+            );
+        }
+
+        if ($this->isEmpty(PipesHeaders::get(PipesHeaders::PROCESS_ID, $headers))) {
+            return reject(
+                new InvalidArgumentException(
+                    sprintf(self::MISSING_HEADER, PipesHeaders::createKey(PipesHeaders::PROCESS_ID))
+                )
+            );
+        }
+
+        if (!array_key_exists(PipesHeaders::createKey(PipesHeaders::PARENT_ID), $headers)) {
+            return reject(
+                new InvalidArgumentException(
+                    sprintf(self::MISSING_HEADER, PipesHeaders::createKey(PipesHeaders::PARENT_ID))
+                )
+            );
+        }
+
+        return resolve();
+    }
+
+    /**
+     * @param string|null $value
+     *
+     * @return bool
+     */
+    private function isEmpty(?string $value): bool
+    {
+        return $value === '' || $value === NULL;
+    }
+
+    /**
+     * @param AMQPChannel $channel
+     * @param AMQPMessage $message
      * @param mixed[]     $headers
      *
      * @return PromiseInterface
@@ -297,40 +331,6 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
             function () use ($headers): void {
                 $this->logger->debug(
                     'Published test item.',
-                    array_merge(
-                        $this->prepareMessage('', '', $headers[self::REPLY_TO] ?? '', $headers),
-                        PipesHeaders::debugInfo($headers)
-                    )
-                );
-            }
-        );
-    }
-
-    /**
-     * @param AMQPChannel $channel
-     * @param AMQPMessage $message
-     * @param Exception   $e
-     *
-     * @return PromiseInterface
-     */
-    public function publishErrorTestMessage(AMQPChannel $channel, AMQPMessage $message, Exception $e): PromiseInterface
-    {
-        $headers = Message::getHeaders($message);
-
-        $headers = array_merge(
-            $headers,
-            [
-                PipesHeaders::createKey(PipesHeaders::RESULT_CODE)    => 2_001,
-                PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE) => $e->getMessage(),
-            ]
-        );
-
-        $channel->basic_publish(Message::create('', $headers), '', $headers[self::REPLY_TO] ?? '');
-
-        return (new Promise(static fn(callable $resolve) => $resolve()))->then(
-            function () use ($headers): void {
-                $this->logger->error(
-                    'Published test item error.',
                     array_merge(
                         $this->prepareMessage('', '', $headers[self::REPLY_TO] ?? '', $headers),
                         PipesHeaders::debugInfo($headers)

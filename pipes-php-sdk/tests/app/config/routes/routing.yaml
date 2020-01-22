@@ -1,0 +1,27 @@
+hb_pf_connector:
+    resource: "@HbPFConnectorBundle"
+    type: annotation
+
+hb_pf_custom_node:
+    resource: "@HbPFCustomNodeBundle"
+    type: annotation
+
+hb_pf_joiner:
+    resource: "@HbPFJoinerBundle"
+    type: annotation
+
+hb_pf_mapper:
+    resource: "@HbPFMapperBundle"
+    type: annotation
+
+hb_pf_table_parser:
+    resource: "@HbPFTableParserBundle"
+    type: annotation
+
+hb_pf_long_running:
+    resource: '@HbPFLongRunningNodeBundle'
+    type: annotation
+
+hb_pf_application:
+    resource: "@HbPFApplicationBundle"
+    type: annotation

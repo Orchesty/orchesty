@@ -14,13 +14,6 @@ final class ScopeFormatter
     public const SPACE = ' ';
 
     /**
-     * ScopeFormatter constructor.
-     */
-    private function __construct()
-    {
-    }
-
-    /**
      * @param string[] $scopes
      * @param string   $separator
      *

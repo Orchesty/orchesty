@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Database\Repository;
+namespace PipesPhpSdkTests\Integration\Database\Repository;
 
 use Exception;
 use Hanaboso\CommonsBundle\Enum\HandlerEnum;
@@ -10,12 +10,12 @@ use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\PipesPhpSdk\Database\Reduction\NodeReduction;
 use Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository;
 use LogicException;
-use Tests\DatabaseTestCaseAbstract;
+use PipesPhpSdkTests\DatabaseTestCaseAbstract;
 
 /**
  * Class NodeRepositoryTest
  *
- * @package Tests\Integration\Database\Repository
+ * @package PipesPhpSdkTests\Integration\Database\Repository
  */
 final class NodeRepositoryTest extends DatabaseTestCaseAbstract
 {

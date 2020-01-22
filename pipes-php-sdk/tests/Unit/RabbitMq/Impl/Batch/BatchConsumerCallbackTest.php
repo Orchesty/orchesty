@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\RabbitMq\Impl\Batch;
+namespace PipesPhpSdkTests\Unit\RabbitMq\Impl\Batch;
 
 use Exception;
 use Hanaboso\CommonsBundle\Metrics\Impl\InfluxDbSender;
@@ -14,7 +14,7 @@ use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPSocketConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
+use PipesPhpSdkTests\KernelTestCaseAbstract;
 use RabbitMqBundle\Connection\Connection;
 use RabbitMqBundle\Utils\Message;
 use React\EventLoop\Factory;
@@ -24,27 +24,10 @@ use function React\Promise\resolve;
 /**
  * Class BatchConsumerCallbackTest
  *
- * @package Tests\Unit\RabbitMq\Impl\Batch
+ * @package PipesPhpSdkTests\Unit\RabbitMq\Impl\Batch
  */
-final class BatchConsumerCallbackTest extends TestCase
+final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
 {
-
-    /**
-     * @param mixed[] $headers
-     * @param string  $content
-     *
-     * @return AMQPMessage
-     */
-    private function createMessage(array $headers = [], string $content = ''): AMQPMessage
-    {
-        $message = Message::create($content, $headers);
-        // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-        $message->delivery_info['delivery_tag'] = 'delivery_tag';
-
-        // phpcs:enable
-
-        return $message;
-    }
 
     /**
      * @covers       \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::validate()
@@ -372,6 +355,23 @@ final class BatchConsumerCallbackTest extends TestCase
             ->done();
 
         $loop->run();
+    }
+
+    /**
+     * @param mixed[] $headers
+     * @param string  $content
+     *
+     * @return AMQPMessage
+     */
+    private function createMessage(array $headers = [], string $content = ''): AMQPMessage
+    {
+        $message = Message::create($content, $headers);
+        // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+        $message->delivery_info['delivery_tag'] = 'delivery_tag';
+
+        // phpcs:enable
+
+        return $message;
     }
 
 }

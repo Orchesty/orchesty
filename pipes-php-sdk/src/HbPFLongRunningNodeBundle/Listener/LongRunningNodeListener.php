@@ -46,7 +46,7 @@ final class LongRunningNodeListener implements EventSubscriberInterface
                 $doc = $repo->findOneBy(['processId' => $processId]);
 
                 if ($doc) {
-                    if (!in_array($doc->getId(), $removedIds)) {
+                    if (!in_array($doc->getId(), $removedIds, TRUE)) {
                         $processIds[] = $doc->getParentProcess();
                         $removedIds[] = $doc->getId();
                         $this->dm->remove($doc);
@@ -59,7 +59,7 @@ final class LongRunningNodeListener implements EventSubscriberInterface
     }
 
     /**
-     * @return mixed[]
+     * @return array<string, array<int|string, array<int|string, int|string>|int|string>|string>
      */
     public static function getSubscribedEvents(): array
     {

@@ -6,7 +6,6 @@ use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Loader\ConnectorLoader;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchActionAbstract;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchInterface;
-use InvalidArgumentException;
 
 /**
  * Class BatchConnectorCallback
@@ -43,10 +42,6 @@ class BatchConnectorCallback extends BatchActionAbstract
     {
         /** @var BatchInterface $connector */
         $connector = $this->connectorLoader->getConnector($id);
-
-        if (!$connector instanceof BatchInterface) {
-            throw new InvalidArgumentException(sprintf('The connector not implemented "%s".', BatchInterface::class));
-        }
 
         return $connector;
     }

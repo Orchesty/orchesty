@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Command;
+namespace PipesPhpSdkTests\Integration\Command;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
@@ -13,15 +13,15 @@ use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider;
 use Hanaboso\Utils\Exception\DateTimeException;
 use OAuth;
 use PHPUnit\Framework\MockObject\MockObject;
+use PipesPhpSdkTests\DatabaseTestCaseAbstract;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
-use Tests\DatabaseTestCaseAbstract;
 use TypeError;
 
 /**
  * Class AuthorizeUserCommandTest
  *
- * @package Tests\Integration\Command
+ * @package PipesPhpSdkTests\Integration\Command
  */
 final class AuthorizeUserCommandTest extends DatabaseTestCaseAbstract
 {
@@ -31,7 +31,7 @@ final class AuthorizeUserCommandTest extends DatabaseTestCaseAbstract
      */
     public function testExecuteOauth2(): void
     {
-        $kernel        = $this->createKernel(['environment' => 'oauthconsole']);
+        $kernel        = self::createKernel(['environment' => 'oauthconsole']);
         $application   = new Application($kernel);
         $command       = $application->find('user:authorize');
         $commandTester = new CommandTester($command);
@@ -50,7 +50,7 @@ final class AuthorizeUserCommandTest extends DatabaseTestCaseAbstract
         $commandTester->execute(['command' => $command->getName(), '--env' => 'oauthconsole']);
         $content = ob_get_clean();
 
-        $this->assertStringContainsString(
+        self::assertStringContainsString(
             'auth/ouath2/url.com?response_type=code&approval_prompt=auto&redirect_uri=127.0.0.4/api/applications/authorize/token&client_id=&state=dXNlcjpudWxsMg,,&access_type=offline',
             (string) $content
         );

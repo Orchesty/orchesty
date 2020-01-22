@@ -1,9 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace Tests;
+namespace PipesPhpSdkTests;
 
 use Exception;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\ControllerTestTrait;
+use Hanaboso\PhpCheckUtils\PhpUnit\Traits\CustomAssertTrait;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\DatabaseTestTrait;
 use Hanaboso\Utils\String\Json;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -13,13 +14,14 @@ use Symfony\Component\Security\Core\Encoder\NativePasswordEncoder;
 /**
  * Class ControllerTestCaseAbstract
  *
- * @package Tests
+ * @package PipesPhpSdkTests
  */
 abstract class ControllerTestCaseAbstract extends WebTestCase
 {
 
     use ControllerTestTrait;
     use DatabaseTestTrait;
+    use CustomAssertTrait;
 
     /**
      * @var NativePasswordEncoder
@@ -36,6 +38,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     public function __construct($name = NULL, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
+
         $this->encoder = new NativePasswordEncoder(3);
     }
 
@@ -45,6 +48,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->startClient();
         $this->dm = self::$container->get('doctrine_mongodb.odm.default_document_manager');
         $this->clearMongo();

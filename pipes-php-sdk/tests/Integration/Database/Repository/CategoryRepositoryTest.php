@@ -1,16 +1,16 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Database\Repository;
+namespace PipesPhpSdkTests\Integration\Database\Repository;
 
 use Exception;
 use Hanaboso\PipesPhpSdk\Database\Document\Category;
 use Hanaboso\PipesPhpSdk\Database\Repository\CategoryRepository;
-use Tests\DatabaseTestCaseAbstract;
+use PipesPhpSdkTests\DatabaseTestCaseAbstract;
 
 /**
  * Class CategoryRepositoryTest
  *
- * @package Tests\Integration\Database\Repository
+ * @package PipesPhpSdkTests\Integration\Database\Repository
  */
 final class CategoryRepositoryTest extends DatabaseTestCaseAbstract
 {

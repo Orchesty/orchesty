@@ -98,7 +98,7 @@ final class TableParser implements TableParserInterface
         foreach ($data as $row => $rowData) {
             foreach ($rowData as $column => $value) {
                 $hasHeaders
-                    ? $this->setCellValue($worksheet, array_search($column, $headers, TRUE) + 1, $row + 2, $value)
+                    ? $this->setCellValue($worksheet, (int) array_search($column, $headers, TRUE) + 1, $row + 2, $value)
                     : $this->setCellValue($worksheet, (int) ++$column, $row + 1, $value);
             }
         }
@@ -107,6 +107,34 @@ final class TableParser implements TableParserInterface
         $writer->save($path);
 
         return (string) realpath($path);
+    }
+
+    /**
+     * @param Spreadsheet $spreadsheet
+     * @param string      $type
+     *
+     * @return IWriter
+     * @throws TableParserException
+     */
+    public function createWriter(Spreadsheet $spreadsheet, string $type): IWriter
+    {
+        switch ($type) {
+            case TableParserInterface::XLSX:
+                return new Xlsx($spreadsheet);
+            case TableParserInterface::XLS:
+                return new Xls($spreadsheet);
+            case TableParserInterface::ODS:
+                return new Ods($spreadsheet);
+            case TableParserInterface::CSV:
+                return new Csv($spreadsheet);
+            case TableParserInterface::HTML:
+                return new Html($spreadsheet);
+            default:
+                throw new TableParserException(
+                    sprintf('Unknown writer type: \'%s\'', $type),
+                    TableParserException::UNKNOWN_WRITER_TYPE
+                );
+        }
     }
 
     /**
@@ -140,34 +168,6 @@ final class TableParser implements TableParserInterface
         $cell = $worksheet->getCellByColumnAndRow($column, $row);
         if ($cell) {
             $cell->setValue($value);
-        }
-    }
-
-    /**
-     * @param Spreadsheet $spreadsheet
-     * @param string      $type
-     *
-     * @return IWriter
-     * @throws TableParserException
-     */
-    public function createWriter(Spreadsheet $spreadsheet, string $type): IWriter
-    {
-        switch ($type) {
-            case TableParserInterface::XLSX:
-                return new Xlsx($spreadsheet);
-            case TableParserInterface::XLS:
-                return new Xls($spreadsheet);
-            case TableParserInterface::ODS:
-                return new Ods($spreadsheet);
-            case TableParserInterface::CSV:
-                return new Csv($spreadsheet);
-            case TableParserInterface::HTML:
-                return new Html($spreadsheet);
-            default:
-                throw new TableParserException(
-                    sprintf('Unknown writer type: \'%s\'', $type),
-                    TableParserException::UNKNOWN_WRITER_TYPE
-                );
         }
     }
 

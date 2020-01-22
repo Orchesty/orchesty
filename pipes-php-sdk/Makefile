@@ -31,10 +31,10 @@ init: .env docker-up-force composer-install
 
 #CI
 phpcodesniffer:
-	$(DE) vendor/bin/phpcs --standard=ruleset.xml src tests
+	$(DE) vendor/bin/phpcs --standard=tests/ruleset.xml src tests
 
 phpstan:
-	$(DE) vendor/bin/phpstan analyse -c phpstan.neon -l 8 src tests
+	$(DE) vendor/bin/phpstan analyse -c tests/phpstan.neon -l 8 src tests
 
 phpunit:
 	$(DE) vendor/bin/phpunit -c vendor/hanaboso/php-check-utils/phpunit.xml.dist tests/Unit
@@ -49,7 +49,7 @@ phpcoverage:
 	$(DE) php vendor/bin/paratest -c vendor/hanaboso/php-check-utils/phpunit.xml.dist -p 8 --coverage-html var/coverage --whitelist src tests
 
 phpcoverage-ci:
-	$(DE) vendor/hanaboso/php-check-utils/bin/coverage.sh -c 30
+	$(DE) vendor/hanaboso/php-check-utils/bin/coverage.sh -c 70
 
 phpmanual-up:
 	cd tests/Manual; $(MAKE) docker-up-force;
@@ -74,8 +74,8 @@ console:
 
 clear-cache:
 	$(DE) rm -rf var/log
-	$(DE) php bin/console cache:clear --env=test
-	$(DE) php bin/console cache:warmup --env=test
+	$(DE) php tests/bin/console cache:clear --env=test
+	$(DE) php tests/bin/console cache:warmup --env=test
 
 .env:
 	sed -e "s|{DEV_UID}|$(shell id -u)|g" \

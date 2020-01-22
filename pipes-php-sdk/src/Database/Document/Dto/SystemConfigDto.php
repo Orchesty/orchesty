@@ -81,25 +81,6 @@ final class SystemConfigDto
     }
 
     /**
-     * @return string
-     */
-    public function toString(): string
-    {
-        return Json::encode(
-            [
-                self::SDK      => [self::HOST => $this->getSdkHost()],
-                self::BRIDGE   => [self::HOST => $this->getBridgeHost()],
-                self::RABBIT   => [self::PREFETCH => $this->getPrefetch()],
-                self::REPEATER => [
-                    self::ENABLED  => $this->isRepeaterEnabled(),
-                    self::HOPS     => $this->getRepeaterHops(),
-                    self::INTERVAL => $this->getRepeaterInterval(),
-                ],
-            ]
-        );
-    }
-
-    /**
      * @param string $param
      *
      * @return SystemConfigDto
@@ -115,6 +96,25 @@ final class SystemConfigDto
             $result[self::REPEATER][self::ENABLED],
             $result[self::REPEATER][self::HOPS],
             $result[self::REPEATER][self::INTERVAL]
+        );
+    }
+
+    /**
+     * @return string
+     */
+    public function toString(): string
+    {
+        return Json::encode(
+            [
+                self::SDK      => [self::HOST => $this->getSdkHost()],
+                self::BRIDGE   => [self::HOST => $this->getBridgeHost()],
+                self::RABBIT   => [self::PREFETCH => $this->getPrefetch()],
+                self::REPEATER => [
+                    self::ENABLED  => $this->isRepeaterEnabled(),
+                    self::HOPS     => $this->getRepeaterHops(),
+                    self::INTERVAL => $this->getRepeaterInterval(),
+                ],
+            ]
         );
     }
 

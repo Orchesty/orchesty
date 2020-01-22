@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\Authorization\Utils;
+namespace PipesPhpSdkTests\Unit\Authorization\Utils;
 
 use Hanaboso\PipesPhpSdk\Authorization\Utils\ScopeFormatter;
 use PHPUnit\Framework\TestCase;
@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * Class ScopeFormaterTest
  *
- * @package Tests\Unit\Authorization\Utils
+ * @package PipesPhpSdkTests\Unit\Authorization\Utils
  */
 final class ScopeFormaterTest extends TestCase
 {

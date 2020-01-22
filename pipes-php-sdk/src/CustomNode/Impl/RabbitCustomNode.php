@@ -31,6 +31,11 @@ abstract class RabbitCustomNode extends CustomNodeAbstract implements LoggerAwar
 {
 
     /**
+     * @var LoggerInterface
+     */
+    protected $logger;
+
+    /**
      * @var Connection
      */
     private $connection;
@@ -61,9 +66,9 @@ abstract class RabbitCustomNode extends CustomNodeAbstract implements LoggerAwar
     private $chann;
 
     /**
-     * @var LoggerInterface
+     * @param ProcessDto $dto
      */
-    protected $logger;
+    abstract protected function processBatch(ProcessDto $dto): void;
 
     /**
      * RabbitCustomNode constructor.
@@ -99,24 +104,6 @@ abstract class RabbitCustomNode extends CustomNodeAbstract implements LoggerAwar
     }
 
     /**
-     * @param ProcessDto $dto
-     */
-    abstract protected function processBatch(ProcessDto $dto): void;
-
-    /**
-     * @param mixed[] $message
-     * @param mixed[] $headers
-     */
-    protected function publishMessage(array $message, array $headers): void
-    {
-        $chann = $this->connection->getChannel($this->chann);
-
-        foreach ($this->queues as $que) {
-            $chann->basic_publish(Message::create($message, $headers), $this->ex, $que);
-        }
-    }
-
-    /**
      * Sets a logger instance on the object.
      *
      * @param LoggerInterface $logger
@@ -126,6 +113,21 @@ abstract class RabbitCustomNode extends CustomNodeAbstract implements LoggerAwar
     public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
+    }
+
+    /**
+     * @param mixed[] $message
+     * @param mixed[] $headers
+     *
+     * @throws Exception
+     */
+    protected function publishMessage(array $message, array $headers): void
+    {
+        $chann = $this->connection->getChannel($this->chann);
+
+        foreach ($this->queues as $que) {
+            $chann->basic_publish(Message::create($message, $headers), $this->ex, $que);
+        }
     }
 
     /**
