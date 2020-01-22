@@ -18,7 +18,7 @@ interface OAuth1ProviderInterface extends OAuthProviderInterface
      * @param string             $tokenUrl
      * @param string             $authorizeUrl
      * @param callable           $saveOauthStuffs
-     * @param mixed[]            $scopes
+     * @param string[]           $scopes
      *
      * @throws AuthorizationException
      */

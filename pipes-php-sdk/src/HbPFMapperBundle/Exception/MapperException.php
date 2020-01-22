@@ -12,8 +12,8 @@ use Hanaboso\Utils\Exception\PipesFrameworkExceptionAbstract;
 class MapperException extends PipesFrameworkExceptionAbstract
 {
 
-    protected const OFFSET = 1_700;
-
     public const MAPPER_NOT_EXIST = self::OFFSET + 1;
+
+    protected const OFFSET = 1_700;
 
 }

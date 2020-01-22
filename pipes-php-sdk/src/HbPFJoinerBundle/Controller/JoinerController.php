@@ -4,10 +4,8 @@ namespace Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Controller;
 
 use Exception;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
-use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Exception\JoinerException;
 use Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Handler\JoinerHandler;
-use Hanaboso\Utils\Exception\PipesFrameworkExceptionAbstract;
 use Hanaboso\Utils\System\ControllerUtils;
 use Hanaboso\Utils\Traits\ControllerTrait;
 use Symfony\Component\HttpFoundation\Request;
@@ -47,8 +45,6 @@ class JoinerController extends AbstractFOSRestController
      * @param string  $joinerId
      *
      * @return Response
-     * @throws OnRepeatException
-     * @throws PipesFrameworkExceptionAbstract
      */
     public function sendAction(Request $request, string $joinerId): Response
     {
@@ -58,8 +54,6 @@ class JoinerController extends AbstractFOSRestController
             return $this->getResponse($data);
         } catch (JoinerException $e) {
             return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
-        } catch (PipesFrameworkExceptionAbstract | OnRepeatException $e) {
-            throw $e;
         }
     }
 

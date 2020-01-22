@@ -1,16 +1,16 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Authorization\Document;
+namespace PipesPhpSdkTests\Integration\Authorization\Document;
 
 use Exception;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use MongoDB\BSON\ObjectId;
-use Tests\DatabaseTestCaseAbstract;
+use PipesPhpSdkTests\DatabaseTestCaseAbstract;
 
 /**
  * Class InstallTest
  *
- * @package Tests\Integration\Authorization\Document
+ * @package PipesPhpSdkTests\Integration\Authorization\Document
  */
 final class InstallTest extends DatabaseTestCaseAbstract
 {

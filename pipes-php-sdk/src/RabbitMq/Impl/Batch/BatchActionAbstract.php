@@ -46,6 +46,23 @@ abstract class BatchActionAbstract implements BatchActionInterface, LoggerAwareI
     }
 
     /**
+     * @param AMQPMessage   $message
+     * @param LoopInterface $loop
+     * @param callable      $itemCallBack
+     *
+     * @return PromiseInterface
+     */
+    public function batchAction(AMQPMessage $message, LoopInterface $loop, callable $itemCallBack): PromiseInterface
+    {
+        return $this
+            ->validateHeaders($message)
+            ->then(fn(string $serviceName) => $this->getBatchService($serviceName))
+            ->then(
+                fn(BatchInterface $node) => $node->processBatch($this->createProcessDto($message), $loop, $itemCallBack)
+            );
+    }
+
+    /**
      * @param AMQPMessage $message
      *
      * @return PromiseInterface
@@ -81,23 +98,6 @@ abstract class BatchActionAbstract implements BatchActionInterface, LoggerAwareI
     private function createProcessDto(AMQPMessage $message): ProcessDto
     {
         return ProcessDtoFactory::createFromMessage($message);
-    }
-
-    /**
-     * @param AMQPMessage   $message
-     * @param LoopInterface $loop
-     * @param callable      $itemCallBack
-     *
-     * @return PromiseInterface
-     */
-    public function batchAction(AMQPMessage $message, LoopInterface $loop, callable $itemCallBack): PromiseInterface
-    {
-        return $this
-            ->validateHeaders($message)
-            ->then(fn(string $serviceName) => $this->getBatchService($serviceName))
-            ->then(
-                fn(BatchInterface $node) => $node->processBatch($this->createProcessDto($message), $loop, $itemCallBack)
-            );
     }
 
 }

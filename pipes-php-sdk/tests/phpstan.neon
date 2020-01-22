@@ -1,0 +1,12 @@
+includes:
+    - ../vendor/hanaboso/php-check-utils/phpstan.neon
+
+parameters:
+    doctrine:
+        objectManagerLoader: DocumentManagerLoader.php
+    symfony:
+        container_xml_path: %rootDir%/../../../var/cache/test/appPipesPhpSdkTests_app_KernelTestDebugContainer.xml
+    ignoreErrors:
+        - '#Access to an undefined property#'
+        - '#PHPDoc tag @var for variable \$connection contains unresolvable type#'
+        - '#Parameter \#2 \$auth_session_handle of method OAuth::getAccessToken\(\) expects string, null given.#'

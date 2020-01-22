@@ -27,10 +27,7 @@ interface BasicApplicationInterface extends ApplicationInterface
      *
      * @return ApplicationInstall
      */
-    public function setApplicationPassword(
-        ApplicationInstall $applicationInstall,
-        string $password
-    ): ApplicationInstall;
+    public function setApplicationPassword(ApplicationInstall $applicationInstall, string $password): ApplicationInstall;
 
     /**
      * @param ApplicationInstall $applicationInstall
@@ -38,9 +35,6 @@ interface BasicApplicationInterface extends ApplicationInterface
      *
      * @return ApplicationInstall
      */
-    public function setApplicationUser(
-        ApplicationInstall $applicationInstall,
-        string $user
-    ): ApplicationInstall;
+    public function setApplicationUser(ApplicationInstall $applicationInstall, string $user): ApplicationInstall;
 
 }

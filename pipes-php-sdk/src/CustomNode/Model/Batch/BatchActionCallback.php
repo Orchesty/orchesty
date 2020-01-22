@@ -6,7 +6,6 @@ use Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Exception\CustomNodeException;
 use Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Loader\CustomNodeLoader;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchActionAbstract;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchInterface;
-use InvalidArgumentException;
 
 /**
  * Class BatchActionCallback
@@ -43,10 +42,6 @@ class BatchActionCallback extends BatchActionAbstract
     {
         /** @var BatchInterface $node */
         $node = $this->customNodeLoader->get($id);
-
-        if (!$node instanceof BatchInterface) {
-            throw new InvalidArgumentException(sprintf('The custom node not implemented "%s".', BatchInterface::class));
-        }
 
         return $node;
     }

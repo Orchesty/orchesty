@@ -1,17 +1,17 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\HbPFMapperBundle\Loader;
+namespace PipesPhpSdkTests\Unit\HbPFMapperBundle\Loader;
 
 use Exception;
 use Hanaboso\PipesPhpSdk\HbPFMapperBundle\Exception\MapperException;
 use Hanaboso\PipesPhpSdk\HbPFMapperBundle\Loader\MapperLoader;
 use Hanaboso\PipesPhpSdk\Mapper\Impl\NullMapper;
-use Tests\KernelTestCaseAbstract;
+use PipesPhpSdkTests\KernelTestCaseAbstract;
 
 /**
  * Class MapperLoaderTest
  *
- * @package Tests\Unit\HbPFMapperBundle\Loader
+ * @package PipesPhpSdkTests\Unit\HbPFMapperBundle\Loader
  */
 final class MapperLoaderTest extends KernelTestCaseAbstract
 {
@@ -20,16 +20,6 @@ final class MapperLoaderTest extends KernelTestCaseAbstract
      * @var MapperLoader
      */
     private $mapperLoader;
-
-    /**
-     *
-     */
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->mapperLoader = self::$container->get('hbpf.mapper.loader.mapper');
-    }
 
     /**
      * @throws Exception
@@ -50,6 +40,16 @@ final class MapperLoaderTest extends KernelTestCaseAbstract
         self::expectExceptionCode(MapperException::MAPPER_NOT_EXIST);
 
         $this->mapperLoader->loadMapper('missing');
+    }
+
+    /**
+     *
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->mapperLoader = self::$container->get('hbpf.mapper.loader.mapper');
     }
 
 }

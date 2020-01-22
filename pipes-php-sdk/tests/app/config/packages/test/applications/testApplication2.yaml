@@ -1,0 +1,8 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf.application.null2:
+        class: PipesPhpSdkTests\Integration\Application\TestOAuth2NullApplication
+        arguments:
+            - '@hbpf.providers.oauth2_provider'

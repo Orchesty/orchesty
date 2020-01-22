@@ -1,18 +1,20 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Database\Repository;
+namespace PipesPhpSdkTests\Integration\Database\Repository;
 
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
 use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
 use Hanaboso\PipesPhpSdk\Database\Document\Category;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\PipesPhpSdk\Database\Repository\TopologyRepository;
-use Tests\DatabaseTestCaseAbstract;
+use Hanaboso\Utils\Exception\EnumException;
+use PipesPhpSdkTests\DatabaseTestCaseAbstract;
 
 /**
  * Class TopologyRepositoryTest
  *
- * @package Tests\Integration\Database\Repository
+ * @package PipesPhpSdkTests\Integration\Database\Repository
  */
 final class TopologyRepositoryTest extends DatabaseTestCaseAbstract
 {
@@ -24,7 +26,6 @@ final class TopologyRepositoryTest extends DatabaseTestCaseAbstract
      */
     public function testGetTotalCount(): void
     {
-        /** @var TopologyRepository $repo */
         $repo   = $this->dm->getRepository(Topology::class);
         $result = $repo->getTotalCount();
         self::assertEquals(0, $result);
@@ -37,6 +38,27 @@ final class TopologyRepositoryTest extends DatabaseTestCaseAbstract
 
         $result = $repo->getTotalCount();
         self::assertEquals(1, $result);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\Database\Repository\TopologyRepository::getMaxVersion
+     *
+     * @throws Exception
+     */
+    public function testGetMaxVersion(): void
+    {
+        $repo   = $this->dm->getRepository(Topology::class);
+        $result = $repo->getMaxVersion('name');
+        self::assertEquals(0, $result);
+
+        $topology = new Topology();
+        $topology
+            ->setName('name')
+            ->setVersion(5);
+        $this->pfd($topology);
+
+        $result = $repo->getMaxVersion('name');
+        self::assertEquals(5, $result);
     }
 
     /**
@@ -123,6 +145,46 @@ final class TopologyRepositoryTest extends DatabaseTestCaseAbstract
 
         self::assertCount(1, $topologies);
         self::assertEquals($topologyWithCategory->getId(), $topologies[0]->getId());
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\Database\Repository\TopologyRepository::getTopologiesCountByName
+     *
+     * @throws MongoDBException
+     */
+    public function testGetTopologiesCountByName(): void
+    {
+        $repo   = $this->dm->getRepository(Topology::class);
+        $result = $repo->getTopologiesCountByName('name');
+        self::assertEquals(0, $result);
+
+        $topology = new Topology();
+        $topology
+            ->setName('name')
+            ->setVersion(5);
+        $this->pfd($topology);
+
+        $result = $repo->getTopologiesCountByName('name');
+        self::assertEquals(1, $result);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\Database\Repository\TopologyRepository::getPublicEnabledTopologies
+     *
+     * @throws EnumException
+     * @throws MongoDBException
+     */
+    public function testGetPublicEnabledTopologies(): void
+    {
+        $topology = new Topology();
+        $topology
+            ->setName('name')
+            ->setVisibility(TopologyStatusEnum::PUBLIC);
+        $this->pfd($topology);
+
+        $repo   = $this->dm->getRepository(Topology::class);
+        $result = $repo->getPublicEnabledTopologies();
+        self::assertEquals('name', $result[0]->getName());
     }
 
 }

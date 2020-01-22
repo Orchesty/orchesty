@@ -1,16 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\HbPFJoinerBundle\Loader;
+namespace PipesPhpSdkTests\Unit\HbPFJoinerBundle\Loader;
 
 use Exception;
 use Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Loader\JoinerLoader;
-use Hanaboso\PipesPhpSdk\Joiner\JoinerInterface;
-use Tests\KernelTestCaseAbstract;
+use PipesPhpSdkTests\KernelTestCaseAbstract;
 
 /**
  * Class JoinerLoaderTest
  *
- * @package Tests\Unit\HbPFJoinerBundle\Loader
+ * @package PipesPhpSdkTests\Unit\HbPFJoinerBundle\Loader
  */
 final class JoinerLoaderTest extends KernelTestCaseAbstract
 {
@@ -32,12 +31,13 @@ final class JoinerLoaderTest extends KernelTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Loader\JoinerLoader::get()
+     *
      * @throws Exception
      */
     public function testLoader(): void
     {
-        $joiner = $this->loader->get('null');
-        self::assertInstanceOf(JoinerInterface::class, $joiner);
+        $this->loader->get('null');
+        self::assertFake();
     }
 
 }

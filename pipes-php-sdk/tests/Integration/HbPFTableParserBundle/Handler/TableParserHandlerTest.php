@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\HbPFTableParserBundle\Handler;
+namespace PipesPhpSdkTests\Integration\HbPFTableParserBundle\Handler;
 
 use Exception;
 use Hanaboso\CommonsBundle\FileStorage\Dto\FileContentDto;
@@ -10,12 +10,12 @@ use Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandlerExcepti
 use Hanaboso\PipesPhpSdk\Parser\Exception\TableParserException;
 use Hanaboso\PipesPhpSdk\Parser\TableParser;
 use Hanaboso\PipesPhpSdk\Parser\TableParserInterface;
-use Tests\KernelTestCaseAbstract;
+use PipesPhpSdkTests\KernelTestCaseAbstract;
 
 /**
  * Class TableParserHandlerTest
  *
- * @package Tests\Integration\HbPFTableParserBundle\Handler
+ * @package PipesPhpSdkTests\Integration\HbPFTableParserBundle\Handler
  */
 final class TableParserHandlerTest extends KernelTestCaseAbstract
 {
@@ -34,18 +34,6 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
      * @var FileStorage
      */
     private $storage;
-
-    /**
-     *
-     */
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->storage = self::$container->get('hbpf.file_storage');
-        $this->handler = new TableParserHandler(new TableParser(), $this->storage);
-        $this->path    = __DIR__ . '/../../Parser/data';
-    }
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler::parseToJson()
@@ -203,6 +191,18 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
         self::expectException(TableParserException::class);
         self::expectExceptionCode(TableParserException::UNKNOWN_WRITER_TYPE);
         $this->handler->parseFromJson('Invalid', ['file_id' => sprintf('%s/output-10.json', $this->path)]);
+    }
+
+    /**
+     *
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->storage = self::$container->get('hbpf.file_storage');
+        $this->handler = new TableParserHandler(new TableParser(), $this->storage);
+        $this->path    = __DIR__ . '/../../Parser/data';
     }
 
 }

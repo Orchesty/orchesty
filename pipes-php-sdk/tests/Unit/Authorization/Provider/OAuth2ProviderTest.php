@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\Authorization\Provider;
+namespace PipesPhpSdkTests\Unit\Authorization\Provider;
 
 use Exception;
 use Hanaboso\CommonsBundle\Redirect\RedirectInterface;
@@ -17,7 +17,7 @@ use Symfony\Bridge\Monolog\Logger;
 /**
  * Class OAuth2ProviderTest
  *
- * @package Tests\Unit\Authorization\Provider
+ * @package PipesPhpSdkTests\Unit\Authorization\Provider
  */
 final class OAuth2ProviderTest extends TestCase
 {
@@ -95,7 +95,6 @@ final class OAuth2ProviderTest extends TestCase
         $token = $provider->getAccessToken($dto, $request);
 
         self::assertNotEmpty($token);
-        self::assertTrue(is_array($token));
     }
 
     /**
@@ -133,7 +132,6 @@ final class OAuth2ProviderTest extends TestCase
         $token = $provider->refreshAccessToken($dto, $token);
 
         self::assertNotEmpty($token);
-        self::assertTrue(is_array($token));
     }
 
     /**

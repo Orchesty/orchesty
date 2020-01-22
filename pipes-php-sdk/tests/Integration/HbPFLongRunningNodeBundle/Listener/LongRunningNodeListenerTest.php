@@ -1,22 +1,24 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\HbPFLongRunningNodeBundle\Listener;
+namespace PipesPhpSdkTests\Integration\HbPFLongRunningNodeBundle\Listener;
 
 use Exception;
 use Hanaboso\CommonsBundle\Event\ProcessStatusEvent;
+use Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Listener\LongRunningNodeListener;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData;
+use PipesPhpSdkTests\DatabaseTestCaseAbstract;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use Tests\DatabaseTestCaseAbstract;
 
 /**
  * Class LongRunningNodeListenerTest
  *
- * @package Tests\Integration\HbPFLongRunningNodeBundle\Listener
+ * @package PipesPhpSdkTests\Integration\HbPFLongRunningNodeBundle\Listener
  */
 final class LongRunningNodeListenerTest extends DatabaseTestCaseAbstract
 {
 
     /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Listener\LongRunningNodeListener
      * @covers \Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Listener\LongRunningNodeListener::onFinish()
      *
      * @throws Exception
@@ -32,6 +34,14 @@ final class LongRunningNodeListenerTest extends DatabaseTestCaseAbstract
         $res = $this->dm->getRepository(LongRunningNodeData::class)->findAll();
         self::assertEquals(1, count($res));
         self::assertEquals('2', $res[0]->getProcessId());
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Listener\LongRunningNodeListener::getSubscribedEvents
+     */
+    public function testGetSubscribedEvents(): void
+    {
+        self::assertEquals(['finished' => 'onFinish'], LongRunningNodeListener::getSubscribedEvents());
     }
 
     /**

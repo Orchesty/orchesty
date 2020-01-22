@@ -1,22 +1,27 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\HbPFLongRunningNodeBundle\Loader;
+namespace PipesPhpSdkTests\Unit\HbPFLongRunningNodeBundle\Loader;
 
 use Exception;
 use Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Loader\LongRunningNodeLoader;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Exception\LongRunningNodeException;
-use Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeInterface;
-use Tests\KernelTestCaseAbstract;
+use PipesPhpSdkTests\KernelTestCaseAbstract;
 
 /**
  * Class LongRunningNodeLoaderTest
  *
- * @package Tests\Unit\HbPFLongRunningNodeBundle\Loader
+ * @package PipesPhpSdkTests\Unit\HbPFLongRunningNodeBundle\Loader
  */
 final class LongRunningNodeLoaderTest extends KernelTestCaseAbstract
 {
 
     /**
+     * @var LongRunningNodeLoader
+     */
+    private $loader;
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Loader\LongRunningNodeLoader
      * @covers \Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Loader\LongRunningNodeLoader::getLongRunningNode()
      *
      * @throws Exception
@@ -26,14 +31,38 @@ final class LongRunningNodeLoaderTest extends KernelTestCaseAbstract
         $testClass = new TestLongRunningNode();
         self::$container->set('hbpf.long_running.test', $testClass);
 
-        /** @var LongRunningNodeLoader $loader */
-        $loader = self::$container->get('hbpf.loader.long_running');
-        $res    = $loader->getLongRunningNode('test');
-        self::assertInstanceOf(LongRunningNodeInterface::class, $res);
-
         self::expectException(LongRunningNodeException::class);
         self::expectExceptionCode(LongRunningNodeException::LONG_RUNNING_SERVICE_NOT_FOUND);
-        $loader->getLongRunningNode('another_test');
+        $this->loader->getLongRunningNode('another_test');
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Loader\LongRunningNodeLoader::getLongRunningNode
+     * @throws LongRunningNodeException
+     */
+    public function testGetLongRunningNode(): void
+    {
+        $node = $this->loader->getLongRunningNode('null');
+
+        self::assertEquals('test', $node->getId());
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Loader\LongRunningNodeLoader::getAllLongRunningNodes
+     */
+    public function testGetAllLongRunningNodes(): void
+    {
+        self::assertEquals([], $this->loader->getAllLongRunningNodes(['null']));
+    }
+
+    /**
+     *
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->loader = self::$container->get('hbpf.loader.long_running');
     }
 
 }

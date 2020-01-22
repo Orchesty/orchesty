@@ -161,6 +161,33 @@ class LongRunningNodeData
     }
 
     /**
+     * @param AMQPMessage $message
+     *
+     * @return LongRunningNodeData
+     * @throws Exception
+     */
+    public static function fromMessage(AMQPMessage $message): LongRunningNodeData
+    {
+        $headers = Message::getHeaders($message);
+
+        return (new LongRunningNodeData())
+            ->setContentType((string) ($headers[PipesHeaders::CONTENT_TYPE] ?? 'application/json'))
+            ->setData(Message::getBody($message))
+            ->setHeaders($headers)
+            ->setParentId((string) ($headers[PipesHeaders::createKey(PipesHeaders::PARENT_ID)] ?? ''))
+            ->setCorrelationId((string) ($headers[PipesHeaders::createKey(PipesHeaders::CORRELATION_ID)] ?? ''))
+            ->setTopologyId((string) ($headers[PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID)] ?? ''))
+            ->setTopologyName((string) ($headers[PipesHeaders::createKey(PipesHeaders::TOPOLOGY_NAME)] ?? ''))
+            ->setNodeId((string) ($headers[PipesHeaders::createKey(PipesHeaders::NODE_ID)] ?? ''))
+            ->setNodeName((string) ($headers[PipesHeaders::createKey(PipesHeaders::NODE_NAME)] ?? ''))
+            ->setParentProcess((string) ($headers[PipesHeaders::createKey(self::PARENT_PROCESS_HEADER)] ?? ''))
+            ->setProcessId((string) ($headers[PipesHeaders::createKey(PipesHeaders::PROCESS_ID)] ?? ''))
+            ->setSequenceId((string) ($headers[PipesHeaders::createKey(PipesHeaders::SEQUENCE_ID)] ?? ''))
+            ->setUpdatedBy((string) ($headers[PipesHeaders::createKey(self::UPDATED_BY_HEADER)] ?? ''))
+            ->setAuditLogs(Json::decode((string) ($headers[PipesHeaders::createKey(self::AUDIT_LOGS_HEADER)] ?? '')));
+    }
+
+    /**
      * @return string
      */
     public function getParentId(): string
@@ -468,10 +495,10 @@ class LongRunningNodeData
     public function preFlush(): void
     {
         if (is_array($this->headers)) {
-            $this->headers = (string) Json::encode($this->headers);
+            $this->headers = Json::encode($this->headers);
         }
         if (is_array($this->auditLogs)) {
-            $this->auditLogs = (string) Json::encode($this->auditLogs);
+            $this->auditLogs = Json::encode($this->auditLogs);
         }
     }
 
@@ -496,33 +523,6 @@ class LongRunningNodeData
         return (new ProcessDto())
             ->setHeaders($this->getHeaders())
             ->setData($this->data);
-    }
-
-    /**
-     * @param AMQPMessage $message
-     *
-     * @return LongRunningNodeData
-     * @throws Exception
-     */
-    public static function fromMessage(AMQPMessage $message): LongRunningNodeData
-    {
-        $headers = Message::getHeaders($message);
-
-        return (new LongRunningNodeData())
-            ->setContentType((string) ($headers[PipesHeaders::CONTENT_TYPE] ?? 'application/json'))
-            ->setData(Message::getBody($message))
-            ->setHeaders($headers)
-            ->setParentId((string) ($headers[PipesHeaders::createKey(PipesHeaders::PARENT_ID)] ?? ''))
-            ->setCorrelationId((string) ($headers[PipesHeaders::createKey(PipesHeaders::CORRELATION_ID)] ?? ''))
-            ->setTopologyId((string) ($headers[PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID)] ?? ''))
-            ->setTopologyName((string) ($headers[PipesHeaders::createKey(PipesHeaders::TOPOLOGY_NAME)] ?? ''))
-            ->setNodeId((string) ($headers[PipesHeaders::createKey(PipesHeaders::NODE_ID)] ?? ''))
-            ->setNodeName((string) ($headers[PipesHeaders::createKey(PipesHeaders::NODE_NAME)] ?? ''))
-            ->setParentProcess((string) ($headers[PipesHeaders::createKey(self::PARENT_PROCESS_HEADER)] ?? ''))
-            ->setProcessId((string) ($headers[PipesHeaders::createKey(PipesHeaders::PROCESS_ID)] ?? ''))
-            ->setSequenceId((string) ($headers[PipesHeaders::createKey(PipesHeaders::SEQUENCE_ID)] ?? ''))
-            ->setUpdatedBy((string) ($headers[PipesHeaders::createKey(self::UPDATED_BY_HEADER)] ?? ''))
-            ->setAuditLogs(Json::decode((string) ($headers[PipesHeaders::createKey(self::AUDIT_LOGS_HEADER)] ?? '')));
     }
 
     /**

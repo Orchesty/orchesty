@@ -1,15 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\HbPFJoinerBundle\Handler;
+namespace PipesPhpSdkTests\Unit\HbPFJoinerBundle\Handler;
 
 use Exception;
 use Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Exception\JoinerException;
-use Tests\KernelTestCaseAbstract;
+use PipesPhpSdkTests\KernelTestCaseAbstract;
 
 /**
  * Class JoinerHandlerTest
  *
- * @package Tests\Unit\HbPFJoinerBundle\Handler
+ * @package PipesPhpSdkTests\Unit\HbPFJoinerBundle\Handler
  */
 final class JoinerHandlerTest extends KernelTestCaseAbstract
 {

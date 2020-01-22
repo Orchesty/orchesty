@@ -30,11 +30,17 @@ class EmbedNode
     protected string $name;
 
     /**
-     * @param string $id
+     * @param Node $node
+     *
+     * @return self
      */
-    protected function setId($id): void
+    public static function from(Node $node): EmbedNode
     {
-        $this->id = $id;
+        $e = new self();
+        $e->setId($node->getId());
+        $e->setName($node->getName());
+
+        return $e;
     }
 
     /**
@@ -55,24 +61,22 @@ class EmbedNode
 
     /**
      * @param string $name
+     *
+     * @return EmbedNode
      */
-    public function setName($name): void
+    public function setName($name): EmbedNode
     {
         $this->name = $name;
+
+        return $this;
     }
 
     /**
-     * @param Node $node
-     *
-     * @return self
+     * @param string $id
      */
-    public static function from(Node $node): EmbedNode
+    protected function setId($id): void
     {
-        $e = new self();
-        $e->setId($node->getId());
-        $e->setName($node->getName());
-
-        return $e;
+        $this->id = $id;
     }
 
 }

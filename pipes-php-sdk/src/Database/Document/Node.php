@@ -224,13 +224,13 @@ class Node
      *
      * @return Node
      * @throws NodeException
-     * @throws EnumException
      */
     public function setType(string $type): Node
     {
-        if (TypeEnum::isValid($type)) {
+        try {
+            TypeEnum::isValid($type);
             $this->type = $type;
-        } else {
+        } catch (EnumException $exception) {
             throw new NodeException(
                 sprintf('Invalid node type "%s"', $type),
                 NodeException::INVALID_TYPE
@@ -253,13 +253,13 @@ class Node
      *
      * @return Node
      * @throws NodeException
-     * @throws EnumException
      */
     public function setHandler(string $handler): Node
     {
-        if (HandlerEnum::isValid($handler)) {
+        try {
+            HandlerEnum::isValid($handler);
             $this->handler = $handler;
-        } else {
+        } catch (EnumException $exception) {
             throw new NodeException(
                 sprintf('Invalid node handler value "%s"', $handler),
                 NodeException::INVALID_HANDLER

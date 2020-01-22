@@ -1,0 +1,24 @@
+parameters:
+    public.services: true
+    node_services_dirs:
+        - '%kernel.root_dir%/HbPFConnectorBundle/Resources/config/'
+        - '%kernel.root_dir%/HbPFCustomNodeBundle/Resources/config/'
+        - '%kernel.root_dir%/HbPFJoinerBundle/Resources/config/'
+        - '%kernel.root_dir%/HbPFMapperBundle/Resources/config/'
+
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf.redirect:
+        class: Hanaboso\PipesPhpSdk\Command\RedirectCommand
+
+    hbpf.application.null2:
+        class: PipesPhpSdkTests\Integration\Command\NullOAuth2Application
+        arguments:
+            - '@hbpf.providers.oauth2_provider'
+
+    hbpf.application.null1:
+        class: PipesPhpSdkTests\Integration\Command\NullOAuth1Application
+        arguments:
+            - '@hbpf.providers.oauth1_provider'

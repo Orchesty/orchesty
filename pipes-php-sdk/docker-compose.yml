@@ -12,7 +12,7 @@ services:
         environment:
             - DEV_UID=${DEV_UID}
             - DEV_GID=${DEV_GID}
-            - KERNEL_CLASS=Hanaboso\PipesPhpSdk\Kernel
+            - KERNEL_CLASS=PipesPhpSdkTests\app\Kernel
             - PHP_IDE_CONFIG=${PHP_IDE_CONFIG}
             - COMPOSER_HOME=${HOME}/dev/.composer
             - METRICS_SERVICE=mongo

@@ -12,8 +12,8 @@ use Hanaboso\Utils\Exception\PipesFrameworkExceptionAbstract;
 final class CustomNodeException extends PipesFrameworkExceptionAbstract
 {
 
-    protected const OFFSET = 1_800;
-
     public const CUSTOM_NODE_SERVICE_NOT_FOUND = self::OFFSET + 1;
+
+    protected const OFFSET = 1_800;
 
 }

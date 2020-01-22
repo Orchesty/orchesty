@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Command;
+namespace PipesPhpSdkTests\Integration\Command;
 
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
@@ -17,7 +17,7 @@ use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider;
 /**
  * Class NullOAuth1Application
  *
- * @package Tests\Integration\Command
+ * @package PipesPhpSdkTests\Integration\Command
  */
 class NullOAuth1Application extends OAuth1ApplicationAbstract implements OAuth1DtoInterface
 {
@@ -122,50 +122,6 @@ class NullOAuth1Application extends OAuth1ApplicationAbstract implements OAuth1D
     }
 
     /**
-     * @param ApplicationInstall $applicationInstall
-     *
-     * @return bool
-     */
-    public function isAuthorized(ApplicationInstall $applicationInstall): bool
-    {
-        $applicationInstall;
-
-        return TRUE;
-    }
-
-    /**
-     * @return string
-     */
-    protected function getTokenUrl(): string
-    {
-        return 'token/ouath1/url.com';
-    }
-
-    /**
-     * @return string
-     */
-    protected function getAuthorizeUrl(): string
-    {
-        return 'auth/ouath2/url.com';
-    }
-
-    /**
-     * @return string
-     */
-    protected function getAccessTokenUrl(): string
-    {
-        return 'access/token/url.com';
-    }
-
-    /**
-     * @return string
-     */
-    protected function getRedirectUrl(): string
-    {
-        return 'redirect/url.com';
-    }
-
-    /**
      * @return string
      */
     public function getConsumerKey(): string
@@ -203,6 +159,38 @@ class NullOAuth1Application extends OAuth1ApplicationAbstract implements OAuth1D
     public function getToken(): array
     {
         return ['token' => 'Grrrrr'];
+    }
+
+    /**
+     * @return string
+     */
+    protected function getTokenUrl(): string
+    {
+        return 'token/ouath1/url.com';
+    }
+
+    /**
+     * @return string
+     */
+    protected function getAuthorizeUrl(): string
+    {
+        return 'auth/ouath2/url.com';
+    }
+
+    /**
+     * @return string
+     */
+    protected function getAccessTokenUrl(): string
+    {
+        return 'access/token/url.com';
+    }
+
+    /**
+     * @return string
+     */
+    protected function getRedirectUrl(): string
+    {
+        return 'redirect/url.com';
     }
 
 }

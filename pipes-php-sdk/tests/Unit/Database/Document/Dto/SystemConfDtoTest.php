@@ -1,15 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\Database\Document\Dto;
+namespace PipesPhpSdkTests\Unit\Database\Document\Dto;
 
 use Exception;
 use Hanaboso\PipesPhpSdk\Database\Document\Dto\SystemConfigDto;
-use Tests\KernelTestCaseAbstract;
+use PipesPhpSdkTests\KernelTestCaseAbstract;
 
 /**
  * Class SystemConfDtoTest
  *
- * @package Tests\Unit\Database\Document\Dto
+ * @package PipesPhpSdkTests\Unit\Database\Document\Dto
  */
 final class SystemConfDtoTest extends KernelTestCaseAbstract
 {
@@ -33,13 +33,13 @@ final class SystemConfDtoTest extends KernelTestCaseAbstract
         $dto  = new SystemConfigDto('Example');
         $json = $dto->toString();
 
-        $result = $dto->fromString($json);
+        $result = SystemConfigDto::fromString($json);
 
         self::assertEquals('Example', $result->getSdkHost());
         self::assertEquals(1, $result->getPrefetch());
 
         try {
-            $dto->fromString('example');
+            SystemConfigDto::fromString('example');
         } catch (Exception $e) {
             self::assertEquals($e->getMessage(), 'Syntax error');
         }

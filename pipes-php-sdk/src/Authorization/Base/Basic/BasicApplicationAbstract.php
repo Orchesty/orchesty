@@ -33,18 +33,15 @@ abstract class BasicApplicationAbstract extends ApplicationAbstract implements B
         return
             (
                 isset(
-                    $applicationInstall->getSettings(
-                    )[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::PASSWORD]
+                    $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::PASSWORD]
                 )
                 &&
                 isset(
-                    $applicationInstall->getSettings(
-                    )[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::USER]
+                    $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::USER]
                 )
             ) ||
             isset(
-                $applicationInstall->getSettings(
-                )[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::TOKEN]
+                $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::TOKEN]
             );
     }
 
