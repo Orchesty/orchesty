@@ -14,11 +14,12 @@ services:
     hbpf.commons.redis_session_handler:
         class: Hanaboso\CommonsBundle\Session\Handler\RedisSessionHandler
         arguments:
-            - '@snc_redis.sessions'
+            - '%env(string:REDIS_DSN)%'
 
     ##########################
     #        Metrics         #
     ##########################
+
     hbpf.system_metrics_listener:
         class: Hanaboso\CommonsBundle\Listener\SystemMetricsListener
         arguments:
@@ -29,24 +30,18 @@ services:
             - { name: kernel.event_subscriber, event: kernel.terminate }
             - { name: kernel.event_subscriber, event: kernel.controller }
 
-    udp_metrics_sender:
-        class: Hanaboso\CommonsBundle\Metrics\Impl\UDPSender
-        arguments:
-            - '%kapacitor.host%'
-            - '%kapacitor.port%'
-        calls:
-            - ['setLogger', ['@monolog.logger.commons']]
-
     hbpf.influxdb_sender_connector:
         class: Hanaboso\CommonsBundle\Metrics\Impl\InfluxDbSender
         arguments:
-            - '@udp_metrics_sender'
+            - '@hbpf.transport.udp_sender'
+            - '%kapacitor.host%:%kapacitor.port%'
             - '%influx.connector_table%'
 
     hbpf.influxdb_sender_monolith:
         class: Hanaboso\CommonsBundle\Metrics\Impl\InfluxDbSender
         arguments:
-            - '@udp_metrics_sender'
+            - '@hbpf.transport.udp_sender'
+            - '%kapacitor.host%:%kapacitor.port%'
             - '%influx.monolith_table%'
 
     hbpf.metrics.mongodb_connector:
@@ -117,6 +112,9 @@ services:
     ##########################
     #   Transport Services   #
     ##########################
+
+    hbpf.transport.udp_sender:
+        class: Hanaboso\CommonsBundle\Transport\Udp\UDPSender
 
     hbpf.transport.curl_manager:
         class: Hanaboso\CommonsBundle\Transport\Curl\CurlManager

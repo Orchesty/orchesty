@@ -16,6 +16,8 @@ parameters:
         - '%kernel.root_dir%/../vendor/hanaboso/pipes-connectors/src/Resources/config/'
     applications: ['%kernel.root_dir%/../vendor/hanaboso/pipes-connectors/src/Resources/config/']
 
+    kernel.root_dir: '%kernel.project_dir%/src'
+
 services:
     _defaults:
         autowire: false
@@ -31,6 +33,7 @@ services:
     Demo\Command\DownloaderCommand:
         arguments:
             - 'downloader:run'
+            - '@hbpf.transport.curl_manager'
         tags:
             - { name: 'console.command', command: 'downloader:run' }
 

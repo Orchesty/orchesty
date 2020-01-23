@@ -15,21 +15,20 @@ class SendDutyEmailTest extends KernelTestCase
 {
 
     /**
-     *
-     */
-    protected function setUp(): void
-    {
-        self::bootKernel();
-    }
-
-    /**
      * @throws Exception
      */
     public function testSend(): void
     {
         $sendDutyEmail = self::$container->get('hbpf.custom_node.send-duty-email');
-        $data          = $sendDutyEmail->process(new ProcessDto())->getData();
-        self::assertIsString($data);
+        self::assertNotEmpty($sendDutyEmail->process(new ProcessDto())->getData());
+    }
+
+    /**
+     *
+     */
+    protected function setUp(): void
+    {
+        self::bootKernel();
     }
 
 }

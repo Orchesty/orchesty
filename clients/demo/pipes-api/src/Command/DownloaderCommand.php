@@ -2,10 +2,12 @@
 
 namespace Demo\Command;
 
-use Clue\React\Buzz\Browser;
 use Exception;
-use GuzzleHttp\Psr7\Request;
-use Hanaboso\CommonsBundle\Utils\Json;
+use GuzzleHttp\Psr7\Uri;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
+use Hanaboso\Utils\String\Json;
 use Psr\Http\Message\ResponseInterface;
 use Ratchet\Client\Connector;
 use Ratchet\Client\WebSocket;
@@ -33,9 +35,27 @@ class DownloaderCommand extends Command
     protected static $defaultName = 'downloader:run';
 
     /**
+     * @var CurlManager
+     */
+    private CurlManager $manager;
+
+    /**
      * @var TimerInterface
      */
     private $heartbeat;
+
+    /**
+     * DownloaderCommand constructor.
+     *
+     * @param string      $name
+     * @param CurlManager $manager
+     */
+    public function __construct(string $name, CurlManager $manager)
+    {
+        parent::__construct($name);
+
+        $this->manager = $manager;
+    }
 
     /**
      * @param InputInterface  $input
@@ -64,14 +84,13 @@ class DownloaderCommand extends Command
     private function connect(LoopInterface $loop, OutputInterface $output): void
     {
         $connector = new Connector($loop);
-        $browser   = new Browser($loop);
 
         $uri = 'wss://ws.pusherapp.com/app/de504dc5763aeef9ff52?client=php-ratchet&version=0.0.1&protocol=5';
 
         /** @var ExtendedPromiseInterface $promise */
         $promise = $connector($uri)
             ->then(
-                function (WebSocket $ws) use ($loop, $output, $uri, $browser): void {
+                function (WebSocket $ws) use ($loop, $output, $uri): void {
                     $this->heartbeat = $loop->addPeriodicTimer(
                         5,
                         static function () use ($ws): void {
@@ -81,10 +100,8 @@ class DownloaderCommand extends Command
 
                     $ws->on(
                         'message',
-                        function (MessageInterface $json) use ($ws, $output, $uri, $browser): void {
-
+                        function (MessageInterface $json) use ($ws, $output, $uri): void {
                             $json = (string) $json;
-
                             $data = Json::decode($json);
 
                             if (!array_key_exists('event', $data)) {
@@ -133,9 +150,9 @@ class DownloaderCommand extends Command
                                                 $data['channel']
                                             )
                                         );
-                                        $this->sendData($json, $output, $browser, 'stock-exchange');
-                                        $this->sendData($json, $output, $browser, 'demo-topology');
-                                        $this->sendData($json, $output, $browser, 'shipping-process');
+                                        $this->sendData($json, $output, 'stock-exchange');
+                                        $this->sendData($json, $output, 'demo-topology');
+                                        $this->sendData($json, $output, 'shipping-process');
                                     } else {
                                         $output->writeln(
                                             sprintf('Received unknown event: %s', Json::encode($data))
@@ -198,22 +215,22 @@ class DownloaderCommand extends Command
     /**
      * @param string          $data
      * @param OutputInterface $output
-     * @param Browser         $browser
      * @param string          $topology
+     *
+     * @throws CurlException
      */
-    private function sendData(string $data, OutputInterface $output, Browser $browser, string $topology): void
+    private function sendData(string $data, OutputInterface $output, string $topology): void
     {
-        $request = new Request(
+        $request = (new RequestDto(
             'POST',
-            sprintf('http://frontend/starting-point/topologies/%s/nodes/start/run-by-name', $topology),
+            new Uri(sprintf('http://frontend/starting-point/topologies/%s/nodes/start/run-by-name', $topology)),
             [
                 'Accept'       => 'application/json',
                 'Content-Type' => 'application/json',
-            ],
-            $data
-        );
+            ]
+        ))->setBody($data);
 
-        $browser->send($request)->then(
+        $this->manager->sendAsync($request)->then(
             static function (ResponseInterface $response) use ($output): void {
                 if ($response->getStatusCode() === 200) {
                     $output->writeln('Send success request to pipes.');

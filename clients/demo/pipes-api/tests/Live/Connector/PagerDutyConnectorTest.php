@@ -5,7 +5,7 @@ namespace Tests\Live\Connector;
 use Demo\Connector\PagerDutyConnector;
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\CommonsBundle\Utils\Json;
+use Hanaboso\Utils\String\Json;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 /**
@@ -15,14 +15,6 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
  */
 final class PagerDutyConnectorTest extends KernelTestCase
 {
-
-    /**
-     *
-     */
-    protected function setUp(): void
-    {
-        self::bootKernel();
-    }
 
     /**
      * @throws Exception
@@ -40,6 +32,14 @@ final class PagerDutyConnectorTest extends KernelTestCase
         self::assertEquals(40, $arr['Tomáš Procházka']['hours']);
         self::assertEquals(45, $arr['Václav Krecl']['hours']);
         self::assertEquals(42, $arr['Jakub Husák']['hours']);
+    }
+
+    /**
+     *
+     */
+    protected function setUp(): void
+    {
+        self::bootKernel();
     }
 
 }

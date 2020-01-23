@@ -7,7 +7,7 @@ use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
-use Hanaboso\CommonsBundle\Utils\Json;
+use Hanaboso\Utils\String\Json;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -18,14 +18,6 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
  */
 final class PagerDutyConnectorTest extends KernelTestCase
 {
-
-    /**
-     *
-     */
-    protected function setUp(): void
-    {
-        self::bootKernel();
-    }
 
     /**
      * @throws Exception
@@ -46,6 +38,14 @@ final class PagerDutyConnectorTest extends KernelTestCase
         self::assertEquals(40, $arr['Tomáš Procházka']['hours']);
         self::assertEquals(45, $arr['Václav Krecl']['hours']);
         self::assertEquals(18, $arr['Jakub Husák']['hours']);
+    }
+
+    /**
+     *
+     */
+    protected function setUp(): void
+    {
+        self::bootKernel();
     }
 
 }

@@ -5,10 +5,10 @@ namespace Demo\LongRunningNode;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
-use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeAbstract;
+use Hanaboso\Utils\Date\DateTimeUtils;
+use Hanaboso\Utils\String\Json;
 use PhpAmqpLib\Message\AMQPMessage;
 
 /**

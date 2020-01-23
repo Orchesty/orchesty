@@ -3,9 +3,9 @@
 namespace Demo\Command;
 
 use Hanaboso\CommonsBundle\Enum\MetricsEnum;
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\CommonsBundle\Metrics\Impl\InfluxDbSender;
-use Hanaboso\CommonsBundle\Metrics\Impl\UDPSender;
+use Hanaboso\CommonsBundle\Transport\Udp\UDPSender;
+use Hanaboso\Utils\Exception\DateTimeException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -38,7 +38,7 @@ class KapacitorCommand extends Command
         $input;
         $output->writeln('Kapacitor start.');
 
-        $sender = new InfluxDbSender(new UDPSender('kapacitor', 9_100), 'test');
+        $sender = new InfluxDbSender(new UDPSender(), 'test', 'measurement');
 
         $i = 0;
         while ($i < 10_000) {

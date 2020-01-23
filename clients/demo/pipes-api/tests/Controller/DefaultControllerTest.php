@@ -23,8 +23,8 @@ final class DefaultControllerTest extends WebTestCase
 
         /** @var Response $response */
         $response = $client->getResponse();
-        $this->assertEquals(401, $response->getStatusCode());
-        $this->assertNotEmpty($response->getContent());
+        self::assertEquals(401, $response->getStatusCode());
+        self::assertNotEmpty($response->getContent());
     }
 
 }

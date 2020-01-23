@@ -5,16 +5,16 @@ namespace Demo\Connector;
 use DateTimeImmutable;
 use DateTimeInterface;
 use GuzzleHttp\Psr7\Uri;
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
-use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
-use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
+use Hanaboso\Utils\Date\DateTimeUtils;
+use Hanaboso\Utils\Exception\DateTimeException;
+use Hanaboso\Utils\String\Json;
 use JK\Utils\CzechHolidays;
 
 /**

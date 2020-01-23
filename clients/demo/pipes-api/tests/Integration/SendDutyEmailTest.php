@@ -7,7 +7,7 @@ use EmailServiceBundle\Mailer\Mailer;
 use EmailServiceBundle\Transport\TransportInterface;
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\CommonsBundle\Utils\Json;
+use Hanaboso\Utils\String\Json;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -18,14 +18,6 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
  */
 final class SendDutyEmailTest extends KernelTestCase
 {
-
-    /**
-     *
-     */
-    protected function setUp(): void
-    {
-        self::bootKernel();
-    }
 
     /**
      * @throws Exception
@@ -41,8 +33,15 @@ final class SendDutyEmailTest extends KernelTestCase
         $dto       = (new ProcessDto())
             ->setData(Json::encode(['since' => '2019-04-19', 'until' => '2019-04-29']));
 
-        $data = $result->process($dto)->getData();
-        self::assertIsString($data);
+        self::assertNotEmpty($result->process($dto)->getData());
+    }
+
+    /**
+     *
+     */
+    protected function setUp(): void
+    {
+        self::bootKernel();
     }
 
 }

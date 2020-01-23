@@ -5,9 +5,9 @@ namespace Demo\CustomNode;
 use Exception;
 use Hanaboso\CommonsBundle\Monolog\LoggerContext;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
 use Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Exception\CustomNodeException;
+use Hanaboso\Utils\System\PipesHeaders;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -60,6 +60,20 @@ class DummyExceptionConnector extends CustomNodeAbstract implements LoggerAwareI
     }
 
     /**
+     * Sets a logger instance on the object.
+     *
+     * @param LoggerInterface $logger
+     *
+     * @return DummyExceptionConnector
+     */
+    public function setLogger(LoggerInterface $logger): DummyExceptionConnector
+    {
+        $this->logger = $logger;
+
+        return $this;
+    }
+
+    /**
      * @throws Exception
      */
     private function throwDummyException(): void
@@ -73,20 +87,6 @@ class DummyExceptionConnector extends CustomNodeAbstract implements LoggerAwareI
         }
 
         throw new CustomNodeException(sprintf('%sexception', ucfirst(strtolower($text))));
-    }
-
-    /**
-     * Sets a logger instance on the object.
-     *
-     * @param LoggerInterface $logger
-     *
-     * @return DummyExceptionConnector
-     */
-    public function setLogger(LoggerInterface $logger): DummyExceptionConnector
-    {
-        $this->logger = $logger;
-
-        return $this;
     }
 
 }

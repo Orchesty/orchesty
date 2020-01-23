@@ -3,7 +3,6 @@
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
 use EmailServiceBundle\EmailServiceBundle;
-use FOS\RestBundle\FOSRestBundle;
 use Hanaboso\CommonsBundle\HbPFCommonsBundle;
 use Hanaboso\HbPFAppStore\HbPFAppStoreBundle;
 use Hanaboso\HbPFConnectors\HbPFConnectorsBundle;
@@ -17,9 +16,8 @@ use Hanaboso\PipesPhpSdk\HbPFConnectorBundle\HbPFConnectorBundle;
 use Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\HbPFCustomNodeBundle;
 use Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\HbPFLongRunningNodeBundle;
 use Hanaboso\PipesPhpSdk\HbPFMapperBundle\HbPFMapperBundle;
+use Hanaboso\RestBundle\RestBundle;
 use Hanaboso\UserBundle\HbPFUserBundle;
-use JMS\SerializerBundle\JMSSerializerBundle;
-use Nelmio\CorsBundle\NelmioCorsBundle;
 use RabbitMqBundle\RabbitMqBundle;
 use Snc\RedisBundle\SncRedisBundle;
 use Symfony\Bundle\DebugBundle\DebugBundle;
@@ -32,11 +30,8 @@ return [
     DebugBundle::class           => ['dev' => TRUE, 'test' => TRUE],
     DoctrineBundle::class        => ['all' => TRUE],
     DoctrineMongoDBBundle::class => ['all' => TRUE],
-    FOSRestBundle::class         => ['all' => TRUE],
     FrameworkBundle::class       => ['all' => TRUE],
-    JMSSerializerBundle::class   => ['all' => TRUE],
     MonologBundle::class         => ['all' => TRUE],
-    NelmioCorsBundle::class      => ['all' => TRUE],
     SecurityBundle::class        => ['all' => TRUE],
     SncRedisBundle::class        => ['all' => TRUE],
     SwiftmailerBundle::class     => ['all' => TRUE],
@@ -57,4 +52,5 @@ return [
     HbPFNotificationBundle::class    => ['all' => TRUE],
     HbPFUserBundle::class            => ['all' => TRUE],
     RabbitMqBundle::class            => ['all' => TRUE],
+    RestBundle::class                => ['all' => TRUE],
 ];

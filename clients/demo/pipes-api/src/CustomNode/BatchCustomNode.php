@@ -3,10 +3,10 @@
 namespace Demo\CustomNode;
 
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\SuccessMessage;
+use Hanaboso\Utils\String\Json;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
 use function React\Promise\resolve;

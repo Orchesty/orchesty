@@ -2,11 +2,11 @@
 
 namespace Demo\CustomNode;
 
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
-use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesPhpSdk\CustomNode\Impl\RabbitCustomNode;
+use Hanaboso\Utils\Date\DateTimeUtils;
+use Hanaboso\Utils\Exception\DateTimeException;
+use Hanaboso\Utils\String\Json;
 
 /**
  * Class SplitFileBatch2
@@ -28,7 +28,7 @@ class SplitFileBatch2 extends RabbitCustomNode
         if (array_key_exists('data', $data)) {
             $data = Json::decode($data['data']);
 
-            $datetime = DateTimeUtils::getUTCDateTime();
+            $datetime = DateTimeUtils::getUtcDateTime();
             if ($datetime->getTimestamp() % 2 == 0) {
                 unset($data['bids']);
             } else {

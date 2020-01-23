@@ -4,9 +4,9 @@ namespace Demo\CustomNode;
 
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
-use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
+use Hanaboso\Utils\Date\DateTimeUtils;
+use Hanaboso\Utils\String\Json;
 
 /**
  * Class DataGeneratorConnector

@@ -3,4 +3,4 @@ includes:
 
 parameters:
 	symfony:
-		container_xml_path: %rootDir%/../../../var/cache/test/srcDemo_KernelTestDebugContainer.xml
+		container_xml_path: %rootDir%/../../../var/cache/dev/Demo_KernelDevDebugContainer.xml

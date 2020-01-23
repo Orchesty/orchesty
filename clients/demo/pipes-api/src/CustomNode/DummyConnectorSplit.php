@@ -2,11 +2,11 @@
 
 namespace Demo\CustomNode;
 
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
-use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
+use Hanaboso\Utils\Date\DateTimeUtils;
+use Hanaboso\Utils\Exception\DateTimeException;
+use Hanaboso\Utils\System\PipesHeaders;
 
 /**
  * Class DummyConnectorSplit
@@ -24,7 +24,7 @@ class DummyConnectorSplit extends CustomNodeAbstract
      */
     public function process(ProcessDto $dto): ProcessDto
     {
-        if (DateTimeUtils::getUTCDateTime()->getTimestamp() % 2 == 0) {
+        if (DateTimeUtils::getUtcDateTime()->getTimestamp() % 2 == 0) {
             $dto->setData('');
 
             return $dto->addHeader(PipesHeaders::createKey(PipesHeaders::RESULT_CODE), '1003');

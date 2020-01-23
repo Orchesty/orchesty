@@ -17,6 +17,7 @@ services:
             FRONTEND_HOST: ${BACKEND_URL}/
             ELASTIC_HOST: elasticsearch
             ELASTIC_INDEX: 'index'
+            METRICS_SERVICE: influx
             COMPOSER_HOME: ${HOME}/dev/.composer
         command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console downloader:run'
         working_dir: /var/www/pipes/clients/demo/pipes-api
@@ -34,6 +35,7 @@ services:
     #      FRONTEND_HOST: ${BACKEND_URL}/
     #      ELASTIC_HOST: elasticsearch
     #      ELASTIC_INDEX: 'logstash-2018.01.31'
+    #      METRICS_SERVICE: influx
     ## END STAGE
 
     ## BEGIN DEV
@@ -260,6 +262,7 @@ services:
             METRICS_HOST: 'kapacitor'
             METRICS_PORT: '9100'
             METRICS_SERVICE: 'influx'
+            REDIS_DSN: 'redis://redis'
             COMPOSER_HOME: ${HOME}/dev/.composer
             #METRICS_HOST: 'mongo'
             #METRICS_PORT: '27017'
@@ -296,6 +299,7 @@ services:
     #      STARTING_POINT_DSN: starting-point:80
     #      TOPOLOGY_API_DSN: topology-api:80
     #      XML_PARSER_API_DSN: xml-parser-api
+    #      REDIS_DSN: 'redis://redis'
     #    secrets:
     #      - source: clevermonitor-ca.pem
     #        target: /var/www/html/var/secret/ca.crt

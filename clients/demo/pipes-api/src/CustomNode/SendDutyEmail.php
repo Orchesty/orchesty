@@ -6,13 +6,13 @@ use Demo\Connector\PagerDutyConnector;
 use EmailServiceBundle\Exception\MailerException;
 use EmailServiceBundle\Mailer\Mailer;
 use EmailServiceBundle\MessageBuilder\Impl\GenericMessageBuilder\GenericTransportMessage;
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
-use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
-use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
+use Hanaboso\Utils\Date\DateTimeUtils;
+use Hanaboso\Utils\Exception\DateTimeException;
+use Hanaboso\Utils\String\Json;
 
 /**
  * Class SendDutyEmail
@@ -71,7 +71,7 @@ class SendDutyEmail extends CustomNodeAbstract
         $dataDto = $this->dutyConnector->processAction($dto);
         $data    = Json::decode($dataDto->getData());
         $data    = Json::encode($data);
-        $data    = str_replace(['}', '{'], ['', ''], (string) $data);
+        $data    = str_replace(['}', '{'], ['', ''], $data);
         $data    = str_replace('"', '', $data);
         $data    = str_replace(':hours:', ': ', $data);
         $data    = str_replace(',', sprintf(',%s', PHP_EOL), $data);
