@@ -2,7 +2,6 @@
 
 namespace Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller;
 
-use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Hanaboso\MongoDataGrid\GridRequestDto;
 use Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Handler\LongRunningNodeHandler;
 use Hanaboso\Utils\System\ControllerUtils;
@@ -17,7 +16,7 @@ use Throwable;
  *
  * @package Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller
  */
-class LongRunningNodeController extends AbstractFOSRestController
+class LongRunningNodeController
 {
 
     use ControllerTrait;

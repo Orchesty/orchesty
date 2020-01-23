@@ -3,7 +3,6 @@
 namespace Hanaboso\PipesPhpSdk\HbPFMapperBundle\Controller;
 
 use Exception;
-use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\PipesPhpSdk\HbPFMapperBundle\Exception\MapperException;
 use Hanaboso\PipesPhpSdk\HbPFMapperBundle\Handler\MapperHandler;
@@ -20,7 +19,7 @@ use Throwable;
  *
  * @package Hanaboso\PipesPhpSdk\HbPFMapperBundle\Controller
  */
-class MapperController extends AbstractFOSRestController
+class MapperController
 {
 
     use ControllerTrait;

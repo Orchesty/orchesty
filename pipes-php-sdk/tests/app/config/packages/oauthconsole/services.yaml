@@ -1,10 +1,10 @@
 parameters:
     public.services: true
     node_services_dirs:
-        - '%kernel.root_dir%/HbPFConnectorBundle/Resources/config/'
-        - '%kernel.root_dir%/HbPFCustomNodeBundle/Resources/config/'
-        - '%kernel.root_dir%/HbPFJoinerBundle/Resources/config/'
-        - '%kernel.root_dir%/HbPFMapperBundle/Resources/config/'
+        - '%kernel.project_dir%/src/HbPFConnectorBundle/Resources/config/'
+        - '%kernel.project_dir%/src/HbPFCustomNodeBundle/Resources/config/'
+        - '%kernel.project_dir%/src/HbPFJoinerBundle/Resources/config/'
+        - '%kernel.project_dir%/src/HbPFMapperBundle/Resources/config/'
 
 services:
     _defaults:

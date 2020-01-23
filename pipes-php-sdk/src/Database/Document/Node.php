@@ -53,7 +53,7 @@ class Node
     /**
      * @var mixed[]|Collection<string, EmbedNode>
      *
-     * @MongoDB\EmbedMany(targetDocument="Hanaboso\CommonsBundle\Database\Document\Embed\EmbedNode")
+     * @MongoDB\EmbedMany(targetDocument="Hanaboso\PipesPhpSdk\Database\Document\Embed\EmbedNode")
      */
     protected $next;
 

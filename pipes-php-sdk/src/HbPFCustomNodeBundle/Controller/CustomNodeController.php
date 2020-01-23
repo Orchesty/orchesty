@@ -3,7 +3,6 @@
 namespace Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Controller;
 
 use Exception;
-use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Handler\CustomNodeHandler;
 use Hanaboso\Utils\Exception\PipesFrameworkExceptionAbstract;
@@ -20,7 +19,7 @@ use Throwable;
  *
  * @package Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Controller
  */
-class CustomNodeController extends AbstractFOSRestController implements LoggerAwareInterface
+class CustomNodeController implements LoggerAwareInterface
 {
 
     use ControllerTrait;

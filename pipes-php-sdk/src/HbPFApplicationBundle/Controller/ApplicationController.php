@@ -3,7 +3,6 @@
 namespace Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller;
 
 use Exception;
-use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler;
@@ -21,7 +20,7 @@ use Throwable;
  *
  * @package Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller
  */
-class ApplicationController extends AbstractFOSRestController
+class ApplicationController
 {
 
     use ControllerTrait;

@@ -7,5 +7,4 @@ services:
         arguments:
             - '@hbpf.handler.long_running'
         calls:
-            - ['setContainer', ['@service_container']]
             - ['setLogger', ['@monolog.logger.commons']]

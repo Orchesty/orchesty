@@ -7,5 +7,4 @@ services:
         arguments:
             - '@hbpf.parser.table.handler'
         calls:
-            - ['setContainer', ['@service_container']]
             - ['setLogger', ['@monolog.logger.commons']]

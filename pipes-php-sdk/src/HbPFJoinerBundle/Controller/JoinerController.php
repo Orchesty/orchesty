@@ -3,7 +3,6 @@
 namespace Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Controller;
 
 use Exception;
-use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Exception\JoinerException;
 use Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Handler\JoinerHandler;
 use Hanaboso\Utils\System\ControllerUtils;
@@ -18,7 +17,7 @@ use Throwable;
  *
  * @package Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Controller
  */
-class JoinerController extends AbstractFOSRestController
+class JoinerController
 {
 
     use ControllerTrait;

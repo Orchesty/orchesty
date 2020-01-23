@@ -2,7 +2,6 @@
 
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
-use FOS\RestBundle\FOSRestBundle;
 use Hanaboso\CommonsBundle\HbPFCommonsBundle;
 use Hanaboso\PipesPhpSdk\HbPFApplicationBundle\HbPFApplicationBundle;
 use Hanaboso\PipesPhpSdk\HbPFConnectorBundle\HbPFConnectorBundle;
@@ -21,7 +20,6 @@ return [
     DebugBundle::class           => ['dev' => TRUE, 'test' => TRUE],
     DoctrineBundle::class        => ['all' => TRUE],
     DoctrineMongoDBBundle::class => ['all' => TRUE],
-    FOSRestBundle::class         => ['all' => TRUE],
     FrameworkBundle::class       => ['all' => TRUE],
     MonologBundle::class         => ['all' => TRUE],
     SecurityBundle::class        => ['all' => TRUE],

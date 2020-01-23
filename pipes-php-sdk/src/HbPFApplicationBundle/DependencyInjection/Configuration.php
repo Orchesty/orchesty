@@ -20,12 +20,10 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder(): TreeBuilder
     {
-        $treeBuilder = new TreeBuilder();
+        $treeBuilder = new TreeBuilder('hbpf');
         /** @var ArrayNodeDefinition $rootNode */
-        $rootNode = $treeBuilder->root('hbpf');
-
-        $rootNode->children()
-            ->arrayNode('application');
+        $rootNode = $treeBuilder->getRootNode();
+        $rootNode->children()->arrayNode('application');
 
         return $treeBuilder;
     }
