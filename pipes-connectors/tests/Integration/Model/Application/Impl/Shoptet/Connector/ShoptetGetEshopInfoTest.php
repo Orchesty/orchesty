@@ -37,16 +37,6 @@ final class ShoptetGetEshopInfoTest extends DatabaseTestCaseAbstract
     private $connector;
 
     /**
-     * @throws Exception
-     */
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->connector = self::$container->get('hbpf.connector.shoptet-get-eshop-info');
-    }
-
-    /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetGetEshopInfo::getId()
      */
     public function testGetId(): void
@@ -94,7 +84,7 @@ final class ShoptetGetEshopInfoTest extends DatabaseTestCaseAbstract
         $applicationInstall = $this->insertApplicationInstall();
         $data               = $this->connector->processActionArray($applicationInstall, new ProcessDto());
 
-        self::assertIsArray($data);
+        self::assertNotEmpty($data);
     }
 
     /**
@@ -118,6 +108,16 @@ final class ShoptetGetEshopInfoTest extends DatabaseTestCaseAbstract
         );
 
         $this->connector->processAction($this->prepareProcessDto('{"data":"data"}', self::HEADERS));
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->connector = self::$container->get('hbpf.connector.shoptet-get-eshop-info');
     }
 
     /**

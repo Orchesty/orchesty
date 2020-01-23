@@ -50,6 +50,7 @@ final class MailchimpApplication extends OAuth2ApplicationAbstract implements We
     public function __construct(OAuth2Provider $provider, CurlManagerInterface $curlManager)
     {
         parent::__construct($provider);
+
         $this->curlManager = $curlManager;
     }
 

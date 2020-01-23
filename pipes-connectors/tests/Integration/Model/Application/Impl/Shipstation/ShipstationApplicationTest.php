@@ -8,7 +8,6 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shipstation\ShipstationApplication;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\DataProvider;
 
@@ -29,15 +28,6 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
      * @var ShipstationApplication
      */
     private $application;
-
-    /**
-     * @throws Exception
-     */
-    public function setUp(): void
-    {
-        parent::setUp();
-        $this->application = self::$container->get('hbpf.application.shipstation');
-    }
 
     /**
      * @throws Exception
@@ -64,20 +54,10 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
             )
         );
 
-        $requestUn = $this->application->getWebhookUnsubscribeRequestDto(
-            $applicationInstall,
-            '358'
-        );
+        $requestUn = $this->application->getWebhookUnsubscribeRequestDto($applicationInstall, '358');
 
-        self::assertEquals(
-            $requestSub->getUriString(),
-            'https://ssapi.shipstation.com/webhooks/subscribe'
-        );
-
-        self::assertEquals(
-            $requestUn->getUriString(),
-            'https://ssapi.shipstation.com/webhooks/358'
-        );
+        self::assertEquals($requestSub->getUriString(), 'https://ssapi.shipstation.com/webhooks/subscribe');
+        self::assertEquals($requestUn->getUriString(), 'https://ssapi.shipstation.com/webhooks/358');
     }
 
     /**
@@ -85,10 +65,7 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
      */
     public function testName(): void
     {
-        self::assertEquals(
-            'Shipstation',
-            $this->application->getName()
-        );
+        self::assertEquals('Shipstation', $this->application->getName());
     }
 
     /**
@@ -96,10 +73,7 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
      */
     public function testGetApplicationType(): void
     {
-        self::assertEquals(
-            ApplicationTypeEnum::WEBHOOK,
-            $this->application->getApplicationType()
-        );
+        self::assertEquals(ApplicationTypeEnum::WEBHOOK, $this->application->getApplicationType());
     }
 
     /**
@@ -107,10 +81,7 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
      */
     public function testGetDescription(): void
     {
-        self::assertEquals(
-            'Shipstation v1',
-            $this->application->getDescription()
-        );
+        self::assertEquals('Shipstation v1', $this->application->getDescription());
     }
 
     /**
@@ -119,8 +90,7 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
     public function testGetWebhookSubscriptions(): void
     {
         $webhookSubcription = $this->application->getWebhookSubscriptions();
-        $this->assertInstanceOf(WebhookSubscription::class, $webhookSubcription[0]);
-        $this->assertEquals(ShipstationApplication::ORDER_NOTIFY, $webhookSubcription[0]->getParameters()['name']);
+        self::assertEquals(ShipstationApplication::ORDER_NOTIFY, $webhookSubcription[0]->getParameters()['name']);
     }
 
     /**
@@ -130,7 +100,6 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
     {
         $fields = $this->application->getSettingsForm()->getFields();
         foreach ($fields as $field) {
-            self::assertInstanceOf(Field::class, $field);
             self::assertContains($field->getKey(), ['user', 'password']);
         }
     }
@@ -144,7 +113,7 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
             new ResponseDto(200, '', '{"id":"id88"}', []),
             new ApplicationInstall()
         );
-        $this->assertEquals('id88', $response);
+        self::assertEquals('id88', $response);
     }
 
     /**
@@ -155,7 +124,17 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
         $response = $this->application->processWebhookUnsubscribeResponse(
             new ResponseDto(200, '', '{"id":"id88"}', [])
         );
-        $this->assertEquals(200, $response);
+        self::assertEquals(200, $response);
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->application = self::$container->get('hbpf.application.shipstation');
     }
 
 }

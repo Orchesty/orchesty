@@ -60,16 +60,6 @@ final class ShoptetCreateOrderConnectorTest extends DatabaseTestCaseAbstract
     private $connector;
 
     /**
-     * @throws Exception
-     */
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->connector = self::$container->get('hbpf.connector.shoptet-create-order');
-    }
-
-    /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetCreateOrderConnector::getId
      */
     public function testGetId(): void
@@ -290,6 +280,16 @@ final class ShoptetCreateOrderConnectorTest extends DatabaseTestCaseAbstract
         );
 
         $this->connector->processEvent($this->prepareProcessDto());
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->connector = self::$container->get('hbpf.connector.shoptet-create-order');
     }
 
 }

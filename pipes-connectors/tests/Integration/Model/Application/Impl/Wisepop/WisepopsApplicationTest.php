@@ -10,7 +10,6 @@ use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Wisepop\WisepopsApplication;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\Utils\String\Json;
 use Tests\DatabaseTestCaseAbstract;
 
@@ -26,15 +25,6 @@ final class WisepopsApplicationTest extends DatabaseTestCaseAbstract
      * @var WisepopsApplication
      */
     private $application;
-
-    /**
-     * @throws Exception
-     */
-    public function setUp(): void
-    {
-        parent::setUp();
-        $this->application = self::$container->get('hbpf.application.wisepops');
-    }
 
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Wisepop\WisepopsApplication::getApplicationType
@@ -101,7 +91,6 @@ final class WisepopsApplicationTest extends DatabaseTestCaseAbstract
     {
         $fields = $this->application->getSettingsForm()->getFields();
         foreach ($fields as $field) {
-            self::assertInstanceOf(Field::class, $field);
             self::assertContains($field->getKey(), ['api_key']);
         }
     }
@@ -111,7 +100,7 @@ final class WisepopsApplicationTest extends DatabaseTestCaseAbstract
      */
     public function testGetWebhookSubscriptions(): void
     {
-        self::assertIsArray($this->application->getWebhookSubscriptions());
+        self::assertNotEmpty($this->application->getWebhookSubscriptions());
     }
 
     /**
@@ -183,6 +172,16 @@ final class WisepopsApplicationTest extends DatabaseTestCaseAbstract
     public function testIsAuthorized(): void
     {
         self::assertTrue($this->application->isAuthorized($this->createApplicationInstall()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->application = self::$container->get('hbpf.application.wisepops');
     }
 
     /**

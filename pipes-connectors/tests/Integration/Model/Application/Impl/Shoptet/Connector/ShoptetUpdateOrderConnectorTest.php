@@ -64,16 +64,6 @@ final class ShoptetUpdateOrderConnectorTest extends DatabaseTestCaseAbstract
     private $connector;
 
     /**
-     * @throws Exception
-     */
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->connector = self::$container->get('hbpf.connector.shoptet-update-order');
-    }
-
-    /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetUpdateOrderConnector::getId
      */
     public function testGetId(): void
@@ -84,7 +74,6 @@ final class ShoptetUpdateOrderConnectorTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetConnectorAbstract::processResponse
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetUpdateOrderConnector::processAction
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetUpdateOrderConnector::getStatus
      *
      * @throws Exception
      */
@@ -141,7 +130,6 @@ final class ShoptetUpdateOrderConnectorTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetUpdateOrderConnector::processAction
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetUpdateOrderConnector::getStatus
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetConnectorAbstract::processResponse
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetConnectorAbstract::getApplicationInstall
      *
@@ -298,6 +286,16 @@ final class ShoptetUpdateOrderConnectorTest extends DatabaseTestCaseAbstract
         );
 
         $this->connector->processEvent($this->prepareProcessDto());
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->connector = self::$container->get('hbpf.connector.shoptet-update-order');
     }
 
 }

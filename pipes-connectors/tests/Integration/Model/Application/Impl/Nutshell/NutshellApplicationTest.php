@@ -5,7 +5,6 @@ namespace Tests\Integration\Model\Application\Impl\Nutshell;
 use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\NutshellApplication;
-use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\DataProvider;
 
@@ -28,23 +27,9 @@ final class NutshellApplicationTest extends DatabaseTestCaseAbstract
     /**
      * @throws Exception
      */
-    public function setUp(): void
-    {
-        parent::setUp();
-        $this->application = self::$container->get('hbpf.application.nutshell');
-    }
-
-    /**
-     * @throws Exception
-     */
     public function testAuthorization(): void
     {
-        $applicationInstall = DataProvider::getBasicAppInstall(
-            $this->application->getKey(),
-            self::USER,
-            self::API_KEY
-        );
-
+        $applicationInstall = DataProvider::getBasicAppInstall($this->application->getKey(), self::USER, self::API_KEY);
         $this->pf($applicationInstall);
 
         $dto = $this->application->getRequestDto(
@@ -54,9 +39,9 @@ final class NutshellApplicationTest extends DatabaseTestCaseAbstract
             '{"id": "apeye", "method": "getLead", "params": { "leadId": 1000 }, "data":{"username": "user@user.com"} }'
         );
 
-        $this->assertEquals('POST', $dto->getMethod());
-        $this->assertEquals('http://api.nutshell.com/v1/json', $dto->getUriString());
-        $this->assertEquals(
+        self::assertEquals('POST', $dto->getMethod());
+        self::assertEquals('http://api.nutshell.com/v1/json', $dto->getUriString());
+        self::assertEquals(
             '{"id": "apeye", "method": "getLead", "params": { "leadId": 1000 }, "data":{"username": "user@user.com"} }',
             $dto->getBody()
         );
@@ -102,9 +87,18 @@ final class NutshellApplicationTest extends DatabaseTestCaseAbstract
     {
         $fields = $this->application->getSettingsForm()->getFields();
         foreach ($fields as $field) {
-            self::assertInstanceOf(Field::class, $field);
             self::assertContains($field->getKey(), ['user', 'password']);
         }
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->application = self::$container->get('hbpf.application.nutshell');
     }
 
 }

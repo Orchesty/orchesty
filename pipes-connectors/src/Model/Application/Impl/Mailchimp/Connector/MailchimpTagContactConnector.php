@@ -40,10 +40,7 @@ final class MailchimpTagContactConnector extends ConnectorAbstract
      * @param CurlManagerInterface $curlManager
      * @param DocumentManager      $dm
      */
-    public function __construct(
-        CurlManagerInterface $curlManager,
-        DocumentManager $dm
-    )
+    public function __construct(CurlManagerInterface $curlManager, DocumentManager $dm)
     {
         $this->curlManager = $curlManager;
         $this->repository  = $dm->getRepository(ApplicationInstall::class);

@@ -18,14 +18,6 @@ final class S3CreateObjectConnector extends S3ObjectConnectorAbstract
 {
 
     /**
-     * @return string
-     */
-    protected function getCustomId(): string
-    {
-        return 'create-object';
-    }
-
-    /**
      * @param ProcessDto $dto
      *
      * @return ProcessDto
@@ -62,6 +54,14 @@ final class S3CreateObjectConnector extends S3ObjectConnectorAbstract
         }
 
         return $this->setJsonContent($dto, [self::NAME => $content[self::NAME]]);
+    }
+
+    /**
+     * @return string
+     */
+    protected function getCustomId(): string
+    {
+        return 'create-object';
     }
 
 }

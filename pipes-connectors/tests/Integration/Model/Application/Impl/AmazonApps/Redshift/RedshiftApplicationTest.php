@@ -12,7 +12,6 @@ use Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\Redshift\RedshiftA
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
-use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
 use LogicException;
 use phpmock\phpunit\PHPMock;
@@ -34,16 +33,6 @@ final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
      * @var RedshiftApplication
      */
     private $application;
-
-    /**
-     * @throws Exception
-     */
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->application = self::$container->get('hbpf.application.redshift');
-    }
 
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\Redshift\RedshiftApplication::getKey
@@ -106,7 +95,6 @@ final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
     public function testGetSettingsForm(): void
     {
         foreach ($this->application->getSettingsForm()->getFields() as $field) {
-            self::assertInstanceOf(Field::class, $field);
             self::assertContains(
                 $field->getKey(),
                 [
@@ -317,6 +305,16 @@ final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
                 ]
             )
         );
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->application = self::$container->get('hbpf.application.redshift');
     }
 
     /**

@@ -51,16 +51,6 @@ final class ShoptetUpdatedOrderConnectorTest extends DatabaseTestCaseAbstract
     private $connector;
 
     /**
-     * @throws Exception
-     */
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->connector = self::$container->get('hbpf.connector.shoptet-updated-order-connector');
-    }
-
-    /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetUpdatedOrderConnector::getId
      */
     public function testGetId(): void
@@ -243,6 +233,16 @@ final class ShoptetUpdatedOrderConnectorTest extends DatabaseTestCaseAbstract
         );
 
         $this->connector->processAction($this->prepareProcessDto());
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->connector = self::$container->get('hbpf.connector.shoptet-updated-order-connector');
     }
 
 }

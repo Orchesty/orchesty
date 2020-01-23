@@ -23,13 +23,13 @@ use Hanaboso\Utils\Traits\UrlBuilderTrait;
 abstract class ShoptetConnectorAbstract extends ConnectorAbstract
 {
 
+    use UrlBuilderTrait;
+    use ProcessHeaderTrait;
+
     protected const ID                = 'id';
     protected const TYPE              = 'type';
     protected const DATA              = 'data';
     protected const REPEATER_INTERVAL = 5_000;
-
-    use UrlBuilderTrait;
-    use ProcessHeaderTrait;
 
     /**
      * @var DocumentRepository<ApplicationInstall>&ApplicationInstallRepository

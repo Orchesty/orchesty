@@ -5,7 +5,7 @@ parameters:
 	doctrine:
 		objectManagerLoader: tests/DocumentManagerLoader.php
 	symfony:
-		container_xml_path: %rootDir%/../../../var/cache/test/srcHanaboso_HbPFConnectors_KernelTestDebugContainer.xml
+		container_xml_path: %rootDir%/../../../var/cache/test/Hanaboso_HbPFConnectors_KernelTestDebugContainer.xml
 	ignoreErrors:
 		- '#Access to an undefined property*#'
 		- '#Unreachable statement \- code above always terminates.#'

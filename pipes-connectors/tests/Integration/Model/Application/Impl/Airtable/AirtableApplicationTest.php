@@ -6,7 +6,6 @@ use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Airtable\AirtableApplication;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
-use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
@@ -29,16 +28,6 @@ final class AirtableApplicationTest extends DatabaseTestCaseAbstract
      * @var AirtableApplication
      */
     private $app;
-
-    /**
-     * @throws Exception
-     */
-    public function setUp(): void
-    {
-        parent::setUp();
-
-        $this->app = self::$container->get('hbpf.application.airtable');
-    }
 
     /**
      * @throws Exception
@@ -79,7 +68,6 @@ final class AirtableApplicationTest extends DatabaseTestCaseAbstract
     {
         $fields = $this->app->getSettingsForm()->getFields();
         foreach ($fields as $field) {
-            self::assertInstanceOf(Field::class, $field);
             self::assertContains($field->getKey(), ['token', 'base_id', 'table_name']);
         }
     }
@@ -106,7 +94,7 @@ final class AirtableApplicationTest extends DatabaseTestCaseAbstract
         );
         $this->pf($applicationInstall);
         $this->dm->clear();
-        $this->assertEquals(TRUE, $this->app->isAuthorized($applicationInstall));
+        self::assertEquals(TRUE, $this->app->isAuthorized($applicationInstall));
     }
 
     /**
@@ -132,6 +120,16 @@ final class AirtableApplicationTest extends DatabaseTestCaseAbstract
             $applicationInstall,
             'POST'
         );
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->app = self::$container->get('hbpf.application.airtable');
     }
 
 }

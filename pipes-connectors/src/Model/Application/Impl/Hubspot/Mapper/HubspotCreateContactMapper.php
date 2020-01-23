@@ -16,6 +16,28 @@ final class HubspotCreateContactMapper extends CustomNodeAbstract
 {
 
     /**
+     * @param ProcessDto $dto
+     *
+     * @return ProcessDto
+     * @throws PipesFrameworkException
+     */
+    public function process(ProcessDto $dto): ProcessDto
+    {
+        $body = Json::decode($dto->getData())['orders'][0] ?? NULL;
+
+        if (!$body) {
+            $message = 'The body of ProcessDto couldnt be decoded from json.';
+            $dto->setStopProcess(ProcessDto::STOP_AND_FAILED, $message);
+
+            return $dto;
+        }
+
+        $dto->setData(Json::encode($this->createBody((array) $body)));
+
+        return $dto;
+    }
+
+    /**
      * @param mixed[] $data
      *
      * @return mixed[]
@@ -122,28 +144,6 @@ final class HubspotCreateContactMapper extends CustomNodeAbstract
             'state'     => 'state',
             'zip'       => 'postalCode',
         ];
-    }
-
-    /**
-     * @param ProcessDto $dto
-     *
-     * @return ProcessDto
-     * @throws PipesFrameworkException
-     */
-    public function process(ProcessDto $dto): ProcessDto
-    {
-        $body = Json::decode($dto->getData())['orders'][0] ?? NULL;
-
-        if (!$body) {
-            $message = 'The body of ProcessDto couldnt be decoded from json.';
-            $dto->setStopProcess(ProcessDto::STOP_AND_FAILED, $message);
-
-            return $dto;
-        }
-
-        $dto->setData(Json::encode($this->createBody((array) $body)));
-
-        return $dto;
     }
 
 }

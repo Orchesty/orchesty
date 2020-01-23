@@ -155,20 +155,6 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
     }
 
     /**
-     * @param ProcessDto $response
-     * @param string     $fileName
-     */
-    private function assertProcessResponse(ProcessDto $response, string $fileName): void
-    {
-        $json = $this->getFile($fileName);
-
-        $json         = Json::decode((string) $json);
-        $responseJson = Json::decode((string) $response->getData());
-
-        self::assertEquals($json, $responseJson);
-    }
-
-    /**
      * @phpstan-param class-string<\Throwable> $exception
      *
      * @param string      $exception
@@ -279,6 +265,20 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
     protected function prepareProcessDto($data = [], $headers = []): ProcessDto
     {
         return (new ProcessDto())->setData(is_array($data) ? Json::encode($data) : $data)->setHeaders($headers);
+    }
+
+    /**
+     * @param ProcessDto $response
+     * @param string     $fileName
+     */
+    private function assertProcessResponse(ProcessDto $response, string $fileName): void
+    {
+        $json = $this->getFile($fileName);
+
+        $json         = Json::decode($json);
+        $responseJson = Json::decode($response->getData());
+
+        self::assertEquals($json, $responseJson);
     }
 
 }

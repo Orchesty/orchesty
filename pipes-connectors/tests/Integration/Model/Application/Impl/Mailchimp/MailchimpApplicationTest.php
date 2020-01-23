@@ -10,7 +10,6 @@ use Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\MailchimpApplicatio
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -48,7 +47,7 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
             self::CLIENT_ID
         );
         $this->pf($applicationInstall);
-        $this->assertEquals(TRUE, $this->application->isAuthorized($applicationInstall));
+        self::assertEquals(TRUE, $this->application->isAuthorized($applicationInstall));
         $this->application->authorize($applicationInstall);
     }
 
@@ -60,7 +59,7 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
         $applicationInstall = new ApplicationInstall();
         $this->pf($applicationInstall);
-        $this->assertEquals(FALSE, $this->application->isAuthorized($applicationInstall));
+        self::assertEquals(FALSE, $this->application->isAuthorized($applicationInstall));
     }
 
     /**
@@ -172,7 +171,6 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
         $fields = $this->application->getSettingsForm()->getFields();
         foreach ($fields as $field) {
-            self::assertInstanceOf(Field::class, $field);
             self::assertContains(
                 $field->getKey(),
                 [
@@ -194,7 +192,7 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
             new ResponseDto(200, '', '{"id":"id88"}', []),
             new ApplicationInstall()
         );
-        $this->assertEquals('id88', $response);
+        self::assertEquals('id88', $response);
     }
 
     /**
@@ -206,7 +204,7 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
         $response = $this->application->processWebhookUnsubscribeResponse(
             new ResponseDto(204, '', '{"id":"id88"}', [])
         );
-        $this->assertEquals(TRUE, $response);
+        self::assertEquals(TRUE, $response);
     }
 
     /**
@@ -217,7 +215,6 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
         $webhookSubcriptions = $this->application->getWebhookSubscriptions();
         foreach ($webhookSubcriptions as $webhookSubscription) {
-            $this->assertInstanceOf(WebhookSubscription::class, $webhookSubscription);
             self::assertContains(
                 $webhookSubscription->getParameters()['name'],
                 ['subscribe', 'upemail', 'unsubscribe']
@@ -264,20 +261,20 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
                 'access_token' => 'token333',
             ]
         );
-        $this->assertEquals(
+        self::assertEquals(
             MailchimpApplication::class,
             get_class($return)
         );
-        $this->assertEquals(
+        self::assertEquals(
             'https://us3.api.mailchimp.com',
             $applicationInstall->getSettings()[MailchimpApplication::API_KEYPOINT]
         );
-        $this->assertEquals(
+        self::assertEquals(
             'code123',
             $applicationInstall->getSettings(
             )[MailchimpApplication::AUTHORIZATION_SETTINGS][MailchimpApplication::TOKEN]['code']
         );
-        $this->assertEquals(
+        self::assertEquals(
             'token333',
             $applicationInstall->getSettings(
             )[MailchimpApplication::AUTHORIZATION_SETTINGS][MailchimpApplication::TOKEN]['access_token']

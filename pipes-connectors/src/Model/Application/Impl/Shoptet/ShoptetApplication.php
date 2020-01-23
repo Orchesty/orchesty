@@ -77,6 +77,7 @@ final class ShoptetApplication extends OAuth2ApplicationAbstract implements Webh
     )
     {
         parent::__construct($provider);
+
         $this->dm                = $dm;
         $this->sender            = $sender;
         $this->startingPointHost = $startingPointHost;
@@ -212,7 +213,7 @@ final class ShoptetApplication extends OAuth2ApplicationAbstract implements Webh
     }
 
     /**
-     * @return mixed[]
+     * @return WebhookSubscription[]
      */
     public function getWebhookSubscriptions(): array
     {

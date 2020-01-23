@@ -38,26 +38,6 @@ final class S3GetObjectConnectorTest extends DatabaseTestCaseAbstract
     /**
      * @throws Exception
      */
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->createApplication();
-
-        $dto = (new ProcessDto())
-            ->setData(Json::encode(['name' => 'Test', 'content' => 'Content']))
-            ->setHeaders(self::HEADERS);
-
-        self::$container
-            ->get('hbpf.connector.s3-create-object')
-            ->processAction($dto);
-
-        $this->connector = self::$container->get('hbpf.connector.s3-get-object');
-    }
-
-    /**
-     * @throws Exception
-     */
     public function testProcessAction(): void
     {
         $this->createApplication();
@@ -132,6 +112,26 @@ final class S3GetObjectConnectorTest extends DatabaseTestCaseAbstract
         );
 
         $this->connector->processAction($dto);
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->createApplication();
+
+        $dto = (new ProcessDto())
+            ->setData(Json::encode(['name' => 'Test', 'content' => 'Content']))
+            ->setHeaders(self::HEADERS);
+
+        self::$container
+            ->get('hbpf.connector.s3-create-object')
+            ->processAction($dto);
+
+        $this->connector = self::$container->get('hbpf.connector.s3-get-object');
     }
 
     /**

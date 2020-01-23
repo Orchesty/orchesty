@@ -9,12 +9,12 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication;
+use Hanaboso\PhpCheckUtils\PhpUnit\Traits\CustomAssertTrait;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
-use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
 use Hanaboso\Utils\Date\DateTimeUtils;
@@ -29,9 +29,10 @@ use Tests\DataProvider;
 final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
 {
 
-    private const CLIENT_ID = '123****';
-
     use PrivateTrait;
+    use CustomAssertTrait;
+
+    private const CLIENT_ID = '123****';
 
     /**
      * @var ShoptetApplication
@@ -48,10 +49,10 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
         /** @var DocumentManager $dm */
         $dm = self::$container->get('doctrine_mongodb.odm.default_document_manager');
         /** @var CurlManager $sender */
-        $sender  = self::$container->get('hbpf.transport.curl_manager');
-        $shoptet = new ShoptetApplication($provider, $dm, $sender, 'localhost');
+        $sender = self::$container->get('hbpf.transport.curl_manager');
+        new ShoptetApplication($provider, $dm, $sender, 'localhost');
 
-        self::assertIsObject($shoptet);
+        self::assertFake();
     }
 
     /**
@@ -100,7 +101,6 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
         $fields = $this->application->getSettingsForm()->getFields();
         foreach ($fields as $field) {
-            self::assertInstanceOf(Field::class, $field);
             self::assertContains(
                 $field->getKey(),
                 [
@@ -206,7 +206,7 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
     public function testGetWebhookSubscriptions(): void
     {
         $this->setApplication();
-        self::assertIsArray($this->application->getWebhookSubscriptions());
+        self::assertNotEmpty($this->application->getWebhookSubscriptions());
     }
 
     /**

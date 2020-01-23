@@ -6,7 +6,6 @@ use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\S3Application;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
 use LogicException;
 use Tests\DatabaseTestCaseAbstract;
@@ -23,16 +22,6 @@ final class S3ApplicationTest extends DatabaseTestCaseAbstract
      * @var S3Application
      */
     private $application;
-
-    /**
-     * @throws Exception
-     */
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->application = self::$container->get('hbpf.application.s3');
-    }
 
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\S3Application::getKey
@@ -95,7 +84,6 @@ final class S3ApplicationTest extends DatabaseTestCaseAbstract
     public function testGetSettingsForm(): void
     {
         foreach ($this->application->getSettingsForm()->getFields() as $field) {
-            self::assertInstanceOf(Field::class, $field);
             self::assertContains(
                 $field->getKey(),
                 [
@@ -147,6 +135,16 @@ final class S3ApplicationTest extends DatabaseTestCaseAbstract
         $this->dm->flush();
 
         self::assertFalse($this->application->isAuthorized($application));
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->application = self::$container->get('hbpf.application.s3');
     }
 
 }

@@ -137,7 +137,7 @@ final class HubspotApplication extends OAuth2ApplicationAbstract implements Webh
     }
 
     /**
-     * @return mixed[]
+     * @return WebhookSubscription[]
      */
     public function getWebhookSubscriptions(): array
     {

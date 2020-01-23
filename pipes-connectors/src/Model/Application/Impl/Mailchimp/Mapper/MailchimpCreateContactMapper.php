@@ -16,6 +16,28 @@ class MailchimpCreateContactMapper extends CustomNodeAbstract
 {
 
     /**
+     * @param ProcessDto $dto
+     *
+     * @return ProcessDto
+     * @throws PipesFrameworkException
+     */
+    public function process(ProcessDto $dto): ProcessDto
+    {
+        $body = Json::decode($dto->getData()) ?? NULL;
+
+        if (!isset($body['properties'])) {
+            $message = 'There is missing field "properties" in ProcessDto.';
+            $dto->setStopProcess(ProcessDto::STOP_AND_FAILED, $message);
+
+            return $dto;
+        }
+
+        $dto->setData(Json::encode($this->createBody($body)));
+
+        return $dto;
+    }
+
+    /**
      * @param mixed[] $data
      *
      * @return mixed[]
@@ -80,28 +102,6 @@ class MailchimpCreateContactMapper extends CustomNodeAbstract
             'ADDRESS'   => 'fullAddress',
             'HUBSPOTID' => 'vid',
         ];
-    }
-
-    /**
-     * @param ProcessDto $dto
-     *
-     * @return ProcessDto
-     * @throws PipesFrameworkException
-     */
-    public function process(ProcessDto $dto): ProcessDto
-    {
-        $body = Json::decode($dto->getData()) ?? NULL;
-
-        if (!isset($body['properties'])) {
-            $message = 'There is missing field "properties" in ProcessDto.';
-            $dto->setStopProcess(ProcessDto::STOP_AND_FAILED, $message);
-
-            return $dto;
-        }
-
-        $dto->setData(Json::encode($this->createBody((array) $body)));
-
-        return $dto;
     }
 
 }

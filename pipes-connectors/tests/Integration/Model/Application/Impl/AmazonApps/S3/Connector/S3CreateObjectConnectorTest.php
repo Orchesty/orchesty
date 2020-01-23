@@ -38,16 +38,6 @@ final class S3CreateObjectConnectorTest extends DatabaseTestCaseAbstract
     /**
      * @throws Exception
      */
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->connector = self::$container->get('hbpf.connector.s3-create-object');
-    }
-
-    /**
-     * @throws Exception
-     */
     public function testProcessAction(): void
     {
         $this->createApplication();
@@ -131,6 +121,16 @@ final class S3CreateObjectConnectorTest extends DatabaseTestCaseAbstract
             ->setHeaders(['pf-application' => self::KEY, 'pf-user' => self::USER]);
 
         $this->connector->processAction($dto);
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->connector = self::$container->get('hbpf.connector.s3-create-object');
     }
 
     /**

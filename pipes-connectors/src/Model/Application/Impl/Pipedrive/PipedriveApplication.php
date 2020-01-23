@@ -122,17 +122,6 @@ final class PipedriveApplication extends BasicApplicationAbstract implements Web
     }
 
     /**
-     * @param ApplicationInstall $applicationInstall
-     *
-     * @return string
-     */
-    private function getToken(ApplicationInstall $applicationInstall): string
-    {
-        return $applicationInstall->getSettings(
-        )[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationAbstract::USER];
-    }
-
-    /**
      * @return WebhookSubscription[]
      */
     public function getWebhookSubscriptions(): array
@@ -222,6 +211,17 @@ final class PipedriveApplication extends BasicApplicationAbstract implements Web
     public function processWebhookUnsubscribeResponse(ResponseDto $dto): bool
     {
         return $dto->getStatusCode() === 200;
+    }
+
+    /**
+     * @param ApplicationInstall $applicationInstall
+     *
+     * @return string
+     */
+    private function getToken(ApplicationInstall $applicationInstall): string
+    {
+        return $applicationInstall->getSettings(
+        )[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationAbstract::USER];
     }
 
 }

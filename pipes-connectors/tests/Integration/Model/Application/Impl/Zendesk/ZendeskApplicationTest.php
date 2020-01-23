@@ -10,7 +10,6 @@ use Hanaboso\HbPFConnectors\Model\Application\Impl\Zendesk\ZendeskApplication;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
-use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract;
 use ReflectionException;
 use Tests\DatabaseTestCaseAbstract;
@@ -89,7 +88,6 @@ final class ZendeskApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
         $fields = $this->application->getSettingsForm()->getFields();
         foreach ($fields as $field) {
-            self::assertInstanceOf(Field::class, $field);
             self::assertContains(
                 $field->getKey(),
                 [

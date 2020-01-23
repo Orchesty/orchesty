@@ -11,7 +11,6 @@ use Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\HubspotApplication;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
 use Tests\DatabaseTestCaseAbstract;
@@ -70,7 +69,6 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
         $fields = $this->application->getSettingsForm()->getFields();
         foreach ($fields as $field) {
-            self::assertInstanceOf(Field::class, $field);
             self::assertContains(
                 $field->getKey(),
                 [
@@ -97,7 +95,7 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
             self::CLIENT_ID
         );
         $this->pf($applicationInstall);
-        $this->assertEquals(TRUE, $this->application->isAuthorized($applicationInstall));
+        self::assertEquals(TRUE, $this->application->isAuthorized($applicationInstall));
         $this->application->authorize($applicationInstall);
     }
 
@@ -109,7 +107,7 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
         $applicationInstall = new ApplicationInstall();
         $this->pf($applicationInstall);
-        $this->assertEquals(FALSE, $this->application->isAuthorized($applicationInstall));
+        self::assertEquals(FALSE, $this->application->isAuthorized($applicationInstall));
     }
 
     /**
@@ -119,10 +117,8 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
     {
         $this->setApplication();
         $webhookSubcription = $this->application->getWebhookSubscriptions();
-        $this->assertInstanceOf(WebhookSubscription::class, $webhookSubcription[0]);
-        $this->assertInstanceOf(WebhookSubscription::class, $webhookSubcription[1]);
-        $this->assertEquals('contact.creation', $webhookSubcription[0]->getParameters()['name']);
-        $this->assertEquals('contact.deletion', $webhookSubcription[1]->getParameters()['name']);
+        self::assertEquals('contact.creation', $webhookSubcription[0]->getParameters()['name']);
+        self::assertEquals('contact.deletion', $webhookSubcription[1]->getParameters()['name']);
     }
 
     /**
@@ -135,7 +131,7 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
             new ResponseDto(200, '', '{"id":"id88"}', []),
             new ApplicationInstall()
         );
-        $this->assertEquals('id88', $response);
+        self::assertEquals('id88', $response);
     }
 
     /**
@@ -147,7 +143,7 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
         $response = $this->application->processWebhookUnsubscribeResponse(
             new ResponseDto(204, '', '{"id":"id88"}', [])
         );
-        $this->assertEquals(TRUE, $response);
+        self::assertEquals(TRUE, $response);
     }
 
     /**
@@ -190,17 +186,17 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
             'id123'
         );
 
-        $this->assertEquals('POST', $response->getMethod());
-        $this->assertEquals('DELETE', $responseUn->getMethod());
-        $this->assertEquals(
+        self::assertEquals('POST', $response->getMethod());
+        self::assertEquals('DELETE', $responseUn->getMethod());
+        self::assertEquals(
             'https://api.hubapi.com/webhooks/v1/123xx/subscriptions?hapikey=21a0d413-e204-4138-9ede-************&userId=89*****',
             $response->getUriString()
         );
-        $this->assertEquals(
+        self::assertEquals(
             '{"subscriptionDetails":{"subscriptionType":"name2","propertyName":"email"},"enabled":false}',
             $response->getBody()
         );
-        $this->assertEquals(
+        self::assertEquals(
             'https://api.hubapi.com/webhooks/v1/123xx/subscriptions/id123?hapikey=21a0d413-e204-4138-9ede-************&userId=89*****',
             $responseUn->getUriString()
         );

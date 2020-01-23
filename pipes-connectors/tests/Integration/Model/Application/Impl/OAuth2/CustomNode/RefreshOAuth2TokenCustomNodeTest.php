@@ -74,8 +74,8 @@ final class RefreshOAuth2TokenCustomNodeTest extends DatabaseTestCaseAbstract
         );
 
         $response = $application->process($dto);
-        $this->assertEquals('{"body":"body"}', $response->getData());
-        $this->assertEquals(ProcessDto::class, get_class($response));
+        self::assertEquals('{"body":"body"}', $response->getData());
+        self::assertEquals(ProcessDto::class, get_class($response));
     }
 
 }

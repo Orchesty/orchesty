@@ -38,26 +38,6 @@ final class S3DeleteObjectConnectorTest extends DatabaseTestCaseAbstract
     /**
      * @throws Exception
      */
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->createApplication();
-
-        $dto = (new ProcessDto())
-            ->setData(Json::encode(['name' => 'Test', 'content' => 'Content']))
-            ->setHeaders(['pf-application' => self::KEY, 'pf-user' => self::USER]);
-
-        self::$container
-            ->get('hbpf.connector.s3-create-object')
-            ->processAction($dto);
-
-        $this->connector = self::$container->get('hbpf.connector.s3-delete-object');
-    }
-
-    /**
-     * @throws Exception
-     */
     public function testProcessAction(): void
     {
         $this->createApplication();
@@ -119,6 +99,26 @@ final class S3DeleteObjectConnectorTest extends DatabaseTestCaseAbstract
             ->setHeaders(['pf-application' => self::KEY, 'pf-user' => self::USER]);
 
         $this->connector->processAction($dto);
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->createApplication();
+
+        $dto = (new ProcessDto())
+            ->setData(Json::encode(['name' => 'Test', 'content' => 'Content']))
+            ->setHeaders(['pf-application' => self::KEY, 'pf-user' => self::USER]);
+
+        self::$container
+            ->get('hbpf.connector.s3-create-object')
+            ->processAction($dto);
+
+        $this->connector = self::$container->get('hbpf.connector.s3-delete-object');
     }
 
     /**

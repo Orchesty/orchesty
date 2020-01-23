@@ -17,14 +17,6 @@ class RedshiftExecuteQueryConnector extends RedshiftObjectConnectorAbstract
 {
 
     /**
-     * @return string
-     */
-    protected function getCustomId(): string
-    {
-        return 'query';
-    }
-
-    /**
      * @param ProcessDto $dto
      *
      * @return ProcessDto
@@ -53,6 +45,14 @@ class RedshiftExecuteQueryConnector extends RedshiftObjectConnectorAbstract
         }
 
         return $this->setJsonContent($dto, [self::RESULT => pg_fetch_row($result)]);
+    }
+
+    /**
+     * @return string
+     */
+    protected function getCustomId(): string
+    {
+        return 'query';
     }
 
 }

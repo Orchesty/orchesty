@@ -80,7 +80,7 @@ final class HubspotCreateContactConnectorTest extends DatabaseTestCaseAbstract
     public function testGetId(): void
     {
         $this->setConnector();
-        $this->assertEquals('hubspot_create_contact', $this->connector->getId());
+        self::assertEquals('hubspot_create_contact', $this->connector->getId());
     }
 
     /**

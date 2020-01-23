@@ -38,6 +38,7 @@ final class DataProvider
         string $clientSecret = 'clientSecret'
     ): ApplicationInstall
     {
+        $settings                                                                                                               = [];
         $settings[BasicApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN][OAuth2Provider::ACCESS_TOKEN] = $accessToken;
         $settings[BasicApplicationInterface::AUTHORIZATION_SETTINGS][OAuth2ApplicationInterface::CLIENT_ID]                     = $clientId;
         $settings[BasicApplicationInterface::AUTHORIZATION_SETTINGS][OAuth2ApplicationInterface::CLIENT_SECRET]                 = $clientSecret;
@@ -64,6 +65,7 @@ final class DataProvider
         string $password = 'pass123'
     ): ApplicationInstall
     {
+        $settings                                                                                        = [];
         $settings[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationAbstract::USER]     = $user;
         $settings[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationAbstract::PASSWORD] = $password;
 

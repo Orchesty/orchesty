@@ -43,6 +43,11 @@ abstract class AwsObjectConnectorAbstract extends ConnectorAbstract
     protected $repository;
 
     /**
+     * @return string
+     */
+    abstract protected function getCustomId(): string;
+
+    /**
      * AwsObjectConnectorAbstract constructor.
      *
      * @param DocumentManager $dm
@@ -88,10 +93,5 @@ abstract class AwsObjectConnectorAbstract extends ConnectorAbstract
             }
         }
     }
-
-    /**
-     * @return string
-     */
-    abstract protected function getCustomId(): string;
 
 }

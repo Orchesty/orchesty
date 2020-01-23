@@ -6,7 +6,6 @@ use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Salesforce\SalesforceApplication;
-use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\DataProvider;
@@ -84,7 +83,6 @@ final class SalesforceApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
         $fields = $this->application->getSettingsForm()->getFields();
         foreach ($fields as $field) {
-            self::assertInstanceOf(Field::class, $field);
             self::assertContains(
                 $field->getKey(),
                 [
@@ -162,7 +160,7 @@ final class SalesforceApplicationTest extends DatabaseTestCaseAbstract
             self::CLIENT_ID
         );
         $this->pf($applicationInstall);
-        $this->assertEquals(TRUE, $this->application->isAuthorized($applicationInstall));
+        self::assertEquals(TRUE, $this->application->isAuthorized($applicationInstall));
         $this->application->authorize($applicationInstall);
     }
 

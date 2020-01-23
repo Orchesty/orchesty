@@ -39,16 +39,6 @@ final class ShoptetGetApiAccessTokenConnectorTest extends DatabaseTestCaseAbstra
     private $connector;
 
     /**
-     * @throws Exception
-     */
-    public function setUp(): void
-    {
-        parent::setUp();
-
-        $this->connector = self::$container->get('hbpf.connector.shoptet-get-api-access-token');
-    }
-
-    /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetGetApiAccessTokenConnector::getId
      */
     public function testGetId(): void
@@ -94,6 +84,16 @@ final class ShoptetGetApiAccessTokenConnectorTest extends DatabaseTestCaseAbstra
 
         $data = $this->connector->processActionArray($applicationInstall, new ProcessDto());
         self::assertEquals(['data' => 'data'], $data);
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->connector = self::$container->get('hbpf.connector.shoptet-get-api-access-token');
     }
 
     /**

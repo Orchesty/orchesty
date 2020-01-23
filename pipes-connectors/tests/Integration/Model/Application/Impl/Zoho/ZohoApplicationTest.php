@@ -6,7 +6,6 @@ use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Zoho\ZohoApplication;
-use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract;
 use Tests\DatabaseTestCaseAbstract;
 use Tests\DataProvider;
@@ -84,13 +83,9 @@ class ZohoApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
         $fields = $this->application->getSettingsForm()->getFields();
         foreach ($fields as $field) {
-            self::assertInstanceOf(Field::class, $field);
             self::assertContains(
                 $field->getKey(),
-                [
-                    OAuth2ApplicationAbstract::CLIENT_ID,
-                    OAuth2ApplicationAbstract::CLIENT_SECRET,
-                ]
+                [OAuth2ApplicationAbstract::CLIENT_ID, OAuth2ApplicationAbstract::CLIENT_SECRET]
             );
         }
     }
@@ -162,7 +157,7 @@ class ZohoApplicationTest extends DatabaseTestCaseAbstract
             self::CLIENT_ID
         );
         $this->pf($applicationInstall);
-        $this->assertEquals(TRUE, $this->application->isAuthorized($applicationInstall));
+        self::assertTrue($this->application->isAuthorized($applicationInstall));
         $this->application->authorize($applicationInstall);
     }
 
