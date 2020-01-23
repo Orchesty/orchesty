@@ -3,7 +3,7 @@ rabbit_mq:
 
     connections:
         default:
-            dsn: 'amqp://%rabbit_host%'
+            dsn: '%env(string:RABBITMQ_DSN)%'
 
     queues:
         notification-rabbit:

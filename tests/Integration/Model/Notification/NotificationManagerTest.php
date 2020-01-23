@@ -34,16 +34,6 @@ final class NotificationManagerTest extends DatabaseTestCaseAbstract
     private $manager;
 
     /**
-     * @throws Exception
-     */
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->manager = self::$container->get('notification.manager');
-    }
-
-    /**
      * @covers NotificationManager::send
      *
      * @throws Exception
@@ -76,6 +66,16 @@ final class NotificationManagerTest extends DatabaseTestCaseAbstract
         $this->manager->send(NotificationEventEnum::ACCESS_EXPIRATION, []);
 
         self::assertTrue(TRUE); // No exception were thrown...
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->manager = self::$container->get('notification.manager');
     }
 
 }

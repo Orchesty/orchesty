@@ -16,6 +16,18 @@ abstract class EmailHandlerAbstract
     /**
      * @return string
      */
+    abstract public function getName(): string;
+
+    /**
+     * @param mixed[] $data
+     *
+     * @return EmailDto
+     */
+    abstract public function process(array $data): EmailDto;
+
+    /**
+     * @return string
+     */
     final public function getType(): string
     {
         return NotificationSenderEnum::EMAIL;
@@ -35,17 +47,5 @@ abstract class EmailHandlerAbstract
             EmailDto::EMAILS,
         ];
     }
-
-    /**
-     * @return string
-     */
-    abstract public function getName(): string;
-
-    /**
-     * @param mixed[] $data
-     *
-     * @return EmailDto
-     */
-    abstract public function process(array $data): EmailDto;
 
 }

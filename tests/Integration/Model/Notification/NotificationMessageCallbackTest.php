@@ -29,17 +29,6 @@ final class NotificationMessageCallbackTest extends DatabaseTestCaseAbstract
     private $connection;
 
     /**
-     * @throws Exception
-     */
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->callback   = self::$container->get('notification.callback.message');
-        $this->connection = self::$container->get('rabbit_mq.connection_manager')->getConnection();
-    }
-
-    /**
      * @covers NotificationMessageCallback::processMessage
      *
      * @throws Exception
@@ -78,6 +67,17 @@ final class NotificationMessageCallbackTest extends DatabaseTestCaseAbstract
             $this->connection,
             $this->connection->createChannel()
         );
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->callback   = self::$container->get('notification.callback.message');
+        $this->connection = self::$container->get('rabbit_mq.connection_manager')->getConnection();
     }
 
 }

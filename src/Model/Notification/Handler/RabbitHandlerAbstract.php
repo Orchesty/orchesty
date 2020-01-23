@@ -16,6 +16,18 @@ abstract class RabbitHandlerAbstract
     /**
      * @return string
      */
+    abstract public function getName(): string;
+
+    /**
+     * @param mixed[] $data
+     *
+     * @return RabbitDto
+     */
+    abstract public function process(array $data): RabbitDto;
+
+    /**
+     * @return string
+     */
     final public function getType(): string
     {
         return NotificationSenderEnum::RABBIT;
@@ -35,17 +47,5 @@ abstract class RabbitHandlerAbstract
             RabbitDto::QUEUE,
         ];
     }
-
-    /**
-     * @return string
-     */
-    abstract public function getName(): string;
-
-    /**
-     * @param mixed[] $data
-     *
-     * @return RabbitDto
-     */
-    abstract public function process(array $data): RabbitDto;
 
 }
