@@ -4,6 +4,7 @@ namespace Tests\Integration\Model;
 
 use Exception;
 use Hanaboso\HbPFAppStore\Model\ApplicationManager;
+use Hanaboso\PhpCheckUtils\PhpUnit\Traits\CustomAssertTrait;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
@@ -17,6 +18,8 @@ use Tests\DatabaseTestCaseAbstract;
 final class ApplicationManagerTest extends DatabaseTestCaseAbstract
 {
 
+    use CustomAssertTrait;
+
     /**
      * @var ApplicationManager
      */
@@ -25,21 +28,11 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
     /**
      * @throws Exception
      */
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->applicationManager = self::$container->get('hbpf._application.manager.application');
-    }
-
-    /**
-     * @throws Exception
-     */
     public function testGetApp(): void
     {
-        $app = $this->applicationManager->getApplication('null');
+        $this->applicationManager->getApplication('null');
 
-        self::assertIsObject($app);
+        self::assertFake();
     }
 
     /**
@@ -49,7 +42,7 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
     {
         $applications = $this->applicationManager->getApplications();
 
-        self::assertIsArray($applications);
+        self::assertEmpty($applications);
     }
 
     /**
@@ -72,8 +65,7 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
     {
         $this->createApp();
 
-        $appDetail = $this->applicationManager->getInstalledApplicationDetail('some app', 'example1');
-        self::assertIsObject($appDetail);
+        $this->applicationManager->getInstalledApplicationDetail('some app', 'example1');
 
         self::expectException(ApplicationInstallException::class);
         self::expectExceptionCode(ApplicationInstallException::APP_WAS_NOT_FOUND);
@@ -182,7 +174,7 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
     {
         $this->createApp('null');
 
-        $application = $this->applicationManager->saveApplicationSettings(
+        $this->applicationManager->saveApplicationSettings(
             'null',
             'example1',
             [
@@ -192,13 +184,22 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
             ]
         );
 
-        self::assertIsObject($application);
         $repository = $this->dm->getRepository(ApplicationInstall::class);
         /** @var ApplicationInstall $app */
         $app = $repository->findOneBy(['key' => 'null']);
 
         self::assertEquals('data1', $app->getSettings()['form']['settings1']);
         self::assertArrayNotHasKey('password', $app->getSettings()['form']);
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->applicationManager = self::$container->get('hbpf._application.manager.application');
     }
 
     /**

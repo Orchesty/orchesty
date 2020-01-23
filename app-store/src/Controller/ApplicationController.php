@@ -3,7 +3,6 @@
 namespace Hanaboso\HbPFAppStore\Controller;
 
 use Exception;
-use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Hanaboso\HbPFAppStore\Handler\ApplicationHandler;
 use Hanaboso\Utils\System\ControllerUtils;
 use Hanaboso\Utils\Traits\ControllerTrait;
@@ -17,7 +16,7 @@ use Throwable;
  *
  * @package Hanaboso\HbPFAppStore\Controller
  */
-class ApplicationController extends AbstractFOSRestController
+class ApplicationController
 {
 
     use ControllerTrait;

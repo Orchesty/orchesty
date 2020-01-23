@@ -28,7 +28,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         /** @var Response $response */
         $response = self::$client->getResponse();
 
-        self::assertIsArray(Json::decode((string) $response->getContent()));
+        self::assertNotEmpty(Json::decode((string) $response->getContent()));
         self::assertEquals(200, $response->getStatusCode());
 
         self::$client->request('GET', '/applicationsss');
@@ -49,12 +49,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         /** @var Response $response */
         $response = self::$client->getResponse();
 
-        self::assertTrue(
-            in_array(
-                $application,
-                Json::decode((string) $response->getContent())
-            )
-        );
+        self::assertTrue(in_array($application, Json::decode((string) $response->getContent()), TRUE));
         self::assertEquals(200, $response->getStatusCode());
 
         self::$client->request('GET', sprintf('/applications/%s', 'example'));
@@ -142,7 +137,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         );
         self::assertEquals('200', $response->getStatusCode());
 
-        $this->setupClient();
         self::$client->request('GET', '/applications/someApp/users/bar');
         /** @var Response $response */
         $response = self::$client->getResponse();

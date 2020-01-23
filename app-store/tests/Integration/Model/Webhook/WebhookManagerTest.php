@@ -36,17 +36,6 @@ final class WebhookManagerTest extends DatabaseTestCaseAbstract
     /**
      * @throws Exception
      */
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->application = self::$container->get('hbpf.application.webhook');
-        $this->repository  = $this->dm->getRepository(Webhook::class);
-    }
-
-    /**
-     * @throws Exception
-     */
     public function testSubscribeAndUnsubscribe(): void
     {
         $this->dm->persist((new ApplicationInstall())->setUser('User')->setKey('webhook'));
@@ -109,6 +98,17 @@ final class WebhookManagerTest extends DatabaseTestCaseAbstract
 
         $this->getService(static fn(): ResponseDto => new ResponseDto(200, 'OK', '{"id":"id"}', []))
             ->subscribeWebhooks($this->application, 'User');
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->application = self::$container->get('hbpf.application.webhook');
+        $this->repository  = $this->dm->getRepository(Webhook::class);
     }
 
     /**

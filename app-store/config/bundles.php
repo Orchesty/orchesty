@@ -22,7 +22,6 @@ return [
     DebugBundle::class           => ['dev' => TRUE, 'test' => TRUE],
     DoctrineBundle::class        => ['all' => TRUE],
     DoctrineMongoDBBundle::class => ['all' => TRUE],
-    FOSRestBundle::class         => ['all' => TRUE],
     FrameworkBundle::class       => ['all' => TRUE],
     MonologBundle::class         => ['all' => TRUE],
     SecurityBundle::class        => ['all' => TRUE],

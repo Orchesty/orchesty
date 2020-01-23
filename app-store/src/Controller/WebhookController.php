@@ -3,7 +3,6 @@
 namespace Hanaboso\HbPFAppStore\Controller;
 
 use Exception;
-use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Hanaboso\HbPFAppStore\Handler\WebhookHandler;
 use Hanaboso\Utils\System\ControllerUtils;
 use Hanaboso\Utils\Traits\ControllerTrait;
@@ -17,7 +16,7 @@ use Throwable;
  *
  * @package Hanaboso\HbPFAppStore\Controller
  */
-class WebhookController extends AbstractFOSRestController
+class WebhookController
 {
 
     use ControllerTrait;

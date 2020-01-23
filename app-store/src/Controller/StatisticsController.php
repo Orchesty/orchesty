@@ -3,7 +3,6 @@
 namespace Hanaboso\HbPFAppStore\Controller;
 
 use Exception;
-use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Hanaboso\HbPFAppStore\Handler\StatisticsHandler;
 use Hanaboso\Utils\Traits\ControllerTrait;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,7 +16,7 @@ use Throwable;
  *
  * @package Hanaboso\HbPFAppStore\Controller
  */
-class StatisticsController extends AbstractFOSRestController
+class StatisticsController
 {
 
     use ControllerTrait;

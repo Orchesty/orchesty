@@ -7,7 +7,6 @@ services:
         arguments:
             - '@hbpf._application.handler.application'
         calls:
-            - ['setContainer', ['@service_container']]
             - ['setLogger', ['@monolog.logger.commons']]
 
     Hanaboso\HbPFAppStore\Controller\WebhookController:
@@ -15,12 +14,9 @@ services:
         arguments:
             - '@hbpf._application.handler.webhook'
         calls:
-            - ['setContainer', ['@service_container']]
             - ['setLogger', ['@monolog.logger.commons']]
 
     Hanaboso\HbPFAppStore\Controller\StatisticsController:
         class: Hanaboso\HbPFAppStore\Controller\StatisticsController
         arguments:
             - '@hbpf._application.handler.statistics'
-        calls:
-            - ['setContainer', ['@service_container']]

@@ -29,16 +29,6 @@ final class SynchronizationRepositoryTest extends DatabaseTestCaseAbstract
     /**
      * @throws Exception
      */
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->repository = $this->dm->getRepository(Synchronization::class);
-    }
-
-    /**
-     * @throws Exception
-     */
     public function testGet(): void
     {
         $this->createSynchronization();
@@ -94,6 +84,16 @@ final class SynchronizationRepositoryTest extends DatabaseTestCaseAbstract
         self::expectExceptionMessage("Synchronization document with key 'key' and user 'user' not found!");
 
         $this->repository->update($this->createApplication());
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->repository = $this->dm->getRepository(Synchronization::class);
     }
 
     /**

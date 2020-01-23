@@ -29,12 +29,12 @@ doctrine_mongodb:
                 ApplicationDocument:
                     type: annotation
                     is_bundle: false
-                    dir: "%kernel.root_dir%/../vendor/hanaboso/pipes-php-sdk/src/Application/Document"
+                    dir: "%kernel.project_dir%/vendor/hanaboso/pipes-php-sdk/src/Application/Document"
                     prefix: Hanaboso\PipesPhpSdk\Application\Document
                 AppStoreDocument:
                     type: annotation
                     is_bundle: false
-                    dir: "%kernel.root_dir%/Document"
+                    dir: "%kernel.project_dir%/src/Document"
                     prefix: Hanaboso\HbPFAppStore\Document
         metrics:
             connection: metrics

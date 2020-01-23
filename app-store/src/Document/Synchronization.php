@@ -20,6 +20,10 @@ use Hanaboso\Utils\Exception\DateTimeException;
 class Synchronization
 {
 
+    use IdTrait;
+    use CreatedTrait;
+    use UpdatedTrait;
+
     public const KEY                  = 'key';
     public const USER                 = 'user';
     public const STATUS               = 'status';
@@ -32,10 +36,6 @@ class Synchronization
     public const EXTERNAL_HASH        = 'externalHash';
     public const EXTERNAL_HASH_HEADER = 'external-hash';
     public const DATA                 = 'data';
-
-    use IdTrait;
-    use CreatedTrait;
-    use UpdatedTrait;
 
     /**
      * @var string
