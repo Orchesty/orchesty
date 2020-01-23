@@ -3,9 +3,9 @@
 namespace Tests\Controller\HbPFConfiguratorBundle\Controller;
 
 use Exception;
-use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler;
 use Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Handler\ConnectorHandler;
+use Hanaboso\Utils\String\Json;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -80,6 +80,29 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
+     * @covers NodeController::listOfNodesAction()
+     *
+     * @throws Exception
+     */
+    public function testListOfNodes(): void
+    {
+        $type = 'connector';
+        $this->prepareNodeMock(ConnectorHandler::class, 'getConnectors');
+
+        $response = $this->sendGet(sprintf('/api/nodes/%s/list_nodes', $type));
+        $content  = $response->content;
+
+        self::assertEquals(200, $response->status);
+        self::assertEquals(['null'], (array) $content);
+
+        $type = 'config';
+        self::$client->request('GET', sprintf('/api/nodes/%s/list_nodes', $type));
+        $response = self::$client->getResponse();
+
+        self::assertEquals(404, $response->getStatusCode());
+    }
+
+    /**
      * @param string $methodName
      * @param mixed  $returnValue
      *
@@ -96,28 +119,6 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
         /** @var ContainerInterface $container */
         $container = self::$client->getContainer();
         $container->set('hbpf.configurator.handler.node', $nodeHandlerMock);
-    }
-
-    /**
-     * @covers NodeController::listOfNodesAction()
-     *
-     * @throws Exception
-     */
-    public function testListOfNodes(): void
-    {
-        $type = 'connector';
-        $this->prepareNodeMock(ConnectorHandler::class, 'getConnectors');
-
-        $response = $this->sendGet(sprintf('/api/nodes/%s/list_nodes', $type));
-        $content  = $response->content;
-
-        self::assertEquals(200, $response->status);
-        self::assertEquals(['null'], (array) $content);
-
-        $type     = 'config';
-        $response = $this->sendGet(sprintf('/api/nodes/%s/list_nodes', $type));
-
-        self::assertEquals(404, $response->status);
     }
 
     /**

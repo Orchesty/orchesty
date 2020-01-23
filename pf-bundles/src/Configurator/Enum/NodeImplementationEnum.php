@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesFramework\Configurator\Enum;
 
-use Hanaboso\CommonsBundle\Enum\EnumAbstract;
+use Hanaboso\Utils\Enum\EnumAbstract;
 
 /**
  * Class NodeImplementationEnum
@@ -21,7 +21,7 @@ final class NodeImplementationEnum extends EnumAbstract
     /**
      * @var string[]
      */
-    protected static $choices = [
+    protected static array $choices = [
         self::PHP => 'Pipes Framework Implementation',
     ];
 

@@ -2,13 +2,13 @@
 
 namespace Hanaboso\PipesFramework\Utils;
 
-use Hanaboso\CommonsBundle\Database\Document\Dto\SystemConfigDto;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
-use Hanaboso\CommonsBundle\Utils\Arrays;
-use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Utils\Dto\NodeSchemaDto;
 use Hanaboso\PipesFramework\Utils\Dto\Schema;
+use Hanaboso\PipesPhpSdk\Database\Document\Dto\SystemConfigDto;
+use Hanaboso\Utils\Arrays\Arrays;
+use Hanaboso\Utils\String\Json;
 
 /**
  * Class TopologySchemaUtils
@@ -52,9 +52,9 @@ class TopologySchemaUtils
     private const REPEATER_INTERVAL = '@pipes:repeaterInterval';
 
     /**
-     * @var mixed[]
+     * @var string[]
      */
-    private static $bpmnHandlers = [
+    private static array $bpmnHandlers = [
         self::BPMN_START_EVENT,
         self::BPMN_TASK,
         self::BPMN_EVENT,
@@ -64,9 +64,9 @@ class TopologySchemaUtils
     ];
 
     /**
-     * @var mixed[]
+     * @var string[]
      */
-    private static $handlers = [
+    private static array $handlers = [
         self::START_EVENT, self::TASK, self::EVENT, self::END_EVENT, self::GATEWAY, self::EXCLUSIVE_GATEWAY,
     ];
 
@@ -97,12 +97,12 @@ class TopologySchemaUtils
         unset($data);
 
         foreach ($processes as $handler => $process) {
-            if (in_array($handler, $handlers)) {
+            if (in_array($handler, $handlers, TRUE)) {
 
                 if (!Arrays::isList($process)) {
                     $tmp = $process;
                     unset($process);
-                    $process[0] = $tmp;
+                    $process = [$tmp];
                 }
                 foreach ($process as $innerProcess) {
 
@@ -164,14 +164,18 @@ class TopologySchemaUtils
     private static function getPipesType(string $type): string
     {
         switch ($type) {
-            case in_array(
-                $type,
-                [self::GATEWAY, self::EXCLUSIVE_GATEWAY, self::BPMN_GATEWAY, self::BPMN_EXCLUSIVE_GATEWAY]
-            ):
+            case self::GATEWAY:
+            case self::EXCLUSIVE_GATEWAY:
+            case self::BPMN_GATEWAY:
+            case self::BPMN_EXCLUSIVE_GATEWAY:
                 return TypeEnum::GATEWAY;
-            case in_array($type, [self::BPMN_EVENT, self::BPMN_START_EVENT, self::EVENT, self::START_EVENT]):
+            case self::EVENT:
+            case self::START_EVENT:
+            case self::BPMN_EVENT:
+            case self::BPMN_START_EVENT:
                 return TypeEnum::START;
-            case in_array($type, [self::BPMN_TASK, self::TASK]):
+            case self::TASK:
+            case self::BPMN_TASK:
                 return TypeEnum::CUSTOM;
             default:
                 return '';

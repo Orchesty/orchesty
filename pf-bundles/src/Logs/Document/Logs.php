@@ -20,6 +20,8 @@ use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
 class Logs
 {
 
+    use IdTrait;
+
     public const ID       = 'id';
     public const MONGO_ID = '_id';
 
@@ -33,8 +35,6 @@ class Logs
     public const PIPES_TOPOLOGY_NAME  = 'pipes.topology_name';
     public const PIPES_NODE_ID        = 'pipes.node_id';
     public const PIPES_NODE_NAME      = 'pipes.node_name';
-
-    use IdTrait;
 
     /**
      * @var DateTime

@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesFramework\Metrics\Exception;
 
-use Hanaboso\CommonsBundle\Exception\PipesFrameworkExceptionAbstract;
+use Hanaboso\Utils\Exception\PipesFrameworkExceptionAbstract;
 
 /**
  * Class MetricsException
@@ -12,11 +12,11 @@ use Hanaboso\CommonsBundle\Exception\PipesFrameworkExceptionAbstract;
 final class MetricsException extends PipesFrameworkExceptionAbstract
 {
 
-    protected const OFFSET = 2_800;
-
     public const DB_NOT_EXIST       = self::OFFSET + 1;
     public const NODE_NOT_FOUND     = self::OFFSET + 2;
     public const TOPOLOGY_NOT_FOUND = self::OFFSET + 3;
     public const QUERY_ERROR        = self::OFFSET + 4;
+
+    protected const OFFSET = 2_800;
 
 }

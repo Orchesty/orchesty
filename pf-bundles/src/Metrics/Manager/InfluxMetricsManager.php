@@ -4,15 +4,15 @@ namespace Hanaboso\PipesFramework\Metrics\Manager;
 
 use DateTime;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Hanaboso\CommonsBundle\Database\Document\Node;
-use Hanaboso\CommonsBundle\Database\Document\Topology;
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
-use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
-use Hanaboso\CommonsBundle\Utils\GeneratorUtils;
 use Hanaboso\PipesFramework\Metrics\Client\ClientInterface;
 use Hanaboso\PipesFramework\Metrics\Dto\MetricsDto;
 use Hanaboso\PipesFramework\Metrics\Exception\MetricsException;
 use Hanaboso\PipesFramework\Metrics\Retention\RetentionFactory;
+use Hanaboso\PipesPhpSdk\Database\Document\Node;
+use Hanaboso\PipesPhpSdk\Database\Document\Topology;
+use Hanaboso\Utils\Date\DateTimeUtils;
+use Hanaboso\Utils\Exception\DateTimeException;
+use Hanaboso\Utils\System\NodeGeneratorUtils;
 use Throwable;
 
 /**
@@ -50,6 +50,7 @@ class InfluxMetricsManager extends MetricsManagerAbstract
     )
     {
         parent::__construct($dm, $nodeTable, $fpmTable, $rabbitTable, $counterTable, $connectorTable);
+
         $this->client = $client;
     }
 
@@ -127,7 +128,7 @@ class InfluxMetricsManager extends MetricsManagerAbstract
 
         $where = [
             self::NODE  => $node->getId(),
-            self::QUEUE => GeneratorUtils::generateQueueName($topology, $node),
+            self::QUEUE => NodeGeneratorUtils::generateQueueName($topology->getId(), $node->getId(), $node->getName()),
         ];
 
         return $this->runQuery($select, $from, $where, NULL, $dateFrom, $dateTo);
@@ -181,8 +182,8 @@ class InfluxMetricsManager extends MetricsManagerAbstract
         $groupBy  = sprintf(
             'TIME(%s)',
             RetentionFactory::getRetention(
-                DateTimeUtils::getUTCDateTime($dateFrom),
-                DateTimeUtils::getUTCDateTime($dateTo)
+                DateTimeUtils::getUtcDateTime($dateFrom),
+                DateTimeUtils::getUtcDateTime($dateTo)
             )
         );
 
@@ -197,6 +198,26 @@ class InfluxMetricsManager extends MetricsManagerAbstract
         );
 
         return $data;
+    }
+
+    /**
+     * @param mixed[] $series
+     *
+     * @return mixed[] $points
+     */
+    public function getPoints(array $series): array
+    {
+        $points = [];
+
+        foreach ($series as $serie) {
+            if (isset($serie['values']) && isset($serie['name'])) {
+                foreach ($this->getPointsFromSerie($serie) as $point) {
+                    $points[$serie['name']] = $point;
+                }
+            }
+        }
+
+        return $points;
     }
 
     /**
@@ -236,8 +257,8 @@ class InfluxMetricsManager extends MetricsManagerAbstract
         }
 
         if ($dateFrom && $dateTo) {
-            $dateFrom = DateTimeUtils::getUTCDateTime($dateFrom);
-            $dateTo   = DateTimeUtils::getUTCDateTime($dateTo);
+            $dateFrom = DateTimeUtils::getUtcDateTime($dateFrom);
+            $dateTo   = DateTimeUtils::getUtcDateTime($dateTo);
             $qb
                 ->setTimeRange($dateFrom->getTimestamp(), $dateTo->getTimestamp())
                 ->from($this->addRetentionPolicy($from, $dateFrom, $dateTo));
@@ -256,26 +277,6 @@ class InfluxMetricsManager extends MetricsManagerAbstract
         }
 
         return $this->processResultSet($this->getPoints($series));
-    }
-
-    /**
-     * @param mixed[] $series
-     *
-     * @return mixed[] $points
-     */
-    public function getPoints(array $series): array
-    {
-        $points = [];
-
-        foreach ($series as $serie) {
-            if (isset($serie['values']) && isset($serie['name'])) {
-                foreach ($this->getPointsFromSerie($serie) as $point) {
-                    $points[$serie['name']] = $point;
-                }
-            }
-        }
-
-        return $points;
     }
 
     /**
@@ -367,11 +368,31 @@ class InfluxMetricsManager extends MetricsManagerAbstract
         if (isset($series[0]['values'])) {
             for ($i = 0; $i < count($series[0]['values']) - 4; $i++) {
                 $item                                                          = $series[0]['values'][$i];
-                $data[DateTimeUtils::getUTCDateTime($item[0])->getTimestamp()] = $item[1] ?? 0;
+                $data[DateTimeUtils::getUtcDateTime($item[0])->getTimestamp()] = $item[1] ?? 0;
             }
         }
 
         return $data;
+    }
+
+    /**
+     * @param string   $fromTables
+     * @param DateTime $from
+     * @param DateTime $to
+     *
+     * @return string
+     */
+    private function addRetentionPolicy(string $fromTables, DateTime $from, DateTime $to): string
+    {
+        $retention = RetentionFactory::getRetention($from, $to);
+
+        return implode(
+            ', ',
+            array_map(
+                static fn(string $item): string => sprintf('"%s".%s', $retention, $item),
+                explode(',', $fromTables)
+            )
+        );
     }
 
     /**
@@ -429,26 +450,6 @@ class InfluxMetricsManager extends MetricsManagerAbstract
         );
 
         return implode(', ', $data);
-    }
-
-    /**
-     * @param string   $fromTables
-     * @param DateTime $from
-     * @param DateTime $to
-     *
-     * @return string
-     */
-    private function addRetentionPolicy(string $fromTables, DateTime $from, DateTime $to): string
-    {
-        $retention = RetentionFactory::getRetention($from, $to);
-
-        return implode(
-            ', ',
-            array_map(
-                static fn(string $item): string => sprintf('"%s".%s', $retention, $item),
-                explode(',', $fromTables)
-            )
-        );
     }
 
 }

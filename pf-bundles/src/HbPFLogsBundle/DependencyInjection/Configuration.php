@@ -21,9 +21,9 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder(): TreeBuilder
     {
-        $treeBuilder = new TreeBuilder();
+        $treeBuilder = new TreeBuilder(HbPFLogsBundle::KEY);
         /** @var ArrayNodeDefinition $rootNode */
-        $rootNode = $treeBuilder->root(HbPFLogsBundle::KEY);
+        $rootNode = $treeBuilder->getRootNode();
 
         $rootNode->children()
             ->enumNode('type')->values(['mongodb', 'elastic'])->isRequired()

@@ -15,16 +15,6 @@ class TplgLoader
     public const TPLG = '.tplg';
 
     /**
-     * @param string $name
-     *
-     * @return string
-     */
-    public static function getName(string $name): string
-    {
-        return str_replace(self::TPLG, '', $name);
-    }
-
-    /**
      * @param string $dir
      *
      * @return mixed[]
@@ -43,6 +33,16 @@ class TplgLoader
         ksort($files);
 
         return $files;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return string
+     */
+    public static function getName(string $name): string
+    {
+        return str_replace(self::TPLG, '', $name);
     }
 
 }

@@ -3,19 +3,18 @@
 namespace Tests\Unit\Utils\Dto;
 
 use Exception;
-use FOS\RestBundle\Decoder\XmlDecoder;
-use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
-use Hanaboso\PipesFramework\Utils\Dto\Schema;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
-use PHPUnit\Framework\TestCase;
+use Hanaboso\RestBundle\Model\Decoder\XmlDecoder;
+use Hanaboso\Utils\String\Json;
+use Tests\KernelTestCaseAbstract;
 
 /**
  * Class SchemaTest
  *
  * @package Tests\Unit\Utils\Dto
  */
-final class SchemaTest extends TestCase
+final class SchemaTest extends KernelTestCaseAbstract
 {
 
     /**
@@ -27,7 +26,6 @@ final class SchemaTest extends TestCase
         $content = $this->load('default.tplg');
         $schema  = TopologySchemaUtils::getSchemaObject($this->getXmlDecoder()->decode($content));
 
-        self::assertInstanceOf(Schema::class, $schema);
         self::assertEquals($this->getExpected(), TopologySchemaUtils::getIndexHash($schema));
     }
 
@@ -40,7 +38,6 @@ final class SchemaTest extends TestCase
         $content = $this->load('ignored-change-same-hash.tplg');
         $schema  = TopologySchemaUtils::getSchemaObject($this->getXmlDecoder()->decode($content));
 
-        self::assertInstanceOf(Schema::class, $schema);
         self::assertEquals($this->getExpected(), TopologySchemaUtils::getIndexHash($schema));
     }
 
@@ -53,7 +50,6 @@ final class SchemaTest extends TestCase
         $content = $this->load('change-new-hash.tplg');
         $schema  = TopologySchemaUtils::getSchemaObject($this->getXmlDecoder()->decode($content));
 
-        self::assertInstanceOf(Schema::class, $schema);
         self::assertNotEquals($this->getExpected(), TopologySchemaUtils::getIndexHash($schema));
     }
 
@@ -65,7 +61,6 @@ final class SchemaTest extends TestCase
         $content = $this->load('missing-start-node.tplg');
         $schema  = TopologySchemaUtils::getSchemaObject($this->getXmlDecoder()->decode($content));
 
-        self::expectException(TopologyException::class);
         self::expectExceptionCode(TopologyException::SCHEMA_START_NODE_MISSING);
 
         $schema->buildIndex();
@@ -123,7 +118,7 @@ final class SchemaTest extends TestCase
      */
     private function getXmlDecoder(): XmlDecoder
     {
-        return new XmlDecoder();
+        return self::$container->get('rest.decoder.xml');
     }
 
 }

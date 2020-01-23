@@ -4,11 +4,6 @@ namespace Hanaboso\PipesFramework\Metrics\Manager;
 
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Hanaboso\CommonsBundle\Database\Document\Node;
-use Hanaboso\CommonsBundle\Database\Document\Topology;
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
-use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
-use Hanaboso\CommonsBundle\Utils\GeneratorUtils;
 use Hanaboso\PipesFramework\Metrics\Document\BridgesMetrics;
 use Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetrics;
 use Hanaboso\PipesFramework\Metrics\Document\MonolithMetrics;
@@ -17,6 +12,11 @@ use Hanaboso\PipesFramework\Metrics\Document\RabbitMetrics;
 use Hanaboso\PipesFramework\Metrics\Document\Tags;
 use Hanaboso\PipesFramework\Metrics\Dto\MetricsDto;
 use Hanaboso\PipesFramework\Metrics\Retention\RetentionFactory;
+use Hanaboso\PipesPhpSdk\Database\Document\Node;
+use Hanaboso\PipesPhpSdk\Database\Document\Topology;
+use Hanaboso\Utils\Date\DateTimeUtils;
+use Hanaboso\Utils\Exception\DateTimeException;
+use Hanaboso\Utils\System\NodeGeneratorUtils;
 use LogicException;
 
 /**
@@ -61,6 +61,7 @@ class MongoMetricsManager extends MetricsManagerAbstract
     )
     {
         parent::__construct($dm, $nodeTable, $fpmTable, $rabbitTable, $counterTable, $connectorTable);
+
         $this->metricsDm      = $metricsDm;
         $this->rabbitInterval = $rabbitInterval;
     }
@@ -79,7 +80,7 @@ class MongoMetricsManager extends MetricsManagerAbstract
 
         $where = [
             self::NODE  => $node->getId(),
-            self::QUEUE => GeneratorUtils::generateQueueName($topology, $node),
+            self::QUEUE => NodeGeneratorUtils::generateQueueName($topology->getId(), $node->getId(), $node->getName()),
         ];
 
         $queue   = $this->rabbitNodeMetrics($where, $dateFrom, $dateTo);
@@ -134,8 +135,8 @@ class MongoMetricsManager extends MetricsManagerAbstract
      */
     public function getTopologyRequestCountMetrics(Topology $topology, array $params): array
     {
-        $params['from'] = $params['from'] ?? 'now - 1h';
-        $params['to']   = $params['to'] ?? 'now';
+        $params['from'] ??= 'now - 1h';
+        $params['to']   ??= 'now';
 
         [$dateFrom, $dateTo] = $this->parseDateRange($params);
 
@@ -159,11 +160,7 @@ class MongoMetricsManager extends MetricsManagerAbstract
      * @return MetricsDto
      * @throws DateTimeException
      */
-    private function connectorNodeMetrics(
-        array $where,
-        string $dateFrom,
-        string $dateTo
-    ): MetricsDto
+    private function connectorNodeMetrics(array $where, string $dateFrom, string $dateTo): MetricsDto
     {
         $qb = $this->metricsDm->createAggregationBuilder(ConnectorsMetrics::class);
         $this->addConditions($qb, $dateFrom, $dateTo, $where, ConnectorsMetrics::class);
@@ -204,11 +201,7 @@ class MongoMetricsManager extends MetricsManagerAbstract
      * @return MetricsDto
      * @throws DateTimeException
      */
-    private function rabbitNodeMetrics(
-        array $where,
-        string $dateFrom,
-        string $dateTo
-    ): MetricsDto
+    private function rabbitNodeMetrics(array $where, string $dateFrom, string $dateTo): MetricsDto
     {
         $qb = $this->metricsDm->createAggregationBuilder(RabbitMetrics::class);
         $this->addConditions($qb, $dateFrom, $dateTo, $where, RabbitMetrics::class);
@@ -252,11 +245,7 @@ class MongoMetricsManager extends MetricsManagerAbstract
      * @return MetricsDto
      * @throws DateTimeException
      */
-    private function monolithNodeMetrics(
-        array $where,
-        string $dateFrom,
-        string $dateTo
-    ): MetricsDto
+    private function monolithNodeMetrics(array $where, string $dateFrom, string $dateTo): MetricsDto
     {
         $qb = $this->metricsDm->createAggregationBuilder(MonolithMetrics::class);
         $this->addConditions($qb, $dateFrom, $dateTo, $where, MonolithMetrics::class);
@@ -297,11 +286,7 @@ class MongoMetricsManager extends MetricsManagerAbstract
      * @return mixed[]
      * @throws DateTimeException
      */
-    private function counterProcessMetrics(
-        array $where,
-        string $dateFrom,
-        string $dateTo
-    ): array
+    private function counterProcessMetrics(array $where, string $dateFrom, string $dateTo): array
     {
         $qb = $this->metricsDm->createAggregationBuilder(ProcessesMetrics::class);
         $this->addConditions($qb, $dateFrom, $dateTo, $where, ProcessesMetrics::class);
@@ -358,11 +343,7 @@ class MongoMetricsManager extends MetricsManagerAbstract
      * @return mixed[]
      * @throws DateTimeException
      */
-    private function bridgesNodeMetrics(
-        array $where,
-        string $dateFrom,
-        string $dateTo
-    ): array
+    private function bridgesNodeMetrics(array $where, string $dateFrom, string $dateTo): array
     {
         $qb = $this->metricsDm->createAggregationBuilder(BridgesMetrics::class);
         $this->addConditions($qb, $dateFrom, $dateTo, $where, BridgesMetrics::class);
@@ -435,14 +416,10 @@ class MongoMetricsManager extends MetricsManagerAbstract
      * @return mixed[]
      * @throws DateTimeException
      */
-    private function requestsCountAggregation(
-        array $where,
-        string $dateFrom,
-        string $dateTo
-    ): array
+    private function requestsCountAggregation(array $where, string $dateFrom, string $dateTo): array
     {
-        $dateTimeFrom = DateTimeUtils::getUTCDateTime($dateFrom);
-        $dateTimeTo   = DateTimeUtils::getUTCDateTime($dateTo);
+        $dateTimeFrom = DateTimeUtils::getUtcDateTime($dateFrom);
+        $dateTimeTo   = DateTimeUtils::getUtcDateTime($dateTo);
 
         $qb = $this->metricsDm->createAggregationBuilder(ProcessesMetrics::class);
         $this->addConditions($qb, $dateFrom, $dateTo, $where, ProcessesMetrics::class);
@@ -489,15 +466,15 @@ class MongoMetricsManager extends MetricsManagerAbstract
             ->addAnd(
                 $qb->matchExpr()
                     ->field('fields.created')
-                    ->gte(DateTimeUtils::getUTCDateTime($dateFrom)->getTimestamp()),
+                    ->gte(DateTimeUtils::getUtcDateTime($dateFrom)->getTimestamp()),
                 $qb->matchExpr()
                     ->field('fields.created')
-                    ->lt(DateTimeUtils::getUTCDateTime($dateTo)->getTimestamp())
+                    ->lt(DateTimeUtils::getUtcDateTime($dateTo)->getTimestamp())
             );
 
         $tags = $this->allowedTags($document);
         foreach ($where as $field => $value) {
-            if (in_array($field, $tags)) {
+            if (in_array($field, $tags, TRUE)) {
                 $qb->match()->addOr($qb->matchExpr()->field(sprintf('tags.%s', $field))->equals($value));
             }
         }

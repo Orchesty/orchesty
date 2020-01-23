@@ -5,7 +5,7 @@ parameters:
 	doctrine:
 		objectManagerLoader: tests/DocumentManagerLoader.php
 	symfony:
-		container_xml_path: %rootDir%/../../../var/cache/test/srcHanaboso_PipesFramework_KernelTestDebugContainer.xml
+		container_xml_path: %rootDir%/../../../var/cache/test/Hanaboso_PipesFramework_KernelTestDebugContainer.xml
 	ignoreErrors:
 		- '#Service \"snc_redis\.default\" is private\.#'
 		-
@@ -13,4 +13,7 @@ parameters:
 		    path: src/Configurator/Model/TopologyConfigFactory.php
 		-
 		    message: '#Access to an undefined property#'
+		    path: tests/*
+		-
+		    message: '#PHPDoc tag @var for variable .+ contains unresolvable type#'
 		    path: tests/*

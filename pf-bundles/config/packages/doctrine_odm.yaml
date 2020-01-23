@@ -44,8 +44,8 @@ doctrine_mongodb:
                 CommonsDocument:
                     type: annotation
                     is_bundle: false
-                    dir: "%kernel.root_dir%/../vendor/hanaboso/commons-bundle/src/Database/Document"
-                    prefix: Hanaboso\CommonsBundle\Database\Document
+                    dir: "%kernel.root_dir%/../vendor/hanaboso/pipes-php-sdk/src/Database/Document"
+                    prefix: Hanaboso\PipesPhpSdk\Database\Document
                 FileMongo:
                     type: annotation
                     is_bundle: false

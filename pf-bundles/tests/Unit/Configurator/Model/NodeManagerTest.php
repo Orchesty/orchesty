@@ -4,12 +4,12 @@ namespace Tests\Unit\Configurator\Model;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
-use Hanaboso\CommonsBundle\Database\Document\Node;
 use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator;
 use Hanaboso\CommonsBundle\Enum\HandlerEnum;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\CommonsBundle\Exception\NodeException;
 use Hanaboso\PipesFramework\Configurator\Model\NodeManager;
+use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use PHPUnit\Framework\MockObject\MockObject;
 use Tests\KernelTestCaseAbstract;
 

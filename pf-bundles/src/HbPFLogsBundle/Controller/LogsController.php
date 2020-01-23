@@ -2,10 +2,9 @@
 
 namespace Hanaboso\PipesFramework\HbPFLogsBundle\Controller;
 
-use FOS\RestBundle\Controller\AbstractFOSRestController;
-use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\MongoDataGrid\GridRequestDto;
 use Hanaboso\PipesFramework\HbPFLogsBundle\Handler\LogsHandler;
+use Hanaboso\Utils\Traits\ControllerTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,7 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @package Hanaboso\PipesFramework\HbPFLogsBundle\Controller
  */
-class LogsController extends AbstractFOSRestController
+class LogsController
 {
 
     use ControllerTrait;
@@ -37,7 +36,7 @@ class LogsController extends AbstractFOSRestController
     }
 
     /**
-     * @Route("/logs", methods={"GET"})
+     * @Route("/logs", methods={"GET", "OPTIONS"})
      *
      * @param Request $request
      *

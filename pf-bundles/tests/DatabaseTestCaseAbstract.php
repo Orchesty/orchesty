@@ -4,7 +4,7 @@ namespace Tests;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
-use Hanaboso\CommonsBundle\Utils\Json;
+use Hanaboso\Utils\String\Json;
 use Symfony\Component\HttpFoundation\Session\Session;
 
 /**

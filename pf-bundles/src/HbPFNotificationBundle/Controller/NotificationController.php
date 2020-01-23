@@ -2,11 +2,10 @@
 
 namespace Hanaboso\PipesFramework\HbPFNotificationBundle\Controller;
 
-use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Hanaboso\CommonsBundle\Enum\NotificationEventEnum;
-use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\HbPFNotificationBundle\Handler\NotificationHandler;
 use Hanaboso\PipesFramework\Notification\Exception\NotificationException;
+use Hanaboso\Utils\Traits\ControllerTrait;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -17,7 +16,7 @@ use Throwable;
  *
  * @package Hanaboso\PipesFramework\HbPFNotificationBundle\Controller
  */
-class NotificationController extends AbstractFOSRestController
+class NotificationController
 {
 
     use ControllerTrait;

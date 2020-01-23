@@ -2,9 +2,9 @@
 
 namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller;
 
-use FOS\RestBundle\Controller\AbstractFOSRestController;
-use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesFramework\Configurator\Enum\NodeImplementationEnum;
+use Hanaboso\Utils\String\Json;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -14,11 +14,11 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @package Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller
  */
-final class NodeController extends AbstractFOSRestController
+final class NodeController extends AbstractController
 {
 
     /**
-     * @Route("/topologies/{id}/nodes", defaults={}, requirements={"id": "\w+"}, methods={"GET", "OPTIONS"})
+     * @Route("/topologies/{id}/nodes", methods={"GET", "OPTIONS"})
      *
      * @param string $id
      *
@@ -33,7 +33,7 @@ final class NodeController extends AbstractFOSRestController
     }
 
     /**
-     * @Route("/nodes/{id}", defaults={}, requirements={"id": "\w+"}, methods={"GET", "OPTIONS"})
+     * @Route("/nodes/{id}", methods={"GET", "OPTIONS"})
      *
      * @param string $id
      *
@@ -48,7 +48,7 @@ final class NodeController extends AbstractFOSRestController
     }
 
     /**
-     * @Route("/nodes/{id}", defaults={}, requirements={"id": "\w+"}, methods={"PATCH", "OPTIONS"})
+     * @Route("/nodes/{id}", methods={"PATCH", "OPTIONS"})
      *
      * @param string $id
      *
@@ -63,7 +63,7 @@ final class NodeController extends AbstractFOSRestController
     }
 
     /**
-     * @Route("/nodes/{type}/list_nodes", requirements={"type"="connector|custom_node|joiner|mapper|long_running"}, methods={"GET"})
+     * @Route("/nodes/{type}/list_nodes", requirements={"type"="connector|custom_node|joiner|mapper|long_running"}, methods={"GET", "OPTIONS"})
      *
      * @param string $type
      *
@@ -95,7 +95,7 @@ final class NodeController extends AbstractFOSRestController
     }
 
     /**
-     * @Route("/nodes/list/name", methods={"GET"})
+     * @Route("/nodes/list/name", methods={"GET", "OPTIONS"})
      *
      * @return Response
      */

@@ -4,17 +4,17 @@ namespace Tests\Unit\Configurator\Cron;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
-use Hanaboso\CommonsBundle\Database\Document\Node;
-use Hanaboso\CommonsBundle\Database\Document\Topology;
-use Hanaboso\CommonsBundle\Database\Repository\TopologyRepository;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\CommonsBundle\Exception\CronException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
-use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
+use Hanaboso\PipesPhpSdk\Database\Document\Node;
+use Hanaboso\PipesPhpSdk\Database\Document\Topology;
+use Hanaboso\PipesPhpSdk\Database\Repository\TopologyRepository;
+use Hanaboso\Utils\String\Json;
 use PHPUnit\Framework\MockObject\MockObject;
 use Tests\KernelTestCaseAbstract;
 
@@ -145,7 +145,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
     public function testBatchCreate(): void
     {
         $this->getManager(
-            static function (RequestDto $request) {
+            static function (RequestDto $request): ResponseDto {
                 self::assertEquals(CurlManager::METHOD_POST, $request->getMethod());
                 self::assertEquals('http://example.com/cron-api/batch_create', $request->getUri(TRUE));
                 self::assertEquals(
@@ -181,7 +181,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
     public function testBatchUpdate(): void
     {
         $this->getManager(
-            static function (RequestDto $request) {
+            static function (RequestDto $request): ResponseDto {
                 self::assertEquals(CurlManager::METHOD_POST, $request->getMethod());
                 self::assertEquals('http://example.com/cron-api/batch_update', $request->getUri(TRUE));
                 self::assertEquals(
@@ -217,7 +217,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
     public function testBatchPatch(): void
     {
         $this->getManager(
-            static function (RequestDto $request) {
+            static function (RequestDto $request): ResponseDto {
                 self::assertEquals(CurlManager::METHOD_POST, $request->getMethod());
                 self::assertEquals('http://example.com/cron-api/batch_patch', $request->getUri(TRUE));
                 self::assertEquals(
@@ -253,7 +253,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
     public function testBatchDelete(): void
     {
         $this->getManager(
-            static function (RequestDto $request) {
+            static function (RequestDto $request): ResponseDto {
                 self::assertEquals(CurlManager::METHOD_POST, $request->getMethod());
                 self::assertEquals('http://example.com/cron-api/batch_delete', $request->getUri(TRUE));
                 self::assertEquals(

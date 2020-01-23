@@ -3,11 +3,11 @@
 namespace Tests\Integration\Metrics\Manager;
 
 use Exception;
-use Hanaboso\CommonsBundle\Database\Document\Node;
-use Hanaboso\CommonsBundle\Database\Document\Topology;
-use Hanaboso\CommonsBundle\Utils\GeneratorUtils;
 use Hanaboso\PipesFramework\Metrics\Client\MetricsClient;
 use Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager;
+use Hanaboso\PipesPhpSdk\Database\Document\Node;
+use Hanaboso\PipesPhpSdk\Database\Document\Topology;
+use Hanaboso\Utils\System\NodeGeneratorUtils;
 use InfluxDB\Database;
 use InfluxDB\Database\RetentionPolicy;
 use InfluxDB\Point;
@@ -34,7 +34,6 @@ final class InfluxMetricsManagerTest extends KernelTestCaseAbstract
         $manager = $this->getManager();
         $result  = $manager->getNodeMetrics($node, $topo, []);
 
-        self::assertTrue(is_array($result));
         self::assertCount(6, $result);
         self::assertArrayHasKey(InfluxMetricsManager::QUEUE_DEPTH, $result);
         self::assertArrayHasKey(InfluxMetricsManager::WAITING_TIME, $result);
@@ -98,7 +97,6 @@ final class InfluxMetricsManagerTest extends KernelTestCaseAbstract
         $manager = $this->getManager();
         $result  = $manager->getTopologyMetrics($topo, []);
 
-        self::assertTrue(is_array($result));
         self::assertCount(4, $result);
         self::assertArrayHasKey($node->getId(), $result);
         self::assertEquals(
@@ -148,7 +146,6 @@ final class InfluxMetricsManagerTest extends KernelTestCaseAbstract
             ]
         );
 
-        self::assertTrue(is_array($result));
         self::assertCount(5, $result);
         self::assertEquals(
             [
@@ -325,7 +322,11 @@ final class InfluxMetricsManagerTest extends KernelTestCaseAbstract
                 'rabbitmq',
                 NULL,
                 [
-                    InfluxMetricsManager::QUEUE => GeneratorUtils::generateQueueName($topology, $node),
+                    InfluxMetricsManager::QUEUE => NodeGeneratorUtils::generateQueueName(
+                        $topology->getId(),
+                        $node->getId(),
+                        $node->getName()
+                    ),
                 ],
                 [
                     InfluxMetricsManager::AVG_MESSAGES => 5,
@@ -437,7 +438,11 @@ final class InfluxMetricsManagerTest extends KernelTestCaseAbstract
                 'rabbitmq',
                 NULL,
                 [
-                    InfluxMetricsManager::QUEUE => GeneratorUtils::generateQueueName($topology, $node),
+                    InfluxMetricsManager::QUEUE => NodeGeneratorUtils::generateQueueName(
+                        $topology->getId(),
+                        $node->getId(),
+                        $node->getName()
+                    ),
                 ],
                 [
                     InfluxMetricsManager::AVG_MESSAGES => 5,

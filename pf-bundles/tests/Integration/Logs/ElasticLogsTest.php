@@ -4,10 +4,10 @@ namespace Tests\Integration\Logs;
 
 use Elastica\Document;
 use Exception;
-use Hanaboso\CommonsBundle\Database\Document\Node;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
-use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
 use Hanaboso\MongoDataGrid\GridRequestDto;
+use Hanaboso\PipesPhpSdk\Database\Document\Node;
+use Hanaboso\Utils\Date\DateTimeUtils;
 use Tests\DatabaseTestCaseAbstract;
 
 /**

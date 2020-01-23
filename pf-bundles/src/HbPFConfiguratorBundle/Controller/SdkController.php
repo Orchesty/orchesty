@@ -4,11 +4,11 @@ namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller;
 
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Doctrine\ODM\MongoDB\MongoDBException;
-use FOS\RestBundle\Controller\AbstractFOSRestController;
-use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
-use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\SdkHandler;
+use Hanaboso\Utils\Exception\PipesFrameworkException;
+use Hanaboso\Utils\Traits\ControllerTrait;
 use Psr\Log\NullLogger;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -18,7 +18,7 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @package Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller
  */
-final class SdkController extends AbstractFOSRestController
+final class SdkController extends AbstractController
 {
 
     use ControllerTrait;

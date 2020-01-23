@@ -3,10 +3,10 @@
 namespace Tests\Integration\TopologyInstaller;
 
 use Exception;
-use Hanaboso\CommonsBundle\Database\Document\Category;
-use Hanaboso\CommonsBundle\Database\Document\Topology;
 use Hanaboso\PipesFramework\TopologyInstaller\CategoryParser;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\TopologyFile;
+use Hanaboso\PipesPhpSdk\Database\Document\Category;
+use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use RuntimeException;
 use Tests\DatabaseTestCaseAbstract;
 

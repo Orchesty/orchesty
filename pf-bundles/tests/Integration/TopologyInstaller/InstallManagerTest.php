@@ -3,8 +3,6 @@
 namespace Tests\Integration\TopologyInstaller;
 
 use Exception;
-use FOS\RestBundle\Decoder\XmlDecoder;
-use Hanaboso\CommonsBundle\Database\Document\Topology;
 use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge;
@@ -12,6 +10,7 @@ use Hanaboso\PipesFramework\TopologyInstaller\CategoryParser;
 use Hanaboso\PipesFramework\TopologyInstaller\InstallManager;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
+use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Client;
 use Tests\DatabaseTestCaseAbstract;
@@ -37,7 +36,6 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
         $this->createTopologies();
         $manager = $this->getManager();
         $output  = $manager->prepareInstall(TRUE, TRUE, TRUE);
-        self::assertTrue(is_array($output));
         self::assertArrayHasKey('create', $output);
         self::assertArrayHasKey('update', $output);
         self::assertArrayHasKey('delete', $output);
@@ -63,7 +61,6 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
         self::assertNotEmpty($res);
 
         $output = $manager->makeInstall(TRUE, TRUE, TRUE);
-        self::assertTrue(is_array($output));
         self::assertArrayHasKey('create', $output);
         self::assertArrayHasKey('update', $output);
         self::assertArrayHasKey('delete', $output);
@@ -103,7 +100,17 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
         $categoryParser  = new CategoryParser($this->dm, $categoryManager);
         $categoryParser->addRoot('systems', $dir);
 
-        return new InstallManager($this->dm, $this->redis, $topologyManager, $requestHandler, $categoryParser, [$dir]);
+        $xmlDecoder = self::$container->get('rest.decoder.xml');
+
+        return new InstallManager(
+            $this->dm,
+            $this->redis,
+            $topologyManager,
+            $requestHandler,
+            $categoryParser,
+            $xmlDecoder,
+            [$dir]
+        );
     }
 
     /**
@@ -111,7 +118,7 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
      */
     private function createTopologies(): void
     {
-        $xmlDecoder = new XmlDecoder();
+        $xmlDecoder = self::$container->get('rest.decoder.xml');
         $topology   = new Topology();
         $topology
             ->setName('file')

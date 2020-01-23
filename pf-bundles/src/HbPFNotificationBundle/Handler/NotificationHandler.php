@@ -3,9 +3,9 @@
 namespace Hanaboso\PipesFramework\HbPFNotificationBundle\Handler;
 
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
-use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesFramework\Notification\Exception\NotificationException;
 use Hanaboso\PipesFramework\Notification\Model\NotificationManager;
+use Hanaboso\Utils\String\Json;
 
 /**
  * Class NotificationHandler

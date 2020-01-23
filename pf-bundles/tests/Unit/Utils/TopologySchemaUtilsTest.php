@@ -2,17 +2,16 @@
 
 namespace Tests\Unit\Utils;
 
-use FOS\RestBundle\Decoder\XmlDecoder;
-use Hanaboso\PipesFramework\Utils\Dto\Schema;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
-use PHPUnit\Framework\TestCase;
+use Hanaboso\RestBundle\Model\Decoder\XmlDecoder;
+use Tests\KernelTestCaseAbstract;
 
 /**
  * Class TopologySchemaUtilsTest
  *
  * @package Tests\Unit\Utils
  */
-final class TopologySchemaUtilsTest extends TestCase
+final class TopologySchemaUtilsTest extends KernelTestCaseAbstract
 {
 
     /**
@@ -23,7 +22,7 @@ final class TopologySchemaUtilsTest extends TestCase
         $content = $this->load('default.tplg');
         $schema  = TopologySchemaUtils::getSchemaObject($this->getXmlDecoder()->decode($content));
 
-        self::assertInstanceOf(Schema::class, $schema);
+        self::assertNotEmpty($schema);
 
         $nodes = $schema->getNodes();
         self::assertCount(9, $schema->getNodes());
@@ -31,23 +30,23 @@ final class TopologySchemaUtilsTest extends TestCase
         self::assertEquals('Event_1lqi8dm', $schema->getStartNode());
 
         foreach ($nodes as $node) {
-            $this->assertObjectHasAttribute('handler', $node);
-            $this->assertObjectHasAttribute('id', $node);
-            $this->assertObjectHasAttribute('name', $node);
-            $this->assertObjectHasAttribute('cronTime', $node);
-            $this->assertObjectHasAttribute('pipesType', $node);
-            $this->assertObjectHasAttribute('systemConfigs', $node);
+            self::assertObjectHasAttribute('handler', $node);
+            self::assertObjectHasAttribute('id', $node);
+            self::assertObjectHasAttribute('name', $node);
+            self::assertObjectHasAttribute('cronTime', $node);
+            self::assertObjectHasAttribute('pipesType', $node);
+            self::assertObjectHasAttribute('systemConfigs', $node);
         }
 
-        $this->assertEquals('bpmn:event', $nodes['Event_1lqi8dm']->getHandler());
-        $this->assertEquals('Event_1lqi8dm', $nodes['Event_1lqi8dm']->getId());
-        $this->assertEquals('hubspot-updated-contact-connector', $nodes['Event_1lqi8dm']->getName());
-        $this->assertEquals('', $nodes['Event_1lqi8dm']->getCronTime());
-        $this->assertEquals('webhook', $nodes['Event_1lqi8dm']->getPipesType());
+        self::assertEquals('bpmn:event', $nodes['Event_1lqi8dm']->getHandler());
+        self::assertEquals('Event_1lqi8dm', $nodes['Event_1lqi8dm']->getId());
+        self::assertEquals('hubspot-updated-contact-connector', $nodes['Event_1lqi8dm']->getName());
+        self::assertEquals('', $nodes['Event_1lqi8dm']->getCronTime());
+        self::assertEquals('webhook', $nodes['Event_1lqi8dm']->getPipesType());
 
-        $this->assertCount(9, $schema->getNodes());
-        $this->assertCount(6, $schema->getSequences());
-        $this->assertEquals('Event_1lqi8dm', $schema->getStartNode());
+        self::assertCount(9, $schema->getNodes());
+        self::assertCount(6, $schema->getSequences());
+        self::assertEquals('Event_1lqi8dm', $schema->getStartNode());
 
         self::assertEquals(
             [
@@ -77,7 +76,7 @@ final class TopologySchemaUtilsTest extends TestCase
      */
     private function getXmlDecoder(): XmlDecoder
     {
-        return new XmlDecoder();
+        return self::$container->get('rest.decoder.xml');
     }
 
 }

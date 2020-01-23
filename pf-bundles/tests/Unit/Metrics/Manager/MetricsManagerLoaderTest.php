@@ -3,9 +3,9 @@
 namespace Tests\Unit\Metrics\Manager;
 
 use Exception;
-use Hanaboso\CommonsBundle\Database\Document\Topology;
 use Hanaboso\PipesFramework\Metrics\Manager\MetricsManagerAbstract;
 use Hanaboso\PipesFramework\Metrics\Manager\MetricsManagerLoader;
+use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use LogicException;
 use PHPUnit\Framework\MockObject\MockObject;
 use Tests\KernelTestCaseAbstract;

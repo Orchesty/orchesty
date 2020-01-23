@@ -3,9 +3,9 @@
 namespace Tests\Unit\Configurator\Utils;
 
 use Exception;
-use Hanaboso\CommonsBundle\Database\Document\Node;
-use Hanaboso\CommonsBundle\Database\Document\Topology;
 use Hanaboso\PipesFramework\Configurator\Utils\CronUtils;
+use Hanaboso\PipesPhpSdk\Database\Document\Node;
+use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Tests\KernelTestCaseAbstract;
 
 /**

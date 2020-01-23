@@ -3,14 +3,9 @@
 namespace Hanaboso\PipesFramework\ApiGateway\Listener;
 
 use Hanaboso\CommonsBundle\Crypt\Exceptions\CryptException;
-use Hanaboso\CommonsBundle\Exception\EnumException;
 use Hanaboso\CommonsBundle\Exception\FileStorageException;
-use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
-use Hanaboso\CommonsBundle\Exception\PipesFrameworkExceptionAbstract;
-use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\CommonsBundle\Transport\Ftp\Exception\FtpException;
 use Hanaboso\CommonsBundle\Transport\Soap\SoapException;
-use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use Hanaboso\PipesFramework\Notification\Exception\NotificationException;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
@@ -21,10 +16,15 @@ use Hanaboso\PipesPhpSdk\HbPFMapperBundle\Exception\MapperException;
 use Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandlerException;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Exception\LongRunningNodeException;
 use Hanaboso\PipesPhpSdk\Parser\Exception\TableParserException;
+use Hanaboso\Utils\Exception\EnumException;
+use Hanaboso\Utils\Exception\PipesFrameworkException;
+use Hanaboso\Utils\Exception\PipesFrameworkExceptionAbstract;
+use Hanaboso\Utils\System\PipesHeaders;
+use Hanaboso\Utils\Traits\ControllerTrait;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
@@ -68,21 +68,11 @@ class ControllerExceptionListener implements EventSubscriberInterface, LoggerAwa
     }
 
     /**
-     * @return mixed[]
-     */
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            KernelEvents::EXCEPTION => 'onKernelException',
-        ];
-    }
-
-    /**
-     * @param GetResponseForExceptionEvent $event
+     * @param ExceptionEvent $event
      *
      * @return void
      */
-    public function onKernelException(GetResponseForExceptionEvent $event): void
+    public function onKernelException(ExceptionEvent $event): void
     {
         $e = $event->getThrowable();
 
@@ -90,11 +80,9 @@ class ControllerExceptionListener implements EventSubscriberInterface, LoggerAwa
             return;
         }
 
-        if ($this->logger) {
-            $this->logger->error('Controller exception.', ['exception' => $e]);
-        }
+        $this->logger->error('Controller exception.', ['exception' => $e]);
 
-        if (!in_array(get_class($e), $this->exceptionClasses)) {
+        if (!in_array(get_class($e), $this->exceptionClasses, TRUE)) {
             return;
         }
 
@@ -116,6 +104,16 @@ class ControllerExceptionListener implements EventSubscriberInterface, LoggerAwa
         $this->exceptionClasses = $exceptionClasses;
 
         return $this;
+    }
+
+    /**
+     * @return array<string, array<int|string, array<int|string, int|string>|int|string>|string>
+     */
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            KernelEvents::EXCEPTION => 'onKernelException',
+        ];
     }
 
 }

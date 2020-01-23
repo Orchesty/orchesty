@@ -1,63 +1,38 @@
 services:
     _defaults:
         public: '%public.services%'
+        autowire: true
+        autoconfigure: true
+
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController
 
     Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\CategoryController:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\CategoryController
-        arguments:
-        calls:
-            - ['setContainer', ['@service_container']]
 
     Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ConnectorController:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ConnectorController
-        arguments:
-        calls:
-            - ['setContainer', ['@service_container']]
 
     Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\LogsController:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\LogsController
-        arguments:
-        calls:
-            - ['setContainer', ['@service_container']]
 
     Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\LongRunningNodeController:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\LongRunningNodeController
-        arguments:
-        calls:
-            - ['setContainer', ['@service_container']]
 
     Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\MetricsController:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\MetricsController
-        arguments:
-        calls:
-            - ['setContainer', ['@service_container']]
 
     Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NodeController:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NodeController
-        arguments:
-        calls:
-            - ['setContainer', ['@service_container']]
 
     Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NotificationController:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NotificationController
-        arguments:
-        calls:
-            - ['setContainer', ['@service_container']]
 
     Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyController:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyController
-        arguments:
-        calls:
-            - ['setContainer', ['@service_container']]
 
     Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserController:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserController
-        arguments:
-        calls:
-            - ['setContainer', ['@service_container']]
 
     Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\SdkController:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\SdkController
-        arguments:
-        calls:
-            - ['setContainer', ['@service_container']]

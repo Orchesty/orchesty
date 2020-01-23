@@ -78,7 +78,7 @@ final class MongoDbLogs extends LogsAbstract
 
         return [
             'limit'  => $dto->getLimit(),
-            'offset' => ((int) ($dto->getPage() ?? 1) - 1) * $dto->getLimit(),
+            'offset' => (($dto->getPage() ?? 1) - 1) * $dto->getLimit(),
             'count'  => count($result),
             'total'  => $count >= self::LIMIT ? self::LIMIT : $count,
             'items'  => $result,

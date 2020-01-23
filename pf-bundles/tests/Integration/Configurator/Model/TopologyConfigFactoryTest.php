@@ -3,13 +3,13 @@
 namespace Tests\Integration\Configurator\Model;
 
 use Exception;
-use Hanaboso\CommonsBundle\Database\Document\Dto\SystemConfigDto;
-use Hanaboso\CommonsBundle\Database\Document\Embed\EmbedNode;
-use Hanaboso\CommonsBundle\Database\Document\Node;
-use Hanaboso\CommonsBundle\Database\Repository\NodeRepository;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
-use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory;
+use Hanaboso\PipesPhpSdk\Database\Document\Dto\SystemConfigDto;
+use Hanaboso\PipesPhpSdk\Database\Document\Embed\EmbedNode;
+use Hanaboso\PipesPhpSdk\Database\Document\Node;
+use Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository;
+use Hanaboso\Utils\String\Json;
 use Tests\DatabaseTestCaseAbstract;
 
 /**
@@ -54,14 +54,12 @@ class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
 
         $configFactory = self::$container->get('hbpf.topology.configurator');
         $result        = $configFactory->create($nodes);
-
-        self::assertIsString($result);
-        $arr = Json::decode($result);
+        $arr           = Json::decode($result);
 
         self::assertArrayNotHasKey(TopologyConfigFactory::WORKER, $arr);
         self::assertArrayNotHasKey(TopologyConfigFactory::SETTINGS, $arr);
 
-        $this->assertResult(__DIR__ . '/data/topologyConfigFactory.json', $arr);
+        self::assertResult(__DIR__ . '/data/topologyConfigFactory.json', $arr);
         self::assertEquals(5, count($arr[TopologyConfigFactory::NODE_CONFIG]));
     }
 

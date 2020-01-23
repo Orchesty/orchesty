@@ -3,9 +3,9 @@
 namespace Tests\Controller\HbPFConfiguratorBundle\Controller;
 
 use Exception;
-use Hanaboso\CommonsBundle\Database\Document\Category;
 use Hanaboso\CommonsBundle\Exception\CategoryException;
-use Hanaboso\CommonsBundle\Utils\ControllerUtils;
+use Hanaboso\PipesPhpSdk\Database\Document\Category;
+use Hanaboso\Utils\System\ControllerUtils;
 use Tests\ControllerTestCaseAbstract;
 
 /**

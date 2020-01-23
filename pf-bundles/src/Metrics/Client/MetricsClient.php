@@ -78,7 +78,7 @@ class MetricsClient implements ClientInterface
     public function getDatabase(?string $name = NULL): Database
     {
         $client   = $this->createClient();
-        $name     = $name ?? $this->database;
+        $name   ??= $this->database;
         $database = $client->selectDB($name);
 
         if (!$database->exists()) {
