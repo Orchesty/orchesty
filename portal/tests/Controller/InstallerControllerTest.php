@@ -36,11 +36,11 @@ final class InstallerControllerTest extends ControllerTestCaseAbstract
             ]
         );
 
-        $this->assertEquals(200, $response1->getStatus());
-        $this->assertEquals($this->getResponseLogstashInfluxb(), $response1->getContent()[0]);
+        self::assertEquals(200, $response1->getStatus());
+        self::assertEquals($this->getResponseLogstashInfluxb(), $response1->getContent()[0]);
 
-        $this->assertEquals(200, $response2->getStatus());
-        $this->assertEquals($this->getResponseElasticsearchMongo(), $response2->getContent()[0]);
+        self::assertEquals(200, $response2->getStatus());
+        self::assertEquals($this->getResponseElasticsearchMongo(), $response2->getContent()[0]);
 
         $response3 = $this->sendPost(
             '/installer',
@@ -51,8 +51,8 @@ final class InstallerControllerTest extends ControllerTestCaseAbstract
             ]
         );
 
-        $this->assertEquals(500, $response3->getStatus());
-        $this->assertEquals('Insert correct value to log', $response3->getContent()['message']);
+        self::assertEquals(500, $response3->getStatus());
+        self::assertEquals('Insert correct value to log', $response3->getContent()['message']);
     }
 
     /**

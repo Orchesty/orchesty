@@ -19,8 +19,8 @@ final class PortalControllerTest extends ControllerTestCaseAbstract
     {
         $response = $this->sendGet('/');
 
-        $this->assertEquals(200, $response->getStatus());
-        $this->assertEquals(
+        self::assertEquals(200, $response->getStatus());
+        self::assertEquals(
             [
                 'name'    => 'portal',
                 'version' => '1.0.0',

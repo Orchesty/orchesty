@@ -25,6 +25,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->startClient();
     }
 
@@ -119,10 +120,10 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
             $message = sprintf('%s%s', Json::encode($responseContent), PHP_EOL);
         }
 
-        $this->assertEquals($status, $responseStatus, $message ?? '');
+        self::assertEquals($status, $responseStatus, $message ?? '');
 
         if ($content) {
-            $this->assertEquals($content, $responseContent);
+            self::assertEquals($content, $responseContent);
         }
     }
 

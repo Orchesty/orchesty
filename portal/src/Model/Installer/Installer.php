@@ -15,20 +15,19 @@ use Throwable;
 class Installer
 {
 
-    private const BASE_ROUTE                = 'dkr.hanaboso.net';
-    private const PIPES_DEMO_MONOLITH_ROUTE = '/pipes/demo/monolith:';
-    private const PIPES_PIPES_PFBRIDGE      = '/pipes/pipes/pf-bridge:';
-    private const PIPES_NOTIFICATION_SENDER = '/pipes/notification-sender:';
-    private const MASTER                    = 'master';
-
-    public const KAPACITOR = 'kapacitor';
-
     public const ELASTICSEARCH = 'elasticsearch';
+    public const KAPACITOR     = 'kapacitor';
     public const RABBITMQ      = 'rabbitmq';
     public const REDIS         = 'redis';
     public const MONGO         = 'mongo';
     public const INFLUXDB      = 'influxdb';
     public const LOGSTASH      = 'logstash';
+
+    private const BASE_ROUTE                = 'dkr.hanaboso.net';
+    private const PIPES_DEMO_MONOLITH_ROUTE = '/pipes/demo/monolith:';
+    private const PIPES_PIPES_PFBRIDGE      = '/pipes/pipes/pf-bridge:';
+    private const PIPES_NOTIFICATION_SENDER = '/pipes/notification-sender:';
+    private const MASTER                    = 'master';
 
     /**
      * @var mixed[]
@@ -170,7 +169,7 @@ class Installer
      */
     public function unsetValue(string $value, array $array): array
     {
-        $key = array_search($value, $array);
+        $key = array_search($value, $array, TRUE);
         if ($key !== FALSE) {
             unset($array[$key]);
 
@@ -713,7 +712,7 @@ class Installer
         $logsName    = sprintf('logs%s', ucfirst($component));
         $metricsName = sprintf('metrics%s', ucfirst($component));
 
-        $key = array_search($dto->getLog(), $this->$logsName['logs']);
+        $key = array_search($dto->getLog(), $this->$logsName['logs'], TRUE);
 
         if (is_int($key)) {
             $array = array_merge($array, [$this->$logsName['logs'][$key]]);
@@ -725,8 +724,8 @@ class Installer
         } else if ($dto->getMetric() === self::MONGO) {
 
             $keys = [self::INFLUXDB, self::KAPACITOR];
-            foreach ($keys as $key) {
-                $index = array_search($key, $this->$metricsName['metrics']);
+            foreach ($keys as $innerKey) {
+                $index = array_search($innerKey, $this->$metricsName['metrics'], TRUE);
                 if ($index !== FALSE) {
                     unset($this->$metricsName['metrics'][$index]);
                 }
@@ -783,7 +782,7 @@ class Installer
 
         $keys = [self::INFLUXDB, self::KAPACITOR];
         foreach ($keys as $key) {
-            $index = array_search($key, $metricsName);
+            $index = array_search($key, $metricsName, TRUE);
             if ($index !== FALSE) {
                 unset($metricsName[$index]);
             }

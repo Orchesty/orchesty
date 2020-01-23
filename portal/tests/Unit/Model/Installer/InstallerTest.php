@@ -159,7 +159,7 @@ final class InstallerTest extends TestCase
 
             $keys = [Installer::INFLUXDB, Installer::KAPACITOR];
             foreach ($keys as $key) {
-                $index = array_search($key, $array['metrics']);
+                $index = array_search($key, $array['metrics'], TRUE);
                 if ($index !== FALSE) {
                     unset($array['metrics'][$index]);
                 }
