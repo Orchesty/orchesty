@@ -25,6 +25,7 @@ services:
             - ${HOME}/dev/.composer:${HOME}/dev/.composer
         environment:
             - APP_ENV=test
+            - RABBITMQ_DSN=amqp://rabbitmq:5672
             - KERNEL_CLASS=Hanaboso\NotificationSender\Kernel
             - DEV_UID=${DEV_UID}
             - DEV_GID=${DEV_GID}

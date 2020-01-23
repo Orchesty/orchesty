@@ -133,7 +133,10 @@ final class NotificationManager implements LoggerAwareInterface
 
             if ($settings) {
                 try {
-                    switch (get_parent_class($handler)) {
+                    /** @var string $parentClass */
+                    $parentClass = get_parent_class($handler);
+
+                    switch ($parentClass) {
                         case CurlHandlerAbstract::class:
                             /** @var CurlDto $dto */
                             $dto = $handler->process($data);

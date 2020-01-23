@@ -22,16 +22,16 @@ use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
 class NotificationSettings
 {
 
+    use IdTrait;
+    use CreatedTrait;
+    use UpdatedTrait;
+
     public const ID         = 'id';
     public const TYPE       = 'type';
     public const NAME       = 'name';
     public const CLASS_NAME = 'class';
     public const EVENTS     = 'events';
     public const SETTINGS   = 'settings';
-
-    use IdTrait;
-    use CreatedTrait;
-    use UpdatedTrait;
 
     /**
      * @var string

@@ -37,16 +37,6 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
     private $manager;
 
     /**
-     * @throws Exception
-     */
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->manager = self::$container->get('notification.manager.settings');
-    }
-
-    /**
      * @covers NotificationSettingsManager::listSettings
      *
      * @throws Exception
@@ -313,6 +303,16 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
         self::expectExceptionMessage("Required settings 'host' for type 'email' is missing!");
 
         $this->manager->saveSettings($settings->getId(), [NotificationSettings::SETTINGS => []]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->manager = self::$container->get('notification.manager.settings');
     }
 
 }

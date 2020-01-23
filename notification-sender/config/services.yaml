@@ -15,5 +15,3 @@ parameters:
     mongo_password: '%env(MONGO_PASSWORD)%'
     mongo_connection: '%env(MONGO_CONNECTION)%'
 
-    env(RABBIT_HOST): rabbitmq
-    rabbit_host: '%env(RABBIT_HOST)%'
