@@ -3,10 +3,9 @@
 namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller;
 
 use Doctrine\ODM\MongoDB\MongoDBException;
-use FOS\RestBundle\Controller\AbstractFOSRestController;
-use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler;
+use Hanaboso\Utils\Traits\ControllerTrait;
 use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,7 +17,7 @@ use Throwable;
  *
  * @package Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller
  */
-class TopologyController extends AbstractFOSRestController
+class TopologyController
 {
 
     use ControllerTrait;

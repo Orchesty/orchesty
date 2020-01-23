@@ -4,9 +4,9 @@ namespace Tests\Controller\HbPFConfiguratorBundle\Controller;
 
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Exception;
-use Hanaboso\CommonsBundle\Utils\ControllerUtils;
-use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesFramework\Configurator\Document\Sdk;
+use Hanaboso\Utils\String\Json;
+use Hanaboso\Utils\System\ControllerUtils;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Tests\ControllerTestCaseAbstract;
 

@@ -4,8 +4,6 @@ namespace Tests\Unit\TopologyInstaller;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
-use Hanaboso\CommonsBundle\Database\Document\Topology;
-use Hanaboso\CommonsBundle\Database\Repository\TopologyRepository;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
@@ -15,6 +13,8 @@ use Hanaboso\PipesFramework\TopologyInstaller\Dto\TopologyFile;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\UpdateObject;
 use Hanaboso\PipesFramework\TopologyInstaller\InstallManager;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
+use Hanaboso\PipesPhpSdk\Database\Document\Topology;
+use Hanaboso\PipesPhpSdk\Database\Repository\TopologyRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Client;
 use Tests\KernelTestCaseAbstract;
@@ -37,7 +37,6 @@ final class InstallManagerTest extends KernelTestCaseAbstract
 
         $manager = $this->createManager($data, $topo, []);
         $output  = $manager->prepareInstall(TRUE, TRUE, TRUE);
-        self::assertTrue(is_array($output));
         self::assertArrayHasKey('create', $output);
         self::assertArrayHasKey('update', $output);
         self::assertArrayHasKey('delete', $output);
@@ -54,7 +53,6 @@ final class InstallManagerTest extends KernelTestCaseAbstract
 
         $manager = $this->createManager($data, $topo, []);
         $output  = $manager->makeInstall(TRUE, TRUE, TRUE);
-        self::assertTrue(is_array($output));
         self::assertArrayHasKey('create', $output);
         self::assertArrayHasKey('update', $output);
         self::assertArrayHasKey('delete', $output);
@@ -82,11 +80,7 @@ final class InstallManagerTest extends KernelTestCaseAbstract
      * @return InstallManager
      * @throws Exception
      */
-    private function createManager(
-        ?string $redisResult,
-        Topology $savedTopo,
-        array $dirs = []
-    ): InstallManager
+    private function createManager(?string $redisResult, Topology $savedTopo, array $dirs = []): InstallManager
     {
         $repo = $this->createMock(TopologyRepository::class);
         /** @var DocumentManager|MockObject $dm */
@@ -123,7 +117,9 @@ final class InstallManagerTest extends KernelTestCaseAbstract
             }
         );
 
-        return new InstallManager($dm, $client, $topologyManager, $requestHandler, $categoryParser, $dirs);
+        $decoder = self::$container->get('rest.decoder.xml');
+
+        return new InstallManager($dm, $client, $topologyManager, $requestHandler, $categoryParser, $decoder, $dirs);
     }
 
     /**

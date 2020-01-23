@@ -3,8 +3,8 @@
 namespace Hanaboso\PipesFramework\Configurator\StatusService;
 
 use Hanaboso\CommonsBundle\Event\ProcessStatusEvent;
-use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
-use Hanaboso\CommonsBundle\Utils\Json;
+use Hanaboso\Utils\Exception\PipesFrameworkException;
+use Hanaboso\Utils\String\Json;
 use PhpAmqpLib\Message\AMQPMessage;
 use RabbitMqBundle\Connection\Connection;
 use RabbitMqBundle\Consumer\CallbackInterface;

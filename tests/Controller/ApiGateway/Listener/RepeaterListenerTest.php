@@ -3,15 +3,15 @@
 namespace Tests\Controller\ApiGateway\Listener;
 
 use Exception;
-use Hanaboso\CommonsBundle\Database\Document\Dto\SystemConfigDto;
-use Hanaboso\CommonsBundle\Database\Document\Node;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use Hanaboso\PipesFramework\ApiGateway\Listener\RepeaterListener;
+use Hanaboso\PipesPhpSdk\Database\Document\Dto\SystemConfigDto;
+use Hanaboso\PipesPhpSdk\Database\Document\Node;
+use Hanaboso\Utils\System\PipesHeaders;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Tests\ControllerTestCaseAbstract;
 use Throwable;
 
@@ -112,20 +112,19 @@ final class RepeaterListenerTest extends ControllerTestCaseAbstract
     /**
      * @param Throwable $exception
      *
-     * @return GetResponseForExceptionEvent | MockObject
-     * @throws Exception
+     * @return ExceptionEvent
      */
-    private function mockEvent(Throwable $exception)
+    private function mockEvent(Throwable $exception): ExceptionEvent
     {
-        /** @var GetResponseForExceptionEvent | MockObject $eventMock */
+        /** @var ExceptionEvent|MockObject $eventMock */
         $eventMock = self::createPartialMock(
-            GetResponseForExceptionEvent::class,
+            ExceptionEvent::class,
             ['getThrowable']
         );
 
         $eventMock
             ->method('getThrowable')
-            ->will($this->returnValue($exception));
+            ->willReturn($exception);
 
         return $eventMock;
     }

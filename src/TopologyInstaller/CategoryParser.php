@@ -7,12 +7,12 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
-use Hanaboso\CommonsBundle\Database\Document\Category;
-use Hanaboso\CommonsBundle\Database\Document\Topology;
-use Hanaboso\CommonsBundle\Database\Repository\CategoryRepository;
 use Hanaboso\CommonsBundle\Exception\CategoryException;
 use Hanaboso\PipesFramework\Configurator\Model\CategoryManager;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\TopologyFile;
+use Hanaboso\PipesPhpSdk\Database\Document\Category;
+use Hanaboso\PipesPhpSdk\Database\Document\Topology;
+use Hanaboso\PipesPhpSdk\Database\Repository\CategoryRepository;
 use RuntimeException;
 
 /**
@@ -280,7 +280,7 @@ class CategoryParser
      */
     private function removeElement(array &$array, string $element): void
     {
-        $key = array_search($element, $array);
+        $key = array_search($element, $array, TRUE);
         if ($key !== FALSE) {
             unset($array[$key]);
         }
@@ -305,7 +305,7 @@ class CategoryParser
      */
     private function replaceElement(array &$array, string $element, string $replacement): void
     {
-        $key = array_search($element, $array);
+        $key = array_search($element, $array, TRUE);
         if ($key !== FALSE) {
             $array[$key] = $replacement;
         }

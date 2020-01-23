@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesFramework\Configurator\Exception;
 
-use Hanaboso\CommonsBundle\Exception\PipesFrameworkExceptionAbstract;
+use Hanaboso\Utils\Exception\PipesFrameworkExceptionAbstract;
 
 /**
  * Class TopologyException
@@ -11,8 +11,6 @@ use Hanaboso\CommonsBundle\Exception\PipesFrameworkExceptionAbstract;
  */
 class TopologyException extends PipesFrameworkExceptionAbstract
 {
-
-    protected const OFFSET = 2_400;
 
     public const INVALID_TOPOLOGY_TYPE            = self::OFFSET + 1;
     public const TOPOLOGY_NOT_FOUND               = self::OFFSET + 2;
@@ -27,5 +25,7 @@ class TopologyException extends PipesFrameworkExceptionAbstract
     public const SCHEMA_START_NODE_MISSING        = self::OFFSET + 11;
     public const SCHEMA_INFINITE_LOOP             = self::OFFSET + 12;
     public const TOPOLOGY_NODE_CRON_NOT_AVAILABLE = self::OFFSET + 13;
+
+    protected const OFFSET = 2_400;
 
 }

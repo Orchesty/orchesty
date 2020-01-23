@@ -7,26 +7,26 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
-use Hanaboso\CommonsBundle\Database\Document\Node;
-use Hanaboso\CommonsBundle\Database\Document\Topology;
 use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator;
-use Hanaboso\CommonsBundle\Database\Repository\NodeRepository;
-use Hanaboso\CommonsBundle\Database\Repository\TopologyRepository;
 use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
 use Hanaboso\CommonsBundle\Exception\CronException;
-use Hanaboso\CommonsBundle\Exception\EnumException;
 use Hanaboso\CommonsBundle\Exception\NodeException;
-use Hanaboso\CommonsBundle\Exception\PipesFrameworkException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
-use Hanaboso\CommonsBundle\Utils\ControllerUtils;
-use Hanaboso\CommonsBundle\Utils\Json;
-use Hanaboso\CommonsBundle\Utils\UriParams;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyConfigException;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
+use Hanaboso\PipesPhpSdk\Database\Document\Node;
+use Hanaboso\PipesPhpSdk\Database\Document\Topology;
+use Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository;
+use Hanaboso\PipesPhpSdk\Database\Repository\TopologyRepository;
+use Hanaboso\Utils\Exception\EnumException;
+use Hanaboso\Utils\Exception\PipesFrameworkException;
+use Hanaboso\Utils\String\Json;
+use Hanaboso\Utils\String\UriParams;
+use Hanaboso\Utils\System\ControllerUtils;
 use Throwable;
 
 /**
@@ -308,7 +308,7 @@ class TopologyHandler
     {
         $startTopology = TRUE;
         $runningInfo   = $this->generatorBridge->infoTopology($topologyId);
-        if ($runningInfo instanceof ResponseDto && $runningInfo->getBody()) {
+        if ($runningInfo->getBody()) {
             $result = Json::decode($runningInfo->getBody());
             if (array_key_exists('docker_info', $result) && count($result['docker_info'])) {
                 $startTopology = FALSE;

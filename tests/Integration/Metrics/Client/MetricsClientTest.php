@@ -4,10 +4,8 @@ namespace Tests\Integration\Metrics\Client;
 
 use Hanaboso\PipesFramework\Metrics\Client\MetricsClient;
 use Hanaboso\PipesFramework\Metrics\Exception\MetricsException;
-use InfluxDB\Client;
 use InfluxDB\Database;
 use InfluxDB\Database\RetentionPolicy;
-use InfluxDB\Query\Builder;
 use Tests\KernelTestCaseAbstract;
 
 /**
@@ -26,7 +24,7 @@ final class MetricsClientTest extends KernelTestCaseAbstract
         $manager = $this->getMetricsClient();
         $client  = $manager->createClient();
 
-        self::assertInstanceOf(Client::class, $client);
+        self::assertNotEmpty($client);
     }
 
     /**
@@ -40,8 +38,6 @@ final class MetricsClientTest extends KernelTestCaseAbstract
         $database = $manager->getDatabase();
 
         $database->create(new RetentionPolicy('test', '1d', 1, TRUE));
-
-        self::assertInstanceOf(Database::class, $database);
 
         self::expectException(MetricsException::class);
         self::expectExceptionCode(MetricsException::DB_NOT_EXIST);
@@ -58,7 +54,7 @@ final class MetricsClientTest extends KernelTestCaseAbstract
         $manager->createClient()->selectDB('pipes')->create(new RetentionPolicy('test', '1d', 1, TRUE));
         $qb = $manager->getQueryBuilder();
 
-        self::assertInstanceOf(Builder::class, $qb);
+        self::assertNotEmpty($qb);
     }
 
     /**

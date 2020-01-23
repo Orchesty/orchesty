@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller;
 
-use FOS\RestBundle\Controller\AbstractFOSRestController;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -12,11 +12,11 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @package Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller
  */
-final class WebhookController extends AbstractFOSRestController
+final class WebhookController extends AbstractController
 {
 
     /**
-     * @Route("/webhook/applications/{key}/users/{user}/subscribe", methods={"POST"})
+     * @Route("/webhook/applications/{key}/users/{user}/subscribe", methods={"POST", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $key
@@ -37,7 +37,7 @@ final class WebhookController extends AbstractFOSRestController
     }
 
     /**
-     * @Route("/webhook/applications/{key}/users/{user}/unsubscribe", methods={"POST"})
+     * @Route("/webhook/applications/{key}/users/{user}/unsubscribe", methods={"POST", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $key

@@ -5,26 +5,26 @@ namespace Hanaboso\PipesFramework\Configurator\Model;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
-use Hanaboso\CommonsBundle\Database\Document\Embed\EmbedNode;
-use Hanaboso\CommonsBundle\Database\Document\Node;
-use Hanaboso\CommonsBundle\Database\Document\Topology;
 use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator;
-use Hanaboso\CommonsBundle\Database\Repository\TopologyRepository;
 use Hanaboso\CommonsBundle\Enum\HandlerEnum;
 use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\CommonsBundle\Exception\CronException;
-use Hanaboso\CommonsBundle\Exception\EnumException;
 use Hanaboso\CommonsBundle\Exception\NodeException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
-use Hanaboso\CommonsBundle\Utils\Json;
-use Hanaboso\CommonsBundle\Utils\Strings;
 use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Utils\Dto\NodeSchemaDto;
 use Hanaboso\PipesFramework\Utils\Dto\Schema;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
+use Hanaboso\PipesPhpSdk\Database\Document\Embed\EmbedNode;
+use Hanaboso\PipesPhpSdk\Database\Document\Node;
+use Hanaboso\PipesPhpSdk\Database\Document\Topology;
+use Hanaboso\PipesPhpSdk\Database\Repository\TopologyRepository;
 use Hanaboso\Utils\Cron\CronParser;
+use Hanaboso\Utils\Exception\EnumException;
+use Hanaboso\Utils\String\Json;
+use Hanaboso\Utils\String\Strings;
 
 /**
  * Class TopologyManager
@@ -457,7 +457,7 @@ class TopologyManager
         $nodes[$dto->getId()]      = $node;
         $embedNodes[$dto->getId()] = EmbedNode::from($node);
 
-        $this->makePatchRequestForCron($node, (string) $dto->getPipesType(), $dto->getId());
+        $this->makePatchRequestForCron($node, $dto->getPipesType(), $dto->getId());
 
         return $node;
     }
@@ -473,12 +473,7 @@ class TopologyManager
      * @throws NodeException
      * @throws TopologyException
      */
-    private function updateNode(
-        Topology $topology,
-        array &$nodes,
-        array &$embedNodes,
-        NodeSchemaDto $dto
-    ): Node
+    private function updateNode(Topology $topology, array &$nodes, array &$embedNodes, NodeSchemaDto $dto): Node
     {
         $this->checkNodeAttributes($dto);
         $node = $this->getNodeBySchemaId($topology, $dto->getId());
@@ -509,7 +504,7 @@ class TopologyManager
             ->setSchemaId($dto->getId())
             ->setTopology($topology->getId())
             ->setHandler(Strings::endsWith($dto->getHandler(), 'vent') ? HandlerEnum::EVENT : HandlerEnum::ACTION)
-            ->setCronParams(urldecode((string) $dto->getCronParams()))
+            ->setCronParams(urldecode($dto->getCronParams()))
             ->setCron($dto->getCronTime());
 
         return $node;

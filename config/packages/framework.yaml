@@ -4,6 +4,7 @@ framework:
         enabled: false
     default_locale: "%locale%"
     trusted_hosts: ~
+    serializer:
     fragments: ~
     http_method_override: true
     test: false

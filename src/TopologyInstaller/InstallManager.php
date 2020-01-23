@@ -6,11 +6,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
-use FOS\RestBundle\Decoder\XmlDecoder;
-use Hanaboso\CommonsBundle\Database\Document\Topology;
-use Hanaboso\CommonsBundle\Database\Repository\TopologyRepository;
 use Hanaboso\CommonsBundle\Exception\CronException;
-use Hanaboso\CommonsBundle\Exception\EnumException;
 use Hanaboso\CommonsBundle\Exception\NodeException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyConfigException;
@@ -20,6 +16,10 @@ use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\UpdateObject;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
+use Hanaboso\PipesPhpSdk\Database\Document\Topology;
+use Hanaboso\RestBundle\Exception\DecoderException;
+use Hanaboso\RestBundle\Model\Decoder\XmlDecoder;
+use Hanaboso\Utils\Exception\EnumException;
 use Predis\Client;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
@@ -61,11 +61,6 @@ class InstallManager implements LoggerAwareInterface
     private $topologyManager;
 
     /**
-     * @var XmlDecoder
-     */
-    private $xml;
-
-    /**
      * @var TopologyGeneratorBridge
      */
     private $requestHandler;
@@ -81,6 +76,42 @@ class InstallManager implements LoggerAwareInterface
     private $categoryParser;
 
     /**
+     * @var XmlDecoder
+     */
+    private $decoder;
+
+    /**
+     * InstallManager constructor.
+     *
+     * @param DocumentManager         $dm
+     * @param Client<mixed>           $client
+     * @param TopologyManager         $topologyManager
+     * @param TopologyGeneratorBridge $requestHandler
+     * @param CategoryParser          $categoryParser
+     * @param XmlDecoder              $decoder
+     * @param mixed[]                 $dirs
+     */
+    public function __construct(
+        DocumentManager $dm,
+        Client $client,
+        TopologyManager $topologyManager,
+        TopologyGeneratorBridge $requestHandler,
+        CategoryParser $categoryParser,
+        XmlDecoder $decoder,
+        array $dirs
+    )
+    {
+        $this->dm              = $dm;
+        $this->client          = $client;
+        $this->topologyManager = $topologyManager;
+        $this->requestHandler  = $requestHandler;
+        $this->categoryParser  = $categoryParser;
+        $this->comparator      = new TopologiesComparator($dm->getRepository(Topology::class), $decoder, $dirs);
+        $this->logger          = new NullLogger();
+        $this->decoder         = $decoder;
+    }
+
+    /**
      * @param bool $makeCreate
      * @param bool $makeUpdate
      * @param bool $makeDelete
@@ -90,6 +121,7 @@ class InstallManager implements LoggerAwareInterface
      * @throws ConnectorException
      * @throws MongoDBException
      * @throws TopologyException
+     * @throws DecoderException
      */
     public function prepareInstall(bool $makeCreate, bool $makeUpdate, bool $makeDelete, bool $force = FALSE): array
     {
@@ -101,37 +133,6 @@ class InstallManager implements LoggerAwareInterface
         }
 
         return $this->generateOutput($result, $makeCreate, $makeUpdate, $makeDelete);
-    }
-
-    /**
-     * InstallManager constructor.
-     *
-     * @param DocumentManager         $dm
-     * @param Client<mixed>           $client
-     * @param TopologyManager         $topologyManager
-     * @param TopologyGeneratorBridge $requestHandler
-     * @param CategoryParser          $categoryParser
-     * @param mixed[]                 $dirs
-     */
-    public function __construct(
-        DocumentManager $dm,
-        Client $client,
-        TopologyManager $topologyManager,
-        TopologyGeneratorBridge $requestHandler,
-        CategoryParser $categoryParser,
-        array $dirs
-    )
-    {
-        $this->dm = $dm;
-        /** @var TopologyRepository $repo */
-        $repo                  = $dm->getRepository(Topology::class);
-        $this->client          = $client;
-        $this->topologyManager = $topologyManager;
-        $this->requestHandler  = $requestHandler;
-        $this->categoryParser  = $categoryParser;
-        $this->comparator      = new TopologiesComparator($repo, $dirs);
-        $this->xml             = new XmlDecoder();
-        $this->logger          = new NullLogger();
     }
 
     /**
@@ -282,7 +283,9 @@ class InstallManager implements LoggerAwareInterface
      * @param string   $content
      *
      * @return Topology
+     * @throws CronException
      * @throws CurlException
+     * @throws DecoderException
      * @throws EnumException
      * @throws LockException
      * @throws MappingException
@@ -290,11 +293,10 @@ class InstallManager implements LoggerAwareInterface
      * @throws NodeException
      * @throws TopologyConfigException
      * @throws TopologyException
-     * @throws CronException
      */
     private function makeRunnable(Topology $topology, string $content): Topology
     {
-        $topology = $this->topologyManager->saveTopologySchema($topology, $content, $this->xml->decode($content));
+        $topology = $this->topologyManager->saveTopologySchema($topology, $content, $this->decoder->decode($content));
         $this->topologyManager->publishTopology($topology);
         $this->topologyManager->updateTopology($topology, ['enabled' => TRUE]);
         $this->requestHandler->generateTopology($topology->getId());

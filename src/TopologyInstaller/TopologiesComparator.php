@@ -3,14 +3,15 @@
 namespace Hanaboso\PipesFramework\TopologyInstaller;
 
 use Doctrine\ODM\MongoDB\MongoDBException;
-use FOS\RestBundle\Decoder\XmlDecoder;
-use Hanaboso\CommonsBundle\Database\Document\Topology;
-use Hanaboso\CommonsBundle\Database\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\TopologyFile;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\UpdateObject;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
+use Hanaboso\PipesPhpSdk\Database\Document\Topology;
+use Hanaboso\PipesPhpSdk\Database\Repository\TopologyRepository;
+use Hanaboso\RestBundle\Exception\DecoderException;
+use Hanaboso\RestBundle\Model\Decoder\XmlDecoder;
 use Symfony\Component\Finder\SplFileInfo;
 
 /**
@@ -32,19 +33,27 @@ class TopologiesComparator
     private $repository;
 
     /**
+     * @var XmlDecoder
+     */
+    private XmlDecoder $decoder;
+
+    /**
      * TopologiesComparator constructor.
      *
      * @param TopologyRepository $repository
+     * @param XmlDecoder         $decoder
      * @param mixed[]            $dirs
      */
-    public function __construct(TopologyRepository $repository, array $dirs)
+    public function __construct(TopologyRepository $repository, XmlDecoder $decoder, array $dirs)
     {
         $this->dirs       = $dirs;
         $this->repository = $repository;
+        $this->decoder    = $decoder;
     }
 
     /**
      * @return CompareResultDto
+     * @throws DecoderException
      * @throws MongoDBException
      * @throws TopologyException
      */
@@ -92,11 +101,11 @@ class TopologiesComparator
      *
      * @return bool
      * @throws TopologyException
+     * @throws DecoderException
      */
     private function isEqual(Topology $topology, SplFileInfo $file): bool
     {
-        $xmlDecoder = new XmlDecoder();
-        $newSchema  = TopologySchemaUtils::getSchemaObject($xmlDecoder->decode($file->getContents()));
+        $newSchema = TopologySchemaUtils::getSchemaObject($this->decoder->decode($file->getContents()));
 
         return $topology->getContentHash() == TopologySchemaUtils::getIndexHash($newSchema);
     }

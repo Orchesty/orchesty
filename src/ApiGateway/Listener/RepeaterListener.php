@@ -7,17 +7,17 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Exception;
-use Hanaboso\CommonsBundle\Database\Document\Node;
-use Hanaboso\CommonsBundle\Database\Repository\NodeRepository;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\CommonsBundle\Traits\ControllerTrait;
-use Hanaboso\CommonsBundle\Utils\PipesHeaders;
+use Hanaboso\PipesPhpSdk\Database\Document\Node;
+use Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository;
+use Hanaboso\Utils\System\PipesHeaders;
+use Hanaboso\Utils\Traits\ControllerTrait;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
@@ -47,21 +47,11 @@ class RepeaterListener implements EventSubscriberInterface, LoggerAwareInterface
     }
 
     /**
-     * @return mixed[]
-     */
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            KernelEvents::EXCEPTION => 'onRepeatableException',
-        ];
-    }
-
-    /**
-     * @param GetResponseForExceptionEvent $event
+     * @param ExceptionEvent $event
      *
      * @throws Exception
      */
-    public function onRepeatableException(GetResponseForExceptionEvent $event): void
+    public function onRepeatableException(ExceptionEvent $event): void
     {
         $e = $event->getThrowable();
 
@@ -103,16 +93,24 @@ class RepeaterListener implements EventSubscriberInterface, LoggerAwareInterface
             $dto->setStopProcess(ProcessDto::STOP_AND_FAILED);
         }
 
-        if ($this->logger) {
-            $this->logger->info(
-                'Repeater info.',
-                ['currentHop' => $currentHop, 'interval' => $e->getInterval(), 'maxHops' => $maxHop]
-            );
-        }
+        $this->logger->info(
+            'Repeater info.',
+            ['currentHop' => $currentHop, 'interval' => $e->getInterval(), 'maxHops' => $maxHop]
+        );
 
         $response = new Response($dto->getData(), 200, $dto->getHeaders());
         $event->setResponse($response);
         $event->allowCustomResponseCode();
+    }
+
+    /**
+     * @return array<string, array<int|string, array<int|string, int|string>|int|string>|string>
+     */
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            KernelEvents::EXCEPTION => 'onRepeatableException',
+        ];
     }
 
     /**

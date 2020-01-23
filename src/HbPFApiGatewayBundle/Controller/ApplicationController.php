@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller;
 
-use FOS\RestBundle\Controller\AbstractFOSRestController;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -12,11 +12,11 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @package Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller
  */
-final class ApplicationController extends AbstractFOSRestController
+final class ApplicationController extends AbstractController
 {
 
     /**
-     * @Route("/applications", methods={"GET"})
+     * @Route("/applications", methods={"GET", "OPTIONS"})
      *
      * @return Response
      */
@@ -26,7 +26,7 @@ final class ApplicationController extends AbstractFOSRestController
     }
 
     /**
-     * @Route("/applications/{key}", methods={"GET"})
+     * @Route("/applications/{key}", methods={"GET", "OPTIONS"})
      *
      * @param string $key
      *
@@ -43,7 +43,7 @@ final class ApplicationController extends AbstractFOSRestController
     }
 
     /**
-     * @Route("/applications/users/{user}", methods={"GET"})
+     * @Route("/applications/users/{user}", methods={"GET", "OPTIONS"})
      *
      * @param string $user
      *
@@ -60,7 +60,7 @@ final class ApplicationController extends AbstractFOSRestController
     }
 
     /**
-     * @Route("/applications/{key}/users/{user}", methods={"GET"})
+     * @Route("/applications/{key}/users/{user}", methods={"GET", "OPTIONS"})
      *
      * @param string $key
      * @param string $user
@@ -79,7 +79,7 @@ final class ApplicationController extends AbstractFOSRestController
     }
 
     /**
-     * @Route("/applications/{key}/users/{user}", methods={"POST"})
+     * @Route("/applications/{key}/users/{user}", methods={"POST", "OPTIONS"})
      *
      * @param string $key
      * @param string $user
@@ -98,7 +98,7 @@ final class ApplicationController extends AbstractFOSRestController
     }
 
     /**
-     * @Route("/applications/{key}/users/{user}", methods={"PUT"})
+     * @Route("/applications/{key}/users/{user}", methods={"PUT", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $key
@@ -119,7 +119,7 @@ final class ApplicationController extends AbstractFOSRestController
     }
 
     /**
-     * @Route("/applications/{key}/users/{user}", methods={"DELETE"})
+     * @Route("/applications/{key}/users/{user}", methods={"DELETE", "OPTIONS"})
      *
      * @param string $key
      * @param string $user
@@ -138,7 +138,7 @@ final class ApplicationController extends AbstractFOSRestController
     }
 
     /**
-     * @Route("/applications/{key}/users/{user}/password", methods={"PUT"})
+     * @Route("/applications/{key}/users/{user}/password", methods={"PUT", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $key
@@ -159,7 +159,7 @@ final class ApplicationController extends AbstractFOSRestController
     }
 
     /**
-     * @Route("/applications/{key}/users/{user}/authorize", methods={"GET"})
+     * @Route("/applications/{key}/users/{user}/authorize", methods={"GET", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $key
@@ -180,7 +180,7 @@ final class ApplicationController extends AbstractFOSRestController
     }
 
     /**
-     * @Route("/applications/{key}/users/{user}/authorize/token", methods={"GET"})
+     * @Route("/applications/{key}/users/{user}/authorize/token", methods={"GET", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $key
@@ -201,7 +201,7 @@ final class ApplicationController extends AbstractFOSRestController
     }
 
     /**
-     * @Route("/applications/authorize/token", methods={"GET"})
+     * @Route("/applications/authorize/token", methods={"GET", "OPTIONS"})
      *
      * @param Request $request
      *

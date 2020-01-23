@@ -18,7 +18,7 @@ class ResourceEnum extends AclResourceEnum
     /**
      * @var string[]
      */
-    protected static $choices = [
+    protected static array $choices = [
         self::GROUP    => 'Group entity',
         self::USER     => 'User entity',
         self::TMP_USER => 'TmpUser entity',

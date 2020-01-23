@@ -6,8 +6,8 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
-use Hanaboso\CommonsBundle\Database\Document\Node;
 use Hanaboso\MongoDataGrid\GridRequestDto;
+use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Driver\Exception\InvalidArgumentException;
 

@@ -2,8 +2,8 @@
 
 namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller;
 
-use FOS\RestBundle\Controller\AbstractFOSRestController;
-use FOS\RestBundle\Controller\ControllerTrait;
+use Hanaboso\Utils\Traits\ControllerTrait;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @package Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller
  */
-final class TopologyController extends AbstractFOSRestController
+final class TopologyController extends AbstractController
 {
 
     use ControllerTrait;
@@ -61,7 +61,7 @@ final class TopologyController extends AbstractFOSRestController
     }
 
     /**
-     * @Route("/topologies", methods={"POST"})
+     * @Route("/topologies", methods={"POST", "OPTIONS"})
      *
      * @return Response
      */
@@ -163,7 +163,7 @@ final class TopologyController extends AbstractFOSRestController
     }
 
     /**
-     * @Route("/topologies/{topologyId}/test", methods={"GET"})
+     * @Route("/topologies/{topologyId}/test", methods={"GET", "OPTIONS"})
      *
      * @param string $topologyId
      *

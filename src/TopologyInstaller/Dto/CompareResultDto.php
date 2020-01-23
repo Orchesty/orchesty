@@ -2,8 +2,8 @@
 
 namespace Hanaboso\PipesFramework\TopologyInstaller\Dto;
 
-use Hanaboso\CommonsBundle\Database\Document\Topology;
 use Hanaboso\PipesFramework\TopologyInstaller\TplgLoader;
+use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 
 /**
  * Class CompareResultDto

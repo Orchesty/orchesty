@@ -4,10 +4,10 @@ namespace Tests\Unit\Configurator\Model;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
-use Hanaboso\CommonsBundle\Database\Document\Category;
 use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator;
-use Hanaboso\CommonsBundle\Database\Repository\CategoryRepository;
 use Hanaboso\PipesFramework\Configurator\Model\CategoryManager;
+use Hanaboso\PipesPhpSdk\Database\Document\Category;
+use Hanaboso\PipesPhpSdk\Database\Repository\CategoryRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use Tests\KernelTestCaseAbstract;
 

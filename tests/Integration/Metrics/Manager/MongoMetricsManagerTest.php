@@ -3,11 +3,11 @@
 namespace Tests\Integration\Metrics\Manager;
 
 use Exception;
-use Hanaboso\CommonsBundle\Database\Document\Node;
-use Hanaboso\CommonsBundle\Database\Document\Topology;
-use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
-use Hanaboso\CommonsBundle\Utils\GeneratorUtils;
 use Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager;
+use Hanaboso\PipesPhpSdk\Database\Document\Node;
+use Hanaboso\PipesPhpSdk\Database\Document\Topology;
+use Hanaboso\Utils\Date\DateTimeUtils;
+use Hanaboso\Utils\System\NodeGeneratorUtils;
 use MongoDB\Client;
 use Tests\KernelTestCaseAbstract;
 
@@ -47,7 +47,6 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
             ]
         );
 
-        self::assertTrue(is_array($result));
         self::assertCount(6, $result);
         self::assertArrayHasKey(MongoMetricsManager::QUEUE_DEPTH, $result);
         self::assertArrayHasKey(MongoMetricsManager::WAITING_TIME, $result);
@@ -122,7 +121,6 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
             ]
         );
 
-        self::assertTrue(is_array($result));
         self::assertCount(6, $result);
         self::assertArrayHasKey(MongoMetricsManager::QUEUE_DEPTH, $result);
         self::assertArrayHasKey(MongoMetricsManager::WAITING_TIME, $result);
@@ -195,7 +193,6 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
             ]
         );
 
-        self::assertTrue(is_array($result));
         self::assertCount(6, $result);
         self::assertArrayHasKey(MongoMetricsManager::QUEUE_DEPTH, $result);
         self::assertArrayHasKey(MongoMetricsManager::WAITING_TIME, $result);
@@ -265,7 +262,6 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
             ]
         );
 
-        self::assertTrue(is_array($result));
         self::assertCount(4, $result);
         self::assertEquals(
             [
@@ -284,7 +280,6 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
         self::assertArrayHasKey($node->getId(), $result);
         $result = $result[$node->getId()];
 
-        self::assertTrue(is_array($result));
         self::assertCount(6, $result);
         self::assertArrayHasKey(MongoMetricsManager::QUEUE_DEPTH, $result);
         self::assertArrayHasKey(MongoMetricsManager::WAITING_TIME, $result);
@@ -313,7 +308,6 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
             ]
         );
 
-        self::assertTrue(is_array($result));
         self::assertCount(2, $result);
         self::assertEquals(
             [
@@ -348,7 +342,6 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
             ]
         );
 
-        self::assertTrue(is_array($result));
         self::assertCount(1, $result);
         self::assertEquals(
             [
@@ -387,7 +380,6 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
             ]
         );
 
-        self::assertTrue(is_array($result));
         self::assertCount(5, $result);
         self::assertCount(121, $result['requests']);
         self::assertEquals(6, array_sum($result['requests']));
@@ -412,7 +404,6 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
             ]
         );
 
-        self::assertTrue(is_array($result));
         self::assertCount(3, $result);
         self::assertCount(121, $result['requests']);
         self::assertEquals(1, array_sum($result['requests']));
@@ -435,7 +426,6 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
             ]
         );
 
-        self::assertTrue(is_array($result));
         self::assertCount(3, $result);
         self::assertCount(121, $result['requests']);
         self::assertEquals(0, array_sum($result['requests']));
@@ -531,7 +521,11 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
 
         $doc = [
             'tags'   => [
-                MongoMetricsManager::QUEUE => GeneratorUtils::generateQueueName($topology, $node),
+                MongoMetricsManager::QUEUE => NodeGeneratorUtils::generateQueueName(
+                    $topology->getId(),
+                    $node->getId(),
+                    $node->getName()
+                ),
             ],
             'fields' => [
                 'messages' => 5,
@@ -595,7 +589,11 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
 
         $doc = [
             'tags'   => [
-                MongoMetricsManager::QUEUE => GeneratorUtils::generateQueueName($topology, $node),
+                MongoMetricsManager::QUEUE => NodeGeneratorUtils::generateQueueName(
+                    $topology->getId(),
+                    $node->getId(),
+                    $node->getName()
+                ),
             ],
             'fields' => [
                 'messages' => 3,
@@ -606,7 +604,11 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
 
         $doc = [
             'tags'   => [
-                MongoMetricsManager::QUEUE => GeneratorUtils::generateQueueName($topology, $node),
+                MongoMetricsManager::QUEUE => NodeGeneratorUtils::generateQueueName(
+                    $topology->getId(),
+                    $node->getId(),
+                    $node->getName()
+                ),
             ],
             'fields' => [
                 'messages' => 5,
@@ -735,7 +737,11 @@ final class MongoMetricsManagerTest extends KernelTestCaseAbstract
 
         $doc = [
             'tags'   => [
-                MongoMetricsManager::QUEUE => GeneratorUtils::generateQueueName($topology, $node),
+                MongoMetricsManager::QUEUE => NodeGeneratorUtils::generateQueueName(
+                    $topology->getId(),
+                    $node->getId(),
+                    $node->getName()
+                ),
             ],
             'fields' => [
                 'messages' => 3,

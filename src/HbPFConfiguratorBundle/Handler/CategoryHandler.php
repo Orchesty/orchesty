@@ -6,10 +6,10 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
-use Hanaboso\CommonsBundle\Database\Document\Category;
 use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocatorInterface;
 use Hanaboso\CommonsBundle\Exception\CategoryException;
 use Hanaboso\PipesFramework\Configurator\Model\CategoryManager;
+use Hanaboso\PipesPhpSdk\Database\Document\Category;
 
 /**
  * Class CategoryHandler

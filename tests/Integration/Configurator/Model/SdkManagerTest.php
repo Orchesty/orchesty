@@ -29,17 +29,6 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
     private $sdkRepo;
 
     /**
-     * @throws Exception
-     */
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->manager = self::$container->get('hbpf.configurator.manager.sdk');
-        $this->sdkRepo = $this->dm->getRepository(Sdk::class);
-    }
-
-    /**
      * @covers SdkManager::getAll
      * @throws Exception
      */
@@ -128,6 +117,17 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
 
         self::assertEquals('One', $data->getKey());
         self::assertEquals('One', $data->getValue());
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->manager = self::$container->get('hbpf.configurator.manager.sdk');
+        $this->sdkRepo = $this->dm->getRepository(Sdk::class);
     }
 
     /**

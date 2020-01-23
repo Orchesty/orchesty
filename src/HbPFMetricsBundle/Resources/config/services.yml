@@ -1,6 +1,6 @@
 parameters:
     env(METRICS_RABBIT_INTERVAL): 5
-    metrics_rabbit_interval: '%env(METRICS_RABBIT_INTERVAL)%'
+    metrics_rabbit_interval: '%env(int:METRICS_RABBIT_INTERVAL)%'
 
 services:
     hbpf.metrics.metrics_client:

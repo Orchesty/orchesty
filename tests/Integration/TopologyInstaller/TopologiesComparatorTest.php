@@ -3,15 +3,13 @@
 namespace Tests\Integration\TopologyInstaller;
 
 use Exception;
-use FOS\RestBundle\Decoder\XmlDecoder;
-use Hanaboso\CommonsBundle\Database\Document\Topology;
-use Hanaboso\CommonsBundle\Database\Repository\TopologyRepository;
 use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
-use Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\TopologyFile;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\UpdateObject;
 use Hanaboso\PipesFramework\TopologyInstaller\TopologiesComparator;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
+use Hanaboso\PipesPhpSdk\Database\Document\Topology;
+use Hanaboso\PipesPhpSdk\Database\Repository\TopologyRepository;
 use Tests\DatabaseTestCaseAbstract;
 
 /**
@@ -27,9 +25,8 @@ final class TopologiesComparatorTest extends DatabaseTestCaseAbstract
      */
     public function testCompare(): void
     {
-        $xmlDecoder = new XmlDecoder();
-
-        $topology = new Topology();
+        $xmlDecoder = self::$container->get('rest.decoder.xml');
+        $topology   = new Topology();
         $topology
             ->setName('file')
             ->setRawBpmn($this->load('file.tplg', TRUE))
@@ -66,10 +63,9 @@ final class TopologiesComparatorTest extends DatabaseTestCaseAbstract
         $dir = sprintf('%s/data', __DIR__);
         /** @var TopologyRepository $repo */
         $repo       = $this->dm->getRepository(Topology::class);
-        $comparator = new TopologiesComparator($repo, [$dir]);
+        $comparator = new TopologiesComparator($repo, $xmlDecoder, [$dir]);
 
         $result = $comparator->compare();
-        self::assertInstanceOf(CompareResultDto::class, $result);
         $create = $result->getCreate();
         $update = $result->getUpdate();
         $delete = $result->getDelete();
@@ -79,9 +75,6 @@ final class TopologiesComparatorTest extends DatabaseTestCaseAbstract
 
         self::assertInstanceOf(TopologyFile::class, reset($create));
         self::assertInstanceOf(UpdateObject::class, reset($update));
-        self::assertInstanceOf(TopologyFile::class, $update[0]->getFile());
-        self::assertInstanceOf(Topology::class, $update[0]->getTopology());
-        self::assertInstanceOf(Topology::class, reset($delete));
     }
 
     /**

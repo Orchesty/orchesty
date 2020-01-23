@@ -4,10 +4,10 @@ namespace Hanaboso\PipesFramework\Metrics\Manager;
 
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Hanaboso\CommonsBundle\Database\Document\Node;
-use Hanaboso\CommonsBundle\Database\Document\Topology;
-use Hanaboso\CommonsBundle\Database\Repository\NodeRepository;
 use Hanaboso\PipesFramework\Metrics\Dto\MetricsDto;
+use Hanaboso\PipesPhpSdk\Database\Document\Node;
+use Hanaboso\PipesPhpSdk\Database\Document\Topology;
+use Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -144,6 +144,31 @@ abstract class MetricsManagerAbstract implements LoggerAwareInterface
     protected $logger;
 
     /**
+     * @param Node     $node
+     * @param Topology $topology
+     * @param mixed[]  $params
+     *
+     * @return mixed[]
+     */
+    abstract public function getNodeMetrics(Node $node, Topology $topology, array $params): array;
+
+    /**
+     * @param Topology $topology
+     * @param mixed[]  $params
+     *
+     * @return mixed[]
+     */
+    abstract public function getTopologyProcessTimeMetrics(Topology $topology, array $params): array;
+
+    /**
+     * @param Topology $topology
+     * @param mixed[]  $params
+     *
+     * @return mixed[]
+     */
+    abstract public function getTopologyRequestCountMetrics(Topology $topology, array $params): array;
+
+    /**
      * MetricsManagerAbstract constructor.
      *
      * @param DocumentManager $dm
@@ -211,31 +236,6 @@ abstract class MetricsManagerAbstract implements LoggerAwareInterface
 
         return $res;
     }
-
-    /**
-     * @param Node     $node
-     * @param Topology $topology
-     * @param mixed[]  $params
-     *
-     * @return mixed[]
-     */
-    abstract public function getNodeMetrics(Node $node, Topology $topology, array $params): array;
-
-    /**
-     * @param Topology $topology
-     * @param mixed[]  $params
-     *
-     * @return mixed[]
-     */
-    abstract public function getTopologyProcessTimeMetrics(Topology $topology, array $params): array;
-
-    /**
-     * @param Topology $topology
-     * @param mixed[]  $params
-     *
-     * @return mixed[]
-     */
-    abstract public function getTopologyRequestCountMetrics(Topology $topology, array $params): array;
 
     /**
      * @param MetricsDto $queue

@@ -4,12 +4,12 @@ namespace Tests;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
-use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
 use Hanaboso\UserBundle\Document\User;
 use Hanaboso\UserBundle\Model\Security\SecurityManager;
 use Hanaboso\UserBundle\Model\Token;
-use Symfony\Bundle\FrameworkBundle\Client;
+use Hanaboso\Utils\String\Json;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -27,11 +27,6 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
 {
 
     use PrivateTrait;
-
-    /**
-     * @var Client
-     */
-    protected static $client;
 
     /**
      * @var DocumentManager
@@ -54,6 +49,11 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     protected $encoder;
 
     /**
+     * @var KernelBrowser
+     */
+    protected static KernelBrowser $client;
+
+    /**
      * ControllerTestCaseAbstract constructor.
      *
      * @param null    $name
@@ -63,6 +63,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     public function __construct($name = NULL, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
+
         $this->encoder = new NativePasswordEncoder(3);
     }
 

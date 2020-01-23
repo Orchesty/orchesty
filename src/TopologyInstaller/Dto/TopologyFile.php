@@ -36,6 +36,16 @@ final class TopologyFile
     }
 
     /**
+     * @param SplFileInfo $file
+     *
+     * @return TopologyFile
+     */
+    public static function from(SplFileInfo $file): TopologyFile
+    {
+        return new self($file->getFilename(), $file->getPathname());
+    }
+
+    /**
      * @return string
      */
     public function getName(): string
@@ -78,16 +88,6 @@ final class TopologyFile
         }
 
         throw new RuntimeException(sprintf('File "%s" not found!', $this->path));
-    }
-
-    /**
-     * @param SplFileInfo $file
-     *
-     * @return TopologyFile
-     */
-    public static function from(SplFileInfo $file): TopologyFile
-    {
-        return new self($file->getFilename(), $file->getPathname());
     }
 
 }

@@ -14,6 +14,24 @@ class Builder extends InfluxDbBuilder
 {
 
     /**
+     * Set's the time range to select data from
+     *
+     * @param int $from
+     * @param int $to
+     *
+     * @return $this
+     */
+    public function setTimeRange($from, $to)
+    {
+        $fromDate = date('Y-m-d H:i:s', $from);
+        $toDate   = date('Y-m-d H:i:s', $to);
+
+        $this->where([sprintf('time >= \'%s\'', $fromDate), sprintf('time < \'%s\'', $toDate)]);
+
+        return $this;
+    }
+
+    /**
      * @return string
      */
     protected function parseQuery(): string
@@ -25,7 +43,7 @@ class Builder extends InfluxDbBuilder
         $metric = $this->metric;
         $rp     = '';
 
-        if (is_string($this->retentionPolicy) && !empty($this->retentionPolicy)) {
+        if ($this->retentionPolicy && !empty($this->retentionPolicy)) {
             $rp     = sprintf('"%s".', $this->retentionPolicy);
             $metric = sprintf('"%s"', $metric);
         }
@@ -57,24 +75,6 @@ class Builder extends InfluxDbBuilder
         }
 
         return $query;
-    }
-
-    /**
-     * Set's the time range to select data from
-     *
-     * @param int $from
-     * @param int $to
-     *
-     * @return $this
-     */
-    public function setTimeRange($from, $to)
-    {
-        $fromDate = date('Y-m-d H:i:s', $from);
-        $toDate   = date('Y-m-d H:i:s', $to);
-
-        $this->where([sprintf('time >= \'%s\'', $fromDate), sprintf('time < \'%s\'', $toDate)]);
-
-        return $this;
     }
 
 }

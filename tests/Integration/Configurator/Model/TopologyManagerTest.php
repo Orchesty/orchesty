@@ -3,17 +3,17 @@
 namespace Tests\Integration\Configurator\Model;
 
 use Exception;
-use Hanaboso\CommonsBundle\Database\Document\Dto\SystemConfigDto;
-use Hanaboso\CommonsBundle\Database\Document\Embed\EmbedNode;
-use Hanaboso\CommonsBundle\Database\Document\Node;
-use Hanaboso\CommonsBundle\Database\Document\Topology;
 use Hanaboso\CommonsBundle\Enum\HandlerEnum;
 use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
-use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
+use Hanaboso\PipesPhpSdk\Database\Document\Dto\SystemConfigDto;
+use Hanaboso\PipesPhpSdk\Database\Document\Embed\EmbedNode;
+use Hanaboso\PipesPhpSdk\Database\Document\Node;
+use Hanaboso\PipesPhpSdk\Database\Document\Topology;
+use Hanaboso\Utils\String\Json;
 use Tests\DatabaseTestCaseAbstract;
 
 /**
@@ -264,42 +264,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
             } else if ($node->getName() == 'node5') {
                 self::assertNodeAfterClone($node5, $node, $res, 0);
             }
-        }
-    }
-
-    /**
-     * @param Node     $expected
-     * @param Node     $actual
-     * @param Topology $topology
-     * @param int      $nextCount
-     *
-     * @throws Exception
-     */
-    private function assertNodeAfterClone(Node $expected, Node $actual, Topology $topology, int $nextCount): void
-    {
-        self::assertFalse($expected->getId() == $actual->getId());
-        self::assertEquals($expected->getName(), $actual->getName());
-        self::assertEquals($expected->getType(), $actual->getType());
-        self::assertEquals($topology->getId(), $actual->getTopology());
-        self::assertEquals($expected->getHandler(), $actual->getHandler());
-        self::assertEquals($expected->isEnabled(), $actual->isEnabled());
-
-        // next
-        self::assertEquals($nextCount, count($expected->getNext()));
-        self::assertEquals($nextCount, count($actual->getNext()));
-
-        /** @var EmbedNode[] $expNext */
-        $expNext = $expected->getNext();
-        /** @var EmbedNode[] $actNext */
-        $actNext = $actual->getNext();
-
-        if ($nextCount == 1) {
-            self::assertFalse($expNext[0]->getId() == $actNext[0]->getId());
-            self::assertEquals($expNext[0]->getName(), $actNext[0]->getName());
-        } else if ($nextCount == 2) {
-            self::assertFalse($expNext[0]->getId() == $actNext[0]->getId());
-            self::assertEquals($expNext[0]->getName(), $actNext[0]->getName());
-            self::assertEquals($expNext[1]->getName(), $actNext[1]->getName());
         }
     }
 
@@ -728,6 +692,42 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         self::assertEquals('Event 2', $nodes[6]->getName());
         self::assertEquals(TypeEnum::WEBHOOK, $nodes[6]->getType());
         self::assertEquals(HandlerEnum::EVENT, $nodes[6]->getHandler());
+    }
+
+    /**
+     * @param Node     $expected
+     * @param Node     $actual
+     * @param Topology $topology
+     * @param int      $nextCount
+     *
+     * @throws Exception
+     */
+    private function assertNodeAfterClone(Node $expected, Node $actual, Topology $topology, int $nextCount): void
+    {
+        self::assertFalse($expected->getId() == $actual->getId());
+        self::assertEquals($expected->getName(), $actual->getName());
+        self::assertEquals($expected->getType(), $actual->getType());
+        self::assertEquals($topology->getId(), $actual->getTopology());
+        self::assertEquals($expected->getHandler(), $actual->getHandler());
+        self::assertEquals($expected->isEnabled(), $actual->isEnabled());
+
+        // next
+        self::assertEquals($nextCount, count($expected->getNext()));
+        self::assertEquals($nextCount, count($actual->getNext()));
+
+        /** @var EmbedNode[] $expNext */
+        $expNext = $expected->getNext();
+        /** @var EmbedNode[] $actNext */
+        $actNext = $actual->getNext();
+
+        if ($nextCount == 1) {
+            self::assertFalse($expNext[0]->getId() == $actNext[0]->getId());
+            self::assertEquals($expNext[0]->getName(), $actNext[0]->getName());
+        } else if ($nextCount == 2) {
+            self::assertFalse($expNext[0]->getId() == $actNext[0]->getId());
+            self::assertEquals($expNext[0]->getName(), $actNext[0]->getName());
+            self::assertEquals($expNext[1]->getName(), $actNext[1]->getName());
+        }
     }
 
 }

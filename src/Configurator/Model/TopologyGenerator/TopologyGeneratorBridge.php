@@ -6,17 +6,17 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use GuzzleHttp\Psr7\Uri;
-use Hanaboso\CommonsBundle\Database\Document\Node;
 use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator;
-use Hanaboso\CommonsBundle\Database\Repository\NodeRepository;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
-use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyConfigException;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory;
+use Hanaboso\PipesPhpSdk\Database\Document\Node;
+use Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository;
+use Hanaboso\Utils\String\Json;
 
 /**
  * Class TopologyGeneratorBridge
@@ -38,14 +38,14 @@ class TopologyGeneratorBridge
     private const HEADERS = ['Content-Type' => 'application/json'];
 
     /**
-     * @var DocumentManager
-     */
-    private $dm;
-
-    /**
      * @var CurlManagerInterface
      */
     protected $curlManager;
+
+    /**
+     * @var DocumentManager
+     */
+    private $dm;
 
     /**
      * @var TopologyConfigFactory

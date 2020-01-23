@@ -6,12 +6,12 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
-use Hanaboso\CommonsBundle\Database\Document\Dto\SystemConfigDto;
-use Hanaboso\CommonsBundle\Database\Document\Node;
-use Hanaboso\CommonsBundle\Database\Repository\NodeRepository;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyConfigException;
+use Hanaboso\PipesPhpSdk\Database\Document\Dto\SystemConfigDto;
+use Hanaboso\PipesPhpSdk\Database\Document\Node;
+use Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository;
 
 /**
  * Class TopologyConfigFactory
@@ -105,7 +105,7 @@ class TopologyConfigFactory
             self::NODE_CONFIG => $this->loopNodes($nodes),
         ];
 
-        return (string) json_encode($result, JSON_FORCE_OBJECT | JSON_THROW_ON_ERROR);
+        return json_encode($result, JSON_FORCE_OBJECT | JSON_THROW_ON_ERROR);
     }
 
     /**
@@ -270,7 +270,7 @@ class TopologyConfigFactory
      * @return mixed[]
      * @throws TopologyConfigException
      */
-    public function getPaths(Node $node, bool $nextConnector): array
+    private function getPaths(Node $node, bool $nextConnector): array
     {
         switch ($node->getType()) {
             case TypeEnum::XML_PARSER:

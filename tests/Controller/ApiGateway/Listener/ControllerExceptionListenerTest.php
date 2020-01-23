@@ -3,15 +3,15 @@
 namespace Tests\Controller\ApiGateway\Listener;
 
 use Exception;
-use Hanaboso\CommonsBundle\Exception\EnumException;
-use Hanaboso\CommonsBundle\Utils\PipesHeaders;
 use Hanaboso\PipesFramework\ApiGateway\Listener\ControllerExceptionListener;
+use Hanaboso\Utils\Exception\EnumException;
+use Hanaboso\Utils\System\PipesHeaders;
 use PHPUnit\Framework\MockObject\MockObject;
 use RabbitMqBundle\Consumer\Callback\Exception\CallbackException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Tests\ControllerTestCaseAbstract;
 use Throwable;
 
@@ -67,20 +67,20 @@ final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
     /**
      * @param Throwable $exception
      *
-     * @return GetResponseForExceptionEvent | MockObject
+     * @return ExceptionEvent
      * @throws Exception
      */
-    private function mockEvent(Throwable $exception)
+    private function mockEvent(Throwable $exception): ExceptionEvent
     {
-        /** @var GetResponseForExceptionEvent | MockObject $eventMock */
+        /** @var ExceptionEvent|MockObject $eventMock */
         $eventMock = self::createPartialMock(
-            GetResponseForExceptionEvent::class,
+            ExceptionEvent::class,
             ['getThrowable']
         );
 
         $eventMock
             ->method('getThrowable')
-            ->will($this->returnValue($exception));
+            ->willReturn($exception);
 
         $this->setProperty($eventMock, 'request', new Request());
 
