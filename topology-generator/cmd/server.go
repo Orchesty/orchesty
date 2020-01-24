@@ -49,8 +49,7 @@ func serverCommand(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return fmt.Errorf("APi server shutdown, reason: %v", err)
 		}
-	case model.ModeCompose:
-	case model.ModeSwarm:
+	case model.ModeCompose, model.ModeSwarm:
 		docker, err = services.DockerConnect()
 		if err != nil {
 			return fmt.Errorf("APi server shutdown, reason: %v", err)
