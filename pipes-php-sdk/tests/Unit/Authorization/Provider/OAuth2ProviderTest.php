@@ -9,9 +9,12 @@ use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesPhpSdk\Authorization\Wrapper\OAuth2Wrapper;
+use Hanaboso\Utils\Exception\DateTimeException;
+use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
+use PipesPhpSdkTests\KernelTestCaseAbstract;
+use ReflectionException;
 use Symfony\Bridge\Monolog\Logger;
 
 /**
@@ -19,7 +22,7 @@ use Symfony\Bridge\Monolog\Logger;
  *
  * @package PipesPhpSdkTests\Unit\Authorization\Provider
  */
-final class OAuth2ProviderTest extends TestCase
+final class OAuth2ProviderTest extends KernelTestCaseAbstract
 {
 
     /**
@@ -132,6 +135,43 @@ final class OAuth2ProviderTest extends TestCase
         $token = $provider->refreshAccessToken($dto, $token);
 
         self::assertNotEmpty($token);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider::stateDecode
+     */
+    public function testStateDecode(): void
+    {
+        $state = OAuth2Provider::stateDecode('ZXhhbXBsZQ,,');
+
+        self::assertEquals(['example', ''], $state);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider::getTokenByGrant
+     * @covers \Hanaboso\PipesPhpSdk\Authorization\Provider\OAuthProviderAbstract::getRedirectUri
+     * @throws ReflectionException
+     * @throws DateTimeException
+     */
+    public function testGetTokenByGrant(): void
+    {
+        $oauth = self::createPartialMock(OAuth2Wrapper::class, ['getAccessToken']);
+        $oauth->method('getAccessToken')->willThrowException(new IdentityProviderException('message', 5, ''));
+
+        $provider = self::createPartialMock(OAuth2Provider::class, ['createClient']);
+        $provider->expects(self::any())->method('createClient')->willReturn($oauth);
+        $provider->setLogger(new Logger('logger'));
+
+        $this->setProperty($provider, 'backend', '127.0.0.11');
+        $uri = $provider->getRedirectUri();
+        self::assertEquals('127.0.0.11/api/applications/authorize/token', $uri);
+
+        self::expectException(AuthorizationException::class);
+        $this->invokeMethod(
+            $provider,
+            'getTokenByGrant',
+            [new OAuth2Dto(new ApplicationInstall(), '/url/', ''), 'grand']
+        );
     }
 
     /**

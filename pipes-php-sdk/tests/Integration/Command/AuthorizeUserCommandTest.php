@@ -10,10 +10,13 @@ use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1\OAuth1ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth1Dto;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider;
+use Hanaboso\PipesPhpSdk\Command\RedirectCommand;
 use Hanaboso\Utils\Exception\DateTimeException;
 use OAuth;
 use PHPUnit\Framework\MockObject\MockObject;
 use PipesPhpSdkTests\DatabaseTestCaseAbstract;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\Console\Tester\CommandTester;
 use TypeError;
 
 /**
@@ -25,34 +28,44 @@ final class AuthorizeUserCommandTest extends DatabaseTestCaseAbstract
 {
 
     /**
+     * @covers \Hanaboso\PipesPhpSdk\Application\Loader\ApplicationLoader
+     * @covers \Hanaboso\PipesPhpSdk\Application\Loader\ApplicationLoader::getApplication
+     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager
+     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager::authorizeApplication
+     * @covers \Hanaboso\PipesPhpSdk\Application\Utils\ApplicationUtils::generateUrl
+     * @covers \Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository::findUserApp
+     * @covers \Hanaboso\PipesPhpSdk\Command\AuthorizeUserCommand
+     * @covers \Hanaboso\PipesPhpSdk\Command\AuthorizeUserCommand::execute
+     * @covers \Hanaboso\PipesPhpSdk\Command\AuthorizeUserCommand::getHelper
+     * @covers \Hanaboso\PipesPhpSdk\Command\AuthorizeUserCommand::configure
+     * @covers \Hanaboso\PipesPhpSdk\Command\RedirectCommand::make
+     * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract
+     * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract::authorize
+     * @covers \Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider::createClient
      * @throws Exception
      */
     public function testExecuteOauth2(): void
     {
-        self::markTestSkipped();
-        //        $kernel        = self::createKernel(['environment' => 'oauthconsole']);
-        //        $application   = new Application($kernel);
-        //        $command       = $application->find('user:authorize');
-        //        $commandTester = new CommandTester($command);
-        //
-        //        $this->dm = $kernel->getContainer()->get('doctrine_mongodb.odm.default_document_manager');
-        //        $this->clearMongo();
-        //
-        //        $app = (new ApplicationInstall())
-        //            ->setKey('null2')
-        //            ->setUser('user');
-        //        $this->pfd($app);
-        //        $this->dm->clear();
-        //
-        //        $commandTester->setInputs(['null2', 'user']);
-        //        ob_start();
-        //        $commandTester->execute(['command' => $command->getName(), '--env' => 'oauthconsole']);
-        //        $content = ob_get_clean();
-        //
-        //        self::assertStringContainsString(
-        //            'auth/ouath2/url.com?response_type=code&approval_prompt=auto&redirect_uri=127.0.0.4/api/applications/authorize/token&client_id=&state=dXNlcjpudWxsMg,,&access_type=offline',
-        //            (string) $content
-        //        );
+        $application   = new Application(self::$kernel);
+        $command       = $application->get('user:authorize');
+        $commandTester = new CommandTester($command);
+
+        $app = (new ApplicationInstall())
+            ->setKey('null2')
+            ->setUser('user');
+        $this->pfd($app);
+        $this->dm->clear();
+
+        $redirect = $this->createPartialMock(RedirectCommand::class, ['make']);
+        $redirect->expects(self::any())->method('make');
+        self::$container->set('hbpf.redirect', $redirect);
+
+        $commandTester->setInputs(['null2', 'user']);
+        ob_start();
+        $commandTester->execute(['command' => $command->getName(), '--env' => 'oauthconsole']);
+        $content = ob_get_clean();
+
+        self::assertStringContainsString('', (string) $content);
     }
 
     /**
@@ -91,6 +104,42 @@ final class AuthorizeUserCommandTest extends DatabaseTestCaseAbstract
         );
 
         $this->expectOutputString('authorize/url?oauth_callback=127.0.0.4&oauth_token=aabbcc');
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\Command\AuthorizeUserCommand::execute
+     */
+    public function testExecuteMissingEnvParam(): void
+    {
+        $application   = new Application(self::$kernel);
+        $command       = $application->get('user:authorize');
+        $commandTester = new CommandTester($command);
+
+        $exitCode = $commandTester->execute(['command' => $command->getName(),]);
+
+        self::assertStringContainsString(
+            'Please make sure that your env is set to --env=oauthconsole.',
+            $commandTester->getDisplay()
+        );
+        self::assertEquals(1, $exitCode);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\Command\AuthorizeUserCommand::execute
+     */
+    public function testExecuteMissingUserParam(): void
+    {
+        $application   = new Application(self::$kernel);
+        $command       = $application->get('user:authorize');
+        $commandTester = new CommandTester($command);
+
+        $commandTester->setInputs(['null2', '']);
+        $commandTester->execute(['command' => $command->getName(), '--env' => 'oauthconsole']);
+
+        self::assertStringContainsString(
+            'Please make sure that input parameters are string.',
+            $commandTester->getDisplay()
+        );
     }
 
     /**

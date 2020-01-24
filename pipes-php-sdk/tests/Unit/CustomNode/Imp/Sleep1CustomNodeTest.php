@@ -11,7 +11,7 @@ use PipesPhpSdkTests\KernelTestCaseAbstract;
  *
  * @package PipesPhpSdkTests\Unit\CustomNode\Imp
  */
-class Sleep1CustomNodeTest extends KernelTestCaseAbstract
+final class Sleep1CustomNodeTest extends KernelTestCaseAbstract
 {
 
     /**

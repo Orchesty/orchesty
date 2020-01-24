@@ -11,7 +11,7 @@ use PipesPhpSdkTests\KernelTestCaseAbstract;
  *
  * @package PipesPhpSdkTests\Unit\Application\Utils
  */
-class ApplicationUtilsTest extends KernelTestCaseAbstract
+final class ApplicationUtilsTest extends KernelTestCaseAbstract
 {
 
     /**

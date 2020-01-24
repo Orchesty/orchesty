@@ -12,7 +12,7 @@ use PipesPhpSdkTests\DatabaseTestCaseAbstract;
  *
  * @package PipesPhpSdkTests\Integration\HbPFJoinerBundle\Handler
  */
-class JoinerHandlerTest extends DatabaseTestCaseAbstract
+final class JoinerHandlerTest extends DatabaseTestCaseAbstract
 {
 
     /**
