@@ -121,13 +121,13 @@ final class TableParser implements TableParserInterface
         switch ($type) {
             case TableParserInterface::XLSX:
                 return new Xlsx($spreadsheet);
-            case TableParserInterface::XLS:
+            case sprintf('%s', TableParserInterface::XLS):
                 return new Xls($spreadsheet);
-            case TableParserInterface::ODS:
+            case sprintf('%s', TableParserInterface::ODS):
                 return new Ods($spreadsheet);
-            case TableParserInterface::CSV:
+            case sprintf('%s', TableParserInterface::CSV):
                 return new Csv($spreadsheet);
-            case TableParserInterface::HTML:
+            case sprintf('%s', TableParserInterface::HTML):
                 return new Html($spreadsheet);
             default:
                 throw new TableParserException(

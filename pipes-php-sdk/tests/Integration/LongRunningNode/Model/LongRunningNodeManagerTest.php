@@ -16,8 +16,24 @@ final class LongRunningNodeManagerTest extends DatabaseTestCaseAbstract
 {
 
     /**
+     * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeManager
      * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeManager::getDocument()
      * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeManager::saveDocument()
+     * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeManager::update()
+     * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeManager::delete()
+     * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData::setProcessId
+     * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData::setNodeName
+     * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData::setTopologyName
+     * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData::setTopologyId
+     * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData::setParentProcess
+     * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData::setData
+     * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData::setHeaders
+     * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData::getAuditLogs
+     * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData::getProcessId
+     * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData::getParentProcess
+     * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData::getHeaders
+     * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData::getNodeName
+     * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData::getTopologyName
      *
      * @throws Exception
      */
@@ -37,6 +53,8 @@ final class LongRunningNodeManagerTest extends DatabaseTestCaseAbstract
             ->setHeaders(['head']);
         $manager->saveDocument($doc);
         $this->dm->clear();
+
+        $manager->update($doc, ['data' => 'something']);
 
         $docs = $this->dm->getRepository(LongRunningNodeData::class)->findAll();
         /** @var LongRunningNodeData $doc */
@@ -61,7 +79,8 @@ final class LongRunningNodeManagerTest extends DatabaseTestCaseAbstract
         $manager->saveDocument($doc);
         $this->dm->clear();
 
-        $docs = $this->dm->getRepository(LongRunningNodeData::class)->findAll();
+        $repository = $this->dm->getRepository(LongRunningNodeData::class);
+        $docs       = $repository->findAll();
         self::assertEquals(2, count($docs));
         /** @var LongRunningNodeData $doc */
         $doc = reset($docs);
@@ -73,6 +92,11 @@ final class LongRunningNodeManagerTest extends DatabaseTestCaseAbstract
 
         self::assertNotNull($manager->getDocument('topo-id-manager2', 'node'));
         self::assertNotNull($manager->getDocument('topo-id-manager2', 'node', 'proc'));
+
+        $manager->delete($doc);
+
+        $docs = $repository->findAll();
+        self::assertEquals(1, count($docs));
     }
 
 }

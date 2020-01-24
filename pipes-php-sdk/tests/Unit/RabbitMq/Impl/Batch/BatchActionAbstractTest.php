@@ -4,6 +4,7 @@ namespace PipesPhpSdkTests\Unit\RabbitMq\Impl\Batch;
 
 use Exception;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchActionAbstract;
+use Monolog\Logger;
 use PhpAmqpLib\Message\AMQPMessage;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 use RabbitMqBundle\Utils\Message;
@@ -33,7 +34,10 @@ final class BatchActionAbstractTest extends KernelTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchActionAbstract
+     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchActionAbstract::setLogger
      * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchActionAbstract::validateHeaders()
+     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchActionAbstract::isEmpty
      * @throws Exception
      */
     public function testValidateHeaders(): void
@@ -42,7 +46,7 @@ final class BatchActionAbstractTest extends KernelTestCaseAbstract
 
         /** @var BatchActionAbstract $batchAction */
         $batchAction = $this->getMockForAbstractClass(BatchActionAbstract::class);
-
+        $batchAction->setLogger(new Logger('logger'));
         $batchAction
             ->batchAction($this->createMessage(), $loop, $this->callback)
             ->then(
@@ -59,6 +63,8 @@ final class BatchActionAbstractTest extends KernelTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchActionAbstract::validateHeaders()
+     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchActionAbstract::batchAction()
+     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchActionAbstract::createProcessDto()
      * @throws Exception
      */
     public function testBatchAction(): void

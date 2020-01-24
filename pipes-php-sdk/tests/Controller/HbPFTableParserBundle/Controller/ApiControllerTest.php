@@ -2,10 +2,17 @@
 
 namespace PipesPhpSdkTests\Controller\HbPFTableParserBundle\Controller;
 
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Exception;
 use Hanaboso\CommonsBundle\Exception\FileStorageException;
+use Hanaboso\PipesPhpSdk\HbPFMapperBundle\Handler\MapperHandler;
+use Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler;
 use Hanaboso\PipesPhpSdk\Parser\Exception\TableParserException;
+use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\String\Json;
+use PHPUnit\Framework\MockObject\MockObject;
 use PipesPhpSdkTests\ControllerTestCaseAbstract;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -38,7 +45,36 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     *
+     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Controller\TableParserController::toJsonAction
+     * @throws Exception
+     */
+    public function testToJsonActionErr(): void
+    {
+        $this->prepareTableParserErr('parseToJson', new MappingException());
+
+        $this->client->request('POST', '/parser/csv/to/json');
+
+        /** @var Response $response */
+        $response = $this->client->getResponse();
+        self::assertEquals(500, $response->getStatusCode());
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Controller\TableParserController::toJsonAction
+     * @throws Exception
+     */
+    public function testToJsonActionErr2(): void
+    {
+        $this->prepareTableParserErr('parseToJson', new PipesFrameworkException());
+        $this->client->request('POST', '/parser/csv/to/json');
+
+        /** @var Response $response */
+        $response = $this->client->getResponse();
+        self::assertEquals(500, $response->getStatusCode());
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Controller\TableParserController::toJsonAction
      */
     public function testToJsonNotFound(): void
     {
@@ -51,7 +87,7 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     *
+     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Controller\TableParserController::toJsonTestAction
      */
     public function testToJsonTest(): void
     {
@@ -61,7 +97,19 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     *
+     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Controller\TableParserController::toJsonTestAction
+     * @throws Exception
+     */
+    public function testToJsonTestErr(): void
+    {
+        $this->prepareTableParserErr('parseToJsonTest', new Exception());
+        $response = $this->sendGet('/parser/csv/to/json/test');
+
+        self::assertEquals(500, $response->status);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Controller\TableParserController::fromJsonAction
      */
     public function testFromJson(): void
     {
@@ -77,7 +125,7 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     *
+     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Controller\TableParserController::fromJsonAction
      */
     public function testToFromNotFound(): void
     {
@@ -90,7 +138,7 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     *
+     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Controller\TableParserController::fromJsonAction
      */
     public function testFromJsonNotFoundWriter(): void
     {
@@ -108,7 +156,9 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     *
+     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Controller\TableParserController::fromJsonTestAction
+     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler::parseFromJsonTest
+     * @covers \Hanaboso\PipesPhpSdk\Parser\TableParser::createWriter
      */
     public function testFromTestJson(): void
     {
@@ -118,13 +168,27 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     *
+     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Controller\TableParserController::fromJsonTestAction
+     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler::parseFromJsonTest
+     * @covers \Hanaboso\PipesPhpSdk\Parser\TableParser::createWriter
      */
     public function testFromTestJsonNotFound(): void
     {
         $response = $this->sendGet('/parser/json/to/csv/test');
 
         self::assertEquals(200, $response->status);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Controller\TableParserController::fromJsonTestAction
+     * @throws Exception
+     */
+    public function testFromTestJsonNotFoundErr(): void
+    {
+        $this->prepareTableParserErr('parseFromJsonTest', new TableParserException());
+        $response = $this->sendGet('/parser/json/to/csv/test');
+
+        self::assertEquals(500, $response->status);
     }
 
     /**
@@ -174,6 +238,25 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
             'status'  => $response->getStatusCode(),
             'content' => Json::decode((string) $response->getContent()),
         ];
+    }
+
+    /**
+     * @param string $methodName
+     * @param mixed  $returnValue
+     *
+     * @throws Exception
+     */
+    private function prepareTableParserErr(string $methodName, $returnValue): void
+    {
+        /** @var MapperHandler|MockObject $mapperHandlerMock */
+        $mapperHandlerMock = self::createMock(TableParserHandler::class);
+        $mapperHandlerMock
+            ->method($methodName)
+            ->willThrowException($returnValue);
+
+        /** @var ContainerInterface $container */
+        $container = $this->client->getContainer();
+        $container->set('hbpf.parser.table.handler', $mapperHandlerMock);
     }
 
 }

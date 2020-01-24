@@ -3,19 +3,52 @@
 namespace PipesPhpSdkTests\Integration\Parser;
 
 use Exception;
+use Hanaboso\PipesPhpSdk\Parser\Exception\TableParserException;
 use Hanaboso\PipesPhpSdk\Parser\TableParser;
 use Hanaboso\PipesPhpSdk\Parser\TableParserInterface;
-use PHPUnit\Framework\TestCase;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Writer\Csv;
+use PhpOffice\PhpSpreadsheet\Writer\Html;
+use PhpOffice\PhpSpreadsheet\Writer\Ods;
+use PhpOffice\PhpSpreadsheet\Writer\Xls;
+use PipesPhpSdkTests\DatabaseTestCaseAbstract;
+use ReflectionException;
 
 /**
  * Class TableParserTest
  *
  * @package PipesPhpSdkTests\Integration\Parser
  */
-final class TableParserTest extends TestCase
+final class TableParserTest extends DatabaseTestCaseAbstract
 {
 
     /**
+     * @covers \Hanaboso\PipesPhpSdk\Parser\TableParser::createWriter
+     * @throws TableParserException
+     */
+    public function testCreateWriter(): void
+    {
+        $parser      = new TableParser();
+        $spreadsheet = new Spreadsheet();
+
+        $xls = $parser->createWriter($spreadsheet, TableParserInterface::XLS);
+        self::assertInstanceOf(Xls::class, $xls);
+
+        $ods = $parser->createWriter($spreadsheet, TableParserInterface::ODS);
+        self::assertInstanceOf(Ods::class, $ods);
+
+        $csv = $parser->createWriter($spreadsheet, TableParserInterface::CSV);
+        self::assertInstanceOf(Csv::class, $csv);
+
+        $html = $parser->createWriter($spreadsheet, TableParserInterface::HTML);
+        self::assertInstanceOf(Html::class, $html);
+    }
+
+    /**
+     * @covers       \Hanaboso\PipesPhpSdk\Parser\TableParser::parseToJson
+     * @covers       \Hanaboso\PipesPhpSdk\Parser\TableParser::getTrimmedCellValue
+     *
      * @param string $input
      * @param string $output
      * @param bool   $hasHeaders
@@ -31,6 +64,10 @@ final class TableParserTest extends TestCase
     }
 
     /**
+     * @covers       \Hanaboso\PipesPhpSdk\Parser\TableParser::parseFromJson
+     * @covers       \Hanaboso\PipesPhpSdk\Parser\TableParser::setCellValue
+     * @covers       \Hanaboso\PipesPhpSdk\Parser\TableParser::createWriter
+     *
      * @param string $input
      * @param string $type
      * @param bool   $hasHeaders
@@ -47,6 +84,21 @@ final class TableParserTest extends TestCase
         self::assertEquals(file_get_contents(__DIR__ . $input), $result);
 
         unlink($path);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\Parser\TableParser::getTrimmedCellValue
+     * @throws ReflectionException
+     */
+    public function testGetTrimmedCellValue(): void
+    {
+        $parser    = new TableParser();
+        $worksheet = self::createPartialMock(Worksheet::class, ['getCellByColumnAndRow']);
+        $worksheet->expects(self::any())->method('getCellByColumnAndRow')->willReturn(NULL);
+
+        $value = $this->invokeMethod($parser, 'getTrimmedCellValue', [$worksheet, 500, 500]);
+
+        self::assertNull($value);
     }
 
     /**

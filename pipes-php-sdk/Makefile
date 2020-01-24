@@ -49,7 +49,7 @@ phpcoverage:
 	$(DE) php vendor/bin/paratest -c vendor/hanaboso/php-check-utils/phpunit.xml.dist -p 8 --coverage-html var/coverage --whitelist src tests
 
 phpcoverage-ci:
-	$(DE) vendor/hanaboso/php-check-utils/bin/coverage.sh -c 70
+	$(DE) vendor/hanaboso/php-check-utils/bin/coverage.sh -c
 
 phpmanual-up:
 	cd tests/Manual; $(MAKE) docker-up-force;

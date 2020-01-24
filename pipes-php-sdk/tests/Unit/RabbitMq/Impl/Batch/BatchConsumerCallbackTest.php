@@ -8,8 +8,10 @@ use Hanaboso\CommonsBundle\Metrics\MetricsSenderLoader;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchActionInterface;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchInterface;
+use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\SuccessMessage;
 use Hanaboso\Utils\System\PipesHeaders;
 use InvalidArgumentException;
+use Monolog\Logger;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPSocketConnection;
 use PhpAmqpLib\Message\AMQPMessage;
@@ -18,6 +20,7 @@ use PipesPhpSdkTests\KernelTestCaseAbstract;
 use RabbitMqBundle\Connection\Connection;
 use RabbitMqBundle\Utils\Message;
 use React\EventLoop\Factory;
+use ReflectionException;
 use Throwable;
 use function React\Promise\resolve;
 
@@ -30,7 +33,17 @@ final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
 {
 
     /**
+     * @covers       \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback
+     * @covers       \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::setLogger
      * @covers       \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::validate()
+     * @covers       \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::processMessage()
+     * @covers       \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::testAction()
+     * @covers       \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::publishErrorTestMessage()
+     * @covers       \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::batchAction()
+     * @covers       \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::publishSuccessTestMessage()
+     * @covers       \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::batchCallback()
+     * @covers       \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::itemCallback()
+     *
      * @dataProvider validateMessageDataProvider
      *
      * @param mixed[] $headers
@@ -51,6 +64,7 @@ final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
         $influxSender = self::createMock(InfluxDbSender::class);
         $loader       = new MetricsSenderLoader('influx', $influxSender, NULL);
         $callback     = new BatchConsumerCallback($batchAction, $loader);
+        $callback->setLogger(new Logger('logger'));
         /** @var Connection|MockObject $connection */
         $connection = self::createMock(Connection::class);
         $connection->expects(self::any())->method('getChannel')->willReturn($channel);
@@ -134,6 +148,12 @@ final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::processMessage()
+     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::testAction
+     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::publishErrorTestMessage
+     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::batchAction
+     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::publishSuccessTestMessage
+     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::batchCallback
+     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::itemCallback
      *
      * @throws Exception
      */
@@ -190,6 +210,12 @@ final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::processMessage()
+     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::testAction()
+     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::publishErrorTestMessage()
+     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::batchAction()
+     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::publishSuccessTestMessage()
+     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::batchCallback
+     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::itemCallback
      *
      * @throws Exception
      */
@@ -248,6 +274,12 @@ final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::processMessage()
+     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::validate()
+     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::publishErrorTestMessage()
+     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::batchAction()
+     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::publishSuccessTestMessage()
+     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::batchCallback()
+     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::itemCallback()
      *
      * @throws Exception
      */
@@ -306,6 +338,8 @@ final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::processMessage()
+     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::batchCallback()
+     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::itemCallback()
      *
      * @throws Exception
      */
@@ -355,6 +389,86 @@ final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
             ->done();
 
         $loop->run();
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::publishErrorTestMessage
+     */
+    public function testPublishErrorTestMessage(): void
+    {
+        $channel = self::createMock(AMQPChannel::class);
+        $channel->method('basic_publish');
+
+        $callback = self::$container->get('hbpf.custom_nodes.batch_callback');
+        $callback->publishErrorTestMessage($channel, new AMQPMessage(), new Exception());
+
+        self::assertFake();
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::testAction
+     *
+     * @throws ReflectionException
+     */
+    public function testActionErr(): void
+    {
+        $channel = self::createMock(AMQPChannel::class);
+        $channel->method('basic_publish');
+
+        $batchAction = self::createMock(BatchActionInterface::class,);
+        $batchAction->method('getBatchService')->willThrowException(new Exception());
+
+        $sender        = self::createMock(MetricsSenderLoader::class);
+        $batchCallback = new BatchConsumerCallback($batchAction, $sender);
+
+        $this->invokeMethod(
+            $batchCallback,
+            'testAction',
+            [$channel, new AMQPMessage(), [PipesHeaders::createKey(PipesHeaders::NODE_NAME) => 'name']]
+        );
+        self::assertFake();
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::itemCallback()
+     *
+     * @throws ReflectionException
+     */
+    public function testItemCallbackWithResultCode(): void
+    {
+        $batchCallback = self::$container->get('hbpf.custom_nodes.batch_callback');
+
+        $channel = self::createMock(AMQPChannel::class);
+        $channel->method('basic_publish');
+
+        $this->invokeMethod(
+            $batchCallback,
+            'itemCallback',
+            [
+                $channel,
+                new AMQPMessage(),
+                (new SuccessMessage(2))->setResultCode(1_004),
+            ]
+        );
+
+        self::assertFake();
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::itemCallback()
+     *
+     * @throws ReflectionException
+     */
+    public function testItemCallback(): void
+    {
+        $batchCallback = self::$container->get('hbpf.custom_nodes.batch_callback');
+
+        $channel = self::createMock(AMQPChannel::class);
+        $channel->method('basic_publish');
+
+        $this->invokeMethod($batchCallback, 'itemCallback', [$channel, new AMQPMessage(), new SuccessMessage(2)]);
+
+        self::assertFake();
     }
 
     /**

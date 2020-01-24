@@ -3,7 +3,10 @@
 namespace PipesPhpSdkTests\Integration\HbPFTableParserBundle\Handler;
 
 use Exception;
+use Hanaboso\CommonsBundle\Exception\FileStorageException;
+use Hanaboso\CommonsBundle\FileStorage\Document\File;
 use Hanaboso\CommonsBundle\FileStorage\Dto\FileContentDto;
+use Hanaboso\CommonsBundle\FileStorage\Dto\FileStorageDto;
 use Hanaboso\CommonsBundle\FileStorage\FileStorage;
 use Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler;
 use Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandlerException;
@@ -11,6 +14,8 @@ use Hanaboso\PipesPhpSdk\Parser\Exception\TableParserException;
 use Hanaboso\PipesPhpSdk\Parser\TableParser;
 use Hanaboso\PipesPhpSdk\Parser\TableParserInterface;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
+use ReflectionException;
+use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * Class TableParserHandlerTest
@@ -37,6 +42,7 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler::parseToJson()
+     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler::getFile()
      *
      * @throws Exception
      */
@@ -57,6 +63,64 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
             ]
         );
         self::assertEquals(file_get_contents(sprintf('%s/output-10h.json', $this->path)), $result);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler::getFile
+     * @throws ReflectionException
+     */
+    public function testGetFile(): void
+    {
+        $file    = (new File())->setFileUrl('/url/file');
+        $storage = self::createPartialMock(FileStorage::class, ['getFileDocument', 'getFileStorage']);
+        $storage->expects(self::any())->method('getFileDocument')->willReturn($file);
+        $storage
+            ->expects(self::any())
+            ->method('getFileStorage')
+            ->willReturn(new FileStorageDto($file, $file->getFileUrl()));
+        $handler = new TableParserHandler(new TableParser(), $storage);
+        $isTmp   = FALSE;
+
+        $fileSystem = $this->createPartialMock(Filesystem::class, ['dumpFile']);
+        $fileSystem->expects(self::any())->method('dumpFile');
+
+        $path = $this->invokeMethod($handler, 'getFile', [['file_id' => '123'], &$isTmp, $fileSystem]);
+        self::assertStringContainsString('/var/www/src/HbPFTableParserBundle/Handler/', $path);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler::getFile
+     *
+     * @throws ReflectionException
+     */
+    public function testGetFile2(): void
+    {
+        $file    = (new File())->setFileUrl('/url/file');
+        $storage = self::createPartialMock(FileStorage::class, ['getFileDocument', 'getFileStorage']);
+        $storage->expects(self::any())->method('getFileDocument')->willReturn($file);
+        $storage
+            ->expects(self::any())
+            ->method('getFileStorage')
+            ->willThrowException(new FileStorageException());
+        $handler = new TableParserHandler(new TableParser(), $storage);
+        $isTmp   = FALSE;
+
+        self::expectException(FileStorageException::class);
+        $this->invokeMethod($handler, 'getFile', [['file_id' => '123'], &$isTmp]);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler::getFile
+     *
+     * @throws ReflectionException
+     */
+    public function testGetFileErr(): void
+    {
+        $isTmp = FALSE;
+
+        self::expectException(TableParserHandlerException::class);
+        self::expectExceptionCode(TableParserHandlerException::PROPERTY_FILE_ID_NOT_SET);
+        $this->invokeMethod($this->handler, 'getFile', [[], &$isTmp]);
     }
 
     /**
@@ -149,6 +213,7 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler::parseFromJsonTest()
+     * @covers \Hanaboso\PipesPhpSdk\Parser\TableParser::createWriter
      *
      * @throws Exception
      */

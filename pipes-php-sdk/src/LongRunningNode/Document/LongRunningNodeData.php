@@ -184,7 +184,7 @@ class LongRunningNodeData
             ->setProcessId((string) ($headers[PipesHeaders::createKey(PipesHeaders::PROCESS_ID)] ?? ''))
             ->setSequenceId((string) ($headers[PipesHeaders::createKey(PipesHeaders::SEQUENCE_ID)] ?? ''))
             ->setUpdatedBy((string) ($headers[PipesHeaders::createKey(self::UPDATED_BY_HEADER)] ?? ''))
-            ->setAuditLogs(Json::decode((string) ($headers[PipesHeaders::createKey(self::AUDIT_LOGS_HEADER)] ?? '')));
+            ->setAuditLogs(Json::decode((string) ($headers[PipesHeaders::createKey(self::AUDIT_LOGS_HEADER)] ?? '{}')));
     }
 
     /**
