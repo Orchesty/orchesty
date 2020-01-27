@@ -1,0 +1,13 @@
+{
+    "http": 200,
+    "body": {
+        "id": "123456789",
+        "created": "2010-10-10 10:10:10",
+        "updated": "2010-10-10 10:10:10",
+        "name": "Email Test Sender",
+        "type": "email",
+        "class": "NotificationSenderTests\\Integration\\Model\\Notification\\Handler\\Impl\\NullEmailHandler",
+        "events": [],
+        "settings": []
+    }
+}

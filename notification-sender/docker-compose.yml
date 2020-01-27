@@ -26,6 +26,7 @@ services:
         environment:
             - APP_ENV=test
             - RABBITMQ_DSN=amqp://rabbitmq:5672
+            - SMTP_DSN=smtp://root:root@mailhog:1025
             - KERNEL_CLASS=Hanaboso\NotificationSender\Kernel
             - DEV_UID=${DEV_UID}
             - DEV_GID=${DEV_GID}

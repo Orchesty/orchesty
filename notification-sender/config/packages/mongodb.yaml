@@ -19,5 +19,5 @@ doctrine_mongodb:
                 AppDocument:
                     type: annotation
                     is_bundle: false
-                    dir: "%kernel.root_dir%/Document"
+                    dir: "%kernel.project_dir%/src//Document"
                     prefix: Hanaboso\NotificationSender\Document

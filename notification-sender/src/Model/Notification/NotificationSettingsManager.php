@@ -5,13 +5,13 @@ namespace Hanaboso\NotificationSender\Model\Notification;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
 use Hanaboso\NotificationSender\Document\NotificationSettings;
 use Hanaboso\NotificationSender\Exception\NotificationException;
 use Hanaboso\NotificationSender\Model\Notification\Handler\CurlHandlerAbstract;
 use Hanaboso\NotificationSender\Model\Notification\Handler\EmailHandlerAbstract;
 use Hanaboso\NotificationSender\Model\Notification\Handler\RabbitHandlerAbstract;
 use Hanaboso\NotificationSender\Repository\NotificationSettingsRepository;
+use Hanaboso\Utils\Exception\DateTimeException;
 use Symfony\Component\DependencyInjection\Argument\RewindableGenerator;
 
 /**
@@ -25,17 +25,17 @@ final class NotificationSettingsManager
     /**
      * @var DocumentManager
      */
-    private $dm;
+    private DocumentManager $dm;
 
     /**
      * @var RewindableGenerator|CurlHandlerAbstract[]|EmailHandlerAbstract[]|RabbitHandlerAbstract[]
      */
-    private $handlers;
+    private RewindableGenerator $handlers;
 
     /**
      * @var ObjectRepository<NotificationSettings>&NotificationSettingsRepository
      */
-    private $repository;
+    private NotificationSettingsRepository $repository;
 
     /**
      * NotificationSettingsManager constructor.

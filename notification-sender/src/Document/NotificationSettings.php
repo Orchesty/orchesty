@@ -7,8 +7,8 @@ use Hanaboso\CommonsBundle\Database\Traits\Document\CreatedTrait;
 use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
 use Hanaboso\CommonsBundle\Database\Traits\Document\UpdatedTrait;
 use Hanaboso\CommonsBundle\Enum\NotificationEventEnum;
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
-use Hanaboso\CommonsBundle\Utils\DateTimeUtils;
+use Hanaboso\Utils\Date\DateTimeUtils;
+use Hanaboso\Utils\Exception\DateTimeException;
 
 /**
  * Class NotificationSettings
@@ -27,6 +27,8 @@ class NotificationSettings
     use UpdatedTrait;
 
     public const ID         = 'id';
+    public const CREATED    = 'created';
+    public const UPDATED    = 'updated';
     public const TYPE       = 'type';
     public const NAME       = 'name';
     public const CLASS_NAME = 'class';
@@ -38,21 +40,21 @@ class NotificationSettings
      *
      * @ODM\Field(type="string")
      */
-    private $class;
+    private string $class;
 
     /**
      * @var mixed[]
      *
      * @ODM\Field(type="collection")
      */
-    private $events = [];
+    private array $events = [];
 
     /**
      * @var mixed[]
      *
      * @ODM\Field(type="hash")
      */
-    private $settings = [];
+    private array $settings = [];
 
     /**
      * NotificationSettings constructor.
@@ -135,8 +137,8 @@ class NotificationSettings
     {
         return [
             self::ID         => $this->id,
-            'created'        => $this->created->format(DateTimeUtils::DATE_TIME),
-            'updated'        => $this->updated->format(DateTimeUtils::DATE_TIME),
+            self::CREATED    => $this->created->format(DateTimeUtils::DATE_TIME),
+            self::UPDATED    => $this->updated->format(DateTimeUtils::DATE_TIME),
             self::NAME       => $name,
             self::TYPE       => $type,
             self::CLASS_NAME => $this->class,

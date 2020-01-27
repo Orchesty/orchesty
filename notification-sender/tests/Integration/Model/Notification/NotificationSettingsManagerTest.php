@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Model\Notification;
+namespace NotificationSenderTests\Integration\Model\Notification;
 
 use Exception;
 use Hanaboso\CommonsBundle\Enum\NotificationEventEnum;
@@ -12,15 +12,18 @@ use Hanaboso\NotificationSender\Model\Notification\Handler\Impl\CurlNotification
 use Hanaboso\NotificationSender\Model\Notification\Handler\Impl\EmailNotificationHandler;
 use Hanaboso\NotificationSender\Model\Notification\Handler\Impl\RabbitNotificationHandler;
 use Hanaboso\NotificationSender\Model\Notification\NotificationSettingsManager;
-use Tests\DatabaseTestCaseAbstract;
-use Tests\Integration\Model\Notification\Handler\Impl\NullCurlHandler;
-use Tests\Integration\Model\Notification\Handler\Impl\NullEmailHandler;
-use Tests\Integration\Model\Notification\Handler\Impl\NullRabitHandler;
+use NotificationSenderTests\DatabaseTestCaseAbstract;
+use NotificationSenderTests\Integration\Model\Notification\Handler\Impl\NullCurlHandler;
+use NotificationSenderTests\Integration\Model\Notification\Handler\Impl\NullEmailHandler;
+use NotificationSenderTests\Integration\Model\Notification\Handler\Impl\NullRabitHandler;
+use NotificationSenderTests\Integration\Model\Notification\Handler\Impl\NullUnknownHandler;
 
 /**
  * Class NotificationSettingsManagerTest
  *
- * @package Tests\Integration\Model\Notification
+ * @package NotificationSenderTests\Integration\Model\Notification
+ *
+ * @covers  \Hanaboso\NotificationSender\Model\Notification\NotificationSettingsManager
  */
 final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
 {
@@ -37,101 +40,108 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
     private $manager;
 
     /**
-     * @covers NotificationSettingsManager::listSettings
+     * @covers \Hanaboso\NotificationSender\Model\Notification\NotificationSettingsManager::listSettings
      *
      * @throws Exception
      */
     public function testListSettings(): void
     {
-        $this->dm->persist(
+        $this->pfd(
             (new NotificationSettings())
                 ->setClass(EmailNotificationHandler::class)
                 ->setEvents(self::EVENTS)
                 ->setSettings([EmailDto::EMAILS => ['one@example.com', 'two@example.com']])
         );
 
-        $this->dm->persist(
+        $this->pfd(
             (new NotificationSettings())
                 ->setClass('Unknown')
                 ->setEvents(self::EVENTS)
                 ->setSettings([EmailDto::EMAILS => ['one@example.com', 'two@example.com']])
         );
 
-        $this->dm->flush();
-
         $handlers = $this->manager->listSettings();
         self::assertEquals(
             [
                 [
-                    'id'       => $handlers[0]['id'],
-                    'created'  => $handlers[0]['created'],
-                    'updated'  => $handlers[0]['updated'],
-                    'type'     => NotificationSenderEnum::CURL,
-                    'name'     => 'Curl Test Sender',
-                    'class'    => NullCurlHandler::class,
-                    'events'   => [],
-                    'settings' => [],
+                    NotificationSettings::ID         => $handlers[0][NotificationSettings::ID],
+                    NotificationSettings::CREATED    => $handlers[0][NotificationSettings::CREATED],
+                    NotificationSettings::UPDATED    => $handlers[0][NotificationSettings::UPDATED],
+                    NotificationSettings::TYPE       => NotificationSenderEnum::CURL,
+                    NotificationSettings::NAME       => 'Curl Test Sender',
+                    NotificationSettings::CLASS_NAME => NullCurlHandler::class,
+                    NotificationSettings::EVENTS     => [],
+                    NotificationSettings::SETTINGS   => [],
                 ], [
-                    'id'       => $handlers[1]['id'],
-                    'created'  => $handlers[1]['created'],
-                    'updated'  => $handlers[1]['updated'],
-                    'type'     => NotificationSenderEnum::EMAIL,
-                    'name'     => 'Email Test Sender',
-                    'class'    => NullEmailHandler::class,
-                    'events'   => [],
-                    'settings' => [],
+                    NotificationSettings::ID         => $handlers[1][NotificationSettings::ID],
+                    NotificationSettings::CREATED    => $handlers[1][NotificationSettings::CREATED],
+                    NotificationSettings::UPDATED    => $handlers[1][NotificationSettings::UPDATED],
+                    NotificationSettings::TYPE       => NotificationSenderEnum::EMAIL,
+                    NotificationSettings::NAME       => 'Email Test Sender',
+                    NotificationSettings::CLASS_NAME => NullEmailHandler::class,
+                    NotificationSettings::EVENTS     => [],
+                    NotificationSettings::SETTINGS   => [],
                 ], [
-                    'id'       => $handlers[2]['id'],
-                    'created'  => $handlers[2]['created'],
-                    'updated'  => $handlers[2]['updated'],
-                    'type'     => NotificationSenderEnum::RABBIT,
-                    'name'     => 'Rabbit Test Sender',
-                    'class'    => NullRabitHandler::class,
-                    'events'   => [],
-                    'settings' => [],
+                    NotificationSettings::ID         => $handlers[2][NotificationSettings::ID],
+                    NotificationSettings::CREATED    => $handlers[2][NotificationSettings::CREATED],
+                    NotificationSettings::UPDATED    => $handlers[2][NotificationSettings::UPDATED],
+                    NotificationSettings::TYPE       => NotificationSenderEnum::RABBIT,
+                    NotificationSettings::NAME       => 'Rabbit Test Sender',
+                    NotificationSettings::CLASS_NAME => NullRabitHandler::class,
+                    NotificationSettings::EVENTS     => [],
+                    NotificationSettings::SETTINGS   => [],
                 ], [
-                    'id'       => $handlers[3]['id'],
-                    'created'  => $handlers[3]['created'],
-                    'updated'  => $handlers[3]['updated'],
-                    'type'     => NotificationSenderEnum::CURL,
-                    'name'     => 'CURL Sender',
-                    'class'    => CurlNotificationHandler::class,
-                    'events'   => [],
-                    'settings' => [],
+                    NotificationSettings::ID         => $handlers[3][NotificationSettings::ID],
+                    NotificationSettings::CREATED    => $handlers[3][NotificationSettings::CREATED],
+                    NotificationSettings::UPDATED    => $handlers[3][NotificationSettings::UPDATED],
+                    NotificationSettings::TYPE       => 'Unknown',
+                    NotificationSettings::NAME       => 'Unknown Test Sender',
+                    NotificationSettings::CLASS_NAME => NullUnknownHandler::class,
+                    NotificationSettings::EVENTS     => [],
+                    NotificationSettings::SETTINGS   => [],
                 ], [
-                    'id'       => $handlers[4]['id'],
-                    'created'  => $handlers[4]['created'],
-                    'updated'  => $handlers[4]['updated'],
-                    'type'     => NotificationSenderEnum::EMAIL,
-                    'name'     => 'Email Sender',
-                    'class'    => EmailNotificationHandler::class,
-                    'events'   => [
+                    NotificationSettings::ID         => $handlers[4][NotificationSettings::ID],
+                    NotificationSettings::CREATED    => $handlers[4][NotificationSettings::CREATED],
+                    NotificationSettings::UPDATED    => $handlers[4][NotificationSettings::UPDATED],
+                    NotificationSettings::TYPE       => NotificationSenderEnum::CURL,
+                    NotificationSettings::NAME       => 'CURL Sender',
+                    NotificationSettings::CLASS_NAME => CurlNotificationHandler::class,
+                    NotificationSettings::EVENTS     => [],
+                    NotificationSettings::SETTINGS   => [],
+                ], [
+                    NotificationSettings::ID         => $handlers[5][NotificationSettings::ID],
+                    NotificationSettings::CREATED    => $handlers[5][NotificationSettings::CREATED],
+                    NotificationSettings::UPDATED    => $handlers[5][NotificationSettings::UPDATED],
+                    NotificationSettings::TYPE       => NotificationSenderEnum::EMAIL,
+                    NotificationSettings::NAME       => 'Email Sender',
+                    NotificationSettings::CLASS_NAME => EmailNotificationHandler::class,
+                    NotificationSettings::EVENTS     => [
                         NotificationEventEnum::ACCESS_EXPIRATION,
                         NotificationEventEnum::DATA_ERROR,
                         NotificationEventEnum::SERVICE_UNAVAILABLE,
                     ],
-                    'settings' => [
-                        'emails' => ['one@example.com', 'two@example.com'],
+                    NotificationSettings::SETTINGS   => [
+                        EmailDto::EMAILS => ['one@example.com', 'two@example.com'],
                     ],
                 ], [
-                    'id'       => $handlers[5]['id'],
-                    'created'  => $handlers[5]['created'],
-                    'updated'  => $handlers[5]['updated'],
-                    'type'     => NotificationSenderEnum::RABBIT,
-                    'name'     => 'AMQP Sender',
-                    'class'    => RabbitNotificationHandler::class,
-                    'events'   => [],
-                    'settings' => [],
+                    NotificationSettings::ID         => $handlers[6][NotificationSettings::ID],
+                    NotificationSettings::CREATED    => $handlers[6][NotificationSettings::CREATED],
+                    NotificationSettings::UPDATED    => $handlers[6][NotificationSettings::UPDATED],
+                    NotificationSettings::TYPE       => NotificationSenderEnum::RABBIT,
+                    NotificationSettings::NAME       => 'AMQP Sender',
+                    NotificationSettings::CLASS_NAME => RabbitNotificationHandler::class,
+                    NotificationSettings::EVENTS     => [],
+                    NotificationSettings::SETTINGS   => [],
                 ],
             ],
             $handlers
         );
 
-        self::assertCount(6, $this->dm->getRepository(NotificationSettings::class)->findAll());
+        self::assertCount(7, $this->dm->getRepository(NotificationSettings::class)->findAll());
     }
 
     /**
-     * @covers NotificationSettingsManager::getSettings
+     * @covers \Hanaboso\NotificationSender\Document\NotificationSettings::getSettings
      *
      * @throws Exception
      */
@@ -141,31 +151,26 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
             ->setClass(EmailNotificationHandler::class)
             ->setEvents(self::EVENTS)
             ->setSettings([EmailDto::EMAILS => ['one@example.com', 'two@example.com']]);
-        $this->dm->persist($settings);
-        $this->dm->flush();
+        $this->pfd($settings);
         $this->dm->clear();
 
         $settings = $this->manager->getSettings($settings->getId());
 
         self::assertEquals(
             [
-                'id'       => $settings['id'],
-                'created'  => $settings['created'],
-                'updated'  => $settings['updated'],
-                'type'     => NotificationSenderEnum::EMAIL,
-                'name'     => 'Email Sender',
-                'class'    => EmailNotificationHandler::class,
-                'events'   => [
+                NotificationSettings::ID         => $settings[NotificationSettings::ID],
+                NotificationSettings::CREATED    => $settings[NotificationSettings::CREATED],
+                NotificationSettings::UPDATED    => $settings[NotificationSettings::UPDATED],
+                NotificationSettings::TYPE       => NotificationSenderEnum::EMAIL,
+                NotificationSettings::NAME       => 'Email Sender',
+                NotificationSettings::CLASS_NAME => EmailNotificationHandler::class,
+                NotificationSettings::EVENTS     => [
                     NotificationEventEnum::ACCESS_EXPIRATION,
                     NotificationEventEnum::DATA_ERROR,
                     NotificationEventEnum::SERVICE_UNAVAILABLE,
                 ],
-                'settings' => [
-                    'emails' =>
-                        [
-                            'one@example.com',
-                            'two@example.com',
-                        ],
+                NotificationSettings::SETTINGS   => [
+                    EmailDto::EMAILS => ['one@example.com', 'two@example.com'],
                 ],
             ],
             $settings
@@ -173,7 +178,7 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers NotificationSettingsManager::getSettings
+     * @covers \Hanaboso\NotificationSender\Model\Notification\NotificationSettingsManager::getSettings
      *
      * @throws Exception
      */
@@ -187,7 +192,7 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers NotificationSettingsManager::getSettings
+     * @covers \Hanaboso\NotificationSender\Model\Notification\NotificationSettingsManager::getSettings
      *
      * @throws Exception
      */
@@ -197,8 +202,7 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
             ->setClass('Unknown')
             ->setEvents(self::EVENTS)
             ->setSettings([EmailDto::EMAILS => ['one@example.com', 'two@example.com']]);
-        $this->dm->persist($settings);
-        $this->dm->flush();
+        $this->pfd($settings);
         $this->dm->clear();
 
         self::expectException(NotificationException::class);
@@ -209,7 +213,7 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers NotificationSettingsManager::saveSettings
+     * @covers \Hanaboso\NotificationSender\Model\Notification\NotificationSettingsManager::saveSettings
      *
      * @throws Exception
      */
@@ -228,8 +232,8 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
                     EmailDto::EMAILS     => ['one@example.com', 'two@example.com'],
                 ]
             );
-        $this->dm->persist($settings);
-        $this->dm->flush();
+
+        $this->pfd($settings);
         $this->dm->clear();
 
         $settings = $this->manager->saveSettings(
@@ -243,20 +247,21 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
                     EmailDto::PASSWORD   => 'password',
                     EmailDto::ENCRYPTION => 'encryption',
                     EmailDto::EMAILS     => ['another-one@example.com', 'another-two@example.com'],
+                    'Unknown'            => 'unknown',
                 ],
             ]
         );
 
         self::assertEquals(
             [
-                'id'       => $settings['id'],
-                'created'  => $settings['created'],
-                'updated'  => $settings['updated'],
-                'type'     => NotificationSenderEnum::EMAIL,
-                'name'     => 'Email Sender',
-                'class'    => EmailNotificationHandler::class,
-                'events'   => [NotificationEventEnum::ACCESS_EXPIRATION],
-                'settings' => [
+                NotificationSettings::ID         => $settings[NotificationSettings::ID],
+                NotificationSettings::CREATED    => $settings[NotificationSettings::CREATED],
+                NotificationSettings::UPDATED    => $settings[NotificationSettings::UPDATED],
+                NotificationSettings::TYPE       => NotificationSenderEnum::EMAIL,
+                NotificationSettings::NAME       => 'Email Sender',
+                NotificationSettings::CLASS_NAME => EmailNotificationHandler::class,
+                NotificationSettings::EVENTS     => [NotificationEventEnum::ACCESS_EXPIRATION],
+                NotificationSettings::SETTINGS   => [
                     EmailDto::HOST       => 'host',
                     EmailDto::PORT       => 'port',
                     EmailDto::USERNAME   => 'username',
@@ -270,7 +275,7 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers NotificationSettingsManager::saveSettings
+     * @covers \Hanaboso\NotificationSender\Model\Notification\NotificationSettingsManager::saveSettings
      *
      * @throws Exception
      */
@@ -284,7 +289,7 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers NotificationSettingsManager::saveSettings
+     * @covers \Hanaboso\NotificationSender\Model\Notification\NotificationSettingsManager::saveSettings
      *
      * @throws Exception
      */
@@ -294,8 +299,7 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
             ->setClass(EmailNotificationHandler::class)
             ->setEvents(self::EVENTS)
             ->setSettings([EmailDto::EMAILS => ['one@example.com', 'two@example.com']]);
-        $this->dm->persist($settings);
-        $this->dm->flush();
+        $this->pfd($settings);
         $this->dm->clear();
 
         self::expectException(NotificationException::class);
