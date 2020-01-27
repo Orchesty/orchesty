@@ -1,16 +1,16 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Document;
+namespace HbPFAppStoreTests\Integration\Document;
 
 use Exception;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use HbPFAppStoreTests\DatabaseTestCaseAbstract;
 use MongoDB\BSON\ObjectId;
-use Tests\DatabaseTestCaseAbstract;
 
 /**
  * Class InstallTest
  *
- * @package Tests\Integration\Document
+ * @package HbPFAppStoreTests\Integration\Document
  */
 final class InstallTest extends DatabaseTestCaseAbstract
 {

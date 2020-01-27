@@ -1,26 +1,29 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Controller;
+namespace HbPFAppStoreTests\Controller;
 
 use Exception;
 use Hanaboso\HbPFAppStore\Handler\ApplicationHandler;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\Utils\String\Json;
+use HbPFAppStoreTests\ControllerTestCaseAbstract;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
-use Tests\ControllerTestCaseAbstract;
 
 /**
  * Class ApplicationControllerTest
  *
- * @package Tests\Controller
+ * @package HbPFAppStoreTests\Controller
  */
 final class ApplicationControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     *
+     * @covers \Hanaboso\HbPFAppStore\Controller\ApplicationController
+     * @covers \Hanaboso\HbPFAppStore\Controller\ApplicationController::listOfApplicationsAction
+     * @covers \Hanaboso\HbPFAppStore\Handler\ApplicationHandler::getApplications
+     * @covers \Hanaboso\HbPFAppStore\Model\ApplicationManager::getApplications
      */
     public function testListOfApplications(): void
     {
@@ -38,6 +41,19 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\HbPFAppStore\Controller\ApplicationController::listOfApplicationsAction
+     */
+    public function testListOfApplicationsErr(): void
+    {
+        $this->mockApplicationHandlerException('getApplications');
+
+        $response = (array) $this->sendGet('/applications');
+        self::assertEquals(500, $response['status']);
+    }
+
+    /**
+     * @covers \Hanaboso\HbPFAppStore\Controller\ApplicationController::getApplicationAction
+     *
      * @throws Exception
      */
     public function testGetApplication(): void
@@ -59,6 +75,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\HbPFAppStore\Controller\ApplicationController::getUsersApplicationAction
+     *
      * @throws Exception
      */
     public function testGetUsersApplication(): void
@@ -79,6 +97,21 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\HbPFAppStore\Controller\ApplicationController::getUsersApplicationAction
+     */
+    public function testGetUsersApplicationErr(): void
+    {
+        $this->mockApplicationHandlerException('getApplicationsByUser');
+
+        $response = (array) $this->sendGet('/applications/users/bar');
+        self::assertEquals(500, $response['status']);
+    }
+
+    /**
+     * @covers \Hanaboso\HbPFAppStore\Controller\ApplicationController::getApplicationDetailAction
+     * @covers \Hanaboso\HbPFAppStore\Handler\ApplicationHandler::getApplicationByKeyAndUser
+     * @covers \Hanaboso\HbPFAppStore\Model\Webhook\WebhookManager::getWebhooks
+     *
      * @throws Exception
      */
     public function testGetApplicationDetail(): void
@@ -89,19 +122,25 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         $application->method('getApplicationForm')->willReturn([]);
         self::$container->set('hbpf.application.someApp', $application);
 
-        self::$client->request('GET', '/applications/someApp/users/bar');
-        /** @var Response $response */
-        $response = self::$client->getResponse();
+        $response = (array) $this->sendGet('/applications/someApp/users/bar');
 
-        self::assertEquals(
-            'bar',
-            Json::decode((string) $response->getContent())[ApplicationInstall::USER]
-        );
-        self::assertEquals('200', $response->getStatusCode());
+        self::assertEquals('200', $response['status']);
     }
 
     /**
-     *
+     * @covers \Hanaboso\HbPFAppStore\Controller\ApplicationController::getApplicationDetailAction
+     */
+    public function testApplicationDetailErr(): void
+    {
+        $this->mockApplicationHandlerException('getApplicationByKeyAndUser');
+        $response = (array) $this->sendGet('/applications/someApp/users/bar');
+
+        self::assertEquals(500, $response['status']);
+    }
+
+    /**
+     * @covers \Hanaboso\HbPFAppStore\Controller\ApplicationController::installApplicationAction
+     * @covers \Hanaboso\HbPFAppStore\Handler\ApplicationHandler::installApplication
      */
     public function testInstallApplication(): void
     {
@@ -109,18 +148,29 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         $application->method('toArray')->willReturn(['user' => 'bar']);
         self::$container->set('hbpf.application.example', $application);
 
-        self::$client->request('POST', '/applications/example/users/bar/install');
-        /** @var Response $response */
-        $response = self::$client->getResponse();
+        $response = (array) $this->sendPost('/applications/example/users/bar/install', []);
 
-        self::assertEquals(
-            'bar',
-            Json::decode((string) $response->getContent())[ApplicationInstall::USER]
-        );
-        self::assertEquals('200', $response->getStatusCode());
+        self::assertEquals('200', $response['status']);
     }
 
     /**
+     * @covers \Hanaboso\HbPFAppStore\Controller\ApplicationController::installApplicationAction
+     */
+    public function testInstallApplicationErr(): void
+    {
+        $this->mockApplicationHandlerException('installApplication');
+
+        $response = (array) $this->sendPost('/applications/example/users/bar/install', []);
+
+        self::assertEquals(500, $response['status']);
+    }
+
+    /**
+     * @covers \Hanaboso\HbPFAppStore\Controller\ApplicationController::uninstallApplicationAction
+     * @covers \Hanaboso\HbPFAppStore\Handler\ApplicationHandler::uninstallApplication
+     * @covers \Hanaboso\HbPFAppStore\Model\ApplicationManager::uninstallApplication
+     * @covers \Hanaboso\HbPFAppStore\Model\ApplicationManager::unsubscribeWebhooks
+     *
      * @throws Exception
      */
     public function testUninstallApplication(): void
@@ -145,6 +195,19 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\HbPFAppStore\Controller\ApplicationController::uninstallApplicationAction
+     */
+    public function testUninstallApplicationErr(): void
+    {
+        $this->mockApplicationHandlerException('uninstallApplication');
+        $response = (array) $this->sendDelete('/applications/null/users/bar/uninstall');
+
+        self::assertEquals(500, $response['status']);
+    }
+
+    /**
+     * @covers \Hanaboso\HbPFAppStore\Controller\ApplicationController::updateApplicationSettingsAction
+     *
      * @throws Exception
      */
     public function testUpdateApplicationSettings(): void
@@ -163,6 +226,19 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\HbPFAppStore\Controller\ApplicationController::updateApplicationSettingsAction
+     */
+    public function testUpdateApplicationSettingsErr(): void
+    {
+        $this->mockApplicationHandlerException('updateApplicationSettings');
+        $response = (array) $this->sendPut('/applications/someApp/users/bar/settings', [], ['test' => 1]);
+
+        self::assertEquals(500, $response['status']);
+    }
+
+    /**
+     * @covers \Hanaboso\HbPFAppStore\Controller\ApplicationController::saveApplicationPasswordAction
+     *
      * @throws Exception
      */
     public function testSaveApplicationPassword(): void
@@ -174,6 +250,27 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         $response = self::$client->getResponse();
 
         self::assertEquals('200', $response->getStatusCode());
+    }
+
+    /**
+     * @covers \Hanaboso\HbPFAppStore\Controller\ApplicationController::saveApplicationPasswordAction
+     */
+    public function testSaveApplicationPasswordErr(): void
+    {
+        $this->mockApplicationHandlerException('updateApplicationPassword');
+        $response = (array) $this->sendPut('/applications/someApp/users/bar/password', [], ['passwd' => 'test']);
+
+        self::assertEquals(500, $response['status']);
+    }
+
+    /**
+     * @param string $fn
+     */
+    private function mockApplicationHandlerException(string $fn): void
+    {
+        $mock = self::createPartialMock(ApplicationHandler::class, [$fn]);
+        $mock->expects(self::any())->method($fn)->willThrowException(new Exception());
+        self::$container->set('hbpf._application.handler.application', $mock);
     }
 
     /**

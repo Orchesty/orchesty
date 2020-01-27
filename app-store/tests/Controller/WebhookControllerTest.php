@@ -1,23 +1,31 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Controller;
+namespace HbPFAppStoreTests\Controller;
 
 use Exception;
 use Hanaboso\HbPFAppStore\Handler\WebhookHandler;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
+use HbPFAppStoreTests\ControllerTestCaseAbstract;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
-use Tests\ControllerTestCaseAbstract;
 
 /**
  * Class WebhookControllerTest
  *
- * @package Tests\Controller
+ * @package HbPFAppStoreTests\Controller
  */
 final class WebhookControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
+     * @covers \Hanaboso\HbPFAppStore\Controller\WebhookController
+     * @covers \Hanaboso\HbPFAppStore\Controller\WebhookController::subscribeWebhooksAction
+     * @covers \Hanaboso\HbPFAppStore\Handler\WebhookHandler
+     * @covers \Hanaboso\HbPFAppStore\Handler\WebhookHandler::subscribeWebhooks
+     * @covers \Hanaboso\HbPFAppStore\Model\Webhook\WebhookManager
+     * @covers \Hanaboso\HbPFAppStore\Model\Webhook\WebhookManager::subscribeWebhooks
+     *
      * @throws Exception
      */
     public function testSubscribeWebhooksAction(): void
@@ -33,6 +41,21 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\HbPFAppStore\Controller\WebhookController::subscribeWebhooksAction
+     */
+    public function testSubscribeWebhooksErr(): void
+    {
+        $this->mockWebhookHandlerException('subscribeWebhooks');
+        $response = (array) $this->sendPost('/webhook/applications/null/users/bar/subscribe', []);
+
+        self::assertEquals(500, $response['status']);
+    }
+
+    /**
+     * @covers \Hanaboso\HbPFAppStore\Controller\WebhookController::unsubscribeWebhooksAction
+     * @covers \Hanaboso\HbPFAppStore\Handler\WebhookHandler::unsubscribeWebhooks
+     * @covers \Hanaboso\HbPFAppStore\Model\Webhook\WebhookManager::unsubscribeWebhooks
+     *
      * @throws Exception
      */
     public function testUnsubscribeWebhooksAction(): void
@@ -45,6 +68,17 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
         $response = self::$client->getResponse();
 
         self::assertEquals('200', $response->getStatusCode());
+    }
+
+    /**
+     * @covers \Hanaboso\HbPFAppStore\Controller\WebhookController::unsubscribeWebhooksAction
+     */
+    public function testUnsubscribeWebhooksErr(): void
+    {
+        $this->mockWebhookHandlerException('unsubscribeWebhooks');
+        $response = (array) $this->sendPost('/webhook/applications/null/users/bar/unsubscribe', []);
+
+        self::assertEquals(500, $response['status']);
     }
 
     /**
@@ -85,6 +119,16 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
             ->setUser($user);
 
         $this->persistAndFlush($dto);
+    }
+
+    /**
+     * @param string $fn
+     */
+    private function mockWebhookHandlerException(string $fn): void
+    {
+        $mock = self::createPartialMock(WebhookHandler::class, [$fn]);
+        $mock->expects(self::any())->method($fn)->willThrowException(new ApplicationInstallException());
+        self::$container->set('hbpf._application.handler.webhook', $mock);
     }
 
 }

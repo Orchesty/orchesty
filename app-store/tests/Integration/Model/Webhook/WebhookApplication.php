@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Model\Webhook;
+namespace HbPFAppStoreTests\Integration\Model\Webhook;
 
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
@@ -19,7 +19,7 @@ use Hanaboso\Utils\String\Json;
 /**
  * Class WebhookApplication
  *
- * @package Tests\Integration\Model\Webhook
+ * @package HbPFAppStoreTests\Integration\Model\Webhook
  */
 final class WebhookApplication extends ApplicationAbstract implements WebhookApplicationInterface
 {

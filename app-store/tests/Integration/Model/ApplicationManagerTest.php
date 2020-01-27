@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Model;
+namespace HbPFAppStoreTests\Integration\Model;
 
 use Exception;
 use Hanaboso\HbPFAppStore\Model\ApplicationManager;
@@ -8,12 +8,12 @@ use Hanaboso\PhpCheckUtils\PhpUnit\Traits\CustomAssertTrait;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
-use Tests\DatabaseTestCaseAbstract;
+use HbPFAppStoreTests\DatabaseTestCaseAbstract;
 
 /**
  * Class ApplicationManagerTest
  *
- * @package Tests\Integration\Model
+ * @package HbPFAppStoreTests\Integration\Model
  */
 final class ApplicationManagerTest extends DatabaseTestCaseAbstract
 {
@@ -73,6 +73,8 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\HbPFAppStore\Model\ApplicationManager::installApplication
+     *
      * @throws Exception
      */
     public function testInstallApplication(): void
@@ -88,6 +90,18 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
         );
 
         self::assertIsObject($app);
+    }
+
+    /**
+     * @covers \Hanaboso\HbPFAppStore\Model\ApplicationManager::installApplication
+     * @throws Exception
+     */
+    public function testInstallApplicationTest(): void
+    {
+        $this->createApp('key', 'user');
+
+        self::expectException(ApplicationInstallException::class);
+        $this->applicationManager->installApplication('key', 'user');
     }
 
     /**
@@ -193,6 +207,18 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\HbPFAppStore\Model\ApplicationManager::subscribeWebhooks
+     * @throws Exception
+     */
+    public function testSubscribeWebhooks(): void
+    {
+        $applicationInstall = $this->createApp('null', 'user');
+        $this->applicationManager->subscribeWebhooks($applicationInstall);
+
+        self::assertFake();
+    }
+
+    /**
      * @throws Exception
      */
     protected function setUp(): void
@@ -206,15 +232,18 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
      * @param string $key
      * @param string $user
      *
+     * @return ApplicationInstall
      * @throws Exception
      */
-    private function createApp(string $key = 'some app', string $user = 'example1'): void
+    private function createApp(string $key = 'some app', string $user = 'example1'): ApplicationInstall
     {
         $app = new ApplicationInstall();
         $app->setKey($key);
         $app->setUser($user);
 
         $this->persistAndFlush($app);
+
+        return $app;
     }
 
 }

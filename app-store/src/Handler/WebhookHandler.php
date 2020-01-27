@@ -2,6 +2,7 @@
 
 namespace Hanaboso\HbPFAppStore\Handler;
 
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\HbPFAppStore\Model\ApplicationManager;
@@ -62,6 +63,7 @@ class WebhookHandler
      * @throws ApplicationInstallException
      * @throws CurlException
      * @throws PipesFrameworkException
+     * @throws MongoDBException
      */
     public function unsubscribeWebhooks(string $key, string $user, array $data = []): void
     {

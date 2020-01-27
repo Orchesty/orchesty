@@ -1,11 +1,11 @@
 #!/usr/bin/env php
 <?php
 use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Hanaboso\HbPFAppStore\Kernel;
+use HbPFAppStoreTests\app\Kernel;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Debug\Debug;
 set_time_limit(0);
-require __DIR__.'/../vendor/autoload.php';
+require __DIR__ . '/../../vendor/autoload.php';
 if (!class_exists(Application::class)) {
     throw new \RuntimeException('You need to add "symfony/framework-bundle" as a Composer dependency.');
 }

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Model\Webhook;
+namespace HbPFAppStoreTests\Integration\Model\Webhook;
 
 use Closure;
 use Doctrine\Common\Persistence\ObjectRepository;
@@ -9,16 +9,17 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\HbPFAppStore\Document\Webhook;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookManager;
+use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
 use Hanaboso\HbPFAppStore\Repository\WebhookRepository;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
+use HbPFAppStoreTests\DatabaseTestCaseAbstract;
 use PHPUnit\Framework\MockObject\MockObject;
-use Tests\DatabaseTestCaseAbstract;
 
 /**
  * Class WebhookManagerTest
  *
- * @package Tests\Integration\Model\Webhook
+ * @package HbPFAppStoreTests\Integration\Model\Webhook
  */
 final class WebhookManagerTest extends DatabaseTestCaseAbstract
 {
@@ -34,6 +35,14 @@ final class WebhookManagerTest extends DatabaseTestCaseAbstract
     private $repository;
 
     /**
+     * @covers \Hanaboso\HbPFAppStore\Model\Webhook\WebhookManager
+     * @covers \Hanaboso\HbPFAppStore\Model\Webhook\WebhookManager::subscribeWebhooks
+     * @covers \Hanaboso\HbPFAppStore\Model\Webhook\WebhookManager::unsubscribeWebhooks
+     * @covers \Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription
+     * @covers \Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription::getTopology
+     * @covers \Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription::getNode
+     * @covers \Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription::getName
+     *
      * @throws Exception
      */
     public function testSubscribeAndUnsubscribe(): void
@@ -63,6 +72,9 @@ final class WebhookManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\HbPFAppStore\Model\Webhook\WebhookManager::subscribeWebhooks
+     * @covers \Hanaboso\HbPFAppStore\Model\Webhook\WebhookManager::unsubscribeWebhooks
+     *
      * @throws Exception
      */
     public function testSubscribeAndUnsubscribeFailed(): void
@@ -89,6 +101,8 @@ final class WebhookManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\HbPFAppStore\Model\Webhook\WebhookManager::subscribeWebhooks
+     *
      * @throws Exception
      */
     public function testSubscribeAndUnsubscribeNoApplication(): void
@@ -98,6 +112,75 @@ final class WebhookManagerTest extends DatabaseTestCaseAbstract
 
         $this->getService(static fn(): ResponseDto => new ResponseDto(200, 'OK', '{"id":"id"}', []))
             ->subscribeWebhooks($this->application, 'User');
+    }
+
+    /**
+     * @covers \Hanaboso\HbPFAppStore\Model\Webhook\WebhookManager::getWebhooks
+     * @covers \Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription::getTopology
+     * @covers \Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription::getName
+     * @throws Exception
+     */
+    public function testGetWebhooks(): void
+    {
+        $webhook = (new Webhook())
+            ->setUser('user')
+            ->setApplication('webhook')
+            ->setName('name')
+            ->setTopology('1');
+        $this->persistAndFlush($webhook);
+
+        $result = $this->getService(static fn(): ResponseDto => new ResponseDto(200, 'OK', '{"id":"id"}', []))
+            ->getWebhooks($this->application, 'user');
+
+        self::assertEquals(
+            [
+                'name'     => 'name',
+                'default'  => TRUE,
+                'enabled'  => TRUE,
+                'topology' => '1',
+            ],
+            $result[0]
+        );
+    }
+
+    /**
+     * @covers \Hanaboso\HbPFAppStore\Model\Webhook\WebhookManager::subscribeWebhooks
+     * @covers \Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription::getParameters
+     * @throws Exception
+     */
+    public function testSubscribeWebhooks(): void
+    {
+        $params = (new WebhookSubscription('name', 'node', 'topo', []))->getParameters();
+        $this->dm->persist((new ApplicationInstall())->setUser('user')->setKey('webhook'));
+        $this->dm->flush();
+
+        $this->getService(static fn(): ResponseDto => new ResponseDto(200, 'OK', '{"id":"id"}', []))
+            ->subscribeWebhooks($this->application, 'user', ['name' => 'testName']);
+
+        self::assertEquals([], $params);
+    }
+
+    /**
+     * @covers \Hanaboso\HbPFAppStore\Model\Webhook\WebhookManager::unsubscribeWebhooks
+     * @throws Exception
+     */
+    public function testUnsubscribeWebhooks(): void
+    {
+        $this->dm->persist((new ApplicationInstall())->setUser('user')->setKey('webhook'));
+        $this->dm->flush();
+
+        $webhook = (new Webhook())
+            ->setUser('user')
+            ->setApplication('webhook')
+            ->setName('name')
+            ->setTopology('1');
+        $this->persistAndFlush($webhook);
+
+        $this
+            ->getService(static fn(): ResponseDto => new ResponseDto(200, 'OK', '{"id":"id"}', []))
+            ->unsubscribeWebhooks($this->application, 'user', ['topology' => 'testTopo']);
+
+        self::assertFake();
     }
 
     /**

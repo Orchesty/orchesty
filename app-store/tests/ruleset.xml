@@ -6,7 +6,7 @@
         <properties>
             <property name="rootNamespaces" type="array">
                 <element key="src" value="Hanaboso\HbPFAppStore" />
-                <element key="tests" value="Tests" />
+                <element key="tests" value="HbPFAppStoreTests" />
             </property>
         </properties>
     </rule>

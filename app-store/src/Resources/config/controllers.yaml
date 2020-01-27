@@ -20,3 +20,5 @@ services:
         class: Hanaboso\HbPFAppStore\Controller\StatisticsController
         arguments:
             - '@hbpf._application.handler.statistics'
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]
