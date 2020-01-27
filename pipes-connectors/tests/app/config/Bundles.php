@@ -1,8 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
-use FOS\RestBundle\FOSRestBundle;
 use Hanaboso\CommonsBundle\HbPFCommonsBundle;
 use Hanaboso\HbPFAppStore\HbPFAppStoreBundle;
 use Hanaboso\HbPFConnectors\HbPFConnectorsBundle;

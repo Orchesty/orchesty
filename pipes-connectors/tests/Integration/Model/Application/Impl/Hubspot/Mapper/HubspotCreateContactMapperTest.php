@@ -1,20 +1,20 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Model\Application\Impl\Hubspot\Mapper;
+namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Hubspot\Mapper;
 
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Mapper\HubspotCreateContactMapper;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shipstation\Connector\ShipstationNewOrderConnector;
 use Hanaboso\Utils\String\Json;
-use Tests\DatabaseTestCaseAbstract;
-use Tests\DataProvider;
-use Tests\MockCurlMethod;
+use HbPFConnectorsTests\DatabaseTestCaseAbstract;
+use HbPFConnectorsTests\DataProvider;
+use HbPFConnectorsTests\MockCurlMethod;
 
 /**
  * Class HubspotCreateContactMapperTest
  *
- * @package Tests\Integration\Model\Application\Impl\Hubspot\Mapper
+ * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Hubspot\Mapper
  */
 final class HubspotCreateContactMapperTest extends DatabaseTestCaseAbstract
 {

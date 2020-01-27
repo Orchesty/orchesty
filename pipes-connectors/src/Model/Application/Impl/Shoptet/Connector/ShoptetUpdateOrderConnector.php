@@ -2,8 +2,6 @@
 
 namespace Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector;
 
-use Doctrine\ODM\MongoDB\DocumentNotFoundException;
-use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
@@ -45,8 +43,6 @@ final class ShoptetUpdateOrderConnector extends ShoptetConnectorAbstract
      * @throws ConnectorException
      * @throws OnRepeatException
      * @throws PipesFrameworkException
-     * @throws DocumentNotFoundException
-     * @throws MongoDBException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {

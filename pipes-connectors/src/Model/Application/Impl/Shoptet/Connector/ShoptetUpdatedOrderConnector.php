@@ -2,7 +2,6 @@
 
 namespace Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector;
 
-use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
@@ -12,7 +11,6 @@ use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessActionNotSupportedTrait;
 use Hanaboso\PipesPhpSdk\Utils\ProcessContentTrait;
-use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\System\PipesHeaders;
 
 /**
@@ -46,8 +44,6 @@ final class ShoptetUpdatedOrderConnector extends ShoptetConnectorAbstract
      * @throws ApplicationInstallException
      * @throws ConnectorException
      * @throws OnRepeatException
-     * @throws PipesFrameworkException
-     * @throws MongoDBException
      */
     public function processEvent(ProcessDto $dto): ProcessDto
     {

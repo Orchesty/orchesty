@@ -28,12 +28,12 @@ final class ShipstationNewOrderConnector extends ConnectorAbstract
     /**
      * @var CurlManagerInterface
      */
-    private $curlManager;
+    private CurlManagerInterface $curlManager;
 
     /**
      * @var ApplicationInstallRepository&ObjectRepository<ApplicationInstall>
      */
-    private $repository;
+    private ApplicationInstallRepository $repository;
 
     /**
      * ShipstationNewOrderConnector constructor.

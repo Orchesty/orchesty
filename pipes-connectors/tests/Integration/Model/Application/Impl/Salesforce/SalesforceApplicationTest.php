@@ -1,19 +1,19 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Model\Application\Impl\Salesforce;
+namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Salesforce;
 
 use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Salesforce\SalesforceApplication;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract;
-use Tests\DatabaseTestCaseAbstract;
-use Tests\DataProvider;
+use HbPFConnectorsTests\DatabaseTestCaseAbstract;
+use HbPFConnectorsTests\DataProvider;
 
 /**
  * Class SalesforceApplicationTest
  *
- * @package Tests\Integration\Model\Application\Impl\Salesforce
+ * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Salesforce
  */
 final class SalesforceApplicationTest extends DatabaseTestCaseAbstract
 {

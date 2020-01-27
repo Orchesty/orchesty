@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests;
+namespace HbPFConnectorsTests;
 
 use Closure;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -20,7 +20,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 /**
  * Class KernelTestCaseAbstract
  *
- * @package Tests
+ * @package HbPFConnectorsTests
  */
 abstract class KernelTestCaseAbstract extends KernelTestCase
 {

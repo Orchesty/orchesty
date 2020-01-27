@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Model\Application\Impl\OAuth2\CustomNode;
+namespace HbPFConnectorsTests\Integration\Model\Application\Impl\OAuth2\CustomNode;
 
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
@@ -9,12 +9,12 @@ use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\SuccessMessage;
 use Hanaboso\Utils\Date\DateTimeUtils;
-use Tests\DatabaseTestCaseAbstract;
+use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 
 /**
  * Class GetApplicationForRefreshBatchTest
  *
- * @package Tests\Integration\Model\Application\Impl\OAuth2\CustomNode
+ * @package HbPFConnectorsTests\Integration\Model\Application\Impl\OAuth2\CustomNode
  */
 class GetApplicationForRefreshBatchTest extends DatabaseTestCaseAbstract
 {

@@ -1,0 +1,18 @@
+#!/usr/bin/env php
+<?php declare(strict_types=1);
+
+use HbPFConnectorsTests\app\Kernel;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\Console\Input\ArgvInput;
+
+set_time_limit(0);
+
+require __DIR__ . '/../../vendor/autoload.php';
+
+try {
+    (new Application(new Kernel('test', TRUE)))->run(new ArgvInput());
+} catch (Throwable $throwable) {
+    echo sprintf('%s%s%s%s', $throwable->getMessage(), PHP_EOL, $throwable->getTraceAsString(), PHP_EOL);
+
+    exit;
+}

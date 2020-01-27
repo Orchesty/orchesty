@@ -153,7 +153,6 @@ final class HubspotApplication extends OAuth2ApplicationAbstract implements Webh
      * @param string              $url
      *
      * @return RequestDto
-     * @throws ApplicationInstallException
      * @throws CurlException
      */
     public function getWebhookSubscribeRequestDto(
@@ -198,7 +197,6 @@ final class HubspotApplication extends OAuth2ApplicationAbstract implements Webh
      * @param string             $id
      *
      * @return RequestDto
-     * @throws ApplicationInstallException
      * @throws CurlException
      */
     public function getWebhookUnsubscribeRequestDto(ApplicationInstall $applicationInstall, string $id): RequestDto

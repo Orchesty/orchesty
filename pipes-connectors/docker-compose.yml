@@ -13,7 +13,7 @@ services:
         environment:
             - DEV_UID=${DEV_UID}
             - DEV_GID=${DEV_GID}
-            - KERNEL_CLASS=Hanaboso\HbPFConnectors\Kernel
+            - KERNEL_CLASS=HbPFConnectorsTests\app\Kernel
             - PHP_WEBROOT=/var/www/pipes/pipes-connectors/public
             - PHP_IDE_CONFIG=${PHP_IDE_CONFIG}
             - COMPOSER_HOME=${HOME}/dev/.composer

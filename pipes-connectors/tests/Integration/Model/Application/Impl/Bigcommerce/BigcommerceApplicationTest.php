@@ -1,18 +1,18 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Model\Application\Impl\Bigcommerce;
+namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Bigcommerce;
 
 use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Bigcommerce\BigcommerceApplication;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use Tests\DatabaseTestCaseAbstract;
-use Tests\DataProvider;
+use HbPFConnectorsTests\DatabaseTestCaseAbstract;
+use HbPFConnectorsTests\DataProvider;
 
 /**
  * Class BigcommerceApplicationTest
  *
- * @package Tests\Integration\Model\Application\Impl\Bigcommerce
+ * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Bigcommerce
  */
 final class BigcommerceApplicationTest extends DatabaseTestCaseAbstract
 {

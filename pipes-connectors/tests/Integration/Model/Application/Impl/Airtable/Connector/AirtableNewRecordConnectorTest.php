@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Model\Application\Impl\Airtable\Connector;
+namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Airtable\Connector;
 
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
@@ -11,14 +11,14 @@ use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
-use Tests\DatabaseTestCaseAbstract;
-use Tests\DataProvider;
-use Tests\MockCurlMethod;
+use HbPFConnectorsTests\DatabaseTestCaseAbstract;
+use HbPFConnectorsTests\DataProvider;
+use HbPFConnectorsTests\MockCurlMethod;
 
 /**
  * Class AirtableNewRecordConnectorTest
  *
- * @package Tests\Integration\Model\Application\Impl\Airtable\Connector
+ * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Airtable\Connector
  */
 final class AirtableNewRecordConnectorTest extends DatabaseTestCaseAbstract
 {

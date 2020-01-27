@@ -1,19 +1,19 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Model\Application\Impl\Zoho;
+namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Zoho;
 
 use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Zoho\ZohoApplication;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract;
-use Tests\DatabaseTestCaseAbstract;
-use Tests\DataProvider;
+use HbPFConnectorsTests\DatabaseTestCaseAbstract;
+use HbPFConnectorsTests\DataProvider;
 
 /**
  * Class ZohoApplicationTest
  *
- * @package Tests\Integration\Model\Application\Impl\Zoho
+ * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Zoho
  */
 class ZohoApplicationTest extends DatabaseTestCaseAbstract
 {

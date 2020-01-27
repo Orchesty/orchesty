@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Controller;
+namespace HbPFConnectorsTests\Controller;
 
-use Tests\ControllerTestCaseAbstract;
+use HbPFConnectorsTests\ControllerTestCaseAbstract;
 
 /**
  * Class GitKeepTest
  *
- * @package Tests\Controller
+ * @package HbPFConnectorsTests\Controller
  */
 final class GitKeepTest extends ControllerTestCaseAbstract
 {

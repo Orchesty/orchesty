@@ -1,20 +1,20 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Model\Application\Impl\Mailchimp\Connector;
+namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Mailchimp\Connector;
 
 use Exception;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\Connector\MailchimpCreateContactConnector;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\MailchimpApplication;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
-use Tests\DatabaseTestCaseAbstract;
-use Tests\DataProvider;
-use Tests\MockCurlMethod;
+use HbPFConnectorsTests\DatabaseTestCaseAbstract;
+use HbPFConnectorsTests\DataProvider;
+use HbPFConnectorsTests\MockCurlMethod;
 
 /**
  * Class MailchimpCreateContactConnectorTest
  *
- * @package Tests\Integration\Model\Application\Impl\Mailchimp\Connector
+ * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Mailchimp\Connector
  */
 final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
 {

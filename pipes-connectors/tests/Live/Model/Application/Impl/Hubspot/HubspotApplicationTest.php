@@ -1,15 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Live\Model\Application\Impl\Hubspot;
+namespace HbPFConnectorsTests\Live\Model\Application\Impl\Hubspot;
 
 use Exception;
-use Tests\DatabaseTestCaseAbstract;
-use Tests\DataProvider;
+use HbPFConnectorsTests\DatabaseTestCaseAbstract;
+use HbPFConnectorsTests\DataProvider;
 
 /**
  * Class HubspotApplicationTest
  *
- * @package Tests\Live\Model\Application\Impl\Hubspot
+ * @package HbPFConnectorsTests\Live\Model\Application\Impl\Hubspot
  */
 final class HubspotApplicationTest extends DatabaseTestCaseAbstract
 {

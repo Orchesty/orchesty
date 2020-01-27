@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Model\Application\Impl\Mailchimp;
+namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Mailchimp;
 
 use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
@@ -12,15 +12,15 @@ use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
+use HbPFConnectorsTests\DatabaseTestCaseAbstract;
+use HbPFConnectorsTests\DataProvider;
+use HbPFConnectorsTests\MockCurlMethod;
 use PHPUnit\Framework\MockObject\MockObject;
-use Tests\DatabaseTestCaseAbstract;
-use Tests\DataProvider;
-use Tests\MockCurlMethod;
 
 /**
  * Class MailchimpApplicationTest
  *
- * @package Tests\Integration\Model\Application\Impl\Mailchimp
+ * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Mailchimp
  */
 final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
 {

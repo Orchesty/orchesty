@@ -1,18 +1,18 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Live\Model\Application\Impl\Mailchimp;
+namespace HbPFConnectorsTests\Live\Model\Application\Impl\Mailchimp;
 
 use Exception;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\MailchimpApplication;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
-use Tests\DatabaseTestCaseAbstract;
-use Tests\DataProvider;
+use HbPFConnectorsTests\DatabaseTestCaseAbstract;
+use HbPFConnectorsTests\DataProvider;
 
 /**
  * Class MailchimpApplicationTest
  *
- * @package Tests\Live\Model\Application\Impl\Mailchimp
+ * @package HbPFConnectorsTests\Live\Model\Application\Impl\Mailchimp
  */
 final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
 {

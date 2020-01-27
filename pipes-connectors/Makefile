@@ -25,7 +25,6 @@ prod-build: .env
 docker-up-force: .env
 	$(DC) pull
 	$(DC) up -d --force-recreate --remove-orphans
-	sleep 10
 
 docker-down-clean: .env
 	$(DC) down -v
@@ -39,17 +38,17 @@ composer-update:
 
 clear-cache:
 	$(DE) rm -rf var/log
-	$(DE) bin/console cache:clear --env=test
-	$(DE) bin/console cache:warmup --env=test
+	$(DE) tests/bin/console cache:clear --env=test
+	$(DE) tests/bin/console cache:warmup --env=test
 
 # App
 init-dev: docker-up-force composer-install
 
 phpcodesniffer:
-	$(DE) vendor/bin/phpcs --standard=ruleset.xml src tests
+	$(DE) vendor/bin/phpcs --standard=tests/ruleset.xml src tests
 
 phpstan:
-	$(DE) vendor/bin/phpstan analyse -c phpstan.neon -l 8 src tests
+	$(DE) vendor/bin/phpstan analyse -c tests/phpstan.neon -l 8 src tests
 
 phpunit:
 	$(DE) vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p 4 --colors tests/Unit

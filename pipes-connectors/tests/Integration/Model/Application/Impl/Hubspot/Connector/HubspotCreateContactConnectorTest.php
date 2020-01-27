@@ -1,18 +1,18 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Model\Application\Impl\Hubspot\Connector;
+namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Hubspot\Connector;
 
 use Exception;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Connector\HubspotCreateContactConnector;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
-use Tests\DatabaseTestCaseAbstract;
-use Tests\DataProvider;
-use Tests\MockCurlMethod;
+use HbPFConnectorsTests\DatabaseTestCaseAbstract;
+use HbPFConnectorsTests\DataProvider;
+use HbPFConnectorsTests\MockCurlMethod;
 
 /**
  * Class HubspotCreateContactConnectorTest
  *
- * @package Tests\Integration\Model\Application\Impl\Hubspot\Connector
+ * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Hubspot\Connector
  */
 final class HubspotCreateContactConnectorTest extends DatabaseTestCaseAbstract
 {

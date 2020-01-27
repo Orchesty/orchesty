@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Model\Application\Impl\Wisepop;
+namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Wisepop;
 
 use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
@@ -11,12 +11,12 @@ use Hanaboso\HbPFConnectors\Model\Application\Impl\Wisepop\WisepopsApplication;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\Utils\String\Json;
-use Tests\DatabaseTestCaseAbstract;
+use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 
 /**
  * Class WisepopsApplicationTest
  *
- * @package Tests\Integration\Model\Application\Impl\Wisepop
+ * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Wisepop
  */
 final class WisepopsApplicationTest extends DatabaseTestCaseAbstract
 {

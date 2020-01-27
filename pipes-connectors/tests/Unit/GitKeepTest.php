@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit;
+namespace HbPFConnectorsTests\Unit;
 
-use Tests\KernelTestCaseAbstract;
+use HbPFConnectorsTests\KernelTestCaseAbstract;
 
 /**
  * Class GitKeepTest
  *
- * @package Tests\Unit
+ * @package HbPFConnectorsTests\Unit
  */
 final class GitKeepTest extends KernelTestCaseAbstract
 {

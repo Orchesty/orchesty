@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Tests;
+namespace HbPFConnectorsTests;
 
 /**
  * Class MockCurlMethod
  *
- * @package Tests
+ * @package HbPFConnectorsTests
  */
 class MockCurlMethod
 {

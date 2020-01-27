@@ -39,7 +39,7 @@ final class MailchimpApplication extends OAuth2ApplicationAbstract implements We
     /**
      * @var CurlManagerInterface
      */
-    private $curlManager;
+    private CurlManagerInterface $curlManager;
 
     /**
      * MailchimpApplication constructor.

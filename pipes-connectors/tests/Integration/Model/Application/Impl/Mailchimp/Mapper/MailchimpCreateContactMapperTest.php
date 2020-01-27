@@ -1,20 +1,20 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Model\Application\Impl\Mailchimp\Mapper;
+namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Mailchimp\Mapper;
 
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\MailchimpApplication;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\Mapper\MailchimpCreateContactMapper;
 use Hanaboso\Utils\String\Json;
-use Tests\DatabaseTestCaseAbstract;
-use Tests\DataProvider;
-use Tests\MockCurlMethod;
+use HbPFConnectorsTests\DatabaseTestCaseAbstract;
+use HbPFConnectorsTests\DataProvider;
+use HbPFConnectorsTests\MockCurlMethod;
 
 /**
  * Class MailchimpCreateContactMapperTest
  *
- * @package Tests\Integration\Model\Application\Impl\Mailchimp\Mapper
+ * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Mailchimp\Mapper
  */
 final class MailchimpCreateContactMapperTest extends DatabaseTestCaseAbstract
 {

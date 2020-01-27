@@ -34,12 +34,12 @@ abstract class ShoptetConnectorAbstract extends ConnectorAbstract
     /**
      * @var DocumentRepository<ApplicationInstall>&ApplicationInstallRepository
      */
-    protected $repository;
+    protected ApplicationInstallRepository $repository;
 
     /**
      * @var CurlManager
      */
-    protected $sender;
+    protected CurlManager $sender;
 
     /**
      * ShoptetConnectorAbstract constructor.

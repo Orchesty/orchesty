@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Model\Application\Impl\Shoptet;
+namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Shoptet;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
@@ -18,13 +18,13 @@ use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
 use Hanaboso\Utils\Date\DateTimeUtils;
-use Tests\DatabaseTestCaseAbstract;
-use Tests\DataProvider;
+use HbPFConnectorsTests\DatabaseTestCaseAbstract;
+use HbPFConnectorsTests\DataProvider;
 
 /**
  * Class ShoptetApplicationTest
  *
- * @package Tests\Integration\Model\Application\Impl\Shoptet
+ * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Shoptet
  */
 final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
 {

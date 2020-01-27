@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Model\Application\Impl\Shoptet\Connector;
+namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Shoptet\Connector;
 
 use Exception;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
@@ -13,13 +13,13 @@ use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\Utils\Date\DateTimeUtils;
-use Tests\DatabaseTestCaseAbstract;
-use Tests\DataProvider;
+use HbPFConnectorsTests\DatabaseTestCaseAbstract;
+use HbPFConnectorsTests\DataProvider;
 
 /**
  * Class ShoptetGetEshopInfoTest
  *
- * @package Tests\Integration\Model\Application\Impl\Shoptet\Connector
+ * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Shoptet\Connector
  */
 final class ShoptetGetEshopInfoTest extends DatabaseTestCaseAbstract
 {

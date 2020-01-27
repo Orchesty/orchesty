@@ -1,16 +1,16 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Live\Model\Application\Impl\Hubspot\Connector;
+namespace HbPFConnectorsTests\Live\Model\Application\Impl\Hubspot\Connector;
 
 use Exception;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Connector\HubspotCreateContactConnector;
-use Tests\DatabaseTestCaseAbstract;
-use Tests\DataProvider;
+use HbPFConnectorsTests\DatabaseTestCaseAbstract;
+use HbPFConnectorsTests\DataProvider;
 
 /**
  * Class HubspotCreateContactConnectorTest
  *
- * @package Tests\Live\Model\Application\Impl\Hubspot\Connector
+ * @package HbPFConnectorsTests\Live\Model\Application\Impl\Hubspot\Connector
  */
 final class HubspotCreateContactConnectorTest extends DatabaseTestCaseAbstract
 {

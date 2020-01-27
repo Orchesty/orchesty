@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests;
+namespace HbPFConnectorsTests;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 /**
  * Class DatabaseTestCaseAbstract
  *
- * @package Tests
+ * @package HbPFConnectorsTests
  */
 abstract class DatabaseTestCaseAbstract extends KernelTestCaseAbstract
 {

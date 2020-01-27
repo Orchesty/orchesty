@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Model\Application\Impl\Shoptet\Connector;
+namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Shoptet\Connector;
 
 use Exception;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
@@ -11,13 +11,13 @@ use Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\Utils\String\Json;
-use Tests\DatabaseTestCaseAbstract;
-use Tests\DataProvider;
+use HbPFConnectorsTests\DatabaseTestCaseAbstract;
+use HbPFConnectorsTests\DataProvider;
 
 /**
  * Class ShoptetCreateOrderConnectorTest
  *
- * @package Tests\Integration\Model\Application\Impl\Shoptet\Connector
+ * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Shoptet\Connector
  */
 final class ShoptetCreateOrderConnectorTest extends DatabaseTestCaseAbstract
 {

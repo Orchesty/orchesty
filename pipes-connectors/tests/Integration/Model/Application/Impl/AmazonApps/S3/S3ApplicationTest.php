@@ -1,19 +1,19 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Model\Application\Impl\AmazonApps\S3;
+namespace HbPFConnectorsTests\Integration\Model\Application\Impl\AmazonApps\S3;
 
 use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\S3Application;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
+use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use LogicException;
-use Tests\DatabaseTestCaseAbstract;
 
 /**
  * Class S3ApplicationTest
  *
- * @package Tests\Integration\Model\Application\Impl\AmazonApps\S3
+ * @package HbPFConnectorsTests\Integration\Model\Application\Impl\AmazonApps\S3
  */
 final class S3ApplicationTest extends DatabaseTestCaseAbstract
 {

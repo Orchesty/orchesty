@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Model\Application\Impl\AmazonApps\Redshift\Connector;
+namespace HbPFConnectorsTests\Integration\Model\Application\Impl\AmazonApps\Redshift\Connector;
 
 use Closure;
 use Exception;
@@ -10,14 +10,14 @@ use Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\Redshift\RedshiftA
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\Utils\String\Json;
+use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use LogicException;
 use phpmock\phpunit\PHPMock;
-use Tests\DatabaseTestCaseAbstract;
 
 /**
  * Class RedshiftExecuteQueryConnectorTest
  *
- * @package Tests\Integration\Model\Application\Impl\AmazonApps\Redshift\Connector
+ * @package HbPFConnectorsTests\Integration\Model\Application\Impl\AmazonApps\Redshift\Connector
  */
 final class RedshiftExecuteQueryConnectorTest extends DatabaseTestCaseAbstract
 {

@@ -27,12 +27,12 @@ final class HubspotCreateContactConnector extends ConnectorAbstract
     /**
      * @var CurlManagerInterface
      */
-    private $curlManager;
+    private CurlManagerInterface $curlManager;
 
     /**
      * @var ApplicationInstallRepository&ObjectRepository<ApplicationInstall>
      */
-    private $repository;
+    private ApplicationInstallRepository $repository;
 
     /**
      * HubspotCreateContactConnector constructor.

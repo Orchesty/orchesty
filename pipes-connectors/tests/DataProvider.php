@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests;
+namespace HbPFConnectorsTests;
 
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
@@ -15,7 +15,7 @@ use Hanaboso\Utils\System\PipesHeaders;
 /**
  * Class DataProvider
  *
- * @package Tests
+ * @package HbPFConnectorsTests
  */
 final class DataProvider
 {

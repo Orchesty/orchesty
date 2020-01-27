@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Model\Application\Impl\AmazonApps\Redshift;
+namespace HbPFConnectorsTests\Integration\Model\Application\Impl\AmazonApps\Redshift;
 
 use Aws\Redshift\Exception\RedshiftException;
 use Aws\Redshift\RedshiftClient;
@@ -13,15 +13,15 @@ use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
+use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use LogicException;
 use phpmock\phpunit\PHPMock;
 use PHPUnit\Framework\MockObject\MockObject;
-use Tests\DatabaseTestCaseAbstract;
 
 /**
  * Class RedshiftApplicationTest
  *
- * @package Tests\Integration\Model\Application\Impl\AmazonApps\Redshift
+ * @package HbPFConnectorsTests\Integration\Model\Application\Impl\AmazonApps\Redshift
  */
 final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
 {

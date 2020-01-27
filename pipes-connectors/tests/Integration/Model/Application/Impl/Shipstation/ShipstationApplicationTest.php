@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Model\Application\Impl\Shipstation;
+namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Shipstation;
 
 use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
@@ -8,13 +8,13 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shipstation\ShipstationApplication;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use Tests\DatabaseTestCaseAbstract;
-use Tests\DataProvider;
+use HbPFConnectorsTests\DatabaseTestCaseAbstract;
+use HbPFConnectorsTests\DataProvider;
 
 /**
  * Class ShipstationApplicationTest
  *
- * @package Tests\Integration\Model\Application\Impl\Shipstation
+ * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Shipstation
  */
 final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
 {

@@ -1,17 +1,17 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Model\Application\Impl\Nutshell;
+namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Nutshell;
 
 use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\NutshellApplication;
-use Tests\DatabaseTestCaseAbstract;
-use Tests\DataProvider;
+use HbPFConnectorsTests\DatabaseTestCaseAbstract;
+use HbPFConnectorsTests\DataProvider;
 
 /**
  * Class NutshellApplicationTest
  *
- * @package Tests\Integration\Model\Application\Impl\Nutshell
+ * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Nutshell
  */
 final class NutshellApplicationTest extends DatabaseTestCaseAbstract
 {

@@ -28,12 +28,12 @@ final class MailchimpCreateContactConnector extends ConnectorAbstract
     /**
      * @var CurlManagerInterface
      */
-    private $curlManager;
+    private CurlManagerInterface $curlManager;
 
     /**
      * @var ObjectRepository<ApplicationInstall>&ApplicationInstallRepository
      */
-    private $repository;
+    private ApplicationInstallRepository $repository;
 
     /**
      * MailchimpCreateContactConnector constructor.

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Model\Application\Impl\AmazonApps\S3\Connector;
+namespace HbPFConnectorsTests\Integration\Model\Application\Impl\AmazonApps\S3\Connector;
 
 use Aws\S3\S3Client;
 use Exception;
@@ -12,14 +12,14 @@ use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\Utils\String\Json;
+use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use PHPUnit\Framework\MockObject\MockObject;
-use Tests\DatabaseTestCaseAbstract;
 use Throwable;
 
 /**
  * Class S3GetObjectConnectorTest
  *
- * @package Tests\Integration\Model\Application\Impl\AmazonApps\S3\Connector
+ * @package HbPFConnectorsTests\Integration\Model\Application\Impl\AmazonApps\S3\Connector
  */
 final class S3GetObjectConnectorTest extends DatabaseTestCaseAbstract
 {

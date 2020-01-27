@@ -49,17 +49,17 @@ final class ShoptetApplication extends OAuth2ApplicationAbstract implements Webh
     /**
      * @var DocumentManager
      */
-    private $dm;
+    private DocumentManager $dm;
 
     /**
      * @var CurlManager
      */
-    private $sender;
+    private CurlManager $sender;
 
     /**
      * @var string
      */
-    private $startingPointHost;
+    private string $startingPointHost;
 
     /**
      * ShoptetApplication constructor.

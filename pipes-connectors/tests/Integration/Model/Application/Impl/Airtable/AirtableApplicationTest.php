@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Model\Application\Impl\Airtable;
+namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Airtable;
 
 use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
@@ -9,13 +9,13 @@ use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
-use Tests\DatabaseTestCaseAbstract;
-use Tests\DataProvider;
+use HbPFConnectorsTests\DatabaseTestCaseAbstract;
+use HbPFConnectorsTests\DataProvider;
 
 /**
  * Class AirtableApplicationTest
  *
- * @package Tests\Integration\Model\Application\Impl\Airtable
+ * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Airtable
  */
 final class AirtableApplicationTest extends DatabaseTestCaseAbstract
 {

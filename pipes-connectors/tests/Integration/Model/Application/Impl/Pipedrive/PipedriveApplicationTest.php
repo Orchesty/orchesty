@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Model\Application\Impl\Pipedrive;
+namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Pipedrive;
 
 use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
@@ -8,13 +8,13 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Pipedrive\PipedriveApplication;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use Tests\DatabaseTestCaseAbstract;
-use Tests\DataProvider;
+use HbPFConnectorsTests\DatabaseTestCaseAbstract;
+use HbPFConnectorsTests\DataProvider;
 
 /**
  * Class PipedriveApplicationTest
  *
- * @package Tests\Integration\Model\Application\Impl\Pipedrive
+ * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Pipedrive
  */
 final class PipedriveApplicationTest extends DatabaseTestCaseAbstract
 {

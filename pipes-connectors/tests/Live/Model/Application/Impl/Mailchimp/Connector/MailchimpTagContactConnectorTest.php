@@ -1,17 +1,17 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Live\Model\Application\Impl\Mailchimp\Connector;
+namespace HbPFConnectorsTests\Live\Model\Application\Impl\Mailchimp\Connector;
 
 use Exception;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\Connector\MailchimpTagContactConnector;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\MailchimpApplication;
-use Tests\DatabaseTestCaseAbstract;
-use Tests\DataProvider;
+use HbPFConnectorsTests\DatabaseTestCaseAbstract;
+use HbPFConnectorsTests\DataProvider;
 
 /**
  * Class MailchimpTagContactConnectorTest
  *
- * @package Tests\Live\Model\Application\Impl\Mailchimp\Connector
+ * @package HbPFConnectorsTests\Live\Model\Application\Impl\Mailchimp\Connector
  */
 final class MailchimpTagContactConnectorTest extends DatabaseTestCaseAbstract
 {

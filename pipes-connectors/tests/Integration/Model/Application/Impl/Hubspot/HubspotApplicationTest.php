@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Model\Application\Impl\Hubspot;
+namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Hubspot;
 
 use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
@@ -13,13 +13,13 @@ use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
-use Tests\DatabaseTestCaseAbstract;
-use Tests\DataProvider;
+use HbPFConnectorsTests\DatabaseTestCaseAbstract;
+use HbPFConnectorsTests\DataProvider;
 
 /**
  * Class HubspotApplicationTest
  *
- * @package Tests\Integration\Model\Application\Impl\Hubspot
+ * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Hubspot
  */
 final class HubspotApplicationTest extends DatabaseTestCaseAbstract
 {

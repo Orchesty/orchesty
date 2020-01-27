@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Model\Application\Impl\Zendesk;
+namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Zendesk;
 
 use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
@@ -11,14 +11,14 @@ use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract;
+use HbPFConnectorsTests\DatabaseTestCaseAbstract;
+use HbPFConnectorsTests\DataProvider;
 use ReflectionException;
-use Tests\DatabaseTestCaseAbstract;
-use Tests\DataProvider;
 
 /**
  * Class ZendeskApplicationTest
  *
- * @package Tests\Integration\Model\Application\Impl\Zendesk
+ * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Zendesk
  */
 final class ZendeskApplicationTest extends DatabaseTestCaseAbstract
 {

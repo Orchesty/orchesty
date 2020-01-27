@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Model\Application\Impl\Shoptet\Connector;
+namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Shoptet\Connector;
 
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
@@ -13,13 +13,13 @@ use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
-use Tests\DatabaseTestCaseAbstract;
-use Tests\DataProvider;
+use HbPFConnectorsTests\DatabaseTestCaseAbstract;
+use HbPFConnectorsTests\DataProvider;
 
 /**
  * Class ShoptetGetApiAccessTokenConnectorTest
  *
- * @package Tests\Integration\Model\Application\Impl\Shoptet\Connector
+ * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Shoptet\Connector
  */
 final class ShoptetGetApiAccessTokenConnectorTest extends DatabaseTestCaseAbstract
 {
