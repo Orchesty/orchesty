@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-use Hanaboso\HbPFAppStore\Kernel;
+use HbPFAppStoreTests\app\Kernel;
 
 require __DIR__ . '/../vendor/autoload.php';
 $kernel = new Kernel((string) ($_SERVER['APP_ENV'] ?? 'test'), (bool) ($_SERVER['APP_DEBUG'] ?? TRUE));

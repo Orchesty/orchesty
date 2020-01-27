@@ -1,19 +1,19 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Repository;
+namespace HbPFAppStoreTests\Integration\Repository;
 
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Exception;
 use Hanaboso\HbPFAppStore\Document\Synchronization;
 use Hanaboso\HbPFAppStore\Repository\SynchronizationRepository;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use HbPFAppStoreTests\DatabaseTestCaseAbstract;
 use LogicException;
-use Tests\DatabaseTestCaseAbstract;
 
 /**
  * Class SynchronizationRepositoryTest
  *
- * @package Tests\Integration\Repository
+ * @package HbPFAppStoreTests\Integration\Repository
  */
 final class SynchronizationRepositoryTest extends DatabaseTestCaseAbstract
 {

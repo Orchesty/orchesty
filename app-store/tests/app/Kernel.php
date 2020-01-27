@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\HbPFAppStore;
+namespace HbPFAppStoreTests\app;
 
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
@@ -15,7 +15,7 @@ use Symfony\Component\Routing\RouteCollectionBuilder;
 /**
  * Class Kernel
  *
- * @package Hanaboso\HbPFAppStore
+ * @package HbPFAppStoreTests\app
  * @codeCoverageIgnore
  */
 class Kernel extends BaseKernel
@@ -30,7 +30,7 @@ class Kernel extends BaseKernel
      */
     public function registerBundles(): iterable
     {
-        $contents = require sprintf('%s/config/bundles.php', $this->getProjectDir());
+        $contents = require sprintf('%s/tests/app/config/bundles.php', $this->getProjectDir());
         foreach ($contents as $class => $envs) {
             if ($envs[$this->environment] ?? $envs['all'] ?? FALSE) {
                 yield new $class();
@@ -46,7 +46,7 @@ class Kernel extends BaseKernel
      */
     protected function configureContainer(ContainerBuilder $container, LoaderInterface $loader): void
     {
-        $container->addResource(new FileResource(sprintf('%s/config/bundles.php', $this->getProjectDir())));
+        $container->addResource(new FileResource(sprintf('%s/tests/app/config/bundles.php', $this->getProjectDir())));
         $confDir = $this->getConfigDir();
         $loader->load(sprintf('%s/{packages}/*%s', $confDir, self::CONFIG_EXTS), 'glob');
         $loader->load(sprintf('%s/{packages}/%s/**/*%s', $confDir, $this->environment, self::CONFIG_EXTS), 'glob');
@@ -72,7 +72,7 @@ class Kernel extends BaseKernel
      */
     private function getConfigDir(): string
     {
-        return sprintf('%s/config', $this->getProjectDir());
+        return sprintf('%s/tests/app/config', $this->getProjectDir());
     }
 
 }

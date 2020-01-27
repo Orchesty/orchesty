@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests;
+namespace HbPFAppStoreTests;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
@@ -15,7 +15,7 @@ use Symfony\Component\Security\Core\Encoder\NativePasswordEncoder;
 /**
  * Class ControllerTestCaseAbstract
  *
- * @package Tests
+ * @package HbPFAppStoreTests
  */
 abstract class ControllerTestCaseAbstract extends WebTestCase
 {

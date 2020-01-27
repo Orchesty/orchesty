@@ -1,0 +1,18 @@
+parameters:
+    public.services: true
+
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf.application.webhook:
+        class: HbPFAppStoreTests\Integration\Model\Webhook\WebhookApplication
+        arguments:
+
+    hbpf.application.null:
+        class: HbPFAppStoreTests\Integration\Model\NullApplication
+
+    hbpf.application.null2:
+        class: HbPFAppStoreTests\Integration\Handler\NullOauthApplication
+        arguments:
+            - '@hbpf.providers.oauth1_provider'
