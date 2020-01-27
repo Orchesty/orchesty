@@ -1,20 +1,33 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Controller;
+namespace PortalTests\Controller;
 
 use Hanaboso\Portal\Model\Installer\Installer;
-use Tests\ControllerTestCaseAbstract;
+use PortalTests\ControllerTestCaseAbstract;
 
 /**
  * Class InstallerControllerTest
  *
- * @package Tests\Controller
+ * @package PortalTests\Controller
  */
 final class InstallerControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     *
+     * @covers \Hanaboso\Portal\Controller\InstallerController
+     * @covers \Hanaboso\Portal\Controller\InstallerController::installerAction
+     * @covers \Hanaboso\Portal\Handler\InstallerHandler
+     * @covers \Hanaboso\Portal\Handler\InstallerHandler::getInstaller
+     * @covers \Hanaboso\Portal\Model\Installer\Installer
+     * @covers \Hanaboso\Portal\Model\Installer\Installer::generate
+     * @covers \Hanaboso\Portal\Model\Installer\Installer::createArray
+     * @covers \Hanaboso\Portal\Model\Installer\Installer::getVersion
+     * @covers \Hanaboso\Portal\Model\Installer\Installer::getComponent
+     * @covers \Hanaboso\Portal\Model\Installer\Installer::getNetwork
+     * @covers \Hanaboso\Portal\Model\Installer\Installer::createBaseComponent
+     * @covers \Hanaboso\Portal\Model\Installer\Installer::convertToCamel
+     * @covers \Hanaboso\Portal\Model\Installer\Installer::resetComponent
+     * @covers \Hanaboso\Portal\Model\Installer\DataTransport
      */
     public function testInstaller(): void
     {

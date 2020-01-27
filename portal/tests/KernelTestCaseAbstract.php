@@ -1,16 +1,19 @@
 <?php declare(strict_types=1);
 
-namespace Tests;
+namespace PortalTests;
 
+use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 /**
  * Class KernelTestCaseAbstract
  *
- * @package Tests
+ * @package PortalTests
  */
 abstract class KernelTestCaseAbstract extends KernelTestCase
 {
+
+    use PrivateTrait;
 
     /**
      *

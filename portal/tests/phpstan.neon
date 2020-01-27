@@ -1,0 +1,9 @@
+includes:
+    - ../vendor/hanaboso/php-check-utils/phpstan.neon
+
+parameters:
+    symfony:
+        container_xml_path: %rootDir%/../../../var/cache/test/srcHanaboso_Portal_KernelTestDebugContainer.xml
+    ignoreErrors:
+        - '#Variable (property access|method call) on#'
+        - '#Variable method call on $this(Hanaboso\Portal\Model\Installer\Installer).#'

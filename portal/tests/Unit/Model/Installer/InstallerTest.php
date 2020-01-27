@@ -1,17 +1,20 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\Model\Installer;
+namespace PortalTests\Unit\Model\Installer;
 
+use Exception;
 use Hanaboso\Portal\Model\Installer\DataTransport;
+use Hanaboso\Portal\Model\Installer\Exception\InstallerException;
 use Hanaboso\Portal\Model\Installer\Installer;
-use PHPUnit\Framework\TestCase;
+use PortalTests\KernelTestCaseAbstract;
+use ReflectionException;
 
 /**
  * Class InstallerTest
  *
- * @package Tests\Unit\Model\Installer
+ * @package PortalTests\Unit\Model\Installer
  */
-final class InstallerTest extends TestCase
+final class InstallerTest extends KernelTestCaseAbstract
 {
 
     private const IMAGE = 'image';
@@ -27,12 +30,19 @@ final class InstallerTest extends TestCase
     ];
 
     /**
-     *
+     * @var Installer
+     */
+    private Installer $installer;
+
+    /**
+     * @covers \Hanaboso\Portal\Model\Installer\DataTransport
+     * @covers \Hanaboso\Portal\Model\Installer\DataTransport::getLog
+     * @covers \Hanaboso\Portal\Model\Installer\DataTransport::getMetric
+     * @covers \Hanaboso\Portal\Model\Installer\DataTransport::getDatabase
      */
     public function testCreateArray(): void
     {
-        $installer = new Installer();
-        $dto       = new DataTransport();
+        $dto = new DataTransport();
 
         $secondaryArray = $this->getSecondaryKeysSorted();
         $primaryArray   = $this->getPrimaryKeys();
@@ -44,7 +54,7 @@ final class InstallerTest extends TestCase
             $secondaryArray
         );
 
-        $array          = $installer->createArray($dto);
+        $array          = $this->installer->createArray($dto);
         $installerArray = $array[0];
 
         foreach ($primaryArray as $value) {
@@ -82,6 +92,100 @@ final class InstallerTest extends TestCase
                 count($secondaryArray)
             )
         );
+    }
+
+    /**
+     * @covers \Hanaboso\Portal\Model\Installer\Installer::unsetValue
+     *
+     * @throws Exception
+     */
+    public function testUnsetValue(): void
+    {
+        $result = $this->installer->unsetValue('1', ['data1' => '1', 'data2' => '2']);
+
+        self::assertEquals(['data2' => '2'], $result);
+    }
+
+    /**
+     * @covers \Hanaboso\Portal\Model\Installer\Installer::unsetValue
+     * @throws Exception
+     */
+    public function testUnsetValueErr(): void
+    {
+        self::expectException(Exception::class);
+        self::expectExceptionMessage('Value is wrong and couldnt be unset.');
+        $this->installer->unsetValue('data1', ['data1' => '1', 'data2' => '2']);
+    }
+
+    /**
+     * @covers \Hanaboso\Portal\Model\Installer\Installer::generate
+     * @throws InstallerException
+     */
+    public function testGenerate(): void
+    {
+        $installer = self::createPartialMock(Installer::class, ['createArray']);
+        $installer->expects(self::any())->method('createArray')->willThrowException(new Exception());
+
+        self::expectException(InstallerException::class);
+        $installer->generate(new DataTransport());
+    }
+
+    /**
+     * @covers \Hanaboso\Portal\Model\Installer\Installer::getCronApiServices
+     *
+     * @throws ReflectionException
+     */
+    public function testGetCronApiServices(): void
+    {
+        $result = $this->invokeMethod($this->installer, 'getCronApiServices');
+
+        self::assertEquals(['cron-api' => ['image' => 'dkr.hanaboso.net/pipes/pipes/python-cron:master']], $result);
+    }
+
+    /**
+     * @covers \Hanaboso\Portal\Model\Installer\Installer::getAllVolumes
+     *
+     * @throws ReflectionException
+     */
+    public function testGetAllVolumes(): void
+    {
+        $result = $this->invokeMethod($this->installer, 'getAllVolumes');
+
+        self::assertEquals(['logs' => ['elasticsearch'], 'metrics' => ['influxdb']], $result);
+    }
+
+    /**
+     * @covers \Hanaboso\Portal\Model\Installer\Installer::getVolumes3
+     *
+     * @throws ReflectionException
+     */
+    public function testGetVolumes3(): void
+    {
+        $result = $this->invokeMethod($this->installer, 'getVolumes3');
+
+        self::assertEquals(4, count($result['volumes']));
+    }
+
+    /**
+     * @covers \Hanaboso\Portal\Model\Installer\Installer::unsetMetrics
+     *
+     * @throws ReflectionException
+     */
+    public function testUnsetMetrics(): void
+    {
+        $result = $this->invokeMethod($this->installer, 'unsetMetrics', [['influxdb' => 'influxdb', 'data' => 'data']]);
+
+        self::assertEquals(['data' => 'data'], $result);
+    }
+
+    /**
+     *
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->installer = new Installer();
     }
 
     /**
