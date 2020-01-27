@@ -1,25 +1,29 @@
 <?php declare(strict_types=1);
 
-namespace Tests;
+namespace NotificationSenderTests;
+
+use Exception;
+use Hanaboso\PhpCheckUtils\PhpUnit\Traits\DatabaseTestTrait;
 
 /**
  * Class DatabaseTestCaseAbstract
  *
- * @package Tests
+ * @package NotificationSenderTests
  */
 abstract class DatabaseTestCaseAbstract extends KernelTestCaseAbstract
 {
 
-    use TestCaseTrait;
+    use DatabaseTestTrait;
 
     /**
-     *
+     * @throws Exception
      */
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->prepareDatabase();
+        $this->dm = self::$container->get('doctrine_mongodb.odm.document_manager');
+        $this->clearMongo();
     }
 
 }

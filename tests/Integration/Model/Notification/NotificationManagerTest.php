@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Model\Notification;
+namespace NotificationSenderTests\Integration\Model\Notification;
 
 use Exception;
 use Hanaboso\CommonsBundle\Enum\NotificationEventEnum;
@@ -9,18 +9,30 @@ use Hanaboso\NotificationSender\Model\Notification\Dto\CurlDto;
 use Hanaboso\NotificationSender\Model\Notification\Dto\EmailDto;
 use Hanaboso\NotificationSender\Model\Notification\Dto\RabbitDto;
 use Hanaboso\NotificationSender\Model\Notification\NotificationManager;
-use Tests\DatabaseTestCaseAbstract;
-use Tests\Integration\Model\Notification\Handler\Impl\NullCurlHandler;
-use Tests\Integration\Model\Notification\Handler\Impl\NullEmailHandler;
-use Tests\Integration\Model\Notification\Handler\Impl\NullRabitHandler;
+use Hanaboso\PhpCheckUtils\PhpUnit\Traits\CustomAssertTrait;
+use NotificationSenderTests\DatabaseTestCaseAbstract;
+use NotificationSenderTests\Integration\Model\Notification\Handler\Impl\NullCurlHandler;
+use NotificationSenderTests\Integration\Model\Notification\Handler\Impl\NullEmailHandler;
+use NotificationSenderTests\Integration\Model\Notification\Handler\Impl\NullRabitHandler;
+use NotificationSenderTests\Integration\Model\Notification\Handler\Impl\NullUnknownHandler;
 
 /**
  * Class NotificationManagerTest
  *
- * @package Tests\Integration\Model\Notification
+ * @package NotificationSenderTests\Integration\Model\Notification
+ *
+ * @covers  \Hanaboso\NotificationSender\Model\Notification\NotificationManager
+ * @covers  \Hanaboso\NotificationSender\Model\Notification\Dto\CurlDto
+ * @covers  \Hanaboso\NotificationSender\Model\Notification\Dto\EmailDto
+ * @covers  \Hanaboso\NotificationSender\Model\Notification\Dto\RabbitDto
+ * @covers  \Hanaboso\NotificationSender\Model\Notification\Sender\CurlSender
+ * @covers  \Hanaboso\NotificationSender\Model\Notification\Sender\EmailSender
+ * @covers  \Hanaboso\NotificationSender\Model\Notification\Sender\RabbitSender
  */
 final class NotificationManagerTest extends DatabaseTestCaseAbstract
 {
+
+    use CustomAssertTrait;
 
     private const EVENTS = [
         NotificationEventEnum::ACCESS_EXPIRATION,
@@ -34,38 +46,61 @@ final class NotificationManagerTest extends DatabaseTestCaseAbstract
     private $manager;
 
     /**
-     * @covers NotificationManager::send
+     * @covers \Hanaboso\NotificationSender\Model\Notification\NotificationManager::send
      *
      * @throws Exception
      */
     public function testSend(): void
     {
-        $this->dm->persist(
+        $this->pfd(
             (new NotificationSettings())
                 ->setClass(NullCurlHandler::class)
                 ->setEvents(self::EVENTS)
                 ->setSettings([CurlDto::METHOD => 'POST', CurlDto::URL => 'https://example.com'])
         );
 
-        $this->dm->persist(
+        $this->pfd(
             (new NotificationSettings())
                 ->setClass(NullEmailHandler::class)
                 ->setEvents(self::EVENTS)
-                ->setSettings([EmailDto::EMAILS => ['one@example.com', 'two@example.com']])
+                ->setSettings(
+                    [
+                        EmailDto::HOST       => 'mailhog',
+                        EmailDto::PORT       => '1025',
+                        EmailDto::USERNAME   => 'root',
+                        EmailDto::PASSWORD   => 'root',
+                        EmailDto::ENCRYPTION => 'null',
+                        EmailDto::EMAILS     => ['one@example.com', 'two@example.com'],
+                    ]
+                )
         );
 
-        $this->dm->persist(
+        $this->pfd(
             (new NotificationSettings())
                 ->setClass(NullRabitHandler::class)
                 ->setEvents(self::EVENTS)
-                ->setSettings([RabbitDto::QUEUE => 'queue'])
+                ->setSettings(
+                    [
+                        RabbitDto::HOST     => 'rabbitmq',
+                        RabbitDto::PORT     => '5672',
+                        RabbitDto::USERNAME => 'guest',
+                        RabbitDto::PASSWORD => 'guest',
+                        RabbitDto::VHOST    => '/',
+                        RabbitDto::QUEUE    => 'queue',
+                    ]
+                )
         );
 
-        $this->dm->flush();
+        $this->pfd(
+            (new NotificationSettings())
+                ->setClass(NullUnknownHandler::class)
+                ->setEvents(self::EVENTS)
+                ->setSettings([])
+        );
 
         $this->manager->send(NotificationEventEnum::ACCESS_EXPIRATION, []);
 
-        self::assertTrue(TRUE); // No exception were thrown...
+        self::assertFake();
     }
 
     /**

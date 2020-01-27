@@ -20,17 +20,17 @@ final class EmailDto
     /**
      * @var string
      */
-    private $from;
+    private string $from;
 
     /**
      * @var string
      */
-    private $subject;
+    private string $subject;
 
     /**
      * @var string
      */
-    private $body;
+    private string $body;
 
     /**
      * EmailDto constructor.

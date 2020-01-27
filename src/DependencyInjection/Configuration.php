@@ -9,6 +9,8 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
  * Class Configuration
  *
  * @package Hanaboso\NotificationSender\DependencyInjection
+ *
+ * @codeCoverageIgnore
  */
 final class Configuration implements ConfigurationInterface
 {
@@ -18,10 +20,7 @@ final class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder(): TreeBuilder
     {
-        $treeBuilder = new TreeBuilder();
-        $treeBuilder->root('notification_sender');
-
-        return $treeBuilder;
+        return new TreeBuilder('notification_sender');
     }
 
 }

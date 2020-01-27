@@ -2,7 +2,7 @@
 
 namespace Hanaboso\NotificationSender\Model\Notification\Dto;
 
-use Hanaboso\CommonsBundle\Utils\Json;
+use Hanaboso\Utils\String\Json;
 
 /**
  * Class CurlDto
@@ -18,12 +18,12 @@ final class CurlDto
     /**
      * @var mixed[]
      */
-    private $body;
+    private array $body;
 
     /**
      * @var mixed[]
      */
-    private $headers;
+    private array $headers;
 
     /**
      * CurlDto constructor.
@@ -50,7 +50,7 @@ final class CurlDto
      */
     public function getJsonBody(): string
     {
-        return Json::encode($this->body) ?: '{}';
+        return Json::encode($this->body);
     }
 
 }

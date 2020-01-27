@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace Tests;
+namespace NotificationSenderTests;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 /**
  * Class KernelTestCaseAbstract
  *
- * @package Tests
+ * @package NotificationSenderTests
  */
 abstract class KernelTestCaseAbstract extends KernelTestCase
 {

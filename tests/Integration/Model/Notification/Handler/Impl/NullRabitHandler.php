@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Model\Notification\Handler\Impl;
+namespace NotificationSenderTests\Integration\Model\Notification\Handler\Impl;
 
 use Hanaboso\NotificationSender\Model\Notification\Dto\RabbitDto;
 use Hanaboso\NotificationSender\Model\Notification\Handler\RabbitHandlerAbstract;
@@ -8,7 +8,7 @@ use Hanaboso\NotificationSender\Model\Notification\Handler\RabbitHandlerAbstract
 /**
  * Class NullRabitHandler
  *
- * @package Tests\Integration\Model\Notification\Handler\Impl
+ * @package NotificationSenderTests\Integration\Model\Notification\Handler\Impl
  */
 final class NullRabitHandler extends RabbitHandlerAbstract
 {

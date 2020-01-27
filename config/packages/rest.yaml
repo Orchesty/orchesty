@@ -1,0 +1,5 @@
+rest:
+    routes:
+        '^/': ['json']
+    decoders:
+        json: 'rest.decoder.json'

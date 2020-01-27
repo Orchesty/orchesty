@@ -2,11 +2,10 @@
 
 namespace Hanaboso\NotificationSender\Controller;
 
-use FOS\RestBundle\Controller\AbstractFOSRestController;
-use Hanaboso\CommonsBundle\Traits\ControllerTrait;
-use Hanaboso\CommonsBundle\Utils\ControllerUtils;
 use Hanaboso\NotificationSender\Exception\NotificationException;
 use Hanaboso\NotificationSender\Handler\NotificationSettingsHandler;
+use Hanaboso\Utils\System\ControllerUtils;
+use Hanaboso\Utils\Traits\ControllerTrait;
 use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,7 +19,7 @@ use Throwable;
  *
  * @Route("/notifications/settings")
  */
-final class NotificationSettingsController extends AbstractFOSRestController
+final class NotificationSettingsController
 {
 
     use ControllerTrait;
@@ -28,7 +27,7 @@ final class NotificationSettingsController extends AbstractFOSRestController
     /**
      * @var NotificationSettingsHandler
      */
-    private $handler;
+    private NotificationSettingsHandler $handler;
 
     /**
      * NotificationSettingsController constructor.

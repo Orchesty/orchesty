@@ -19,7 +19,7 @@ final class CurlSender
     /**
      * @var CurlManagerInterface
      */
-    private $manager;
+    private CurlManagerInterface $manager;
 
     /**
      * CurlSender constructor.

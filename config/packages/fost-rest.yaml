@@ -1,9 +1,0 @@
-fos_rest:
-    format_listener:
-        enabled: true
-        rules:
-            - { path: '^/', priorities: ['json'] }
-
-    body_listener:
-        decoders:
-            json: fos_rest.decoder.json

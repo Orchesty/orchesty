@@ -2,10 +2,10 @@
 
 namespace Hanaboso\NotificationSender\Model\Notification;
 
+use Exception;
 use Hanaboso\CommonsBundle\Enum\NotificationEventEnum;
-use Hanaboso\CommonsBundle\Exception\EnumException;
-use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\NotificationSender\Exception\NotificationException;
+use Hanaboso\Utils\String\Json;
 use PhpAmqpLib\Message\AMQPMessage;
 use RabbitMqBundle\Connection\Connection;
 use RabbitMqBundle\Consumer\CallbackInterface;
@@ -25,7 +25,7 @@ final class NotificationMessageCallback implements CallbackInterface
     /**
      * @var NotificationManager
      */
-    private $manager;
+    private NotificationManager $manager;
 
     /**
      * NotificationMessageCallback constructor.
@@ -43,7 +43,7 @@ final class NotificationMessageCallback implements CallbackInterface
      * @param int         $channelId
      *
      * @throws NotificationException
-     * @throws EnumException
+     * @throws Exception
      */
     public function processMessage(AMQPMessage $message, Connection $connection, int $channelId): void
     {

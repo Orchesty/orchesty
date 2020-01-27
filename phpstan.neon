@@ -1,8 +1,0 @@
-includes:
-	- vendor/hanaboso/php-check-utils/phpstan.neon
-
-parameters:
-	doctrine:
-		objectManagerLoader: tests/DocumentManagerLoader.php
-	symfony:
-		container_xml_path: %rootDir%/../../../var/cache/test/srcHanaboso_NotificationSender_KernelTestDebugContainer.xml

@@ -10,7 +10,7 @@ use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
  * @package         Hanaboso\NotificationSender\Repository
  * @phpstan-extends DocumentRepository<\Hanaboso\NotificationSender\Document\NotificationSettings>
  */
-class NotificationSettingsRepository extends DocumentRepository
+final class NotificationSettingsRepository extends DocumentRepository
 {
 
 }

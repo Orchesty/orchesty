@@ -2,9 +2,10 @@
 
 namespace Hanaboso\NotificationSender\Handler;
 
-use Hanaboso\CommonsBundle\Exception\DateTimeException;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\NotificationSender\Exception\NotificationException;
 use Hanaboso\NotificationSender\Model\Notification\NotificationSettingsManager;
+use Hanaboso\Utils\Exception\DateTimeException;
 
 /**
  * Class NotificationSettingsHandler
@@ -17,7 +18,7 @@ final class NotificationSettingsHandler
     /**
      * @var NotificationSettingsManager
      */
-    private $manager;
+    private NotificationSettingsManager $manager;
 
     /**
      * NotificationSettingsHandler constructor.
@@ -32,6 +33,7 @@ final class NotificationSettingsHandler
     /**
      * @return mixed[]
      * @throws DateTimeException
+     * @throws MongoDBException
      */
     public function listSettings(): array
     {
@@ -55,6 +57,7 @@ final class NotificationSettingsHandler
      *
      * @return mixed[]
      * @throws NotificationException
+     * @throws MongoDBException
      */
     public function saveSettings(string $id, array $data): array
     {
