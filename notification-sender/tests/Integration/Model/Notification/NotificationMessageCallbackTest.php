@@ -1,22 +1,27 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Model\Notification;
+namespace NotificationSenderTests\Integration\Model\Notification;
 
 use Exception;
 use Hanaboso\CommonsBundle\Enum\NotificationEventEnum;
 use Hanaboso\NotificationSender\Exception\NotificationException;
 use Hanaboso\NotificationSender\Model\Notification\NotificationMessageCallback;
+use Hanaboso\PhpCheckUtils\PhpUnit\Traits\CustomAssertTrait;
+use NotificationSenderTests\DatabaseTestCaseAbstract;
 use RabbitMqBundle\Connection\Connection;
 use RabbitMqBundle\Utils\Message;
-use Tests\DatabaseTestCaseAbstract;
 
 /**
  * Class NotificationMessageCallbackTest
  *
- * @package Tests\Integration\Model\Notification
+ * @package NotificationSenderTests\Integration\Model\Notification
+ *
+ * @covers  \Hanaboso\NotificationSender\Model\Notification\NotificationMessageCallback
  */
 final class NotificationMessageCallbackTest extends DatabaseTestCaseAbstract
 {
+
+    use CustomAssertTrait;
 
     /**
      * @var NotificationMessageCallback
@@ -29,7 +34,7 @@ final class NotificationMessageCallbackTest extends DatabaseTestCaseAbstract
     private $connection;
 
     /**
-     * @covers NotificationMessageCallback::processMessage
+     * @covers \Hanaboso\NotificationSender\Model\Notification\NotificationMessageCallback::processMessage
      *
      * @throws Exception
      */
@@ -46,11 +51,11 @@ final class NotificationMessageCallbackTest extends DatabaseTestCaseAbstract
             $this->connection->createChannel()
         );
 
-        self::assertTrue(TRUE); // No exception were thrown...
+        self::assertFake();
     }
 
     /**
-     * @covers NotificationMessageCallback::processMessage
+     * @covers \Hanaboso\NotificationSender\Model\Notification\NotificationMessageCallback::processMessage
      *
      * @throws Exception
      */

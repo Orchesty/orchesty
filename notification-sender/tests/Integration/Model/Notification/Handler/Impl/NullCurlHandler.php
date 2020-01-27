@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Model\Notification\Handler\Impl;
+namespace NotificationSenderTests\Integration\Model\Notification\Handler\Impl;
 
 use Hanaboso\NotificationSender\Model\Notification\Dto\CurlDto;
 use Hanaboso\NotificationSender\Model\Notification\Handler\CurlHandlerAbstract;
@@ -8,7 +8,7 @@ use Hanaboso\NotificationSender\Model\Notification\Handler\CurlHandlerAbstract;
 /**
  * Class NullCurlHandler
  *
- * @package Tests\Integration\Model\Notification\Handler\Impl
+ * @package NotificationSenderTests\Integration\Model\Notification\Handler\Impl
  */
 final class NullCurlHandler extends CurlHandlerAbstract
 {

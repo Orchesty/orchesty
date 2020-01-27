@@ -1,0 +1,9 @@
+{
+    "http": 404,
+    "body": {
+        "status": "NOT_FOUND",
+        "error_code": 105,
+        "type": "Hanaboso\\NotificationSender\\Exception\\NotificationException",
+        "message": "NotificationSettings with key 'Unknown' not found!"
+    }
+}

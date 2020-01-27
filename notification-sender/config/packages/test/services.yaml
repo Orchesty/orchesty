@@ -5,16 +5,21 @@ services:
         public: '%service_visibility%'
 
     hbpf.notification.handler.null.curl:
-        class: Tests\Integration\Model\Notification\Handler\Impl\NullCurlHandler
+        class: NotificationSenderTests\Integration\Model\Notification\Handler\Impl\NullCurlHandler
         arguments:
         tags: ['hbpf.notification.handler']
 
     hbpf.notification.handler.null.email:
-        class: Tests\Integration\Model\Notification\Handler\Impl\NullEmailHandler
+        class: NotificationSenderTests\Integration\Model\Notification\Handler\Impl\NullEmailHandler
         arguments:
         tags: ['hbpf.notification.handler']
 
     hbpf.notification.handler.null.rabbit:
-        class: Tests\Integration\Model\Notification\Handler\Impl\NullRabitHandler
+        class: NotificationSenderTests\Integration\Model\Notification\Handler\Impl\NullRabitHandler
+        arguments:
+        tags: ['hbpf.notification.handler']
+
+    hbpf.notification.handler.null.unknown:
+        class: NotificationSenderTests\Integration\Model\Notification\Handler\Impl\NullUnknownHandler
         arguments:
         tags: ['hbpf.notification.handler']

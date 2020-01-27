@@ -51,26 +51,29 @@ create-index:
 	$(DE) bin/console d:m:s:c --index
 
 phpcodesniffer:
-	$(DE) vendor/bin/phpcs --standard=ruleset.xml src tests
+	$(DE) vendor/bin/phpcs --standard=tests/ruleset.xml src tests
 
 phpstan:
-	$(DE) vendor/bin/phpstan analyse -c phpstan.neon -l 8 src tests
+	$(DE) vendor/bin/phpstan analyse -c tests/phpstan.neon -l 8 src tests
+
+phpunit:
+	$(DE) vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p 4 --colors tests/Unit
 
 phpintegration:
 	$(DE) vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p 4 --colors tests/Integration
 
 phpcontroller: database-clear
-	$(DE) vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p 1 --colors tests/Controller
+	$(DE) vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p 4 --colors tests/Controller
 
-phpcoverage:
+phpcoverage: database-clear
 	$(DE) php vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p 4 --coverage-html var/coverage --whitelist src tests
 
 phpcoverage-ci:
-	$(DE) ./vendor/hanaboso/php-check-utils/bin/coverage.sh -c 65
+	$(DE) ./vendor/hanaboso/php-check-utils/bin/coverage.sh
 
-test: docker-up-force composer-install sleep fasttest docker-down-clean
+test: docker-up-force composer-install fasttest docker-down-clean
 
-fasttest: phpcodesniffer clear-cache phpstan phpintegration phpcontroller phpcoverage-ci
+fasttest: clear-cache phpcodesniffer phpstan wait-for-server-start phpunit phpintegration phpcontroller phpcoverage-ci
 
-sleep:
-	$(DE) sleep 10
+wait-for-server-start:
+	$(DE) /bin/bash -c 'while [ $$(curl -s -o /dev/null -w "%{http_code}" http://guest:guest@rabbitmq:15672/api/overview) == 000 ]; do sleep 1; done'

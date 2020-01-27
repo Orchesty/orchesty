@@ -16,8 +16,10 @@ use Symfony\Component\Routing\RouteCollectionBuilder;
  * Class Kernel
  *
  * @package Hanaboso\NotificationSender
+ *
+ * @codeCoverageIgnore
  */
-class Kernel extends BaseKernel
+final class Kernel extends BaseKernel
 {
 
     use MicroKernelTrait;
@@ -29,7 +31,7 @@ class Kernel extends BaseKernel
      */
     public function registerBundles(): iterable
     {
-        $contents = require sprintf('%s/config/bundles.php', $this->getProjectDir());
+        $contents = require sprintf('%s/config/Bundles.php', $this->getProjectDir());
         foreach ($contents as $class => $envs) {
             if ($envs[$this->environment] ?? $envs['all'] ?? FALSE) {
                 yield new $class();
@@ -45,7 +47,7 @@ class Kernel extends BaseKernel
      */
     protected function configureContainer(ContainerBuilder $container, LoaderInterface $loader): void
     {
-        $container->addResource(new FileResource(sprintf('%s/config/bundles.php', $this->getProjectDir())));
+        $container->addResource(new FileResource(sprintf('%s/config/Bundles.php', $this->getProjectDir())));
         $confDir = $this->getConfigDir();
         $loader->load(sprintf('%s/{packages}/*%s', $confDir, self::CONFIG_EXTS), 'glob');
         $loader->load(sprintf('%s/{packages}/%s/**/*%s', $confDir, $this->environment, self::CONFIG_EXTS), 'glob');

@@ -12,8 +12,10 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
  * Class NotificationSenderExtension
  *
  * @package Hanaboso\NotificationSender\DependencyInjection
+ *
+ * @codeCoverageIgnore
  */
-class NotificationSenderExtension extends Extension
+final class NotificationSenderExtension extends Extension
 {
 
     /**

@@ -3,7 +3,6 @@
 namespace Hanaboso\NotificationSender\Model\Notification;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\NotificationSender\Document\NotificationSettings;
 use Hanaboso\NotificationSender\Exception\NotificationException;
 use Hanaboso\NotificationSender\Model\Notification\Dto\CurlDto;
@@ -15,6 +14,7 @@ use Hanaboso\NotificationSender\Model\Notification\Handler\RabbitHandlerAbstract
 use Hanaboso\NotificationSender\Model\Notification\Sender\CurlSender;
 use Hanaboso\NotificationSender\Model\Notification\Sender\EmailSender;
 use Hanaboso\NotificationSender\Model\Notification\Sender\RabbitSender;
+use Hanaboso\Utils\String\Json;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -34,27 +34,27 @@ final class NotificationManager implements LoggerAwareInterface
     /**
      * @var DocumentManager
      */
-    private $dm;
+    private DocumentManager $dm;
 
     /**
      * @var RewindableGenerator|CurlHandlerAbstract[]|EmailHandlerAbstract[]|RabbitHandlerAbstract[]
      */
-    private $handlers;
+    private RewindableGenerator $handlers;
 
     /**
      * @var CurlSender
      */
-    private $curlSender;
+    private CurlSender $curlSender;
 
     /**
      * @var EmailSender
      */
-    private $emailSender;
+    private EmailSender $emailSender;
 
     /**
      * @var RabbitSender
      */
-    private $rabbitSender;
+    private RabbitSender $rabbitSender;
 
     /**
      * @var LoggerInterface
@@ -105,6 +105,8 @@ final class NotificationManager implements LoggerAwareInterface
 
         foreach ($this->handlers as $handler) {
             $class = get_class($handler);
+            /** @var string $parentClass */
+            $parentClass = get_parent_class($handler);
 
             /** @var NotificationSettings|null $settings */
             $settings = $this->dm->getRepository(NotificationSettings::class)->findOneBy(
@@ -119,23 +121,15 @@ final class NotificationManager implements LoggerAwareInterface
                     sprintf(
                         'sending notification from sender manager: [settings=%s] [parentClass=%s]',
                         Json::encode($settings->toArray($event, $class)),
-                        get_parent_class($handler)
+                        $parentClass
                     )
                 );
             } else {
-                $this->logger->debug(
-                    sprintf(
-                        'No settings found: [parentClass=%s]',
-                        get_parent_class($handler)
-                    )
-                );
+                $this->logger->debug(sprintf('No settings found: [parentClass=%s]', $parentClass));
             }
 
             if ($settings) {
                 try {
-                    /** @var string $parentClass */
-                    $parentClass = get_parent_class($handler);
-
                     switch ($parentClass) {
                         case CurlHandlerAbstract::class:
                             /** @var CurlDto $dto */

@@ -1,273 +1,169 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Controller;
+namespace NotificationSenderTests\Controller;
 
 use Exception;
-use Hanaboso\CommonsBundle\Enum\NotificationEventEnum;
-use Hanaboso\CommonsBundle\Enum\NotificationSenderEnum;
-use Hanaboso\CommonsBundle\Utils\ControllerUtils;
-use Hanaboso\NotificationSender\Document\NotificationSettings;
-use Hanaboso\NotificationSender\Exception\NotificationException;
-use Hanaboso\NotificationSender\Model\Notification\Dto\EmailDto;
-use Hanaboso\NotificationSender\Model\Notification\Handler\Impl\CurlNotificationHandler;
-use Hanaboso\NotificationSender\Model\Notification\Handler\Impl\EmailNotificationHandler;
-use Hanaboso\NotificationSender\Model\Notification\Handler\Impl\RabbitNotificationHandler;
-use Tests\ControllerTestCaseAbstract;
-use Tests\Integration\Model\Notification\Handler\Impl\NullCurlHandler;
-use Tests\Integration\Model\Notification\Handler\Impl\NullEmailHandler;
-use Tests\Integration\Model\Notification\Handler\Impl\NullRabitHandler;
+use Hanaboso\NotificationSender\Handler\NotificationSettingsHandler;
+use NotificationSenderTests\ControllerTestCaseAbstract;
 
 /**
  * Class NotificationSettingsControllerTest
  *
- * @package Tests\Controller
+ * @package NotificationSenderTests\Controller
+ *
+ * @covers  \Hanaboso\NotificationSender\Controller\NotificationSettingsController
+ * @covers  \Hanaboso\NotificationSender\Handler\NotificationSettingsHandler
  */
 final class NotificationSettingsControllerTest extends ControllerTestCaseAbstract
 {
 
-    private const ID      = 'id';
-    private const ITEMS   = 'items';
-    private const CREATED = 'created';
-    private const UPDATED = 'updated';
+    private const ID    = 'id';
+    private const BODY  = 'body';
+    private const ITEMS = 'items';
 
     /**
-     * @covers NotificationSettingsController::listSettingsAction
-     * @covers NotificationSettingsHandler::listSettings
-     * @covers NotificationSettingsManager::listSettings
+     * @covers \Hanaboso\NotificationSender\Controller\NotificationSettingsController::listSettingsAction
+     * @covers \Hanaboso\NotificationSender\Handler\NotificationSettingsHandler::listSettings
      *
      * @throws Exception
      */
     public function testListSettings(): void
     {
-        $response = $this->sendGet('/notifications/settings');
-
         $this->assertResponse(
-            $response,
-            200,
-            [
-                self::ITEMS => [
-                    [
-                        self::ID      => $response->getContent()[self::ITEMS][0][self::ID],
-                        self::CREATED => $response->getContent()[self::ITEMS][0][self::CREATED],
-                        self::UPDATED => $response->getContent()[self::ITEMS][0][self::UPDATED],
-                        'type'        => NotificationSenderEnum::CURL,
-                        'name'        => 'Curl Test Sender',
-                        'class'       => NullCurlHandler::class,
-                        'events'      => [],
-                        'settings'    => [],
-                    ],
-                    [
-                        self::ID      => $response->getContent()[self::ITEMS][1][self::ID],
-                        self::CREATED => $response->getContent()[self::ITEMS][1][self::CREATED],
-                        self::UPDATED => $response->getContent()[self::ITEMS][1][self::UPDATED],
-                        'type'        => NotificationSenderEnum::EMAIL,
-                        'name'        => 'Email Test Sender',
-                        'class'       => NullEmailHandler::class,
-                        'events'      => [],
-                        'settings'    => [],
-                    ],
-                    [
-                        self::ID      => $response->getContent()[self::ITEMS][2][self::ID],
-                        self::CREATED => $response->getContent()[self::ITEMS][2][self::CREATED],
-                        self::UPDATED => $response->getContent()[self::ITEMS][2][self::UPDATED],
-                        'type'        => NotificationSenderEnum::RABBIT,
-                        'name'        => 'Rabbit Test Sender',
-                        'class'       => NullRabitHandler::class,
-                        'events'      => [],
-                        'settings'    => [],
-                    ], [
-                        self::ID      => $response->getContent()[self::ITEMS][3][self::ID],
-                        self::CREATED => $response->getContent()[self::ITEMS][3][self::CREATED],
-                        self::UPDATED => $response->getContent()[self::ITEMS][3][self::UPDATED],
-                        'type'        => NotificationSenderEnum::CURL,
-                        'name'        => 'CURL Sender',
-                        'class'       => CurlNotificationHandler::class,
-                        'events'      => [],
-                        'settings'    => [],
-                    ], [
-                        self::ID      => $response->getContent()[self::ITEMS][4][self::ID],
-                        self::CREATED => $response->getContent()[self::ITEMS][4][self::CREATED],
-                        self::UPDATED => $response->getContent()[self::ITEMS][4][self::UPDATED],
-                        'type'        => NotificationSenderEnum::EMAIL,
-                        'name'        => 'Email Sender',
-                        'class'       => EmailNotificationHandler::class,
-                        'events'      => [],
-                        'settings'    => [],
-                    ], [
-                        self::ID      => $response->getContent()[self::ITEMS][5][self::ID],
-                        self::CREATED => $response->getContent()[self::ITEMS][5][self::CREATED],
-                        self::UPDATED => $response->getContent()[self::ITEMS][5][self::UPDATED],
-                        'type'        => NotificationSenderEnum::RABBIT,
-                        'name'        => 'AMQP Sender',
-                        'class'       => RabbitNotificationHandler::class,
-                        'events'      => [],
-                        'settings'    => [],
-                    ],
-                ],
-            ]
+            __DIR__ . '/data/NotificationSettingsControllerTest/listSettingsRequest.json',
+            ['id' => '123456789', 'created' => '2010-10-10 10:10:10', 'updated' => '2010-10-10 10:10:10']
         );
     }
 
     /**
-     * @covers NotificationSettingsController::getSettingsAction
-     * @covers NotificationSettingsHandler::getSettings
-     * @covers NotificationSettingsManager::getSettings
+     * @covers \Hanaboso\NotificationSender\Controller\NotificationSettingsController::listSettingsAction
+     * @covers \Hanaboso\NotificationSender\Handler\NotificationSettingsHandler::listSettings
+     *
+     * @throws Exception
+     */
+    public function testListSettingsException(): void
+    {
+        $this->prepareHandler('listSettings');
+
+        $this->assertResponse(__DIR__ . '/data/NotificationSettingsControllerTest/listSettingsExceptionRequest.json');
+    }
+
+    /**
+     * @covers \Hanaboso\NotificationSender\Controller\NotificationSettingsController::getSettingsAction
+     * @covers \Hanaboso\NotificationSender\Handler\NotificationSettingsHandler::getSettings
      *
      * @throws Exception
      */
     public function testGetSettings(): void
     {
-        $response = $this->sendGet('/notifications/settings');
-        $response = $this->sendGet(
-            sprintf(
-                '/notifications/settings/%s',
-                $response->getContent()[self::ITEMS][1][self::ID]
-            )
-        );
+        $this->getSettingsId();
 
         $this->assertResponse(
-            $response,
-            200,
-            [
-                self::ID      => $response->getContent()[self::ID],
-                self::CREATED => $response->getContent()[self::CREATED],
-                self::UPDATED => $response->getContent()[self::UPDATED],
-                'type'        => NotificationSenderEnum::EMAIL,
-                'name'        => 'Email Test Sender',
-                'class'       => NullEmailHandler::class,
-                'events'      => [],
-                'settings'    => [],
-            ]
+            __DIR__ . '/data/NotificationSettingsControllerTest/getSettingsRequest.json',
+            ['id' => '123456789', 'created' => '2010-10-10 10:10:10', 'updated' => '2010-10-10 10:10:10'],
+            [':id' => $this->getSettingsId()]
         );
     }
 
     /**
-     * @covers NotificationSettingsController::getSettingsAction
-     * @covers NotificationSettingsHandler::getSettings
-     * @covers NotificationSettingsManager::getSettings
+     * @covers \Hanaboso\NotificationSender\Controller\NotificationSettingsController::getSettingsAction
+     * @covers \Hanaboso\NotificationSender\Handler\NotificationSettingsHandler::getSettings
      *
      * @throws Exception
      */
     public function testGetSettingsNotFound(): void
     {
-        $this->assertResponse(
-            $this->sendGet('/notifications/settings/Unknown'),
-            404,
-            [
-                'status'     => ControllerUtils::NOT_FOUND,
-                'error_code' => 105,
-                'type'       => NotificationException::class,
-                'message'    => "NotificationSettings with key 'Unknown' not found!",
-            ]
-        );
+        $this->assertResponse(__DIR__ . '/data/NotificationSettingsControllerTest/getSettingsNotFoundRequest.json');
     }
 
     /**
-     * @covers NotificationSettingsController::saveSettingsAction
-     * @covers NotificationSettingsHandler::saveSettings
-     * @covers NotificationSettingsManager::saveSettings
+     * @covers \Hanaboso\NotificationSender\Controller\NotificationSettingsController::getSettingsAction
+     * @covers \Hanaboso\NotificationSender\Handler\NotificationSettingsHandler::getSettings
+     *
+     * @throws Exception
+     */
+    public function testGetSettingsException(): void
+    {
+        $this->prepareHandler('getSettings');
+
+        $this->assertResponse(__DIR__ . '/data/NotificationSettingsControllerTest/getSettingsExceptionRequest.json');
+    }
+
+    /**
+     * @covers \Hanaboso\NotificationSender\Controller\NotificationSettingsController::saveSettingsAction
+     * @covers \Hanaboso\NotificationSender\Handler\NotificationSettingsHandler::saveSettings
      *
      * @throws Exception
      */
     public function testSaveSettings(): void
     {
-        $response = $this->sendGet('/notifications/settings');
-        $response = $this->sendPut(
-            sprintf(
-                '/notifications/settings/%s',
-                $response->getContent()[self::ITEMS][1][self::ID]
-            ),
-            [
-                NotificationSettings::EVENTS   => [NotificationEventEnum::ACCESS_EXPIRATION],
-                NotificationSettings::SETTINGS => [
-                    EmailDto::HOST       => 'host',
-                    EmailDto::PORT       => 'port',
-                    EmailDto::USERNAME   => 'username',
-                    EmailDto::PASSWORD   => 'password',
-                    EmailDto::ENCRYPTION => 'ssl',
-                    EmailDto::EMAILS     => [
-                        'another-one@example.com', 'another-two@example.com',
-                    ],
-                ],
-            ]
-        );
+        $this->getSettingsId();
 
         $this->assertResponse(
-            $response,
-            200,
-            [
-                self::ID      => $response->getContent()[self::ID],
-                self::CREATED => $response->getContent()[self::CREATED],
-                self::UPDATED => $response->getContent()[self::UPDATED],
-                'type'        => NotificationSenderEnum::EMAIL,
-                'name'        => 'Email Test Sender',
-                'class'       => NullEmailHandler::class,
-                'events'      => [NotificationEventEnum::ACCESS_EXPIRATION],
-                'settings'    => [
-                    EmailDto::HOST       => 'host',
-                    EmailDto::PORT       => 'port',
-                    EmailDto::USERNAME   => 'username',
-                    EmailDto::PASSWORD   => 'password',
-                    EmailDto::ENCRYPTION => 'ssl',
-                    EmailDto::EMAILS     => [
-                        'another-one@example.com', 'another-two@example.com',
-                    ],
-                ],
-            ]
+            __DIR__ . '/data/NotificationSettingsControllerTest/saveSettingsRequest.json',
+            ['id' => '123456789', 'created' => '2010-10-10 10:10:10', 'updated' => '2010-10-10 10:10:10'],
+            [':id' => $this->getSettingsId()]
         );
     }
 
     /**
-     * @covers NotificationSettingsController::saveSettingsAction
-     * @covers NotificationSettingsHandler::saveSettings
-     * @covers NotificationSettingsManager::saveSettings
+     * @covers \Hanaboso\NotificationSender\Controller\NotificationSettingsController::saveSettingsAction
+     * @covers \Hanaboso\NotificationSender\Handler\NotificationSettingsHandler::saveSettings
      *
      * @throws Exception
      */
     public function testSaveSettingsNotFound(): void
     {
-        $this->assertResponse(
-            $this->sendPut('/notifications/settings/Unknown'),
-            404,
-            [
-                'status'     => ControllerUtils::NOT_FOUND,
-                'error_code' => 105,
-                'type'       => NotificationException::class,
-                'message'    => "NotificationSettings with key 'Unknown' not found!",
-            ]
-        );
+        $this->assertResponse(__DIR__ . '/data/NotificationSettingsControllerTest/saveSettingsNotFoundRequest.json');
     }
 
     /**
-     * @covers NotificationSettingsController::saveSettingsAction
-     * @covers NotificationSettingsHandler::saveSettings
-     * @covers NotificationSettingsManager::saveSettings
+     * @covers \Hanaboso\NotificationSender\Controller\NotificationSettingsController::saveSettingsAction
+     * @covers \Hanaboso\NotificationSender\Handler\NotificationSettingsHandler::saveSettings
      *
      * @throws Exception
      */
     public function testSaveSettingsNotFoundRequired(): void
     {
-        $response = $this->sendGet('/notifications/settings');
-        $response = $this->sendPut(
-            sprintf(
-                '/notifications/settings/%s',
-                $response->getContent()[self::ITEMS][1][self::ID]
-            ),
-            [
-                NotificationSettings::SETTINGS => [],
-            ]
-        );
+        $this->getSettingsId();
 
         $this->assertResponse(
-            $response,
-            404,
-            [
-                'status'     => ControllerUtils::NOT_FOUND,
-                'error_code' => 101,
-                'type'       => NotificationException::class,
-                'message'    => "Required settings 'host' for type 'email' is missing!",
-            ]
+            __DIR__ . '/data/NotificationSettingsControllerTest/saveSettingsNotFoundRequiredRequest.json',
+            [],
+            [':id' => $this->getSettingsId()]
         );
+    }
+
+    /**
+     * @covers \Hanaboso\NotificationSender\Controller\NotificationSettingsController::saveSettingsAction
+     * @covers \Hanaboso\NotificationSender\Handler\NotificationSettingsHandler::saveSettings
+     *
+     * @throws Exception
+     */
+    public function testSaveSettingsException(): void
+    {
+        $this->prepareHandler('saveSettings');
+
+        $this->assertResponse(__DIR__ . '/data/NotificationSettingsControllerTest/saveSettingsExceptionRequest.json');
+    }
+
+    /**
+     * @return string
+     */
+    private function getSettingsId(): string
+    {
+        return $this->sendRequest('GET', '/notifications/settings')[self::BODY][self::ITEMS][1][self::ID];
+    }
+
+    /**
+     * @param string $method
+     */
+    private function prepareHandler(string $method): void
+    {
+        $handler = self::createMock(NotificationSettingsHandler::class);
+        $handler->method($method)->willThrowException(new Exception('Something gone wrong!'));
+
+        self::$container->set('notification.handler.settings', $handler);
     }
 
 }
