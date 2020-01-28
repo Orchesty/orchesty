@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "237318e89b346dc7fbd04595d2fef648",
+    "content-hash": "7ca04d2ccf578adf7e5154a6476b925b",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.133.4",
+            "version": "3.133.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "6ecd907672784cca89584c7553fa38589c1efcb6"
+                "reference": "cd7bd2fdd159146ef6c7eeb90b73fae4fd11da57"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/6ecd907672784cca89584c7553fa38589c1efcb6",
-                "reference": "6ecd907672784cca89584c7553fa38589c1efcb6",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/cd7bd2fdd159146ef6c7eeb90b73fae4fd11da57",
+                "reference": "cd7bd2fdd159146ef6c7eeb90b73fae4fd11da57",
                 "shasum": ""
             },
             "require": {
@@ -88,7 +88,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2020-01-21T19:14:39+00:00"
+            "time": "2020-01-24T19:11:35+00:00"
         },
         {
             "name": "aws/aws-sdk-php-symfony",
@@ -1843,6 +1843,7 @@
                 "Guzzle",
                 "stream"
             ],
+            "abandoned": true,
             "time": "2014-10-12T19:18:40+00:00"
         },
         {
@@ -1888,7 +1889,7 @@
             "dist": {
                 "type": "path",
                 "url": "../app-store",
-                "reference": "dc4c3e33af8e40b556a9ea2a5ef7a73c99dfb3fd"
+                "reference": "afbc22c682756dfcbd8b819181fca3da1d379afd"
             },
             "require": {
                 "ext-json": "*",
@@ -1906,7 +1907,7 @@
             },
             "autoload-dev": {
                 "psr-4": {
-                    "Tests\\": "tests/"
+                    "HbPFAppStoreTests\\": "tests/"
                 }
             },
             "license": [
@@ -2044,11 +2045,11 @@
         },
         {
             "name": "hanaboso/pipes-php-sdk",
-            "version": "1.2.1",
+            "version": "1.2.2",
             "dist": {
                 "type": "path",
                 "url": "../pipes-php-sdk",
-                "reference": "6748366406ffb643fdbd3f5b38226fd281313a9c"
+                "reference": "4aa83ef3fcdcebfbdbf3872a03eccb3d40967b38"
             },
             "require": {
                 "ext-json": "*",
@@ -3073,16 +3074,16 @@
         },
         {
             "name": "ocramius/proxy-manager",
-            "version": "2.6.0",
+            "version": "2.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Ocramius/ProxyManager.git",
-                "reference": "406ca12cabfb43e3b11c994bcbeea8e358c65af9"
+                "reference": "dec37bfb3c3594440ee4fa263494189344787d22"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Ocramius/ProxyManager/zipball/406ca12cabfb43e3b11c994bcbeea8e358c65af9",
-                "reference": "406ca12cabfb43e3b11c994bcbeea8e358c65af9",
+                "url": "https://api.github.com/repos/Ocramius/ProxyManager/zipball/dec37bfb3c3594440ee4fa263494189344787d22",
+                "reference": "dec37bfb3c3594440ee4fa263494189344787d22",
                 "shasum": ""
             },
             "require": {
@@ -3100,6 +3101,7 @@
                 "doctrine/coding-standard": "^6.0.0",
                 "ext-phar": "*",
                 "infection/infection": "^0.15.0",
+                "mikey179/vfsstream": "^1.6.8",
                 "nikic/php-parser": "^4.3.0",
                 "phpbench/phpbench": "^0.16.10",
                 "phpunit/phpunit": "^8.5.1",
@@ -3145,7 +3147,7 @@
                 "proxy pattern",
                 "service proxies"
             ],
-            "time": "2020-01-07T08:10:36+00:00"
+            "time": "2020-01-27T09:25:51+00:00"
         },
         {
             "name": "paragonie/random_compat",
@@ -8888,16 +8890,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "0.12.7",
+            "version": "0.12.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "07fa7958027fd98c567099bbcda5d6a0f2ec5197"
+                "reference": "62a552602b7586d82826231f2fd4cbfe39fe0b1d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/07fa7958027fd98c567099bbcda5d6a0f2ec5197",
-                "reference": "07fa7958027fd98c567099bbcda5d6a0f2ec5197",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/62a552602b7586d82826231f2fd4cbfe39fe0b1d",
+                "reference": "62a552602b7586d82826231f2fd4cbfe39fe0b1d",
                 "shasum": ""
             },
             "require": {
@@ -8923,7 +8925,7 @@
                 "MIT"
             ],
             "description": "PHPStan - PHP Static Analysis Tool",
-            "time": "2020-01-20T21:59:06+00:00"
+            "time": "2020-01-26T23:36:48+00:00"
         },
         {
             "name": "phpstan/phpstan-doctrine",
@@ -10187,16 +10189,16 @@
         },
         {
             "name": "slevomat/coding-standard",
-            "version": "6.1.0",
+            "version": "6.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/slevomat/coding-standard.git",
-                "reference": "2f5e0101c2a4df5559a7a2b1a10fc3cfa134ca03"
+                "reference": "0a7934d7ecdfe402079027513daa3b7e881f315d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/slevomat/coding-standard/zipball/2f5e0101c2a4df5559a7a2b1a10fc3cfa134ca03",
-                "reference": "2f5e0101c2a4df5559a7a2b1a10fc3cfa134ca03",
+                "url": "https://api.github.com/repos/slevomat/coding-standard/zipball/0a7934d7ecdfe402079027513daa3b7e881f315d",
+                "reference": "0a7934d7ecdfe402079027513daa3b7e881f315d",
                 "shasum": ""
             },
             "require": {
@@ -10224,7 +10226,7 @@
                 "MIT"
             ],
             "description": "Slevomat Coding Standard for PHP_CodeSniffer complements Consistence Coding Standard by providing sniffs with additional checks.",
-            "time": "2020-01-19T07:51:51+00:00"
+            "time": "2020-01-23T15:37:30+00:00"
         },
         {
             "name": "spaze/phpstan-disallowed-calls",
