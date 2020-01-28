@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests;
+namespace PortalTests;
 
 use Exception;
 use Hanaboso\CommonsBundle\Utils\Json;
@@ -12,7 +12,7 @@ use Throwable;
 /**
  * Class ControllerTestCaseAbstract
  *
- * @package Tests
+ * @package PortalTests
  */
 abstract class ControllerTestCaseAbstract extends WebTestCase
 {

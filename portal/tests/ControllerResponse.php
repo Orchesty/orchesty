@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Tests;
+namespace PortalTests;
 
 /**
  * Class ControllerResponse
  *
- * @package Tests
+ * @package PortalTests
  */
 final class ControllerResponse
 {

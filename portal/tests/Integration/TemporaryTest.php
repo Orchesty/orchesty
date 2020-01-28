@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration;
+namespace PortalTests\Integration;
 
-use Tests\KernelTestCaseAbstract;
+use PortalTests\KernelTestCaseAbstract;
 
 /**
  * Class TemporaryTest
  *
- * @package Tests\Integration
+ * @package PortalTests\Integration
  */
 final class TemporaryTest extends KernelTestCaseAbstract
 {

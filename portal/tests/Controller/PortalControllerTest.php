@@ -1,19 +1,19 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Controller;
+namespace PortalTests\Controller;
 
-use Tests\ControllerTestCaseAbstract;
+use PortalTests\ControllerTestCaseAbstract;
 
 /**
  * Class PortalControllerTest
  *
- * @package Tests\Controller
+ * @package PortalTests\Controller
  */
 final class PortalControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     *
+     * @covers \Hanaboso\Portal\Controller\PortalController::indexAction
      */
     public function testIndex(): void
     {
