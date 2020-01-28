@@ -18,7 +18,7 @@ class BatchConnectorCallback extends BatchActionAbstract
     /**
      * @var ConnectorLoader
      */
-    private $connectorLoader;
+    private ConnectorLoader $connectorLoader;
 
     /**
      * BatchConnectorCallback constructor.

@@ -28,7 +28,7 @@ final class ZendeskApplicationTest extends DatabaseTestCaseAbstract
     /**
      * @var ZendeskApplication
      */
-    private $application;
+    private ZendeskApplication $application;
 
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Zendesk\ZendeskApplication::getApplicationType

@@ -20,7 +20,7 @@ final class CustomNodeLoader
     /**
      * @var ContainerInterface
      */
-    private $container;
+    private ContainerInterface $container;
 
     /**
      * CustomNodeLoader constructor.

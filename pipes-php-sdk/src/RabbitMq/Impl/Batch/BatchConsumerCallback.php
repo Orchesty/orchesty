@@ -43,22 +43,22 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
     /**
      * @var BatchActionInterface
      */
-    private $batchAction;
+    private BatchActionInterface $batchAction;
 
     /**
      * @var MetricsSenderLoader
      */
-    private $sender;
+    private MetricsSenderLoader $sender;
 
     /**
      * @var LoggerInterface
      */
-    private $logger;
+    private LoggerInterface $logger;
 
     /**
      * @var mixed[]
      */
-    private $currentMetrics = [];
+    private array $currentMetrics = [];
 
     /**
      * BatchConsumerCallback constructor.

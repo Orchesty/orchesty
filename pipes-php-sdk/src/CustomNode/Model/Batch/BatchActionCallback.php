@@ -18,7 +18,7 @@ class BatchActionCallback extends BatchActionAbstract
     /**
      * @var CustomNodeLoader
      */
-    private $customNodeLoader;
+    private CustomNodeLoader $customNodeLoader;
 
     /**
      * BatchActionCallback constructor.

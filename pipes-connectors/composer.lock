@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bf84b635b500d3c9622049853709d3f9",
+    "content-hash": "a51fdf9755a830852d0ec671f73eb616",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -1321,11 +1321,11 @@
         },
         {
             "name": "hanaboso/app-store",
-            "version": "1.3.0",
+            "version": "1.3.1",
             "dist": {
                 "type": "path",
                 "url": "../app-store",
-                "reference": "dc4c3e33af8e40b556a9ea2a5ef7a73c99dfb3fd"
+                "reference": "33c196329173187e1f54d0eec509931025ccbe21"
             },
             "require": {
                 "ext-json": "*",
@@ -1343,7 +1343,7 @@
             },
             "autoload-dev": {
                 "psr-4": {
-                    "Tests\\": "tests/"
+                    "HbPFAppStoreTests\\": "tests/"
                 }
             },
             "license": [
@@ -1444,11 +1444,11 @@
         },
         {
             "name": "hanaboso/pipes-php-sdk",
-            "version": "1.2.1",
+            "version": "1.2.2",
             "dist": {
                 "type": "path",
                 "url": "../pipes-php-sdk",
-                "reference": "6748366406ffb643fdbd3f5b38226fd281313a9c"
+                "reference": "4aa83ef3fcdcebfbdbf3872a03eccb3d40967b38"
             },
             "require": {
                 "ext-json": "*",

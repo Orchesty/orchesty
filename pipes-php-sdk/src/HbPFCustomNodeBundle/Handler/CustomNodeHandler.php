@@ -19,7 +19,7 @@ class CustomNodeHandler
     /**
      * @var CustomNodeLoader
      */
-    private $loader;
+    private CustomNodeLoader $loader;
 
     /**
      * CustomNodeHandler constructor.

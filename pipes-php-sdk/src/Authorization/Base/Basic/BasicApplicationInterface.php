@@ -27,7 +27,10 @@ interface BasicApplicationInterface extends ApplicationInterface
      *
      * @return ApplicationInstall
      */
-    public function setApplicationPassword(ApplicationInstall $applicationInstall, string $password): ApplicationInstall;
+    public function setApplicationPassword(
+        ApplicationInstall $applicationInstall,
+        string $password
+    ): ApplicationInstall;
 
     /**
      * @param ApplicationInstall $applicationInstall

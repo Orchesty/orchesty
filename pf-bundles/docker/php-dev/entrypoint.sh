@@ -8,6 +8,8 @@ su-exec root adduser -u ${DEV_UID} -D -G dev dev
 su-exec root chown -R dev:dev /var/www /home/dev /opt
 
 export HOME=/home/dev
+echo "alias sudo='su-exec root'" >> ~/.bashrc
+echo 'PS1="\`pwd\` $ "' >> ~/.bashrc
 
 # Add Hanaboso gitlab as known host
 mkdir -p $HOME/.ssh

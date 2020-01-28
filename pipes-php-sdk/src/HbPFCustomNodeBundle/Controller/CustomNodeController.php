@@ -27,7 +27,7 @@ class CustomNodeController implements LoggerAwareInterface
     /**
      * @var CustomNodeHandler
      */
-    private $handler;
+    private CustomNodeHandler $handler;
 
     /**
      * CustomNodeController constructor.

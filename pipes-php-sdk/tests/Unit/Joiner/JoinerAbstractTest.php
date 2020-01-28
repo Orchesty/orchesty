@@ -3,6 +3,7 @@
 namespace PipesPhpSdkTests\Unit\Joiner;
 
 use Exception;
+use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\Joiner\Impl\NullJoiner;
 use PipesPhpSdkTests\DatabaseTestCaseAbstract;
 use PipesPhpSdkTests\Integration\Application\TestNullApplication;
@@ -44,6 +45,27 @@ final class JoinerAbstractTest extends DatabaseTestCaseAbstract
         $key = $this->joiner->setApplication(new TestNullApplication())->getApplicationKey();
 
         self::assertEquals('null-key', $key);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\Joiner\JoinerAbstract::getApplication
+     * @throws Exception
+     */
+    public function testGetApplicationException(): void
+    {
+        self::expectException(ConnectorException::class);
+        self::expectExceptionCode(ConnectorException::MISSING_APPLICATION);
+        $this->joiner->getApplication();
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\Joiner\JoinerAbstract::getApplication
+     * @throws Exception
+     */
+    public function testGetApplication(): void
+    {
+        $this->joiner->setApplication(new TestNullApplication());
+        self::assertNotEmpty($this->joiner->getApplication());
     }
 
     /**

@@ -20,7 +20,7 @@ class ApplicationLoader
     /**
      * @var ContainerInterface
      */
-    private $container;
+    private ContainerInterface $container;
 
     /**
      * ApplicationLoader constructor.

@@ -28,17 +28,17 @@ final class WebhookManager
     /**
      * @var DocumentManager
      */
-    private $dm;
+    private DocumentManager $dm;
 
     /**
      * @var CurlManagerInterface
      */
-    private $manager;
+    private CurlManagerInterface $manager;
 
     /**
      * @var string
      */
-    private $hostname;
+    private string $hostname;
 
     /**
      * @var ObjectRepository<ApplicationInstall>&ApplicationInstallRepository

@@ -2,8 +2,10 @@
 
 namespace PipesPhpSdkTests\Unit\Connector;
 
+use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
+use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 use PipesPhpSdkTests\Integration\Application\TestNullApplication;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
@@ -55,6 +57,27 @@ final class ConnectorAbstractTest extends KernelTestCaseAbstract
     public function testGetApplicationKey(): void
     {
         self::assertNull($this->nullConnector->getApplicationKey());
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract::getApplication
+     * @throws Exception
+     */
+    public function testGetApplicationException(): void
+    {
+        self::expectException(ConnectorException::class);
+        self::expectExceptionCode(ConnectorException::MISSING_APPLICATION);
+        $this->nullConnector->getApplication();
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract::getApplication
+     * @throws Exception
+     */
+    public function testGetApplication(): void
+    {
+        $this->nullConnector->setApplication(new TestNullApplication());
+        self::assertNotEmpty($this->nullConnector->getApplication());
     }
 
     /**

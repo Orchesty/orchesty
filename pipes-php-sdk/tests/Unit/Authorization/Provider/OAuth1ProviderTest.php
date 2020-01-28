@@ -66,6 +66,7 @@ final class OAuth1ProviderTest extends KernelTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider::authorize
+     * @throws Exception
      */
     public function testAuthorizeErr(): void
     {
@@ -224,15 +225,17 @@ final class OAuth1ProviderTest extends KernelTestCaseAbstract
     {
         $provider = self::$container->get('hbpf.providers.oauth1_provider');
 
-        $dto = new OAuth1Dto((new ApplicationInstall())
-            ->setSettings(
-                [
-                    BasicApplicationInterface::AUTHORIZATION_SETTINGS => [
-                        OAuth1ApplicationInterface::CONSUMER_KEY    => 'consumer_key',
-                        OAuth1ApplicationInterface::CONSUMER_SECRET => 'secret_key',
-                    ],
-                ]
-            ));
+        $dto = new OAuth1Dto(
+            (new ApplicationInstall())
+                ->setSettings(
+                    [
+                        BasicApplicationInterface::AUTHORIZATION_SETTINGS => [
+                            OAuth1ApplicationInterface::CONSUMER_KEY    => 'consumer_key',
+                            OAuth1ApplicationInterface::CONSUMER_SECRET => 'secret_key',
+                        ],
+                    ]
+                )
+        );
         $this->invokeMethod($provider, 'createClient', [$dto]);
 
         self::assertFake();

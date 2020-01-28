@@ -27,7 +27,7 @@ class ConnectorController implements LoggerAwareInterface
     /**
      * @var ConnectorHandler
      */
-    private $connectorHandler;
+    private ConnectorHandler $connectorHandler;
 
     /**
      * ConnectorController constructor.

@@ -50,7 +50,7 @@ final class ShoptetCreateOrderConnector extends ShoptetConnectorAbstract
         try {
             $response = $this->processResponse(
                 $this->sender->send(
-                    $this->application->getRequestDto(
+                    $this->getApplication()->getRequestDto(
                         $applicationInstall,
                         CurlManager::METHOD_POST,
                         sprintf('%s%s', $this->host, self::URL),

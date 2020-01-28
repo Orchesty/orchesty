@@ -17,7 +17,7 @@ class StatisticsHandler
     /**
      * @var StatisticsManager
      */
-    private $statisticsManager;
+    private StatisticsManager $statisticsManager;
 
     /**
      * StatisticsHandler constructor.

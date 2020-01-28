@@ -22,12 +22,12 @@ class Field
     /**
      * @var string
      */
-    private $type;
+    private string $type;
 
     /**
      * @var string
      */
-    private $key;
+    private string $key;
 
     /**
      * @var mixed|null
@@ -37,32 +37,32 @@ class Field
     /**
      * @var string
      */
-    private $label;
+    private string $label;
 
     /**
      * @var string
      */
-    private $description = '';
+    private string $description = '';
 
     /**
      * @var bool
      */
-    private $required = FALSE;
+    private bool $required = FALSE;
 
     /**
      * @var bool
      */
-    private $readOnly = FALSE;
+    private bool $readOnly = FALSE;
 
     /**
      * @var bool
      */
-    private $disabled = FALSE;
+    private bool $disabled = FALSE;
 
     /**
      * @var mixed[]
      */
-    private $choices = [];
+    private array $choices = [];
 
     /**
      * Field constructor.

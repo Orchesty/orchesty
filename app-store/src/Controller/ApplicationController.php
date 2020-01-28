@@ -24,7 +24,7 @@ class ApplicationController
     /**
      * @var ApplicationHandler
      */
-    private $applicationHandler;
+    private ApplicationHandler $applicationHandler;
 
     /**
      * ApplicationController constructor.

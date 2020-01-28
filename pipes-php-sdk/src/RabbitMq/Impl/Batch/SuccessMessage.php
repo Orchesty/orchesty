@@ -16,17 +16,17 @@ class SuccessMessage
     /**
      * @var int
      */
-    private $sequenceId;
+    private int $sequenceId;
 
     /**
      * @var string
      */
-    private $data = '';
+    private string $data = '';
 
     /**
      * @var mixed[]
      */
-    private $headers = [];
+    private array $headers = [];
 
     /**
      * SuccessMessage constructor.

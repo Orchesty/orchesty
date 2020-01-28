@@ -28,7 +28,7 @@ class OAuth1Provider extends OAuthProviderAbstract implements OAuth1ProviderInte
     /**
      * @var DocumentManager
      */
-    private $dm;
+    private DocumentManager $dm;
 
     /**
      * OAuth1Provider constructor.

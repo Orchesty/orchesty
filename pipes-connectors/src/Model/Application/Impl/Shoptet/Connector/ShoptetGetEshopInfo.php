@@ -8,6 +8,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
+use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessEventNotSupportedTrait;
 
 /**
@@ -36,6 +37,7 @@ class ShoptetGetEshopInfo extends ShoptetConnectorAbstract
      * @return ProcessDto
      * @throws ApplicationInstallException
      * @throws OnRepeatException
+     * @throws ConnectorException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
@@ -55,10 +57,11 @@ class ShoptetGetEshopInfo extends ShoptetConnectorAbstract
      *
      * @return mixed[]
      * @throws CurlException
+     * @throws ConnectorException
      */
     public function processActionArray(ApplicationInstall $applicationInstall, ?ProcessDto $processDto = NULL): array
     {
-        $requestDto = $this->application->getRequestDto(
+        $requestDto = $this->getApplication()->getRequestDto(
             $applicationInstall,
             CurlManager::METHOD_GET,
             sprintf('%s%s', $this->host, self::GET_ESHOP_INFO)

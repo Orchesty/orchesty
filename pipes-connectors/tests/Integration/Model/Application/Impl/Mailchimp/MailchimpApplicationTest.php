@@ -32,7 +32,7 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
     /**
      * @var MailchimpApplication
      */
-    private $application;
+    private MailchimpApplication $application;
 
     /**
      * @throws Exception

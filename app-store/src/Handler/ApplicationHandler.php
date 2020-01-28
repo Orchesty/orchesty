@@ -29,12 +29,12 @@ class ApplicationHandler
     /**
      * @var ApplicationManager
      */
-    private $applicationManager;
+    private ApplicationManager $applicationManager;
 
     /**
      * @var WebhookManager
      */
-    private $webhookManager;
+    private WebhookManager $webhookManager;
 
     /**
      * ApplicationHandler constructor.

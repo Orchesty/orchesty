@@ -20,7 +20,7 @@ class ConnectorLoader
     /**
      * @var ContainerInterface
      */
-    private $container;
+    private ContainerInterface $container;
 
     /**
      * ConnectorLoader constructor.

@@ -51,7 +51,7 @@ final class ShoptetUpdateOrderConnector extends ShoptetConnectorAbstract
         try {
             $response = $this->processResponse(
                 $this->sender->send(
-                    $this->application->getRequestDto(
+                    $this->getApplication()->getRequestDto(
                         $applicationInstall,
                         CurlManager::METHOD_PATCH,
                         sprintf(

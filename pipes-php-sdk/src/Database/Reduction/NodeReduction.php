@@ -13,6 +13,6 @@ final class NodeReduction
     /**
      * @var string[]
      */
-    public static $typeExclude = [];
+    public static array $typeExclude = [];
 
 }

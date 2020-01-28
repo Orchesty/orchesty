@@ -77,6 +77,7 @@ final class MailchimpTagContactConnector extends ConnectorAbstract
      * @throws ApplicationInstallException
      * @throws CurlException
      * @throws PipesFrameworkException
+     * @throws ConnectorException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
@@ -84,7 +85,7 @@ final class MailchimpTagContactConnector extends ConnectorAbstract
         $apiEndpoint        = $applicationInstall->getSettings()[MailchimpApplication::API_KEYPOINT];
 
         $return = $this->curlManager->send(
-            $this->application->getRequestDto(
+            $this->getApplication()->getRequestDto(
                 $applicationInstall,
                 CurlManager::METHOD_POST,
                 sprintf(

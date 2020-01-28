@@ -13,7 +13,7 @@ class Form
     /**
      * @var Field[]
      */
-    private $fields = [];
+    private array $fields = [];
 
     /**
      * @param Field $field

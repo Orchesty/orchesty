@@ -17,27 +17,27 @@ final class OAuth1Dto implements OAuth1DtoInterface
     /**
      * @var ApplicationInstall
      */
-    private $applicationInstall;
+    private ApplicationInstall $applicationInstall;
 
     /**
      * @var string
      */
-    private $consumerKey;
+    private string $consumerKey;
 
     /**
      * @var string
      */
-    private $consumerSecret;
+    private string $consumerSecret;
 
     /**
      * @var string
      */
-    private $signatureMethod;
+    private string $signatureMethod;
 
     /**
      * @var int
      */
-    private $authType;
+    private int $authType;
 
     /**
      * OAuth1Dto constructor.

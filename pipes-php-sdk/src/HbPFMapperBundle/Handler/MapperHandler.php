@@ -16,7 +16,7 @@ class MapperHandler
     /**
      * @var MapperLoader
      */
-    private $mapperLoader;
+    private MapperLoader $mapperLoader;
 
     /**
      * MapperHandler constructor.

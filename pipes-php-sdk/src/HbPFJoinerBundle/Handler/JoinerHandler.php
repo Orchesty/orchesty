@@ -16,7 +16,7 @@ class JoinerHandler
     /**
      * @var JoinerLoader
      */
-    private $loader;
+    private JoinerLoader $loader;
 
     /**
      * JoinerHandler constructor.

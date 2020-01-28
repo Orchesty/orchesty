@@ -20,12 +20,12 @@ class ConnectorHandler
     /**
      * @var ConnectorManager
      */
-    private $connManager;
+    private ConnectorManager $connManager;
 
     /**
      * @var ConnectorLoader
      */
-    private $loader;
+    private ConnectorLoader $loader;
 
     /**
      * ConnectorHandler constructor.

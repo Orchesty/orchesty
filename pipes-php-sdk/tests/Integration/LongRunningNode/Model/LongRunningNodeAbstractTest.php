@@ -2,6 +2,8 @@
 
 namespace PipesPhpSdkTests\Integration\LongRunningNode\Model;
 
+use Exception;
+use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use PipesPhpSdkTests\DatabaseTestCaseAbstract;
 use PipesPhpSdkTests\Integration\Application\TestNullApplication;
 
@@ -24,6 +26,29 @@ final class LongRunningNodeAbstractTest extends DatabaseTestCaseAbstract
 
         $nullNode->setApplication(new TestNullApplication());
         self::assertEquals('null-key', $nullNode->getApplicationKey());
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeAbstract::getApplication
+     * @throws Exception
+     */
+    public function testGetApplicationException(): void
+    {
+        $nullNode = new NullLongRunningNode();
+        self::expectException(ConnectorException::class);
+        self::expectExceptionCode(ConnectorException::MISSING_APPLICATION);
+        $nullNode->getApplication();
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeAbstract::getApplication
+     * @throws Exception
+     */
+    public function testGetApplication(): void
+    {
+        $nullNode = new NullLongRunningNode();
+        $nullNode->setApplication(new TestNullApplication());
+        self::assertNotEmpty($nullNode->getApplication());
     }
 
 }

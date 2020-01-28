@@ -20,7 +20,7 @@ final class JoinerLoader
     /**
      * @var ContainerInterface
      */
-    private $container;
+    private ContainerInterface $container;
 
     /**
      * JoinerLoader constructor.

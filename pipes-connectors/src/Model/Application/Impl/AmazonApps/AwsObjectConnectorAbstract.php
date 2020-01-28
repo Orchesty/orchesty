@@ -5,8 +5,6 @@ namespace Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\Redshift\RedshiftApplication;
-use Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\S3Application;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
@@ -66,17 +64,6 @@ abstract class AwsObjectConnectorAbstract extends ConnectorAbstract
     protected function getApplicationInstall(ProcessDto $dto): ApplicationInstall
     {
         return $this->repository->findUsersAppDefaultHeaders($dto);
-    }
-
-    /**
-     * @return RedshiftApplication|S3Application
-     */
-    protected function getApplication()
-    {
-        /** @var RedshiftApplication|S3Application $application */
-        $application = $this->application;
-
-        return $application;
     }
 
     /**

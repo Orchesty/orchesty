@@ -30,7 +30,7 @@ final class WebhookApplication extends ApplicationAbstract implements WebhookApp
     /**
      * @var WebhookSubscription[]
      */
-    private $subscriptions = [];
+    private array $subscriptions = [];
 
     /**
      * WebhookApplication constructor.

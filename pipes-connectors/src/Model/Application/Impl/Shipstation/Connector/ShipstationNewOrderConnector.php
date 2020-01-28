@@ -12,6 +12,7 @@ use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
+use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessActionNotSupportedTrait;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 
@@ -62,6 +63,7 @@ final class ShipstationNewOrderConnector extends ConnectorAbstract
      * @throws ApplicationInstallException
      * @throws CurlException
      * @throws PipesFrameworkException
+     * @throws ConnectorException
      */
     public function processEvent(ProcessDto $dto): ProcessDto
     {
@@ -75,7 +77,7 @@ final class ShipstationNewOrderConnector extends ConnectorAbstract
         }
 
         $return = $this->curlManager->send(
-            $this->application->getRequestDto(
+            $this->getApplication()->getRequestDto(
                 $applicationInstall,
                 CurlManager::METHOD_GET,
                 $url,

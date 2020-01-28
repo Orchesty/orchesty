@@ -18,7 +18,7 @@ class LongRunningNodeManager
     /**
      * @var DocumentManager
      */
-    private $dm;
+    private DocumentManager $dm;
 
     /**
      * LongRunningNodeManager constructor.

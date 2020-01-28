@@ -21,7 +21,7 @@ class AuthorizeUserCommand extends Command
     /**
      * @var ApplicationManager
      */
-    private $applicationManager;
+    private ApplicationManager $applicationManager;
 
     /**
      * AuthorizeUserCommand constructor.

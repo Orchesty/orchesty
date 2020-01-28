@@ -26,12 +26,12 @@ class ApplicationManager
     /**
      * @var ApplicationLoader
      */
-    private $loader;
+    private ApplicationLoader $loader;
 
     /**
      * @var DocumentManager
      */
-    private $dm;
+    private DocumentManager $dm;
 
     /**
      * @var ObjectRepository<ApplicationInstall>&ApplicationInstallRepository

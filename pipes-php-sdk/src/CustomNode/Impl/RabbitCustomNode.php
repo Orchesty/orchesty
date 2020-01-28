@@ -33,17 +33,17 @@ abstract class RabbitCustomNode extends CustomNodeAbstract implements LoggerAwar
     /**
      * @var LoggerInterface
      */
-    protected $logger;
+    protected LoggerInterface $logger;
 
     /**
      * @var Connection
      */
-    private $connection;
+    private Connection $connection;
 
     /**
      * @var Publisher
      */
-    private $publisher;
+    private Publisher $publisher;
 
     /**
      * @var ObjectRepository<Node>|NodeRepository
@@ -53,17 +53,17 @@ abstract class RabbitCustomNode extends CustomNodeAbstract implements LoggerAwar
     /**
      * @var mixed[]
      */
-    private $queues = [];
+    private array $queues = [];
 
     /**
      * @var string
      */
-    private $ex = '';
+    private string $ex = '';
 
     /**
      * @var int
      */
-    private $chann;
+    private int $chann;
 
     /**
      * @param ProcessDto $dto

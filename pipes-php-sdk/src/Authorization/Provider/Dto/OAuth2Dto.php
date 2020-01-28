@@ -17,37 +17,37 @@ class OAuth2Dto implements OAuth2DtoInterface
     /**
      * @var string
      */
-    private $clientId;
+    private string $clientId;
 
     /**
      * @var string
      */
-    private $clientSecret;
+    private string $clientSecret;
 
     /**
      * @var string|null
      */
-    private $redirectUrl;
+    private ?string $redirectUrl;
 
     /**
      * @var string
      */
-    private $authorizeUrl;
+    private string $authorizeUrl;
 
     /**
      * @var string
      */
-    private $tokenUrl;
+    private string $tokenUrl;
 
     /**
      * @var string
      */
-    private $user = '';
+    private string $user = '';
 
     /**
      * @var string
      */
-    private $applicationKey = '';
+    private string $applicationKey = '';
 
     /**
      * OAuth2Dto constructor.

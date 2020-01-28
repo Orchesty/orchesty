@@ -29,7 +29,7 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
     /**
      * @var HubspotApplication
      */
-    private $application;
+    private HubspotApplication $application;
 
     /**
      *

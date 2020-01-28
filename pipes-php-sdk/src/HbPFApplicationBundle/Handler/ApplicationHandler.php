@@ -19,7 +19,7 @@ class ApplicationHandler
     /**
      * @var ApplicationManager
      */
-    private $applicationManager;
+    private ApplicationManager $applicationManager;
 
     /**
      * ApplicationHandler constructor.

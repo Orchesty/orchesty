@@ -13,6 +13,7 @@ use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
+use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessEventNotSupportedTrait;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 
@@ -60,16 +61,17 @@ final class AirtableNewRecordConnector extends ConnectorAbstract
      * @param ProcessDto $dto
      *
      * @return ProcessDto
-     * @throws PipesFrameworkException
-     * @throws CurlException
      * @throws ApplicationInstallException
+     * @throws CurlException
+     * @throws PipesFrameworkException
+     * @throws ConnectorException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
         $applicationInstall = $this->repository->findUsersAppDefaultHeaders($dto);
 
         /** @var AirtableApplication $app */
-        $app = $this->application;
+        $app = $this->getApplication();
         if (!$app->getValue($applicationInstall, AirtableApplication::BASE_ID)
             || !$app->getValue($applicationInstall, AirtableApplication::TABLE_NAME)) {
 
@@ -85,7 +87,7 @@ final class AirtableNewRecordConnector extends ConnectorAbstract
             $app->getValue($applicationInstall, AirtableApplication::TABLE_NAME)
         );
         $return = $this->curlManager->send(
-            $this->application->getRequestDto(
+            $app->getRequestDto(
                 $applicationInstall,
                 CurlManager::METHOD_POST,
                 $url,

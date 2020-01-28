@@ -24,12 +24,12 @@ class LongRunningNodeCallback implements CallbackInterface
     /**
      * @var LongRunningNodeManager
      */
-    private $manager;
+    private LongRunningNodeManager $manager;
 
     /**
      * @var LongRunningNodeLoader
      */
-    private $loader;
+    private LongRunningNodeLoader $loader;
 
     /**
      * LongRunningNodeCallback constructor.

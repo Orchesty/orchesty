@@ -25,7 +25,7 @@ class JoinerController
     /**
      * @var JoinerHandler
      */
-    private $joinerHandler;
+    private JoinerHandler $joinerHandler;
 
     /**
      * JoinerController constructor.

@@ -13,17 +13,17 @@ class ErrorMessage
     /**
      * @var int
      */
-    private $code = 2_001;
+    private int $code = 2_001;
 
     /**
      * @var string
      */
-    private $message = '';
+    private string $message = '';
 
     /**
      * @var string
      */
-    private $detail = '';
+    private string $detail = '';
 
     /**
      * ErrorMessage constructor.

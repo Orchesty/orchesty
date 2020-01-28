@@ -20,12 +20,12 @@ class RequestbinConnector extends CustomNodeAbstract
     /**
      * @var string
      */
-    private $url;
+    private string $url;
 
     /**
      * @var CurlManager
      */
-    private $curl;
+    private CurlManager $curl;
 
     /**
      * RequestbinConnector constructor.

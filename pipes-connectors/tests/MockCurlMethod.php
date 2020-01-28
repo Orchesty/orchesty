@@ -13,17 +13,17 @@ class MockCurlMethod
     /**
      * @var int
      */
-    private $code;
+    private int $code;
 
     /**
      * @var string
      */
-    private $fileName;
+    private string $fileName;
 
     /**
      * @var mixed[]
      */
-    private $headers = [];
+    private array $headers = [];
 
     /**
      * MockCurlMethod constructor.

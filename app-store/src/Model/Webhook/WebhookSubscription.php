@@ -16,22 +16,22 @@ final class WebhookSubscription
     /**
      * @var string
      */
-    private $name;
+    private string $name;
 
     /**
      * @var string
      */
-    private $node;
+    private string $node;
 
     /**
      * @var string
      */
-    private $topology;
+    private string $topology;
 
     /**
      * @var mixed[]
      */
-    private $parameters;
+    private array $parameters;
 
     /**
      * WebhookSubscription constructor.

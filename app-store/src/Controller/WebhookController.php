@@ -24,7 +24,7 @@ class WebhookController
     /**
      * @var WebhookHandler
      */
-    private $webhookHandler;
+    private WebhookHandler $webhookHandler;
 
     /**
      * WebhookController constructor.

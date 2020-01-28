@@ -23,7 +23,7 @@ final class SalesforceApplicationTest extends DatabaseTestCaseAbstract
     /**
      * @var SalesforceApplication
      */
-    private $application;
+    private SalesforceApplication $application;
 
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Salesforce\SalesforceApplication::getApplicationType

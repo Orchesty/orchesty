@@ -77,13 +77,14 @@ final class HubspotCreateContactConnector extends ConnectorAbstract
      * @throws ApplicationInstallException
      * @throws CurlException
      * @throws PipesFrameworkException
+     * @throws ConnectorException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
         $applicationInstall = $this->repository->findUsersAppDefaultHeaders($dto);
 
         $return = $this->curlManager->send(
-            $this->application->getRequestDto(
+            $this->getApplication()->getRequestDto(
                 $applicationInstall,
                 CurlManager::METHOD_POST,
                 sprintf('%s/contacts/v1/contact/', HubspotApplication::BASE_URL),

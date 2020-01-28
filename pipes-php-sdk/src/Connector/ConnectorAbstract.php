@@ -4,6 +4,7 @@ namespace Hanaboso\PipesPhpSdk\Connector;
 
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
+use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\String\Json;
 
@@ -16,14 +17,14 @@ abstract class ConnectorAbstract implements ConnectorInterface
 {
 
     /**
-     * @var ApplicationInterface
+     * @var ApplicationInterface|null
      */
     protected $application;
 
     /**
      * @var mixed[]
      */
-    protected $okStatuses = [
+    protected array $okStatuses = [
         200,
         201,
     ];
@@ -31,7 +32,7 @@ abstract class ConnectorAbstract implements ConnectorInterface
     /**
      * @var mixed[]
      */
-    protected $badStatuses = [
+    protected array $badStatuses = [
         409,
         400,
     ];
@@ -68,15 +69,25 @@ abstract class ConnectorAbstract implements ConnectorInterface
     }
 
     /**
+     * @return ApplicationInterface
+     * @throws ConnectorException
+     */
+    public function getApplication(): ApplicationInterface
+    {
+        if ($this->application) {
+            return $this->application;
+        }
+
+        throw new ConnectorException('Application has not set.', ConnectorException::MISSING_APPLICATION);
+    }
+
+    /**
      * @return string|null
      */
     public function getApplicationKey(): ?string
     {
-        /** @var ApplicationInterface|null $application */
-        $application = $this->application;
-
-        if ($application) {
-            return $application->getKey();
+        if ($this->application) {
+            return $this->application->getKey();
         }
 
         return NULL;

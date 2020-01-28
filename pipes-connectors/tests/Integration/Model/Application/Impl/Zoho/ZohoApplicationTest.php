@@ -23,7 +23,7 @@ class ZohoApplicationTest extends DatabaseTestCaseAbstract
     /**
      * @var ZohoApplication
      */
-    private $application;
+    private ZohoApplication $application;
 
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Zoho\ZohoApplication::getApplicationType

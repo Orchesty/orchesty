@@ -18,17 +18,17 @@ abstract class OAuthProviderAbstract implements OAuthProviderInterface
     /**
      * @var RedirectInterface
      */
-    protected $redirect;
+    protected RedirectInterface $redirect;
 
     /**
      * @var string
      */
-    protected $backend;
+    protected string $backend;
 
     /**
      * @var LoggerInterface
      */
-    protected $logger;
+    protected LoggerInterface $logger;
 
     /**
      * OAuthProviderAbstract constructor.

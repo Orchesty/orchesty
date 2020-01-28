@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesPhpSdk\CustomNode;
 
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
+use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 
 /**
  * Class CustomNodeAbstract
@@ -13,7 +14,7 @@ abstract class CustomNodeAbstract implements CustomNodeInterface
 {
 
     /**
-     * @var ApplicationInterface
+     * @var ApplicationInterface|null
      */
     protected $application;
 
@@ -30,14 +31,25 @@ abstract class CustomNodeAbstract implements CustomNodeInterface
     }
 
     /**
+     * @return ApplicationInterface
+     * @throws ConnectorException
+     */
+    public function getApplication(): ApplicationInterface
+    {
+        if ($this->application) {
+            return $this->application;
+        }
+
+        throw new ConnectorException('Application has not set.', ConnectorException::MISSING_APPLICATION);
+    }
+
+    /**
      * @return string|null
      */
     public function getApplicationKey(): ?string
     {
-        /** @var ApplicationInterface|null $application */
-        $application = $this->application;
-        if ($application) {
-            return $application->getKey();
+        if ($this->application) {
+            return $this->application->getKey();
         }
 
         return NULL;

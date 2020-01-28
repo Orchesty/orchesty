@@ -20,7 +20,7 @@ class MapperLoader
     /**
      * @var ContainerInterface
      */
-    private $container;
+    private ContainerInterface $container;
 
     /**
      * MapperLoader constructor.

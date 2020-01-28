@@ -20,7 +20,7 @@ final class HubspotCreateContactConnectorTest extends DatabaseTestCaseAbstract
     /**
      * @var HubspotCreateContactConnector
      */
-    private $connector;
+    private HubspotCreateContactConnector $connector;
 
     /**
      * @param int  $code

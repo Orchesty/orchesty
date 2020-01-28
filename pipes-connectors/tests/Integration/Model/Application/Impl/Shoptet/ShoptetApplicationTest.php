@@ -37,7 +37,7 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
     /**
      * @var ShoptetApplication
      */
-    private $application;
+    private ShoptetApplication $application;
 
     /**
      * @throws Exception
