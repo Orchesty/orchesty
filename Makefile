@@ -40,25 +40,25 @@ init: .env docker-up-force composer-install
 
 #CI
 codesniffer:
-	$(DE) ./vendor/bin/phpcs --standard=./ruleset.xml src/ tests/
+	$(DE) ./vendor/bin/phpcs --standard=tests/ruleset.xml src tests
 
 phpstan:
-	$(DE) ./vendor/bin/phpstan analyse -c phpstan.neon -l 8 src/ tests/
+	$(DE) ./vendor/bin/phpstan analyse -c tests/phpstan.neon -l 8 src tests
 
 phpunit:
-	$(DE) ./vendor/bin/phpunit -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist --colors tests/Unit
-
-phpcontroller:
-	$(DE) ./vendor/bin/phpunit -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist --colors tests/Controller
+	$(DE) ./vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p 4 --colors tests/Unit
 
 phpintegration: database-create
-	$(DE) ./vendor/bin/phpunit -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist --colors tests/Integration
+	$(DE) ./vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p 4 --colors tests/Integration
+
+phpcontroller:
+	$(DE) ./vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p 1 --colors tests/Controller
 
 phpcoverage:
-	$(DE) php vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p 4 --coverage-html var/coverage --whitelist src tests
+	$(DE) ./vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p 4 --coverage-html var/coverage --whitelist src tests
 
 phpcoverage-ci:
-	$(DE) ./vendor/hanaboso/php-check-utils/bin/coverage.sh -c 60
+	$(DE) ./vendor/hanaboso/php-check-utils/bin/coverage.sh
 
 phpmanual-up:
 	cd tests/Manual; $(MAKE) docker-up-force;

@@ -29,43 +29,48 @@ doctrine_mongodb:
                 ApplicationDocument:
                     type: annotation
                     is_bundle: false
-                    dir: "%kernel.root_dir%/../vendor/hanaboso/pipes-php-sdk/src/Application/Document"
+                    dir: "%kernel.project_dir%/src/../vendor/hanaboso/pipes-php-sdk/src/Application/Document"
                     prefix: Hanaboso\PipesPhpSdk\Application\Document
                 WebhookDocument:
                     type: annotation
                     is_bundle: false
-                    dir: "%kernel.root_dir%/../vendor/hanaboso/app-store/src/Document"
-                    prefix: Hanaboso\PipesFramework\Application\Document
+                    dir: "%kernel.project_dir%/src/../vendor/hanaboso/app-store/src/Document"
+                    prefix: Hanaboso\HbPFAppStore\Document
                 FileDocument:
                     type: annotation
                     is_bundle: false
-                    dir: "%kernel.root_dir%/../vendor/hanaboso/commons-bundle/src/FileStorage/Document"
+                    dir: "%kernel.project_dir%/src/../vendor/hanaboso/commons-bundle/src/FileStorage/Document"
                     prefix: Hanaboso\CommonsBundle\FileStorage\Document
                 CommonsDocument:
                     type: annotation
                     is_bundle: false
-                    dir: "%kernel.root_dir%/../vendor/hanaboso/pipes-php-sdk/src/Database/Document"
+                    dir: "%kernel.project_dir%/src/../vendor/hanaboso/pipes-php-sdk/src/Database/Document"
                     prefix: Hanaboso\PipesPhpSdk\Database\Document
                 FileMongo:
                     type: annotation
                     is_bundle: false
-                    dir: "%kernel.root_dir%/../vendor/hanaboso/commons-bundle/src/FileStorage/Driver/Impl/Mongo"
+                    dir: "%kernel.project_dir%/src/../vendor/hanaboso/commons-bundle/src/FileStorage/Driver/Impl/Mongo"
                     prefix: Hanaboso\CommonsBundle\FileStorage\Driver\Impl\Mongo
                 LongRunningNodeDocument:
                     type: annotation
                     is_bundle: false
-                    dir: "%kernel.root_dir%/../vendor/hanaboso/pipes-php-sdk/src/LongRunningNode/Document"
+                    dir: "%kernel.project_dir%/src/../vendor/hanaboso/pipes-php-sdk/src/LongRunningNode/Document"
                     prefix: Hanaboso\PipesPhpSdk\LongRunningNode\Document
                 LogsDocument:
                     type: annotation
                     is_bundle: false
-                    dir: "%kernel.root_dir%/Logs/Document"
+                    dir: "%kernel.project_dir%/src/Logs/Document"
                     prefix: Hanaboso\PipesFramework\Logs\Document
                 ConfiguratorDocument:
                     type: annotation
                     is_bundle: false
-                    dir: "%kernel.root_dir%/Configurator/Document"
+                    dir: "%kernel.project_dir%/src/Configurator/Document"
                     prefix: Hanaboso\PipesFramework\Configurator\Document
+                MetricsDocument:
+                    type: annotation
+                    is_bundle: false
+                    dir: "%kernel.project_dir%/src/Metrics/Document"
+                    prefix: Hanaboso\PipesFramework\Metrics\Document
         metrics:
             connection: metrics
             database: metrics
@@ -73,5 +78,5 @@ doctrine_mongodb:
                 MetricsDocument:
                     type: annotation
                     is_bundle: false
-                    dir: "%kernel.root_dir%/Metrics/Document"
+                    dir: "%kernel.project_dir%/src/Metrics/Document"
                     prefix: Hanaboso\PipesFramework\Metrics\Document

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\HbPFNotificationBundle\Model;
+namespace PipesFrameworkTests\Unit\HbPFNotificationBundle\Model;
 
 use Exception;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
@@ -9,33 +9,47 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Notification\Exception\NotificationException;
 use Hanaboso\PipesFramework\Notification\Model\NotificationManager;
+use Monolog\Logger;
 use PHPUnit\Framework\MockObject\MockObject;
-use Tests\KernelTestCaseAbstract;
+use PipesFrameworkTests\KernelTestCaseAbstract;
 
 /**
  * Class NotificationManagerTest
  *
- * @package Tests\Unit\HbPFNotificationBundle\Model
+ * @package PipesFrameworkTests\Unit\HbPFNotificationBundle\Model
  */
 final class NotificationManagerTest extends KernelTestCaseAbstract
 {
 
     /**
+     * @covers \Hanaboso\PipesFramework\Notification\Model\NotificationManager
+     * @covers \Hanaboso\PipesFramework\Notification\Model\NotificationManager::setLogger
+     * @covers \Hanaboso\PipesFramework\Notification\Model\NotificationManager::getSettings
+     * @covers \Hanaboso\PipesFramework\Notification\Model\NotificationManager::getUrl
+     * @covers \Hanaboso\PipesFramework\Notification\Model\NotificationManager::sendAndProcessRequest
+     *
      * @throws Exception
      */
     public function testReadSettings(): void
     {
-        $this->getManager(
+        $manager = $this->getManager(
             static function (RequestDto $request): ResponseDto {
                 self::assertEquals(CurlManager::METHOD_GET, $request->getMethod());
                 self::assertEquals('http://example.com/notifications/settings', $request->getUri(TRUE));
 
                 return new ResponseDto(200, 'OK', '', []);
             }
-        )->getSettings();
+        );
+
+        $manager->setLogger(new Logger('logger'));
+        $manager->getSettings();
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\Notification\Model\NotificationManager::getSetting
+     * @covers \Hanaboso\PipesFramework\Notification\Model\NotificationManager::getUrl
+     * @covers \Hanaboso\PipesFramework\Notification\Model\NotificationManager::sendAndProcessRequest
+     *
      * @throws Exception
      */
     public function testReadSetting(): void
@@ -51,6 +65,10 @@ final class NotificationManagerTest extends KernelTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\Notification\Model\NotificationManager::updateSettings
+     * @covers \Hanaboso\PipesFramework\Notification\Model\NotificationManager::getUrl
+     * @covers \Hanaboso\PipesFramework\Notification\Model\NotificationManager::sendAndProcessRequest
+     *
      * @throws Exception
      */
     public function testUpdateSettings(): void
@@ -67,6 +85,10 @@ final class NotificationManagerTest extends KernelTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\Notification\Model\NotificationManager::getSettings
+     * @covers \Hanaboso\PipesFramework\Notification\Model\NotificationManager::getUrl
+     * @covers \Hanaboso\PipesFramework\Notification\Model\NotificationManager::sendAndProcessRequest
+     *
      * @throws Exception
      */
     public function testRequestFail(): void

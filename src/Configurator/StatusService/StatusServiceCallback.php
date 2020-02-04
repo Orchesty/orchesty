@@ -2,6 +2,7 @@
 
 namespace Hanaboso\PipesFramework\Configurator\StatusService;
 
+use Exception;
 use Hanaboso\CommonsBundle\Event\ProcessStatusEvent;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\String\Json;
@@ -40,7 +41,7 @@ class StatusServiceCallback implements CallbackInterface
      * @param Connection  $connection
      * @param int         $channelId
      *
-     * @throws PipesFrameworkException
+     * @throws Exception
      */
     public function processMessage(AMQPMessage $message, Connection $connection, int $channelId): void
     {

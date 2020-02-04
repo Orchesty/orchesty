@@ -185,17 +185,17 @@ class TopologyConfigFactory
     private function getWorkers(Node $node, bool $nextConnector): array
     {
         switch ($node->getType()) {
-            case TypeEnum::WEBHOOK:
-            case TypeEnum::CRON:
-            case TypeEnum::START:
+            case sprintf('%s', TypeEnum::WEBHOOK):
+            case sprintf('%s', TypeEnum::CRON):
+            case sprintf('%s', TypeEnum::START):
                 return [
                     self::TYPE => $this->getWorkerByType($node),
                 ];
-            case TypeEnum::BATCH:
-            case TypeEnum::BATCH_CONNECTOR:
-            case TypeEnum::RESEQUENCER:
-            case TypeEnum::SPLITTER:
-            case TypeEnum::DEBUG:
+            case sprintf('%s', TypeEnum::BATCH):
+            case sprintf('%s', TypeEnum::BATCH_CONNECTOR):
+            case sprintf('%s', TypeEnum::RESEQUENCER):
+            case sprintf('%s', TypeEnum::SPLITTER):
+            case sprintf('%s', TypeEnum::DEBUG):
                 return [
                     self::TYPE     => $this->getWorkerByType($node),
                     self::SETTINGS => [
@@ -227,32 +227,32 @@ class TopologyConfigFactory
     private function getWorkerByType(Node $node): string
     {
         switch ($node->getType()) {
-            case TypeEnum::BATCH:
-            case TypeEnum::BATCH_CONNECTOR:
+            case sprintf('%s', TypeEnum::BATCH):
+            case sprintf('%s', TypeEnum::BATCH_CONNECTOR):
                 $workerType = self::SPLITTER_AMQRPC;
 
                 break;
-            case TypeEnum::WEBHOOK:
-            case TypeEnum::GATEWAY:
-            case TypeEnum::DEBUG:
-            case TypeEnum::CRON:
-            case TypeEnum::START:
+            case sprintf('%s', TypeEnum::WEBHOOK):
+            case sprintf('%s', TypeEnum::GATEWAY):
+            case sprintf('%s', TypeEnum::DEBUG):
+            case sprintf('%s', TypeEnum::CRON):
+            case sprintf('%s', TypeEnum::START):
                 $workerType = self::WORKER_NULL;
 
                 break;
-            case TypeEnum::RESEQUENCER:
+            case sprintf('%s', TypeEnum::RESEQUENCER):
                 $workerType = self::WORKER_RESEQUENCER;
 
                 break;
-            case TypeEnum::SPLITTER:
+            case sprintf('%s', TypeEnum::SPLITTER):
                 $workerType = self::SPLITTER_JSON;
 
                 break;
-            case TypeEnum::XML_PARSER:
+            case sprintf('%s', TypeEnum::XML_PARSER):
                 $workerType = self::WORKER_HTTP_XML_PARSER;
 
                 break;
-            case TypeEnum::USER:
+            case sprintf('%s', TypeEnum::USER):
                 $workerType = self::WORKER_LONG_RUNNING;
 
                 break;
@@ -273,43 +273,43 @@ class TopologyConfigFactory
     private function getPaths(Node $node, bool $nextConnector): array
     {
         switch ($node->getType()) {
-            case TypeEnum::XML_PARSER:
+            case sprintf('%s', TypeEnum::XML_PARSER):
                 $paths = [
                     self::PROCESS_PATH => '/xml_parser',
                     self::STATUS_PATH  => '/xml_parser/test',
                 ];
 
                 break;
-            case TypeEnum::TABLE_PARSER:
+            case sprintf('%s', TypeEnum::TABLE_PARSER):
                 $paths = [
                     self::PROCESS_PATH => sprintf('/parser/json/to/%s/', $node->getName()),
                     self::STATUS_PATH  => sprintf('/parser/json/to/%s/test', $node->getName()),
                 ];
 
                 break;
-            case TypeEnum::FTP:
+            case sprintf('%s', TypeEnum::FTP):
                 $paths = [
                     self::PROCESS_PATH => '/connector/ftp/action',
                     self::STATUS_PATH  => '/connector/ftp/action/test',
                 ];
 
                 break;
-            case TypeEnum::EMAIL:
+            case sprintf('%s', TypeEnum::EMAIL):
                 $paths = [
                     self::PROCESS_PATH => '/mailer/email',
                     self::STATUS_PATH  => '/mailer/email/test',
                 ];
 
                 break;
-            case TypeEnum::MAPPER:
+            case sprintf('%s', TypeEnum::MAPPER):
                 $paths = [
                     self::PROCESS_PATH => sprintf('/mapper/%s/process', $node->getName()),
                     self::STATUS_PATH  => sprintf('/mapper/%s/test', $node->getName()),
                 ];
 
                 break;
-            case TypeEnum::CONNECTOR:
-            case TypeEnum::BATCH_CONNECTOR:
+            case sprintf('%s', TypeEnum::CONNECTOR):
+            case sprintf('%s', TypeEnum::BATCH_CONNECTOR):
                 if ($nextConnector) {
                     $paths = [
                         self::PROCESS_PATH => sprintf('/connector/%s/webhook', $node->getName()),
@@ -324,28 +324,28 @@ class TopologyConfigFactory
                 ];
 
                 break;
-            case TypeEnum::CUSTOM:
+            case sprintf('%s', TypeEnum::CUSTOM):
                 $paths = [
                     self::PROCESS_PATH => sprintf('/custom_node/%s/process', $node->getName()),
                     self::STATUS_PATH  => sprintf('/custom_node/%s/process/test', $node->getName()),
                 ];
 
                 break;
-            case TypeEnum::SIGNAL:
+            case sprintf('%s', TypeEnum::SIGNAL):
                 $paths = [
                     self::PROCESS_PATH => '/custom_node/signal/process',
                     self::STATUS_PATH  => '/custom_node/signal/process/test',
                 ];
 
                 break;
-            case TypeEnum::USER:
+            case sprintf('%s', TypeEnum::USER):
                 $paths = [
                     self::PROCESS_PATH => sprintf('/longRunning/%s/process', $node->getName()),
                     self::STATUS_PATH  => sprintf('/longRunning/%s/process/test', $node->getName()),
                 ];
 
                 break;
-            case TypeEnum::API:
+            case sprintf('%s', TypeEnum::API):
                 $paths = [
                     self::PROCESS_PATH => '/connector/api/action',
                     self::STATUS_PATH  => '/connector/api/action/test',
@@ -373,30 +373,30 @@ class TopologyConfigFactory
         }
 
         switch ($nodeType) {
-            case TypeEnum::XML_PARSER:
+            case sprintf('%s', TypeEnum::XML_PARSER):
                 $host = $this->configs[self::XML_PARSER_API_HOST];
 
                 break;
-            case  TypeEnum::FTP:
+            case  sprintf('%s', TypeEnum::FTP):
                 $host = $this->configs[self::FTP_API_HOST];
 
                 break;
-            case TypeEnum::EMAIL:
+            case sprintf('%s', TypeEnum::EMAIL):
                 $host = $this->configs[self::MAILER_API_HOST];
 
                 break;
-            case TypeEnum::MAPPER:
+            case sprintf('%s', TypeEnum::MAPPER):
                 $host = $this->configs[self::MAPPER_API_HOST];
 
                 break;
-            case TypeEnum::BATCH_CONNECTOR:
-            case TypeEnum::TABLE_PARSER:
-            case TypeEnum::CONNECTOR:
-            case TypeEnum::WEBHOOK:
-            case TypeEnum::CUSTOM:
-            case TypeEnum::SIGNAL:
-            case TypeEnum::USER:
-            case TypeEnum::API:
+            case sprintf('%s', TypeEnum::BATCH_CONNECTOR):
+            case sprintf('%s', TypeEnum::TABLE_PARSER):
+            case sprintf('%s', TypeEnum::CONNECTOR):
+            case sprintf('%s', TypeEnum::WEBHOOK):
+            case sprintf('%s', TypeEnum::CUSTOM):
+            case sprintf('%s', TypeEnum::SIGNAL):
+            case sprintf('%s', TypeEnum::USER):
+            case sprintf('%s', TypeEnum::API):
                 $host = $this->configs[self::MONOLITH_API_HOST];
 
                 break;
@@ -415,8 +415,8 @@ class TopologyConfigFactory
     private function getPublishQueue(string $nodeType): array
     {
         switch ($nodeType) {
-            case TypeEnum::BATCH:
-            case TypeEnum::BATCH_CONNECTOR:
+            case sprintf('%s', TypeEnum::BATCH):
+            case sprintf('%s', TypeEnum::BATCH_CONNECTOR):
                 return [
                     self::NAME => sprintf('pipes.%s', $nodeType),
                 ];
@@ -434,18 +434,18 @@ class TopologyConfigFactory
     private function getPort(string $nodeType): int
     {
         switch ($nodeType) {
-            case TypeEnum::API:
-            case TypeEnum::BATCH:
-            case TypeEnum::BATCH_CONNECTOR:
-            case TypeEnum::CONNECTOR:
-            case TypeEnum::CUSTOM:
-            case TypeEnum::EMAIL:
-            case TypeEnum::FTP:
-            case TypeEnum::MAPPER:
-            case TypeEnum::SIGNAL:
-            case TypeEnum::TABLE_PARSER:
-            case TypeEnum::USER:
-            case TypeEnum::WEBHOOK:
+            case sprintf('%s', TypeEnum::API):
+            case sprintf('%s', TypeEnum::BATCH):
+            case sprintf('%s', TypeEnum::BATCH_CONNECTOR):
+            case sprintf('%s', TypeEnum::CONNECTOR):
+            case sprintf('%s', TypeEnum::CUSTOM):
+            case sprintf('%s', TypeEnum::EMAIL):
+            case sprintf('%s', TypeEnum::FTP):
+            case sprintf('%s', TypeEnum::MAPPER):
+            case sprintf('%s', TypeEnum::SIGNAL):
+            case sprintf('%s', TypeEnum::TABLE_PARSER):
+            case sprintf('%s', TypeEnum::USER):
+            case sprintf('%s', TypeEnum::WEBHOOK):
                 return 80;
             default:
                 throw new TopologyConfigException(sprintf('Unknown type for port [%s].', $nodeType));

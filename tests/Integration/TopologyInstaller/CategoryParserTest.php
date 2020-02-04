@@ -1,24 +1,41 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\TopologyInstaller;
+namespace PipesFrameworkTests\Integration\TopologyInstaller;
 
 use Exception;
 use Hanaboso\PipesFramework\TopologyInstaller\CategoryParser;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\TopologyFile;
 use Hanaboso\PipesPhpSdk\Database\Document\Category;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
+use PipesFrameworkTests\DatabaseTestCaseAbstract;
 use RuntimeException;
-use Tests\DatabaseTestCaseAbstract;
 
 /**
  * Class CategoryParserTest
  *
- * @package Tests\Integration\TopologyInstaller
+ * @package PipesFrameworkTests\Integration\TopologyInstaller
  */
 final class CategoryParserTest extends DatabaseTestCaseAbstract
 {
 
     /**
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\CategoryParser
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\CategoryParser::addRoot
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\CategoryParser::addAlias
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\CategoryParser::addExclude
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\CategoryParser::classifyTopology
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\CategoryParser::getCategories
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\CategoryParser::removeExcluded
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\CategoryParser::removeElement
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\CategoryParser::matchRoot
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\CategoryParser::setAliases
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\CategoryParser::replaceElement
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\CategoryParser::processRootParts
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\CategoryParser::removePartsOfPath
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\CategoryParser::checkStopChar
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\CategoryParser::createCategory
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\CategoryParser::getParsedPath
+     *
      * @throws Exception
      */
     public function testClassifyTopology(): void
@@ -94,6 +111,15 @@ final class CategoryParserTest extends DatabaseTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\CategoryParser::addExclude
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\CategoryParser::classifyTopology
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\CategoryParser::getCategories
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\CategoryParser::matchRoot
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\CategoryParser::processRootParts
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\CategoryParser::removePartsOfPath
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\CategoryParser::checkStopChar
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\TopologyFile::getFileContents
+     *
      * @throws Exception
      */
     public function testClassifyTopologyError(): void

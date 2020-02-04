@@ -1,0 +1,22 @@
+{
+    "http": 200,
+    "body": {
+        "php": {
+            "connector": [
+                "null"
+            ],
+            "custom": [
+                "microsleep100000",
+                "microsleep200000",
+                "microsleep500000",
+                "microsleep700000",
+                "null",
+                "requestbin",
+                "sleep1"
+            ],
+            "user": [
+                "null"
+            ]
+        }
+    }
+}

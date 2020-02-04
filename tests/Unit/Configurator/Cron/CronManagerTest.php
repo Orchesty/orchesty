@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\Configurator\Cron;
+namespace PipesFrameworkTests\Unit\Configurator\Cron;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
@@ -16,12 +16,12 @@ use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\PipesPhpSdk\Database\Repository\TopologyRepository;
 use Hanaboso\Utils\String\Json;
 use PHPUnit\Framework\MockObject\MockObject;
-use Tests\KernelTestCaseAbstract;
+use PipesFrameworkTests\KernelTestCaseAbstract;
 
 /**
  * Class CronManagerTest
  *
- * @package Tests\Unit\Configurator\Cron
+ * @package PipesFrameworkTests\Unit\Configurator\Cron
  */
 final class CronManagerTest extends KernelTestCaseAbstract
 {
@@ -31,6 +31,10 @@ final class CronManagerTest extends KernelTestCaseAbstract
     private const COM3 = 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d \'{"params":"abc"}\' http://example.com/topologies/test/nodes/id-3/run';
 
     /**
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::getAll
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::sendAndProcessRequest
+     *sendAndProcessRequest
      * @throws Exception
      */
     public function testGetAll(): void
@@ -56,6 +60,12 @@ final class CronManagerTest extends KernelTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::create
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::getUrl
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::getCommand
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::getTopologyAndNode
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::sendAndProcessRequest
+     *
      * @throws Exception
      */
     public function testCreate(): void
@@ -80,6 +90,12 @@ final class CronManagerTest extends KernelTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::update
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::getUrl
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::getHash
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::sendAndProcessRequest
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::getCommand
+     *
      * @throws Exception
      */
     public function testUpdate(): void
@@ -102,6 +118,12 @@ final class CronManagerTest extends KernelTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::patch
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::getHash
+     * @covers \Hanaboso\PipesFramework\Configurator\Utils\CronUtils::getHash
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::getCommand
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::sendAndProcessRequest
+     *
      * @throws Exception
      */
     public function testPatch(): void
@@ -124,6 +146,34 @@ final class CronManagerTest extends KernelTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::patch
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::getHash
+     * @covers \Hanaboso\PipesFramework\Configurator\Utils\CronUtils::getHash
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::getCommand
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::sendAndProcessRequest
+     *
+     * @throws Exception
+     */
+    public function testPatchEmpty(): void
+    {
+        $this->getManager(
+            static function (RequestDto $request): ResponseDto {
+                self::assertEquals(CurlManager::METHOD_POST, $request->getMethod());
+                self::assertEquals('http://example.com/cron-api/patch/test/id-1', $request->getUri(TRUE));
+                self::assertEquals('{}', $request->getBody());
+
+                return new ResponseDto(200, 'OK', '', []);
+            }
+        )->patch($this->getNode(), TRUE);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::delete
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::getUrl
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::getHash
+     * @covers \Hanaboso\PipesFramework\Configurator\Utils\CronUtils::getHash
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::sendAndProcessRequest
+     *
      * @throws Exception
      */
     public function testDelete(): void
@@ -140,6 +190,12 @@ final class CronManagerTest extends KernelTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::batchCreate
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::processNodes
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::getCommand
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::getTopologyAndNode
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::sendAndProcessRequest
+     *
      * @throws Exception
      */
     public function testBatchCreate(): void
@@ -176,6 +232,11 @@ final class CronManagerTest extends KernelTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::batchUpdate
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::processNodes
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::getTopologyAndNode
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::sendAndProcessRequest
+     *
      * @throws Exception
      */
     public function testBatchUpdate(): void
@@ -212,6 +273,12 @@ final class CronManagerTest extends KernelTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::batchPatch
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::sendAndProcessRequest
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::processNodes
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::getTopologyAndNode
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::getCommand
+     *
      * @throws Exception
      */
     public function testBatchPatch(): void
@@ -248,6 +315,48 @@ final class CronManagerTest extends KernelTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::batchPatch
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::sendAndProcessRequest
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::processNodes
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::getTopologyAndNode
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::getCommand
+     *
+     * @throws Exception
+     */
+    public function testBatchPatchEmpty(): void
+    {
+        $this->getManager(
+            static function (RequestDto $request): ResponseDto {
+                self::assertEquals(CurlManager::METHOD_POST, $request->getMethod());
+                self::assertEquals('http://example.com/cron-api/batch_patch', $request->getUri(TRUE));
+                self::assertEquals(
+                    [
+                        [
+                            'topology' => 'topology-1',
+                            'node'     => 'node-1',
+                        ], [
+                            'topology' => 'topology-1',
+                            'node'     => 'node-2',
+                        ], [
+                            'topology' => 'topology-1',
+                            'node'     => 'node-3',
+                        ],
+                    ],
+                    Json::decode($request->getBody())
+                );
+
+                return new ResponseDto(200, 'OK', '', []);
+            }
+        )->batchPatch($this->getNodes(3), TRUE);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::batchDelete
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::sendAndProcessRequest
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::processNodes
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::getCommand
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::getTopologyAndNode
+     *
      * @throws Exception
      */
     public function testBatchDelete(): void
@@ -271,6 +380,11 @@ final class CronManagerTest extends KernelTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::create
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::getCommand
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::getTopologyAndNode
+     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::sendAndProcessRequest
+     *
      * @throws Exception
      */
     public function testRequestFail(): void

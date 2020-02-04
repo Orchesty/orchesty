@@ -1,0 +1,5 @@
+{
+    "http": "GET /api/nodes/mapper/list_nodes",
+    "body": [],
+    "headers": []
+}

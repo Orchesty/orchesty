@@ -1,0 +1,8 @@
+{
+    "http": 200,
+    "body": {
+        "id": "5e32aab74c2bd32924205303",
+        "key": "key",
+        "value": "value"
+    }
+}

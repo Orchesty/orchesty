@@ -1,21 +1,27 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\Utils;
+namespace PipesFrameworkTests\Unit\Utils;
 
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
+use Hanaboso\RestBundle\Exception\XmlDecoderException;
 use Hanaboso\RestBundle\Model\Decoder\XmlDecoder;
-use Tests\KernelTestCaseAbstract;
+use PipesFrameworkTests\KernelTestCaseAbstract;
+use ReflectionException;
 
 /**
  * Class TopologySchemaUtilsTest
  *
- * @package Tests\Unit\Utils
+ * @package PipesFrameworkTests\Unit\Utils
  */
 final class TopologySchemaUtilsTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers TopologySchemaUtils::getSchemaObject()
+     * @covers \Hanaboso\PipesFramework\Utils\TopologySchemaUtils::getSchemaObject()
+     * @covers \Hanaboso\PipesFramework\Utils\TopologySchemaUtils::getPipesType()
+     * @covers \Hanaboso\PipesFramework\Utils\TopologySchemaUtils::createConfigDto()
+     *
+     * @throws XmlDecoderException
      */
     public function testGetSchemaObject(): void
     {
@@ -59,6 +65,32 @@ final class TopologySchemaUtilsTest extends KernelTestCaseAbstract
             ],
             $schema->getSequences()
         );
+
+        $content = $this->load('tplg-no-process.tplg');
+        $schema  = TopologySchemaUtils::getSchemaObject($this->getXmlDecoder()->decode($content));
+        self::assertCount(0, $schema->getNodes());
+
+        $content = $this->load('tplg-with-process.tplg');
+        $schema  = TopologySchemaUtils::getSchemaObject($this->getXmlDecoder()->decode($content));
+        self::assertCount(0, $schema->getNodes());
+
+        $content = $this->load('tplg-no-type.tplg');
+        $schema  = TopologySchemaUtils::getSchemaObject($this->getXmlDecoder()->decode($content));
+        self::assertCount(9, $schema->getNodes());
+    }
+
+    /**
+     * @covers \Hanaboso\PipesFramework\Utils\TopologySchemaUtils::getPipesType
+     * @throws ReflectionException
+     */
+    public function testGetPipesType(): void
+    {
+        $topo   = new TopologySchemaUtils();
+        $result = $this->invokeMethod($topo, 'getPipesType', ['']);
+        self::assertEquals('', $result);
+
+        $result = $this->invokeMethod($topo, 'getPipesType', ['gateway']);
+        self::assertEquals('gateway', $result);
     }
 
     /**

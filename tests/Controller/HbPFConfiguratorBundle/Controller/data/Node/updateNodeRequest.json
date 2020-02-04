@@ -1,0 +1,10 @@
+{
+    "http": "PATCH /api/nodes/:id",
+    "body": {
+        "name": "name",
+        "type": "api",
+        "topology": "topo",
+        "handler": "action"
+    },
+    "headers": []
+}

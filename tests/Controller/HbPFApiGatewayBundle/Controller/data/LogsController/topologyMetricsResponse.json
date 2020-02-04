@@ -1,0 +1,23 @@
+{
+    "http": 200,
+    "body": {
+        "limit": 10,
+        "offset": 0,
+        "count": 1,
+        "total": 1,
+        "items": [
+            {
+                "id": "123456789",
+                "severity": "error",
+                "message": "",
+                "type": "",
+                "correlation_id": "",
+                "topology_id": "",
+                "topology_name": "",
+                "node_id": "",
+                "node_name": "",
+                "timestamp": ""
+            }
+        ]
+    }
+}

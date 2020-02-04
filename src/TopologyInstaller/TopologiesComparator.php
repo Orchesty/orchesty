@@ -10,7 +10,7 @@ use Hanaboso\PipesFramework\TopologyInstaller\Dto\UpdateObject;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\PipesPhpSdk\Database\Repository\TopologyRepository;
-use Hanaboso\RestBundle\Exception\DecoderException;
+use Hanaboso\RestBundle\Exception\XmlDecoderException;
 use Hanaboso\RestBundle\Model\Decoder\XmlDecoder;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -53,9 +53,9 @@ class TopologiesComparator
 
     /**
      * @return CompareResultDto
-     * @throws DecoderException
      * @throws MongoDBException
      * @throws TopologyException
+     * @throws XmlDecoderException
      */
     public function compare(): CompareResultDto
     {
@@ -101,7 +101,7 @@ class TopologiesComparator
      *
      * @return bool
      * @throws TopologyException
-     * @throws DecoderException
+     * @throws XmlDecoderException
      */
     private function isEqual(Topology $topology, SplFileInfo $file): bool
     {

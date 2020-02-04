@@ -1,9 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Metrics\Manager;
+namespace PipesFrameworkTests\Integration\Metrics\Manager;
 
 use Exception;
 use Hanaboso\PipesFramework\Metrics\Client\MetricsClient;
+use Hanaboso\PipesFramework\Metrics\Exception\MetricsException;
 use Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
@@ -11,17 +12,29 @@ use Hanaboso\Utils\System\NodeGeneratorUtils;
 use InfluxDB\Database;
 use InfluxDB\Database\RetentionPolicy;
 use InfluxDB\Point;
-use Tests\KernelTestCaseAbstract;
+use PipesFrameworkTests\DatabaseTestCaseAbstract;
+use ReflectionException;
 
 /**
  * Class InfluxMetricsManagerTest
  *
- * @package Tests\Integration\Metrics\Manager
+ * @package PipesFrameworkTests\Integration\Metrics\Manager
  */
-final class InfluxMetricsManagerTest extends KernelTestCaseAbstract
+final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
 {
 
     /**
+     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MetricsManagerAbstract
+     * @covers \Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager
+     * @covers \Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager::getNodeMetrics
+     * @covers \Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager::runQuery
+     * @covers \Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager::processGraphResult
+     * @covers \Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager::processResultSet
+     * @covers \Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager::getPoints
+     * @covers \Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager::getPointsFromSerie
+     * @covers \Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager::processInnerResult
+     * @covers \Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager::generateOutput
+     *
      * @throws Exception
      */
     public function testGetNodeMetrics(): void
@@ -81,6 +94,16 @@ final class InfluxMetricsManagerTest extends KernelTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager::getTopologyMetrics
+     * @covers \Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager::getTopologyProcessTimeMetrics
+     * @covers \Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager::getNodeMetrics
+     * @covers \Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager::runQuery
+     * @covers \Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager::processGraphResult
+     * @covers \Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager::processResultSet
+     * @covers \Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager::getPoints
+     * @covers \Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager::getPointsFromSerie
+     * @covers \Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager::processInnerResult
+     *
      * @throws Exception
      */
     public function testGetTopologyMetrics(): void
@@ -126,6 +149,20 @@ final class InfluxMetricsManagerTest extends KernelTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager::getTopologyRequestCountMetrics
+     * @covers \Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager::getTopologyMetrics
+     * @covers \Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager::runQuery
+     * @covers \Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager::getTopologyProcessTimeMetrics
+     * @covers \Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager::getFunctionForSelect
+     * @covers \Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager::addStringSeparator
+     * @covers \Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager::getNodeMetrics
+     * @covers \Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager::addStringSeparator
+     * @covers \Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager::processGraphResult
+     * @covers \Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager::processResultSet
+     * @covers \Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager::addRetentionPolicy
+     * @covers \Hanaboso\PipesFramework\Metrics\Builder\Builder::setTimeRange
+     * @covers \Hanaboso\PipesFramework\Metrics\Builder\Builder::parseQuery
+     *
      * @throws Exception
      */
     public function testGetTopologyRequestCountMetric(): void
@@ -162,6 +199,18 @@ final class InfluxMetricsManagerTest extends KernelTestCaseAbstract
             $result['topology']
         );
         self::assertCount(117, $result['requests']);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager::runQuery
+     * @throws ReflectionException
+     */
+    public function testInfluxMetricsManager(): void
+    {
+        $manager = $this->getManager();
+
+        self::expectException(MetricsException::class);
+        $this->invokeMethod($manager, 'runQuery', ['select', 'from', []]);
     }
 
     /**

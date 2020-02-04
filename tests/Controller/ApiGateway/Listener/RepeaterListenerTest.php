@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Controller\ApiGateway\Listener;
+namespace PipesFrameworkTests\Controller\ApiGateway\Listener;
 
 use Exception;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
@@ -10,21 +10,26 @@ use Hanaboso\PipesPhpSdk\Database\Document\Dto\SystemConfigDto;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\Utils\System\PipesHeaders;
 use PHPUnit\Framework\MockObject\MockObject;
+use PipesFrameworkTests\ControllerTestCaseAbstract;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
-use Tests\ControllerTestCaseAbstract;
+use Symfony\Component\HttpKernel\KernelEvents;
 use Throwable;
 
 /**
  * Class RepeaterListenerTest
  *
- * @package Tests\Controller\ApiGateway\Listener
+ * @package PipesFrameworkTests\Controller\ApiGateway\Listener
+ *
+ * @covers  \Hanaboso\PipesFramework\ApiGateway\Listener\RepeaterListener
  */
 final class RepeaterListenerTest extends ControllerTestCaseAbstract
 {
 
     /**
      * @throws Exception
+     *
+     * @covers \Hanaboso\PipesFramework\ApiGateway\Listener\RepeaterListener::onRepeatableException
      */
     public function testOnRepeatableException(): void
     {
@@ -52,12 +57,36 @@ final class RepeaterListenerTest extends ControllerTestCaseAbstract
             self::assertEquals(5, $maxHop);
             self::assertEquals(20, $repeaterInterval);
         }
+
+        $eventMock = $this->mockEvent(new OnRepeatException(new ProcessDto()));
+        $listener->onRepeatableException($eventMock);
+        /** @var Response $response */
+        $response = $eventMock->getResponse();
+        self::assertEquals(1, $response->headers->get(PipesHeaders::createKey(PipesHeaders::REPEAT_HOPS)));
+        self::assertEquals(3, $response->headers->get(PipesHeaders::createKey(PipesHeaders::REPEAT_MAX_HOPS)));
+        self::assertEquals(60_000, $response->headers->get(PipesHeaders::createKey(PipesHeaders::REPEAT_INTERVAL)));
+    }
+
+    /**
+     * @covers \Hanaboso\PipesFramework\ApiGateway\Listener\RepeaterListener::onRepeatableException
+     *
+     * @throws Exception
+     */
+    public function testOnRepeatableExceptionReturn(): void
+    {
+        $listener  = self::$container->get('listener.repeater');
+        $eventMock = $this->mockEvent(new Exception('Upps, somehing went wrong.'));
+        $listener->onRepeatableException($eventMock);
+
+        self::assertFake();
     }
 
     /**
      * @throws Exception
+     *
+     * @covers \Hanaboso\PipesFramework\ApiGateway\Listener\RepeaterListener::onRepeatableException
      */
-    function testException(): void
+    public function testException(): void
     {
         $node = (new Node())->setSystemConfigs((new SystemConfigDto('', '', 1, FALSE, 5, 20)));
         $this->persistAndFlush($node);
@@ -67,13 +96,15 @@ final class RepeaterListenerTest extends ControllerTestCaseAbstract
 
         $eventMock = $this->mockEvent(new OnRepeatException($dto));
         $listener->onRepeatableException($eventMock);
-        self::assertEmpty([]);
+        self::assertFake();
     }
 
     /**
      * @throws Exception
+     *
+     * @covers \Hanaboso\PipesFramework\ApiGateway\Listener\RepeaterListener::onRepeatableException
      */
-    function testMaxHops(): void
+    public function testMaxHops(): void
     {
         $listener = new RepeaterListener($this->dm);
         $dto      = new ProcessDto();
@@ -89,24 +120,21 @@ final class RepeaterListenerTest extends ControllerTestCaseAbstract
         /** @var Response $response */
         $response = $eventMock->getResponse();
 
-        self::assertEquals(
-            0,
-            (int) $response->headers->get(
-                PipesHeaders::createKey(PipesHeaders::REPEAT_INTERVAL)
-            )
-        );
-
-        self::assertArrayNotHasKey(
-            PipesHeaders::createKey(PipesHeaders::REPEAT_MAX_HOPS),
-            $response->headers->all()
-        );
-
-        self::assertArrayHasKey(
-            PipesHeaders::createKey(PipesHeaders::REPEAT_HOPS),
-            $response->headers->all()
-        );
-
+        self::assertEquals(0, (int) $response->headers->get(PipesHeaders::createKey(PipesHeaders::REPEAT_INTERVAL)));
+        self::assertArrayNotHasKey(PipesHeaders::createKey(PipesHeaders::REPEAT_MAX_HOPS), $response->headers->all());
+        self::assertArrayHasKey(PipesHeaders::createKey(PipesHeaders::REPEAT_HOPS), $response->headers->all());
         self::assertEquals(200, $response->getStatusCode());
+    }
+
+    /**
+     * @covers \Hanaboso\PipesFramework\ApiGateway\Listener\RepeaterListener::getSubscribedEvents
+     */
+    public function testGetSubscribedEvents(): void
+    {
+        self::assertEquals(
+            [KernelEvents::EXCEPTION => 'onRepeatableException'],
+            RepeaterListener::getSubscribedEvents()
+        );
     }
 
     /**
@@ -117,14 +145,8 @@ final class RepeaterListenerTest extends ControllerTestCaseAbstract
     private function mockEvent(Throwable $exception): ExceptionEvent
     {
         /** @var ExceptionEvent|MockObject $eventMock */
-        $eventMock = self::createPartialMock(
-            ExceptionEvent::class,
-            ['getThrowable']
-        );
-
-        $eventMock
-            ->method('getThrowable')
-            ->willReturn($exception);
+        $eventMock = self::createPartialMock(ExceptionEvent::class, ['getThrowable']);
+        $eventMock->method('getThrowable')->willReturn($exception);
 
         return $eventMock;
     }

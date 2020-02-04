@@ -1,62 +1,77 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Controller\HbPFConfiguratorBundle\Controller;
+namespace PipesFrameworkTests\Controller\HbPFConfiguratorBundle\Controller;
 
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
-use Hanaboso\CommonsBundle\Exception\CategoryException;
+use Hanaboso\PipesFramework\Configurator\Model\CategoryManager;
 use Hanaboso\PipesPhpSdk\Database\Document\Category;
-use Hanaboso\Utils\System\ControllerUtils;
-use Tests\ControllerTestCaseAbstract;
+use PipesFrameworkTests\ControllerTestCaseAbstract;
 
 /**
  * Class CategoryControllerTest
  *
- * @package Tests\Controller\HbPFConfiguratorBundle\Controller
+ * @package PipesFrameworkTests\Controller\HbPFConfiguratorBundle\Controller
  */
 final class CategoryControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers CategoryController::getCategoriesAction()
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\CategoryController
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\CategoryController::getCategoriesAction
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler::getCategories
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler::getCategoryData
      *
      * @throws Exception
      */
     public function testGetCategories(): void
     {
         $this->createCategories(4);
-
-        $response = $this->sendGet('/api/categories');
-
-        self::assertEquals(200, $response->status);
-        self::assertEquals(0, $response->content->offset);
-        self::assertNull($response->content->limit);
-        self::assertEquals(4, $response->content->count);
-        self::assertEquals(4, $response->content->total);
-
-        self::assertCount(4, $response->content->items);
+        $this->assertResponse(
+            __DIR__ . '/data/Category/getCategoriesRequest.json',
+            [
+                '_id'    => '5e3293c74f674f452942a9d4',
+                'parent' => '5e32945ec6117b57df219493',
+            ]
+        );
     }
 
     /**
-     * @covers CategoryController::createCategoryAction()
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\CategoryController::createCategoryAction
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler::createCategory
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler::getCategoryData
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\CategoryManager::createCategory
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\CategoryManager::setCategoryData
      *
      * @throws Exception
      */
     public function testCreateTopology(): void
     {
-        $response = $this->sendPost(
-            '/api/categories',
-            [
-                'name' => 'Test category',
-            ]
+        $this->assertResponse(
+            __DIR__ . '/data/Category/createCategoryRequest.json',
+            ['_id' => '5e3294f6486bd447291eb8e3']
         );
-
-        self::assertEquals(200, $response->status);
-        self::assertEquals('Test category', $response->content->name);
-        self::assertNull($response->content->parent);
     }
 
     /**
-     * @covers CategoryController::updateCategoryAction()
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\CategoryController::createCategoryAction
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler::createCategory
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\CategoryManager::createCategory
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\CategoryManager::setCategoryData
+     */
+    public function testCreateCategoryErr(): void
+    {
+        $this->assertResponse(__DIR__ . '/data/Category/createCategoryErrRequest.json');
+    }
+
+    /**
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\CategoryController::updateCategoryAction
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler::updateCategory
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler::getCategory
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler::getCategoryData
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\CategoryManager::updateCategory
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\CategoryManager::setCategoryData
      *
      * @throws Exception
      */
@@ -64,43 +79,53 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
     {
         $categories = $this->createCategories(2);
 
-        $response = $this->sendPut(
-            sprintf('/api/categories/%s', $categories[1]->getId()),
-            [
-                'name'   => 'edited',
-                'parent' => $categories[0]->getId(),
-            ]
+        $this->assertResponse(
+            __DIR__ . '/data/Category/updateCategoryRequest.json',
+            ['_id' => '5e3297eee83e1850c8387dc4', 'parent' => '5e3297eee83e1850c8387dc3'],
+            [':id' => $categories[1]->getId()],
+            ['parent' => $categories[0]->getId()]
         );
-
-        self::assertEquals(200, $response->status);
-        self::assertEquals('edited', $response->content->name);
-        self::assertEquals($categories[0]->getId(), $response->content->parent);
-        self::assertEquals($categories[1]->getId(), $response->content->_id);
     }
 
     /**
-     * @covers CategoryController::updateCategoryAction()
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\CategoryController::updateCategoryAction
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler::updateCategory
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler::getCategory
      *
      * @throws Exception
      */
     public function testUpdateCategoryNotFound(): void
     {
-        $response = $this->sendPut(
-            sprintf('/api/categories/999'),
-            [
-                'name' => 'Category 2',
-            ]
-        );
-        $content  = $response->content;
-
-        self::assertEquals(400, $response->status);
-        self::assertEquals(CategoryException::class, $content->type);
-        self::assertEquals(ControllerUtils::INTERNAL_SERVER_ERROR, $content->status);
-        self::assertEquals(2_301, $content->errorCode);
+        $this->assertResponse(__DIR__ . '/data/Category/updateCategoryNotFoundRequest.json', [], [':id' => 999]);
     }
 
     /**
-     * @covers CategoryController::deleteCategoryAction()
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\CategoryController::updateCategoryAction
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler::updateCategory
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler::getCategory
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\CategoryManager::updateCategory
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\CategoryManager::setCategoryData
+     * @throws Exception
+     */
+    public function testUpdateCategoryErr(): void
+    {
+        $categories = $this->createCategories(2);
+
+        $manager = self::createPartialMock(CategoryManager::class, ['updateCategory']);
+        $manager->expects(self::any())->method('updateCategory')->willThrowException(new MongoDBException());
+        self::$container->set('hbpf.configurator.manager.category', $manager);
+
+        $this->assertResponse(
+            __DIR__ . '/data/Category/updateCategoryErrRequest.json',
+            [],
+            [':id' => $categories[1]->getId()]
+        );
+    }
+
+    /**
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\CategoryController::deleteCategoryAction
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler::deleteCategory
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\CategoryManager::deleteCategory
      *
      * @throws Exception
      */
@@ -108,9 +133,20 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
     {
         $categories = $this->createCategories(1);
 
-        $response = $this->sendDelete(sprintf('/api/categories/%s', $categories[0]->getId()));
+        $this->assertResponse(
+            __DIR__ . '/data/Category/deleteCategoryRequest.json',
+            [],
+            [':id' => $categories[0]->getId()]
+        );
+    }
 
-        self::assertEquals(200, $response->status);
+    /**
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\CategoryController::deleteCategoryAction
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler::deleteCategory
+     */
+    public function testDeleteCategoryNotFound(): void
+    {
+        $this->assertResponse(__DIR__ . '/data/Category/deleteCategoryNotFoundRequest.json');
     }
 
     /**

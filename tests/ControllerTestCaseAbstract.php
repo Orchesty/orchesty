@@ -1,57 +1,36 @@
 <?php declare(strict_types=1);
 
-namespace Tests;
+namespace PipesFrameworkTests;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
-use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
+use Hanaboso\PhpCheckUtils\PhpUnit\Traits\ControllerTestTrait;
+use Hanaboso\PhpCheckUtils\PhpUnit\Traits\CustomAssertTrait;
+use Hanaboso\PhpCheckUtils\PhpUnit\Traits\DatabaseTestTrait;
 use Hanaboso\UserBundle\Document\User;
 use Hanaboso\UserBundle\Model\Security\SecurityManager;
 use Hanaboso\UserBundle\Model\Token;
 use Hanaboso\Utils\String\Json;
-use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\UsageTrackingTokenStorage;
 use Symfony\Component\Security\Core\Encoder\NativePasswordEncoder;
 
 /**
  * Class ControllerTestCaseAbstract
  *
- * @package Tests
+ * @package PipesFrameworkTests
  */
 abstract class ControllerTestCaseAbstract extends WebTestCase
 {
 
-    use PrivateTrait;
-
-    /**
-     * @var DocumentManager
-     */
-    protected $dm;
-
-    /**
-     * @var Session<mixed>
-     */
-    protected $session;
-
-    /**
-     * @var UsageTrackingTokenStorage
-     */
-    protected $tokenStorage;
+    use ControllerTestTrait;
+    use DatabaseTestTrait;
+    use CustomAssertTrait;
 
     /**
      * @var NativePasswordEncoder
      */
     protected $encoder;
-
-    /**
-     * @var KernelBrowser
-     */
-    protected static KernelBrowser $client;
 
     /**
      * ControllerTestCaseAbstract constructor.
@@ -74,9 +53,9 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     {
         parent::setUp();
 
-        self::$client = self::createClient([], []);
-        $this->dm     = self::$container->get('doctrine_mongodb.odm.default_document_manager');
-        $this->dm->getClient()->dropDatabase('pipes');
+        $this->startClient();
+        $this->dm = self::$container->get('doctrine_mongodb.odm.default_document_manager');
+        $this->clearMongo();
 
         // Login
         $this->loginUser('test@example.com', 'password');
@@ -102,10 +81,8 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
      */
     protected function loginUser(string $username, string $password): User
     {
-        $this->session = self::$container->get('session');
-        /** @var ContainerInterface $container */
-        $container          = self::$client->getContainer();
-        $this->tokenStorage = $container->get('security.token_storage');
+        $this->session      = self::$container->get('session');
+        $this->tokenStorage = self::$container->get('security.token_storage');
         $this->session->invalidate();
         $this->session->start();
 
@@ -126,7 +103,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
         $this->session->save();
 
         $cookie = new Cookie($this->session->getName(), $this->session->getId());
-        self::$client->getCookieJar()->set($cookie);
+        $this->client->getCookieJar()->set($cookie);
 
         return $user;
     }
@@ -138,9 +115,9 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
      */
     protected function sendGet(string $url): object
     {
-        self::$client->request('GET', $url);
+        $this->client->request('GET', $url);
         /** @var Response $response */
-        $response = self::$client->getResponse();
+        $response = $this->client->getResponse();
 
         return $this->returnResponse($response);
     }
@@ -154,7 +131,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
      */
     protected function sendPost(string $url, array $parameters, ?array $content = NULL): object
     {
-        self::$client->request(
+        $this->client->request(
             'POST',
             $url,
             $parameters,
@@ -164,7 +141,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
         );
 
         /** @var Response $response */
-        $response = self::$client->getResponse();
+        $response = $this->client->getResponse();
 
         return $this->returnResponse($response);
     }
@@ -178,7 +155,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
      */
     protected function sendPut(string $url, array $parameters, ?array $content = NULL): object
     {
-        self::$client->request(
+        $this->client->request(
             'PUT',
             $url,
             $parameters,
@@ -188,7 +165,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
         );
 
         /** @var Response $response */
-        $response = self::$client->getResponse();
+        $response = $this->client->getResponse();
 
         return $this->returnResponse($response);
     }
@@ -200,10 +177,10 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
      */
     protected function sendDelete(string $url): object
     {
-        self::$client->request('DELETE', $url);
+        $this->client->request('DELETE', $url);
 
         /** @var Response $response */
-        $response = self::$client->getResponse();
+        $response = $this->client->getResponse();
 
         return $this->returnResponse($response);
     }

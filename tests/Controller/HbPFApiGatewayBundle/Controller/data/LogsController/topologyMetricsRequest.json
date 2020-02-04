@@ -1,0 +1,5 @@
+{
+    "http": "GET /api/logs",
+    "body": [],
+    "headers": []
+}

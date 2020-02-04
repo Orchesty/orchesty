@@ -12,7 +12,6 @@ use Hanaboso\CommonsBundle\Exception\NodeException;
 use Hanaboso\PipesFramework\Configurator\Model\NodeManager;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository;
-use Hanaboso\Utils\Exception\EnumException;
 
 /**
  * Class NodeHandler
@@ -90,7 +89,6 @@ class NodeHandler
      * @throws LockException
      * @throws MappingException
      * @throws NodeException
-     * @throws EnumException
      * @throws MongoDBException
      */
     public function updateNode(string $id, array $data): array

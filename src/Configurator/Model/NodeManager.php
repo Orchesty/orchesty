@@ -8,7 +8,6 @@ use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator;
 use Hanaboso\CommonsBundle\Enum\HandlerEnum;
 use Hanaboso\CommonsBundle\Exception\NodeException;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
-use Hanaboso\Utils\Exception\EnumException;
 
 /**
  * Class NodeManager
@@ -41,7 +40,6 @@ class NodeManager
      *
      * @return Node
      * @throws NodeException
-     * @throws EnumException
      * @throws MongoDBException
      */
     public function updateNode(Node $node, array $data): Node

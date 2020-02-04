@@ -1,0 +1,22 @@
+{
+    "http": 200,
+    "body": {
+        "topology_id": "",
+        "topology_name": "",
+        "node_id": "",
+        "parent_id": null,
+        "correlation_id": null,
+        "node_name": "",
+        "parent_process": null,
+        "process_id": null,
+        "sequence_id": null,
+        "state": null,
+        "data": null,
+        "headers": "[]",
+        "created": "2010-10-10 10:10:10",
+        "updated": "2010-10-10 10:10:10",
+        "updated_by": null,
+        "audit_logs": "[]",
+        "content_type": null
+    }
+}

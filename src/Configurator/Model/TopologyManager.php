@@ -118,7 +118,6 @@ class TopologyManager
      * @return Topology
      * @throws CronException
      * @throws CurlException
-     * @throws EnumException
      * @throws NodeException
      * @throws TopologyException
      * @throws MongoDBException
@@ -205,7 +204,6 @@ class TopologyManager
      *
      * @return Topology
      * @throws NodeException
-     * @throws EnumException
      * @throws TopologyException
      * @throws MongoDBException
      */
@@ -375,7 +373,6 @@ class TopologyManager
      *
      * @throws TopologyException
      * @throws NodeException
-     * @throws EnumException
      * @throws MongoDBException
      */
     private function generateNodes(Topology $topology, Schema $dto): void
@@ -404,7 +401,6 @@ class TopologyManager
      *
      * @throws NodeException
      * @throws TopologyException
-     * @throws EnumException
      * @throws MongoDBException
      */
     private function updateNodes(Topology $topology, Schema $dto): void
@@ -441,7 +437,6 @@ class TopologyManager
      * @param NodeSchemaDto $dto
      *
      * @return Node
-     * @throws EnumException
      * @throws NodeException
      * @throws TopologyException
      * @throws MongoDBException
@@ -469,7 +464,6 @@ class TopologyManager
      * @param NodeSchemaDto $dto
      *
      * @return Node
-     * @throws EnumException
      * @throws NodeException
      * @throws TopologyException
      */
@@ -493,7 +487,6 @@ class TopologyManager
      * @param NodeSchemaDto $dto
      *
      * @return Node
-     * @throws EnumException
      * @throws NodeException
      */
     private function setNodeAttributes(Topology $topology, Node $node, NodeSchemaDto $dto): Node

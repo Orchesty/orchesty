@@ -6,6 +6,7 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\TopologyInstaller\InstallManager;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
+use Hanaboso\RestBundle\Exception\XmlDecoderException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
@@ -37,7 +38,7 @@ class InstallTopologyCommand extends Command
      */
     public function __construct(InstallManager $manager)
     {
-        parent::__construct('topology:install');
+        parent::__construct();
 
         $this->manager = $manager;
     }
@@ -47,16 +48,18 @@ class InstallTopologyCommand extends Command
      */
     protected function configure(): void
     {
-        $this->addOption(self::CREATE, 'c', InputOption::VALUE_NONE, 'Create');
-        $this->addOption(self::UPDATE, 'u', InputOption::VALUE_NONE, 'Update');
-        $this->addOption(self::DELETE, 'd', InputOption::VALUE_NONE, 'Delete');
-        $this->addOption(self::FORCE, 'force', InputOption::VALUE_NONE, 'Force');
-        $this->setDescription(
-            'Possible params are: -c for create, -u for update, -d for delete, --force for apply your changes.'
-        );
-        $this->setHelp(
-            'Possible params are: -c for create, -u for update, -d for delete, --force for apply your changes.'
-        );
+        $this
+            ->setName('topology:install')
+            ->addOption(self::CREATE, 'c', InputOption::VALUE_NONE, 'Create')
+            ->addOption(self::UPDATE, 'u', InputOption::VALUE_NONE, 'Update')
+            ->addOption(self::DELETE, 'd', InputOption::VALUE_NONE, 'Delete')
+            ->addOption(self::FORCE, 'force', InputOption::VALUE_NONE, 'Force')
+            ->setDescription(
+                'Possible params are: -c for create, -u for update, -d for delete, --force for apply your changes.'
+            )
+            ->setHelp(
+                'Possible params are: -c for create, -u for update, -d for delete, --force for apply your changes.'
+            );
     }
 
     /**
@@ -67,6 +70,7 @@ class InstallTopologyCommand extends Command
      * @throws ConnectorException
      * @throws MongoDBException
      * @throws TopologyException
+     * @throws XmlDecoderException
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {

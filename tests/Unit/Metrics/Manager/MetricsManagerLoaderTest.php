@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\Metrics\Manager;
+namespace PipesFrameworkTests\Unit\Metrics\Manager;
 
 use Exception;
 use Hanaboso\PipesFramework\Metrics\Manager\MetricsManagerAbstract;
@@ -8,18 +8,20 @@ use Hanaboso\PipesFramework\Metrics\Manager\MetricsManagerLoader;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use LogicException;
 use PHPUnit\Framework\MockObject\MockObject;
-use Tests\KernelTestCaseAbstract;
+use PipesFrameworkTests\KernelTestCaseAbstract;
 
 /**
  * Class MetricsManagerLoaderTest
  *
- * @package Tests\Unit\Metrics\Manager
+ * @package PipesFrameworkTests\Unit\Metrics\Manager
  */
 final class MetricsManagerLoaderTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers       MetricsManagerLoader::getManager
+     * @covers       \Hanaboso\PipesFramework\Metrics\Manager\MetricsManagerLoader
+     * @covers       \Hanaboso\PipesFramework\Metrics\Manager\MetricsManagerLoader::getManager
+     * @covers       \Hanaboso\PipesFramework\Metrics\Manager\MetricsManagerAbstract::getTopologyMetrics
      *
      * @dataProvider loaderDataProvider
      *
@@ -31,6 +33,12 @@ final class MetricsManagerLoaderTest extends KernelTestCaseAbstract
      */
     public function testGetManager(MetricsManagerLoader $loader, string $service, ?string $err): void
     {
+        new MetricsManagerLoader(
+            'mongo',
+            self::createMock(MetricsManagerAbstract::class),
+            self::createMock(MetricsManagerAbstract::class)
+        );
+
         if ($err) {
             self::expectException(LogicException::class);
             self::expectExceptionMessage($err);

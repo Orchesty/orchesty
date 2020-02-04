@@ -1,0 +1,5 @@
+{
+    "http": "POST /api/connector/null/action",
+    "body": [],
+    "headers": []
+}

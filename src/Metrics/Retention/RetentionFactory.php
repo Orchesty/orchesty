@@ -3,7 +3,6 @@
 namespace Hanaboso\PipesFramework\Metrics\Retention;
 
 use DateTime;
-use LogicException;
 
 /**
  * Class RetentionFactory
@@ -48,8 +47,6 @@ final class RetentionFactory
     public static function getRetentionInSeconds(DateTime $from, DateTime $to): int
     {
         switch (self::getRetention($from, $to)) {
-            case self::SEC:
-                return 5;
             case self::MIN:
                 return 60;
             case self::HALF_HOUR:
@@ -57,7 +54,7 @@ final class RetentionFactory
             case self::FOUR_HOUR:
                 return 4 * 60 * 60;
             default:
-                throw new LogicException('undefined retention map');
+                return 5;
         }
     }
 

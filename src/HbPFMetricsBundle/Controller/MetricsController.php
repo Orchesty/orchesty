@@ -4,6 +4,7 @@ namespace Hanaboso\PipesFramework\HbPFMetricsBundle\Controller;
 
 use Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler;
 use Hanaboso\Utils\Traits\ControllerTrait;
+use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -32,6 +33,7 @@ class MetricsController
     public function __construct(MetricsHandler $metricsHandler)
     {
         $this->metricsHandler = $metricsHandler;
+        $this->logger         = new NullLogger();
     }
 
     /**
@@ -45,8 +47,7 @@ class MetricsController
     public function topologyMetricsAction(Request $request, string $topologyId): Response
     {
         try {
-            $query = $request->attributes->all()['query'];
-            $data  = $this->metricsHandler->getTopologyMetrics($topologyId, $query->all());
+            $data = $this->metricsHandler->getTopologyMetrics($topologyId, $request->query->all());
         } catch (Throwable $e) {
             return $this->getErrorResponse($e, 400);
         }
@@ -66,8 +67,7 @@ class MetricsController
     public function nodeMetricsAction(Request $request, string $topologyId, string $nodeId): Response
     {
         try {
-            $query = $request->attributes->all()['query'];
-            $data  = $this->metricsHandler->getNodeMetrics($topologyId, $nodeId, $query->all());
+            $data = $this->metricsHandler->getNodeMetrics($topologyId, $nodeId, $request->query->all());
         } catch (Throwable $e) {
             return $this->getErrorResponse($e, 400);
         }
@@ -86,8 +86,7 @@ class MetricsController
     public function topologyRequestsCountMetricsAction(Request $request, string $topologyId): Response
     {
         try {
-            $query = $request->attributes->all()['query'];
-            $data  = $this->metricsHandler->getRequestsCountMetrics($topologyId, $query->all());
+            $data = $this->metricsHandler->getRequestsCountMetrics($topologyId, $request->query->all());
         } catch (Throwable $e) {
             return $this->getErrorResponse($e, 400);
         }

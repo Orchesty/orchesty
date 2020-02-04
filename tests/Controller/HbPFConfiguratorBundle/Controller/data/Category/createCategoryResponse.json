@@ -1,0 +1,8 @@
+{
+    "http": 200,
+    "body": {
+        "_id": "5e3294f6486bd447291eb8e3",
+        "name": "Test category",
+        "parent": null
+    }
+}

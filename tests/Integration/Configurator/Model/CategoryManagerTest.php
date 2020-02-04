@@ -1,21 +1,26 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Configurator\Model;
+namespace PipesFrameworkTests\Integration\Configurator\Model;
 
 use Exception;
 use Hanaboso\CommonsBundle\Exception\CategoryException;
 use Hanaboso\PipesPhpSdk\Database\Document\Category;
-use Tests\DatabaseTestCaseAbstract;
+use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
  * Class CategoryManagerTest
  *
- * @package Tests\Integration\Configurator\Model
+ * @package PipesFrameworkTests\Integration\Configurator\Model
  */
 final class CategoryManagerTest extends DatabaseTestCaseAbstract
 {
 
     /**
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\CategoryManager
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\CategoryManager::createCategory
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\CategoryManager::setCategoryData
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\CategoryManager::deleteCategory
+     *
      * @throws Exception
      */
     public function testManager(): void

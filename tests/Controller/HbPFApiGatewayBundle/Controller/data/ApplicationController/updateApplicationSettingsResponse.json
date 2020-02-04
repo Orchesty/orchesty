@@ -1,0 +1,50 @@
+{
+    "http": 200,
+    "body": {
+        "id": "123456789",
+        "user": "user",
+        "key": "null",
+        "settings": {
+            "form": []
+        },
+        "nonEncryptedSettings": [],
+        "created": "2010-10-10 10:10:10",
+        "updated": "2010-10-10 10:10:10",
+        "expires": null,
+        "applicationSettings": [
+            {
+                "type": "text",
+                "key": "settings1",
+                "value": null,
+                "label": "Client 11",
+                "description": "",
+                "required": false,
+                "readOnly": false,
+                "disabled": false,
+                "choices": []
+            },
+            {
+                "type": "text",
+                "key": "settings2",
+                "value": null,
+                "label": "Client 22",
+                "description": "",
+                "required": false,
+                "readOnly": false,
+                "disabled": false,
+                "choices": []
+            },
+            {
+                "type": "password",
+                "key": "settings3",
+                "value": null,
+                "label": "Client 33",
+                "description": "",
+                "required": false,
+                "readOnly": false,
+                "disabled": false,
+                "choices": []
+            }
+        ]
+    }
+}

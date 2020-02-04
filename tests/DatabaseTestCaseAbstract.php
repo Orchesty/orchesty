@@ -1,24 +1,23 @@
 <?php declare(strict_types=1);
 
-namespace Tests;
+namespace PipesFrameworkTests;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
+use Hanaboso\PhpCheckUtils\PhpUnit\Traits\CustomAssertTrait;
+use Hanaboso\PhpCheckUtils\PhpUnit\Traits\DatabaseTestTrait;
 use Hanaboso\Utils\String\Json;
 use Symfony\Component\HttpFoundation\Session\Session;
 
 /**
  * Class DatabaseTestCaseAbstract
  *
- * @package Tests
+ * @package PipesFrameworkTests
  */
 abstract class DatabaseTestCaseAbstract extends KernelTestCaseAbstract
 {
 
-    /**
-     * @var DocumentManager
-     */
-    protected $dm;
+    use DatabaseTestTrait;
+    use CustomAssertTrait;
 
     /**
      * @var Session<mixed>
@@ -26,7 +25,7 @@ abstract class DatabaseTestCaseAbstract extends KernelTestCaseAbstract
     protected $session;
 
     /**
-     *
+     * @throws Exception
      */
     protected function setUp(): void
     {
@@ -36,7 +35,7 @@ abstract class DatabaseTestCaseAbstract extends KernelTestCaseAbstract
         $this->dm->getClient()->dropDatabase('pipes');
         $this->session = new Session();
         $this->session->invalidate();
-        $this->session->clear();
+        $this->clearMongo();
     }
 
     /**

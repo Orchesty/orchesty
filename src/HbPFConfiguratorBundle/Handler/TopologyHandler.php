@@ -191,7 +191,6 @@ class TopologyHandler
      * @return mixed[]
      * @throws CronException
      * @throws CurlException
-     * @throws EnumException
      * @throws NodeException
      * @throws TopologyException
      * @throws MongoDBException
@@ -256,7 +255,6 @@ class TopologyHandler
      * @param string $id
      *
      * @return string[]
-     * @throws EnumException
      * @throws NodeException
      * @throws TopologyException
      * @throws MongoDBException

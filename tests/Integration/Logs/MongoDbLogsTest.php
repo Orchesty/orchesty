@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Logs;
+namespace PipesFrameworkTests\Integration\Logs;
 
 use DateTime;
 use Exception;
@@ -10,17 +10,30 @@ use Hanaboso\PipesFramework\Logs\Document\Logs;
 use Hanaboso\PipesFramework\Logs\Document\Pipes;
 use Hanaboso\PipesFramework\Logs\Document\Stacktrace;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
-use Tests\DatabaseTestCaseAbstract;
+use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
  * Class MongoDbLogsTest
  *
- * @package Tests\Integration\Logs
+ * @package PipesFrameworkTests\Integration\Logs
  */
 final class MongoDbLogsTest extends DatabaseTestCaseAbstract
 {
 
     /**
+     * @covers \Hanaboso\PipesFramework\Logs\MongoDbLogs
+     * @covers \Hanaboso\PipesFramework\Logs\MongoDbLogs::getData
+     * @covers \Hanaboso\PipesFramework\Logs\MongoDbLogs::getNonEmptyValue
+     * @covers \Hanaboso\PipesFramework\Logs\MongoDbLogs::processStartingPoints
+     * @covers \Hanaboso\PipesFramework\Logs\LogsFilter::filterCols
+     * @covers \Hanaboso\PipesFramework\Logs\LogsFilter::orderCols
+     * @covers \Hanaboso\PipesFramework\Logs\LogsFilter::searchableCols
+     * @covers \Hanaboso\PipesFramework\Logs\LogsFilter::useTextSearch
+     * @covers \Hanaboso\PipesFramework\Logs\LogsFilter::prepareSearchQuery
+     * @covers \Hanaboso\PipesFramework\Logs\LogsFilter::setDocument
+     * @covers \Hanaboso\PipesFramework\Logs\StartingPointsFilter::setDocument
+     * @covers \Hanaboso\PipesFramework\Logs\LogsAbstract
+     *
      * @throws Exception
      */
     public function testGetData(): void
