@@ -2,7 +2,7 @@ import {INodeLabel} from "../topology/Configurator";
 import AMessage, {MessageType} from "./AMessage";
 import Headers from "./Headers";
 import IMessage from "./IMessage";
-import {ResultCode, ResultCodeGroup} from "./ResultCode";
+import {ResultCode} from "./ResultCode";
 
 interface ICounterMessageContent {
     result: { code: ResultCode, message: string };
@@ -72,15 +72,6 @@ class CounterMessage extends AMessage implements IMessage {
     }
 
     /**
-     * Returns the first char of ResultCode that should equal to one of ResultCodeGroup
-     *
-     * @return {ResultCodeGroup}
-     */
-    public getResultGroup(): ResultCodeGroup {
-        return parseInt(`${this.resultCode}`.charAt(0), 10);
-    }
-
-    /**
      * @return {string}
      */
     public getContent(): string {
@@ -110,12 +101,14 @@ class CounterMessage extends AMessage implements IMessage {
     }
 
     public isOk(): boolean {
-        if (this.getResultCode() === ResultCode.SUCCESS || this.getResultGroup() === ResultCodeGroup.NON_STANDARD
-        ) {
-            return true;
-        }
-
-        return false;
+        return [
+            ResultCode.SUCCESS,
+            ResultCode.REPEAT,
+            ResultCode.FORWARD_TO_TARGET_QUEUE,
+            ResultCode.DO_NOT_CONTINUE,
+            ResultCode.LIMIT_EXCEEDED, // TODO: Is this success state?
+            ResultCode.SPLITTER_BATCH_END,
+        ].includes(this.getResultCode());
     }
 
     /**
