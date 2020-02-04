@@ -21,6 +21,7 @@ use Hanaboso\RestBundle\Exception\XmlDecoderException;
 use Hanaboso\RestBundle\Model\Decoder\XmlDecoder;
 use Hanaboso\Utils\Exception\EnumException;
 use Predis\Client;
+use Predis\Connection\Parameters;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -84,25 +85,25 @@ class InstallManager implements LoggerAwareInterface
      * InstallManager constructor.
      *
      * @param DocumentManager         $dm
-     * @param Client<mixed>           $client
      * @param TopologyManager         $topologyManager
      * @param TopologyGeneratorBridge $requestHandler
      * @param CategoryParser          $categoryParser
      * @param XmlDecoder              $decoder
+     * @param string                  $redisDsn
      * @param mixed[]                 $dirs
      */
     public function __construct(
         DocumentManager $dm,
-        Client $client,
         TopologyManager $topologyManager,
         TopologyGeneratorBridge $requestHandler,
         CategoryParser $categoryParser,
         XmlDecoder $decoder,
+        string $redisDsn,
         array $dirs
     )
     {
         $this->dm              = $dm;
-        $this->client          = $client;
+        $this->client          = new Client(Parameters::create($redisDsn));
         $this->topologyManager = $topologyManager;
         $this->requestHandler  = $requestHandler;
         $this->categoryParser  = $categoryParser;

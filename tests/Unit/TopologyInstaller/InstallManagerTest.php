@@ -19,6 +19,7 @@ use Monolog\Logger;
 use PHPUnit\Framework\MockObject\MockObject;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 use Predis\Client;
+use Predis\Connection\Parameters;
 use ReflectionException;
 
 /**
@@ -40,9 +41,9 @@ final class InstallManagerTest extends KernelTestCaseAbstract
     public function testPrepareInstall(): void
     {
         $topo = new Topology();
-        $data = $this->createRedisRecord();
+        $this->createRedisRecord();
 
-        $manager = $this->createManager($data, $topo, []);
+        $manager = $this->createManager($topo, []);
         $manager->setLogger(new Logger('logger'));
         $output = $manager->prepareInstall(TRUE, TRUE, TRUE);
         self::assertArrayHasKey('create', $output);
@@ -69,9 +70,9 @@ final class InstallManagerTest extends KernelTestCaseAbstract
     {
         $topo = new Topology();
         $this->setProperty($topo, 'id', '123');
-        $data = $this->createRedisRecord();
+        $this->createRedisRecord();
 
-        $manager = $this->createManager($data, $topo, []);
+        $manager = $this->createManager($topo, []);
         $output  = $manager->makeInstall(TRUE, TRUE, TRUE);
         self::assertArrayHasKey('create', $output);
         self::assertArrayHasKey('update', $output);
@@ -89,7 +90,7 @@ final class InstallManagerTest extends KernelTestCaseAbstract
         $topo = new Topology();
         $this->setProperty($topo, 'id', '123');
 
-        $manager = $this->createManager(NULL, $topo, []);
+        $manager = $this->createManager($topo, []);
         $this->expectException(ConnectorException::class);
         $manager->makeInstall(TRUE, TRUE, TRUE);
     }
@@ -104,7 +105,7 @@ final class InstallManagerTest extends KernelTestCaseAbstract
     {
         $topo = new Topology();
         $this->setProperty($topo, 'id', '123');
-        $manager = $this->createManager(NULL, $topo, []);
+        $manager = $this->createManager($topo, []);
 
         $dm = $this->createMock(DocumentManager::class);
         $dm->expects(self::any())->method('persist')->willThrowException(new Exception());
@@ -119,26 +120,19 @@ final class InstallManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @param string|null $redisResult
-     * @param Topology    $savedTopo
-     * @param mixed[]     $dirs
+     * @param Topology $savedTopo
+     * @param mixed[]  $dirs
      *
      * @return InstallManager
      * @throws Exception
      */
-    private function createManager(?string $redisResult, Topology $savedTopo, array $dirs = []): InstallManager
+    private function createManager(Topology $savedTopo, array $dirs = []): InstallManager
     {
         $repo = $this->createMock(TopologyRepository::class);
         /** @var DocumentManager|MockObject $dm */
         $dm = $this->createMock(DocumentManager::class);
         $dm->method('getRepository')->willReturn($repo);
         $dm->method('persist')->willReturn(TRUE);
-
-        /** @var Client<mixed>|MockObject $client */
-        $client = $this->getMockBuilder(Client::class)->setMethods(['set', 'get', 'del'])->getMock();
-        $client->method('set')->willReturn(TRUE);
-        $client->method('get')->willReturn($redisResult);
-        $client->method('del')->willReturn(TRUE);
 
         /** @var TopologyManager|MockObject $topologyManager */
         $topologyManager = $this->createMock(TopologyManager::class);
@@ -162,17 +156,23 @@ final class InstallManagerTest extends KernelTestCaseAbstract
             static function (): void {
             }
         );
-
         $decoder = self::$container->get('rest.decoder.xml');
 
-        return new InstallManager($dm, $client, $topologyManager, $requestHandler, $categoryParser, $decoder, $dirs);
+        return new InstallManager(
+            $dm,
+            $topologyManager,
+            $requestHandler,
+            $categoryParser,
+            $decoder,
+            (string) getenv('REDIS_DSN'),
+            $dirs
+        );
     }
 
     /**
-     * @return string
      * @throws Exception
      */
-    private function createRedisRecord(): string
+    private function createRedisRecord(): void
     {
         $topo = new Topology();
         $topo->setName('file-upl');
@@ -186,7 +186,8 @@ final class InstallManagerTest extends KernelTestCaseAbstract
         $dto->addUpdate(new UpdateObject($topo, new TopologyFile('file-upl.tplg', __DIR__ . '/data/file-upl.tplg')));
         $dto->addDelete([$topo2]);
 
-        return serialize($dto);
+        $client = new Client(Parameters::create((string) getenv('REDIS_DSN')));
+        $client->set(InstallManager::AUTO_INSTALL_KEY, serialize($dto));
     }
 
 }

@@ -25,3 +25,21 @@ services:
             - '@hbpf.transport.curl_manager'
             - '@hbpf.topology.configurator'
             - '%topology_generator_configs%'
+
+
+    hbpf.install.topology.manager:
+        class: Hanaboso\PipesFramework\TopologyInstaller\InstallManager
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.configurator.manager.topology'
+            - '@hbpf.topology_generator.bridge'
+            - '@hbpf.category.parser'
+            - '@rest.decoder.xml'
+            - '%env(string:REDIS_DSN)%'
+            - [] #todo: add dirs
+
+    hbpf.category.parser:
+        class: Hanaboso\PipesFramework\TopologyInstaller\CategoryParser
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.configurator.manager.category'
