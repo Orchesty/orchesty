@@ -22,3 +22,8 @@ services:
     hbpf.application.null:
         class: PipesFrameworkTests\NullApplication
         arguments:
+
+    hbpf.transport.curl_client_factory:
+        class: Hanaboso\CommonsBundle\Transport\Curl\CurlClientFactory
+        arguments:
+            - {"timeout": 1}
