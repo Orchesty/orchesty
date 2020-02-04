@@ -2,8 +2,7 @@
 
 namespace Hanaboso\Portal\Controller;
 
-use FOS\RestBundle\Controller\AbstractFOSRestController;
-use Hanaboso\CommonsBundle\Traits\ControllerTrait;
+use Hanaboso\Utils\Traits\ControllerTrait;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -12,7 +11,7 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @package Hanaboso\Portal\Controller
  */
-final class PortalController extends AbstractFOSRestController
+final class PortalController
 {
 
     use ControllerTrait;

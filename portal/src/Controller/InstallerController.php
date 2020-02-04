@@ -3,9 +3,8 @@
 namespace Hanaboso\Portal\Controller;
 
 use Exception;
-use FOS\RestBundle\Controller\AbstractFOSRestController;
-use Hanaboso\CommonsBundle\Traits\ControllerTrait;
 use Hanaboso\Portal\Handler\InstallerHandler;
+use Hanaboso\Utils\Traits\ControllerTrait;
 use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,7 +17,7 @@ use Throwable;
  *
  * @package Hanaboso\Portal\Controller
  */
-class InstallerController extends AbstractFOSRestController
+class InstallerController
 {
 
     use ControllerTrait;

@@ -3,7 +3,7 @@ includes:
 
 parameters:
     symfony:
-        container_xml_path: %rootDir%/../../../var/cache/test/srcHanaboso_Portal_KernelTestDebugContainer.xml
+        container_xml_path: %rootDir%/../../../var/cache/test/Hanaboso_Portal_KernelTestDebugContainer.xml
     ignoreErrors:
         - '#Variable (property access|method call) on#'
-        - '#Variable method call on $this(Hanaboso\Portal\Model\Installer\Installer).#'
+        - '#Variable method call on \$this(Hanaboso\Portal\Model\Installer\Installer).#'

@@ -19,10 +19,7 @@ final class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder(): TreeBuilder
     {
-        $treeBuilder = new TreeBuilder();
-        $treeBuilder->root('portal');
-
-        return $treeBuilder;
+        return new TreeBuilder('portal');
     }
 
 }
