@@ -9,3 +9,10 @@ services:
             - '@hbpf.cron.manager'
         tags:
             - { name: console.command }
+
+    hbpf.command.topology_install:
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\InstallTopologyCommand
+        arguments:
+            - '@hbpf.install.topology.manager'
+        tags:
+            - {name: console.command}

@@ -36,3 +36,6 @@ services:
 
     Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\SdkController:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\SdkController
+
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\WebhookController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\WebhookController

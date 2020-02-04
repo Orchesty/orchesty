@@ -23,12 +23,10 @@ final class ConnectorController extends AbstractController
      */
     public function processEvent(string $id): Response
     {
-        $data = $this->forward(
+        return $this->forward(
             'Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Controller\ConnectorController::processEventAction',
             ['id' => $id]
         );
-
-        return new Response((string) $data->getContent(), $data->getStatusCode(), $data->headers->all());
     }
 
     /**
@@ -40,12 +38,10 @@ final class ConnectorController extends AbstractController
      */
     public function processAction(string $id): Response
     {
-        $data = $this->forward(
+        return $this->forward(
             'Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Controller\ConnectorController::processActionAction',
             ['id' => $id]
         );
-
-        return new Response((string) $data->getContent(), $data->getStatusCode(), $data->headers->all());
     }
 
 }

@@ -1,2 +1,2 @@
 parameters:
-    applications:
+    applications: ['%kernel.project_dir%/config/packages/test']

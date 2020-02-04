@@ -1,0 +1,14 @@
+{
+    "http": 200,
+    "body": {
+        "_id": "123456789",
+        "type": "webhook",
+        "name": "another-topology",
+        "descr": "",
+        "status": "New",
+        "visibility": "draft",
+        "version": 1,
+        "category": null,
+        "enabled": true
+    }
+}

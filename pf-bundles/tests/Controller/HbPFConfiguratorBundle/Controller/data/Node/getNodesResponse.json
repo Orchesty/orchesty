@@ -1,0 +1,17 @@
+{
+    "http": 200,
+    "body": {
+        "items": [
+            {
+                "_id": "5e329eb233609f28e8613114",
+                "name": "",
+                "topology_id": "5e329eb233609f28e8613113",
+                "next": [],
+                "type": "custom",
+                "handler": "event",
+                "enabled": true,
+                "schema_id": ""
+            }
+        ]
+    }
+}

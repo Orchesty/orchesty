@@ -1,47 +1,53 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Controller\ApiGateway\Listener;
+namespace PipesFrameworkTests\Controller\ApiGateway\Listener;
 
 use Exception;
 use Hanaboso\PipesFramework\ApiGateway\Listener\ControllerExceptionListener;
 use Hanaboso\Utils\Exception\EnumException;
 use Hanaboso\Utils\System\PipesHeaders;
 use PHPUnit\Framework\MockObject\MockObject;
+use PipesFrameworkTests\ControllerTestCaseAbstract;
 use RabbitMqBundle\Consumer\Callback\Exception\CallbackException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
-use Tests\ControllerTestCaseAbstract;
+use Symfony\Component\HttpKernel\KernelEvents;
 use Throwable;
 
 /**
  * Class ControllerExceptionListenerTest
  *
- * @package Tests\Controller\ApiGateway\Listener
+ * @package PipesFrameworkTests\Controller\ApiGateway\Listener
+ *
+ * @covers  \Hanaboso\PipesFramework\ApiGateway\Listener\ControllerExceptionListener
  */
 final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     *
+     * @covers \Hanaboso\PipesFramework\ApiGateway\Listener\ControllerExceptionListener::onKernelException
      */
     public function testListener(): void
     {
-        self::$client->request('GET', '/nodes/oiz5', [], [], []);
+        $this->client->request('GET', '/nodes/oiz5', [], [], []);
 
         /** @var JsonResponse $response */
-        $response = self::$client->getResponse();
+        $response = $this->client->getResponse();
 
         self::assertEquals(400, $response->getStatusCode());
     }
 
     /**
      * @throws Exception
+     *
+     * @covers \Hanaboso\PipesFramework\ApiGateway\Listener\ControllerExceptionListener::onKernelException
      */
     public function testKernelException(): void
     {
         $controller = new ControllerExceptionListener();
+        $controller->setExceptionClasses([EnumException::class]);
 
         $eventMock = $this->mockEvent(new Exception(''));
         $controller->onKernelException($eventMock);
@@ -65,6 +71,17 @@ final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\ApiGateway\Listener\ControllerExceptionListener::getSubscribedEvents
+     */
+    public function testGetSubscribedEvents(): void
+    {
+        self::assertEquals(
+            [KernelEvents::EXCEPTION => 'onKernelException'],
+            ControllerExceptionListener::getSubscribedEvents()
+        );
+    }
+
+    /**
      * @param Throwable $exception
      *
      * @return ExceptionEvent
@@ -73,14 +90,8 @@ final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
     private function mockEvent(Throwable $exception): ExceptionEvent
     {
         /** @var ExceptionEvent|MockObject $eventMock */
-        $eventMock = self::createPartialMock(
-            ExceptionEvent::class,
-            ['getThrowable']
-        );
-
-        $eventMock
-            ->method('getThrowable')
-            ->willReturn($exception);
+        $eventMock = self::createPartialMock(ExceptionEvent::class, ['getThrowable']);
+        $eventMock->method('getThrowable')->willReturn($exception);
 
         $this->setProperty($eventMock, 'request', new Request());
 

@@ -29,7 +29,7 @@ final class CompareResultDto
     private $update = [];
 
     /**
-     * @param mixed[] $topologies
+     * @param Topology[] $topologies
      */
     public function addDelete(array $topologies): void
     {

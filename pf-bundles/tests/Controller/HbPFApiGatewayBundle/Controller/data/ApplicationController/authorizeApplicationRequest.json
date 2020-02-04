@@ -1,0 +1,7 @@
+{
+    "http": "GET /api/applications/null/users/user/authorize?redirect_url=http://example.com",
+    "body": {
+        "password": "password"
+    },
+    "headers": []
+}

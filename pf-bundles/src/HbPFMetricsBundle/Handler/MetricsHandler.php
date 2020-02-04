@@ -123,7 +123,7 @@ class MetricsHandler
     private function getNodeByTopologyAndNodeId(string $topologyId, string $nodeId): Node
     {
         /** @var Node|null $node */
-        $node = $this->dm->getRepository(Node::class)->findBy(['id' => $nodeId, 'topology' => $topologyId]);
+        $node = $this->dm->getRepository(Node::class)->findOneBy(['id' => $nodeId, 'topology' => $topologyId]);
 
         if (!$node) {
             throw new MetricsException(

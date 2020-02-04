@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Configurator\Model;
+namespace PipesFrameworkTests\Integration\Configurator\Model;
 
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
@@ -8,12 +8,12 @@ use Exception;
 use Hanaboso\PipesFramework\Configurator\Document\Sdk;
 use Hanaboso\PipesFramework\Configurator\Model\SdkManager;
 use Hanaboso\PipesFramework\Configurator\Repository\SdkRepository;
-use Tests\DatabaseTestCaseAbstract;
+use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
  * Class SdkManagerTest
  *
- * @package Tests\Integration\Configurator\Model
+ * @package PipesFrameworkTests\Integration\Configurator\Model
  */
 final class SdkManagerTest extends DatabaseTestCaseAbstract
 {
@@ -29,7 +29,7 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
     private $sdkRepo;
 
     /**
-     * @covers SdkManager::getAll
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\SdkManager::getAll
      * @throws Exception
      */
     public function testGetAll(): void
@@ -49,7 +49,7 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
     /**
      * @throws Exception
      *
-     * @covers SdkManager::getOne
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\SdkManager::getOne
      */
     public function testGetOne(): void
     {
@@ -63,7 +63,7 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers SdkManager::create
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\SdkManager::create
      * @throws Exception
      */
     public function testCreate(): void
@@ -83,7 +83,7 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers SdkManager::update
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\SdkManager::update
      * @throws Exception
      */
     public function testUpdate(): void
@@ -104,7 +104,7 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers SdkManager::delete
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\SdkManager::delete
      * @throws Exception
      */
     public function testDelete(): void

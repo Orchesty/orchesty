@@ -17,7 +17,7 @@ use Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\UpdateObject;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
-use Hanaboso\RestBundle\Exception\DecoderException;
+use Hanaboso\RestBundle\Exception\XmlDecoderException;
 use Hanaboso\RestBundle\Model\Decoder\XmlDecoder;
 use Hanaboso\Utils\Exception\EnumException;
 use Predis\Client;
@@ -121,7 +121,7 @@ class InstallManager implements LoggerAwareInterface
      * @throws ConnectorException
      * @throws MongoDBException
      * @throws TopologyException
-     * @throws DecoderException
+     * @throws XmlDecoderException
      */
     public function prepareInstall(bool $makeCreate, bool $makeUpdate, bool $makeDelete, bool $force = FALSE): array
     {
@@ -262,7 +262,6 @@ class InstallManager implements LoggerAwareInterface
     private function makeDelete(CompareResultDto $dto): array
     {
         $errors = [];
-        /** @var Topology $topology */
         foreach ($dto->getDelete() as $topology) {
             try {
                 $message = '';
@@ -285,7 +284,6 @@ class InstallManager implements LoggerAwareInterface
      * @return Topology
      * @throws CronException
      * @throws CurlException
-     * @throws DecoderException
      * @throws EnumException
      * @throws LockException
      * @throws MappingException
@@ -293,6 +291,7 @@ class InstallManager implements LoggerAwareInterface
      * @throws NodeException
      * @throws TopologyConfigException
      * @throws TopologyException
+     * @throws XmlDecoderException
      */
     private function makeRunnable(Topology $topology, string $content): Topology
     {

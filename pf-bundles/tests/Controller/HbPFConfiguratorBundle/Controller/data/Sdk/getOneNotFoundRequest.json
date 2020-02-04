@@ -1,0 +1,5 @@
+{
+    "http": "GET /api/sdks/123",
+    "body": {},
+    "headers": []
+}

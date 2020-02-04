@@ -1,17 +1,17 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Metrics\Client;
+namespace PipesFrameworkTests\Integration\Metrics\Client;
 
 use Hanaboso\PipesFramework\Metrics\Client\MetricsClient;
 use Hanaboso\PipesFramework\Metrics\Exception\MetricsException;
 use InfluxDB\Database;
 use InfluxDB\Database\RetentionPolicy;
-use Tests\KernelTestCaseAbstract;
+use PipesFrameworkTests\KernelTestCaseAbstract;
 
 /**
  * Class MetricsClientTest
  *
- * @package Tests\Integration\Metrics\Client
+ * @package PipesFrameworkTests\Integration\Metrics\Client
  */
 final class MetricsClientTest extends KernelTestCaseAbstract
 {

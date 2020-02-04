@@ -4,6 +4,7 @@ namespace Hanaboso\HbPFAppStore\Controller;
 
 use Exception;
 use Hanaboso\HbPFAppStore\Handler\WebhookHandler;
+use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\Utils\System\ControllerUtils;
 use Hanaboso\Utils\Traits\ControllerTrait;
 use Symfony\Component\HttpFoundation\Request;
@@ -51,6 +52,8 @@ class WebhookController
             $this->webhookHandler->subscribeWebhooks($key, $user, $request->request->all());
 
             return $this->getResponse([]);
+        } catch (ApplicationInstallException $e) {
+            return $this->getErrorResponse($e, 404, ControllerUtils::NOT_FOUND, $request->headers->all());
         } catch (Exception|Throwable $e) {
             return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
         }
@@ -71,6 +74,8 @@ class WebhookController
             $this->webhookHandler->unsubscribeWebhooks($key, $user, $request->request->all());
 
             return $this->getResponse([]);
+        } catch (ApplicationInstallException $e) {
+            return $this->getErrorResponse($e, 404, ControllerUtils::NOT_FOUND, $request->headers->all());
         } catch (Exception|Throwable $e) {
             return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
         }

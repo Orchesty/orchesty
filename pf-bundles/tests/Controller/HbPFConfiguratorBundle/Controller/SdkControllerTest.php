@@ -1,158 +1,146 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Controller\HbPFConfiguratorBundle\Controller;
+namespace PipesFrameworkTests\Controller\HbPFConfiguratorBundle\Controller;
 
-use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Exception;
 use Hanaboso\PipesFramework\Configurator\Document\Sdk;
-use Hanaboso\Utils\String\Json;
-use Hanaboso\Utils\System\ControllerUtils;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Tests\ControllerTestCaseAbstract;
+use PipesFrameworkTests\ControllerTestCaseAbstract;
 
 /**
  * Class SdkControllerTest
  *
- * @package Tests\Controller\HbPFConfiguratorBundle\Controller
+ * @package PipesFrameworkTests\Controller\HbPFConfiguratorBundle\Controller
  */
 final class SdkControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers SdkController::getAllAction
-     * @covers SdkHandler::getAll
-     * @covers SdkManager::getAll
-     *
      * @throws Exception
+     *
+     * @covers  \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\SdkController::getAllAction
+     * @covers  \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\SdkController
+     * @covers  \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\SdkHandler::getAll
+     * @covers  \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\SdkHandler
+     * @covers  \Hanaboso\PipesFramework\Configurator\Model\SdkManager::getAll
+     * @covers  \Hanaboso\PipesFramework\Configurator\Model\SdkManager
      */
     public function testGetAll(): void
     {
         $this->createSdk('One');
         $this->createSdk('Two');
 
-        self::$client->request('GET', '/api/sdks');
-
-        /** @var JsonResponse $response */
-        $response = self::$client->getResponse();
-        $content  = Json::decode((string) $response->getContent());
-
-        self::assertEquals(200, $response->getStatusCode());
-        self::assertEquals('One', $content['items'][0]['key']);
-        self::assertEquals('One', $content['items'][0]['value']);
-        self::assertEquals('Two', $content['items'][1]['key']);
-        self::assertEquals('Two', $content['items'][1]['value']);
+        $this->assertResponse(__DIR__ . '/data/Sdk/getAllRequest.json', ['id' => '5e32a7a41ffeab2445696983']);
     }
 
     /**
-     * @covers SdkController::getOneAction
-     * @covers SdkHandler::getOne
-     * @covers SdkManager::getOne
-     *
      * @throws Exception
+     *
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\SdkController::getOneAction
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\SdkHandler::getOne
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\SdkManager::getOne
      */
     public function testGetOne(): void
     {
-        self::$client->request('GET', sprintf('/api/sdks/%s', $this->createSdk('One')->getId()));
-
-        /** @var JsonResponse $response */
-        $response = self::$client->getResponse();
-        $content  = Json::decode((string) $response->getContent());
-
-        self::assertEquals('One', $content['key']);
-        self::assertEquals('One', $content['value']);
-
-        self::$client->request('GET', '/api/sdks/Unknown');
-
-        /** @var JsonResponse $response */
-        $response = self::$client->getResponse();
-        $content  = Json::decode((string) $response->getContent());
-
-        self::assertEquals(404, $response->getStatusCode());
-        self::assertEquals(ControllerUtils::INTERNAL_SERVER_ERROR, $content['status']);
-        self::assertEquals(DocumentNotFoundException::class, $content['type']);
-        self::assertEquals("Document Sdk with key 'Unknown' not found!", $content['message']);
+        $this->assertResponse(
+            __DIR__ . '/data/Sdk/getOneRequest.json',
+            ['id' => '5e32a9b8a1b2a70fef6fa273'],
+            [':id' => $this->createSdk('One')->getId()]
+        );
     }
 
     /**
-     * @covers SdkController::createAction
-     * @covers SdkHandler::create
-     * @covers SdkManager::create
-     *
      * @throws Exception
+     *
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\SdkController::getOneAction
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\SdkHandler::getOne
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\SdkManager::getOne
+     */
+    public function testGetOneNotFound(): void
+    {
+        $this->assertResponse(__DIR__ . '/data/Sdk/getOneNotFoundRequest.json');
+    }
+
+    /**
+     * @throws Exception
+     *
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\SdkController::createAction
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\SdkHandler::create
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\SdkManager::create
      */
     public function testCreate(): void
     {
-        self::$client->request(
-            'POST',
-            '/api/sdks',
-            [
-                Sdk::KEY   => 'Key',
-                Sdk::VALUE => 'Value',
-            ]
-        );
-
-        /** @var JsonResponse $response */
-        $response = self::$client->getResponse();
-        $content  = Json::decode((string) $response->getContent());
-
-        $this->dm->clear();
-        self::assertCount(1, $this->dm->getRepository(Sdk::class)->findAll());
-
-        self::assertEquals(200, $response->getStatusCode());
-        self::assertEquals('Key', $content['key']);
-        self::assertEquals('Value', $content['value']);
+        $this->assertResponse(__DIR__ . '/data/Sdk/createRequest.json', ['id' => '5e32aab74c2bd32924205303']);
     }
 
     /**
-     * @covers SdkController::updateAction
-     * @covers SdkHandler::update
-     * @covers SdkManager::update
      * @throws Exception
+     *
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\SdkController::createAction
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\SdkHandler::create
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\SdkManager::create
+     */
+    public function testCreateErr(): void
+    {
+        $this->assertResponse(__DIR__ . '/data/Sdk/createErrRequest.json');
+    }
+
+    /**
+     * @throws Exception
+     *
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\SdkController::updateAction
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\SdkHandler::update
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\SdkHandler::get
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\SdkManager::update
      */
     public function testUpdate(): void
     {
-        self::$client->request(
-            'PUT',
-            sprintf('/api/sdks/%s', $this->createSdk('One')->getId()),
-            [
-                Sdk::KEY   => 'Key',
-                Sdk::VALUE => 'Value',
-            ]
+        $this->assertResponse(
+            __DIR__ . '/data/Sdk/updateRequest.json',
+            ['id' => '5e32ac41505d6e1b5047eb43'],
+            [':id' => $this->createSdk('One')->getId()]
         );
-
-        /** @var JsonResponse $response */
-        $response = self::$client->getResponse();
-        $content  = Json::decode((string) $response->getContent());
-
-        $this->dm->clear();
-        self::assertCount(1, $this->dm->getRepository(Sdk::class)->findAll());
-
-        self::assertEquals(200, $response->getStatusCode());
-        self::assertEquals('Key', $content['key']);
-        self::assertEquals('Value', $content['value']);
     }
 
     /**
-     * @covers SdkController::deleteAction
-     * @covers SdkHandler::delete
-     * @covers SdkManager::delete
-     *
      * @throws Exception
+     *
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\SdkController::updateAction
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\SdkHandler::update
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\SdkHandler::get
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\SdkManager::update
+     */
+    public function testUpdateNotFound(): void
+    {
+        $this->assertResponse(__DIR__ . '/data/Sdk/updateNotFoundRequest.json',);
+    }
+
+    /**
+     * @throws Exception
+     *
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\SdkController::deleteAction
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\SdkHandler::delete
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\SdkHandler::get
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\SdkManager::delete
      */
     public function testDelete(): void
     {
-        self::$client->request('DELETE', sprintf('/api/sdks/%s', $this->createSdk('One')->getId()));
+        $this->assertResponse(
+            __DIR__ . '/data/Sdk/deleteRequest.json',
+            ['id' => '5e32ae5cb04e0b3566176113'],
+            [':id' => $this->createSdk('One')->getId()]
+        );
+    }
 
-        /** @var JsonResponse $response */
-        $response = self::$client->getResponse();
-        $content  = Json::decode((string) $response->getContent());
-
-        $this->dm->clear();
-        self::assertCount(0, $this->dm->getRepository(Sdk::class)->findAll());
-
-        self::assertEquals(200, $response->getStatusCode());
-        self::assertEquals('One', $content['key']);
-        self::assertEquals('One', $content['value']);
+    /**
+     * @throws Exception
+     *
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\SdkController::deleteAction
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\SdkHandler::delete
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\SdkManager::delete
+     */
+    public function testDeleteErr(): void
+    {
+        $this->assertResponse(__DIR__ . '/data/Sdk/deleteErrRequest.json',);
     }
 
     /**

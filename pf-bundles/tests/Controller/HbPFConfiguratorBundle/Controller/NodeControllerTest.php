@@ -1,87 +1,134 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Controller\HbPFConfiguratorBundle\Controller;
+namespace PipesFrameworkTests\Controller\HbPFConfiguratorBundle\Controller;
 
+use Doctrine\ODM\MongoDB\LockException;
 use Exception;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler;
+use Hanaboso\PipesPhpSdk\Database\Document\Node;
+use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Handler\ConnectorHandler;
-use Hanaboso\Utils\String\Json;
 use PHPUnit\Framework\MockObject\MockObject;
+use PipesFrameworkTests\ControllerTestCaseAbstract;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Tests\ControllerTestCaseAbstract;
 
 /**
  * Class NodeControllerTest
  *
- * @package Tests\Controller\HbPFConfiguratorBundle\Controller
+ * @package PipesFrameworkTests\Controller\HbPFConfiguratorBundle\Controller
+ *
+ * @covers  \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController
  */
 final class NodeControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers NodeController::getNodesAction()
      * @throws Exception
+     *
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController::getNodesAction()
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler::getNodes
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler::getNodeData
      */
     public function testGetNodes(): void
     {
-        $returnValue = ['abc'];
+        $topology = new Topology();
+        $this->dm->persist($topology);
+        $node = (new Node())->setTopology($topology->getId());
+        $this->pfd($node);
 
-        $this->prepareNodeHandlerMock('getNodes', $returnValue);
-
-        self::$client->request('GET', '/api/topologies/abc123/nodes', [], [], []);
-
-        /** @var JsonResponse $response */
-        $response = self::$client->getResponse();
-        $content  = Json::decode((string) $response->getContent());
-
-        self::assertEquals(200, $response->getStatusCode());
-        self::assertEquals($returnValue, $content);
+        $this->assertResponse(
+            __DIR__ . '/data/Node/getNodesRequest.json',
+            [
+                '_id'         => '5e329eb233609f28e8613114',
+                'topology_id' => '5e329eb233609f28e8613113',
+            ],
+            [':id' => $topology->getId()]
+        );
     }
 
     /**
-     * @covers NodeController::getNodeAction()
      * @throws Exception
+     *
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController::getNodeAction()
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler::getNode
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler::getNodeData
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler::getNodeById
      */
     public function testGetNode(): void
     {
-        $returnValue = ['abc'];
+        $node = new Node();
+        $this->pfd($node);
 
-        $this->prepareNodeHandlerMock('getNode', $returnValue);
-
-        self::$client->request('GET', '/api/nodes/abc123', [], [], []);
-
-        /** @var JsonResponse $response */
-        $response = self::$client->getResponse();
-        $content  = Json::decode((string) $response->getContent());
-
-        self::assertEquals(200, $response->getStatusCode());
-        self::assertEquals($returnValue, $content);
+        $this->assertResponse(
+            __DIR__ . '/data/Node/getNodeRequest.json',
+            ['_id' => '5e329f9b5ef3694da71d42b3'],
+            [':id' => $node->getId()]
+        );
     }
 
     /**
-     * @covers NodeController::updateNodeAction()
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController::getNodeAction()
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler::getNode
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler::getNodeById
+     */
+    public function testGetNodeNotFound(): void
+    {
+        $this->assertResponse(__DIR__ . '/data/Node/getNodeNotFoundRequest.json');
+    }
+
+    /**
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController::getNodeAction()
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler::getNode
      * @throws Exception
+     */
+    public function testGetNodeErr(): void
+    {
+        $this->prepareNodeHandlerMock('getNode', new LockException('Its lock.'));
+
+        $node = new Node();
+        $this->pfd($node);
+
+        $this->assertResponse(__DIR__ . '/data/Node/getNodeErrRequest.json', [], [':id' => $node->getId()]);
+    }
+
+    /**
+     * @throws Exception
+     *
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController::updateNodeAction()
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler::updateNode
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler::getNodeById
      */
     public function testUpdateNode(): void
     {
-        $returnValue = ['abc'];
+        $node = new Node();
+        $this->pfd($node);
 
-        $this->prepareNodeHandlerMock('updateNode', $returnValue);
-
-        self::$client->request('PATCH', '/api/nodes/abc123', [], [], []);
-
-        /** @var JsonResponse $response */
-        $response = self::$client->getResponse();
-        $content  = Json::decode((string) $response->getContent());
-
-        self::assertEquals(200, $response->getStatusCode());
-        self::assertEquals($returnValue, $content);
+        $this->assertResponse(
+            __DIR__ . '/data/Node/updateNodeRequest.json',
+            ['_id' => '5e32a3bf1280c6296f258c83'],
+            [':id' => $node->getId()]
+        );
     }
 
     /**
-     * @covers NodeController::listOfNodesAction()
+     * @throws Exception
      *
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController::updateNodeAction()
+     */
+    public function testUpdateErrNode(): void
+    {
+        $node = new Node();
+        $this->pfd($node);
+
+        $this->assertResponse(
+            __DIR__ . '/data/Node/updateNodeErrRequest.json',
+            ['_id' => '5e32a3bf1280c6296f258c83'],
+            [':id' => $node->getId()]
+        );
+    }
+
+    /**
      * @throws Exception
      */
     public function testListOfNodes(): void
@@ -96,8 +143,8 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
         self::assertEquals(['null'], (array) $content);
 
         $type = 'config';
-        self::$client->request('GET', sprintf('/api/nodes/%s/list_nodes', $type));
-        $response = self::$client->getResponse();
+        $this->client->request('GET', sprintf('/api/nodes/%s/list_nodes', $type));
+        $response = $this->client->getResponse();
 
         self::assertEquals(404, $response->getStatusCode());
     }
@@ -114,10 +161,10 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
         $nodeHandlerMock = self::createMock(NodeHandler::class);
         $nodeHandlerMock
             ->method($methodName)
-            ->willReturn($returnValue);
+            ->willThrowException($returnValue);
 
         /** @var ContainerInterface $container */
-        $container = self::$client->getContainer();
+        $container = $this->client->getContainer();
         $container->set('hbpf.configurator.handler.node', $nodeHandlerMock);
     }
 

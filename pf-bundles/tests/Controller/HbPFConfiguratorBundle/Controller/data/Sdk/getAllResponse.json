@@ -1,0 +1,17 @@
+{
+    "http": 200,
+    "body": {
+        "items": [
+            {
+                "id": "5e32a7a41ffeab2445696983",
+                "key": "One",
+                "value": "One"
+            },
+            {
+                "id": "5e32a7a41ffeab2445696983",
+                "key": "Two",
+                "value": "Two"
+            }
+        ]
+    }
+}

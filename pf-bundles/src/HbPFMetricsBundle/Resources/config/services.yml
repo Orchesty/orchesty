@@ -3,6 +3,9 @@ parameters:
     metrics_rabbit_interval: '%env(int:METRICS_RABBIT_INTERVAL)%'
 
 services:
+    _defaults:
+        public: '%public.services%'
+
     hbpf.metrics.metrics_client:
         class: Hanaboso\PipesFramework\Metrics\Client\MetricsClient
         arguments:

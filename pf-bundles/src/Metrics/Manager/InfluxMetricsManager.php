@@ -177,7 +177,7 @@ class InfluxMetricsManager extends MetricsManagerAbstract
     {
         $data = $this->getTopologyMetrics($topology, $params);
 
-        $dateFrom = $params['from'] ?? 'now - 1h';
+        $dateFrom = $params['from'] ?? 'now -1h';
         $dateTo   = $params['to'] ?? 'now';
         $groupBy  = sprintf(
             'TIME(%s)',

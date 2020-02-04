@@ -1,0 +1,8 @@
+{
+    "http": 200,
+    "body": {
+        "_id": "123456789",
+        "name": "Category",
+        "parent": null
+    }
+}

@@ -1,0 +1,8 @@
+{
+    "http": "POST /api/sdks",
+    "body": {
+        "key": "key",
+        "value": "value"
+    },
+    "headers": []
+}

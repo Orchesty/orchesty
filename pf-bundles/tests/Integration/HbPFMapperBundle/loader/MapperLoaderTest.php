@@ -1,20 +1,20 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\HbPFMapperBundle\loader;
+namespace PipesFrameworkTests\Integration\HbPFMapperBundle\loader;
 
 use Hanaboso\PipesPhpSdk\HbPFMapperBundle\Loader\MapperLoader;
-use Tests\KernelTestCaseAbstract;
+use PipesFrameworkTests\KernelTestCaseAbstract;
 
 /**
  * Class MapperLoaderTest
  *
- * @package Tests\Integration\HbPFMapperBundle\loader
+ * @package PipesFrameworkTests\Integration\HbPFMapperBundle\loader
  */
 final class MapperLoaderTest extends KernelTestCaseAbstract
 {
 
     /**
-     *
+     * @covers \Hanaboso\PipesPhpSdk\HbPFMapperBundle\Loader\MapperLoader::getAllMappers
      */
     public function testGetAllMappers(): void
     {

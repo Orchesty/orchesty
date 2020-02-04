@@ -1,50 +1,65 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Configurator\Model;
+namespace PipesFrameworkTests\Integration\Configurator\Model;
 
 use Exception;
 use Hanaboso\CommonsBundle\Enum\HandlerEnum;
 use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
+use Hanaboso\CommonsBundle\Exception\NodeException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
+use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
+use Hanaboso\PipesFramework\Utils\Dto\NodeSchemaDto;
+use Hanaboso\PipesFramework\Utils\Dto\Schema;
 use Hanaboso\PipesPhpSdk\Database\Document\Dto\SystemConfigDto;
 use Hanaboso\PipesPhpSdk\Database\Document\Embed\EmbedNode;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\Utils\String\Json;
-use Tests\DatabaseTestCaseAbstract;
+use PipesFrameworkTests\DatabaseTestCaseAbstract;
+use ReflectionException;
 
 /**
  * Class TopologyManagerTest
  *
- * @package Tests\Integration\Configurator\Model
+ * @package PipesFrameworkTests\Integration\Configurator\Model
  */
 final class TopologyManagerTest extends DatabaseTestCaseAbstract
 {
 
     /**
+     * @var TopologyManager
+     */
+    private $manager;
+
+    /**
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::createTopology
+     *
      * @throws Exception
      */
     public function testCreateTopologyWithSameName(): void
     {
-        $manager = self::$container->get('hbpf.configurator.manager.topology');
-
         self::expectException(TopologyException::class);
         self::expectExceptionCode(TopologyException::TOPOLOGY_NAME_ALREADY_EXISTS);
-        self::assertEquals(1, $manager->createTopology(['name' => 'Topology'])->getVersion());
-        $manager->createTopology(['name' => 'Topology'])->getVersion();
+        self::assertEquals(1, $this->manager->createTopology(['name' => 'Topology'])->getVersion());
+        $this->manager->createTopology(['name' => 'Topology'])->getVersion();
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::createTopology
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateTopology
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::setTopologyData
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::checkTopologyName
+     *
      * @throws Exception
      */
     public function testUpdateUnpublishedTopologyWithName(): void
     {
-        $manager  = self::$container->get('hbpf.configurator.manager.topology');
-        $topology = $manager->createTopology(['name' => 'Topology']);
-        $manager->updateTopology($topology, ['name' => 'Another Topology']);
+        $topology = $this->manager->createTopology(['name' => 'Topology']);
+        $this->manager->updateTopology($topology, ['name' => 'Another Topology']);
 
         $this->dm->clear();
         $topologies = $this->dm->getRepository(Topology::class)->findBy(['name' => 'another-topology']);
@@ -52,38 +67,53 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::createTopology
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::normalizeName
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateTopology
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::checkTopologyName
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::setTopologyData
+     *
      * @throws Exception
      */
     public function testUpdatePublishedTopologyWithName(): void
     {
-        $manager  = self::$container->get('hbpf.configurator.manager.topology');
-        $topology = $manager->createTopology(['name' => 'Topology']);
+        $topology = $this->manager->createTopology(['name' => 'Topology']);
         $topology->setVisibility(TopologyStatusEnum::PUBLIC);
         $this->dm->flush();
 
         self::expectException(TopologyException::class);
         self::expectExceptionCode(TopologyException::TOPOLOGY_CANNOT_CHANGE_NAME);
 
-        $manager->updateTopology($topology, ['name' => 'Another Topology']);
+        $this->manager->updateTopology($topology, ['name' => 'Another Topology']);
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::createTopology
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateTopology
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::normalizeName
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::setTopologyData
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::checkTopologyName
+     *
      * @throws Exception
      */
     public function testCheckTopologyNameUnPublished(): void
     {
-        $manager = self::$container->get('hbpf.configurator.manager.topology');
 
-        $manager->createTopology(['name' => 'Another Topology']);
-        $topology = $manager->createTopology(['name' => 'Topology']);
+        $this->manager->createTopology(['name' => 'Another Topology']);
+        $topology = $this->manager->createTopology(['name' => 'Topology']);
         self::assertEquals(1, $topology->getVersion());
 
         self::expectException(TopologyException::class);
         self::expectExceptionCode(TopologyException::TOPOLOGY_NAME_ALREADY_EXISTS);
-        $manager->updateTopology($topology, ['name' => 'Another Topology']);
+        $this->manager->updateTopology($topology, ['name' => 'Another Topology']);
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateTopology
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::normalizeName
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::setTopologyData
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::checkTopologyName
+     *
      * @throws Exception
      */
     public function testUpdateTopology(): void
@@ -106,7 +136,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
             'enabled' => FALSE,
         ];
 
-        self::$container->get('hbpf.configurator.manager.topology')->updateTopology($top, $expt);
+        $this->manager->updateTopology($top, $expt);
         $this->dm->clear();
         /** @var Topology $top */
         $top = $this->dm->getRepository(Topology::class)->findOneBy(['id' => $top->getId()]);
@@ -118,6 +148,8 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::publishTopology
+     *
      * @throws Exception
      */
     public function testPublishTopology(): void
@@ -137,11 +169,13 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $this->dm->flush();
 
         /** @var Topology $res */
-        $res = self::$container->get('hbpf.configurator.manager.topology')->publishTopology($top);
+        $res = $this->manager->publishTopology($top);
         self::assertEquals(TopologyStatusEnum::PUBLIC, $res->getVisibility());
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::publishTopology
+     *
      * @throws Exception
      */
     public function testPublishTopologyNoNodes(): void
@@ -155,10 +189,14 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         self::expectException(TopologyException::class);
         self::expectExceptionCode(TopologyException::TOPOLOGY_HAS_NO_NODES);
 
-        self::$container->get('hbpf.configurator.manager.topology')->publishTopology($top);
+        $this->manager->publishTopology($top);
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::cloneTopology
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::makePatchRequestForCron
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::cloneTopologyShallow
+     *
      * @throws Exception
      */
     public function testCloneTopology(): void
@@ -238,7 +276,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $this->dm->clear();
 
         /** @var Topology $res */
-        $res = self::$container->get('hbpf.configurator.manager.topology')->cloneTopology($top);
+        $res = $this->manager->cloneTopology($top);
 
         self::assertEquals($top->getName(), $res->getName());
         self::assertEquals($top->getVersion() + 1, $res->getVersion());
@@ -268,6 +306,10 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::cloneTopology
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::makePatchRequestForCron
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::cloneTopologyShallow
+     *
      * @throws Exception
      */
     public function testCloneTopologyWithoutBpmn(): void
@@ -284,7 +326,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $this->dm->clear();
 
         /** @var Topology $res */
-        $res = self::$container->get('hbpf.configurator.manager.topology')->cloneTopology($top);
+        $res = $this->manager->cloneTopology($top);
 
         self::assertEquals($top->getName(), $res->getName());
         self::assertEquals($top->getVersion() + 1, $res->getVersion());
@@ -294,6 +336,19 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::saveTopologySchema
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::cloneTopologyShallow
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::generateNodes
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::removeNodesByTopology
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNodes
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNode
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::checkNodeAttributes
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::getNodeBySchemaId
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::setNodeAttributes
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::createNode
+     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getSequences
+     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getNodes
+     *
      * @throws Exception
      */
     public function testSaveTopologySchema(): void
@@ -303,8 +358,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
             ->setDescr('Topology');
         $this->persistAndFlush($topology);
 
-        $topologyManager = self::$container->get('hbpf.configurator.manager.topology');
-        $result          = $topologyManager->saveTopologySchema($topology, '', $this->getSchema('schema.json'));
+        $result = $this->manager->saveTopologySchema($topology, '', $this->getSchema('schema.json'));
 
         /** @var Node[] $nodes */
         $nodes = $this->dm->getRepository(Node::class)->findBy(['topology' => $topology->getId()]);
@@ -316,6 +370,17 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::saveTopologySchema
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::cloneTopologyShallow
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::generateNodes
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::removeNodesByTopology
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNodes
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNode
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::checkNodeAttributes
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::getNodeBySchemaId
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::setNodeAttributes
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::createNode
+     *
      * @throws Exception
      */
     public function testSaveTopologySchemaWithClone(): void
@@ -352,8 +417,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $this->dm->flush();
         $this->dm->clear();
 
-        $topologyManager = self::$container->get('hbpf.configurator.manager.topology');
-        $result          = $topologyManager->saveTopologySchema($topology, '', $this->getSchema('schema.json'));
+        $result = $this->manager->saveTopologySchema($topology, '', $this->getSchema('schema.json'));
 
         self::assertNotEquals($topology->getId(), $result->getId());
 
@@ -367,6 +431,17 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::saveTopologySchema
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::cloneTopologyShallow
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::generateNodes
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::removeNodesByTopology
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNodes
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNode
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::checkNodeAttributes
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::getNodeBySchemaId
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::setNodeAttributes
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::createNode
+     *
      * @throws Exception
      */
     public function testSaveTopologySchemaUpdateNodes(): void
@@ -378,9 +453,8 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $this->dm->flush();
         $this->dm->clear();
 
-        $topologyManager = self::$container->get('hbpf.configurator.manager.topology');
-        $result1         = $topologyManager->saveTopologySchema($topology, '', $this->getSchema('schema.json'));
-        $result2         = $topologyManager->saveTopologySchema($result1, '', $this->getSchema('schema-update.json'));
+        $result1 = $this->manager->saveTopologySchema($topology, '', $this->getSchema('schema.json'));
+        $result2 = $this->manager->saveTopologySchema($result1, '', $this->getSchema('schema-update.json'));
 
         /** @var Node[] $nodes1 */
         $nodes1 = $this->dm->getRepository(Node::class)->findBy(['topology' => $result1->getId()]);
@@ -433,6 +507,17 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::saveTopologySchema
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::cloneTopologyShallow
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::generateNodes
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::removeNodesByTopology
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNodes
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNode
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::checkNodeAttributes
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::getNodeBySchemaId
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::setNodeAttributes
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::createNode
+     *
      * @throws Exception
      */
     public function testSaveTopologySchemaNameNotFound(): void
@@ -442,17 +527,26 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
             ->setDescr('Topology');
         $this->persistAndFlush($topology);
 
-        $topologyManager = self::$container->get('hbpf.configurator.manager.topology');
-
         self::expectException(TopologyException::class);
         self::expectExceptionCode(TopologyException::TOPOLOGY_NODE_NAME_NOT_FOUND);
 
         $schema = $this->getSchema('schema.json');
         unset($schema['bpmn:process']['bpmn:startEvent']['@name']);
-        $topologyManager->saveTopologySchema($topology, '', $schema);
+        $this->manager->saveTopologySchema($topology, '', $schema);
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::saveTopologySchema
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::cloneTopologyShallow
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::generateNodes
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::removeNodesByTopology
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNodes
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNode
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::checkNodeAttributes
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::getNodeBySchemaId
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::setNodeAttributes
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::createNode
+     *
      * @throws Exception
      */
     public function testSaveTopologySchemaTypeNotExist(): void
@@ -462,17 +556,26 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
             ->setDescr('Topology');
         $this->persistAndFlush($topology);
 
-        $topologyManager = self::$container->get('hbpf.configurator.manager.topology');
-
         self::expectException(TopologyException::class);
         self::expectExceptionCode(TopologyException::TOPOLOGY_NODE_TYPE_NOT_EXIST);
 
         $schema                                                        = $this->getSchema('schema.json');
         $schema['bpmn:process']['bpmn:startEvent']['@pipes:pipesType'] = 'Unknown';
-        $topologyManager->saveTopologySchema($topology, '', $schema);
+        $this->manager->saveTopologySchema($topology, '', $schema);
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::saveTopologySchema
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::cloneTopologyShallow
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::generateNodes
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::removeNodesByTopology
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNodes
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNode
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::checkNodeAttributes
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::getNodeBySchemaId
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::setNodeAttributes
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::createNode
+     *
      * @throws Exception
      */
     public function testSaveTopologySchemaCronNotValid(): void
@@ -482,23 +585,22 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
             ->setDescr('Topology');
         $this->persistAndFlush($topology);
 
-        $topologyManager = self::$container->get('hbpf.configurator.manager.topology');
-
         self::expectException(TopologyException::class);
         self::expectExceptionCode(TopologyException::TOPOLOGY_NODE_CRON_NOT_VALID);
 
         $schema                                                     = $this->getSchema('schema.json');
         $schema['bpmn:process']['bpmn:event'][0]['@pipes:cronTime'] = 'Unknown';
-        $topologyManager->saveTopologySchema($topology, '', $schema);
+        $this->manager->saveTopologySchema($topology, '', $schema);
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::deleteTopology
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::removeNodesByTopology
+     *
      * @throws Exception
      */
     public function testDeletePublishedTopology(): void
     {
-        $manager = self::$container->get('hbpf.configurator.manager.topology');
-
         $node  = new Node();
         $node2 = new Node();
         $top   = new Topology();
@@ -513,16 +615,17 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
 
         self::expectException(TopologyException::class);
         self::expectExceptionCode(TopologyException::CANNOT_DELETE_PUBLIC_TOPOLOGY);
-        $manager->deleteTopology($top);
+        $this->manager->deleteTopology($top);
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::deleteTopology
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::removeNodesByTopology
+     *
      * @throws Exception
      */
     public function testDeleteTopology(): void
     {
-        $manager = self::$container->get('hbpf.configurator.manager.topology');
-
         $node  = new Node();
         $node2 = new Node();
         $top   = new Topology();
@@ -535,7 +638,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $this->persistAndFlush($node);
         $this->persistAndFlush($node2);
 
-        $manager->deleteTopology($top);
+        $this->manager->deleteTopology($top);
         $this->dm->clear();
         self::assertEmpty(
             $this->dm->getRepository(Topology::class)->findBy(
@@ -550,6 +653,8 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::getCronTopologies
+     *
      * @throws Exception
      */
     public function testGetCronTopologies(): void
@@ -576,9 +681,8 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
             )
         );
 
-        $manager = self::$container->get('hbpf.configurator.manager.topology');
-        $this->setProperty($manager, 'cronManager', $cronManager);
-        $topologies = $manager->getCronTopologies();
+        $this->setProperty($this->manager, 'cronManager', $cronManager);
+        $topologies = $this->manager->getCronTopologies();
 
         self::assertEquals(
             [
@@ -611,6 +715,65 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::getCronTopologies
+     *
+     * @throws Exception
+     */
+    public function testGetCronTopologiesRes(): void
+    {
+        $tp  = (new Topology())->setName('Topology')->setVersion(1)->setEnabled(TRUE);
+        $tp2 = (new Topology())->setName('Topology')->setVersion(2)->setEnabled(TRUE);
+        $this->dm->persist($tp);
+        $this->dm->persist($tp2);
+        $this->dm->flush();
+
+        $cronManager = self::createMock(CronManager::class);
+        $cronManager->method('getAll')->willReturn(
+            new ResponseDto(
+                200,
+                'OK',
+                sprintf(
+                    '[{"topology":"%s", "node":"Node", "time":"*/1 * * * *"}, {"topology":"%s", "node":"Node", "time":"*/1 * * * *"}]',
+                    $tp->getId(),
+                    $tp2->getId(),
+                ),
+                []
+            )
+        );
+        $this->setProperty($this->manager, 'cronManager', $cronManager);
+
+        $topologies = $this->manager->getCronTopologies();
+
+        self::assertEquals(
+            [
+                [
+                    'topology' => [
+                        'id'      => $tp2->getId(),
+                        'name'    => 'Topology',
+                        'status'  => TRUE,
+                        'version' => 2,
+                    ],
+                    'node'     => ['name' => 'Node'],
+                    'time'     => '*/1 * * * *',
+                ],
+                [
+                    'topology' => [
+                        'id'      => $tp->getId(),
+                        'name'    => 'Topology',
+                        'status'  => TRUE,
+                        'version' => 1,
+                    ],
+                    'node'     => ['name' => 'Node'],
+                    'time'     => '*/1 * * * *',
+                ],
+            ],
+            $topologies
+        );
+    }
+
+    /**
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::getCronTopologies
+     *
      * @throws Exception
      */
     public function testGetCronTopologiesNotFound(): void
@@ -620,13 +783,18 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
             new ResponseDto(200, 'OK', '[{"topology":"Topology", "node":"Node", "time":"*/1 * * * *"}]', [])
         );
 
-        $manager = self::$container->get('hbpf.configurator.manager.topology');
-        $this->setProperty($manager, 'cronManager', $cronManager);
+        $this->setProperty($this->manager, 'cronManager', $cronManager);
 
-        self::assertCount(0, $manager->getCronTopologies());
+        self::assertCount(0, $this->manager->getCronTopologies());
     }
 
     /**
+     * @covers \Hanaboso\PipesPhpSdk\Database\Document\Dto\SystemConfigDto
+     * @covers \Hanaboso\PipesPhpSdk\Database\Document\Node::setName
+     * @covers \Hanaboso\PipesPhpSdk\Database\Document\Node::setSystemConfigs
+     * @covers \Hanaboso\PipesPhpSdk\Database\Document\Node::getName
+     * @covers \Hanaboso\PipesPhpSdk\Database\Document\Node::getSystemConfigs
+     *
      * @throws Exception
      */
     public function testSystemConfig(): void
@@ -643,6 +811,106 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
 
         self::assertEquals('node10', $foundNode[0]->getName());
         self::assertIsObject($foundNode[0]->getSystemConfigs());
+    }
+
+    /**
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::unPublishTopology
+     */
+    public function testUnPublishTopology(): void
+    {
+        $topology = $this->manager->unPublishTopology(new Topology());
+
+        self::assertEquals(TopologyStatusEnum::DRAFT, $topology->getVisibility());
+    }
+
+    /**
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNodes
+     * @throws ReflectionException
+     * @throws NodeException
+     * @throws Exception
+     */
+    public function testUpdateNodes(): void
+    {
+        $node = (new Node())->setType('api');
+        $this->pfd($node);
+
+        $topology = new Topology();
+        $this->pfd($topology);
+
+        $this->invokeMethod(
+            $this->manager,
+            'updateNodes',
+            [
+                $topology,
+                (new Schema())
+                    ->addNode('1', new NodeSchemaDto('handler', $node->getId(), 'api', new SystemConfigDto(), 'name')),
+            ]
+        );
+
+        self::assertFake();
+    }
+
+    /**
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::checkNodeAttributes
+     * @throws ReflectionException
+     */
+    public function testCheckNodeAttributes(): void
+    {
+        $nodeSchema = new NodeSchemaDto('handler', '1', '', new SystemConfigDto(), 'name');
+
+        self::expectException(TopologyException::class);
+        $this->invokeMethod($this->manager, 'checkNodeAttributes', [$nodeSchema]);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::getNodeBySchemaId
+     * @throws ReflectionException
+     * @throws Exception
+     */
+    public function testGetNodeBySchemaId(): void
+    {
+        $topology = new Topology();
+        $this->pfd($topology);
+
+        self::expectException(NodeException::class);
+        $this->invokeMethod($this->manager, 'getNodeBySchemaId', [$topology, '1']);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::setTopologyData
+     * @throws ReflectionException
+     * @throws Exception
+     */
+    public function testSetTopologyData(): void
+    {
+        $topology = new Topology();
+        $this->pfd($topology);
+
+        $this->invokeMethod(
+            $this->manager,
+            'setTopologyData',
+            [
+                $topology,
+                [
+                    'name'     => 'name',
+                    'desc'     => 'desc',
+                    'enabled'  => TRUE,
+                    'category' => 'category',
+                ],
+            ]
+        );
+
+        self::assertFake();
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->manager = self::$container->get('hbpf.configurator.manager.topology');
     }
 
     /**

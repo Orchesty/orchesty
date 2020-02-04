@@ -1,16 +1,24 @@
 parameters:
     public.services: true
     node_services_dirs:
-        - '%kernel.root_dir%/../vendor/hanaboso/pipes-php-sdk/src/HbPFConnectorBundle/Resources/config/'
-        - '%kernel.root_dir%/../vendor/hanaboso/pipes-php-sdk/src/HbPFCustomNodeBundle/Resources/config/'
-        - '%kernel.root_dir%/../vendor/hanaboso/pipes-php-sdk/src/HbPFJoinerBundle/Resources/config/'
-        - '%kernel.root_dir%/../vendor/hanaboso/pipes-php-sdk/src/HbPFMapperBundle/Resources/config/'
-        - '%kernel.root_dir%/../config/packages/test/'
+        - '%kernel.project_dir%/vendor/hanaboso/pipes-php-sdk/src/HbPFConnectorBundle/Resources/config/'
+        - '%kernel.project_dir%/vendor/hanaboso/pipes-php-sdk/src/HbPFCustomNodeBundle/Resources/config/'
+        - '%kernel.project_dir%/vendor/hanaboso/pipes-php-sdk/src/HbPFJoinerBundle/Resources/config/'
+        - '%kernel.project_dir%/vendor/hanaboso/pipes-php-sdk/src/HbPFMapperBundle/Resources/config/'
+        - '%kernel.project_dir%/config/packages/test/'
 
 services:
     _defaults:
         public: '%public.services%'
 
     hbpf.connector.null:
-        class: Tests\Unit\HbPFConnectorBundle\Loader\NullConnector
+        class: PipesFrameworkTests\NullConnector
+        arguments:
+
+    hbpf.long_running.null:
+        class: PipesFrameworkTests\NullLongRunning
+        arguments:
+
+    hbpf.application.null:
+        class: PipesFrameworkTests\NullApplication
         arguments:

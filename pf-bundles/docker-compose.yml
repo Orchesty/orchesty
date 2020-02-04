@@ -5,9 +5,10 @@ services:
         user: ${DEV_UID}:${DEV_GID}
         ports:
             - ${DEV_IP}:8000:80
-        working_dir: /var/www/pipes/pf-bundles
         volumes:
-            - ../:/var/www/pipes
+            - ./:/var/www
+            - ../app-store:/var/app-store
+            - ../pipes-php-sdk:/var/pipes-php-sdk
             - ${SSH_AUTH_SOCK}:${SSH_AUTH}
             - ${HOME}/dev/.composer:${HOME}/dev/.composer
         environment:
@@ -16,9 +17,12 @@ services:
             - KERNEL_CLASS=Hanaboso\PipesFramework\Kernel
             - PHP_IDE_CONFIG=${PHP_IDE_CONFIG}
             - COMPOSER_HOME=${HOME}/dev/.composer
+            - PRELOAD_USER:${DEV_UID}
+            - PRELOAD_PATH:/var/www/var/cache/dev/Hanaboso_PipesFramework_KernelDevDebugContainer.preload.php
             - FRONTEND_DSN=${DEV_IP}
             - FRONTEND_HOST=${DEV_IP}
             - BACKEND_DSN=${DEV_IP}
+            - NOTIFICATION_DSN=http://notification-sender-api
             - REDIS_DSN=redis://redis:6379/10
             - MULTI_PROBE_DSN=multi-probe:8007
             - TOPOLOGY_API_DSN=topology-api:80
@@ -55,6 +59,12 @@ services:
             - DEV_GID={DEV_GID}
         ports:
             - ${DEV_IP}:8050:5000
+
+    notification-sender-api:
+        image: dkr.hanaboso.net/pipes/notification-sender:master
+        working_dir: /var/www
+        environment:
+            MONGO_HOST: mongo
 
     mongo:
         image: mongo:latest

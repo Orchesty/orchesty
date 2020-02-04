@@ -1,0 +1,21 @@
+{
+    "http": 200,
+    "body": {
+        "items": [
+            {
+                "_id": "123456789",
+                "name": "Parent Category",
+                "parent": "123456789"
+            },
+            {
+                "_id": "123456789",
+                "name": "Child Category",
+                "parent": "123456789"
+            }
+        ],
+        "total": 2,
+        "limit": null,
+        "count": 2,
+        "offset": 0
+    }
+}

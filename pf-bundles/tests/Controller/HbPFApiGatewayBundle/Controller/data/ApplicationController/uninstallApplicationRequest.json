@@ -1,0 +1,5 @@
+{
+    "http": "DELETE /api/applications/null/users/user",
+    "body": [],
+    "headers": []
+}

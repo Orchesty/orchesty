@@ -1,0 +1,8 @@
+{
+    "http": 200,
+    "body": {
+        "access_expiration": "Access Expiration",
+        "data_error": "Data Error",
+        "service_unavailable": "Service Unavailable"
+    }
+}

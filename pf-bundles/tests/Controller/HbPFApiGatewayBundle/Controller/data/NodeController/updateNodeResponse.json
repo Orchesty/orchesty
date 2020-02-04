@@ -1,0 +1,13 @@
+{
+    "http": 200,
+    "body": {
+        "_id": "123456789",
+        "name": "",
+        "topology_id": "123456789",
+        "next": [],
+        "type": "custom",
+        "handler": "event",
+        "enabled": false,
+        "schema_id": ""
+    }
+}

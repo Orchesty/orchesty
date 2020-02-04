@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\Configurator\Model;
+namespace PipesFrameworkTests\Unit\Configurator\Model;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
@@ -9,18 +9,18 @@ use Hanaboso\PipesFramework\Configurator\Model\CategoryManager;
 use Hanaboso\PipesPhpSdk\Database\Document\Category;
 use Hanaboso\PipesPhpSdk\Database\Repository\CategoryRepository;
 use PHPUnit\Framework\MockObject\MockObject;
-use Tests\KernelTestCaseAbstract;
+use PipesFrameworkTests\KernelTestCaseAbstract;
 
 /**
  * Class CategoryManagerTest
  *
- * @package Tests\Unit\Configurator\Model
+ * @package PipesFrameworkTests\Unit\Configurator\Model
  */
 final class CategoryManagerTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers CategoryManager::createCategory()
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\CategoryManager::createCategory()
      * @throws Exception
      */
     public function testCreateCategory(): void
@@ -41,7 +41,7 @@ final class CategoryManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers CategoryManager::updateCategory()
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\CategoryManager::updateCategory()
      * @throws Exception
      */
     public function testUpdateCategory(): void

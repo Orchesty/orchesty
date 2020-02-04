@@ -1,22 +1,24 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\Configurator\Utils;
+namespace PipesFrameworkTests\Unit\Configurator\Utils;
 
 use Exception;
 use Hanaboso\PipesFramework\Configurator\Utils\CronUtils;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
-use Tests\KernelTestCaseAbstract;
+use PipesFrameworkTests\KernelTestCaseAbstract;
 
 /**
  * Class CronUtilsTest
  *
- * @package Tests\Unit\Configurator\Utils
+ * @package PipesFrameworkTests\Unit\Configurator\Utils
  */
 final class CronUtilsTest extends KernelTestCaseAbstract
 {
 
     /**
+     * @covers \Hanaboso\PipesFramework\Configurator\Utils\CronUtils::getTopologyUrl
+     *
      * @throws Exception
      */
     public function testGetTopologyUrl(): void

@@ -45,7 +45,18 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
      */
     public function testSubscribeWebhooksErr(): void
     {
-        $this->mockWebhookHandlerException('subscribeWebhooks');
+        $this->mockWebhookHandlerException('subscribeWebhooks', new ApplicationInstallException());
+        $response = (array) $this->sendPost('/webhook/applications/null/users/bar/subscribe', []);
+
+        self::assertEquals(404, $response['status']);
+    }
+
+    /**
+     * @covers \Hanaboso\HbPFAppStore\Controller\WebhookController::subscribeWebhooksAction
+     */
+    public function testSubscribeWebhooksErr2(): void
+    {
+        $this->mockWebhookHandlerException('subscribeWebhooks', new Exception());
         $response = (array) $this->sendPost('/webhook/applications/null/users/bar/subscribe', []);
 
         self::assertEquals(500, $response['status']);
@@ -75,7 +86,18 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
      */
     public function testUnsubscribeWebhooksErr(): void
     {
-        $this->mockWebhookHandlerException('unsubscribeWebhooks');
+        $this->mockWebhookHandlerException('unsubscribeWebhooks', new ApplicationInstallException());
+        $response = (array) $this->sendPost('/webhook/applications/null/users/bar/unsubscribe', []);
+
+        self::assertEquals(404, $response['status']);
+    }
+
+    /**
+     * @covers \Hanaboso\HbPFAppStore\Controller\WebhookController::unsubscribeWebhooksAction
+     */
+    public function testUnsubscribeWebhooksErr2(): void
+    {
+        $this->mockWebhookHandlerException('unsubscribeWebhooks', new Exception());
         $response = (array) $this->sendPost('/webhook/applications/null/users/bar/unsubscribe', []);
 
         self::assertEquals(500, $response['status']);
@@ -123,11 +145,12 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @param string $fn
+     * @param mixed  $return
      */
-    private function mockWebhookHandlerException(string $fn): void
+    private function mockWebhookHandlerException(string $fn, $return): void
     {
         $mock = self::createPartialMock(WebhookHandler::class, [$fn]);
-        $mock->expects(self::any())->method($fn)->willThrowException(new ApplicationInstallException());
+        $mock->expects(self::any())->method($fn)->willThrowException($return);
         self::$container->set('hbpf._application.handler.webhook', $mock);
     }
 

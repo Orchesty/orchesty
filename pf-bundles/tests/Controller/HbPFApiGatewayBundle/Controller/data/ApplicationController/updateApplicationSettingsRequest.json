@@ -1,0 +1,5 @@
+{
+    "http": "PUT /api/applications/null/users/user",
+    "body": [],
+    "headers": []
+}

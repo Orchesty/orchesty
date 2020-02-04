@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\Configurator\Model;
+namespace PipesFrameworkTests\Unit\Configurator\Model;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
@@ -11,18 +11,19 @@ use Hanaboso\CommonsBundle\Exception\NodeException;
 use Hanaboso\PipesFramework\Configurator\Model\NodeManager;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use PHPUnit\Framework\MockObject\MockObject;
-use Tests\KernelTestCaseAbstract;
+use PipesFrameworkTests\KernelTestCaseAbstract;
 
 /**
  * Class NodeManagerTest
  *
- * @package Tests\Unit\Configurator\Model
+ * @package PipesFrameworkTests\Unit\Configurator\Model
  */
 final class NodeManagerTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers NodeManager::updateNode()
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\NodeManager
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\NodeManager::updateNode()
      * @throws Exception
      */
     public function testUpdateNode(): void
@@ -49,7 +50,7 @@ final class NodeManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers NodeManager::updateNode()
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\NodeManager::updateNode()
      * @throws Exception
      */
     public function testUpdateNodeEnabled(): void
@@ -69,7 +70,7 @@ final class NodeManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers NodeManager::updateNode()
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\NodeManager::updateNode()
      * @throws Exception
      */
     public function testUpdateNodeEnabledFail(): void

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\TopologyInstaller;
+namespace PipesFrameworkTests\Integration\TopologyInstaller;
 
 use Exception;
 use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
@@ -10,17 +10,29 @@ use Hanaboso\PipesFramework\TopologyInstaller\TopologiesComparator;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\PipesPhpSdk\Database\Repository\TopologyRepository;
-use Tests\DatabaseTestCaseAbstract;
+use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
  * Class TopologiesComparatorTest
  *
- * @package Tests\Integration\TopologyInstaller
+ * @package PipesFrameworkTests\Integration\TopologyInstaller
  */
 final class TopologiesComparatorTest extends DatabaseTestCaseAbstract
 {
 
     /**
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\TopologiesComparator
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\TopologiesComparator::compare
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\TopologiesComparator::prepareFiles
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\TopologiesComparator::isEqual
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto::addDelete
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto::addCreate
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto::addUpdate
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto::getDelete
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto::getCreate
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto::getUpdate
+     * @covers \Hanaboso\PipesFramework\Utils\TopologySchemaUtils::getIndexHash
+     *
      * @throws Exception
      */
     public function testCompare(): void

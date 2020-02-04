@@ -1,0 +1,10 @@
+{
+    "http": 200,
+    "body": {
+        "limit": 10,
+        "offset": 0,
+        "count": 0,
+        "total": 0,
+        "items": []
+    }
+}

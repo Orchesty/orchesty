@@ -1,0 +1,8 @@
+{
+    "http": "PUT /api/categories/:id",
+    "body": {
+        "name": "edited",
+        "parent": ""
+    },
+    "headers": []
+}

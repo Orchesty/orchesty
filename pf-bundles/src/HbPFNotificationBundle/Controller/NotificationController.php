@@ -6,6 +6,7 @@ use Hanaboso\CommonsBundle\Enum\NotificationEventEnum;
 use Hanaboso\PipesFramework\HbPFNotificationBundle\Handler\NotificationHandler;
 use Hanaboso\PipesFramework\Notification\Exception\NotificationException;
 use Hanaboso\Utils\Traits\ControllerTrait;
+use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -34,6 +35,7 @@ class NotificationController
     public function __construct(NotificationHandler $notificationHandler)
     {
         $this->notificationHandler = $notificationHandler;
+        $this->logger              = new NullLogger();
     }
 
     /**
