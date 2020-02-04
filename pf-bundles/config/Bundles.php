@@ -20,7 +20,6 @@ use Hanaboso\PipesPhpSdk\HbPFTableParserBundle\HbPFTableParserBundle;
 use Hanaboso\RestBundle\RestBundle;
 use Hanaboso\UserBundle\HbPFUserBundle;
 use RabbitMqBundle\RabbitMqBundle;
-use Snc\RedisBundle\SncRedisBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\MonologBundle\MonologBundle;
 use Symfony\Bundle\SecurityBundle\SecurityBundle;
@@ -31,7 +30,6 @@ return [
     FrameworkBundle::class       => ['all' => TRUE],
     MonologBundle::class         => ['all' => TRUE],
     SecurityBundle::class        => ['all' => TRUE],
-    SncRedisBundle::class        => ['all' => TRUE],
     SwiftmailerBundle::class     => ['all' => TRUE],
 
     HbPFCommonsBundle::class         => ['all' => TRUE],
