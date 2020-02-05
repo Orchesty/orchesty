@@ -9,9 +9,9 @@ use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Form;
+use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
-use Hanaboso\PipesPhpSdk\Authorization\Utils\ScopeFormatter;
 
 /**
  * Class QuickbooksApplication
@@ -23,16 +23,18 @@ final class QuickbooksApplication extends OAuth2ApplicationAbstract
 
     public const  QUICKBOOKS_URL = 'https://appcenter.intuit.com/connect/oauth2';
     public const  TOKEN_URL      = 'https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer';
-    private const SCOPES         = ['com.intuit.quickbooks.accounting'];
+    public const  APP_ID         = 'app_id';
 
-    private const APP_ID = 'app_id';
+    private const SCOPES   = ['com.intuit.quickbooks.accounting'];
+    private const VERSION  = 'v3';
+    private const BASE_URL = 'https://quickbooks.api.intuit.com';
 
     /**
      * @return string
      */
     public function getApplicationType(): string
     {
-        return ApplicationTypeEnum::WEBHOOK;
+        return ApplicationTypeEnum::CRON;
     }
 
     /**
@@ -77,28 +79,6 @@ final class QuickbooksApplication extends OAuth2ApplicationAbstract
 
     /**
      * @param ApplicationInstall $applicationInstall
-     * @param mixed[]            $scopes
-     * @param string             $separator
-     */
-    public function authorize(
-        ApplicationInstall $applicationInstall,
-        array $scopes = [],
-        string $separator = ScopeFormatter::COMMA
-    ): void
-    {
-        $scopes;
-        $separator;
-
-        $this->provider->authorize(
-            $this->createDto($applicationInstall),
-            self::SCOPES,
-            ScopeFormatter::SPACE
-        );
-
-    }
-
-    /**
-     * @param ApplicationInstall $applicationInstall
      * @param string             $method
      * @param string|null        $url
      * @param string|null        $data
@@ -114,12 +94,15 @@ final class QuickbooksApplication extends OAuth2ApplicationAbstract
         ?string $data = NULL
     ): RequestDto
     {
-        $request = new RequestDto($method, $this->getUri($url));
+        $request = new RequestDto(
+            $method,
+            $this->getUri(sprintf('%s%s', $this->getBaseUrl($applicationInstall), $url))
+        );
         $request->setHeaders(
             [
                 'Content-Type'  => 'application/json',
                 'Accept'        => 'application/json',
-                'Authorization' => sprintf('Basic %s', $this->getAccessToken($applicationInstall)),
+                'Authorization' => sprintf('Bearer %s', $this->getAccessToken($applicationInstall)),
             ]
         );
 
@@ -136,30 +119,37 @@ final class QuickbooksApplication extends OAuth2ApplicationAbstract
      */
     public function getSettingsForm(): Form
     {
-        $form = new Form();
-        $form
+        return (new Form())
             ->addField(new Field(Field::TEXT, OAuth2ApplicationInterface::CLIENT_ID, 'Client Id', NULL, TRUE))
-            ->addField(new Field(Field::TEXT, OAuth2ApplicationInterface::CLIENT_SECRET, 'Client Secret', TRUE))
-            ->addField(new Field(Field::TEXT, self::APP_ID, 'Application Id', NULL, TRUE));
-
-        return $form;
+            ->addField(new Field(Field::TEXT, OAuth2ApplicationInterface::CLIENT_SECRET, 'Client Secret', NULL, TRUE))
+            ->addField(new Field(Field::TEXT, self::APP_ID, 'Realm Id', NULL, TRUE));
     }
 
     /**
      * @param ApplicationInstall $applicationInstall
      *
-     * @return bool
+     * @return string[]
      */
-    public function isAuthorized(ApplicationInstall $applicationInstall): bool
+    protected function getScopes(ApplicationInstall $applicationInstall): array
     {
-        try {
-            $this->getAccessToken($applicationInstall);
+        $applicationInstall;
 
-            return TRUE;
-        } catch (ApplicationInstallException $e) {
+        return self::SCOPES;
+    }
 
-            return FALSE;
-        }
+    /**
+     * @param ApplicationInstall $applicationInstall
+     *
+     * @return string
+     */
+    private function getBaseUrl(ApplicationInstall $applicationInstall): string
+    {
+        return sprintf(
+            '%s/%s/company/%s',
+            self::BASE_URL,
+            self::VERSION,
+            $applicationInstall->getSettings()[BasicApplicationAbstract::FORM][self::APP_ID]
+        );
     }
 
 }
