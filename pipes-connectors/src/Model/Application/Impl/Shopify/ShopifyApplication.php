@@ -7,7 +7,6 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
-use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookApplicationInterface;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
@@ -16,6 +15,7 @@ use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Form;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
+use Hanaboso\Utils\String\Json;
 
 /**
  * Class ShopifyApplication
@@ -24,9 +24,24 @@ use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
  */
 final class ShopifyApplication extends BasicApplicationAbstract implements WebhookApplicationInterface
 {
-    public const  SHOP            = 'shop';
-    public const  SHOPIFY_URL     = 'myshopify.com/admin/api';
-    public const  SHOPIFY_VERSION = '2019-10';
+
+    public const  SHOPIFY_URL     = 'myshopify.com/admin/api/';
+    public const  SHOPIFY_VERSION = '2020-01';
+
+    /**
+     * @var CurlManager
+     */
+    private CurlManager $sender;
+
+    /**
+     * ShopifyApplication constructor.
+     *
+     * @param CurlManager $sender
+     */
+    public function __construct(CurlManager $sender)
+    {
+        $this->sender = $sender;
+    }
 
     /**
      * @return string
@@ -76,14 +91,16 @@ final class ShopifyApplication extends BasicApplicationAbstract implements Webho
         ?string $data = NULL
     ): RequestDto
     {
-        $uri     = sprintf('%s/%s', $this->getBaseUrl($applicationInstall), $url);
+        $uri     = sprintf('%s%s', $this->getBaseUrl($applicationInstall), $url);
         $request = new RequestDto($method, $this->getUri($uri));
         $request->setHeaders(
             [
-                'Content-Type' => 'application/json',
-                'Accept'       => 'application/json',
+                'Content-Type'           => 'application/json',
+                'Accept'                 => 'application/json',
+                'X-Shopify-Access-Token' => $this->getPassword($applicationInstall),
             ]
         );
+
         if (isset($data)) {
             $request->setBody($data);
         }
@@ -97,24 +114,9 @@ final class ShopifyApplication extends BasicApplicationAbstract implements Webho
      */
     public function getSettingsForm(): Form
     {
-        $form        = new Form();
-        $field       = new Field(Field::TEXT, BasicApplicationAbstract::USER, 'Api Key', NULL, TRUE);
-        $fieldSecret = new Field(Field::TEXT, BasicApplicationAbstract::PASSWORD, 'Password', NULL, TRUE);
-        $form->addField($field);
-        $form->addField($fieldSecret);
-
-        return $form;
-    }
-
-    /**
-     * @param ApplicationInstall $applicationInstall
-     *
-     * @return string
-     */
-    private function getPassword(ApplicationInstall $applicationInstall): string
-    {
-        return $applicationInstall->getSettings(
-        )[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::PASSWORD];
+        return (new Form())
+            ->addField(new Field(Field::TEXT, BasicApplicationInterface::USER, 'Shop name', NULL, TRUE))
+            ->addField(new Field(Field::TEXT, BasicApplicationAbstract::PASSWORD, 'App password', NULL, TRUE));
     }
 
     /**
@@ -144,14 +146,14 @@ final class ShopifyApplication extends BasicApplicationAbstract implements Webho
         return $this->getRequestDto(
             $applicationInstall,
             CurlManager::METHOD_POST,
-            'webhooks.json',
+            '/webhooks.json',
             Json::encode(
                 [
                     'webhook' =>
                         [
-                            'address' => $url,
                             'topic'   => $subscription->getParameters()['name'],
-                            'format' => 'json',
+                            'address' => $url,
+                            'format'  => 'json',
                         ],
                 ]
             )
@@ -167,11 +169,7 @@ final class ShopifyApplication extends BasicApplicationAbstract implements Webho
      */
     public function getWebhookUnsubscribeRequestDto(ApplicationInstall $applicationInstall, string $id): RequestDto
     {
-        return $this->getRequestDto(
-            $applicationInstall,
-            CurlManager::METHOD_DELETE,
-            sprintf('webhooks/%s.json', $id)
-        );
+        return $this->getRequestDto($applicationInstall, CurlManager::METHOD_DELETE, sprintf('/webhooks/%s.json', $id));
     }
 
     /**
@@ -202,20 +200,9 @@ final class ShopifyApplication extends BasicApplicationAbstract implements Webho
      *
      * @return string
      */
-    private function getApiKey(ApplicationInstall $applicationInstall): string
+    private function getPassword(ApplicationInstall $applicationInstall): string
     {
-        return $applicationInstall->getSettings(
-        )[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::USER];
-    }
-
-    /**
-     * @param ApplicationInstall $applicationInstall
-     *
-     * @return string
-     */
-    private function getShopName(ApplicationInstall $applicationInstall): string
-    {
-        return $applicationInstall->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][self::SHOP];
+        return $applicationInstall->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::PASSWORD];
     }
 
     /**
@@ -226,13 +213,21 @@ final class ShopifyApplication extends BasicApplicationAbstract implements Webho
     private function getBaseUrl(ApplicationInstall $applicationInstall): string
     {
         return sprintf(
-            'https://%s:%s@%s.%s/%s',
-            $this->getApiKey($applicationInstall),
-            $this->getPassword($applicationInstall),
+            'https://%s.%s%s',
             $this->getShopName($applicationInstall),
             self::SHOPIFY_URL,
-            self::SHOPIFY_VERSION
+            self::SHOPIFY_VERSION,
         );
+    }
+
+    /**
+     * @param ApplicationInstall $applicationInstall
+     *
+     * @return string
+     */
+    private function getShopName(ApplicationInstall $applicationInstall): string
+    {
+        return $applicationInstall->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][self::USER];
     }
 
 }

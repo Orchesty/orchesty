@@ -1,28 +1,29 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration\Model\Application\Impl\Shopify;
+namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Shopify;
 
 use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
-use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shopify\ShopifyApplication;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
+use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
-use Tests\DatabaseTestCaseAbstract;
-use Tests\DataProvider;
+use HbPFConnectorsTests\DatabaseTestCaseAbstract;
+use HbPFConnectorsTests\DataProvider;
 
 /**
  * Class ShopifyApplicationTest
  *
- * @package Tests\Integration\Model\Application\Impl\Shopify
+ * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Shopify
  */
 final class ShopifyApplicationTest extends DatabaseTestCaseAbstract
 {
 
-    private const API_KEY  = 'd4500771446672c5390187**********';
-    private const PASSWORD = 'b0ef2faa171c1d45460fa8**********';
+    private const ESHOP_NAME = 'hana1';
+    private const PASSWORD   = '079a9710da9264428749be8a148*****';
 
     /**
      * @var ShopifyApplication
@@ -30,189 +31,175 @@ final class ShopifyApplicationTest extends DatabaseTestCaseAbstract
     private $application;
 
     /**
-     * @throws Exception
-     */
-    public function setUp(): void
-    {
-        parent::setUp();
-        $this->application = self::$container->get('hbpf.application.shopify');
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function testAuthorization(): void
-    {
-        $applicationInstall = DataProvider::getBasicAppInstall(
-            $this->application->getKey()
-        );
-
-        $applicationInstall->setSettings(
-            [
-                BasicApplicationInterface::AUTHORIZATION_SETTINGS =>
-                    [
-                        ShopifyApplication::SHOP           => 'TestHanaHana',
-                        BasicApplicationInterface::USER     => self::API_KEY,
-                        BasicApplicationInterface::PASSWORD => self::PASSWORD,
-                    ],
-            ]
-        );
-
-        $this->pf($applicationInstall);
-
-        $dto = $this->application->getRequestDto(
-            $applicationInstall,
-            'POST',
-            'customers.json',
-            '{"customer": 
-            {"first_name": "Steve", "last_name": "Lastnameson", "email": "steve.lastnameson@example.com", "phone": "+15142546011", "verified_email": true, "addresses": 
-            [{"address1": "123 Oak St","city": "Ottawa","province": "ON","phone": "555-1212","zip": "123 ABC","last_name": "Lastnameson","first_name": "Mother","country": "CA"}],
-            "password": "newpass","password_confirmation": "newpass","send_email_welcome": false}}'
-        );
-
-        $this->assertEquals('POST', $dto->getMethod());
-        $this->assertEquals(
-            'https://d4500771446672c5390187**********:b0ef2faa171c1d45460fa8**********@testhanahana.myshopify.com/admin/api/2019-10/customers.json',
-            $dto->getUriString()
-        );
-        $this->assertEquals(
-            '{"customer": 
-            {"first_name": "Steve", "last_name": "Lastnameson", "email": "steve.lastnameson@example.com", "phone": "+15142546011", "verified_email": true, "addresses": 
-            [{"address1": "123 Oak St","city": "Ottawa","province": "ON","phone": "555-1212","zip": "123 ABC","last_name": "Lastnameson","first_name": "Mother","country": "CA"}],
-            "password": "newpass","password_confirmation": "newpass","send_email_welcome": false}}',
-            $dto->getBody()
-        );
-    }
-
-    /**
-     *
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shopify\ShopifyApplication
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shopify\ShopifyApplication::getApplicationType
      */
     public function testGetApplicationType(): void
     {
-        self::assertEquals(
-            ApplicationTypeEnum::WEBHOOK,
-            $this->application->getApplicationType()
-        );
+        self::assertEquals(ApplicationTypeEnum::WEBHOOK, $this->application->getApplicationType());
     }
 
     /**
-     *
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shopify\ShopifyApplication::getKey
+     */
+    public function testGetKey(): void
+    {
+        self::assertEquals('shopify', $this->application->getKey());
+    }
+
+    /**
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shopify\ShopifyApplication::getName
      */
     public function testName(): void
     {
-        self::assertEquals(
-            'Shopify',
-            $this->application->getName()
-        );
+        self::assertEquals('Shopify', $this->application->getName());
     }
 
     /**
-     *
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shopify\ShopifyApplication::getDescription
      */
     public function testGetDescription(): void
     {
-        self::assertEquals(
-            'Shopify v1',
-            $this->application->getDescription()
-        );
+        self::assertEquals('Shopify v1', $this->application->getDescription());
     }
 
     /**
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shopify\ShopifyApplication::getRequestDto
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shopify\ShopifyApplication::getBaseUrl
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shopify\ShopifyApplication::getPassword
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shopify\ShopifyApplication::getShopName
+     *
      * @throws Exception
+     */
+    public function testGetRequestDto(): void
+    {
+        $applicationInstall = $this->createApplication();
+
+        $request = $this->application->getRequestDto(
+            $applicationInstall,
+            CurlManager::METHOD_POST,
+            '/customers.json',
+            (string) file_get_contents(__DIR__ . '/data/createCustomer.json')
+        );
+
+        self::assertEquals('https://hana1.myshopify.com/admin/api/2020-01/customers.json', $request->getUri());
+        self::assertEquals(
+            [
+                'Content-Type'           => 'application/json',
+                'Accept'                 => 'application/json',
+                'X-Shopify-Access-Token' => '079a9710da9264428749be8a148*****',
+            ],
+            $request->getHeaders()
+        );
+        self::assertEquals(file_get_contents(__DIR__ . '/data/createCustomer.json'), $request->getBody());
+    }
+
+    /**
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shopify\ShopifyApplication::getSettingsForm
+     *
+     * @throws ApplicationInstallException
      */
     public function testGetSettingsForm(): void
     {
         $fields = $this->application->getSettingsForm()->getFields();
         foreach ($fields as $field) {
-            self::assertInstanceOf(Field::class, $field);
-            self::assertContains($field->getKey(), ['user', 'password', 'shop']);
+            self::assertContains(
+                $field->getKey(),
+                [
+                    BasicApplicationInterface::USER,
+                    BasicApplicationInterface::PASSWORD,
+                ]
+            );
         }
-
     }
 
     /**
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shopify\ShopifyApplication::getWebhookSubscriptions
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shopify\ShopifyApplication::getWebhookSubscribeRequestDto
+     *
      * @throws Exception
      */
     public function testWebhookSubscribeRequestDto(): void
     {
-        $applicationInstall = DataProvider::getBasicAppInstall(
-            $this->application->getKey()
-        );
+        $applicationInstall = $this->createApplication();
 
-        $applicationInstall->setSettings(
-            [
-                BasicApplicationInterface::AUTHORIZATION_SETTINGS =>
-                    [
-                        ShopifyApplication::SHOP            => 'TestHanaHana',
-                        BasicApplicationInterface::USER     => self::API_KEY,
-                        BasicApplicationInterface::PASSWORD => self::PASSWORD,
-                    ],
-            ]
-        );
-
-        $this->pf($applicationInstall);
-
-        $subscription = new WebhookSubscription('test', 'node', 'xxx', ['name' => 'customers/create']);
-
-        $requestSub = $this->application->getWebhookSubscribeRequestDto(
+        $dto = $this->application->getWebhookSubscribeRequestDto(
             $applicationInstall,
-            $subscription,
-            'https://www.xx.cz'
+            $this->application->getWebhookSubscriptions()[0],
+            'https://www.seznam.cz'
         );
 
-        $requestUn = $this->application->getWebhookUnsubscribeRequestDto(
-            $applicationInstall,
-            '726899654794'
-        );
-
-        self::assertEquals(
-            'https://d4500771446672c5390187**********:b0ef2faa171c1d45460fa8**********@testhanahana.myshopify.com/admin/api/2019-10/webhooks.json',
-            $requestSub->getUriString()
-        );
-
-        self::assertEquals(
-            '{"webhook":{"address":"https:\/\/www.xx.cz","topic":"customers\/create","format":"json"}}',
-            $requestSub->getBody()
-        );
-
-        self::assertEquals(
-            'https://d4500771446672c5390187**********:b0ef2faa171c1d45460fa8**********@testhanahana.myshopify.com/admin/api/2019-10/webhooks/726899654794.json',
-            $requestUn->getUriString()
-        );
-
+        self::assertEquals('https://hana1.myshopify.com/admin/api/2020-01/webhooks.json', $dto->getUri());
     }
 
     /**
-     *
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shopify\ShopifyApplication::getWebhookUnsubscribeRequestDto
+     * @throws CurlException
+     * @throws Exception
      */
-    public function testGetWebhookSubscriptions(): void
+    public function testGetWebhookUnsubscribeRequestDto(): void
     {
-        $webhookSubcription = $this->application->getWebhookSubscriptions();
-        $this->assertInstanceOf(WebhookSubscription::class, $webhookSubcription[0]);
-        $this->assertEquals('customers/create', $webhookSubcription[0]->getParameters()['name']);
+        $applicationInstall = $this->createApplication();
+        $dto                = $this->application->getWebhookUnsubscribeRequestDto($applicationInstall, '759136321675');
+
+        self::assertEquals('https://hana1.myshopify.com/admin/api/2020-01/webhooks/759136321675.json', $dto->getUri());
     }
 
     /**
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shopify\ShopifyApplication::processWebhookSubscribeResponse
+     *
      * @throws Exception
      */
     public function testProcessWebhookSubscribeResponse(): void
     {
         $response = $this->application->processWebhookSubscribeResponse(
-            new ResponseDto(200, '', '{"webhook": {"id": 726666666866}}', []),
+            new ResponseDto(200, '', (string) file_get_contents(__DIR__ . '/data/createWebhookResponse.json'), []),
             new ApplicationInstall()
         );
-        $this->assertEquals('726666666866', $response);
+        self::assertEquals('1047897672', $response);
     }
 
     /**
-     *
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shopify\ShopifyApplication::processWebhookUnsubscribeResponse
      */
     public function testProcessWebhookUnsubscribeResponse(): void
     {
         $response = $this->application->processWebhookUnsubscribeResponse(
             new ResponseDto(200, '', '', [])
         );
-        $this->assertEquals(200, $response);
+        self::assertEquals(200, $response);
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->application = self::$container->get('hbpf.application.shopify');
+    }
+
+    /**
+     * @return ApplicationInstall
+     * @throws Exception
+     */
+    private function createApplication(): ApplicationInstall
+    {
+        $applicationInstall = DataProvider::getBasicAppInstall($this->application->getKey());
+
+        $applicationInstall->setSettings(
+            [
+                BasicApplicationInterface::AUTHORIZATION_SETTINGS =>
+                    [
+                        BasicApplicationInterface::USER     => self::ESHOP_NAME,
+                        BasicApplicationInterface::PASSWORD => self::PASSWORD,
+                    ],
+            ]
+        );
+        $this->pf($applicationInstall);
+
+        return $applicationInstall;
     }
 
 }
