@@ -98,6 +98,8 @@ class RepeaterListener implements EventSubscriberInterface, LoggerAwareInterface
             ['currentHop' => $currentHop, 'interval' => $e->getInterval(), 'maxHops' => $maxHop]
         );
 
+        $dto->addHeader(PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE), $e->getMessage());
+
         $response = new Response($dto->getData(), 200, $dto->getHeaders());
         $event->setResponse($response);
         $event->allowCustomResponseCode();
