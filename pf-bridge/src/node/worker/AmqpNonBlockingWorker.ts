@@ -1,5 +1,5 @@
 import {Message as AmqpMessage} from "amqplib";
-import {Connection} from "amqplib-plus/dist/lib/Connection";
+import {Connection} from "amqplib-plus";
 import logger from "../../logger/Logger";
 import Headers from "../../message/Headers";
 import JobMessage, {IResult} from "../../message/JobMessage";

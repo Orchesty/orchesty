@@ -2,10 +2,9 @@ import { assert } from "chai";
 import "mocha";
 
 import {Channel, Message} from "amqplib";
-import {Connection} from "amqplib-plus/dist/lib/Connection";
-import {Publisher} from "amqplib-plus/dist/lib/Publisher";
-import {SimpleConsumer} from "amqplib-plus/dist/lib/SimpleConsumer";
+import {Connection, Publisher} from "amqplib-plus";
 import {amqpConnectionOptions, mongoStorageOptions, persistentQueues} from "../../src/config";
+import {SimpleConsumer} from "../../src/consumer/SimpleConsumer";
 import Headers from "../../src/message/Headers";
 import Repeater, {IRepeaterSettings} from "../../src/repeater/Repeater";
 import MongoMessageStorage from "../../src/repeater/storage/MongoMessageStorage";

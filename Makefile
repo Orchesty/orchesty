@@ -1,5 +1,5 @@
 TEST=make test && make docker-down-clean
-VENDOR=rm -rf vendor
+VENDOR=rm -rf vendor && rm -rf var
 DOCKER=make docker-up-force
 INSTALL=docker-compose exec -T app composer global require hirak/prestissimo
 COMPOSER=make composer-update

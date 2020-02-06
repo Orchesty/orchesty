@@ -1,6 +1,5 @@
 import {Channel, Options} from "amqplib";
-import {Connection} from "amqplib-plus/dist/lib/Connection";
-import {Publisher} from "amqplib-plus/dist/lib/Publisher";
+import {Connection, Publisher} from "amqplib-plus";
 import logger from "../../../logger/Logger";
 import CounterMessage from "../../../message/CounterMessage";
 import Headers from "../../../message/Headers";
@@ -83,6 +82,9 @@ class CounterPublisher extends Publisher implements ICounterPublisher {
             message.getResult().message,
             followers,
             message.getMultiplier(),
+            message.getResult().code,
+            message.getRequest(),
+            message.getResponse()
         );
 
         const opts: Options.Publish = {

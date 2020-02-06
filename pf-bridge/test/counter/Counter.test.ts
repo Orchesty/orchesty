@@ -2,10 +2,9 @@ import {assert} from "chai";
 import "mocha";
 
 import {Channel, Message} from "amqplib";
-import {Connection} from "amqplib-plus/dist/lib/Connection";
-import {Publisher} from "amqplib-plus/dist/lib/Publisher";
-import {SimpleConsumer} from "amqplib-plus/dist/lib/SimpleConsumer";
+import {Connection, Publisher} from "amqplib-plus";
 import {amqpConnectionOptions, persistentQueues, redisStorageOptions} from "../../src/config";
+import {SimpleConsumer} from "../../src/consumer/SimpleConsumer";
 import {default as Counter, ICounterSettings} from "../../src/counter/Counter";
 import {ICounterProcessInfo} from "../../src/counter/CounterProcess";
 import Distributor from "../../src/counter/distributor/Distributor";
@@ -22,7 +21,7 @@ const metricsMock = {
 };
 
 const runCounterTest = async (counter: Counter, testOutputQueue: any, done: any) => {
-    const events: Array<[{}, {}]> = [
+    const events: any = [
         // Test Job 123 - linear success
         //
         //  SUCCESS - SUCCESS - SUCCESS
@@ -342,8 +341,8 @@ const runCounterTest = async (counter: Counter, testOutputQueue: any, done: any)
     consumer.consume(testOutputQueue.name, testOutputQueue.options);
 
     await counter.start();
-    const promises: Array<Promise<any>> = [];
-    events.forEach((ev) => {
+    const promises: Promise<any>[] = [];
+    events.forEach((ev: any) => {
         promises.push(
             publisher.sendToQueue(
                 counter.getSettings().sub.queue.name,

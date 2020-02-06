@@ -10,7 +10,7 @@ import {ITopologyConfig} from "../topology/Configurator";
 const SIGTERM_TIMEOUT = 5000;
 
 process.on("unhandledRejection", (err) => {
-    logger.error("Unhandled rejection", {error: err});
+    logger.error("Unhandled rejection", {error: err as Error});
     process.exit(1);
 });
 
@@ -90,7 +90,7 @@ const main = async () => {
         // Force hard exit after timeout
         setTimeout(() => { process.exit(0); }, SIGTERM_TIMEOUT);
 
-        const stopProms: Array<Promise<void>> = [];
+        const stopProms: Promise<void>[] = [];
         toStop.forEach((svc: IStoppable) => {
             stopProms.push(svc.stop());
         });
