@@ -48,14 +48,15 @@ class HbPFConnectorsExtension extends Extension implements PrependExtensionInter
         $loader->load('hubspot.yaml');
         $loader->load('mailchimp.yaml');
         $loader->load('nutshell.yaml');
+        $loader->load('pipedrive.yaml');
+        $loader->load('quickbooks.yaml');
+        $loader->load('salesforce.yaml');
         $loader->load('shipstation.yaml');
         $loader->load('shopify.yaml');
-        $loader->load('pipedrive.yaml');
-        $loader->load('salesforce.yaml');
+        $loader->load('shoptet.yaml');
         $loader->load('wisepops.yaml');
         $loader->load('zendesk.yaml');
         $loader->load('zoho.yaml');
-        $loader->load('shoptet.yaml');
     }
 
 }

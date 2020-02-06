@@ -1,0 +1,8 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf.application.quickbooks:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\Quickbooks\QuickbooksApplication
+        arguments:
+            - '@hbpf.providers.oauth2_provider'

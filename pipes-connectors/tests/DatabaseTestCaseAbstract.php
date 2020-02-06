@@ -4,6 +4,7 @@ namespace HbPFConnectorsTests;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
+use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
 use Symfony\Component\HttpFoundation\Session\Session;
 
 /**
@@ -13,6 +14,8 @@ use Symfony\Component\HttpFoundation\Session\Session;
  */
 abstract class DatabaseTestCaseAbstract extends KernelTestCaseAbstract
 {
+
+    use PrivateTrait;
 
     /**
      * @var DocumentManager
