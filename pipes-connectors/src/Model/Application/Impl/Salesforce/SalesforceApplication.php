@@ -96,12 +96,10 @@ final class SalesforceApplication extends OAuth2ApplicationAbstract
      */
     public function getSettingsForm(): Form
     {
-        $form = new Form();
-        $form->addField(new Field(Field::TEXT, OAuth2ApplicationInterface::CLIENT_ID, 'Client Id', NULL, TRUE));
-        $form->addField(new Field(Field::TEXT, OAuth2ApplicationInterface::CLIENT_SECRET, 'Client Secret', NULL, TRUE));
-        $form->addField(new Field(Field::TEXT, SalesforceApplication::INSTANCE_NAME, 'Instance Name', NULL, TRUE));
-
-        return $form;
+        return (new Form())
+            ->addField(new Field(Field::TEXT, OAuth2ApplicationInterface::CLIENT_ID, 'Client Id', NULL, TRUE))
+            ->addField(new Field(Field::TEXT, OAuth2ApplicationInterface::CLIENT_SECRET, 'Client Secret', NULL, TRUE))
+            ->addField(new Field(Field::TEXT, SalesforceApplication::INSTANCE_NAME, 'Instance Name', NULL, TRUE));
     }
 
     /**
