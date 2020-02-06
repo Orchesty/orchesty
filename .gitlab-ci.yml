@@ -256,7 +256,7 @@ pf-bridge-test:
     - docker-compose pull
     - docker-compose up -d
     - docker-compose exec -T test npm run lint
-    - docker-compose exec -T test bash -c 'while ! nc -z rabbitmq 5672; do sleep 1; done'
+    - docker-compose exec -T test sh -c 'while [ $(curl -s -o /dev/null -w "%{http_code}" http://guest:guest@rabbitmq:15672/api/overview) == 000 ]; do sleep 1; done'
     - docker-compose exec -T test npm run testunit
     - docker-compose exec -T test npm run testintegration
 
