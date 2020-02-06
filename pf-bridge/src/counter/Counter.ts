@@ -1,6 +1,5 @@
 import {Channel, Message, Options} from "amqplib";
-import {Connection} from "amqplib-plus/dist/lib/Connection";
-import {Publisher} from "amqplib-plus/dist/lib/Publisher";
+import {Connection, Publisher} from "amqplib-plus";
 import {IMetrics} from "metrics-sender/dist/lib/metrics/IMetrics";
 import IStoppable from "../IStoppable";
 import logger from "../logger/Logger";
@@ -62,6 +61,9 @@ export default class Counter implements ICounter, IStoppable {
             content.result.message,
             parseInt(content.route.following, 10),
             parseInt(content.route.multiplier, 10),
+            content.result.originalCode,
+            content.result.request,
+            content.result.response,
         );
     }
 
@@ -303,11 +305,17 @@ export default class Counter implements ICounter, IStoppable {
         headers.setPFHeader(Headers.PARENT_ID, "");
         headers.setPFHeader(Headers.PROCESS_ID, process.parent_id);
 
-        const result = process.success === true ? ResultCode.SUCCESS : ResultCode.CHILD_PROCESS_ERROR;
-
-        const parentCm = new CounterMessage(cm.getNodeLabel(), headers.getRaw(), result, "sub-process evaluated", 0, 1);
-
-        return await this.updateProcessInfo(parentCm);
+        return await this.updateProcessInfo(new CounterMessage(
+            cm.getNodeLabel(),
+            headers.getRaw(),
+            process.success === true ? ResultCode.SUCCESS : ResultCode.CHILD_PROCESS_ERROR,
+            cm.getResultMsg(),
+            0,
+            1,
+            cm.getOriginalResultCode(),
+            cm.getRequest(),
+            cm.getResponse(),
+        ));
     }
 
     /**

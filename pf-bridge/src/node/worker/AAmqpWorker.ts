@@ -1,7 +1,5 @@
 import {Channel, Message as AmqpMessage} from "amqplib";
-import {Connection} from "amqplib-plus/dist/lib/Connection";
-import {Publisher} from "amqplib-plus/dist/lib/Publisher";
-import {SimpleConsumer} from "amqplib-plus/dist/lib/SimpleConsumer";
+import {Connection, Publisher} from "amqplib-plus";
 import {Container} from "hb-utils/dist/lib/Container";
 import * as uuid4 from "uuid/v4";
 import logger from "../../logger/Logger";
@@ -10,6 +8,7 @@ import JobMessage from "../../message/JobMessage";
 import {ResultCode} from "../../message/ResultCode";
 import {INodeLabel} from "../../topology/Configurator";
 import AWorker from "./AWorker";
+import {SimpleConsumer} from "../../consumer/SimpleConsumer";
 
 export interface IAmqpWorkerSettings {
     node_label: INodeLabel;

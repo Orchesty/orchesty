@@ -1,4 +1,4 @@
-import {ILogger} from "amqplib-plus/dist/lib/ILogger";
+import {ILogger} from "amqplib-plus/dist/ILogger";
 import {Sender} from "metrics-sender/dist/lib/udp/Sender";
 import * as os from "os";
 import {loggerOptions} from "../config";

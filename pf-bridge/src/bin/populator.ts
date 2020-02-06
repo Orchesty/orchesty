@@ -1,5 +1,5 @@
 import {Channel} from "amqplib";
-import {Publisher} from "amqplib-plus/dist/lib/Publisher";
+import {Publisher} from "amqplib-plus";
 import * as fs from "fs";
 import logger from "../logger/Logger";
 import {IAmqpFaucetSettings} from "../node/faucet/AmqpFaucet";
