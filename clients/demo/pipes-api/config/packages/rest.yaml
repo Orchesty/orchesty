@@ -15,7 +15,7 @@ rest:
             headers: ['Content-Type', 'OrderBy', 'Filter', 'Page', 'Limit']
             credentials: TRUE
         '^/':
-            origin: []
+            origin: ['*']
             methods: []
             headers: []
             credentials: FALSE

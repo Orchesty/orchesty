@@ -156,9 +156,7 @@ final class ShoptetGetEshopInfoTest extends DatabaseTestCaseAbstract
         $this->setProperty(
             $this->connector,
             'sender',
-            $this->prepareSender(
-                static fn() => new ResponseDto(200, 'Created', $jsonContent, self::HEADERS)
-            )
+            $this->prepareSender(static fn() => new ResponseDto(200, 'Created', $jsonContent, self::HEADERS))
         );
     }
 

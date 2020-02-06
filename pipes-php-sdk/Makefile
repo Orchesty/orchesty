@@ -46,10 +46,10 @@ phpintegration:
 	$(DE) vendor/bin/phpunit -c vendor/hanaboso/php-check-utils/phpunit.xml.dist tests/Integration
 
 phpcoverage:
-	$(DE) php vendor/bin/paratest -c vendor/hanaboso/php-check-utils/phpunit.xml.dist -p 8 --coverage-html var/coverage --whitelist src tests
+	$(DE) vendor/bin/paratest -c vendor/hanaboso/php-check-utils/phpunit.xml.dist -p 8 --coverage-html var/coverage --whitelist src tests
 
 phpcoverage-ci:
-	$(DE) vendor/hanaboso/php-check-utils/bin/coverage.sh -c
+	$(DE) vendor/hanaboso/php-check-utils/bin/coverage.sh
 
 phpmanual-up:
 	cd tests/Manual; $(MAKE) docker-up-force;

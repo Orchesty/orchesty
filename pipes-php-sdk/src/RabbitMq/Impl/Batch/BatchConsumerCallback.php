@@ -350,11 +350,10 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
      */
     private function batchAction(AMQPMessage $message, AMQPChannel $channel, LoopInterface $loop): PromiseInterface
     {
-        return $this->batchAction->batchAction(
-            $message,
-            $loop,
-            fn(SuccessMessage $successMessage) => $this->itemCallback($channel, $message, $successMessage)
-        )->then(fn() => $this->batchCallback($channel, $message));
+        $callback = fn(SuccessMessage $successMessage) => $this->itemCallback($channel, $message, $successMessage);
+
+        return $this->batchAction->batchAction($message, $loop, $callback)
+            ->then(fn() => $this->batchCallback($channel, $message));
     }
 
     /**

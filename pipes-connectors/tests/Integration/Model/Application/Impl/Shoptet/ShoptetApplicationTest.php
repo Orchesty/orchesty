@@ -419,20 +419,20 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
      */
     private function mockSender(string $jsonContent): void
     {
+        $callback = static fn(): ResponseDto => new ResponseDto(
+            200,
+            'api token',
+            $jsonContent,
+            [
+                'pf-user'        => 'user',
+                'pf-application' => ShoptetApplication::SHOPTET_KEY,
+            ]
+        );
+
         $this->setProperty(
             self::$container->get('hbpf.application.shoptet'),
             'sender',
-            $this->prepareSender(
-                static fn(): ResponseDto => new ResponseDto(
-                    200,
-                    'api token',
-                    $jsonContent,
-                    [
-                        'pf-user'        => 'user',
-                        'pf-application' => ShoptetApplication::SHOPTET_KEY,
-                    ]
-                )
-            )
+            $this->prepareSender($callback)
         );
     }
 

@@ -54,12 +54,16 @@ abstract class BatchActionAbstract implements BatchActionInterface, LoggerAwareI
      */
     public function batchAction(AMQPMessage $message, LoopInterface $loop, callable $itemCallBack): PromiseInterface
     {
+        $callback = fn(BatchInterface $node) => $node->processBatch(
+            $this->createProcessDto($message),
+            $loop,
+            $itemCallBack
+        );
+
         return $this
             ->validateHeaders($message)
             ->then(fn(string $serviceName) => $this->getBatchService($serviceName))
-            ->then(
-                fn(BatchInterface $node) => $node->processBatch($this->createProcessDto($message), $loop, $itemCallBack)
-            );
+            ->then($callback);
     }
 
     /**

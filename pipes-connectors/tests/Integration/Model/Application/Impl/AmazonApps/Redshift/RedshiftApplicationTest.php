@@ -172,25 +172,25 @@ final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
      */
     public function testSetApplicationInstall(): void
     {
-        /** @var RedshiftClient|MockObject $client */
-        $client = self::createPartialMock(RedshiftClient::class, ['__call']);
-        $client->method('__call')->willReturnCallback(
-            static fn(): Result => new Result(
-                [
-                    'Clusters' => [
-                        [
-                            'ClusterIdentifier' => '',
-                            'MasterUsername'    => '',
-                            'DBName'            => '',
-                            'Endpoint'          => [
-                                'Address' => '',
-                                'Port'    => '',
-                            ],
+        $callback = static fn(): Result => new Result(
+            [
+                'Clusters' => [
+                    [
+                        'ClusterIdentifier' => '',
+                        'MasterUsername'    => '',
+                        'DBName'            => '',
+                        'Endpoint'          => [
+                            'Address' => '',
+                            'Port'    => '',
                         ],
                     ],
-                ]
-            )
+                ],
+            ]
         );
+
+        /** @var RedshiftClient|MockObject $client */
+        $client = self::createPartialMock(RedshiftClient::class, ['__call']);
+        $client->method('__call')->willReturnCallback($callback);
 
         /** @var RedshiftApplication|MockObject $innerApplication */
         $innerApplication = self::createPartialMock(RedshiftApplication::class, ['getRedshiftClient']);

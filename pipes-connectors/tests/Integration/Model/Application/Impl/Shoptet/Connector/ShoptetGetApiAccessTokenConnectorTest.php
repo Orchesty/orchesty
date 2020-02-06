@@ -123,21 +123,21 @@ final class ShoptetGetApiAccessTokenConnectorTest extends DatabaseTestCaseAbstra
      */
     private function mockSender(): void
     {
+        $callback = static fn() => new ResponseDto(
+            200,
+            '',
+            '{"data":"data"}',
+            [
+                'Authorization' => sprintf('Bearer %s', '___access_token__'),
+                'Content-Type'  => 'application/json',
+                'Accept'        => 'application/json',
+            ]
+        );
+
         $this->setProperty(
             $this->connector,
             'sender',
-            $this->prepareSender(
-                static fn() => new ResponseDto(
-                    200,
-                    '',
-                    '{"data":"data"}',
-                    [
-                        'Authorization' => sprintf('Bearer %s', '___access_token__'),
-                        'Content-Type'  => 'application/json',
-                        'Accept'        => 'application/json',
-                    ]
-                )
-            )
+            $this->prepareSender($callback)
         );
     }
 
