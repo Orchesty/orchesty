@@ -29,21 +29,6 @@ final class ShopifyApplication extends BasicApplicationAbstract implements Webho
     public const  SHOPIFY_VERSION = '2020-01';
 
     /**
-     * @var CurlManager
-     */
-    private CurlManager $sender;
-
-    /**
-     * ShopifyApplication constructor.
-     *
-     * @param CurlManager $sender
-     */
-    public function __construct(CurlManager $sender)
-    {
-        $this->sender = $sender;
-    }
-
-    /**
      * @return string
      */
     public function getApplicationType(): string
@@ -202,7 +187,8 @@ final class ShopifyApplication extends BasicApplicationAbstract implements Webho
      */
     private function getPassword(ApplicationInstall $applicationInstall): string
     {
-        return $applicationInstall->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::PASSWORD];
+        return $applicationInstall->getSettings(
+        )[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::PASSWORD];
     }
 
     /**

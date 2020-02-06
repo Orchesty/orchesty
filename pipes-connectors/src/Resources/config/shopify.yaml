@@ -4,5 +4,3 @@ services:
 
     hbpf.application.shopify:
         class: Hanaboso\HbPFConnectors\Model\Application\Impl\Shopify\ShopifyApplication
-        arguments:
-            - '@hbpf.transport.curl_manager'
