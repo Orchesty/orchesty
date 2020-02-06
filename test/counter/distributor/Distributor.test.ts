@@ -24,7 +24,7 @@ const createSyncObj = (): ISyncObject => {
         "pf-node-id": "test_node_4",
         "pf-node-name": "test_node_name_4",
     });
-    const cm = new CounterMessage(label, headers.getRaw(), ResultCode.SUCCESS);
+    const cm = new CounterMessage(label, headers.getRaw(), ResultCode.SUCCESS, "", 0, 1, ResultCode.SUCCESS);
     const p = new Promise((resolve, reject) => {
         res = resolve;
         rej = reject;

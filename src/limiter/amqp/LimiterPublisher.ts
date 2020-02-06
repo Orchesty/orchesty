@@ -1,6 +1,5 @@
 import {Channel, Options} from "amqplib";
-import {Connection} from "amqplib-plus/dist/lib/Connection";
-import {Publisher} from "amqplib-plus/dist/lib/Publisher";
+import {Connection, Publisher} from "amqplib-plus";
 import Headers from "../../message/Headers";
 import JobMessage from "../../message/JobMessage";
 import {ILimiterSettings} from "../Limiter";

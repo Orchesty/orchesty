@@ -2,9 +2,7 @@ import { assert } from "chai";
 import "mocha";
 
 import {Channel, Message, Options} from "amqplib";
-import {Connection} from "amqplib-plus/dist/lib/Connection";
-import {Publisher} from "amqplib-plus/dist/lib/Publisher";
-import {SimpleConsumer} from "amqplib-plus/dist/lib/SimpleConsumer";
+import {Connection, Publisher} from "amqplib-plus";
 import {amqpConnectionOptions} from "../../../src/config";
 import Headers from "../../../src/message/Headers";
 import JobMessage from "../../../src/message/JobMessage";
@@ -14,6 +12,7 @@ import IPartialForwarder from "../../../src/node/drain/IPartialForwarder";
 import {IAmqpWorkerSettings, IWaiting} from "../../../src/node/worker/AAmqpWorker";
 import AmqpNonBlockingWorker from "../../../src/node/worker/AmqpNonBlockingWorker";
 import {INodeLabel} from "../../../src/topology/Configurator";
+import {SimpleConsumer} from "../../../src/consumer/SimpleConsumer";
 
 const conn = new Connection(amqpConnectionOptions);
 

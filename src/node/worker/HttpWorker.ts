@@ -80,6 +80,11 @@ class HttpWorker extends AWorker {
                     return reject([msg]);
                 }
 
+                const {method, url, body: requestBody, headers: requestHeaders} = reqParams;
+                const {statusCode: status, body: responseBody, headers: innerResponseHeaders} = response;
+                msg.setRequest({method, url, body: requestBody, headers: requestHeaders});
+                msg.setResponse({status, body: responseBody, headers: innerResponseHeaders});
+
                 const responseHeaders: any = response.headers;
                 try {
                     Headers.validateMandatoryHeaders(responseHeaders);

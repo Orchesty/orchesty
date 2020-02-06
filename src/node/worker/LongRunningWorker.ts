@@ -1,6 +1,5 @@
 import { Channel } from "amqplib";
-import { Connection } from "amqplib-plus/dist/lib/Connection";
-import { Publisher } from "amqplib-plus/dist/lib/Publisher";
+import { Connection, Publisher } from "amqplib-plus";
 import { Agent } from "http";
 import { IMetrics } from "metrics-sender/dist/lib/metrics/IMetrics";
 import * as request from "request";

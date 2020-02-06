@@ -1,5 +1,4 @@
-import {AssertionPublisher} from "amqplib-plus/dist/lib/AssertPublisher";
-import {Connection} from "amqplib-plus/dist/lib/Connection";
+import {AssertionPublisher, Connection} from "amqplib-plus";
 import {Container} from "hb-utils/dist/lib/Container";
 import {Metrics} from "metrics-sender/dist/lib/metrics/Metrics";
 import {MongoMetrics} from "./mongo-metrics/MongoMetrics";

@@ -10,6 +10,19 @@ export interface IResult {
     message: string;
 }
 
+export interface IRequest {
+    method: string;
+    url: string;
+    body: string;
+    headers: any;
+}
+
+export interface IResponse {
+    status: number;
+    body: string;
+    headers: any;
+}
+
 /**
  * Class representing the flowing message through the node
  */
@@ -20,6 +33,8 @@ class JobMessage extends AMessage implements IMessage {
     private measurement: Measurement;
     private multiplier: number;
     private forwardSelf: boolean;
+    private request?: IRequest;
+    private response?: IResponse;
 
     /**
      *
@@ -123,6 +138,34 @@ class JobMessage extends AMessage implements IMessage {
      */
     public getMeasurement(): Measurement {
         return this.measurement;
+    }
+
+    /**
+     *
+     */
+    public getRequest(): IRequest {
+        return this.request;
+    }
+
+    /**
+     * @param {IRequest} request
+     */
+    public setRequest(request: IRequest): any {
+        this.request = request;
+    }
+
+    /**
+     *
+     */
+    public getResponse(): IResponse {
+        return this.response;
+    }
+
+    /**
+     * @param {IResponse} response
+     */
+    public setResponse(response: IResponse): any {
+        this.response = response;
     }
 
 }

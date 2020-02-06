@@ -2,14 +2,13 @@ import { assert } from "chai";
 import "mocha";
 
 import {Channel, Message} from "amqplib";
-import {Connection} from "amqplib-plus/dist/lib/Connection";
-import {Publisher} from "amqplib-plus/dist/lib/Publisher";
-import {SimpleConsumer} from "amqplib-plus/dist/lib/SimpleConsumer";
+import {Connection, Publisher} from "amqplib-plus";
 import * as bodyParser from "body-parser";
 import * as express from "express";
 import {TimeUtils} from "hb-utils/dist/lib/TimeUtils";
 import {persistentQueues} from "../../src/config";
 import * as config from "../../src/config";
+import {SimpleConsumer} from "../../src/consumer/SimpleConsumer";
 import {ICounterProcessInfo} from "../../src/counter/CounterProcess";
 import Headers from "../../src/message/Headers";
 import {ResultCode} from "../../src/message/ResultCode";

@@ -1,9 +1,8 @@
 import {Channel, Message, Options} from "amqplib";
-import {AssertionPublisher} from "amqplib-plus/dist/lib/AssertPublisher";
-import {Connection, createChannelCallback} from "amqplib-plus/dist/lib/Connection";
-import {SimpleConsumer} from "amqplib-plus/dist/lib/SimpleConsumer";
+import {AssertionPublisher, Connection, createChannelCallback} from "amqplib-plus";
 import {ObjectUtils} from "hb-utils/dist/lib/ObjectUtils";
 import {persistentQueues} from "../config";
+import {SimpleConsumer} from "../consumer/SimpleConsumer";
 import IStoppable from "../IStoppable";
 import Headers from "../message/Headers";
 import logger from "./../logger/Logger";

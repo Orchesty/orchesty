@@ -1,10 +1,14 @@
 import {default as CounterMessage} from "../message/CounterMessage";
+import {IRequest, IResponse} from "../message/JobMessage";
 import {ResultCode} from "../message/ResultCode";
 
 interface ICounterLog {
     resultCode: ResultCode;
+    originalResultCode: ResultCode;
     node: string;
     message: string;
+    request?: IRequest;
+    response?: IResponse;
 }
 
 export interface ICounterProcessInfo {
@@ -75,9 +79,14 @@ class CounterProcess {
         }
 
         processInfo.total = processInfo.total + (cm.getMultiplier() * cm.getFollowing());
-
-        const log: ICounterLog = {node: cm.getNodeId(), resultCode: cm.getResultCode(), message: cm.getResultMsg()};
-        processInfo.messages.push(log);
+        processInfo.messages.push({
+            node: cm.getNodeId(),
+            resultCode: cm.getResultCode(),
+            originalResultCode: cm.getOriginalResultCode(),
+            message: cm.getResultMsg(),
+            request: cm.getRequest(),
+            response: cm.getResponse(),
+        });
 
         return processInfo;
     }

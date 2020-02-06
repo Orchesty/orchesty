@@ -1,7 +1,7 @@
 import { assert } from "chai";
 import "mocha";
 
-import {AssertionPublisher} from "amqplib-plus/dist/lib/AssertPublisher";
+import {AssertionPublisher} from "amqplib-plus";
 import * as mock from "ts-mockito";
 import {persistentMessages} from "../../../src/config";
 import Headers from "../../../src/message/Headers";

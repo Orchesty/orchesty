@@ -2,12 +2,10 @@ import { assert } from "chai";
 import "mocha";
 
 import {Channel, Message} from "amqplib";
-import {Connection} from "amqplib-plus/dist/lib/Connection";
-import {Publisher} from "amqplib-plus/dist/lib/Publisher";
-import {SimpleConsumer} from "amqplib-plus/dist/lib/SimpleConsumer";
+import {Connection, Publisher} from "amqplib-plus";
 import * as config from "../../src/config";
-import {redisStorageOptions} from "../../src/config";
-import {persistentQueues} from "../../src/config";
+import {persistentQueues, redisStorageOptions} from "../../src/config";
+import {SimpleConsumer} from "../../src/consumer/SimpleConsumer";
 import {ICounterProcessInfo} from "../../src/counter/CounterProcess";
 import RedisStorage from "../../src/counter/storage/RedisStorage";
 import {ResultCode} from "../../src/message/ResultCode";

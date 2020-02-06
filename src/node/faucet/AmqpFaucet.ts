@@ -1,5 +1,5 @@
 import {Channel} from "amqplib";
-import {Connection} from "amqplib-plus/dist/lib/Connection";
+import {Connection} from "amqplib-plus";
 import logger from "../../logger/Logger";
 import {INodeLabel} from "../../topology/Configurator";
 import Consumer from "./amqp/AMQPConsumer";
@@ -65,8 +65,8 @@ class AmqpFaucet implements IFaucet {
                 ch.prefetch(s.prefetch),
             ]);
 
-            const ok = results[0];
-            const ex = results[1];
+            const ok = results[0] as any;
+            const ex = results[1] as any;
 
             return ch.bindQueue(ok.queue, ex.exchange, s.routing_key);
         };

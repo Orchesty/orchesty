@@ -1,6 +1,5 @@
 import { Channel, Message } from "amqplib";
-import {Connection} from "amqplib-plus/dist/lib/Connection";
-import { Consumer as BasicConsumer } from "amqplib-plus/dist/lib/Consumer";
+import {Connection, Consumer as BasicConsumer} from "amqplib-plus";
 import logger from "../../../logger/Logger";
 import {MessageType} from "../../../message/AMessage";
 import Headers from "../../../message/Headers";

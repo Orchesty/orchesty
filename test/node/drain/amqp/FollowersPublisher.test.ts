@@ -2,8 +2,7 @@ import { assert } from "chai";
 import "mocha";
 
 import {Channel, Message} from "amqplib";
-import {Connection} from "amqplib-plus/dist/lib/Connection";
-import {SimpleConsumer} from "amqplib-plus/dist/lib/SimpleConsumer";
+import {Connection} from "amqplib-plus";
 import {amqpConnectionOptions, persistentMessages} from "../../../../src/config";
 import Headers from "../../../../src/message/Headers";
 import JobMessage from "../../../../src/message/JobMessage";
@@ -11,6 +10,7 @@ import {ResultCode} from "../../../../src/message/ResultCode";
 import FollowersPublisher from "../../../../src/node/drain/amqp/FollowersPublisher";
 import {IAmqpDrainSettings} from "../../../../src/node/drain/AmqpDrain";
 import {INodeLabel} from "../../../../src/topology/Configurator";
+import {SimpleConsumer} from "../../../../src/consumer/SimpleConsumer";
 
 const conn = new Connection(amqpConnectionOptions);
 const settings: IAmqpDrainSettings = {

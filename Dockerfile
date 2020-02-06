@@ -1,6 +1,6 @@
-FROM node:10
+FROM node:10-alpine
 
-RUN apt-get update && apt-get install -y netcat vim nano
+RUN apk update --no-cache && apk upgrade --no-cache && apk add --no-cache nano netcat-openbsd vim
 
 COPY . /srv/app
 

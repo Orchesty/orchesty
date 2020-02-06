@@ -2,10 +2,11 @@ import {INodeLabel} from "../topology/Configurator";
 import AMessage, {MessageType} from "./AMessage";
 import Headers from "./Headers";
 import IMessage from "./IMessage";
+import {IRequest, IResponse} from "./JobMessage";
 import {ResultCode} from "./ResultCode";
 
 interface ICounterMessageContent {
-    result: { code: ResultCode, message: string };
+    result: { code: ResultCode, originalCode: ResultCode, message: string, request?: IRequest, response?: IResponse; };
     route: { following: number, multiplier: number };
 }
 
@@ -18,6 +19,9 @@ class CounterMessage extends AMessage implements IMessage {
         private resultMsg: string = "",
         private following: number = 0,
         private multiplier: number = 1,
+        private originalResultCode: ResultCode,
+        private request?: IRequest,
+        private response?: IResponse,
     ) {
         super(node, headers, Buffer.from(""));
 
@@ -57,6 +61,20 @@ class CounterMessage extends AMessage implements IMessage {
 
     /**
      *
+     */
+    public getRequest(): IRequest | undefined {
+        return this.request;
+    }
+
+    /**
+     *
+     */
+    public getResponse(): IResponse | undefined {
+        return this.response;
+    }
+
+    /**
+     *
      * @return {string}
      */
     public getResultMsg(): string {
@@ -72,13 +90,24 @@ class CounterMessage extends AMessage implements IMessage {
     }
 
     /**
+     *
+     * @return {ResultCode}
+     */
+    public getOriginalResultCode(): ResultCode {
+        return this.originalResultCode;
+    }
+
+    /**
      * @return {string}
      */
     public getContent(): string {
         const content: ICounterMessageContent = {
             result: {
                 code: this.resultCode,
+                originalCode: this.originalResultCode,
                 message: this.resultMsg,
+                request: this.request,
+                response: this.response,
             },
             route: {
                 following: this.following,

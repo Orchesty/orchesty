@@ -1,4 +1,4 @@
-import {IConnectionOptions} from "amqplib-plus/dist/lib/Connection";
+import {IConnectionOptions} from "amqplib-plus";
 import {IRedisStorageSettings} from "./counter/storage/RedisStorage";
 import {ILimiterSettings} from "./limiter/Limiter";
 import {IProbeSettings} from "./probe/Probe";
