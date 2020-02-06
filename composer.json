@@ -27,14 +27,5 @@
     },
     "require-dev": {
         "hanaboso/php-check-utils": "^1.1"
-    },
-    "replace": {
-        "ralouphie/getallheaders": "*",
-        "symfony/polyfill-ctype": "*",
-        "symfony/polyfill-iconv": "*",
-        "symfony/polyfill-intl-idn": "*",
-        "symfony/polyfill-mbstring": "*",
-        "symfony/polyfill-php72": "*",
-        "symfony/polyfill-php73": "*"
     }
 }
