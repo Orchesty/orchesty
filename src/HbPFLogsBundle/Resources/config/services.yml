@@ -16,7 +16,7 @@ services:
 
     elastica.client:
         class: Elastica\Client
-        factory: Happyr\ElasticaDsn\ClientFactory::create
+        factory: Hanaboso\PipesFramework\Logs\ElasticaClientFactory::create
         arguments:
             - '%elasticsearch_dsn%'
 

@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1cec457773f67857cba9aceb88743996",
+    "content-hash": "833f2b9c24603b060f4b2f04361faa41",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.133.8",
+            "version": "3.133.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "c564fcccd5fc7b5e8514d1cbe35558be1e3a11cd"
+                "reference": "59e059bd6d25d315a03cdad10b79102df5cb0a1b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/c564fcccd5fc7b5e8514d1cbe35558be1e3a11cd",
-                "reference": "c564fcccd5fc7b5e8514d1cbe35558be1e3a11cd",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/59e059bd6d25d315a03cdad10b79102df5cb0a1b",
+                "reference": "59e059bd6d25d315a03cdad10b79102df5cb0a1b",
                 "shasum": ""
             },
             "require": {
@@ -88,7 +88,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2020-02-05T19:12:47+00:00"
+            "time": "2020-02-06T19:11:31+00:00"
         },
         {
             "name": "aws/aws-sdk-php-symfony",
@@ -2219,16 +2219,16 @@
         },
         {
             "name": "hanaboso/utils",
-            "version": "1.0.13",
+            "version": "1.0.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/utils.git",
-                "reference": "12a3e37651e616b9a503217e774bfcb71caa0b39"
+                "reference": "7e68801085f28b04b0a7b3e15fe3f78c9cb99350"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/utils/zipball/12a3e37651e616b9a503217e774bfcb71caa0b39",
-                "reference": "12a3e37651e616b9a503217e774bfcb71caa0b39",
+                "url": "https://api.github.com/repos/hanaboso/utils/zipball/7e68801085f28b04b0a7b3e15fe3f78c9cb99350",
+                "reference": "7e68801085f28b04b0a7b3e15fe3f78c9cb99350",
                 "shasum": ""
             },
             "require": {
@@ -2268,47 +2268,7 @@
                     "role": "Developer"
                 }
             ],
-            "time": "2020-01-22T07:26:36+00:00"
-        },
-        {
-            "name": "happyr/elastica-dsn",
-            "version": "0.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Happyr/elastica-dsn.git",
-                "reference": "773b00675061622a68dd680bd85f2211acf883ee"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Happyr/elastica-dsn/zipball/773b00675061622a68dd680bd85f2211acf883ee",
-                "reference": "773b00675061622a68dd680bd85f2211acf883ee",
-                "shasum": ""
-            },
-            "require": {
-                "ruflin/elastica": "^6.1"
-            },
-            "require-dev": {
-                "nyholm/nsa": "^1.1",
-                "phpunit/phpunit": "^8.2"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Happyr\\ElasticaDsn\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Nyholm",
-                    "email": "tobias.nyholm@gmail.com"
-                }
-            ],
-            "description": "DSN support to ruflin/Elastica",
-            "time": "2019-08-08T15:58:25+00:00"
+            "time": "2020-02-06T15:53:01+00:00"
         },
         {
             "name": "influxdb/influxdb-php",
@@ -10119,16 +10079,16 @@
         },
         {
             "name": "slevomat/coding-standard",
-            "version": "6.1.4",
+            "version": "6.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/slevomat/coding-standard.git",
-                "reference": "49e60216bd467dece2b414ca5cc91298cd5afa45"
+                "reference": "d767b5e302ff096327466c97fec3cb57f6d16086"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/slevomat/coding-standard/zipball/49e60216bd467dece2b414ca5cc91298cd5afa45",
-                "reference": "49e60216bd467dece2b414ca5cc91298cd5afa45",
+                "url": "https://api.github.com/repos/slevomat/coding-standard/zipball/d767b5e302ff096327466c97fec3cb57f6d16086",
+                "reference": "d767b5e302ff096327466c97fec3cb57f6d16086",
                 "shasum": ""
             },
             "require": {
@@ -10138,9 +10098,9 @@
             },
             "require-dev": {
                 "dealerdirect/phpcodesniffer-composer-installer": "0.6.2",
-                "jakub-onderka/php-parallel-lint": "1.0.0",
+                "grogy/php-parallel-lint": "1.1.0",
                 "phing/phing": "2.16.3",
-                "phpstan/phpstan": "0.11.19|0.12.8",
+                "phpstan/phpstan": "0.11.19|0.12.9",
                 "phpstan/phpstan-phpunit": "0.11.2|0.12.6",
                 "phpstan/phpstan-strict-rules": "0.11.1|0.12.2",
                 "phpunit/phpunit": "7.5.18|8.5.2"
@@ -10156,7 +10116,7 @@
                 "MIT"
             ],
             "description": "Slevomat Coding Standard for PHP_CodeSniffer complements Consistence Coding Standard by providing sniffs with additional checks.",
-            "time": "2020-02-03T21:40:44+00:00"
+            "time": "2020-02-05T21:17:34+00:00"
         },
         {
             "name": "spaze/phpstan-disallowed-calls",

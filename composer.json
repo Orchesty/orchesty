@@ -28,8 +28,8 @@
         "hanaboso/rabbit-mq-bundle": "^1.3",
         "hanaboso/rest-bundle": "^1.0",
         "hanaboso/user-bundle": "^1.3",
-        "happyr/elastica-dsn": "^0.1",
         "influxdb/influxdb-php": "^1.15",
+        "ruflin/elastica": "^6.1",
         "symfony/serializer": "^5.0"
     },
     "require-dev": {
