@@ -88,6 +88,17 @@ class ControllerExceptionListener implements EventSubscriberInterface, LoggerAwa
 
         $response = $this->getErrorResponse($e, 200);
         $response->headers->add(PipesHeaders::clear($event->getRequest()->headers->all()));
+
+        if (in_array(get_class($e), [ConnectorException::class], TRUE)) {
+            /** @var ConnectorException $exception */
+            $exception = $e;
+            $dto       = $exception->getProcessDto();
+
+            if ($dto) {
+                $response->headers->add(PipesHeaders::clear($dto->getHeaders()));
+            }
+        }
+
         $response->headers->set(PipesHeaders::createKey(PipesHeaders::RESULT_CODE), '1006');
 
         $event->setResponse($response);
