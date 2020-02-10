@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1032cc77949bc817c160074ac310ee7e",
+    "content-hash": "e7965495f6e3e93a8ec62f5af04abd6d",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -2045,11 +2045,11 @@
         },
         {
             "name": "hanaboso/pipes-php-sdk",
-            "version": "1.2.3",
+            "version": "1.2.4",
             "dist": {
                 "type": "path",
                 "url": "../pipes-php-sdk",
-                "reference": "1a12468c2d0a2748ca3222922cd015978ce4c80b"
+                "reference": "98b7dbd542d235be4869dd4324b1f18198f19d61"
             },
             "require": {
                 "ext-json": "*",
