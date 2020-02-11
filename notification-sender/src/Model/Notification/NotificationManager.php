@@ -102,6 +102,7 @@ final class NotificationManager implements LoggerAwareInterface
     {
         $data = array_merge($data, $data[self::PIPE] ?? []);
         unset($data[self::PIPE]);
+        $this->dm->clear();
 
         foreach ($this->handlers as $handler) {
             $class = get_class($handler);

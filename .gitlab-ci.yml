@@ -93,6 +93,16 @@ limiter-image:
     - master
     - ci
 
+notification-sender-image:
+  stage: stage1
+  script:
+    - cd $REPO_ROOT/notification-sender
+    - make build TAG=${CI_BUILD_REF_NAME}
+  only:
+    - dev
+    - master
+    - ci
+
 logstash-build:
     stage: stage1
     script:
