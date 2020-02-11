@@ -29,7 +29,10 @@ final class EmailNotificationHandler extends EmailHandlerAbstract
      */
     public function process(array $data): EmailDto
     {
-        return new EmailDto('no-reply@hanaboso.com', 'Something gone terribly wrong', Json::encode($data));
+        $subject = $data[self::SUBJECT] ?? 'Something gone terribly wrong';
+        unset($data[self::SUBJECT]);
+
+        return new EmailDto('no-reply@hanaboso.com', $subject, Json::encode($data));
     }
 
 }

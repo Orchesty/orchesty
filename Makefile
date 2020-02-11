@@ -3,7 +3,7 @@
 DC=docker-compose
 DE=docker-compose exec -T app
 IMAGE=dkr.hanaboso.net/pipes/notification-sender
-BASE=hanabosocom/php-dev:php-7.4
+PHP_DEV=hanabosocom/php-base:php-7.4-alpine
 
 .env:
 	sed -e "s/{DEV_UID}/$(shell id -u)/g" \
@@ -22,6 +22,13 @@ docker-compose.ci.yml:
 	sed -r 's/^(\s+ports:)$$/#\1/g; s/^(\s+- \$$\{DEV_IP\}.*)$$/#\1/g' docker-compose.yml > docker-compose.ci.yml
 
 # Docker
+build: .env docker-compose.ci.yml
+	docker pull $(PHP_DEV)
+	docker-compose -f docker-compose.ci.yml run --rm --no-deps app \
+		bash -c "composer install --ignore-platform-reqs --no-dev && rm -rf ./var/* && php bin/console cache:warmup --env=prod"
+	docker build -t $(IMAGE):${TAG} .
+	docker push $(IMAGE):${TAG}
+
 docker-up-force: .env
 	$(DC) pull
 	$(DC) up -d --force-recreate --remove-orphans

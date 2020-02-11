@@ -13,6 +13,8 @@ use Hanaboso\NotificationSender\Model\Notification\Dto\EmailDto;
 abstract class EmailHandlerAbstract
 {
 
+    public const SUBJECT = 'subject';
+
     /**
      * @return string
      */
