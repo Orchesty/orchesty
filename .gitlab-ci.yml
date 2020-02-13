@@ -252,7 +252,7 @@ demo-pipes-api-test:
     - cd $REPO_ROOT/$DIR
     - export COMPOSE_PROJECT_NAME="p${CI_PIPELINE_ID}-demo-pipes-api" # CLEANUP bundles
     - export COMPOSE_FILE=docker-compose.ci.yml                       # CLEANUP bundles
-    - make ${COMPOSE_FILE} test
+    - make ${COMPOSE_FILE} test docker-down-clean
 
 pf-bridge-test:
   stage: stage2

@@ -53,7 +53,7 @@ phplive:
 
 init: docker-up-force composer-install
 
-test: init fasttest docker-down-clean
+test: init fasttest
 
 fasttest: clear-cache phpcodesniffer phpstan phpintegration phpcontroller phpcoverage-ci
 

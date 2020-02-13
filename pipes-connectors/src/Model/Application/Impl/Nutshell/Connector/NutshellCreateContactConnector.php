@@ -7,6 +7,7 @@ use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
+use Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\NutshellApplication;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
@@ -25,8 +26,6 @@ final class NutshellCreateContactConnector extends ConnectorAbstract
 {
 
     use ProcessEventNotSupportedTrait;
-
-    public const BASE_URL = 'http://app.nutshell.com/api/v1/json';
 
     /**
      * @var CurlManagerInterface
@@ -80,7 +79,7 @@ final class NutshellCreateContactConnector extends ConnectorAbstract
             $this->getApplication()->getRequestDto(
                 $applicationInstall,
                 CurlManager::METHOD_POST,
-                self::BASE_URL,
+                NutshellApplication::BASE_URL,
                 Json::encode($data)
             )
         );
