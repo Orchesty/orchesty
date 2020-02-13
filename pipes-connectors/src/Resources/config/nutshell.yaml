@@ -4,3 +4,11 @@ services:
 
     hbpf.application.nutshell:
         class: Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\NutshellApplication
+
+    hbpf.connector.nutshell-create-contact:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\Connector\NutshellCreateContactConnector
+        arguments:
+            - '@hbpf.transport.curl_manager'
+            - '@doctrine_mongodb.odm.default_document_manager'
+        calls:
+            - ['setApplication', ['@hbpf.application.nutshell']]

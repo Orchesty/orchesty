@@ -4,6 +4,7 @@ namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Nutshell;
 
 use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\NutshellApplication;
 use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
@@ -25,6 +26,10 @@ final class NutshellApplicationTest extends DatabaseTestCaseAbstract
     private $application;
 
     /**
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\NutshellApplication::getRequestDto
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\NutshellApplication::getToken
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\NutshellApplication::getKey
+     *
      * @throws Exception
      */
     public function testAuthorization(): void
@@ -34,13 +39,13 @@ final class NutshellApplicationTest extends DatabaseTestCaseAbstract
 
         $dto = $this->application->getRequestDto(
             $applicationInstall,
-            'POST',
-            'http://api.nutshell.com/v1/json',
+            CurlManager::METHOD_POST,
+            'http://app.nutshell.com/api/v1/json',
             '{"id": "apeye", "method": "getLead", "params": { "leadId": 1000 }, "data":{"username": "user@user.com"} }'
         );
 
         self::assertEquals('POST', $dto->getMethod());
-        self::assertEquals('http://api.nutshell.com/v1/json', $dto->getUriString());
+        self::assertEquals('http://app.nutshell.com/api/v1/json', $dto->getUriString());
         self::assertEquals(
             '{"id": "apeye", "method": "getLead", "params": { "leadId": 1000 }, "data":{"username": "user@user.com"} }',
             $dto->getBody()
@@ -48,39 +53,32 @@ final class NutshellApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\NutshellApplication::getApplicationType
      */
     public function testGetApplicationType(): void
     {
-        self::assertEquals(
-            ApplicationTypeEnum::CRON,
-            $this->application->getApplicationType()
-        );
+        self::assertEquals(ApplicationTypeEnum::CRON, $this->application->getApplicationType());
     }
 
     /**
-     *
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\NutshellApplication::getName
      */
     public function testName(): void
     {
-        self::assertEquals(
-            'Nutshell',
-            $this->application->getName()
-        );
+        self::assertEquals('Nutshell', $this->application->getName());
     }
 
     /**
-     *
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\NutshellApplication::getDescription
      */
     public function testGetDescription(): void
     {
-        self::assertEquals(
-            'Nutshell v1',
-            $this->application->getDescription()
-        );
+        self::assertEquals('Nutshell v1', $this->application->getDescription());
     }
 
     /**
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\NutshellApplication::getSettingsForm
+     *
      * @throws Exception
      */
     public function testGetSettingsForm(): void

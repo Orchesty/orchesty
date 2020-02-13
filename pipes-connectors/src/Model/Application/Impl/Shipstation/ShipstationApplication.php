@@ -201,10 +201,8 @@ final class ShipstationApplication extends BasicApplicationAbstract implements W
         return base64_encode(
             sprintf(
                 '%s:%s',
-                $applicationInstall->getSettings(
-                )[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationAbstract::USER],
-                $applicationInstall->getSettings(
-                )[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationAbstract::PASSWORD]
+                $applicationInstall->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationAbstract::USER],
+                $applicationInstall->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationAbstract::PASSWORD]
             )
         );
     }

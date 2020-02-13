@@ -1,0 +1,10 @@
+{
+    "jsonrpc": "2.0",
+    "method": "newContact",
+    "params": {
+        "contact": {
+            "name": "New Account Name"
+        }
+    },
+    "id": "apeye"
+}

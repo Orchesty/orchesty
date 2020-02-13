@@ -20,9 +20,6 @@ use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 final class NutshellApplication extends BasicApplicationAbstract
 {
 
-    public const BASE_URL     = 'http://app.nutshell.com/api/v1/json';
-    public const NUTSHELL_URL = 'http://api.nutshell.com/v1/json';
-
     /**
      * @return string
      */
@@ -92,13 +89,9 @@ final class NutshellApplication extends BasicApplicationAbstract
      */
     public function getSettingsForm(): Form
     {
-        $form        = new Form();
-        $field       = new Field(Field::TEXT, BasicApplicationAbstract::USER, 'Username', NULL, TRUE);
-        $fieldSecret = new Field(Field::TEXT, BasicApplicationAbstract::PASSWORD, 'API Key', NULL, TRUE);
-        $form->addField($field);
-        $form->addField($fieldSecret);
-
-        return $form;
+        return (new Form())
+            ->addField(new Field(Field::TEXT, BasicApplicationAbstract::USER, 'Username', NULL, TRUE))
+            ->addField(new Field(Field::TEXT, BasicApplicationAbstract::PASSWORD, 'API Key', NULL, TRUE));
     }
 
     /**
@@ -111,10 +104,8 @@ final class NutshellApplication extends BasicApplicationAbstract
         return base64_encode(
             sprintf(
                 '%s:%s',
-                $applicationInstall->getSettings(
-                )[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationAbstract::USER],
-                $applicationInstall->getSettings(
-                )[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationAbstract::PASSWORD]
+                $applicationInstall->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationAbstract::USER],
+                $applicationInstall->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationAbstract::PASSWORD]
             )
         );
     }
