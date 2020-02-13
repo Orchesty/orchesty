@@ -4,7 +4,8 @@ namespace Demo\Connector;
 
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
-use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
+use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessActionNotSupportedTrait;
+use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessEventNotSupportedTrait;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\SuccessMessage;
 use Hanaboso\Utils\String\Json;
@@ -20,38 +21,15 @@ use function React\Promise\resolve;
 final class BatchConnector extends ConnectorAbstract implements BatchInterface
 {
 
+    use ProcessActionNotSupportedTrait;
+    use ProcessEventNotSupportedTrait;
+
     /**
      * @return string
      */
     public function getId(): string
     {
         return 'batch';
-    }
-
-    /**
-     * @param ProcessDto $dto
-     *
-     * @return ProcessDto
-     * @throws ConnectorException
-     */
-    public function processAction(ProcessDto $dto): ProcessDto
-    {
-        $dto;
-
-        throw new ConnectorException(sprintf("Connector '%s': No support for Action!", $this->getId()));
-    }
-
-    /**
-     * @param ProcessDto $dto
-     *
-     * @return ProcessDto
-     * @throws ConnectorException
-     */
-    public function processEvent(ProcessDto $dto): ProcessDto
-    {
-        $dto;
-
-        throw new ConnectorException(sprintf("Connector '%s': No support for Event!", $this->getId()));
     }
 
     /**
@@ -64,6 +42,7 @@ final class BatchConnector extends ConnectorAbstract implements BatchInterface
     public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
     {
         $loop;
+
         $messages = Json::decode($dto->getData())['messages'] ?? 10;
 
         for ($i = 0; $i < $messages; $i++) {

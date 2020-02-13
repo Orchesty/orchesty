@@ -22,31 +22,40 @@ composer-install:
 composer-update:
 	$(DEC) update --no-suggest
 
+composer-outdated:
+	$(DE) composer outdated
+
 clear-cache:
 	$(DE) rm -rf var/log
 	$(DE) php bin/console cache:clear --env=test
 	$(DE) php bin/console cache:warmup --env=test
 
-codesniffer:
-	$(DE) php ./vendor/bin/phpcs --standard=./ruleset.xml src/ tests/
+phpcodesniffer:
+	$(DE) php ./vendor/bin/phpcs --standard=./tests/ruleset.xml src tests
 
 phpstan:
-	$(DE) php ./vendor/bin/phpstan analyse -c ./phpstan.neon -l 8 src/ tests/
-
-phpcontroller:
-	$(DE) php ./vendor/bin/phpunit -c phpunit.xml.dist --colors tests/Controller
+	$(DE) php ./vendor/bin/phpstan analyse -c ./tests/phpstan.neon -l 8 src tests
 
 phpintegration:
-	$(DE) php ./vendor/bin/phpunit -c phpunit.xml.dist --colors tests/Integration
+	$(DE) php ./vendor/bin/phpunit -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist --colors tests/Integration
+
+phpcontroller:
+	$(DE) php ./vendor/bin/phpunit -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist --colors tests/Controller
+
+phpcoverage:
+	$(DE) ./vendor/bin/paratest -c vendor/hanaboso/php-check-utils/phpunit.xml.dist -p 4 --coverage-html var/coverage --whitelist src tests
+
+phpcoverage-ci:
+	$(DE) ./vendor/hanaboso/php-check-utils/bin/coverage.sh -c 50
 
 phplive:
-	$(DE) php ./vendor/bin/phpunit -c phpunit.xml.dist --colors tests/Live
+	$(DE) ./vendor/bin/phpunit -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist tests/Live
 
 init: docker-up-force composer-install
 
 test: init fasttest docker-down-clean
 
-fasttest: clear-cache codesniffer phpstan phpintegration phpcontroller
+fasttest: clear-cache phpcodesniffer phpstan phpintegration phpcontroller phpcoverage-ci
 
 docker-compose.ci.yml:
 	# Comment out any port forwarding

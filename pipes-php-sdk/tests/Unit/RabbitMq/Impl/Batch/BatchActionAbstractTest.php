@@ -82,7 +82,9 @@ final class BatchActionAbstractTest extends KernelTestCaseAbstract
 
                     $loop->stop();
                 },
-                static function (Throwable $throwable): void {
+                static function (Throwable $throwable) use ($loop): void {
+                    $loop->stop();
+
                     self::fail(sprintf('%s%s%s', $throwable->getMessage(), PHP_EOL, $throwable->getTraceAsString()));
                 }
             )->done();

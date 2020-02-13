@@ -27,7 +27,6 @@ class SendDutyEmail extends CustomNodeAbstract
         'pavlicek.m@hanaboso.com',
         'husak.j@hanaboso.com',
         'jirsa.r@hanaboso.com',
-        'prochazka.t@hanaboso.com',
         'krecl.v@hanaboso.com',
         'info@hanaboso.com',
     ];
@@ -109,8 +108,7 @@ class SendDutyEmail extends CustomNodeAbstract
         $since =
             $date['since'] ?? DateTimeUtils::getUtcDateTime('first day of last month')->format(DateTimeUtils::DATE);
         $till  =
-            $date['until'] ?? DateTimeUtils::getUtcDateTime('first day of this month')
-                ->modify('+ 1 day')
+            $date['until'] ?? DateTimeUtils::getUtcDateTime('first day of this month')->modify('+ 1 day')
                 ->format(DateTimeUtils::DATE);
 
         return sprintf('%s %s — %s', self::SUBJECT, $since, $till);

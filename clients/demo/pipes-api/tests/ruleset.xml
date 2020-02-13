@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<ruleset name="HANABOSO_DEMO_CODESTYLE">
+    <rule ref="./vendor/hanaboso/php-check-utils/ruleset.xml"/>
+    <rule ref="SlevomatCodingStandard.Files.TypeNameMatchesFileName">
+        <properties>
+            <property name="rootNamespaces" type="array">
+                <element key="src" value="Demo"/>
+                <element key="tests" value="DemoTests"/>
+            </property>
+        </properties>
+    </rule>
+</ruleset>

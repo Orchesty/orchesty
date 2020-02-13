@@ -1,30 +1,26 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Controller;
+namespace DemoTests\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\HttpFoundation\Response;
+use Demo\Controller\DefaultController;
+use DemoTests\KernelTestCaseAbstract;
 
 /**
  * Class DefaultControllerTest
  *
- * @package Tests\Controller
+ * @package DemoTests\Controller
  */
-final class DefaultControllerTest extends WebTestCase
+final class DefaultControllerTest extends KernelTestCaseAbstract
 {
 
     /**
-     *
+     * @covers \Demo\Controller\DefaultController::indexAction
      */
     public function testIndex(): void
     {
-        $client = self::createClient();
-        $client->request('GET', '/');
-
-        /** @var Response $response */
-        $response = $client->getResponse();
-        self::assertEquals(401, $response->getStatusCode());
-        self::assertNotEmpty($response->getContent());
+        $controller = new DefaultController();
+        $response   = $controller->indexAction();
+        self::assertEquals(200, $response->getStatusCode());
     }
 
 }

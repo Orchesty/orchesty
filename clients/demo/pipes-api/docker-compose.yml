@@ -20,6 +20,7 @@ services:
             FRONTEND_HOST: ${DEV_IP}
             METRICS_SERVICE: influx
             COMPOSER_HOME: ${HOME}/dev/.composer
+            KERNEL_CLASS: Demo\Kernel
         volumes:
             - ../../../:/var/www/pipes
             - ${SSH_AUTH_SOCK}:${SSH_AUTH}

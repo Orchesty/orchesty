@@ -1,5 +1,5 @@
 includes:
-	- vendor/hanaboso/php-check-utils/phpstan.neon
+	- ../vendor/hanaboso/php-check-utils/phpstan.neon
 
 parameters:
 	symfony:

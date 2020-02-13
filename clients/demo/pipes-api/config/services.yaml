@@ -113,7 +113,14 @@ services:
         class: Demo\CustomNode\SplitFileBatch2
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.rabbit_mq.connection'
             - '@rabbit_mq.publisher.test_batch'
+
+    hbpf.rabbit_mq.connection:
+        class: RabbitMqBundle\Connection\Connection
+        arguments:
+            - 'default'
+            - '@rabbit_mq.client_factory'
 
     # LongRunningNode
     hbpf.long_running.time-stamper:

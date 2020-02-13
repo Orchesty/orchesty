@@ -35,8 +35,6 @@ class SplitFileBatch extends CustomNodeAbstract implements BatchInterface
         $data = Json::decode($dto->getData());
 
         if (array_key_exists('data', $data)) {
-            $data = Json::decode($data['data']);
-
             $datetime = DateTimeUtils::getUtcDateTime();
             if ($datetime->getTimestamp() % 2 == 0) {
                 unset($data['bids']);

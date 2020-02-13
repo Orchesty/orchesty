@@ -9,7 +9,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\": "tests/"
+            "DemoTests\\": "tests/"
         }
     },
     "require": {
@@ -28,7 +28,8 @@
         "ratchet/pawl": "^0.3"
     },
     "require-dev": {
-        "hanaboso/php-check-utils": "^1.0"
+        "hanaboso/php-check-utils": "^1.0",
+        "clue/block-react": "^1.2"
     },
     "repositories": [
         {

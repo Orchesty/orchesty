@@ -1,25 +1,30 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Integration;
+namespace DemoTests\Integration;
 
 use Demo\CustomNode\SendDutyEmail;
+use DemoTests\KernelTestCaseAbstract;
 use EmailServiceBundle\Mailer\Mailer;
 use EmailServiceBundle\Transport\TransportInterface;
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\Utils\String\Json;
 use PHPUnit\Framework\MockObject\MockObject;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 /**
  * Class SendDutyEmailTest
  *
- * @package Tests\Integration
+ * @package DemoTests\Integration
  */
-final class SendDutyEmailTest extends KernelTestCase
+final class SendDutyEmailTest extends KernelTestCaseAbstract
 {
 
     /**
+     * @covers \Demo\CustomNode\SendDutyEmail
+     * @covers \Demo\CustomNode\SendDutyEmail::process
+     * @covers \Demo\CustomNode\SendDutyEmail::send
+     * @covers \Demo\CustomNode\SendDutyEmail::getSubject
+     *
      * @throws Exception
      */
     public function testSend(): void
@@ -34,14 +39,6 @@ final class SendDutyEmailTest extends KernelTestCase
             ->setData(Json::encode(['since' => '2019-04-19', 'until' => '2019-04-29']));
 
         self::assertNotEmpty($result->process($dto)->getData());
-    }
-
-    /**
-     *
-     */
-    protected function setUp(): void
-    {
-        self::bootKernel();
     }
 
 }

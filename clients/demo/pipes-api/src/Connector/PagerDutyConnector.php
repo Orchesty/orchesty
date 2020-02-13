@@ -12,6 +12,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
+use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessEventNotSupportedTrait;
 use Hanaboso\Utils\Date\DateTimeUtils;
 use Hanaboso\Utils\Exception\DateTimeException;
 use Hanaboso\Utils\String\Json;
@@ -24,6 +25,8 @@ use JK\Utils\CzechHolidays;
  */
 class PagerDutyConnector extends ConnectorAbstract
 {
+
+    use ProcessEventNotSupportedTrait;
 
     /**
      * @var CurlManagerInterface
@@ -46,19 +49,6 @@ class PagerDutyConnector extends ConnectorAbstract
     public function getId(): string
     {
         return 'pager_duty.schedule';
-    }
-
-    /**
-     * @param ProcessDto $dto
-     *
-     * @return ProcessDto
-     * @throws ConnectorException
-     */
-    public function processEvent(ProcessDto $dto): ProcessDto
-    {
-        $dto;
-
-        throw new ConnectorException(sprintf('Process not event is not implemented for PagerDutyConnector'));
     }
 
     /**
@@ -173,9 +163,8 @@ class PagerDutyConnector extends ConnectorAbstract
         $start = DateTimeUtils::getUtcDateTime($startDay);
         $end   = DateTimeUtils::getUtcDateTime($endDay);
         $diff  = $end->diff($start);
-        $hours = $diff->h;
 
-        return (int) ($hours + ($diff->days * 24));
+        return (int) ($diff->h + ($diff->days * 24));
     }
 
     /**

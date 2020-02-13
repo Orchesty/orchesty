@@ -45,6 +45,16 @@ class DownloaderCommand extends Command
     private $heartbeat;
 
     /**
+     * @var LoopInterface
+     */
+    private LoopInterface $loop;
+
+    /**
+     * @var Connector
+     */
+    private Connector $connector;
+
+    /**
      * DownloaderCommand constructor.
      *
      * @param string      $name
@@ -54,7 +64,9 @@ class DownloaderCommand extends Command
     {
         parent::__construct($name);
 
-        $this->manager = $manager;
+        $this->manager   = $manager;
+        $this->loop      = Factory::create();
+        $this->connector = new Connector($this->loop);
     }
 
     /**
@@ -68,11 +80,9 @@ class DownloaderCommand extends Command
         $input;
         $output->writeln('Downloader start.');
 
-        $loop = Factory::create();
+        $this->connect($this->loop, $output);
 
-        $this->connect($loop, $output);
-
-        $loop->run();
+        $this->loop->run();
 
         return 0;
     }
@@ -83,12 +93,10 @@ class DownloaderCommand extends Command
      */
     private function connect(LoopInterface $loop, OutputInterface $output): void
     {
-        $connector = new Connector($loop);
-
         $uri = 'wss://ws.pusherapp.com/app/de504dc5763aeef9ff52?client=php-ratchet&version=0.0.1&protocol=5';
 
         /** @var ExtendedPromiseInterface $promise */
-        $promise = $connector($uri)
+        $promise = ($this->connector)($uri)
             ->then(
                 function (WebSocket $ws) use ($loop, $output, $uri): void {
                     $this->heartbeat = $loop->addPeriodicTimer(
