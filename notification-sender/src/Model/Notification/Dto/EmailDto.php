@@ -10,17 +10,13 @@ namespace Hanaboso\NotificationSender\Model\Notification\Dto;
 final class EmailDto
 {
 
+    public const EMAIL      = 'email';
     public const EMAILS     = 'emails';
     public const HOST       = 'host';
     public const PORT       = 'port';
     public const USERNAME   = 'username';
     public const PASSWORD   = 'password';
     public const ENCRYPTION = 'encryption';
-
-    /**
-     * @var string
-     */
-    private string $from;
 
     /**
      * @var string
@@ -35,23 +31,13 @@ final class EmailDto
     /**
      * EmailDto constructor.
      *
-     * @param string $from
      * @param string $subject
      * @param string $body
      */
-    public function __construct(string $from, string $subject, string $body)
+    public function __construct(string $subject, string $body)
     {
-        $this->from    = $from;
         $this->subject = $subject;
         $this->body    = $body;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFrom(): string
-    {
-        return $this->from;
     }
 
     /**

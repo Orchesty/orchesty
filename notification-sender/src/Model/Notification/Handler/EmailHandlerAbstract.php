@@ -47,6 +47,7 @@ abstract class EmailHandlerAbstract
             EmailDto::PASSWORD,
             EmailDto::ENCRYPTION,
             EmailDto::EMAILS,
+            EmailDto::EMAIL,
         ];
     }
 
