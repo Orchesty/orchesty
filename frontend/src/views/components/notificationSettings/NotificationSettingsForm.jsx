@@ -73,6 +73,7 @@ class NotificationSettingsChangeForm extends React.Component {
           <Field key="username" name="username" component={FormTextInput} label="Username" />,
           <Field key="password" name="password" component={FormTextInput} label="Password" />,
           <Field key="encryption" name="encryption" component={FormSelectInput} label="Encryption" options={encryptions} />,
+          <Field key="email" name="email" component={FormTextInput} label="Email (sender)" />,
           <Field key="emails" name="emails" component={FormTextAreaInput} rows={10} label="Emails (one per line)" />,
         );
         break;
@@ -99,7 +100,7 @@ class NotificationSettingsChangeForm extends React.Component {
   }
 }
 
-function validate({ type, method, url, host, port, username, password, encryption, emails, vhost, user, queue }) {
+function validate({ type, method, url, host, port, username, password, encryption, email, emails, vhost, user, queue }) {
   const errors = {};
 
   switch (type) {
@@ -132,6 +133,10 @@ function validate({ type, method, url, host, port, username, password, encryptio
 
       if (!encryption) {
         errors.encryption = 'Encryption must be filled!';
+      }
+
+      if (!email) {
+        errors.email = 'Email (sender) must be filled!';
       }
 
       if (!emails) {
