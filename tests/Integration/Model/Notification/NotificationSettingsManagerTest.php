@@ -230,6 +230,7 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
                     EmailDto::PASSWORD   => 'password',
                     EmailDto::ENCRYPTION => 'encryption',
                     EmailDto::EMAILS     => ['one@example.com', 'two@example.com'],
+                    EmailDto::EMAIL      => 'email@example.com',
                 ]
             );
 
@@ -247,6 +248,7 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
                     EmailDto::PASSWORD   => 'password',
                     EmailDto::ENCRYPTION => 'encryption',
                     EmailDto::EMAILS     => ['another-one@example.com', 'another-two@example.com'],
+                    EmailDto::EMAIL      => 'email@example.com',
                     'Unknown'            => 'unknown',
                 ],
             ]
@@ -268,6 +270,7 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
                     EmailDto::PASSWORD   => 'password',
                     EmailDto::ENCRYPTION => 'encryption',
                     EmailDto::EMAILS     => ['another-one@example.com', 'another-two@example.com'],
+                    EmailDto::EMAIL      => 'email@example.com',
                 ],
             ],
             $settings

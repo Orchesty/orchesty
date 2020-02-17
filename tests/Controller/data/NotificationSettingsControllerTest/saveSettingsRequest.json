@@ -14,7 +14,8 @@
             "emails": [
                 "another-one@example.com",
                 "another-two@example.com"
-            ]
+            ],
+            "email": "email@example.com"
         }
     }
 }

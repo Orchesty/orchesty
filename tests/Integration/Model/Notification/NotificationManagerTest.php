@@ -71,6 +71,7 @@ final class NotificationManagerTest extends DatabaseTestCaseAbstract
                         EmailDto::PASSWORD   => 'root',
                         EmailDto::ENCRYPTION => 'null',
                         EmailDto::EMAILS     => ['one@example.com', 'two@example.com'],
+                        EmailDto::EMAIL      => 'email@example.com',
                     ]
                 )
         );

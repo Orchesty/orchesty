@@ -32,7 +32,7 @@ final class EmailSender
         foreach ($settings[EmailDto::EMAILS] as $email) {
             $mailer->send(
                 (new Swift_Message($dto->getSubject(), $dto->getBody()))
-                    ->setFrom($dto->getFrom())
+                    ->setFrom($settings[EmailDto::EMAIL])
                     ->setTo($email)
             );
         }

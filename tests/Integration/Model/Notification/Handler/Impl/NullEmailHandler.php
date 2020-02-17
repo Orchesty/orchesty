@@ -30,7 +30,7 @@ final class NullEmailHandler extends EmailHandlerAbstract
     {
         $data;
 
-        return new EmailDto('email@example.com', 'Subject', 'Body');
+        return new EmailDto('Subject', 'Body');
     }
 
 }

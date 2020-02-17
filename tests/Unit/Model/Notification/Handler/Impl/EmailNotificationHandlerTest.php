@@ -53,6 +53,7 @@ final class EmailNotificationHandlerTest extends KernelTestCaseAbstract
                 EmailDto::PASSWORD,
                 EmailDto::ENCRYPTION,
                 EmailDto::EMAILS,
+                EmailDto::EMAIL,
             ],
             $this->handler->getRequiredSettings()
         );
@@ -64,7 +65,7 @@ final class EmailNotificationHandlerTest extends KernelTestCaseAbstract
     public function testProcess(): void
     {
         self::assertEquals(
-            new EmailDto('no-reply@hanaboso.com', 'Something gone terribly wrong', Json::encode([])),
+            new EmailDto('Something gone terribly wrong', Json::encode([])),
             $this->handler->process([])
         );
     }
