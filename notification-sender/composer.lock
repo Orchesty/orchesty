@@ -5768,16 +5768,16 @@
         },
         {
             "name": "hanaboso/php-check-utils",
-            "version": "1.1.18",
+            "version": "1.1.19",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/php-check-utils.git",
-                "reference": "c8a853a39bb86a5697359fc4764ead62072d1531"
+                "reference": "1008fe324c9f1173bb2e851f3a014509c8d7cd54"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/php-check-utils/zipball/c8a853a39bb86a5697359fc4764ead62072d1531",
-                "reference": "c8a853a39bb86a5697359fc4764ead62072d1531",
+                "url": "https://api.github.com/repos/hanaboso/php-check-utils/zipball/1008fe324c9f1173bb2e851f3a014509c8d7cd54",
+                "reference": "1008fe324c9f1173bb2e851f3a014509c8d7cd54",
                 "shasum": ""
             },
             "require": {
@@ -5834,7 +5834,7 @@
                 }
             ],
             "description": "Utils for php development - CodeSniffer, PhpStan, PhpStorm",
-            "time": "2020-02-13T15:51:34+00:00"
+            "time": "2020-02-17T10:19:49+00:00"
         },
         {
             "name": "myclabs/deep-copy",

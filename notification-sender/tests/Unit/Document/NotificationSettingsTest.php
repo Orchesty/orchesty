@@ -2,8 +2,10 @@
 
 namespace NotificationSenderTests\Unit\Document;
 
+use Exception;
 use Hanaboso\CommonsBundle\Enum\NotificationEventEnum;
 use Hanaboso\NotificationSender\Document\NotificationSettings;
+use Hanaboso\NotificationSender\Model\Notification\Dto\EmailDto;
 use NotificationSenderTests\KernelTestCaseAbstract;
 
 /**
@@ -17,18 +19,21 @@ final class NotificationSettingsTest extends KernelTestCaseAbstract
 {
 
     /**
-     *
+     * @throws Exception
      */
     public function testDocument(): void
     {
         $settings = (new NotificationSettings())
             ->setClass('Class')
             ->setEvents([NotificationEventEnum::ACCESS_EXPIRATION])
-            ->setSettings([]);
+            ->setSettings([EmailDto::EMAILS => ['one@example.com', 'two@example.com']]);
 
         self::assertEquals('Class', $settings->getClass());
         self::assertNotEmpty($settings->getEvents());
-        self::assertEmpty($settings->getSettings());
+        self::assertNotEmpty($settings->getSettings());
+
+        $settings->preFlush();
+        $settings->postLoad();
 
         $settings = $settings->toArray('Type', 'Name');
 
@@ -41,7 +46,7 @@ final class NotificationSettingsTest extends KernelTestCaseAbstract
                 NotificationSettings::TYPE       => 'Type',
                 NotificationSettings::CLASS_NAME => 'Class',
                 NotificationSettings::EVENTS     => [NotificationEventEnum::ACCESS_EXPIRATION],
-                NotificationSettings::SETTINGS   => [],
+                NotificationSettings::SETTINGS   => [EmailDto::EMAILS => ['one@example.com', 'two@example.com']],
             ],
             $settings
         );
