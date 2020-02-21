@@ -5,9 +5,8 @@ package test
 import (
 	"bytes"
 	"context"
+	"github.com/hanaboso/go-mongodb"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -22,19 +21,12 @@ var client *mongo.Client
 const topologyId = "5ddba690ffa5d5261c2d3fe2"
 
 func TestMain(m *testing.M) {
-	var err error
-	client, err = mongo.NewClient(options.Client().ApplyURI(config.Mongo.Host))
-	if err != nil {
-		log.Fatal("MongoDB create client: ", err.Error())
-	}
-	err = client.Connect(context.Background())
-	if err != nil {
-		log.Fatal("MongoDB connect: ", err.Error())
-	}
-	insertTestData(client.Database(config.Mongo.Database))
-	code := m.Run()
+	mongo := &mongodb.Connection{}
+	mongo.Connect(config.Mongo.Dsn)
+
+	insertTestData(mongo.Database)
 	// Don't defer. os.Exit do not call defer.
-	os.Exit(code)
+	os.Exit(m.Run())
 }
 
 func insertTestData(db *mongo.Database) {

@@ -1,17 +1,12 @@
 package storage
 
 import (
-	"context"
-	"time"
-
-	log "github.com/sirupsen/logrus"
+	"github.com/hanaboso/go-mongodb"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.mongodb.org/mongo-driver/mongo/readpref"
-
 	"topology-generator/pkg/config"
 	"topology-generator/pkg/model"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // MongoInterface represents MongoDB database interface
@@ -24,8 +19,7 @@ type MongoInterface interface {
 
 // MongoDefault represents default MongoDB implementation
 type MongoDefault struct {
-	mongo            *mongo.Database
-	keepAlive        *time.Ticker
+	mongo            *mongodb.Connection
 	log              *log.Logger
 	visibilityFilter primitive.E
 	enabledFilter    primitive.E
@@ -40,7 +34,6 @@ var Mongo MongoInterface
 func CreateMongo() *MongoDefault {
 	m := &MongoDefault{
 		mongo:            nil,
-		keepAlive:        time.NewTicker(time.Minute),
 		log:              log.New(),
 		visibilityFilter: primitive.E{Key: "visibility", Value: "public"},
 		enabledFilter:    primitive.E{Key: "enabled", Value: true},
@@ -51,65 +44,26 @@ func CreateMongo() *MongoDefault {
 	return m
 }
 
-func dataSourceName() string {
-	return config.Mongo.Host
-}
-
 // Connect connects to database
 func (m *MongoDefault) Connect() {
-	ds := dataSourceName()
-	client, err := mongo.NewClient(options.Client().ApplyURI(ds))
-	if err != nil {
-		m.log.Errorf("MongoDB connect: %s", err.Error())
-		return
-	}
+	log.Infof("Connecting to MongoDB: %s", config.Mongo.Dsn)
+	connection := &mongodb.Connection{}
+	connection.Connect(config.Mongo.Dsn)
 
-	timeoutDuration := config.Mongo.Timeout * time.Minute
-	innerContext, cancel := createContextWithTimeout()
-	defer cancel()
-
-	err = client.Connect(innerContext)
-	if err != nil {
-		m.log.Errorf("MongoDB connect: %s", err.Error())
-		return
-	}
-
-	ctx, cancelFunc := context.WithTimeout(context.Background(), 10*time.Second)
-
-	defer cancelFunc()
-	e := client.Ping(ctx, readpref.Primary())
-	log.Debugf("Connecting MongoDB ping result: %b...", e)
-	m.mongo = client.Database(config.Mongo.Database)
-	m.keepAlive = time.NewTicker(timeoutDuration)
-
-	go func() {
-		for t := range m.keepAlive.C {
-			m.log.Debugf("MongoDB keep-alive: %s", t)
-			innerContext, cancel := createContextWithTimeout()
-
-			err := m.mongo.Client().Ping(innerContext, nil)
-			if err != nil {
-				m.log.Errorf("MongoDB not connected. Reconnecting in %d seconds.", config.Mongo.Timeout)
-			}
-
-			cancel()
-		}
-	}()
-
-	log.Infof("Connecting MongoDB to %s...", ds)
+	m.mongo = connection
+	log.Info("MongoDB successfully connected!")
 }
 
 // Disconnect disconnects from database
 func (m *MongoDefault) Disconnect() error {
-	innerContext, cancel := createContextWithTimeout()
-	defer cancel()
+	m.mongo.Disconnect()
 
-	return m.mongo.Client().Disconnect(innerContext)
+	return nil
 }
 
 func (m *MongoDefault) FindTopologyByID(id string) (*model.Topology, error) {
 	var topology model.Topology
-	innerContext, cancel := createContextWithTimeout()
+	innerContext, cancel := m.mongo.Context()
 	defer cancel()
 
 	innerTopologyID, err := primitive.ObjectIDFromHex(id)
@@ -124,7 +78,7 @@ func (m *MongoDefault) FindTopologyByID(id string) (*model.Topology, error) {
 		m.deletedFilter,
 	}
 
-	err = m.mongo.Collection(config.Mongo.Topology).FindOne(innerContext, filter).Decode(&topology)
+	err = m.mongo.Database.Collection(config.Mongo.Topology).FindOne(innerContext, filter).Decode(&topology)
 
 	if err != nil {
 		m.log.Warnf("Topology with key '%s' not found.", id)
@@ -138,7 +92,7 @@ func (m *MongoDefault) FindTopologyByID(id string) (*model.Topology, error) {
 func (m *MongoDefault) FindNodesByTopology(id string) ([]model.Node, error) {
 	var nodes []model.Node
 
-	innerContext, cancel := createContextWithTimeout()
+	innerContext, cancel := m.mongo.Context()
 	defer cancel()
 
 	filter := primitive.D{
@@ -146,7 +100,7 @@ func (m *MongoDefault) FindNodesByTopology(id string) ([]model.Node, error) {
 		m.deletedFilter,
 	}
 
-	cursor, err := m.mongo.Collection(config.Mongo.Node).Find(innerContext, filter)
+	cursor, err := m.mongo.Database.Collection(config.Mongo.Node).Find(innerContext, filter)
 
 	if err != nil {
 		m.log.Warnf("Topology with key '%s' not found.", id)
@@ -172,10 +126,4 @@ func (m *MongoDefault) FindNodesByTopology(id string) ([]model.Node, error) {
 
 	return nodes, nil
 
-}
-
-func createContextWithTimeout() (context.Context, context.CancelFunc) {
-	timeoutDuration := config.Mongo.Timeout * time.Second
-
-	return context.WithTimeout(context.Background(), timeoutDuration)
 }

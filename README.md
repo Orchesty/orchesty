@@ -11,6 +11,7 @@ Topology generator se dále stará i o korektní ukončení běžící topologie
 ## Spuštění služby - development
 - `make run` - spustí container definovaný v `docker-compose.yml`
 - `make go-test` - spustí testy
+- `http://127.0.0.33:8080` - Swagger OpenAPI
 
 ## Konfigurační volby
 - DEPLOYMENT_PREFIX

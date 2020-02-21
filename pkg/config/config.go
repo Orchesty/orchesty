@@ -1,23 +1,17 @@
 package config
 
 import (
-	"fmt"
 	"os"
-	"strings"
-	"time"
 
 	"github.com/jinzhu/configor"
-
 	"topology-generator/pkg/model"
 )
 
 type (
 	mongoConfig struct {
-		Host     string        `default:"mongodb://127.0.0.1:27017" env:"MONGO_HOST"`
-		Database string        `default:"demo" env:"MONGO_DATABASE"`
-		Topology string        `default:"Topology" env:"MONGO_TOPOLOGY"`
-		Node     string        `default:"Node" env:"MONGO_NODE"`
-		Timeout  time.Duration `default:"10" env:"MONGO_TIMEOUT"`
+		Dsn      string `default:"" env:"MONGO_DSN"`
+		Topology string `default:"Topology" env:"MONGO_TOPOLOGY"`
+		Node     string `default:"Node" env:"MONGO_NODE"`
 	}
 
 	apiConfig struct {
@@ -57,8 +51,5 @@ func init() {
 	}
 	if err := configor.Load(&c); err != nil {
 		panic(err)
-	}
-	if !strings.HasPrefix(Mongo.Host, "mongodb://") {
-		Mongo.Host = fmt.Sprintf("mongodb://%s/", Mongo.Host)
 	}
 }
