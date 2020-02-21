@@ -494,13 +494,16 @@ services:
     ## BEGIN DEV
     telegraf:
         image: dkr.hanaboso.net/pipes/pipes/rabbitmq-telegraf:dev
+        user: ${DEV_UID}:${DEV_GID}
+        environment:
+            DEV_UID: ${DEV_UID}
+            DEV_GID: ${DEV_GID}
+            APP_DEBUG: 'true'
+            METRICS_SERVICE: influx
+            #METRICS_SERVICE: mongo
+            #MONGO_DSN: mongodb://mongo/metrics?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
         volumes:
             - ../../rabbitmq-telegraf:/rabbitmq-telegraf
-        environment:
-            METRICS_SERVICE: 'influx'
-            #METRICS_SERVICE: 'mongo'
-            #MONGO_DSN: "mongodb://mongo:27017/"
-        command: go run main.go
     ## END DEV
     ## BEGIN STAGE
     #telegraf:

@@ -1,7 +1,3 @@
-temp/
-
-.idea/
 .env
-
-# Built binary file
-rabbitmq-telegraf
+.idea
+var

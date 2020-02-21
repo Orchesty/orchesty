@@ -1,9 +1,10 @@
 package services_test
 
 import (
+	"testing"
+
 	"github.com/stretchr/testify/require"
 	"rabbitmq-telegraf/pkg/services"
-	"testing"
 )
 
 func TestInfluxDbSender_Send(t *testing.T) {
