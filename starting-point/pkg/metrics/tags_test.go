@@ -1,10 +1,11 @@
 package metrics
 
 import (
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"starting-point/pkg/storage"
-	"testing"
 )
 
 func TestGetTags(t *testing.T) {

@@ -4,8 +4,9 @@
 API pro spouštění topologií Pipes Frameworku. Topologie je možné spouštět dle jejich ID a názvů. V případě topologií vyžadujících akci uživatele (human tasků) umožňuje také jejich potvrzení nebo zamítnutí.
 
 ## Spuštění služby - development
-- `make init` - Spustí aplikaci definovanou v `docker-compose.yml`
+- `make init-dev` - Spustí aplikaci definovanou v `docker-compose.yml`
 - `make test` - Spustí testy
+- `http://127.0.0.44:8080` - Swagger OpenAPI
 
 ## Konfigurační volby
 - METRICS_SERVICE
@@ -13,26 +14,14 @@ API pro spouštění topologií Pipes Frameworku. Topologie je možné spouště
     - Výběr úložiště metrik
     - Například: `influx` nebo `mongo`
 
-- MONGO_HOSTNAME
+- MONGO_DSN
     - Povinný: Ano
-    - MongoDB server
-    - Například: `mongodb`
-- MONGO_USERNAME
+    - MongoDB DSN
+    - Například: `mongodb://mongodb/starting-point?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500`
+- MONGO_METRICS_DSN
     - Povinný: Ano
-    - MongoDB uživatelské jméno
-    - Například: `root`
-- MONGO_PASSWORD
-    - Povinný: Ano
-    - MongoDB heslo
-    - Například: `root`
-- MONGO_DATABASE
-    - Povinný: Ano
-    - MongoDB databáze
-    - Například: `starting-point`
-- MONGO_METRICS_DATABASE
-    - Povinný: Ne (výchozí `metrics`)
-    - MongoDB databáze metrik
-    - Například: `metrics`
+    - MongoDB DSN pro metriky
+    - Například: `mongodb://mongodb/metrics?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500`
 - MONGO_TOPOLOGY_COLL
     - Povinný: Ne (výchozí `Topology`)
     - MongoDB kolekce topologií

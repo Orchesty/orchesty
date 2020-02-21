@@ -2,8 +2,10 @@ package rabbitmq
 
 import (
 	"fmt"
-	log "github.com/sirupsen/logrus"
+
 	"github.com/streadway/amqp"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // Publisher represents publisher

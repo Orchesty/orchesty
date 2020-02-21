@@ -1,15 +1,13 @@
 package storage
 
 import (
-	"context"
 	"fmt"
+
+	"github.com/hanaboso/go-mongodb"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"starting-point/pkg/config"
-	"strconv"
-	"time"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -18,6 +16,7 @@ import (
 type MongoInterface interface {
 	Connect()
 	Disconnect() error
+	IsConnected() bool
 	FindNodeByID(nodeID, topologyID, processID string, isHumanTask bool) *Node
 	FindNodeByName(nodeName, topologyID, processID string, isHumanTask bool) []Node
 	FindTopologyByID(topologyID, nodeID, processID string, isHumanTask bool) *Topology
@@ -29,9 +28,8 @@ type MongoInterface interface {
 
 // MongoDefault represents default MongoDB implementation
 type MongoDefault struct {
-	mongo            *mongo.Database
-	metrics          *mongo.Database
-	keepAlive        *time.Ticker
+	mongo            *mongodb.Connection
+	metrics          *mongodb.Connection
 	log              *log.Logger
 	visibilityFilter primitive.E
 	enabledFilter    primitive.E
@@ -56,54 +54,36 @@ func CreateMongo() {
 
 // Connect connects to database
 func (m *MongoDefault) Connect() {
-	client, err := mongo.NewClient(options.Client().ApplyURI(fmt.Sprintf("mongodb://@%s/", config.Config.MongoDB.Hostname)))
-	if err != nil {
-		m.log.Errorf("MongoDB connect: %s", err.Error())
-	}
+	log.Infof("Connecting to MongoDB: %s", config.Config.MongoDB.Dsn)
+	connection := &mongodb.Connection{}
+	connection.Connect(config.Config.MongoDB.Dsn)
 
-	timeout, _ := strconv.Atoi(config.Config.MongoDB.Timeout)
-	timeoutDuration := time.Duration(timeout) * (time.Minute)
-	innerContext, cancel := createContextWithTimeout()
-	defer cancel()
+	log.Infof("Connecting to MongoDB: %s", config.Config.MongoDB.MetricsDsn)
+	metricsConnection := &mongodb.Connection{}
+	metricsConnection.Connect(config.Config.MongoDB.MetricsDsn)
 
-	err = client.Connect(innerContext)
-	if err != nil {
-		m.log.Errorf("MongoDB connect: %s", err.Error())
-	}
+	m.mongo = connection
+	m.metrics = metricsConnection
 
-	m.mongo = client.Database(config.Config.MongoDB.Database)
-	m.metrics = client.Database(config.Config.MongoDB.MetricsDatabase)
-	m.keepAlive = time.NewTicker(timeoutDuration)
-
-	go func() {
-		for t := range m.keepAlive.C {
-			m.log.Debug(fmt.Sprintf("MongoDB keep-alive: %s", t))
-			innerContext, cancel := createContextWithTimeout()
-
-			err := m.mongo.Client().Ping(innerContext, nil)
-			if err != nil {
-				m.log.Errorf("MongoDB not connected. Reconnecting in %d seconds.", timeout)
-			}
-
-			cancel()
-		}
-	}()
-
-	log.Info("Connecting to MongoDB...")
+	log.Info("MongoDB successfully connected!")
 }
 
 // Disconnect disconnects from database
 func (m *MongoDefault) Disconnect() error {
-	innerContext, cancel := createContextWithTimeout()
-	defer cancel()
+	m.mongo.Disconnect()
 
-	return m.mongo.Client().Disconnect(innerContext)
+	return nil
+}
+
+// IsConnected checks connection status
+func (m *MongoDefault) IsConnected() bool {
+	return m.mongo.IsConnected()
 }
 
 // FindNodeByID finds node by id
 func (m *MongoDefault) FindNodeByID(nodeID, topologyID, processID string, isHumanTask bool) *Node {
 	var node Node
-	innerContext, cancel := createContextWithTimeout()
+	innerContext, cancel := m.mongo.Context()
 	defer cancel()
 
 	innerNodeID, err := primitive.ObjectIDFromHex(nodeID)
@@ -113,7 +93,7 @@ func (m *MongoDefault) FindNodeByID(nodeID, topologyID, processID string, isHuma
 		return nil
 	}
 
-	err = m.mongo.Collection(config.Config.MongoDB.NodeColl).FindOne(innerContext, primitive.D{
+	err = m.mongo.Database.Collection(config.Config.MongoDB.NodeColl).FindOne(innerContext, primitive.D{
 		{"_id", innerNodeID},
 		{"topology", topologyID},
 		m.enabledFilter,
@@ -132,10 +112,10 @@ func (m *MongoDefault) FindNodeByID(nodeID, topologyID, processID string, isHuma
 func (m *MongoDefault) FindNodeByName(nodeName, topologyID, processID string, isHumanTask bool) []Node {
 	var node Node
 	var nodes []Node
-	innerContext, cancel := createContextWithTimeout()
+	innerContext, cancel := m.mongo.Context()
 	defer cancel()
 
-	cursor, err := m.mongo.Collection(config.Config.MongoDB.NodeColl).Find(innerContext, primitive.D{
+	cursor, err := m.mongo.Database.Collection(config.Config.MongoDB.NodeColl).Find(innerContext, primitive.D{
 		{"name", nodeName},
 		{"topology", topologyID},
 		m.enabledFilter,
@@ -169,7 +149,7 @@ func (m *MongoDefault) FindNodeByName(nodeName, topologyID, processID string, is
 // FindTopologyByID finds topology by ID
 func (m *MongoDefault) FindTopologyByID(topologyID, nodeID, processID string, isHumanTask bool) *Topology {
 	var topology Topology
-	innerContext, cancel := createContextWithTimeout()
+	innerContext, cancel := m.mongo.Context()
 	defer cancel()
 
 	innerTopologyID, err := primitive.ObjectIDFromHex(topologyID)
@@ -179,7 +159,7 @@ func (m *MongoDefault) FindTopologyByID(topologyID, nodeID, processID string, is
 		return nil
 	}
 
-	err = m.mongo.Collection(config.Config.MongoDB.TopologyColl).FindOne(innerContext, primitive.D{
+	err = m.mongo.Database.Collection(config.Config.MongoDB.TopologyColl).FindOne(innerContext, primitive.D{
 		{"_id", innerTopologyID},
 		m.visibilityFilter,
 		m.enabledFilter,
@@ -203,10 +183,10 @@ func (m *MongoDefault) FindTopologyByID(topologyID, nodeID, processID string, is
 // FindTopologyByName finds topology by name
 func (m *MongoDefault) FindTopologyByName(topologyName, nodeName, processID string, isHumanTask bool) *Topology {
 	var topology Topology
-	innerContext, cancel := createContextWithTimeout()
+	innerContext, cancel := m.mongo.Context()
 	defer cancel()
 
-	cursor, err := m.mongo.Collection(config.Config.MongoDB.TopologyColl).Find(innerContext, primitive.D{
+	cursor, err := m.mongo.Database.Collection(config.Config.MongoDB.TopologyColl).Find(innerContext, primitive.D{
 		{"name", topologyName},
 		m.visibilityFilter,
 		m.enabledFilter,
@@ -248,10 +228,10 @@ func (m *MongoDefault) FindTopologyByName(topologyName, nodeName, processID stri
 // FindTopologyByApplication finds topology by application
 func (m *MongoDefault) FindTopologyByApplication(topologyName, nodeName, token string) (*Topology, *Webhook) {
 	var webhook Webhook
-	innerContext, cancel := createContextWithTimeout()
+	innerContext, cancel := m.mongo.Context()
 	defer cancel()
 
-	err := m.mongo.Collection(config.Config.MongoDB.WebhookColl).FindOne(innerContext, primitive.D{
+	err := m.mongo.Database.Collection(config.Config.MongoDB.WebhookColl).FindOne(innerContext, primitive.D{
 		{"topology", topologyName},
 		{"node", nodeName},
 		{"token", token},
@@ -272,7 +252,7 @@ func (m *MongoDefault) FindTopologyByApplication(topologyName, nodeName, token s
 func (m *MongoDefault) FindHumanTask(nodeID, topologyID, processID string) *HumanTask {
 	var humanTask HumanTask
 
-	innerContext, cancel := createContextWithTimeout()
+	innerContext, cancel := m.mongo.Context()
 	defer cancel()
 
 	var filter = primitive.D{
@@ -283,7 +263,7 @@ func (m *MongoDefault) FindHumanTask(nodeID, topologyID, processID string) *Huma
 		filter = append(filter, primitive.E{Key: "processId", Value: processID})
 	}
 
-	err := m.mongo.Collection(config.Config.MongoDB.HumanTaskColl).FindOne(innerContext, filter).Decode(&humanTask)
+	err := m.mongo.Database.Collection(config.Config.MongoDB.HumanTaskColl).FindOne(innerContext, filter).Decode(&humanTask)
 	if err != nil {
 		logMongoError(m.log, err, fmt.Sprintf("HumanTask with topology '%s', node '%s' and process '%s' not found.", topologyID, nodeID, processID))
 
@@ -295,26 +275,16 @@ func (m *MongoDefault) FindHumanTask(nodeID, topologyID, processID string) *Huma
 
 // SaveMetrics saves metrics
 func (m *MongoDefault) SaveMetrics(doc bson.M) error {
-	innerContext, cancel := createContextWithTimeout()
+	innerContext, cancel := m.mongo.Context()
 	defer cancel()
 
-	err := m.metrics.Client().Ping(innerContext, nil)
-	_ = err
-
-	if _, err := m.metrics.Collection(config.Config.MongoDB.MeasurementColl).InsertOne(innerContext, doc); err != nil {
+	if _, err := m.metrics.Database.Collection(config.Config.MongoDB.MeasurementColl).InsertOne(innerContext, doc); err != nil {
 		logMongoError(m.log, err, "failed to send metrics")
 
 		return err
 	}
 
 	return nil
-}
-
-func createContextWithTimeout() (context.Context, context.CancelFunc) {
-	timeout, _ := strconv.Atoi(config.Config.MongoDB.Timeout)
-	timeoutDuration := time.Duration(timeout) * time.Second
-
-	return context.WithTimeout(context.Background(), timeoutDuration)
 }
 
 func logMongoError(log *log.Logger, err error, content string) {

@@ -200,34 +200,35 @@ services:
 
     ## BEGIN DEV
     starting-point:
-        image: dkr.hanaboso.net/pipes/pipes/starting-point:app-dev
+        image: dkr.hanaboso.net/pipes/pipes/starting-point:dev
+        user: ${DEV_UID}:${DEV_GID}
         environment:
-            APP_DEBUG: "false"
-            GO111MODULE: "on"
-            MONGO_HOSTNAME: mongo
-            MONGO_DATABASE: demo
-            RABBIT_COUNTER_QUEUE_DURABLE: "true"
-            RABBIT_QUEUE_DURABLE: "true"
+            DEV_UID: ${DEV_UID}
+            DEV_GID: ${DEV_GID}
+            APP_DEBUG: 'true'
+            MONGO_DSN: mongodb://mongo/demo?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
+            MONGO_METRICS_DSN: mongodb://mongo/metrics?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
+            RABBIT_COUNTER_QUEUE_DURABLE: 'true'
+            RABBIT_QUEUE_DURABLE: 'true'
             RABBIT_DELIVERY_MODE: 2
-            APP_CLEANUP_TIME: "300"
-        working_dir: /go/src/hanaboso/starting-point
+            APP_CLEANUP_TIME: 300
+            GOROUTINE_LIMIT: 1000
         volumes:
-            - ./../../starting-point/:/go/src/hanaboso/starting-point
+            - ./../../starting-point/:/starting-point
         ports:
             - ${DEV_IP}:8000:80
-        command: go run cmd/starting-point.go
     ## END DEV
     ## BEGIN STAGE
     #starting-point:
-    #  image: dkr.hanaboso.net/pipes/pipes/starting-point:dev
+    #  image: dkr.hanaboso.net/pipes/pipes/starting-point:master
     #  environment:
-    #    APP_DEBUG: "false"
-    #    MONGO_HOSTNAME: mongo
-    #    MONGO_DATABASE: demo
-    #    RABBIT_COUNTER_QUEUE_DURABLE: "true"
-    #    RABBIT_QUEUE_DURABLE: "true"
+    #    MONGO_DSN: mongodb://mongo/demo?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
+    #    MONGO_METRICS_DSN: mongodb://mongo/metrics?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
+    #    RABBIT_COUNTER_QUEUE_DURABLE: 'true'
+    #    RABBIT_QUEUE_DURABLE: 'true'
     #    RABBIT_DELIVERY_MODE: 2
-    #    APP_CLEANUP_TIME: "300"
+    #    APP_CLEANUP_TIME: 300
+    #    GOROUTINE_LIMIT: 1000
     ## END STAGE
 
     repeater:
@@ -330,6 +331,7 @@ services:
         working_dir: /var/www
         environment:
             MONGO_HOST: mongo
+            RABBITMQ_DSN: amqp://rabbitmq:5672
     ## END DEV
     ## BEGIN STAGE
     #notification-sender-consumer:
@@ -337,6 +339,7 @@ services:
     #    command: bash -c 'while ! [ -f vendor/autoload.php ]; do sleep 1; echo "sleep 1"; done; bin/console rabbit_mq:consumer:notification'
     #    environment:
     #      MONGO_HOST: mongo
+    #      RABBITMQ_DSN: amqp://rabbitmq:5672
     ## END STAGE
 
     ## BEGIN DEV

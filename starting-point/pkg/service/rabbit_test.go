@@ -2,16 +2,22 @@ package service
 
 import (
 	"bytes"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"io/ioutil"
 	"net/http"
+	"os"
+	"testing"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"starting-point/pkg/metrics"
 	"starting-point/pkg/storage"
 	"starting-point/pkg/udp"
-	"testing"
 )
 
 func TestRabbit(t *testing.T) {
+	if os.Getenv("GITLAB_CI") == "true" {
+		t.Skip()
+	}
+
 	ConnectToRabbit()
 	udp.ConnectToUDP()
 

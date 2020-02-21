@@ -30,7 +30,7 @@ starting-point-dev-image:
   script:
     - DIR=starting-point
     - cd $DIR
-    - make build-dev-image
+    - make build-dev TAG=dev
   only:
     - dev
     - master
@@ -287,9 +287,8 @@ starting-point:
     - DIR=starting-point
     - skip_unmodified $DIR
     - cd $DIR
-    - make build-image push TAG=${CI_BUILD_REF_NAME}
+    - make build TAG=${CI_BUILD_REF_NAME}
   only:
-    - dev
     - master
 
 rabbitmq-telegraf:
@@ -498,3 +497,10 @@ cleanup:
     - export COMPOSE_FILE=docker-compose.ci.yml
     - make ${COMPOSE_FILE}
     - docker-compose down -v || echo "topology generator cleanup phase failed"
+
+    - ": starting point"
+    - cd $REPO_ROOT/starting-point
+    - export COMPOSE_PROJECT_NAME="starting-point-test_${CI_PIPELINE_ID}"
+    - export COMPOSE_FILE=docker-compose.ci.yml
+    - make ${COMPOSE_FILE}
+    - docker-compose down -v || echo "starting point cleanup phase failed"

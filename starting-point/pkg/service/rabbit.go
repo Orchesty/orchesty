@@ -3,8 +3,9 @@ package service
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/streadway/amqp"
 	"net/http"
+
+	"github.com/streadway/amqp"
 	"starting-point/pkg/config"
 	"starting-point/pkg/metrics"
 	"starting-point/pkg/rabbitmq"

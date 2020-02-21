@@ -2,11 +2,12 @@ package router
 
 import (
 	"bytes"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
+	"testing"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"starting-point/pkg/service"
 	"starting-point/pkg/storage"
-	"testing"
 )
 
 var topology = "Topology"
@@ -61,6 +62,10 @@ type CacheMockTopology struct {
 }
 
 type MongoMockTopology struct {
+	*storage.MongoDefault
+}
+
+type MongoMockConnected struct {
 	*storage.MongoDefault
 }
 
@@ -130,9 +135,15 @@ func (c *MongoMock) FindTopologyByApplication(topologyName, nodeName, token stri
 	return &topologyObject, &webhookObject
 }
 
+func (c *MongoMockConnected) IsConnected() bool {
+	return true
+}
+
 func TestHandleStatus(t *testing.T) {
+	storage.Mongo = &MongoMockConnected{}
+
 	r, _ := http.NewRequest("GET", "/status", nil)
-	assertResponse(t, r, 200, `{"status":"OK"}`)
+	assertResponse(t, r, 200, `{"database":true}`)
 }
 
 func TestHandleRunByID(t *testing.T) {
@@ -142,11 +153,11 @@ func TestHandleRunByID(t *testing.T) {
 	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
 
 	mockCache(1)
-	r, _ = http.NewRequest("POST", "/human-task/topologies/a/nodes/b/run", bytes.NewReader([]byte("[]")))
+	r, _ = http.NewRequest("POST", "/human-tasks/topologies/a/nodes/b/run", bytes.NewReader([]byte("[]")))
 	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
 
 	mockCache(1)
-	r, _ = http.NewRequest("POST", "/human-task/topologies/a/nodes/b/stop", bytes.NewReader([]byte("[]")))
+	r, _ = http.NewRequest("POST", "/human-tasks/topologies/a/nodes/b/stop", bytes.NewReader([]byte("[]")))
 	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
 }
 
@@ -157,11 +168,11 @@ func TestHandleRunByName(t *testing.T) {
 	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
 
 	mockCache(1)
-	r, _ = http.NewRequest("POST", "/human-task/topologies/a/nodes/b/run-by-name", bytes.NewReader([]byte("[]")))
+	r, _ = http.NewRequest("POST", "/human-tasks/topologies/a/nodes/b/run-by-name", bytes.NewReader([]byte("[]")))
 	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
 
 	mockCache(1)
-	r, _ = http.NewRequest("POST", "/human-task/topologies/a/nodes/b/stop-by-name", bytes.NewReader([]byte("[]")))
+	r, _ = http.NewRequest("POST", "/human-tasks/topologies/a/nodes/b/stop-by-name", bytes.NewReader([]byte("[]")))
 	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
 }
 
@@ -293,13 +304,13 @@ func (c *MongoNoMockHumanTask) FindTopologyByName(topologyName, nodeName, proces
 func TestHandleRunByIDHumanTaskNotFound(t *testing.T) {
 	mockCache(4)
 
-	r, _ := http.NewRequest("POST", "/human-task/topologies/a/nodes/b/token/c/run", bytes.NewReader([]byte("[]")))
-	assertResponse(t, r, 404, `{"message":"HumanTask with token 'c' not found!"}`)
+	r, _ := http.NewRequest("POST", "/human-tasks/topologies/a/nodes/b/token/c/run", bytes.NewReader([]byte("[]")))
+	assertResponse(t, r, 404, `{"message":"Human task with token 'c' not found!"}`)
 }
 
 func TestHandleRunByNameHumanTaskNotFound(t *testing.T) {
 	mockCache(4)
 
-	r, _ := http.NewRequest("POST", "/human-task/topologies/a/nodes/b/token/c/run-by-name", bytes.NewReader([]byte("[]")))
+	r, _ := http.NewRequest("POST", "/human-tasks/topologies/a/nodes/b/token/c/run-by-name", bytes.NewReader([]byte("[]")))
 	assertResponse(t, r, 404, `{"message":"Topology with name 'a', node with name 'b' and human task with token 'c' not found!"}`)
 }

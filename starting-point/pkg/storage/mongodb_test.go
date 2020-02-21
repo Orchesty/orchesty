@@ -1,12 +1,13 @@
 package storage
 
 import (
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"starting-point/pkg/config"
-	"testing"
 )
 
 var nodeCollection = "Node"
@@ -26,7 +27,7 @@ func TestMongo(t *testing.T) {
 	defer func() {
 		_ = Mongo.Disconnect()
 	}()
-	data := prepareData(Mongo.(*MongoDefault).mongo)
+	data := prepareData(Mongo.(*MongoDefault).mongo.Database)
 
 	topology := Mongo.FindTopologyByID(data[topologySuccessNodeSuccess][0], data[topologySuccessNodeSuccess][1], "", true)
 	assert.Equal(t, data[topologySuccessNodeSuccess][0], topology.ID.Hex())
