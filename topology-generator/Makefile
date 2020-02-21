@@ -1,33 +1,47 @@
-.PHONY: docker-build docker-push
+DC=docker-compose
+DE=docker-compose exec -T app
+REGISTRY=dkr.hanaboso.net/pipes/pipes
+IMAGE=dkr.hanaboso.net/pipes/pipes/topology-api-v2
 
-DOCKER_DEFAULT_TAG := dev
-DOCKER_REGISTRY := dkr.hanaboso.net/pipes/pipes/
+.env:
+	sed -e 's/{DEV_UID}/$(shell id -u)/g' \
+		-e 's/{DEV_GID}/$(shell id -g)/g' \
+		-e 's/{GITLAB_CI}/$(echo $GITLAB_CI)/g' \
+		.env.dist >> .env; \
+
+build:
+	docker build -t ${IMAGE}:${TAG} .
+	docker push ${IMAGE}:${TAG}
+
+build-dev:
+	docker build -f Dockerfile.dev -t ${IMAGE}:${TAG} .
+	docker push ${IMAGE}:${TAG}
+
+docker-up-force: .env
+	$(DC) pull
+	$(DC) up -d --force-recreate --remove-orphans
+
+docker-down-clean: .env
+	$(DC) down -v
 
 docker-compose.ci.yml:
 	# Comment out any port forwarding
-	sed -r 's/^(\s+ports:)$$/#\1/g; s/^(\s+- \$$\{DEV_IP\}.*)$$/#\1/g' docker-compose.yml > docker-compose.ci.yml
+	sed -r 's/^(\s+ports:)$$/#\1/g; s/^(\s+- \$$\{DEV_IP\}.*)$$/#\1/g; s/^(\s+- \$$\{GOPATH\}.*)$$/#\1/g' docker-compose.yml > docker-compose.ci.yml
 
-docker-build:
-	docker build -t topology-api-v2:$(DOCKER_DEFAULT_TAG) -t $(DOCKER_REGISTRY)topology-api-v2:$(DOCKER_DEFAULT_TAG) -f docker/build/Dockerfile .
- 
-docker-push: docker-build
-	docker push $(DOCKER_REGISTRY)topology-api-v2:$(DOCKER_DEFAULT_TAG)
+init-dev: docker-up-force wait-for-server-start
 
-go-test:
-	gofmt -w cmd pkg
-	go vet ./...
-	go test ./...
+wait-for-server-start:
+	$(DE) /bin/sh -c 'while [ $$(curl -s -o /dev/null -w "%{http_code}" http://localhost/v1/status) == 000 ]; do sleep 1; done'
 
-docker-compose.ci.yml:
-	# Comment out any port forwarding
-	sed -r 's/^(\s+ports:)$$/#\1/g; s/^(\s+- \$$\{DEV_IP\}.*)$$/#\1/g' docker-compose.yml > docker-compose.ci.yml
+lint:
+	$(DE) gofmt -w .
+	$(DE) golint ./...
 
-ci-test:
-	docker-compose up -d --force-recreate
-	docker-compose exec -T topology-generator gofmt -w cmd pkg
-	docker-compose exec -T topology-generator go vet ./...
-	docker-compose exec -T topology-generator go test ./...
+fast-test: lint
+	$(DE) mkdir var || true
+	$(DE) go test -cover -coverprofile var/coverage.out ./... -count=1
+	$(DE) go tool cover -html=var/coverage.out -o var/coverage.html
 
-run:
-	export DOCKER_API_VERSION=1.37
-	go run main.go server
+test: init-dev fast-test docker-down-clean
+
+ci-test: test

@@ -344,24 +344,26 @@ services:
 
     ## BEGIN DEV
     topology-api:
+        image: dkr.hanaboso.net/pipes/pipes/topology-api-v2:dev
         user: ${DEV_UID}:${DEV_GID}
-        image: dkr.hanaboso.net/pipes/pipes/topology-api-v1:dev
         environment:
+            DEV_UID: ${DEV_UID}
+            DEV_GID: ${DEV_GID}
             DEPLOYMENT_PREFIX: demo
             GENERATOR_NETWORK: demo_default
             GENERATOR_MODE: compose
             GENERATOR_PATH: /srv/topology
-            MONGO_HOST: mongodb://mongo
-            MONGO_DATABASE: demo
+            MONGO_DSN: mongodb://mongo/demo?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
             RABBITMQ_HOST: rabbitmq
             PROJECT_SOURCE_PATH: ${PROJECT_SOURCE_PATH}/../topology
         volumes:
+            - ./../../topology-generator/:/topology-generator
             - ${DOCKER_SOCKET_PATH}:/var/run/docker.sock
             - ../topology:/srv/topology
     ## END DEV
     ## BEGIN STAGE
     #topology-api:
-    #    image: dkr.hanaboso.net/pipes/pipes/topology-api-v1:dev
+    #    image: dkr.hanaboso.net/pipes/pipes/topology-api-v2:master
     #    environment:
     #      DEPLOYMENT_PREFIX: ${DEPLOYMENT_PREFIX}
     #      DOCKER_HOST: tcp://${DOCKER_HOST}
@@ -370,8 +372,7 @@ services:
     #      GENERATOR_NETWORK: ${DEPLOYMENT_PREFIX}_default
     #      GENERATOR_MODE: swarm
     #      GENERATOR_PATH: /tmp
-    #      MONGO_HOST: mongodb://mongo
-    #      MONGO_DATABASE: demo
+    #      MONGO_DSN: mongodb://mongo/demo?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
     #      RABBITMQ_HOST: rabbitmq
     #    secrets:
     #      - source: docker-ca.pem
