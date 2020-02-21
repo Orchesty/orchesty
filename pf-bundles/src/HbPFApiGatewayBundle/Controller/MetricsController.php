@@ -27,7 +27,7 @@ final class MetricsController extends AbstractController
     {
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::topologyMetricsAction',
-            ['query' => $request->query, 'topologyId' => $topologyId]
+            ['request' => $request, 'topologyId' => $topologyId]
         );
     }
 
@@ -44,7 +44,7 @@ final class MetricsController extends AbstractController
     {
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::nodeMetricsAction',
-            ['query' => $request->query, 'topologyId' => $topologyId, 'nodeId' => $nodeId]
+            ['request' => $request, 'topologyId' => $topologyId, 'nodeId' => $nodeId]
         );
     }
 
@@ -60,7 +60,7 @@ final class MetricsController extends AbstractController
     {
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::topologyRequestsCountMetricsAction',
-            ['query' => $request->query, 'topologyId' => $topologyId]
+            ['request' => $request, 'topologyId' => $topologyId]
         );
     }
 
