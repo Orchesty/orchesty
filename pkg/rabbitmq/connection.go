@@ -2,10 +2,11 @@ package rabbitmq
 
 import (
 	"fmt"
-	"github.com/streadway/amqp"
-	"starting-point/pkg/config"
 	"sync"
 	"time"
+
+	"github.com/streadway/amqp"
+	"starting-point/pkg/config"
 
 	log "github.com/sirupsen/logrus"
 )

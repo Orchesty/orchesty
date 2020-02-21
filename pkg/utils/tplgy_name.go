@@ -2,8 +2,9 @@ package utils
 
 import (
 	"fmt"
-	"starting-point/pkg/storage"
 	"strings"
+
+	"starting-point/pkg/storage"
 )
 
 // GenerateTplgName generates queue name from topology & node id's and name's

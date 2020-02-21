@@ -6,11 +6,12 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"syscall"
+
 	"starting-point/pkg/router"
 	"starting-point/pkg/service"
 	"starting-point/pkg/storage"
 	"starting-point/pkg/udp"
-	"syscall"
 
 	log "github.com/sirupsen/logrus"
 )

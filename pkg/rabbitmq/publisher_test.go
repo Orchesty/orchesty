@@ -1,11 +1,12 @@
 package rabbitmq
 
 import (
+	"testing"
+
 	"github.com/streadway/amqp"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"starting-point/pkg/config"
 	"starting-point/pkg/storage"
-	"testing"
 )
 
 func TestPublish(t *testing.T) {

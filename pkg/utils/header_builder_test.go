@@ -1,11 +1,12 @@
 package utils
 
 import (
+	"net/http"
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"net/http"
 	"starting-point/pkg/storage"
-	"testing"
 )
 
 func TestBldCounterHeaders(t *testing.T) {

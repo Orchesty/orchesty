@@ -1,9 +1,10 @@
 package utils
 
 import (
+	"os"
+
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/process"
-	"os"
 )
 
 var p *process.Process

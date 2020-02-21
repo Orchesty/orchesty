@@ -2,9 +2,18 @@ FROM golang:alpine
 
 RUN apk update --no-cache && \
     apk upgrade --no-cache && \
-    apk add --no-cache git && \
-    go get -u golang.org/x/lint/golint
+    apk add curl git su-exec --no-cache && \
+    go get -u golang.org/x/lint/golint && \
+    chmod u+s /sbin/su-exec
 
 ENV CGO_ENABLED 0
 
 WORKDIR /starting-point
+
+CMD /bin/sh -c '\
+    su-exec root addgroup -g ${DEV_GID} dev || true && \
+    su-exec root adduser -u ${DEV_UID} -D -G dev dev || true && \
+    su-exec root mkdir -p /.cache && \
+    su-exec root chmod -R 777 /.cache && \
+    go mod download && \
+    su-exec root go run cmd/starting-point.go'

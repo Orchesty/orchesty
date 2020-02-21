@@ -4,10 +4,11 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
-	"starting-point/pkg/config"
-	"starting-point/pkg/udp"
 	"strings"
 	"time"
+
+	"starting-point/pkg/config"
+	"starting-point/pkg/udp"
 
 	log "github.com/sirupsen/logrus"
 )

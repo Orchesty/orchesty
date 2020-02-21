@@ -1,10 +1,11 @@
 package metrics
 
 import (
+	"testing"
+
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"starting-point/pkg/storage"
 	"starting-point/pkg/udp"
-	"testing"
 )
 
 func TestSendMetrics(t *testing.T) {

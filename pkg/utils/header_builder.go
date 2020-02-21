@@ -1,12 +1,13 @@
 package utils
 
 import (
-	"github.com/google/uuid"
-	"github.com/streadway/amqp"
 	"net/http"
-	"starting-point/pkg/storage"
 	"strings"
 	"time"
+
+	"github.com/google/uuid"
+	"github.com/streadway/amqp"
+	"starting-point/pkg/storage"
 )
 
 // HeaderBuilder represents headerBuilder

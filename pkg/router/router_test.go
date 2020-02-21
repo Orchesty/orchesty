@@ -2,15 +2,19 @@ package router
 
 import (
 	"bytes"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"starting-point/pkg/storage"
 )
 
 func TestRouter(t *testing.T) {
+	storage.Mongo = &MongoMockConnected{}
+
 	r, _ := http.NewRequest("GET", "/status", nil)
-	assertResponse(t, r, 200, `{"status":"OK"}`)
+	assertResponse(t, r, 200, `{"database":true}`)
 }
 
 func TestNotFound(t *testing.T) {

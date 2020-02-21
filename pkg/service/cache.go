@@ -2,11 +2,12 @@ package service
 
 import (
 	"fmt"
+	"strconv"
+	"time"
+
 	"github.com/patrickmn/go-cache"
 	"starting-point/pkg/config"
 	"starting-point/pkg/storage"
-	"strconv"
-	"time"
 )
 
 // CacheInterface represents cache interface

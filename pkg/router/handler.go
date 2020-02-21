@@ -2,10 +2,11 @@ package router
 
 import (
 	"fmt"
-	"github.com/gorilla/context"
-	"github.com/gorilla/mux"
 	"net/http"
 	"runtime"
+
+	"github.com/gorilla/context"
+	"github.com/gorilla/mux"
 	"starting-point/pkg/config"
 	"starting-point/pkg/metrics"
 	"starting-point/pkg/service"
@@ -46,7 +47,9 @@ func HandleLimit(h http.HandlerFunc, w http.ResponseWriter, r *http.Request) {
 
 // HandleStatus checks if HTTP is working correctly
 func HandleStatus(w http.ResponseWriter, r *http.Request) {
-	writeResponse(w, map[string]interface{}{"status": "OK"})
+	writeResponse(w, map[string]interface{}{
+		"database": storage.Mongo.IsConnected(),
+	})
 }
 
 // HandleRunByID runs topology by ID
@@ -121,7 +124,7 @@ func handleByID(w http.ResponseWriter, r *http.Request, isHumanTask, isStop bool
 	}
 
 	if isHumanTask && topology.Node.HumanTask == nil {
-		writeErrorResponse(w, http.StatusNotFound, fmt.Sprintf("HumanTask with token '%s' not found!", vars["token"]))
+		writeErrorResponse(w, http.StatusNotFound, fmt.Sprintf("Human task with token '%s' not found!", vars["token"]))
 		return
 	}
 

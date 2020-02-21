@@ -29,11 +29,8 @@ type config struct {
 }
 
 type mongoDb struct {
-	Hostname        string
-	Username        string
-	Password        string
-	Database        string
-	MetricsDatabase string
+	Dsn             string
+	MetricsDsn      string
 	NodeColl        string
 	TopologyColl    string
 	HumanTaskColl   string
@@ -85,11 +82,8 @@ func init() {
 
 	Config = config{
 		MongoDB: &mongoDb{
-			Hostname:        getEnv("MONGO_HOSTNAME", ""),
-			Username:        getEnv("MONGO_USERNAME", ""),
-			Password:        getEnv("MONGO_PASSWORD", ""),
-			Database:        getEnv("MONGO_DATABASE", ""),
-			MetricsDatabase: getEnv("MONGO_METRICS_DATABASE", "metrics"),
+			Dsn:             getEnv("MONGO_DSN", ""),
+			MetricsDsn:      getEnv("MONGO_METRICS_DSN", ""),
 			NodeColl:        getEnv("MONGO_NODE_COLL", "Node"),
 			TopologyColl:    getEnv("MONGO_TOPOLOGY_COLL", "Topology"),
 			HumanTaskColl:   getEnv("MONGO_HUMAN_TASK_COLL", "LongRunningNodeData"),

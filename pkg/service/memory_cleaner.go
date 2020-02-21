@@ -2,9 +2,10 @@ package service
 
 import (
 	"runtime/debug"
+	"time"
+
 	"starting-point/pkg/config"
 	"starting-point/pkg/utils"
-	"time"
 )
 
 // StartCleaner starts memory cleaner
