@@ -41,15 +41,15 @@ services:
             - METRICS_SERVICE=influx
 
     starting-point:
-        image: dkr.hanaboso.net/pipes/pipes/starting-point:dev
+        image: dkr.hanaboso.net/pipes/pipes/starting-point:master
         environment:
-            - APP_DEBUG="false"
-            - MONGO_HOSTNAME=mongo
-            - MONGO_DATABASE=pipes
-            - RABBIT_COUNTER_QUEUE_DURABLE="true"
-            - RABBIT_QUEUE_DURABLE="true"
-            - RABBIT_DELIVERY_MODE=2
-            - APP_CLEANUP_TIME="300"
+            MONGO_DSN: mongodb://mongo/demo?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
+            MONGO_METRICS_DSN: mongodb://mongo/metrics?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
+            RABBIT_COUNTER_QUEUE_DURABLE: 'true'
+            RABBIT_QUEUE_DURABLE: 'true'
+            RABBIT_DELIVERY_MODE: 2
+            APP_CLEANUP_TIME: 300
+            GOROUTINE_LIMIT: 1000
 
     cron-api:
         user: ${DEV_UID}:${DEV_GID}
