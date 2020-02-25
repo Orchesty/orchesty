@@ -9,11 +9,23 @@ Na základě zvoleného adaptéru je při požadavku na publishování topologie
 Topology generator se dále stará i o korektní ukončení běžící topologie.
 
 ## Spuštění služby - development
-- `make run` - spustí container definovaný v `docker-compose.yml`
-- `make go-test` - spustí testy
+- `make init-dev` - Spustí aplikaci definovanou v `docker-compose.yml`
+- `make test` - Spustí testy
 - `http://127.0.0.33:8080` - Swagger OpenAPI
 
 ## Konfigurační volby
+- MONGO_DSN
+    - Povinný: `ANO`
+    - MongoDB DSN
+    - Například: `mongodb://mongodb/topology-generator?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500`
+- MONGO_TOPOLOGY
+    - Povinný: Ne (výchozí `Topology`)
+    - MongoDB kolekce topologií
+    - Například: `Topology`
+- MONGO_NODE
+    - Povinný: Ne (výchozí `Node`)
+    - MongoDB kolekce uzlů
+    - Například: `Node`
 - DEPLOYMENT_PREFIX
     - ??
     - Například: `demo`
@@ -33,14 +45,6 @@ Topology generator se dále stará i o korektní ukončení běžící topologie
     - Povinný: `ANO`
     - Umístění generovaných souborů vně kontejneru
     - Například: `/usr/user1/pipes/topology`
-- MONGO_HOST
-    - Povinný: `ANO`
-    - Connection string pro připojení do MongoDB
-    - Například: `mongodb://mongo`
-- MONGO_DATABASE
-    - Povinný: `ANO`
-    - Databáze do které se TG připojuje
-    - Například: `demo`
 - RABBITMQ_HOST
     - Povinný: `ANO`
     - Connection string pro připojení do MongoDB
