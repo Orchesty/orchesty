@@ -1,8 +1,9 @@
 package metrics
 
 import (
-	"starting-point/pkg/utils"
 	"time"
+
+	"starting-point/pkg/utils"
 )
 
 const requestDuration = "fpm_request_total_duration"

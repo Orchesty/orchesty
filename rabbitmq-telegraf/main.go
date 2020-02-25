@@ -1,10 +1,12 @@
 package main
 
 import (
-	log "github.com/sirupsen/logrus"
+	"time"
+
 	"rabbitmq-telegraf/pkg/config"
 	"rabbitmq-telegraf/pkg/services"
-	"time"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func main() {

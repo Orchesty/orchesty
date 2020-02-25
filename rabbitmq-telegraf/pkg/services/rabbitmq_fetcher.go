@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"rabbitmq-telegraf/pkg/config"
 	"strings"
+
+	"rabbitmq-telegraf/pkg/config"
 )
 
 type RabbitMqFetchSvc interface {

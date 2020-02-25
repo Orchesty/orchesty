@@ -1,8 +1,9 @@
 package services
 
 import (
-	log "github.com/sirupsen/logrus"
 	"rabbitmq-telegraf/pkg/config"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type SenderSvc interface {

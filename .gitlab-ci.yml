@@ -25,12 +25,22 @@ php-dev-image:
     - master
     - ci
 
+topology-api-dev-image:
+  stage: stage1
+  script:
+    - DIR=topology-generator
+    - cd $DIR
+    - make build-dev TAG=dev
+  only:
+    - dev
+    - master
+
 starting-point-dev-image:
   stage: stage1
   script:
     - DIR=starting-point
     - cd $DIR
-    - make build-dev-image
+    - make build-dev TAG=dev
   only:
     - dev
     - master
@@ -40,7 +50,7 @@ rabbitmq-telegraf-dev-image:
   script:
     - DIR=rabbitmq-telegraf
     - cd $DIR
-    - make build-dev-image
+    - make build-dev TAG=dev
   only:
     - dev
     - master
@@ -139,14 +149,6 @@ lib-python-build:
     - dev
     - master
 
-topology-api:
-  stage: stage1
-  script:
-    -  cd topology-generator && make docker-push DOCKER_DEFAULT_TAG=${CI_BUILD_REF_NAME}
-  only:
-    - dev
-    - master
-
 pf-bridge:
   stage: stage1
   script:
@@ -176,6 +178,18 @@ limiter-test:
   <<: *go_test
   variables:
     DIR: limiter
+  stage: stage2
+
+starting-point-test:
+  <<: *go_test
+  variables:
+    DIR: starting-point
+  stage: stage2
+
+rabbitmq-telegraf-test:
+  <<: *go_test
+  variables:
+    DIR: rabbitmq-telegraf
   stage: stage2
 
 topology-generator-test:
@@ -234,16 +248,6 @@ pipes-connectors-test:
     - export COMPOSE_FILE=docker-compose.ci.yml                         # CLEANUP pipes-connectors
     - make ${COMPOSE_FILE} test docker-down-clean
 
-rabbitmq-telegraf-test:
-  stage: stage2
-  script:
-    - DIR=rabbitmq-telegraf
-    - skip_unmodified $DIR
-    - cd $REPO_ROOT/$DIR
-    - export COMPOSE_PROJECT_NAME="p${CI_PIPELINE_ID}-rabbitmq-telegraf" # CLEANUP rabbitmq-telegraf
-    - export COMPOSE_FILE=docker-compose.ci.yml                          # CLEANUP rabbitmq-telegraf
-    - make ${COMPOSE_FILE} test
-
 demo-pipes-api-test:
   stage: stage2
   script:
@@ -281,15 +285,24 @@ frontend:
     - dev
     - master
 
+topology-api:
+  stage: stage2
+  script:
+    - DIR=topology-generator
+    - skip_unmodified $DIR
+    - cd $DIR
+    - make build TAG=${CI_BUILD_REF_NAME}
+  only:
+    - master
+
 starting-point:
   stage: stage2
   script:
     - DIR=starting-point
     - skip_unmodified $DIR
     - cd $DIR
-    - make build-image push TAG=${CI_BUILD_REF_NAME}
+    - make build TAG=${CI_BUILD_REF_NAME}
   only:
-    - dev
     - master
 
 rabbitmq-telegraf:
@@ -300,7 +313,6 @@ rabbitmq-telegraf:
     - cd $DIR
     - make build TAG=${CI_BUILD_REF_NAME}
   only:
-    - dev
     - master
 
 # Client: demo
@@ -464,7 +476,7 @@ cleanup:
 
     - ": rabbitmq-telegraf"
     - cd $REPO_ROOT/rabbitmq-telegraf
-    - export COMPOSE_PROJECT_NAME=p${CI_PIPELINE_ID}-rabbitmq-telegraf
+    - export COMPOSE_PROJECT_NAME="rabbitmq-telegraf-test_${CI_PIPELINE_ID}"
     - export COMPOSE_FILE=docker-compose.ci.yml
     - make ${COMPOSE_FILE} docker-down-clean || echo "rabbitmq-telegraf cleanup phase failed"
 
@@ -498,3 +510,10 @@ cleanup:
     - export COMPOSE_FILE=docker-compose.ci.yml
     - make ${COMPOSE_FILE}
     - docker-compose down -v || echo "topology generator cleanup phase failed"
+
+    - ": starting point"
+    - cd $REPO_ROOT/starting-point
+    - export COMPOSE_PROJECT_NAME="starting-point-test_${CI_PIPELINE_ID}"
+    - export COMPOSE_FILE=docker-compose.ci.yml
+    - make ${COMPOSE_FILE}
+    - docker-compose down -v || echo "starting point cleanup phase failed"

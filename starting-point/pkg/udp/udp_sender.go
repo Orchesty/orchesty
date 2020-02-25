@@ -3,8 +3,9 @@ package udp
 import (
 	"fmt"
 	"net"
-	"starting-point/pkg/config"
 	"time"
+
+	"starting-point/pkg/config"
 
 	log "github.com/sirupsen/logrus"
 )

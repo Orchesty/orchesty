@@ -2,9 +2,11 @@ package config
 
 import (
 	"fmt"
-	"github.com/jinzhu/configor"
-	log "github.com/sirupsen/logrus"
 	"time"
+
+	"github.com/jinzhu/configor"
+
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -20,13 +22,8 @@ type (
 	}
 
 	mongoDb struct {
-		Host              string `default:"mongo" env:"METRICS_HOST"`
-		Port              int    `default:"27017" env:"METRICS_PORT"`
-		MaxReconnectTries int    `default:"3" env:"MONGO_TRIES"`
-		Database          string `default:"metrics" env:"MONGO_DATABASE"`
-		Collection        string `default:"rabbitmq" env:"MONGO_COLLECTION"`
-
-		DSN string
+		Collection string `default:"rabbitmq" env:"MONGO_COLLECTION"`
+		DSN        string `default:"" env:"MONGO_DSN"`
 	}
 
 	influxDb struct {
@@ -78,7 +75,6 @@ func init() {
 	}
 
 	InfluxDb.DSN = fmt.Sprintf("http://%s:%d", InfluxDb.Host, InfluxDb.Port)
-	MongoDb.DSN = fmt.Sprintf("mongodb://%s:%d/", MongoDb.Host, MongoDb.Port)
 
 	if App.Debug {
 		log.SetLevel(log.DebugLevel)

@@ -1,9 +1,10 @@
 package services
 
 import (
-	"github.com/stretchr/testify/assert"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNewInfluxDbSenderSvc_getUrl(t *testing.T) {

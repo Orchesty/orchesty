@@ -12,8 +12,8 @@ func (n mockStorageSvc) Connect() {
 	return
 }
 
-func (n mockStorageSvc) Disconnect() error {
-	return nil
+func (n mockStorageSvc) Disconnect() {
+	return
 }
 
 func (n mockStorageSvc) FindTopologyByID(id string) (*model.Topology, error) {

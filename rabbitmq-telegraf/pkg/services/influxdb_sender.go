@@ -4,8 +4,9 @@ import (
 	"bytes"
 	"fmt"
 	"net/http"
-	"rabbitmq-telegraf/pkg/config"
 	"time"
+
+	"rabbitmq-telegraf/pkg/config"
 )
 
 type InfluxDbSender struct {

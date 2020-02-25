@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"net/http"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestLimiterApp(t *testing.T) {
@@ -43,7 +44,7 @@ func simulateTraffic(t *testing.T, stopTest chan bool) {
 		fmt.Println(err)
 	}
 
-	if assert.Equal(t, "{\"status\":\"OK\"}\n", string(body)) {
+	if assert.Equal(t, "{\"database\":true}\n", string(body)) {
 		stopTest <- true
 	}
 }

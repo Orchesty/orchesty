@@ -2,10 +2,11 @@ package services
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/require"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"topology-generator/pkg/config"
@@ -156,6 +157,10 @@ func getEnvironment(mode model.Adapter) model.Environment {
 }
 
 func TestTopologyService_CreateTopologyJsonFails(t *testing.T) {
+	if os.Getenv("GITLAB_CI") == "true" {
+		t.Skip()
+	}
+
 	nodeConfig := model.NodeConfig{
 		NodeConfig: getNodeConfigs(),
 		Environment: model.Environment{

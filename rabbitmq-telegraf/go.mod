@@ -1,17 +1,14 @@
 module rabbitmq-telegraf
 
-go 1.12
+go 1.13
 
 require (
-	github.com/go-stack/stack v1.8.0 // indirect
-	github.com/golang/snappy v0.0.1 // indirect
+	github.com/hanaboso/go-mongodb v0.0.0-20200219152830-da09213c767a
 	github.com/jinzhu/configor v1.1.1
 	github.com/sirupsen/logrus v1.4.2
-	github.com/stretchr/testify v1.2.2
-	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect
+	github.com/stretchr/testify v1.5.1
 	github.com/xdg/stringprep v1.0.0 // indirect
-	go.mongodb.org/mongo-driver v1.1.0
-	golang.org/x/crypto v0.0.0-20190829043050-9756ffdc2472 // indirect
-	golang.org/x/sync v0.0.0-20190423024810-112230192c58 // indirect
-	golang.org/x/text v0.3.2 // indirect
+	go.mongodb.org/mongo-driver v1.3.0
+	golang.org/x/crypto v0.0.0-20200221231518-2aa609cf4a9d // indirect
+	golang.org/x/sys v0.0.0-20200223170610-d5e6a3e2c0ae // indirect
 )
