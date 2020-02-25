@@ -12,7 +12,7 @@ import (
 // MongoInterface represents MongoDB database interface
 type MongoInterface interface {
 	Connect()
-	Disconnect() error
+	Disconnect()
 	FindTopologyByID(id string) (*model.Topology, error)
 	FindNodesByTopology(id string) ([]model.Node, error)
 }
@@ -55,10 +55,8 @@ func (m *MongoDefault) Connect() {
 }
 
 // Disconnect disconnects from database
-func (m *MongoDefault) Disconnect() error {
+func (m *MongoDefault) Disconnect() {
 	m.mongo.Disconnect()
-
-	return nil
 }
 
 func (m *MongoDefault) FindTopologyByID(id string) (*model.Topology, error) {
