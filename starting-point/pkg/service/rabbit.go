@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/hanaboso/go-metrics"
 	"github.com/streadway/amqp"
 	"starting-point/pkg/config"
-	"starting-point/pkg/metrics"
 	"starting-point/pkg/rabbitmq"
 	"starting-point/pkg/storage"
 	"starting-point/pkg/utils"
@@ -20,14 +20,15 @@ type Rabbit interface {
 	SndMessage(r *http.Request, topology storage.Topology, init map[string]float64, isHuman bool, isStop bool)
 	DisconnectRabbit()
 	ClearChannels()
+	IsMetricsConnected() bool
 }
 
 // RabbitDefault interprets Rabbit
 type RabbitDefault struct {
-	publisher     rabbitmq.Publisher
-	connection    rabbitmq.Connection
-	builder       utils.HeaderBuilder
-	metricsSender metrics.Sender
+	publisher  rabbitmq.Publisher
+	connection rabbitmq.Connection
+	builder    utils.HeaderBuilder
+	metrics    metrics.Interface
 }
 
 // ProcessMessage  body structures
@@ -85,17 +86,26 @@ func (r *RabbitDefault) SndMessage(
 
 	// Send Metrics
 	corrID := m.Headers[utils.CorrelationID]
-	r.metricsSender.SendMetrics(metrics.GetTags(topology, corrID.(string)), metrics.GetFields(init))
+
+	if err := r.metrics.Send(config.Config.Metrics.Measurement, utils.GetTags(topology, corrID.(string)), utils.GetFields(init)); err != nil {
+		log.Error(fmt.Sprintf("Metrics error: %+v", err))
+	}
 }
 
 // DisconnectRabbit disconnects RabbitMQ
 func (r *RabbitDefault) DisconnectRabbit() {
 	r.connection.Disconnect()
+	r.metrics.Disconnect()
 }
 
 // ClearChannels clears channels form connection
 func (r *RabbitDefault) ClearChannels() {
 	r.connection.ClearChannels()
+}
+
+// IsMetricsConnected checks metrics connection status
+func (r *RabbitDefault) IsMetricsConnected() bool {
+	return r.metrics.IsConnected()
 }
 
 func (r *RabbitDefault) initCounterProcess(httpHeaders http.Header, topology storage.Topology) {
@@ -135,9 +145,9 @@ func NewRabbit() Rabbit {
 	conn.CloseChannel(config.Config.RabbitMQ.CounterQueueName)
 
 	return &RabbitDefault{
-		publisher:     publisher,
-		connection:    conn,
-		builder:       builder,
-		metricsSender: metrics.NewSender(),
+		publisher:  publisher,
+		connection: conn,
+		builder:    builder,
+		metrics:    metrics.Connect(config.Config.Metrics.Dsn),
 	}
 }

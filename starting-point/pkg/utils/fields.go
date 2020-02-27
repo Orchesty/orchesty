@@ -1,9 +1,7 @@
-package metrics
+package utils
 
 import (
 	"time"
-
-	"starting-point/pkg/utils"
 )
 
 const requestDuration = "fpm_request_total_duration"
@@ -15,7 +13,7 @@ const timestamp = "timestamp"
 func InitFields() (m map[string]float64) {
 	m = make(map[string]float64)
 	m[timestamp] = float64(time.Now().Unix())
-	user, kernel := utils.GetCPUTime()
+	user, kernel := GetCPUTime()
 	m[userTime] = user
 	m[kernelTime] = kernel
 
@@ -25,7 +23,7 @@ func InitFields() (m map[string]float64) {
 // GetFields for metrics
 func GetFields(init map[string]float64) (m map[string]interface{}) {
 	m = make(map[string]interface{})
-	user, kernel := utils.GetCPUTime()
+	user, kernel := GetCPUTime()
 
 	m[userTime] = user - init[userTime]
 	m[kernelTime] = kernel - init[kernelTime]
