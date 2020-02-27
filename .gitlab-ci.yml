@@ -35,26 +35,6 @@ topology-api-dev-image:
     - dev
     - master
 
-starting-point-dev-image:
-  stage: stage1
-  script:
-    - DIR=starting-point
-    - cd $DIR
-    - make build-dev TAG=dev
-  only:
-    - dev
-    - master
-
-rabbitmq-telegraf-dev-image:
-  stage: stage1
-  script:
-    - DIR=rabbitmq-telegraf
-    - cd $DIR
-    - make build-dev TAG=dev
-  only:
-    - dev
-    - master
-
 lib-python-dev-build:
   stage: stage1
   script:

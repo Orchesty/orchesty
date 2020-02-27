@@ -4,7 +4,12 @@ DOCKER=make docker-up-force
 INSTALL=docker-compose exec -T app composer global require hirak/prestissimo
 COMPOSER=make composer-update
 
-test: test-php
+test: test-php test-go
+
+test-go:
+	cd starting-point && $(TEST)
+	cd rabbitmq-telegraf && $(TEST)
+	cd topology-generator && $(TEST)
 
 test-php:
 	cd pipes-php-sdk && $(TEST)

@@ -7,7 +7,7 @@ var rabbitMqData = stream
    |from()
        .database('pipes')
        .retentionPolicy('default')
-       .measurement('rabbitmq_queue')
+       .measurement('rabbitmq')
    |barrier()
        .period(sample)
    |window()
