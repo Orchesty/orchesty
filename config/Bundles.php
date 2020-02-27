@@ -10,6 +10,7 @@ use Hanaboso\PipesFramework\HbPFConfiguratorBundle\HbPFConfiguratorBundle;
 use Hanaboso\PipesFramework\HbPFLogsBundle\HbPFLogsBundle;
 use Hanaboso\PipesFramework\HbPFMetricsBundle\HbPFMetricsBundle;
 use Hanaboso\PipesFramework\HbPFNotificationBundle\HbPFNotificationBundle;
+use Hanaboso\PipesFramework\HbPFUserBundle\HbPFUsersBundle;
 use Hanaboso\PipesPhpSdk\HbPFApplicationBundle\HbPFApplicationBundle;
 use Hanaboso\PipesPhpSdk\HbPFConnectorBundle\HbPFConnectorBundle;
 use Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\HbPFCustomNodeBundle;
@@ -51,4 +52,5 @@ return [
     EmailServiceBundle::class        => ['all' => TRUE],
     RabbitMqBundle::class            => ['all' => TRUE],
     RestBundle::class                => ['all' => TRUE],
+    HbPFUsersBundle::class           => ['all' => TRUE],
 ];

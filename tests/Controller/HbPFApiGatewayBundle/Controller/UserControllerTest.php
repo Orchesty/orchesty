@@ -16,6 +16,9 @@ final class UserControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserController::loginAction
+     * @covers \Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::loginUserAction
+     * @covers \Hanaboso\PipesFramework\HbPFUserBundle\Handler\UserHandler::login
+     * @covers \Hanaboso\PipesFramework\HbPFUserBundle\Handler\UserHandler::getSettings
      */
     public function testLoginAction(): void
     {

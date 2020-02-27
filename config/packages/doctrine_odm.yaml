@@ -71,6 +71,11 @@ doctrine_mongodb:
                     is_bundle: false
                     dir: "%kernel.project_dir%/src/Metrics/Document"
                     prefix: Hanaboso\PipesFramework\Metrics\Document
+                UserSettings:
+                    type: annotation
+                    is_bundle: false
+                    dir: "%kernel.project_dir%/src/User/Document"
+                    prefix: Hanaboso\PipesFramework\User\Document
         metrics:
             connection: metrics
             database: metrics
