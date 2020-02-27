@@ -4,7 +4,7 @@ export default {
 		servers: {
 			mainServer: {
 				url: 'http://url.to.backend/api',
-				url_starting_point: 'http://url.to.frontend/starting-point',
+				url_starting_point: 'http://url.to.frontend',
 				caption: 'Main',
 			},
 		},
