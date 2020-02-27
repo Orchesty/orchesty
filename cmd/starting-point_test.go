@@ -32,7 +32,7 @@ func timeoutExit(t *testing.T, stopTest chan bool) {
 }
 
 func simulateTraffic(t *testing.T, stopTest chan bool) {
-	resp, err := http.Get("http://127.0.0.127:80/status")
+	resp, err := http.Get("http://127.0.0.127:8080/status")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -44,7 +44,7 @@ func simulateTraffic(t *testing.T, stopTest chan bool) {
 		fmt.Println(err)
 	}
 
-	if assert.Equal(t, "{\"database\":true}\n", string(body)) {
+	if assert.Equal(t, "{\"database\":true,\"metrics\":true}\n", string(body)) {
 		stopTest <- true
 	}
 }

@@ -24,10 +24,8 @@ var topologySuccessWebhookSuccess = "topologySuccessWebhookSuccess"
 
 func TestMongo(t *testing.T) {
 	CreateMongo()
-	defer func() {
-		_ = Mongo.Disconnect()
-	}()
-	data := prepareData(Mongo.(*MongoDefault).mongo.Database)
+	defer Mongo.Disconnect()
+	data := prepareData(Mongo.(*MongoDefault).connection.Database)
 
 	topology := Mongo.FindTopologyByID(data[topologySuccessNodeSuccess][0], data[topologySuccessNodeSuccess][1], "", true)
 	assert.Equal(t, data[topologySuccessNodeSuccess][0], topology.ID.Hex())

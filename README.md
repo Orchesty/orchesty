@@ -9,19 +9,10 @@ API pro spouštění topologií Pipes Frameworku. Topologie je možné spouště
 - `http://127.0.0.44:8080` - Swagger OpenAPI
 
 ## Konfigurační volby
-- METRICS_SERVICE
-    - Povinný: Ne (výchozí `influx`)
-    - Výběr úložiště metrik
-    - Například: `influx` nebo `mongo`
-
 - MONGO_DSN
     - Povinný: Ano
     - MongoDB DSN
     - Například: `mongodb://mongodb/starting-point?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500`
-- MONGO_METRICS_DSN
-    - Povinný: Ano
-    - MongoDB DSN pro metriky
-    - Například: `mongodb://mongodb/metrics?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500`
 - MONGO_TOPOLOGY_COLL
     - Povinný: Ne (výchozí `Topology`)
     - MongoDB kolekce topologií
@@ -38,14 +29,6 @@ API pro spouštění topologií Pipes Frameworku. Topologie je možné spouště
     - Povinný: Ne (výchozí `Webhook`)
     - MongoDB kolekce webhooků
     - Například: `Webhook`
-- MONGO_TIMEOUT
-    - Povinný: Ne (výchozí `10`)
-    - MongoDB timeout
-    - Například: `10`
-- MONGO_MEASUREMENT
-    - Povinný: Ne (výchozí `monolith`)
-    - MongoDB kolekce metrik
-    - Například: `monolith`
 
 - RABBIT_HOSTNAME
     - Povinný: Ne (výchozí `rabbitmq`)
@@ -84,21 +67,13 @@ API pro spouštění topologií Pipes Frameworku. Topologie je možné spouště
     - RabbitMQ maximální počet souběžně posílaných zpráv
     - Například: `32767`
 
-- INFLUX_HOSTNAME
-    - Povinný: Ne (výchozí `influxdb`)
-    - InfluxDB server
-    - Například: `influxdb`
-- INFLUX_PORT
-    - Povinný: Ne (výchozí `8089`)
-    - InfluxDB port
-    - Například: `8089`
-- INFLUX_REFRESH_TIME
-    - Povinný: Ne (výchozí `3600`)
-    - InfluxDB interval znovunalézání serveru 
-    - Například: `3600`
-- INFLUX_MEASUREMENT
+- METRICS_DSN
+    - Povinný: Ano
+    - Metriky DSN
+    - Například: `mongodb://mongodb/starting-point?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500` nebo `influxdb://influxdb:8089`
+- METRICS_MEASUREMENT
     - Povinný: Ne (výchozí `monolith`)
-    - InfluxDB tag metrik
+    - MongoDB kolekce metrik / InfluxDB tag metrik
     - Například: `monolith`
 
 - CACHE_EXPIRATION

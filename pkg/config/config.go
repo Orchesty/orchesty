@@ -7,36 +7,25 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const (
-	// MetricsInflux ...
-	MetricsInflux = "influx"
-	// MetricsMongo ...
-	MetricsMongo = "mongo"
-)
-
 // Config represents config
 var Config config
 
 type config struct {
-	MongoDB        *mongoDb
-	RabbitMQ       *rabbitMq
-	Cache          *cache
-	InfluxDB       *influxDB
-	Logger         *log.Logger
-	Cleaner        *cleaner
-	Limiter        *limiter
-	MetricsService string
+	MongoDB  *mongoDb
+	RabbitMQ *rabbitMq
+	Metrics  *metrics
+	Cache    *cache
+	Logger   *log.Logger
+	Cleaner  *cleaner
+	Limiter  *limiter
 }
 
 type mongoDb struct {
-	Dsn             string
-	MetricsDsn      string
-	NodeColl        string
-	TopologyColl    string
-	HumanTaskColl   string
-	WebhookColl     string
-	Timeout         string
-	MeasurementColl string
+	Dsn           string
+	NodeColl      string
+	TopologyColl  string
+	HumanTaskColl string
+	WebhookColl   string
 }
 
 type rabbitMq struct {
@@ -56,10 +45,8 @@ type cache struct {
 	CleanUp    string
 }
 
-type influxDB struct {
-	Hostname    string
-	Port        string
-	RefreshTime int16
+type metrics struct {
+	Dsn         string
 	Measurement string
 }
 
@@ -82,14 +69,11 @@ func init() {
 
 	Config = config{
 		MongoDB: &mongoDb{
-			Dsn:             getEnv("MONGO_DSN", ""),
-			MetricsDsn:      getEnv("MONGO_METRICS_DSN", ""),
-			NodeColl:        getEnv("MONGO_NODE_COLL", "Node"),
-			TopologyColl:    getEnv("MONGO_TOPOLOGY_COLL", "Topology"),
-			HumanTaskColl:   getEnv("MONGO_HUMAN_TASK_COLL", "LongRunningNodeData"),
-			WebhookColl:     getEnv("MONGO_WEBHOOK_COLL", "Webhook"),
-			Timeout:         getEnv("MONGO_TIMEOUT", "10"),
-			MeasurementColl: getEnv("MONGO_MEASUREMENT", "monolith"),
+			Dsn:           getEnv("MONGO_DSN", ""),
+			NodeColl:      getEnv("MONGO_NODE_COLL", "Node"),
+			TopologyColl:  getEnv("MONGO_TOPOLOGY_COLL", "Topology"),
+			HumanTaskColl: getEnv("MONGO_HUMAN_TASK_COLL", "LongRunningNodeData"),
+			WebhookColl:   getEnv("MONGO_WEBHOOK_COLL", "Webhook"),
 		},
 		RabbitMQ: &rabbitMq{
 			Hostname:             getEnv("RABBIT_HOSTNAME", "rabbitmq"),
@@ -102,15 +86,13 @@ func init() {
 			QueueDurable:         getEnvBool("RABBIT_QUEUE_DURABLE", true),
 			MaxConcurrentPublish: getEnvInt("RABBIT_CONCURRENT_PUBLISH_RATE", 32767),
 		},
+		Metrics: &metrics{
+			Dsn:         getEnv("METRICS_DSN", ""),
+			Measurement: getEnv("METRICS_MEASUREMENT", "monolith"),
+		},
 		Cache: &cache{
 			Expiration: getEnv("CACHE_EXPIRATION", "24"),
 			CleanUp:    getEnv("CACHE_CLEAN_UP", "1"),
-		},
-		InfluxDB: &influxDB{
-			Hostname:    getEnv("INFLUX_HOSTNAME", "influxdb"),
-			Port:        getEnv("INFLUX_PORT", "8089"),
-			RefreshTime: getEnvInt("INFLUX_REFRESH_TIME", 3600),
-			Measurement: getEnv("INFLUX_MEASUREMENT", "monolith"),
 		},
 		Logger: l,
 		Cleaner: &cleaner{
@@ -120,20 +102,12 @@ func init() {
 		Limiter: &limiter{
 			GoroutineLimit: getEnvInt("GOROUTINE_LIMIT", 2000),
 		},
-		MetricsService: getEnv("METRICS_SERVICE", MetricsInflux),
 	}
 }
 
 // GetConfig getting Config, for test purpose
 func GetConfig() interface{} {
 	return Config
-}
-
-func init() {
-	if Config.MetricsService != MetricsInflux &&
-		Config.MetricsService != MetricsMongo {
-		Config.Logger.Fatalf("invalid metrics service [%s], valid options are: [%s, %s]", Config.MetricsService, MetricsInflux, MetricsMongo)
-	}
 }
 
 func getEnv(key string, defaultValue string) string {
