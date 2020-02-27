@@ -21,7 +21,7 @@ final class UserController extends AbstractController
      */
     public function loginAction(): Response
     {
-        return $this->forward('Hanaboso\UserBundle\Controller\UserController::loginAction');
+        return $this->forward('Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::loginUserAction');
     }
 
     /**
@@ -98,6 +98,31 @@ final class UserController extends AbstractController
     public function deleteAction(string $id): Response
     {
         return $this->forward('Hanaboso\UserBundle\Controller\UserController::deleteAction', ['id' => $id]);
+    }
+
+    /**
+     * @Route("/user/list", methods={"POST", "OPTIONS"})
+     *
+     * @return Response
+     */
+    public function getAllUsers(): Response
+    {
+        return $this->forward('Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::getAllUsersAction');
+    }
+
+    /**
+     * @Route("/user/{id}/saveSettings", methods={"POST", "OPTIONS"})
+     *
+     * @param string $id
+     *
+     * @return Response
+     */
+    public function saveUserSettings(string $id): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::saveUserSettingsAction',
+            ['id' => $id]
+        );
     }
 
 }

@@ -1,0 +1,15 @@
+{
+    "http": 200,
+    "body": {
+        "total": 1,
+        "page": 1,
+        "count": 1,
+        "items": [
+            {
+                "email": "test@example.com",
+                "created": "2020-02-26 12:00:00",
+                "id": "5e565d74eb437f16e475a2e2"
+            }
+        ]
+    }
+}
