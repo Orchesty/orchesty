@@ -8,11 +8,7 @@ IMAGE=dkr.hanaboso.net/pipes/pipes/rabbitmq-telegraf
 		.env.dist >> .env; \
 
 build:
-	docker build -t ${IMAGE}:${TAG} .
-	docker push ${IMAGE}:${TAG}
-
-build-dev:
-	docker build -f Dockerfile.dev -t ${IMAGE}:${TAG} .
+	docker build -t ${IMAGE}:${TAG} --pull .
 	docker push ${IMAGE}:${TAG}
 
 docker-up-force: .env
@@ -25,6 +21,11 @@ docker-down-clean: .env
 docker-compose.ci.yml:
 	# Comment out any port forwarding
 	sed -r 's/^(\s+ports:)$$/#\1/g; s/^(\s+- \$$\{DEV_IP\}.*)$$/#\1/g; s/^(\s+- \$$\{GOPATH\}.*)$$/#\1/g' docker-compose.yml > docker-compose.ci.yml
+
+go-update:
+	$(DE) su-exec root go get -u all
+	$(DE) su-exec root go mod tidy
+	$(DE) su-exec root chown dev:dev go.mod go.sum
 
 init-dev: docker-up-force wait-for-server-start
 

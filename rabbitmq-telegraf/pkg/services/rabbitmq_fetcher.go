@@ -9,17 +9,21 @@ import (
 	"rabbitmq-telegraf/pkg/config"
 )
 
+// RabbitMqFetchSvc represents abstract RabbitMq fetcher
 type RabbitMqFetchSvc interface {
 	GatherQueuesInfo() ([]Queue, error)
 }
 
+// RabbitMqStats represents specific RabbitMq fetcher
 type RabbitMqStats struct{}
 
+// Queue represents RabbitMq queue
 type Queue struct {
 	Messages int    `json:"messages"`
 	Name     string `json:"name"`
 }
 
+// GatherQueuesInfo returns RabbitMq queues stats
 func (svc RabbitMqStats) GatherQueuesInfo() ([]Queue, error) {
 	var list []Queue
 
@@ -29,10 +33,7 @@ func (svc RabbitMqStats) GatherQueuesInfo() ([]Queue, error) {
 		return nil, err
 	}
 
-	req.SetBasicAuth(
-		config.RabbitMQ.Username,
-		config.RabbitMQ.Password,
-	)
+	req.SetBasicAuth(config.RabbitMQ.Username, config.RabbitMQ.Password)
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -48,6 +49,7 @@ func (svc RabbitMqStats) GatherQueuesInfo() ([]Queue, error) {
 	return list, nil
 }
 
+// NewRabbitMqFetchSvc creates RabbitMq fetcher
 func NewRabbitMqFetchSvc() RabbitMqFetchSvc {
 	return RabbitMqStats{}
 }

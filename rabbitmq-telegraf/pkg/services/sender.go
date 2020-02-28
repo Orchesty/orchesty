@@ -1,38 +1,44 @@
 package services
 
 import (
+	"time"
+
+	"github.com/hanaboso/go-metrics"
 	"rabbitmq-telegraf/pkg/config"
 
 	log "github.com/sirupsen/logrus"
 )
 
-type SenderSvc interface {
-	Send(metrics []Queue) error
-}
-
+// Sender represents RabbitMq metrics sender
 type Sender struct {
-	sender    SenderSvc
+	metrics   metrics.Interface
 	workQueue <-chan []Queue
 }
 
+// Start RabbitMq metrics sender
 func (s *Sender) Start() {
-	for w := range s.workQueue {
-		if err := s.sender.Send(w); err != nil {
-			log.Error(err)
+	for queues := range s.workQueue {
+		for _, queue := range queues {
+			if queue.Messages <= 0 {
+				continue
+			}
+
+			if err := s.metrics.Send(config.Metrics.Measurement, map[string]interface{}{
+				"queue": queue.Name,
+			}, map[string]interface{}{
+				"messages": queue.Messages,
+				"created":  time.Now().Unix(),
+			}); err != nil {
+				log.Error(err)
+			}
 		}
 	}
 }
 
+// NewSenderSvc creates RabbitMq metrics sender
 func NewSenderSvc(workQueue <-chan []Queue) Sender {
-	var s SenderSvc
-	if config.App.Output == config.OUTPUT_MONGO {
-		s = NewMongoDbSenderSvc()
-	} else {
-		s = NewInfluxDbSenderSvc()
-	}
-
 	return Sender{
-		sender:    s,
+		metrics:   metrics.Connect(config.Metrics.Dsn),
 		workQueue: workQueue,
 	}
 }

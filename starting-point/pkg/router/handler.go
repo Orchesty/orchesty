@@ -8,7 +8,6 @@ import (
 	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
 	"starting-point/pkg/config"
-	"starting-point/pkg/metrics"
 	"starting-point/pkg/service"
 	"starting-point/pkg/storage"
 	"starting-point/pkg/utils"
@@ -49,6 +48,7 @@ func HandleLimit(h http.HandlerFunc, w http.ResponseWriter, r *http.Request) {
 func HandleStatus(w http.ResponseWriter, r *http.Request) {
 	writeResponse(w, map[string]interface{}{
 		"database": storage.Mongo.IsConnected(),
+		"metrics":  service.RabbitMq.IsMetricsConnected(),
 	})
 }
 
@@ -103,7 +103,7 @@ func handleByID(w http.ResponseWriter, r *http.Request, isHumanTask, isStop bool
 		return
 	}
 
-	init := metrics.InitFields()
+	init := utils.InitFields()
 	vars := mux.Vars(r)
 	var topology *storage.Topology
 
@@ -145,7 +145,7 @@ func handleByName(w http.ResponseWriter, r *http.Request, isHumanTask, isStop bo
 		return
 	}
 
-	init := metrics.InitFields()
+	init := utils.InitFields()
 	vars := mux.Vars(r)
 	var topology *storage.Topology
 
@@ -182,7 +182,7 @@ func handleByApplication(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	init := metrics.InitFields()
+	init := utils.InitFields()
 	vars := mux.Vars(r)
 	var topology, webhook = service.Cache.FindTopologyByApplication(vars["topology"], vars["node"], vars["token"])
 

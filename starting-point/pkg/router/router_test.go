@@ -14,7 +14,7 @@ func TestRouter(t *testing.T) {
 	storage.Mongo = &MongoMockConnected{}
 
 	r, _ := http.NewRequest("GET", "/status", nil)
-	assertResponse(t, r, 200, `{"database":true}`)
+	assertResponse(t, r, 200, `{"database":true,"metrics":true}`)
 }
 
 func TestNotFound(t *testing.T) {

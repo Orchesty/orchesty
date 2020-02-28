@@ -139,11 +139,16 @@ func (c *MongoMockConnected) IsConnected() bool {
 	return true
 }
 
+func (r *RabbitMock) IsMetricsConnected() bool {
+	return true
+}
+
 func TestHandleStatus(t *testing.T) {
 	storage.Mongo = &MongoMockConnected{}
+	service.RabbitMq = &RabbitMock{}
 
 	r, _ := http.NewRequest("GET", "/status", nil)
-	assertResponse(t, r, 200, `{"database":true}`)
+	assertResponse(t, r, 200, `{"database":true,"metrics":true}`)
 }
 
 func TestHandleRunByID(t *testing.T) {
