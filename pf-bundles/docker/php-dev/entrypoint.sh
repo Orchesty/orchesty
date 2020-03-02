@@ -5,7 +5,7 @@ DEV_GID=$(id -g)
 
 su-exec root addgroup -g ${DEV_GID} dev
 su-exec root adduser -u ${DEV_UID} -D -G dev dev
-su-exec root chown -R dev:dev /var/www /home/dev /opt
+su-exec root chown -R dev:dev /home/dev /opt
 
 export HOME=/home/dev
 echo "alias sudo='su-exec root'" >> ~/.bashrc
