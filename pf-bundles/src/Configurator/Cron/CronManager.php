@@ -27,18 +27,14 @@ use Throwable;
 class CronManager
 {
 
-    private const CURL_COMMAND = 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d \'{%s}\' %s%s';
+    private const CURL_COMMAND = "echo \"[CRON] [$(date +'%%Y-%%m-%%dT%%TZ')] Requesting %s: $(curl -H 'Accept: application/json' -H 'Content-Type: application/json' -X POST -d '{%s}' -s %s)\" >> /proc/1/fd/1";
 
-    private const GET_ALL = '%s/cron-api/get_all';
-    private const CREATE  = '%s/cron-api/create';
-    private const UPDATE  = '%s/cron-api/update/%s';
-    private const PATCH   = '%s/cron-api/patch/%s';
-    private const DELETE  = '%s/cron-api/delete/%s';
-
-    private const BATCH_CREATE = '%s/cron-api/batch_create';
-    private const BATCH_UPDATE = '%s/cron-api/batch_update';
-    private const BATCH_PATCH  = '%s/cron-api/batch_patch';
-    private const BATCH_DELETE = '%s/cron-api/batch_delete';
+    private const GET    = '%s/crons';
+    private const CREATE = '%s/crons';
+    private const UPDATE = '%s/crons/%s';
+    private const PATCH  = '%s/crons/%s';
+    private const DELETE = '%s/crons/%s';
+    private const BATCH  = '%s/crons-batches';
 
     private const TOPOLOGY = 'topology';
     private const NODE     = 'node';
@@ -93,7 +89,7 @@ class CronManager
      */
     public function getAll(): ResponseDto
     {
-        return $this->sendAndProcessRequest(new RequestDto(CurlManager::METHOD_GET, $this->getUrl(self::GET_ALL)));
+        return $this->sendAndProcessRequest(new RequestDto(CurlManager::METHOD_GET, $this->getUrl(self::GET)));
     }
 
     /**
@@ -112,10 +108,10 @@ class CronManager
             ->setBody(
                 Json::encode(
                     [
-                        'topology' => $topologyName,
-                        'node'     => $nodeName,
-                        'time'     => $node->getCron(),
-                        'command'  => $this->getCommand($node),
+                        self::TOPOLOGY => $topologyName,
+                        self::NODE     => $nodeName,
+                        self::TIME     => $node->getCron(),
+                        self::COMMAND  => $this->getCommand($node),
                     ]
                 )
             );
@@ -133,12 +129,12 @@ class CronManager
     public function update(Node $node): ResponseDto
     {
         $url = $this->getUrl(self::UPDATE, $this->getHash($node));
-        $dto = (new RequestDto(CurlManager::METHOD_POST, $url))
+        $dto = (new RequestDto(CurlManager::METHOD_PUT, $url))
             ->setBody(
                 Json::encode(
                     [
-                        'time'    => $node->getCron(),
-                        'command' => $this->getCommand($node),
+                        self::TIME    => $node->getCron(),
+                        self::COMMAND => $this->getCommand($node),
                     ]
                 )
             );
@@ -157,8 +153,8 @@ class CronManager
     public function patch(Node $node, bool $empty = FALSE): ResponseDto
     {
         $body = [
-            'time'    => $node->getCron(),
-            'command' => $this->getCommand($node),
+            self::TIME    => $node->getCron(),
+            self::COMMAND => $this->getCommand($node),
         ];
 
         if ($empty) {
@@ -166,8 +162,7 @@ class CronManager
         }
 
         $url = $this->getUrl(self::PATCH, $this->getHash($node));
-        $dto = (new RequestDto(CurlManager::METHOD_POST, $url))
-            ->setBody(Json::encode($body));
+        $dto = (new RequestDto(CurlManager::METHOD_PATCH, $url))->setBody(Json::encode($body));
 
         return $this->sendAndProcessRequest($dto);
     }
@@ -182,7 +177,7 @@ class CronManager
     public function delete(Node $node): ResponseDto
     {
         $url = $this->getUrl(self::DELETE, $this->getHash($node));
-        $dto = new RequestDto(CurlManager::METHOD_POST, $url);
+        $dto = new RequestDto(CurlManager::METHOD_DELETE, $url);
 
         return $this->sendAndProcessRequest($dto);
     }
@@ -197,7 +192,7 @@ class CronManager
     public function batchCreate(array $nodes): ResponseDto
     {
         $body = $this->processNodes($nodes);
-        $dto  = (new RequestDto(CurlManager::METHOD_POST, $this->getUrl(self::BATCH_CREATE)))->setBody($body);
+        $dto  = (new RequestDto(CurlManager::METHOD_POST, $this->getUrl(self::BATCH)))->setBody($body);
 
         return $this->sendAndProcessRequest($dto);
     }
@@ -212,7 +207,7 @@ class CronManager
     public function batchUpdate(array $nodes): ResponseDto
     {
         $body = $this->processNodes($nodes);
-        $dto  = (new RequestDto(CurlManager::METHOD_POST, $this->getUrl(self::BATCH_UPDATE)))->setBody($body);
+        $dto  = (new RequestDto(CurlManager::METHOD_PUT, $this->getUrl(self::BATCH)))->setBody($body);
 
         return $this->sendAndProcessRequest($dto);
     }
@@ -233,7 +228,7 @@ class CronManager
         }
 
         $body = $this->processNodes($nodes, $exclude);
-        $dto  = (new RequestDto(CurlManager::METHOD_POST, $this->getUrl(self::BATCH_PATCH)))->setBody($body);
+        $dto  = (new RequestDto(CurlManager::METHOD_PATCH, $this->getUrl(self::BATCH)))->setBody($body);
 
         return $this->sendAndProcessRequest($dto);
     }
@@ -248,7 +243,7 @@ class CronManager
     public function batchDelete(array $nodes): ResponseDto
     {
         $body = $this->processNodes($nodes, [self::TIME, self::COMMAND]);
-        $dto  = (new RequestDto(CurlManager::METHOD_POST, $this->getUrl(self::BATCH_DELETE)))->setBody($body);
+        $dto  = (new RequestDto(CurlManager::METHOD_DELETE, $this->getUrl(self::BATCH)))->setBody($body);
 
         return $this->sendAndProcessRequest($dto);
     }
@@ -301,13 +296,9 @@ class CronManager
     {
         /** @var Topology $topology */
         $topology = $this->topologyRepository->findOneBy(['id' => $node->getTopology()]);
+        $url      = sprintf('%s%s', rtrim($this->backend, '/'), CronUtils::getTopologyUrl($topology, $node));
 
-        return sprintf(
-            self::CURL_COMMAND,
-            $node->getCronParams(),
-            rtrim($this->backend, '/'),
-            CronUtils::getTopologyUrl($topology, $node)
-        );
+        return sprintf(self::CURL_COMMAND, $url, $node->getCronParams(), $url);
     }
 
     /**
@@ -358,10 +349,7 @@ class CronManager
         try {
             return $this->curlManager->send($dto);
         } catch (Throwable $e) {
-            throw new CronException(
-                sprintf('Cron API failed: %s', $e->getMessage()),
-                CronException::CRON_EXCEPTION
-            );
+            throw new CronException(sprintf('Cron API failed: %s', $e->getMessage()), CronException::CRON_EXCEPTION);
         }
     }
 

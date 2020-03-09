@@ -6,8 +6,8 @@ parameters:
     env(BACKEND_HOST): http://127.0.0.66
     backend_host: '%env(BACKEND_HOST)%'
 
-    cron_host: 'http://cron-api:5000'
-    starting_point_host: 'http://starting-point'
+    cron_host: "%env(string:CRON_DSN)%"
+    starting_point_host: "%env(string:STARTING_POINT_DSN)%"
     notification_host: 'http://notification-sender-api'
     activateLink: '%backend_host%/user/%s/activate'
     access_token_refresh_interval: 3600

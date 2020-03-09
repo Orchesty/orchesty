@@ -148,6 +148,12 @@ pf-bridge:
     - export COMPOSE_FILE=docker-compose.ci.yml
     - make ${COMPOSE_FILE} ci-test
 
+cron-test:
+  <<: *go_test
+  variables:
+    DIR: cron
+  stage: stage2
+
 multi-probe-test:
   <<: *go_test
   variables:
