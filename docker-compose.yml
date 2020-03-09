@@ -28,8 +28,8 @@ services:
             - TOPOLOGY_API_DSN=topology-api:80
             - MONGODB_DSN=mongodb://mongo
             - MARIADB_DSN=maria
-            - STARTING_POINT_DSN=starting-point:80
-            - CRON_DSN=http://cron-api:5000
+            - STARTING_POINT_DSN=starting-point:8080
+            - CRON_DSN=http://cron-api:8080
             - ELASTICSEARCH_DSN=elasticsearch://elasticsearch
             - RABBITMQ_HOST=rabbitmq
             - RABBITMQ_PORT=5672
@@ -44,21 +44,17 @@ services:
         image: dkr.hanaboso.net/pipes/pipes/starting-point:master
         environment:
             MONGO_DSN: mongodb://mongo/demo?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
-            MONGO_METRICS_DSN: mongodb://mongo/metrics?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
+            METRICS_DSN: mongodb://mongo/metrics?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
             RABBIT_COUNTER_QUEUE_DURABLE: 'true'
             RABBIT_QUEUE_DURABLE: 'true'
             RABBIT_DELIVERY_MODE: 2
-            APP_CLEANUP_TIME: 300
-            GOROUTINE_LIMIT: 1000
 
     cron-api:
         user: ${DEV_UID}:${DEV_GID}
-        image: dkr.hanaboso.net/pipes/pipes/python-cron:dev
+        image: dkr.hanaboso.net/pipes/pipes/cron:master
         environment:
-            - DEV_UID={DEV_UID}
-            - DEV_GID={DEV_GID}
-        ports:
-            - ${DEV_IP}:8050:5000
+            MONGO_DSN: mongodb://mongo/cron?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
+            MONGO_COLLECTION: cron
 
     notification-sender-api:
         image: dkr.hanaboso.net/pipes/notification-sender:master

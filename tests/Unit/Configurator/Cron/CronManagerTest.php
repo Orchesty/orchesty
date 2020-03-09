@@ -26,15 +26,15 @@ use PipesFrameworkTests\KernelTestCaseAbstract;
 final class CronManagerTest extends KernelTestCaseAbstract
 {
 
-    private const COM1 = 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d \'{"params":"abc"}\' http://example.com/topologies/test/nodes/id-1/run';
-    private const COM2 = 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d \'{"params":"abc"}\' http://example.com/topologies/test/nodes/id-2/run';
-    private const COM3 = 'curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d \'{"params":"abc"}\' http://example.com/topologies/test/nodes/id-3/run';
+    private const COM1 = "echo \"[CRON] [$(date +'%Y-%m-%dT%TZ')] Requesting http://example.com/topologies/test/nodes/id-1/run: $(curl -H 'Accept: application/json' -H 'Content-Type: application/json' -X POST -d '{\"params\":\"abc\"}' -s http://example.com/topologies/test/nodes/id-1/run)\" >> /proc/1/fd/1";
+    private const COM2 = "echo \"[CRON] [$(date +'%Y-%m-%dT%TZ')] Requesting http://example.com/topologies/test/nodes/id-2/run: $(curl -H 'Accept: application/json' -H 'Content-Type: application/json' -X POST -d '{\"params\":\"abc\"}' -s http://example.com/topologies/test/nodes/id-2/run)\" >> /proc/1/fd/1";
+    private const COM3 = "echo \"[CRON] [$(date +'%Y-%m-%dT%TZ')] Requesting http://example.com/topologies/test/nodes/id-3/run: $(curl -H 'Accept: application/json' -H 'Content-Type: application/json' -X POST -d '{\"params\":\"abc\"}' -s http://example.com/topologies/test/nodes/id-3/run)\" >> /proc/1/fd/1";
 
     /**
      * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager
      * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::getAll
      * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::sendAndProcessRequest
-     *sendAndProcessRequest
+     *
      * @throws Exception
      */
     public function testGetAll(): void
@@ -42,7 +42,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
         $data = $this->getManager(
             static function (RequestDto $request): ResponseDto {
                 self::assertEquals(CurlManager::METHOD_GET, $request->getMethod());
-                self::assertEquals('http://example.com/cron-api/get_all', $request->getUri(TRUE));
+                self::assertEquals('http://example.com/crons', $request->getUri(TRUE));
 
                 return new ResponseDto(200, 'OK', '[{"name":"Name", "time":"*/1 * * * *"}]', []);
             }
@@ -73,7 +73,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
         $this->getManager(
             static function (RequestDto $request): ResponseDto {
                 self::assertEquals(CurlManager::METHOD_POST, $request->getMethod());
-                self::assertEquals('http://example.com/cron-api/create', $request->getUri(TRUE));
+                self::assertEquals('http://example.com/crons', $request->getUri(TRUE));
                 self::assertEquals(
                     [
                         'topology' => 'topology-1',
@@ -102,8 +102,8 @@ final class CronManagerTest extends KernelTestCaseAbstract
     {
         $this->getManager(
             static function (RequestDto $request): ResponseDto {
-                self::assertEquals(CurlManager::METHOD_POST, $request->getMethod());
-                self::assertEquals('http://example.com/cron-api/update/test/id-1', $request->getUri(TRUE));
+                self::assertEquals(CurlManager::METHOD_PUT, $request->getMethod());
+                self::assertEquals('http://example.com/crons/test/id-1', $request->getUri(TRUE));
                 self::assertEquals(
                     [
                         'time'    => '1 1 1 1 1',
@@ -130,8 +130,8 @@ final class CronManagerTest extends KernelTestCaseAbstract
     {
         $this->getManager(
             static function (RequestDto $request): ResponseDto {
-                self::assertEquals(CurlManager::METHOD_POST, $request->getMethod());
-                self::assertEquals('http://example.com/cron-api/patch/test/id-1', $request->getUri(TRUE));
+                self::assertEquals(CurlManager::METHOD_PATCH, $request->getMethod());
+                self::assertEquals('http://example.com/crons/test/id-1', $request->getUri(TRUE));
                 self::assertEquals(
                     [
                         'time'    => '1 1 1 1 1',
@@ -158,8 +158,8 @@ final class CronManagerTest extends KernelTestCaseAbstract
     {
         $this->getManager(
             static function (RequestDto $request): ResponseDto {
-                self::assertEquals(CurlManager::METHOD_POST, $request->getMethod());
-                self::assertEquals('http://example.com/cron-api/patch/test/id-1', $request->getUri(TRUE));
+                self::assertEquals(CurlManager::METHOD_PATCH, $request->getMethod());
+                self::assertEquals('http://example.com/crons/test/id-1', $request->getUri(TRUE));
                 self::assertEquals('{}', $request->getBody());
 
                 return new ResponseDto(200, 'OK', '', []);
@@ -180,8 +180,8 @@ final class CronManagerTest extends KernelTestCaseAbstract
     {
         $this->getManager(
             static function (RequestDto $request): ResponseDto {
-                self::assertEquals(CurlManager::METHOD_POST, $request->getMethod());
-                self::assertEquals('http://example.com/cron-api/delete/test/id-1', $request->getUri(TRUE));
+                self::assertEquals(CurlManager::METHOD_DELETE, $request->getMethod());
+                self::assertEquals('http://example.com/crons/test/id-1', $request->getUri(TRUE));
                 self::assertEmpty($request->getBody());
 
                 return new ResponseDto(200, 'OK', '', []);
@@ -203,7 +203,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
         $this->getManager(
             static function (RequestDto $request): ResponseDto {
                 self::assertEquals(CurlManager::METHOD_POST, $request->getMethod());
-                self::assertEquals('http://example.com/cron-api/batch_create', $request->getUri(TRUE));
+                self::assertEquals('http://example.com/crons-batches', $request->getUri(TRUE));
                 self::assertEquals(
                     [
                         [
@@ -243,8 +243,8 @@ final class CronManagerTest extends KernelTestCaseAbstract
     {
         $this->getManager(
             static function (RequestDto $request): ResponseDto {
-                self::assertEquals(CurlManager::METHOD_POST, $request->getMethod());
-                self::assertEquals('http://example.com/cron-api/batch_update', $request->getUri(TRUE));
+                self::assertEquals(CurlManager::METHOD_PUT, $request->getMethod());
+                self::assertEquals('http://example.com/crons-batches', $request->getUri(TRUE));
                 self::assertEquals(
                     [
                         [
@@ -285,8 +285,8 @@ final class CronManagerTest extends KernelTestCaseAbstract
     {
         $this->getManager(
             static function (RequestDto $request): ResponseDto {
-                self::assertEquals(CurlManager::METHOD_POST, $request->getMethod());
-                self::assertEquals('http://example.com/cron-api/batch_patch', $request->getUri(TRUE));
+                self::assertEquals(CurlManager::METHOD_PATCH, $request->getMethod());
+                self::assertEquals('http://example.com/crons-batches', $request->getUri(TRUE));
                 self::assertEquals(
                     [
                         [
@@ -327,8 +327,8 @@ final class CronManagerTest extends KernelTestCaseAbstract
     {
         $this->getManager(
             static function (RequestDto $request): ResponseDto {
-                self::assertEquals(CurlManager::METHOD_POST, $request->getMethod());
-                self::assertEquals('http://example.com/cron-api/batch_patch', $request->getUri(TRUE));
+                self::assertEquals(CurlManager::METHOD_PATCH, $request->getMethod());
+                self::assertEquals('http://example.com/crons-batches', $request->getUri(TRUE));
                 self::assertEquals(
                     [
                         [
@@ -363,8 +363,8 @@ final class CronManagerTest extends KernelTestCaseAbstract
     {
         $this->getManager(
             static function (RequestDto $request): ResponseDto {
-                self::assertEquals(CurlManager::METHOD_POST, $request->getMethod());
-                self::assertEquals('http://example.com/cron-api/batch_delete', $request->getUri(TRUE));
+                self::assertEquals(CurlManager::METHOD_DELETE, $request->getMethod());
+                self::assertEquals('http://example.com/crons-batches', $request->getUri(TRUE));
                 self::assertEquals(
                     [
                         ['topology' => 'topology-1', 'node' => 'node-1'],
