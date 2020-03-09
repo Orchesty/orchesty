@@ -5,7 +5,6 @@ namespace PipesFrameworkTests\Controller\HbPFUserBundle\Controller;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\Persistence\ObjectRepository;
 use Exception;
-use Hanaboso\DataGrid\Exception\GridException;
 use Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController;
 use Hanaboso\PipesFramework\HbPFUserBundle\Handler\UserHandler;
 use Hanaboso\PipesFramework\User\Document\UserSettings;
@@ -40,6 +39,7 @@ final class UserControllerTest extends ControllerTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\User\Filter\UserDocumentFilter::orderCols
      * @covers \Hanaboso\PipesFramework\User\Filter\UserDocumentFilter::searchableCols
      * @covers \Hanaboso\PipesFramework\User\Filter\UserDocumentFilter::useTextSearch
+     *
      * @throws Exception
      */
     public function testGetAllUsers(): void
@@ -61,8 +61,8 @@ final class UserControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::getAllUsersAction
-     * @throws MongoDBException
-     * @throws GridException
+     *
+     * @throws Exception
      */
     public function testGetAllUsersEntity(): void
     {
@@ -84,6 +84,8 @@ final class UserControllerTest extends ControllerTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\User\Filter\UserDocumentFilter::orderCols
      * @covers \Hanaboso\PipesFramework\User\Filter\UserDocumentFilter::searchableCols
      * @covers \Hanaboso\PipesFramework\User\Filter\UserDocumentFilter::useTextSearch
+     *
+     * @throws Exception
      */
     public function testGetAllUsersErr(): void
     {
@@ -103,6 +105,7 @@ final class UserControllerTest extends ControllerTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\User\Document\UserSettings::getUserId
      * @covers \Hanaboso\PipesFramework\User\Document\UserSettings::getSettings
      * @covers \Hanaboso\PipesFramework\User\Document\UserSettings::setSettings
+     *
      * @throws Exception
      */
     public function testSaveSettings(): void
@@ -119,13 +122,15 @@ final class UserControllerTest extends ControllerTestCaseAbstract
         $setting = $repository->findOneBy(['userId' => $user->getId()]);
 
         self::assertEquals(1, count($repository->findAll()));
-        self::assertEquals('{"settings":"some settings"}', $setting->getSettings());
+        self::assertEquals(['some' => 'settings'], $setting->getSettings());
         self::assertEquals($user->getId(), $setting->getUserId());
     }
 
     /**
      * @covers \Hanaboso\PipesFramework\HbPFUserBundle\Handler\UserHandler::getUser
      * @covers \Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::saveUserSettingsAction
+     *
+     * @throws Exception
      */
     public function testSaveSettingsErrNoUser(): void
     {
@@ -136,6 +141,8 @@ final class UserControllerTest extends ControllerTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserController::saveUserSettings
      * @covers \Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::saveUserSettingsAction
      * @covers \Hanaboso\PipesFramework\HbPFUserBundle\Handler\UserHandler::saveSettings
+     *
+     * @throws Exception
      */
     public function testSaveSettingsErr(): void
     {
@@ -154,6 +161,8 @@ final class UserControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::loginUserAction
+     *
+     * @throws Exception
      */
     public function testLoginUserActionErr(): void
     {
@@ -167,6 +176,8 @@ final class UserControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::loginUserAction
+     *
+     * @throws Exception
      */
     public function testLoginUserActionErrPipes(): void
     {
@@ -180,6 +191,7 @@ final class UserControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::loginUserAction
+     *
      * @throws Exception
      */
     public function testLoginUserAction(): void
@@ -189,7 +201,7 @@ final class UserControllerTest extends ControllerTestCaseAbstract
         /** @var User $user */
         $user = $repository->findOneBy(['email' => 'test@example.com']);
 
-        $settings = (new UserSettings())->setUserId($user->getId())->setSettings('{"settings": "some settings"}');
+        $settings = (new UserSettings())->setUserId($user->getId())->setSettings(['data' => 'someData']);
         $this->pfd($settings);
 
         $this->assertResponse(__DIR__ . '/data/loginUserRequest.json', ['id' => '5e57a1ace2a2c66a577b8ff2']);

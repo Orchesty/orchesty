@@ -19,7 +19,6 @@
         "ext-iconv": "*",
         "ext-intl": "*",
         "ext-mbstring": "*",
-        "doctrine/doctrine-fixtures-bundle": "^3.3",
         "hanaboso/acl-bundle": "^1.3",
         "hanaboso/app-store": "^1.3",
         "hanaboso/email-service-bundle": "^1.1",
@@ -33,8 +32,7 @@
         "symfony/serializer": "^5.0"
     },
     "require-dev": {
-        "hanaboso/php-check-utils": "^1.1",
-        "phpunit/phpunit": "^8.5"
+        "hanaboso/php-check-utils": "^1.1"
     },
     "repositories": [
         {

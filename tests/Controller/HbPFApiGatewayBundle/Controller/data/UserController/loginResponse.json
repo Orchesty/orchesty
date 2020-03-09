@@ -3,6 +3,6 @@
     "body": {
         "id": "123456789",
         "email": "test@example.com",
-        "settings": ""
+        "settings": []
     }
 }

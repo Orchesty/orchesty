@@ -3,6 +3,6 @@
     "body": {
         "id": "5e57a1ace2a2c66a577b8ff2",
         "email": "test@example.com",
-        "settings": "some settings"
+        "settings": {"data": "someData"}
     }
 }
