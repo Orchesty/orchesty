@@ -13,7 +13,6 @@ use Hanaboso\UserBundle\Model\Security\SecurityManagerException;
 use Hanaboso\UserBundle\Model\User\UserManager;
 use Hanaboso\UserBundle\Model\User\UserManagerException;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
-use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\System\ControllerUtils;
 
 /**
@@ -23,6 +22,8 @@ use Hanaboso\Utils\System\ControllerUtils;
  */
 class UserHandler
 {
+
+    private const SETTINGS = 'settings';
 
     /**
      * @var UsersManager
@@ -76,10 +77,10 @@ class UserHandler
      */
     public function saveSettings(array $data, string $id): UserSettings
     {
-        ControllerUtils::checkParameters(['settings'], $data);
+        ControllerUtils::checkParameters([self::SETTINGS], $data);
 
         $settings = (new UserSettings())
-            ->setSettings(Json::encode($data))
+            ->setSettings($data[self::SETTINGS])
             ->setUserId($this->getUser($id)->getId());
 
         $this->dm->persist($settings);
@@ -100,8 +101,8 @@ class UserHandler
         ControllerUtils::checkParameters(['email', 'password'], $data);
 
         $user     = $this->userManager->login($data);
-        $settings = Json::decode($this->getSettings($user->getId()));
-        $data     = array_merge($user->toArray(), $settings);
+        $settings = $this->getSettings($user->getId());
+        $data     = array_merge($user->toArray(), [self::SETTINGS => $settings]);
 
         return $data;
     }
@@ -109,9 +110,9 @@ class UserHandler
     /**
      * @param string $id
      *
-     * @return string
+     * @return mixed[]
      */
-    private function getSettings(string $id): string
+    private function getSettings(string $id): array
     {
         /** @var ObjectRepository<UserSettings> $userRepository */
         $userRepository = $this->dm->getRepository(UserSettings::class);
@@ -122,7 +123,7 @@ class UserHandler
             return $userSettings->getSettings();
         }
 
-        return '{"settings": ""}';
+        return [];
     }
 
     /**

@@ -18,11 +18,11 @@ class UserSettings
     use IdTrait;
 
     /**
-     * @var string
+     * @var mixed[]
      *
-     * @ODM\Field(type="string")
+     * @ODM\Field(type="hash")
      */
-    private string $settings;
+    private array $settings;
 
     /**
      * @ODM\Field(type="string")
@@ -30,19 +30,19 @@ class UserSettings
     private string $userId;
 
     /**
-     * @return string
+     * @return mixed[]
      */
-    public function getSettings(): string
+    public function getSettings(): array
     {
         return $this->settings;
     }
 
     /**
-     * @param string $settings
+     * @param mixed[] $settings
      *
      * @return UserSettings
      */
-    public function setSettings(string $settings): self
+    public function setSettings(array $settings): UserSettings
     {
         $this->settings = $settings;
 

@@ -1,7 +1,9 @@
 {
     "http": "POST /api/user/123456789/saveSettings",
     "body": {
-        "settings": "some settings"
+        "settings": {
+            "some": "settings"
+        }
     },
     "headers": []
 }
