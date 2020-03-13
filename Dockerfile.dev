@@ -16,4 +16,4 @@ CMD /bin/sh -c '\
     su-exec root mkdir -p /.cache && \
     su-exec root chmod -R 777 /.cache && \
     go mod download && \
-    su-exec root go run main.go server'
+    go run main.go server'
