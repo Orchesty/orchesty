@@ -113,12 +113,6 @@ func (d dockerClient) DeleteSwarm(topologyId string, db StorageSvc, dockerCli Do
 		return fmt.Errorf("getting topology %s failed. Reason: %v", topologyId, err)
 	}
 
-	err = dockerCli.StopSwarm(topology, generatorConfig.Prefix)
-
-	if err != nil {
-		return fmt.Errorf("failed to stop swarm. Reason: %v", err)
-	}
-
 	dstDir := GetDstDir(generatorConfig.Path, topology.GetSaveDir())
 	err = fs_commands.RemoveDirectory(dstDir)
 	if err != nil {
