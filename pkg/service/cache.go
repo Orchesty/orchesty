@@ -15,8 +15,8 @@ type CacheInterface interface {
 	InitCache()
 	GetCache() *cache.Cache
 	InvalidateCache(topologyName string) int
-	FindTopologyByID(topologyID, nodeID, processID string, isHumanTask bool) *storage.Topology
-	FindTopologyByName(topologyName, nodeName, processID string, isHumanTask bool) *storage.Topology
+	FindTopologyByID(topologyID, nodeID, humanTaskID string, isHumanTask bool) *storage.Topology
+	FindTopologyByName(topologyName, nodeName, humanTaskID string, isHumanTask bool) *storage.Topology
 	FindTopologyByApplication(topologyName, nodeName, token string) (*storage.Topology, *storage.Webhook)
 }
 
@@ -48,12 +48,12 @@ func (c *CacheDefault) GetCache() *cache.Cache {
 }
 
 // FindTopologyByID finds topology by ID
-func (c *CacheDefault) FindTopologyByID(topologyID, nodeID, processID string, isHumanTask bool) *storage.Topology {
+func (c *CacheDefault) FindTopologyByID(topologyID, nodeID, humanTaskID string, isHumanTask bool) *storage.Topology {
 	topologyKey := fmt.Sprintf("%s-%s", topologyID, nodeID)
 	topology, found := c.cache.Get(topologyKey)
 
 	if !found {
-		foundTopology := c.mongo.FindTopologyByID(topologyID, nodeID, processID, isHumanTask)
+		foundTopology := c.mongo.FindTopologyByID(topologyID, nodeID, humanTaskID, isHumanTask)
 
 		if foundTopology != nil && foundTopology.Node != nil {
 			c.cache.Set(topologyKey, foundTopology, 0)
@@ -67,12 +67,12 @@ func (c *CacheDefault) FindTopologyByID(topologyID, nodeID, processID string, is
 }
 
 // FindTopologyByName finds topology by name
-func (c *CacheDefault) FindTopologyByName(topologyName, nodeName, processID string, isHumanTask bool) *storage.Topology {
+func (c *CacheDefault) FindTopologyByName(topologyName, nodeName, humanTaskID string, isHumanTask bool) *storage.Topology {
 	topologyKey := fmt.Sprintf("%s-%s", topologyName, nodeName)
 	topology, found := c.cache.Get(topologyKey)
 
 	if !found {
-		foundTopology := c.mongo.FindTopologyByName(topologyName, nodeName, processID, isHumanTask)
+		foundTopology := c.mongo.FindTopologyByName(topologyName, nodeName, humanTaskID, isHumanTask)
 
 		if foundTopology != nil {
 			c.cache.Set(topologyKey, foundTopology, 0)

@@ -89,25 +89,25 @@ func TestCache(t *testing.T) {
 	}, cacheCache)
 }
 
-func (m *MongoMock) FindNodeByID(nodeID, topologyID, processID string, isHumanTask bool) *storage.Node {
+func (m *MongoMock) FindNodeByID(nodeID, topologyID, humanTaskID string, isHumanTask bool) *storage.Node {
 	return &storage.Node{
 		ID:   customObjectID,
 		Name: node,
 	}
 }
 
-func (m *MongoMock) FindNodeByName(nodeName, topologyID, processID string, isHumanTask bool) []storage.Node {
+func (m *MongoMock) FindNodeByName(nodeName, topologyID, humanTaskID string, isHumanTask bool) []storage.Node {
 	return []storage.Node{{
 		ID:   customObjectID,
 		Name: node,
 	}}
 }
 
-func (m *MongoMock) FindTopologyByID(topologyID, nodeID, processID string, isHumanTask bool) *storage.Topology {
+func (m *MongoMock) FindTopologyByID(topologyID, nodeID, humanTaskID string, isHumanTask bool) *storage.Topology {
 	return &topologyObject
 }
 
-func (m *MongoMock) FindTopologyByName(topologyName, nodeName, processID string, isHumanTask bool) *storage.Topology {
+func (m *MongoMock) FindTopologyByName(topologyName, nodeName, humanTaskID string, isHumanTask bool) *storage.Topology {
 	return &topologyObject
 }
 
@@ -115,7 +115,7 @@ func (m *MongoMock) FindTopologyByApplication(topologyName, nodeName, token stri
 	return &topologyObject, &webhookObject
 }
 
-func (m *MongoMock) FindHumanTask(nodeID, topologyID, processID string) *storage.HumanTask {
+func (m *MongoMock) FindHumanTask(nodeID, topologyID, humanTaskID string) *storage.HumanTask {
 	return &storage.HumanTask{
 		ID:            customObjectID,
 		CorrelationID: "correlationID",
