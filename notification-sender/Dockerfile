@@ -1,17 +1,11 @@
 FROM hanabosocom/php-base:php-7.4-alpine
+RUN apk add composer --no-cache && composer global require hirak/prestissimo
+COPY . .
+RUN composer install -a --no-dev && APP_ENV=prod APP_DEBUG=0 bin/console cache:warmup
 
-ENV APP_ENV=prod
-ENV APP_DEBUG=0
-ENV PHP_FPM_MAX_REQUESTS 500
-ENV PHP_FPM_MAX_CHILDREN 5
-
-COPY . /var/www
+FROM hanabosocom/php-base:php-7.4-alpine
+ENV APP_DEBUG=0 APP_ENV=prod PHP_FPM_MAX_CHILDREN=10 PHP_FPM_MAX_REQUESTS=500
 COPY php-local.ini /usr/local/etc/php/conf.d/zz_local.ini
-
-RUN mkdir -p /var/www/var/log /var/www/var/cache && \
-    chmod -R 774 /var/www/var && \
-    chown -R www-data /var/www/var
-
-WORKDIR /var/www
-
+COPY --from=0 /var/www .
+RUN rm -rf html localhost && chown -R www-data:www-data /var/www/var
 CMD [ "php-w-nginx.sh" ]

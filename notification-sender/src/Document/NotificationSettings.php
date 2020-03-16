@@ -44,26 +44,26 @@ class NotificationSettings
      *
      * @ODM\Field(type="string")
      */
-    private string $class;
+    private $class;
 
     /**
      * @var mixed[]
      *
      * @ODM\Field(type="collection")
      */
-    private array $events = [];
+    private $events = [];
 
     /**
      * @var mixed[]
      */
-    private array $settings = [];
+    private $settings = [];
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private string $encryptedSettings;
+    private $encryptedSettings;
 
     /**
      * NotificationSettings constructor.
