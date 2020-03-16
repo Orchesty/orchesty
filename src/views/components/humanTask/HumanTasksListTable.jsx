@@ -122,7 +122,7 @@ class HumanTasksListTable extends AbstractTable {
       const menuItems = [{
         caption: 'Approve',
         customClass: 'btn btn-success',
-        action: () => approveHumanTask(item.topologyId, item.nodeId, item.processId, true)
+        action: () => approveHumanTask(item.topologyId, item.nodeId, item.id, true)
       }, {
         caption: 'Change',
         customClass: 'btn btn-warning',
@@ -130,7 +130,7 @@ class HumanTasksListTable extends AbstractTable {
       }, {
         caption: 'Decline',
         customClass: 'btn btn-danger',
-        action: () => process(item.topologyId, item.nodeId, item.processId, false)
+        action: () => process(item.topologyId, item.nodeId, item.id, false)
       }];
 
       return (

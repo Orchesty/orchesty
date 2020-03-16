@@ -1,5 +1,10 @@
 *
+!src
+!.babelrc
 !entrypoint.sh
 !nginx.conf.tpl
+!package.json
+!package-lock.json
 !upstream_resolver
-!dist
+!webpack.config.common.js
+!webpack.config.prod.js

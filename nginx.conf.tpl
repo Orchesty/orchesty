@@ -1,4 +1,4 @@
-user www-data;
+# user www-data;
 worker_processes auto;
 pid /run/nginx.pid;
 include /etc/nginx/modules-enabled/*.conf;
@@ -40,9 +40,9 @@ http {
 	##
 	# Logging Settings
 	##
-
-	access_log /proc/self/fd/1;
-	error_log /proc/self/fd/2;
+	log_format own escape=none '[$time_local] [$request_time s] [HTTP $status] [$request_method $request_uri] $request_body';
+	access_log /proc/self/fd/1 own;
+	error_log /proc/self/fd/2 warn;
 
 	##
 	# Gzip Settings
@@ -76,9 +76,6 @@ http {
 		server_name _;
 		listen 80 default_server;
 
-		set_by_lua $php_app_index 'return os.getenv("PHP_APP_INDEX")';
-		set_by_lua $php_webroot 'return os.getenv("PHP_WEBROOT")';
-
 		location /ui {
 			root /var/www/html;
 			rewrite ^/ui$ /ui/ permanent;
@@ -93,12 +90,8 @@ http {
 			proxy_pass http://resolve_spitter-api:3000/;
 		}
 
-		location /cron-api {
-			proxy_pass http://resolve_cron-api:5000/;
-		}
-
 		location /starting-point/ {
-			proxy_pass http://resolve_starting-point:80/;
+			proxy_pass http://resolve_starting-point:8080/;
 		}
 
 		location /socket.io {
