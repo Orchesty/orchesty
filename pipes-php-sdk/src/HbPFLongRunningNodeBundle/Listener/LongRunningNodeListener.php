@@ -11,6 +11,8 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  * Class LongRunningNodeListener
  *
  * @package Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Listener
+ *
+ * @codeCoverageIgnore
  */
 final class LongRunningNodeListener implements EventSubscriberInterface
 {
