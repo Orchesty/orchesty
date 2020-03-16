@@ -266,7 +266,7 @@ frontend:
     - DIR=frontend
     - skip_unmodified $DIR
     - cd $DIR
-    - make build image push TAG=${CI_BUILD_REF_NAME}
+    - make build TAG=${CI_BUILD_REF_NAME}
   only:
     - dev
     - master
