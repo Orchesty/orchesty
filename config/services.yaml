@@ -1,6 +1,9 @@
 parameters:
     locale: 'en'
     secret: '%env(APP_SECRET)%'
+    container:
+        dumper:
+            inline_factories: true
 
     env(MONGO_HOST): mongodb
     env(MONGO_PORT): null

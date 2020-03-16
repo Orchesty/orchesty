@@ -48,11 +48,11 @@ final class Kernel extends BaseKernel
     protected function configureContainer(ContainerBuilder $container, LoaderInterface $loader): void
     {
         $container->addResource(new FileResource(sprintf('%s/config/Bundles.php', $this->getProjectDir())));
+        $container->setParameter('container.dumper.inline_class_loader', TRUE);
         $confDir = $this->getConfigDir();
+        $loader->load(sprintf('%s/*%s', $confDir, self::CONFIG_EXTS), 'glob');
         $loader->load(sprintf('%s/{packages}/*%s', $confDir, self::CONFIG_EXTS), 'glob');
         $loader->load(sprintf('%s/{packages}/%s/**/*%s', $confDir, $this->environment, self::CONFIG_EXTS), 'glob');
-        $loader->load(sprintf('%s/{services}%s', $confDir, self::CONFIG_EXTS), 'glob');
-        $loader->load(sprintf('%s/{services}_%s%s', $confDir, $this->environment, self::CONFIG_EXTS), 'glob');
     }
 
     /**
