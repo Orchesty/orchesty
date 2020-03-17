@@ -41,6 +41,13 @@ init-dev: .env
 destroy-dev:
 	$(DC_DEV) down -v
 
+init-mongo:
+	docker-compose -f docker-compose.mongo.yaml pull
+	docker-compose -f docker-compose.mongo.yaml up -d --force-recreate --remove-orphans
+
+destroy-mongo:
+	docker-compose -f docker-compose.mongo.yaml down -v
+
 composer-update-dev:
 	$(DE_DEV) monolith-api composer global require hirak/prestissimo
 	$(DE_DEV) monolith-api composer update --no-suggest
