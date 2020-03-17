@@ -15,7 +15,7 @@ type (
 	}
 
 	apiConfig struct {
-		Host string `default:"0.0.0.0:80" env:"API_HOST"`
+		Host string `default:"0.0.0.0:8080" env:"API_HOST"`
 	}
 
 	GeneratorConfig struct {
