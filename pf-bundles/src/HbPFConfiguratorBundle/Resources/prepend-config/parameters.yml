@@ -13,8 +13,8 @@ parameters:
     mapper_api_host: "%env(string:MAPPER_API_DSN)%"
     monolith_api_host: "%env(string:MONOLITH_API_DSN)%"
     xml_parser_api_host: "%env(string:XML_PARSER_API_DSN)%"
-    metrics_host: "%kapacitor.host%"
-    metrics_port: "%kapacitor.port%"
+    metrics_host: "%env(string:METRICS_HOST)%"
+    metrics_port: "%env(string:METRICS_PORT)%"
 
     topology_configs:
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::RABBITMQ_HOST: "%rabbit_host%:%rabbit_port%"
