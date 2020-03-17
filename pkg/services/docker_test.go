@@ -522,23 +522,6 @@ func TestDockerClient_DeleteSwarmFails(t *testing.T) {
 		require.NotNil(t, err)
 		require.Equal(t, "getting topology 5dc0474e4e9acc00282bb942 failed. Reason: cant return topology for test purpose", err.Error())
 	})
-
-	t.Run("testing delete swarm fails on stopping swarm", func(t *testing.T) {
-		err := testDocker.DeleteSwarm(
-			topologyId,
-			testDb{
-				mockGetTopology: func(id string) (topology *model.Topology, e error) {
-					return getMockTopology(), nil
-				},
-				mockGetTopologyNodes: func(id string) (nodes []model.Node, e error) {
-					return getTestNodes(), nil
-				}},
-			testSwarmCLi,
-			configGenerator,
-		)
-		require.NotNil(t, err)
-		require.Equal(t, "failed to stop swarm. Reason: stopping swarm failed", err.Error())
-	})
 }
 
 func TestDockerClient_RunStopSwarmFails(t *testing.T) {
