@@ -13,7 +13,7 @@ services:
             - ./:/topology-generator
             - ${GOPATH}/pkg:/go/pkg
         ports:
-            - ${DEV_IP}:8080:8080
+            - ${DEV_IP}:80:8080
 
     mongodb:
         image: mongo:latest

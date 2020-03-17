@@ -1,0 +1,16 @@
+*
+!clients/demo/php-local.ini
+!clients/demo/pipes-api/bin
+!clients/demo/pipes-api/config
+!clients/demo/pipes-api/public
+!clients/demo/pipes-api/src
+!clients/demo/pipes-api/composer.json
+!clients/demo/pipes-api/composer.lock
+!pf-bundles/src
+!pf-bundles/composer.json
+!pipes-php-sdk/src
+!pipes-php-sdk/composer.json
+!app-store/src
+!app-store/composer.json
+!pipes-connectors/src
+!pipes-connectors/composer.json

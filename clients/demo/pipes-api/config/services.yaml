@@ -1,6 +1,9 @@
 parameters:
     locale: en
     secret: ThisTokenIsNotSoSecretChangeIt
+    container:
+        dumper:
+            inline_factories: true
 
     frontendHost: http://127.0.0.66/ui
     env(BACKEND_HOST): http://127.0.0.66

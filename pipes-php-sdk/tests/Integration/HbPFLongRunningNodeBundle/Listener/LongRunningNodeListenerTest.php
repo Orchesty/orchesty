@@ -32,8 +32,8 @@ final class LongRunningNodeListenerTest extends DatabaseTestCaseAbstract
 
         /** @var LongRunningNodeData[] $res */
         $res = $this->dm->getRepository(LongRunningNodeData::class)->findAll();
-        self::assertEquals(1, count($res));
-        self::assertEquals('2', $res[0]->getProcessId());
+        self::assertEquals(4, count($res));
+        self::assertEquals('0', $res[0]->getProcessId());
     }
 
     /**

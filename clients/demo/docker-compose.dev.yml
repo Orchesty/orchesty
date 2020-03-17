@@ -46,8 +46,18 @@ services:
             BACKEND_HOST: ${BACKEND_URL}/
             FRONTEND_HOST: ${BACKEND_URL}/
             ELASTIC_HOST: elasticsearch
-            ELASTIC_INDEX: 'index'
+            ELASTIC_INDEX: index
             METRICS_SERVICE: influx
+            REDIS_DSN: redis://redis
+            FTP_API_DSN: ftp-api
+            MAILER_API_DSN: mailer-api
+            MAPPER_API_DSN: mapper-api
+            MONOLITH_API_DSN: monolith-api
+            MULTI_PROBE_DSN: multi-probe:8007
+            STARTING_POINT_DSN: starting-point:8080
+            CRON_DSN: cron-api:8080
+            TOPOLOGY_API_DSN: topology-api:80
+            XML_PARSER_API_DSN: xml-parser-api
             COMPOSER_HOME: ${HOME}/dev/.composer
         command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit_mq:consumer:batch'
         working_dir: /var/www/pipes/clients/demo/pipes-api
@@ -66,6 +76,16 @@ services:
     #      ELASTIC_HOST: elasticsearch
     #      ELASTIC_INDEX: 'logstash-2018.01.31'
     #      METRICS_SERVICE: influx
+    #      REDIS_DSN: redis://redis
+    #      FTP_API_DSN: ftp-api
+    #      MAILER_API_DSN: mailer-api
+    #      MAPPER_API_DSN: mapper-api
+    #      MONOLITH_API_DSN: monolith-api
+    #      MULTI_PROBE_DSN: multi-probe:8007
+    #      STARTING_POINT_DSN: starting-point:8080
+    #      CRON_DSN: cron-api:8080
+    #      TOPOLOGY_API_DSN: topology-api:80
+    #      XML_PARSER_API_DSN: xml-parser-api
     #      PHP_FPM_MAX_REQUESTS: 5000
     ## END STAGE
 
@@ -77,8 +97,18 @@ services:
             BACKEND_HOST: ${BACKEND_URL}/
             FRONTEND_HOST: ${BACKEND_URL}/
             ELASTIC_HOST: elasticsearch
-            ELASTIC_INDEX: 'index'
+            ELASTIC_INDEX: index
             METRICS_SERVICE: influx
+            REDIS_DSN: redis://redis
+            FTP_API_DSN: ftp-api
+            MAILER_API_DSN: mailer-api
+            MAPPER_API_DSN: mapper-api
+            MONOLITH_API_DSN: monolith-api
+            MULTI_PROBE_DSN: multi-probe:8007
+            STARTING_POINT_DSN: starting-point:8080
+            CRON_DSN: cron-api:8080
+            TOPOLOGY_API_DSN: topology-api:80
+            XML_PARSER_API_DSN: xml-parser-api
             COMPOSER_HOME: ${HOME}/dev/.composer
         command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit_mq:consumer:batch-connector'
         working_dir: /var/www/pipes/clients/demo/pipes-api
@@ -97,6 +127,16 @@ services:
     #      ELASTIC_HOST: elasticsearch
     #      ELASTIC_INDEX: 'logstash-2018.01.31'
     #      METRICS_SERVICE: influx
+    #      REDIS_DSN: redis://redis
+    #      FTP_API_DSN: ftp-api
+    #      MAILER_API_DSN: mailer-api
+    #      MAPPER_API_DSN: mapper-api
+    #      MONOLITH_API_DSN: monolith-api
+    #      MULTI_PROBE_DSN: multi-probe:8007
+    #      STARTING_POINT_DSN: starting-point:8080
+    #      CRON_DSN: cron-api:8080
+    #      TOPOLOGY_API_DSN: topology-api:80
+    #      XML_PARSER_API_DSN: xml-parser-api
     #      PHP_FPM_MAX_REQUESTS: 5000
     ## END STAGE
 
@@ -110,11 +150,18 @@ services:
             BACKEND_HOST: ${BACKEND_URL}/
             FRONTEND_HOST: ${BACKEND_URL}/
             ELASTIC_HOST: elasticsearch
-            ELASTIC_INDEX: 'logstash-2018.01.31'
-            METRICS_SERVICE: 'influx'
-            METRICS_HOST: 'kapacitor'
-            METRICS_PORT: '9100'
+            ELASTIC_INDEX: index
+            METRICS_SERVICE: influx
+            REDIS_DSN: redis://redis
+            FTP_API_DSN: ftp-api
+            MAILER_API_DSN: mailer-api
+            MAPPER_API_DSN: mapper-api
+            MONOLITH_API_DSN: monolith-api
+            MULTI_PROBE_DSN: multi-probe:8007
             STARTING_POINT_DSN: starting-point:8080
+            CRON_DSN: cron-api:8080
+            TOPOLOGY_API_DSN: topology-api:80
+            XML_PARSER_API_DSN: xml-parser-api
             COMPOSER_HOME: ${HOME}/dev/.composer
         volumes:
             - ../../:/var/www/pipes
@@ -130,10 +177,17 @@ services:
     #      FRONTEND_HOST: ${BACKEND_URL}/
     #      ELASTIC_HOST: elasticsearch
     #      ELASTIC_INDEX: 'logstash-2018.01.31'
-    #       METRICS_SERVICE: 'influx'
-    #       METRICS_HOST: 'kapacitor'
-    #       METRICS_PORT: '9100'
-    #       STARTING_POINT_DSN: starting-point:8080
+    #      METRICS_SERVICE: influx
+    #      REDIS_DSN: redis://redis
+    #      FTP_API_DSN: ftp-api
+    #      MAILER_API_DSN: mailer-api
+    #      MAPPER_API_DSN: mapper-api
+    #      MONOLITH_API_DSN: monolith-api
+    #      MULTI_PROBE_DSN: multi-probe:8007
+    #      STARTING_POINT_DSN: starting-point:8080
+    #      CRON_DSN: cron-api:8080
+    #      TOPOLOGY_API_DSN: topology-api:80
+    #      XML_PARSER_API_DSN: xml-parser-api
     #      PHP_FPM_MAX_REQUESTS: 5000
     ## END STAGE
 
@@ -145,7 +199,18 @@ services:
             BACKEND_HOST: ${BACKEND_URL}/
             FRONTEND_HOST: ${BACKEND_URL}/
             ELASTIC_HOST: elasticsearch
-            ELASTIC_INDEX: 'index'
+            ELASTIC_INDEX: index
+            METRICS_SERVICE: influx
+            REDIS_DSN: redis://redis
+            FTP_API_DSN: ftp-api
+            MAILER_API_DSN: mailer-api
+            MAPPER_API_DSN: mapper-api
+            MONOLITH_API_DSN: monolith-api
+            MULTI_PROBE_DSN: multi-probe:8007
+            STARTING_POINT_DSN: starting-point:8080
+            CRON_DSN: cron-api:8080
+            TOPOLOGY_API_DSN: topology-api:80
+            XML_PARSER_API_DSN: xml-parser-api
             COMPOSER_HOME: ${HOME}/dev/.composer
         command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit_mq:consumer:status-service'
         working_dir: /var/www/pipes/clients/demo/pipes-api
@@ -163,6 +228,17 @@ services:
     #      FRONTEND_HOST: ${BACKEND_URL}/
     #      ELASTIC_HOST: elasticsearch
     #      ELASTIC_INDEX: 'logstash-2018.01.31'
+    #      METRICS_SERVICE: influx
+    #      REDIS_DSN: redis://redis
+    #      FTP_API_DSN: ftp-api
+    #      MAILER_API_DSN: mailer-api
+    #      MAPPER_API_DSN: mapper-api
+    #      MONOLITH_API_DSN: monolith-api
+    #      MULTI_PROBE_DSN: multi-probe:8007
+    #      STARTING_POINT_DSN: starting-point:8080
+    #      CRON_DSN: cron-api:8080
+    #      TOPOLOGY_API_DSN: topology-api:80
+    #      XML_PARSER_API_DSN: xml-parser-api
     #      PHP_FPM_MAX_REQUESTS: 5000
     ## END STAGE
 
@@ -305,15 +381,19 @@ services:
     #      ELASTIC_INDEX: 'logstash-2018.01.31'
     #      SMTP_USER: dev.email.hb@gmail.com
     #      SMTP_PASSWORD: jVME2RkX9xyYhj9v
+    #      METRICS_HOST: 'kapacitor'
+    #      METRICS_PORT: '9100'
+    #      METRICS_SERVICE: 'influx'
+    #      REDIS_DSN: 'redis://redis'
     #      FTP_API_DSN: ftp-api
     #      MAILER_API_DSN: mailer-api
     #      MAPPER_API_DSN: mapper-api
     #      MONOLITH_API_DSN: monolith-api
     #      MULTI_PROBE_DSN: multi-probe:8007
     #      STARTING_POINT_DSN: starting-point:8080
+    #      CRON_DSN: cron-api:8080
     #      TOPOLOGY_API_DSN: topology-api:8080
     #      XML_PARSER_API_DSN: xml-parser-api
-    #      REDIS_DSN: 'redis://redis'
     #    secrets:
     #      - source: clevermonitor-ca.pem
     #        target: /var/www/html/var/secret/ca.crt
@@ -325,7 +405,6 @@ services:
     ## BEGIN DEV
     notification-sender-api:
         image: dkr.hanaboso.net/pipes/notification-sender:master
-        working_dir: /var/www
         environment:
             MONGO_HOST: mongo
     ## END DEV
@@ -418,7 +497,6 @@ services:
     #    environment:
     #      BACKEND_URL: ${BACKEND_URL}
     #      FRONTEND_URL: ${BACKEND_URL}
-    #      PHP_WEBROOT: /var/www/html/public
     #    ports:
     #      - ${PUBLISH_HTTP_PORT}:80
     ## END STAGE

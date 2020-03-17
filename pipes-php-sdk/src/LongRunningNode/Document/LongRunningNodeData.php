@@ -21,6 +21,11 @@ use RabbitMqBundle\Utils\Message;
  *
  * @ODM\Document(repositoryClass="Hanaboso\PipesPhpSdk\LongRunningNode\Repository\LongRunningNodeDataRepository")
  * @ODM\HasLifecycleCallbacks()
+ * @ODM\Indexes({
+ *     @ODM\Index(keys={"created"="asc"}),
+ *     @ODM\Index(keys={"nodeName"="asc"}),
+ *     @ODM\Index(keys={"auditLogs"="text"})
+ * })
  */
 class LongRunningNodeData
 {

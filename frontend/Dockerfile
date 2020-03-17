@@ -1,21 +1,26 @@
-FROM debian:stretch
+FROM node:12-alpine
+COPY . .
+RUN npm i && npm run build
 
-# TODO: better cleanup
-RUN apt-get update && \
-    apt-get install -y --force-yes nginx-extras procps bind9-host && \
-    apt-get clean
+FROM alpine
 
-ENV PHP_APP_INDEX index.php
-ENV PHP_WEBROOT /srv/app
-
-RUN rm /etc/nginx/nginx.conf
-COPY nginx.conf.tpl /etc/nginx/
-COPY upstream_resolver /usr/sbin
-
-WORKDIR /var/www/html
-COPY dist/ ui/
+RUN apk update --no-cache && \
+    apk upgrade --no-cache && \
+    apk add \
+    bash \
+    bind-tools \
+    nginx \
+    procps && \
+    rm /etc/nginx/nginx.conf && \
+    rm -rf /etc/nginx/conf.d
 
 COPY entrypoint.sh /
+COPY nginx.conf.tpl /etc/nginx
+COPY upstream_resolver /usr/sbin
+COPY --from=0 /dist /var/www/html/ui
+
+WORKDIR /var/www/html
+
 ENTRYPOINT [ "/entrypoint.sh" ]
 
 CMD nginx -g 'daemon off;'

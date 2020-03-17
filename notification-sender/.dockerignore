@@ -1,0 +1,8 @@
+*
+!bin
+!config
+!public
+!src
+!composer.json
+!composer.lock
+!php-local.ini

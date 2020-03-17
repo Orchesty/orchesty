@@ -117,7 +117,7 @@ export function humanTaskListChangeFilter(listId, filter) {
 
 export function humanTaskProcess(listId, topology, node, token, approve, body) {
   return dispatch => new Promise((resolve, reject) => {
-    startingPointRequest(dispatch, 'POST', `/human-tasks/topologies/${topology}/nodes/${node}/token/${token}/${approve ? 'run' : 'stop'}`, null, body).then((response) => {
+    startingPointRequest(dispatch, 'POST', getHumanTaskRunUrl(topology, node, token, approve), null, body).then((response) => {
       if (response) {
         dispatch(loadList(listId));
 
@@ -127,6 +127,10 @@ export function humanTaskProcess(listId, topology, node, token, approve, body) {
       reject('Something gone wrong.')
     });
   });
+}
+
+export function getHumanTaskRunUrl(topology, node, token, approve) {
+  return `/human-tasks/topologies/${topology}/nodes/${node}/token/${token}/${approve ? 'run' : 'stop'}`
 }
 
 export function humanTaskChange(listId, id, body) {

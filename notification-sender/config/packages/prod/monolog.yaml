@@ -4,3 +4,4 @@ monolog:
             type: stream
             path: "php://stdout"
             level: info
+            channels: ['!php', '!request']
