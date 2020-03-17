@@ -39,6 +39,8 @@ services:
             - MONOLITH_API_DSN=${DEV_IP}
             - XML_PARSER_API_DSN=xml-parser-api
             - METRICS_SERVICE=influx
+            - METRICS_HOST=influx
+            - METRICS_PORT=8089
 
     starting-point:
         image: dkr.hanaboso.net/pipes/pipes/starting-point:master
