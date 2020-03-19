@@ -52,7 +52,20 @@ export function notificationSettingsChange(listId, id, data) {
   const { events, ...settings } = data;
 
   if (settings.emails) {
-    settings.emails = settings.emails.split(/\r\n|\r|\n/g);
+    settings.emails = settings.emails.split(/\r\n|\r|\n/g).filter(email => email.length);
+  }
+
+  if (settings.headers) {
+    const innerHeaders = {};
+
+    settings.headers.split(/\r\n|\r|\n/g).filter(header => header.length).map(header => {
+      const [key, value] = header.split(/:/g);
+      innerHeaders[key] = value;
+
+      return undefined
+    });
+
+    settings.headers = innerHeaders;
   }
 
   return dispatch => new Promise((resolve, reject) => {

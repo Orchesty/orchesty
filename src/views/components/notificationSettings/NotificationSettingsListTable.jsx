@@ -19,10 +19,12 @@ class NotificationSettingsListTable extends AbstractTable {
 
       return (
         <th
+          title={item.status ? '' : `Settings error: ${item.status_message}`}
           key={item.customName}
           className="notification-settings-head"
           onClick={() => changeNotificationSettings(item.id, item)}>
-          {item.customName}
+          <i className={item.status ? 'fa fa-check' : 'fa fa-times'} style={{ color: item.status ? "#080" : "#F00" }} />
+          &nbsp;{item.customName}
         </th>
       );
     }) : [];
