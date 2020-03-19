@@ -10,7 +10,9 @@
                 "type": "curl",
                 "class": "Hanaboso\\NotificationSender\\Model\\Notification\\Handler\\Impl\\CurlNotificationHandler",
                 "events": [],
-                "settings": []
+                "settings": [],
+                "status": true,
+                "status_message": null
             },
             {
                 "id": "123456789",
@@ -20,7 +22,9 @@
                 "type": "email",
                 "class": "Hanaboso\\NotificationSender\\Model\\Notification\\Handler\\Impl\\EmailNotificationHandler",
                 "events": [],
-                "settings": []
+                "settings": [],
+                "status": true,
+                "status_message": null
             },
             {
                 "id": "123456789",
@@ -30,7 +34,9 @@
                 "type": "rabbit",
                 "class": "Hanaboso\\NotificationSender\\Model\\Notification\\Handler\\Impl\\RabbitNotificationHandler",
                 "events": [],
-                "settings": []
+                "settings": [],
+                "status": true,
+                "status_message": null
             }
         ]
     }
