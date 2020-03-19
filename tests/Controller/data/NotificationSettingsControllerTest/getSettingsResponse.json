@@ -8,6 +8,8 @@
         "type": "email",
         "class": "NotificationSenderTests\\Integration\\Model\\Notification\\Handler\\Impl\\NullEmailHandler",
         "events": [],
-        "settings": []
+        "settings": [],
+        "status": true,
+        "status_message": null
     }
 }

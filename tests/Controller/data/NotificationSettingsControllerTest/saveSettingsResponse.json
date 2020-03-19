@@ -21,6 +21,8 @@
                 "another-two@example.com"
             ],
             "email": "email@example.com"
-        }
+        },
+        "status": false,
+        "status_message": "Connection could not be established with host host :stream_socket_client(): php_network_getaddresses: getaddrinfo failed: Name does not resolve"
     }
 }

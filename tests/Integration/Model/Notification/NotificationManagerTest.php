@@ -56,7 +56,13 @@ final class NotificationManagerTest extends DatabaseTestCaseAbstract
             (new NotificationSettings())
                 ->setClass(NullCurlHandler::class)
                 ->setEvents(self::EVENTS)
-                ->setSettings([CurlDto::METHOD => 'POST', CurlDto::URL => 'https://example.com'])
+                ->setSettings(
+                    [
+                        CurlDto::METHOD  => 'POST',
+                        CurlDto::URL     => 'https://example.com',
+                        CurlDto::HEADERS => [],
+                    ]
+                )
         );
 
         $this->pfd(
