@@ -6,6 +6,8 @@ services:
         working_dir: /var/www
         environment:
             - APP_ENV=dev
+            - RABBITMQ_DSN=amqp://rabbitmq:5672
+            - SMTP_DSN=smtp://root:root@mailhog:1025
             - KERNEL_CLASS=Hanaboso\NotificationSender\Kernel
             - DEV_UID=${DEV_UID}
             - DEV_GID=${DEV_GID}
@@ -18,7 +20,7 @@ services:
         image: hanabosocom/php-dev:php-7.4
         user: ${DEV_UID}:${DEV_GID}
         ports:
-            - ${DEV_IP}:8000:80
+            - ${DEV_IP}:80:80
         volumes:
             - ./:/var/www
             - ${SSH_AUTH_SOCK}:${SSH_AUTH}
@@ -52,6 +54,15 @@ services:
         image: mailhog/mailhog
         ports:
             - ${DEV_IP}:8025:8025
+
+    swagger-ui:
+        image: swaggerapi/swagger-ui
+        ports:
+            - ${DEV_IP}:8080:8080
+        volumes:
+            - ./openapi.yaml:/api.yaml
+        environment:
+            SWAGGER_JSON: /api.yaml
 
 volumes:
     mongodb: {}
