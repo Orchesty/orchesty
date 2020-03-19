@@ -9,6 +9,7 @@ RUN cd clients/demo/pipes-api && \
 
 FROM hanabosocom/php-base:php-7.4-alpine
 ENV APP_DEBUG=0 APP_ENV=prod PHP_FPM_MAX_CHILDREN=10 PHP_FPM_MAX_REQUESTS=500
+ENV STARTING_POINT_DSN='starting-point:8080' METRICS_SERVICE='influx'
 COPY clients/demo/php-local.ini /usr/local/etc/php/conf.d/zz_local.ini
 COPY --from=0 /var/www/clients/demo/pipes-api .
 RUN rm -rf html localhost && chown -R www-data:www-data /var/www/var
