@@ -42,7 +42,7 @@ class NotificationSettingsChangeForm extends React.Component {
   }
 
   render() {
-    const { initialValues: { type, eventOptions } } = this.props;
+    const { initialValues: { type }, eventOptions } = this.props;
 
     const methods = [
       { value: 'GET', label: 'GET' },
@@ -63,7 +63,8 @@ class NotificationSettingsChangeForm extends React.Component {
       case "curl":
         settings.push(
           <Field key="method" name="method" component={FormSelectInput} label="Method" options={methods} />,
-          <Field key="url" name="url" component={FormTextInput} label="Url" />
+          <Field key="url" name="url" component={FormTextInput} label="Url" />,
+          <Field key="headers" name="headers" component={FormTextAreaInput} rows={10} label="Headers (one per line)" />,
         );
         break;
       case "email":
@@ -100,7 +101,7 @@ class NotificationSettingsChangeForm extends React.Component {
   }
 }
 
-function validate({ type, method, url, host, port, username, password, encryption, email, emails, vhost, user, queue }) {
+function validate({ type, method, url, headers, host, port, username, password, encryption, email, emails, vhost, user, queue }) {
   const errors = {};
 
   switch (type) {
@@ -111,6 +112,10 @@ function validate({ type, method, url, host, port, username, password, encryptio
 
       if (!url) {
         errors.url = 'URL must be filled!';
+      }
+
+      if (!headers) {
+        errors.headers = 'Headers must be filled!';
       }
       break;
 
@@ -181,7 +186,7 @@ NotificationSettingsChangeForm.propTypes = {
 };
 
 function mapStateToProps({ notificationSettings: { events: eventOptions } }, { data }) {
-  const { type, events, settings, settings: { emails } } = data;
+  const { type, events, settings, settings: { emails, headers } } = data;
 
   return {
     initialValues: {
@@ -189,8 +194,9 @@ function mapStateToProps({ notificationSettings: { events: eventOptions } }, { d
       events,
       ...settings,
       emails: emails && emails.join('\r\n'),
-      eventOptions: Object.entries(eventOptions).map(([value, label]) => ({ value, label })),
-    }
+      headers: headers && Object.entries(headers).map(([key, value]) => `${key}:${value}`).join('\r\n'),
+    },
+    eventOptions: Object.entries(eventOptions).map(([value, label]) => ({ value, label })),
   };
 }
 
