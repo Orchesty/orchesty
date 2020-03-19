@@ -1,0 +1,177 @@
+openapi: 3.0.0
+
+info:
+    title: Notification Sender
+    description: Notification Sender API
+    version: '1.0'
+
+servers:
+    -   url: http://127.0.0.71
+        description: Docker Localhost
+
+paths:
+    /status:
+        get:
+            tags: [ Status ]
+            responses:
+                200:
+                    $ref: '#/components/responses/Status'
+
+    /notifications/settings:
+        get:
+            tags: [ Notification Settings ]
+            responses:
+                200:
+                    $ref: '#/components/responses/Settings'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /notifications/settings/{id}:
+        get:
+            tags: [ Notification Settings ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            responses:
+                200:
+                    $ref: '#/components/responses/Setting'
+                404:
+                    $ref: '#/components/responses/404'
+                500:
+                    $ref: '#/components/responses/500'
+        put:
+            tags: [ Notification Settings ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            requestBody:
+                $ref: '#/components/requestBodies/Setting'
+            responses:
+                200:
+                    $ref: '#/components/responses/Setting'
+                404:
+                    $ref: '#/components/responses/404'
+                500:
+                    $ref: '#/components/responses/500'
+
+components:
+    requestBodies:
+        Setting:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            events:
+                                type: array
+                                items:
+                                    type: string
+                                    enum: [access_expiration, data_error, service_unavailable]
+                            settings:
+                                type: object
+
+    responses:
+        Status:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            database:
+                                type: boolean
+                            rabbitmq:
+                                type: boolean
+
+        Setting:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Setting'
+
+        Settings:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Settings'
+
+        404:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Message'
+                    example:
+                        type: NotificationException
+                        status: NOT_FOUND
+                        message: NotificationSettings with key 'Unknown' not found!
+                        error_code: 404
+
+        500:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Message'
+                    example:
+                        type: NotificationException
+                        status: INTERNAL_SERVER_ERROR
+                        message: Something gone wrong
+                        error_code: 500
+
+    schemas:
+        Setting:
+            type: object
+            properties:
+                id:
+                    type: string
+                created:
+                    type: string
+                updated:
+                    type: string
+                name:
+                    type: string
+                type:
+                    type: string
+                    enum: [curl, email, rabbit]
+                class:
+                    type: string
+                events:
+                    type: array
+                    items:
+                        type: string
+                        enum: [access_expiration, data_error, service_unavailable]
+                settings:
+                    type: object
+                status:
+                    type: boolean
+                status_message:
+                    type: string
+                    nullable: true
+
+        Settings:
+            type: array
+            items:
+                $ref: '#/components/schemas/Setting'
+
+        Message:
+            type: object
+            properties:
+                type:
+                    type: string
+                status:
+                    type: string
+                message:
+                    type: string
+                error_code:
+                    type: integer
+
+    parameters:
+        Id:
+            name: id
+            in: path
+            required: true
+            example: id
+            schema:
+                type: string
