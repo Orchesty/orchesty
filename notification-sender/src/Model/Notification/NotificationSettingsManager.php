@@ -5,14 +5,22 @@ namespace Hanaboso\NotificationSender\Model\Notification;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
+use Hanaboso\CommonsBundle\Enum\NotificationSenderEnum;
 use Hanaboso\NotificationSender\Document\NotificationSettings;
 use Hanaboso\NotificationSender\Exception\NotificationException;
+use Hanaboso\NotificationSender\Model\Notification\Dto\CurlDto;
+use Hanaboso\NotificationSender\Model\Notification\Dto\EmailDto;
+use Hanaboso\NotificationSender\Model\Notification\Dto\RabbitDto;
 use Hanaboso\NotificationSender\Model\Notification\Handler\CurlHandlerAbstract;
 use Hanaboso\NotificationSender\Model\Notification\Handler\EmailHandlerAbstract;
 use Hanaboso\NotificationSender\Model\Notification\Handler\RabbitHandlerAbstract;
+use Hanaboso\NotificationSender\Model\Notification\Sender\CurlSender;
+use Hanaboso\NotificationSender\Model\Notification\Sender\EmailSender;
+use Hanaboso\NotificationSender\Model\Notification\Sender\RabbitSender;
 use Hanaboso\NotificationSender\Repository\NotificationSettingsRepository;
 use Hanaboso\Utils\Exception\DateTimeException;
 use Symfony\Component\DependencyInjection\Argument\RewindableGenerator;
+use Throwable;
 
 /**
  * Class NotificationSettingsManager
@@ -21,6 +29,8 @@ use Symfony\Component\DependencyInjection\Argument\RewindableGenerator;
  */
 final class NotificationSettingsManager
 {
+
+    private const TEST_MESSAGE = [EmailHandlerAbstract::SUBJECT => 'Pipes Framework: Notification settings test message'];
 
     /**
      * @var DocumentManager
@@ -38,16 +48,43 @@ final class NotificationSettingsManager
     private NotificationSettingsRepository $repository;
 
     /**
+     * @var CurlSender
+     */
+    private CurlSender $curlSender;
+
+    /**
+     * @var EmailSender
+     */
+    private EmailSender $emailSender;
+
+    /**
+     * @var RabbitSender
+     */
+    private RabbitSender $rabbitSender;
+
+    /**
      * NotificationSettingsManager constructor.
      *
      * @param DocumentManager            $dm
      * @param RewindableGenerator<mixed> $handlers
+     * @param CurlSender                 $curlSender
+     * @param EmailSender                $emailSender
+     * @param RabbitSender               $rabbitSender
      */
-    public function __construct(DocumentManager $dm, RewindableGenerator $handlers)
+    public function __construct(
+        DocumentManager $dm,
+        RewindableGenerator $handlers,
+        CurlSender $curlSender,
+        EmailSender $emailSender,
+        RabbitSender $rabbitSender
+    )
     {
-        $this->dm         = $dm;
-        $this->handlers   = $handlers;
-        $this->repository = $dm->getRepository(NotificationSettings::class);
+        $this->dm           = $dm;
+        $this->handlers     = $handlers;
+        $this->repository   = $dm->getRepository(NotificationSettings::class);
+        $this->curlSender   = $curlSender;
+        $this->emailSender  = $emailSender;
+        $this->rabbitSender = $rabbitSender;
     }
 
     /**
@@ -139,6 +176,8 @@ final class NotificationSettingsManager
             $setting->setSettings($data[NotificationSettings::SETTINGS]);
         }
 
+        $this->validateSettings($setting, $handler, $data[NotificationSettings::SETTINGS]);
+
         $this->dm->flush();
 
         return $setting->toArray($handler->getType(), $handler->getName());
@@ -183,6 +222,53 @@ final class NotificationSettingsManager
             sprintf("Notification handler '%s' not found!", $class),
             NotificationException::NOTIFICATION_HANDLER_NOT_FOUND
         );
+    }
+
+    /**
+     * @param NotificationSettings                                           $setting
+     * @param CurlHandlerAbstract|EmailHandlerAbstract|RabbitHandlerAbstract $handler
+     * @param mixed[]                                                        $settings
+     *
+     * @throws NotificationException
+     */
+    private function validateSettings(NotificationSettings $setting, $handler, array $settings): void
+    {
+        try {
+            switch ($handler->getType()) {
+                case NotificationSenderEnum::CURL:
+                    /** @var CurlDto $dto */
+                    $dto = $handler->process(self::TEST_MESSAGE);
+
+                    $this->curlSender->send($dto, $settings);
+
+                    break;
+                case NotificationSenderEnum::EMAIL:
+                    /** @var EmailDto $dto */
+                    $dto = $handler->process(self::TEST_MESSAGE);
+
+                    $this->emailSender->send($dto, $settings);
+
+                    break;
+                case NotificationSenderEnum::RABBIT:
+                    /** @var RabbitDto $dto */
+                    $dto = $handler->process(self::TEST_MESSAGE);
+
+                    $this->rabbitSender->send($dto, $settings);
+
+                    break;
+                default:
+                    throw new NotificationException(
+                        sprintf("Notification sender for notification handler '%s' not found!", get_class($handler)),
+                        NotificationException::NOTIFICATION_SENDER_NOT_FOUND
+                    );
+            }
+
+            $setting->setStatus(TRUE)->setStatusMessage(NULL);
+        } catch (NotificationException $e) {
+            throw $e;
+        } catch (Throwable $e) {
+            $setting->setStatus(FALSE)->setStatusMessage($e->getMessage());
+        }
     }
 
 }

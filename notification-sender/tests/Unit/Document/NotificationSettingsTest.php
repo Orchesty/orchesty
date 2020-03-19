@@ -26,11 +26,15 @@ final class NotificationSettingsTest extends KernelTestCaseAbstract
         $settings = (new NotificationSettings())
             ->setClass('Class')
             ->setEvents([NotificationEventEnum::ACCESS_EXPIRATION])
-            ->setSettings([EmailDto::EMAILS => ['one@example.com', 'two@example.com']]);
+            ->setSettings([EmailDto::EMAILS => ['one@example.com', 'two@example.com']])
+            ->setStatus(TRUE)
+            ->setStatusMessage(NULL);
 
         self::assertEquals('Class', $settings->getClass());
         self::assertNotEmpty($settings->getEvents());
         self::assertNotEmpty($settings->getSettings());
+        self::assertTrue($settings->isStatus());
+        self::assertNull($settings->getStatusMessage());
 
         $settings->preFlush();
         $settings->postLoad();
@@ -39,14 +43,16 @@ final class NotificationSettingsTest extends KernelTestCaseAbstract
 
         self::assertEquals(
             [
-                NotificationSettings::ID         => NULL,
-                NotificationSettings::CREATED    => $settings[NotificationSettings::CREATED],
-                NotificationSettings::UPDATED    => $settings[NotificationSettings::UPDATED],
-                NotificationSettings::NAME       => 'Name',
-                NotificationSettings::TYPE       => 'Type',
-                NotificationSettings::CLASS_NAME => 'Class',
-                NotificationSettings::EVENTS     => [NotificationEventEnum::ACCESS_EXPIRATION],
-                NotificationSettings::SETTINGS   => [EmailDto::EMAILS => ['one@example.com', 'two@example.com']],
+                NotificationSettings::ID             => NULL,
+                NotificationSettings::CREATED        => $settings[NotificationSettings::CREATED],
+                NotificationSettings::UPDATED        => $settings[NotificationSettings::UPDATED],
+                NotificationSettings::NAME           => 'Name',
+                NotificationSettings::TYPE           => 'Type',
+                NotificationSettings::CLASS_NAME     => 'Class',
+                NotificationSettings::EVENTS         => [NotificationEventEnum::ACCESS_EXPIRATION],
+                NotificationSettings::SETTINGS       => [EmailDto::EMAILS => ['one@example.com', 'two@example.com']],
+                NotificationSettings::STATUS         => TRUE,
+                NotificationSettings::STATUS_MESSAGE => NULL,
             ],
             $settings
         );

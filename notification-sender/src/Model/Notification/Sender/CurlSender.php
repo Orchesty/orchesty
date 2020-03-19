@@ -43,7 +43,7 @@ final class CurlSender
             (new RequestDto(
                 $settings[CurlDto::METHOD],
                 new Uri($settings[CurlDto::URL])
-            ))->setBody($dto->getJsonBody())->setHeaders($dto->getHeaders())
+            ))->setBody($dto->getJsonBody())->setHeaders(array_merge($settings[CurlDto::HEADERS], $dto->getHeaders()))
         );
     }
 

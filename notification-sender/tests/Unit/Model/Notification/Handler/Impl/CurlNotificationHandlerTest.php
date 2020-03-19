@@ -44,7 +44,7 @@ final class CurlNotificationHandlerTest extends KernelTestCaseAbstract
      */
     public function testGetRequiredSettings(): void
     {
-        self::assertEquals([CurlDto::METHOD, CurlDto::URL], $this->handler->getRequiredSettings());
+        self::assertEquals([CurlDto::METHOD, CurlDto::URL, CurlDto::HEADERS], $this->handler->getRequiredSettings());
     }
 
     /**

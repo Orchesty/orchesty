@@ -20,3 +20,6 @@ services:
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
             - !tagged hbpf.notification.handler
+            - '@notification.sender.curl'
+            - '@notification.sender.email'
+            - '@notification.sender.rabbit'

@@ -38,7 +38,7 @@ abstract class CurlHandlerAbstract
      */
     final public function getRequiredSettings(): array
     {
-        return [CurlDto::METHOD, CurlDto::URL];
+        return [CurlDto::METHOD, CurlDto::URL, CurlDto::HEADERS];
     }
 
 }

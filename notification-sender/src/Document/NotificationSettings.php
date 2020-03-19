@@ -28,14 +28,16 @@ class NotificationSettings
     use CreatedTrait;
     use UpdatedTrait;
 
-    public const ID         = 'id';
-    public const CREATED    = 'created';
-    public const UPDATED    = 'updated';
-    public const TYPE       = 'type';
-    public const NAME       = 'name';
-    public const CLASS_NAME = 'class';
-    public const EVENTS     = 'events';
-    public const SETTINGS   = 'settings';
+    public const ID             = 'id';
+    public const CREATED        = 'created';
+    public const UPDATED        = 'updated';
+    public const TYPE           = 'type';
+    public const NAME           = 'name';
+    public const CLASS_NAME     = 'class';
+    public const EVENTS         = 'events';
+    public const SETTINGS       = 'settings';
+    public const STATUS         = 'status';
+    public const STATUS_MESSAGE = 'status_message';
 
     private const EMPTY = '01_N86jVkKpY154CDLSDO92ZLH4PVg3zxZ6ea83UBanK9o=:hUijwPbtwKyeK8Wa9WwWxOuJJ5CDRL2v9CJYYdAg1Fg=:LmP28iFgUwppq42xmve7tI+cnT+WD+sD:A4YIOJjqBHWm3WDTTu67jbHuPb+2Og==';
 
@@ -64,6 +66,20 @@ class NotificationSettings
      * @ODM\Field(type="string")
      */
     private $encryptedSettings;
+
+    /**
+     * @var bool
+     *
+     * @ODM\Field(type="bool")
+     */
+    private $status = TRUE;
+
+    /**
+     * @var string|null
+     *
+     * @ODM\Field(type="string", nullable=true)
+     */
+    private $statusMessage;
 
     /**
      * NotificationSettings constructor.
@@ -137,6 +153,46 @@ class NotificationSettings
     }
 
     /**
+     * @return bool
+     */
+    public function isStatus(): bool
+    {
+        return $this->status;
+    }
+
+    /**
+     * @param bool $status
+     *
+     * @return NotificationSettings
+     */
+    public function setStatus(bool $status): NotificationSettings
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getStatusMessage(): ?string
+    {
+        return $this->statusMessage;
+    }
+
+    /**
+     * @param string|null $statusMessage
+     *
+     * @return NotificationSettings
+     */
+    public function setStatusMessage(?string $statusMessage): NotificationSettings
+    {
+        $this->statusMessage = $statusMessage;
+
+        return $this;
+    }
+
+    /**
      * @ODM\PreFlush
      * @throws CryptException
      */
@@ -163,14 +219,16 @@ class NotificationSettings
     public function toArray(string $type, string $name): array
     {
         return [
-            self::ID         => $this->id,
-            self::CREATED    => $this->created->format(DateTimeUtils::DATE_TIME),
-            self::UPDATED    => $this->updated->format(DateTimeUtils::DATE_TIME),
-            self::NAME       => $name,
-            self::TYPE       => $type,
-            self::CLASS_NAME => $this->class,
-            self::EVENTS     => $this->events,
-            self::SETTINGS   => $this->settings,
+            self::ID             => $this->id,
+            self::CREATED        => $this->created->format(DateTimeUtils::DATE_TIME),
+            self::UPDATED        => $this->updated->format(DateTimeUtils::DATE_TIME),
+            self::NAME           => $name,
+            self::TYPE           => $type,
+            self::CLASS_NAME     => $this->class,
+            self::EVENTS         => $this->events,
+            self::SETTINGS       => $this->settings,
+            self::STATUS         => $this->status,
+            self::STATUS_MESSAGE => $this->statusMessage,
         ];
     }
 

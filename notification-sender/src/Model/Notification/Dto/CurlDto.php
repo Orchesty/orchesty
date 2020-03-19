@@ -12,8 +12,9 @@ use Hanaboso\Utils\String\Json;
 final class CurlDto
 {
 
-    public const METHOD = 'method';
-    public const URL    = 'url';
+    public const METHOD  = 'method';
+    public const URL     = 'url';
+    public const HEADERS = 'headers';
 
     /**
      * @var mixed[]
