@@ -35,7 +35,6 @@ final class WebhookManagerTest extends DatabaseTestCaseAbstract
     private $repository;
 
     /**
-     * @covers \Hanaboso\HbPFAppStore\Model\Webhook\WebhookManager
      * @covers \Hanaboso\HbPFAppStore\Model\Webhook\WebhookManager::subscribeWebhooks
      * @covers \Hanaboso\HbPFAppStore\Model\Webhook\WebhookManager::unsubscribeWebhooks
      * @covers \Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription
@@ -118,6 +117,7 @@ final class WebhookManagerTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\HbPFAppStore\Model\Webhook\WebhookManager::getWebhooks
      * @covers \Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription::getTopology
      * @covers \Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription::getName
+     *
      * @throws Exception
      */
     public function testGetWebhooks(): void
@@ -146,6 +146,7 @@ final class WebhookManagerTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\HbPFAppStore\Model\Webhook\WebhookManager::subscribeWebhooks
      * @covers \Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription::getParameters
+     *
      * @throws Exception
      */
     public function testSubscribeWebhooks(): void
@@ -162,6 +163,7 @@ final class WebhookManagerTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\HbPFAppStore\Model\Webhook\WebhookManager::unsubscribeWebhooks
+     *
      * @throws Exception
      */
     public function testUnsubscribeWebhooks(): void

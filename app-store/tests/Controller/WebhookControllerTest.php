@@ -14,14 +14,16 @@ use Symfony\Component\HttpFoundation\Response;
  * Class WebhookControllerTest
  *
  * @package HbPFAppStoreTests\Controller
+ *
+ * @covers  \Hanaboso\HbPFAppStore\Controller\WebhookController
+ * @covers  \Hanaboso\HbPFAppStore\Handler\WebhookHandler
+ * @covers  \Hanaboso\HbPFAppStore\Model\Webhook\WebhookManager
  */
 final class WebhookControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\HbPFAppStore\Controller\WebhookController
      * @covers \Hanaboso\HbPFAppStore\Controller\WebhookController::subscribeWebhooksAction
-     * @covers \Hanaboso\HbPFAppStore\Handler\WebhookHandler
      * @covers \Hanaboso\HbPFAppStore\Handler\WebhookHandler::subscribeWebhooks
      * @covers \Hanaboso\HbPFAppStore\Model\Webhook\WebhookManager
      * @covers \Hanaboso\HbPFAppStore\Model\Webhook\WebhookManager::subscribeWebhooks

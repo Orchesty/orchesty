@@ -2,15 +2,10 @@
 
 namespace HbPFAppStoreTests\Integration\Handler;
 
-use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
-use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\HbPFAppStore\Handler\WebhookHandler;
 use Hanaboso\HbPFAppStore\Model\ApplicationManager;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
-use Hanaboso\Utils\Exception\DateTimeException;
-use Hanaboso\Utils\Exception\PipesFrameworkException;
 use HbPFAppStoreTests\DatabaseTestCaseAbstract;
 
 /**
@@ -24,9 +19,7 @@ final class WebhookHandlerTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\HbPFAppStore\Handler\WebhookHandler::subscribeWebhooks
      *
-     * @throws DateTimeException
-     * @throws ApplicationInstallException
-     * @throws PipesFrameworkException
+     * @throws Exception
      */
     public function testSubscribeWebhooks(): void
     {
@@ -43,11 +36,7 @@ final class WebhookHandlerTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\HbPFAppStore\Handler\WebhookHandler::unsubscribeWebhooks
      *
-     * @throws ApplicationInstallException
-     * @throws DateTimeException
-     * @throws PipesFrameworkException
-     * @throws MongoDBException
-     * @throws CurlException
+     * @throws Exception
      */
     public function testUnsubscribeWebhooks(): void
     {
@@ -67,7 +56,6 @@ final class WebhookHandlerTest extends DatabaseTestCaseAbstract
      * @param mixed[] $settings
      *
      * @return ApplicationInstall
-     * @throws DateTimeException
      * @throws Exception
      */
     private function createApplicationInstall(

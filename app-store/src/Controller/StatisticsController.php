@@ -2,7 +2,6 @@
 
 namespace Hanaboso\HbPFAppStore\Controller;
 
-use Exception;
 use Hanaboso\HbPFAppStore\Handler\StatisticsHandler;
 use Hanaboso\Utils\Traits\ControllerTrait;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,11 +11,11 @@ use Throwable;
 /**
  * Class StatisticsController
  *
- * @Route("/statistics")
- *
  * @package Hanaboso\HbPFAppStore\Controller
+ *
+ * @Route("/statistics")
  */
-class StatisticsController
+final class StatisticsController
 {
 
     use ControllerTrait;
@@ -39,22 +38,20 @@ class StatisticsController
     /**
      * @Route("/applications", methods={"GET"})
      *
-     *
      * @return Response
      */
     public function getApplicationsBasicDataAction(): Response
     {
         try {
-            $data = $this->statisticsHandler->getApplicationsBasicData();
-
-            return $this->getResponse($data);
-        } catch (Exception|Throwable $e) {
-            return $this->getErrorResponse($e, 500);
+            return $this->getResponse($this->statisticsHandler->getApplicationsBasicData());
+        } catch (Throwable $t) {
+            return $this->getErrorResponse($t);
         }
     }
 
     /**
      * @Route("/applications/{application}", methods={"GET"})
+     *
      * @param string $application
      *
      * @return Response
@@ -62,11 +59,9 @@ class StatisticsController
     public function getApplicationsUsersAction(string $application): Response
     {
         try {
-            $data = $this->statisticsHandler->getApplicationsUsers($application);
-
-            return $this->getResponse($data);
-        } catch (Exception|Throwable $e) {
-            return $this->getErrorResponse($e, 500);
+            return $this->getResponse($this->statisticsHandler->getApplicationsUsers($application));
+        } catch (Throwable $t) {
+            return $this->getErrorResponse($t);
         }
     }
 

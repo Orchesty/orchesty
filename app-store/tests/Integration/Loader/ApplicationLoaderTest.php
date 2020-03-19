@@ -2,6 +2,7 @@
 
 namespace HbPFAppStoreTests\Integration\Loader;
 
+use Exception;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use HbPFAppStoreTests\DatabaseTestCaseAbstract;
 
@@ -15,7 +16,8 @@ final class ApplicationLoaderTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\HbPFAppStore\Loader\ApplicationLoader::getApplication
-     * @throws ApplicationInstallException
+     *
+     * @throws Exception
      */
     public function testGetApplication(): void
     {

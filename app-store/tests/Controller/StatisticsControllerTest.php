@@ -14,12 +14,15 @@ use Symfony\Component\HttpFoundation\Response;
  * Class StatisticsControllerTest
  *
  * @package HbPFAppStoreTests\Controller
+ *
+ * @covers  \Hanaboso\HbPFAppStore\Controller\StatisticsController
+ * @covers  \Hanaboso\HbPFAppStore\Handler\StatisticsHandler
+ * @covers  \Hanaboso\HbPFAppStore\Model\StatisticsManager
  */
 final class StatisticsControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\HbPFAppStore\Controller\StatisticsController
      * @covers \Hanaboso\HbPFAppStore\Controller\StatisticsController::getApplicationsBasicDataAction
      * @covers \Hanaboso\HbPFAppStore\Handler\StatisticsHandler::getApplicationsBasicData
      * @covers \Hanaboso\HbPFAppStore\Model\StatisticsManager::getApplicationsBasicData
@@ -66,9 +69,7 @@ final class StatisticsControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\HbPFAppStore\Controller\StatisticsController::getApplicationsUsersAction
-     * @covers \Hanaboso\HbPFAppStore\Handler\StatisticsHandler
      * @covers \Hanaboso\HbPFAppStore\Handler\StatisticsHandler::getApplicationsUsers
-     * @covers \Hanaboso\HbPFAppStore\Model\StatisticsManager
      * @covers \Hanaboso\HbPFAppStore\Model\StatisticsManager::getApplicationsUsers
      *
      * @throws Exception

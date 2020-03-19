@@ -5,7 +5,6 @@ namespace Hanaboso\HbPFAppStore\Model;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
-use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\HbPFAppStore\Loader\ApplicationLoader;
@@ -26,7 +25,7 @@ use Hanaboso\Utils\Exception\DateTimeException;
  *
  * @package Hanaboso\HbPFAppStore\Model
  */
-class ApplicationManager
+final class ApplicationManager
 {
 
     /**
@@ -76,7 +75,7 @@ class ApplicationManager
      * @param string $key
      *
      * @return ApplicationInterface
-     * @throws Exception
+     * @throws ApplicationInstallException
      */
     public function getApplication(string $key): ApplicationInterface
     {
@@ -111,8 +110,8 @@ class ApplicationManager
      *
      * @return ApplicationInstall
      * @throws ApplicationInstallException
-     * @throws DateTimeException
      * @throws MongoDBException
+     * @throws DateTimeException
      */
     public function installApplication(string $key, string $user): ApplicationInstall
     {
@@ -138,7 +137,9 @@ class ApplicationManager
      * @param string $user
      *
      * @return ApplicationInstall
-     * @throws Exception
+     * @throws ApplicationInstallException
+     * @throws MongoDBException
+     * @throws CurlException
      */
     public function uninstallApplication(string $key, string $user): ApplicationInstall
     {
@@ -157,15 +158,13 @@ class ApplicationManager
      * @param mixed[] $data
      *
      * @return ApplicationInstall
-     * @throws Exception
+     * @throws ApplicationInstallException
+     * @throws MongoDBException
      */
     public function saveApplicationSettings(string $key, string $user, array $data): ApplicationInstall
     {
         $application = $this->loader->getApplication($key)
-            ->setApplicationSettings(
-                $this->repository->findUserApp($key, $user),
-                $data
-            );
+            ->setApplicationSettings($this->repository->findUserApp($key, $user), $data);
         $this->dm->flush();
 
         return $application;
@@ -177,7 +176,8 @@ class ApplicationManager
      * @param string $password
      *
      * @return ApplicationInstall
-     * @throws Exception
+     * @throws ApplicationInstallException
+     * @throws MongoDBException
      */
     public function saveApplicationPassword(string $key, string $user, string $password): ApplicationInstall
     {
@@ -237,7 +237,10 @@ class ApplicationManager
      * @param ApplicationInstall $applicationInstall
      * @param mixed[]            $data
      *
-     * @throws Exception
+     * @throws ApplicationInstallException
+     * @throws DateTimeException
+     * @throws MongoDBException
+     * @throws CurlException
      */
     public function subscribeWebhooks(ApplicationInstall $applicationInstall, array $data = []): void
     {

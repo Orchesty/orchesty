@@ -16,9 +16,10 @@ use Symfony\Component\Routing\RouteCollectionBuilder;
  * Class Kernel
  *
  * @package HbPFAppStoreTests\app
+ *
  * @codeCoverageIgnore
  */
-class Kernel extends BaseKernel
+final class Kernel extends BaseKernel
 {
 
     use MicroKernelTrait;

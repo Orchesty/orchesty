@@ -13,7 +13,7 @@ use Hanaboso\Utils\Exception\DateTimeException;
  *
  * @package Hanaboso\HbPFAppStore\Model
  */
-class StatisticsManager
+final class StatisticsManager
 {
 
     /**

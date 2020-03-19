@@ -94,6 +94,7 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\HbPFAppStore\Model\ApplicationManager::installApplication
+     *
      * @throws Exception
      */
     public function testInstallApplicationTest(): void
@@ -208,6 +209,7 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\HbPFAppStore\Model\ApplicationManager::subscribeWebhooks
+     *
      * @throws Exception
      */
     public function testSubscribeWebhooks(): void

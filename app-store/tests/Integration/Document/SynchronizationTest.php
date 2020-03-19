@@ -10,12 +10,13 @@ use HbPFAppStoreTests\DatabaseTestCaseAbstract;
  * Class SynchronizationTest
  *
  * @package HbPFAppStoreTests\Integration\Document
+ *
+ * @covers  \Hanaboso\HbPFAppStore\Document\Synchronization
  */
 final class SynchronizationTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\HbPFAppStore\Document\Synchronization
      * @covers \Hanaboso\HbPFAppStore\Document\Synchronization::getUser
      * @covers \Hanaboso\HbPFAppStore\Document\Synchronization::setUser
      * @covers \Hanaboso\HbPFAppStore\Document\Synchronization::getStatus

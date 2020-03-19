@@ -1,4 +1,5 @@
 *
+!app-store/openapi.yaml
 !cron/openapi.yaml
 !notification-sender/openapi.yaml
 !starting-point/openapi.yaml

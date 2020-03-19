@@ -8,9 +8,10 @@ use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
  * Class WebhookRepository
  *
  * @package         Hanaboso\HbPFAppStore\Repository
+ *
  * @phpstan-extends DocumentRepository<\Hanaboso\HbPFAppStore\Document\Webhook>
  */
-class WebhookRepository extends DocumentRepository
+final class WebhookRepository extends DocumentRepository
 {
 
 }

@@ -2,7 +2,6 @@
 
 namespace Hanaboso\HbPFAppStore\Controller;
 
-use Exception;
 use Hanaboso\HbPFAppStore\Handler\WebhookHandler;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\Utils\System\ControllerUtils;
@@ -17,7 +16,7 @@ use Throwable;
  *
  * @package Hanaboso\HbPFAppStore\Controller
  */
-class WebhookController
+final class WebhookController
 {
 
     use ControllerTrait;
@@ -53,9 +52,9 @@ class WebhookController
 
             return $this->getResponse([]);
         } catch (ApplicationInstallException $e) {
-            return $this->getErrorResponse($e, 404, ControllerUtils::NOT_FOUND, $request->headers->all());
-        } catch (Exception|Throwable $e) {
-            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
+            return $this->getErrorResponse($e, 404, ControllerUtils::NOT_FOUND);
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
         }
     }
 
@@ -75,9 +74,9 @@ class WebhookController
 
             return $this->getResponse([]);
         } catch (ApplicationInstallException $e) {
-            return $this->getErrorResponse($e, 404, ControllerUtils::NOT_FOUND, $request->headers->all());
-        } catch (Exception|Throwable $e) {
-            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
+            return $this->getErrorResponse($e, 404, ControllerUtils::NOT_FOUND);
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
         }
     }
 

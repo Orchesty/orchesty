@@ -12,7 +12,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @package Hanaboso\HbPFAppStore\Loader
  */
-class ApplicationLoader
+final class ApplicationLoader
 {
 
     private const APPLICATION_PREFIX = 'hbpf.application';

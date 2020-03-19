@@ -10,12 +10,13 @@ use HbPFAppStoreTests\DatabaseTestCaseAbstract;
  * Class WebhookTest
  *
  * @package HbPFAppStoreTests\Integration\Document
+ *
+ * @covers  \Hanaboso\HbPFAppStore\Document\Webhook
  */
 final class WebhookTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\HbPFAppStore\Document\Webhook
      * @covers \Hanaboso\HbPFAppStore\Document\Webhook::getName
      * @covers \Hanaboso\HbPFAppStore\Document\Webhook::setName
      * @covers \Hanaboso\HbPFAppStore\Document\Webhook::setUser

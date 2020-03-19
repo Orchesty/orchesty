@@ -2,8 +2,8 @@
 
 namespace Hanaboso\HbPFAppStore\Controller;
 
-use Exception;
 use Hanaboso\HbPFAppStore\Handler\ApplicationHandler;
+use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\Utils\System\ControllerUtils;
 use Hanaboso\Utils\Traits\ControllerTrait;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,8 +15,10 @@ use Throwable;
  * Class ApplicationController
  *
  * @package Hanaboso\HbPFAppStore\Controller
+ *
+ * @Route("/applications")
  */
-class ApplicationController
+final class ApplicationController
 {
 
     use ControllerTrait;
@@ -37,23 +39,22 @@ class ApplicationController
     }
 
     /**
-     * @Route("/applications", methods={"GET"})
+     * @Route("", methods={"GET"})
+     * @Route("/", methods={"GET"})
      *
      * @return Response
      */
     public function listOfApplicationsAction(): Response
     {
         try {
-            $data = $this->applicationHandler->getApplications();
-
-            return $this->getResponse($data);
-        } catch (Exception|Throwable $e) {
-            return $this->getErrorResponse($e, 500);
+            return $this->getResponse($this->applicationHandler->getApplications());
+        } catch (Throwable $t) {
+            return $this->getErrorResponse($t);
         }
     }
 
     /**
-     * @Route("/applications/{key}", methods={"GET"})
+     * @Route("/{key}", methods={"GET"})
      *
      * @param string $key
      *
@@ -62,16 +63,16 @@ class ApplicationController
     public function getApplicationAction(string $key): Response
     {
         try {
-            $data = $this->applicationHandler->getApplicationByKey($key);
-
-            return $this->getResponse($data);
-        } catch (Exception|Throwable $e) {
-            return $this->getErrorResponse($e, 500);
+            return $this->getResponse($this->applicationHandler->getApplicationByKey($key));
+        } catch (ApplicationInstallException $e) {
+            return $this->getErrorResponse($e, 404, ControllerUtils::NOT_FOUND);
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
         }
     }
 
     /**
-     * @Route("/applications/users/{user}", methods={"GET"})
+     * @Route("/users/{user}", methods={"GET"})
      *
      * @param string $user
      *
@@ -80,16 +81,14 @@ class ApplicationController
     public function getUsersApplicationAction(string $user): Response
     {
         try {
-            $data = $this->applicationHandler->getApplicationsByUser($user);
-
-            return $this->getResponse($data);
-        } catch (Exception|Throwable $e) {
-            return $this->getErrorResponse($e, 500);
+            return $this->getResponse($this->applicationHandler->getApplicationsByUser($user));
+        } catch (Throwable $t) {
+            return $this->getErrorResponse($t);
         }
     }
 
     /**
-     * @Route("/applications/{key}/users/{user}",  methods={"GET"})
+     * @Route("/{key}/users/{user}",  methods={"GET"})
      *
      * @param string $key
      * @param string $user
@@ -99,16 +98,16 @@ class ApplicationController
     public function getApplicationDetailAction(string $key, string $user): Response
     {
         try {
-            $data = $this->applicationHandler->getApplicationByKeyAndUser($key, $user);
-
-            return $this->getResponse($data);
-        } catch (Exception|Throwable $e) {
-            return $this->getErrorResponse($e, 500);
+            return $this->getResponse($this->applicationHandler->getApplicationByKeyAndUser($key, $user));
+        } catch (ApplicationInstallException $e) {
+            return $this->getErrorResponse($e, 404, ControllerUtils::NOT_FOUND);
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
         }
     }
 
     /**
-     * @Route("/applications/{key}/users/{user}/install",  methods={"POST"})
+     * @Route("/{key}/users/{user}/install",  methods={"POST"})
      *
      * @param string $key
      * @param string $user
@@ -118,16 +117,16 @@ class ApplicationController
     public function installApplicationAction(string $key, string $user): Response
     {
         try {
-            $data = $this->applicationHandler->installApplication($key, $user);
-
-            return $this->getResponse($data);
-        } catch (Exception|Throwable $e) {
-            return $this->getErrorResponse($e, 500);
+            return $this->getResponse($this->applicationHandler->installApplication($key, $user));
+        } catch (ApplicationInstallException $e) {
+            return $this->getErrorResponse($e, 404, ControllerUtils::NOT_FOUND);
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
         }
     }
 
     /**
-     * @Route("/applications/{key}/users/{user}/uninstall", methods={"DELETE"})
+     * @Route("/{key}/users/{user}/uninstall", methods={"DELETE"})
      *
      * @param string $key
      * @param string $user
@@ -137,16 +136,16 @@ class ApplicationController
     public function uninstallApplicationAction(string $key, string $user): Response
     {
         try {
-            $data = $this->applicationHandler->uninstallApplication($key, $user);
-
-            return $this->getResponse($data);
-        } catch (Exception|Throwable $e) {
-            return $this->getErrorResponse($e, 500);
+            return $this->getResponse($this->applicationHandler->uninstallApplication($key, $user));
+        } catch (ApplicationInstallException $e) {
+            return $this->getErrorResponse($e, 404, ControllerUtils::NOT_FOUND);
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
         }
     }
 
     /**
-     * @Route("/applications/{key}/users/{user}/settings", methods={"PUT"})
+     * @Route("/{key}/users/{user}/settings", methods={"PUT"})
      *
      * @param Request $request
      * @param string  $key
@@ -157,16 +156,18 @@ class ApplicationController
     public function updateApplicationSettingsAction(Request $request, string $key, string $user): Response
     {
         try {
-            $data = $this->applicationHandler->updateApplicationSettings($key, $user, $request->request->all());
-
-            return $this->getResponse($data);
-        } catch (Exception|Throwable $e) {
-            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
+            return $this->getResponse(
+                $this->applicationHandler->updateApplicationSettings($key, $user, $request->request->all())
+            );
+        } catch (ApplicationInstallException $e) {
+            return $this->getErrorResponse($e, 404, ControllerUtils::NOT_FOUND);
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
         }
     }
 
     /**
-     * @Route("/applications/{key}/users/{user}/password", methods={"PUT"})
+     * @Route("/{key}/users/{user}/password", methods={"PUT"})
      *
      * @param Request $request
      * @param string  $key
@@ -177,11 +178,13 @@ class ApplicationController
     public function saveApplicationPasswordAction(Request $request, string $key, string $user): Response
     {
         try {
-            $data = $this->applicationHandler->updateApplicationPassword($key, $user, $request->request->all());
-
-            return $this->getResponse($data);
-        } catch (Exception|Throwable $e) {
-            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
+            return $this->getResponse(
+                $this->applicationHandler->updateApplicationPassword($key, $user, $request->request->all())
+            );
+        } catch (ApplicationInstallException $e) {
+            return $this->getErrorResponse($e, 404, ControllerUtils::NOT_FOUND);
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
         }
     }
 

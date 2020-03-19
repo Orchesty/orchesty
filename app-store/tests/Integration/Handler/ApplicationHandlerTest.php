@@ -2,13 +2,10 @@
 
 namespace HbPFAppStoreTests\Integration\Handler;
 
-use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
 use Hanaboso\HbPFAppStore\Handler\ApplicationHandler;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
-use Hanaboso\Utils\Exception\DateTimeException;
 use HbPFAppStoreTests\DatabaseTestCaseAbstract;
 use InvalidArgumentException;
 
@@ -16,6 +13,8 @@ use InvalidArgumentException;
  * Class ApplicationHandlerTest
  *
  * @package HbPFAppStoreTests\Integration\Handler
+ *
+ * @covers  \Hanaboso\HbPFAppStore\Handler\ApplicationHandler
  */
 final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
 {
@@ -26,7 +25,6 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
     private $handler;
 
     /**
-     * @covers \Hanaboso\HbPFAppStore\Handler\ApplicationHandler
      * @covers \Hanaboso\HbPFAppStore\Handler\ApplicationHandler::getApplicationByKey
      * @covers \Hanaboso\HbPFAppStore\Model\ApplicationManager::getApplication
      * @covers \Hanaboso\HbPFAppStore\Loader\ApplicationLoader::getApplication
@@ -55,7 +53,7 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\HbPFAppStore\Loader\ApplicationLoader::getApplication
      * @covers \Hanaboso\HbPFAppStore\Model\ApplicationManager::getInstalledApplications
      *
-     * @throws DateTimeException
+     * @throws Exception
      */
     public function testGetApplicationsByUser(): void
     {
@@ -69,8 +67,7 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\HbPFAppStore\Handler\ApplicationHandler::getApplicationByKeyAndUser
      *
-     * @throws DateTimeException
-     * @throws ApplicationInstallException
+     * @throws Exception
      */
     public function testGetApplicationByKeyAndUser(): void
     {
@@ -84,7 +81,6 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\HbPFAppStore\Handler\ApplicationHandler::updateApplicationSettings
      * @covers \Hanaboso\HbPFAppStore\Model\ApplicationManager::saveApplicationSettings
      *
-     * @throws DateTimeException
      * @throws Exception
      */
     public function testUpdateApplicationSettings(): void
@@ -96,7 +92,7 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\HbPFAppStore\Handler\ApplicationHandler::updateApplicationPassword
-     * @throws DateTimeException
+     *
      * @throws Exception
      */
     public function testUpdateApplicationPassword(): void
@@ -110,7 +106,6 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\HbPFAppStore\Handler\ApplicationHandler::updateApplicationPassword
      *
-     * @throws DateTimeException
      * @throws Exception
      */
     public function testUpdateApplicationPasswordErr(): void
@@ -125,6 +120,7 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\HbPFAppStore\Handler\ApplicationHandler::authorizeApplication
      * @covers \Hanaboso\HbPFAppStore\Model\ApplicationManager::authorizeApplication
      * @covers \Hanaboso\HbPFAppStore\Loader\ApplicationLoader::getApplication
+     *
      * @throws Exception
      */
     public function testAuthorizeApplication(): void
@@ -138,9 +134,7 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\HbPFAppStore\Handler\ApplicationHandler::saveAuthToken
      * @covers \Hanaboso\HbPFAppStore\Model\ApplicationManager::saveAuthorizationToken
      *
-     * @throws ApplicationInstallException
-     * @throws DateTimeException
-     * @throws MongoDBException
+     * @throws Exception
      */
     public function testSaveAuthToken(): void
     {
@@ -170,7 +164,6 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
      * @param mixed[] $settings
      *
      * @return ApplicationInstall
-     * @throws DateTimeException
      * @throws Exception
      */
     private function createApplicationInstall(

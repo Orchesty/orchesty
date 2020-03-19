@@ -23,27 +23,27 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     /**
      * @var DocumentManager
      */
-    protected $dm;
+    protected DocumentManager $dm;
 
     /**
      * @var Session<mixed>
      */
-    protected $session;
+    protected Session $session;
 
     /**
      * @var TokenStorage
      */
-    protected $tokenStorage;
+    protected TokenStorage $tokenStorage;
 
     /**
      * @var NativePasswordEncoder
      */
-    protected $encoder;
+    protected NativePasswordEncoder $encoder;
 
     /**
      * @var KernelBrowser
      */
-    protected static $client;
+    protected static KernelBrowser $client;
 
     /**
      * ControllerTestCaseAbstract constructor.

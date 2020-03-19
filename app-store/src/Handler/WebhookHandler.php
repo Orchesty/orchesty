@@ -3,11 +3,11 @@
 namespace Hanaboso\HbPFAppStore\Handler;
 
 use Doctrine\ODM\MongoDB\MongoDBException;
-use Exception;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\HbPFAppStore\Model\ApplicationManager;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
+use Hanaboso\Utils\Exception\DateTimeException;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\System\ControllerUtils;
 
@@ -16,7 +16,7 @@ use Hanaboso\Utils\System\ControllerUtils;
  *
  * @package Hanaboso\HbPFAppStore\Handler
  */
-class WebhookHandler
+final class WebhookHandler
 {
 
     /**
@@ -41,7 +41,9 @@ class WebhookHandler
      *
      * @throws ApplicationInstallException
      * @throws PipesFrameworkException
-     * @throws Exception
+     * @throws MongoDBException
+     * @throws CurlException
+     * @throws DateTimeException
      */
     public function subscribeWebhooks(string $key, string $user, array $data = []): void
     {
@@ -62,8 +64,8 @@ class WebhookHandler
      *
      * @throws ApplicationInstallException
      * @throws CurlException
-     * @throws PipesFrameworkException
      * @throws MongoDBException
+     * @throws PipesFrameworkException
      */
     public function unsubscribeWebhooks(string $key, string $user, array $data = []): void
     {

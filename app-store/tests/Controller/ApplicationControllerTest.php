@@ -9,18 +9,18 @@ use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\Utils\String\Json;
 use HbPFAppStoreTests\ControllerTestCaseAbstract;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class ApplicationControllerTest
  *
  * @package HbPFAppStoreTests\Controller
+ *
+ * @covers  \Hanaboso\HbPFAppStore\Controller\ApplicationController
  */
 final class ApplicationControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\HbPFAppStore\Controller\ApplicationController
      * @covers \Hanaboso\HbPFAppStore\Controller\ApplicationController::listOfApplicationsAction
      * @covers \Hanaboso\HbPFAppStore\Handler\ApplicationHandler::getApplications
      * @covers \Hanaboso\HbPFAppStore\Model\ApplicationManager::getApplications
@@ -28,14 +28,12 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     public function testListOfApplications(): void
     {
         self::$client->request('GET', '/applications');
-        /** @var Response $response */
         $response = self::$client->getResponse();
 
         self::assertNotEmpty(Json::decode((string) $response->getContent()));
         self::assertEquals(200, $response->getStatusCode());
 
         self::$client->request('GET', '/applicationsss');
-        /** @var Response $response */
         $response = self::$client->getResponse();
         self::assertEquals(404, $response->getStatusCode());
     }
@@ -62,14 +60,25 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         $this->mockApplicationHandler([$application]);
 
         self::$client->request('GET', sprintf('/applications/%s', 'null'));
-        /** @var Response $response */
         $response = self::$client->getResponse();
 
         self::assertTrue(in_array($application, Json::decode((string) $response->getContent()), TRUE));
         self::assertEquals(200, $response->getStatusCode());
 
         self::$client->request('GET', sprintf('/applications/%s', 'example'));
-        /** @var Response $response */
+        $response = self::$client->getResponse();
+        self::assertEquals(404, $response->getStatusCode());
+    }
+
+    /**
+     * @covers \Hanaboso\HbPFAppStore\Controller\ApplicationController::getApplicationAction
+     *
+     * @throws Exception
+     */
+    public function testGetApplicationException(): void
+    {
+        $this->mockApplicationHandlerException('getApplicationByKey');
+        self::$client->request('GET', '/applications/application');
         $response = self::$client->getResponse();
         self::assertEquals(500, $response->getStatusCode());
     }
@@ -86,7 +95,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         );
 
         self::$client->request('GET', '/applications/users/bar');
-        /** @var Response $response */
         $response = self::$client->getResponse();
 
         self::assertEquals(
@@ -123,8 +131,10 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         self::$container->set('hbpf.application.someApp', $application);
 
         $response = (array) $this->sendGet('/applications/someApp/users/bar');
-
         self::assertEquals('200', $response['status']);
+
+        $response = (array) $this->sendGet('/applications/application/users/user');
+        self::assertEquals('404', $response['status']);
     }
 
     /**
@@ -149,8 +159,10 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         self::$container->set('hbpf.application.example', $application);
 
         $response = (array) $this->sendPost('/applications/example/users/bar/install', []);
-
         self::assertEquals('200', $response['status']);
+
+        $response = (array) $this->sendPost('/applications/application/users/user/install', []);
+        self::assertEquals('404', $response['status']);
     }
 
     /**
@@ -178,7 +190,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         $this->insertApp('null');
 
         self::$client->request('DELETE', '/applications/null/users/bar/uninstall');
-        /** @var Response $response */
         $response = self::$client->getResponse();
 
         self::assertEquals(
@@ -188,10 +199,12 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         self::assertEquals('200', $response->getStatusCode());
 
         self::$client->request('GET', '/applications/someApp/users/bar');
-        /** @var Response $response */
         $response = self::$client->getResponse();
 
         self::assertEquals('3002', Json::decode((string) $response->getContent())['error_code']);
+
+        $response = (array) $this->sendDelete('/applications/application/users/user/uninstall');
+        self::assertEquals('404', $response['status']);
     }
 
     /**
@@ -215,14 +228,16 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         $this->mockApplicationHandler(['new_settings' => 'test1']);
 
         self::$client->request('PUT', '/applications/someApp/users/bar/settings', [], [], [], '{"test":1}');
-        /** @var Response $response */
         $response = self::$client->getResponse();
-
         self::assertEquals('200', $response->getStatusCode());
         self::assertEquals(
             'test1',
             Json::decode((string) $response->getContent())['new_settings']
         );
+
+        self::$client->request('PUT', '/applications/application/users/user/settings');
+        $response = self::$client->getResponse();
+        self::assertEquals('404', $response->getStatusCode());
     }
 
     /**
@@ -245,11 +260,13 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     {
         $this->mockApplicationHandler(['new_passwd' => 'secret']);
 
-        self::$client->request('PUT', '/applications/someApp/users/bar/password', [], [], [], '{"passwd": test}');
-        /** @var Response $response */
+        self::$client->request('PUT', '/applications/someApp/users/bar/password', ['password' => 'Passw0rd']);
         $response = self::$client->getResponse();
-
         self::assertEquals('200', $response->getStatusCode());
+
+        self::$client->request('PUT', '/applications/application/users/user/password', ['password' => 'Passw0rd']);
+        $response = self::$client->getResponse();
+        self::assertEquals('404', $response->getStatusCode());
     }
 
     /**

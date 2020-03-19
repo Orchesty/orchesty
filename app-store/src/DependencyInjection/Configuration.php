@@ -10,9 +10,10 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
  * Class Configuration
  *
  * @package Hanaboso\HbPFAppStore\DependencyInjection
+ *
  * @codeCoverageIgnore
  */
-class Configuration implements ConfigurationInterface
+final class Configuration implements ConfigurationInterface
 {
 
     /**

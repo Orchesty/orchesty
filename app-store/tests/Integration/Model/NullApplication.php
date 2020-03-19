@@ -22,7 +22,7 @@ use Hanaboso\Utils\String\Json;
  *
  * @package HbPFAppStoreTests\Integration\Model
  */
-class NullApplication extends BasicApplicationAbstract implements WebhookApplicationInterface
+final class NullApplication extends BasicApplicationAbstract implements WebhookApplicationInterface
 {
 
     /**

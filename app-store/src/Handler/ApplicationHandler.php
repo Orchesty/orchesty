@@ -3,8 +3,8 @@
 namespace Hanaboso\HbPFAppStore\Handler;
 
 use Doctrine\ODM\MongoDB\MongoDBException;
-use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\HbPFAppStore\Model\ApplicationManager;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookApplicationInterface;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookManager;
@@ -19,7 +19,7 @@ use InvalidArgumentException;
  *
  * @package Hanaboso\HbPFAppStore\Handler
  */
-class ApplicationHandler
+final class ApplicationHandler
 {
 
     private const AUTHORIZED           = 'authorized';
@@ -65,7 +65,7 @@ class ApplicationHandler
      * @param string $key
      *
      * @return mixed[]
-     * @throws Exception
+     * @throws ApplicationInstallException
      */
     public function getApplicationByKey(string $key): array
     {
@@ -100,7 +100,6 @@ class ApplicationHandler
      *
      * @return mixed[]
      * @throws ApplicationInstallException
-     * @throws Exception
      */
     public function getApplicationByKeyAndUser(string $key, string $user): array
     {
@@ -126,8 +125,8 @@ class ApplicationHandler
      *
      * @return mixed[]
      * @throws ApplicationInstallException
+     * @throws MongoDBException
      * @throws DateTimeException
-     * @throws Exception
      */
     public function installApplication(string $key, string $user): array
     {
@@ -149,7 +148,9 @@ class ApplicationHandler
      * @param string $user
      *
      * @return mixed[]
-     * @throws Exception
+     * @throws ApplicationInstallException
+     * @throws MongoDBException
+     * @throws CurlException
      */
     public function uninstallApplication(string $key, string $user): array
     {
@@ -168,7 +169,8 @@ class ApplicationHandler
      * @param mixed[] $data
      *
      * @return mixed[]
-     * @throws Exception
+     * @throws ApplicationInstallException
+     * @throws MongoDBException
      */
     public function updateApplicationSettings(string $key, string $user, array $data): array
     {
@@ -184,16 +186,16 @@ class ApplicationHandler
      * @param mixed[] $data
      *
      * @return mixed[]
-     * @throws Exception
+     * @throws ApplicationInstallException
+     * @throws MongoDBException
      */
     public function updateApplicationPassword(string $key, string $user, array $data): array
     {
         if (!array_key_exists('password', $data)) {
             throw new InvalidArgumentException('Field password is not included.');
         }
-        $password = $data['password'];
 
-        return $this->applicationManager->saveApplicationPassword($key, $user, $password)->toArray();
+        return $this->applicationManager->saveApplicationPassword($key, $user, $data['password'])->toArray();
     }
 
     /**
@@ -201,7 +203,8 @@ class ApplicationHandler
      * @param string $user
      * @param string $redirectUrl
      *
-     * @throws Exception
+     * @throws ApplicationInstallException
+     * @throws MongoDBException
      */
     public function authorizeApplication(string $key, string $user, string $redirectUrl): void
     {

@@ -1,5 +1,9 @@
 [
     {
+        "name": "App Store",
+        "url": "docs/app-store.yaml"
+    },
+    {
         "name": "CRON",
         "url": "docs/cron.yaml"
     },

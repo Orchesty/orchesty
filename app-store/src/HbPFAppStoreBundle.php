@@ -9,7 +9,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  *
  * @package Hanaboso\HbPFAppStore
  */
-class HbPFAppStoreBundle extends Bundle
+final class HbPFAppStoreBundle extends Bundle
 {
 
 }
