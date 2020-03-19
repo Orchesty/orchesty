@@ -301,6 +301,17 @@ rabbitmq-telegraf:
   only:
     - master
 
+swagger:
+  stage: stage2
+  script:
+    - DIR=swagger
+    - skip_unmodified $DIR
+    - cd $DIR
+    - make build TAG=${CI_BUILD_REF_NAME}
+  only:
+    - dev
+    - master
+
 # Client: demo
 stage-demo:
   stage: stage3
