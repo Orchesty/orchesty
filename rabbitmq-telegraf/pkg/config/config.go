@@ -3,9 +3,10 @@ package config
 import (
 	"time"
 
+	"github.com/hanaboso/go-log/pkg/zap"
 	"github.com/jinzhu/configor"
 
-	log "github.com/sirupsen/logrus"
+	log "github.com/hanaboso/go-log/pkg"
 )
 
 type (
@@ -39,6 +40,8 @@ var (
 	RabbitMQ rabbitMq
 	// Metrics settings
 	Metrics metrics
+	// Logger logger
+	Logger log.Logger
 
 	c = config{
 		App:      &App,
@@ -48,15 +51,15 @@ var (
 )
 
 func init() {
-	log.StandardLogger()
+	Logger = zap.NewLogger()
 	if err := configor.Load(&c); err != nil {
-		log.Fatal(err)
+		Logger.Fatal(err)
 	}
 
 	if App.Debug {
-		log.SetLevel(log.DebugLevel)
+		Logger.SetLevel(log.DEBUG)
 	} else {
-		log.SetLevel(log.InfoLevel)
+		Logger.SetLevel(log.INFO)
 	}
 
 	App.Tick *= time.Second
