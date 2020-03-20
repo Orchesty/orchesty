@@ -1,0 +1,27 @@
+openapi: 3.0.0
+
+info:
+    title: Limiter
+    description: Limiter API
+    version: '1.0'
+
+paths: {}
+
+components:
+    schemas:
+        RabbitMessage:
+            type: object
+            properties:
+                headers:
+                    type: object
+                    properties:
+                        pf-limit-key:
+                            type: string
+                        pf-limit-time:
+                            type: string
+                        pf-limit-value:
+                            type: string
+                        pf-limit-return-exchange:
+                            type: string
+                        pf-limit-return-routing-key:
+                            type: string
