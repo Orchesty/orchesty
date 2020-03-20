@@ -8,6 +8,10 @@
         "url": "docs/cron.yaml"
     },
     {
+        "name": "Limiter",
+        "url": "docs/limiter.yaml"
+    },
+    {
         "name": "Notification Sender",
         "url": "docs/notification-sender.yaml"
     },
