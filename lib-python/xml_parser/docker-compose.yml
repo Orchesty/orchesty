@@ -12,4 +12,13 @@ services:
           METRICS_HOST: metrics
           METRICS_PORT: '5555'
         ports:
-          - 127.0.0.55:8080:80
+          - 127.0.0.55:80:80
+
+    swagger-ui:
+        image: swaggerapi/swagger-ui
+        ports:
+            - 127.0.0.55:8080:8080
+        volumes:
+            - ./openapi.yaml:/api.yaml
+        environment:
+            SWAGGER_JSON: /api.yaml

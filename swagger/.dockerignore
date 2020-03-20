@@ -1,6 +1,7 @@
 *
 !app-store/openapi.yaml
 !cron/openapi.yaml
+!lib-python/xml_parser/openapi.yaml
 !notification-sender/openapi.yaml
 !starting-point/openapi.yaml
 !topology-generator/openapi.yaml
