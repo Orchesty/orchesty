@@ -3,6 +3,7 @@ module rabbitmq-telegraf
 go 1.13
 
 require (
+	github.com/hanaboso/go-log v0.0.0-20200316105142-2513eeb2ee4e
 	github.com/hanaboso/go-metrics v0.0.0-20200306095447-da17d0533b7c
 	github.com/jinzhu/configor v1.1.1
 	github.com/sirupsen/logrus v1.4.2
