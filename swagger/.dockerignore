@@ -4,5 +4,6 @@
 !lib-python/xml_parser/openapi.yaml
 !limiter/openapi.yaml
 !notification-sender/openapi.yaml
+!portal/openapi.yaml
 !starting-point/openapi.yaml
 !topology-generator/openapi.yaml

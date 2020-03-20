@@ -14,6 +14,10 @@
     {
         "name": "Notification Sender",
         "url": "docs/notification-sender.yaml"
+    },,
+    {
+        "name": "Portal",
+        "url": "docs/portal.yaml"
     },
     {
         "name": "Starting Point",
