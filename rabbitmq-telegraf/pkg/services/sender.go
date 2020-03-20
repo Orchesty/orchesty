@@ -48,6 +48,6 @@ func NewSenderSvc(workQueue <-chan []Queue, logger log.Logger) Sender {
 	return Sender{
 		metrics:   metrics.Connect(config.Metrics.Dsn),
 		workQueue: workQueue,
-		logger: logger,
+		logger:    logger,
 	}
 }
