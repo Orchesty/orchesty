@@ -32,7 +32,7 @@ class Installer
     /**
      * @var mixed[]
      */
-    protected $logsServices = [
+    protected array $logsServices = [
         'logs' => [
             self::ELASTICSEARCH,
             self::LOGSTASH,
@@ -42,7 +42,7 @@ class Installer
     /**
      * @var mixed[]
      */
-    protected $metricsServices = [
+    protected array $metricsServices = [
         'metrics' => [
             self::INFLUXDB,
             self::KAPACITOR,
@@ -53,7 +53,7 @@ class Installer
     /**
      * @var mixed[]
      */
-    protected $coreServices = [
+    protected array $coreServices = [
         'core' => [
             'batch',
             'batch-connector',
@@ -75,7 +75,7 @@ class Installer
     /**
      * @var mixed[]
      */
-    protected $databases = [
+    protected array $databases = [
         'databases' => [
             self::MONGO,
             self::REDIS,
@@ -86,7 +86,7 @@ class Installer
     /**
      * @var mixed[]
      */
-    protected $logsVolumes = [
+    protected array $logsVolumes = [
         'logs' => [
             self::ELASTICSEARCH,
         ],
@@ -95,7 +95,7 @@ class Installer
     /**
      * @var mixed[]
      */
-    protected $metricsVolumes = [
+    protected array $metricsVolumes = [
         'metrics' => [
             self::INFLUXDB,
         ],
@@ -104,7 +104,7 @@ class Installer
     /**
      * @var mixed[]
      */
-    protected $monolithEnvironments = [
+    protected array $monolithEnvironments = [
         'BACKEND_HOST'         => '${BACKEND_URL}/',
         'ELASTIC_HOST'         => self::ELASTICSEARCH,
         'ELASTIC_INDEX'        => 'logstash-2018.01.31',
@@ -119,7 +119,7 @@ class Installer
     /**
      * @var mixed[]
      */
-    protected $pfBridgeEnvironments = [
+    protected array $pfBridgeEnvironments = [
         'RABBITMQ_HOST'    => self::RABBITMQ,
         'RABBITMQ_PORT'    => 5_672,
         'RABBITMQ_USER'    => 'guest',
@@ -138,7 +138,7 @@ class Installer
     /**
      * @var mixed[]
      */
-    protected $notificationEnvironments = [
+    protected array $notificationEnvironments = [
         'RABBIT_HOST' => self::RABBITMQ,
         'RABBIT_PORT' => 5_672,
         'RABBIT_USER' => 'guest',

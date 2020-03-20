@@ -17,7 +17,7 @@ class InstallerHandler
     /**
      * @var Installer
      */
-    private $installer;
+    private Installer $installer;
 
     /**
      * InstallerHandler constructor.

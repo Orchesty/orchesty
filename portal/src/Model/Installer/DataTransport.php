@@ -15,17 +15,17 @@ class DataTransport
     /**
      * @var string
      */
-    private $log;
+    private string $log;
 
     /**
      * @var string
      */
-    private $metric;
+    private string $metric;
 
     /**
      * @var bool
      */
-    private $database;
+    private bool $database;
 
     /**
      * DataTransport constructor.
@@ -43,12 +43,12 @@ class DataTransport
     )
     {
 
-        if ($log === Installer::ELASTICSEARCH OR $log === Installer::LOGSTASH) {
+        if ($log === Installer::ELASTICSEARCH || $log === Installer::LOGSTASH) {
             $this->log = $log;
         } else {
             throw new InstallerException('Insert correct value to log', InstallerException::INVALID_INPUT);
         }
-        if ($metric === Installer::INFLUXDB OR $metric === Installer::MONGO) {
+        if ($metric === Installer::INFLUXDB || $metric === Installer::MONGO) {
             $this->metric = $metric;
         } else {
             throw new InstallerException('Insert correct value to metric', InstallerException::INVALID_INPUT);

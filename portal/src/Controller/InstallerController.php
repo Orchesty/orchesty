@@ -2,7 +2,6 @@
 
 namespace Hanaboso\Portal\Controller;
 
-use Exception;
 use Hanaboso\Portal\Handler\InstallerHandler;
 use Hanaboso\Utils\Traits\ControllerTrait;
 use Psr\Log\NullLogger;
@@ -25,7 +24,7 @@ class InstallerController
     /**
      * @var InstallerHandler
      */
-    private $installerHandler;
+    private InstallerHandler $installerHandler;
 
     /**
      * InstallerController constructor.
@@ -59,8 +58,8 @@ class InstallerController
             $response->headers->set('Content-Disposition', $disposition);
 
             return $response;
-        } catch (Exception|Throwable $e) {
-            return $this->getErrorResponse($e, 500);
+        } catch (Throwable $t) {
+            return $this->getErrorResponse($t);
         }
     }
 

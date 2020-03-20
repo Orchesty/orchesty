@@ -3,3 +3,9 @@ rest:
         ^/: ['json']
     decoders:
         json: 'rest.decoder.json'
+    cors:
+        ^/:
+            origin: ['*']
+            methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+            headers: ['Content-Type']
+            credentials: TRUE
