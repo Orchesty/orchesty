@@ -16,95 +16,95 @@ final class LongRunningNodeController extends AbstractController
 {
 
     /**
-     * @Route("/longRunning/{nodeId}/process", methods={"POST", "GET", "OPTIONS"})
+     * @Route("/longRunning/{id}/process", methods={"POST", "GET", "OPTIONS"})
      *
      * @param Request $request
-     * @param string  $nodeId
+     * @param string  $id
      *
      * @return Response
      */
-    public function processAction(Request $request, string $nodeId): Response
+    public function processAction(Request $request, string $id): Response
     {
         return $this->forward(
             'Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController::processAction',
-            ['request' => $request, 'nodeId' => $nodeId]
+            ['request' => $request, 'id' => $id]
         );
     }
 
     /**
-     * @Route("/longRunning/{nodeId}/process/test", methods={"GET", "OPTIONS"})
+     * @Route("/longRunning/{id}/process/test", methods={"GET", "OPTIONS"})
      *
-     * @param string $nodeId
+     * @param string $id
      *
      * @return Response
      */
-    public function testAction(string $nodeId): Response
+    public function testAction(string $id): Response
     {
         return $this->forward(
             'Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController::testAction',
-            ['nodeId' => $nodeId]
+            ['id' => $id]
         );
     }
 
     /**
-     * @Route("/longRunning/id/topology/{topo}/getTasks", methods={"GET", "OPTIONS"})
+     * @Route("/longRunning/id/topology/{topology}/getTasks", methods={"GET", "OPTIONS"})
      *
-     * @param string $topo
+     * @param string $topology
      *
      * @return Response
      */
-    public function getTasksByAction(string $topo): Response
+    public function getTasksByAction(string $topology): Response
     {
         return $this->forward(
             'Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController::getTasksByIdAction',
-            ['topo' => $topo]
+            ['topology' => $topology]
         );
     }
 
     /**
-     * @Route("/longRunning/name/topology/{topo}/getTasks", methods={"GET", "OPTIONS"})
+     * @Route("/longRunning/name/topology/{topology}/getTasks", methods={"GET", "OPTIONS"})
      *
-     * @param string $topo
+     * @param string $topology
      *
      * @return Response
      */
-    public function getTasksAction(string $topo): Response
+    public function getTasksAction(string $topology): Response
     {
         return $this->forward(
             'Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController::getTasksAction',
-            ['topo' => $topo]
+            ['topology' => $topology]
         );
     }
 
     /**
-     * @Route("/longRunning/id/topology/{topo}/node/{node}/getTasks", methods={"GET", "OPTIONS"})
+     * @Route("/longRunning/id/topology/{topology}/node/{node}/getTasks", methods={"GET", "OPTIONS"})
      *
-     * @param string $topo
+     * @param string $topology
      * @param string $node
      *
      * @return Response
      */
-    public function getNodeTasksByIdAction(string $topo, string $node): Response
+    public function getNodeTasksByIdAction(string $topology, string $node): Response
     {
         return $this->forward(
             'Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController::getNodeTasksByIdAction',
-            ['topo' => $topo, 'node' => $node]
+            ['topology' => $topology, 'node' => $node]
         );
     }
 
     /**
-     * @Route("/longRunning/name/topology/{topo}/node/{node}/getTasks", methods={"GET", "OPTIONS"})
+     * @Route("/longRunning/name/topology/{topology}/node/{node}/getTasks", methods={"GET", "OPTIONS"})
      *
-     * @param string $topo
+     * @param string $topology
      * @param string $node
      *
      * @return Response
      */
-    public function getNodeTasksAction(string $topo, string $node): Response
+    public function getNodeTasksAction(string $topology, string $node): Response
     {
         return $this->forward(
             'Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController::getNodeTasksAction',
-            ['topo' => $topo, 'node' => $node]
+            ['topology' => $topology, 'node' => $node]
         );
     }
 
