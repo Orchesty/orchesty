@@ -7,7 +7,6 @@ use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
-use Hanaboso\Utils\Exception\DateTimeException;
 use PipesPhpSdkTests\DatabaseTestCaseAbstract;
 use PipesPhpSdkTests\Integration\Application\TestNullApplication;
 
@@ -35,69 +34,80 @@ final class BasicApplicationAbstractTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract::isAuthorized
      *
-     * @throws DateTimeException
+     * @throws Exception
      */
     public function testIsAuthorize(): void
     {
         $applicationInstall = $this->createApplicationInstall();
         self::assertFalse($this->testApp->isAuthorized($applicationInstall));
 
-        $applicationInstall = $this->createApplicationInstall([ApplicationInterface::AUTHORIZATION_SETTINGS => [BasicApplicationInterface::PASSWORD => 'just_password']]);
+        $applicationInstall = $this->createApplicationInstall(
+            [ApplicationInterface::AUTHORIZATION_SETTINGS => [BasicApplicationInterface::PASSWORD => 'just_password']]
+        );
         self::assertFalse($this->testApp->isAuthorized($applicationInstall));
     }
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract::setApplicationPassword
      *
-     * @throws DateTimeException
+     * @throws Exception
      */
     public function testSetApplicationPassword(): void
     {
-        $applicationInstall = $this->createApplicationInstall([ApplicationInterface::AUTHORIZATION_SETTINGS => [BasicApplicationInterface::PASSWORD => 'just_password']]);
+        $applicationInstall = $this->createApplicationInstall(
+            [ApplicationInterface::AUTHORIZATION_SETTINGS => [BasicApplicationInterface::PASSWORD => 'just_password']]
+        );
 
         $applicationInstall = $this->testApp->setApplicationPassword($applicationInstall, 'very_secret_password');
         self::assertEquals(
             'very_secret_password',
-            $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::PASSWORD]
+            $applicationInstall->getSettings(
+            )[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::PASSWORD]
         );
     }
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract::setApplicationUser
      *
-     * @throws DateTimeException
+     * @throws Exception
      */
     public function testSetApplicationUser(): void
     {
-        $applicationInstall = $this->createApplicationInstall([ApplicationInterface::AUTHORIZATION_SETTINGS => [BasicApplicationInterface::USER => 'just_user']]);
+        $applicationInstall = $this->createApplicationInstall(
+            [ApplicationInterface::AUTHORIZATION_SETTINGS => [BasicApplicationInterface::USER => 'just_user']]
+        );
         $applicationInstall = $this->testApp->setApplicationUser($applicationInstall, 'new_user');
 
         self::assertEquals(
             'new_user',
-            $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::USER]
+            $applicationInstall->getSettings(
+            )[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::USER]
         );
     }
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract::setApplicationToken
      *
-     * @throws DateTimeException
+     * @throws Exception
      */
     public function testSetApplicationToken(): void
     {
-        $applicationInstall = $this->createApplicationInstall([ApplicationInterface::AUTHORIZATION_SETTINGS => [BasicApplicationInterface::TOKEN => '__token__']]);
+        $applicationInstall = $this->createApplicationInstall(
+            [ApplicationInterface::AUTHORIZATION_SETTINGS => [BasicApplicationInterface::TOKEN => '__token__']]
+        );
         $applicationInstall = $this->testApp->setApplicationToken($applicationInstall, '__new_token__');
 
         self::assertEquals(
             '__new_token__',
-            $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::TOKEN]
+            $applicationInstall->getSettings(
+            )[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::TOKEN]
         );
     }
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract::setApplicationSettings
      *
-     * @throws DateTimeException
+     * @throws Exception
      */
     public function testSetApplicationSettings(): void
     {
@@ -125,7 +135,8 @@ final class BasicApplicationAbstractTest extends DatabaseTestCaseAbstract
 
         self::assertEquals(
             '__new_token__',
-            $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::TOKEN]
+            $applicationInstall->getSettings(
+            )[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::TOKEN]
         );
     }
 
@@ -143,7 +154,7 @@ final class BasicApplicationAbstractTest extends DatabaseTestCaseAbstract
      * @param mixed[] $settings
      *
      * @return ApplicationInstall
-     * @throws DateTimeException
+     * @throws Exception
      */
     private function createApplicationInstall(array $settings = []): ApplicationInstall
     {

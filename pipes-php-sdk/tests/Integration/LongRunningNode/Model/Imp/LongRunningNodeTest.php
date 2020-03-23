@@ -18,6 +18,7 @@ final class LongRunningNodeTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Model\Impl\LongRunningNodeAbstract::beforeAction
      * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Model\Impl\LongRunningNodeAbstract::afterAction
+
      * @throws Exception
      */
     public function testBeforeAction(): void

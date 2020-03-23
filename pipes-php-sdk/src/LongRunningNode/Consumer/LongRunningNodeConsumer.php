@@ -9,7 +9,7 @@ use RabbitMqBundle\Consumer\Consumer;
  *
  * @package Hanaboso\PipesPhpSdk\LongRunningNode\Consumer
  */
-class LongRunningNodeConsumer extends Consumer
+final class LongRunningNodeConsumer extends Consumer
 {
 
 }

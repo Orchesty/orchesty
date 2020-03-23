@@ -2,7 +2,7 @@
 
 namespace PipesPhpSdkTests\Unit\Connector\Model\BatchConnector;
 
-use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
+use Exception;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 
 /**
@@ -16,7 +16,8 @@ final class BatchConnectorCallbackTest extends KernelTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\Connector\Model\BatchConnector\BatchConnectorCallback
      * @covers \Hanaboso\PipesPhpSdk\Connector\Model\BatchConnector\BatchConnectorCallback::getBatchService
-     * @throws ConnectorException
+
+     * @throws Exception
      */
     public function testGetBatchService(): void
     {

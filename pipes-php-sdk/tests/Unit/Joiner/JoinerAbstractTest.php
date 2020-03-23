@@ -49,6 +49,7 @@ final class JoinerAbstractTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\Joiner\JoinerAbstract::getApplication
+
      * @throws Exception
      */
     public function testGetApplicationException(): void
@@ -60,6 +61,7 @@ final class JoinerAbstractTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\Joiner\JoinerAbstract::getApplication
+
      * @throws Exception
      */
     public function testGetApplication(): void

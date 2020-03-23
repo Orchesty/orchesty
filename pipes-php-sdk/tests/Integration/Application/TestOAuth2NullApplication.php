@@ -17,7 +17,7 @@ use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
  *
  * @package PipesPhpSdkTests\Integration\Application
  */
-class TestOAuth2NullApplication extends OAuth2ApplicationAbstract
+final class TestOAuth2NullApplication extends OAuth2ApplicationAbstract
 {
 
     /**

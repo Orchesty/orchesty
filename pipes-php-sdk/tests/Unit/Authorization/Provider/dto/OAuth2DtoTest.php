@@ -2,11 +2,11 @@
 
 namespace PipesPhpSdkTests\Unit\Authorization\Provider\dto;
 
+use Exception;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth2Dto;
-use Hanaboso\Utils\Exception\DateTimeException;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 
 /**
@@ -18,7 +18,7 @@ final class OAuth2DtoTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @throws DateTimeException
+     * @throws Exception
      */
     public function testOauth2Dto(): void
     {

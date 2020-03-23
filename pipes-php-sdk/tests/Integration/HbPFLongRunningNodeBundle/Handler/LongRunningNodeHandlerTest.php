@@ -2,7 +2,6 @@
 
 namespace PipesPhpSdkTests\Integration\HbPFLongRunningNodeBundle\Handler;
 
-use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
 use Hanaboso\MongoDataGrid\GridRequestDto;
 use Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Handler\LongRunningNodeHandler;
@@ -49,8 +48,7 @@ final class LongRunningNodeHandlerTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Handler\LongRunningNodeHandler::process
      *
-     * @throws MongoDBException
-     * @throws LongRunningNodeException
+     * @throws Exception
      */
     public function testProcessErr(): void
     {
@@ -98,6 +96,7 @@ final class LongRunningNodeHandlerTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Handler\LongRunningNodeHandler::getTasks
+
      * @throws Exception
      */
     public function testGetTasks(): void

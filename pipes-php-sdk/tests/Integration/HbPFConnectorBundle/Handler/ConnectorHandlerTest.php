@@ -3,7 +3,6 @@
 namespace PipesPhpSdkTests\Integration\HbPFConnectorBundle\Handler;
 
 use Exception;
-use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Handler\ConnectorHandler;
 use PipesPhpSdkTests\DatabaseTestCaseAbstract;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,7 +23,7 @@ final class ConnectorHandlerTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Handler\ConnectorHandler::processEvent
      *
-     * @throws ConnectorException
+     * @throws Exception
      */
     public function testProcessEvent(): void
     {
@@ -36,7 +35,7 @@ final class ConnectorHandlerTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Handler\ConnectorHandler::processTest
      *
-     * @throws ConnectorException
+     * @throws Exception
      */
     public function testProcessTest(): void
     {
@@ -48,7 +47,7 @@ final class ConnectorHandlerTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Handler\ConnectorHandler::processAction
      *
-     * @throws ConnectorException
+     * @throws Exception
      */
     public function testProcessAction(): void
     {

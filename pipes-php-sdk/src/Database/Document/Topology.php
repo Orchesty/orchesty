@@ -2,8 +2,7 @@
 
 namespace Hanaboso\PipesPhpSdk\Database\Document;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\Index;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Hanaboso\CommonsBundle\Database\Traits\Document\DeletedTrait;
 use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
 use Hanaboso\CommonsBundle\Enum\StatusEnum;
@@ -14,14 +13,14 @@ use Hanaboso\Utils\String\Json;
 /**
  * Class Topology
  *
- * @MongoDB\Document(
+ * @package Hanaboso\PipesPhpSdk\Database\Document
+ *
+ * @ODM\Document(
  *     repositoryClass="Hanaboso\PipesPhpSdk\Database\Repository\TopologyRepository",
  *     indexes={
- *         @MongoDB\Index(keys={"name": "asc", "version": "asc"}, unique="true")
+ *         @ODM\Index(keys={"name": "asc", "version": "asc"}, unique="true")
  *     }
  * )
- *
- * @package Hanaboso\PipesPhpSdk\Database\Document
  */
 class Topology
 {
@@ -32,71 +31,71 @@ class Topology
     /**
      * @var string
      *
-     * @MongoDB\Field(type="string")
+     * @ODM\Field(type="string")
      */
     protected $name = '';
 
     /**
      * @var int
      *
-     * @MongoDB\Field(type="int", options={"default":"1"})
+     * @ODM\Field(type="int", options={"default":"1"})
      */
     protected $version = 1;
 
     /**
      * @var string
      *
-     * @MongoDB\Field(type="string")
+     * @ODM\Field(type="string")
      */
     protected $descr = '';
 
     /**
      * @var string
      *
-     * @MongoDB\Field(type="string", options={"default":"draft"})
+     * @ODM\Field(type="string", options={"default":"draft"})
      */
     protected $visibility = TopologyStatusEnum::DRAFT;
 
     /**
      * @var string
      *
-     * @MongoDB\Field(type="string")
+     * @ODM\Field(type="string")
      */
     protected $status = StatusEnum::NEW;
 
     /**
      * @var bool
      *
-     * @MongoDB\Field(type="boolean", options={"default":"1"})
+     * @ODM\Field(type="boolean", options={"default":"1"})
      */
     protected $enabled = TRUE;
 
     /**
      * @var string
      *
-     * @MongoDB\Field(type="string")
+     * @ODM\Field(type="string")
      */
     protected $bpmn = '';
 
     /**
      * @var string
      *
-     * @MongoDB\Field(type="string")
+     * @ODM\Field(type="string")
      */
     protected $rawBpmn = '';
 
     /**
      * @var string|null
      *
-     * @MongoDB\Field(type="string")
-     * @Index()
+     * @ODM\Field(type="string")
+     * @ODM\Index()
      */
     protected $category = NULL;
 
     /**
      * @var string
      *
-     * @MongoDB\Field(type="string")
+     * @ODM\Field(type="string")
      */
     protected $contentHash = '';
 

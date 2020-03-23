@@ -12,7 +12,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @package Hanaboso\PipesPhpSdk\HbPFMapperBundle\Loader
  */
-class MapperLoader
+final class MapperLoader
 {
 
     public const PREFIX = 'hbpf.mapper';

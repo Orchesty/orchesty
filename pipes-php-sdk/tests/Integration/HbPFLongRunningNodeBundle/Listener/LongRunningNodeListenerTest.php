@@ -19,7 +19,7 @@ final class LongRunningNodeListenerTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Listener\LongRunningNodeListener
-     * @covers \Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Listener\LongRunningNodeListener::onFinish()
+     * @covers \Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Listener\LongRunningNodeListener::onFinish
      *
      * @throws Exception
      */

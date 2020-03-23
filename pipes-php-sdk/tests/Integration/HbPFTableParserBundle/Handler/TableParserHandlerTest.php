@@ -14,7 +14,6 @@ use Hanaboso\PipesPhpSdk\Parser\Exception\TableParserException;
 use Hanaboso\PipesPhpSdk\Parser\TableParser;
 use Hanaboso\PipesPhpSdk\Parser\TableParserInterface;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
-use ReflectionException;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
@@ -41,8 +40,8 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
     private $storage;
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler::parseToJson()
-     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler::getFile()
+     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler::parseToJson
+     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler::getFile
      *
      * @throws Exception
      */
@@ -67,7 +66,8 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler::getFile
-     * @throws ReflectionException
+
+     * @throws Exception
      */
     public function testGetFile(): void
     {
@@ -91,7 +91,7 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler::getFile
      *
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function testGetFile2(): void
     {
@@ -112,7 +112,7 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler::getFile
      *
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function testGetFileErr(): void
     {
@@ -124,7 +124,7 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler::parseToJson()
+     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler::parseToJson
      *
      * @throws Exception
      */
@@ -138,7 +138,7 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler::parseToJsonTest()
+     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler::parseToJsonTest
      */
     public function testParseToJsonTest(): void
     {
@@ -146,7 +146,7 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler::parseFromJson()
+     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler::parseFromJson
      *
      * @throws Exception
      */
@@ -186,7 +186,7 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler::parseFromJson()
+     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler::parseFromJson
      *
      * @throws Exception
      */
@@ -212,7 +212,7 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler::parseFromJsonTest()
+     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler::parseFromJsonTest
      * @covers \Hanaboso\PipesPhpSdk\Parser\TableParser::createWriter
      *
      * @throws Exception
@@ -223,7 +223,7 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler::parseToJson()
+     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler::parseToJson
      *
      * @throws Exception
      */
@@ -235,7 +235,7 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler::parseFromJson()
+     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler::parseFromJson
      *
      * @throws Exception
      */
@@ -247,7 +247,7 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler::parseFromJson()
+     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler::parseFromJson
      *
      * @throws Exception
      */

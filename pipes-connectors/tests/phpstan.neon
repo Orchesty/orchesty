@@ -9,4 +9,4 @@ parameters:
 	ignoreErrors:
 		- '#Access to an undefined property*#'
 		- '#Unreachable statement \- code above always terminates.#'
-		- '#PHPDoc tag @var for variable \$(application|innerApplication) contains unresolvable type#'
+		- '#PHPDoc tag @var for variable \$(application|innerApplication|providerMock) contains unresolvable type#'

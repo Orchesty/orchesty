@@ -13,7 +13,7 @@ use InvalidArgumentException;
  *
  * @package Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler
  */
-class ApplicationHandler
+final class ApplicationHandler
 {
 
     /**
@@ -75,7 +75,8 @@ class ApplicationHandler
      * @param string $user
      * @param string $redirectUrl
      *
-     * @throws Exception
+     * @throws ApplicationInstallException
+     * @throws MongoDBException
      */
     public function authorizeApplication(string $key, string $user, string $redirectUrl): void
     {

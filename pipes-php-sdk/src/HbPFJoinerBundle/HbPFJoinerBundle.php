@@ -9,7 +9,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  *
  * @package Hanaboso\PipesPhpSdk\HbPFJoinerBundle
  */
-class HbPFJoinerBundle extends Bundle
+final class HbPFJoinerBundle extends Bundle
 {
 
 }

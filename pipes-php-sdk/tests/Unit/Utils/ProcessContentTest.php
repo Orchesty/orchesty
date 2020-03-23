@@ -2,10 +2,10 @@
 
 namespace PipesPhpSdkTests\Unit\Utils;
 
+use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
-use ReflectionException;
 
 /**
  * Class ProcessContentTest
@@ -18,7 +18,7 @@ final class ProcessContentTest extends KernelTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\Utils\ProcessContentTrait::getContentByKey
      *
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function testGetContentKey(): void
     {
@@ -33,7 +33,7 @@ final class ProcessContentTest extends KernelTestCaseAbstract
      * @covers \Hanaboso\PipesPhpSdk\Utils\ProcessContentTrait::getContentByKey
      * @covers \Hanaboso\PipesPhpSdk\Utils\ProcessContentTrait::getByKey
      *
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function testGetContentKeyErr(): void
     {
@@ -47,7 +47,7 @@ final class ProcessContentTest extends KernelTestCaseAbstract
      * @covers \Hanaboso\PipesPhpSdk\Utils\ProcessContentTrait::checkRequiredContent
      * @covers \Hanaboso\PipesPhpSdk\Utils\ProcessContentTrait::getByKey
      *
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function testCheckRequiredContent(): void
     {
@@ -65,7 +65,7 @@ final class ProcessContentTest extends KernelTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\Utils\ProcessContentTrait::getByKey
      *
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function testGetByKeyNull(): void
     {
@@ -84,7 +84,7 @@ final class ProcessContentTest extends KernelTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\Utils\ProcessContentTrait::getByKey
      *
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function testGetByKey(): void
     {

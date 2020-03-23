@@ -8,9 +8,10 @@ use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
  * Class LongRunningNodeDataRepository
  *
  * @package         Hanaboso\PipesPhpSdk\LongRunningNode\Repository
+ *
  * @phpstan-extends DocumentRepository<\Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData>
  */
-class LongRunningNodeDataRepository extends DocumentRepository
+final class LongRunningNodeDataRepository extends DocumentRepository
 {
 
     /**

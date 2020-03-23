@@ -2,15 +2,15 @@
 
 namespace Hanaboso\PipesPhpSdk\Database\Document\Embed;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 
 /**
  * Class EmbedNode
  *
- * @MongoDB\EmbeddedDocument
- *
  * @package Hanaboso\PipesPhpSdk\Database\Document\Embed
+ *
+ * @ODM\EmbeddedDocument
  */
 class EmbedNode
 {
@@ -18,14 +18,14 @@ class EmbedNode
     /**
      * @var string
      *
-     * @MongoDB\Field(type="string")
+     * @ODM\Field(type="string")
      */
     protected string $id;
 
     /**
      * @var string
      *
-     * @MongoDB\Field(type="string")
+     * @ODM\Field(type="string")
      */
     protected string $name;
 

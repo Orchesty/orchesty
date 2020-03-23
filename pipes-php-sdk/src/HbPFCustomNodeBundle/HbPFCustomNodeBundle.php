@@ -9,7 +9,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  *
  * @package Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle
  */
-class HbPFCustomNodeBundle extends Bundle
+final class HbPFCustomNodeBundle extends Bundle
 {
 
 }

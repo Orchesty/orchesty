@@ -22,7 +22,8 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFMapperBundle\Controller\MapperController
-     * @covers \Hanaboso\PipesPhpSdk\HbPFMapperBundle\Controller\MapperController::processTestAction()
+     * @covers \Hanaboso\PipesPhpSdk\HbPFMapperBundle\Controller\MapperController::processTestAction
+
      * @throws Exception
      */
     public function testProcessTest(): void
@@ -39,6 +40,7 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFMapperBundle\Controller\MapperController::processTestAction
+
      * @throws Exception
      */
     public function testProcessTestAction(): void
@@ -54,7 +56,8 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFMapperBundle\Controller\MapperController::processAction()
+     * @covers \Hanaboso\PipesPhpSdk\HbPFMapperBundle\Controller\MapperController::processAction
+
      * @throws Exception
      */
     public function testProcess(): void

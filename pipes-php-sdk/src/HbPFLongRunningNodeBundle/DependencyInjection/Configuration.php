@@ -9,9 +9,10 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
  * Class Configuration
  *
  * @package Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\DependencyInjection
+ *
  * @codeCoverageIgnore
  */
-class Configuration implements ConfigurationInterface
+final class Configuration implements ConfigurationInterface
 {
 
     /**

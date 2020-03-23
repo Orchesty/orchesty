@@ -6,7 +6,6 @@ use DateTime;
 use Exception;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\Utils\Date\DateTimeUtils;
-use Hanaboso\Utils\Exception\DateTimeException;
 use PipesPhpSdkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -24,7 +23,6 @@ final class ApplicationInstallTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall::toArray
      * @covers \Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall
      *
-     * @throws DateTimeException
      * @throws Exception
      */
     public function testApplicationInstall(): void

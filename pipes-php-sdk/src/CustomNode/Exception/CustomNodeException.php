@@ -9,7 +9,7 @@ use Hanaboso\Utils\Exception\PipesFrameworkExceptionAbstract;
  *
  * @package Hanaboso\PipesPhpSdk\CustomNode\Exception
  */
-class CustomNodeException extends PipesFrameworkExceptionAbstract
+final class CustomNodeException extends PipesFrameworkExceptionAbstract
 {
 
     public const NO_PROCESS_ACTION = 1;

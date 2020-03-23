@@ -14,9 +14,10 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
  * Class HbPFJoinerExtension
  *
  * @package Hanaboso\PipesPhpSdk\HbPFJoinerBundle\DependencyInjection
+ *
  * @codeCoverageIgnore
  */
-class HbPFJoinerExtension extends Extension implements PrependExtensionInterface
+final class HbPFJoinerExtension extends Extension implements PrependExtensionInterface
 {
 
     /**

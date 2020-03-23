@@ -13,7 +13,7 @@ use Hanaboso\PipesPhpSdk\Database\Document\Category;
  *
  * @phpstan-extends DocumentRepository<Category>
  */
-class CategoryRepository extends DocumentRepository
+final class CategoryRepository extends DocumentRepository
 {
 
     /**

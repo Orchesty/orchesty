@@ -9,7 +9,7 @@ use Hanaboso\PipesPhpSdk\Mapper\MapperAbstract;
  *
  * @package Hanaboso\PipesPhpSdk\Mapper\Impl
  */
-class NullMapper extends MapperAbstract
+final class NullMapper extends MapperAbstract
 {
 
     /**

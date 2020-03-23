@@ -1,0 +1,549 @@
+openapi: 3.0.0
+
+info:
+    title: Pipes PHP SDK
+    description: Pipes PHP SDK API
+    version: '1.0'
+
+servers:
+    -   url: http://127.0.0.4
+        description: Docker Localhost
+
+paths:
+    /applications/{key}/users/{user}/authorize:
+        get:
+            tags: [ Applications ]
+            parameters:
+                -   $ref: '#/components/parameters/Key'
+                -   $ref: '#/components/parameters/User'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+                404:
+                    $ref: '#/components/responses/404'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /applications/{key}/users/{user}/authorize/token:
+        post:
+            tags: [ Applications ]
+            parameters:
+                -   $ref: '#/components/parameters/Key'
+                -   $ref: '#/components/parameters/User'
+            responses:
+                302:
+                    description: ''
+                404:
+                    $ref: '#/components/responses/404'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /applications/authorize/token:
+        get:
+            tags: [ Applications ]
+            parameters:
+                -   $ref: '#/components/parameters/State'
+            responses:
+                302:
+                    description: ''
+                404:
+                    $ref: '#/components/responses/404'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /connector/list:
+        get:
+            tags: [ Connectors ]
+            responses:
+                200:
+                    $ref: '#/components/responses/Connectors'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /connector/{id}/action:
+        post:
+            tags: [ Connectors ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /connector/{id}/action/test:
+        get:
+            tags: [ Connectors ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /connector/{id}/webhook:
+        post:
+            tags: [ Connectors ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /connector/{id}/webhook/test:
+        get:
+            tags: [ Connectors ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /custom_node/list:
+        get:
+            tags: [ Custom Nodes ]
+            responses:
+                200:
+                    $ref: '#/components/responses/Connectors'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /custom_node/{id}/process:
+        post:
+            tags: [ Custom Nodes ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /custom_node/{id}/process/test:
+        get:
+            tags: [ Custom Nodes ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /joiner/list:
+        get:
+            tags: [ Joiners ]
+            responses:
+                200:
+                    $ref: '#/components/responses/Connectors'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /joiner/{id}/join:
+        post:
+            tags: [ Joiners ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /joiner/{id}/join/test:
+        post:
+            tags: [ Joiners ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /longRunning/list:
+        get:
+            tags: [ Long Running Nodes ]
+            responses:
+                200:
+                    $ref: '#/components/responses/Connectors'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /longRunning/{id}/process:
+        post:
+            tags: [ Long Running Nodes ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /longRunning/{id}/process/test:
+        get:
+            tags: [ Long Running Nodes ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /longRunning/id/topology/{topology}/getTasks:
+        get:
+            tags: [ Long Running Nodes ]
+            parameters:
+                -   $ref: '#/components/parameters/Topology'
+            responses:
+                200:
+                    $ref: '#/components/responses/TopologyTasks'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /longRunning/name/topology/{topology}/getTasks:
+        get:
+            tags: [ Long Running Nodes ]
+            parameters:
+                -   $ref: '#/components/parameters/Topology'
+            responses:
+                200:
+                    $ref: '#/components/responses/TopologyTasks'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /longRunning/id/topology/{topology}/node/{node}/getTasks:
+        get:
+            tags: [ Long Running Nodes ]
+            parameters:
+                -   $ref: '#/components/parameters/Topology'
+                -   $ref: '#/components/parameters/Node'
+            responses:
+                200:
+                    $ref: '#/components/responses/TopologyTasks'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /longRunning/name/topology/{topology}/node/{node}/getTasks:
+        get:
+            tags: [ Long Running Nodes ]
+            parameters:
+                -   $ref: '#/components/parameters/Topology'
+                -   $ref: '#/components/parameters/Node'
+            responses:
+                200:
+                    $ref: '#/components/responses/TopologyTasks'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /longRunning/{id}:
+        put:
+            tags: [ Long Running Nodes ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            requestBody:
+                $ref: '#/components/requestBodies/LongRunningData'
+            responses:
+                200:
+                    $ref: '#/components/responses/LongRunningData'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /mapper/list:
+        get:
+            tags: [ Mappers ]
+            responses:
+                200:
+                    $ref: '#/components/responses/Connectors'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /mapper/{id}/process:
+        post:
+            tags: [ Mappers ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /mapper/{id}/process/test:
+        post:
+            tags: [ Mappers ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /parser/{type}/to/json:
+        post:
+            tags: [ Parsers ]
+            parameters:
+                -   $ref: '#/components/parameters/Type'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /parser/{type}/to/json/test:
+        get:
+            tags: [ Parsers ]
+            parameters:
+                -   $ref: '#/components/parameters/Type'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /parser/json/to/{type}:
+        post:
+            tags: [ Parsers ]
+            parameters:
+                -   $ref: '#/components/parameters/Type'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /parser/json/to/{type}/test:
+        get:
+            tags: [ Parsers ]
+            parameters:
+                -   $ref: '#/components/parameters/Type'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+                500:
+                    $ref: '#/components/responses/500'
+
+components:
+    requestBodies:
+        LongRunningData:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            data:
+                                type: object
+
+    responses:
+        Empty:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        type: object
+
+        Connectors:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Connectors'
+
+        TopologyTasks:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/TopologyTasks'
+
+        LongRunningData:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/LongRunningData'
+
+        404:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Message'
+                    example:
+                        type: AppStoreException
+                        status: NOT_FOUND
+                        message: Application with key 'Unknown' not found!
+                        error_code: 404
+
+        500:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Message'
+                    example:
+                        type: AppStoreException
+                        status: INTERNAL_SERVER_ERROR
+                        message: Something gone wrong
+                        error_code: 500
+
+    schemas:
+        Connectors:
+            type: array
+            items:
+                type: string
+
+        TopologyTask:
+            type: object
+            properties:
+                created:
+                    type: string
+                updated:
+                    type: string
+                data:
+                    type: string
+                    format: json
+                auditLogs:
+                    type: string
+                    format: json
+                topologyId:
+                    type: string
+                topologyName:
+                    type: string
+                nodeId:
+                    type: string
+                nodeName:
+                    type: string
+                processId:
+                    type: string
+
+        TopologyTasks:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/TopologyTask'
+                count:
+                    type: integer
+                total:
+                    type: integer
+                limit:
+                    type: integer
+                offset:
+                    type: integer
+
+        LongRunningData:
+            type: object
+            properties:
+                topology_id:
+                    type: string
+                topology_name:
+                    type: string
+                node_id:
+                    type: string
+                node_name:
+                    type: string
+                parent_id:
+                    type: string
+                correlation_id:
+                    type: string
+                process_id:
+                    type: string
+                sequence_id:
+                    type: string
+                state:
+                    type: string
+                data:
+                    type: string
+                headers:
+                    type: string
+                created:
+                    type: string
+                updated:
+                    type: string
+                updated_by:
+                    type: string
+                audit_logs:
+                    type: string
+                content_type:
+                    type: string
+
+        Message:
+            type: object
+            properties:
+                type:
+                    type: string
+                status:
+                    type: string
+                message:
+                    type: string
+                error_code:
+                    type: integer
+
+    parameters:
+        Id:
+            name: id
+            in: path
+            required: true
+            example: id
+            schema:
+                type: string
+
+        Key:
+            name: key
+            in: path
+            required: true
+            example: id
+            schema:
+                type: string
+
+        User:
+            name: user
+            in: path
+            required: true
+            example: user
+            schema:
+                type: string
+
+        Topology:
+            name: topology
+            in: path
+            required: true
+            example: topology
+            schema:
+                type: string
+
+        Node:
+            name: node
+            in: path
+            required: true
+            example: node
+            schema:
+                type: string
+
+        Type:
+            name: type
+            in: path
+            required: true
+            example: type
+            schema:
+                type: string
+                enum: [xlsx, xls, ods, csv, html]
+
+        State:
+            name: state
+            in: query
+            required: true
+            example: state
+            schema:
+                type: string

@@ -8,7 +8,6 @@ use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\Utils\Date\DateTimeUtils;
-use Hanaboso\Utils\Exception\DateTimeException;
 use PipesPhpSdkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -25,7 +24,6 @@ final class ApplicationInstallRepositoryTest extends DatabaseTestCaseAbstract
      * @covers  \Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall::setKey
      * @covers  \Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall::setExpires
      *
-     * @throws DateTimeException
      * @throws Exception
      */
     public function testGetApplicationsBasicData(): void
@@ -71,7 +69,7 @@ final class ApplicationInstallRepositoryTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository::findUserApp
      *
-     * @throws ApplicationInstallException
+     * @throws Exception
      */
     public function testFindUserAppErr(): void
     {
@@ -85,7 +83,6 @@ final class ApplicationInstallRepositoryTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository::findUsersAppDefaultHeaders
      *
-     * @throws ApplicationInstallException
      * @throws Exception
      */
     public function testFindUsersAppDefaultHeaders(): void

@@ -2,11 +2,11 @@
 
 namespace PipesPhpSdkTests\Unit\Utils;
 
+use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\Utils\System\PipesHeaders;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
-use ReflectionException;
 
 /**
  * Class ProcessHeaderTest
@@ -19,7 +19,8 @@ final class ProcessHeaderTest extends KernelTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\Utils\ProcessHeaderTrait::setHeader
      * @covers \Hanaboso\PipesPhpSdk\Utils\ProcessHeaderTrait::getHeaderByKey
-     * @throws ReflectionException
+
+     * @throws Exception
      */
     public function testGetHeaderByKey(): void
     {
@@ -35,7 +36,8 @@ final class ProcessHeaderTest extends KernelTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\Utils\ProcessHeaderTrait::getHeaderByKey
-     * @throws ReflectionException
+
+     * @throws Exception
      */
     public function testGetHeaderByKeyErr(): void
     {
@@ -47,7 +49,8 @@ final class ProcessHeaderTest extends KernelTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\Utils\ProcessHeaderTrait::setHeader
-     * @throws ReflectionException
+
+     * @throws Exception
      */
     public function testSetHeader(): void
     {

@@ -17,10 +17,10 @@ final class LongRunningNodeManagerTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeManager
-     * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeManager::getDocument()
-     * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeManager::saveDocument()
-     * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeManager::update()
-     * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeManager::delete()
+     * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeManager::getDocument
+     * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeManager::saveDocument
+     * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeManager::update
+     * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeManager::delete
      * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData::setProcessId
      * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData::setNodeName
      * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData::setTopologyName

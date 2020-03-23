@@ -2,8 +2,8 @@
 
 namespace Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller;
 
-use Exception;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
+use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler;
 use Hanaboso\Utils\System\ControllerUtils;
@@ -20,7 +20,7 @@ use Throwable;
  *
  * @package Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller
  */
-class ApplicationController
+final class ApplicationController
 {
 
     use ControllerTrait;
@@ -28,7 +28,7 @@ class ApplicationController
     /**
      * @var ApplicationHandler
      */
-    private $applicationHandler;
+    private ApplicationHandler $applicationHandler;
 
     /**
      * ApplicationController constructor.
@@ -60,8 +60,10 @@ class ApplicationController
             $this->applicationHandler->authorizeApplication($key, $user, $redirectUrl);
 
             return $this->getResponse([]);
-        } catch (Exception|Throwable $e) {
-            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
+        } catch (ApplicationInstallException $e) {
+            return $this->getErrorResponse($e, 404, ControllerUtils::NOT_FOUND);
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
         }
     }
 
@@ -77,11 +79,13 @@ class ApplicationController
     public function setAuthorizationTokenAction(Request $request, string $key, string $user): Response
     {
         try {
-            $url = $this->applicationHandler->saveAuthToken($key, $user, $request->request->all());
+            $url = $this->applicationHandler->saveAuthToken($key, $user, $request->query->all());
 
             return new RedirectResponse($url[ApplicationInterface::REDIRECT_URL]);
-        } catch (Exception|Throwable $e) {
-            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
+        } catch (ApplicationInstallException $e) {
+            return $this->getErrorResponse($e, 404, ControllerUtils::NOT_FOUND);
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
         }
     }
 
@@ -100,8 +104,10 @@ class ApplicationController
             $url = $this->applicationHandler->saveAuthToken($key, $user, $request->query->all());
 
             return new RedirectResponse($url[ApplicationInterface::REDIRECT_URL]);
-        } catch (Exception|Throwable $e) {
-            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
+        } catch (ApplicationInstallException $e) {
+            return $this->getErrorResponse($e, 404, ControllerUtils::NOT_FOUND);
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
         }
     }
 

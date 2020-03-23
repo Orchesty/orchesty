@@ -2,6 +2,7 @@
 
 namespace PipesPhpSdkTests\Unit\Authorization\Wrapper;
 
+use Exception;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
@@ -19,7 +20,8 @@ final class OAuth2WrapperTest extends KernelTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\Authorization\Wrapper\OAuth2Wrapper
      * @covers \Hanaboso\PipesPhpSdk\Authorization\Wrapper\OAuth2Wrapper::getParsedResponse
-     * @throws AuthorizationException
+
+     * @throws Exception
      */
     public function testGetParsedResponseErr(): void
     {
@@ -50,7 +52,8 @@ final class OAuth2WrapperTest extends KernelTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\Authorization\Wrapper\OAuth2Wrapper
      * @covers \Hanaboso\PipesPhpSdk\Authorization\Wrapper\OAuth2Wrapper::getParsedResponse
-     * @throws AuthorizationException
+
+     * @throws Exception
      */
     public function testGetParsedResponseE(): void
     {

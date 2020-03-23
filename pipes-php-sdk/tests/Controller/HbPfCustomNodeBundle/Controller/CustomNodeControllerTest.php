@@ -23,7 +23,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Controller\CustomNodeController
-     * @covers \Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Controller\CustomNodeController::sendAction()
+     * @covers \Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Controller\CustomNodeController::sendAction
      *
      * @throws Exception
      */
@@ -51,7 +51,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Controller\CustomNodeController::sendAction()
+     * @covers \Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Controller\CustomNodeController::sendAction
      *
      * @throws Exception
      */
@@ -74,7 +74,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Controller\CustomNodeController::sendAction()
+     * @covers \Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Controller\CustomNodeController::sendAction
      *
      * @throws Exception
      */
@@ -103,7 +103,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Controller\CustomNodeController::sendTestAction()
+     * @covers \Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Controller\CustomNodeController::sendTestAction
      *
      * @throws Exception
      */
@@ -116,7 +116,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Controller\CustomNodeController::sendTestAction()
+     * @covers \Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Controller\CustomNodeController::sendTestAction
      *
      * @throws Exception
      */

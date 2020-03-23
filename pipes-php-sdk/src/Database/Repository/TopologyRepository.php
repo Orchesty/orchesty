@@ -16,7 +16,7 @@ use Hanaboso\PipesPhpSdk\Database\Document\Topology;
  *
  * @phpstan-extends DocumentRepository<Topology>
  */
-class TopologyRepository extends DocumentRepository
+final  class TopologyRepository extends DocumentRepository
 {
 
     /**

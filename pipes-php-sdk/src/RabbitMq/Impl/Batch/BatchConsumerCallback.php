@@ -30,7 +30,7 @@ use function React\Promise\resolve;
  *
  * @package Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch
  */
-class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterface
+final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterface
 {
 
     use DebugMessageTrait;
@@ -466,7 +466,6 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
     /**
      * @param AMQPChannel  $channel
      * @param AMQPMessage  $message
-     *
      * @param ErrorMessage $errorMessage
      *
      * @return PromiseInterface

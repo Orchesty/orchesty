@@ -21,7 +21,7 @@ final class NodeRepositoryTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository::getEventNodesByTopology()
+     * @covers \Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository::getEventNodesByTopology
      *
      * @throws Exception
      */

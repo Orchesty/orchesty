@@ -30,6 +30,7 @@ final class NullCustomNodeTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract::getApplication
+
      * @throws Exception
      */
     public function testGetApplicationException(): void
@@ -41,6 +42,7 @@ final class NullCustomNodeTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract::getApplication
+
      * @throws Exception
      */
     public function testGetApplication(): void

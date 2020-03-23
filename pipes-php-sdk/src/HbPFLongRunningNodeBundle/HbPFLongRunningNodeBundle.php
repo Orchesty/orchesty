@@ -9,7 +9,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  *
  * @package Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle
  */
-class HbPFLongRunningNodeBundle extends Bundle
+final class HbPFLongRunningNodeBundle extends Bundle
 {
 
 }

@@ -3,7 +3,6 @@
 namespace PipesPhpSdkTests\Integration\HbPFMapperBundle\Handler;
 
 use Exception;
-use Hanaboso\PipesPhpSdk\HbPFMapperBundle\Exception\MapperException;
 use Hanaboso\PipesPhpSdk\HbPFMapperBundle\Handler\MapperHandler;
 use PipesPhpSdkTests\DatabaseTestCaseAbstract;
 
@@ -23,7 +22,7 @@ final class MapperHandlerTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFMapperBundle\Handler\MapperHandler::process
      *
-     * @throws MapperException
+     * @throws Exception
      */
     public function testProcess(): void
     {
@@ -35,7 +34,7 @@ final class MapperHandlerTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFMapperBundle\Handler\MapperHandler::processTest
      *
-     * @throws MapperException
+     * @throws Exception
      */
     public function testProcessTest(): void
     {

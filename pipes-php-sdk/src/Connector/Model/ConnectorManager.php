@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @package Hanaboso\PipesPhpSdk\Connector\Model
  */
-class ConnectorManager
+final class ConnectorManager
 {
 
     /**

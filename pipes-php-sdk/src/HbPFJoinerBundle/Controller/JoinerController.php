@@ -2,7 +2,6 @@
 
 namespace Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Controller;
 
-use Exception;
 use Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Exception\JoinerException;
 use Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Handler\JoinerHandler;
 use Hanaboso\Utils\System\ControllerUtils;
@@ -17,7 +16,7 @@ use Throwable;
  *
  * @package Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Controller
  */
-class JoinerController
+final class JoinerController
 {
 
     use ControllerTrait;
@@ -38,36 +37,34 @@ class JoinerController
     }
 
     /**
-     * @Route("/joiner/{joinerId}/join", defaults={}, requirements={"joinerId": "\w+"}, methods={"POST", "OPTIONS"})
+     * @Route("/joiner/{id}/join", defaults={}, requirements={"id": "\w+"}, methods={"POST", "OPTIONS"})
      *
      * @param Request $request
-     * @param string  $joinerId
+     * @param string  $id
      *
      * @return Response
      */
-    public function sendAction(Request $request, string $joinerId): Response
+    public function sendAction(Request $request, string $id): Response
     {
         try {
-            $data = $this->joinerHandler->processJoiner($joinerId, $request->request->all());
-
-            return $this->getResponse($data);
+            return $this->getResponse($this->joinerHandler->processJoiner($id, $request->request->all()));
         } catch (JoinerException $e) {
             return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
         }
     }
 
     /**
-     * @Route("/joiner/{joinerId}/join/test", defaults={}, requirements={"joinerId": "\w+"}, methods={"POST", "OPTIONS"})
+     * @Route("/joiner/{id}/join/test", defaults={}, requirements={"id": "\w+"}, methods={"POST", "OPTIONS"})
      *
      * @param Request $request
-     * @param string  $joinerId
+     * @param string  $id
      *
      * @return Response
      */
-    public function sendTestAction(Request $request, string $joinerId): Response
+    public function sendTestAction(Request $request, string $id): Response
     {
         try {
-            $this->joinerHandler->processJoinerTest($joinerId, $request->request->all());
+            $this->joinerHandler->processJoinerTest($id, $request->request->all());
 
             return $this->getResponse([]);
         } catch (JoinerException $e) {
@@ -83,11 +80,9 @@ class JoinerController
     public function listOfJoinersAction(): Response
     {
         try {
-            $data = $this->joinerHandler->getJoiners();
-
-            return $this->getResponse($data);
-        } catch (Exception|Throwable $e) {
-            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR);
+            return $this->getResponse($this->joinerHandler->getJoiners());
+        } catch (Throwable $t) {
+            return $this->getErrorResponse($t);
         }
     }
 

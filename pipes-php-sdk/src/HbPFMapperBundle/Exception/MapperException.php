@@ -9,7 +9,7 @@ use Hanaboso\Utils\Exception\PipesFrameworkExceptionAbstract;
  *
  * @package Hanaboso\PipesPhpSdk\HbPFMapperBundle\Exception
  */
-class MapperException extends PipesFrameworkExceptionAbstract
+final class MapperException extends PipesFrameworkExceptionAbstract
 {
 
     public const MAPPER_NOT_EXIST = self::OFFSET + 1;

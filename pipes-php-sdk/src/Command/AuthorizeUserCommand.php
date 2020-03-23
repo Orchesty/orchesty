@@ -15,7 +15,7 @@ use Symfony\Component\Console\Question\Question;
  *
  * @package Hanaboso\PipesPhpSdk\Command
  */
-class AuthorizeUserCommand extends Command
+final class AuthorizeUserCommand extends Command
 {
 
     /**

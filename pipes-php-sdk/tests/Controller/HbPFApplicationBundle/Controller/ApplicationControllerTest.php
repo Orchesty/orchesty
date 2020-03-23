@@ -2,7 +2,9 @@
 
 namespace PipesPhpSdkTests\Controller\HbPFApplicationBundle\Controller;
 
+use Exception;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
+use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler;
 use Hanaboso\Utils\String\Base64;
 use PipesPhpSdkTests\ControllerTestCaseAbstract;
@@ -27,6 +29,17 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         $response = $this->sendGet('/applications/key/users/user/authorize?redirect_url=/redirect/url');
 
         self::assertEquals(200, $response->status);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::authorizeApplicationAction
+     */
+    public function testAuthorizeApplicationActionNotFound(): void
+    {
+        $this->mockHandler('authorizeApplication', new ApplicationInstallException());
+        $response = $this->sendGet('/applications/key/users/user/authorize?redirect_url=http://example.com');
+
+        self::assertEquals(404, $response->status);
     }
 
     /**
@@ -65,6 +78,17 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::setAuthorizationTokenAction
      */
+    public function testSetAuthorizationTokenActionNotFound(): void
+    {
+        $this->mockHandler('saveAuthToken', new ApplicationInstallException());
+        $response = $this->sendGet('/applications/key/users/user/authorize/token');
+
+        self::assertEquals(404, $response->status);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::setAuthorizationTokenAction
+     */
     public function testSetAuthorizationTokenActionErr(): void
     {
         $this->mockHandler('saveAuthToken');
@@ -96,6 +120,17 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::setAuthorizationTokenQueryAction
      */
+    public function testSetAuthorizationTokenQueryActionNotFound(): void
+    {
+        $this->mockHandler('saveAuthToken', new ApplicationInstallException());
+        $response = $this->sendGet('/applications/authorize/token?state={"key":"value"}');
+
+        self::assertEquals(404, $response->status);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::setAuthorizationTokenQueryAction
+     */
     public function testSetAuthorizationTokenQueryActionErr(): void
     {
         $this->mockHandler('saveAuthToken');
@@ -112,7 +147,11 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     {
         $handler = self::createPartialMock(ApplicationHandler::class, [$method]);
         if ($return) {
-            $handler->expects(self::any())->method($method)->willReturn($return);
+            if ($return instanceof Exception) {
+                $handler->expects(self::any())->method($method)->willThrowException($return);
+            } else {
+                $handler->expects(self::any())->method($method)->willReturn($return);
+            }
         } else {
             $handler->expects(self::any())->method($method);
         }

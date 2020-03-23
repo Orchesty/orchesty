@@ -3,7 +3,6 @@
 namespace PipesPhpSdkTests\Integration\HbPFCustomNodeBundle\Handler;
 
 use Exception;
-use Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Exception\CustomNodeException;
 use Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Handler\CustomNodeHandler;
 use PipesPhpSdkTests\DatabaseTestCaseAbstract;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,7 +24,7 @@ final class CustomNodeHandlerTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Handler\CustomNodeHandler
      * @covers \Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Handler\CustomNodeHandler::process
      *
-     * @throws CustomNodeException
+     * @throws Exception
      */
     public function testProcess(): void
     {
@@ -37,7 +36,7 @@ final class CustomNodeHandlerTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Handler\CustomNodeHandler::processTest
      *
-     * @throws CustomNodeException
+     * @throws Exception
      */
     public function testProcessTest(): void
     {

@@ -64,7 +64,6 @@ abstract class OAuthProviderAbstract implements OAuthProviderInterface
 
     /**
      * @param string $message
-     *
      * @param int    $code
      *
      * @throws AuthorizationException

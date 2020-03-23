@@ -3,7 +3,6 @@
 namespace PipesPhpSdkTests\Integration\Parser;
 
 use Exception;
-use Hanaboso\PipesPhpSdk\Parser\Exception\TableParserException;
 use Hanaboso\PipesPhpSdk\Parser\TableParser;
 use Hanaboso\PipesPhpSdk\Parser\TableParserInterface;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -13,7 +12,6 @@ use PhpOffice\PhpSpreadsheet\Writer\Html;
 use PhpOffice\PhpSpreadsheet\Writer\Ods;
 use PhpOffice\PhpSpreadsheet\Writer\Xls;
 use PipesPhpSdkTests\DatabaseTestCaseAbstract;
-use ReflectionException;
 
 /**
  * Class TableParserTest
@@ -25,7 +23,8 @@ final class TableParserTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\Parser\TableParser::createWriter
-     * @throws TableParserException
+
+     * @throws Exception
      */
     public function testCreateWriter(): void
     {
@@ -49,11 +48,12 @@ final class TableParserTest extends DatabaseTestCaseAbstract
      * @covers       \Hanaboso\PipesPhpSdk\Parser\TableParser::parseToJson
      * @covers       \Hanaboso\PipesPhpSdk\Parser\TableParser::getTrimmedCellValue
      *
+     * @dataProvider getParseToJsonData
+
      * @param string $input
      * @param string $output
      * @param bool   $hasHeaders
      *
-     * @dataProvider getParseToJsonData
      * @throws Exception
      */
     public function testParseToJson(string $input, string $output, bool $hasHeaders): void
@@ -68,11 +68,12 @@ final class TableParserTest extends DatabaseTestCaseAbstract
      * @covers       \Hanaboso\PipesPhpSdk\Parser\TableParser::setCellValue
      * @covers       \Hanaboso\PipesPhpSdk\Parser\TableParser::createWriter
      *
+     * @dataProvider getParseFromJsonData
+
      * @param string $input
      * @param string $type
      * @param bool   $hasHeaders
      *
-     * @dataProvider getParseFromJsonData
      * @throws Exception
      */
     public function testParseFromJson(string $input, string $type, bool $hasHeaders): void
@@ -88,7 +89,8 @@ final class TableParserTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\Parser\TableParser::getTrimmedCellValue
-     * @throws ReflectionException
+
+     * @throws Exception
      */
     public function testGetTrimmedCellValue(): void
     {

@@ -2,8 +2,8 @@
 
 namespace PipesPhpSdkTests\Integration\CustomNode\Imp;
 
+use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesPhpSdk\CustomNode\Impl\RequestbinConnector;
@@ -21,7 +21,7 @@ final class RequestBinConnectorTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\PipesPhpSdk\CustomNode\Impl\RequestbinConnector
      * @covers \Hanaboso\PipesPhpSdk\CustomNode\Impl\RequestbinConnector::process
      *
-     * @throws CurlException
+     * @throws Exception
      */
     public function testProcess(): void
     {

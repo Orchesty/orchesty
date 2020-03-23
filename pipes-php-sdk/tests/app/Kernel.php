@@ -4,7 +4,6 @@ namespace PipesPhpSdkTests\app;
 
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
-use Symfony\Component\Config\Exception\LoaderLoadException;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -16,6 +15,7 @@ use Symfony\Component\Routing\RouteCollectionBuilder;
  * Class Kernel
  *
  * @package PipesPhpSdkTests\app
+ *
  * @codeCoverageIgnore
  */
 final class Kernel extends BaseKernel
@@ -59,7 +59,7 @@ final class Kernel extends BaseKernel
     /**
      * @param RouteCollectionBuilder $routes
      *
-     * @throws LoaderLoadException
+     * @throws Exception
      */
     protected function configureRoutes(RouteCollectionBuilder $routes): void
     {

@@ -2,13 +2,13 @@
 
 namespace PipesPhpSdkTests\Integration\LongRunningNode\Consumer;
 
+use Exception;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\Utils\System\PipesHeaders;
 use PhpAmqpLib\Message\AMQPMessage;
 use PhpAmqpLib\Wire\AMQPTable;
 use PipesPhpSdkTests\DatabaseTestCaseAbstract;
 use RabbitMqBundle\Connection\Connection;
-use ReflectionException;
 
 /**
  * Class LongRunningNodeCallbackTest
@@ -21,8 +21,8 @@ final class LongRunningNodeCallbackTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Consumer\LongRunningNodeCallback
      * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Consumer\LongRunningNodeCallback::processMessage
-     * @throws OnRepeatException
-     * @throws ReflectionException
+
+     * @throws Exception
      */
     public function testProcessMessage(): void
     {
@@ -49,8 +49,8 @@ final class LongRunningNodeCallbackTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Consumer\LongRunningNodeCallback::processMessage
-     * @throws ReflectionException
-     * @throws OnRepeatException
+
+     * @throws Exception
      */
     public function testProcessMessageErr(): void
     {

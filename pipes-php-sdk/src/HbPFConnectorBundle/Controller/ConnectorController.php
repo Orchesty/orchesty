@@ -2,7 +2,6 @@
 
 namespace Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Controller;
 
-use Exception;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Handler\ConnectorHandler;
 use Hanaboso\Utils\Exception\PipesFrameworkExceptionAbstract;
@@ -19,7 +18,7 @@ use Throwable;
  *
  * @package Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Controller
  */
-class ConnectorController implements LoggerAwareInterface
+final class ConnectorController implements LoggerAwareInterface
 {
 
     use ControllerTrait;
@@ -52,12 +51,12 @@ class ConnectorController implements LoggerAwareInterface
     public function processEventAction(string $id, Request $request): Response
     {
         try {
-            $data = $this->connectorHandler->processEvent($id, $request);
+            $dto = $this->connectorHandler->processEvent($id, $request);
 
-            return $this->getResponse($data->getData(), 200, ControllerUtils::createHeaders($data->getHeaders()));
+            return $this->getResponse($dto->getData(), 200, ControllerUtils::createHeaders($dto->getHeaders()));
         } catch (PipesFrameworkExceptionAbstract | OnRepeatException $e) {
             throw $e;
-        } catch (Exception|Throwable $e) {
+        } catch (Throwable $e) {
             return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
         }
     }
@@ -75,8 +74,8 @@ class ConnectorController implements LoggerAwareInterface
         try {
             $this->connectorHandler->processTest($id);
 
-            return $this->getResponse('');
-        } catch (Exception|Throwable $e) {
+            return $this->getResponse([]);
+        } catch (Throwable $e) {
             return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
         }
     }
@@ -94,9 +93,9 @@ class ConnectorController implements LoggerAwareInterface
     public function processActionAction(string $id, Request $request): Response
     {
         try {
-            $data = $this->connectorHandler->processAction($id, $request);
+            $dto = $this->connectorHandler->processAction($id, $request);
 
-            return $this->getResponse($data->getData(), 200, ControllerUtils::createHeaders($data->getHeaders()));
+            return $this->getResponse($dto->getData(), 200, ControllerUtils::createHeaders($dto->getHeaders()));
         } catch (PipesFrameworkExceptionAbstract | OnRepeatException $e) {
             throw $e;
         } catch (Throwable $e) {
@@ -117,8 +116,8 @@ class ConnectorController implements LoggerAwareInterface
         try {
             $this->connectorHandler->processTest($id);
 
-            return $this->getResponse('');
-        } catch (Exception|Throwable $e) {
+            return $this->getResponse([]);
+        } catch (Throwable $e) {
             return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
         }
     }
@@ -131,11 +130,9 @@ class ConnectorController implements LoggerAwareInterface
     public function listOfConnectorsAction(): Response
     {
         try {
-            $data = $this->connectorHandler->getConnectors();
-
-            return $this->getResponse($data);
-        } catch (Exception|Throwable $e) {
-            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR);
+            return $this->getResponse($this->connectorHandler->getConnectors());
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
         }
     }
 

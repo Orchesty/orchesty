@@ -6,11 +6,9 @@ use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
-use Hanaboso\Utils\Exception\PipesFrameworkException;
 use PipesPhpSdkTests\Integration\Application\TestNullApplication;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 use PipesPhpSdkTests\Unit\Connector\Traits\TestNullConnector;
-use ReflectionException;
 
 /**
  * Class ConnectorAbstractTest
@@ -30,7 +28,7 @@ final class ConnectorAbstractTest extends KernelTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract::evaluateStatusCode
      *
-     * @throws PipesFrameworkException
+     * @throws Exception
      */
     public function testEvaluateStatusCode(): void
     {
@@ -61,6 +59,7 @@ final class ConnectorAbstractTest extends KernelTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract::getApplication
+
      * @throws Exception
      */
     public function testGetApplicationException(): void
@@ -72,6 +71,7 @@ final class ConnectorAbstractTest extends KernelTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract::getApplication
+
      * @throws Exception
      */
     public function testGetApplication(): void
@@ -84,7 +84,7 @@ final class ConnectorAbstractTest extends KernelTestCaseAbstract
      * @covers \Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract::setJsonContent
      * @covers \Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract::getJsonContent
      *
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function testJsonContent(): void
     {

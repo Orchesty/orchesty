@@ -11,7 +11,7 @@ use Hanaboso\Utils\System\PipesHeaders;
  *
  * @package Hanaboso\PipesPhpSdk\CustomNode\Impl
  */
-class NullCustomNode extends CustomNodeAbstract
+final class NullCustomNode extends CustomNodeAbstract
 {
 
     /**

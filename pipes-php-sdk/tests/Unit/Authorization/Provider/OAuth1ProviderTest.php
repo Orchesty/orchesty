@@ -11,12 +11,10 @@ use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1\OAuth1ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth1Dto;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider;
-use Hanaboso\Utils\Exception\DateTimeException;
 use OAuth;
 use OAuthException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
-use ReflectionException;
 use Symfony\Bridge\Monolog\Logger;
 
 /**
@@ -66,6 +64,7 @@ final class OAuth1ProviderTest extends KernelTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider::authorize
+
      * @throws Exception
      */
     public function testAuthorizeErr(): void
@@ -216,10 +215,9 @@ final class OAuth1ProviderTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider::createClient()
+     * @covers \Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider::createClient
      *
-     * @throws ReflectionException
-     * @throws DateTimeException
+     * @throws Exception
      */
     public function testCreateClient(): void
     {

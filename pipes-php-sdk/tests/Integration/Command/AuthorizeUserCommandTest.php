@@ -11,7 +11,6 @@ use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1\OAuth1ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth1Dto;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider;
 use Hanaboso\PipesPhpSdk\Command\RedirectCommand;
-use Hanaboso\Utils\Exception\DateTimeException;
 use OAuth;
 use PHPUnit\Framework\MockObject\MockObject;
 use PipesPhpSdkTests\DatabaseTestCaseAbstract;
@@ -42,6 +41,7 @@ final class AuthorizeUserCommandTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract
      * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract::authorize
      * @covers \Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider::createClient
+
      * @throws Exception
      */
     public function testExecuteOauth2(): void
@@ -69,7 +69,6 @@ final class AuthorizeUserCommandTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws DateTimeException
      * @throws Exception
      */
     public function testExecuteOauth1(): void

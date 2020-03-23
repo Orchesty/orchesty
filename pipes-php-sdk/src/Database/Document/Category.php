@@ -2,8 +2,7 @@
 
 namespace Hanaboso\PipesPhpSdk\Database\Document;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\Index;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
 
 /**
@@ -11,10 +10,10 @@ use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
  *
  * @package Hanaboso\PipesPhpSdk\Database\Document
  *
- * @MongoDB\Document(
+ * @ODM\Document(
  *     repositoryClass="Hanaboso\PipesPhpSdk\Database\Repository\CategoryRepository",
  *     indexes={
- *         @MongoDB\Index(keys={"name": "asc", "parent": "asc"}, unique="true")
+ *         @ODM\Index(keys={"name": "asc", "parent": "asc"}, unique="true")
  *     }
  * )
  */
@@ -26,15 +25,15 @@ class Category
     /**
      * @var string
      *
-     * @MongoDB\Field(type="string")
+     * @ODM\Field(type="string")
      */
     protected $name;
 
     /**
      * @var string|null
      *
-     * @MongoDB\Field(type="string")
-     * @Index()
+     * @ODM\Field(type="string")
+     * @ODM\Index()
      */
     protected $parent;
 

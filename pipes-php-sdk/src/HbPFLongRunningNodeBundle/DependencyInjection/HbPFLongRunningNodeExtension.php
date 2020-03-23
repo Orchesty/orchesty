@@ -15,9 +15,10 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
  * Class HbPFLongRunningNodeExtension
  *
  * @package Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\DependencyInjection
+ *
  * @codeCoverageIgnore
  */
-class HbPFLongRunningNodeExtension extends Extension implements PrependExtensionInterface
+final class HbPFLongRunningNodeExtension extends Extension implements PrependExtensionInterface
 {
 
     /**

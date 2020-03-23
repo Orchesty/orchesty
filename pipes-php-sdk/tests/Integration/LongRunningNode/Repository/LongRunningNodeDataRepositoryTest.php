@@ -16,7 +16,7 @@ final class LongRunningNodeDataRepositoryTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Repository\LongRunningNodeDataRepository::getGroupStats()
+     * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Repository\LongRunningNodeDataRepository::getGroupStats
      *
      * @throws Exception
      */

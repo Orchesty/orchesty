@@ -187,6 +187,7 @@ class ApplicationInstall
 
     /**
      * @ODM\PreFlush
+     *
      * @throws CryptException
      */
     public function preFlush(): void
@@ -196,6 +197,7 @@ class ApplicationInstall
 
     /**
      * @ODM\PostLoad
+     *
      * @throws CryptException
      */
     public function postLoad(): void

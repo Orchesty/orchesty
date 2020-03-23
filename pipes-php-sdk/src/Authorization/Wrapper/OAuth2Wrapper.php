@@ -12,7 +12,7 @@ use Psr\Http\Message\RequestInterface;
  *
  * @package Hanaboso\PipesPhpSdk\Authorization\Wrapper
  */
-class OAuth2Wrapper extends GenericProvider
+final class OAuth2Wrapper extends GenericProvider
 {
 
     /**

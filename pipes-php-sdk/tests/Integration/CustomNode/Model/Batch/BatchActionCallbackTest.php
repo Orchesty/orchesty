@@ -2,7 +2,7 @@
 
 namespace PipesPhpSdkTests\Integration\CustomNode\Model\Batch;
 
-use Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Exception\CustomNodeException;
+use Exception;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 
 /**
@@ -17,7 +17,7 @@ final class BatchActionCallbackTest extends KernelTestCaseAbstract
      * @covers \Hanaboso\PipesPhpSdk\CustomNode\Model\Batch\BatchActionCallback
      * @covers \Hanaboso\PipesPhpSdk\CustomNode\Model\Batch\BatchActionCallback::getBatchService
      *
-     * @throws CustomNodeException
+     * @throws Exception
      */
     public function testGetBatchService(): void
     {

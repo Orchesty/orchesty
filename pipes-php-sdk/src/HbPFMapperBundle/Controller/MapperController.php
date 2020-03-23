@@ -2,7 +2,6 @@
 
 namespace Hanaboso\PipesPhpSdk\HbPFMapperBundle\Controller;
 
-use Exception;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\PipesPhpSdk\HbPFMapperBundle\Exception\MapperException;
 use Hanaboso\PipesPhpSdk\HbPFMapperBundle\Handler\MapperHandler;
@@ -19,7 +18,7 @@ use Throwable;
  *
  * @package Hanaboso\PipesPhpSdk\HbPFMapperBundle\Controller
  */
-class MapperController
+final class MapperController
 {
 
     use ControllerTrait;
@@ -52,9 +51,7 @@ class MapperController
     public function processAction(Request $request, string $id): Response
     {
         try {
-            $data = $this->mapperHandler->process($id, $request->request->all());
-
-            return $this->getResponse($data);
+            return $this->getResponse($this->mapperHandler->process($id, $request->request->all()));
         } catch (PipesFrameworkExceptionAbstract | OnRepeatException $e) {
             throw $e;
         }
@@ -87,11 +84,9 @@ class MapperController
     public function listOfMappersAction(): Response
     {
         try {
-            $data = $this->mapperHandler->getMappers();
-
-            return $this->getResponse($data);
-        } catch (Exception|Throwable $e) {
-            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR);
+            return $this->getResponse($this->mapperHandler->getMappers());
+        } catch (Throwable $t) {
+            return $this->getErrorResponse($t);
         }
     }
 

@@ -20,7 +20,7 @@ use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
  *
  * @package Hanaboso\PipesPhpSdk\Application\Manager
  */
-class ApplicationManager
+final class ApplicationManager
 {
 
     /**

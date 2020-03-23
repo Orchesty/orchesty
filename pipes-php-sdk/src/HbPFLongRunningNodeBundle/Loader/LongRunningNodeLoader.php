@@ -20,7 +20,7 @@ final class LongRunningNodeLoader
     /**
      * @var ContainerInterface
      */
-    private $container;
+    private ContainerInterface $container;
 
     /**
      * LongRunningNodeLoader constructor.

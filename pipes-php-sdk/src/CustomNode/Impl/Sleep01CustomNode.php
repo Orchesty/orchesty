@@ -10,7 +10,7 @@ use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
  *
  * @package Hanaboso\PipesPhpSdk\CustomNode\Impl
  */
-class Sleep01CustomNode extends CustomNodeAbstract
+final class Sleep01CustomNode extends CustomNodeAbstract
 {
 
     /**

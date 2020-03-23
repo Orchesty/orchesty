@@ -16,7 +16,7 @@ final class CategoryRepositoryTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Database\Repository\CategoryRepository::childrenLevelUp()
+     * @covers \Hanaboso\PipesPhpSdk\Database\Repository\CategoryRepository::childrenLevelUp
      *
      * @throws Exception
      */

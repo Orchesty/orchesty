@@ -7,7 +7,6 @@ use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
-use ReflectionException;
 
 /**
  * Class TraitTest
@@ -27,7 +26,7 @@ final class TraitTest extends KernelTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\Connector\Traits\ProcessActionNotSupportedTrait::processAction
      *
-     * @throws ConnectorException
+     * @throws Exception
      */
     public function testProcessActionException(): void
     {
@@ -38,7 +37,7 @@ final class TraitTest extends KernelTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\Connector\Traits\ProcessEventNotSupportedTrait::processEvent
      *
-     * @throws ConnectorException
+     * @throws Exception
      */
     public function testProcessEventException(): void
     {
@@ -49,7 +48,7 @@ final class TraitTest extends KernelTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\Connector\Traits\ProcessExceptionTrait::createException
      *
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function testCreateException(): void
     {
@@ -66,7 +65,7 @@ final class TraitTest extends KernelTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\Connector\Traits\ProcessExceptionTrait::createMissingContentException
      *
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function testCreateMissingContentException(): void
     {
@@ -86,7 +85,7 @@ final class TraitTest extends KernelTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\Connector\Traits\ProcessExceptionTrait::createMissingHeaderException
      *
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function testCreateMissingHeaderException(): void
     {
@@ -106,7 +105,7 @@ final class TraitTest extends KernelTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\Connector\Traits\ProcessExceptionTrait::createMissingApplicationInstallException
      *
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function testCreateMissingApplicationInstallException(): void
     {
@@ -126,7 +125,7 @@ final class TraitTest extends KernelTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\Connector\Traits\ProcessExceptionTrait::createRepeatException
      *
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function testCreateRepeatException(): void
     {

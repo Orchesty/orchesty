@@ -10,3 +10,6 @@ parameters:
         - '#Access to an undefined property#'
         - '#PHPDoc tag @var for variable \$connection contains unresolvable type#'
         - '#Parameter \#2 \$auth_session_handle of method OAuth::getAccessToken\(\) expects string, null given.#'
+        -
+            message: '#PHPDoc tag @var for variable .+ contains unresolvable type.#'
+            path: /*

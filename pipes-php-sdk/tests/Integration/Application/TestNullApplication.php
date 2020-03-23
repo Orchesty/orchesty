@@ -16,7 +16,7 @@ use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
  *
  * @package PipesPhpSdkTests\Integration\Application
  */
-class TestNullApplication extends BasicApplicationAbstract
+final class TestNullApplication extends BasicApplicationAbstract
 {
 
     /**

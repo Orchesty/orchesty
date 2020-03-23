@@ -16,7 +16,7 @@ use Throwable;
  *
  * @package Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller
  */
-class LongRunningNodeController
+final class LongRunningNodeController
 {
 
     use ControllerTrait;
@@ -24,7 +24,7 @@ class LongRunningNodeController
     /**
      * @var LongRunningNodeHandler
      */
-    private $handler;
+    private LongRunningNodeHandler $handler;
 
     /**
      * LongRunningNodeController constructor.
@@ -37,35 +37,35 @@ class LongRunningNodeController
     }
 
     /**
-     * @Route("/longRunning/{nodeId}/process", methods={"GET", "POST", "OPTIONS"})
+     * @Route("/longRunning/{id}/process", methods={"GET", "POST", "OPTIONS"})
      *
      * @param Request $request
-     * @param string  $nodeId
+     * @param string  $id
      *
      * @return Response
      */
-    public function processAction(Request $request, string $nodeId): Response
+    public function processAction(Request $request, string $id): Response
     {
         try {
-            $data = $this->handler->process($nodeId, $request->request->all(), $request->headers->all());
+            $dto = $this->handler->process($id, $request->request->all(), $request->headers->all());
 
-            return $this->getResponse($data->getData(), 200, ControllerUtils::createHeaders($data->getHeaders()));
+            return $this->getResponse($dto->getData(), 200, ControllerUtils::createHeaders($dto->getHeaders()));
         } catch (Throwable $e) {
             return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
         }
     }
 
     /**
-     * @Route("/longRunning/{nodeId}/process/test", methods={"GET", "OPTIONS"})
+     * @Route("/longRunning/{id}/process/test", methods={"GET", "OPTIONS"})
      *
-     * @param string $nodeId
+     * @param string $id
      *
      * @return Response
      */
-    public function testAction(string $nodeId): Response
+    public function testAction(string $id): Response
     {
         try {
-            $this->handler->test($nodeId);
+            $this->handler->test($id);
 
             return $this->getResponse([]);
         } catch (Throwable $e) {
@@ -74,89 +74,84 @@ class LongRunningNodeController
     }
 
     /**
-     * @Route("/longRunning/id/topology/{topo}/getTasks", methods={"GET", "OPTIONS"})
+     * @Route("/longRunning/id/topology/{topology}/getTasks", methods={"GET", "OPTIONS"})
      *
      * @param Request $request
-     * @param string  $topo
+     * @param string  $topology
      *
      * @return Response
      */
-    public function getTasksByIdAction(Request $request, string $topo): Response
+    public function getTasksByIdAction(Request $request, string $topology): Response
     {
         try {
             return $this->getResponse(
-                $this->handler->getTasksById(
-                    new GridRequestDto($request->headers->all()),
-                    $topo
-                )
+                $this->handler->getTasksById(new GridRequestDto($request->headers->all()), $topology)
             );
-        } catch (Throwable $e) {
-            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
+        } catch (Throwable $t) {
+            return $this->getErrorResponse($t);
         }
     }
 
     /**
-     * @Route("/longRunning/name/topology/{topo}/getTasks", methods={"GET", "OPTIONS"})
+     * @Route("/longRunning/name/topology/{topology}/getTasks", methods={"GET", "OPTIONS"})
      *
      * @param Request $request
-     * @param string  $topo
+     * @param string  $topology
      *
      * @return Response
      */
-    public function getTasksAction(Request $request, string $topo): Response
+    public function getTasksAction(Request $request, string $topology): Response
     {
         try {
-            return $this->getResponse($this->handler->getTasks(new GridRequestDto($request->headers->all()), $topo));
-        } catch (Throwable $e) {
-            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
+            return $this->getResponse(
+                $this->handler->getTasks(new GridRequestDto($request->headers->all()), $topology)
+            );
+        } catch (Throwable $t) {
+            return $this->getErrorResponse($t, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
         }
     }
 
     /**
-     * @Route("/longRunning/id/topology/{topo}/node/{node}/getTasks", methods={"GET", "OPTIONS"})
+     * @Route("/longRunning/id/topology/{topology}/node/{node}/getTasks", methods={"GET", "OPTIONS"})
      *
      * @param Request $request
-     * @param string  $topo
+     * @param string  $topology
      * @param string  $node
      *
      * @return Response
      */
-    public function getNodeTasksByIdAction(Request $request, string $topo, string $node): Response
+    public function getNodeTasksByIdAction(Request $request, string $topology, string $node): Response
     {
         try {
             return $this->getResponse(
-                $this->handler->getTasksById(
-                    new GridRequestDto($request->headers->all()),
-                    $topo,
-                    $node
-                )
+                $this->handler->getTasksById(new GridRequestDto($request->headers->all()), $topology, $node)
             );
-        } catch (Throwable $e) {
-            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
+        } catch (Throwable $t) {
+            return $this->getErrorResponse($t, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
         }
     }
 
     /**
-     * @Route("/longRunning/name/topology/{topo}/node/{node}/getTasks", methods={"GET", "OPTIONS"})
+     * @Route("/longRunning/name/topology/{topology}/node/{node}/getTasks", methods={"GET", "OPTIONS"})
      *
      * @param Request $request
-     * @param string  $topo
+     * @param string  $topology
      * @param string  $node
      *
      * @return Response
      */
-    public function getNodeTasksAction(Request $request, string $topo, string $node): Response
+    public function getNodeTasksAction(Request $request, string $topology, string $node): Response
     {
         try {
             return $this->getResponse(
                 $this->handler->getTasks(
                     new GridRequestDto($request->headers->all()),
-                    $topo,
+                    $topology,
                     $node
                 )
             );
-        } catch (Throwable $e) {
-            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
+        } catch (Throwable $t) {
+            return $this->getErrorResponse($t, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
         }
     }
 
@@ -168,11 +163,9 @@ class LongRunningNodeController
     public function listOfLongRunningNodesAction(): Response
     {
         try {
-            $data = $this->handler->getAllLongRunningNodes();
-
-            return $this->getResponse($data);
+            return $this->getResponse($this->handler->getAllLongRunningNodes());
         } catch (Throwable $t) {
-            return $this->getErrorResponse($t, 500, ControllerUtils::INTERNAL_SERVER_ERROR);
+            return $this->getErrorResponse($t);
         }
     }
 

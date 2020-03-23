@@ -8,7 +8,6 @@ use Hanaboso\PipesPhpSdk\Database\Document\Dto\SystemConfigDto;
 use Hanaboso\PipesPhpSdk\Database\Document\Embed\EmbedNode;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use PipesPhpSdkTests\DatabaseTestCaseAbstract;
-use ReflectionException;
 
 /**
  * Class NodeTest
@@ -40,7 +39,6 @@ final class NodeTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\PipesPhpSdk\Database\Document\Node::setSystemConfigs
      * @covers \Hanaboso\PipesPhpSdk\Database\Document\Node::getSystemConfigs
      *
-     * @throws ReflectionException
      * @throws Exception
      */
     public function testNode(): void

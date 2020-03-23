@@ -18,7 +18,7 @@ use Throwable;
  *
  * @package Hanaboso\PipesPhpSdk\LongRunningNode\Consumer
  */
-class LongRunningNodeCallback implements CallbackInterface
+final class LongRunningNodeCallback implements CallbackInterface
 {
 
     /**

@@ -5,7 +5,6 @@ namespace PipesPhpSdkTests\Integration\Application;
 use Exception;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use Hanaboso\Utils\Exception\DateTimeException;
 use PipesPhpSdkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -44,7 +43,7 @@ final class ApplicationAbstractTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall::setUser
      * @covers \Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall::setSettings
      *
-     * @throws DateTimeException
+     * @throws Exception
      */
     public function testGetApplicationForm(): void
     {
@@ -59,7 +58,7 @@ final class ApplicationAbstractTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall::setUser
      * @covers \Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall::setSettings
      *
-     * @throws DateTimeException
+     * @throws Exception
      */
     public function testSetApplicationSettings(): void
     {
@@ -96,7 +95,6 @@ final class ApplicationAbstractTest extends DatabaseTestCaseAbstract
 
     /**
      * @return ApplicationInstall
-     * @throws DateTimeException
      * @throws Exception
      */
     private function createApplicationInstall(): ApplicationInstall

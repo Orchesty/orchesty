@@ -10,7 +10,7 @@ use Symfony\Component\Console\Command\Command;
  *
  * @package Hanaboso\PipesPhpSdk\Command
  */
-class IncludeCommands extends BundleApplication
+final class IncludeCommands extends BundleApplication
 {
 
     /**

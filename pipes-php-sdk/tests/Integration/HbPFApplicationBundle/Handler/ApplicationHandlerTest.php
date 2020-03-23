@@ -2,16 +2,13 @@
 
 namespace PipesPhpSdkTests\Integration\HbPFApplicationBundle\Handler;
 
-use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler;
-use Hanaboso\Utils\Exception\DateTimeException;
 use InvalidArgumentException;
 use PipesPhpSdkTests\DatabaseTestCaseAbstract;
 
@@ -40,7 +37,6 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler::updateApplicationSettings
      *
-     * @throws DateTimeException
      * @throws Exception
      */
     public function testUpdateApplicationSettings(): void
@@ -58,7 +54,6 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler::updateApplicationPassword
      *
-     * @throws DateTimeException
      * @throws Exception
      */
     public function testUpdateApplicationPassword(): void
@@ -68,14 +63,14 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
 
         self::assertEquals(
             '__very_secret__',
-            $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::PASSWORD]
+            $applicationInstall->getSettings(
+            )[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::PASSWORD]
         );
     }
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler::updateApplicationPassword
      *
-     * @throws DateTimeException
      * @throws Exception
      */
     public function testUpdateApplicationPasswordErr(): void
@@ -88,7 +83,6 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler::authorizeApplication
      *
-     * @throws DateTimeException
      * @throws Exception
      */
     public function testAuthorizeApplication(): void
@@ -105,7 +99,6 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler::saveAuthToken
      *
-     * @throws DateTimeException
      * @throws Exception
      */
     public function testSaveAuthToken(): void
@@ -122,8 +115,7 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler::saveAuthToken
      *
-     * @throws MongoDBException
-     * @throws ApplicationInstallException
+     * @throws Exception
      */
     public function testAuthToken(): void
     {
@@ -152,7 +144,7 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
      * @param mixed[] $settings
      *
      * @return ApplicationInstall
-     * @throws DateTimeException
+     * @throws Exception
      */
     private function createApplicationInstall(array $settings = []): ApplicationInstall
     {

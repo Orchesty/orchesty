@@ -19,28 +19,28 @@ use Hanaboso\Utils\System\PipesHeaders;
  *
  * @package Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Handler
  */
-class LongRunningNodeHandler
+final class LongRunningNodeHandler
 {
 
     /**
      * @var LongRunningNodeManager
      */
-    private $manager;
+    private LongRunningNodeManager $manager;
 
     /**
      * @var LongRunningNodeLoader
      */
-    private $loader;
+    private LongRunningNodeLoader $loader;
 
     /**
      * @var LongRunningNodeFilter
      */
-    private $filter;
+    private LongRunningNodeFilter $filter;
 
     /**
      * @var DocumentManager
      */
-    private $dm;
+    private DocumentManager $dm;
 
     /**
      * LongRunningNodeHandler constructor.

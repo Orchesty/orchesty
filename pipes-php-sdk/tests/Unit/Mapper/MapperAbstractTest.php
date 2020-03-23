@@ -37,6 +37,7 @@ final class MapperAbstractTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\Mapper\MapperAbstract::getApplication
+
      * @throws Exception
      */
     public function testGetApplicationException(): void
@@ -49,6 +50,7 @@ final class MapperAbstractTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\Mapper\MapperAbstract::getApplication
+
      * @throws Exception
      */
     public function testGetApplication(): void

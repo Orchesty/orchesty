@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @package Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Handler
  */
-class ConnectorHandler
+final class ConnectorHandler
 {
 
     /**

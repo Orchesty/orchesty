@@ -9,12 +9,10 @@ use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesPhpSdk\Authorization\Wrapper\OAuth2Wrapper;
-use Hanaboso\Utils\Exception\DateTimeException;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
 use PHPUnit\Framework\MockObject\MockObject;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
-use ReflectionException;
 use Symfony\Bridge\Monolog\Logger;
 
 /**
@@ -150,8 +148,8 @@ final class OAuth2ProviderTest extends KernelTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider::getTokenByGrant
      * @covers \Hanaboso\PipesPhpSdk\Authorization\Provider\OAuthProviderAbstract::getRedirectUri
-     * @throws ReflectionException
-     * @throws DateTimeException
+     *
+     * @throws Exception
      */
     public function testGetTokenByGrant(): void
     {

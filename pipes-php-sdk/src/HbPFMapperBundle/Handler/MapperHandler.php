@@ -10,7 +10,7 @@ use Hanaboso\PipesPhpSdk\HbPFMapperBundle\Loader\MapperLoader;
  *
  * @package Hanaboso\PipesPhpSdk\HbPFMapperBundle\Handler
  */
-class MapperHandler
+final class MapperHandler
 {
 
     /**

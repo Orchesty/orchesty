@@ -10,7 +10,7 @@ use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
  *
  * @package PipesPhpSdkTests\Unit\HbPFConnectorBundle\Loader
  */
-class NullConnector extends ConnectorAbstract
+final class NullConnector extends ConnectorAbstract
 {
 
     /**

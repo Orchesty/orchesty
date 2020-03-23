@@ -15,7 +15,8 @@ final class JoinerHandlerTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Handler\JoinerHandler::processJoiner()
+     * @covers \Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Handler\JoinerHandler::processJoiner
+
      * @throws Exception
      */
     public function testJoin(): void

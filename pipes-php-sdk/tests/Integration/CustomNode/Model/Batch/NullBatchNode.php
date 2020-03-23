@@ -15,7 +15,7 @@ use React\Promise\PromiseInterface;
  *
  * @package PipesPhpSdkTests\Integration\CustomNode\Model\Batch
  */
-class NullBatchNode implements BatchInterface, CustomNodeInterface
+final class NullBatchNode implements BatchInterface, CustomNodeInterface
 {
 
     /**

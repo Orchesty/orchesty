@@ -14,9 +14,10 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
  * Class HbPFCustomNodeExtension
  *
  * @package Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\DependencyInjection
+ *
  * @codeCoverageIgnore
  */
-class HbPFCustomNodeExtension extends Extension implements PrependExtensionInterface
+final class HbPFCustomNodeExtension extends Extension implements PrependExtensionInterface
 {
 
     /**

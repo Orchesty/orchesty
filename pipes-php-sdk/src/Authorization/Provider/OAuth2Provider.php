@@ -18,7 +18,7 @@ use function GuzzleHttp\Psr7\parse_query;
  *
  * @package Hanaboso\PipesPhpSdk\Authorization\Provider
  */
-class OAuth2Provider extends OAuthProviderAbstract implements OAuth2ProviderInterface, LoggerAwareInterface
+final class OAuth2Provider extends OAuthProviderAbstract implements OAuth2ProviderInterface, LoggerAwareInterface
 {
 
     public const  REFRESH_TOKEN     = 'refresh_token';

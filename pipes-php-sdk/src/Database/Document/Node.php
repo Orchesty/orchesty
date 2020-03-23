@@ -4,8 +4,7 @@ namespace Hanaboso\PipesPhpSdk\Database\Document;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\Index;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Hanaboso\CommonsBundle\Database\Traits\Document\DeletedTrait;
 use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
 use Hanaboso\CommonsBundle\Enum\HandlerEnum;
@@ -18,9 +17,9 @@ use Hanaboso\Utils\Exception\EnumException;
 /**
  * Class Node
  *
- * @MongoDB\Document(repositoryClass="Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository")
- *
  * @package Hanaboso\PipesPhpSdk\Database\Document
+ *
+ * @ODM\Document(repositoryClass="Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository")
  */
 class Node
 {
@@ -31,71 +30,71 @@ class Node
     /**
      * @var string
      *
-     * @MongoDB\Field(type="string")
+     * @ODM\Field(type="string")
      */
     protected $schemaId = '';
 
     /**
      * @var string
      *
-     * @MongoDB\Field(type="string")
+     * @ODM\Field(type="string")
      */
     protected $name = '';
 
     /**
      * @var string
      *
-     * @MongoDB\Field(type="string")
-     * @Index()
+     * @ODM\Field(type="string")
+     * @ODM\Index()
      */
     protected $topology = '';
 
     /**
      * @var mixed[]|Collection<string, EmbedNode>
      *
-     * @MongoDB\EmbedMany(targetDocument="Hanaboso\PipesPhpSdk\Database\Document\Embed\EmbedNode")
+     * @ODM\EmbedMany(targetDocument="Hanaboso\PipesPhpSdk\Database\Document\Embed\EmbedNode")
      */
     protected $next;
 
     /**
      * @var string
      *
-     * @MongoDB\Field(type="string")
+     * @ODM\Field(type="string")
      */
     protected $type = TypeEnum::CUSTOM;
 
     /**
      * @var string
      *
-     * @MongoDB\Field(type="string")
+     * @ODM\Field(type="string")
      */
     protected $handler = HandlerEnum::EVENT;
 
     /**
      * @var bool
      *
-     * @MongoDB\Field(type="boolean", options={"default":"1"})
+     * @ODM\Field(type="boolean", options={"default":"1"})
      */
     protected $enabled = TRUE;
 
     /**
      * @var string|null
      *
-     * @MongoDB\Field(type="string")
+     * @ODM\Field(type="string")
      */
     protected $cron = NULL;
 
     /**
      * @var string|null
      *
-     * @MongoDB\Field(type="string")
+     * @ODM\Field(type="string")
      */
     protected $cronParams = NULL;
 
     /**
      * @var string|null
      *
-     * @MongoDB\Field(type="string")
+     * @ODM\Field(type="string")
      */
     protected $systemConfigs = NULL;
 

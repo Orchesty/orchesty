@@ -19,7 +19,7 @@ use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider;
  *
  * @package PipesPhpSdkTests\Integration\Command
  */
-class NullOAuth1Application extends OAuth1ApplicationAbstract implements OAuth1DtoInterface
+final class NullOAuth1Application extends OAuth1ApplicationAbstract implements OAuth1DtoInterface
 {
 
     /**

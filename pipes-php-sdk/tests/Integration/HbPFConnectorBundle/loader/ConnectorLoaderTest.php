@@ -2,6 +2,7 @@
 
 namespace PipesPhpSdkTests\Integration\HbPFConnectorBundle\loader;
 
+use Exception;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Loader\ConnectorLoader;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
@@ -31,7 +32,7 @@ final class ConnectorLoaderTest extends KernelTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Loader\ConnectorLoader::getConnector
      *
-     * @throws ConnectorException
+     * @throws Exception
      */
     public function testGetConnector(): void
     {

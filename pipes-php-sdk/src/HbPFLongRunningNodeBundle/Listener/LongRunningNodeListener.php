@@ -20,7 +20,7 @@ final class LongRunningNodeListener implements EventSubscriberInterface
     /**
      * @var DocumentManager
      */
-    private $dm;
+    private DocumentManager $dm;
 
     /**
      * LongRunningNodeListener constructor.

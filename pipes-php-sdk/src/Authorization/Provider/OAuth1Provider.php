@@ -17,7 +17,7 @@ use Psr\Log\LoggerAwareInterface;
  *
  * @package Hanaboso\PipesPhpSdk\Authorization\Provider
  */
-class OAuth1Provider extends OAuthProviderAbstract implements OAuth1ProviderInterface, LoggerAwareInterface
+final class OAuth1Provider extends OAuthProviderAbstract implements OAuth1ProviderInterface, LoggerAwareInterface
 {
 
     public const OAUTH_TOKEN        = 'oauth_token';

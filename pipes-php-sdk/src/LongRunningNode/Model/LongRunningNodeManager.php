@@ -12,7 +12,7 @@ use Hanaboso\Utils\String\Json;
  *
  * @package Hanaboso\PipesPhpSdk\LongRunningNode\Model
  */
-class LongRunningNodeManager
+final class LongRunningNodeManager
 {
 
     /**

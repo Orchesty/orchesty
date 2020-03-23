@@ -12,7 +12,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @package Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Loader
  */
-class ConnectorLoader
+final class ConnectorLoader
 {
 
     private const CONNECTOR_PREFIX = 'hbpf.connector';

@@ -18,7 +18,7 @@ use LogicException;
  *
  * @phpstan-extends DocumentRepository<Node>
  */
-class NodeRepository extends DocumentRepository
+final class NodeRepository extends DocumentRepository
 {
 
     /**

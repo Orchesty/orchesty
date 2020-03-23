@@ -9,7 +9,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  *
  * @package Hanaboso\PipesPhpSdk\HbPFMapperBundle
  */
-class HbPFMapperBundle extends Bundle
+final class HbPFMapperBundle extends Bundle
 {
 
 }

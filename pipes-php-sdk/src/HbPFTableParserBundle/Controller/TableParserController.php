@@ -20,7 +20,7 @@ use Throwable;
  *
  * @package Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Controller
  */
-class TableParserController
+final class TableParserController
 {
 
     use ControllerTrait;
@@ -28,7 +28,7 @@ class TableParserController
     /**
      * @var TableParserHandler
      */
-    private $tableParserHandler;
+    private TableParserHandler $tableParserHandler;
 
     /**
      * TableParserController constructor.
@@ -72,7 +72,7 @@ class TableParserController
         try {
             $this->tableParserHandler->parseToJsonTest();
 
-            return $this->getResponse('');
+            return $this->getResponse([]);
         } catch (Throwable $e) {
             return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR);
         }

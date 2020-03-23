@@ -9,7 +9,7 @@ use Hanaboso\PipesPhpSdk\Joiner\JoinerAbstract;
  *
  * @package Hanaboso\PipesPhpSdk\Joiner\Impl
  */
-class NullJoiner extends JoinerAbstract
+final class NullJoiner extends JoinerAbstract
 {
 
     /**

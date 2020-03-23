@@ -2,7 +2,6 @@
 
 namespace Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Controller;
 
-use Exception;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Handler\CustomNodeHandler;
 use Hanaboso\Utils\Exception\PipesFrameworkExceptionAbstract;
@@ -19,7 +18,7 @@ use Throwable;
  *
  * @package Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Controller
  */
-class CustomNodeController implements LoggerAwareInterface
+final class CustomNodeController implements LoggerAwareInterface
 {
 
     use ControllerTrait;
@@ -40,19 +39,19 @@ class CustomNodeController implements LoggerAwareInterface
     }
 
     /**
-     * @Route("/custom_node/{nodeId}/process", methods={"POST", "OPTIONS"})
+     * @Route("/custom_node/{id}/process", methods={"POST", "OPTIONS"})
      *
      * @param Request $request
-     * @param string  $nodeId
+     * @param string  $id
      *
      * @return Response
      * @throws OnRepeatException
      * @throws PipesFrameworkExceptionAbstract
      */
-    public function sendAction(Request $request, string $nodeId): Response
+    public function sendAction(Request $request, string $id): Response
     {
         try {
-            $data = $this->handler->process($nodeId, $request);
+            $data = $this->handler->process($id, $request);
 
             return $this->getResponse($data->getData(), 200, ControllerUtils::createHeaders($data->getHeaders()));
         } catch (PipesFrameworkExceptionAbstract | OnRepeatException $e) {
@@ -63,20 +62,20 @@ class CustomNodeController implements LoggerAwareInterface
     }
 
     /**
-     * @Route("/custom_node/{nodeId}/process/test", methods={"GET", "OPTIONS"})
+     * @Route("/custom_node/{id}/process/test", methods={"GET", "OPTIONS"})
      *
-     * @param string $nodeId
+     * @param string $id
      *
      * @return Response
      */
-    public function sendTestAction(string $nodeId): Response
+    public function sendTestAction(string $id): Response
     {
         try {
-            $this->handler->processTest($nodeId);
+            $this->handler->processTest($id);
 
             return $this->getResponse([]);
-        } catch (Exception|Throwable $e) {
-            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR);
+        } catch (Throwable $t) {
+            return $this->getErrorResponse($t, 500, ControllerUtils::INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -88,11 +87,9 @@ class CustomNodeController implements LoggerAwareInterface
     public function listOfCustomNodesAction(): Response
     {
         try {
-            $data = $this->handler->getCustomNodes();
-
-            return $this->getResponse($data);
-        } catch (Exception|Throwable $e) {
-            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR);
+            return $this->getResponse($this->handler->getCustomNodes());
+        } catch (Throwable $t) {
+            return $this->getErrorResponse($t);
         }
     }
 

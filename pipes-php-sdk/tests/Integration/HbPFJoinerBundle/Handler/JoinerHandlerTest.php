@@ -24,7 +24,7 @@ final class JoinerHandlerTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Handler\JoinerHandler
      * @covers \Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Handler\JoinerHandler::processJoiner
      *
-     * @throws JoinerException
+     * @throws Exception
      */
     public function testProcessJoiner(): void
     {
@@ -34,7 +34,7 @@ final class JoinerHandlerTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Handler\JoinerHandler::processJoinerTest
      *
-     * @throws JoinerException
+     * @throws Exception
      */
     public function testProcessJoinerTest(): void
     {
@@ -45,7 +45,7 @@ final class JoinerHandlerTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Handler\JoinerHandler::processJoinerTest
      *
-     * @throws JoinerException
+     * @throws Exception
      */
     public function testProcessJoinerTestErr(): void
     {
@@ -57,7 +57,7 @@ final class JoinerHandlerTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Handler\JoinerHandler::processJoinerTest
      *
-     * @throws JoinerException
+     * @throws Exception
      */
     public function testProcessJoinerTestErr2(): void
     {

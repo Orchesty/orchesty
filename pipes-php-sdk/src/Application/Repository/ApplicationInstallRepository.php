@@ -15,9 +15,10 @@ use MongoDB\BSON\UTCDateTime;
  * Class ApplicationInstallRepository
  *
  * @package         Hanaboso\PipesPhpSdk\Application\Repository
+ *
  * @phpstan-extends DocumentRepository<ApplicationInstall>
  */
-class ApplicationInstallRepository extends DocumentRepository
+final class ApplicationInstallRepository extends DocumentRepository
 {
 
     /**

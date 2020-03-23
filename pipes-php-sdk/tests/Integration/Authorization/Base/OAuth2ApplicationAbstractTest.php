@@ -9,15 +9,12 @@ use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
-use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
 use Hanaboso\Utils\Date\DateTimeUtils;
-use Hanaboso\Utils\Exception\DateTimeException;
 use PipesPhpSdkTests\DatabaseTestCaseAbstract;
 use PipesPhpSdkTests\Integration\Application\TestOAuth2NullApplication;
 use PipesPhpSdkTests\Integration\Command\NullOAuth2Application;
-use ReflectionException;
 
 /**
  * Class OAuth2ApplicationAbstractTest
@@ -43,7 +40,7 @@ final class OAuth2ApplicationAbstractTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract::isAuthorized
      *
-     * @throws DateTimeException
+     * @throws Exception
      */
     public function testIsAuthorize(): void
     {
@@ -64,8 +61,8 @@ final class OAuth2ApplicationAbstractTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract::getApplicationForm
-     * @throws DateTimeException
-     * @throws ApplicationInstallException
+
+     * @throws Exception
      */
     public function testGetApplicationForm(): void
     {
@@ -77,8 +74,7 @@ final class OAuth2ApplicationAbstractTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract::getTokens
      * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract::refreshAuthorization
      *
-     * @throws DateTimeException
-     * @throws AuthorizationException
+     * @throws Exception
      */
     public function testRefreshAuthorization(): void
     {
@@ -108,26 +104,28 @@ final class OAuth2ApplicationAbstractTest extends DatabaseTestCaseAbstract
 
         self::assertEquals(
             '__token__',
-            $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN][OAuth2Provider::ACCESS_TOKEN]
+            $applicationInstall->getSettings(
+            )[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN][OAuth2Provider::ACCESS_TOKEN]
         );
     }
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract::getFrontendRedirectUrl
      *
-     * @throws DateTimeException
+     * @throws Exception
      */
     public function testGetFrontendRedirectUrl(): void
     {
-        $applicationInstall = $this->createApplicationInstall([ApplicationInterface::AUTHORIZATION_SETTINGS => [ApplicationInterface::REDIRECT_URL => '/redirect/url']]);
+        $applicationInstall = $this->createApplicationInstall(
+            [ApplicationInterface::AUTHORIZATION_SETTINGS => [ApplicationInterface::REDIRECT_URL => '/redirect/url']]
+        );
         self::assertEquals('/redirect/url', $this->testApp->getFrontendRedirectUrl($applicationInstall));
     }
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract::setAuthorizationToken
      *
-     * @throws DateTimeException
-     * @throws AuthorizationException
+     * @throws Exception
      */
     public function testAuthorizationToken(): void
     {
@@ -148,19 +146,21 @@ final class OAuth2ApplicationAbstractTest extends DatabaseTestCaseAbstract
 
         self::assertEquals(
             '__token__',
-            $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN][OAuth2Provider::ACCESS_TOKEN]
+            $applicationInstall->getSettings(
+            )[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN][OAuth2Provider::ACCESS_TOKEN]
         );
     }
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract::getAccessToken
      *
-     * @throws DateTimeException
-     * @throws ApplicationInstallException
+     * @throws Exception
      */
     public function testGetAccessToken(): void
     {
-        $applicationInstall = $this->createApplicationInstall([ApplicationInterface::AUTHORIZATION_SETTINGS => [ApplicationInterface::TOKEN => [OAuth2Provider::ACCESS_TOKEN => '__token__']]]);
+        $applicationInstall = $this->createApplicationInstall(
+            [ApplicationInterface::AUTHORIZATION_SETTINGS => [ApplicationInterface::TOKEN => [OAuth2Provider::ACCESS_TOKEN => '__token__']]]
+        );
 
         self::assertEquals('__token__', $this->testApp->getAccessToken($applicationInstall));
 
@@ -172,7 +172,7 @@ final class OAuth2ApplicationAbstractTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract::setApplicationSettings
      *
-     * @throws DateTimeException
+     * @throws Exception
      */
     public function testSetApplicationSettings(): void
     {
@@ -195,8 +195,7 @@ final class OAuth2ApplicationAbstractTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract::createDto
      *
-     * @throws DateTimeException
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function testCreateDto(): void
     {
@@ -221,7 +220,7 @@ final class OAuth2ApplicationAbstractTest extends DatabaseTestCaseAbstract
      * @param mixed[] $settings
      *
      * @return ApplicationInstall
-     * @throws DateTimeException
+     * @throws Exception
      */
     private function createApplicationInstall(array $settings = []): ApplicationInstall
     {

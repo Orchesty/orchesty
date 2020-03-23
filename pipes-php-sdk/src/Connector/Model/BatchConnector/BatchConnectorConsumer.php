@@ -9,7 +9,7 @@ use RabbitMqBundle\Consumer\AsyncConsumer;
  *
  * @package Hanaboso\PipesPhpSdk\Connector\Model\BatchConnector
  */
-class BatchConnectorConsumer extends AsyncConsumer
+final class BatchConnectorConsumer extends AsyncConsumer
 {
 
 }

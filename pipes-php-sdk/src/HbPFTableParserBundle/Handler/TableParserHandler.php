@@ -19,18 +19,18 @@ use Symfony\Component\Filesystem\Filesystem;
  *
  * @package Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler
  */
-class TableParserHandler
+final class TableParserHandler
 {
 
     /**
      * @var TableParser
      */
-    private $tableParser;
+    private TableParser $tableParser;
 
     /**
      * @var FileStorage
      */
-    private $fileStorage;
+    private FileStorage $fileStorage;
 
     /**
      * TableParserHandler constructor.

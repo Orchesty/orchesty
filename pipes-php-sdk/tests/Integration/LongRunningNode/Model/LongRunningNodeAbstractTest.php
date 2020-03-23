@@ -30,6 +30,7 @@ final class LongRunningNodeAbstractTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeAbstract::getApplication
+
      * @throws Exception
      */
     public function testGetApplicationException(): void
@@ -42,6 +43,7 @@ final class LongRunningNodeAbstractTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeAbstract::getApplication
+
      * @throws Exception
      */
     public function testGetApplication(): void

@@ -14,9 +14,10 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
  * Class HbPFTableParserExtension
  *
  * @package Hanaboso\PipesPhpSdk\HbPFTableParserBundle\DependencyInjection
+ *
  * @codeCoverageIgnore
  */
-class HbPFTableParserExtension extends Extension implements PrependExtensionInterface
+final class HbPFTableParserExtension extends Extension implements PrependExtensionInterface
 {
 
     /**

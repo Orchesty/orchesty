@@ -21,7 +21,8 @@ final class JoinerControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Controller\JoinerController
-     * @covers \Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Controller\JoinerController::sendAction()
+     * @covers \Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Controller\JoinerController::sendAction
+
      * @throws Exception
      */
     public function testSend(): void
@@ -42,7 +43,8 @@ final class JoinerControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Controller\JoinerController::sendAction()
+     * @covers \Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Controller\JoinerController::sendAction
+
      * @throws Exception
      */
     public function testSendErr(): void
@@ -57,7 +59,8 @@ final class JoinerControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Controller\JoinerController::sendAction()
+     * @covers \Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Controller\JoinerController::sendAction
+
      * @throws Exception
      */
     public function testSendErr2(): void
@@ -72,7 +75,8 @@ final class JoinerControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Controller\JoinerController::sendTestAction()
+     * @covers \Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Controller\JoinerController::sendTestAction
+
      * @throws Exception
      */
     public function testSendTest(): void
@@ -93,7 +97,7 @@ final class JoinerControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Controller\JoinerController::sendTestAction()
+     * @covers \Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Controller\JoinerController::sendTestAction
      *
      * @throws Exception
      */

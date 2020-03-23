@@ -9,7 +9,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  *
  * @package Hanaboso\PipesPhpSdk\HbPFTableParserBundle
  */
-class HbPFTableParserBundle extends Bundle
+final class HbPFTableParserBundle extends Bundle
 {
 
 }

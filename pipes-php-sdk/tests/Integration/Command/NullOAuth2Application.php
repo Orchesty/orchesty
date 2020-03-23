@@ -19,7 +19,7 @@ use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
  *
  * @package PipesPhpSdkTests\Integration\Command
  */
-class NullOAuth2Application extends OAuth2ApplicationAbstract
+final class NullOAuth2Application extends OAuth2ApplicationAbstract
 {
 
     /**

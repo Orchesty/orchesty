@@ -2,7 +2,7 @@
 
 namespace PipesPhpSdkTests\Unit\Application\Model\Form;
 
-use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
+use Exception;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Form;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
@@ -20,7 +20,7 @@ final class FormTest extends KernelTestCaseAbstract
      * @covers \Hanaboso\PipesPhpSdk\Application\Model\Form\Form::toArray
      * @covers \Hanaboso\PipesPhpSdk\Application\Model\Form\Form::getFields
      *
-     * @throws ApplicationInstallException
+     * @throws Exception
      */
     public function testForm(): void
     {

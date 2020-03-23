@@ -11,7 +11,7 @@ use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
  *
  * @package Hanaboso\PipesPhpSdk\Authorization\Provider\Dto
  */
-class OAuth2Dto implements OAuth2DtoInterface
+final class OAuth2Dto implements OAuth2DtoInterface
 {
 
     /**

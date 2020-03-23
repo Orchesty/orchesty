@@ -2,7 +2,7 @@
 
 namespace PipesPhpSdkTests\Unit\Connector\Model;
 
-use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
+use Exception;
 use Hanaboso\PipesPhpSdk\Connector\Model\ConnectorManager;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 use PipesPhpSdkTests\Unit\HbPFConnectorBundle\Loader\NullConnector;
@@ -19,7 +19,8 @@ final class ConnectorManagerTest extends KernelTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\Connector\Model\ConnectorManager::processEvent
      * @covers \Hanaboso\PipesPhpSdk\Utils\ProcessDtoFactory::createFromRequest
-     * @throws ConnectorException
+
+     * @throws Exception
      */
     public function testProcessEvent(): void
     {
@@ -37,7 +38,7 @@ final class ConnectorManagerTest extends KernelTestCaseAbstract
      * @covers \Hanaboso\PipesPhpSdk\Connector\Model\ConnectorManager::processAction
      * @covers \Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract::getApplicationKey
      *
-     * @throws ConnectorException
+     * @throws Exception
      */
     public function testProcessAction(): void
     {

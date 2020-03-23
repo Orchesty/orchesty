@@ -2,8 +2,8 @@
 
 namespace PipesPhpSdkTests\Integration\LongRunningNode\Model;
 
+use Exception;
 use PipesPhpSdkTests\DatabaseTestCaseAbstract;
-use ReflectionException;
 
 /**
  * Class LongRunningNodeFilterTest
@@ -21,7 +21,7 @@ final class LongRunningNodeFilterTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeFilter::prepareSearchQuery
      * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeFilter::setDocument
      *
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function testNodeFilter(): void
     {

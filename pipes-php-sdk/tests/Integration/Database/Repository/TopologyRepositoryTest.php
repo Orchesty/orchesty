@@ -2,13 +2,11 @@
 
 namespace PipesPhpSdkTests\Integration\Database\Repository;
 
-use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
 use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
 use Hanaboso\PipesPhpSdk\Database\Document\Category;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\PipesPhpSdk\Database\Repository\TopologyRepository;
-use Hanaboso\Utils\Exception\EnumException;
 use PipesPhpSdkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -20,7 +18,7 @@ final class TopologyRepositoryTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Database\Repository\TopologyRepository::getTotalCount()
+     * @covers \Hanaboso\PipesPhpSdk\Database\Repository\TopologyRepository::getTotalCount
      *
      * @throws Exception
      */
@@ -111,7 +109,7 @@ final class TopologyRepositoryTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Database\Repository\TopologyRepository::getTopologiesByCategory()
+     * @covers \Hanaboso\PipesPhpSdk\Database\Repository\TopologyRepository::getTopologiesByCategory
      *
      * @throws Exception
      */
@@ -150,7 +148,7 @@ final class TopologyRepositoryTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\Database\Repository\TopologyRepository::getTopologiesCountByName
      *
-     * @throws MongoDBException
+     * @throws Exception
      */
     public function testGetTopologiesCountByName(): void
     {
@@ -171,8 +169,7 @@ final class TopologyRepositoryTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\Database\Repository\TopologyRepository::getPublicEnabledTopologies
      *
-     * @throws EnumException
-     * @throws MongoDBException
+     * @throws Exception
      */
     public function testGetPublicEnabledTopologies(): void
     {

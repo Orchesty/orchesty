@@ -10,7 +10,7 @@ use Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Loader\JoinerLoader;
  *
  * @package Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Handler
  */
-class JoinerHandler
+final class JoinerHandler
 {
 
     /**

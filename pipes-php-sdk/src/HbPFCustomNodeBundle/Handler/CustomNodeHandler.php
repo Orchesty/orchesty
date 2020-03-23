@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @package Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Handler
  */
-class CustomNodeHandler
+final class CustomNodeHandler
 {
 
     /**

@@ -2,16 +2,13 @@
 
 namespace PipesPhpSdkTests\Integration\Application\Manager;
 
-use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Loader\ApplicationLoader;
 use Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
-use Hanaboso\Utils\Exception\DateTimeException;
 use PipesPhpSdkTests\DatabaseTestCaseAbstract;
 use PipesPhpSdkTests\Integration\Application\TestOAuth2NullApplication;
 
@@ -55,9 +52,8 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager::saveApplicationPassword()
+     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager::saveApplicationPassword
      *
-     * @throws DateTimeException
      * @throws Exception
      */
     public function testSaveApplicationPassword(): void
@@ -72,16 +68,16 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager::saveAuthorizationToken()
+     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager::saveAuthorizationToken
      *
-     * @throws DateTimeException
-     * @throws MongoDBException
-     * @throws ApplicationInstallException
+     * @throws Exception
      */
     public function testSaveAuthorizationToken(): void
     {
         $applicationInstall = $this->createApplicationInstall('null2');
-        $applicationInstall->setSettings([ApplicationInterface::AUTHORIZATION_SETTINGS => [ApplicationInterface::REDIRECT_URL => '/test/redirect']]);
+        $applicationInstall->setSettings(
+            [ApplicationInterface::AUTHORIZATION_SETTINGS => [ApplicationInterface::REDIRECT_URL => '/test/redirect']]
+        );
 
         $app = self::createPartialMock(TestOAuth2NullApplication::class, ['setAuthorizationToken']);
         $app->expects(self::any())->method('setAuthorizationToken')->willReturnSelf();
@@ -109,14 +105,16 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
      * @param string $key
      *
      * @return ApplicationInstall
-     * @throws DateTimeException
+     * @throws Exception
      */
     private function createApplicationInstall(string $key = 'null'): ApplicationInstall
     {
         $applicationInstall = (new ApplicationInstall())
             ->setKey($key)
             ->setUser('user')
-            ->setSettings([ApplicationInterface::AUTHORIZATION_SETTINGS => [BasicApplicationInterface::PASSWORD => 'passwd987']]);
+            ->setSettings(
+                [ApplicationInterface::AUTHORIZATION_SETTINGS => [BasicApplicationInterface::PASSWORD => 'passwd987']]
+            );
         $this->pfd($applicationInstall);
 
         return $applicationInstall;

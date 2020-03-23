@@ -2,8 +2,6 @@
 
 namespace PipesPhpSdkTests\Integration\CustomNode\Imp;
 
-use Doctrine\ODM\MongoDB\LockException;
-use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesPhpSdk\Database\Document\Embed\EmbedNode;
@@ -16,7 +14,6 @@ use PipesPhpSdkTests\DatabaseTestCaseAbstract;
 use PipesPhpSdkTests\Integration\Application\TestNullApplication;
 use RabbitMqBundle\Connection\Connection;
 use RabbitMqBundle\Publisher\Publisher;
-use ReflectionException;
 
 /**
  * Class RabbitCustomNodeTest
@@ -50,7 +47,7 @@ final class RabbitCustomNodeTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\PipesPhpSdk\CustomNode\Impl\RabbitCustomNode::setLogger
      * @covers \Hanaboso\PipesPhpSdk\CustomNode\Impl\RabbitCustomNode::publishMessage
      *
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function testPublishMessage(): void
     {
@@ -64,7 +61,7 @@ final class RabbitCustomNodeTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\CustomNode\Impl\RabbitCustomNode::validate
      *
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function testValidateEmptyNodeId(): void
     {
@@ -78,7 +75,7 @@ final class RabbitCustomNodeTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\PipesPhpSdk\CustomNode\Impl\RabbitCustomNode::isEmpty
      * @covers \Hanaboso\PipesPhpSdk\CustomNode\Impl\RabbitCustomNode::validate
      *
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function testValidateEmptyTopologyId(): void
     {
@@ -92,7 +89,7 @@ final class RabbitCustomNodeTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\PipesPhpSdk\CustomNode\Impl\RabbitCustomNode::isEmpty
      * @covers \Hanaboso\PipesPhpSdk\CustomNode\Impl\RabbitCustomNode::validate
      *
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function testValidateEmptyCorrelationId(): void
     {
@@ -111,7 +108,7 @@ final class RabbitCustomNodeTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\PipesPhpSdk\CustomNode\Impl\RabbitCustomNode::isEmpty
      * @covers \Hanaboso\PipesPhpSdk\CustomNode\Impl\RabbitCustomNode::validate
      *
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function testValidateEmptyProcessId(): void
     {
@@ -131,7 +128,7 @@ final class RabbitCustomNodeTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\PipesPhpSdk\CustomNode\Impl\RabbitCustomNode::isEmpty
      * @covers \Hanaboso\PipesPhpSdk\CustomNode\Impl\RabbitCustomNode::validate
      *
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function testValidateEmptyParentId(): void
     {
@@ -152,7 +149,7 @@ final class RabbitCustomNodeTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\PipesPhpSdk\CustomNode\Impl\RabbitCustomNode::isEmpty
      * @covers \Hanaboso\PipesPhpSdk\CustomNode\Impl\RabbitCustomNode::validate
      *
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function testValidate(): void
     {
@@ -172,7 +169,7 @@ final class RabbitCustomNodeTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\CustomNode\Impl\RabbitCustomNode::normalizeHeaders
      *
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function testNormalizeHeadersTest(): void
     {
@@ -192,7 +189,6 @@ final class RabbitCustomNodeTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\CustomNode\Impl\RabbitCustomNode::bindChannels
      *
-     * @throws ReflectionException
      * @throws Exception
      */
     public function testBindChannels(): void
@@ -222,7 +218,7 @@ final class RabbitCustomNodeTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\CustomNode\Impl\RabbitCustomNode::unbindChannels
      *
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function testUnbindChannels(): void
     {
@@ -234,15 +230,13 @@ final class RabbitCustomNodeTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\CustomNode\Impl\RabbitCustomNode::process()
-     * @covers \Hanaboso\PipesPhpSdk\CustomNode\Impl\RabbitCustomNode::validate()
-     * @covers \Hanaboso\PipesPhpSdk\CustomNode\Impl\RabbitCustomNode::normalizeHeaders()
-     * @covers \Hanaboso\PipesPhpSdk\CustomNode\Impl\RabbitCustomNode::bindChannels()
-     * @covers \Hanaboso\PipesPhpSdk\CustomNode\Impl\RabbitCustomNode::processBatch()
-     * @covers \Hanaboso\PipesPhpSdk\CustomNode\Impl\RabbitCustomNode::unbindChannels()
+     * @covers \Hanaboso\PipesPhpSdk\CustomNode\Impl\RabbitCustomNode::process
+     * @covers \Hanaboso\PipesPhpSdk\CustomNode\Impl\RabbitCustomNode::validate
+     * @covers \Hanaboso\PipesPhpSdk\CustomNode\Impl\RabbitCustomNode::normalizeHeaders
+     * @covers \Hanaboso\PipesPhpSdk\CustomNode\Impl\RabbitCustomNode::bindChannels
+     * @covers \Hanaboso\PipesPhpSdk\CustomNode\Impl\RabbitCustomNode::processBatch
+     * @covers \Hanaboso\PipesPhpSdk\CustomNode\Impl\RabbitCustomNode::unbindChannels
      *
-     * @throws LockException
-     * @throws MappingException
      * @throws Exception
      */
     public function testProcess(): void

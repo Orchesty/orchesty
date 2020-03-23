@@ -10,7 +10,7 @@ use InvalidArgumentException;
  *
  * @package Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch
  */
-class SuccessMessage
+final class SuccessMessage
 {
 
     /**

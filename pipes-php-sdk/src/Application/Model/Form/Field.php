@@ -9,7 +9,7 @@ use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
  *
  * @package Hanaboso\PipesPhpSdk\Application\Model\Form
  */
-class Field
+final class Field
 {
 
     public const TEXT       = 'text';

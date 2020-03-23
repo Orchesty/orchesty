@@ -7,7 +7,7 @@ namespace Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch;
  *
  * @package Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch
  */
-class ErrorMessage
+final class ErrorMessage
 {
 
     /**

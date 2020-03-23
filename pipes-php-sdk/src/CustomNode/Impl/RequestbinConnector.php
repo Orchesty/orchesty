@@ -14,7 +14,7 @@ use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
  *
  * @package Hanaboso\PipesPhpSdk\CustomNode\Impl
  */
-class RequestbinConnector extends CustomNodeAbstract
+final class RequestbinConnector extends CustomNodeAbstract
 {
 
     /**

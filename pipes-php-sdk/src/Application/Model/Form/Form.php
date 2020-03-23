@@ -7,7 +7,7 @@ namespace Hanaboso\PipesPhpSdk\Application\Model\Form;
  *
  * @package Hanaboso\PipesPhpSdk\Application\Model\Form
  */
-class Form
+final class Form
 {
 
     /**

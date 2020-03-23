@@ -9,7 +9,7 @@ use Hanaboso\CommonsBundle\Redirect\RedirectInterface;
  *
  * @package Hanaboso\PipesPhpSdk\Command
  */
-class RedirectCommand implements RedirectInterface
+final class RedirectCommand implements RedirectInterface
 {
 
     /**

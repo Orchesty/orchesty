@@ -12,7 +12,7 @@ use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchInterface;
  *
  * @package Hanaboso\PipesPhpSdk\CustomNode\Model\Batch
  */
-class BatchActionCallback extends BatchActionAbstract
+final class BatchActionCallback extends BatchActionAbstract
 {
 
     /**
