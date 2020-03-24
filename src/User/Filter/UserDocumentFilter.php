@@ -17,7 +17,7 @@ class UserDocumentFilter extends GridFilterAbstract
     /**
      * @var string[]
      */
-    protected $filterCols = [
+    protected array $filterCols = [
         'created' => 'created',
         'email'   => 'email',
     ];
@@ -25,7 +25,7 @@ class UserDocumentFilter extends GridFilterAbstract
     /**
      * @var string[]
      */
-    protected $orderCols = [
+    protected array $orderCols = [
         'created' => 'created',
         'email'   => 'email',
     ];
@@ -33,7 +33,7 @@ class UserDocumentFilter extends GridFilterAbstract
     /**
      * @var string[]
      */
-    protected $searchableCols = [
+    protected array $searchableCols = [
         'created',
         'email',
     ];

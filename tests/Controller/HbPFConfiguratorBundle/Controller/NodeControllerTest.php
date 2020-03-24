@@ -23,12 +23,12 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @throws Exception
-     *
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController::getNodesAction()
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController::getNodesAction
      * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler
      * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler::getNodes
      * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler::getNodeData
+     *
+     * @throws Exception
      */
     public function testGetNodes(): void
     {
@@ -48,12 +48,12 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @throws Exception
-     *
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController::getNodeAction()
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController::getNodeAction
      * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler::getNode
      * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler::getNodeData
      * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler::getNodeById
+     *
+     * @throws Exception
      */
     public function testGetNode(): void
     {
@@ -68,7 +68,7 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController::getNodeAction()
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController::getNodeAction
      * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler::getNode
      * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler::getNodeById
      */
@@ -78,8 +78,9 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController::getNodeAction()
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController::getNodeAction
      * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler::getNode
+     *
      * @throws Exception
      */
     public function testGetNodeErr(): void
@@ -93,11 +94,11 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @throws Exception
-     *
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController::updateNodeAction()
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController::updateNodeAction
      * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler::updateNode
      * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler::getNodeById
+     *
+     * @throws Exception
      */
     public function testUpdateNode(): void
     {
@@ -112,9 +113,9 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @throws Exception
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController::updateNodeAction
      *
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController::updateNodeAction()
+     * @throws Exception
      */
     public function testUpdateErrNode(): void
     {

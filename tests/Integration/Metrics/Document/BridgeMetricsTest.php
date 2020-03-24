@@ -2,11 +2,10 @@
 
 namespace PipesFrameworkTests\Integration\Metrics\Document;
 
-use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
+use Exception;
 use Hanaboso\PipesFramework\Metrics\Document\BridgesMetrics;
 use Hanaboso\Utils\Date\DateTimeUtils;
-use Hanaboso\Utils\Exception\DateTimeException;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -27,8 +26,8 @@ final class BridgeMetricsTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\Metrics\Document\Tags::getNodeId
      * @covers \Hanaboso\PipesFramework\Metrics\Document\Tags::getTopologyId
      * @covers \Hanaboso\PipesFramework\Metrics\Document\Tags::getQueue
-     * @throws MongoDBException
-     * @throws DateTimeException
+     *
+     * @throws Exception
      */
     public function testDocument(): void
     {

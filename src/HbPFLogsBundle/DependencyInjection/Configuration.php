@@ -11,6 +11,7 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
  * Class Configuration
  *
  * @package Hanaboso\PipesFramework\HbPFLogsBundle\DependencyInjection
+ *
  * @codeCoverageIgnore
  */
 class Configuration implements ConfigurationInterface

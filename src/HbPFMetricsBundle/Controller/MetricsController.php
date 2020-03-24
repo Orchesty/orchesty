@@ -23,7 +23,7 @@ class MetricsController
     /**
      * @var MetricsHandler
      */
-    private $metricsHandler;
+    private MetricsHandler $metricsHandler;
 
     /**
      * MetricsController constructor.
@@ -37,61 +37,55 @@ class MetricsController
     }
 
     /**
-     * @Route("/metrics/topology/{topologyId}", methods={"GET", "OPTIONS"})
+     * @Route("/metrics/topology/{topology}", methods={"GET", "OPTIONS"})
      *
      * @param Request $request
-     * @param string  $topologyId
+     * @param string  $topology
      *
      * @return Response
      */
-    public function topologyMetricsAction(Request $request, string $topologyId): Response
+    public function topologyMetricsAction(Request $request, string $topology): Response
     {
         try {
-            $data = $this->metricsHandler->getTopologyMetrics($topologyId, $request->query->all());
+            return $this->getResponse($this->metricsHandler->getTopologyMetrics($topology, $request->query->all()));
         } catch (Throwable $e) {
-            return $this->getErrorResponse($e, 400);
+            return $this->getErrorResponse($e);
         }
-
-        return $this->getResponse($data);
     }
 
     /**
-     * @Route("/metrics/topology/{topologyId}/node/{nodeId}", methods={"GET", "OPTIONS"})
+     * @Route("/metrics/topology/{topology}/node/{node}", methods={"GET", "OPTIONS"})
      *
      * @param Request $request
-     * @param string  $topologyId
-     * @param string  $nodeId
+     * @param string  $topology
+     * @param string  $node
      *
      * @return Response
      */
-    public function nodeMetricsAction(Request $request, string $topologyId, string $nodeId): Response
+    public function nodeMetricsAction(Request $request, string $topology, string $node): Response
     {
         try {
-            $data = $this->metricsHandler->getNodeMetrics($topologyId, $nodeId, $request->query->all());
+            return $this->getResponse($this->metricsHandler->getNodeMetrics($topology, $node, $request->query->all()));
         } catch (Throwable $e) {
             return $this->getErrorResponse($e, 400);
         }
-
-        return $this->getResponse($data);
     }
 
     /**
-     * @Route("/metrics/topology/{topologyId}/requests", methods={"GET", "OPTIONS"})
+     * @Route("/metrics/topology/{topology}/requests", methods={"GET", "OPTIONS"})
      *
      * @param Request $request
-     * @param string  $topologyId
+     * @param string  $topology
      *
      * @return Response
      */
-    public function topologyRequestsCountMetricsAction(Request $request, string $topologyId): Response
+    public function topologyRequestsCountMetricsAction(Request $request, string $topology): Response
     {
         try {
-            $data = $this->metricsHandler->getRequestsCountMetrics($topologyId, $request->query->all());
+            return $this->getResponse($this->metricsHandler->getRequestsCountMetrics($topology, $request->query->all()));
         } catch (Throwable $e) {
             return $this->getErrorResponse($e, 400);
         }
-
-        return $this->getResponse($data);
     }
 
 }

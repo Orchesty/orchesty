@@ -16,51 +16,51 @@ final class MetricsController extends AbstractController
 {
 
     /**
-     * @Route("/metrics/topology/{topologyId}", methods={"GET", "OPTIONS"})
+     * @Route("/metrics/topology/{topology}", methods={"GET", "OPTIONS"})
      *
      * @param Request $request
-     * @param string  $topologyId
+     * @param string  $topology
      *
      * @return Response
      */
-    public function topologyMetricsAction(Request $request, string $topologyId): Response
+    public function topologyMetricsAction(Request $request, string $topology): Response
     {
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::topologyMetricsAction',
-            ['request' => $request, 'topologyId' => $topologyId]
+            ['request' => $request, 'topology' => $topology]
         );
     }
 
     /**
-     * @Route("/metrics/topology/{topologyId}/node/{nodeId}", methods={"GET", "OPTIONS"})
+     * @Route("/metrics/topology/{topology}/node/{node}", methods={"GET", "OPTIONS"})
      *
      * @param Request $request
-     * @param string  $topologyId
-     * @param string  $nodeId
+     * @param string  $topology
+     * @param string  $node
      *
      * @return Response
      */
-    public function nodeMetricsAction(Request $request, string $topologyId, string $nodeId): Response
+    public function nodeMetricsAction(Request $request, string $topology, string $node): Response
     {
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::nodeMetricsAction',
-            ['request' => $request, 'topologyId' => $topologyId, 'nodeId' => $nodeId]
+            ['request' => $request, 'topology' => $topology, 'node' => $node]
         );
     }
 
     /**
-     * @Route("/metrics/topology/{topologyId}/requests", methods={"GET", "OPTIONS"})
+     * @Route("/metrics/topology/{topology}/requests", methods={"GET", "OPTIONS"})
      *
      * @param Request $request
-     * @param string  $topologyId
+     * @param string  $topology
      *
      * @return Response
      */
-    public function topologyRequestsCountMetricsAction(Request $request, string $topologyId): Response
+    public function topologyRequestsCountMetricsAction(Request $request, string $topology): Response
     {
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::topologyRequestsCountMetricsAction',
-            ['request' => $request, 'topologyId' => $topologyId]
+            ['request' => $request, 'topology' => $topology]
         );
     }
 

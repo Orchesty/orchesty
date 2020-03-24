@@ -25,7 +25,7 @@ class NotificationController
     /**
      * @var NotificationHandler
      */
-    private $notificationHandler;
+    private NotificationHandler $notificationHandler;
 
     /**
      * NotificationController constructor.

@@ -19,7 +19,6 @@ use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\Utils\String\Json;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
-use ReflectionException;
 
 /**
  * Class TopologyManagerTest
@@ -815,6 +814,8 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::unPublishTopology
+     *
+     * @throws Exception
      */
     public function testUnPublishTopology(): void
     {
@@ -825,8 +826,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNodes
-     * @throws ReflectionException
-     * @throws NodeException
+     *
      * @throws Exception
      */
     public function testUpdateNodes(): void
@@ -852,7 +852,8 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::checkNodeAttributes
-     * @throws ReflectionException
+     *
+     * @throws Exception
      */
     public function testCheckNodeAttributes(): void
     {
@@ -864,7 +865,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::getNodeBySchemaId
-     * @throws ReflectionException
+     *
      * @throws Exception
      */
     public function testGetNodeBySchemaId(): void
@@ -878,7 +879,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::setTopologyData
-     * @throws ReflectionException
+     *
      * @throws Exception
      */
     public function testSetTopologyData(): void

@@ -44,22 +44,22 @@ class CronManager
     /**
      * @var CurlManagerInterface
      */
-    private $curlManager;
+    private CurlManagerInterface $curlManager;
 
     /**
      * @var ObjectRepository<Topology>&TopologyRepository
      */
-    private $topologyRepository;
+    private TopologyRepository $topologyRepository;
 
     /**
      * @var string
      */
-    private $backend;
+    private string $backend;
 
     /**
      * @var string
      */
-    private $cronHost;
+    private string $cronHost;
 
     /**
      * CronManager constructor.

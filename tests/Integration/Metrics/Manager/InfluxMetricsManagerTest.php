@@ -13,7 +13,6 @@ use InfluxDB\Database;
 use InfluxDB\Database\RetentionPolicy;
 use InfluxDB\Point;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
-use ReflectionException;
 
 /**
  * Class InfluxMetricsManagerTest
@@ -203,7 +202,8 @@ final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager::runQuery
-     * @throws ReflectionException
+     *
+     * @throws Exception
      */
     public function testInfluxMetricsManager(): void
     {

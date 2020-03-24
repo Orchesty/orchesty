@@ -40,7 +40,7 @@ class ControllerExceptionListener implements EventSubscriberInterface, LoggerAwa
     /**
      * @var mixed[]
      */
-    protected $exceptionClasses = [
+    protected array $exceptionClasses = [
         ApplicationInstallException::class,
         AuthorizationException::class,
         ConnectorException::class,

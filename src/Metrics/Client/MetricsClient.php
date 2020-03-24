@@ -19,27 +19,27 @@ class MetricsClient implements ClientInterface
     /**
      * @var string
      */
-    private $host;
+    private string $host;
 
     /**
      * @var int
      */
-    private $port;
+    private int $port;
 
     /**
      * @var string
      */
-    private $user;
+    private string $user;
 
     /**
      * @var string
      */
-    private $password;
+    private string $password;
 
     /**
      * @var string
      */
-    private $database;
+    private string $database;
 
     /**
      * MetricsClient constructor.

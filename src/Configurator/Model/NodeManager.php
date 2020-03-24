@@ -20,7 +20,7 @@ class NodeManager
     /**
      * @var DocumentManager
      */
-    private $dm;
+    private DocumentManager $dm;
 
     /**
      * NodeManager constructor.

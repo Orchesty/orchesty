@@ -15,12 +15,12 @@ final class UpdateObject
     /**
      * @var Topology
      */
-    private $topology;
+    private Topology $topology;
 
     /**
      * @var TopologyFile
      */
-    private $file;
+    private TopologyFile $file;
 
     /**
      * UpdateObject constructor.

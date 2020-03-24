@@ -14,6 +14,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
  * Class HbPFApiGatewayExtension
  *
  * @package Hanaboso\PipesFramework\HbPFApiGatewayBundle\DependencyInjection
+ *
  * @codeCoverageIgnore
  */
 class HbPFApiGatewayExtension extends Extension implements PrependExtensionInterface

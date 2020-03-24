@@ -40,22 +40,22 @@ class TopologyGeneratorBridge
     /**
      * @var CurlManagerInterface
      */
-    protected $curlManager;
+    protected CurlManagerInterface $curlManager;
 
     /**
      * @var DocumentManager
      */
-    private $dm;
+    private DocumentManager $dm;
 
     /**
      * @var TopologyConfigFactory
      */
-    private $configFactory;
+    private TopologyConfigFactory $configFactory;
 
     /**
      * @var mixed[]
      */
-    private $configs;
+    private array $configs;
 
     /**
      * TopologyGeneratorBridge constructor.

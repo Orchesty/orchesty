@@ -4,7 +4,6 @@ namespace PipesFrameworkTests\Integration\Configurator\Model;
 
 use Exception;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
-use Hanaboso\CommonsBundle\Exception\NodeException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyConfigException;
@@ -17,7 +16,6 @@ use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository;
 use Hanaboso\Utils\String\Json;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
-use ReflectionException;
 
 /**
  * Class TopologyConfigFactoryTest
@@ -82,8 +80,8 @@ class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::getWorkerByType
-     * @throws ReflectionException
-     * @throws NodeException
+     *
+     * @throws Exception
      */
     public function testGetWorkers(): void
     {
@@ -104,8 +102,8 @@ class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::getPaths
-     * @throws NodeException
-     * @throws ReflectionException
+     *
+     * @throws Exception
      */
     public function testGetPaths(): void
     {
@@ -217,7 +215,8 @@ class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::getHost
-     * @throws ReflectionException
+     *
+     * @throws Exception
      */
     public function testGetHost(): void
     {
@@ -248,7 +247,8 @@ class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::getPort
-     * @throws ReflectionException
+     *
+     * @throws Exception
      */
     public function testGetPort(): void
     {
@@ -263,8 +263,8 @@ class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::getNextNode
-     * @throws NodeException
-     * @throws ReflectionException
+     *
+     * @throws Exception
      */
     public function testGetNextNode(): void
     {
@@ -276,8 +276,7 @@ class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::makePatchRequestForCron
-     * @throws NodeException
-     * @throws ReflectionException
+     *
      * @throws Exception
      */
     public function testPatchRequestForCron(): void

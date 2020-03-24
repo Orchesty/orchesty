@@ -19,11 +19,11 @@ final class MetricsManagerLoaderTest extends KernelTestCaseAbstract
 {
 
     /**
+     * @dataProvider loaderDataProvider
+     *
      * @covers       \Hanaboso\PipesFramework\Metrics\Manager\MetricsManagerLoader
      * @covers       \Hanaboso\PipesFramework\Metrics\Manager\MetricsManagerLoader::getManager
      * @covers       \Hanaboso\PipesFramework\Metrics\Manager\MetricsManagerAbstract::getTopologyMetrics
-     *
-     * @dataProvider loaderDataProvider
      *
      * @param MetricsManagerLoader $loader
      * @param string               $service

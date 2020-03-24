@@ -3,7 +3,6 @@
 namespace PipesFrameworkTests\Integration\Logs;
 
 use Doctrine\ODM\MongoDB\LockException;
-use Doctrine\ODM\MongoDB\MongoDBException;
 use Elastica\Client;
 use Elastica\Document;
 use Elastica\Exception\ResponseException;
@@ -17,7 +16,6 @@ use Hanaboso\PipesFramework\Logs\StartingPointsFilter;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\Utils\Date\DateTimeUtils;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
-use ReflectionException;
 
 /**
  * Class ElasticLogsTest
@@ -44,7 +42,8 @@ final class ElasticLogsTest extends DatabaseTestCaseAbstract
     {
         $this->prepareData();
 
-        $logs   = self::$container->get('hbpf.elastic.logs');
+        $logs = self::$container->get('hbpf.elastic.logs');
+        $logs->setIndex('');
         $result = $logs->getData(
             new GridRequestDto(
                 [
@@ -52,7 +51,6 @@ final class ElasticLogsTest extends DatabaseTestCaseAbstract
                 ]
             )
         );
-        $logs->setIndex('index');
 
         self::assertEquals(
             [
@@ -81,6 +79,7 @@ final class ElasticLogsTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\Logs\ElasticLogs::getData
+     *
      * @throws Exception
      */
     public function testGetDataErr(): void
@@ -93,6 +92,7 @@ final class ElasticLogsTest extends DatabaseTestCaseAbstract
             )
         );
         $elLogs = new ElasticLogs($this->dm, new StartingPointsFilter($this->dm), $client);
+        $elLogs->setIndex('');
         $this->setProperty($elLogs, 'client', $client);
         self::expectException(ResponseException::class);
         $elLogs->getData(new GridRequestDto(['filter' => '{"severity":"ERROR"}']));
@@ -101,12 +101,12 @@ final class ElasticLogsTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesFramework\Logs\ElasticLogs::getData
      *
-     * @throws MongoDBException
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function testGetDataErr2(): void
     {
-        $logs   = self::$container->get('hbpf.elastic.logs');
+        $logs = self::$container->get('hbpf.elastic.logs');
+        $logs->setIndex('');
         $client = self::createPartialMock(Client::class, ['request']);
         $client->expects(self::any())->method('request')->willThrowException(
             new ResponseException(
@@ -136,11 +136,12 @@ final class ElasticLogsTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\Logs\LogsFilter::setDocument
      * @covers \Hanaboso\PipesFramework\Logs\ElasticLogs::getFilterAndSorter
      *
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function testGetFilterAndSorter(): void
     {
-        $logs   = self::$container->get('hbpf.elastic.logs');
+        $logs = self::$container->get('hbpf.elastic.logs');
+        $logs->setIndex('');
         $result = $this->invokeMethod(
             $logs,
             'getFilterAndSorter',
@@ -151,13 +152,15 @@ final class ElasticLogsTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Logs\LogsAbstract::processStartingPoints
-     * @throws ReflectionException
+     * @covers \Hanaboso\PipesFramework\Logs\LogsAbstract::processStartingPoint
+     *
+     * @throws Exception
      */
     public function testProcessStartingPoints(): void
     {
         $logs = self::$container->get('hbpf.elastic.logs');
-        $dto  = new GridRequestDto([]);
+        $logs->setIndex('');
+        $dto = new GridRequestDto([]);
 
         self::expectException(LockException::class);
         $this->invokeMethod($logs, 'processStartingPoints', [$dto, ['1' => ['correlation_id' => []]]]);
@@ -165,12 +168,14 @@ final class ElasticLogsTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\Logs\LogsAbstract::processStartingPoints
-     * @throws ReflectionException
+     *
+     * @throws Exception
      */
     public function testProcessStartingPointsErr(): void
     {
         $logs = self::$container->get('hbpf.elastic.logs');
-        $dto  = new GridRequestDto([]);
+        $logs->setIndex('');
+        $dto = new GridRequestDto([]);
 
         self::expectException(LockException::class);
         $this->invokeMethod($logs, 'processStartingPoints', [$dto, ['1' => ['node_id' => []]]]);
@@ -178,11 +183,13 @@ final class ElasticLogsTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\Logs\LogsAbstract::getNodeName
-     * @throws ReflectionException
+     *
+     * @throws Exception
      */
     public function testGetNodeName(): void
     {
         $logs = self::$container->get('hbpf.elastic.logs');
+        $logs->setIndex('');
 
         $result = $this->invokeMethod($logs, 'getNodeName', ['1']);
         self::assertEmpty($result);

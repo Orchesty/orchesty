@@ -36,13 +36,13 @@ final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
         /** @var JsonResponse $response */
         $response = $this->client->getResponse();
 
-        self::assertEquals(400, $response->getStatusCode());
+        self::assertEquals(404, $response->getStatusCode());
     }
 
     /**
-     * @throws Exception
-     *
      * @covers \Hanaboso\PipesFramework\ApiGateway\Listener\ControllerExceptionListener::onKernelException
+     *
+     * @throws Exception
      */
     public function testKernelException(): void
     {

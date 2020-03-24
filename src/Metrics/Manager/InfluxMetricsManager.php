@@ -26,7 +26,7 @@ class InfluxMetricsManager extends MetricsManagerAbstract
     /**
      * @var ClientInterface
      */
-    private $client;
+    private ClientInterface $client;
 
     /**
      * InfluxMetricsManager constructor.

@@ -17,6 +17,7 @@ final class CategoryController extends AbstractController
 
     /**
      * @Route("/categories", methods={"GET", "OPTIONS"})
+     *
      * @param Request $request
      *
      * @return Response

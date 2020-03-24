@@ -2,6 +2,7 @@
 
 namespace PipesFrameworkTests\Integration\Metrics\Client;
 
+use Exception;
 use Hanaboso\PipesFramework\Metrics\Client\MetricsClient;
 use Hanaboso\PipesFramework\Metrics\Exception\MetricsException;
 use InfluxDB\Database;
@@ -28,8 +29,7 @@ final class MetricsClientTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @throws MetricsException
-     * @throws Database\Exception
+     * @throws Exception
      */
     public function testGetDatabase(): void
     {

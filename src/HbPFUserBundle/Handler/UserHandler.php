@@ -67,7 +67,6 @@ class UserHandler
 
     /**
      * @param mixed[] $data
-     *
      * @param string  $id
      *
      * @return UserSettings

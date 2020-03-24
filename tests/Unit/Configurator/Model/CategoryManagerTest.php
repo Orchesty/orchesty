@@ -20,7 +20,8 @@ final class CategoryManagerTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\CategoryManager::createCategory()
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\CategoryManager::createCategory
+     *
      * @throws Exception
      */
     public function testCreateCategory(): void
@@ -41,7 +42,8 @@ final class CategoryManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\CategoryManager::updateCategory()
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\CategoryManager::updateCategory
+     *
      * @throws Exception
      */
     public function testUpdateCategory(): void

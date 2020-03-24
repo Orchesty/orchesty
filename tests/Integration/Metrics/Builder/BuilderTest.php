@@ -2,11 +2,11 @@
 
 namespace PipesFrameworkTests\Integration\Metrics\Builder;
 
+use Exception;
 use Hanaboso\PipesFramework\Metrics\Builder\Builder;
 use InfluxDB\Database;
 use InvalidArgumentException;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
-use ReflectionException;
 
 /**
  * Class BuilderTest
@@ -18,7 +18,8 @@ final class BuilderTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\Metrics\Builder\Builder::parseQuery
-     * @throws ReflectionException
+     *
+     * @throws Exception
      */
     public function testParseQuery(): void
     {

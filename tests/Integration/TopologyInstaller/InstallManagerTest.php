@@ -27,7 +27,7 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
     /**
      * @var Client<mixed>
      */
-    private $redis;
+    private Client $redis;
 
     /**
      * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager

@@ -15,17 +15,17 @@ final class MetricsManagerLoader
     /**
      * @var string
      */
-    private $metricsService;
+    private string $metricsService;
 
     /**
      * @var MetricsManagerAbstract
      */
-    private $influxManager;
+    private MetricsManagerAbstract $influxManager;
 
     /**
      * @var MetricsManagerAbstract
      */
-    private $mongoManager;
+    private MetricsManagerAbstract $mongoManager;
 
     /**
      * MetricsManagerLoader constructor.

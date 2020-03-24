@@ -23,7 +23,7 @@ class LogsController
     /**
      * @var LogsHandler
      */
-    private $logsHandler;
+    private LogsHandler $logsHandler;
 
     /**
      * LogsController constructor.

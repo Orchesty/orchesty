@@ -39,17 +39,17 @@ class TopologyManager
     /**
      * @var DocumentManager
      */
-    private $dm;
+    private DocumentManager $dm;
 
     /**
      * @var ObjectRepository<Topology>&TopologyRepository
      */
-    private $topologyRepository;
+    private TopologyRepository $topologyRepository;
 
     /**
      * @var CronManager
      */
-    private $cronManager;
+    private CronManager $cronManager;
 
     /**
      * TopologyManager constructor.

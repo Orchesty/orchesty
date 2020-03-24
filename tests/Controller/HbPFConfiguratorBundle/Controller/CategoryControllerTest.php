@@ -105,6 +105,7 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler::getCategory
      * @covers \Hanaboso\PipesFramework\Configurator\Model\CategoryManager::updateCategory
      * @covers \Hanaboso\PipesFramework\Configurator\Model\CategoryManager::setCategoryData
+     *
      * @throws Exception
      */
     public function testUpdateCategoryErr(): void

@@ -16,7 +16,7 @@ class LogsHandler
     /**
      * @var LogsInterface
      */
-    private $logs;
+    private LogsInterface $logs;
 
     /**
      * LogsHandler constructor.

@@ -21,12 +21,12 @@ class MetricsHandler
     /**
      * @var DocumentManager
      */
-    private $dm;
+    private DocumentManager $dm;
 
     /**
      * @var MetricsManagerLoader
      */
-    private $loader;
+    private MetricsManagerLoader $loader;
 
     /**
      * MetricsHandler constructor.

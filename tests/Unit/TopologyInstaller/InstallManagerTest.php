@@ -20,7 +20,6 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 use Predis\Client;
 use Predis\Connection\Parameters;
-use ReflectionException;
 
 /**
  * Class InstallManagerTest
@@ -98,7 +97,6 @@ final class InstallManagerTest extends KernelTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::makeDelete
      *
-     * @throws ReflectionException
      * @throws Exception
      */
     public function testMakeDelete(): void
@@ -109,7 +107,7 @@ final class InstallManagerTest extends KernelTestCaseAbstract
 
         $dm = $this->createMock(DocumentManager::class);
         $dm->expects(self::any())->method('persist')->willThrowException(new Exception());
-        $this->setProperty($manager, 'dm', [$dm]);
+        $this->setProperty($manager, 'dm', $dm);
 
         $dto = new CompareResultDto();
         $dto->addDelete([(new Topology())->setName('name')]);

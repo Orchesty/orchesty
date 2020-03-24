@@ -29,7 +29,7 @@ class InstallTopologyCommand extends Command
     /**
      * @var InstallManager
      */
-    private $manager;
+    private InstallManager $manager;
 
     /**
      * InstallTopologyCommand constructor.

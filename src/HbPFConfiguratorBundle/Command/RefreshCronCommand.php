@@ -25,12 +25,12 @@ class RefreshCronCommand extends Command
     /**
      * @var DocumentManager
      */
-    private $dm;
+    private DocumentManager $dm;
 
     /**
      * @var CronManager
      */
-    private $cronManager;
+    private CronManager $cronManager;
 
     /**
      * RefreshCronCommand constructor.

@@ -30,12 +30,12 @@ class MongoMetricsManager extends MetricsManagerAbstract
     /**
      * @var DocumentManager
      */
-    private $metricsDm;
+    private DocumentManager $metricsDm;
 
     /**
      * @var int
      */
-    private $rabbitInterval;
+    private int $rabbitInterval;
 
     /**
      * MongoMetricsManager constructor.

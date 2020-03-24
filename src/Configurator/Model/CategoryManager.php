@@ -24,7 +24,7 @@ class CategoryManager
     /**
      * @var DocumentManager
      */
-    private $dm;
+    private DocumentManager $dm;
 
     /**
      * CategoryManager constructor.

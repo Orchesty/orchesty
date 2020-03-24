@@ -44,42 +44,42 @@ class InstallManager implements LoggerAwareInterface
     /**
      * @var DocumentManager
      */
-    private $dm;
+    private DocumentManager $dm;
 
     /**
      * @var TopologiesComparator
      */
-    private $comparator;
+    private TopologiesComparator $comparator;
 
     /**
      * @var Client<mixed>
      */
-    private $client;
+    private Client $client;
 
     /**
      * @var TopologyManager
      */
-    private $topologyManager;
+    private TopologyManager $topologyManager;
 
     /**
      * @var TopologyGeneratorBridge
      */
-    private $requestHandler;
+    private TopologyGeneratorBridge $requestHandler;
 
     /**
      * @var LoggerInterface
      */
-    private $logger;
+    private LoggerInterface $logger;
 
     /**
      * @var CategoryParser
      */
-    private $categoryParser;
+    private CategoryParser $categoryParser;
 
     /**
      * @var XmlDecoder
      */
-    private $decoder;
+    private XmlDecoder $decoder;
 
     /**
      * InstallManager constructor.

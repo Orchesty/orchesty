@@ -59,6 +59,7 @@ class UserController
 
     /**
      * @Route("/user/list", methods={"POST", "OPTIONS"})
+     *
      * @param Request $request
      *
      * @return Response
@@ -74,8 +75,8 @@ class UserController
 
     /**
      * @Route("/user/{id}/saveSettings", methods={"POST", "OPTIONS"})
-     * @param Request $request
      *
+     * @param Request $request
      * @param string  $id
      *
      * @return Response

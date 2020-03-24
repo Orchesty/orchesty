@@ -23,7 +23,8 @@ final class NodeManagerTest extends KernelTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\Configurator\Model\NodeManager
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\NodeManager::updateNode()
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\NodeManager::updateNode
+     *
      * @throws Exception
      */
     public function testUpdateNode(): void
@@ -50,7 +51,8 @@ final class NodeManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\NodeManager::updateNode()
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\NodeManager::updateNode
+     *
      * @throws Exception
      */
     public function testUpdateNodeEnabled(): void
@@ -70,7 +72,8 @@ final class NodeManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\NodeManager::updateNode()
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\NodeManager::updateNode
+     *
      * @throws Exception
      */
     public function testUpdateNodeEnabledFail(): void

@@ -17,7 +17,7 @@ class TopologyEvent extends Event
     /**
      * @var string
      */
-    private $topologyName;
+    private string $topologyName;
 
     /**
      * TopologyEvent constructor.

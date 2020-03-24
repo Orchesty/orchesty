@@ -24,17 +24,17 @@ class NodeHandler
     /**
      * @var ObjectRepository<Node>&NodeRepository
      */
-    private $nodeRepository;
+    private NodeRepository $nodeRepository;
 
     /**
      * @var DocumentManager
      */
-    private $dm;
+    private DocumentManager $dm;
 
     /**
      * @var NodeManager
      */
-    private $manager;
+    private NodeManager $manager;
 
     /**
      * NodeHandler constructor.

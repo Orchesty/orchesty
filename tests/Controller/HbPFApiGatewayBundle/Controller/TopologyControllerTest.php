@@ -28,6 +28,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyController::getTopologiesAction
+     *
      * @throws Exception
      */
     public function testGetTopologies(): void
@@ -48,6 +49,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyController::getTopologyAction
+     *
      * @throws Exception
      */
     public function testGetTopologyAction(): void
@@ -72,6 +74,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyController::updateTopologyAction
+     *
      * @throws Exception
      */
     public function testUpdateTopologyAction(): void
@@ -88,6 +91,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyController::getTopologySchemaAction
+     *
      * @throws Exception
      */
     public function testGetTopologySchemaAction(): void
@@ -107,6 +111,8 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyController::getTopologySchemaAction
+     *
+     * @throws Exception
      */
     public function testSaveTopologySchemaAction(): void
     {
@@ -122,6 +128,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyController::publishTopologyAction
+     *
      * @throws Exception
      */
     public function testPublishTopologyAction(): void
@@ -138,6 +145,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyController::cloneTopologyAction
+     *
      * @throws Exception
      */
     public function testCloneTopologyAction(): void
@@ -154,6 +162,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyController::deleteTopologyAction
+     *
      * @throws Exception
      */
     public function testDeleteTopologyAction(): void

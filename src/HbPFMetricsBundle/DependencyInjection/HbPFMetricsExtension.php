@@ -12,6 +12,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
  * Class HbPFMetricsExtension
  *
  * @package Hanaboso\PipesFramework\HbPFMetricsBundle\DependencyInjection
+ *
  * @codeCoverageIgnore
  */
 class HbPFMetricsExtension extends Extension

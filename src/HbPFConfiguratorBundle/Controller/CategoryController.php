@@ -24,7 +24,7 @@ class CategoryController
     /**
      * @var CategoryHandler
      */
-    private $categoryHandler;
+    private CategoryHandler $categoryHandler;
 
     /**
      * CategoryController constructor.
@@ -44,9 +44,7 @@ class CategoryController
      */
     public function getCategoriesAction(): Response
     {
-        $data = $this->categoryHandler->getCategories();
-
-        return $this->getResponse($data);
+        return $this->getResponse($this->categoryHandler->getCategories());
     }
 
     /**
@@ -59,9 +57,7 @@ class CategoryController
     public function createCategoryAction(Request $request): Response
     {
         try {
-            $data = $this->categoryHandler->createCategory($request->request->all());
-
-            return $this->getResponse($data);
+            return $this->getResponse($this->categoryHandler->createCategory($request->request->all()));
         } catch (Throwable $e) {
             return $this->getErrorResponse($e);
         }
@@ -78,9 +74,7 @@ class CategoryController
     public function updateCategoryAction(Request $request, string $id): Response
     {
         try {
-            $data = $this->categoryHandler->updateCategory($id, $request->request->all());
-
-            return $this->getResponse($data);
+            return $this->getResponse($this->categoryHandler->updateCategory($id, $request->request->all()));
         } catch (CategoryException $e) {
             return $this->getErrorResponse($e, 400);
         } catch (Throwable $e) {
@@ -98,9 +92,7 @@ class CategoryController
     public function deleteCategoryAction(string $id): Response
     {
         try {
-            $data = $this->categoryHandler->deleteCategory($id);
-
-            return $this->getResponse($data);
+            return $this->getResponse($this->categoryHandler->deleteCategory($id));
         } catch (Throwable $e) {
             return $this->getErrorResponse($e);
         }

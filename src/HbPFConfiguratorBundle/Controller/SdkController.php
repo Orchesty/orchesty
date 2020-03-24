@@ -26,7 +26,7 @@ final class SdkController extends AbstractController
     /**
      * @var SdkHandler
      */
-    private $handler;
+    private SdkHandler $handler;
 
     /**
      * SdkController constructor.

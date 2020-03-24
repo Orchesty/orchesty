@@ -28,52 +28,52 @@ class CategoryParser
     /**
      * @var mixed[]
      */
-    private $roots = [];
+    private array $roots = [];
 
     /**
      * @var mixed[]
      */
-    private $excludes = [];
+    private array $excludes = [];
 
     /**
      * @var mixed[]
      */
-    private $aliases = [];
+    private array $aliases = [];
 
     /**
      * @var mixed[]
      */
-    private $pathFromFile = [];
+    private array $pathFromFile = [];
 
     /**
      * @var mixed[]
      */
-    private $tmpFilePath = [];
+    private array $tmpFilePath = [];
 
     /**
      * @var mixed[]
      */
-    private $tmpPath = [];
+    private array $tmpPath = [];
 
     /**
      * @var string
      */
-    private $matchedRootAlias = '';
+    private string $matchedRootAlias = '';
 
     /**
      * @var DocumentManager
      */
-    private $dm;
+    private DocumentManager $dm;
 
     /**
      * @var ObjectRepository<Category>&CategoryRepository
      */
-    private $categoryRepository;
+    private CategoryRepository $categoryRepository;
 
     /**
      * @var CategoryManager
      */
-    private $categoryManager;
+    private CategoryManager $categoryManager;
 
     /**
      * CategoryParser constructor.

@@ -111,37 +111,37 @@ abstract class MetricsManagerAbstract implements LoggerAwareInterface
     /**
      * @var ObjectRepository<Node>&NodeRepository
      */
-    protected $nodeRepository;
+    protected NodeRepository $nodeRepository;
 
     /**
      * @var string
      */
-    protected $nodeTable;
+    protected string $nodeTable;
 
     /**
      * @var string
      */
-    protected $fpmTable;
+    protected string $fpmTable;
 
     /**
      * @var string
      */
-    protected $rabbitTable;
+    protected string $rabbitTable;
 
     /**
      * @var string
      */
-    protected $counterTable;
+    protected string $counterTable;
 
     /**
      * @var string
      */
-    protected $connectorTable;
+    protected string $connectorTable;
 
     /**
      * @var LoggerInterface
      */
-    protected $logger;
+    protected LoggerInterface $logger;
 
     /**
      * @param Node     $node

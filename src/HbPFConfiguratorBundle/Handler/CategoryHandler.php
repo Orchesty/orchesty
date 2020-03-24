@@ -22,12 +22,12 @@ class CategoryHandler
     /**
      * @var DocumentManager
      */
-    private $dm;
+    private DocumentManager $dm;
 
     /**
      * @var CategoryManager
      */
-    private $categoryManager;
+    private CategoryManager $categoryManager;
 
     /**
      * CategoryHandler constructor.
