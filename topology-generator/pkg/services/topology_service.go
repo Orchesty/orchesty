@@ -175,11 +175,13 @@ func (ts *TopologyService) getKubernetesContainers(mountName string) ([]model.Co
 	}
 
 	env := make([]model.EnvItem, len(environment))
+	i := 0
 	for name, value := range environment {
-		env = append(env, model.EnvItem{
+		env[i] = model.EnvItem{
 			Name:  name,
 			Value: value,
-		})
+		}
+		i++;
 	}
 
 	if multiNode {

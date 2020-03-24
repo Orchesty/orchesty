@@ -46,7 +46,7 @@ func TestDockerClient_MultiNodeDockerCompose(t *testing.T) {
 		Environment: model.Environment{
 			DockerRegistry:      "dkr.hanaboso.net/pipes/pipes",
 			DockerPfBridgeImage: "pf-bridge:dev",
-			RabbitMqDsn:         "localhost:56",
+			RabbitMqHost:        "localhost:56",
 			MultiProbeHost:      "probe:40",
 			MetricsHost:         "metrics:963",
 			MetricsPort:         "",
@@ -125,7 +125,7 @@ func TestDockerClient_DockerCompose(t *testing.T) {
 		Environment: model.Environment{
 			DockerRegistry:      "dkr.hanaboso.net/pipes/pipes",
 			DockerPfBridgeImage: "pf-bridge:dev",
-			RabbitMqDsn:         "test:99",
+			RabbitMqHost:        "test:99",
 			MultiProbeHost:      "test:3098",
 			MetricsHost:         "",
 			MetricsPort:         "",
@@ -210,7 +210,7 @@ func TestDockerClient_Swarm(t *testing.T) {
 		Environment: model.Environment{
 			DockerRegistry:      "dkr.hanaboso.net/pipes/pipes",
 			DockerPfBridgeImage: "pf-bridge:dev",
-			RabbitMqDsn:         "test:99",
+			RabbitMqHost:        "test:99",
 			MultiProbeHost:      "test:3098",
 			MetricsHost:         "",
 			MetricsPort:         "",
@@ -415,7 +415,7 @@ func TestDockerClient_GenerateFails(t *testing.T) {
 		Environment: model.Environment{
 			DockerRegistry:      "dkr.hanaboso.net/pipes/pipes",
 			DockerPfBridgeImage: "pf-bridge:dev",
-			RabbitMqDsn:         "test:99",
+			RabbitMqHost:        "test:99",
 			MultiProbeHost:      "test:3098",
 			MetricsHost:         "",
 			MetricsPort:         "",

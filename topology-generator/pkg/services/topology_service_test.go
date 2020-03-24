@@ -148,7 +148,7 @@ func getEnvironment(mode model.Adapter) model.Environment {
 	return model.Environment{
 		DockerRegistry:      "dkr.hanaboso.net/pipes/pipes",
 		DockerPfBridgeImage: "pf-bridge:dev",
-		RabbitMqDsn:         "rabbitmq:5672",
+		RabbitMqHost:        "rabbitmq:5672",
 		MultiProbeHost:      "multi-probe:8007",
 		MetricsHost:         "kapacitor:9100",
 		WorkerDefaultPort:   8808,
@@ -166,7 +166,7 @@ func TestTopologyService_CreateTopologyJsonFails(t *testing.T) {
 		Environment: model.Environment{
 			DockerRegistry:      "testregistry",
 			DockerPfBridgeImage: "testimages",
-			RabbitMqDsn:         "",
+			RabbitMqHost:        "",
 			MultiProbeHost:      "",
 			MetricsHost:         "",
 			MetricsPort:         "",
@@ -254,7 +254,7 @@ func TestGetDockerServicesFails(t *testing.T) {
 		Environment: model.Environment{
 			DockerRegistry:      "",
 			DockerPfBridgeImage: "",
-			RabbitMqDsn:         "[x:",
+			RabbitMqHost:        "[x:",
 			MultiProbeHost:      "[y:",
 			MetricsHost:         "",
 			MetricsPort:         "",
@@ -285,7 +285,7 @@ func TestTopologyService_CreateDockerComposeFails(t *testing.T) {
 		Environment: model.Environment{
 			DockerRegistry:      "",
 			DockerPfBridgeImage: "",
-			RabbitMqDsn:         "[x:",
+			RabbitMqHost:        "[x:",
 			MultiProbeHost:      "[y:",
 			MetricsHost:         "",
 			MetricsPort:         "",
