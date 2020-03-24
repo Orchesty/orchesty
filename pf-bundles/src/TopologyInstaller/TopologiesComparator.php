@@ -25,12 +25,12 @@ class TopologiesComparator
     /**
      * @var mixed[]
      */
-    private $dirs;
+    private array $dirs;
 
     /**
      * @var TopologyRepository
      */
-    private $repository;
+    private TopologyRepository $repository;
 
     /**
      * @var XmlDecoder

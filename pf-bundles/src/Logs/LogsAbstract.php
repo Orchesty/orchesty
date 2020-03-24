@@ -37,12 +37,12 @@ abstract class LogsAbstract implements LogsInterface
     /**
      * @var DocumentManager
      */
-    private $dm;
+    private DocumentManager $dm;
 
     /**
      * @var StartingPointsFilter
      */
-    private $startingPointsFilter;
+    private StartingPointsFilter $startingPointsFilter;
 
     /**
      * LogsAbstract constructor.

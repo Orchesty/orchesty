@@ -65,17 +65,17 @@ class TopologyConfigFactory
     /**
      * @var mixed[]
      */
-    private $configs;
+    private array $configs;
 
     /**
      * @var DocumentManager
      */
-    private $dm;
+    private DocumentManager $dm;
 
     /**
      * @var ObjectRepository<Node>&NodeRepository
      */
-    private $nodeRepo;
+    private NodeRepository $nodeRepo;
 
     /**
      * TopologyConfigFactory constructor.
@@ -462,9 +462,10 @@ class TopologyConfigFactory
     private function getNextNode(Node $node): ?Node
     {
         if ($node->getNext()) {
-            $id = $node->getNext()[0]->getId();
+            /** @var Node $node */
+            $node = $this->nodeRepo->find($node->getNext()[0]->getId());
 
-            return $this->nodeRepo->find($id);
+            return $node;
         }
 
         return NULL;

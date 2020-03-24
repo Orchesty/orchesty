@@ -30,17 +30,17 @@ class NotificationManager implements LoggerAwareInterface
     /**
      * @var CurlManagerInterface
      */
-    private $curlManager;
+    private CurlManagerInterface $curlManager;
 
     /**
      * @var string
      */
-    private $backend;
+    private string $backend;
 
     /**
      * @var LoggerInterface
      */
-    private $logger;
+    private LoggerInterface $logger;
 
     /**
      * NotificationManager constructor.

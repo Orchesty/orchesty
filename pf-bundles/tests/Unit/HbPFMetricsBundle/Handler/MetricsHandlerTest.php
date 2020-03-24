@@ -2,10 +2,10 @@
 
 namespace PipesFrameworkTests\Unit\HbPFMetricsBundle\Handler;
 
+use Exception;
 use Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler;
 use Hanaboso\PipesFramework\Metrics\Exception\MetricsException;
 use PipesFrameworkTests\KernelTestCaseAbstract;
-use ReflectionException;
 
 /**
  * Class MetricsHandlerTest
@@ -22,7 +22,8 @@ final class MetricsHandlerTest extends KernelTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler::getTopologyById
-     * @throws ReflectionException
+     *
+     * @throws Exception
      */
     public function testGetTopologyId(): void
     {
@@ -32,7 +33,8 @@ final class MetricsHandlerTest extends KernelTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler::getNodeByTopologyAndNodeId
-     * @throws ReflectionException
+     *
+     * @throws Exception
      */
     public function testGetNodeByTopologyAndNodeId(): void
     {

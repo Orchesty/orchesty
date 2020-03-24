@@ -18,9 +18,9 @@ final class LogsControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @throws Exception
-     *
      * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\LogsController::topologyMetricsAction
+     *
+     * @throws Exception
      */
     public function testTopologyMetricsAction(): void
     {

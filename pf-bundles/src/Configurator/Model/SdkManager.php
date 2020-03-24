@@ -20,12 +20,12 @@ final class SdkManager
     /**
      * @var DocumentManager
      */
-    private $dm;
+    private DocumentManager $dm;
 
     /**
      * @var ObjectRepository<Sdk>&SdkRepository
      */
-    private $repository;
+    private SdkRepository $repository;
 
     /**
      * SdkManager constructor.

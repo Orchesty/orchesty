@@ -18,7 +18,7 @@ final class MongoDbLogs extends LogsAbstract
     /**
      * @var LogsFilter
      */
-    private $filter;
+    private LogsFilter $filter;
 
     /**
      * MongoDbLogs constructor.

@@ -1,0 +1,2040 @@
+openapi: 3.0.0
+
+info:
+    title: Pipes Framework
+    description: Pipes Framework API
+    version: '1.0'
+
+servers:
+    -   url: http://127.0.0.2
+        description: Docker Localhost
+
+paths:
+    /api/applications:
+        get:
+            tags: [ Applications ]
+            responses:
+                200:
+                    $ref: '#/components/responses/Applications'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/applications/{key}:
+        get:
+            tags: [ Applications ]
+            parameters:
+                -   $ref: '#/components/parameters/Key'
+            responses:
+                200:
+                    $ref: '#/components/responses/Application'
+                404:
+                    $ref: '#/components/responses/404'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/applications/users/{user}:
+        get:
+            tags: [ Applications ]
+            parameters:
+                -   $ref: '#/components/parameters/User'
+            responses:
+                200:
+                    $ref: '#/components/responses/ApplicationInstalls'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/applications/{key}/users/{user}:
+        get:
+            tags: [ Applications ]
+            parameters:
+                -   $ref: '#/components/parameters/Key'
+                -   $ref: '#/components/parameters/User'
+            responses:
+                200:
+                    $ref: '#/components/responses/ApplicationInstall'
+                404:
+                    $ref: '#/components/responses/404'
+                500:
+                    $ref: '#/components/responses/500'
+
+        post:
+            tags: [ Applications ]
+            parameters:
+                -   $ref: '#/components/parameters/Key'
+                -   $ref: '#/components/parameters/User'
+            requestBody:
+                $ref: '#/components/requestBodies/Empty'
+            responses:
+                200:
+                    $ref: '#/components/responses/ApplicationInstallInstall'
+                404:
+                    $ref: '#/components/responses/404'
+                500:
+                    $ref: '#/components/responses/500'
+
+        put:
+            tags: [ Applications ]
+            parameters:
+                -   $ref: '#/components/parameters/Key'
+                -   $ref: '#/components/parameters/User'
+            requestBody:
+                $ref: '#/components/requestBodies/Settings'
+            responses:
+                200:
+                    $ref: '#/components/responses/ApplicationInstallSettings'
+                404:
+                    $ref: '#/components/responses/404'
+                500:
+                    $ref: '#/components/responses/500'
+
+        delete:
+            tags: [ Applications ]
+            parameters:
+                -   $ref: '#/components/parameters/Key'
+                -   $ref: '#/components/parameters/User'
+            responses:
+                200:
+                    $ref: '#/components/responses/ApplicationInstallUninstall'
+                404:
+                    $ref: '#/components/responses/404'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/applications/{key}/users/{user}/password:
+        put:
+            tags: [ Applications ]
+            parameters:
+                -   $ref: '#/components/parameters/Key'
+                -   $ref: '#/components/parameters/User'
+            requestBody:
+                $ref: '#/components/requestBodies/Password'
+            responses:
+                200:
+                    $ref: '#/components/responses/ApplicationInstallUninstall'
+                404:
+                    $ref: '#/components/responses/404'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/applications/authorize/token:
+        get:
+            tags: [ Applications ]
+            parameters:
+                -   $ref: '#/components/parameters/State'
+            responses:
+                302:
+                    description: ''
+                404:
+                    $ref: '#/components/responses/404'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/applications/{key}/users/{user}/authorize:
+        get:
+            tags: [ Applications ]
+            parameters:
+                -   $ref: '#/components/parameters/Key'
+                -   $ref: '#/components/parameters/User'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+                404:
+                    $ref: '#/components/responses/404'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/applications/{key}/users/{user}/authorize/token:
+        get:
+            tags: [ Applications ]
+            parameters:
+                -   $ref: '#/components/parameters/Key'
+                -   $ref: '#/components/parameters/User'
+            responses:
+                302:
+                    description: ''
+                404:
+                    $ref: '#/components/responses/404'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/categories:
+        get:
+            tags: [ Categories ]
+            responses:
+                200:
+                    $ref: '#/components/responses/Categories'
+                500:
+                    $ref: '#/components/responses/500'
+
+        post:
+            tags: [ Categories ]
+            requestBody:
+                $ref: '#/components/requestBodies/Category'
+            responses:
+                200:
+                    $ref: '#/components/responses/Categories'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/categories/{id}:
+        put:
+            tags: [ Categories ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            requestBody:
+                $ref: '#/components/requestBodies/Category'
+            responses:
+                200:
+                    $ref: '#/components/responses/Category'
+                404:
+                    $ref: '#/components/responses/404'
+                500:
+                    $ref: '#/components/responses/500'
+
+        delete:
+            tags: [ Categories ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/connector/{id}/action:
+        post:
+            tags: [ Connectors ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/connector/{id}/webhook:
+        post:
+            tags: [ Connectors ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/logs:
+        get:
+            tags: [ Logs ]
+            responses:
+                200:
+                    $ref: '#/components/responses/Logs'
+                500:
+                    $ref: '#/components/responses/500'
+
+
+    /api/longRunning/{id}/process:
+        post:
+            tags: [ Long Running Nodes ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/longRunning/{id}/process/test:
+        get:
+            tags: [ Long Running Nodes ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/longRunning/id/topology/{topology}/getTasks:
+        get:
+            tags: [ Long Running Nodes ]
+            parameters:
+                -   $ref: '#/components/parameters/Topology'
+            responses:
+                200:
+                    $ref: '#/components/responses/TopologyTasks'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/longRunning/name/topology/{topology}/getTasks:
+        get:
+            tags: [ Long Running Nodes ]
+            parameters:
+                -   $ref: '#/components/parameters/Topology'
+            responses:
+                200:
+                    $ref: '#/components/responses/TopologyTasks'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/longRunning/id/topology/{topology}/node/{node}/getTasks:
+        get:
+            tags: [ Long Running Nodes ]
+            parameters:
+                -   $ref: '#/components/parameters/Topology'
+                -   $ref: '#/components/parameters/Node'
+            responses:
+                200:
+                    $ref: '#/components/responses/TopologyTasks'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/longRunning/name/topology/{topology}/node/{node}/getTasks:
+        get:
+            tags: [ Long Running Nodes ]
+            parameters:
+                -   $ref: '#/components/parameters/Topology'
+                -   $ref: '#/components/parameters/Node'
+            responses:
+                200:
+                    $ref: '#/components/responses/TopologyTasks'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/longRunning/{id}:
+        put:
+            tags: [ Long Running Nodes ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            requestBody:
+                $ref: '#/components/requestBodies/LongRunningData'
+            responses:
+                200:
+                    $ref: '#/components/responses/LongRunningData'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/metrics/topology/{topology}:
+        get:
+            tags: [ Metrics ]
+            parameters:
+                -   $ref: '#/components/parameters/Topology'
+            responses:
+                200:
+                    $ref: '#/components/responses/TopologyMetrics'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/metrics/topology/{topology}/node/{node}:
+        get:
+            tags: [ Metrics ]
+            parameters:
+                -   $ref: '#/components/parameters/Topology'
+                -   $ref: '#/components/parameters/Node'
+            responses:
+                200:
+                    $ref: '#/components/responses/TopologyNodeMetrics'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/metrics/topology/{topology}/requests:
+        get:
+            tags: [ Metrics ]
+            parameters:
+                -   $ref: '#/components/parameters/Topology'
+            responses:
+                200:
+                    $ref: '#/components/responses/TopologyRequestMetrics'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/topologies/{id}/nodes:
+        get:
+            tags: [ Nodes ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            responses:
+                200:
+                    $ref: '#/components/responses/Nodes'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/nodes/{id}:
+        get:
+            tags: [ Nodes ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            responses:
+                200:
+                    $ref: '#/components/responses/Node'
+                404:
+                    $ref: '#/components/responses/404'
+                500:
+                    $ref: '#/components/responses/500'
+
+        patch:
+            tags: [ Nodes ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            requestBody:
+                $ref: '#/components/requestBodies/Node'
+            responses:
+                200:
+                    $ref: '#/components/responses/Node'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/nodes/{type}/list_nodes:
+        get:
+            tags: [ Nodes ]
+            parameters:
+                -   $ref: '#/components/parameters/Type'
+            responses:
+                200:
+                    $ref: '#/components/responses/NodesNames'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/nodes/list/name:
+        get:
+            tags: [ Nodes ]
+            responses:
+                200:
+                    $ref: '#/components/responses/NodesImplementationsNames'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/notification_settings/events:
+        get:
+            tags: [ Notification Settings ]
+            responses:
+                200:
+                    $ref: '#/components/responses/Events'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/notification_settings/{id}:
+        get:
+            tags: [ Notification Settings ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            responses:
+                200:
+                    $ref: '#/components/responses/Setting'
+                500:
+                    $ref: '#/components/responses/500'
+
+        put:
+            tags: [ Notification Settings ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            requestBody:
+                $ref: '#/components/requestBodies/NotificationSetting'
+            responses:
+                200:
+                    $ref: '#/components/responses/Setting'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/sdks:
+        get:
+            tags: [ SDKs ]
+            responses:
+                200:
+                    $ref: '#/components/responses/Sdks'
+                500:
+                    $ref: '#/components/responses/500'
+
+        post:
+            tags: [ SDKs ]
+            requestBody:
+                $ref: '#/components/requestBodies/Sdk'
+            responses:
+                200:
+                    $ref: '#/components/responses/Sdk'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/sdks/{id}:
+        get:
+            tags: [ SDKs ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            responses:
+                200:
+                    $ref: '#/components/responses/Sdk'
+                404:
+                    $ref: '#/components/responses/404'
+                500:
+                    $ref: '#/components/responses/500'
+
+        put:
+            tags: [ SDKs ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            requestBody:
+                $ref: '#/components/requestBodies/Sdk'
+            responses:
+                200:
+                    $ref: '#/components/responses/Sdk'
+                404:
+                    $ref: '#/components/responses/404'
+                500:
+                    $ref: '#/components/responses/500'
+
+        delete:
+            tags: [ SDKs ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            responses:
+                200:
+                    $ref: '#/components/responses/Sdk'
+                404:
+                    $ref: '#/components/responses/404'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/topologies:
+        get:
+            tags: [ Topologies ]
+            responses:
+                200:
+                    $ref: '#/components/responses/Topologies'
+                500:
+                    $ref: '#/components/responses/500'
+
+        post:
+            tags: [ Topologies ]
+            requestBody:
+                $ref: '#/components/requestBodies/Topology'
+            responses:
+                200:
+                    $ref: '#/components/responses/Topology'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/topologies/cron:
+        get:
+            tags: [ Topologies ]
+            responses:
+                200:
+                    $ref: '#/components/responses/Topologies'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/topologies/{id}:
+        get:
+            tags: [ Topologies ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            responses:
+                200:
+                    $ref: '#/components/responses/Topology'
+                500:
+                    $ref: '#/components/responses/500'
+
+        put:
+            tags: [ Topologies ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            requestBody:
+                $ref: '#/components/requestBodies/Topology'
+            responses:
+                200:
+                    $ref: '#/components/responses/Topology'
+                500:
+                    $ref: '#/components/responses/500'
+
+        delete:
+            tags: [ Topologies ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/topologies/{id}/schema.bpmn:
+        get:
+            tags: [ Topologies ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            responses:
+                200:
+                    $ref: '#/components/responses/TopologySchema'
+                500:
+                    $ref: '#/components/responses/500'
+
+        put:
+            tags: [ Topologies ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            requestBody:
+                $ref: '#/components/requestBodies/TopologySchema'
+            responses:
+                200:
+                    $ref: '#/components/responses/Topology'
+                400:
+                    $ref: '#/components/responses/500'
+                500:
+                    $ref: '#/components/responses/500'
+
+
+    /api/topologies/{id}/publish:
+        post:
+            tags: [ Topologies ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            responses:
+                200:
+                    $ref: '#/components/responses/TopologyPublish'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/topologies/{id}/clone:
+        post:
+            tags: [ Topologies ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            responses:
+                200:
+                    $ref: '#/components/responses/Topology'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/topologies/{id}/test:
+        get:
+            tags: [ Topologies ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            responses:
+                200:
+                    $ref: '#/components/responses/TopologyTest'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/user/login:
+        post:
+            tags: [ Users ]
+            requestBody:
+                $ref: '#/components/requestBodies/Login'
+            responses:
+                200:
+                    $ref: '#/components/responses/User'
+                400:
+                    $ref: '#/components/responses/400'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/user/logout:
+        post:
+            tags: [ Users ]
+            requestBody:
+                $ref: '#/components/requestBodies/Empty'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+                401:
+                    $ref: '#/components/responses/401'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/user/register:
+        post:
+            tags: [ Users ]
+            requestBody:
+                $ref: '#/components/requestBodies/Register'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+                400:
+                    $ref: '#/components/responses/400'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/user/{token}/activate:
+        post:
+            tags: [ Users ]
+            parameters:
+                -   $ref: '#/components/parameters/Token'
+            responses:
+                200:
+                    $ref: '#/components/responses/User'
+                400:
+                    $ref: '#/components/responses/400'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/user/{token}/set_password:
+        post:
+            tags: [ Users ]
+            parameters:
+                -   $ref: '#/components/parameters/Token'
+            requestBody:
+                $ref: '#/components/requestBodies/SetPassword'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+                400:
+                    $ref: '#/components/responses/400'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/user/change_password:
+        post:
+            tags: [ Users ]
+            requestBody:
+                $ref: '#/components/requestBodies/ChangePassword'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+                401:
+                    $ref: '#/components/responses/401'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/user/reset_password:
+        post:
+            tags: [ Users ]
+            requestBody:
+                $ref: '#/components/requestBodies/ResetPassword'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+                400:
+                    $ref: '#/components/responses/400'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/user/{id}/delete:
+        delete:
+            tags: [ Users ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            responses:
+                200:
+                    $ref: '#/components/responses/User'
+                400:
+                    $ref: '#/components/responses/400'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/user/list:
+        post:
+            tags: [ Users ]
+            responses:
+                200:
+                    $ref: '#/components/responses/Users'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/user/{id}/saveSettings:
+        post:
+            tags: [ Users ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            requestBody:
+                $ref: '#/components/requestBodies/UserSettings'
+            responses:
+                200:
+                    $ref: '#/components/responses/UserSettings'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/webhook/applications/{key}/users/{user}/subscribe:
+        post:
+            tags: [ Webhooks ]
+            parameters:
+                -   $ref: '#/components/parameters/Key'
+                -   $ref: '#/components/parameters/User'
+            requestBody:
+                $ref: '#/components/requestBodies/Webhook'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+                404:
+                    $ref: '#/components/responses/404'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/webhook/applications/{key}/users/{user}/unsubscribe:
+        post:
+            tags: [ Webhooks ]
+            parameters:
+                -   $ref: '#/components/parameters/Key'
+                -   $ref: '#/components/parameters/User'
+            requestBody:
+                $ref: '#/components/requestBodies/Webhook'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+                404:
+                    $ref: '#/components/responses/404'
+                500:
+                    $ref: '#/components/responses/500'
+
+components:
+    requestBodies:
+        Empty:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        type: object
+
+        Settings:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            settingOne:
+                                type: string
+                            settingTwo:
+                                type: string
+
+        Password:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            password:
+                                type: string
+
+        Webhook:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            name:
+                                type: string
+                            topology:
+                                type: string
+
+        Category:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            name:
+                                type: string
+                            parent:
+                                type: string
+
+        LongRunningData:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            data:
+                                type: object
+
+        Node:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        properties:
+                            name:
+                                type: string
+                            topology:
+                                type: string
+                            type:
+                                type: string
+                                enum:
+                                    - api
+                                    - batch
+                                    - batch_connector
+                                    - connector
+                                    - cron
+                                    - custom
+                                    - debug
+                                    - email
+                                    - ftp
+                                    - mapper
+                                    - resequencer
+                                    - signal
+                                    - splitter
+                                    - table_parser
+                                    - webhook
+                                    - xml_parser
+                                    - start
+                                    - gateway
+                                    - user
+                            handler:
+                                type: string
+                                enum: [action, event]
+                            enabled:
+                                type: boolean
+
+        NotificationSetting:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            events:
+                                type: array
+                                items:
+                                    type: string
+                                    enum: [access_expiration, data_error, service_unavailable]
+                            settings:
+                                type: object
+
+        Sdk:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            key:
+                                type: string
+                            value:
+                                type: string
+
+        Topology:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            name:
+                                type: string
+                            descr:
+                                type: string
+                            enabled:
+                                type: boolean
+                            category:
+                                type: string
+                                nullable: true
+
+        TopologySchema:
+            description: ''
+            content:
+                application/xml:
+                    schema:
+                        type: object
+
+        Login:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            email:
+                                type: string
+                            password:
+                                type: string
+
+        Register:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            email:
+                                type: string
+
+        ChangePassword:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            password:
+                                type: string
+                            old_password:
+                                type: string
+                                nullable: true
+
+        ResetPassword:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            email:
+                                type: string
+
+        SetPassword:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            password:
+                                type: string
+
+        UserSettings:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            settings:
+                                type: object
+
+    responses:
+        Application:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Application'
+
+        Applications:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Applications'
+
+        ApplicationInstall:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/ApplicationInstall'
+
+        ApplicationInstalls:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/ApplicationInstalls'
+
+        ApplicationInstallInstall:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/ApplicationInstall'
+
+        ApplicationInstallUninstall:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/ApplicationInstallUninstall'
+
+        ApplicationInstallSettings:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/ApplicationInstallSettings'
+
+        ApplicationsStatistics:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/ApplicationsStatistics'
+
+        ApplicationStatistics:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/ApplicationStatistics'
+
+        Category:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Category'
+
+        Categories:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Categories'
+
+        Logs:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Logs'
+
+        TopologyTasks:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/TopologyTasks'
+
+        LongRunningData:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/LongRunningData'
+
+        TopologyMetrics:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/TopologyMetrics'
+
+        TopologyNodeMetrics:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/TopologyNodeMetrics'
+
+        TopologyRequestMetrics:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/TopologyRequestMetrics'
+
+        Node:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Node'
+
+        Nodes:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Nodes'
+
+        NodesNames:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/NodesName'
+
+        NodesImplementationsNames:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/NodesImplementationsNames'
+
+        Events:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Events'
+
+        Setting:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Setting'
+
+        Settings:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Settings'
+
+        Sdk:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Sdk'
+
+        Sdks:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Sdks'
+
+        Topology:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Topology'
+
+        Topologies:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Topologies'
+
+        TopologySchema:
+            description: ''
+            content:
+                application/xml:
+                    schema:
+                        $ref: '#/components/schemas/TopologySchema'
+
+        TopologyPublish:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/TopologyPublish'
+
+        TopologyTest:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/TopologyTest'
+
+        User:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/User'
+
+        Users:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Users'
+
+        UserSettings:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/UserSettings'
+
+        Empty:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        type: object
+
+        400:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Message'
+                    example:
+                        type: SecurityManagerException
+                        status: USER_EMAIL_ALREADY_EXISTS
+                        message: User email ialready exists!
+                        error_code: 400
+
+        401:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Message'
+                    example:
+                        type: SecurityManagerException
+                        status: NOT_AUTHORIZED
+                        message: User is not authroized!
+                        error_code: 401
+
+        404:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Message'
+                    example:
+                        type: AppStoreException
+                        status: NOT_FOUND
+                        message: Application with key 'Unknown' not found!
+                        error_code: 404
+
+        500:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Message'
+                    example:
+                        type: AppStoreException
+                        status: INTERNAL_SERVER_ERROR
+                        message: Something gone wrong
+                        error_code: 500
+
+    schemas:
+        Application:
+            type: object
+            properties:
+                key:
+                    type: string
+                name:
+                    type: string
+                description:
+                    type: string
+                application_type:
+                    type: string
+                    enum: [cron, webhook]
+                authorization_type:
+                    type: string
+                    enum: [basic, oauth, oauth2]
+
+        Applications:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Application'
+
+        ApplicationInstall:
+            type: object
+            properties:
+                key:
+                    type: string
+                name:
+                    type: string
+                description:
+                    type: string
+                application_type:
+                    type: string
+                    enum: [cron, webhook]
+                authorization_type:
+                    type: string
+                    enum: [basic, oauth, oauth2]
+                authorized:
+                    type: boolean
+                applicationSettings:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ApplicationSetting'
+                webhookSettings:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/WebhookSetting'
+
+        ApplicationInstallUninstall:
+            type: object
+            properties:
+                id:
+                    type: string
+                key:
+                    type: string
+                user:
+                    type: string
+                authorized:
+                    type: boolean
+                settings:
+                    type: object
+                nonEncryptedSettings:
+                    type: object
+                created:
+                    type: string
+                updated:
+                    type: string
+                expires:
+                    type: string
+                    nullable: true
+
+        ApplicationInstalls:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ApplicationInstallUninstall'
+
+        ApplicationsStatistics:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            _id:
+                                type: string
+                            value:
+                                type: object
+                                properties:
+                                    total_sum:
+                                        type: integer
+                                    non_expire_sum:
+                                        type: integer
+
+        ApplicationStatistics:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            _id:
+                                type: string
+                            value:
+                                type: object
+                                properties:
+                                    users:
+                                        type: object
+                                        properties:
+                                            name:
+                                                type: string
+                                            active:
+                                                type: boolean
+
+        ApplicationInstallSettings:
+            type: object
+            properties:
+                id:
+                    type: string
+                key:
+                    type: string
+                user:
+                    type: string
+                settings:
+                    type: object
+                nonEncryptedSettings:
+                    type: object
+                created:
+                    type: string
+                updated:
+                    type: string
+                expires:
+                    type: string
+                    nullable: true
+                applicationSettings:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ApplicationSetting'
+
+        ApplicationSetting:
+            type: object
+            properties:
+                key:
+                    type: string
+                type:
+                    type: string
+                    enum: [text, number, url, password, selectbox, checkbox]
+                label:
+                    type: string
+                value:
+                    type: string
+                description:
+                    type: string
+                required:
+                    type: boolean
+                readOnly:
+                    type: boolean
+                disabled:
+                    type: boolean
+                choices:
+                    type: array
+                    items:
+                        type: string
+
+        WebhookSetting:
+            type: object
+            properties:
+                name:
+                    type: string
+                topology:
+                    type: string
+                default:
+                    type: boolean
+                enabled:
+                    type: boolean
+
+        Category:
+            type: object
+            properties:
+                _id:
+                    type: string
+                name:
+                    type: string
+                parent:
+                    type: string
+                    nullable: true
+
+        Categories:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Category'
+                count:
+                    type: integer
+                total:
+                    type: integer
+                limit:
+                    type: integer
+                offset:
+                    type: integer
+
+        Log:
+            type: object
+            properties:
+                id:
+                    type: string
+                severity:
+                    type: string
+                message:
+                    type: string
+                type:
+                    type: string
+                correlation_id:
+                    type: string
+                topology_id:
+                    type: string
+                topology_name:
+                    type: string
+                node_id:
+                    type: string
+                node_name:
+                    type: string
+                timestamp:
+                    type: string
+
+        Logs:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Log'
+                count:
+                    type: integer
+                total:
+                    type: integer
+                limit:
+                    type: integer
+                offset:
+                    type: integer
+
+
+        TopologyTask:
+            type: object
+            properties:
+                created:
+                    type: string
+                updated:
+                    type: string
+                data:
+                    type: string
+                    format: json
+                auditLogs:
+                    type: string
+                    format: json
+                topologyId:
+                    type: string
+                topologyName:
+                    type: string
+                nodeId:
+                    type: string
+                nodeName:
+                    type: string
+                processId:
+                    type: string
+
+        TopologyTasks:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/TopologyTask'
+                count:
+                    type: integer
+                total:
+                    type: integer
+                limit:
+                    type: integer
+                offset:
+                    type: integer
+
+        LongRunningData:
+            type: object
+            properties:
+                topology_id:
+                    type: string
+                topology_name:
+                    type: string
+                node_id:
+                    type: string
+                node_name:
+                    type: string
+                parent_id:
+                    type: string
+                correlation_id:
+                    type: string
+                process_id:
+                    type: string
+                sequence_id:
+                    type: string
+                state:
+                    type: string
+                data:
+                    type: string
+                headers:
+                    type: string
+                created:
+                    type: string
+                updated:
+                    type: string
+                updated_by:
+                    type: string
+                audit_logs:
+                    type: string
+                content_type:
+                    type: string
+
+        MinAvgMax:
+            type: object
+            properties:
+                min:
+                    type: string
+                avg:
+                    type: string
+                max:
+                    type: string
+
+        MinAvgMaxTotErr:
+            type: object
+            properties:
+                min:
+                    type: string
+                avg:
+                    type: string
+                max:
+                    type: string
+                total:
+                    type: string
+                errors:
+                    type: string
+
+        TopologyMetrics:
+            type: object
+            properties:
+                topology:
+                    type: object
+                    properties:
+                        process_time:
+                            $ref: '#/components/schemas/MinAvgMax'
+                        process:
+                            type: object
+                            properties:
+                                total:
+                                    type: string
+                                errors:
+                                    type: string
+                        nodeOne:
+                            $ref: '#/components/schemas/TopologyNodeMetrics'
+                        nodeTwo:
+                            $ref: '#/components/schemas/TopologyNodeMetrics'
+
+        TopologyNodeMetrics:
+            type: object
+            properties:
+                queue_depth:
+                    $ref: '#/components/schemas/MinAvgMax'
+                waiting_time:
+                    $ref: '#/components/schemas/MinAvgMax'
+                process_time:
+                    $ref: '#/components/schemas/MinAvgMax'
+                cpu_time:
+                    $ref: '#/components/schemas/MinAvgMax'
+                request_time:
+                    $ref: '#/components/schemas/MinAvgMax'
+                process:
+                    $ref: '#/components/schemas/MinAvgMaxTotErr'
+
+        TopologyRequestMetrics:
+            type: object
+            properties:
+                topology:
+                    type: object
+                    properties:
+                        process_time:
+                            $ref: '#/components/schemas/MinAvgMax'
+                        process:
+                            type: object
+                            properties:
+                                total:
+                                    type: string
+                                errors:
+                                    type: string
+                        nodeOne:
+                            $ref: '#/components/schemas/TopologyNodeMetrics'
+                        nodeTwo:
+                            $ref: '#/components/schemas/TopologyNodeMetrics'
+                requests:
+                    type: array
+                    items:
+                        type: integer
+
+        Node:
+            type: object
+            properties:
+                _id:
+                    type: string
+                name:
+                    type: string
+                topology_id:
+                    type: string
+                next:
+                    type: object
+                    properties:
+                        id:
+                            type: string
+                        name:
+                            type: string
+                type:
+                    type: string
+                    enum:
+                        - api
+                        - batch
+                        - batch_connector
+                        - connector
+                        - cron
+                        - custom
+                        - debug
+                        - email
+                        - ftp
+                        - mapper
+                        - resequencer
+                        - signal
+                        - splitter
+                        - table_parser
+                        - webhook
+                        - xml_parser
+                        - start
+                        - gateway
+                        - user
+                handler:
+                    type: string
+                    enum: [action, event]
+                enabled:
+                    type: boolean
+                schema_id:
+                    type: string
+
+        Nodes:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Category'
+
+        NodesName:
+            type: array
+            items:
+                type: string
+
+        NodesImplementationsNames:
+            type: object
+            properties:
+                php:
+                    type: object
+                    properties:
+                        connector:
+                            type: array
+                            items:
+                                type: string
+                        custom:
+                            type: array
+                            items:
+                                type: string
+                        user:
+                            type: array
+                            items:
+                                type: string
+
+        Events:
+            type: array
+            items:
+                type: string
+
+        Setting:
+            type: object
+            properties:
+                id:
+                    type: string
+                created:
+                    type: string
+                updated:
+                    type: string
+                name:
+                    type: string
+                type:
+                    type: string
+                    enum: [curl, email, rabbit]
+                class:
+                    type: string
+                events:
+                    type: array
+                    items:
+                        type: string
+                        enum: [access_expiration, data_error, service_unavailable]
+                settings:
+                    type: object
+                status:
+                    type: boolean
+                status_message:
+                    type: string
+                    nullable: true
+
+        Settings:
+            type: array
+            items:
+                $ref: '#/components/schemas/Setting'
+
+        Sdk:
+            type: object
+            properties:
+                id:
+                    type: string
+                key:
+                    type: string
+                value:
+                    type: string
+
+        Sdks:
+            type: array
+            items:
+                $ref: '#/components/schemas/Sdk'
+
+        Topology:
+            type: object
+            properties:
+                _id:
+                    type: string
+                type:
+                    type: string
+                    enum: [cron, webhook]
+                name:
+                    type: string
+                descr:
+                    type: string
+                status:
+                    type: string
+                    enum: [New, Starting, Running, Stopped]
+                visibility:
+                    type: string
+                    enum: [draft, public]
+                version:
+                    type: string
+                category:
+                    type: string
+                enabled:
+                    type: boolean
+
+        Topologies:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Topology'
+                count:
+                    type: integer
+                total:
+                    type: integer
+                limit:
+                    type: integer
+                offset:
+                    type: integer
+
+        TopologySchema:
+            type: object
+
+        TopologyPublish:
+            type: object
+            properties:
+                generate_result:
+                    type: string
+                run_result:
+                    type: string
+
+        TopologyTest:
+            type: object
+            properties:
+                id:
+                    type: string
+                status:
+                    type: boolean
+                message:
+                    type: string
+                nodes:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            id:
+                                type: string
+                            node_id:
+                                type: string
+                            node_name:
+                                type: string
+                            status:
+                                type: boolean
+                            url:
+                                type: string
+                            code:
+                                type: integer
+                            message:
+                                type: string
+
+        User:
+            type: object
+            properties:
+                id:
+                    type: string
+                email:
+                    type: string
+                settings:
+                    type: object
+
+        Users:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            created:
+                                type: string
+                            email:
+                                type: string
+                count:
+                    type: integer
+                total:
+                    type: integer
+                limit:
+                    type: integer
+                offset:
+                    type: integer
+
+        UserSettings:
+            type: object
+            properties:
+                settings:
+                    type: object
+                    properties:
+                        settingOne:
+                            type: string
+                        settingsTwo:
+                            type: string
+
+        Message:
+            type: object
+            properties:
+                type:
+                    type: string
+                status:
+                    type: string
+                message:
+                    type: string
+                error_code:
+                    type: integer
+
+    parameters:
+        Id:
+            name: id
+            in: path
+            required: true
+            example: id
+            schema:
+                type: string
+
+        Key:
+            name: key
+            in: path
+            required: true
+            example: key
+            schema:
+                type: string
+
+        User:
+            name: user
+            in: path
+            required: true
+            example: user
+            schema:
+                type: string
+
+        Topology:
+            name: topology
+            in: path
+            required: true
+            example: topology
+            schema:
+                type: string
+
+        Node:
+            name: node
+            in: path
+            required: true
+            example: node
+            schema:
+                type: string
+
+        Type:
+            name: type
+            in: path
+            required: true
+            example: type
+            schema:
+                type: string
+                enum: [connector, custom_node, joiner, mapper, long_running]
+
+        Application:
+            name: application
+            in: path
+            required: true
+            example: application
+            schema:
+                type: string
+
+        State:
+            name: state
+            in: query
+            required: true
+            example: state
+            schema:
+                type: string
+
+        Token:
+            name: token
+            in: path
+            required: true
+            example: token
+            schema:
+                type: string

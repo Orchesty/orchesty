@@ -2,8 +2,8 @@
 
 namespace PipesFrameworkTests\Integration\Command;
 
+use Exception;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
-use ReflectionException;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\ConsoleOutput;
@@ -43,7 +43,8 @@ final class InstallTopologyCommandTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\InstallTopologyCommand::insertRows
-     * @throws ReflectionException
+     *
+     * @throws Exception
      */
     public function testInsertRows(): void
     {

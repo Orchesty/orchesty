@@ -16,17 +16,17 @@ final class CompareResultDto
     /**
      * @var Topology[]
      */
-    private $delete = [];
+    private array $delete = [];
 
     /**
      * @var TopologyFile[]
      */
-    private $create = [];
+    private array $create = [];
 
     /**
      * @var UpdateObject[]
      */
-    private $update = [];
+    private array $update = [];
 
     /**
      * @param Topology[] $topologies

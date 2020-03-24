@@ -30,6 +30,7 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\Configurator\Model\SdkManager::getAll
+     *
      * @throws Exception
      */
     public function testGetAll(): void
@@ -47,9 +48,9 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws Exception
-     *
      * @covers \Hanaboso\PipesFramework\Configurator\Model\SdkManager::getOne
+     *
+     * @throws Exception
      */
     public function testGetOne(): void
     {
@@ -64,6 +65,7 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\Configurator\Model\SdkManager::create
+     *
      * @throws Exception
      */
     public function testCreate(): void
@@ -84,6 +86,7 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\Configurator\Model\SdkManager::update
+     *
      * @throws Exception
      */
     public function testUpdate(): void
@@ -105,6 +108,7 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\Configurator\Model\SdkManager::delete
+     *
      * @throws Exception
      */
     public function testDelete(): void

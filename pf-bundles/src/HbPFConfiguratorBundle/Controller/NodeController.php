@@ -24,7 +24,7 @@ class NodeController
     /**
      * @var NodeHandler
      */
-    private $nodeHandler;
+    private NodeHandler $nodeHandler;
 
     /**
      * NodeController constructor.
@@ -46,9 +46,7 @@ class NodeController
      */
     public function getNodesAction(string $id): Response
     {
-        $data = $this->nodeHandler->getNodes($id);
-
-        return $this->getResponse($data);
+        return $this->getResponse($this->nodeHandler->getNodes($id));
     }
 
     /**
@@ -61,18 +59,16 @@ class NodeController
     public function getNodeAction(string $id): Response
     {
         try {
-            $data = $this->nodeHandler->getNode($id);
-
-            return $this->getResponse($data);
+            return $this->getResponse($this->nodeHandler->getNode($id));
         } catch (NodeException $e) {
-            return $this->getErrorResponse($e, 400);
+            return $this->getErrorResponse($e, 404);
         } catch (Throwable $e) {
             return $this->getErrorResponse($e);
         }
     }
 
     /**
-     * @Route("/nodes/{id}/{request}", defaults={}, requirements={"id": "\w+"}, methods={"PATCH", "OPTIONS"})
+     * @Route("/nodes/{id}", defaults={}, requirements={"id": "\w+"}, methods={"PATCH", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $id
@@ -82,9 +78,7 @@ class NodeController
     public function updateNodeAction(Request $request, string $id): Response
     {
         try {
-            $data = $this->nodeHandler->updateNode($id, $request->request->all());
-
-            return $this->getResponse($data);
+            return $this->getResponse($this->nodeHandler->updateNode($id, $request->request->all()));
         } catch (Throwable $e) {
             return $this->getErrorResponse($e);
         }
