@@ -152,7 +152,7 @@ final class ElasticLogsTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Logs\LogsAbstract::processStartingPoint
+     * @covers \Hanaboso\PipesFramework\Logs\LogsAbstract::processStartingPoints
      *
      * @throws Exception
      */
