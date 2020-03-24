@@ -17,9 +17,9 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @throws Exception
-     *
      * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\CategoryController::getCategoriesAction
+     *
+     * @throws Exception
      */
     public function testGetCategoriesAction(): void
     {
@@ -32,9 +32,9 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @throws Exception
-     *
      * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\CategoryController::createCategoryAction
+     *
+     * @throws Exception
      */
     public function testCreateCategoryAction(): void
     {
@@ -45,9 +45,9 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @throws Exception
-     *
      * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\CategoryController::updateCategoryAction
+     *
+     * @throws Exception
      */
     public function testUpdateCategoryAction(): void
     {
@@ -61,9 +61,9 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @throws Exception
-     *
      * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\CategoryController::deleteCategoryAction
+     *
+     * @throws Exception
      */
     public function testDeleteCategoryAction(): void
     {

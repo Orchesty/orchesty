@@ -2,9 +2,9 @@
 
 namespace PipesFrameworkTests\Unit\Metrics\Retention;
 
+use Exception;
 use Hanaboso\PipesFramework\Metrics\Retention\RetentionFactory;
 use Hanaboso\Utils\Date\DateTimeUtils;
-use Hanaboso\Utils\Exception\DateTimeException;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 
 /**
@@ -18,7 +18,8 @@ final class RetentionFactoryTest extends KernelTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesFramework\Metrics\Retention\RetentionFactory::getRetention
      * @covers \Hanaboso\PipesFramework\Metrics\Retention\RetentionFactory::getRetentionInSeconds
-     * @throws DateTimeException
+     *
+     * @throws Exception
      */
     public function testGetRetention(): void
     {

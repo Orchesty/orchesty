@@ -16,6 +16,10 @@
         "url": "docs/notification-sender.yaml"
     },
     {
+        "name": "Pipes Framework",
+        "url": "docs/pipes-framework.yaml"
+    },
+    {
         "name": "PHP SDK",
         "url": "docs/php-sdk.yaml"
     },

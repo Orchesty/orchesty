@@ -13,27 +13,27 @@ final class MetricsDto
     /**
      * @var string
      */
-    private $min = '0';
+    private string $min = '0';
 
     /**
      * @var string
      */
-    private $max = '0';
+    private string $max = '0';
 
     /**
      * @var string
      */
-    private $avg = '0.00';
+    private string $avg = '0.00';
 
     /**
      * @var string
      */
-    private $total = '0';
+    private string $total = '0';
 
     /**
      * @var string
      */
-    private $errors = '0';
+    private string $errors = '0';
 
     /**
      * @param mixed $min

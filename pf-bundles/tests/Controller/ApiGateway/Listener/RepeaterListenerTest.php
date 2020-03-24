@@ -27,9 +27,9 @@ final class RepeaterListenerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @throws Exception
-     *
      * @covers \Hanaboso\PipesFramework\ApiGateway\Listener\RepeaterListener::onRepeatableException
+     *
+     * @throws Exception
      */
     public function testOnRepeatableException(): void
     {
@@ -82,9 +82,9 @@ final class RepeaterListenerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @throws Exception
-     *
      * @covers \Hanaboso\PipesFramework\ApiGateway\Listener\RepeaterListener::onRepeatableException
+     *
+     * @throws Exception
      */
     public function testException(): void
     {
@@ -100,9 +100,9 @@ final class RepeaterListenerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @throws Exception
-     *
      * @covers \Hanaboso\PipesFramework\ApiGateway\Listener\RepeaterListener::onRepeatableException
+     *
+     * @throws Exception
      */
     public function testMaxHops(): void
     {

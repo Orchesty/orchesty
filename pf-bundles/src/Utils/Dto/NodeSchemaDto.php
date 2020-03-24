@@ -23,37 +23,37 @@ final class NodeSchemaDto
     /**
      * @var string
      */
-    private $handler;
+    private string $handler;
 
     /**
      * @var string
      */
-    private $id;
+    private string $id;
 
     /**
      * @var string
      */
-    private $name;
+    private string $name;
 
     /**
      * @var string
      */
-    private $cronTime;
+    private string $cronTime;
 
     /**
      * @var string
      */
-    private $cronParams;
+    private string $cronParams;
 
     /**
      * @var string
      */
-    private $pipesType;
+    private string $pipesType;
 
     /**
      * @var SystemConfigDto
      */
-    private $systemConfigs;
+    private SystemConfigDto $systemConfigs;
 
     /**
      * NodeSchemaDto constructor.

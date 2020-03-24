@@ -40,27 +40,27 @@ class TopologyHandler
     /**
      * @var ObjectRepository<Topology>&TopologyRepository
      */
-    protected $topologyRepository;
+    protected TopologyRepository $topologyRepository;
 
     /**
      * @var DocumentManager
      */
-    protected $dm;
+    protected DocumentManager $dm;
 
     /**
      * @var TopologyManager
      */
-    protected $manager;
+    protected TopologyManager $manager;
 
     /**
      * @var CurlManagerInterface
      */
-    protected $curlManager;
+    protected CurlManagerInterface $curlManager;
 
     /**
      * @var TopologyGeneratorBridge
      */
-    protected $generatorBridge;
+    protected TopologyGeneratorBridge $generatorBridge;
 
     /**
      * TopologyHandler constructor.

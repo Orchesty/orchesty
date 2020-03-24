@@ -25,7 +25,7 @@ class TopologyController
     /**
      * @var TopologyHandler
      */
-    private $topologyHandler;
+    private TopologyHandler $topologyHandler;
 
     /**
      * TopologyController constructor.
@@ -93,7 +93,7 @@ class TopologyController
     }
 
     /**
-     * @Route("/topologies", requirements={"id": "\w+"}, methods={"POST"})
+     * @Route("/topologies", methods={"POST"})
      *
      * @param Request $request
      *
@@ -237,7 +237,7 @@ class TopologyController
     }
 
     /**
-     * @Route("/topologies/{topologyId}/test", methods={"GET"})
+     * @Route("/topologies/{id}/test", methods={"GET"})
      *
      * @param string $topologyId
      *

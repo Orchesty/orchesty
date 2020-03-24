@@ -62,12 +62,12 @@ final class ElasticLogs extends LogsAbstract
     /**
      * @var Client
      */
-    private $client;
+    private Client $client;
 
     /**
      * @var string
      */
-    private $index;
+    private string $index;
 
     /**
      * ElasticLogs constructor.

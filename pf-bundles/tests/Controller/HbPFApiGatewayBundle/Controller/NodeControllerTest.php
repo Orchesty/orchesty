@@ -77,7 +77,9 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
      */
     public function testListOfNodesEmpty(): void
     {
-        $nodeController = self::$container->get('Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NodeController');
+        $nodeController = self::$container->get(
+            'Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NodeController'
+        );
 
         $result = $nodeController->listOfNodesAction('something');
         self::assertEquals(200, $result->getStatusCode());

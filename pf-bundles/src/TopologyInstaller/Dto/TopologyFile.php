@@ -16,12 +16,12 @@ final class TopologyFile
     /**
      * @var string
      */
-    private $name;
+    private string $name;
 
     /**
      * @var string
      */
-    private $path;
+    private string $path;
 
     /**
      * TopologyFile constructor.

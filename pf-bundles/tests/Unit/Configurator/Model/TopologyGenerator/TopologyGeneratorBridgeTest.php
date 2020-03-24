@@ -164,7 +164,7 @@ final class TopologyGeneratorBridgeTest extends KernelTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge::runTest
-     * @throws CurlException
+     *
      * @throws Exception
      */
     public function testRunTestErr(): void

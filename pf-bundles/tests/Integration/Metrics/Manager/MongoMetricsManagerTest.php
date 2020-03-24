@@ -504,7 +504,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     *
+     * @throws Exception
      */
     protected function setUp(): void
     {

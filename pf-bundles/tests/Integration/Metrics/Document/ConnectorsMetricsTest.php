@@ -2,11 +2,10 @@
 
 namespace PipesFrameworkTests\Integration\Metrics\Document;
 
-use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
+use Exception;
 use Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetrics;
 use Hanaboso\Utils\Date\DateTimeUtils;
-use Hanaboso\Utils\Exception\DateTimeException;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -23,8 +22,7 @@ final class ConnectorsMetricsTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetricsFields::getTotalDuration
      * @covers \Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetricsFields::getCreated
      *
-     * @throws DateTimeException
-     * @throws MongoDBException
+     * @throws Exception
      */
     public function testDocument(): void
     {

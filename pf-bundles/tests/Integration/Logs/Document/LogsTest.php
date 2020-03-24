@@ -2,8 +2,8 @@
 
 namespace PipesFrameworkTests\Integration\Logs\Document;
 
-use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
+use Exception;
 use Hanaboso\PipesFramework\Logs\Document\Logs;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
@@ -37,7 +37,8 @@ final class LogsTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\Logs\Document\Stacktrace::getFile
      * @covers \Hanaboso\PipesFramework\Logs\Document\Stacktrace::getTrace
      * @covers \Hanaboso\PipesFramework\Logs\Document\Stacktrace::getCode
-     * @throws MongoDBException
+     *
+     * @throws Exception
      */
     public function testDocument(): void
     {
@@ -73,7 +74,7 @@ final class LogsTest extends DatabaseTestCaseAbstract
             ->getQuery()
             ->execute();
 
-        /** @var DocumentRepository<Logs>  $repository */
+        /** @var DocumentRepository<Logs> $repository */
         $repository = $this->dm->getRepository(Logs::class);
         /** @var Logs $result */
         $result = $repository->findAll()[0];

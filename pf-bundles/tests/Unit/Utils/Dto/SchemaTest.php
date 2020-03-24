@@ -5,7 +5,6 @@ namespace PipesFrameworkTests\Unit\Utils\Dto;
 use Exception;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
-use Hanaboso\RestBundle\Exception\XmlDecoderException;
 use Hanaboso\RestBundle\Model\Decoder\XmlDecoder;
 use Hanaboso\Utils\String\Json;
 use PipesFrameworkTests\KernelTestCaseAbstract;
@@ -19,14 +18,15 @@ final class SchemaTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::buildIndex()
-     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::checkStartNode()
-     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getIndexItem()
-     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::checkInfiniteLoop()
+     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::buildIndex
+     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::checkStartNode
+     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getIndexItem
+     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::checkInfiniteLoop
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::addNode
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::addSequence
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::setStartNode
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getNodes
+     *
      * @throws Exception
      */
     public function testBuildIndex(): void
@@ -38,10 +38,11 @@ final class SchemaTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::buildIndex()
-     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::checkStartNode()
-     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getIndexItem()
-     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::checkInfiniteLoop()
+     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::buildIndex
+     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::checkStartNode
+     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getIndexItem
+     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::checkInfiniteLoop
+     *
      * @throws Exception
      */
     public function testBuildIndexSameHash(): void
@@ -53,10 +54,11 @@ final class SchemaTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::buildIndex()
-     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::checkStartNode()
-     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getIndexItem()
-     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::checkInfiniteLoop()
+     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::buildIndex
+     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::checkStartNode
+     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getIndexItem
+     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::checkInfiniteLoop
+     *
      * @throws Exception
      */
     public function testBuildIndexNewHash(): void
@@ -72,6 +74,7 @@ final class SchemaTest extends KernelTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::checkStartNode
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getIndexItem
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::checkInfiniteLoop
+     *
      * @throws Exception
      */
     public function testBuildIndexMissingStartNode(): void
@@ -89,6 +92,7 @@ final class SchemaTest extends KernelTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::checkStartNode
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getIndexItem
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::checkInfiniteLoop
+     *
      * @throws Exception
      */
     public function testBuildIndexInfiniteLoop(): void
@@ -106,8 +110,6 @@ final class SchemaTest extends KernelTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::buildIndex
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getStartNode
      *
-     * @throws XmlDecoderException
-     * @throws TopologyException
      * @throws Exception
      */
     public function testBuildIndexWithoutNodes(): void

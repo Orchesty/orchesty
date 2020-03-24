@@ -9,7 +9,7 @@ use PipesFrameworkTests\ControllerTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller
  *
- * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\WebhookController
+ * @covers  \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\WebhookController
  */
 final class WebhookControllerTest extends ControllerTestCaseAbstract
 {

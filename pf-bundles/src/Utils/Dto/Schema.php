@@ -17,17 +17,17 @@ class Schema
     /**
      * @var NodeSchemaDto[]
      */
-    private $nodes = [];
+    private array $nodes = [];
 
     /**
      * @var mixed[]
      */
-    private $sequences = [];
+    private array $sequences = [];
 
     /**
      * @var string
      */
-    private $startNode = '';
+    private string $startNode = '';
 
     /**
      * @return NodeSchemaDto[]

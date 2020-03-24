@@ -34,9 +34,9 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @throws Exception
-     *
      * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::getUsersApplicationAction
+     *
+     * @throws Exception
      */
     public function testGetUsersApplicationAction(): void
     {
@@ -53,9 +53,9 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @throws Exception
-     *
      * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::getApplicationDetailAction
+     *
+     * @throws Exception
      */
     public function testGetApplicationDetailAction(): void
     {
@@ -72,9 +72,9 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @throws Exception
-     *
      * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::installApplicationAction
+     *
+     * @throws Exception
      */
     public function testInstallApplicationAction(): void
     {
@@ -82,9 +82,9 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @throws Exception
-     *
      * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::updateApplicationSettingsAction
+     *
+     * @throws Exception
      */
     public function testUpdateApplicationSettingsAction(): void
     {
@@ -101,9 +101,9 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @throws Exception
-     *
      * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::uninstallApplicationAction
+     *
+     * @throws Exception
      */
     public function testUninstallApplicationAction(): void
     {
@@ -120,9 +120,9 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @throws Exception
-     *
      * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::saveApplicationPasswordAction
+     *
+     * @throws Exception
      */
     public function testSaveApplicationPasswordAction(): void
     {
@@ -139,9 +139,9 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @throws Exception
-     *
      * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::authorizeApplicationAction
+     *
+     * @throws Exception
      */
     public function testAuthorizeApplicationAction(): void
     {
@@ -151,9 +151,9 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @throws Exception
-     *
      * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::setAuthorizationTokenAction
+     *
+     * @throws Exception
      */
     public function testSetAuthorizationTokenAction(): void
     {
@@ -174,9 +174,9 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @throws Exception
-     *
      * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::setAuthorizationTokenQueryAction
+     *
+     * @throws Exception
      */
     public function testSetAuthorizationTokenQueryAction(): void
     {

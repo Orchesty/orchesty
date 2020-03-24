@@ -2,11 +2,10 @@
 
 namespace PipesFrameworkTests\Integration\Metrics\Document;
 
-use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
+use Exception;
 use Hanaboso\PipesFramework\Metrics\Document\MonolithMetrics;
 use Hanaboso\Utils\Date\DateTimeUtils;
-use Hanaboso\Utils\Exception\DateTimeException;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -23,8 +22,8 @@ final class MonolithMetricsTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\Metrics\Document\MonolithMetricsFields::getCreated
      * @covers \Hanaboso\PipesFramework\Metrics\Document\MonolithMetricsFields::getUserTime
      * @covers \Hanaboso\PipesFramework\Metrics\Document\MonolithMetricsFields::getKernelTime
-     * @throws MongoDBException
-     * @throws DateTimeException
+     *
+     * @throws Exception
      */
     public function testDocument(): void
     {

@@ -10,6 +10,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  * Class HbPFLogsBundle
  *
  * @package Hanaboso\PipesFramework\HbPFLogsBundle
+ *
  * @codeCoverageIgnore
  */
 class HbPFLogsBundle extends Bundle

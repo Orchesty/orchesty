@@ -20,7 +20,7 @@ final class SdkHandler
     /**
      * @var SdkManager
      */
-    private $manager;
+    private SdkManager $manager;
 
     /**
      * SdkHandler constructor.

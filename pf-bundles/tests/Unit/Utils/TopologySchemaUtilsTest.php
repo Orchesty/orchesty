@@ -2,11 +2,10 @@
 
 namespace PipesFrameworkTests\Unit\Utils;
 
+use Exception;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
-use Hanaboso\RestBundle\Exception\XmlDecoderException;
 use Hanaboso\RestBundle\Model\Decoder\XmlDecoder;
 use PipesFrameworkTests\KernelTestCaseAbstract;
-use ReflectionException;
 
 /**
  * Class TopologySchemaUtilsTest
@@ -17,11 +16,11 @@ final class TopologySchemaUtilsTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\Utils\TopologySchemaUtils::getSchemaObject()
-     * @covers \Hanaboso\PipesFramework\Utils\TopologySchemaUtils::getPipesType()
-     * @covers \Hanaboso\PipesFramework\Utils\TopologySchemaUtils::createConfigDto()
+     * @covers \Hanaboso\PipesFramework\Utils\TopologySchemaUtils::getSchemaObject
+     * @covers \Hanaboso\PipesFramework\Utils\TopologySchemaUtils::getPipesType
+     * @covers \Hanaboso\PipesFramework\Utils\TopologySchemaUtils::createConfigDto
      *
-     * @throws XmlDecoderException
+     * @throws Exception
      */
     public function testGetSchemaObject(): void
     {
@@ -81,7 +80,8 @@ final class TopologySchemaUtilsTest extends KernelTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\Utils\TopologySchemaUtils::getPipesType
-     * @throws ReflectionException
+     *
+     * @throws Exception
      */
     public function testGetPipesType(): void
     {

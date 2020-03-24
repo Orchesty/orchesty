@@ -4,6 +4,7 @@
 !lib-python/xml_parser/openapi.yaml
 !limiter/openapi.yaml
 !notification-sender/openapi.yaml
+!pf-bundles/openapi.yaml
 !pipes-php-sdk/openapi.yaml
 !portal/openapi.yaml
 !starting-point/openapi.yaml
