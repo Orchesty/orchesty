@@ -136,10 +136,14 @@ func getFullEnvironment(t *testing.T) {
 		"METRICS_SERVICE":  "influx",
 		"MULTI_PROBE_HOST": "multi-probe",
 		"MULTI_PROBE_PORT": "8007",
-		"RABBITMQ_DSN":     "rabbitmq",
+		"RABBITMQ_HOST":    "rabbitmq",
+		"RABBITMQ_PORT":    "20",
+		"RABBITMQ_PASS":    "",
+		"RABBITMQ_USER":    "",
+		"RABBITMQ_VHOST":   "",
 	}
 
-	assert.Equal(t, result, expected)
+	assert.Equal(t, expected, result)
 
 }
 
@@ -147,7 +151,7 @@ func getEnvironment(mode Adapter) Environment {
 	return Environment{
 		DockerRegistry:      "dkr.hanaboso.net/pipes/pipes",
 		DockerPfBridgeImage: "pf-bridge:dev",
-		RabbitMqDsn:         "rabbitmq",
+		RabbitMqHost:        "rabbitmq:20",
 		MultiProbeHost:      "multi-probe:8007",
 		MetricsHost:         "kapacitor",
 		MetricsPort:         "9100",

@@ -7,7 +7,12 @@ import (
 )
 
 const (
-	RabbitDsn      = "RABBITMQ_DSN"
+	//RabbitDsn      = "RABBITMQ_DSN"
+	RabbitMqHost   = "RABBITMQ_HOST"
+	RabbitMqPort   = "RABBITMQ_PORT"
+	RabbitMqUser   = "RABBITMQ_USER"
+	RabbitMqPass   = "RABBITMQ_PASS"
+	RabbitMqVHost  = "RABBITMQ_VHOST"
 	MultiProbeHost = "MULTI_PROBE_HOST"
 	MultiProbePort = "MULTI_PROBE_PORT"
 	MetricsHost    = "METRICS_HOST"
@@ -34,15 +39,19 @@ type NodeUserParams struct {
 }
 
 type Environment struct {
-	DockerRegistry      string  `json:"docker_registry"`
-	DockerPfBridgeImage string  `json:"docker_pf_bridge_image"`
-	RabbitMqDsn         string  `json:"rabbitmq_dsn"`
-	MultiProbeHost      string  `json:"multi_probe_host"`
-	MetricsHost         string  `json:"metrics_host"`
-	MetricsPort         string  `json:"metrics_port"`
-	MetricsService      string  `json:"metrics_service"`
-	WorkerDefaultPort   int     `json:"worker_default_port"`
-	GeneratorMode       Adapter `json:"generator_mode"`
+	DockerRegistry      string `json:"docker_registry"`
+	DockerPfBridgeImage string `json:"docker_pf_bridge_image"`
+	//RabbitMqDsn         string  `json:"rabbitmq_dsn"`
+	RabbitMqHost      string  `json:"rabbitmq_host"`
+	RabbitMqUser      string  `json:"rabbitmq_user"`
+	RabbitMqPass      string  `json:"rabbitmq_pass"`
+	RabbitMqVHost     string  `json:"rabbitmq_vhost"`
+	MultiProbeHost    string  `json:"multi_probe_host"`
+	MetricsHost       string  `json:"metrics_host"`
+	MetricsPort       string  `json:"metrics_port"`
+	MetricsService    string  `json:"metrics_service"`
+	WorkerDefaultPort int     `json:"worker_default_port"`
+	GeneratorMode     Adapter `json:"generator_mode"`
 }
 
 func (p *NodeConfig) GetBridges(t *Topology, nodes []Node, WorkerDefaultPort int) ([]TopologyBridgeJson, error) {
@@ -98,9 +107,18 @@ func (p *NodeConfig) GetBridges(t *Topology, nodes []Node, WorkerDefaultPort int
 
 func (e *Environment) GetEnvironment() (map[string]string, error) {
 	var environment = make(map[string]string)
-
-	environment[RabbitDsn] = e.RabbitMqDsn
-
+	var err error
+	//environment[RabbitDsn] = e.RabbitMqDsn
+	if host, port, err := net.SplitHostPort(e.RabbitMqHost); err == nil {
+		environment[RabbitMqHost] = host
+		environment[RabbitMqPort] = port
+		environment[RabbitMqUser] = e.RabbitMqUser
+		environment[RabbitMqPass] = e.RabbitMqPass
+		environment[RabbitMqVHost] = e.RabbitMqVHost
+	}
+	if err != nil {
+		return nil, fmt.Errorf("Error splitting RabbitMqHost. Reason: %v", err)
+	}
 	host, port, err := net.SplitHostPort(e.MultiProbeHost)
 	if err != nil {
 		return nil, fmt.Errorf("Error splitting MultiProbeHost. Reason: %v", err)

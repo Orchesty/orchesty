@@ -448,7 +448,7 @@ func TestClient_Generate(t *testing.T) {
 		Environment: model.Environment{
 			DockerRegistry:      "testregistry",
 			DockerPfBridgeImage: "testimages",
-			RabbitMqDsn:         "",
+			RabbitMqHost:        "",
 			MultiProbeHost:      "probe:440",
 			MetricsHost:         "",
 			MetricsPort:         "",
@@ -505,7 +505,7 @@ func TestClient_GenerateMulti(t *testing.T) {
 		Environment: model.Environment{
 			DockerRegistry:      "testregistry",
 			DockerPfBridgeImage: "testimages",
-			RabbitMqDsn:         "",
+			RabbitMqHost:        "",
 			MultiProbeHost:      "probe:440",
 			MetricsHost:         "",
 			MetricsPort:         "",
@@ -569,7 +569,7 @@ func TestClient_DeleteAllFails(t *testing.T) {
 		Environment: model.Environment{
 			DockerRegistry:      "testregistry",
 			DockerPfBridgeImage: "testimages",
-			RabbitMqDsn:         "",
+			RabbitMqHost:        "",
 			MultiProbeHost:      "",
 			MetricsHost:         "",
 			MetricsPort:         "",
@@ -749,7 +749,7 @@ func TestClient_GenerateFails(t *testing.T) {
 		Environment: model.Environment{
 			DockerRegistry:      "dkr.hanaboso.net/pipes/pipes",
 			DockerPfBridgeImage: "pf-bridge:dev",
-			RabbitMqDsn:         "test:99",
+			RabbitMqHost:        "test:99",
 			MultiProbeHost:      "test:3098",
 			MetricsHost:         "",
 			MetricsPort:         "",
