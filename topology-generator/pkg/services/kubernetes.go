@@ -31,7 +31,7 @@ func (c kubernetesClient) DeleteAll(topologyId string, db StorageSvc, generatorC
 	if err != nil {
 		return fmt.Errorf("error getting topology %s from db. Reason: %v", topologyId, err)
 	}
-	err = c.deleteService(GetDeploymentName(topologyId))
+	err = c.deleteService(topology.GetMultiNodeName())
 	if err != nil {
 		return fmt.Errorf("deleting service failed. Reason: %v", err)
 	}
