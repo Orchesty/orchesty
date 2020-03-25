@@ -16,7 +16,8 @@ RUN yum install -y mongodb-org-shell
 
 USER logstash
 
-RUN logstash-plugin install logstash-output-mongodb
+# https://github.com/logstash-plugins/logstash-output-mongodb/issues/60
+RUN logstash-plugin install --version=3.1.5 logstash-output-mongodb
 
 COPY ./entrypoint.sh /
 
