@@ -106,7 +106,7 @@ func (ts *TopologyService) CreateDeploymentService() ([]byte, error) {
 		ApiVersion: "v1",
 		Kind:       "Service",
 		Metadata: model.Metadata{
-			Name: GetDeploymentName(ts.Topology.ID.Hex()),
+			Name: ts.Topology.GetMultiNodeName(),
 		},
 		Spec: model.ServiceSpec{
 			Ports: []model.ServicePort{
@@ -181,14 +181,14 @@ func (ts *TopologyService) getKubernetesContainers(mountName string) ([]model.Co
 			Name:  name,
 			Value: value,
 		}
-		i++;
+		i++
 	}
 
 	if multiNode {
 		command := strings.Split(getMultiBridgeStartCommand(), " ")
 		return []model.Container{
 			{
-				Name:    strings.ReplaceAll(ts.Topology.GetMultiNodeName(), "_", "-"),
+				Name:    ts.Topology.GetMultiNodeName(),
 				Command: []string{command[0]},
 				Args:    command[1:],
 				Image:   getDockerImage(registry, image),
