@@ -117,7 +117,7 @@ func (t *Topology) GetDockerName() string {
 }
 
 func (t *Topology) GetMultiNodeName() string {
-	return fmt.Sprintf("%s_mb", t.ID.Hex())
+	return fmt.Sprintf("%s-mb", t.ID.Hex())
 }
 
 func (t *Topology) GetSaveDir() string {

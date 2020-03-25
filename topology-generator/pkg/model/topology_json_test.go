@@ -112,7 +112,7 @@ func getSwarmName(t *testing.T) {
 }
 
 func getMultiNodeName(t *testing.T) {
-	expected := "5cc0474e4e9acc00282bb942_mb"
+	expected := "5cc0474e4e9acc00282bb942-mb"
 	topology := getTestTopology()
 	result := topology.GetMultiNodeName()
 
