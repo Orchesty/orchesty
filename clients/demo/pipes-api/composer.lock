@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.133.42",
+            "version": "3.133.44",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "4f0259689e66237e429f9fc1d879b2bcdce6dadb"
+                "reference": "00df425deebdde3f3bebfde446a4250695dc47e4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/4f0259689e66237e429f9fc1d879b2bcdce6dadb",
-                "reference": "4f0259689e66237e429f9fc1d879b2bcdce6dadb",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/00df425deebdde3f3bebfde446a4250695dc47e4",
+                "reference": "00df425deebdde3f3bebfde446a4250695dc47e4",
                 "shasum": ""
             },
             "require": {
@@ -88,7 +88,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2020-03-23T18:17:07+00:00"
+            "time": "2020-03-25T18:15:47+00:00"
         },
         {
             "name": "aws/aws-sdk-php-symfony",
@@ -1928,11 +1928,11 @@
         },
         {
             "name": "hanaboso/app-store",
-            "version": "1.3.3",
+            "version": "1.3.4",
             "dist": {
                 "type": "path",
                 "url": "../../../app-store",
-                "reference": "9cef623dbd259b211ad0af8054814f544a23327d"
+                "reference": "63586a61f12a979efa50f501e3de1614b089d159"
             },
             "require": {
                 "hanaboso/pipes-php-sdk": "^1.2",
@@ -1963,20 +1963,20 @@
         },
         {
             "name": "hanaboso/commons-bundle",
-            "version": "2.0.7",
+            "version": "2.0.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/commons-bundle.git",
-                "reference": "3cb6962a7028d9874f55be69cf83a9c6da363992"
+                "reference": "e5fed72d17d8d4a15367df1dc6cb85b6db3ed98b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/commons-bundle/zipball/3cb6962a7028d9874f55be69cf83a9c6da363992",
-                "reference": "3cb6962a7028d9874f55be69cf83a9c6da363992",
+                "url": "https://api.github.com/repos/hanaboso/commons-bundle/zipball/e5fed72d17d8d4a15367df1dc6cb85b6db3ed98b",
+                "reference": "e5fed72d17d8d4a15367df1dc6cb85b6db3ed98b",
                 "shasum": ""
             },
             "require": {
-                "aws/aws-sdk-php-symfony": "^2.1",
+                "aws/aws-sdk-php-symfony": "^2.2",
                 "doctrine/doctrine-bundle": "^2.0",
                 "doctrine/mongodb-odm-bundle": "^4.1",
                 "ext-apcu": "*",
@@ -2013,7 +2013,7 @@
             "license": [
                 "proprietary"
             ],
-            "time": "2020-03-17T10:12:44+00:00"
+            "time": "2020-03-26T11:28:55+00:00"
         },
         {
             "name": "hanaboso/email-service-bundle",
@@ -2090,11 +2090,11 @@
         },
         {
             "name": "hanaboso/pipes-connectors",
-            "version": "1.3.3",
+            "version": "1.3.4",
             "dist": {
                 "type": "path",
                 "url": "../../../pipes-connectors",
-                "reference": "d2a4e5afdce9fba975395e4e30ad106649339386"
+                "reference": "e36872fd4247fe161270848afd7fbdf1eb592e3f"
             },
             "require": {
                 "ext-ctype": "*",
@@ -2130,11 +2130,11 @@
         },
         {
             "name": "hanaboso/pipes-framework",
-            "version": "1.3.7",
+            "version": "1.3.8",
             "dist": {
                 "type": "path",
                 "url": "../../../pf-bundles",
-                "reference": "083271f5dd80c0b3ebfd33de9560e0afc8abbc8f"
+                "reference": "e983ff0317f3a84df19d11e901e1f7322b7df4dc"
             },
             "require": {
                 "ext-ctype": "*",
@@ -2178,11 +2178,11 @@
         },
         {
             "name": "hanaboso/pipes-php-sdk",
-            "version": "1.2.5",
+            "version": "1.2.6",
             "dist": {
                 "type": "path",
                 "url": "../../../pipes-php-sdk",
-                "reference": "230c0f8a58dc98a8def40f0486e88d488ae8df4d"
+                "reference": "9e70c3cdb8afdff475dbdf461a4d869986a89848"
             },
             "require": {
                 "ext-json": "*",
@@ -2310,16 +2310,16 @@
         },
         {
             "name": "hanaboso/user-bundle",
-            "version": "1.3.7",
+            "version": "1.3.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/user-bundle.git",
-                "reference": "7b55e92858795daadf0cf43bc615aeaed0925fcd"
+                "reference": "594f942908afed05f9f0b141ab2f06168b833d85"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/user-bundle/zipball/7b55e92858795daadf0cf43bc615aeaed0925fcd",
-                "reference": "7b55e92858795daadf0cf43bc615aeaed0925fcd",
+                "url": "https://api.github.com/repos/hanaboso/user-bundle/zipball/594f942908afed05f9f0b141ab2f06168b833d85",
+                "reference": "594f942908afed05f9f0b141ab2f06168b833d85",
                 "shasum": ""
             },
             "require": {
@@ -2349,7 +2349,7 @@
             "license": [
                 "proprietary"
             ],
-            "time": "2020-02-17T13:49:49+00:00"
+            "time": "2020-03-26T11:00:23+00:00"
         },
         {
             "name": "hanaboso/utils",
@@ -3897,16 +3897,16 @@
         },
         {
             "name": "psr/log",
-            "version": "1.1.2",
+            "version": "1.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/log.git",
-                "reference": "446d54b4cb6bf489fc9d75f55843658e6f25d801"
+                "reference": "0f73288fd15629204f9d42b7055f72dacbe811fc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/log/zipball/446d54b4cb6bf489fc9d75f55843658e6f25d801",
-                "reference": "446d54b4cb6bf489fc9d75f55843658e6f25d801",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/0f73288fd15629204f9d42b7055f72dacbe811fc",
+                "reference": "0f73288fd15629204f9d42b7055f72dacbe811fc",
                 "shasum": ""
             },
             "require": {
@@ -3940,7 +3940,7 @@
                 "psr",
                 "psr-3"
             ],
-            "time": "2019-11-01T11:05:21+00:00"
+            "time": "2020-03-23T09:12:05+00:00"
         },
         {
             "name": "psr/simple-cache",
