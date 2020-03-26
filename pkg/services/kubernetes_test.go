@@ -478,7 +478,7 @@ func TestClient_Generate(t *testing.T) {
 	}
 	require.NotNil(t, d, "Deployment cannot be nil")
 
-	s, err := testClient.serviceClient.Get(fmt.Sprintf("%s-mb", topologyId), v1.GetOptions{})
+	s, err := testClient.serviceClient.Get(fmt.Sprintf("mb-%s", topologyId), v1.GetOptions{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -535,7 +535,7 @@ func TestClient_GenerateMulti(t *testing.T) {
 	}
 	require.NotNil(t, d, "Deployment cannot be nil")
 
-	s, err := testClient.serviceClient.Get(fmt.Sprintf("%s-mb", topologyId), v1.GetOptions{})
+	s, err := testClient.serviceClient.Get(fmt.Sprintf("mb-%s", topologyId), v1.GetOptions{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -864,7 +864,7 @@ func TestClient_GenerateFails(t *testing.T) {
 		err = testClient.Generate(ts)
 
 		require.NotNil(t, err)
-		require.Equal(t, "creating service in cluster failed. Reason: services \"5dc0474e4e9acc00282bb942-mb\" already exists", err.Error())
+		require.Equal(t, "creating service in cluster failed. Reason: services \"mb-5dc0474e4e9acc00282bb942\" already exists", err.Error())
 	})
 }
 
