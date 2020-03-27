@@ -50,6 +50,14 @@ final class UserControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserController::verifyAction
+     */
+    public function testVerifyAction(): void
+    {
+        $this->assertResponse(__DIR__ . '/data/UserController/verifyRequest.json');
+    }
+
+    /**
      * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserController::setPasswordAction
      */
     public function testSetPasswordAction(): void
@@ -79,6 +87,14 @@ final class UserControllerTest extends ControllerTestCaseAbstract
     public function testDeleteAction(): void
     {
         $this->assertResponse(__DIR__ . '/data/UserController/deleteRequest.json');
+    }
+
+    /**
+     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserController::getUserAction
+     */
+    public function testGetAction(): void
+    {
+        $this->assertResponse(__DIR__ . '/data/UserController/getUserRequest.json');
     }
 
 }

@@ -3,7 +3,9 @@
 namespace PipesFrameworkTests\Controller\ApiGateway\Listener;
 
 use Exception;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesFramework\ApiGateway\Listener\ControllerExceptionListener;
+use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\Utils\Exception\EnumException;
 use Hanaboso\Utils\System\PipesHeaders;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -79,6 +81,27 @@ final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
             [KernelEvents::EXCEPTION => 'onKernelException'],
             ControllerExceptionListener::getSubscribedEvents()
         );
+    }
+
+    /**
+     * @covers \Hanaboso\PipesFramework\ApiGateway\Listener\ControllerExceptionListener::onKernelException
+     *
+     * @throws Exception
+     */
+    public function testConnectorException(): void
+    {
+        $controller = new ControllerExceptionListener();
+
+        $eventMock = $this->mockEvent(new ConnectorException('', 0, NULL, new ProcessDto()));
+        $controller->onKernelException($eventMock);
+
+        $response = $eventMock->getResponse();
+        if ($response) {
+            self::assertEquals(
+                1_006,
+                $response->headers->get(PipesHeaders::createKey(PipesHeaders::RESULT_CODE))
+            );
+        }
     }
 
     /**

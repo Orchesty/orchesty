@@ -9,6 +9,7 @@ use Hanaboso\UserBundle\Model\Security\SecurityManagerException;
 use Hanaboso\UserBundle\Model\User\UserManagerException;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\Traits\ControllerTrait;
+use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -37,6 +38,7 @@ class UserController
     public function __construct(UserHandler $userHandler)
     {
         $this->userHandler = $userHandler;
+        $this->logger      = new NullLogger();
     }
 
     /**
@@ -86,6 +88,22 @@ class UserController
         try {
             return $this->getResponse($this->userHandler->saveSettings($request->request->all(), $id));
         } catch (MongoDBException | UserManagerException | PipesFrameworkException $e) {
+            return $this->getErrorResponse($e);
+        }
+    }
+
+    /**
+     * @Route("/user/{id}", methods={"GET", "OPTIONS"})
+     *
+     * @param string $id
+     *
+     * @return Response
+     */
+    public function getUserAction(string $id): Response
+    {
+        try {
+            return $this->getResponse($this->userHandler->getUserDetail($id));
+        } catch (UserManagerException $e) {
             return $this->getErrorResponse($e);
         }
     }

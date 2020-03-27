@@ -13,7 +13,7 @@ security:
             pattern: ^/(api/user/login|api/user/logout|api/user/\w+/activate|api/user/\w+/set_password|api/user/reset_password|api/user/register)
             security: false
         unsecured_user:
-            pattern: ^/(user/login|user/logout|user/\w+/activate|user/\w+/set_password|user/reset_password|user/register)
+            pattern: ^/(user/login|user/logout|user/\w+/activate|user/\w+/verify|user/\w+/set_password|user/reset_password|user/register)
             security: false
         unsecured_starting_point:
             pattern: ^/(topologies/*|api/topologies/*|node/*|api/node/*)

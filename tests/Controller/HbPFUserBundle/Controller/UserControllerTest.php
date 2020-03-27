@@ -10,6 +10,7 @@ use Hanaboso\PipesFramework\HbPFUserBundle\Handler\UserHandler;
 use Hanaboso\PipesFramework\User\Document\UserSettings;
 use Hanaboso\UserBundle\Document\User;
 use Hanaboso\UserBundle\Model\Security\SecurityManagerException;
+use Hanaboso\UserBundle\Model\User\UserManagerException;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Monolog\Logger;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
@@ -29,7 +30,7 @@ final class UserControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserController::getAllUsers
+     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserController::getAllUsersAction
      * @covers \Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::getAllUsersAction
      * @covers \Hanaboso\PipesFramework\HbPFUserBundle\Handler\UserHandler::getAllUsers
      * @covers \Hanaboso\PipesFramework\User\Manager\UserManager::getArrayOfUsers
@@ -74,7 +75,7 @@ final class UserControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserController::getAllUsers
+     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserController::getAllUsersAction
      * @covers \Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::getAllUsersAction
      * @covers \Hanaboso\PipesFramework\HbPFUserBundle\Handler\UserHandler::getAllUsers
      * @covers \Hanaboso\PipesFramework\User\Manager\UserManager::getArrayOfUsers
@@ -98,7 +99,44 @@ final class UserControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserController::saveUserSettings
+     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserController::getUserAction
+     * @covers \Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::getUserAction
+     * @covers \Hanaboso\PipesFramework\HbPFUserBundle\Handler\UserHandler::getUserDetail
+     * @covers \Hanaboso\PipesFramework\User\Document\UserSettings::getUserId
+     * @covers \Hanaboso\PipesFramework\User\Document\UserSettings::getSettings
+     *
+     * @throws Exception
+     */
+    public function testGetUser(): void
+    {
+        $user = (new User())
+            ->setEmail('email@example.com')
+            ->setPassword('passw0rd');
+        $this->pfd($user);
+
+        $this->assertResponse(
+            __DIR__ . '/data/getUserRequest.json',
+            ['id' => '5e57a1ace2a2c66a577b8ff2'],
+            [':id' => $user->getId()]
+        );
+    }
+
+    /**
+     * @covers \Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::getUserAction
+     *
+     * @throws Exception
+     */
+    public function testGetUserEntityError(): void
+    {
+        $handler = self::createPartialMock(UserHandler::class, ['getUserDetail']);
+        $handler->expects(self::any())->method('getUserDetail')->willThrowException(new UserManagerException());
+        $controller = new UserController($handler);
+
+        self::assertEquals(500, $controller->getUserAction('123')->getStatusCode());
+    }
+
+    /**
+     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserController::saveUserSettingsAction
      * @covers \Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::saveUserSettingsAction
      * @covers \Hanaboso\PipesFramework\HbPFUserBundle\Handler\UserHandler::saveSettings
      * @covers \Hanaboso\PipesFramework\User\Document\UserSettings::setUserId
@@ -138,7 +176,7 @@ final class UserControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserController::saveUserSettings
+     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserController::saveUserSettingsAction
      * @covers \Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::saveUserSettingsAction
      * @covers \Hanaboso\PipesFramework\HbPFUserBundle\Handler\UserHandler::saveSettings
      *

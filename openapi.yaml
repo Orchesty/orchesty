@@ -660,7 +660,20 @@ paths:
                 -   $ref: '#/components/parameters/Token'
             responses:
                 200:
-                    $ref: '#/components/responses/User'
+                    $ref: '#/components/responses/Email'
+                400:
+                    $ref: '#/components/responses/400'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/user/{token}/validate:
+        post:
+            tags: [ Users ]
+            parameters:
+                -   $ref: '#/components/parameters/Token'
+            responses:
+                200:
+                    $ref: '#/components/responses/Email'
                 400:
                     $ref: '#/components/responses/400'
                 500:
@@ -739,6 +752,17 @@ paths:
             responses:
                 200:
                     $ref: '#/components/responses/UserSettings'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/user/{id}:
+        post:
+            tags: [ Users ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            responses:
+                200:
+                    $ref: '#/components/responses/User'
                 500:
                     $ref: '#/components/responses/500'
 
@@ -1232,6 +1256,13 @@ components:
                     schema:
                         $ref: '#/components/schemas/UserSettings'
 
+        Email:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Email'
+
         Empty:
             description: ''
             content:
@@ -1248,7 +1279,7 @@ components:
                     example:
                         type: SecurityManagerException
                         status: USER_EMAIL_ALREADY_EXISTS
-                        message: User email ialready exists!
+                        message: User email already exists!
                         error_code: 400
 
         401:
@@ -1952,6 +1983,12 @@ components:
                             type: string
                         settingsTwo:
                             type: string
+
+        Email:
+            type: object
+            properties:
+                email:
+                    type: string
 
         Message:
             type: object
