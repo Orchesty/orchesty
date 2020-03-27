@@ -68,9 +68,16 @@ var jobCount = bridgeData
     |count('bridge_job_total_duration')
         .as('time')
 
+var jobSumWaiting = bridgeData
+    |sum('bridge_job_waiting_duration')
+        .as('time')
+
+var jobCountWaiting = bridgeData
+    |count('bridge_job_waiting_duration')
+        .as('time')
 total
-   |join(totalFailed, waitingTimeAvg, timeMin, timeMax, processTimeAvg, jobSum, jobCount)
-       .as('total', 'failed', 'avg_waiting', 'job_min', 'job_max', 'avg_process', 'sum', 'count')
+   |join(totalFailed, waitingTimeAvg, timeMin, timeMax, processTimeAvg, jobSum, jobCount, jobSumWaiting, jobCountWaiting)
+       .as('total', 'failed', 'avg_waiting', 'job_min', 'job_max', 'avg_process', 'sum', 'count', 'sum_waiting', 'count_waiting')
    |influxDBOut()
        .database('pipes')
        .measurement('bridges')
