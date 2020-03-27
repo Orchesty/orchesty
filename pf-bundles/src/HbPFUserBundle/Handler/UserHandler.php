@@ -9,6 +9,7 @@ use Hanaboso\MongoDataGrid\GridRequestDto;
 use Hanaboso\PipesFramework\User\Document\UserSettings;
 use Hanaboso\PipesFramework\User\Manager\UserManager as UsersManager;
 use Hanaboso\UserBundle\Document\User;
+use Hanaboso\UserBundle\Entity\UserInterface;
 use Hanaboso\UserBundle\Model\Security\SecurityManagerException;
 use Hanaboso\UserBundle\Model\User\UserManager;
 use Hanaboso\UserBundle\Model\User\UserManagerException;
@@ -66,6 +67,17 @@ class UserHandler
     }
 
     /**
+     * @param string $id
+     *
+     * @return mixed[]
+     * @throws UserManagerException
+     */
+    public function getUserDetail(string $id): array
+    {
+        return $this->getUserData($this->getUser($id));
+    }
+
+    /**
      * @param mixed[] $data
      * @param string  $id
      *
@@ -78,9 +90,13 @@ class UserHandler
     {
         ControllerUtils::checkParameters([self::SETTINGS], $data);
 
-        $settings = (new UserSettings())
-            ->setSettings($data[self::SETTINGS])
-            ->setUserId($this->getUser($id)->getId());
+        $settings = $this->getSettings($id);
+        if (!$settings) {
+            $settings = (new UserSettings())
+                ->setUserId($this->getUser($id)->getId());
+        }
+
+        $settings->setSettings($data[self::SETTINGS]);
 
         $this->dm->persist($settings);
         $this->dm->flush();
@@ -99,19 +115,34 @@ class UserHandler
     {
         ControllerUtils::checkParameters(['email', 'password'], $data);
 
-        $user     = $this->userManager->login($data);
-        $settings = $this->getSettings($user->getId());
-        $data     = array_merge($user->toArray(), [self::SETTINGS => $settings]);
+        return $this->getUserData($this->userManager->login($data));
+    }
 
-        return $data;
+    /**
+     * ----------------------------------- HELPERS -----------------------------------
+     */
+
+    /**
+     * @param UserInterface $user
+     *
+     * @return mixed[]
+     */
+    private function getUserData(UserInterface $user): array
+    {
+        $settings = $this->getSettings($user->getId());
+        if ($settings) {
+            $settings = $settings->getSettings();
+        }
+
+        return array_merge($user->toArray(), [self::SETTINGS => $settings ?? []]);
     }
 
     /**
      * @param string $id
      *
-     * @return mixed[]
+     * @return UserSettings|null
      */
-    private function getSettings(string $id): array
+    private function getSettings(string $id): ?UserSettings
     {
         /** @var ObjectRepository<UserSettings> $userRepository */
         $userRepository = $this->dm->getRepository(UserSettings::class);
@@ -119,10 +150,10 @@ class UserHandler
         $userSettings = $userRepository->findOneBy(['userId' => $id]);
 
         if ($userSettings) {
-            return $userSettings->getSettings();
+            return $userSettings;
         }
 
-        return [];
+        return NULL;
     }
 
     /**

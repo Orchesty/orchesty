@@ -57,6 +57,18 @@ final class UserController extends AbstractController
     }
 
     /**
+     * @Route("/user/{token}/verify", requirements={"token": "\w+"}, methods={"POST", "OPTIONS"})
+     *
+     * @param string $token
+     *
+     * @return Response
+     */
+    public function verifyAction(string $token): Response
+    {
+        return $this->forward('Hanaboso\UserBundle\Controller\UserController::verifyAction', ['token' => $token]);
+    }
+
+    /**
      * @Route("/user/{token}/set_password", requirements={"token": "\w+"}, methods={"POST", "OPTIONS"})
      *
      * @param string $token
@@ -105,7 +117,7 @@ final class UserController extends AbstractController
      *
      * @return Response
      */
-    public function getAllUsers(): Response
+    public function getAllUsersAction(): Response
     {
         return $this->forward('Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::getAllUsersAction');
     }
@@ -117,10 +129,25 @@ final class UserController extends AbstractController
      *
      * @return Response
      */
-    public function saveUserSettings(string $id): Response
+    public function saveUserSettingsAction(string $id): Response
     {
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::saveUserSettingsAction',
+            ['id' => $id]
+        );
+    }
+
+    /**
+     * @Route("/user/{id}", methods={"GET", "OPTIONS"})
+     *
+     * @param string $id
+     *
+     * @return Response
+     */
+    public function getUserAction(string $id): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::getUserAction',
             ['id' => $id]
         );
     }

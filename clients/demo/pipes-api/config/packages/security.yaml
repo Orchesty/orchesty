@@ -13,7 +13,7 @@ security:
 
     firewalls:
         unsecured_user:
-            pattern: ^/(api/user/login|api/user/logout|api/user/\w+/activate|api/user/\w+/set_password|api/user/reset_password)
+            pattern: ^/(api/user/login|api/user/logout|api/user/\w+/activate|user/\w+/verify|api/user/\w+/set_password|api/user/reset_password)
             security: false
         unsecured_starting_point:
             pattern: ^/(topologies/*|api/topologies/*|node/*|api/node/*)

@@ -1,0 +1,9 @@
+{
+    "http": 500,
+    "body": {
+        "status": "INTERNAL_SERVER_ERROR",
+        "error_code": 1201,
+        "type": "Hanaboso\\UserBundle\\Model\\User\\UserManagerException",
+        "message": "User with id [Unknown] not found."
+    }
+}
