@@ -102,17 +102,17 @@ func (ts *TopologyService) CreateConfigMap() ([]byte, error) {
 }
 
 func (ts *TopologyService) CreateDeploymentService() ([]byte, error) {
-	ports, err := ts.getKubernetesContainerPorts()
+	containerPorts, err := ts.getKubernetesContainerPorts()
 	if err != nil {
-		return nil, fmt.Errorf("failed to get k8s container ports, reason: %w", err)
+		return nil, fmt.Errorf("failed to get k8s container containerPorts, reason: %w", err)
 	}
 
-	servicePorts := make([]model.ServicePort, len(ports))
-	for i, port := range ports {
+	servicePorts := make([]model.ServicePort, len(containerPorts))
+	for i, containerPort := range containerPorts {
 		servicePorts[i] = model.ServicePort{
 			Protocol:   "TCP",
-			Port:       port.ContainerPort,
-			TargetPort: port.Name,
+			Port:       containerPort.ContainerPort,
+			TargetPort: containerPort.Name,
 		}
 	}
 
@@ -178,14 +178,17 @@ func (ts *TopologyService) getKubernetesContainerPorts() ([]model.Port, error) {
 	if err != nil {
 		return nil, err
 	}
-	ports := make([]model.Port, len(bridges))
+	containerPorts := make([]model.Port, len(bridges))
 	for i, bridge := range bridges {
-		ports[i] = model.Port{
-			Name:          bridge.Label.NodeId,
+		str := bridge.Label.NodeId
+		length := len(str)
+		last10 := str[length-10 : length]
+		containerPorts[i] = model.Port{
+			Name:          last10,
 			ContainerPort: bridge.Debug.Port,
 		}
 	}
-	return ports, nil
+	return containerPorts, nil
 }
 
 func (ts *TopologyService) getKubernetesContainers(mountName string) ([]model.Container, error) {
