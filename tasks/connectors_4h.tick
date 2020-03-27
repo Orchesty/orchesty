@@ -4,7 +4,7 @@ var sample = 4h
 var retention = '4h'
 
 batch
-   |query('SELECT (sum("sum.time") / count("count.time")) as "avg.time",  min("min.time") as "min.time", max("max.time") as "max.time", sum("sum.time") as "sum.time", count("count.time") as "count.time" FROM "pipes"."30m"."connectors"')
+   |query('SELECT (sum("sum.time") / sum("count.time")) as "avg.time",  min("min.time") as "min.time", max("max.time") as "max.time", sum("sum.time") as "sum.time", count("count.time") as "count.time" FROM "pipes"."30m"."connectors"')
        .period(sample)
        .every(sample)
        .groupBy('topology_id', 'node_id')
