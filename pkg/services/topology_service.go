@@ -102,6 +102,20 @@ func (ts *TopologyService) CreateConfigMap() ([]byte, error) {
 }
 
 func (ts *TopologyService) CreateDeploymentService() ([]byte, error) {
+	ports, err := ts.getKubernetesContainerPorts()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get k8s container ports, reason: %w", err)
+	}
+
+	servicePorts := make([]model.ServicePort, len(ports))
+	for i, port := range ports {
+		servicePorts[i] = model.ServicePort{
+			Protocol:   "TCP",
+			Port:       port.ContainerPort,
+			TargetPort: port.Name,
+		}
+	}
+
 	s := model.DeploymentService{
 		ApiVersion: "v1",
 		Kind:       "Service",
@@ -109,12 +123,7 @@ func (ts *TopologyService) CreateDeploymentService() ([]byte, error) {
 			Name: ts.Topology.GetMultiNodeName(),
 		},
 		Spec: model.ServiceSpec{
-			Ports: []model.ServicePort{
-				{
-					Protocol: "TCP",
-					Port:     ts.nodeConfig.Environment.WorkerDefaultPort,
-				},
-			},
+			Ports: servicePorts,
 			Selector: map[string]string{
 				"app": GetDeploymentName(ts.Topology.ID.Hex()),
 			},
@@ -128,7 +137,7 @@ func (ts *TopologyService) CreateKubernetesDeployment() ([]byte, error) {
 
 	containers, err := ts.getKubernetesContainers(mountName)
 	if err != nil {
-		return nil, fmt.Errorf("error getting kubernetes containes. reason: %v", err)
+		return nil, fmt.Errorf("error getting kubernetes containers. reason: %v", err)
 	}
 
 	labels := make(map[string]string)
@@ -163,6 +172,22 @@ func (ts *TopologyService) CreateKubernetesDeployment() ([]byte, error) {
 	return yaml.Marshal(depl)
 }
 
+func (ts *TopologyService) getKubernetesContainerPorts() ([]model.Port, error) {
+	var bridges, err = ts.nodeConfig.GetBridges(ts.Topology, ts.Nodes, ts.nodeConfig.Environment.WorkerDefaultPort)
+
+	if err != nil {
+		return nil, err
+	}
+	ports := make([]model.Port, len(bridges))
+	for i, bridge := range bridges {
+		ports[i] = model.Port{
+			Name:          bridge.Label.NodeId,
+			ContainerPort: bridge.Debug.Port,
+		}
+	}
+	return ports, nil
+}
+
 func (ts *TopologyService) getKubernetesContainers(mountName string) ([]model.Container, error) {
 	registry := ts.nodeConfig.Environment.DockerRegistry
 	image := ts.nodeConfig.Environment.DockerPfBridgeImage
@@ -172,6 +197,11 @@ func (ts *TopologyService) getKubernetesContainers(mountName string) ([]model.Co
 	environment, err := ts.nodeConfig.Environment.GetEnvironment()
 	if err != nil {
 		return nil, fmt.Errorf("error getting environment. reason: %v", err)
+	}
+
+	ports, err := ts.getKubernetesContainerPorts()
+	if err != nil {
+		return nil, fmt.Errorf("error getting container ports, reason: %w", err)
 	}
 
 	env := make([]model.EnvItem, len(environment))
@@ -192,12 +222,8 @@ func (ts *TopologyService) getKubernetesContainers(mountName string) ([]model.Co
 				Command: []string{command[0]},
 				Args:    command[1:],
 				Image:   getDockerImage(registry, image),
-				Ports: []model.Port{
-					{
-						ContainerPort: ts.nodeConfig.Environment.WorkerDefaultPort,
-					},
-				},
-				Env: env,
+				Ports:   ports,
+				Env:     env,
 				VolumeMounts: []model.VolumeMount{
 					{
 						Name:      mountName,
