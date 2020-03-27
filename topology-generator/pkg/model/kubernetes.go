@@ -13,6 +13,7 @@ type TemplateMetadata struct {
 }
 
 type Port struct {
+	Name          string
 	ContainerPort int `yaml:"containerPort"`
 }
 
@@ -82,8 +83,9 @@ type ServiceSpec struct {
 }
 
 type ServicePort struct {
-	Protocol string
-	Port     int
+	Protocol   string
+	Port       int
+	TargetPort string `yaml:"targetPort"`
 }
 
 type DeploymentService struct {
