@@ -113,6 +113,7 @@ func (ts *TopologyService) CreateDeploymentService() ([]byte, error) {
 			Protocol:   "TCP",
 			Port:       containerPort.ContainerPort,
 			TargetPort: containerPort.Name,
+			Name:       containerPort.Name,
 		}
 	}
 
@@ -141,7 +142,7 @@ func (ts *TopologyService) CreateKubernetesDeployment() ([]byte, error) {
 	}
 
 	labels := make(map[string]string)
-	labels["app"] = ts.Topology.ID.Hex()
+	labels["app"] = GetDeploymentName(ts.Topology.ID.Hex())
 	var depl = model.Deployment{
 		ApiVersion: "apps/v1",
 		Kind:       "Deployment",
@@ -180,11 +181,8 @@ func (ts *TopologyService) getKubernetesContainerPorts() ([]model.Port, error) {
 	}
 	containerPorts := make([]model.Port, len(bridges))
 	for i, bridge := range bridges {
-		str := bridge.Label.NodeId
-		length := len(str)
-		last10 := str[length-10 : length]
 		containerPorts[i] = model.Port{
-			Name:          last10,
+			Name:          getKubernetPortName(bridge.Label.NodeId),
 			ContainerPort: bridge.Debug.Port,
 		}
 	}

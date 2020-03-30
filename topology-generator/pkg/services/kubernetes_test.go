@@ -482,6 +482,7 @@ func TestClient_Generate(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	require.Equal(t, s.Spec.Selector["app"], d.Spec.Template.ObjectMeta.Labels["app"])
 	require.NotNil(t, s, "Service cannot be nil")
 
 	cm, err := testClient.configClient.Get(GetConfigMapName(topologyId), v1.GetOptions{})

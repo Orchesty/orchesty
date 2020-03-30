@@ -86,6 +86,7 @@ type ServicePort struct {
 	Protocol   string
 	Port       int
 	TargetPort string `yaml:"targetPort"`
+	Name       string
 }
 
 type DeploymentService struct {
