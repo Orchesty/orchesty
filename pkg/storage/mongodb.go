@@ -1,15 +1,17 @@
 package storage
 
 import (
+	"cron/pkg/config"
 	"cron/pkg/utils"
 	"net/http"
 
-	"cron/pkg/config"
+	"github.com/hanaboso/go-log/pkg/zap"
 	"github.com/hanaboso/go-mongodb"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
+	log "github.com/hanaboso/go-log/pkg"
 	cronParser "github.com/robfig/cron/v3"
 )
 
@@ -32,6 +34,7 @@ type Interface interface {
 // MongoDBImplementation represents MongoDB storage implementation
 type MongoDBImplementation struct {
 	connection *mongodb.Connection
+	logger     log.Logger
 }
 
 // MongoDB represents MongoDB storage implementation
@@ -39,12 +42,16 @@ var MongoDB Interface = &MongoDBImplementation{}
 
 // Connect connects to MongoDB
 func (m *MongoDBImplementation) Connect() {
-	config.Config.Logger.Infof("Connecting to MongoDB: %s", config.Config.MongoDB.Dsn)
+	if m.logger == nil {
+		m.logger = zap.NewLogger()
+	}
+
+	m.logContext().Info("Connecting to MongoDB: %s", config.MongoDB.Dsn)
 
 	m.connection = &mongodb.Connection{}
-	m.connection.Connect(config.Config.MongoDB.Dsn)
+	m.connection.Connect(config.MongoDB.Dsn)
 
-	config.Config.Logger.Info("MongoDB successfully connected!")
+	m.logContext().Info("MongoDB successfully connected!")
 }
 
 // Disconnect disconnects from MongoDB
@@ -64,17 +71,17 @@ func (m *MongoDBImplementation) GetAll() ([]Cron, error) {
 	var cron Cron
 	var crons []Cron
 
-	cursor, err := m.connection.Database.Collection(config.Config.MongoDB.Collection).Find(context, map[string]interface{}{})
+	cursor, err := m.connection.Database.Collection(config.MongoDB.Collection).Find(context, map[string]interface{}{})
 
 	if err != nil {
-		logMongoDBError(err)
+		m.logContext().Error(err)
 
 		return crons, err
 	}
 
 	defer func() {
 		if err := cursor.Close(nil); err != nil {
-			logMongoDBError(err)
+			m.logContext().Error(err)
 		}
 	}()
 
@@ -82,7 +89,7 @@ func (m *MongoDBImplementation) GetAll() ([]Cron, error) {
 		err = cursor.Decode(&cron)
 
 		if err != nil {
-			logMongoDBError(err)
+			m.logContext().Error(err)
 
 			return crons, err
 		}
@@ -103,10 +110,10 @@ func (m *MongoDBImplementation) Create(cron *Cron) (*mongo.InsertOneResult, erro
 	defer cancel()
 
 	cron.ID = primitive.NewObjectID()
-	result, err := m.connection.Database.Collection(config.Config.MongoDB.Collection).InsertOne(context, cron)
+	result, err := m.connection.Database.Collection(config.MongoDB.Collection).InsertOne(context, cron)
 
 	if err != nil {
-		logMongoDBError(err)
+		m.logContext().Error(err)
 	}
 
 	return result, err
@@ -140,13 +147,13 @@ func (m *MongoDBImplementation) Delete(cron *Cron) (*mongo.DeleteResult, error) 
 	context, cancel := m.connection.Context()
 	defer cancel()
 
-	result, err := m.connection.Database.Collection(config.Config.MongoDB.Collection).DeleteOne(context, map[string]interface{}{
+	result, err := m.connection.Database.Collection(config.MongoDB.Collection).DeleteOne(context, map[string]interface{}{
 		topology: cron.Topology,
 		node:     cron.Node,
 	})
 
 	if err != nil {
-		logMongoDBError(err)
+		m.logContext().Error(err)
 	}
 
 	return result, err
@@ -168,10 +175,10 @@ func (m *MongoDBImplementation) BatchCreate(crons []Cron) (*mongo.InsertManyResu
 		innerCrons = append(innerCrons, cron)
 	}
 
-	result, err := m.connection.Database.Collection(config.Config.MongoDB.Collection).InsertMany(context, innerCrons)
+	result, err := m.connection.Database.Collection(config.MongoDB.Collection).InsertMany(context, innerCrons)
 
 	if err != nil {
-		logMongoDBError(err)
+		m.logContext().Error(err)
 	}
 
 	return result, err
@@ -230,10 +237,10 @@ func (m *MongoDBImplementation) BatchDelete(crons []Cron) (*mongo.DeleteResult, 
 	context, cancel := m.connection.Context()
 	defer cancel()
 
-	result, err := m.connection.Database.Collection(config.Config.MongoDB.Collection).DeleteMany(context, m.createDelete(crons))
+	result, err := m.connection.Database.Collection(config.MongoDB.Collection).DeleteMany(context, m.createDelete(crons))
 
 	if err != nil {
-		logMongoDBError(err)
+		m.logContext().Error(err)
 	}
 
 	return result, err
@@ -251,7 +258,7 @@ func (m *MongoDBImplementation) createUpdate(cron *Cron, upsert bool) (*mongo.Up
 	context, cancel := m.connection.Context()
 	defer cancel()
 
-	result, err := m.connection.Database.Collection(config.Config.MongoDB.Collection).UpdateOne(context, map[string]interface{}{
+	result, err := m.connection.Database.Collection(config.MongoDB.Collection).UpdateOne(context, map[string]interface{}{
 		topology: cron.Topology,
 		node:     cron.Node,
 	}, createSet(map[string]interface{}{
@@ -260,7 +267,7 @@ func (m *MongoDBImplementation) createUpdate(cron *Cron, upsert bool) (*mongo.Up
 	}), &options.UpdateOptions{Upsert: &upsert})
 
 	if err != nil {
-		logMongoDBError(err)
+		m.logContext().Error(err)
 	}
 
 	return result, err
@@ -279,9 +286,9 @@ func (m *MongoDBImplementation) createDelete(crons []Cron) interface{} {
 	return map[string]interface{}{"$or": ors}
 }
 
-func (*MongoDBImplementation) validate(cron *Cron) *utils.Error {
+func (m *MongoDBImplementation) validate(cron *Cron) *utils.Error {
 	if _, err := cronParser.ParseStandard(cron.Time); err != nil {
-		logCronError(err)
+		m.logContext().Error(err)
 
 		return &utils.Error{
 			Code:    http.StatusBadRequest,
@@ -292,10 +299,9 @@ func (*MongoDBImplementation) validate(cron *Cron) *utils.Error {
 	return nil
 }
 
-func logMongoDBError(error error) {
-	config.Config.Logger.Errorf("Unexpected MongoDB error: %s", error.Error())
-}
-
-func logCronError(error error) {
-	config.Config.Logger.Errorf("Unexpected CRON error: %s", error.Error())
+func (m *MongoDBImplementation) logContext() log.Logger {
+	return m.logger.WithFields(map[string]interface{}{
+		"service": "cron",
+		"type":    "mongodb",
+	})
 }

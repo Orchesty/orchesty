@@ -12,11 +12,11 @@ import (
 	"cron/pkg/service"
 	"cron/pkg/storage"
 
-	log "github.com/sirupsen/logrus"
+	log "github.com/hanaboso/go-log/pkg"
 )
 
 func main() {
-	config.Config.Logger.Info("Starting HTTP server...")
+	logContext().Info("Starting HTTP server...")
 	storage.MongoDB.Connect()
 	service.Cron.Start()
 
@@ -27,14 +27,14 @@ func main() {
 		service.Cron.Stop()
 
 		if err := server.Shutdown(context.Background()); err != nil {
-			config.Config.Logger.Error(err)
+			logContext().Error(err)
 		}
 	}()
 
 	gracefulShutdown(server)
 
 	if err := server.ListenAndServe(); err != nil {
-		config.Config.Logger.Error(err)
+		logContext().Error(err)
 	}
 }
 
@@ -46,14 +46,21 @@ func gracefulShutdown(server *http.Server) {
 	go func() {
 		_ = <-signals
 
-		log.Info("Stopping HTTP server...")
+		logContext().Info("Stopping HTTP server...")
 		storage.MongoDB.Disconnect()
 		service.Cron.Stop()
 
 		if err := server.Shutdown(context.Background()); err != nil {
-			config.Config.Logger.Error(err)
+			logContext().Error(err)
 		}
 
 		os.Exit(0)
 	}()
+}
+
+func logContext() log.Logger {
+	return config.Logger.WithFields(map[string]interface{}{
+		"service": "cron",
+		"type":    "cmd",
+	})
 }

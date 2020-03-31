@@ -1,34 +1,50 @@
 package config
 
 import (
+	"github.com/hanaboso/go-log/pkg/zap"
 	"github.com/jinzhu/configor"
 
-	log "github.com/sirupsen/logrus"
+	log "github.com/hanaboso/go-log/pkg"
 )
 
-// Config represents application config
-var Config = struct {
-	App struct {
-		Debug bool `env:"APP_DEBUG"`
-	}
-	Logger  *log.Logger
-	MongoDB struct {
+type (
+	mongoDBType struct {
 		Dsn        string `env:"MONGO_DSN" required:"true"`
 		Collection string `env:"MONGO_COLLECTION" required:"true"`
 	}
-}{}
+	appType struct {
+		Debug bool `env:"APP_DEBUG"`
+	}
+	configType struct {
+		App   *appType
+		Mongo *mongoDBType
+	}
+	logger log.Logger
+)
+
+var (
+	// MongoDB represents MongoDB config
+	MongoDB mongoDBType
+	// Logger logger
+	Logger logger
+	app    appType
+
+	config = configType{
+		App:   &app,
+		Mongo: &MongoDB,
+	}
+)
 
 func load() {
-	Config.Logger = log.StandardLogger()
-
-	if err := configor.Load(&Config); err != nil {
-		Config.Logger.Fatalf("Unexpected config error: %s", err.Error())
+	Logger = zap.NewLogger()
+	if err := configor.Load(&config); err != nil {
+		Logger.Fatal(err)
 	}
 
-	if Config.App.Debug {
-		Config.Logger.SetLevel(log.DebugLevel)
+	if app.Debug {
+		Logger.SetLevel(log.DEBUG)
 	} else {
-		Config.Logger.SetLevel(log.InfoLevel)
+		Logger.SetLevel(log.INFO)
 	}
 }
 

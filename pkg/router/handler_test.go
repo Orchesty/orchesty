@@ -119,7 +119,6 @@ func TestHandleGetAllError(t *testing.T) {
 
 func TestHandleCreate(t *testing.T) {
 	setUp()
-	config.Config.Logger.Warn(storage.MongoDB)
 
 	r, _ := http.NewRequest(http.MethodPost, "/crons", bytes.NewReader([]byte(cron)))
 	assertResponse(t, r, http.StatusOK, "{}")
@@ -382,7 +381,7 @@ func setUp() {
 	storage.MongoDB.Connect()
 
 	connection := mongodb.Connection{}
-	connection.Connect(config.Config.MongoDB.Dsn)
+	connection.Connect(config.MongoDB.Dsn)
 
 	context, cancel := connection.Context()
 	defer cancel()

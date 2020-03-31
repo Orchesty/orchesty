@@ -7,8 +7,10 @@ import (
 	"strings"
 	"time"
 
-	"cron/pkg/config"
 	"cron/pkg/storage"
+	"github.com/hanaboso/go-log/pkg/zap"
+
+	log "github.com/hanaboso/go-log/pkg"
 )
 
 // Interface represents abstract cron implementation
@@ -19,6 +21,7 @@ type Interface interface {
 
 type cron struct {
 	ticker *time.Ticker
+	log    log.Logger
 }
 
 // Cron represents specific cron implementation
@@ -26,6 +29,10 @@ var Cron Interface = &cron{}
 
 // Start starts cron
 func (c *cron) Start() {
+	if c.log == nil {
+		c.log = zap.NewLogger()
+	}
+
 	c.write()
 
 	if c.ticker == nil {
@@ -57,13 +64,20 @@ func (c *cron) write() {
 		content = append(content, fmt.Sprintf("%s %s", cron.Time, cron.Command))
 	}
 
-	config.Config.Logger.Infof("Updating %d CRONs...", len(crons))
+	c.logContext().Info("Updating %d CRONs...", len(crons))
 
 	if err := ioutil.WriteFile("/etc/crontabs/root", []byte(strings.Join(content, "\n")), 0777); err != nil {
-		config.Config.Logger.Errorf("Unexpected IO error: %s", err.Error())
+		c.logContext().Error(err)
 	}
 
 	if _, err := exec.Command("crontab", "/etc/crontabs/root").Output(); err != nil {
-		config.Config.Logger.Errorf("Unexpected command error: %s", err.Error())
+		c.logContext().Error(err)
 	}
+}
+
+func (c *cron) logContext() log.Logger {
+	return c.log.WithFields(map[string]interface{}{
+		"service": "cron",
+		"type":    "cron-service-loop",
+	})
 }

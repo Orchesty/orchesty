@@ -199,5 +199,5 @@ func HandleBatchDelete(writer http.ResponseWriter, request *http.Request, _ http
 }
 
 func logJSONError(error error) {
-	config.Config.Logger.Errorf("Unexpected JSON error: %s", error.Error())
+	config.Logger.Error(error)
 }
