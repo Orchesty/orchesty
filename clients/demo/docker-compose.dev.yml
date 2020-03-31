@@ -593,7 +593,7 @@ services:
             #METRICS_DSN: mongodb://mongo/metrics?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
         volumes:
             - ../../rabbitmq-telegraf:/app
-        command: go run main.go
+        command: go run cmd/main.go
     ## END DEV
     ## BEGIN STAGE
     #telegraf:

@@ -1,8 +1,9 @@
 module cron
 
-go 1.13
+go 1.14
 
 require (
+	github.com/hanaboso/go-log v0.0.0-20200313123147-272181627048
 	github.com/hanaboso/go-mongodb v0.0.0-20200226122419-e9d9c50f5411
 	github.com/jinzhu/configor v1.1.1
 	github.com/julienschmidt/httprouter v1.3.0
