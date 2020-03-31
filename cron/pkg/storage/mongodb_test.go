@@ -423,7 +423,7 @@ func setUp() {
 	MongoDB.Connect()
 
 	connection := mongodb.Connection{}
-	connection.Connect(config.Config.MongoDB.Dsn)
+	connection.Connect(config.MongoDB.Dsn)
 
 	context, cancel := connection.Context()
 	defer cancel()

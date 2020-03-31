@@ -15,7 +15,7 @@ func main() {
 
 	// Publisher
 	workQueue := make(chan []services.Queue, 10)
-	svc := services.NewSenderSvc(workQueue, config.Logger)
+	svc := services.NewSenderSvc(workQueue)
 	go svc.Start()
 
 	// Consumer

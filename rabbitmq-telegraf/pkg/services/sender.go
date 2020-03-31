@@ -1,7 +1,6 @@
 package services
 
 import (
-	"github.com/hanaboso/go-log/pkg/zap"
 	"time"
 
 	"github.com/hanaboso/go-metrics"
@@ -31,23 +30,24 @@ func (s *Sender) Start() {
 				"messages": queue.Messages,
 				"created":  time.Now().Unix(),
 			}); err != nil {
-				s.logger.WithFields(map[string]interface{}{
-					"service": "rabbitmq-telegraf",
-				}).Error(err)
+				s.logContext().Error(err)
 			}
 		}
 	}
 }
 
 // NewSenderSvc creates RabbitMq metrics sender
-func NewSenderSvc(workQueue <-chan []Queue, logger log.Logger) Sender {
-	if logger == nil {
-		logger = zap.NewLogger()
-	}
-
+func NewSenderSvc(workQueue <-chan []Queue) Sender {
 	return Sender{
 		metrics:   metrics.Connect(config.Metrics.Dsn),
 		workQueue: workQueue,
-		logger:    logger,
+		logger:    config.Logger,
 	}
+}
+
+func (s *Sender) logContext() log.Logger {
+	return s.logger.WithFields(map[string]interface{}{
+		"service": "rabbitmq-telegraf",
+		"type":    "sender",
+	})
 }
