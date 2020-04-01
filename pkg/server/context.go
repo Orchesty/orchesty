@@ -2,19 +2,22 @@ package server
 
 import (
 	"github.com/gin-gonic/gin"
+	log "github.com/hanaboso/go-log/pkg"
 	"github.com/pkg/errors"
-	log "github.com/sirupsen/logrus"
 	"net/http"
+	"topology-generator/pkg/config"
 	"topology-generator/pkg/services"
 
 	"topology-generator/pkg/model"
 )
 
+// ContextWrapper ContextWrapper
 type ContextWrapper struct {
 	*gin.Context
 	Sc *services.ServiceContainer
 }
 
+// OK OK
 func (w *ContextWrapper) OK(obj ...interface{}) {
 	if len(obj) > 0 {
 		w.JSON(http.StatusOK, obj[0])
@@ -23,10 +26,12 @@ func (w *ContextWrapper) OK(obj ...interface{}) {
 	}
 }
 
+// WithCode WithCode
 func (w *ContextWrapper) WithCode(code int, obj ...interface{}) {
 	w.JSON(code, obj[0])
 }
 
+// NOK NOK
 func (w *ContextWrapper) NOK(err error) {
 	code := http.StatusInternalServerError
 	resp := gin.H{
@@ -46,9 +51,9 @@ func (w *ContextWrapper) NOK(err error) {
 		resp["code"] = mErr.Error()
 		resp["codeDescription"] = mErr.Description()
 
-		log.Info(err) // well-known error, so only info log
+		logContext().Info(err.Error()) // well-known error, so only info log
 	} else {
-		log.Error(err) // unknown error, so LOG IT!
+		logContext().Error(err) // unknown error, so LOG IT!
 	}
 
 	w.JSON(code, resp)
@@ -64,4 +69,11 @@ func Wrap(handler func(*ContextWrapper), sc *services.ServiceContainer) func(*gi
 // WrapBindErr Wrap error
 func WrapBindErr(err model.Error, info error) error {
 	return errors.Wrap(err, info.Error())
+}
+
+func logContext() log.Logger {
+	return config.Logger.WithFields(map[string]interface{}{
+		"service": "topology-generator",
+		"type":    "server",
+	})
 }

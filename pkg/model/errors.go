@@ -8,10 +8,15 @@ import (
 )
 
 const (
+	// ErrNotFound ErrNotFound
 	ErrNotFound Error = iota
+	// ErrRequestMalformed ErrRequestMalformed
 	ErrRequestMalformed
+	// ErrBadCredentials ErrBadCredentials
 	ErrBadCredentials
+	// ErrUnauthorized ErrUnauthorized
 	ErrUnauthorized
+	// ErrAlreadyRegistered ErrAlreadyRegistered
 	ErrAlreadyRegistered
 )
 
@@ -37,8 +42,10 @@ var knownStatusCodes = map[Error]int{
 	ErrNotFound:       http.StatusNotFound,
 }
 
+// Error Error
 type Error int
 
+// StatusCode StatusCode
 func (err Error) StatusCode() int {
 	code, ok := knownStatusCodes[err]
 	if !ok {
@@ -56,7 +63,7 @@ func (err Error) Error() string {
 	return s
 }
 
-// Error returns description of error
+// Description returns description of error
 func (err Error) Description() string {
 	s, ok := knownErrorDescriptions[err]
 	if !ok {
@@ -65,10 +72,12 @@ func (err Error) Description() string {
 	return s
 }
 
+// IsCauseOf IsCauseOf
 func (err Error) IsCauseOf(wrappedErr error) bool {
 	return errors.Cause(wrappedErr) == err
 }
 
+// IsNotCauseOf IsNotCauseOf
 func (err Error) IsNotCauseOf(wrappedErr error) bool {
 	return !err.IsCauseOf(wrappedErr)
 }

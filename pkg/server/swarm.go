@@ -11,6 +11,7 @@ import (
 	"topology-generator/pkg/model"
 )
 
+// InfoAction InfoAction
 func (m *Swarm) InfoAction(c *ContextWrapper) {
 	id := c.Param("topologyId")
 
@@ -38,6 +39,7 @@ func (m *Swarm) InfoAction(c *ContextWrapper) {
 	c.OK(gin.H{"message": message, "docker-info": containers})
 }
 
+// GenerateAction GenerateAction
 func (m *Swarm) GenerateAction(c *ContextWrapper) {
 	id := c.Param("topologyId")
 
@@ -62,6 +64,7 @@ func (m *Swarm) GenerateAction(c *ContextWrapper) {
 	c.OK(gin.H{"message": fmt.Sprintf("ID: %s", id)})
 }
 
+// RunStopAction RunStopAction
 func (m *Swarm) RunStopAction(c *ContextWrapper) {
 	var body body
 	if err := c.ShouldBind(&body); err != nil {
@@ -79,6 +82,7 @@ func (m *Swarm) RunStopAction(c *ContextWrapper) {
 	c.WithCode(http.StatusOK, gin.H{"message": fmt.Sprintf("ID: %s", id), "docker-info": containers})
 }
 
+// DeleteAction DeleteAction
 func (m *Swarm) DeleteAction(c *ContextWrapper) {
 	id := c.Param("topologyId")
 

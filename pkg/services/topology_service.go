@@ -3,58 +3,62 @@ package services
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/sirupsen/logrus"
+	log "github.com/hanaboso/go-log/pkg"
 	"gopkg.in/yaml.v2"
 	"strings"
 	"topology-generator/pkg/config"
-	"topology-generator/pkg/fs_commands"
+	"topology-generator/pkg/fscommands"
 	"topology-generator/pkg/model"
 )
 
+// TopologyService TopologyService
 type TopologyService struct {
 	Topology        *model.Topology
 	Nodes           []model.Node
 	nodeConfig      model.NodeConfig
 	generatorConfig config.GeneratorConfig
+	logger          log.Logger
 }
 
-func (ts *TopologyService) CreateTopologyJson() ([]byte, error) {
+// CreateTopologyJSON CreateTopologyJSON
+func (ts *TopologyService) CreateTopologyJSON() ([]byte, error) {
 	var bridges, err = ts.nodeConfig.GetBridges(ts.Topology, ts.Nodes, ts.nodeConfig.Environment.WorkerDefaultPort)
 
 	if err != nil {
 		return nil, err
 	}
 
-	t := model.TopologyJson{
+	t := model.TopologyJSON{
 		ID:           model.CreateServiceName(ts.Topology.NormalizeName()),
 		TopologyName: ts.Topology.Name,
-		TopologyId:   ts.Topology.ID.Hex(),
+		TopologyID:   ts.Topology.ID.Hex(),
 		Bridges:      bridges,
 	}
 	return json.Marshal(t)
 }
 
+// GenerateTopology GenerateTopology
 func (ts *TopologyService) GenerateTopology() error {
-
-	topologyJsonData, err := ts.CreateTopologyJson()
+	topologyJSONData, err := ts.CreateTopologyJSON()
 	if err != nil {
 		return fmt.Errorf("error creating topology json. Reason: %v", err)
 	}
 
 	dstFile := GetDstDir(ts.generatorConfig.Path, ts.Topology.GetSaveDir())
-	if err := fs_commands.WriteFile(
+	if err := fscommands.WriteFile(
 		dstFile,
 		"topology.json",
-		topologyJsonData,
+		topologyJSONData,
 	); err != nil {
 		return fmt.Errorf("error writing to topology.json. Reason: %v", err)
 	}
 
-	logrus.Debugf("Save topology.json to %s", dstFile)
+	ts.logContext(nil).Debug("Save topology.json to %s", dstFile)
 
 	return nil
 }
 
+// CreateDockerCompose CreateDockerCompose
 func (ts *TopologyService) CreateDockerCompose(adapter model.Adapter) ([]byte, error) {
 	var (
 		services map[string]*model.Service
@@ -80,9 +84,10 @@ func (ts *TopologyService) CreateDockerCompose(adapter model.Adapter) ([]byte, e
 	return yaml.Marshal(compose)
 }
 
+// CreateConfigMap CreateConfigMap
 func (ts *TopologyService) CreateConfigMap() ([]byte, error) {
 	data := make(map[string]string)
-	topology, err := ts.CreateTopologyJson()
+	topology, err := ts.CreateTopologyJSON()
 
 	if err != nil {
 		return nil, fmt.Errorf("failed to create topology json. Reason: %v", err)
@@ -90,7 +95,7 @@ func (ts *TopologyService) CreateConfigMap() ([]byte, error) {
 
 	data["topology.json"] = string(topology)
 	configMap := model.ConfigMap{
-		ApiVersion: "v1",
+		APIVersion: "v1",
 		Kind:       "ConfigMap",
 		Metadata: model.Metadata{
 			Name: GetConfigMapName(ts.Topology.ID.Hex()),
@@ -101,6 +106,7 @@ func (ts *TopologyService) CreateConfigMap() ([]byte, error) {
 	return yaml.Marshal(configMap)
 }
 
+// CreateDeploymentService CreateDeploymentService
 func (ts *TopologyService) CreateDeploymentService() ([]byte, error) {
 	containerPorts, err := ts.getKubernetesContainerPorts()
 	if err != nil {
@@ -118,7 +124,7 @@ func (ts *TopologyService) CreateDeploymentService() ([]byte, error) {
 	}
 
 	s := model.DeploymentService{
-		ApiVersion: "v1",
+		APIVersion: "v1",
 		Kind:       "Service",
 		Metadata: model.Metadata{
 			Name: ts.Topology.GetMultiNodeName(),
@@ -133,6 +139,7 @@ func (ts *TopologyService) CreateDeploymentService() ([]byte, error) {
 	return yaml.Marshal(s)
 }
 
+// CreateKubernetesDeployment CreateKubernetesDeployment
 func (ts *TopologyService) CreateKubernetesDeployment() ([]byte, error) {
 	const mountName = "topologyjson"
 
@@ -144,7 +151,7 @@ func (ts *TopologyService) CreateKubernetesDeployment() ([]byte, error) {
 	labels := make(map[string]string)
 	labels["app"] = GetDeploymentName(ts.Topology.ID.Hex())
 	var depl = model.Deployment{
-		ApiVersion: "apps/v1",
+		APIVersion: "apps/v1",
 		Kind:       "Deployment",
 		Metadata: model.Metadata{
 			Name: GetDeploymentName(ts.Topology.ID.Hex()),
@@ -182,7 +189,7 @@ func (ts *TopologyService) getKubernetesContainerPorts() ([]model.Port, error) {
 	containerPorts := make([]model.Port, len(bridges))
 	for i, bridge := range bridges {
 		containerPorts[i] = model.Port{
-			Name:          getKubernetPortName(bridge.Label.NodeId),
+			Name:          getKubernetPortName(bridge.Label.NodeID),
 			ContainerPort: bridge.Debug.Port,
 		}
 	}
@@ -304,23 +311,36 @@ func (ts *TopologyService) getDockerServices(mode model.Adapter) (map[string]*mo
 	return services, nil
 }
 
-func NewTopologyService(nodeConfig model.NodeConfig, config config.GeneratorConfig, db StorageSvc, topologyId string) (*TopologyService, error) {
-	topology, err := db.GetTopology(topologyId)
-
-	if err != nil {
-		return nil, fmt.Errorf("error getting topology %s. Reason: %v", topologyId, err)
+func (ts *TopologyService) logContext(data map[string]interface{}) log.Logger {
+	if data == nil {
+		data = make(map[string]interface{})
 	}
 
-	nodes, err := db.GetTopologyNodes(topologyId)
+	data["service"] = "topology-generator"
+	data["type"] = "topology-service"
+
+	return ts.logger.WithFields(data)
+}
+
+// NewTopologyService NewTopologyService
+func NewTopologyService(nodeConfig model.NodeConfig, configuration config.GeneratorConfig, db StorageSvc, topologyID string) (*TopologyService, error) {
+	topology, err := db.GetTopology(topologyID)
 
 	if err != nil {
-		return nil, fmt.Errorf("error getting topology nodes %s. Reason: %v", topologyId, err)
+		return nil, fmt.Errorf("error getting topology %s. Reason: %v", topologyID, err)
+	}
+
+	nodes, err := db.GetTopologyNodes(topologyID)
+
+	if err != nil {
+		return nil, fmt.Errorf("error getting topology nodes %s. Reason: %v", topologyID, err)
 	}
 
 	return &TopologyService{
 		Topology:        topology,
 		Nodes:           nodes,
 		nodeConfig:      nodeConfig,
-		generatorConfig: config,
+		generatorConfig: configuration,
+		logger:          config.Logger,
 	}, nil
 }

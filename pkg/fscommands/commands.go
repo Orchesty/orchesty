@@ -1,12 +1,13 @@
-package fs_commands
+package fscommands
 
 import (
 	"bytes"
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"topology-generator/pkg/config"
 
-	log "github.com/sirupsen/logrus"
+	log "github.com/hanaboso/go-log/pkg"
 )
 
 // WriteFile creates new file in given directory
@@ -31,9 +32,9 @@ func RemoveDirectory(directory string) error {
 	return os.RemoveAll(directory)
 }
 
-func Execute(command string, args ...string) (error, bytes.Buffer, bytes.Buffer) {
-
-	log.Infof("CMD: %s %s", command, args)
+// Execute Execute
+func Execute(command string, args ...string) (bytes.Buffer, bytes.Buffer, error) {
+	logContext().Info("CMD: %s %s", command, args)
 
 	cmd := exec.Command(command, args...)
 	var (
@@ -47,16 +48,23 @@ func Execute(command string, args ...string) (error, bytes.Buffer, bytes.Buffer)
 	err := cmd.Run()
 
 	if err != nil {
-		log.Infof("Exit:%s", err)
+		logContext().Info("Exit:%s", err)
 	}
 
 	if out.Len() > 0 {
-		log.Infof("OUT %s %s > %s\n", cmd.Path, cmd.Args, out.String())
+		logContext().Info("OUT %s %s > %s\n", cmd.Path, cmd.Args, out.String())
 	}
 
 	if stdErr.Len() > 0 {
-		log.Infof("STDERR %s\n", stdErr.String())
+		logContext().Info("STDERR %s\n", stdErr.String())
 	}
 
-	return err, out, stdErr
+	return out, stdErr, err
+}
+
+func logContext() log.Logger {
+	return config.Logger.WithFields(map[string]interface{}{
+		"service": "topology-generator",
+		"type":    "fs-command",
+	})
 }

@@ -102,42 +102,42 @@ func getTestTopology() model.Topology {
 func getNodeConfigs() map[string]model.NodeUserParams {
 	return map[string]model.NodeUserParams{
 		"5cc047dd4e9acc002a200c12": {
-			Worker: model.TopologyBridgeWorkerJson{
+			Worker: model.TopologyBridgeWorkerJSON{
 				Type: "worker.null",
-				Settings: model.TopologyBridgeWorkerSettingsJson{
-					PublishQueue: model.TopologyBridgeWorkerSettingsQueueJson{},
+				Settings: model.TopologyBridgeWorkerSettingsJSON{
+					PublishQueue: model.TopologyBridgeWorkerSettingsQueueJSON{},
 				},
 			},
 		},
 		"5cc047dd4e9acc002a200c13": {
-			Faucet: model.TopologyBridgeFaucetSettingsJson{
+			Faucet: model.TopologyBridgeFaucetSettingsJSON{
 				Settings: map[string]int{
 					"prefetch": 10,
 				},
 			},
-			Worker: model.TopologyBridgeWorkerJson{
+			Worker: model.TopologyBridgeWorkerJSON{
 				Type: "worker.http",
-				Settings: model.TopologyBridgeWorkerSettingsJson{
+				Settings: model.TopologyBridgeWorkerSettingsJSON{
 					Host:         "monolith-api",
 					ProcessPath:  "/connector/Webhook/webhook",
 					StatusPath:   "/connector/Webhook/webhook/test",
 					Method:       "POST",
 					Port:         80,
 					Secure:       false,
-					PublishQueue: model.TopologyBridgeWorkerSettingsQueueJson{},
+					PublishQueue: model.TopologyBridgeWorkerSettingsQueueJSON{},
 				},
 			},
 		},
 		"5cc047dd4e9acc002a200c14": {
-			Worker: model.TopologyBridgeWorkerJson{
+			Worker: model.TopologyBridgeWorkerJSON{
 				Type: "worker.http_xml_parser",
-				Settings: model.TopologyBridgeWorkerSettingsJson{
+				Settings: model.TopologyBridgeWorkerSettingsJSON{
 					Host:         "xml-parser-api",
 					ProcessPath:  "/Xml_parser",
 					StatusPath:   "/Xml_parser/test",
 					Method:       "POST",
 					Port:         80,
-					PublishQueue: model.TopologyBridgeWorkerSettingsQueueJson{},
+					PublishQueue: model.TopologyBridgeWorkerSettingsQueueJSON{},
 				},
 			},
 		},
@@ -269,7 +269,7 @@ func TestGetDockerServicesFails(t *testing.T) {
 		mockGetTopologyNodes: func(id string) (nodes []model.Node, e error) {
 			return []model.Node{}, nil
 		},
-	}, topologyId)
+	}, topologyID)
 
 	if err != nil {
 		t.Fatal(err)
@@ -300,7 +300,7 @@ func TestTopologyService_CreateDockerComposeFails(t *testing.T) {
 		mockGetTopologyNodes: func(id string) (nodes []model.Node, e error) {
 			return []model.Node{}, nil
 		},
-	}, topologyId)
+	}, topologyID)
 
 	if err != nil {
 		t.Fatal(err)

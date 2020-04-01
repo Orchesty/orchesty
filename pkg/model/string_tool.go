@@ -2,6 +2,7 @@ package model
 
 import "strings"
 
+// Substring Substring
 func Substring(s string, start int, length int) string {
 
 	if start > len(s) {
@@ -31,6 +32,7 @@ func Substring(s string, start int, length int) string {
 	return s[start:length]
 }
 
+// CreateServiceName CreateServiceName
 func CreateServiceName(s string) string {
 	var (
 		item   string

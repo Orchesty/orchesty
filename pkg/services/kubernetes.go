@@ -3,7 +3,7 @@ package services
 import (
 	"flag"
 	"fmt"
-	"github.com/sirupsen/logrus"
+	log "github.com/hanaboso/go-log/pkg"
 	appsV1 "k8s.io/api/apps/v1"
 	coreV1 "k8s.io/api/core/v1"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -15,7 +15,7 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/retry"
 	"topology-generator/pkg/config"
-	"topology-generator/pkg/fs_commands"
+	"topology-generator/pkg/fscommands"
 	"topology-generator/pkg/model"
 )
 
@@ -24,41 +24,44 @@ type kubernetesClient struct {
 	configClient     typedCoreV1.ConfigMapInterface
 	serviceClient    typedCoreV1.ServiceInterface
 	namespace        string
+	logger           log.Logger
 }
 
-func (c kubernetesClient) DeleteAll(topologyId string, db StorageSvc, generatorConfig config.GeneratorConfig) error {
-	topology, err := db.GetTopology(topologyId)
+// DeleteAll DeleteAll
+func (c kubernetesClient) DeleteAll(topologyID string, db StorageSvc, generatorConfig config.GeneratorConfig) error {
+	topology, err := db.GetTopology(topologyID)
 	if err != nil {
-		return fmt.Errorf("error getting topology %s from db. Reason: %v", topologyId, err)
+		return fmt.Errorf("error getting topology %s from db. Reason: %v", topologyID, err)
 	}
 	err = c.deleteService(topology.GetMultiNodeName())
 	if err != nil {
 		return fmt.Errorf("deleting service failed. Reason: %v", err)
 	}
 
-	err = c.deleteConfigMap(GetConfigMapName(topologyId))
+	err = c.deleteConfigMap(GetConfigMapName(topologyID))
 	if err != nil {
 		return fmt.Errorf("deleting config map failed. Reason: %v", err)
 	}
 
-	err = c.delete(GetDeploymentName(topologyId))
+	err = c.delete(GetDeploymentName(topologyID))
 	if err != nil {
 		return fmt.Errorf("deleting deployment failed. Reason: %v", err)
 	}
 
 	dstDir := GetDstDir(generatorConfig.Path, topology.GetSaveDir())
-	err = fs_commands.RemoveDirectory(dstDir)
+	err = fscommands.RemoveDirectory(dstDir)
 	if err != nil {
 		return fmt.Errorf("removing %s failed. Reason: %v", dstDir, err)
 	}
 	return nil
 }
 
-func (c kubernetesClient) RunStop(topologyId string, db StorageSvc, action string) error {
-	topology, err := db.GetTopology(topologyId)
+// RunStop RunStop
+func (c kubernetesClient) RunStop(topologyID string, db StorageSvc, action string) error {
+	topology, err := db.GetTopology(topologyID)
 
 	if err != nil {
-		return fmt.Errorf("error getting topology %s", topologyId)
+		return fmt.Errorf("error getting topology %s", topologyID)
 	}
 
 	switch action {
@@ -80,6 +83,7 @@ func (c kubernetesClient) RunStop(topologyId string, db StorageSvc, action strin
 	return fmt.Errorf("action %s is not allowed", action)
 }
 
+// Generate Generate
 func (c kubernetesClient) Generate(ts *TopologyService) error {
 	err := ts.GenerateTopology()
 	if err != nil {
@@ -90,7 +94,7 @@ func (c kubernetesClient) Generate(ts *TopologyService) error {
 	if err != nil {
 		return fmt.Errorf("creating configmap yaml content[topology_id=%s] failed. Reason: %v", ts.Topology.ID.Hex(), err)
 	}
-	if err := fs_commands.WriteFile(
+	if err := fscommands.WriteFile(
 		dstFile,
 		"configmap.yaml",
 		configMap,
@@ -107,7 +111,7 @@ func (c kubernetesClient) Generate(ts *TopologyService) error {
 	if err != nil {
 		return fmt.Errorf("creating deployment yaml content[topology_id=%s] failed. Reason: %v", ts.Topology.ID.Hex(), err)
 	}
-	if err := fs_commands.WriteFile(
+	if err := fscommands.WriteFile(
 		dstFile,
 		"kubernetes-deployment.yaml",
 		kubernetesDeployment,
@@ -119,13 +123,13 @@ func (c kubernetesClient) Generate(ts *TopologyService) error {
 	if err != nil {
 		return fmt.Errorf("creating deployment failed. Reason: %v", err)
 	}
-	logrus.Debugf("Save kubernetes-deployment.yml to %s", dstFile)
+	c.logContext(nil).Debug("Save kubernetes-deployment.yml to %s", dstFile)
 
 	service, err := ts.CreateDeploymentService()
 	if err != nil {
 		return fmt.Errorf("creating yaml content of service[topology_id=%s] failed. Reason: %v", ts.Topology.ID.Hex(), err)
 	}
-	if err := fs_commands.WriteFile(
+	if err := fscommands.WriteFile(
 		dstFile,
 		"service.yaml",
 		service,
@@ -168,6 +172,7 @@ func (c kubernetesClient) deleteConfigMap(name string) error {
 	})
 }
 
+// Info Info
 func (c kubernetesClient) Info(name string) ([]coreV1.Container, error) {
 	deployment, err := c.deploymentClient.Get(name, metaV1.GetOptions{})
 	if err != nil {
@@ -246,6 +251,18 @@ func (c kubernetesClient) delete(name string) error {
 	})
 }
 
+func (c kubernetesClient) logContext(data map[string]interface{}) log.Logger {
+	if data == nil {
+		data = make(map[string]interface{})
+	}
+
+	data["service"] = "topology-generator"
+	data["type"] = "mongodb"
+
+	return c.logger.WithFields(data)
+}
+
+// KubernetesSvc KubernetesSvc
 type KubernetesSvc interface {
 	create(obj []byte) error
 	createConfigMap(obj []byte) error
@@ -257,17 +274,25 @@ type KubernetesSvc interface {
 	createService(obj []byte) error
 	deleteService(name string) error
 	Generate(ts *TopologyService) error
-	RunStop(topologyId string, db StorageSvc, action string) error
-	DeleteAll(topologyId string, db StorageSvc, generatorConfig config.GeneratorConfig) error
+	RunStop(topologyID string, db StorageSvc, action string) error
+	DeleteAll(topologyID string, db StorageSvc, generatorConfig config.GeneratorConfig) error
 }
 
+// NewKubernetesSvc NewKubernetesSvc
 func NewKubernetesSvc(clientSet *kubernetes.Clientset, namespace string) KubernetesSvc {
 	deploymentsClient := clientSet.AppsV1().Deployments(namespace)
 	configClient := clientSet.CoreV1().ConfigMaps(namespace)
 	serviceClient := clientSet.CoreV1().Services(namespace)
-	return &kubernetesClient{deploymentClient: deploymentsClient, namespace: namespace, configClient: configClient, serviceClient: serviceClient}
+	return &kubernetesClient{
+		deploymentClient: deploymentsClient,
+		namespace:        namespace,
+		configClient:     configClient,
+		serviceClient:    serviceClient,
+		logger:           config.Logger,
+	}
 }
 
+// GetKubernetesConfig GetKubernetesConfig
 func GetKubernetesConfig(config config.GeneratorConfig) (*rest.Config, error) {
 	if config.Mode != model.ModeKubernetes {
 		return nil, fmt.Errorf("mode %s is not compatible with kubernetes", config.Mode)

@@ -9,6 +9,7 @@ import (
 	"topology-generator/pkg/services"
 )
 
+// GenerateAction GenerateAction
 func (k *Kubernetes) GenerateAction(c *ContextWrapper) {
 	id := c.Param("topologyId")
 
@@ -35,6 +36,7 @@ func (k *Kubernetes) GenerateAction(c *ContextWrapper) {
 
 }
 
+// RunStopAction RunStopAction
 func (k *Kubernetes) RunStopAction(c *ContextWrapper) {
 	var body body
 	if err := c.ShouldBind(&body); err != nil {
@@ -53,6 +55,7 @@ func (k *Kubernetes) RunStopAction(c *ContextWrapper) {
 	c.WithCode(http.StatusOK, gin.H{"message": fmt.Sprintf("ID: %s", id)})
 }
 
+// DeleteAction DeleteAction
 func (k *Kubernetes) DeleteAction(c *ContextWrapper) {
 	id := c.Param("topologyId")
 
@@ -65,6 +68,7 @@ func (k *Kubernetes) DeleteAction(c *ContextWrapper) {
 	c.WithCode(http.StatusOK, gin.H{"message": fmt.Sprintf("ID: %s", id)})
 }
 
+// InfoAction InfoAction
 func (k *Kubernetes) InfoAction(c *ContextWrapper) {
 	id := c.Param("topologyId")
 

@@ -1,43 +1,60 @@
 package model
 
 import (
-	"errors"
 	"fmt"
 	"net"
 )
 
 const (
 	//RabbitDsn      = "RABBITMQ_DSN"
-	RabbitMqHost   = "RABBITMQ_HOST"
-	RabbitMqPort   = "RABBITMQ_PORT"
-	RabbitMqUser   = "RABBITMQ_USER"
-	RabbitMqPass   = "RABBITMQ_PASS"
-	RabbitMqVHost  = "RABBITMQ_VHOST"
+
+	// RabbitMqHost RabbitMqHost
+	RabbitMqHost = "RABBITMQ_HOST"
+	// RabbitMqPort RabbitMqPort
+	RabbitMqPort = "RABBITMQ_PORT"
+	// RabbitMqUser RabbitMqUser
+	RabbitMqUser = "RABBITMQ_USER"
+	// RabbitMqPass RabbitMqPass
+	RabbitMqPass = "RABBITMQ_PASS"
+	// RabbitMqVHost RabbitMqVHost
+	RabbitMqVHost = "RABBITMQ_VHOST"
+	// MultiProbeHost MultiProbeHost
 	MultiProbeHost = "MULTI_PROBE_HOST"
+	// MultiProbePort MultiProbePort
 	MultiProbePort = "MULTI_PROBE_PORT"
-	MetricsHost    = "METRICS_HOST"
-	MetricsPort    = "METRICS_PORT"
+	// MetricsHost MetricsHost
+	MetricsHost = "METRICS_HOST"
+	// MetricsPort MetricsPort
+	MetricsPort = "METRICS_PORT"
+	// MetricsService MetricsService
 	MetricsService = "METRICS_SERVICE"
 )
 
+// Adapter Adapter
 type Adapter string
 
 const (
-	ModeCompose    Adapter = "compose"
-	ModeSwarm      Adapter = "swarm"
+	// ModeCompose ModeCompose
+	ModeCompose Adapter = "compose"
+	// ModeSwarm ModeSwarm
+	ModeSwarm Adapter = "swarm"
+	// ModeKubernetes ModeKubernetes
 	ModeKubernetes Adapter = "k8s"
 )
 
+// NodeConfig NodeConfig
 type NodeConfig struct {
 	NodeConfig  map[string]NodeUserParams `json:"node_config"`
 	Environment Environment               `json:"environment,omitempty"`
 }
 
+// NodeUserParams NodeUserParams
 type NodeUserParams struct {
-	Faucet TopologyBridgeFaucetSettingsJson `json:"faucet,omitempty"`
-	Worker TopologyBridgeWorkerJson         `json:"worker"`
+	Faucet TopologyBridgeFaucetSettingsJSON `json:"faucet,omitempty"`
+	Worker TopologyBridgeWorkerJSON         `json:"worker"`
 }
 
+// Environment Environment
 type Environment struct {
 	DockerRegistry      string `json:"docker_registry"`
 	DockerPfBridgeImage string `json:"docker_pf_bridge_image"`
@@ -54,15 +71,16 @@ type Environment struct {
 	GeneratorMode     Adapter `json:"generator_mode"`
 }
 
-func (p *NodeConfig) GetBridges(t *Topology, nodes []Node, WorkerDefaultPort int) ([]TopologyBridgeJson, error) {
+// GetBridges GetBridges
+func (p *NodeConfig) GetBridges(t *Topology, nodes []Node, WorkerDefaultPort int) ([]TopologyBridgeJSON, error) {
 
 	var (
-		bridges []TopologyBridgeJson
+		bridges []TopologyBridgeJSON
 		port    int
 	)
 
 	if len(nodes) == 0 {
-		return nil, errors.New(fmt.Sprintf("missing nodes"))
+		return nil, fmt.Errorf("missing nodes")
 	}
 
 	i := 0
@@ -70,32 +88,32 @@ func (p *NodeConfig) GetBridges(t *Topology, nodes []Node, WorkerDefaultPort int
 
 		port = WorkerDefaultPort + i
 
-		nodeId := CreateServiceName(node.GetServiceName())
+		nodeID := CreateServiceName(node.GetServiceName())
 
-		var worker TopologyBridgeWorkerJson
-		var faucet TopologyBridgeFaucetSettingsJson
+		var worker TopologyBridgeWorkerJSON
+		var faucet TopologyBridgeFaucetSettingsJSON
 		if nodeConfig, ok := p.NodeConfig[node.ID.Hex()]; ok {
 			worker = nodeConfig.Worker
 			faucet = nodeConfig.Faucet
 		} else {
-			return nil, errors.New(fmt.Sprintf("missing config data for node ID: %s", node.ID.Hex()))
+			return nil, fmt.Errorf("missing config data for node ID: %s", node.ID.Hex())
 		}
 
-		bridges = append(bridges, TopologyBridgeJson{
-			ID: CreateServiceName(nodeId),
-			Label: TopologyBridgeLabelJson{
-				ID:       CreateServiceName(nodeId),
-				NodeId:   node.ID.Hex(),
+		bridges = append(bridges, TopologyBridgeJSON{
+			ID: CreateServiceName(nodeID),
+			Label: TopologyBridgeLabelJSON{
+				ID:       CreateServiceName(nodeID),
+				NodeID:   node.ID.Hex(),
 				NodeName: node.Name,
 			},
 			Faucet: faucet,
 			Worker: worker,
 			Next:   node.GetNext(),
 			// TODO: add multimode choice
-			Debug: TopologyBridgeDebugJson{
+			Debug: TopologyBridgeDebugJSON{
 				Port: port,
 				Host: t.GetMultiNodeName(),
-				Url:  fmt.Sprintf("http://%s:%d/status", t.GetMultiNodeName(), port),
+				URL:  fmt.Sprintf("http://%s:%d/status", t.GetMultiNodeName(), port),
 			},
 		})
 
@@ -105,6 +123,7 @@ func (p *NodeConfig) GetBridges(t *Topology, nodes []Node, WorkerDefaultPort int
 	return bridges, nil
 }
 
+// GetEnvironment GetEnvironment
 func (e *Environment) GetEnvironment() (map[string]string, error) {
 	var environment = make(map[string]string)
 	var err error

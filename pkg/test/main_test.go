@@ -18,7 +18,7 @@ import (
 
 var client *mongo.Client
 
-const topologyId = "5ddba690ffa5d5261c2d3fe2"
+const topologyID = "5ddba690ffa5d5261c2d3fe2"
 
 func TestMain(m *testing.M) {
 	mongo := &mongodb.Connection{}
@@ -31,7 +31,7 @@ func TestMain(m *testing.M) {
 
 func insertTestData(db *mongo.Database) {
 	coll := db.Collection(config.Mongo.Topology)
-	objectId, err := primitive.ObjectIDFromHex(topologyId)
+	objectId, err := primitive.ObjectIDFromHex(topologyID)
 	if err != nil {
 		log.Fatal("Creating primitive object id failed: ", err.Error())
 	}
@@ -63,7 +63,7 @@ func insertTestData(db *mongo.Database) {
 	node := model.Node{
 		ID:       nodeObjectId,
 		Name:     "Start",
-		Topology: topologyId,
+		Topology: topologyID,
 		Next: []model.NodeNext{
 			{
 				ID:   "5ddba6a33ba8ab2922002a93",
@@ -86,7 +86,7 @@ func insertTestData(db *mongo.Database) {
 	node = model.Node{
 		ID:       nodeObjectId,
 		Name:     "idnes",
-		Topology: topologyId,
+		Topology: topologyID,
 		Next:     nil,
 		Type:     "custom",
 		Handler:  "action",
@@ -101,10 +101,10 @@ func getTestNodeConfig() *model.NodeConfig {
 	return &model.NodeConfig{
 		NodeConfig: map[string]model.NodeUserParams{
 			"5ddba6a33ba8ab2922002a92": {
-				Faucet: model.TopologyBridgeFaucetSettingsJson{},
-				Worker: model.TopologyBridgeWorkerJson{
+				Faucet: model.TopologyBridgeFaucetSettingsJSON{},
+				Worker: model.TopologyBridgeWorkerJSON{
 					Type: "worker.null",
-					Settings: model.TopologyBridgeWorkerSettingsJson{
+					Settings: model.TopologyBridgeWorkerSettingsJSON{
 						Host:        "",
 						ProcessPath: "",
 						StatusPath:  "",
@@ -112,7 +112,7 @@ func getTestNodeConfig() *model.NodeConfig {
 						Port:        0,
 						Secure:      false,
 						Opts:        nil,
-						PublishQueue: model.TopologyBridgeWorkerSettingsQueueJson{
+						PublishQueue: model.TopologyBridgeWorkerSettingsQueueJSON{
 							Name:    "",
 							Options: "",
 						},
@@ -121,10 +121,10 @@ func getTestNodeConfig() *model.NodeConfig {
 				},
 			},
 			"5ddba6a33ba8ab2922002a93": {
-				Faucet: model.TopologyBridgeFaucetSettingsJson{},
-				Worker: model.TopologyBridgeWorkerJson{
+				Faucet: model.TopologyBridgeFaucetSettingsJSON{},
+				Worker: model.TopologyBridgeWorkerJSON{
 					Type: "worker.http",
-					Settings: model.TopologyBridgeWorkerSettingsJson{
+					Settings: model.TopologyBridgeWorkerSettingsJSON{
 						Host:        "monolith-api",
 						ProcessPath: "/custom_node/idnes/process",
 						StatusPath:  "/custom_node/idnes/process/test",
@@ -132,7 +132,7 @@ func getTestNodeConfig() *model.NodeConfig {
 						Port:        80,
 						Secure:      false,
 						Opts:        nil,
-						PublishQueue: model.TopologyBridgeWorkerSettingsQueueJson{
+						PublishQueue: model.TopologyBridgeWorkerSettingsQueueJSON{
 							Name:    "",
 							Options: "",
 						},

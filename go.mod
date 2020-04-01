@@ -1,6 +1,6 @@
 module topology-generator
 
-go 1.13
+go 1.14
 
 require (
 	github.com/Microsoft/go-winio v0.4.14 // indirect
@@ -11,15 +11,15 @@ require (
 	github.com/gin-contrib/sse v0.0.0-20190301062529-5545eab6dad3 // indirect
 	github.com/gin-gonic/gin v1.3.0
 	github.com/golang/protobuf v1.3.1 // indirect
+	github.com/hanaboso/go-log v0.0.0-20200316105142-2513eeb2ee4e
 	github.com/hanaboso/go-mongodb v0.0.0-20200219152830-da09213c767a
 	github.com/jinzhu/configor v1.0.0
 	github.com/json-iterator/go v1.1.6 // indirect
 	github.com/mattn/go-isatty v0.0.7 // indirect
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
 	github.com/pkg/errors v0.9.1
-	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/cobra v0.0.3
-	github.com/stretchr/testify v1.5.0
+	github.com/stretchr/testify v1.5.1
 	github.com/ugorji/go v1.1.4 // indirect
 	github.com/xdg/stringprep v1.0.0 // indirect
 	go.mongodb.org/mongo-driver v1.3.0

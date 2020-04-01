@@ -7,24 +7,28 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type TopologyBridgeDebugJson struct {
+// TopologyBridgeDebugJSON TopologyBridgeDebugJSON
+type TopologyBridgeDebugJSON struct {
 	Port int    `json:"port,omitempty"`
 	Host string `json:"host,omitempty"`
-	Url  string `json:"url,omitempty"`
+	URL  string `json:"url,omitempty"`
 }
 
-type TopologyBridgeLabelJson struct {
+// TopologyBridgeLabelJSON TopologyBridgeLabelJSON
+type TopologyBridgeLabelJSON struct {
 	ID       string `json:"id"`
-	NodeId   string `json:"node_id"`
+	NodeID   string `json:"node_id"`
 	NodeName string `json:"node_name"`
 }
 
-type TopologyBridgeWorkerSettingsQueueJson struct {
+// TopologyBridgeWorkerSettingsQueueJSON TopologyBridgeWorkerSettingsQueueJSON
+type TopologyBridgeWorkerSettingsQueueJSON struct {
 	Name    string `json:"name,omitempty"`
 	Options string `json:"options,omitempty"`
 }
 
-type TopologyBridgeWorkerSettingsJson struct {
+// TopologyBridgeWorkerSettingsJSON TopologyBridgeWorkerSettingsJSON
+type TopologyBridgeWorkerSettingsJSON struct {
 	Host           string                                `json:"host,omitempty"`
 	ProcessPath    string                                `json:"process_path,omitempty"`
 	StatusPath     string                                `json:"status_path,omitempty"`
@@ -32,31 +36,35 @@ type TopologyBridgeWorkerSettingsJson struct {
 	Port           int                                   `json:"port,omitempty"`
 	Secure         bool                                  `json:"secure,omitempty" default:"true"`
 	Opts           []string                              `json:"opts,omitempty"`
-	PublishQueue   TopologyBridgeWorkerSettingsQueueJson `json:"publish_queue,omitempty"`
+	PublishQueue   TopologyBridgeWorkerSettingsQueueJSON `json:"publish_queue,omitempty"`
 	ParserSettings []string                              `json:"parser_settings,omitempty"`
 }
 
-type TopologyBridgeWorkerJson struct {
+// TopologyBridgeWorkerJSON TopologyBridgeWorkerJSON
+type TopologyBridgeWorkerJSON struct {
 	Type     string                           `json:"type"`
-	Settings TopologyBridgeWorkerSettingsJson `json:"settings,omitempty"`
+	Settings TopologyBridgeWorkerSettingsJSON `json:"settings,omitempty"`
 }
 
-type TopologyBridgeJson struct {
+// TopologyBridgeJSON TopologyBridgeJSON
+type TopologyBridgeJSON struct {
 	ID     string                           `json:"id"`
-	Label  TopologyBridgeLabelJson          `json:"label"`
-	Faucet TopologyBridgeFaucetSettingsJson `json:"faucet"`
-	Worker TopologyBridgeWorkerJson         `json:"worker"`
+	Label  TopologyBridgeLabelJSON          `json:"label"`
+	Faucet TopologyBridgeFaucetSettingsJSON `json:"faucet"`
+	Worker TopologyBridgeWorkerJSON         `json:"worker"`
 	Next   []string                         `json:"next"`
-	Debug  TopologyBridgeDebugJson          `json:"debug"`
+	Debug  TopologyBridgeDebugJSON          `json:"debug"`
 }
 
-type TopologyJson struct {
+// TopologyJSON TopologyJSON
+type TopologyJSON struct {
 	ID           string               `json:"id"`
-	TopologyId   string               `json:"topology_id"`
+	TopologyID   string               `json:"topology_id"`
 	TopologyName string               `json:"topology_name"`
-	Bridges      []TopologyBridgeJson `json:"nodes"`
+	Bridges      []TopologyBridgeJSON `json:"nodes"`
 }
 
+// Topology Topology
 type Topology struct {
 	ID         primitive.ObjectID `bson:"_id"`
 	Name       string             `bson:"name"`
@@ -70,15 +78,18 @@ type Topology struct {
 	Deleted    bool               `bson:"deleted"`
 }
 
-type TopologyBridgeFaucetSettingsJson struct {
+// TopologyBridgeFaucetSettingsJSON TopologyBridgeFaucetSettingsJSON
+type TopologyBridgeFaucetSettingsJSON struct {
 	Settings map[string]int `json:"settings,omitempty"`
 }
 
+// NodeNext NodeNext
 type NodeNext struct {
 	ID   string `bson:"id"`
 	Name string `bson:"name"`
 }
 
+// Node Node
 type Node struct {
 	ID       primitive.ObjectID `bson:"_id"`
 	Name     string             `bson:"name"`
@@ -90,11 +101,13 @@ type Node struct {
 	Deleted  bool               `bson:"deleted"`
 }
 
+// GetServiceName GetServiceName
 func (n *Node) GetServiceName() string {
 	//TODO: add webalize to Name
 	return fmt.Sprintf("%s-%s", n.ID.Hex(), n.Name)
 }
 
+// GetNext GetNext
 func (n *Node) GetNext() []string {
 
 	var nextNode []string
@@ -107,35 +120,43 @@ func (n *Node) GetNext() []string {
 	return nextNode
 }
 
+// NormalizeName NormalizeName
 func (t *Topology) NormalizeName() string {
 	//TODO: add webalize to Name
 	return fmt.Sprintf("%s-%s", t.ID.Hex(), t.Name)
 }
 
+// GetDockerName GetDockerName
 func (t *Topology) GetDockerName() string {
 	return fmt.Sprintf("%s-%s", t.ID.Hex(), strings.ToLower(strings.ReplaceAll(t.Name, " ", "")))
 }
 
+// GetMultiNodeName GetMultiNodeName
 func (t *Topology) GetMultiNodeName() string {
 	return fmt.Sprintf("mb-%s", t.ID.Hex())
 }
 
+// GetSaveDir GetSaveDir
 func (t *Topology) GetSaveDir() string {
 	return t.NormalizeName()
 }
 
+// GetSwarmName GetSwarmName
 func (t *Topology) GetSwarmName(prefix string) string {
 	return fmt.Sprintf("%s_%s", prefix, Substring(t.ID.Hex(), 8, len(t.ID.Hex())))
 }
 
+// GetProbeServiceName GetProbeServiceName
 func (t *Topology) GetProbeServiceName() string {
 	return fmt.Sprintf("%s_probe", t.ID.Hex())
 }
 
+// GetCounterServiceName GetCounterServiceName
 func (t *Topology) GetCounterServiceName() string {
 	return fmt.Sprintf("%s_counter", t.ID.Hex())
 }
 
+// GetConfigName GetConfigName
 func (t *Topology) GetConfigName(prefix string) string {
 	return fmt.Sprintf(
 		"%s_%s_config",
@@ -144,6 +165,7 @@ func (t *Topology) GetConfigName(prefix string) string {
 	)
 }
 
+// GetTopologyPrefix GetTopologyPrefix
 func (t *Topology) GetTopologyPrefix(prefix string) string {
 	return fmt.Sprintf(
 		"%s_%s",
@@ -152,6 +174,7 @@ func (t *Topology) GetTopologyPrefix(prefix string) string {
 	)
 }
 
+// GetVolumes GetVolumes
 func (t *Topology) GetVolumes(adapter Adapter, sourcePath string, topologyPath string) []string {
 	var volumes = make([]string, 0)
 

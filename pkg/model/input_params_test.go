@@ -56,7 +56,7 @@ func getBridgesEmptyNodes(t *testing.T) {
 }
 
 func getBridges(t *testing.T) {
-	topologyJson := []byte(`[{"id":"5cc047dd4e9acc002a200c12-sta","label":{"id":"5cc047dd4e9acc002a200c12-sta","node_id":"5cc047dd4e9acc002a200c12","node_name":"start"},"faucet":{},"worker":{"type":"worker.null","settings":{"publish_queue":{}}},"next":["5cc047dd4e9acc002a200c14-xml"],"debug":{"port":8088,"host":"mb-5cc0474e4e9acc00282bb942","url":"http://mb-5cc0474e4e9acc00282bb942:8088/status"}},{"id":"5cc047dd4e9acc002a200c13-web","label":{"id":"5cc047dd4e9acc002a200c13-web","node_id":"5cc047dd4e9acc002a200c13","node_name":"Webhook"},"faucet":{"settings":{"prefetch":10}},"worker":{"type":"worker.http","settings":{"host":"monolith-api","process_path":"/connector/Webhook/webhook","status_path":"/connector/Webhook/webhook/test","method":"POST","port":80,"publish_queue":{}}},"next":[],"debug":{"port":8089,"host":"mb-5cc0474e4e9acc00282bb942","url":"http://mb-5cc0474e4e9acc00282bb942:8089/status"}},{"id":"5cc047dd4e9acc002a200c14-xml","label":{"id":"5cc047dd4e9acc002a200c14-xml","node_id":"5cc047dd4e9acc002a200c14","node_name":"Xml_parser"},"faucet":{},"worker":{"type":"worker.http_xml_parser","settings":{"host":"xml-parser-api","process_path":"/Xml_parser","status_path":"/Xml_parser/test","method":"POST","port":80,"publish_queue":{}}},"next":["5cc047dd4e9acc002a200c13-web"],"debug":{"port":8090,"host":"mb-5cc0474e4e9acc00282bb942","url":"http://mb-5cc0474e4e9acc00282bb942:8090/status"}}]`)
+	topologyJSON := []byte(`[{"id":"5cc047dd4e9acc002a200c12-sta","label":{"id":"5cc047dd4e9acc002a200c12-sta","node_id":"5cc047dd4e9acc002a200c12","node_name":"start"},"faucet":{},"worker":{"type":"worker.null","settings":{"publish_queue":{}}},"next":["5cc047dd4e9acc002a200c14-xml"],"debug":{"port":8088,"host":"mb-5cc0474e4e9acc00282bb942","url":"http://mb-5cc0474e4e9acc00282bb942:8088/status"}},{"id":"5cc047dd4e9acc002a200c13-web","label":{"id":"5cc047dd4e9acc002a200c13-web","node_id":"5cc047dd4e9acc002a200c13","node_name":"Webhook"},"faucet":{"settings":{"prefetch":10}},"worker":{"type":"worker.http","settings":{"host":"monolith-api","process_path":"/connector/Webhook/webhook","status_path":"/connector/Webhook/webhook/test","method":"POST","port":80,"publish_queue":{}}},"next":[],"debug":{"port":8089,"host":"mb-5cc0474e4e9acc00282bb942","url":"http://mb-5cc0474e4e9acc00282bb942:8089/status"}},{"id":"5cc047dd4e9acc002a200c14-xml","label":{"id":"5cc047dd4e9acc002a200c14-xml","node_id":"5cc047dd4e9acc002a200c14","node_name":"Xml_parser"},"faucet":{},"worker":{"type":"worker.http_xml_parser","settings":{"host":"xml-parser-api","process_path":"/Xml_parser","status_path":"/Xml_parser/test","method":"POST","port":80,"publish_queue":{}}},"next":["5cc047dd4e9acc002a200c13-web"],"debug":{"port":8090,"host":"mb-5cc0474e4e9acc00282bb942","url":"http://mb-5cc0474e4e9acc00282bb942:8090/status"}}]`)
 
 	topology := getTestTopology()
 	nodes := getTestNodes()
@@ -71,8 +71,8 @@ func getBridges(t *testing.T) {
 		t.Errorf("cannot get bridges [%s]", err)
 	}
 
-	var expected []TopologyBridgeJson
-	err = json.Unmarshal(topologyJson, &expected)
+	var expected []TopologyBridgeJSON
+	err = json.Unmarshal(topologyJSON, &expected)
 
 	assert.Equal(t, expected, result)
 }
@@ -80,42 +80,42 @@ func getBridges(t *testing.T) {
 func getNodeConfigs() map[string]NodeUserParams {
 	return map[string]NodeUserParams{
 		"5cc047dd4e9acc002a200c12": {
-			Worker: TopologyBridgeWorkerJson{
+			Worker: TopologyBridgeWorkerJSON{
 				Type: "worker.null",
-				Settings: TopologyBridgeWorkerSettingsJson{
-					PublishQueue: TopologyBridgeWorkerSettingsQueueJson{},
+				Settings: TopologyBridgeWorkerSettingsJSON{
+					PublishQueue: TopologyBridgeWorkerSettingsQueueJSON{},
 				},
 			},
 		},
 		"5cc047dd4e9acc002a200c13": {
-			Faucet: TopologyBridgeFaucetSettingsJson{
+			Faucet: TopologyBridgeFaucetSettingsJSON{
 				Settings: map[string]int{
 					"prefetch": 10,
 				},
 			},
-			Worker: TopologyBridgeWorkerJson{
+			Worker: TopologyBridgeWorkerJSON{
 				Type: "worker.http",
-				Settings: TopologyBridgeWorkerSettingsJson{
+				Settings: TopologyBridgeWorkerSettingsJSON{
 					Host:         "monolith-api",
 					ProcessPath:  "/connector/Webhook/webhook",
 					StatusPath:   "/connector/Webhook/webhook/test",
 					Method:       "POST",
 					Port:         80,
 					Secure:       false,
-					PublishQueue: TopologyBridgeWorkerSettingsQueueJson{},
+					PublishQueue: TopologyBridgeWorkerSettingsQueueJSON{},
 				},
 			},
 		},
 		"5cc047dd4e9acc002a200c14": {
-			Worker: TopologyBridgeWorkerJson{
+			Worker: TopologyBridgeWorkerJSON{
 				Type: "worker.http_xml_parser",
-				Settings: TopologyBridgeWorkerSettingsJson{
+				Settings: TopologyBridgeWorkerSettingsJSON{
 					Host:         "xml-parser-api",
 					ProcessPath:  "/Xml_parser",
 					StatusPath:   "/Xml_parser/test",
 					Method:       "POST",
 					Port:         80,
-					PublishQueue: TopologyBridgeWorkerSettingsQueueJson{},
+					PublishQueue: TopologyBridgeWorkerSettingsQueueJSON{},
 				},
 			},
 		},

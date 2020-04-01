@@ -9,9 +9,9 @@ import (
 func getDockerGeneratorVersion(mode model.Adapter) string {
 	if mode == model.ModeSwarm {
 		return "3.3"
-	} else {
-		return "2"
 	}
+
+	return "2"
 }
 
 func getDockerNetworks(adapter model.Adapter, network string) map[string]*model.NetworkConfig {
@@ -70,18 +70,21 @@ func getSingleBridgeStartCommand(serviceName string) string {
 	return fmt.Sprintf("./dist/src/bin/pipes.js start bridge --id %s", serviceName)
 }
 
-func GetConfigMapName(topologyId string) string {
-	return fmt.Sprintf("configmap-%s", topologyId)
+// GetConfigMapName GetConfigMapName
+func GetConfigMapName(topologyID string) string {
+	return fmt.Sprintf("configmap-%s", topologyID)
 }
 
-func GetDeploymentName(topologyId string) string {
-	return fmt.Sprintf("topology-%s", topologyId)
+// GetDeploymentName GetDeploymentName
+func GetDeploymentName(topologyID string) string {
+	return fmt.Sprintf("topology-%s", topologyID)
 }
 
-func getPodName(topologyId string) string {
-	return fmt.Sprintf("pod%s", topologyId)
+func getPodName(topologyID string) string {
+	return fmt.Sprintf("pod%s", topologyID)
 }
 
+// GetDstDir GetDstDir
 func GetDstDir(path string, saveDir string) string {
 	return fmt.Sprintf("%s/%s", path, saveDir)
 }

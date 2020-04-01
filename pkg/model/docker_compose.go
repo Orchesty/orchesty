@@ -1,25 +1,30 @@
 package model
 
+// External External
 type External struct {
 	Name     string `yaml:"name,omitempty" json:"name,omitempty"`
 	External bool   `yaml:"external" json:"external"`
 }
 
+// Configs Configs
 type Configs struct {
 	External bool `yaml:"external,omitempty" json:"external,omitempty"`
 }
 
+// ServiceNetworkConfig ServiceNetworkConfig
 type ServiceNetworkConfig struct {
 	Aliases     []string `yaml:"aliases,omitempty" json:"aliases,omitempty"`
 	Ipv4Address string   `yaml:"ipv4_address,omitempty" json:"ipv4_address omitempty" mapstructure:"ipv4_address"`
 	Ipv6Address string   `yaml:"ipv6_address,omitempty" json:"ipv6_address omitempty" mapstructure:"ipv6_address"`
 }
 
+// ServiceConfigs ServiceConfigs
 type ServiceConfigs struct {
 	Source string `yaml:"source,omitempty" json:"source,omitempty"`
 	Target string `yaml:"target,omitempty" json:"target,omitempty"`
 }
 
+// NetworkConfig NetworkConfig
 type NetworkConfig struct {
 	Driver     string            `yaml:"driver,omitempty" json:"driver,omitempty"`
 	DriverOpts map[string]string `yaml:"driver_opts,omitempty" json:"driver_opts,omitempty"`
@@ -27,6 +32,7 @@ type NetworkConfig struct {
 	Labels     map[string]string `yaml:"labels,omitempty" json:"labels,omitempty"`
 }
 
+// Service Service
 type Service struct {
 	Image       string                           `yaml:"image" json:"image"`
 	WorkingDir  string                           `yaml:"working_dir,omitempty" json:"working_dir,omitempty"`
@@ -38,6 +44,7 @@ type Service struct {
 	Command     string                           `yaml:"command,omitempty" json:"command,omitempty"`
 }
 
+// DockerCompose DockerCompose
 type DockerCompose struct {
 	Version  string                    `yaml:"version" json:"version" default:"2"`
 	Services map[string]*Service       `yaml:"services" json:"services"`

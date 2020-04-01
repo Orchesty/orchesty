@@ -3,18 +3,21 @@ package services
 import (
 	"fmt"
 	"github.com/docker/docker/api/types"
-	"github.com/sirupsen/logrus"
 	"topology-generator/pkg/config"
-	"topology-generator/pkg/fs_commands"
+	"topology-generator/pkg/fscommands"
+
+	log "github.com/hanaboso/go-log/pkg"
 )
 
-type dockerClient struct{}
+type dockerClient struct {
+	logger log.Logger
+}
 
-func (d dockerClient) RunStop(topologyId string, db StorageSvc, dockerCli DockerCliSvc, generatorConfig config.GeneratorConfig, action string) ([]types.Container, error) {
-	topology, err := db.GetTopology(topologyId)
+func (d dockerClient) RunStop(topologyID string, db StorageSvc, dockerCli DockerCliSvc, generatorConfig config.GeneratorConfig, action string) ([]types.Container, error) {
+	topology, err := db.GetTopology(topologyID)
 
 	if err != nil {
-		return nil, fmt.Errorf("getting topology %s failed. Reason: %v", topologyId, err)
+		return nil, fmt.Errorf("getting topology %s failed. Reason: %v", topologyID, err)
 	}
 	dstDir := GetDstDir(generatorConfig.Path, topology.GetSaveDir())
 
@@ -52,7 +55,7 @@ func (d dockerClient) Generate(ts *TopologyService) error {
 		return fmt.Errorf("writing docker-compose[topology_id=%s] failed. Reason: %v", ts.Topology.ID.Hex(), err)
 	}
 
-	if err := fs_commands.WriteFile(
+	if err := fscommands.WriteFile(
 		dstFile,
 		"docker-compose.yml",
 		dockerCompose,
@@ -60,16 +63,16 @@ func (d dockerClient) Generate(ts *TopologyService) error {
 		return fmt.Errorf("writing topology[id=%s, file=docker-compose.json] failed. Reason: %v", ts.Topology.ID.Hex(), err)
 	}
 
-	logrus.Debugf("Save docker-compose.yml to %s", dstFile)
+	d.logContext(nil).Debug("Save docker-compose.yml to %s", dstFile)
 
 	return nil
 }
 
-func (d dockerClient) RunStopSwarm(topologyId string, db StorageSvc, dockerCli DockerCliSvc, generatorConfig config.GeneratorConfig, action string) ([]types.Container, error) {
-	topology, err := db.GetTopology(topologyId)
+func (d dockerClient) RunStopSwarm(topologyID string, db StorageSvc, dockerCli DockerCliSvc, generatorConfig config.GeneratorConfig, action string) ([]types.Container, error) {
+	topology, err := db.GetTopology(topologyID)
 
 	if err != nil {
-		return nil, fmt.Errorf("getting topology %s failed. Reason: %v", topologyId, err)
+		return nil, fmt.Errorf("getting topology %s failed. Reason: %v", topologyID, err)
 	}
 	switch action {
 	case "start":
@@ -106,30 +109,30 @@ func (d dockerClient) RunStopSwarm(topologyId string, db StorageSvc, dockerCli D
 
 }
 
-func (d dockerClient) DeleteSwarm(topologyId string, db StorageSvc, dockerCli DockerCliSvc, generatorConfig config.GeneratorConfig) error {
-	topology, err := db.GetTopology(topologyId)
+func (d dockerClient) DeleteSwarm(topologyID string, db StorageSvc, dockerCli DockerCliSvc, generatorConfig config.GeneratorConfig) error {
+	topology, err := db.GetTopology(topologyID)
 
 	if err != nil {
-		return fmt.Errorf("getting topology %s failed. Reason: %v", topologyId, err)
+		return fmt.Errorf("getting topology %s failed. Reason: %v", topologyID, err)
 	}
 
 	dstDir := GetDstDir(generatorConfig.Path, topology.GetSaveDir())
-	err = fs_commands.RemoveDirectory(dstDir)
+	err = fscommands.RemoveDirectory(dstDir)
 	if err != nil {
 		return fmt.Errorf("error removing %s. Reason: %v", dstDir, err)
 	}
 	return nil
 }
 
-func (d dockerClient) Delete(topologyId string, db StorageSvc, generatorConfig config.GeneratorConfig) error {
-	topology, err := db.GetTopology(topologyId)
+func (d dockerClient) Delete(topologyID string, db StorageSvc, generatorConfig config.GeneratorConfig) error {
+	topology, err := db.GetTopology(topologyID)
 
 	if err != nil {
 		return fmt.Errorf("failed to get topology. Reason: %v", err)
 	}
 
 	dstDir := fmt.Sprintf("%s/%s", generatorConfig.Path, topology.GetSaveDir())
-	err = fs_commands.RemoveDirectory(dstDir)
+	err = fscommands.RemoveDirectory(dstDir)
 
 	if err != nil {
 		return fmt.Errorf("failed to remove %s. Reason: %v", dstDir, err)
@@ -137,14 +140,28 @@ func (d dockerClient) Delete(topologyId string, db StorageSvc, generatorConfig c
 	return nil
 }
 
+func (d dockerClient) logContext(data map[string]interface{}) log.Logger {
+	if data == nil {
+		data = make(map[string]interface{})
+	}
+	data["service"] = "topology-generator"
+	data["type"] = "docker-client"
+
+	return d.logger.WithFields(data)
+}
+
+// DockerSvc DockerSvc
 type DockerSvc interface {
-	Delete(topologyId string, db StorageSvc, generatorConfig config.GeneratorConfig) error
-	DeleteSwarm(topologyId string, db StorageSvc, dockerCli DockerCliSvc, generatorConfig config.GeneratorConfig) error
-	RunStopSwarm(topologyId string, db StorageSvc, dockerCli DockerCliSvc, generatorConfig config.GeneratorConfig, action string) ([]types.Container, error)
-	RunStop(topologyId string, db StorageSvc, dockerCli DockerCliSvc, generatorConfig config.GeneratorConfig, action string) ([]types.Container, error)
+	Delete(topologyID string, db StorageSvc, generatorConfig config.GeneratorConfig) error
+	DeleteSwarm(topologyID string, db StorageSvc, dockerCli DockerCliSvc, generatorConfig config.GeneratorConfig) error
+	RunStopSwarm(topologyID string, db StorageSvc, dockerCli DockerCliSvc, generatorConfig config.GeneratorConfig, action string) ([]types.Container, error)
+	RunStop(topologyID string, db StorageSvc, dockerCli DockerCliSvc, generatorConfig config.GeneratorConfig, action string) ([]types.Container, error)
 	Generate(ts *TopologyService) error
 }
 
+// NewDockerSvc NewDockerSvc
 func NewDockerSvc() DockerSvc {
-	return &dockerClient{}
+	return &dockerClient{
+		logger: config.Logger,
+	}
 }

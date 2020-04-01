@@ -11,6 +11,7 @@ import (
 	"topology-generator/pkg/model"
 )
 
+// InfoAction InfoAction
 func (m *DockerCompose) InfoAction(c *ContextWrapper) {
 	id := c.Param("topologyId")
 	topology, err := c.Sc.Mongo.GetTopology(id)
@@ -37,6 +38,7 @@ func (m *DockerCompose) InfoAction(c *ContextWrapper) {
 	c.OK(gin.H{"message": message, "docker-info": containers})
 }
 
+// GenerateAction GenerateAction
 func (m *DockerCompose) GenerateAction(c *ContextWrapper) {
 	id := c.Param("topologyId")
 
@@ -61,6 +63,7 @@ func (m *DockerCompose) GenerateAction(c *ContextWrapper) {
 	c.OK(gin.H{"message": fmt.Sprintf("ID: %s", id)})
 }
 
+// RunStopAction RunStopAction
 func (m *DockerCompose) RunStopAction(c *ContextWrapper) {
 	var body body
 	if err := c.ShouldBind(&body); err != nil {
@@ -78,6 +81,7 @@ func (m *DockerCompose) RunStopAction(c *ContextWrapper) {
 	c.WithCode(http.StatusOK, gin.H{"message": fmt.Sprintf("ID: %s", id), "docker-info": containers})
 }
 
+// DeleteAction DeleteAction
 func (m *DockerCompose) DeleteAction(c *ContextWrapper) {
 	id := c.Param("topologyId")
 
