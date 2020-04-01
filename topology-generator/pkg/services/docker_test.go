@@ -54,7 +54,7 @@ func TestDockerClient_MultiNodeDockerCompose(t *testing.T) {
 			WorkerDefaultPort:   8888,
 			GeneratorMode:       "compose",
 		},
-	}, multiConfigGenerator, db, topologyId)
+	}, multiConfigGenerator, db, topologyID)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -81,7 +81,7 @@ func TestDockerClient_MultiNodeDockerCompose(t *testing.T) {
 		},
 	}
 
-	containers, err := testDocker.RunStop(topologyId, db, testCliSvc, multiConfigGenerator, "start")
+	containers, err := testDocker.RunStop(topologyID, db, testCliSvc, multiConfigGenerator, "start")
 
 	if err != nil {
 		t.Fatal(err)
@@ -89,15 +89,15 @@ func TestDockerClient_MultiNodeDockerCompose(t *testing.T) {
 
 	require.Equal(t, 1, len(containers), "Len of running containers must be 1 after start")
 
-	containers, err = testDocker.RunStop(topologyId, db, testCliSvc, multiConfigGenerator, "stop")
+	containers, err = testDocker.RunStop(topologyID, db, testCliSvc, multiConfigGenerator, "stop")
 
 	require.Equal(t, 0, len(containers), "Len of running containers must be 0 after stop")
 
-	containers, err = testDocker.RunStop(topologyId, db, testCliSvc, multiConfigGenerator, "stopstart")
+	containers, err = testDocker.RunStop(topologyID, db, testCliSvc, multiConfigGenerator, "stopstart")
 
 	require.NotNil(t, err)
 
-	err = testDocker.Delete(topologyId, db, multiConfigGenerator)
+	err = testDocker.Delete(topologyID, db, multiConfigGenerator)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -133,7 +133,7 @@ func TestDockerClient_DockerCompose(t *testing.T) {
 			WorkerDefaultPort:   8888,
 			GeneratorMode:       "compose",
 		},
-	}, configGenerator, db, topologyId)
+	}, configGenerator, db, topologyID)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -162,7 +162,7 @@ func TestDockerClient_DockerCompose(t *testing.T) {
 		},
 	}
 
-	containers, err := testDocker.RunStop(topologyId, db, testCliSvc, configGenerator, "start")
+	containers, err := testDocker.RunStop(topologyID, db, testCliSvc, configGenerator, "start")
 
 	if err != nil {
 		t.Fatal(err)
@@ -170,7 +170,7 @@ func TestDockerClient_DockerCompose(t *testing.T) {
 
 	require.Equal(t, 3, len(containers), "Len of running containers must be 1 after start")
 
-	containers, err = testDocker.RunStop(topologyId, db, testCliSvc, configGenerator, "stop")
+	containers, err = testDocker.RunStop(topologyID, db, testCliSvc, configGenerator, "stop")
 
 	testCliSvc.mockGetDockerTopologyInfo = func(status string, name string) (containers []types.Container, err error) {
 		return []types.Container{}, nil
@@ -178,11 +178,11 @@ func TestDockerClient_DockerCompose(t *testing.T) {
 
 	require.Equal(t, 0, len(containers), "Len of running containers must be 0 after stop")
 
-	containers, err = testDocker.RunStop(topologyId, db, testCliSvc, configGenerator, "stopstart")
+	containers, err = testDocker.RunStop(topologyID, db, testCliSvc, configGenerator, "stopstart")
 
 	require.NotNil(t, err)
 
-	err = testDocker.Delete(topologyId, db, configGenerator)
+	err = testDocker.Delete(topologyID, db, configGenerator)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -218,7 +218,7 @@ func TestDockerClient_Swarm(t *testing.T) {
 			WorkerDefaultPort:   8888,
 			GeneratorMode:       "swarm",
 		},
-	}, configGenerator, db, topologyId)
+	}, configGenerator, db, topologyID)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -251,7 +251,7 @@ func TestDockerClient_Swarm(t *testing.T) {
 		},
 	}
 
-	containers, err := testDocker.RunStopSwarm(topologyId, db, testSwarmCli, configGenerator, "start")
+	containers, err := testDocker.RunStopSwarm(topologyID, db, testSwarmCli, configGenerator, "start")
 
 	if err != nil {
 		t.Fatal(err)
@@ -263,13 +263,13 @@ func TestDockerClient_Swarm(t *testing.T) {
 		return []types.Container{}, nil
 	}
 
-	containers, err = testDocker.RunStopSwarm(topologyId, db, testSwarmCli, configGenerator, "stop")
+	containers, err = testDocker.RunStopSwarm(topologyID, db, testSwarmCli, configGenerator, "stop")
 	require.Equal(t, 0, len(containers), "Len of running containers must be 0 after stop")
 
-	containers, err = testDocker.RunStopSwarm(topologyId, db, testSwarmCli, configGenerator, "stopstart")
+	containers, err = testDocker.RunStopSwarm(topologyID, db, testSwarmCli, configGenerator, "stopstart")
 	require.NotNil(t, err)
 
-	err = testDocker.DeleteSwarm(topologyId, db, testSwarmCli, configGenerator)
+	err = testDocker.DeleteSwarm(topologyID, db, testSwarmCli, configGenerator)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -433,7 +433,7 @@ func TestDockerClient_GenerateFails(t *testing.T) {
 			mockGetTopologyNodes: func(id string) (nodes []model.Node, err error) {
 				return []model.Node{}, nil
 			},
-		}, topologyId)
+		}, topologyID)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -451,7 +451,7 @@ func TestDockerClient_GenerateFails(t *testing.T) {
 			mockGetTopologyNodes: func(id string) (nodes []model.Node, err error) {
 				return getTestNodes(), nil
 			},
-		}, topologyId)
+		}, topologyID)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -465,7 +465,7 @@ func TestDockerClient_GenerateFails(t *testing.T) {
 func TestDockerClient_DeleteFails(t *testing.T) {
 	setupDockerTest()
 
-	err := testDocker.Delete(topologyId, testDb{
+	err := testDocker.Delete(topologyID, testDb{
 		mockGetTopology: func(id string) (topology *model.Topology, e error) {
 			return getMockTopology(), fmt.Errorf("cant return topology for test purpose")
 		},
@@ -508,7 +508,7 @@ func TestDockerClient_DeleteSwarmFails(t *testing.T) {
 
 	t.Run("testing delete swarm fails on getting topology", func(t *testing.T) {
 		err := testDocker.DeleteSwarm(
-			topologyId,
+			topologyID,
 			testDb{
 				mockGetTopology: func(id string) (topology *model.Topology, e error) {
 					return getMockTopology(), fmt.Errorf("cant return topology for test purpose")
@@ -542,7 +542,7 @@ func TestDockerClient_RunStopSwarmFails(t *testing.T) {
 
 	t.Run("Testing that RunStopSwarm fails on getting topology", func(t *testing.T) {
 		_, err := testDocker.RunStopSwarm(
-			topologyId,
+			topologyID,
 			testDb{
 				mockGetTopology: func(id string) (topology *model.Topology, e error) {
 					return getMockTopology(), fmt.Errorf("cant return topology for test purpose")
@@ -562,7 +562,7 @@ func TestDockerClient_RunStopSwarmFails(t *testing.T) {
 			return fmt.Errorf("error creating swarm config")
 		}
 		_, err := testDocker.RunStopSwarm(
-			topologyId,
+			topologyID,
 			testDb{
 				mockGetTopology: func(id string) (topology *model.Topology, e error) {
 					return getMockTopology(), nil
@@ -585,7 +585,7 @@ func TestDockerClient_RunStopSwarmFails(t *testing.T) {
 			return fmt.Errorf("error starting swarm")
 		}
 		_, err := testDocker.RunStopSwarm(
-			topologyId,
+			topologyID,
 			testDb{
 				mockGetTopology: func(id string) (topology *model.Topology, e error) {
 					return getMockTopology(), nil
@@ -612,7 +612,7 @@ func TestDockerClient_RunStopSwarmFails(t *testing.T) {
 		}
 
 		_, err := testDocker.RunStopSwarm(
-			topologyId,
+			topologyID,
 			testDb{
 				mockGetTopology: func(id string) (topology *model.Topology, e error) {
 					return getMockTopology(), nil
@@ -633,7 +633,7 @@ func TestDockerClient_RunStopSwarmFails(t *testing.T) {
 		}
 
 		_, err := testDocker.RunStopSwarm(
-			topologyId,
+			topologyID,
 			testDb{
 				mockGetTopology: func(id string) (topology *model.Topology, e error) {
 					return getMockTopology(), nil
@@ -657,7 +657,7 @@ func TestDockerClient_RunStopSwarmFails(t *testing.T) {
 		}
 
 		_, err := testDocker.RunStopSwarm(
-			topologyId,
+			topologyID,
 			testDb{
 				mockGetTopology: func(id string) (topology *model.Topology, e error) {
 					return getMockTopology(), nil

@@ -3,8 +3,12 @@ package config
 import (
 	"os"
 
-	"github.com/jinzhu/configor"
 	"topology-generator/pkg/model"
+
+	"github.com/hanaboso/go-log/pkg/zap"
+	"github.com/jinzhu/configor"
+
+	log "github.com/hanaboso/go-log/pkg"
 )
 
 type (
@@ -15,9 +19,11 @@ type (
 	}
 
 	apiConfig struct {
-		Host string `default:"0.0.0.0:8080" env:"API_HOST"`
+		Host  string `default:"0.0.0.0:8080" env:"API_HOST"`
+		Debug bool   `default:"false" env:"APP_DEBUG"`
 	}
 
+	// GeneratorConfig GeneratorConfig
 	GeneratorConfig struct {
 		Path              string        `default:"/opt/srv/topology" env:"GENERATOR_PATH"`
 		TopologyPath      string        `default:"/srv/app/topology/topology.json" env:"TOPOLOGY_PATH"` // for node configuration, path in docker
@@ -39,17 +45,30 @@ type (
 )
 
 var (
-	Mongo     mongoConfig
-	API       apiConfig
+	// Mongo Mongo
+	Mongo mongoConfig
+	// API API
+	API apiConfig
+	// Generator Generator
 	Generator GeneratorConfig
-	c         = config{&Mongo, &API, &Generator}
+	// Logger Logger
+	Logger log.Logger
+	c      = config{&Mongo, &API, &Generator}
 )
 
 func init() {
+	Logger = zap.NewLogger()
+
 	if err := os.Setenv("CONFIGOR_ENV_PREFIX", "-"); err != nil {
-		panic(err)
+		Logger.Fatal(err)
 	}
 	if err := configor.Load(&c); err != nil {
-		panic(err)
+		Logger.Fatal(err)
+	}
+
+	if API.Debug {
+		Logger.SetLevel(log.DEBUG)
+	} else {
+		Logger.SetLevel(log.INFO)
 	}
 }

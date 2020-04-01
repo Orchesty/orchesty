@@ -6,7 +6,7 @@ import (
 	"topology-generator/pkg/config"
 	"topology-generator/pkg/model"
 
-	log "github.com/sirupsen/logrus"
+	log "github.com/hanaboso/go-log/pkg"
 )
 
 // MongoInterface represents MongoDB database interface
@@ -20,7 +20,7 @@ type MongoInterface interface {
 // MongoDefault represents default MongoDB implementation
 type MongoDefault struct {
 	mongo            *mongodb.Connection
-	log              *log.Logger
+	logger           log.Logger
 	visibilityFilter primitive.E
 	enabledFilter    primitive.E
 	deletedFilter    primitive.E
@@ -34,7 +34,7 @@ var Mongo MongoInterface
 func CreateMongo() *MongoDefault {
 	m := &MongoDefault{
 		mongo:            nil,
-		log:              log.New(),
+		logger:           config.Logger,
 		visibilityFilter: primitive.E{Key: "visibility", Value: "public"},
 		enabledFilter:    primitive.E{Key: "enabled", Value: true},
 		deletedFilter:    primitive.E{Key: "deleted", Value: false},
@@ -46,12 +46,12 @@ func CreateMongo() *MongoDefault {
 
 // Connect connects to database
 func (m *MongoDefault) Connect() {
-	log.Infof("Connecting to MongoDB: %s", config.Mongo.Dsn)
+	m.logContext(nil).Info("Connecting to MongoDB: %s", config.Mongo.Dsn)
 	connection := &mongodb.Connection{}
 	connection.Connect(config.Mongo.Dsn)
 
 	m.mongo = connection
-	log.Info("MongoDB successfully connected!")
+	m.logContext(nil).Info("MongoDB successfully connected!")
 }
 
 // Disconnect disconnects from database
@@ -59,6 +59,7 @@ func (m *MongoDefault) Disconnect() {
 	m.mongo.Disconnect()
 }
 
+// FindTopologyByID FindTopologyByID
 func (m *MongoDefault) FindTopologyByID(id string) (*model.Topology, error) {
 	var topology model.Topology
 	innerContext, cancel := m.mongo.Context()
@@ -66,7 +67,9 @@ func (m *MongoDefault) FindTopologyByID(id string) (*model.Topology, error) {
 
 	innerTopologyID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		m.log.Warnf("Topology ID '%s' is not valid MongoDB ID.", id)
+		m.logContext(map[string]interface{}{
+			"topologyId": id,
+		}).Warn("Topology ID is not valid MongoDB ID.")
 
 		return nil, err
 	}
@@ -79,7 +82,9 @@ func (m *MongoDefault) FindTopologyByID(id string) (*model.Topology, error) {
 	err = m.mongo.Database.Collection(config.Mongo.Topology).FindOne(innerContext, filter).Decode(&topology)
 
 	if err != nil {
-		m.log.Warnf("Topology with key '%s' not found.", id)
+		m.logContext(map[string]interface{}{
+			"topologyId": id,
+		}).Warn("Topology not found.")
 
 		return nil, err
 	}
@@ -87,6 +92,7 @@ func (m *MongoDefault) FindTopologyByID(id string) (*model.Topology, error) {
 	return &topology, nil
 }
 
+// FindNodesByTopology FindNodesByTopology
 func (m *MongoDefault) FindNodesByTopology(id string) ([]model.Node, error) {
 	var nodes []model.Node
 
@@ -101,7 +107,9 @@ func (m *MongoDefault) FindNodesByTopology(id string) ([]model.Node, error) {
 	cursor, err := m.mongo.Database.Collection(config.Mongo.Node).Find(innerContext, filter)
 
 	if err != nil {
-		m.log.Warnf("Topology with key '%s' not found.", id)
+		m.logContext(map[string]interface{}{
+			"topologyId": id,
+		}).Warn("Topology not found.")
 
 		return nil, err
 	}
@@ -115,7 +123,10 @@ func (m *MongoDefault) FindNodesByTopology(id string) ([]model.Node, error) {
 		err = cursor.Decode(&node)
 
 		if err != nil {
-			m.log.Errorf("Node with name '%s' decode error: %s", node.Name, err.Error())
+			m.logContext(map[string]interface{}{
+				"reason":   "Node name decode",
+				"nodeName": node.Name,
+			}).Error(err)
 			return nil, err
 		}
 
@@ -124,4 +135,15 @@ func (m *MongoDefault) FindNodesByTopology(id string) ([]model.Node, error) {
 
 	return nodes, nil
 
+}
+
+func (m *MongoDefault) logContext(data map[string]interface{}) log.Logger {
+	if data == nil {
+		data = make(map[string]interface{})
+	}
+
+	data["service"] = "topology-generator"
+	data["type"] = "mongodb"
+
+	return m.logger.WithFields(data)
 }

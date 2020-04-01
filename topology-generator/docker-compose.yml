@@ -2,18 +2,20 @@ version: '3.5'
 
 services:
     app:
-        image: dkr.hanaboso.net/pipes/pipes/topology-api-v2:dev
+        image: hanabosocom/go-base:dev
         user: ${DEV_UID}:${DEV_GID}
         environment:
             DEV_UID: ${DEV_UID}
             DEV_GID: ${DEV_GID}
             GITLAB_CI: ${GITLAB_CI}
+            APP_DEBUG: 'true'
             MONGO_DSN: mongodb://mongodb/topology-api?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
         volumes:
-            - ./:/topology-generator
+            - ./:/app
             - ${GOPATH}/pkg:/go/pkg
         ports:
             - ${DEV_IP}:80:8080
+        command: go run main.go server
 
     mongodb:
         image: mongo:latest

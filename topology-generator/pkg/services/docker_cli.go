@@ -7,7 +7,7 @@ import (
 	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/client"
 	"topology-generator/pkg/config"
-	"topology-generator/pkg/fs_commands"
+	"topology-generator/pkg/fscommands"
 	"topology-generator/pkg/model"
 )
 
@@ -15,6 +15,7 @@ type dockercli struct {
 	cli *client.Client
 }
 
+// GetDockerTopologyInfo GetDockerTopologyInfo
 func (d dockercli) GetDockerTopologyInfo(status string, name string) ([]types.Container, error) {
 	filterList := filters.NewArgs()
 
@@ -28,6 +29,7 @@ func (d dockercli) GetDockerTopologyInfo(status string, name string) ([]types.Co
 	return d.cli.ContainerList(context.Background(), options)
 }
 
+// GetSwarmTopologyInfo GetSwarmTopologyInfo
 func (d dockercli) GetSwarmTopologyInfo(status string, name string) ([]types.Container, error) {
 	filterList := filters.NewArgs()
 	filterList.Add("status", status)
@@ -40,18 +42,20 @@ func (d dockercli) GetSwarmTopologyInfo(status string, name string) ([]types.Con
 	return d.cli.ContainerList(context.Background(), options)
 }
 
+// CreateSwarmConfig CreateSwarmConfig
 func (d dockercli) CreateSwarmConfig(topology *model.Topology, generatorConfig config.GeneratorConfig) error {
 	cmd, args := getSwarmCreateConfigCmd(topology, generatorConfig)
-	err, _, stdErr := fs_commands.Execute(cmd, args...)
+	_, stdErr, err := fscommands.Execute(cmd, args...)
 	if err != nil {
 		return fmt.Errorf("%s [%s]", err, stdErr.String())
 	}
 	return nil
 }
 
+// RunSwarm RunSwarm
 func (d dockercli) RunSwarm(topology *model.Topology, generatorConfig config.GeneratorConfig) error {
 	cmd, args := getSwarmRunCmd(topology, generatorConfig)
-	err, _, stdErr := fs_commands.Execute(cmd, args...)
+	_, stdErr, err := fscommands.Execute(cmd, args...)
 
 	if err != nil {
 		return fmt.Errorf("%s [%s]", err, stdErr.String())
@@ -59,9 +63,10 @@ func (d dockercli) RunSwarm(topology *model.Topology, generatorConfig config.Gen
 	return nil
 }
 
+// StopSwarm StopSwarm
 func (d dockercli) StopSwarm(topology *model.Topology, prefix string) error {
 	cmd, args := getSwarmRmConfigCmd(topology, prefix)
-	err, _, stdErr := fs_commands.Execute(cmd, args...)
+	_, stdErr, err := fscommands.Execute(cmd, args...)
 
 	if err != nil {
 		return fmt.Errorf("%s [%s]", err.Error(), stdErr.String())
@@ -69,27 +74,30 @@ func (d dockercli) StopSwarm(topology *model.Topology, prefix string) error {
 	return nil
 }
 
+// RemoveSwarmConfig RemoveSwarmConfig
 func (d dockercli) RemoveSwarmConfig(topology *model.Topology, prefix string) error {
 	cmd, args := getSwarmStopCmd(topology, prefix)
-	err, _, stdErr := fs_commands.Execute(cmd, args...)
+	_, stdErr, err := fscommands.Execute(cmd, args...)
 	if err != nil {
 		return fmt.Errorf("%s [%s]", err.Error(), stdErr.String())
 	}
 	return nil
 }
 
+// StartCompose StartCompose
 func (d dockercli) StartCompose(dstDir string) error {
 	configPath := getDockerComposePath(dstDir)
-	err, _, stdErr := fs_commands.Execute("docker-compose", "-f", configPath, "up", "-d")
+	_, stdErr, err := fscommands.Execute("docker-compose", "-f", configPath, "up", "-d")
 	if err != nil {
 		return fmt.Errorf("%s [%s]", err.Error(), stdErr.String())
 	}
 	return nil
 }
 
+// StopCompose StopCompose
 func (d dockercli) StopCompose(dstDir string) error {
 	configPath := getDockerComposePath(dstDir)
-	err, _, stdErr := fs_commands.Execute("docker-compose", "-f", configPath, "down")
+	_, stdErr, err := fscommands.Execute("docker-compose", "-f", configPath, "down")
 
 	if err != nil {
 		return fmt.Errorf("%s [%s]", err.Error(), stdErr.String())
@@ -109,6 +117,7 @@ func getDockerComposePath(dstDir string) string {
 	return configPath
 }
 
+// DockerCliSvc DockerCliSvc
 type DockerCliSvc interface {
 	GetDockerTopologyInfo(status string, name string) ([]types.Container, error)
 	GetSwarmTopologyInfo(status string, name string) ([]types.Container, error)
@@ -121,10 +130,12 @@ type DockerCliSvc interface {
 	Close() error
 }
 
+// NewDockerCliSvc NewDockerCliSvc
 func NewDockerCliSvc(cli *client.Client) DockerCliSvc {
 	return &dockercli{cli: cli}
 }
 
+// DockerConnect DockerConnect
 func DockerConnect() (*client.Client, error) {
 	cli, err := client.NewEnvClient()
 
@@ -136,12 +147,12 @@ func DockerConnect() (*client.Client, error) {
 }
 
 func getSwarmCreateConfigCmd(topology *model.Topology, generatorConfig config.GeneratorConfig) (string, []string) {
-	topologyJson := fmt.Sprintf("%s/%s/topology.json", generatorConfig.Path, topology.GetSaveDir())
+	topologyJSON := fmt.Sprintf("%s/%s/topology.json", generatorConfig.Path, topology.GetSaveDir())
 	return "docker", []string{
 		"config",
 		"create",
 		topology.GetConfigName(generatorConfig.Prefix),
-		topologyJson,
+		topologyJSON,
 	}
 }
 

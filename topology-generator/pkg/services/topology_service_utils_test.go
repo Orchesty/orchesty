@@ -118,16 +118,16 @@ func TestGetSwarmCommand(t *testing.T) {
 }
 
 func TestGetConfigMapName(t *testing.T) {
-	n := GetConfigMapName(topologyId)
-	require.Equal(t, fmt.Sprintf("configmap-%s", topologyId), n)
+	n := GetConfigMapName(topologyID)
+	require.Equal(t, fmt.Sprintf("configmap-%s", topologyID), n)
 }
 
 func TestGetDeploymentName(t *testing.T) {
-	n := GetDeploymentName(topologyId)
-	require.Equal(t, fmt.Sprintf("topology-%s", topologyId), n)
+	n := GetDeploymentName(topologyID)
+	require.Equal(t, fmt.Sprintf("topology-%s", topologyID), n)
 }
 
 func TestGetPodName(t *testing.T) {
-	n := getPodName(topologyId)
-	require.Equal(t, fmt.Sprintf("pod%s", topologyId), n)
+	n := getPodName(topologyID)
+	require.Equal(t, fmt.Sprintf("pod%s", topologyID), n)
 }

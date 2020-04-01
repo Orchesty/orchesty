@@ -75,6 +75,3 @@ func getMockContainer() types.Container {
 		Mounts:          nil,
 	}
 }
-
-type mockDockerApi struct {
-}
