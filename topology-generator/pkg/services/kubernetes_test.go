@@ -2,6 +2,7 @@ package services
 
 import (
 	"fmt"
+	"github.com/hanaboso/go-log/pkg/zap"
 	"github.com/stretchr/testify/require"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"gopkg.in/yaml.v2"
@@ -18,9 +19,9 @@ import (
 
 var (
 	testClient          kubernetesClient
-	topologyId          = "5dc0474e4e9acc00282bb942"
-	deploymentName      = GetDeploymentName(topologyId)
-	configMapName       = GetConfigMapName(topologyId)
+	topologyID          = "5dc0474e4e9acc00282bb942"
+	deploymentName      = GetDeploymentName(topologyID)
+	configMapName       = GetConfigMapName(topologyID)
 	testConfigGenerator = config.GeneratorConfig{
 		Path:              "/tmp",
 		TopologyPath:      "/srv/app/topology/topology.json",
@@ -41,12 +42,12 @@ type testDb struct {
 }
 
 func getMockTopology() *model.Topology {
-	objectId, err := primitive.ObjectIDFromHex(topologyId)
+	objectID, err := primitive.ObjectIDFromHex(topologyID)
 	if err != nil {
 		return nil
 	}
 	return &model.Topology{
-		ID:         objectId,
+		ID:         objectID,
 		Name:       "TestTopology",
 		Version:    0,
 		Descr:      "",
@@ -129,7 +130,13 @@ func setup() {
 	deploymentsClient := clientSet.AppsV1().Deployments(namespace)
 	configClient := clientSet.CoreV1().ConfigMaps(namespace)
 	serviceClient := clientSet.CoreV1().Services(namespace)
-	testClient = kubernetesClient{deploymentClient: deploymentsClient, namespace: namespace, configClient: configClient, serviceClient: serviceClient}
+	testClient = kubernetesClient{
+		deploymentClient: deploymentsClient,
+		namespace:        namespace,
+		configClient:     configClient,
+		serviceClient:    serviceClient,
+		logger:           zap.NewLogger(),
+	}
 }
 
 func TestClient_Create(t *testing.T) {
@@ -142,7 +149,7 @@ func TestClient_Create(t *testing.T) {
 
 	containers := []model.Container{
 		{
-			Name:    getPodName(topologyId),
+			Name:    getPodName(topologyID),
 			Command: []string{command[0]},
 			Args:    command[1:],
 			Image:   getDockerImage(registry, image),
@@ -161,9 +168,9 @@ func TestClient_Create(t *testing.T) {
 	}
 
 	labels := make(map[string]string)
-	labels["app"] = topologyId
+	labels["app"] = topologyID
 	var depl = model.Deployment{
-		ApiVersion: "apps/v1",
+		APIVersion: "apps/v1",
 		Kind:       "Deployment",
 		Metadata: model.Metadata{
 			Name: deploymentName,
@@ -181,7 +188,7 @@ func TestClient_Create(t *testing.T) {
 						{
 							Name: mountName,
 							ConfigMap: model.ConfigMapVolume{
-								Name: GetConfigMapName(topologyId),
+								Name: GetConfigMapName(topologyID),
 							},
 						},
 					},
@@ -215,7 +222,7 @@ func TestClient_CreateConfigMap(t *testing.T) {
 	data := make(map[string]string)
 	data["topology.json"] = "topologyjsonobject"
 	configMap := model.ConfigMap{
-		ApiVersion: "v1",
+		APIVersion: "v1",
 		Kind:       "ConfigMap",
 		Metadata: model.Metadata{
 			Name: configMapName,
@@ -247,7 +254,7 @@ func TestClient_CreateConfigMap(t *testing.T) {
 func TestClient_CreateService(t *testing.T) {
 	setup()
 	s := model.DeploymentService{
-		ApiVersion: "v1",
+		APIVersion: "v1",
 		Kind:       "Service",
 		Metadata: model.Metadata{
 			Name: deploymentName,
@@ -333,7 +340,7 @@ func TestClient_DeleteService(t *testing.T) {
 func TestClient_Start(t *testing.T) {
 	setup()
 	t.Run("Creating deployment", TestClient_Create)
-	err := testClient.RunStop(topologyId, db, "start")
+	err := testClient.RunStop(topologyID, db, "start")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -347,7 +354,7 @@ func TestClient_Start(t *testing.T) {
 func TestClient_Stop(t *testing.T) {
 	setup()
 	t.Run("Starting deployment", TestClient_Start)
-	err := testClient.RunStop(topologyId, db, "stop")
+	err := testClient.RunStop(topologyID, db, "stop")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -395,7 +402,7 @@ func TestClient_DeleteAll(t *testing.T) {
 	setup()
 	t.Run("Generating deployement", TestClient_Generate)
 
-	err := testClient.DeleteAll(topologyId, testDb{
+	err := testClient.DeleteAll(topologyID, testDb{
 		mockGetTopology: func(id string) (topology *model.Topology, e error) {
 			return getMockTopology(), nil
 		},
@@ -408,17 +415,17 @@ func TestClient_DeleteAll(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	cm, err := testClient.configClient.Get(GetConfigMapName(topologyId), v1.GetOptions{})
+	cm, err := testClient.configClient.Get(GetConfigMapName(topologyID), v1.GetOptions{})
 
 	require.NotNil(t, err, "Getting deleted config map should return error")
 	require.Nil(t, cm, "Deleted config map should be nil after calling get for it")
 
-	d, err := testClient.deploymentClient.Get(GetDeploymentName(topologyId), v1.GetOptions{})
+	d, err := testClient.deploymentClient.Get(GetDeploymentName(topologyID), v1.GetOptions{})
 
 	require.NotNil(t, err, "Getting deleted deployment should return error")
 	require.Nil(t, d, "Deleted deployment should be nil after calling get for it")
 
-	s, err := testClient.serviceClient.Get(GetDeploymentName(topologyId), v1.GetOptions{})
+	s, err := testClient.serviceClient.Get(GetDeploymentName(topologyID), v1.GetOptions{})
 
 	require.NotNil(t, err, "Getting deleted service should return error")
 	require.Nil(t, s, "Deleted service should be nil after calling get for it")
@@ -463,7 +470,7 @@ func TestClient_Generate(t *testing.T) {
 		mockGetTopologyNodes: func(id string) (nodes []model.Node, e error) {
 			return getTestNodes(), nil
 		},
-	}, topologyId)
+	}, topologyID)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -472,20 +479,20 @@ func TestClient_Generate(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	d, err := testClient.deploymentClient.Get(GetDeploymentName(topologyId), v1.GetOptions{})
+	d, err := testClient.deploymentClient.Get(GetDeploymentName(topologyID), v1.GetOptions{})
 	if err != nil {
 		t.Fatal(err)
 	}
 	require.NotNil(t, d, "Deployment cannot be nil")
 
-	s, err := testClient.serviceClient.Get(fmt.Sprintf("mb-%s", topologyId), v1.GetOptions{})
+	s, err := testClient.serviceClient.Get(fmt.Sprintf("mb-%s", topologyID), v1.GetOptions{})
 	if err != nil {
 		t.Fatal(err)
 	}
 	require.Equal(t, s.Spec.Selector["app"], d.Spec.Template.ObjectMeta.Labels["app"])
 	require.NotNil(t, s, "Service cannot be nil")
 
-	cm, err := testClient.configClient.Get(GetConfigMapName(topologyId), v1.GetOptions{})
+	cm, err := testClient.configClient.Get(GetConfigMapName(topologyID), v1.GetOptions{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -521,7 +528,7 @@ func TestClient_GenerateMulti(t *testing.T) {
 		mockGetTopologyNodes: func(id string) (nodes []model.Node, e error) {
 			return getTestNodes(), nil
 		},
-	}, topologyId)
+	}, topologyID)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -530,19 +537,19 @@ func TestClient_GenerateMulti(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	d, err := testClient.deploymentClient.Get(GetDeploymentName(topologyId), v1.GetOptions{})
+	d, err := testClient.deploymentClient.Get(GetDeploymentName(topologyID), v1.GetOptions{})
 	if err != nil {
 		t.Fatal(err)
 	}
 	require.NotNil(t, d, "Deployment cannot be nil")
 
-	s, err := testClient.serviceClient.Get(fmt.Sprintf("mb-%s", topologyId), v1.GetOptions{})
+	s, err := testClient.serviceClient.Get(fmt.Sprintf("mb-%s", topologyID), v1.GetOptions{})
 	if err != nil {
 		t.Fatal(err)
 	}
 	require.NotNil(t, s, "Service cannot be nil")
 
-	cm, err := testClient.configClient.Get(GetConfigMapName(topologyId), v1.GetOptions{})
+	cm, err := testClient.configClient.Get(GetConfigMapName(topologyID), v1.GetOptions{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -585,7 +592,7 @@ func TestClient_DeleteAllFails(t *testing.T) {
 		mockGetTopologyNodes: func(id string) (nodes []model.Node, e error) {
 			return getTestNodes(), nil
 		},
-	}, topologyId)
+	}, topologyID)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -617,7 +624,7 @@ func TestClient_DeleteAllFails(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = testClient.DeleteAll(topologyId, testDb{
+		err = testClient.DeleteAll(topologyID, testDb{
 			mockGetTopology: func(id string) (topology *model.Topology, e error) {
 				return getMockTopology(), nil
 			},
@@ -642,7 +649,7 @@ func TestClient_DeleteAllFails(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = testClient.DeleteAll(topologyId, testDb{
+		err = testClient.DeleteAll(topologyID, testDb{
 			mockGetTopology: func(id string) (topology *model.Topology, e error) {
 				return getMockTopology(), nil
 			},
@@ -770,7 +777,7 @@ func TestClient_GenerateFails(t *testing.T) {
 			mockGetTopologyNodes: func(id string) (nodes []model.Node, err error) {
 				return []model.Node{}, nil
 			},
-		}, topologyId)
+		}, topologyID)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -790,7 +797,7 @@ func TestClient_GenerateFails(t *testing.T) {
 			mockGetTopologyNodes: func(id string) (nodes []model.Node, err error) {
 				return getTestNodes(), nil
 			},
-		}, topologyId)
+		}, topologyID)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -820,7 +827,7 @@ func TestClient_GenerateFails(t *testing.T) {
 			mockGetTopologyNodes: func(id string) (nodes []model.Node, err error) {
 				return getTestNodes(), nil
 			},
-		}, topologyId)
+		}, topologyID)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -849,7 +856,7 @@ func TestClient_GenerateFails(t *testing.T) {
 			mockGetTopologyNodes: func(id string) (nodes []model.Node, err error) {
 				return getTestNodes(), nil
 			},
-		}, topologyId)
+		}, topologyID)
 		if err != nil {
 			t.Fatal(err)
 		}

@@ -1,7 +1,6 @@
 package server
 
 import (
-	"errors"
 	"fmt"
 	"topology-generator/pkg/model"
 )
@@ -10,14 +9,21 @@ type body struct {
 	Action string `json:"action"`
 }
 
+// Service Service
 type Service struct {
 	TopologyHandler
 }
 
+// Swarm Swarm
 type Swarm Service
+
+// DockerCompose DockerCompose
 type DockerCompose Service
+
+// Kubernetes Kubernetes
 type Kubernetes Service
 
+// TopologyHandler TopologyHandler
 type TopologyHandler interface {
 	GenerateAction(c *ContextWrapper)
 	RunStopAction(c *ContextWrapper)
@@ -26,6 +32,7 @@ type TopologyHandler interface {
 	Close()
 }
 
+// GetHandlerAdapter GetHandlerAdapter
 func GetHandlerAdapter(mode model.Adapter) (TopologyHandler, error) {
 	switch mode {
 	case model.ModeCompose:
@@ -36,5 +43,5 @@ func GetHandlerAdapter(mode model.Adapter) (TopologyHandler, error) {
 		return &Kubernetes{}, nil
 	}
 
-	return nil, errors.New(fmt.Sprintf("unknown topology generator mode: %s", mode))
+	return nil, fmt.Errorf("unknown topology generator mode: %s", mode)
 }

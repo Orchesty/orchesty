@@ -8,6 +8,7 @@ import (
 	"topology-generator/pkg/storage"
 )
 
+// ServiceContainer ServiceContainer
 type ServiceContainer struct {
 	Mongo      StorageSvc
 	Docker     DockerSvc
@@ -15,6 +16,7 @@ type ServiceContainer struct {
 	DockerCli  DockerCliSvc
 }
 
+// NewServiceContainer NewServiceContainer
 func NewServiceContainer(mongo storage.MongoInterface, cli *client.Client, clientSet *kubernetes.Clientset, config config.GeneratorConfig) *ServiceContainer {
 	storageSvc := NewStorageSvc(mongo)
 	if config.Mode == model.ModeKubernetes {
@@ -23,11 +25,11 @@ func NewServiceContainer(mongo storage.MongoInterface, cli *client.Client, clien
 			Mongo:      storageSvc,
 			Kubernetes: kubernetesSvc,
 		}
-	} else {
-		return &ServiceContainer{
-			Mongo:     storageSvc,
-			Docker:    NewDockerSvc(),
-			DockerCli: NewDockerCliSvc(cli),
-		}
+	}
+
+	return &ServiceContainer{
+		Mongo:     storageSvc,
+		Docker:    NewDockerSvc(),
+		DockerCli: NewDockerCliSvc(cli),
 	}
 }

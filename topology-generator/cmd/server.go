@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/docker/docker/client"
-	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"k8s.io/client-go/kubernetes"
 	"net/http"
@@ -17,16 +15,22 @@ import (
 	"topology-generator/pkg/server"
 	"topology-generator/pkg/services"
 	"topology-generator/pkg/storage"
+
+	log "github.com/hanaboso/go-log/pkg"
 )
 
 func startServer(sc *services.ServiceContainer) *http.Server {
 	s := server.New(sc)
 
 	go func() {
-		log.WithField("address", s.Addr).Info("Starting API server...")
+		logContext(config.Logger, map[string]interface{}{
+			"address": s.Addr,
+		}).Info("Starting API server...")
 		// service connections
 		if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.WithField("address", s.Addr).Fatal("API server start failed, reason:", err)
+			logContext(config.Logger, map[string]interface{}{
+				"address": s.Addr,
+			}).Fatal(err)
 		}
 	}()
 
@@ -34,7 +38,6 @@ func startServer(sc *services.ServiceContainer) *http.Server {
 }
 
 func serverCommand(cmd *cobra.Command, args []string) error {
-
 	var docker *client.Client
 	var clientSet *kubernetes.Clientset
 	var err error
@@ -68,7 +71,7 @@ func serverCommand(cmd *cobra.Command, args []string) error {
 	signal.Notify(quit, os.Interrupt)
 	<-quit
 
-	log.Info("Shutdown API server...")
+	logContext(config.Logger, nil).Info("Shutdown API server...")
 
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -76,15 +79,21 @@ func serverCommand(cmd *cobra.Command, args []string) error {
 	if err := s.Shutdown(shutdownCtx); err != nil {
 		return fmt.Errorf("API server shutdown failed, reason: %v", err)
 	}
-	log.Info("Server exiting")
+	logContext(config.Logger, nil).Info("Server exiting")
 	return nil
 }
 
-func init() {
-	if gin.IsDebugging() {
-		log.SetLevel(log.DebugLevel)
+func logContext(logger log.Logger, data map[string]interface{}) log.Logger {
+	if data == nil {
+		data = make(map[string]interface{})
 	}
+	data["service"] = "topology-generator"
+	data["type"] = "server"
 
+	return logger.WithFields(data)
+}
+
+func init() {
 	rootCmd.AddCommand(&cobra.Command{
 		Use:   "server",
 		Short: "start API server",
