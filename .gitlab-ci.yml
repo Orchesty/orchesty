@@ -25,16 +25,6 @@ php-dev-image:
     - master
     - ci
 
-topology-api-dev-image:
-  stage: stage1
-  script:
-    - DIR=topology-generator
-    - cd $DIR
-    - make build-dev TAG=dev
-  only:
-    - dev
-    - master
-
 lib-python-dev-build:
   stage: stage1
   script:
