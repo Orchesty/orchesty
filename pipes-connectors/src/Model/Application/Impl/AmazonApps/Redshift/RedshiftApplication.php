@@ -62,7 +62,7 @@ final class RedshiftApplication extends AwsApplicationAbstract
         $form
             ->addField(new Field(Field::TEXT, self::KEY, 'Key', NULL, TRUE))
             ->addField(new Field(Field::TEXT, self::SECRET, 'Secret', NULL, TRUE))
-            ->addField(new Field(Field::TEXT, self::DB_PASSWORD, 'Database Password', NULL, TRUE))
+            ->addField(new Field(Field::PASSWORD, self::DB_PASSWORD, 'Database Password', NULL, TRUE))
             ->addField((new Field(Field::SELECT_BOX, self::REGION, 'Region', '', TRUE))->setChoices(self::REGIONS));
 
         return $form;

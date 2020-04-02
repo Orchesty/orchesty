@@ -6,15 +6,15 @@ use Symfony\Component\HttpFoundation\Request;
 
 require __DIR__ . '/../../../vendor/autoload.php';
 
-if ($_SERVER['APP_DEBUG'] ?? (($_SERVER['APP_ENV'] ?? 'dev') !== 'prod')) {
+if (filter_input(INPUT_SERVER, 'APP_DEBUG') ?? ((filter_input(INPUT_SERVER, 'APP_ENV') ?? 'dev') !== 'prod')) {
     umask(0_000);
     Debug::enable();
 }
 
 // Request::setTrustedProxies(['0.0.0.0/0'], Request::HEADER_FORWARDED);
 $kernel   = new Kernel(
-    $_SERVER['APP_ENV'] ?? 'dev',
-    $_SERVER['APP_DEBUG'] ?? (($_SERVER['APP_ENV'] ?? 'dev') !== 'prod')
+    filter_input(INPUT_SERVER, 'APP_ENV') ?? 'dev',
+    filter_input(INPUT_SERVER, 'APP_DEBUG') ?? ((filter_input(INPUT_SERVER, 'APP_ENV') ?? 'dev') !== 'prod')
 );
 $request  = Request::createFromGlobals();
 $response = $kernel->handle($request);
