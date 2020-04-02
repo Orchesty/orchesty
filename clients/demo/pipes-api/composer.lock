@@ -2131,11 +2131,11 @@
         },
         {
             "name": "hanaboso/pipes-framework",
-            "version": "1.3.10",
+            "version": "1.3.11",
             "dist": {
                 "type": "path",
                 "url": "../../../pf-bundles",
-                "reference": "262b3d390cd75ae7535d138ca64a3a88967d65c6"
+                "reference": "1c6e3ccc8d9f673ac3624fe97c30f15203c5907b"
             },
             "require": {
                 "ext-ctype": "*",
@@ -2179,11 +2179,11 @@
         },
         {
             "name": "hanaboso/pipes-php-sdk",
-            "version": "1.2.7",
+            "version": "1.2.8",
             "dist": {
                 "type": "path",
                 "url": "../../../pipes-php-sdk",
-                "reference": "ed947af0f1696703919cb681c3bde21b950fbd89"
+                "reference": "08faf5c2b0414ef6f111969e4d5a38ee0a98a957"
             },
             "require": {
                 "ext-json": "*",

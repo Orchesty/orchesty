@@ -49,9 +49,9 @@ final class ProcessDtoFactory
     {
         $dto = new ProcessDto();
         $dto
-            ->setSuccessProcess()
             ->setData($content)
-            ->setHeaders($headers);
+            ->setHeaders($headers)
+            ->setSuccessProcess();
 
         return $dto;
     }
