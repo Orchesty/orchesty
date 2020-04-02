@@ -351,6 +351,7 @@ git-pf-bundles:
     - git remote add dest git@gitlab.hanaboso.net:pipes/pf-bundles.git
     - git push --mirror dest
     - "[[ ${CI_BUILD_REF_NAME} == 'master' ]] && git push dest ${CI_BUILD_REF_NAME}:refs/tags/$(cat ../_tmp_pipes_full/pf-bundles/composer.json | grep version | grep -oE '[[:digit:]]\\.[[:digit:]]\\.[[:digit:]]') || true"
+    - "[[ ${CI_BUILD_REF_NAME} == 'dev' ]] && git push dest ${CI_BUILD_REF_NAME}:refs/tags/$(cat ../_tmp_pipes_full/pf-bundles/composer.json | grep version | grep -oE '[[:digit:]]\\.[[:digit:]]\\.[[:digit:]]') || true"
 
 git-notification-sender:
   stage: stage3
@@ -369,6 +370,7 @@ git-notification-sender:
     - git remote add dest git@gitlab.hanaboso.net:pipes/notification-sender.git
     - git push --mirror dest
     - "[[ ${CI_BUILD_REF_NAME} == 'master' ]] && git push dest ${CI_BUILD_REF_NAME}:refs/tags/$(cat ../_tmp_pipes_full/notification-sender/composer.json | grep version | grep -oE '[[:digit:]]\\.[[:digit:]]\\.[[:digit:]]') || true"
+    - "[[ ${CI_BUILD_REF_NAME} == 'dev' ]] && git push dest ${CI_BUILD_REF_NAME}:refs/tags/$(cat ../_tmp_pipes_full/notification-sender/composer.json | grep version | grep -oE '[[:digit:]]\\.[[:digit:]]\\.[[:digit:]]') || true"
 
 git-app-store:
   stage: stage3
@@ -387,6 +389,7 @@ git-app-store:
     - git remote add dest git@gitlab.hanaboso.net:pipes/app-store.git
     - git push --mirror dest
     - "[[ ${CI_BUILD_REF_NAME} == 'master' ]] && git push dest ${CI_BUILD_REF_NAME}:refs/tags/$(cat ../_tmp_pipes_full/app-store/composer.json | grep version | grep -oE '[[:digit:]]\\.[[:digit:]]\\.[[:digit:]]') || true"
+    - "[[ ${CI_BUILD_REF_NAME} == 'dev' ]] && git push dest ${CI_BUILD_REF_NAME}:refs/tags/$(cat ../_tmp_pipes_full/app-store/composer.json | grep version | grep -oE '[[:digit:]]\\.[[:digit:]]\\.[[:digit:]]') || true"
 
 git-pipes-php-sdk:
   stage: stage3
@@ -405,6 +408,7 @@ git-pipes-php-sdk:
     - git remote add dest git@gitlab.hanaboso.net:pipes/pipes-php-sdk.git
     - git push --mirror dest
     - "[[ ${CI_BUILD_REF_NAME} == 'master' ]] && git push dest ${CI_BUILD_REF_NAME}:refs/tags/$(cat ../_tmp_pipes_full/pipes-php-sdk/composer.json | grep version | grep -oE '[[:digit:]]\\.[[:digit:]]\\.[[:digit:]]') || true"
+    - "[[ ${CI_BUILD_REF_NAME} == 'dev' ]] && git push dest ${CI_BUILD_REF_NAME}:refs/tags/$(cat ../_tmp_pipes_full/pipes-php-sdk/composer.json | grep version | grep -oE '[[:digit:]]\\.[[:digit:]]\\.[[:digit:]]') || true"
 
 git-pipes-connectors:
   stage: stage3
@@ -423,6 +427,7 @@ git-pipes-connectors:
     - git remote add dest git@gitlab.hanaboso.net:pipes/pipes-connectors.git
     - git push --mirror dest
     - "[[ ${CI_BUILD_REF_NAME} == 'master' ]] && git push dest ${CI_BUILD_REF_NAME}:refs/tags/$(cat ../_tmp_pipes_full/pipes-connectors/composer.json | grep version | grep -oE '[[:digit:]]\\.[[:digit:]]\\.[[:digit:]]') || true"
+    - "[[ ${CI_BUILD_REF_NAME} == 'dev' ]] && git push dest ${CI_BUILD_REF_NAME}:refs/tags/$(cat ../_tmp_pipes_full/pipes-connectors/composer.json | grep version | grep -oE '[[:digit:]]\\.[[:digit:]]\\.[[:digit:]]') || true"
 
 cleanup:
   stage: cleanup
