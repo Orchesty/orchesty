@@ -32,6 +32,7 @@ type ChanData struct {
 type connection struct {
 	host        string
 	port        int
+	vhost       string
 	user        string
 	password    string
 	conn        *amqp.Connection
@@ -42,7 +43,8 @@ type connection struct {
 }
 
 func (c *connection) Connect() {
-	connString := fmt.Sprintf("amqp://%s:%s@%s:%d/", c.user, c.password, c.host, c.port)
+	connString := fmt.Sprintf("amqp://%s:%s@%s:%d/%s", c.user, c.password, c.host, c.port, c.vhost)
+	log.Info(fmt.Sprintf("Connecting to RabbitMQ: %s", connString))
 
 	var err error
 	c.conn, err = amqp.Dial(connString)
@@ -63,7 +65,7 @@ func (c *connection) Connect() {
 		c.restartChan <- true
 	}()
 
-	log.Info(fmt.Sprintf("Rabbit MQ connected to %s", connString))
+	log.Info("RabbitMQ successfully connected!")
 
 	// clear Channels
 	c.ClearChannels()
@@ -181,10 +183,11 @@ func (c *connection) reconnect() {
 }
 
 // NewConnection construct
-func NewConnection(host string, port int, user string, password string, log *log.Logger) (r Connection) {
+func NewConnection(host string, port int, vhost string, user string, password string, log *log.Logger) (r Connection) {
 	return &connection{
 		host:        host,
 		port:        port,
+		vhost:       vhost,
 		user:        user,
 		password:    password,
 		channels:    make(map[string]ChanData),
