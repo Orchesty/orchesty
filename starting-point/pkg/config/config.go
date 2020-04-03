@@ -33,6 +33,7 @@ type rabbitMq struct {
 	Username             string
 	Password             string
 	Port                 int16
+	Vhost                string
 	CounterQueueName     string
 	CounterQueueDurable  bool
 	DeliveryMode         int16
@@ -80,6 +81,7 @@ func init() {
 			Username:             getEnv("RABBIT_USERNAME", "guest"),
 			Password:             getEnv("RABBIT_PASSWORD", "guest"),
 			Port:                 getEnvInt("RABBIT_PORT", 5672),
+			Vhost:                getEnv("RABBIT_VHOST", ""),
 			CounterQueueName:     getEnv("RABBIT_COUNTER_QUEUE_NAME", "pipes.multi-counter"),
 			CounterQueueDurable:  getEnvBool("RABBIT_COUNTER_QUEUE_DURABLE", true),
 			DeliveryMode:         getEnvInt("RABBIT_DELIVERY_MODE", 2), // 0 - 1 Transient, 2 - Persistent

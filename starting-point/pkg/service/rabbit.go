@@ -133,8 +133,9 @@ func NewRabbit() Rabbit {
 	conn := rabbitmq.NewConnection(
 		config.Config.RabbitMQ.Hostname,
 		int(config.Config.RabbitMQ.Port),
-		config.Config.RabbitMQ.Password,
+		config.Config.RabbitMQ.Vhost,
 		config.Config.RabbitMQ.Username,
+		config.Config.RabbitMQ.Password,
 		config.Config.Logger)
 	conn.Connect()
 	publisher := rabbitmq.NewPublisher(conn, config.Config.Logger)
