@@ -13,7 +13,6 @@ RUN apk update && apk upgrade && apk add --no-cache \
 
 # Container has the same ssh as the host machine
 ENV SSH_AUTH_SOCK=/tmp/.ssh-auth-sock
-LABEL com.ensody.ssh-agent-inject=true
 
 ENV TERM=xterm
 
