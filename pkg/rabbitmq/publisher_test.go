@@ -33,6 +33,7 @@ func getConnection() Connection {
 	return NewConnection(
 		config.Config.RabbitMQ.Hostname,
 		int(config.Config.RabbitMQ.Port),
+		"",
 		config.Config.RabbitMQ.Username,
 		config.Config.RabbitMQ.Password,
 		config.Config.Logger)
