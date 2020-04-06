@@ -13,7 +13,7 @@ services:
             - DEV_GID=${DEV_GID}
         volumes:
             - ./:/var/www
-            - ${SSH_AUTH_SOCK}:${SSH_AUTH}
+            - ${SSH_AUTH}:/tmp/.ssh-auth-sock
         command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit_mq:consumer:notification'
 
     app:
@@ -23,7 +23,7 @@ services:
             - ${DEV_IP}:80:80
         volumes:
             - ./:/var/www
-            - ${SSH_AUTH_SOCK}:${SSH_AUTH}
+            - ${SSH_AUTH}:/tmp/.ssh-auth-sock
             - ${HOME}/dev/.composer:${HOME}/dev/.composer
         environment:
             - APP_ENV=test
