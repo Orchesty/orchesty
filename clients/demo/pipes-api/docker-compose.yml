@@ -34,5 +34,5 @@ services:
             KERNEL_CLASS: Demo\Kernel
         volumes:
             - ../../../:/var/www/pipes
-            - ${SSH_AUTH_SOCK}:${SSH_AUTH}
+            - ${SSH_AUTH}:/tmp/.ssh-auth-sock
             - ${HOME}/dev/.composer:${HOME}/dev/.composer

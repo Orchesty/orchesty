@@ -7,7 +7,7 @@ services:
             - ${DEV_IP}:80:80
         volumes:
             - ./:/var/www
-            - ${SSH_AUTH_SOCK}:${SSH_AUTH}
+            - ${SSH_AUTH}:/tmp/.ssh-auth-sock
             - ${HOME}/dev/.composer:${HOME}/dev/.composer
         environment:
             - DEV_UID=${DEV_UID}
