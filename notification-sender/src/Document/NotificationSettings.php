@@ -18,7 +18,7 @@ use Hanaboso\Utils\Exception\DateTimeException;
  * @package Hanaboso\NotificationSender\Document
  *
  * @ODM\Document(repositoryClass="Hanaboso\NotificationSender\Repository\NotificationSettingsRepository")
- * @ODM\UniqueIndex(name="UK_notification_settings_name", keys={"name"="asc"})
+ * @ODM\UniqueIndex(name="UK_notification_settings_name", keys={"class"="asc"})
  * @ODM\HasLifecycleCallbacks()
  */
 class NotificationSettings
