@@ -10,11 +10,12 @@ builder-image:
 
 build: builder-image
 	docker run -t --rm -v $(shell pwd)/../:/build -w /build/website -u $(shell id -u):$(shell id -g) -e PORTAL_API_URL=${PORTAL_API_URL} pipes-docs-builder bash -xc ' \
-	  phpdoc && \
-	  mv /tmp/phpdoc-build/README.md src/docs/sdk/api/index.md && \
+#	  phpdoc && \
+#	  mv /tmp/phpdoc-build/README.md src/docs/sdk/api/index.md && \
 	  cat <(echo -e "--- \nautotoc: true \nlayout: main.hbs	\n---") \
 	  src/docs/sdk/api/index.md > /tmp/index && \
 	  mv /tmp/index src/docs/sdk/api/index.md && \
+	  yarn upgrade && \
 	  yarn run build'
 
 deploy:
@@ -26,7 +27,9 @@ deploy:
 	aws s3 sync --acl public-read --delete ./build/ s3://pipes-website-${ENV}/
 
 dev-server: builder-image
+	docker stop website-dev-server || true && \
 	docker run -t --rm \
+	  --name website-dev-server \
 	  -p 127.0.0.1:9084:9080 \
 	  -v $(shell pwd)/../:/build \
 	  -w /build/website \
