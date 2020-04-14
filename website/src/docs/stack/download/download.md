@@ -1,8 +1,9 @@
 ---
 name: Download
-collection: Download
+collection: documentation
 layout: main.hbs
 level: 1
+index: 10
 ---
 
  <form action="{#var portal_api_url}/installer" method="post" target="_blank">

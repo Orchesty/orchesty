@@ -1,8 +1,9 @@
 ---
 layout: main.hbs
-collection: install
+collection: documentation
 name: Installation
-level: 1
+level: 1 
+index: 1
 ---
 
 #### Instalace
@@ -117,3 +118,4 @@ Pokud při běhu příkazu z předchozího kroku nenastala žádná chyba, mělo
 * doplnit anchory pro spravnou funkci linků v textu (permalink plugin)
 * Získání předkonfigurovného docker-compose.yaml
 * Inicializacni command
+* Stažení

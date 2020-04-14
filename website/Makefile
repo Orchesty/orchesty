@@ -5,7 +5,7 @@ PORTAL_API_URL?=http://127.0.0.88:8000
 
 
 builder-image:
-	cd builder-image && \
+	cd docker && \
 	docker build -t pipes-docs-builder .
 
 build: builder-image
@@ -47,3 +47,12 @@ dev-server-debug: builder-image
 	docker run -t --rm -p 127.0.0.1:9084:9080 -v $(shell pwd)/../:/build -w /build/website -u $(shell id -u):$(shell id -g) -e DEBUG=metalsmith:* pipes-docs-builder bash -xc ' \
 	  yarn run dev-server & \
 	  yarn run build --dev-server'
+
+yarn-build:
+	docker run -t --rm -v $(shell pwd)/../:/build -w /build/website -u $(shell id -u):$(shell id -g) -e PORTAL_API_URL=${PORTAL_API_URL} pipes-docs-builder bash -xc 'node build.js'
+
+yarn-install: builder-image
+	docker run -t --rm -v $(shell pwd)/../:/build -w /build/website -u $(shell id -u):$(shell id -g) -e PORTAL_API_URL=${PORTAL_API_URL} pipes-docs-builder bash -xc 'yarn install'
+
+yarn-upgrade: builder-image
+	docker run -t --rm -v $(shell pwd)/../:/build -w /build/website -u $(shell id -u):$(shell id -g) -e PORTAL_API_URL=${PORTAL_API_URL} pipes-docs-builder bash -xc 'yarn upgrade'

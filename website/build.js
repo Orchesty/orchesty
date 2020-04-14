@@ -1,19 +1,23 @@
-const Metalsmith = require('metalsmith')
-const collections = require('metalsmith-collections')
-const assets = require('metalsmith-assets')
-const replace = require('metalsmith-one-replace')
-const layouts = require('metalsmith-layouts')
-const markdown = require('metalsmith-markdown')
-const mdpartials = require('metalsmith-markdown-partials')
-const permalinks = require('metalsmith-permalinks')
-const headingsidentifier = require('metalsmith-headings-identifier')
-const headings = require('metalsmith-headings')
-const autotoc = require('metalsmith-autotoc')
-const debug = require('metalsmith-debug')
-const watch = require('metalsmith-watch')
-const dotenv = require('dotenv')
+const autotoc = require('metalsmith-autotoc');
+const collections = require('metalsmith-collections');
+const cssPacker = require('metalsmith-css-packer');
+const debug = require('metalsmith-debug');
+const dotenv = require('dotenv');
+const headings = require('metalsmith-headings');
+const headingsidentifier = require('metalsmith-headings-identifier');
+const helperRegister = require('metalsmith-register-helpers');
+const highlights = require('metalsmith-code-highlight');
+const htmlMinifier = require("metalsmith-html-minifier");
+const jsPacker = require('metalsmith-js-packer');
+const layouts = require('metalsmith-layouts');
+const markdown = require('metalsmith-markdown');
+const mdpartials = require('metalsmith-markdown-partials');
+const Metalsmith = require('metalsmith');
+const permalinks = require('metalsmith-permalinks');
+const replace = require('metalsmith-one-replace');
+const watch = require('metalsmith-watch');
 
-dotenv.config()
+dotenv.config();
 
 require('handlebars-helpers')();
 
@@ -24,44 +28,15 @@ let ms = Metalsmith(__dirname)
     .source('./src')
     .destination('./build')
     .clean(true)
+    .use(helperRegister({directory: '_helpers'}))
     .use(collections({
-        Collection1: {
-            pattern: 'docs/*.md',
+        documentation: {
+            sortBy: 'index',
             metadata: {
-                name: "generovana kolekce1"
-            }
+                name: "Documentation",
+                description: "Description of PIPES documentation ..."
+            },
         },
-        Collection2: {
-            pattern: 'stack/*.md',
-            sortBy: 'order',
-            metadata: {
-                name: "generovana kolekce2"
-            }
-        },
-        news: {
-            pattern: '',
-            metadata: {
-                name: "news kolekce",
-                reverse: false,
-                sortBy: 'order'
-            }
-        },
-        install: {
-            pattern: '',
-            metadata: {
-                name: "install kolekce",
-                reverse: false,
-
-            }
-        },
-        pages_coll: {
-            pattern: 'pages/*.md',
-            metadata: {
-                name: "pages",
-                reverse: false,
-            }
-        },
-
     }))
     .use(replace({
         actions:[{
@@ -105,10 +80,24 @@ let ms = Metalsmith(__dirname)
         default: "main.hbs",
         directory: 'layouts'
     }))
-    .use(assets({
-        source: './src/assets/css',
-        destination: 'css'
-    }))
+  .use(highlights())
+  .use(cssPacker({
+      removeLocalSrc: true,
+      outputPath: 'assets/css/'
+  }))
+  .use(jsPacker({
+      ouputPath: 'assets/js/'
+  }))
+  .use(htmlMinifier({
+      minifierOptions: {
+          collapseBooleanAttributes: true,
+          collapseWhitespace: true,
+          removeAttributeQuotes: true,
+          removeComments: true,
+          removeEmptyAttributes: true,
+          removeRedundantAttributes: true,
+      },
+  }))
     // .use(assets({
     //     source: './src/docs/images',
     //     destination: 'images'
@@ -120,7 +109,7 @@ let ms = Metalsmith(__dirname)
     //    ACL: 'public-read'
     //  }
     //}))
-    .use(debug())
+    .use(debug());
 
 if (process.argv.includes('--dev-server')) {
     ms.use(
@@ -129,13 +118,12 @@ if (process.argv.includes('--dev-server')) {
                 "${source}/**/*": true, // rebuild the file when it changed
                 "layouts/**/*": "**/*", // rebuild all files when layout changes
             },
-            livereload: false, // not yet ;)
         })
     )
 }
 
 ms.build((err) => {
     if (err) throw err
-})
+});
 
 

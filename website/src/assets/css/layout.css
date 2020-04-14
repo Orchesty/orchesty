@@ -1,0 +1,23 @@
+body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    text-align: justify;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
+.sticky-nav {
+    position: fixed;
+}
+
+.sticky-nav a:hover {
+    color: lightcoral;
+    font-weight: bold;
+}
+
+.level_2 {
+    margin-left: 30px;
+}

@@ -1,12 +1,13 @@
 ---
 layout: main.hbs
+collection: documentation
 name: Example
-collection: example
-level: 1
+level: 1 
+index: 100
 ---
-
+awdad
 #### CSS snippet
-<pre class='code code-css'><label>CSS</label><code>button {
+<pre class='code'><label>CSS</label><code>button {
 width:20px;
 height:28px;
 color:#fff;
@@ -19,7 +20,7 @@ background:#14ADE5}
 
 #### JS snippet
 <div markdown="1">
-<pre class='code code-javascript'><label> JS </label><code>&lt;button onclick="myFunction()"&gt;Post&lt;/button&gt;
+<pre class='code'><label> JS </label><code>&lt;button onclick="myFunction()"&gt;Post&lt;/button&gt;
 &lt;script&gt;
 function myFunction() {
     document.write(5 + 6);
@@ -28,14 +29,14 @@ function myFunction() {
 <div markdown="1">
 
 #### jQuery snippet
-<pre class='code code-jquery'><label>Jquery</label><code>$(document).ready(function{
+<pre class='code'><label>Jquery</label><code>$(document).ready(function{
  jQuery.cssRule(".post", "display", "block");
 });</code></pre>
 
 
 
-#### ruby snippet
-<pre class='code code-ruby'><label> ruby </label><code>[1, 2, 3].each do |n|
+#### Ruby snippet
+<pre class='code'><label>Ruby </label><code>[1, 2, 3].each do |n|
     # Prints out a number
     puts "Number #{n}"
 end
@@ -44,7 +45,7 @@ end
 </code></pre>
 
 #### Go snippet
-<pre class='code code-go'><label>Go</label><code>package main
+<pre class='code'><label>Go</label><code>package main
                                                  
 import "fmt"
                                                  
