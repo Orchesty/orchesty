@@ -68,7 +68,7 @@ Do vytvořeného adresáře nakopírujte získaný soubor docker-compose.yml, ne
 ```bash
 # cd /srv/pipes
 # cat > docker-compose.yml
----
+...
 version: '2'
 services:
 ...

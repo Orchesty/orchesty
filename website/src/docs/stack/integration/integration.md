@@ -34,7 +34,7 @@ Aplikací existuje několik typů. Dle použitého zabezpečení se dělí na Ba
 TODO: rozdělit na podkapitoly o CRON a WH
 
 #### Příklad Basic CRONové aplikace
-<pre class='code'><label>PHP</label><code>
+``` PHP
 namespace Demo\Application\Impl;
 
 use GuzzleHttp\Psr7\Uri;
@@ -138,10 +138,10 @@ final class BasicApplication extends BasicApplicationAbstract
 	}
 
 }
-</code></pre>
+```
 
 #### Příklad Basic Webhookové aplikace
-<pre class='code'><label>PHP</label><code>
+``` PHP
 namespace Demo\Application\Impl;
 
 use GuzzleHttp\Psr7\Uri;
@@ -333,10 +333,10 @@ final class BasicWebhookApplication extends BasicApplicationAbstract implements 
 	}
 
 }
-</code></pre>
+```
 
 #### Příklad OAuth CRONové aplikace
-<pre class='code'><label>PHP</label><code>
+``` PHP
 namespace Demo\Application\Impl;
 
 use GuzzleHttp\Psr7\Uri;
@@ -457,10 +457,10 @@ final class OAuthApplication extends OAuth2ApplicationAbstract
 	}
 
 }
-</code></pre>
+```
 
 #### Příklad OAuth Webhookové aplikace
-<pre class='code'><label>PHP</label><code>
+``` PHP
 namespace Demo\Application\Impl;
 
 use GuzzleHttp\Psr7\Uri;
@@ -671,7 +671,7 @@ final class OAuthWebhookApplication extends OAuth2ApplicationAbstract implements
 	}
 
 }
-</code></pre>
+```
 
 #### OAuth
 TODO

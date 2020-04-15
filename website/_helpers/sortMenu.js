@@ -3,6 +3,10 @@ module.exports = function (collection) {
   let sortedMenu = [];
 
   collection.forEach(item => {
+      if (item.menu_exclude === true) {
+        return;
+      }
+
       let obj = {
         name: item.name,
         level: item.level,

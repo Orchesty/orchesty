@@ -5,9 +5,36 @@ name: Example
 level: 1 
 index: 100
 ---
-awdad
+
+#### Obrázek
+![Ukázkový obrázek](/img/stormtroopocat.png "Avatar")
+
+#### Tabulka
+
+| Option | Description |
+| ------ | ----------- |
+| data   | path to data files to supply the data that will be passed into templates. |
+| engine | engine to be used for processing templates. Handlebars is the default. |
+| ext    | extension to be used for dest files. |
+
+
+#### Odkazy
+[link with title](https://hanaboso.com "Hanaboso!")
+
+Autoconverted link https://hanaboso.com
+
+#### InfoBlock
+``` infoBlock
+Nějaký informační text.
+```
+
+#### CodeBlock without lang
+    awdadad
+    adawdawda
+
 #### CSS snippet
-<pre class='code'><label>CSS</label><code>button {
+``` CSS
+button {
 width:20px;
 height:28px;
 color:#fff;
@@ -15,37 +42,35 @@ font-size:28px;
 padding:11px 15px;
 border-radius:5px;
 background:#14ADE5}
-</code></pre>
-
+```
 
 #### JS snippet
-<div markdown="1">
-<pre class='code'><label> JS </label><code>&lt;button onclick="myFunction()"&gt;Post&lt;/button&gt;
-&lt;script&gt;
+``` JS
 function myFunction() {
     document.write(5 + 6);
 }
-&lt;/script&gt;</code></pre>
-<div markdown="1">
+```
 
 #### jQuery snippet
-<pre class='code'><label>Jquery</label><code>$(document).ready(function{
+``` jQuery
+$(document).ready(function{
  jQuery.cssRule(".post", "display", "block");
-});</code></pre>
-
-
+});
+```
 
 #### Ruby snippet
-<pre class='code'><label>Ruby </label><code>[1, 2, 3].each do |n|
+``` Ruby
+[1, 2, 3].each do |n|
     # Prints out a number
     puts "Number #{n}"
 end
 
 [1, 2, 3].each {|n| puts "Number #{n}"}
-</code></pre>
+```
 
 #### Go snippet
-<pre class='code'><label>Go</label><code>package main
+``` GO
+package main
                                                  
 import "fmt"
                                                  
@@ -56,4 +81,4 @@ return x + y
 func main() {
 fmt.Println(add(42, 13))
 }
-</code></pre>
+```
