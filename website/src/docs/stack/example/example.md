@@ -28,6 +28,9 @@ Autoconverted link https://hanaboso.com
 Nějaký informační text.
 ```
 
+#### Inline CodeBlock
+Sample `inline code` block.
+
 #### CodeBlock without lang
     awdadad
     adawdawda
@@ -41,7 +44,8 @@ color:#fff;
 font-size:28px;
 padding:11px 15px;
 border-radius:5px;
-background:#14ADE5}
+background:#14ADE5
+}
 ```
 
 #### JS snippet
