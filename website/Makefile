@@ -37,19 +37,17 @@ dev-server: builder-image
 	  -e PORTAL_API_URL=${PORTAL_API_URL} \
 	  pipes-docs-builder \
 	  bash -xc ' \
-	    yarn run dev-server & \
-	    yarn run build --dev-server'
+	    yarn start'
 
 interactive: builder-image
 	docker run -ti --rm -v $(shell pwd)/../:/build -w /build/website -u $(shell id -u):$(shell id -g) pipes-docs-builder bash
 
 dev-server-debug: builder-image
 	docker run -t --rm -p 127.0.0.1:9084:9080 -v $(shell pwd)/../:/build -w /build/website -u $(shell id -u):$(shell id -g) -e DEBUG=metalsmith:* pipes-docs-builder bash -xc ' \
-	  yarn run dev-server & \
-	  yarn run build --dev-server'
+	  yarn start'
 
 yarn-build:
-	docker run -t --rm -v $(shell pwd)/../:/build -w /build/website -u $(shell id -u):$(shell id -g) -e PORTAL_API_URL=${PORTAL_API_URL} pipes-docs-builder bash -xc 'node build.js'
+	docker run -t --rm -v $(shell pwd)/../:/build -w /build/website -u $(shell id -u):$(shell id -g) -e PORTAL_API_URL=${PORTAL_API_URL} pipes-docs-builder bash -xc 'yarn build'
 
 yarn-install: builder-image
 	docker run -t --rm -v $(shell pwd)/../:/build -w /build/website -u $(shell id -u):$(shell id -g) -e PORTAL_API_URL=${PORTAL_API_URL} pipes-docs-builder bash -xc 'yarn install'

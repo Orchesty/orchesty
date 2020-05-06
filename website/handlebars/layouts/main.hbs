@@ -3,24 +3,15 @@
     <head>
         <title>PIPES - DOCS </title>
         <meta name="keywords" content="">
-        <meta name="description" content=""/>
+        <meta name="description" content="" />
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
         <!-- Compiled and minified CSS -->
         <link rel="stylesheet"
-              href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons"
-              data-packer="exclude">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
-              data-packer="exclude">
+              href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons">
+        <link rel="stylesheet" href="/css/main.css">
 
-        <link rel="stylesheet" href="/assets/css/screen.css">
-        <link rel="stylesheet" href="/assets/css/layout.css">
-        <link rel="stylesheet" href="/assets/css/code/main.css">
-        <link rel="stylesheet" href="/assets/css/code/theme/dracula.css">
-
-        <!-- Compiled and minified JavaScript -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     </head>
     <body>
         <main>
@@ -78,6 +69,9 @@
                     <!--    Content-->
                     <div class="container col s12 m12 l8">
                         <div class="row">
+                            {{> base }}
+                        </div>
+                        <div class="row">
                             {{{contents}}}
                         </div>
                     </div>
@@ -91,7 +85,7 @@
                             <li class="divider"></li>
                             <!--    Generating list of headings from object " " -->
                             {{#if headings}}
-                                <!--    Write "log this" into two curly brackets to "debug" the handelbars objects-->
+                            <!--    Write "log this" into two curly brackets to "debug" the handelbars objects-->
                                 {{#each headings}}
                                     <li><a href="#{{id}}">{{text}}</a></li>
                                 {{/each}}
@@ -121,7 +115,8 @@
                 </div>
             </div>
         </footer>
-        <script src="/assets/js/codeBlock.js"></script>
-        <script src="/assets/js/main.js"></script>
     </body>
+
+    <!-- Compiled and minified JavaScript -->
+    <script async defer src="/js/main.js"></script>
 </html>
