@@ -1,61 +1,166 @@
-"use strict";
+const gulp = require('gulp');
+const uglify = require('gulp-uglify');
+const sass = require('gulp-sass');
+const contact = require('gulp-concat');
+const sourcemaps = require('gulp-sourcemaps');
+const jshint = require('gulp-jshint');
+const cleanCSS = require('gulp-clean-css');
+const del = require('del');
+const browserSync = require('browser-sync').create();
+const prettyError = require('gulp-prettyerror');
+const htmlmin = require('gulp-htmlmin');
+const debug = require('gulp-debug');
 
-// Load plugins
-const browsersync = require("browser-sync").create();
-const del = require("del");
-const gulp = require("gulp");
-const merge = require("merge-stream");
+const createMetalsmith = require('./metalsmith')
 
-// BrowserSync
-function browserSync(done) {
-  browsersync.init({
+// Static server
+gulp.task('browser-sync', function() {
+  browserSync.init({
     server: {
-      baseDir: "./"
-    },
-    port: 3000
+      baseDir: "build",
+      index: "index.html"
+    }
   });
-  done();
-}
+});
 
-// BrowserSync reload
-function browserSyncReload(done) {
-  browsersync.reload();
-  done();
-}
+// Build web from markdown
+gulp.task('markdown', async () => {
+  return new Promise((resolve )=> {
+    createMetalsmith().build(function(err) {
+      if (err) {
+        console.error(err)
+      }
 
-// Clean vendor
-function clean() {
-  return del(["./vendor/"]);
-}
+      browserSync.reload();
+      resolve()
+    });
+  })
+});
 
-// Bring third party dependencies from node_modules into vendor directory
-function modules() {
-  // Bootstrap
-  var bootstrap = gulp.src('./node_modules/bootstrap/dist/**/*')
-    .pipe(gulp.dest('./vendor/bootstrap'));
-  // jQuery
-  var jquery = gulp.src([
-      './node_modules/jquery/dist/*',
-      '!./node_modules/jquery/dist/core.js'
+gulp.task('compile-scss', () => {
+  return gulp
+    .src('./assets/scss/main.scss')
+    .pipe(prettyError())
+    .pipe(sourcemaps.init())
+    .pipe(sass())
+    .pipe(sourcemaps.write())
+    .pipe(gulp.dest('build/css'))
+    .pipe(browserSync.reload({
+      stream: true
+    }))
+});
+
+// MINIFY CSS
+gulp.task('minify-css', () => {
+  return gulp
+    .src('./build/css/**/*.css')
+    .pipe(cleanCSS())
+    .pipe(gulp.dest('./build/css'));
+});
+
+// CONCAT JAVASCRIPT FOR FRONTEND MODULE
+gulp.task('concat-js', () => {
+  return gulp
+    .src([
+      './node_modules/materialize-css/dist/js/materialize.js',
+      './assets/js/**/*.js'
     ])
-    .pipe(gulp.dest('./vendor/jquery'));
-  return merge(bootstrap, jquery);
-}
+    .pipe(sourcemaps.init())
+    .pipe(contact('main.js', {newLine: ';'}))
+    .pipe(sourcemaps.write())
+    .pipe(gulp.dest('./build/js'))
+    .pipe(browserSync.reload({
+      stream: true
+    }));
+});
 
-// Watch files
-function watchFiles() {
-  gulp.watch("./**/*.css", browserSyncReload);
-  gulp.watch("./**/*.html", browserSyncReload);
-}
+//  MINIFY JAVASCRIPT
+gulp.task('minify-js', () => {
+  return gulp
+    .src('./build/js/**/*.js')
+    .pipe(uglify())
+    .pipe(gulp.dest('./build/js'));
+});
 
-// Define complex tasks
-const vendor = gulp.series(clean, modules);
-const build = gulp.series(vendor);
-const watch = gulp.series(build, gulp.parallel(watchFiles, browserSync));
+//  MINIFY HTML
+gulp.task('minify-html', () => {
+  return gulp
+    .src('./build/**/*.html')
+    .pipe(prettyError())
+    .pipe(htmlmin({ collapseWhitespace: true }))
+    .pipe(gulp.dest('./build'));
+});
 
-// Export tasks
-exports.clean = clean;
-exports.vendor = vendor;
-exports.build = build;
-exports.watch = watch;
-exports.default = build;
+
+// JAVASCRIPT CODE CONTROL
+gulp.task('jshint', () => {
+  return gulp
+    .src([
+      './assets/js/**/*.js',
+    ])
+    .pipe(jshint())
+    .pipe(jshint.reporter('default'))
+});
+
+// COPY IMAGES
+gulp.task('copy-images', () => {
+  return gulp
+    .src('./assets/img/*')
+    .pipe(gulp.dest('./build/img'));
+});
+
+
+// CLEAN DIST FOLDER
+gulp.task('clean', () => {
+  return del(
+    [
+      // CSS
+      './build/*',
+    ],
+    {force: true, dot: true}
+  );
+});
+
+// WATCH
+gulp.task('watch', () => {
+  gulp.watch('./assets/scss/**/*.scss', gulp.series('compile-scss'));
+  gulp.watch('./assets/js/**/*.js', gulp.series('jshint', 'concat-js'));
+  gulp.watch(['./src/**/*', './handlebars/**/*'], gulp.series('markdown'));
+});
+
+// BUILD PROD
+gulp.task('build:prod', gulp.series(
+  'clean',
+  'jshint',
+  gulp.parallel(
+    'compile-scss',
+    'copy-images',
+    'concat-js',
+    'markdown'
+  ),
+  gulp.parallel(
+    'minify-css',
+    'minify-js',
+    'minify-html',
+  ),
+));
+
+gulp.task('build:dev', gulp.series(
+  'clean',
+  'jshint',
+  gulp.parallel(
+    'compile-scss',
+    'copy-images',
+    'concat-js',
+    'markdown'
+  ),
+));
+
+gulp.task('default', gulp.series(
+  'build:dev',
+  gulp.parallel(
+    'browser-sync',
+    'watch'
+  )
+))
+

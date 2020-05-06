@@ -1,4 +1,4 @@
-FROM node:13-stretch-slim
+FROM node:14-stretch-slim
 
 RUN apt-get update && \
     apt-get install -y wget gnupg ca-certificates apt-transport-https && \
