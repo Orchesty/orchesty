@@ -1,5 +1,4 @@
 {{- $componentName := "logstash" -}}
-{{- if .Values.global.logstash.enabled -}}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -9,5 +8,4 @@ metadata:
 {{ include "pipes.labels" . | indent 4 }}
 data:
   logstash.conf: |
-{{ .Files.Get "files/logstash.conf" | indent 4 }}
-{{- end -}}
+{{ .Files.Get (printf "files/logstash-%s.conf" .Values.global.monitoring.logStorage) | indent 4 }}

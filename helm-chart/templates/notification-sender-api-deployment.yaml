@@ -35,6 +35,11 @@ spec:
                 configMapKeyRef:
                   key: mongodb_database
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: RABBITMQ_DSN
+              valueFrom:
+                configMapKeyRef:
+                  key: rabbitmq_dsn
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
           resources:
             requests:
               memory: 128Mi

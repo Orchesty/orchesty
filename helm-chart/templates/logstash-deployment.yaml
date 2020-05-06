@@ -1,5 +1,4 @@
 {{- $componentName := "logstash" -}}
-{{- if .Values.global.logstash.enabled -}}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -35,6 +34,16 @@ spec:
           env:
             - name: LS_JAVA_OPTS
               value: "-Xms512m -Xmx512m"
+            - name: MONGODB_DSN
+              valueFrom:
+                configMapKeyRef:
+                  key: mongodb_dsn
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: MONGODB_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  key: mongodb_database
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
           volumeMounts:
             - name: config-volume
               subPath: logstash.conf
@@ -50,4 +59,3 @@ spec:
         - name: config-volume
           configMap:
             name: {{ include "pipes.fullname" (dict "suffix" $componentName "root" .) }}
-{{- end -}}

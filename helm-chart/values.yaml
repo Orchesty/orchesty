@@ -28,6 +28,7 @@ global:
 
   monitoring:
     useInfluxDB: true
+    logStorage: elasticsearch
 
   api:
     serviceAnnotations: {}
@@ -37,9 +38,6 @@ global:
 
   frontend:
     serviceAnnotations: {}
-
-  logstash:
-    enabled: true
 
   longRunningNode:
     enabled: true
