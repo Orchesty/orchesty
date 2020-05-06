@@ -1,0 +1,53 @@
+{{- $componentName := "logstash" -}}
+{{- if .Values.global.logstash.enabled -}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pipes.fullname" (dict "suffix" $componentName "root" .) }}
+  labels:
+{{ include "pipes.labels" . | indent 4 }}
+{{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 4 }}
+spec:
+  selector:
+    matchLabels:
+{{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 6 }}
+  template:
+    metadata:
+      labels:
+{{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 8 }}
+    spec:
+{{ include "pipes.imagePullSecrets" . | indent 6 }}
+      containers:
+        - name: stream
+          image: {{ include "pipes.imageFullname" (dict "image" $componentName "root" .) }}
+          imagePullPolicy: Always
+          ports:
+            - name: default
+              containerPort: 9600
+              protocol: TCP
+            - name: ingest-tcp
+              containerPort: 5120
+              protocol: TCP
+            - name: ingest-udp
+              containerPort: 5120
+              protocol: UDP
+          env:
+            - name: LS_JAVA_OPTS
+              value: "-Xms512m -Xmx512m"
+          volumeMounts:
+            - name: config-volume
+              subPath: logstash.conf
+              mountPath: /usr/share/logstash/pipeline/logstash.conf
+          resources:
+            requests:
+              memory: 1Gi
+              cpu: 50m
+            limits:
+              memory: 1Gi
+              cpu: "2"
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ include "pipes.fullname" (dict "suffix" $componentName "root" .) }}
+{{- end -}}

@@ -1,0 +1,36 @@
+{{- $componentName := "kapacitor" -}}
+{{- if .Values.global.monitoring.useInfluxDB -}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pipes.fullname" (dict "suffix" $componentName "root" .) }}
+  labels:
+{{ include "pipes.labels" . | indent 4 }}
+{{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 4 }}
+spec:
+  selector:
+    matchLabels:
+{{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 6 }}
+  template:
+    metadata:
+      labels:
+{{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 8 }}
+    spec:
+{{ include "pipes.imagePullSecrets" . | indent 6 }}
+      containers:
+        - name: stream
+          image: {{ include "pipes.imageFullname" (dict "image" $componentName "root" .) }}
+          imagePullPolicy: Always
+          ports:
+            - name: ingest-udp
+              containerPort: 9100
+              protocol: UDP
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 50m
+            limits:
+              memory: 128Mi
+              cpu: "2"
+{{- end -}}

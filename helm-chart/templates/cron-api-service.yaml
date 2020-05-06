@@ -1,0 +1,21 @@
+---
+{{- $componentName := "cron-api" -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "pipes.fullname" (dict "suffix" $componentName "noPrefix" true "root" .) }}
+  labels:
+{{ include "pipes.labels" . | indent 4 }}
+{{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 4 }}
+spec:
+  selector:
+{{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 4 }}
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8080
+      targetPort: http
+    - name: http-legacy # todo: remove asap
+      protocol: TCP
+      port: 5000
+      targetPort: http

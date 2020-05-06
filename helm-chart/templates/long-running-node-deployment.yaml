@@ -1,0 +1,35 @@
+{{- $componentName := "long-running-node" -}}
+{{- if .Values.global.longRunningNode.enabled -}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pipes.fullname" (dict "suffix" $componentName "root" .) }}
+  labels:
+{{ include "pipes.labels" . | indent 4 }}
+{{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 4 }}
+spec:
+  selector:
+    matchLabels:
+{{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 6 }}
+  template:
+    metadata:
+      labels:
+{{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 8 }}
+    spec:
+{{ include "pipes.imagePullSecrets" . | indent 6 }}
+      containers:
+        - name: php-w-nginx
+          image: {{ include "pipes.imageFullname" (dict "image" "monolith" "root" .) }}
+          imagePullPolicy: Always
+          args: ["bin/console", "rabbit_mq:consumer:long-running-node"]
+          env:
+{{ include "pipes.monolithEnv" . | indent 12 }}
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: 10m
+            limits:
+              memory: 1Gi
+              cpu: "2"
+{{- end -}}

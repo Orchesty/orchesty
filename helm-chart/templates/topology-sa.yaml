@@ -1,0 +1,34 @@
+# todo: rename to topology-api and fix it in setup
+{{- $componentName := "topology" -}}
+{{- if .Values.global.topology.manageServiceAccount -}}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "pipes.fullname" (dict "suffix" $componentName "root" .) }}
+{{ end }}
+
+{{- if .Values.global.topology.manageRBAC -}}
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+ name: {{ include "pipes.fullname" (dict "suffix" $componentName "root" .) }}
+rules:
+- apiGroups: ["", "apps"]
+  resources: ["deployments", "services", "configmaps"]
+  verbs: ["get", "list", "create", "update", "patch", "delete"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "pipes.fullname" (dict "suffix" $componentName "root" .) }}
+subjects:
+- kind: ServiceAccount
+  name: {{ include "pipes.fullname" (dict "suffix" $componentName "root" .) }}
+roleRef:
+  kind: Role
+  name: {{ include "pipes.fullname" (dict "suffix" $componentName "root" .) }}
+  apiGroup: ""
+{{- end -}}

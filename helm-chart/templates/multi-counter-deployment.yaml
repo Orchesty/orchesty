@@ -1,0 +1,88 @@
+---
+{{- $componentName := "multi-counter" -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pipes.fullname" (dict "suffix" $componentName "root" .) }}
+  labels:
+{{ include "pipes.labels" . | indent 4 }}
+{{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 4 }}
+spec:
+  selector:
+    matchLabels:
+{{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 6 }}
+  template:
+    metadata:
+      labels:
+{{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 8 }}
+    spec:
+{{ include "pipes.imagePullSecrets" . | indent 6 }}
+      containers:
+        - name: multi-counter
+          args: ["./dist/src/bin/pipes.js", "start", "multi_counter"]
+          image: {{ include "pipes.imageFullname" (dict "image" "bridge" "root" .) }}
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8005
+          env:
+            - name: RABBITMQ_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: rabbitmq_host
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: RABBITMQ_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: rabbitmq_port
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: RABBITMQ_USER
+              valueFrom:
+                configMapKeyRef:
+                  key: rabbitmq_user
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: RABBITMQ_PASS
+              valueFrom:
+                configMapKeyRef:
+                  key: rabbitmq_password
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: __RABBITMQ_VHOST
+              valueFrom:
+                configMapKeyRef:
+                  key: rabbitmq_vhost
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: RABBITMQ_VHOST # todo: fix / in code or start supporting DSN
+              value: "/$(__RABBITMQ_VHOST)"
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: redis_host
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: REDIS_PORT
+              value: "6379"
+            - name: REDIS_PASS
+              value: ""
+            - name: REDIS_DB
+              value: "0"
+            - name: COUNTER_PREFETCH
+              value: "100"
+            - name: METRICS_HOST
+            {{- if .Values.global.monitoring.useInfluxDB }}
+              value: kapacitor
+            {{- else }}
+              valueFrom:
+                configMapKeyRef:
+                  key: mongodb_auth_and_hosts
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            {{- end }}
+            - name: METRICS_PORT
+              value: "{{ if .Values.global.monitoring.useInfluxDB }}9100{{ else }}27017{{ end }}"
+            - name: METRICS_SERVICE
+              value: {{ if .Values.global.monitoring.useInfluxDB }}influx{{ else }}mongo{{ end }}
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 10m
+            limits:
+              memory: 128Mi
+              cpu: "2"

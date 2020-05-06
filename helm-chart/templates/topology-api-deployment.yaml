@@ -1,0 +1,48 @@
+{{- $componentName := "topology-api" -}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pipes.fullname" (dict "suffix" $componentName "root" .) }}
+  labels:
+{{ include "pipes.labels" . | indent 4 }}
+{{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 4 }}
+spec:
+  selector:
+    matchLabels:
+{{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 6 }}
+  template:
+    metadata:
+      labels:
+{{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 8 }}
+    spec:
+{{ include "pipes.imagePullSecrets" . | indent 6 }}
+      serviceAccountName: {{ include "pipes.fullname" (dict "suffix" "topology" "root" .) }}
+      containers:
+        - name: topology-api
+          image: {{ include "pipes.imageFullname" (dict "image" $componentName "root" .) }}
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: __MONGODB_DSN
+              valueFrom:
+                configMapKeyRef:
+                  key: mongodb_dsn
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: K8S_NAMESPACE
+              value: {{ .Release.Namespace }}
+            - name: GENERATOR_MODE
+              value: k8s
+            - name: GENERATOR_PATH
+              value: /srv/topology
+            - name: MONGO_DSN
+              value: "$(__MONGODB_DSN)&connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500"
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: 10m
+            limits:
+              memory: 256Mi
+              cpu: "1"

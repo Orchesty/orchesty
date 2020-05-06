@@ -1,0 +1,71 @@
+---
+{{- $componentName := "repeater" -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pipes.fullname" (dict "suffix" $componentName "root" .) }}
+  labels:
+{{ include "pipes.labels" . | indent 4 }}
+{{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 4 }}
+spec:
+  selector:
+    matchLabels:
+{{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 6 }}
+  template:
+    metadata:
+      labels:
+{{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 8 }}
+    spec:
+{{ include "pipes.imagePullSecrets" . | indent 6 }}
+      containers:
+        - name: repeater
+          image: {{ include "pipes.imageFullname" (dict "image" "bridge" "root" .) }}
+          imagePullPolicy: Always
+          args: ["./dist/src/bin/pipes.js", "start", "repeater"]
+          env:
+            - name: RABBITMQ_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: rabbitmq_host
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: RABBITMQ_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: rabbitmq_port
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: RABBITMQ_USER
+              valueFrom:
+                configMapKeyRef:
+                  key: rabbitmq_user
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: RABBITMQ_PASS
+              valueFrom:
+                configMapKeyRef:
+                  key: rabbitmq_password
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: __RABBITMQ_VHOST
+              valueFrom:
+                configMapKeyRef:
+                  key: rabbitmq_vhost
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: RABBITMQ_VHOST # todo: fix / in code or start supporting DSN
+              value: "/$(__RABBITMQ_VHOST)"
+            - name: MONGO_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: mongodb_auth_and_hosts
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: MONGO_DB
+              valueFrom:
+                configMapKeyRef:
+                  key: mongodb_db_and_opts
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: REPEATER_CHECK_TIMEOUT
+              value: "5000"
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: 25m
+            limits:
+              memory: 128Mi
+              cpu: "2"

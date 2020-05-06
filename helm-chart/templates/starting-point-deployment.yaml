@@ -1,0 +1,81 @@
+---
+{{- $componentName := "starting-point" -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pipes.fullname" (dict "suffix" $componentName "root" .) }}
+  labels:
+{{ include "pipes.labels" . | indent 4 }}
+{{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 4 }}
+spec:
+  selector:
+    matchLabels:
+{{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 6 }}
+  template:
+    metadata:
+      labels:
+{{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 8 }}
+    spec:
+{{ include "pipes.imagePullSecrets" . | indent 6 }}
+      containers:
+        - name: starting-point
+          image: {{ include "pipes.imageFullname" (dict "image" "starting-point" "root" .) }}
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: __MONGODB_DSN
+              valueFrom:
+                configMapKeyRef:
+                  key: mongodb_dsn
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: MONGO_DSN
+              value: "$(__MONGODB_DSN)&connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500"
+            - name: METRICS_DSN
+            {{- if .Values.global.monitoring.useInfluxDB }}
+              value: influxdb://kapacitor:9100
+            {{- else }}
+              valueFrom:
+                configMapKeyRef:
+                  key: mongodb_dsn
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            {{- end }}
+            - name: RABBIT_COUNTER_QUEUE_DURABLE
+              value: "true"
+            - name: RABBIT_QUEUE_DURABLE
+              value: "true"
+            - name: RABBIT_DELIVERY_MODE
+              value: "2"
+            - name: RABBIT_HOSTNAME
+              valueFrom:
+                configMapKeyRef:
+                  key: rabbitmq_host
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: RABBIT_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: rabbitmq_port
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: RABBIT_VHOST # probably not supported yet
+              valueFrom:
+                configMapKeyRef:
+                  key: rabbitmq_vhost
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: RABBIT_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  key: rabbitmq_user
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: RABBIT_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: rabbitmq_password
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 10m
+            limits:
+              memory: 128Mi
+              cpu: "2"

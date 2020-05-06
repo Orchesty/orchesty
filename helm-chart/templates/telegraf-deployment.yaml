@@ -1,0 +1,62 @@
+---
+{{- $componentName := "telegraf" -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pipes.fullname" (dict "suffix" $componentName "root" .) }}
+  labels:
+{{ include "pipes.labels" . | indent 4 }}
+{{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 4 }}
+spec:
+  selector:
+    matchLabels:
+{{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 6 }}
+  template:
+    metadata:
+      labels:
+{{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 8 }}
+    spec:
+{{ include "pipes.imagePullSecrets" . | indent 6 }}
+      containers:
+        - name: stream
+          image: {{ include "pipes.imageFullname" (dict "image" $componentName "root" .) }}
+          imagePullPolicy: Always
+          env:
+            - name: METRICS_DSN
+            {{- if .Values.global.monitoring.useInfluxDB }}
+              value: influxdb://kapacitor:9100
+            {{- else }}
+              valueFrom:
+                configMapKeyRef:
+                  key: mongodb_dsn
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            {{- end }}
+            - name: __RABBITMQ_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: rabbitmq_host
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: RABBIT_HOST
+              value: "http://$(__RABBITMQ_HOST):15672/"
+            - name: RABBIT_VHOST  # probably not supported yet
+              valueFrom:
+                configMapKeyRef:
+                  key: rabbitmq_vhost
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: RABBIT_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  key: rabbitmq_user
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: RABBIT_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: rabbitmq_password
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 50m
+            limits:
+              memory: 128Mi
+              cpu: "2"
