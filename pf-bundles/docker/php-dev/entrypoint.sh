@@ -19,5 +19,6 @@ su-exec root mkdir -p /opt/phpstorm-coverage
 su-exec root chmod -R 774 /var/www/var/log && su-exec root chown -R dev:dev /var/www/var/log
 su-exec root chmod -R 774 /var/www/var/cache && su-exec root chown -R dev:dev /var/www/var/cache
 su-exec root chmod -R 777 /opt/phpstorm-coverage && su-exec root chown -R dev:dev /opt/phpstorm-coverage
+su-exec root chmod -R 775 /tmp/.ssh-auth-sock && su-exec root chown -R dev:dev /tmp/.ssh-auth-sock
 
 exec "$@"
