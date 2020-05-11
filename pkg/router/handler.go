@@ -1,7 +1,9 @@
 package router
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"runtime"
 
@@ -128,8 +130,8 @@ func handleByID(w http.ResponseWriter, r *http.Request, isHumanTask, isStop bool
 		return
 	}
 
-	if vars["user"] != "" {
-		r.Header.Set(utils.UserID, vars["user"])
+	if user := getUser(r); user != nil {
+		r.Header.Set(utils.UserID, *user)
 	}
 
 	go processMessage(isHumanTask, isStop, topology, r, init)
@@ -165,8 +167,8 @@ func handleByName(w http.ResponseWriter, r *http.Request, isHumanTask, isStop bo
 		}
 	}
 
-	if vars["user"] != "" {
-		r.Header.Set(utils.UserID, vars["user"])
+	if user := getUser(r); user != nil {
+		r.Header.Set(utils.UserID, *user)
 	}
 
 	go processMessage(isHumanTask, isStop, topology, r, init)
@@ -201,4 +203,28 @@ func handleByApplication(w http.ResponseWriter, r *http.Request) {
 
 func processMessage(isHumanTask bool, isStop bool, topology *storage.Topology, r *http.Request, init map[string]float64) {
 	service.RabbitMq.SndMessage(r, *topology, init, isHumanTask, isStop)
+}
+
+func getUser(r *http.Request) *string {
+	if user := mux.Vars(r)["user"]; user != "" {
+		return &user
+	}
+
+	if data, err := ioutil.ReadAll(r.Body); err == nil {
+		innerData := map[string]interface{}{}
+
+		if json.Unmarshal(data, &innerData) == nil {
+			if user, exists := innerData[utils.UserID]; exists {
+				innerUser := fmt.Sprintf("%v", user)
+
+				return &innerUser
+			}
+		}
+	}
+
+	if user := r.Header.Get(utils.UserID); user != "" {
+		return &user
+	}
+
+	return nil
 }

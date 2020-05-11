@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"starting-point/pkg/service"
 	"starting-point/pkg/storage"
+	"starting-point/pkg/utils"
 )
 
 var topology = "Topology"
@@ -166,6 +167,21 @@ func TestHandleRunByID(t *testing.T) {
 	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
 }
 
+func TestHandleRunByIDUser(t *testing.T) {
+	mockCache(1)
+	r, _ := http.NewRequest("POST", "/topologies/a/nodes/b/user/c/run", bytes.NewReader([]byte("[]")))
+	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
+
+	mockCache(1)
+	r, _ = http.NewRequest("POST", "/topologies/a/nodes/b/run", bytes.NewReader([]byte(`{"pf-user":"c"}`)))
+	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
+
+	mockCache(1)
+	r, _ = http.NewRequest("POST", "/topologies/a/nodes/b/run", bytes.NewReader([]byte("[]")))
+	r.Header.Add(utils.UserID, "c")
+	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
+}
+
 func TestHandleRunByName(t *testing.T) {
 	mockCache(1)
 
@@ -178,6 +194,21 @@ func TestHandleRunByName(t *testing.T) {
 
 	mockCache(1)
 	r, _ = http.NewRequest("POST", "/human-tasks/topologies/a/nodes/b/stop-by-name", bytes.NewReader([]byte("[]")))
+	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
+}
+
+func TestHandleRunByNameUser(t *testing.T) {
+	mockCache(1)
+	r, _ := http.NewRequest("POST", "/topologies/a/nodes/b/user/c/run-by-name", bytes.NewReader([]byte("[]")))
+	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
+
+	mockCache(1)
+	r, _ = http.NewRequest("POST", "/topologies/a/nodes/b/run-by-name", bytes.NewReader([]byte(`{"pf-user":"c"}`)))
+	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
+
+	mockCache(1)
+	r, _ = http.NewRequest("POST", "/topologies/a/nodes/b/run-by-name", bytes.NewReader([]byte("[]")))
+	r.Header.Add(utils.UserID, "c")
 	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
 }
 
