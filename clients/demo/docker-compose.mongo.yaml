@@ -218,6 +218,17 @@ services:
         volumes:
             - rabbitmq:/var/lib/rabbitmq
 
+    logstash:
+        image: dkr.hanaboso.net/pipes/pipes/logstash:master
+        environment:
+            - MONGO_HOST=mongo
+            - MONGO_DATABASE=demo
+            - MONGO_COLLECTION=Logs
+            - LS_JAVA_OPTS=-Xms512m -Xmx512m
+        volumes:
+            - ./stack/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+        restart: on-failure
+
 volumes:
     redis:
     mongodb:
