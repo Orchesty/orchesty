@@ -221,8 +221,8 @@ services:
     logstash:
         image: dkr.hanaboso.net/pipes/pipes/logstash:master
         environment:
-            - MONGO_HOST=mongo
-            - MONGO_DATABASE=demo
+            - MONGO_DSN=mongodb://mongo:27017
+            - MONGO_DB=demo
             - MONGO_COLLECTION=Logs
             - LS_JAVA_OPTS=-Xms512m -Xmx512m
         volumes:
