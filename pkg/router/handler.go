@@ -130,8 +130,8 @@ func handleByID(w http.ResponseWriter, r *http.Request, isHumanTask, isStop bool
 		return
 	}
 
-	if user := getUser(r); user != nil {
-		r.Header.Set(utils.UserID, *user)
+	if user := getUser(r); user != "" {
+		r.Header.Set(utils.UserID, user)
 	}
 
 	go processMessage(isHumanTask, isStop, topology, r, init)
@@ -167,8 +167,8 @@ func handleByName(w http.ResponseWriter, r *http.Request, isHumanTask, isStop bo
 		}
 	}
 
-	if user := getUser(r); user != nil {
-		r.Header.Set(utils.UserID, *user)
+	if user := getUser(r); user != "" {
+		r.Header.Set(utils.UserID, user)
 	}
 
 	go processMessage(isHumanTask, isStop, topology, r, init)
@@ -205,9 +205,9 @@ func processMessage(isHumanTask bool, isStop bool, topology *storage.Topology, r
 	service.RabbitMq.SndMessage(r, *topology, init, isHumanTask, isStop)
 }
 
-func getUser(r *http.Request) *string {
+func getUser(r *http.Request) string {
 	if user := mux.Vars(r)["user"]; user != "" {
-		return &user
+		return user
 	}
 
 	if data, err := ioutil.ReadAll(r.Body); err == nil {
@@ -215,16 +215,10 @@ func getUser(r *http.Request) *string {
 
 		if json.Unmarshal(data, &innerData) == nil {
 			if user, exists := innerData[utils.UserID]; exists {
-				innerUser := fmt.Sprintf("%v", user)
-
-				return &innerUser
+				return fmt.Sprintf("%v", user)
 			}
 		}
 	}
 
-	if user := r.Header.Get(utils.UserID); user != "" {
-		return &user
-	}
-
-	return nil
+	return r.Header.Get(utils.UserID)
 }
