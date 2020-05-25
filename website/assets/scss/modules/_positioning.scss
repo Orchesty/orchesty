@@ -1,0 +1,61 @@
+$position-list: (relative, absolute, fixed, sticky);
+
+@each $position in $position-list {
+  .p-#{$position} {
+    position: $position;
+  }
+}
+
+$display-list: (flex, block);
+
+@each $display in $display-list {
+  .d-#{$display} {
+    display: $display;
+  }
+}
+
+$flex-direction-list: (column, row);
+
+@each $direction in $flex-direction-list {
+  .fd-#{$direction} {
+    flex-direction: $direction;
+  }
+}
+
+$align-items-list: (center);
+
+@each $align-items in $align-items-list {
+  .ai-#{$align-items} {
+    align-items: $align-items;
+  }
+}
+
+$justify-content-list: (
+        flex-start,
+        center,
+        flex-end,
+        space-between,
+        space-around
+);
+
+@each $justify-content in $justify-content-list {
+  .jc-#{$justify-content} {
+    justify-content: $justify-content;
+  }
+}
+
+$flex-grow-list: (0, 1);
+
+@each $flex-grow in $flex-grow-list {
+  .fg-#{$flex-grow} {
+    flex-grow: $flex-grow;
+  }
+}
+
+$text-align: right, center, left, justify;
+
+@each $option in $text-align {
+  .t-#{$option} {
+    text-align: $option;
+  }
+}

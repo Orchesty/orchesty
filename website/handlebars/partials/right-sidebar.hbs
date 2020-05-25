@@ -1,0 +1,11 @@
+<aside id="right-sidebar" class="p-sticky">
+	<ul class="scroll-nav">
+		{{#if headings}}
+			{{#each headings}}
+				<li>
+					<a href="#{{id}}" class="anchor-link">{{text}}</a>
+				</li>
+			{{/each}}
+		{{/if}}
+	</ul>
+</aside>

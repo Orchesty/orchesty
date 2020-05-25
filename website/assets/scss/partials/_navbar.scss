@@ -1,0 +1,238 @@
+$primary-navbar-height: 55px;
+$secondary-navbar-height: 40px;
+
+#navbar-container {
+  height: $primary-navbar-height;
+
+  @media (max-width: map-get($breakpoints-max, "sm")) {
+    height: $primary-navbar-height + $secondary-navbar-height;
+  }
+
+  #primary-navbar-fixed {
+    width: 100%;
+    height: $primary-navbar-height;
+    z-index: 100;
+    background: $primary;
+
+    & .container {
+      background-image: url("../img/abst_tech_pattern_top.png");
+      background-repeat: no-repeat;
+      background-position-x: 20%;
+
+      @media (max-width: map-get($breakpoints-max, "xs")) {
+        background-size: contain;
+      }
+    }
+
+    .logo {
+      height: 35px;
+    }
+  }
+
+  #fixed-main-menu-container {
+    top: $primary-navbar-height;
+    z-index: 90;
+    width: 100%;
+    background: $primary;
+    transform: translateY(-105%);
+    transition: transform 250ms ease-in;
+    @include box-shadow;
+
+    &.active {
+      transform: translateY(0%);
+    }
+  }
+
+  #secondary-navbar-fixed {
+    top: $primary-navbar-height;
+    width: 100%;
+    min-height: $secondary-navbar-height;
+    z-index: 80;
+    background: $grey-bg;
+    color: $grey-text;
+
+    .current {
+      display: initial;
+    }
+
+    .search {
+      display: none;
+    }
+
+    &.active {
+      .current {
+        display: none;
+      }
+
+      .search {
+        display: block;
+      }
+    }
+  }
+
+  $secondary-nav-border: lighten($grey-text, 50%) solid 1px;
+
+  #fixed-sidebar-nav-container {
+    top: $primary-navbar-height + $secondary-navbar-height + 10;
+    width: 100%;
+    height: calc(100% - #{$primary-navbar-height + $secondary-navbar-height});
+    z-index: 70;
+    background: $grey-bg;
+    overflow-y: auto;
+    transform: translateY(-105%);
+    transition: transform 250ms ease-in;
+    @include box-shadow;
+
+    &.active {
+      transform: translateY(0%);
+    }
+
+    ul {
+      padding: 0;
+      margin: 0;
+
+      li {
+        display: flex;
+        flex-flow: wrap;
+
+        &:not(:last-child) {
+          border-bottom: $secondary-nav-border;
+        }
+
+        a {
+          color: $grey-text;
+          @extend .pa-2;
+          flex-grow: 1;
+
+          &:hover {
+            color: lighten($grey-text, 15%);
+          }
+
+          &.active {
+            font-weight: bolder;
+            color: $primary-dark;
+          }
+        }
+
+        ul {
+          padding: 0;
+          margin: 0;
+          width: 100%;
+
+          li {
+            @extend .pl-3;
+
+            &:first-child {
+              border-top: $secondary-nav-border;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.secondary-nav {
+  li {
+    ul {
+      display: none;
+
+      &.active {
+        display: initial;
+      }
+    }
+
+    button {
+      display: flex;
+      flex-grow: 0;
+      border: none;
+      margin: 0;
+      padding: 0;
+      background: none;
+      cursor: pointer;
+
+      svg {
+        fill: $grey-text;
+        width: 15px;
+        height: 15px;
+        @extend .pr-2;
+        @extend .pl-4;
+        @extend .py-2;
+      }
+
+      svg.up {
+        display: initial;
+      }
+
+      svg.down {
+        display: none;
+      }
+
+      &.active {
+        svg.up {
+          display: none;
+        }
+
+        svg.down {
+          display: initial;
+        }
+      }
+    }
+  }
+}
+
+
+#main-menu-btn {
+  background: none;
+  border: none;
+  display: flex;
+  height: 35px;
+  width: 35px;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  cursor: pointer;
+
+  svg {
+    fill: white;
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    min-height: 20px;
+  }
+}
+
+#secondary-menu-btn {
+  background: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+
+  svg {
+    fill: $grey-text;
+    width: 20px;
+    height: 20px;
+    min-height: 20px;
+    min-width: 20px;
+  }
+
+  svg.up {
+    display: initial;
+  }
+
+  svg.down {
+    display: none;
+  }
+
+  &.active {
+    svg.up {
+      display: none;
+    }
+
+    svg.down {
+      display: initial;
+    }
+  }
+}

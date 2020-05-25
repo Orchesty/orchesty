@@ -4,3 +4,4 @@
 go/pkg
 
 clients/topology
+.DS_Store

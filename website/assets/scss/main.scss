@@ -1,3 +1,22 @@
-@import "variables";
+// modules
+@import './modules/breakpoints';
+@import './modules/colors';
+@import './modules/grid';
+@import './modules/mixins';
+@import './modules/normalize';
+@import './modules/positioning';
+@import './modules/spacing';
+@import './modules/typography';
 
-@import "../../node_modules/materialize-css/sass/materialize";
+// partials
+@import './partials/content';
+@import './partials/footer';
+@import './partials/left-sidebar';
+@import './partials/main-menu';
+@import './partials/navbar';
+@import './partials/right-sidebar';
+@import './partials/search';
+@import './partials/version';
+
+// layouts
+@import './layouts/main';

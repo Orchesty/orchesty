@@ -1,20 +1,19 @@
-const gulp = require('gulp');
-const uglify = require('gulp-uglify');
-const sass = require('gulp-sass');
-const contact = require('gulp-concat');
-const sourcemaps = require('gulp-sourcemaps');
-const jshint = require('gulp-jshint');
-const cleanCSS = require('gulp-clean-css');
-const del = require('del');
 const browserSync = require('browser-sync').create();
-const prettyError = require('gulp-prettyerror');
+const cleanCSS = require('gulp-clean-css');
+const contact = require('gulp-concat');
+const del = require('del');
+const gulp = require('gulp');
 const htmlmin = require('gulp-htmlmin');
-const debug = require('gulp-debug');
+const jshint = require('gulp-jshint');
+const prettyError = require('gulp-prettyerror');
+const sass = require('gulp-sass');
+const sourcemaps = require('gulp-sourcemaps');
+const uglify = require('gulp-uglify-es').default;
 
 const createMetalsmith = require('./metalsmith')
 
 // Static server
-gulp.task('browser-sync', function() {
+gulp.task('browser-sync', function () {
   browserSync.init({
     server: {
       baseDir: "build",
@@ -25,8 +24,8 @@ gulp.task('browser-sync', function() {
 
 // Build web from markdown
 gulp.task('markdown', async () => {
-  return new Promise((resolve )=> {
-    createMetalsmith().build(function(err) {
+  return new Promise((resolve) => {
+    createMetalsmith().build(function (err) {
       if (err) {
         console.error(err)
       }
@@ -35,6 +34,12 @@ gulp.task('markdown', async () => {
       resolve()
     });
   })
+});
+
+gulp.task('add-fonts', () => {
+  return gulp
+    .src(['assets/fonts/*.*'])
+    .pipe(gulp.dest('build/fonts/'));
 });
 
 gulp.task('compile-scss', () => {
@@ -63,6 +68,7 @@ gulp.task('concat-js', () => {
   return gulp
     .src([
       './node_modules/materialize-css/dist/js/materialize.js',
+      './node_modules/lunr/lunr.js',
       './assets/js/**/*.js'
     ])
     .pipe(sourcemaps.init())
@@ -87,10 +93,9 @@ gulp.task('minify-html', () => {
   return gulp
     .src('./build/**/*.html')
     .pipe(prettyError())
-    .pipe(htmlmin({ collapseWhitespace: true }))
+    .pipe(htmlmin({collapseWhitespace: true}))
     .pipe(gulp.dest('./build'));
 });
-
 
 // JAVASCRIPT CODE CONTROL
 gulp.task('jshint', () => {
@@ -109,12 +114,24 @@ gulp.task('copy-images', () => {
     .pipe(gulp.dest('./build/img'));
 });
 
+// COPY ICONS
+gulp.task('copy-icons', () => {
+  return gulp
+    .src('./assets/ico/*')
+    .pipe(gulp.dest('./build/ico'));
+});
+
+// COPY INDEX
+gulp.task('copy-index', () => {
+  return gulp
+    .src('./build/docs/cs/index.html')
+    .pipe(gulp.dest('./build/'));
+});
 
 // CLEAN DIST FOLDER
 gulp.task('clean', () => {
   return del(
     [
-      // CSS
       './build/*',
     ],
     {force: true, dot: true}
@@ -133,8 +150,10 @@ gulp.task('build:prod', gulp.series(
   'clean',
   'jshint',
   gulp.parallel(
+    'add-fonts',
     'compile-scss',
     'copy-images',
+    'copy-icons',
     'concat-js',
     'markdown'
   ),
@@ -143,17 +162,21 @@ gulp.task('build:prod', gulp.series(
     'minify-js',
     'minify-html',
   ),
+  'copy-index',
 ));
 
 gulp.task('build:dev', gulp.series(
   'clean',
   'jshint',
   gulp.parallel(
+    'add-fonts',
     'compile-scss',
     'copy-images',
+    'copy-icons',
     'concat-js',
     'markdown'
   ),
+  'copy-index',
 ));
 
 gulp.task('default', gulp.series(

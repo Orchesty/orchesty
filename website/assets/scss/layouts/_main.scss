@@ -1,0 +1,11 @@
+#page-wrapper {
+  height: 100vh;
+}
+
+#main-footer {
+  @extend .light-regular-text;
+  background-color: $primary;
+  background-image: url("../img/abst_tech_pattern_bot.png");
+  background-repeat: no-repeat;
+  background-position: 100% 100%;
+}
