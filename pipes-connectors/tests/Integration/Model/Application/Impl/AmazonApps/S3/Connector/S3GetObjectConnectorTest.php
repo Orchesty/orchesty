@@ -63,7 +63,6 @@ final class S3GetObjectConnectorTest extends DatabaseTestCaseAbstract
                 }
             );
 
-            /** @var S3Application|MockObject $application */
             $application = self::createPartialMock(S3Application::class, ['getS3Client']);
             $application->method('getS3Client')->willReturn($client);
             $this->setProperty($this->connector, 'application', $application);

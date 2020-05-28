@@ -13,7 +13,7 @@ services:
         class: Hanaboso\HbPFAppStore\Model\ApplicationManager
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
-            - '@hbpf.loader.application'
+            - '@hbpf.application.loader'
             - '@hbpf._application.manager.webhook'
             -
     hbpf._application.manager.statistics:

@@ -60,6 +60,17 @@ final class ApplicationManager
     }
 
     /**
+     * @param string $key
+     *
+     * @return ApplicationInterface
+     * @throws ApplicationInstallException
+     */
+    public function getApplication(string $key): ApplicationInterface
+    {
+        return $this->loader->getApplication($key);
+    }
+
+    /**
      * @param string  $key
      * @param string  $user
      * @param mixed[] $data

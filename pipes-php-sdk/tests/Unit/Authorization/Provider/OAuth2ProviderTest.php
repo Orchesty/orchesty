@@ -11,7 +11,6 @@ use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesPhpSdk\Authorization\Wrapper\OAuth2Wrapper;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
-use PHPUnit\Framework\MockObject\MockObject;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 use Symfony\Bridge\Monolog\Logger;
 
@@ -32,7 +31,6 @@ final class OAuth2ProviderTest extends KernelTestCaseAbstract
      */
     public function testAuthorize(string $url): void
     {
-        /** @var MockObject|OAuth2Provider $provider */
         $provider = $this->getMockedProvider($url);
         $install  = new ApplicationInstall();
         $dto      = new OAuth2Dto($install, 'authorize/url', 'token/url');
@@ -51,7 +49,6 @@ final class OAuth2ProviderTest extends KernelTestCaseAbstract
      */
     public function testAuthorizeCustomApp(string $url): void
     {
-        /** @var MockObject|OAuth2Provider $provider */
         $provider = $this->getMockedProvider($url);
         $install  = new ApplicationInstall();
         $dto      = new OAuth2Dto($install, 'authorize/url', 'token/url');
@@ -82,7 +79,6 @@ final class OAuth2ProviderTest extends KernelTestCaseAbstract
      */
     public function testGetAccessToken(array $request, bool $exception): void
     {
-        /** @var OAuth2Provider|MockObject $provider */
         $provider = $this->getMockedProvider('');
         $provider->setLogger(new Logger('logger'));
         $install = new ApplicationInstall();
@@ -119,7 +115,6 @@ final class OAuth2ProviderTest extends KernelTestCaseAbstract
      */
     public function testRefreshAccessToken(array $token, bool $exception): void
     {
-        /** @var OAuth2Provider|MockObject $provider */
         $provider = $this->getMockedProvider('');
         $provider->setLogger(new Logger('logger'));
         $install = new ApplicationInstall();
@@ -191,10 +186,10 @@ final class OAuth2ProviderTest extends KernelTestCaseAbstract
     /**
      * @param string $authorizeUrl
      *
-     * @return MockObject
+     * @return OAuth2Provider
      * @throws Exception
      */
-    private function getMockedProvider(string $authorizeUrl): MockObject
+    private function getMockedProvider(string $authorizeUrl): OAuth2Provider
     {
         $redirect = self::createMock(RedirectInterface::class);
         $redirect->method('make')->willReturnCallback(

@@ -25,32 +25,8 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
     private $handler;
 
     /**
-     * @covers \Hanaboso\HbPFAppStore\Handler\ApplicationHandler::getApplicationByKey
-     * @covers \Hanaboso\HbPFAppStore\Model\ApplicationManager::getApplication
-     * @covers \Hanaboso\HbPFAppStore\Loader\ApplicationLoader::getApplication
-     *
-     * @throws Exception
-     */
-    public function testGetApplicationByKey(): void
-    {
-        $response = $this->handler->getApplicationByKey('null');
-
-        self::assertEquals(
-            [
-                'name'               => 'null',
-                'authorization_type' => 'basic',
-                'application_type'   => 'webhook',
-                'key'                => 'null',
-                'description'        => 'This is null app.',
-            ],
-            $response
-        );
-    }
-
-    /**
      * @covers \Hanaboso\HbPFAppStore\Handler\ApplicationHandler::getApplicationsByUser
      * @covers \Hanaboso\HbPFAppStore\Model\ApplicationManager::getApplication
-     * @covers \Hanaboso\HbPFAppStore\Loader\ApplicationLoader::getApplication
      * @covers \Hanaboso\HbPFAppStore\Model\ApplicationManager::getInstalledApplications
      *
      * @throws Exception
@@ -119,7 +95,6 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\HbPFAppStore\Handler\ApplicationHandler::authorizeApplication
      * @covers \Hanaboso\HbPFAppStore\Model\ApplicationManager::authorizeApplication
-     * @covers \Hanaboso\HbPFAppStore\Loader\ApplicationLoader::getApplication
      *
      * @throws Exception
      */

@@ -1,7 +1,4 @@
-.PHONY: init-dev init-prod generate build-monolith push-monolith
-
 # Client-specific vars
-
 CLIENT_DIR="clients/demo"
 
 TAG?=dev

@@ -222,9 +222,8 @@ class MongoMetricsManager extends MetricsManagerAbstract
 
         $from = DateTimeUtils::getUtcDateTime($dateFrom);
         $to   = DateTimeUtils::getUtcDateTime($dateTo);
-
         $diff = $to->diff($from);
-        $secs = (($diff->days * 24 + $diff->h) * 60 + $diff->i) * 60 + $diff->s;
+        $secs = (((int) $diff->days * 24 + $diff->h) * 60 + $diff->i) * 60 + $diff->s;
 
         $res[self::QUEUE_COUNT] = $secs / $this->rabbitInterval;
 

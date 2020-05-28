@@ -1,4 +1,5 @@
 parameters:
+    rabbit_dsn: '%env(string:RABBIT_DSN)%'
     rabbit_host: rabbitmq
     rabbit_port: 5672
     rabbit_vhost: /
@@ -9,6 +10,10 @@ parameters:
 
 # Repeater
 rabbit_mq:
+    connections:
+        default:
+            dsn: '%env(string:RABBIT_DSN)%'
+
     exchanges:
         repeater:
             durable: true

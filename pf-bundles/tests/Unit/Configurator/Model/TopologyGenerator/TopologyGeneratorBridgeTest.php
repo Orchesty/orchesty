@@ -13,8 +13,6 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository;
-use Hanaboso\PipesPhpSdk\Database\Repository\TopologyRepository;
-use PHPUnit\Framework\MockObject\MockObject;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 
 /**
@@ -193,19 +191,15 @@ final class TopologyGeneratorBridgeTest extends KernelTestCaseAbstract
         $node = (new Node())->setName('topology-1');
         $this->setProperty($node, 'id', 'test');
 
-        /** @var TopologyRepository|MockObject $nodeRepository */
         $nodeRepository = self::createPartialMock(NodeRepository::class, ['getNodesByTopology']);
         $nodeRepository->method('getNodesByTopology')->willReturn([$node]);
 
-        /** @var DocumentManager|MockObject $documentManager */
         $documentManager = self::createPartialMock(DocumentManager::class, ['getRepository']);
         $documentManager->method('getRepository')->willReturn($nodeRepository);
 
-        /** @var CurlManager|MockObject $curlManager */
         $curlManager = self::createPartialMock(CurlManager::class, ['send']);
         $curlManager->method('send')->willReturnCallback($callback);
 
-        /** @var DatabaseManagerLocator|MockObject $managerLocator */
         $managerLocator = self::createPartialMock(DatabaseManagerLocator::class, ['get', 'getDm']);
         $managerLocator->method('get')->willReturn($documentManager);
         $managerLocator->method('getDm')->willReturn($documentManager);

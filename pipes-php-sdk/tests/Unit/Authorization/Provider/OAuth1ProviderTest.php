@@ -13,7 +13,6 @@ use Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth1Dto;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider;
 use OAuth;
 use OAuthException;
-use PHPUnit\Framework\MockObject\MockObject;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 use Symfony\Bridge\Monolog\Logger;
 
@@ -40,8 +39,7 @@ final class OAuth1ProviderTest extends KernelTestCaseAbstract
      */
     public function testAuthorize(array $data, string $url, bool $exception): void
     {
-        $install = new ApplicationInstall();
-        /** @var OAuth1Provider|MockObject $provider */
+        $install  = new ApplicationInstall();
         $provider = $this->getMockedProvider($data, $url);
         $provider->setLogger(new Logger('logger'));
         $dto = new OAuth1Dto($install);
@@ -64,7 +62,6 @@ final class OAuth1ProviderTest extends KernelTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider::authorize
-
      * @throws Exception
      */
     public function testAuthorizeErr(): void
@@ -113,7 +110,6 @@ final class OAuth1ProviderTest extends KernelTestCaseAbstract
         $install->setSettings(
             [BasicApplicationInterface::AUTHORIZATION_SETTINGS => [BasicApplicationInterface::TOKEN => $data]]
         );
-        /** @var OAuth1Provider|MockObject $provider */
         $provider = $this->getMockedProvider(['token'], '');
         $provider->setLogger(new Logger('logger'));
         $dto = new OAuth1Dto($install);
@@ -145,7 +141,6 @@ final class OAuth1ProviderTest extends KernelTestCaseAbstract
         );
         $dto = new OAuth1Dto($install);
 
-        /** @var OAuth1Provider|MockObject $oauth */
         $oauth = self::createPartialMock(OAuth::class, ['getAccessToken', 'setToken']);
         $oauth->expects(self::any())->method('getAccessToken')->willThrowException(new OAuthException());
         $oauth->expects(self::any())->method('setToken');
@@ -187,7 +182,6 @@ final class OAuth1ProviderTest extends KernelTestCaseAbstract
         $install->setSettings(
             [BasicApplicationInterface::AUTHORIZATION_SETTINGS => [BasicApplicationInterface::TOKEN => $data]]
         );
-        /** @var OAuth1Provider|MockObject $provider */
         $provider = $this->getMockedProvider(['token'], '');
         $provider->setLogger(new Logger('logger'));
         $dto = new OAuth1Dto($install);
@@ -248,10 +242,10 @@ final class OAuth1ProviderTest extends KernelTestCaseAbstract
      * @param mixed[] $data
      * @param string  $authorizeUrl
      *
-     * @return MockObject
+     * @return OAuth1Provider
      * @throws Exception
      */
-    private function getMockedProvider(array $data, string $authorizeUrl): MockObject
+    private function getMockedProvider(array $data, string $authorizeUrl): OAuth1Provider
     {
         $dm = self::createMock(DocumentManager::class);
         $dm->method('persist')->willReturn(TRUE);

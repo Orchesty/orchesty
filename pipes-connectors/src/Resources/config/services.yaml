@@ -11,4 +11,4 @@ services:
         class: Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\CustomNode\RefreshOAuth2TokenCustomNode
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
-            - '@hbpf.loader.application'
+            - '@hbpf.application.loader'

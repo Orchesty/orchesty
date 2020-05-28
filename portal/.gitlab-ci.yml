@@ -1,7 +1,7 @@
 ---
 
 portal-api-build:
-  stage: stage2
+  stage: stage3
   only:
     changes:
       - portal/**/*
@@ -18,7 +18,7 @@ portal-api-build:
       - portal
 
 .portal-api-deploy:
-  stage: stage3
+  stage: stage5
   when: manual
   dependencies:
     - portal-api-build

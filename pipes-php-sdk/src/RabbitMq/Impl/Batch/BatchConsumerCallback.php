@@ -127,7 +127,7 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
                 }
             )
             ->then(
-                function (AMQPChannel $channel) use ($message, $headers, $loop) {
+                function (AMQPChannel $channel) use ($message, $headers, $loop): PromiseInterface {
                     switch ($headers[self::TYPE]) {
                         case 'test':
                             return $this->testAction($channel, $message, $headers);
@@ -140,7 +140,13 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
                     }
                 }
             )->otherwise(
-                function (Throwable $e) use ($replyChannel, $connection, $channelId, $message, $headers) {
+                function (Throwable $e) use (
+                    $replyChannel,
+                    $connection,
+                    $channelId,
+                    $message,
+                    $headers
+                ): PromiseInterface {
                     if ($replyChannel === NULL) {
                         // @todo create new channel
                         $replyChannel = $connection->getChannel($channelId);
@@ -153,7 +159,7 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
                             new ErrorMessage(2_001, $e->getMessage())
                         )
                         ->then(
-                            function () use ($e, $headers) {
+                            function () use ($e, $headers): PromiseInterface {
                                 $this->logger->error(
                                     sprintf('Batch action error: %s', $e->getMessage()),
                                     array_merge(['exception' => $e], PipesHeaders::debugInfo($headers))

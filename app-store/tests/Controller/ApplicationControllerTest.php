@@ -21,69 +21,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\HbPFAppStore\Controller\ApplicationController::listOfApplicationsAction
-     * @covers \Hanaboso\HbPFAppStore\Handler\ApplicationHandler::getApplications
-     * @covers \Hanaboso\HbPFAppStore\Model\ApplicationManager::getApplications
-     */
-    public function testListOfApplications(): void
-    {
-        self::$client->request('GET', '/applications');
-        $response = self::$client->getResponse();
-
-        self::assertNotEmpty(Json::decode((string) $response->getContent()));
-        self::assertEquals(200, $response->getStatusCode());
-
-        self::$client->request('GET', '/applicationsss');
-        $response = self::$client->getResponse();
-        self::assertEquals(404, $response->getStatusCode());
-    }
-
-    /**
-     * @covers \Hanaboso\HbPFAppStore\Controller\ApplicationController::listOfApplicationsAction
-     */
-    public function testListOfApplicationsErr(): void
-    {
-        $this->mockApplicationHandlerException('getApplications');
-
-        $response = (array) $this->sendGet('/applications');
-        self::assertEquals(500, $response['status']);
-    }
-
-    /**
-     * @covers \Hanaboso\HbPFAppStore\Controller\ApplicationController::getApplicationAction
-     *
-     * @throws Exception
-     */
-    public function testGetApplication(): void
-    {
-        $application = 'null';
-        $this->mockApplicationHandler([$application]);
-
-        self::$client->request('GET', sprintf('/applications/%s', 'null'));
-        $response = self::$client->getResponse();
-
-        self::assertTrue(in_array($application, Json::decode((string) $response->getContent()), TRUE));
-        self::assertEquals(200, $response->getStatusCode());
-
-        self::$client->request('GET', sprintf('/applications/%s', 'example'));
-        $response = self::$client->getResponse();
-        self::assertEquals(404, $response->getStatusCode());
-    }
-
-    /**
-     * @covers \Hanaboso\HbPFAppStore\Controller\ApplicationController::getApplicationAction
-     *
-     * @throws Exception
-     */
-    public function testGetApplicationException(): void
-    {
-        $this->mockApplicationHandlerException('getApplicationByKey');
-        self::$client->request('GET', '/applications/application');
-        $response = self::$client->getResponse();
-        self::assertEquals(500, $response->getStatusCode());
-    }
-
-    /**
      * @covers \Hanaboso\HbPFAppStore\Controller\ApplicationController::getUsersApplicationAction
      *
      * @throws Exception
@@ -308,8 +245,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         $handler->method('updateApplicationSettings')
             ->willReturn($returnValue);
         $handler->method('getApplicationsByUser')
-            ->willReturn($returnValue);
-        $handler->method('getApplicationByKey')
             ->willReturn($returnValue);
         $handler->method('authorizeApplication')
             ->willReturnCallback(

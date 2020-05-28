@@ -2,7 +2,7 @@
 
 TAG?=dev
 IMAGE=dkr.hanaboso.net/pipes/pipes/php-sdk/php-dev:${TAG}
-BASE=hanabosocom/php-dev:php-7.4
+BASE=hanabosocom/php-dev:php-7.4-alpine
 DC=docker-compose
 DE=docker-compose exec -T app
 DEC=docker-compose exec -T app composer

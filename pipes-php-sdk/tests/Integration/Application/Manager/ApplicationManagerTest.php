@@ -34,6 +34,16 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager::getApplication
+     *
+     * @throws Exception
+     */
+    public function testGetApplication(): void
+    {
+        self::assertEquals('null-key', $this->manager->getApplication('null')->getKey());
+    }
+
+    /**
      * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager::saveApplicationSettings
      *
      * @throws Exception

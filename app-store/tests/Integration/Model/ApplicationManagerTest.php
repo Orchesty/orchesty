@@ -35,15 +35,6 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
         self::assertFake();
     }
 
-    /**
-     * @throws Exception
-     */
-    public function testGetApplications(): void
-    {
-        $applications = $this->applicationManager->getApplications();
-
-        self::assertEmpty($applications);
-    }
 
     /**
      * @throws Exception

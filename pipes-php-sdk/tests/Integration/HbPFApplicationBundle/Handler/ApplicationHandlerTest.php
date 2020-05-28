@@ -29,9 +29,54 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler
      * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler::getApplications
      */
+    public function testGetApplications(): void
+    {
+        $ex = [
+            'items' => [
+                [
+                    'key'                => 'null-key',
+                    'name'               => 'Null',
+                    'authorization_type' => 'basic',
+                    'application_type'   => 'cron',
+                    'description'        => 'Application for test purposes',
+                ],
+                [
+                    'key'                => 'null2',
+                    'name'               => 'Null2',
+                    'authorization_type' => 'oauth2',
+                    'application_type'   => 'cron',
+                    'description'        => 'Application for test purposes',
+                ],
+                [
+                    'key'                => 'null1',
+                    'name'               => 'null1',
+                    'authorization_type' => 'oauth',
+                    'application_type'   => 'webhook',
+                    'description'        => 'This is null ouath1 app.',
+                ],
+            ],
+        ];
+        self::assertEquals($ex, $this->handler->getApplications());
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler
+     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler::getApplications
+     *
+     * @throws Exception
+     */
     public function testGetApplication(): void
     {
-        self::assertEquals(['null', 'null2', 'null3'], $this->handler->getApplications());
+        self::assertEquals(
+            [
+                'key'                => 'null-key',
+                'name'               => 'Null',
+                'authorization_type' => 'basic',
+                'application_type'   => 'cron',
+                'description'        => 'Application for test purposes',
+            ],
+            $this->handler->getApplicationByKey('null')
+        );
     }
 
     /**

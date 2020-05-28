@@ -10,7 +10,7 @@ version: '2.2'
 services:
     ## BEGIN DEV
     downloader:
-        image: hanabosocom/php-dev:php-7.4
+        image: hanabosocom/php-dev:php-7.4-alpine
         user: ${DEV_UID}:${DEV_GID}
         environment:
             BACKEND_HOST: ${BACKEND_URL}/
@@ -40,7 +40,7 @@ services:
 
     ## BEGIN DEV
     batch:
-        image: hanabosocom/php-dev:php-7.4
+        image: hanabosocom/php-dev:php-7.4-alpine
         user: ${DEV_UID}:${DEV_GID}
         environment:
             BACKEND_HOST: ${BACKEND_URL}/
@@ -91,7 +91,7 @@ services:
 
     ## BEGIN DEV
     batch-connector:
-        image: hanabosocom/php-dev:php-7.4
+        image: hanabosocom/php-dev:php-7.4-alpine
         user: ${DEV_UID}:${DEV_GID}
         environment:
             BACKEND_HOST: ${BACKEND_URL}/
@@ -142,7 +142,7 @@ services:
 
     ## BEGIN DEV
     long-running-node:
-        image: hanabosocom/php-dev:php-7.4
+        image: hanabosocom/php-dev:php-7.4-alpine
         user: ${DEV_UID}:${DEV_GID}
         command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit_mq:consumer:long-running-node'
         working_dir: /var/www/pipes/clients/demo/pipes-api
@@ -193,7 +193,7 @@ services:
 
     ## BEGIN DEV
     status-service:
-        image: hanabosocom/php-dev:php-7.4
+        image: hanabosocom/php-dev:php-7.4-alpine
         user: ${DEV_UID}:${DEV_GID}
         environment:
             BACKEND_HOST: ${BACKEND_URL}/
@@ -335,7 +335,7 @@ services:
     # PHP Services monolith
     ## BEGIN DEV
     monolith-api:
-        image: hanabosocom/php-dev:php-7.4
+        image: hanabosocom/php-dev:php-7.4-alpine
         user: ${DEV_UID}:${DEV_GID}
         ports:
             - ${DEV_IP}:80:80
@@ -548,7 +548,7 @@ services:
             - redis:/data
 
     logstash:
-        image: dkr.hanaboso.net/pipes/pipes/logstash:dev
+        image: dkr.hanaboso.net/pipes/pipes/logstash-mongo:master
         environment:
             - MONGO_DSN=mongodb://mongo:27017
             - MONGO_DB=demo
@@ -556,17 +556,12 @@ services:
             - LS_JAVA_OPTS=-Xms512m -Xmx512m
         #command: --log.level debug
         ## BEGIN DEV
-        volumes:
-            - ./stack/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
         restart: on-failure
         ## END DEV
         ## BEGIN STAGE
         #deploy:
         #  restart_policy:
         #    condition: on-failure
-        #configs:
-        #  - source: logstash.conf
-        #    target: /usr/share/logstash/pipeline/logstash.conf
         ## END STAGE
 
     # Metrics
@@ -684,8 +679,6 @@ volumes:
 #      o: bind
 #
 #configs:
-#  logstash.conf:
-#    file: ./stack/logstash.conf
 #  telegraf.conf:
 #    file: ./stack/telegraf.conf
 #

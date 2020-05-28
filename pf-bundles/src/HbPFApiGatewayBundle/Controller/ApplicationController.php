@@ -2,7 +2,10 @@
 
 namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller;
 
+use Exception;
+use Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -16,13 +19,29 @@ final class ApplicationController extends AbstractController
 {
 
     /**
+     * @var ServiceLocator
+     */
+    private ServiceLocator $locator;
+
+    /**
+     * ApplicationController constructor.
+     *
+     * @param ServiceLocator $locator
+     */
+    public function __construct(ServiceLocator $locator)
+    {
+        $this->locator = $locator;
+    }
+
+    /**
      * @Route("/applications", methods={"GET", "OPTIONS"})
      *
      * @return Response
      */
     public function listOfApplicationsAction(): Response
     {
-        return $this->forward('Hanaboso\HbPFAppStore\Controller\ApplicationController::listOfApplicationsAction');
+        //TODO: refactor after ServiceLocatorMS will be done
+        return new JsonResponse($this->locator->getApps());
     }
 
     /**
@@ -34,12 +53,8 @@ final class ApplicationController extends AbstractController
      */
     public function getApplicationAction(string $key): Response
     {
-        return $this->forward(
-            'Hanaboso\HbPFAppStore\Controller\ApplicationController::getApplicationAction',
-            [
-                'key' => $key,
-            ]
-        );
+        //TODO: refactor after ServiceLocatorMS will be done
+        return new JsonResponse($this->locator->getApp($key));
     }
 
     /**
@@ -51,12 +66,8 @@ final class ApplicationController extends AbstractController
      */
     public function getUsersApplicationAction(string $user): Response
     {
-        return $this->forward(
-            'Hanaboso\HbPFAppStore\Controller\ApplicationController::getUsersApplicationAction',
-            [
-                'user' => $user,
-            ]
-        );
+        //TODO: refactor after ServiceLocatorMS will be done
+        return new JsonResponse($this->locator->getUserApps($user));
     }
 
     /**
@@ -69,13 +80,8 @@ final class ApplicationController extends AbstractController
      */
     public function getApplicationDetailAction(string $key, string $user): Response
     {
-        return $this->forward(
-            'Hanaboso\HbPFAppStore\Controller\ApplicationController::getApplicationDetailAction',
-            [
-                'key'  => $key,
-                'user' => $user,
-            ]
-        );
+        //TODO: refactor after ServiceLocatorMS will be done
+        return new JsonResponse($this->locator->getAppDetail($key, $user));
     }
 
     /**
@@ -88,13 +94,8 @@ final class ApplicationController extends AbstractController
      */
     public function installApplicationAction(string $key, string $user): Response
     {
-        return $this->forward(
-            'Hanaboso\HbPFAppStore\Controller\ApplicationController::installApplicationAction',
-            [
-                'key'  => $key,
-                'user' => $user,
-            ]
-        );
+        //TODO: refactor after ServiceLocatorMS will be done
+        return new JsonResponse($this->locator->installApp($key, $user));
     }
 
     /**
@@ -108,14 +109,8 @@ final class ApplicationController extends AbstractController
      */
     public function updateApplicationSettingsAction(Request $request, string $key, string $user): Response
     {
-        return $this->forward(
-            'Hanaboso\HbPFAppStore\Controller\ApplicationController::updateApplicationSettingsAction',
-            [
-                'request' => $request,
-                'key'     => $key,
-                'user'    => $user,
-            ]
-        );
+        //TODO: refactor after ServiceLocatorMS will be done
+        return new JsonResponse($this->locator->updateApp($key, $user, $request->request->all()));
     }
 
     /**
@@ -128,13 +123,8 @@ final class ApplicationController extends AbstractController
      */
     public function uninstallApplicationAction(string $key, string $user): Response
     {
-        return $this->forward(
-            'Hanaboso\HbPFAppStore\Controller\ApplicationController::uninstallApplicationAction',
-            [
-                'key'  => $key,
-                'user' => $user,
-            ]
-        );
+        //TODO: refactor after ServiceLocatorMS will be done
+        return new JsonResponse($this->locator->uninstallApp($key, $user));
     }
 
     /**
@@ -148,14 +138,8 @@ final class ApplicationController extends AbstractController
      */
     public function saveApplicationPasswordAction(Request $request, string $key, string $user): Response
     {
-        return $this->forward(
-            'Hanaboso\HbPFAppStore\Controller\ApplicationController::saveApplicationPasswordAction',
-            [
-                'request' => $request,
-                'key'     => $key,
-                'user'    => $user,
-            ]
-        );
+        //TODO: refactor after ServiceLocatorMS will be done
+        return new JsonResponse($this->locator->updateAppPassword($key, $user, $request->request->all()));
     }
 
     /**
@@ -169,14 +153,14 @@ final class ApplicationController extends AbstractController
      */
     public function authorizeApplicationAction(Request $request, string $key, string $user): Response
     {
-        return $this->forward(
-            'Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::authorizeApplicationAction',
-            [
-                'request' => $request,
-                'key'     => $key,
-                'user'    => $user,
-            ]
-        );
+        try {
+            //TODO: refactor after ServiceLocatorMS will be done
+            $this->locator->authorize($key, $user, $request->query->get('redirect_url'));
+        } catch (Exception $e) {
+            return new JsonResponse(['Error' => $e->getMessage()], 500);
+        }
+
+        return new JsonResponse([]);
     }
 
     /**
@@ -190,14 +174,8 @@ final class ApplicationController extends AbstractController
      */
     public function setAuthorizationTokenAction(Request $request, string $key, string $user): Response
     {
-        return $this->forward(
-            'Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::setAuthorizationTokenAction',
-            [
-                'request' => $request,
-                'key'     => $key,
-                'user'    => $user,
-            ]
-        );
+        //TODO: refactor after ServiceLocatorMS will be done
+        return new JsonResponse($this->locator->authorizationToken($key, $user, $request->query->all()));
     }
 
     /**
@@ -209,12 +187,8 @@ final class ApplicationController extends AbstractController
      */
     public function setAuthorizationTokenQueryAction(Request $request): Response
     {
-        return $this->forward(
-            'Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::setAuthorizationTokenQueryAction',
-            [
-                'request' => $request,
-            ]
-        );
+        //TODO: refactor after ServiceLocatorMS will be done
+        return new JsonResponse($this->locator->authorizationQueryToken($request->query->all()));
     }
 
 }

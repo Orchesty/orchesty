@@ -15,7 +15,6 @@ use Monolog\Logger;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPSocketConnection;
 use PhpAmqpLib\Message\AMQPMessage;
-use PHPUnit\Framework\MockObject\MockObject;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 use RabbitMqBundle\Connection\Connection;
 use RabbitMqBundle\Utils\Message;
@@ -54,17 +53,13 @@ final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
     {
         $loop = Factory::create();
 
-        /** @var BatchActionInterface|MockObject $batchAction */
         $batchAction = self::createMock(BatchActionInterface::class);
-        /** @var AMQPChannel|MockObject $channel */
-        $channel = self::createMock(AMQPChannel::class);
+        $channel     = self::createMock(AMQPChannel::class);
         $channel->method('basic_publish')->willReturn(resolve());
-        /** @var InfluxDbSender|MockObject $influxSender */
         $influxSender = self::createMock(InfluxDbSender::class);
         $loader       = new MetricsSenderLoader('influx', $influxSender, NULL);
         $callback     = new BatchConsumerCallback($batchAction, $loader);
         $callback->setLogger(new Logger('logger'));
-        /** @var Connection|MockObject $connection */
         $connection = self::createMock(Connection::class);
         $connection->expects(self::any())->method('getChannel')->willReturn($channel);
 
@@ -160,22 +155,17 @@ final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
     {
         $loop = Factory::create();
 
-        /** @var BatchActionInterface|MockObject $batchAction */
         $batchAction = self::createMock(BatchActionInterface::class);
         $batchAction->method('batchAction')->willReturn(resolve());
-        /** @var AMQPChannel|MockObject $channel */
         $channel = self::createMock(AMQPChannel::class);
         $channel->method('queue_declare')->willReturn(resolve());
         $channel->method('basic_publish')->willReturn(resolve());
-        /** @var AMQPSocketConnection|MockObject $client */
         $client = self::createMock(AMQPSocketConnection::class);
         $client->method('channel')->willReturn($channel);
-        /** @var InfluxDbSender|MockObject $influxSender */
         $influxSender = self::createMock(InfluxDbSender::class);
         $loader       = new MetricsSenderLoader('influx', $influxSender, NULL);
         $callback     = new BatchConsumerCallback($batchAction, $loader);
-        /** @var Connection|MockObject $connection */
-        $connection = self::createMock(Connection::class);
+        $connection   = self::createMock(Connection::class);
         $connection->expects(self::any())->method('getChannel')->willReturn($channel);
         $connection->expects(self::any())->method('getClient')->willReturn($client);
 
@@ -222,23 +212,18 @@ final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
     {
         $loop = Factory::create();
 
-        /** @var BatchActionInterface|MockObject $batchAction */
         $batchAction = self::createMock(BatchActionInterface::class);
         $batchAction->method('batchAction')->willReturn(resolve());
         $batchAction->method('getBatchService')->willReturn(self::createMock(BatchInterface::class));
-        /** @var AMQPChannel|MockObject $channel */
         $channel = self::createMock(AMQPChannel::class);
         $channel->method('queue_declare')->willReturn(resolve());
         $channel->method('basic_publish')->willReturn(resolve());
-        /** @var AMQPSocketConnection|MockObject $client */
         $client = self::createMock(AMQPSocketConnection::class);
         $client->method('channel')->willReturn($channel);
-        /** @var InfluxDbSender|MockObject $influxSender */
         $influxSender = self::createMock(InfluxDbSender::class);
         $loader       = new MetricsSenderLoader('influx', $influxSender, NULL);
         $callback     = new BatchConsumerCallback($batchAction, $loader);
-        /** @var Connection|MockObject $connection */
-        $connection = self::createMock(Connection::class);
+        $connection   = self::createMock(Connection::class);
         $connection->expects(self::any())->method('getChannel')->willReturn($channel);
         $connection->expects(self::any())->method('getClient')->willReturn($client);
 
@@ -286,23 +271,18 @@ final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
     {
         $loop = Factory::create();
 
-        /** @var BatchActionInterface|MockObject $batchAction */
         $batchAction = self::createMock(BatchActionInterface::class);
         $batchAction->method('batchAction')->willReturn(resolve());
         $batchAction->method('getBatchService')->willThrowException(new Exception());
-        /** @var AMQPChannel|MockObject $channel */
         $channel = self::createMock(AMQPChannel::class);
         $channel->method('queue_declare')->willReturn(resolve());
         $channel->method('basic_publish')->willReturn(resolve());
-        /** @var AMQPSocketConnection|MockObject $client */
         $client = self::createMock(AMQPSocketConnection::class);
         $client->method('channel')->willReturn($channel);
-        /** @var InfluxDbSender|MockObject $influxSender */
         $influxSender = self::createMock(InfluxDbSender::class);
         $loader       = new MetricsSenderLoader('influx', $influxSender, NULL);
         $callback     = new BatchConsumerCallback($batchAction, $loader);
-        /** @var Connection|MockObject $connection */
-        $connection = self::createMock(Connection::class);
+        $connection   = self::createMock(Connection::class);
         $connection->expects(self::any())->method('getChannel')->willReturn($channel);
         $connection->expects(self::any())->method('getClient')->willReturn($client);
 
@@ -346,22 +326,17 @@ final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
     {
         $loop = Factory::create();
 
-        /** @var BatchActionInterface|MockObject $batchAction */
         $batchAction = self::createMock(BatchActionInterface::class);
         $batchAction->method('batchAction')->willReturn(resolve());
-        /** @var AMQPChannel|MockObject $channel */
         $channel = self::createMock(AMQPChannel::class);
         $channel->method('queue_declare')->willReturn(resolve());
         $channel->method('basic_publish')->willReturn(resolve());
-        /** @var AMQPSocketConnection|MockObject $client */
         $client = self::createMock(AMQPSocketConnection::class);
         $client->method('channel')->willReturn($channel);
-        /** @var InfluxDbSender|MockObject $influxSender */
         $influxSender = self::createMock(InfluxDbSender::class);
         $loader       = new MetricsSenderLoader('influx', $influxSender, NULL);
 
-        $callback = new BatchConsumerCallback($batchAction, $loader);
-        /** @var Connection|MockObject $connection */
+        $callback   = new BatchConsumerCallback($batchAction, $loader);
         $connection = self::createMock(Connection::class);
         $connection->expects(self::any())->method('getChannel')->willReturn($channel);
         $connection->expects(self::any())->method('getClient')->willReturn($client);

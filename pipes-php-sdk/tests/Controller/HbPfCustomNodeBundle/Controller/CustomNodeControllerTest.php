@@ -8,7 +8,6 @@ use Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Exception\CustomNodeException;
 use Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Handler\CustomNodeHandler;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\String\Json;
-use PHPUnit\Framework\MockObject\MockObject;
 use PipesPhpSdkTests\ControllerTestCaseAbstract;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -191,7 +190,6 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
             ->setHeaders(['test' => 'test'])
             ->setData(Json::encode(['test' => 'test']));
 
-        /** @var CustomNodeHandler|MockObject $joinerHandlerMock */
         $joinerHandlerMock = self::createMock(CustomNodeHandler::class);
         $joinerHandlerMock
             ->method('process')

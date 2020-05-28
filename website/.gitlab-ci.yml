@@ -1,6 +1,6 @@
 ---
 site build:
-  stage: stage2
+  stage: stage3
   only:
     changes:
       - website/**/*
@@ -17,7 +17,7 @@ site build:
       - website/build
 
 .site_deploy:
-  stage: stage3
+  stage: stage5
   when: manual
   only:
     changes:

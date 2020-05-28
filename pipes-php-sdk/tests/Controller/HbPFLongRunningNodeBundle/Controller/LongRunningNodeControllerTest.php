@@ -9,7 +9,6 @@ use Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Exception\LongRunningNodeException;
 use Hanaboso\Utils\String\Json;
 use InvalidArgumentException;
-use PHPUnit\Framework\MockObject\MockObject;
 use PipesPhpSdkTests\ControllerTestCaseAbstract;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -29,7 +28,6 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
      */
     public function testProcess(): void
     {
-        /** @var LongRunningNodeHandler|MockObject $handler */
         $handler = self::createMock(LongRunningNodeHandler::class);
         $handler->method('process')->willReturnCallback(
             static function (string $nodeId, array $data): ProcessDto {

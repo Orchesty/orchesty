@@ -41,6 +41,39 @@ final class ApplicationController
     }
 
     /**
+     * @Route("/applications", methods={"GET"})
+     * @Route("/applications/", methods={"GET"})
+     *
+     * @return Response
+     */
+    public function listOfApplicationsAction(): Response
+    {
+        try {
+            return $this->getResponse($this->applicationHandler->getApplications());
+        } catch (Throwable $t) {
+            return $this->getErrorResponse($t);
+        }
+    }
+
+    /**
+     * @Route("/applications/{key}", methods={"GET"})
+     *
+     * @param string $key
+     *
+     * @return Response
+     */
+    public function getApplicationAction(string $key): Response
+    {
+        try {
+            return $this->getResponse($this->applicationHandler->getApplicationByKey($key));
+        } catch (ApplicationInstallException $e) {
+            return $this->getErrorResponse($e, 404, ControllerUtils::NOT_FOUND);
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
+        }
+    }
+
+    /**
      * @Route("/applications/{key}/users/{user}/authorize", methods={"GET"})
      *
      * @param Request $request

@@ -2,6 +2,30 @@ version: '2.2'
 
 services:
     monolith-api:
+        image: dkr.hanaboso.net/pipes/pipes/pf-bundle:master
+        ports:
+            - ${DEV_IP}:80:80
+        environment:
+            BACKEND_HOST: ${BACKEND_URL}/
+            FRONTEND_HOST: ${BACKEND_URL}/
+            SMTP_USER: dev.email.hb@gmail.com
+            SMTP_PASSWORD: jVME2RkX9xyYhj9v
+            METRICS_SERVICE: mongo
+            METRICS_HOST: mongo
+            METRICS_PORT: 27017
+            REDIS_DSN: redis://redis
+            CRON_DSN: cron-api:8080
+            FTP_API_DSN: ftp-api
+            MAILER_API_DSN: mailer-api
+            MAPPER_API_DSN: mapper-api
+            MONOLITH_API_DSN: sdk-api
+            MULTI_PROBE_DSN: multi-probe:8007
+            STARTING_POINT_DSN: starting-point:8080
+            TOPOLOGY_API_DSN: topology-api:8080
+            XML_PARSER_API_DSN: xml-parser-api
+            RABBIT_DSN: amqp://rabbitmq:5672/
+
+    sdk-api:
         image: dkr.hanaboso.net/pipes/demo/monolith:master
         environment:
             BACKEND_HOST: ${BACKEND_URL}/
@@ -16,11 +40,12 @@ services:
             FTP_API_DSN: ftp-api
             MAILER_API_DSN: mailer-api
             MAPPER_API_DSN: mapper-api
-            MONOLITH_API_DSN: monolith-api
+            MONOLITH_API_DSN: sdk-api
             MULTI_PROBE_DSN: multi-probe:8007
             STARTING_POINT_DSN: starting-point:8080
             TOPOLOGY_API_DSN: topology-api:8080
             XML_PARSER_API_DSN: xml-parser-api
+            RABBIT_DSN: amqp://rabbitmq:5672/
 
     batch:
         image: dkr.hanaboso.net/pipes/demo/monolith:master
@@ -35,12 +60,13 @@ services:
             FTP_API_DSN: ftp-api
             MAILER_API_DSN: mailer-api
             MAPPER_API_DSN: mapper-api
-            MONOLITH_API_DSN: monolith-api
+            MONOLITH_API_DSN: sdk-api
             MULTI_PROBE_DSN: multi-probe:8007
             STARTING_POINT_DSN: starting-point:8080
             TOPOLOGY_API_DSN: topology-api:8080
             XML_PARSER_API_DSN: xml-parser-api
             PHP_FPM_MAX_REQUESTS: 5000
+            RABBIT_DSN: amqp://rabbitmq:5672/
         command: bin/console rabbit_mq:consumer:batch
 
     batch-connector:
@@ -56,12 +82,13 @@ services:
             FTP_API_DSN: ftp-api
             MAILER_API_DSN: mailer-api
             MAPPER_API_DSN: mapper-api
-            MONOLITH_API_DSN: monolith-api
+            MONOLITH_API_DSN: sdk-api
             MULTI_PROBE_DSN: multi-probe:8007
             STARTING_POINT_DSN: starting-point:8080
             TOPOLOGY_API_DSN: topology-api:8080
             XML_PARSER_API_DSN: xml-parser-api
             PHP_FPM_MAX_REQUESTS: 5000
+            RABBIT_DSN: amqp://rabbitmq:5672/
         command: bin/console rabbit_mq:consumer:batch-connector
 
     long-running-node:
@@ -77,12 +104,13 @@ services:
             FTP_API_DSN: ftp-api
             MAILER_API_DSN: mailer-api
             MAPPER_API_DSN: mapper-api
-            MONOLITH_API_DSN: monolith-api
+            MONOLITH_API_DSN: sdk-api
             MULTI_PROBE_DSN: multi-probe:8007
             STARTING_POINT_DSN: starting-point:8080
             TOPOLOGY_API_DSN: topology-api:8080
             XML_PARSER_API_DSN: xml-parser-api
             PHP_FPM_MAX_REQUESTS: 5000
+            RABBIT_DSN: amqp://rabbitmq:5672/
         command: bin/console rabbit_mq:consumer:long-running-node
 
     status-service:
@@ -98,12 +126,13 @@ services:
             FTP_API_DSN: ftp-api
             MAILER_API_DSN: mailer-api
             MAPPER_API_DSN: mapper-api
-            MONOLITH_API_DSN: monolith-api
+            MONOLITH_API_DSN: sdk-api
             MULTI_PROBE_DSN: multi-probe:8007
             STARTING_POINT_DSN: starting-point:8080
             TOPOLOGY_API_DSN: topology-api:8080
             XML_PARSER_API_DSN: xml-parser-api
             PHP_FPM_MAX_REQUESTS: 5000
+            RABBIT_DSN: amqp://rabbitmq:5672/
         command: bin/console rabbit_mq:consumer:status-service
 
     multi-probe:
@@ -219,15 +248,12 @@ services:
             - rabbitmq:/var/lib/rabbitmq
 
     logstash:
-        image: dkr.hanaboso.net/pipes/pipes/logstash:master
+        image: dkr.hanaboso.net/pipes/pipes/logstash-mongo:master
         environment:
             - MONGO_DSN=mongodb://mongo:27017
             - MONGO_DB=demo
             - MONGO_COLLECTION=Logs
             - LS_JAVA_OPTS=-Xms512m -Xmx512m
-        volumes:
-            - ./stack/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
-        restart: on-failure
 
 volumes:
     redis:

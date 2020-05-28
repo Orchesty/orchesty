@@ -15,7 +15,6 @@ use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
 use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\MockCurlMethod;
-use PHPUnit\Framework\MockObject\MockObject;
 
 /**
  * Class MailchimpApplicationTest
@@ -236,7 +235,6 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
                 ),
             ]
         );
-        /** @var OAuth2Provider|MockObject $providerMock */
         $providerMock = self::createPartialMock(OAuth2Provider::class, ['getAccessToken']);
         $providerMock->method('getAccessToken')->willReturn(
             [

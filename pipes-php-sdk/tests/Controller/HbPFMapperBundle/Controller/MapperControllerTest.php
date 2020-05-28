@@ -6,7 +6,6 @@ use Exception;
 use Hanaboso\PipesPhpSdk\HbPFMapperBundle\Exception\MapperException;
 use Hanaboso\PipesPhpSdk\HbPFMapperBundle\Handler\MapperHandler;
 use Hanaboso\Utils\String\Json;
-use PHPUnit\Framework\MockObject\MockObject;
 use PipesPhpSdkTests\ControllerTestCaseAbstract;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
@@ -23,7 +22,6 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFMapperBundle\Controller\MapperController
      * @covers \Hanaboso\PipesPhpSdk\HbPFMapperBundle\Controller\MapperController::processTestAction
-
      * @throws Exception
      */
     public function testProcessTest(): void
@@ -40,7 +38,6 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFMapperBundle\Controller\MapperController::processTestAction
-
      * @throws Exception
      */
     public function testProcessTestAction(): void
@@ -57,7 +54,6 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFMapperBundle\Controller\MapperController::processAction
-
      * @throws Exception
      */
     public function testProcess(): void
@@ -137,7 +133,6 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
      */
     private function prepareMapperHandlerMock(string $methodName, $returnValue = 'Test'): void
     {
-        /** @var MapperHandler|MockObject $mapperHandlerMock */
         $mapperHandlerMock = self::createMock(MapperHandler::class);
         $mapperHandlerMock
             ->method($methodName)
@@ -156,7 +151,6 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
      */
     private function prepareMapperHandlerMockException(string $methodName, $returnValue): void
     {
-        /** @var MapperHandler|MockObject $mapperHandlerMock */
         $mapperHandlerMock = self::createMock(MapperHandler::class);
         $mapperHandlerMock
             ->method($methodName)

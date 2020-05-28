@@ -15,7 +15,6 @@ use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DatabaseTestCaseAbstract;
-use PHPUnit\Framework\MockObject\MockObject;
 
 /**
  * Class S3CreateObjectConnectorTest
@@ -103,7 +102,6 @@ final class S3CreateObjectConnectorTest extends DatabaseTestCaseAbstract
 
         $this->createApplication();
 
-        /** @var S3Client|MockObject $client */
         $client = self::createPartialMock(S3Client::class, ['__call']);
         $client->method('__call')->willReturnCallback(
             static function (): void {
@@ -111,7 +109,6 @@ final class S3CreateObjectConnectorTest extends DatabaseTestCaseAbstract
             }
         );
 
-        /** @var S3Application|MockObject $application */
         $application = self::createPartialMock(S3Application::class, ['getS3Client']);
         $application->method('getS3Client')->willReturn($client);
         $this->setProperty($this->connector, 'application', $application);

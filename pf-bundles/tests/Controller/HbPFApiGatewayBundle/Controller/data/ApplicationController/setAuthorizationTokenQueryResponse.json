@@ -1,5 +1,5 @@
 {
-    "http": 302,
+    "http": 200,
     "body": [
         "Redirect"
     ]

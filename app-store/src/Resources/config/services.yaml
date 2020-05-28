@@ -2,12 +2,6 @@ services:
     _defaults:
         public: '%public.services%'
 
-    hbpf.loader.application:
-        class: Hanaboso\HbPFAppStore\Loader\ApplicationLoader
-        public: true
-        arguments:
-            - '@service_container'
-
     hbpf._application.handler.application:
         class: Hanaboso\HbPFAppStore\Handler\ApplicationHandler
         arguments:

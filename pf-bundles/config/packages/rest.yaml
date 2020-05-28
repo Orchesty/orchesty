@@ -1,0 +1,21 @@
+rest:
+    routes:
+        '^/api/topologies/\w+/schema.bpmn': ['xml']
+        '^/topologies/\w+/schema.bpmn': ['xml']
+        '^/api': ['json']
+        '^/webhook': ['json', 'xml']
+        '^/': ['json']
+    decoders:
+        json: rest.decoder.json
+        xml: rest.decoder.xml
+    cors:
+        '^/api':
+            origin: ['*']
+            methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS']
+            headers: ['Content-Type', 'OrderBy', 'Filter', 'Page', 'Limit']
+            credentials: TRUE
+        '^/':
+            origin: ['*']
+            methods: []
+            headers: []
+            credentials: FALSE

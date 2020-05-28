@@ -1,5 +1,5 @@
 parameters:
-    stdout_path: "%kernel.logs_dir%/stdout_%kernel.environment%.log"
+    stdout_path: 'php://stdout'
 
 monolog:
     use_microseconds: false
@@ -44,11 +44,6 @@ monolog:
             id: udp_handler
             level: info
             channels: [user]
-        rabbit-mq:
-            type: service
-            id: udp_handler
-            level: info
-            channels: [rabbit-mq]
         rabbit_mq:
             type: service
             id: udp_handler
@@ -62,7 +57,7 @@ monolog:
             level: info
             formatter: logstash_formatter
             max_files: 10
-            channels: '!php'
+#            channels: '!php'
 
 services:
     _defaults:

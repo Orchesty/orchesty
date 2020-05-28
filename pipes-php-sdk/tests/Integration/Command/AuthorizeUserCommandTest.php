@@ -12,7 +12,6 @@ use Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth1Dto;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider;
 use Hanaboso\PipesPhpSdk\Command\RedirectCommand;
 use OAuth;
-use PHPUnit\Framework\MockObject\MockObject;
 use PipesPhpSdkTests\DatabaseTestCaseAbstract;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -41,7 +40,6 @@ final class AuthorizeUserCommandTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract
      * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract::authorize
      * @covers \Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider::createClient
-
      * @throws Exception
      */
     public function testExecuteOauth2(): void
@@ -88,8 +86,7 @@ final class AuthorizeUserCommandTest extends DatabaseTestCaseAbstract
             );
         $this->pfd($app);
 
-        $install = new ApplicationInstall();
-        /** @var OAuth1Provider|MockObject $provider */
+        $install  = new ApplicationInstall();
         $provider = $this->getMockedProvider(['oauth_token' => 'aabbcc', 'oauth_token_secret' => '112233']);
         $dto      = new OAuth1Dto($install);
 
@@ -144,25 +141,21 @@ final class AuthorizeUserCommandTest extends DatabaseTestCaseAbstract
     /**
      * @param mixed[] $data
      *
-     * @return MockObject
+     * @return OAuth1Provider
      * @throws Exception
      */
-    private function getMockedProvider(array $data): MockObject
+    private function getMockedProvider(array $data): OAuth1Provider
     {
-        /** @var MockObject|DocumentManager $dm */
         $dm = self::createMock(DocumentManager::class);
         $dm->method('persist')->willReturn(TRUE);
         $dm->method('flush')->willReturn(TRUE);
 
-        /** @var MockObject|RedirectInterface $redirect */
         $redirect = self::createMock(RedirectInterface::class);
         $this->expectException(TypeError::class);
 
-        /** @var MockObject|OAuth $oauth */
         $oauth = self::createPartialMock(OAuth::class, ['getRequestToken']);
         $oauth->method('getRequestToken')->willReturn($data);
 
-        /** @var MockObject|OAuth1Provider $client */
         $client = self::getMockBuilder(OAuth1Provider::class)
             ->setConstructorArgs([$dm, $redirect])
             ->setMethods(['createClient'])

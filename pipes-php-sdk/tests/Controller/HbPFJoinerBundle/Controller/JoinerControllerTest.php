@@ -6,7 +6,6 @@ use Exception;
 use Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Exception\JoinerException;
 use Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Handler\JoinerHandler;
 use Hanaboso\Utils\String\Json;
-use PHPUnit\Framework\MockObject\MockObject;
 use PipesPhpSdkTests\ControllerTestCaseAbstract;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,7 +21,6 @@ final class JoinerControllerTest extends ControllerTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Controller\JoinerController
      * @covers \Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Controller\JoinerController::sendAction
-
      * @throws Exception
      */
     public function testSend(): void
@@ -44,7 +42,6 @@ final class JoinerControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Controller\JoinerController::sendAction
-
      * @throws Exception
      */
     public function testSendErr(): void
@@ -60,7 +57,6 @@ final class JoinerControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Controller\JoinerController::sendAction
-
      * @throws Exception
      */
     public function testSendErr2(): void
@@ -76,7 +72,6 @@ final class JoinerControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Controller\JoinerController::sendTestAction
-
      * @throws Exception
      */
     public function testSendTest(): void
@@ -157,7 +152,6 @@ final class JoinerControllerTest extends ControllerTestCaseAbstract
      */
     private function prepareJoinerHandlerMock($returnValue = 'Test'): void
     {
-        /** @var JoinerHandler|MockObject $joinerHandlerMock */
         $joinerHandlerMock = self::createMock(JoinerHandler::class);
         $joinerHandlerMock
             ->method('processJoiner')
@@ -179,7 +173,6 @@ final class JoinerControllerTest extends ControllerTestCaseAbstract
      */
     private function mockJoinerHandlerException(): void
     {
-        /** @var JoinerHandler|MockObject $joinerHandlerMock */
         $joinerHandlerMock = self::createPartialMock(
             JoinerHandler::class,
             ['processJoiner', 'processJoinerTest', 'getJoiners']

@@ -16,7 +16,6 @@ use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
 use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use LogicException;
 use phpmock\phpunit\PHPMock;
-use PHPUnit\Framework\MockObject\MockObject;
 
 /**
  * Class RedshiftApplicationTest
@@ -188,11 +187,9 @@ final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
             ]
         );
 
-        /** @var RedshiftClient|MockObject $client */
         $client = self::createPartialMock(RedshiftClient::class, ['__call']);
         $client->method('__call')->willReturnCallback($callback);
 
-        /** @var RedshiftApplication|MockObject $innerApplication */
         $innerApplication = self::createPartialMock(RedshiftApplication::class, ['getRedshiftClient']);
         $innerApplication->method('getRedshiftClient')->willReturn($client);
 
@@ -238,11 +235,9 @@ final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
             'Login into application was unsuccessful.'
         );
 
-        /** @var RedshiftClient|MockObject $client */
         $client = self::createPartialMock(RedshiftClient::class, ['__call']);
         $client->method('__call')->willReturnCallback(static fn(): Result => new Result(['Clusters' => [FALSE]]));
 
-        /** @var RedshiftApplication|MockObject $innerApplication */
         $innerApplication = self::createPartialMock(RedshiftApplication::class, ['getRedshiftClient']);
         $innerApplication->method('getRedshiftClient')->willReturn($client);
 
@@ -322,7 +317,6 @@ final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
      */
     private function prepareConnection(Closure $closure): void
     {
-        /** @var MockObject $connection */
         $connection = $this->getFunctionMock(
             'Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\Redshift',
             'pg_connect'

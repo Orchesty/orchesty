@@ -5,12 +5,11 @@ namespace PipesPhpSdkTests\Controller\HbPFTableParserBundle\Controller;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Exception;
 use Hanaboso\CommonsBundle\Exception\FileStorageException;
-use Hanaboso\PipesPhpSdk\HbPFMapperBundle\Handler\MapperHandler;
 use Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler;
 use Hanaboso\PipesPhpSdk\Parser\Exception\TableParserException;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\String\Json;
-use PHPUnit\Framework\MockObject\MockObject;
+use JsonException;
 use PipesPhpSdkTests\ControllerTestCaseAbstract;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -46,7 +45,6 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Controller\TableParserController::toJsonAction
-
      * @throws Exception
      */
     public function testToJsonActionErr(): void
@@ -62,7 +60,6 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Controller\TableParserController::toJsonAction
-
      * @throws Exception
      */
     public function testToJsonActionErr2(): void
@@ -100,7 +97,6 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Controller\TableParserController::toJsonTestAction
-
      * @throws Exception
      */
     public function testToJsonTestErr(): void
@@ -119,12 +115,12 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
         $response = $this->sendPost(
             '/parser/json/to/csv',
             [
-                'file_id' => sprintf('%s/../../../Integration/Parser/data/output-10.json', __DIR__),
+                'file_id' => __DIR__ . '/../../../Integration/Parser/data/output-10.json',
             ]
         );
 
         self::assertEquals(200, $response->status);
-        self::assertRegExp('#\/tmp\/\d+\.\d+\.csv#i', $response->content[0]);
+        self::assertMatchesRegularExpression('#\/tmp\/\d+\.\d+\.csv#i', $response->content);
     }
 
     /**
@@ -184,7 +180,6 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Controller\TableParserController::fromJsonTestAction
-
      * @throws Exception
      */
     public function testFromTestJsonNotFoundErr(): void
@@ -230,18 +225,26 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
             [],
             $content ? Json::encode($content) : ''
         );
-        /** @var Response $response */
+
         $response = $this->client->getResponse();
-        $res      = Json::decode((string) $response->getContent());
 
-        if (isset($res['error_code'])) {
-            return parent::sendPost($url, $parameters, $content);
+        try {
+            $res = Json::decode((string) $response->getContent());
+
+            if (isset($res['error_code'])) {
+                return parent::sendPost($url, $parameters, $content);
+            }
+
+            return (object) [
+                'status'  => $response->getStatusCode(),
+                'content' => Json::decode((string) $response->getContent()),
+            ];
+        } catch (JsonException $e) {
+            return (object) [
+                'status'  => $response->getStatusCode(),
+                'content' => (string) $response->getContent(),
+            ];
         }
-
-        return (object) [
-            'status'  => $response->getStatusCode(),
-            'content' => Json::decode((string) $response->getContent()),
-        ];
     }
 
     /**
@@ -252,7 +255,6 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
      */
     private function prepareTableParserErr(string $methodName, $returnValue): void
     {
-        /** @var MapperHandler|MockObject $mapperHandlerMock */
         $mapperHandlerMock = self::createMock(TableParserHandler::class);
         $mapperHandlerMock
             ->method($methodName)

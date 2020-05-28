@@ -49,30 +49,6 @@ final class ApplicationHandler
     }
 
     /**
-     * @return mixed[]
-     */
-    public function getApplications(): array
-    {
-        return [
-            'items' => array_map(
-                fn(string $key): array => $this->applicationManager->getApplication($key)->toArray(),
-                $this->applicationManager->getApplications()
-            ),
-        ];
-    }
-
-    /**
-     * @param string $key
-     *
-     * @return mixed[]
-     * @throws ApplicationInstallException
-     */
-    public function getApplicationByKey(string $key): array
-    {
-        return $this->applicationManager->getApplication($key)->toArray();
-    }
-
-    /**
      * @param string $user
      *
      * @return mixed[]

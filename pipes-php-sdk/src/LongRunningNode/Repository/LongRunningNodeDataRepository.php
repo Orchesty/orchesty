@@ -3,13 +3,14 @@
 namespace Hanaboso\PipesPhpSdk\LongRunningNode\Repository;
 
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
+use Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData;
 
 /**
  * Class LongRunningNodeDataRepository
  *
  * @package         Hanaboso\PipesPhpSdk\LongRunningNode\Repository
  *
- * @phpstan-extends DocumentRepository<\Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData>
+ * @phpstan-extends DocumentRepository<LongRunningNodeData>
  */
 final class LongRunningNodeDataRepository extends DocumentRepository
 {

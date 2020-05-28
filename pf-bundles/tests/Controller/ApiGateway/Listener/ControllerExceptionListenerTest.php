@@ -8,7 +8,6 @@ use Hanaboso\PipesFramework\ApiGateway\Listener\ControllerExceptionListener;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\Utils\Exception\EnumException;
 use Hanaboso\Utils\System\PipesHeaders;
-use PHPUnit\Framework\MockObject\MockObject;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 use RabbitMqBundle\Consumer\Callback\Exception\CallbackException;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -112,7 +111,6 @@ final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
      */
     private function mockEvent(Throwable $exception): ExceptionEvent
     {
-        /** @var ExceptionEvent|MockObject $eventMock */
         $eventMock = self::createPartialMock(ExceptionEvent::class, ['getThrowable']);
         $eventMock->method('getThrowable')->willReturn($exception);
 

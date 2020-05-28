@@ -3,7 +3,7 @@
 DC=docker-compose
 DE=docker-compose exec -T app
 IMAGE=dkr.hanaboso.net/pipes/application
-BASE=hanabosocom/php-dev:php-7.4
+BASE=hanabosocom/php-dev:php-7.4-alpine
 
 .env:
 	sed -e "s/{DEV_UID}/$(shell id -u)/g" \

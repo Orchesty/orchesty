@@ -20,6 +20,56 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::listOfApplicationsAction
+     */
+    public function testListOfApplications(): void
+    {
+        $response = $this->sendGet('/applications');
+
+        self::assertNotEmpty($response->content);
+        self::assertEquals(200, $response->status);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::listOfApplicationsAction
+     */
+    public function testListOfApplicationsErr(): void
+    {
+        $this->mockHandler('getApplications', new Exception());
+
+        $response = (array) $this->sendGet('/applications');
+        self::assertEquals(500, $response['status']);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::getApplicationAction
+     *
+     * @throws Exception
+     */
+    public function testGetApplication(): void
+    {
+        $response = $this->sendGet(sprintf('/applications/%s', 'null'));
+
+        self::assertEquals('null-key', $response->content->key);
+        self::assertEquals(200, $response->status);
+
+        $response = $this->sendGet(sprintf('/applications/%s', 'example'));
+        self::assertEquals(404, $response->status);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::getApplicationAction
+     *
+     * @throws Exception
+     */
+    public function testGetApplicationException(): void
+    {
+        $this->mockHandler('getApplicationByKey', new Exception());
+        $response = $this->sendGet('/applications/application');
+        self::assertEquals(500, $response->status);
+    }
+
+    /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController
      * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::authorizeApplicationAction
      */
