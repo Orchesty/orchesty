@@ -2,9 +2,10 @@
 
 DOCKER_TAG = dev
 DOCKER_REGISTRY := dkr.hanaboso.net/pipes/pipes
+TYPE?=mongo
 
 docker-build:
-	docker build -t $(DOCKER_REGISTRY)/logstash:$(DOCKER_TAG) .
+	docker build --build-arg TYPE=$(TYPE) -t $(DOCKER_REGISTRY)/logstash-$(TYPE):$(DOCKER_TAG) .
 
 docker-push:
-	docker push $(DOCKER_REGISTRY)/logstash:$(DOCKER_TAG)
+	docker push $(DOCKER_REGISTRY)/logstash-$(TYPE):$(DOCKER_TAG)
