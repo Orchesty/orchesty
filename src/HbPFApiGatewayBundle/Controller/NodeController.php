@@ -2,8 +2,7 @@
 
 namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller;
 
-use Hanaboso\PipesFramework\Configurator\Enum\NodeImplementationEnum;
-use Hanaboso\Utils\String\Json;
+use Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,6 +15,21 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 final class NodeController extends AbstractController
 {
+
+    /**
+     * @var ServiceLocator
+     */
+    private ServiceLocator $locator;
+
+    /**
+     * NodeController constructor.
+     *
+     * @param ServiceLocator $locator
+     */
+    public function __construct(ServiceLocator $locator)
+    {
+        $this->locator = $locator;
+    }
 
     /**
      * @Route("/topologies/{id}/nodes", methods={"GET", "OPTIONS"})
@@ -101,31 +115,8 @@ final class NodeController extends AbstractController
      */
     public function listNodesNamesAction(): Response
     {
-        return new JsonResponse(
-            [
-                NodeImplementationEnum::PHP => [
-                    NodeImplementationEnum::CONNECTOR => $this->getForwardContent(
-                        'Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Controller\ConnectorController::listOfConnectorsAction'
-                    ),
-                    NodeImplementationEnum::CUSTOM    => $this->getForwardContent(
-                        'Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Controller\CustomNodeController::listOfCustomNodesAction'
-                    ),
-                    NodeImplementationEnum::USER      => $this->getForwardContent(
-                        'Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController::listOfLongRunningNodesAction'
-                    ),
-                ],
-            ]
-        );
-    }
-
-    /**
-     * @param string $path
-     *
-     * @return mixed[]
-     */
-    private function getForwardContent(string $path): array
-    {
-        return Json::decode((string) $this->forward($path)->getContent());
+        //TODO: refactor after ServiceLocatorMS will be done
+        return new JsonResponse($this->locator->getNodes());
     }
 
 }

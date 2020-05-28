@@ -1,20 +1,16 @@
-.PHONY: docker-up-force docker-down-clean test
+TAG?=dev
+IMAGE=dkr.hanaboso.net/pipes/pipes/pf-bundle:$(TAG)
 
-TAG?=php-7.4
-GITLAB=dkr.hanaboso.net/pipes/pipes/php-dev:${TAG}
-DOCKERHUB=hanabosocom/php-dev:${TAG}
-BASE=hanabosocom/php-base:php-7.4-alpine
 DC=docker-compose
 DE=docker-compose exec -T app
 DEC=docker-compose exec -T app composer
 
 # Build
-build-dev:
-	docker pull ${BASE}
-	cd docker/php-dev/ && docker build -t ${GITLAB} .
-	cd docker/php-dev/ && docker build -t ${DOCKERHUB} .
-	docker push ${GITLAB}
-	docker push ${DOCKERHUB}
+build: .env
+	cp .dockerignore ../.dockerignore
+	docker build -f Dockerfile -t $(IMAGE) --pull ../. || rm ../.dockerignore
+	docker push $(IMAGE)
+	rm ../.dockerignore || true
 
 # Docker
 docker-up-force: .env

@@ -6,6 +6,8 @@ services:
 
     Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController
+        arguments:
+            - '@hbpp.service.locator'
 
     Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\CategoryController:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\CategoryController
@@ -24,6 +26,8 @@ services:
 
     Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NodeController:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NodeController
+        arguments:
+            - '@hbpp.service.locator'
 
     Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NotificationController:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NotificationController

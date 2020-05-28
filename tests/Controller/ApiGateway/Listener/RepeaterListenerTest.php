@@ -9,7 +9,6 @@ use Hanaboso\PipesFramework\ApiGateway\Listener\RepeaterListener;
 use Hanaboso\PipesPhpSdk\Database\Document\Dto\SystemConfigDto;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\Utils\System\PipesHeaders;
-use PHPUnit\Framework\MockObject\MockObject;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
@@ -144,7 +143,6 @@ final class RepeaterListenerTest extends ControllerTestCaseAbstract
      */
     private function mockEvent(Throwable $exception): ExceptionEvent
     {
-        /** @var ExceptionEvent|MockObject $eventMock */
         $eventMock = self::createPartialMock(ExceptionEvent::class, ['getThrowable']);
         $eventMock->method('getThrowable')->willReturn($exception);
 

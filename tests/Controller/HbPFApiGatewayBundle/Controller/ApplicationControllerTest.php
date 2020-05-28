@@ -3,7 +3,13 @@
 namespace PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller;
 
 use Exception;
+use Hanaboso\CommonsBundle\Redirect\RedirectInterface;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator;
+use Hanaboso\PipesFramework\Configurator\Document\Sdk;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\Utils\String\Json;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -145,9 +151,46 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
      */
     public function testAuthorizeApplicationAction(): void
     {
+        $sdk = new Sdk();
+        $sdk->setKey('ip')->setValue('name');
+        $this->dm->persist($sdk);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $curl = $this->createMock(CurlManager::class);
+        $curl->method('send')->willReturn(new ResponseDto(200, '', Json::encode(['key' => 'null']), []));
+
+        $loader = new ServiceLocator(
+            $this->dm,
+            $curl,
+            self::createMock(RedirectInterface::class)
+        );
+
+        self::$container->set('hbpp.service.locator', $loader);
+
         $this->createApplication();
 
         $this->assertResponse(__DIR__ . '/data/ApplicationController/authorizeApplicationRequest.json');
+    }
+
+    /**
+     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::authorizeApplicationAction
+     *
+     * @throws Exception
+     */
+    public function testAuthorizeApplicationActionException(): void
+    {
+        $loader = new ServiceLocator(
+            $this->dm,
+            self::$container->get('hbpf.transport.curl_manager'),
+            self::createMock(RedirectInterface::class)
+        );
+
+        self::$container->set('hbpp.service.locator', $loader);
+
+        $this->createApplication();
+
+        $this->assertResponse(__DIR__ . '/data/ApplicationController/authorizeApplicationExRequest.json');
     }
 
     /**

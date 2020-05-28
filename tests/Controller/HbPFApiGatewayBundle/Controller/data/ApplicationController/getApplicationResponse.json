@@ -1,10 +1,4 @@
 {
     "http": 200,
-    "body": {
-        "name": "null",
-        "authorization_type": "basic",
-        "application_type": "webhook",
-        "key": "null",
-        "description": "This is null app."
-    }
+    "body": {}
 }

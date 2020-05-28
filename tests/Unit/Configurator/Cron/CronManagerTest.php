@@ -15,7 +15,6 @@ use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\PipesPhpSdk\Database\Repository\TopologyRepository;
 use Hanaboso\Utils\String\Json;
-use PHPUnit\Framework\MockObject\MockObject;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 
 /**
@@ -417,15 +416,12 @@ final class CronManagerTest extends KernelTestCaseAbstract
 
         $this->setProperty($topology, 'id', 'test');
 
-        /** @var TopologyRepository|MockObject $topologyRepository */
         $topologyRepository = self::createPartialMock(TopologyRepository::class, ['findOneBy']);
         $topologyRepository->method('findOneBy')->willReturn($topology);
 
-        /** @var DocumentManager|MockObject $documentManager */
         $documentManager = self::createPartialMock(DocumentManager::class, ['getRepository']);
         $documentManager->method('getRepository')->willReturn($topologyRepository);
 
-        /** @var CurlManager|MockObject $curlManager */
         $curlManager = self::createPartialMock(CurlManager::class, ['send']);
         $curlManager->method('send')->willReturnCallback($callback);
 

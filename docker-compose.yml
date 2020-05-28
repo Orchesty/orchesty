@@ -1,7 +1,7 @@
 version: '3.5'
 services:
     app:
-        image: hanabosocom/php-dev:php-7.4
+        image: hanabosocom/php-dev:php-7.4-alpine
         user: ${DEV_UID}:${DEV_GID}
         ports:
             - ${DEV_IP}:80:80
@@ -17,8 +17,6 @@ services:
             - KERNEL_CLASS=Hanaboso\PipesFramework\Kernel
             - PHP_IDE_CONFIG=${PHP_IDE_CONFIG}
             - COMPOSER_HOME=${HOME}/dev/.composer
-            - PRELOAD_USER:${DEV_UID}
-            - PRELOAD_PATH:/var/www/var/cache/dev/Hanaboso_PipesFramework_KernelDevDebugContainer.preload.php
             - FRONTEND_DSN=${DEV_IP}
             - FRONTEND_HOST=${DEV_IP}
             - BACKEND_DSN=${DEV_IP}
@@ -27,16 +25,17 @@ services:
             - MULTI_PROBE_DSN=multi-probe:8007
             - TOPOLOGY_API_DSN=topology-api:80
             - MONGODB_DSN=mongodb://mongo
+            - MONGODB_DB=pipes
             - MARIADB_DSN=maria
             - STARTING_POINT_DSN=starting-point:8080
             - CRON_DSN=http://cron-api:8080
             - ELASTICSEARCH_DSN=elasticsearch://elasticsearch
-            - RABBITMQ_HOST=rabbitmq
-            - RABBITMQ_PORT=5672
+            - RABBIT_DSN=amqp://rabbitmq:5672
             - FTP_API_DSN=ftp-api
             - MAILER_API_DSN=mailer-api
             - MAPPER_API_DSN=mapper-api
             - MONOLITH_API_DSN=${DEV_IP}
+            - WORKER_DEFAULT_PORT=8008
             - XML_PARSER_API_DSN=xml-parser-api
             - METRICS_SERVICE=influx
             - METRICS_HOST=influx

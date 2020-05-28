@@ -12,6 +12,7 @@ use Hanaboso\PipesFramework\Configurator\Exception\TopologyConfigException;
 use Hanaboso\PipesPhpSdk\Database\Document\Dto\SystemConfigDto;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository;
+use Hanaboso\Utils\String\DsnParser;
 
 /**
  * Class TopologyConfigFactory
@@ -25,6 +26,7 @@ class TopologyConfigFactory
     public const DOCKER_REGISTRY        = 'docker_registry';
     public const DOCKER_PF_BRIDGE_IMAGE = 'docker_pf_bridge_image';
     public const RABBITMQ_HOST          = 'rabbitmq_host';
+    public const RABBITMQ_DSN           = 'rabbitmq_dsn';
     public const RABBITMQ_USER          = 'rabbitmq_user';
     public const RABBITMQ_PASS          = 'rabbitmq_pass';
     public const RABBITMQ_VHOST         = 'rabbitmq_vhost';
@@ -85,7 +87,14 @@ class TopologyConfigFactory
      */
     public function __construct(array $configs, DocumentManager $dm)
     {
-        $this->configs  = $configs;
+        $this->configs = $configs;
+
+        $parsed                              = DsnParser::rabbitParser($configs[self::RABBITMQ_DSN]);
+        $this->configs[self::RABBITMQ_HOST]  = sprintf('%s:%s', $parsed[DsnParser::HOST], $parsed[DsnParser::PORT]);
+        $this->configs[self::RABBITMQ_VHOST] = $parsed[DsnParser::VHOST] ?? '/';
+        $this->configs[self::RABBITMQ_USER]  = $parsed[DsnParser::USER] ?? 'guest';
+        $this->configs[self::RABBITMQ_PASS]  = $parsed[DsnParser::PASSWORD] ?? 'guest';
+
         $this->dm       = $dm;
         $this->nodeRepo = $this->dm->getRepository(Node::class);
     }

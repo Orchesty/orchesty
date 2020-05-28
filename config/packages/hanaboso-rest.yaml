@@ -1,9 +1,0 @@
-rest:
-    routes:
-        '^/api/topologies/\w+/schema.bpmn': ['xml']
-        '^/topologies/\w+/schema.bpmn': ['xml']
-        '^/api': ['json']
-        '^/': ['json']
-    decoders:
-        json: rest.decoder.json
-        xml: rest.decoder.xml

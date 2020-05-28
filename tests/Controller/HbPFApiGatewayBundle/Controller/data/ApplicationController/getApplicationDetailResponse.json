@@ -1,47 +1,4 @@
 {
     "http": 200,
-    "body": {
-        "name": "null",
-        "authorization_type": "basic",
-        "application_type": "webhook",
-        "key": "null",
-        "description": "This is null app.",
-        "authorized": true,
-        "applicationSettings": [
-            {
-                "type": "text",
-                "key": "settings1",
-                "value": null,
-                "label": "Client 11",
-                "description": "",
-                "required": false,
-                "readOnly": false,
-                "disabled": false,
-                "choices": []
-            },
-            {
-                "type": "text",
-                "key": "settings2",
-                "value": null,
-                "label": "Client 22",
-                "description": "",
-                "required": false,
-                "readOnly": false,
-                "disabled": false,
-                "choices": []
-            },
-            {
-                "type": "password",
-                "key": "settings3",
-                "value": null,
-                "label": "Client 33",
-                "description": "",
-                "required": false,
-                "readOnly": false,
-                "disabled": false,
-                "choices": []
-            }
-        ],
-        "webhookSettings": []
-    }
+    "body": {}
 }
