@@ -39,7 +39,7 @@ final class BridgeMetricsTest extends DatabaseTestCaseAbstract
                         'bridge_job_result_success'   => TRUE,
                         'bridge_job_waiting_duration' => 10,
                         'bridge_job_total_duration'   => 20,
-                        'created'                     => DateTimeUtils::getUtcDateTime('1.1.2020'),
+                        'created'                     => DateTimeUtils::getUtcDateTime('1.1.2020')->getTimestamp(),
                     ],
                     'tags'   => [
                         'nodeId'     => '1',

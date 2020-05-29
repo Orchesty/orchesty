@@ -34,7 +34,7 @@ final class ProcessMetricsTest extends DatabaseTestCaseAbstract
                     'fields' => [
                         'counter_process_result'   => TRUE,
                         'counter_process_duration' => 10,
-                        'created'                  => DateTimeUtils::getUtcDateTime('1.1.2020'),
+                        'created'                  => DateTimeUtils::getUtcDateTime('1.1.2020')->getTimestamp(),
                     ],
                     'tags'   => [
                         'nodeId'     => '1',

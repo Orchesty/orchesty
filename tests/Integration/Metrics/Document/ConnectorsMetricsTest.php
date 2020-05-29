@@ -32,7 +32,7 @@ final class ConnectorsMetricsTest extends DatabaseTestCaseAbstract
                 [
                     'fields' => [
                         'sent_request_total_duration' => 10,
-                        'created'                     => DateTimeUtils::getUtcDateTime('1.1.2020'),
+                        'created'                     => DateTimeUtils::getUtcDateTime('1.1.2020')->getTimestamp(),
                     ],
                     'tags'   => [
                         'nodeId'     => '1',

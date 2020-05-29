@@ -2,7 +2,7 @@
     "name": "hanaboso/pipes-framework",
     "license": "proprietary",
     "description": "PipesFramework for Symfony",
-    "version": "1.4.0",
+    "version": "1.4.1",
     "autoload": {
         "psr-4": {
             "Hanaboso\\PipesFramework\\": "src"
