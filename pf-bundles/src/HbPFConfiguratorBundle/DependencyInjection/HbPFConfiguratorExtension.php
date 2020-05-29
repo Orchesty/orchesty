@@ -40,7 +40,6 @@ class HbPFConfiguratorExtension extends Extension implements PrependExtensionInt
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/prepend-config'));
         $loader->load('parameters.yml');
-        $loader->load('status_service.yml');
 
         $container->setParameter('src_dir', __DIR__ . '/../..');
     }

@@ -32,7 +32,7 @@ final class RabbitMetricsTest extends DatabaseTestCaseAbstract
                 [
                     'fields' => [
                         'messages' => 2,
-                        'created'  => DateTimeUtils::getUtcDateTime('1.1.2020'),
+                        'created'  => DateTimeUtils::getUtcDateTime('1.1.2020')->getTimestamp(),
                     ],
                     'tags'   => [
                         'nodeId'     => '1',

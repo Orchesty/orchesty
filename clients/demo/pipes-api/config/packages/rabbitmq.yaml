@@ -1,13 +1,3 @@
-parameters:
-    rabbit_dsn: '%env(string:RABBIT_DSN)%'
-    rabbit_host: rabbitmq
-    rabbit_port: 5672
-    rabbit_vhost: /
-    rabbit_user: guest
-    rabbit_password: guest
-    rabbit_persistent: true
-    rabbit_path: /
-
 # Repeater
 rabbit_mq:
     connections:

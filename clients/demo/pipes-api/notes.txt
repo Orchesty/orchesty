@@ -1,7 +1,0 @@
-use symfony installer for new project
-create docker-compose
-create make file
-add hanaboso/pipes-framework, phpoffice/phpspreadsheet to composer.json
-add fost-rest-bundle, jms-serializer-bundle, doctrine-mongo-bundle, pf-commons bundle to AppKernel.php
-run docker and composer install
-create ruleset.xml

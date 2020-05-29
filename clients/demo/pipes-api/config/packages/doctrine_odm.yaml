@@ -30,12 +30,6 @@ doctrine_mongodb:
     document_managers:
         default:
             mappings:
-                HbPFUserBundle: ~
-                UsersDocument:
-                    type: annotation
-                    is_bundle: false
-                    dir: "%kernel.root_dir%/../vendor/hanaboso/pipes-framework/src/User/Document"
-                    prefix: Hanaboso\PipesFramework\User\Document
                 CommonsDocument:
                     type: annotation
                     is_bundle: false
@@ -51,27 +45,8 @@ doctrine_mongodb:
                     is_bundle: false
                     dir: "%kernel.root_dir%/../vendor/hanaboso/pipes-php-sdk/src/LongRunningNode/Document"
                     prefix: Hanaboso\PipesPhpSdk\LongRunningNode\Document
-                LogsDocument:
-                    type: annotation
-                    is_bundle: false
-                    dir: "%kernel.root_dir%/../vendor/hanaboso/pipes-framework/src/Logs/Document"
-                    prefix: Hanaboso\PipesFramework\Logs\Document
-                ConfiguratorDocument:
-                    type: annotation
-                    is_bundle: false
-                    dir: "%kernel.root_dir%/../vendor/hanaboso/pipes-framework/src/Configurator/Document"
-                    prefix: Hanaboso\PipesFramework\Configurator\Document
                 Webhook:
                     type: annotation
                     is_bundle: false
                     dir: "%kernel.root_dir%/../vendor/hanaboso/app-store/src/Document"
                     prefix: Hanaboso\HbPFAppStore\Document
-        metrics:
-            connection: metrics
-            database: metrics
-            mappings:
-                MetricsDocument:
-                    type: annotation
-                    is_bundle: false
-                    dir: "%kernel.root_dir%/../vendor/hanaboso/pipes-framework/src/Metrics/Document"
-                    prefix: Hanaboso\PipesFramework\Metrics\Document

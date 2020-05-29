@@ -2,10 +2,13 @@ app:
     resource: '../../src/Controller/'
     type: annotation
 
-hb_pf_api_gateway:
-    resource: '@HbPFApiGatewayBundle/Controller'
-    type:     annotation
-    prefix:   /api
+hb_pf_applications:
+    resource: "@HbPFApplicationBundle/Controller"
+    type: annotation
+
+hb_pf_appstore:
+    resource: "@HbPFAppStoreBundle"
+    type: annotation
 
 hb_pf_mapper:
     resource: "@HbPFMapperBundle/Controller"
@@ -17,26 +20,6 @@ hb_pf_connector:
 
 hb_pf_cutom_node:
     resource: "@HbPFCustomNodeBundle/Controller"
-    type: annotation
-
-hb_pf_configurator:
-    resource: "@HbPFConfiguratorBundle/Controller"
-    type: annotation
-
-hb_pf_user:
-    resource: "@HbPFUserBundle/Controller"
-    type: annotation
-
-hb_pf_metrics:
-    resource: "@HbPFMetricsBundle/Controller"
-    type: annotation
-
-hb_pf_logs:
-    resource: "@HbPFLogsBundle/Controller"
-    type: annotation
-
-hb_pf_notification:
-    resource: '@HbPFNotificationBundle'
     type: annotation
 
 hb_pf_long_running:

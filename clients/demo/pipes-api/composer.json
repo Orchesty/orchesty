@@ -15,15 +15,13 @@
     "require": {
         "php": "^7.4",
         "ext-json": "*",
-        "hanaboso/acl-bundle": "^1.3",
         "hanaboso/app-store": "^1.3",
         "hanaboso/commons-bundle": "^2.0",
         "hanaboso/email-service-bundle": "^1.0",
         "hanaboso/pipes-connectors": "^1.3",
-        "hanaboso/pipes-framework": "^1.3",
         "hanaboso/pipes-php-sdk": "^1.2",
         "hanaboso/rabbit-mq-bundle": "^1.3",
-        "hanaboso/user-bundle": "^1.3",
+        "hanaboso/rest-bundle": "^1.0",
         "kucharovic/czech-holidays": "^1.0",
         "ratchet/pawl": "^0.3"
     },
@@ -32,13 +30,6 @@
         "clue/block-react": "^1.2"
     },
     "repositories": [
-        {
-            "type": "path",
-            "url": "../../../pf-bundles",
-            "options": {
-                "symlink": true
-            }
-        },
         {
             "type": "path",
             "url": "../../../pipes-php-sdk",

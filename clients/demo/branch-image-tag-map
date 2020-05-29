@@ -7,11 +7,4 @@ declare -A BRANCH_IMAGE_TAG_MAP=(
   # branch: perf
   [FRONTEND_perf]="perf"
 
-  # branch: pipes-lite
-  [FRONTEND_pipes-lite]="pipes-lite"
-
-  # branch: pip-413
-  [MONOLITH_pip-413]="pip-413"
-  [FRONTEND_pip-413]="pip-413"
-
 )

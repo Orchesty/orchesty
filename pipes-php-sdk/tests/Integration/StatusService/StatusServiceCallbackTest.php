@@ -1,21 +1,21 @@
 <?php declare(strict_types=1);
 
-namespace PipesFrameworkTests\Integration\Configurator\StatusService;
+namespace PipesPhpSdkTests\Integration\StatusService;
 
 use Exception;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\CustomAssertTrait;
-use Hanaboso\PipesFramework\Configurator\StatusService\StatusServiceCallback;
+use Hanaboso\PipesPhpSdk\StatusService\StatusServiceCallback;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
-use PipesFrameworkTests\KernelTestCaseAbstract;
+use PipesPhpSdkTests\KernelTestCaseAbstract;
 use RabbitMqBundle\Connection\Connection;
 use RabbitMqBundle\Utils\Message;
 
 /**
  * Class StatusServiceCallbackTest
  *
- * @package PipesFrameworkTests\Integration\Configurator\StatusService
+ * @package PipesPhpSdkTests\Integration\StatusService
  *
- * @covers  \Hanaboso\PipesFramework\Configurator\StatusService\StatusServiceCallback
+ * @covers  \Hanaboso\PipesPhpSdk\StatusService\StatusServiceCallback
  */
 final class StatusServiceCallbackTest extends KernelTestCaseAbstract
 {
@@ -33,7 +33,7 @@ final class StatusServiceCallbackTest extends KernelTestCaseAbstract
     private Connection $connection;
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\StatusService\StatusServiceCallback::processMessage
+     * @covers \Hanaboso\PipesPhpSdk\StatusService\StatusServiceCallback::processMessage
      *
      * @throws Exception
      */
@@ -50,7 +50,7 @@ final class StatusServiceCallbackTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\StatusService\StatusServiceCallback::processMessage
+     * @covers \Hanaboso\PipesPhpSdk\StatusService\StatusServiceCallback::processMessage
      *
      * @throws Exception
      */
@@ -63,7 +63,7 @@ final class StatusServiceCallbackTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\StatusService\StatusServiceCallback::processMessage
+     * @covers \Hanaboso\PipesPhpSdk\StatusService\StatusServiceCallback::processMessage
      *
      * @throws Exception
      */
@@ -82,11 +82,8 @@ final class StatusServiceCallbackTest extends KernelTestCaseAbstract
     {
         parent::setUp();
 
-        $this->callback   = self::$container->get(
-            'hanaboso.pipes_framework.commons.status_service.status_service_callback'
-        );
-        $this->connection = self::$container->get('rabbit_mq.connection_manager')->getConnection();
-        $this->connection->createChannel();
+        $this->callback   = self::$container->get('hbpf.custom_nodes.status_service.status_service_callback');
+        $this->connection = self::createMock(Connection::class);
     }
 
 }

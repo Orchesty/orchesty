@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e48aa6be3c3bf35b9a49e6bdbfef51dd",
+    "content-hash": "55e23b0687b8805f26e8c15b3efdb29f",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -796,16 +796,16 @@
         },
         {
             "name": "doctrine/mongodb-odm",
-            "version": "2.1.0",
+            "version": "2.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/mongodb-odm.git",
-                "reference": "e2d0595ec0b1f2c3213f4378a94008fa2e052541"
+                "reference": "91e90a46dd63fa02b8acdfa89ae20b802ce70cca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/mongodb-odm/zipball/e2d0595ec0b1f2c3213f4378a94008fa2e052541",
-                "reference": "e2d0595ec0b1f2c3213f4378a94008fa2e052541",
+                "url": "https://api.github.com/repos/doctrine/mongodb-odm/zipball/91e90a46dd63fa02b8acdfa89ae20b802ce70cca",
+                "reference": "91e90a46dd63fa02b8acdfa89ae20b802ce70cca",
                 "shasum": ""
             },
             "require": {
@@ -888,7 +888,7 @@
                 "odm",
                 "php"
             ],
-            "time": "2020-05-28T19:37:01+00:00"
+            "time": "2020-05-29T09:36:27+00:00"
         },
         {
             "name": "doctrine/mongodb-odm-bundle",

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\Configurator\StatusService;
+namespace Hanaboso\PipesPhpSdk\StatusService;
 
 use Exception;
 use Hanaboso\CommonsBundle\Event\ProcessStatusEvent;
@@ -16,9 +16,9 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 /**
  * Class StatusServiceCallback
  *
- * @package Hanaboso\PipesFramework\Configurator\StatusService
+ * @package Hanaboso\PipesPhpSdk\StatusService
  */
-class StatusServiceCallback implements CallbackInterface
+final class StatusServiceCallback implements CallbackInterface
 {
 
     /**

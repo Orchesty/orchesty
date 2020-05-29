@@ -1,17 +1,9 @@
 parameters:
-    env(SMTP_USER):
-    env(SMTP_PASSWORD):
-    mailer_user: '%env(SMTP_USER)%'
-    mailer_password: '%env(SMTP_PASSWORD)%'
-
     mailer_from: dev.email.hb@gmail.com
     mailer_async: false
     mailer_builder_id: generic
 
 swiftmailer:
-    transport: 'gmail'
-    username: '%mailer_user%'
-    password: '%mailer_password%'
-    host: 'smtp.gmail.com'
+    url: '%env(EMAIL_DSN)%'
     disable_delivery: false
     logging: true

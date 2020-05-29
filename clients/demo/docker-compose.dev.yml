@@ -28,7 +28,7 @@ services:
     ## END DEV
     ## BEGIN STAGE
     #donwlader:
-    #    image: dkr.hanaboso.net/pipes/demo/monolith:${TAG_MONOLITH}
+    #    image: dkr.hanaboso.net/pipes/demo/php-api:${TAG_MONOLITH}
     #    command: bin/console downloader:run
     #    environment:
     #      BACKEND_HOST: ${BACKEND_URL}/
@@ -68,7 +68,7 @@ services:
     ## END DEV
     ## BEGIN STAGE
     #batch:
-    #    image: dkr.hanaboso.net/pipes/demo/monolith:${TAG_MONOLITH}
+    #    image: dkr.hanaboso.net/pipes/demo/php-api:${TAG_MONOLITH}
     #    command: bin/console rabbit_mq:consumer:batch
     #    environment:
     #      BACKEND_HOST: ${BACKEND_URL}/
@@ -119,7 +119,7 @@ services:
     ## END DEV
     ## BEGIN STAGE
     #batch-connector:
-    #    image: dkr.hanaboso.net/pipes/demo/monolith:${TAG_MONOLITH}
+    #    image: dkr.hanaboso.net/pipes/demo/php-api:${TAG_MONOLITH}
     #    command: bin/console rabbit_mq:consumer:batch-connector
     #    environment:
     #      BACKEND_HOST: ${BACKEND_URL}/
@@ -170,7 +170,7 @@ services:
     ## END DEV
     ## BEGIN STAGE
     #long-running-node:
-    #    image: dkr.hanaboso.net/pipes/demo/monolith:${TAG_MONOLITH}
+    #    image: dkr.hanaboso.net/pipes/demo/php-api:${TAG_MONOLITH}
     #    command: bin/console rabbit_mq:consumer:long-running-node
     #    environment:
     #      BACKEND_HOST: ${BACKEND_URL}/
@@ -221,7 +221,7 @@ services:
     ## END DEV
     ## BEGIN STAGE
     #status-service:
-    #    image: dkr.hanaboso.net/pipes/demo/monolith:${TAG_MONOLITH}
+    #    image: dkr.hanaboso.net/pipes/demo/php-api:${TAG_MONOLITH}
     #    command: bin/console rabbit_mq:consumer:status-service
     #    environment:
     #      BACKEND_HOST: ${BACKEND_URL}/
@@ -373,7 +373,7 @@ services:
     ## END DEV
     ## BEGIN STAGE
     #monolith-api:
-    #    image: dkr.hanaboso.net/pipes/demo/monolith:${TAG_MONOLITH}
+    #    image: dkr.hanaboso.net/pipes/demo/php-api:${TAG_MONOLITH}
     #    environment:
     #      BACKEND_HOST: ${BACKEND_URL}/
     #      FRONTEND_HOST: ${BACKEND_URL}/
@@ -677,10 +677,6 @@ volumes:
 #      type: none
 #      device: /srv/persistent-data/${DEPLOYMENT_PREFIX}/redis
 #      o: bind
-#
-#configs:
-#  telegraf.conf:
-#    file: ./stack/telegraf.conf
 #
 #secrets:
 #  stage-staff.pem:

@@ -164,7 +164,7 @@ class PagerDutyConnector extends ConnectorAbstract
         $end   = DateTimeUtils::getUtcDateTime($endDay);
         $diff  = $end->diff($start);
 
-        return (int) ($diff->h + ($diff->days * 24));
+        return $diff->h + ((int) $diff->days * 24);
     }
 
     /**

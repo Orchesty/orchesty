@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: php-w-nginx
-          image: dkr.hanaboso.net/pipes/demo/monolith:dev
+          image: dkr.hanaboso.net/pipes/demo/php-api:dev
           args: ["bin/console", "rabbit_mq:consumer:status-service"]
           ports:
             - containerPort: 80

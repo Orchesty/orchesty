@@ -2,7 +2,7 @@
 CLIENT_DIR="clients/demo"
 
 TAG?=dev
-IMAGE=dkr.hanaboso.net/pipes/demo/monolith:$(TAG)
+IMAGE=dkr.hanaboso.net/pipes/demo/php-api:$(TAG)
 
 # Generic vars
 
@@ -32,22 +32,22 @@ init-dev: .env
 	$(DC_DEV) pull
 	rm -rf pipes-api/var/cache/*
 	$(DC_DEV) up -d --force-recreate --remove-orphans
-	$(DE_DEV) monolith-api composer install --no-suggest
-	$(DE_DEV) monolith-api rm -rf var/cache/*
+	$(DE_DEV) php-sdk composer install --no-suggest
+	$(DE_DEV) php-sdk rm -rf var/cache/*
 
 destroy-dev:
 	$(DC_DEV) down -v
 
 init-mongo:
-	docker-compose -f docker-compose.mongo.yaml pull
-	docker-compose -f docker-compose.mongo.yaml up -d --force-recreate --remove-orphans
+	docker-compose -f docker-compose.mongo.yml pull
+	docker-compose -f docker-compose.mongo.yml up -d --force-recreate --remove-orphans
 
 destroy-mongo:
-	docker-compose -f docker-compose.mongo.yaml down -v
+	docker-compose -f docker-compose.mongo.yml down -v
 
 composer-update-dev:
-	$(DE_DEV) monolith-api composer global require hirak/prestissimo
-	$(DE_DEV) monolith-api composer update --no-suggest
+	$(DE_DEV) php-sdk composer global require hirak/prestissimo
+	$(DE_DEV) php-sdk composer update --no-suggest
 
 build: .env
 	cp .dockerignore ../../.dockerignore

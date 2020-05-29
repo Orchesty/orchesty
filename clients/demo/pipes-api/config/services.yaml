@@ -5,18 +5,14 @@ parameters:
         dumper:
             inline_factories: true
 
-    frontendHost: http://127.0.0.66/ui
-    env(BACKEND_HOST): http://127.0.0.66
     backend_host: '%env(BACKEND_HOST)%'
-
-    cron_host: "%env(string:CRON_DSN)%"
     starting_point_host: "%env(string:STARTING_POINT_DSN)%"
-    notification_host: 'http://notification-sender-api'
-    activateLink: '%backend_host%/user/%s/activate'
+
     access_token_refresh_interval: 3600
     node_services_dirs:
         - '%kernel.project_dir%/config'
         - '%kernel.root_dir%/../vendor/hanaboso/pipes-connectors/src/Resources/config/'
+
     applications: ['%kernel.root_dir%/../vendor/hanaboso/pipes-connectors/src/Resources/config/']
 
     kernel.root_dir: '%kernel.project_dir%/src'

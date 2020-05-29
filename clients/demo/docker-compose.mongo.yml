@@ -1,137 +1,67 @@
 version: '2.2'
 
 services:
-    monolith-api:
-        image: dkr.hanaboso.net/pipes/pipes/pf-bundle:master
-        ports:
-            - ${DEV_IP}:80:80
+    php-sdk:
+        image: dkr.hanaboso.net/pipes/demo/php-api:master
         environment:
             BACKEND_HOST: ${BACKEND_URL}/
-            FRONTEND_HOST: ${BACKEND_URL}/
-            SMTP_USER: dev.email.hb@gmail.com
-            SMTP_PASSWORD: jVME2RkX9xyYhj9v
+            EMAIL_DSN: gmail://dev.email.hb@gmail.com:jVME2RkX9xyYhj9v@localhost
             METRICS_SERVICE: mongo
             METRICS_HOST: mongo
             METRICS_PORT: 27017
             REDIS_DSN: redis://redis
-            CRON_DSN: cron-api:8080
-            FTP_API_DSN: ftp-api
-            MAILER_API_DSN: mailer-api
-            MAPPER_API_DSN: mapper-api
-            MONOLITH_API_DSN: sdk-api
-            MULTI_PROBE_DSN: multi-probe:8007
             STARTING_POINT_DSN: starting-point:8080
-            TOPOLOGY_API_DSN: topology-api:8080
-            XML_PARSER_API_DSN: xml-parser-api
-            RABBIT_DSN: amqp://rabbitmq:5672/
-
-    sdk-api:
-        image: dkr.hanaboso.net/pipes/demo/monolith:master
-        environment:
-            BACKEND_HOST: ${BACKEND_URL}/
-            FRONTEND_HOST: ${BACKEND_URL}/
-            SMTP_USER: dev.email.hb@gmail.com
-            SMTP_PASSWORD: jVME2RkX9xyYhj9v
-            METRICS_SERVICE: mongo
-            METRICS_HOST: mongo
-            METRICS_PORT: 27017
-            REDIS_DSN: redis://redis
-            CRON_DSN: cron-api:8080
-            FTP_API_DSN: ftp-api
-            MAILER_API_DSN: mailer-api
-            MAPPER_API_DSN: mapper-api
-            MONOLITH_API_DSN: sdk-api
-            MULTI_PROBE_DSN: multi-probe:8007
-            STARTING_POINT_DSN: starting-point:8080
-            TOPOLOGY_API_DSN: topology-api:8080
-            XML_PARSER_API_DSN: xml-parser-api
             RABBIT_DSN: amqp://rabbitmq:5672/
 
     batch:
-        image: dkr.hanaboso.net/pipes/demo/monolith:master
+        image: dkr.hanaboso.net/pipes/demo/php-api:master
         environment:
             BACKEND_HOST: ${BACKEND_URL}/
-            FRONTEND_HOST: ${BACKEND_URL}/
+            EMAIL_DSN: gmail://dev.email.hb@gmail.com:jVME2RkX9xyYhj9v@localhost
             METRICS_SERVICE: mongo
             METRICS_HOST: mongo
             METRICS_PORT: 27017
             REDIS_DSN: redis://redis
-            CRON_DSN: cron-api:8080
-            FTP_API_DSN: ftp-api
-            MAILER_API_DSN: mailer-api
-            MAPPER_API_DSN: mapper-api
-            MONOLITH_API_DSN: sdk-api
-            MULTI_PROBE_DSN: multi-probe:8007
             STARTING_POINT_DSN: starting-point:8080
-            TOPOLOGY_API_DSN: topology-api:8080
-            XML_PARSER_API_DSN: xml-parser-api
-            PHP_FPM_MAX_REQUESTS: 5000
             RABBIT_DSN: amqp://rabbitmq:5672/
         command: bin/console rabbit_mq:consumer:batch
 
     batch-connector:
-        image: dkr.hanaboso.net/pipes/demo/monolith:master
+        image: dkr.hanaboso.net/pipes/demo/php-api:master
         environment:
             BACKEND_HOST: ${BACKEND_URL}/
-            FRONTEND_HOST: ${BACKEND_URL}/
+            EMAIL_DSN: gmail://dev.email.hb@gmail.com:jVME2RkX9xyYhj9v@localhost
             METRICS_SERVICE: mongo
             METRICS_HOST: mongo
             METRICS_PORT: 27017
             REDIS_DSN: redis://redis
-            CRON_DSN: cron-api:8080
-            FTP_API_DSN: ftp-api
-            MAILER_API_DSN: mailer-api
-            MAPPER_API_DSN: mapper-api
-            MONOLITH_API_DSN: sdk-api
-            MULTI_PROBE_DSN: multi-probe:8007
             STARTING_POINT_DSN: starting-point:8080
-            TOPOLOGY_API_DSN: topology-api:8080
-            XML_PARSER_API_DSN: xml-parser-api
-            PHP_FPM_MAX_REQUESTS: 5000
             RABBIT_DSN: amqp://rabbitmq:5672/
         command: bin/console rabbit_mq:consumer:batch-connector
 
     long-running-node:
-        image: dkr.hanaboso.net/pipes/demo/monolith:master
+        image: dkr.hanaboso.net/pipes/demo/php-api:master
         environment:
             BACKEND_HOST: ${BACKEND_URL}/
-            FRONTEND_HOST: ${BACKEND_URL}/
+            EMAIL_DSN: gmail://dev.email.hb@gmail.com:jVME2RkX9xyYhj9v@localhost
             METRICS_SERVICE: mongo
             METRICS_HOST: mongo
             METRICS_PORT: 27017
             REDIS_DSN: redis://redis
-            CRON_DSN: cron-api:8080
-            FTP_API_DSN: ftp-api
-            MAILER_API_DSN: mailer-api
-            MAPPER_API_DSN: mapper-api
-            MONOLITH_API_DSN: sdk-api
-            MULTI_PROBE_DSN: multi-probe:8007
             STARTING_POINT_DSN: starting-point:8080
-            TOPOLOGY_API_DSN: topology-api:8080
-            XML_PARSER_API_DSN: xml-parser-api
-            PHP_FPM_MAX_REQUESTS: 5000
             RABBIT_DSN: amqp://rabbitmq:5672/
         command: bin/console rabbit_mq:consumer:long-running-node
 
     status-service:
-        image: dkr.hanaboso.net/pipes/demo/monolith:master
+        image: dkr.hanaboso.net/pipes/demo/php-api:master
         environment:
             BACKEND_HOST: ${BACKEND_URL}/
-            FRONTEND_HOST: ${BACKEND_URL}/
+            EMAIL_DSN: gmail://dev.email.hb@gmail.com:jVME2RkX9xyYhj9v@localhost
             METRICS_SERVICE: mongo
             METRICS_HOST: mongo
             METRICS_PORT: 27017
             REDIS_DSN: redis://redis
-            CRON_DSN: cron-api:8080
-            FTP_API_DSN: ftp-api
-            MAILER_API_DSN: mailer-api
-            MAPPER_API_DSN: mapper-api
-            MONOLITH_API_DSN: sdk-api
-            MULTI_PROBE_DSN: multi-probe:8007
             STARTING_POINT_DSN: starting-point:8080
-            TOPOLOGY_API_DSN: topology-api:8080
-            XML_PARSER_API_DSN: xml-parser-api
-            PHP_FPM_MAX_REQUESTS: 5000
             RABBIT_DSN: amqp://rabbitmq:5672/
         command: bin/console rabbit_mq:consumer:status-service
 
@@ -227,6 +157,30 @@ services:
             FRONTEND_URL: ${BACKEND_URL}
         ports:
             - ${DEV_IP}:81:80
+
+    backend:
+        image: dkr.hanaboso.net/pipes/pipes/pf-bundle:master
+        ports:
+            - ${DEV_IP}:80:80
+        environment:
+            BACKEND_HOST: ${BACKEND_URL}/
+            FRONTEND_HOST: ${BACKEND_URL}/
+            SMTP_USER: dev.email.hb@gmail.com
+            SMTP_PASSWORD: jVME2RkX9xyYhj9v
+            METRICS_SERVICE: mongo
+            METRICS_HOST: mongo
+            METRICS_PORT: 27017
+            REDIS_DSN: redis://redis
+            CRON_DSN: cron-api:8080
+            FTP_API_DSN: ftp-api
+            MAILER_API_DSN: mailer-api
+            MAPPER_API_DSN: mapper-api
+            MONOLITH_API_DSN: php-sdk
+            MULTI_PROBE_DSN: multi-probe:8007
+            STARTING_POINT_DSN: starting-point:8080
+            TOPOLOGY_API_DSN: topology-api:8080
+            XML_PARSER_API_DSN: xml-parser-api
+            RABBIT_DSN: amqp://rabbitmq:5672/
 
     redis:
         image: redis:alpine

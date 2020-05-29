@@ -1,9 +1,5 @@
 rest:
     routes:
-        '^/api/topologies/\w+/schema.bpmn': ['xml']
-        '^/topologies/\w+/schema.bpmn': ['xml']
-        '^/api': ['json']
-        '^/webhook': ['json', 'xml']
         '^/': ['json']
     decoders:
         json: rest.decoder.json

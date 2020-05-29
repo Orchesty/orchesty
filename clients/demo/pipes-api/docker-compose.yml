@@ -14,21 +14,6 @@ services:
             DEV_UID: ${DEV_UID}
             DEV_GID: ${DEV_GID}
             BACKEND_HOST: ${DEV_IP}/
-            FRONTEND_HOST: ${DEV_IP}/
-            ELASTIC_HOST: elasticsearch
-            ELASTIC_INDEX: index
-            REDIS_DSN: redis://redis
-            FTP_API_DSN: ftp-api
-            MAILER_API_DSN: mailer-api
-            MAPPER_API_DSN: mapper-api
-            MONOLITH_API_DSN: monolith-api
-            MULTI_PROBE_DSN: multi-probe:8007
-            STARTING_POINT_DSN: starting-point:8080
-            CRON_DSN: cron-api:8080
-            TOPOLOGY_API_DSN: topology-api:80
-            XML_PARSER_API_DSN: xml-parser-api
-            METRICS_HOST: ${DEV_IP}
-            METRICS_PORT: 8080
             METRICS_SERVICE: influx
             COMPOSER_HOME: ${HOME}/dev/.composer
             KERNEL_CLASS: Demo\Kernel

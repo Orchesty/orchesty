@@ -796,16 +796,16 @@
         },
         {
             "name": "doctrine/mongodb-odm",
-            "version": "2.1.0",
+            "version": "2.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/mongodb-odm.git",
-                "reference": "e2d0595ec0b1f2c3213f4378a94008fa2e052541"
+                "reference": "91e90a46dd63fa02b8acdfa89ae20b802ce70cca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/mongodb-odm/zipball/e2d0595ec0b1f2c3213f4378a94008fa2e052541",
-                "reference": "e2d0595ec0b1f2c3213f4378a94008fa2e052541",
+                "url": "https://api.github.com/repos/doctrine/mongodb-odm/zipball/91e90a46dd63fa02b8acdfa89ae20b802ce70cca",
+                "reference": "91e90a46dd63fa02b8acdfa89ae20b802ce70cca",
                 "shasum": ""
             },
             "require": {
@@ -888,7 +888,7 @@
                 "odm",
                 "php"
             ],
-            "time": "2020-05-28T19:37:01+00:00"
+            "time": "2020-05-29T09:36:27+00:00"
         },
         {
             "name": "doctrine/mongodb-odm-bundle",
@@ -1524,11 +1524,11 @@
         },
         {
             "name": "hanaboso/pipes-php-sdk",
-            "version": "1.3.0",
+            "version": "1.3.1",
             "dist": {
                 "type": "path",
                 "url": "../pipes-php-sdk",
-                "reference": "117c1055bbd034f1adacc0461a064bc2824a3420"
+                "reference": "df590bb91bd20b2ce93609b9f66c92474f89e225"
             },
             "require": {
                 "ext-json": "*",

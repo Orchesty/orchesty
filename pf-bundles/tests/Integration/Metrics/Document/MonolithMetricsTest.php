@@ -34,7 +34,7 @@ final class MonolithMetricsTest extends DatabaseTestCaseAbstract
                     'fields' => [
                         'fpm_cpu_kernel_time' => '1.111',
                         'fpm_cpu_user_time'   => '2.222',
-                        'created'             => DateTimeUtils::getUtcDateTime('1.1.2020'),
+                        'created'             => DateTimeUtils::getUtcDateTime('1.1.2020')->getTimestamp(),
                     ],
                     'tags'   => [
                         'nodeId'     => '1',

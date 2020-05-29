@@ -1,0 +1,19 @@
+# STATUS SERVICE
+rabbit_mq:
+    queues:
+        pipes.results:
+            durable: true
+
+    consumers:
+        status-service:
+            class: Hanaboso\PipesPhpSdk\StatusService\StatusServiceConsumer
+            queue: pipes.results
+            callback: hbpf.custom_nodes.status_service.status_service_callback
+            prefetch_count: 100
+
+services:
+    # callback for status service
+    hbpf.custom_nodes.status_service.status_service_callback:
+        class: Hanaboso\PipesPhpSdk\StatusService\StatusServiceCallback
+        arguments:
+            - '@event_dispatcher'
