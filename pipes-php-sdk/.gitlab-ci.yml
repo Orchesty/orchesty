@@ -1,0 +1,15 @@
+---
+
+stages:
+    - mirror
+
+before_script:
+    - export REPO_ROOT=$(pwd)
+    - eval $(ssh-agent)
+    - ssh-add ~/.ssh/bob_the_builder_hanaboso
+
+mirror:
+    stage: mirror
+    when: manual
+    script:
+        - "curl -X POST -F token=${MIRROR_TOKEN} -F ref=master -F variables\\[REPO\\]=hanaboso-pipes-php-sdk https://gitlab.hanaboso.net/api/v4/projects/38/trigger/pipeline"

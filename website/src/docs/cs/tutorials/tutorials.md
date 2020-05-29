@@ -7,7 +7,7 @@ index: 10
 lang: cs
 ---
 
-- [Instalace PIPES a spuštění ukázkového procesu](/docs/cs/tutorials/installation "Instalace PIPES a spuštění ukázkového procesu") 
+- [Instalace a spuštění PIPES](/docs/cs/tutorials/installation "Instalace a spuštění PIPES") 
 - [Jak nastavit vlastní službu s využitím SDK pro přímou integraci s PIPES](/docs/cs/tutorials/sdk-settings)
 - [Jak vytvořit konektor pro volání REST API](/docs/cs/tutorials/basic-connector  "Jak vytvořit konektor pro volání REST API")
 - [Jak vytvořit aplikaci s basic autentizací](/docs/cs/tutorials/basic-application "Jak vytvořit aplikaci s basic autentizací")
