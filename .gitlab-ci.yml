@@ -393,7 +393,8 @@ git-app-store:
         - cd _tmp_pipes
         - git filter-branch -f --prune-empty --subdirectory-filter app-store -- -q --all
         - git remote add dest git@gitlab.hanaboso.net:pipes/app-store.git
-        - git push --mirror dest
+        - git push dest master -f
+        - git push dest dev  -f
         - "[[ ${CI_BUILD_REF_NAME} == 'master' ]] && git push dest ${CI_BUILD_REF_NAME}:refs/tags/$(cat ../_tmp_pipes_full/app-store/composer.json | grep version | grep -oE '[[:digit:]]+\\.[[:digit:]]+\\.[[:digit:]]+') || true"
         - "[[ ${CI_BUILD_REF_NAME} == 'dev' ]] && git push dest ${CI_BUILD_REF_NAME}:refs/tags/$(cat ../_tmp_pipes_full/app-store/composer.json | grep version | grep -oE '[[:digit:]]+\\.[[:digit:]]+\\.[[:digit:]]+') || true"
 
@@ -413,8 +414,8 @@ git-pipes-php-sdk:
         - cd _tmp_pipes
         - git filter-branch -f --prune-empty --subdirectory-filter pipes-php-sdk -- -q --all
         - git remote add dest git@gitlab.hanaboso.net:pipes/pipes-php-sdk.git
-        - git push dest master
-        - git push dest dev
+        - git push dest master -f
+        - git push dest dev  -f
         - "[[ ${CI_BUILD_REF_NAME} == 'master' ]] && git push dest ${CI_BUILD_REF_NAME}:refs/tags/$(cat ../_tmp_pipes_full/pipes-php-sdk/composer.json | grep version | grep -oE '[[:digit:]]+\\.[[:digit:]]+\\.[[:digit:]]+') || true"
         - "[[ ${CI_BUILD_REF_NAME} == 'dev' ]] && git push dest ${CI_BUILD_REF_NAME}:refs/tags/$(cat ../_tmp_pipes_full/pipes-php-sdk/composer.json | grep version | grep -oE '[[:digit:]]+\\.[[:digit:]]+\\.[[:digit:]]+') || true"
 
