@@ -18,7 +18,6 @@ use Hanaboso\NotificationSender\Model\Notification\Sender\CurlSender;
 use Hanaboso\NotificationSender\Model\Notification\Sender\EmailSender;
 use Hanaboso\NotificationSender\Model\Notification\Sender\RabbitSender;
 use Hanaboso\NotificationSender\Repository\NotificationSettingsRepository;
-use Hanaboso\Utils\Exception\DateTimeException;
 use Symfony\Component\DependencyInjection\Argument\RewindableGenerator;
 use Throwable;
 
@@ -89,7 +88,6 @@ final class NotificationSettingsManager
 
     /**
      * @return mixed[]
-     * @throws DateTimeException
      * @throws MongoDBException
      */
     public function listSettings(): array

@@ -155,7 +155,7 @@ final class ApplicationController extends AbstractController
     {
         try {
             //TODO: refactor after ServiceLocatorMS will be done
-            $this->locator->authorize($key, $user, $request->query->get('redirect_url'));
+            $this->locator->authorize($key, $user, (string) $request->query->get('redirect_url'));
         } catch (Exception $e) {
             return new JsonResponse(['Error' => $e->getMessage()], 500);
         }

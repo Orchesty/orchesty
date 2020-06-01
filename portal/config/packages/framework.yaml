@@ -6,3 +6,6 @@ framework:
 
     router:
         strict_requirements: ~
+
+    serializer:
+        enabled: false
