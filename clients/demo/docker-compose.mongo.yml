@@ -124,6 +124,14 @@ services:
         image: dkr.hanaboso.net/pipes/notification-sender:master
         environment:
             MONGO_HOST: mongo
+            RABBITMQ_DSN: amqp://rabbitmq:5672
+
+    notification-sender-consumer:
+        image: dkr.hanaboso.net/pipes/notification-sender:master
+        environment:
+            MONGO_HOST: mongo
+            RABBITMQ_DSN: amqp://rabbitmq:5672
+        command: bin/console rabbit_mq:consumer:notification
 
     topology-api:
         image: dkr.hanaboso.net/pipes/pipes/topology-api-v2:master
@@ -153,8 +161,8 @@ services:
     frontend:
         image: dkr.hanaboso.net/pipes/pipes/frontend:master
         environment:
-            BACKEND_URL: ${BACKEND_URL}
-            FRONTEND_URL: ${BACKEND_URL}
+            BACKEND_URL: ${BACKEND_URL}:80
+            STARTING_POINT_URL: ${BACKEND_URL}:82
         ports:
             - ${DEV_IP}:81:80
 
@@ -163,6 +171,8 @@ services:
         ports:
             - ${DEV_IP}:80:80
         environment:
+            BACKEND_DSN: ${BACKEND_URL}/
+            FRONTEND_DSN: ${BACKEND_URL}/
             BACKEND_HOST: ${BACKEND_URL}/
             FRONTEND_HOST: ${BACKEND_URL}/
             SMTP_USER: dev.email.hb@gmail.com
@@ -170,6 +180,8 @@ services:
             METRICS_SERVICE: mongo
             METRICS_HOST: mongo
             METRICS_PORT: 27017
+            MONGODB_DSN: mongodb://mongo
+            MONGODB_DB: demo
             REDIS_DSN: redis://redis
             CRON_DSN: cron-api:8080
             FTP_API_DSN: ftp-api
@@ -181,6 +193,8 @@ services:
             TOPOLOGY_API_DSN: topology-api:8080
             XML_PARSER_API_DSN: xml-parser-api
             RABBIT_DSN: amqp://rabbitmq:5672/
+            NOTIFICATION_DSN: notification-sender-api
+            WORKER_DEFAULT_PORT: 8008
 
     redis:
         image: redis:alpine

@@ -18,7 +18,7 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
  *
  * @package Hanaboso\PipesPhpSdk\StatusService
  */
-final class StatusServiceCallback implements CallbackInterface
+class StatusServiceCallback implements CallbackInterface
 {
 
     /**

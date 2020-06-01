@@ -3,6 +3,12 @@ rabbit_mq:
     queues:
         pipes.results:
             durable: true
+        pipes.notifications:
+            durable: true
+
+    publishers:
+        pipes-notifications:
+            routing_key: pipes.notifications
 
     consumers:
         status-service:
