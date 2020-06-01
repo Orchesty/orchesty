@@ -5,7 +5,6 @@ namespace Hanaboso\NotificationSender\Handler;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\NotificationSender\Exception\NotificationException;
 use Hanaboso\NotificationSender\Model\Notification\NotificationSettingsManager;
-use Hanaboso\Utils\Exception\DateTimeException;
 
 /**
  * Class NotificationSettingsHandler
@@ -32,7 +31,6 @@ final class NotificationSettingsHandler
 
     /**
      * @return mixed[]
-     * @throws DateTimeException
      * @throws MongoDBException
      */
     public function listSettings(): array

@@ -46,40 +46,40 @@ class NotificationSettings
      *
      * @ODM\Field(type="string")
      */
-    private $class;
+    private string $class = '';
 
     /**
      * @var mixed[]
      *
      * @ODM\Field(type="collection")
      */
-    private $events = [];
+    private array $events = [];
 
     /**
      * @var mixed[]
      */
-    private $settings = [];
+    private array $settings = [];
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $encryptedSettings;
+    private string $encryptedSettings = '';
 
     /**
      * @var bool
      *
      * @ODM\Field(type="bool")
      */
-    private $status = TRUE;
+    private bool $status = TRUE;
 
     /**
      * @var string|null
      *
      * @ODM\Field(type="string", nullable=true)
      */
-    private $statusMessage;
+    private ?string $statusMessage = NULL;
 
     /**
      * NotificationSettings constructor.
