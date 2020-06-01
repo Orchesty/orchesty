@@ -6,13 +6,13 @@ rabbit_mq:
             dsn: '%env(string:RABBITMQ_DSN)%'
 
     queues:
-        notification-rabbit:
-        notification:
+        pipes.notifications:
+            durable: true
 
     publishers:
         notification-rabbit:
 
     consumers:
         notification:
-            queue: notification
+            queue: pipes.notifications
             callback: notification.callback.message
