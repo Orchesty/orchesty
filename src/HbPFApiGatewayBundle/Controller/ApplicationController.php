@@ -6,6 +6,7 @@ use Exception;
 use Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -175,7 +176,9 @@ final class ApplicationController extends AbstractController
     public function setAuthorizationTokenAction(Request $request, string $key, string $user): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
-        return new JsonResponse($this->locator->authorizationToken($key, $user, $request->query->all()));
+        $url = $this->locator->authorizationToken($key, $user, $request->query->all());
+
+        return new RedirectResponse($url['redirectUrl']);
     }
 
     /**
@@ -188,7 +191,9 @@ final class ApplicationController extends AbstractController
     public function setAuthorizationTokenQueryAction(Request $request): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
-        return new JsonResponse($this->locator->authorizationQueryToken($request->query->all()));
+        $url = $this->locator->authorizationQueryToken($request->query->all());
+
+        return new RedirectResponse($url['redirectUrl']);
     }
 
 }

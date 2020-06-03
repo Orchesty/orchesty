@@ -158,7 +158,14 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         $this->dm->clear();
 
         $curl = $this->createMock(CurlManager::class);
-        $curl->method('send')->willReturn(new ResponseDto(200, '', Json::encode(['key' => 'null']), []));
+        $curl
+            ->expects(self::at(0))
+            ->method('send')
+            ->willReturn(new ResponseDto(200, '', Json::encode(['key' => 'null']), []));
+        $curl
+            ->expects(self::at(1))
+            ->method('send')
+            ->willReturn(new ResponseDto(200, '', Json::encode(['authorizeUrl' => 'redirect/url']), []));
 
         $loader = new ServiceLocator(
             $this->dm,
@@ -202,6 +209,11 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     {
         $this->createApplication();
 
+        $dto  = new ResponseDto(200, '', Json::encode(['redirectUrl' => 'redirect/url']), []);
+        $curl = self::createMock(CurlManager::class);
+        $curl->method('send')->willReturn($dto);
+        self::$container->set('hbpf.transport.curl_manager', $curl);
+
         $this->assertResponse(
             __DIR__ . '/data/ApplicationController/setAuthorizationTokenRequest.json',
             [],
@@ -225,6 +237,11 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     {
         $this->createApplication();
 
+        $dto  = new ResponseDto(200, '', Json::encode(['redirectUrl' => 'redirect/url']), []);
+        $curl = self::createMock(CurlManager::class);
+        $curl->method('send')->willReturn($dto);
+        self::$container->set('hbpf.transport.curl_manager', $curl);
+
         $this->assertResponse(
             __DIR__ . '/data/ApplicationController/setAuthorizationTokenQueryRequest.json',
             [],
@@ -246,8 +263,11 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     private function createApplication(): ApplicationInstall
     {
         $application = (new ApplicationInstall())->setKey('null')->setUser('user');
-
         $this->pfd($application);
+
+        $sdk = new Sdk();
+        $sdk->setKey('php-sdk')->setValue('php-sdk');
+        $this->pfd($sdk);
 
         return $application;
     }
