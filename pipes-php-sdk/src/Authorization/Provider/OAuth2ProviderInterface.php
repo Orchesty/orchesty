@@ -17,9 +17,9 @@ interface OAuth2ProviderInterface extends OAuthProviderInterface
      * @param OAuth2DtoInterface $dto
      * @param string[]           $scopes
      *
-     * @throws AuthorizationException
+     * @return string
      */
-    public function authorize(OAuth2DtoInterface $dto, array $scopes = []): void;
+    public function authorize(OAuth2DtoInterface $dto, array $scopes = []): string;
 
     /**
      * @param OAuth2DtoInterface $dto

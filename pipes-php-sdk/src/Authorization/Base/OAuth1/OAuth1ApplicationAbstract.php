@@ -105,12 +105,13 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
     /**
      * @param ApplicationInstall $applicationInstall
      *
+     * @return string
      * @throws AuthorizationException
      * @throws OAuthException
      */
-    public function authorize(ApplicationInstall $applicationInstall): void
+    public function authorize(ApplicationInstall $applicationInstall): string
     {
-        $this->provider->authorize(
+        return $this->provider->authorize(
             $this->createDto($applicationInstall),
             $this->getTokenUrl(),
             $this->getAuthorizeUrl(),

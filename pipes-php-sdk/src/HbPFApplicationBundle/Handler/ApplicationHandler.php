@@ -91,12 +91,13 @@ final class ApplicationHandler
      * @param string $user
      * @param string $redirectUrl
      *
+     * @return string
      * @throws ApplicationInstallException
      * @throws MongoDBException
      */
-    public function authorizeApplication(string $key, string $user, string $redirectUrl): void
+    public function authorizeApplication(string $key, string $user, string $redirectUrl): string
     {
-        $this->applicationManager->authorizeApplication($key, $user, $redirectUrl);
+        return $this->applicationManager->authorizeApplication($key, $user, $redirectUrl);
     }
 
     /**

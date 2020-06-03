@@ -207,7 +207,7 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
     {
         $handler = $this->getMockBuilder(ConnectorHandler::class)
             ->disableOriginalConstructor()
-            ->setMethods(['processAction', 'processEvent', 'processTest'])
+            ->onlyMethods(['processAction', 'processEvent', 'processTest'])
             ->getMock();
 
         $dto = new ProcessDto();

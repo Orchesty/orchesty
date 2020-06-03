@@ -91,10 +91,14 @@ final class NullOauthApplication extends OAuth1ApplicationAbstract
 
     /**
      * @param ApplicationInstall $applicationInstall
+     *
+     * @return string
      */
-    public function authorize(ApplicationInstall $applicationInstall): void
+    public function authorize(ApplicationInstall $applicationInstall): string
     {
         $applicationInstall;
+
+        return 'authorize/url';
     }
 
     /**

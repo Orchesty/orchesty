@@ -3,7 +3,6 @@
 namespace PipesPhpSdkTests\Unit\Authorization\Provider;
 
 use Exception;
-use Hanaboso\CommonsBundle\Redirect\RedirectInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth2Dto;
@@ -191,19 +190,13 @@ final class OAuth2ProviderTest extends KernelTestCaseAbstract
      */
     private function getMockedProvider(string $authorizeUrl): OAuth2Provider
     {
-        $redirect = self::createMock(RedirectInterface::class);
-        $redirect->method('make')->willReturnCallback(
-            static function (): void {
-            }
-        );
-
         $oauth = self::createPartialMock(OAuth2Wrapper::class, ['getAuthorizationUrl', 'getAccessToken']);
         $oauth->method('getAuthorizationUrl')->willReturn($authorizeUrl);
         $oauth->method('getAccessToken')->willReturn(new AccessToken(['access_token' => '123']));
 
         $client = self::getMockBuilder(OAuth2Provider::class)
-            ->setConstructorArgs([$redirect, '127.0.0.4'])
-            ->setMethods(['createClient'])
+            ->setConstructorArgs(['127.0.0.4'])
+            ->onlyMethods(['createClient'])
             ->getMock();
 
         $client->method('createClient')->willReturn($oauth);

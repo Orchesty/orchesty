@@ -164,7 +164,7 @@ final class ServiceLocator implements LoggerAwareInterface
     public function updateAppPassword(string $key, string $user, array $data): array
     {
         return $this->doRequest(
-            sprintf('/applications/%s/users/%s/password', $key, $user),
+            sprintf('applications/%s/users/%s/password', $key, $user),
             CurlManager::METHOD_PUT,
             $data
         );
@@ -180,7 +180,7 @@ final class ServiceLocator implements LoggerAwareInterface
     public function authorizationToken(string $key, string $user, array $query): array
     {
         return $this->doRequest(
-            sprintf('/applications/%s/users/%s/authorize/token%s', $key, $user, $this->queryToString($query)),
+            sprintf('applications/%s/users/%s/authorize/token%s', $key, $user, $this->queryToString($query)),
             CurlManager::METHOD_GET
         );
     }
@@ -193,7 +193,7 @@ final class ServiceLocator implements LoggerAwareInterface
     public function authorizationQueryToken(array $query): array
     {
         return $this->doRequest(
-            sprintf('/applications/authorize/token%s', $this->queryToString($query)),
+            sprintf('applications/authorize/token%s', $this->queryToString($query)),
             CurlManager::METHOD_GET
         );
     }
@@ -205,14 +205,19 @@ final class ServiceLocator implements LoggerAwareInterface
      */
     public function authorize(string $key, string $user, string $redirect): void
     {
-        $app = $this->doRequest(sprintf('applications/%s/users/%s', $user, $key), CurlManager::METHOD_GET);
+        $app = $this->doRequest(sprintf('applications/%s/users/%s', $key, $user), CurlManager::METHOD_GET);
         if (!isset($app['host'])) {
             throw new LogicException(sprintf('App %s is not found!', $key));
         }
 
-        $this->redirect->make(
-            sprintf('%s/applications/%s/users/%s/authorize?=redirect_url=%s', $app['host'], $key, $user, $redirect)
+        $url = $this->doRequest(
+            sprintf('%s/applications/%s/users/%s/authorize?redirect_url=%s', $app['host'], $key, $user, $redirect),
+            CurlManager::METHOD_GET
         );
+
+        $this->logger->error($url);
+
+        $this->redirect->make($url['authorizeUrl']);
     }
 
     /**

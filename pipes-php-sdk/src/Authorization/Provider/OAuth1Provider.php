@@ -4,7 +4,6 @@ namespace Hanaboso\PipesPhpSdk\Authorization\Provider;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
-use Hanaboso\CommonsBundle\Redirect\RedirectInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth1DtoInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Utils\ScopeFormatter;
@@ -33,13 +32,12 @@ final class OAuth1Provider extends OAuthProviderAbstract implements OAuth1Provid
     /**
      * OAuth1Provider constructor.
      *
-     * @param DocumentManager   $dm
-     * @param RedirectInterface $redirect
-     * @param string            $backend
+     * @param DocumentManager $dm
+     * @param string          $backend
      */
-    public function __construct(DocumentManager $dm, RedirectInterface $redirect, string $backend)
+    public function __construct(DocumentManager $dm, string $backend)
     {
-        parent::__construct($redirect, $backend);
+        parent::__construct($backend);
 
         $this->dm = $dm;
     }
@@ -51,6 +49,7 @@ final class OAuth1Provider extends OAuthProviderAbstract implements OAuth1Provid
      * @param callable           $saveOauthStuffs
      * @param string[]           $scopes
      *
+     * @return string
      * @throws AuthorizationException
      * @throws OAuthException
      */
@@ -60,7 +59,7 @@ final class OAuth1Provider extends OAuthProviderAbstract implements OAuth1Provid
         string $authorizeUrl,
         callable $saveOauthStuffs,
         array $scopes = []
-    ): void
+    ): string
     {
         $client       = $this->createClient($dto);
         $requestToken = [];
@@ -79,14 +78,12 @@ final class OAuth1Provider extends OAuthProviderAbstract implements OAuth1Provid
 
         $saveOauthStuffs($this->dm, $dto, $requestToken);
 
-        $authorizeUrl = $this->getAuthorizeUrl(
+        return $this->getAuthorizeUrl(
             $authorizeUrl,
             $this->getRedirectUri(),
             $requestToken[self::OAUTH_TOKEN],
             $scopes
         );
-
-        $this->redirect->make($authorizeUrl);
     }
 
     /**

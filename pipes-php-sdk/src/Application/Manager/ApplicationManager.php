@@ -116,10 +116,11 @@ final class ApplicationManager
      * @param string $user
      * @param string $redirectUrl
      *
+     * @return string
      * @throws ApplicationInstallException
      * @throws MongoDBException
      */
-    public function authorizeApplication(string $key, string $user, string $redirectUrl): void
+    public function authorizeApplication(string $key, string $user, string $redirectUrl): string
     {
         $applicationInstall = $this->repository->findUserApp($key, $user);
 
@@ -128,7 +129,7 @@ final class ApplicationManager
         $application->setFrontendRedirectUrl($applicationInstall, $redirectUrl);
         $this->dm->flush();
 
-        $application->authorize($applicationInstall);
+        return $application->authorize($applicationInstall);
     }
 
     /**

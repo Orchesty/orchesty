@@ -61,10 +61,12 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
 
     /**
      * @param ApplicationInstall $applicationInstall
+     *
+     * @return string
      */
-    public function authorize(ApplicationInstall $applicationInstall): void
+    public function authorize(ApplicationInstall $applicationInstall): string
     {
-        $this->provider->authorize(
+        return $this->provider->authorize(
             $this->createDto($applicationInstall),
             $this->getScopes($applicationInstall),
             static::SCOPE_SEPARATOR

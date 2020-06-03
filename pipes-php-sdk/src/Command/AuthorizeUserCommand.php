@@ -77,7 +77,7 @@ final class AuthorizeUserCommand extends Command
             return 1;
         }
 
-        $this->applicationManager->authorizeApplication($key, $user, '');
+        $output->writeln($this->applicationManager->authorizeApplication($key, $user, ''));
 
         return 0;
     }

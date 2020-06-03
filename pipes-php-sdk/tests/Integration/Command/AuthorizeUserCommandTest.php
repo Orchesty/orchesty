@@ -10,7 +10,6 @@ use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1\OAuth1ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth1Dto;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider;
-use Hanaboso\PipesPhpSdk\Command\RedirectCommand;
 use OAuth;
 use PipesPhpSdkTests\DatabaseTestCaseAbstract;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
@@ -36,7 +35,6 @@ final class AuthorizeUserCommandTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\PipesPhpSdk\Command\AuthorizeUserCommand::execute
      * @covers \Hanaboso\PipesPhpSdk\Command\AuthorizeUserCommand::getHelper
      * @covers \Hanaboso\PipesPhpSdk\Command\AuthorizeUserCommand::configure
-     * @covers \Hanaboso\PipesPhpSdk\Command\RedirectCommand::make
      * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract
      * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract::authorize
      * @covers \Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider::createClient
@@ -53,10 +51,6 @@ final class AuthorizeUserCommandTest extends DatabaseTestCaseAbstract
             ->setUser('user');
         $this->pfd($app);
         $this->dm->clear();
-
-        $redirect = $this->createPartialMock(RedirectCommand::class, ['make']);
-        $redirect->expects(self::any())->method('make');
-        self::$container->set('hbpf.redirect', $redirect);
 
         $commandTester->setInputs(['null2', 'user']);
         ob_start();
@@ -158,7 +152,7 @@ final class AuthorizeUserCommandTest extends DatabaseTestCaseAbstract
 
         $client = self::getMockBuilder(OAuth1Provider::class)
             ->setConstructorArgs([$dm, $redirect])
-            ->setMethods(['createClient'])
+            ->onlyMethods(['createClient'])
             ->getMock();
 
         $client->method('createClient')->willReturn($oauth);

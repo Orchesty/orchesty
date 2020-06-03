@@ -9,7 +9,6 @@ use Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler;
 use Hanaboso\Utils\System\ControllerUtils;
 use Hanaboso\Utils\Traits\ControllerTrait;
 use InvalidArgumentException;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -90,9 +89,9 @@ final class ApplicationController
                 throw new InvalidArgumentException('Missing "redirect_url" query parameter.');
             }
 
-            $this->applicationHandler->authorizeApplication($key, $user, $redirectUrl);
+            $url = $this->applicationHandler->authorizeApplication($key, $user, $redirectUrl);
 
-            return $this->getResponse([]);
+            return $this->getResponse(['authorizeUrl' => $url]);
         } catch (ApplicationInstallException $e) {
             return $this->getErrorResponse($e, 404, ControllerUtils::NOT_FOUND);
         } catch (Throwable $e) {
@@ -114,7 +113,7 @@ final class ApplicationController
         try {
             $url = $this->applicationHandler->saveAuthToken($key, $user, $request->query->all());
 
-            return new RedirectResponse($url[ApplicationInterface::REDIRECT_URL]);
+            return $this->getResponse(['redirectUrl' => $url[ApplicationInterface::REDIRECT_URL]]);
         } catch (ApplicationInstallException $e) {
             return $this->getErrorResponse($e, 404, ControllerUtils::NOT_FOUND);
         } catch (Throwable $e) {
@@ -136,7 +135,7 @@ final class ApplicationController
 
             $url = $this->applicationHandler->saveAuthToken($key, $user, $request->query->all());
 
-            return new RedirectResponse($url[ApplicationInterface::REDIRECT_URL]);
+            return $this->getResponse(['redirectUrl' => $url[ApplicationInterface::REDIRECT_URL]]);
         } catch (ApplicationInstallException $e) {
             return $this->getErrorResponse($e, 404, ControllerUtils::NOT_FOUND);
         } catch (Throwable $e) {

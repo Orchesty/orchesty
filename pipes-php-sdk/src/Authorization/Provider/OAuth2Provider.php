@@ -3,7 +3,6 @@
 namespace Hanaboso\PipesPhpSdk\Authorization\Provider;
 
 use Exception;
-use Hanaboso\CommonsBundle\Redirect\RedirectInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth2DtoInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Utils\ScopeFormatter;
@@ -29,33 +28,21 @@ final class OAuth2Provider extends OAuthProviderAbstract implements OAuth2Provid
     private const STATE             = 'state';
 
     /**
-     * OAuth2Provider constructor.
-     *
-     * @param RedirectInterface $redirect
-     * @param string            $backend
-     */
-    public function __construct(RedirectInterface $redirect, string $backend)
-    {
-        parent::__construct($redirect, $backend);
-
-        $this->backend = $backend;
-    }
-
-    /**
      * @param OAuth2DtoInterface $dto
      * @param string[]           $scopes
      * @param string             $separator
+     *
+     * @return string
      */
     public function authorize(
         OAuth2DtoInterface $dto,
         array $scopes = [],
         string $separator = ScopeFormatter::COMMA
-    ): void
+    ): string
     {
-        $client           = $this->createClient($dto);
-        $authorizationUrl = $this->getAuthorizeUrl($dto, $client->getAuthorizationUrl(), $scopes, $separator);
+        $client = $this->createClient($dto);
 
-        $this->redirect->make($authorizationUrl);
+        return $this->getAuthorizeUrl($dto, $client->getAuthorizationUrl(), $scopes, $separator);
     }
 
     /**

@@ -2,7 +2,6 @@
 
 namespace Hanaboso\PipesPhpSdk\Authorization\Provider;
 
-use Hanaboso\CommonsBundle\Redirect\RedirectInterface;
 use Hanaboso\PipesPhpSdk\Application\Utils\ApplicationUtils;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
 use Psr\Log\LoggerInterface;
@@ -14,11 +13,6 @@ use Psr\Log\LoggerInterface;
  */
 abstract class OAuthProviderAbstract implements OAuthProviderInterface
 {
-
-    /**
-     * @var RedirectInterface
-     */
-    protected RedirectInterface $redirect;
 
     /**
      * @var string
@@ -33,13 +27,11 @@ abstract class OAuthProviderAbstract implements OAuthProviderInterface
     /**
      * OAuthProviderAbstract constructor.
      *
-     * @param RedirectInterface $redirect
-     * @param string            $backend
+     * @param string $backend
      */
-    public function __construct(RedirectInterface $redirect, string $backend)
+    public function __construct(string $backend)
     {
-        $this->redirect = $redirect;
-        $this->backend  = $backend;
+        $this->backend = $backend;
     }
 
     /**

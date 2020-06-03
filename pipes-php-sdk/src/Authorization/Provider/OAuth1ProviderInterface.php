@@ -20,6 +20,7 @@ interface OAuth1ProviderInterface extends OAuthProviderInterface
      * @param callable           $saveOauthStuffs
      * @param string[]           $scopes
      *
+     * @return string
      * @throws AuthorizationException
      */
     public function authorize(
@@ -28,7 +29,7 @@ interface OAuth1ProviderInterface extends OAuthProviderInterface
         string $authorizeUrl,
         callable $saveOauthStuffs,
         array $scopes = []
-    ): void;
+    ): string;
 
     /**
      * @param OAuth1DtoInterface $dto

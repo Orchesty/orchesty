@@ -19,8 +19,10 @@ interface OAuth2ApplicationInterface extends ApplicationInterface
 
     /**
      * @param ApplicationInstall $applicationInstall
+     *
+     * @return string
      */
-    public function authorize(ApplicationInstall $applicationInstall): void;
+    public function authorize(ApplicationInstall $applicationInstall): string;
 
     /**
      * @param ApplicationInstall $applicationInstall
