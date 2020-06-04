@@ -7,12 +7,12 @@ services:
         arguments:
             - '@service_container'
 
-#    hbpf.listener.long_running:
-#        class: Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Listener\LongRunningNodeListener
-#        arguments:
-#            - '@doctrine_mongodb.odm.default_document_manager'
-#        tags:
-#            - { name: kernel.event_subscriber }
+    #    hbpf.listener.long_running:
+    #        class: Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Listener\LongRunningNodeListener
+    #        arguments:
+    #            - '@doctrine_mongodb.odm.default_document_manager'
+    #        tags:
+    #            - { name: kernel.event_subscriber }
 
     hbpf.filter.long_running:
         class: Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeFilter
@@ -31,3 +31,7 @@ services:
             - '@hbpf.loader.long_running'
             - '@hbpf.filter.long_running'
             - '@doctrine_mongodb.odm.default_document_manager'
+
+    # LongRunningNode
+    hbpf.long_running.debug:
+        class: Hanaboso\PipesPhpSdk\LongRunningNode\Model\Impl\DebugLongRunningNode

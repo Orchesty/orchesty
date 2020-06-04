@@ -5,6 +5,7 @@ namespace Hanaboso\PipesPhpSdk\LongRunningNode\Model\Impl;
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData;
+use Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeAbstract as BaseLongRunningNodeAbstract;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 
@@ -13,7 +14,7 @@ use PhpAmqpLib\Message\AMQPMessage;
  *
  * @package Hanaboso\PipesPhpSdk\LongRunningNode\Model\Impl
  */
-abstract class LongRunningNodeAbstract implements LongRunningNodeInterface
+abstract class LongRunningNodeAbstract extends BaseLongRunningNodeAbstract implements LongRunningNodeInterface
 {
 
     /**
