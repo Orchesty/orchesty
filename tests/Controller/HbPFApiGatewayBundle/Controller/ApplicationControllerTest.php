@@ -159,11 +159,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
 
         $curl = $this->createMock(CurlManager::class);
         $curl
-            ->expects(self::at(0))
-            ->method('send')
-            ->willReturn(new ResponseDto(200, '', Json::encode(['key' => 'null']), []));
-        $curl
-            ->expects(self::at(1))
             ->method('send')
             ->willReturn(new ResponseDto(200, '', Json::encode(['authorizeUrl' => 'redirect/url']), []));
 
