@@ -2,7 +2,6 @@
 
 namespace Hanaboso\HbPFConnectors\Model\Application\Impl\Zendesk;
 
-use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
@@ -29,14 +28,6 @@ final class ZendeskApplication extends OAuth2ApplicationAbstract
     private const TOKEN_URL = 'https://%s.zendesk.com/oauth/tokens';
     private const SUBDOMAIN = 'subdomain';
     private const SCOPES    = ['read', 'write'];
-
-    /**
-     * @return string
-     */
-    public function getApplicationType(): string
-    {
-        return ApplicationTypeEnum::CRON;
-    }
 
     /**
      * @return string

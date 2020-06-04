@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesPhpSdk\Application\Base;
 
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 
@@ -15,6 +16,14 @@ abstract class ApplicationAbstract implements ApplicationInterface
 {
 
     public const FORM = 'form';
+
+    /**
+     * @return string
+     */
+    public function getApplicationType(): string
+    {
+        return ApplicationTypeEnum::CRON;
+    }
 
     /**
      * @return mixed[]

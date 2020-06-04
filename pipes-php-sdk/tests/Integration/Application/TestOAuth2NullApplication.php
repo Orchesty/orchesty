@@ -2,7 +2,6 @@
 
 namespace PipesPhpSdkTests\Integration\Application;
 
-use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
@@ -19,14 +18,6 @@ use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
  */
 final class TestOAuth2NullApplication extends OAuth2ApplicationAbstract
 {
-
-    /**
-     * @return string
-     */
-    public function getApplicationType(): string
-    {
-        return ApplicationTypeEnum::CRON;
-    }
 
     /**
      * @return string

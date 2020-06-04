@@ -2,7 +2,6 @@
 
 namespace Hanaboso\HbPFConnectors\Model\Application\Impl\Airtable;
 
-use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
@@ -26,14 +25,6 @@ final class AirtableApplication extends BasicApplicationAbstract
     public const  BASE_URL   = 'https://api.airtable.com/v0';
     public const  BASE_ID    = 'base_id';
     public const  TABLE_NAME = 'table_name';
-
-    /**
-     * @return string
-     */
-    public function getApplicationType(): string
-    {
-        return ApplicationTypeEnum::CRON;
-    }
 
     /**
      * @return string
@@ -114,7 +105,8 @@ final class AirtableApplication extends BasicApplicationAbstract
     {
         return
             isset(
-                $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::TOKEN]
+                $applicationInstall->getSettings(
+                )[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::TOKEN]
             )
             &&
             isset(
@@ -149,8 +141,12 @@ final class AirtableApplication extends BasicApplicationAbstract
      */
     private function getAccessToken(ApplicationInstall $applicationInstall): string
     {
-        if (isset($applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::TOKEN])) {
-            return $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::TOKEN];
+        if (isset(
+            $applicationInstall->getSettings(
+            )[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::TOKEN]
+        )) {
+            return $applicationInstall->getSettings(
+            )[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::TOKEN];
         }
 
         throw new AuthorizationException(

@@ -2,7 +2,6 @@
 
 namespace Hanaboso\HbPFConnectors\Model\Application\Impl\Zoho;
 
-use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
@@ -26,14 +25,6 @@ final class ZohoApplication extends OAuth2ApplicationAbstract
     private const AUTH_URL  = 'https://accounts.zoho.eu/oauth/v2/auth';
     private const TOKEN_URL = 'https://accounts.zoho.eu/oauth/v2/token';
     private const SCOPES    = ['ZohoCRM.modules.ALL', 'ZohoCRM.settings.ALL'];
-
-    /**
-     * @return string
-     */
-    public function getApplicationType(): string
-    {
-        return ApplicationTypeEnum::CRON;
-    }
 
     /**
      * @return string

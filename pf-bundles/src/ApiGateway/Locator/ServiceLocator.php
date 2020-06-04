@@ -205,17 +205,13 @@ final class ServiceLocator implements LoggerAwareInterface
      */
     public function authorize(string $key, string $user, string $redirect): void
     {
-        $app = $this->doRequest(sprintf('applications/%s/users/%s', $key, $user), CurlManager::METHOD_GET);
-        if (!isset($app['host'])) {
-            throw new LogicException(sprintf('App %s is not found!', $key));
-        }
-
         $url = $this->doRequest(
-            sprintf('%s/applications/%s/users/%s/authorize?redirect_url=%s', $app['host'], $key, $user, $redirect),
+            sprintf('applications/%s/users/%s/authorize?redirect_url=%s', $key, $user, $redirect),
             CurlManager::METHOD_GET
         );
-
-        $this->logger->error($url);
+        if (!isset($url['authorizeUrl'])) {
+            throw new LogicException(sprintf('App %s is not found!', $key));
+        }
 
         $this->redirect->make($url['authorizeUrl']);
     }

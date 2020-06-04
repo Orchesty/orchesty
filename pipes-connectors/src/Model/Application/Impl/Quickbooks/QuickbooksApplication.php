@@ -2,7 +2,6 @@
 
 namespace Hanaboso\HbPFConnectors\Model\Application\Impl\Quickbooks;
 
-use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
@@ -28,14 +27,6 @@ final class QuickbooksApplication extends OAuth2ApplicationAbstract
     private const SCOPES   = ['com.intuit.quickbooks.accounting'];
     private const VERSION  = 'v3';
     private const BASE_URL = 'https://quickbooks.api.intuit.com';
-
-    /**
-     * @return string
-     */
-    public function getApplicationType(): string
-    {
-        return ApplicationTypeEnum::CRON;
-    }
 
     /**
      * @return string

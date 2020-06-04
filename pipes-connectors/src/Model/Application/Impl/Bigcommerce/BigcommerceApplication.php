@@ -2,7 +2,6 @@
 
 namespace Hanaboso\HbPFConnectors\Model\Application\Impl\Bigcommerce;
 
-use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
@@ -27,14 +26,6 @@ final class BigcommerceApplication extends OAuth2ApplicationAbstract
     protected const SCOPE_SEPARATOR = ScopeFormatter::SPACE;
 
     private const  SCOPES = ['store_v2_products'];
-
-    /**
-     * @return string
-     */
-    public function getApplicationType(): string
-    {
-        return ApplicationTypeEnum::CRON;
-    }
 
     /**
      * @return string

@@ -3,6 +3,7 @@
 namespace PipesPhpSdkTests\Integration\Application;
 
 use Exception;
+use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use PipesPhpSdkTests\DatabaseTestCaseAbstract;
@@ -19,6 +20,14 @@ final class ApplicationAbstractTest extends DatabaseTestCaseAbstract
      * @var TestNullApplication
      */
     private $application;
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract::getApplicationType
+     */
+    public function testGetApplicationType(): void
+    {
+        self::assertEquals(ApplicationTypeEnum::CRON, $this->application->getApplicationType());
+    }
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract::toArray

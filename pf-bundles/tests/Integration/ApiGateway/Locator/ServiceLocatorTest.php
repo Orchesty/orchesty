@@ -184,10 +184,8 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
      */
     public function testAuthorize(): void
     {
-        $dto  = new ResponseDto(200, '', Json::encode(['key' => 'null']), []);
-        $dto2 = new ResponseDto(200, '', Json::encode(['authorizeUrl' => 'redirect/url']), []);
-
-        $this->createLocator($dto, FALSE, $dto2)->authorize('key', 'user', 'redirect');
+        $dto = new ResponseDto(200, '', Json::encode(['authorizeUrl' => 'redirect/url']), []);
+        $this->createLocator($dto, FALSE)->authorize('key', 'user', 'redirect');
         self::assertFake();
     }
 
@@ -263,14 +261,13 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
      */
 
     /**
-     * @param ResponseDto      $dto
-     * @param bool             $exception
-     * @param ResponseDto|null $dto2
+     * @param ResponseDto $dto
+     * @param bool        $exception
      *
      * @return ServiceLocator
      * @throws Exception
      */
-    private function createLocator(ResponseDto $dto, bool $exception = FALSE, ?ResponseDto $dto2 = NULL): ServiceLocator
+    private function createLocator(ResponseDto $dto, bool $exception = FALSE): ServiceLocator
     {
         $sdk = new Sdk();
         $sdk->setValue('name')->setKey('host');
@@ -283,12 +280,7 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
         if ($exception) {
             $curl->method('send')->willThrowException(new Exception());
         } else {
-            if ($dto2) {
-                $curl->expects(self::at(0))->method('send')->willReturn($dto);
-                $curl->expects(self::at(1))->method('send')->willReturn($dto2);
-            } else {
-                $curl->method('send')->willReturn($dto);
-            }
+            $curl->method('send')->willReturn($dto);
         }
 
         $redirect = $this->createMock(RedirectInterface::class);

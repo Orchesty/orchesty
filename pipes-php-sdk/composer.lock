@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cae20f7f4a27a22b4c0754c673097e7d",
+    "content-hash": "797adee145dc9a9ada8f2ac519e1b884",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.139.1",
+            "version": "3.140.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "31fc7fc73d550e237b34f7c6802250fd4ade9a01"
+                "reference": "9798418d4f0cdc0cf11dab453eca96e1d072df79"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/31fc7fc73d550e237b34f7c6802250fd4ade9a01",
-                "reference": "31fc7fc73d550e237b34f7c6802250fd4ade9a01",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/9798418d4f0cdc0cf11dab453eca96e1d072df79",
+                "reference": "9798418d4f0cdc0cf11dab453eca96e1d072df79",
                 "shasum": ""
             },
             "require": {
@@ -88,7 +88,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2020-06-02T18:12:38+00:00"
+            "time": "2020-06-03T18:12:30+00:00"
         },
         {
             "name": "aws/aws-sdk-php-symfony",
@@ -892,16 +892,16 @@
         },
         {
             "name": "doctrine/mongodb-odm-bundle",
-            "version": "4.1.1",
+            "version": "4.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/DoctrineMongoDBBundle.git",
-                "reference": "21ed3a7ca4a5cd7571574943363e88aa703fae37"
+                "reference": "f3b93a7c06407b8b09e2a4b0c6c537dd64fa8174"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/DoctrineMongoDBBundle/zipball/21ed3a7ca4a5cd7571574943363e88aa703fae37",
-                "reference": "21ed3a7ca4a5cd7571574943363e88aa703fae37",
+                "url": "https://api.github.com/repos/doctrine/DoctrineMongoDBBundle/zipball/f3b93a7c06407b8b09e2a4b0c6c537dd64fa8174",
+                "reference": "f3b93a7c06407b8b09e2a4b0c6c537dd64fa8174",
                 "shasum": ""
             },
             "require": {
@@ -969,7 +969,7 @@
                 "persistence",
                 "symfony"
             ],
-            "time": "2020-03-22T11:17:29+00:00"
+            "time": "2020-06-04T07:08:40+00:00"
         },
         {
             "name": "doctrine/persistence",
@@ -7334,16 +7334,16 @@
         },
         {
             "name": "hanaboso/php-check-utils",
-            "version": "1.1.26",
+            "version": "1.1.27",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/php-check-utils.git",
-                "reference": "6a457658004ce506078377c9683197df2aa0820a"
+                "reference": "77e86d3a0a0a697eed9977cb0ce4bea80112b1fb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/php-check-utils/zipball/6a457658004ce506078377c9683197df2aa0820a",
-                "reference": "6a457658004ce506078377c9683197df2aa0820a",
+                "url": "https://api.github.com/repos/hanaboso/php-check-utils/zipball/77e86d3a0a0a697eed9977cb0ce4bea80112b1fb",
+                "reference": "77e86d3a0a0a697eed9977cb0ce4bea80112b1fb",
                 "shasum": ""
             },
             "require": {
@@ -7400,7 +7400,7 @@
                 }
             ],
             "description": "Utils for php development - CodeSniffer, PhpStan, PhpStorm",
-            "time": "2020-06-02T07:54:42+00:00"
+            "time": "2020-06-03T17:00:04+00:00"
         },
         {
             "name": "hanaboso/rest-bundle",
