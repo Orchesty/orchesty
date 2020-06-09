@@ -69,7 +69,7 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
         $fields = $this->application->getSettingsForm()->getFields();
         foreach ($fields as $field) {
-            self::assertContains(
+            self::assertContainsEquals(
                 $field->getKey(),
                 [
                     HubspotApplication::USER_ID,

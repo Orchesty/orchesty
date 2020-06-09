@@ -2,6 +2,7 @@
 
 namespace PipesPhpSdkTests\Integration\Database\Document;
 
+use Exception;
 use Hanaboso\PipesPhpSdk\Database\Document\Category;
 use PipesPhpSdkTests\DatabaseTestCaseAbstract;
 
@@ -19,6 +20,8 @@ final class CategoryTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\PipesPhpSdk\Database\Document\Category::setName
      * @covers \Hanaboso\PipesPhpSdk\Database\Document\Category::getParent
      * @covers \Hanaboso\PipesPhpSdk\Database\Document\Category::setParent
+     *
+     * @throws Exception
      */
     public function testCategory(): void
     {

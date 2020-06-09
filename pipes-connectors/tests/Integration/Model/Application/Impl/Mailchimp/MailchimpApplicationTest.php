@@ -170,7 +170,7 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
         $fields = $this->application->getSettingsForm()->getFields();
         foreach ($fields as $field) {
-            self::assertContains(
+            self::assertContainsEquals(
                 $field->getKey(),
                 [
                     OAuth2ApplicationAbstract::CLIENT_ID,

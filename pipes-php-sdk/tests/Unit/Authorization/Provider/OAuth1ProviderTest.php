@@ -120,6 +120,8 @@ final class OAuth1ProviderTest extends KernelTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider::getAccessToken
+     *
+     * @throws Exception
      */
     public function testGetAccessTokenErr(): void
     {

@@ -4,17 +4,13 @@ namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Quickbooks;
 
 use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
-use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Quickbooks\QuickbooksApplication;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
-use Hanaboso\Utils\Exception\DateTimeException;
 use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
-use ReflectionException;
 
 /**
  * Class QuickbooksApplicationTest
@@ -108,8 +104,6 @@ final class QuickbooksApplicationTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Quickbooks\QuickbooksApplication::getRequestDto
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Quickbooks\QuickbooksApplication::getBaseUrl
      *
-     * @throws CurlException
-     * @throws ApplicationInstallException
      * @throws Exception
      */
     public function testGetRequestDto(): void
@@ -121,7 +115,9 @@ final class QuickbooksApplicationTest extends DatabaseTestCaseAbstract
             self::CLIENT_ID,
             self::CLIENT_SECRET
         );
-        $applicationInstall->setSettings([BasicApplicationAbstract::FORM => [QuickbooksApplication::APP_ID => self::SHOP_ID]]);
+        $applicationInstall->setSettings(
+            [BasicApplicationAbstract::FORM => [QuickbooksApplication::APP_ID => self::SHOP_ID]]
+        );
         $this->pf($applicationInstall);
 
         $dto = $this->application->getRequestDto(
@@ -146,8 +142,8 @@ final class QuickbooksApplicationTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Quickbooks\QuickbooksApplication::getScopes
-     * @throws DateTimeException
-     * @throws ReflectionException
+     *
+     * @throws Exception
      */
     public function testGetScopes(): void
     {

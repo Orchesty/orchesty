@@ -41,7 +41,7 @@ final class SystemConfDtoTest extends KernelTestCaseAbstract
         try {
             SystemConfigDto::fromString('example');
         } catch (Exception $e) {
-            self::assertEquals($e->getMessage(), 'Syntax error');
+            self::assertEquals('Syntax error', $e->getMessage());
         }
     }
 

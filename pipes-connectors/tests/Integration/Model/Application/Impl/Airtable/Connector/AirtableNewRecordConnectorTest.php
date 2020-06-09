@@ -60,7 +60,7 @@ final class AirtableNewRecordConnectorTest extends DatabaseTestCaseAbstract
 
         self::assertFailedProcessResponse($response, 'response500.json');
 
-        self::assertEquals($response->getHeaders()['pf-result-code'], ProcessDto::STOP_AND_FAILED);
+        self::assertEquals(ProcessDto::STOP_AND_FAILED, $response->getHeaders()['pf-result-code']);
     }
 
     /**
@@ -78,7 +78,7 @@ final class AirtableNewRecordConnectorTest extends DatabaseTestCaseAbstract
 
         self::assertFailedProcessResponse($response, 'newRecord.json');
 
-        self::assertEquals($response->getHeaders()['pf-result-code'], ProcessDto::STOP_AND_FAILED);
+        self::assertEquals(ProcessDto::STOP_AND_FAILED, $response->getHeaders()['pf-result-code']);
     }
 
     /**

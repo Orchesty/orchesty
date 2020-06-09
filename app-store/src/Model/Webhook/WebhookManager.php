@@ -13,7 +13,6 @@ use Hanaboso\HbPFAppStore\Repository\WebhookRepository;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
-use Hanaboso\Utils\Exception\DateTimeException;
 
 /**
  * Class WebhookManager
@@ -117,7 +116,6 @@ final class WebhookManager
      * @throws MongoDBException
      * @throws CurlException
      * @throws ApplicationInstallException
-     * @throws DateTimeException
      * @throws Exception
      */
     public function subscribeWebhooks(WebhookApplicationInterface $application, string $userId, array $data = []): void

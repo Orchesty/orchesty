@@ -35,8 +35,8 @@ final class SynchronizationRepositoryTest extends DatabaseTestCaseAbstract
         /** @var Synchronization $synchronization */
         $synchronization = $this->repository->get($this->createApplication());
 
-        self::assertEquals($synchronization->getKey(), self::KEY);
-        self::assertEquals($synchronization->getUser(), self::USER);
+        self::assertEquals(self::KEY, $synchronization->getKey());
+        self::assertEquals(self::USER, $synchronization->getUser());
     }
 
     /**

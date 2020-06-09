@@ -219,7 +219,6 @@ final class NodeRepositoryTest extends DatabaseTestCaseAbstract
         $this->dm->flush();
         $this->dm->clear();
 
-        /** @var Node[] $nodes */
         $nodes = $repo->getNodesByTopology($topology->getId());
         self::assertCount(1, $nodes);
         /** @var Node $first */

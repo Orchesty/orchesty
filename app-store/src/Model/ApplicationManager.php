@@ -103,7 +103,6 @@ final class ApplicationManager
      * @return ApplicationInstall
      * @throws ApplicationInstallException
      * @throws MongoDBException
-     * @throws DateTimeException
      */
     public function installApplication(string $key, string $user): ApplicationInstall
     {

@@ -23,7 +23,7 @@ class MockCurlMethod
     /**
      * @var mixed[]
      */
-    private array $headers = [];
+    private array $headers;
 
     /**
      * MockCurlMethod constructor.

@@ -10,7 +10,6 @@ use Hanaboso\PipesPhpSdk\LongRunningNode\Exception\LongRunningNodeException;
 use Hanaboso\Utils\String\Json;
 use InvalidArgumentException;
 use PipesPhpSdkTests\ControllerTestCaseAbstract;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class LongRunningNodeControllerTest
@@ -41,7 +40,6 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
         self::$container->set('hbpf.handler.long_running', $handler);
 
         $this->sendPost('/longRunning/node/process', ['cont']);
-        /** @var Response $res */
         $res = $this->client->getResponse();
         self::assertEquals(200, $res->getStatusCode());
     }
@@ -56,7 +54,6 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
         self::$container->set('hbpf.handler.long_running', $handler);
 
         $this->client->request('POST', '/longRunning/node/process', [], [], [], '{}');
-        /** @var Response $res */
         $res = $this->client->getResponse();
         self::assertEquals(500, $res->getStatusCode());
     }
@@ -288,13 +285,11 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
         $this->dm->clear();
 
         $this->sendGet(sprintf('/longRunning/id/topology/%s/getTasks', $name));
-        /** @var Response $res */
         $res = $this->client->getResponse();
         self::assertEquals(200, $res->getStatusCode());
         self::assertEquals(2, count(Json::decode((string) $res->getContent())['items']));
 
         $this->sendGet(sprintf('/longRunning/id/topology/%s/node/node0/getTasks', $name));
-        /** @var Response $res */
         $res = $this->client->getResponse();
         self::assertEquals(200, $res->getStatusCode());
     }

@@ -8,7 +8,6 @@ use Hanaboso\HbPFAppStore\Handler\StatisticsHandler;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\Utils\Date\DateTimeUtils;
 use HbPFAppStoreTests\ControllerTestCaseAbstract;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class StatisticsControllerTest
@@ -34,7 +33,6 @@ final class StatisticsControllerTest extends ControllerTestCaseAbstract
         $this->createApps();
 
         self::$client->request('GET', '/statistics/applications');
-        /** @var Response $response */
         $response = self::$client->getResponse();
 
         self::assertEquals(200, $response->getStatusCode());
@@ -51,7 +49,6 @@ final class StatisticsControllerTest extends ControllerTestCaseAbstract
         $this->createApps();
 
         self::$client->request('GET', '/statistics/applicationssss');
-        /** @var Response $response */
         $response = self::$client->getResponse();
         self::assertEquals(404, $response->getStatusCode());
     }
@@ -79,7 +76,6 @@ final class StatisticsControllerTest extends ControllerTestCaseAbstract
         $this->createApps();
 
         self::$client->request('GET', '/statistics/applications/hubspot');
-        /** @var Response $response */
         $response = self::$client->getResponse();
 
         self::assertEquals(200, $response->getStatusCode());

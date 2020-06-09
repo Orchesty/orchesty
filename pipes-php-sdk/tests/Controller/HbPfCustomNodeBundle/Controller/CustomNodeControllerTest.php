@@ -9,8 +9,6 @@ use Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Handler\CustomNodeHandler;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\String\Json;
 use PipesPhpSdkTests\ControllerTestCaseAbstract;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class CustomNodeControllerTest
@@ -39,7 +37,6 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
             Json::encode(['test' => 'test'])
         );
 
-        /** @var Response $response */
         $response = $this->client->getResponse();
 
         self::assertEquals(200, $response->getStatusCode());
@@ -66,7 +63,6 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
             [],
             Json::encode(['test' => 'test'])
         );
-        /** @var Response $response */
         $response = $this->client->getResponse();
 
         self::assertEquals(500, $response->getStatusCode());
@@ -83,9 +79,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
             ->disableOriginalConstructor()
             ->getMock();
         $handler->method('process')->willThrowException(new PipesFrameworkException());
-        /** @var ContainerInterface $container */
-        $container = $this->client->getContainer();
-        $container->set('hbpf.handler.custom_node', $handler);
+        self::$container->set('hbpf.handler.custom_node', $handler);
 
         $this->client->request(
             'POST',
@@ -95,7 +89,6 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
             [],
             Json::encode(['test' => 'test'])
         );
-        /** @var Response $response */
         $response = $this->client->getResponse();
 
         self::assertEquals(500, $response->getStatusCode());
@@ -125,7 +118,6 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
 
         $this->client->request('GET', '/custom_node/null/process/test', [], [], [], '');
 
-        /** @var Response $response */
         $response = $this->client->getResponse();
 
         self::assertEquals(500, $response->getStatusCode());
@@ -141,7 +133,6 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
         $this->mockNodeControllerHandler();
         $this->client->request('GET', '/custom_node/list');
 
-        /** @var Response $response */
         $response = $this->client->getResponse();
 
         self::assertTrue(
@@ -162,7 +153,6 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
         $this->mockNodeControllerException();
         $this->client->request('GET', '/custom_node/list');
 
-        /** @var Response $response */
         $response = $this->client->getResponse();
 
         self::assertEquals(500, $response->getStatusCode());
@@ -201,9 +191,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
                 }
             );
 
-        /** @var ContainerInterface $container */
-        $container = $this->client->getContainer();
-        $container->set('hbpf.handler.custom_node', $joinerHandlerMock);
+        self::$container->set('hbpf.handler.custom_node', $joinerHandlerMock);
     }
 
     /**
@@ -217,9 +205,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
         $handler->method('getCustomNodes')->willThrowException(new Exception());
         $handler->method('process')->willThrowException(new Exception());
         $handler->method('processTest')->willThrowException(new CustomNodeException());
-        /** @var ContainerInterface $container */
-        $container = $this->client->getContainer();
-        $container->set('hbpf.handler.custom_node', $handler);
+        self::$container->set('hbpf.handler.custom_node', $handler);
     }
 
 }

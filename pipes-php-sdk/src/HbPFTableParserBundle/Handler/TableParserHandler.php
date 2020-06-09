@@ -124,8 +124,6 @@ final class TableParserHandler
      * @return string
      * @throws FileStorageException
      * @throws TableParserHandlerException
-     * @throws LockException
-     * @throws MappingException
      */
     private function getFile(array $data, bool &$isTmp, ?Filesystem $fs = NULL): string
     {

@@ -13,12 +13,12 @@ final class ErrorMessage
     /**
      * @var int
      */
-    private int $code = 2_001;
+    private int $code;
 
     /**
      * @var string
      */
-    private string $message = '';
+    private string $message;
 
     /**
      * @var string

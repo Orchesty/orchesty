@@ -57,6 +57,8 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication::getApplicationType
+     *
+     * @throws Exception
      */
     public function testGetApplicationType(): void
     {
@@ -66,6 +68,8 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication::getKey
+     *
+     * @throws Exception
      */
     public function testGetKey(): void
     {
@@ -75,6 +79,8 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication::getName
+     *
+     * @throws Exception
      */
     public function testGetName(): void
     {
@@ -84,6 +90,8 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication::getDescription
+     *
+     * @throws Exception
      */
     public function testGetDescription(): void
     {
@@ -101,7 +109,7 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
         $fields = $this->application->getSettingsForm()->getFields();
         foreach ($fields as $field) {
-            self::assertContains(
+            self::assertContainsEquals(
                 $field->getKey(),
                 [
                     OAuth2ApplicationAbstract::CLIENT_ID,
@@ -148,6 +156,8 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication::getAuthUrl
+     *
+     * @throws Exception
      */
     public function testGetAuthUrl(): void
     {
@@ -157,6 +167,8 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication::getTokenUrl
+     *
+     * @throws Exception
      */
     public function testGetTokenUrl(): void
     {
@@ -166,6 +178,7 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication::getAuthUrlWithServerUrl
+     *
      * @throws Exception
      */
     public function testGetAuthUrlWithServerUrl(): void
@@ -184,6 +197,7 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication::getTokenUrlWithServerUrl
+     *
      * @throws Exception
      */
     public function testGetTokenUrlWithServerUrl(): void
@@ -202,6 +216,8 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication::getWebhookSubscriptions
+     *
+     * @throws Exception
      */
     public function testGetWebhookSubscriptions(): void
     {
@@ -392,6 +408,8 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication::getTopologyUrl
+     *
+     * @throws Exception
      */
     public function testGetTopologyUrl(): void
     {

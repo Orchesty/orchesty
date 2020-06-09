@@ -8,8 +8,6 @@ use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Handler\ConnectorHandler;
 use Hanaboso\Utils\String\Json;
 use PipesPhpSdkTests\ControllerTestCaseAbstract;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class ConnectorControllerTest
@@ -42,7 +40,6 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
     {
         $this->client->request('POST', '/connector/magento/webhook', [], [], [], '{}');
 
-        /** @var Response $response */
         $response = $this->client->getResponse();
         self::assertEquals(500, $response->getStatusCode());
     }
@@ -56,13 +53,11 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
     {
         $handler = self::createPartialMock(ConnectorHandler::class, ['getConnectors']);
         $handler->expects(self::any())->method('getConnectors')->willThrowException(new ConnectorException());
-        /** @var ContainerInterface $container */
-        $container = $this->client->getContainer();
-        $container->set('hbpf.handler.connector', $handler);
+
+        self::$container->set('hbpf.handler.connector', $handler);
 
         $this->client->request('POST', '/connector/magento/webhook', [], [], [], '{}');
 
-        /** @var Response $response */
         $response = $this->client->getResponse();
         self::assertEquals(500, $response->getStatusCode());
     }
@@ -96,7 +91,6 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
     {
         $this->client->request('POST', '/connector/magento/action', [], [], [], '{}');
 
-        /** @var Response $response */
         $response = $this->client->getResponse();
         self::assertEquals(500, $response->getStatusCode());
     }
@@ -108,13 +102,11 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
     {
         $handler = self::createPartialMock(ConnectorHandler::class, ['getConnectors']);
         $handler->expects(self::any())->method('getConnectors')->willThrowException(new Exception());
-        /** @var ContainerInterface $container */
-        $container = $this->client->getContainer();
-        $container->set('hbpf.handler.connector', $handler);
+
+        self::$container->set('hbpf.handler.connector', $handler);
 
         $this->client->request('POST', '/connector/magento/action', [], [], [], '{}');
 
-        /** @var Response $response */
         $response = $this->client->getResponse();
         self::assertEquals(500, $response->getStatusCode());
     }
@@ -148,9 +140,8 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
     {
         $handler = self::createPartialMock(ConnectorHandler::class, ['getConnectors']);
         $handler->expects(self::any())->method('getConnectors')->willThrowException(new Exception());
-        /** @var ContainerInterface $container */
-        $container = $this->client->getContainer();
-        $container->set('hbpf.handler.connector', $handler);
+
+        self::$container->set('hbpf.handler.connector', $handler);
 
         $response = $this->sendGet('/connector/list');
         self::assertEquals(500, $response->status);
@@ -167,7 +158,6 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
 
         $this->client->request('POST', '/connector/magento/action', [], [], [], '{}');
 
-        /** @var Response $response */
         $response = $this->client->getResponse();
 
         self::assertEquals(200, $response->getStatusCode());
@@ -185,7 +175,6 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
         $this->mockConnectorsHandler();
         $this->client->request('GET', '/connector/list');
 
-        /** @var Response $response */
         $response = $this->client->getResponse();
 
         self::assertTrue(
@@ -216,9 +205,7 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
             ->setHeaders([]);
         $handler->method($method)->willReturn($dto);
 
-        /** @var ContainerInterface $container */
-        $container = $this->client->getContainer();
-        $container->set('hbpf.handler.connector', $handler);
+        self::$container->set('hbpf.handler.connector', $handler);
     }
 
     /**

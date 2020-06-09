@@ -4,6 +4,7 @@ namespace HbPFConnectorsTests;
 
 use Closure;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Redirect\RedirectInterface;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
@@ -16,7 +17,6 @@ use Hanaboso\Utils\String\Json;
 use PHPUnit\Framework\MockObject\MockObject;
 use React\EventLoop\Factory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Throwable;
 
 /**
  * Class KernelTestCaseAbstract
@@ -130,6 +130,8 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
     /**
      * @param ProcessDto $response
      * @param string     $fileName
+     *
+     * @throws Exception
      */
     protected function assertSuccessProcessResponse(ProcessDto $response, string $fileName): void
     {
@@ -144,6 +146,8 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
     /**
      * @param ProcessDto $response
      * @param string     $fileName
+     *
+     * @throws Exception
      */
     protected function assertFailedProcessResponse(ProcessDto $response, string $fileName): void
     {
@@ -271,6 +275,8 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
     /**
      * @param ProcessDto $response
      * @param string     $fileName
+     *
+     * @throws Exception
      */
     private function assertProcessResponse(ProcessDto $response, string $fileName): void
     {

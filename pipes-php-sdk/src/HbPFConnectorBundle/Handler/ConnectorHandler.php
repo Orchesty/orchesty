@@ -3,7 +3,6 @@
 namespace Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Handler;
 
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\PipesPhpSdk\Connector\ConnectorInterface;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\Connector\Model\ConnectorManager;
 use Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Loader\ConnectorLoader;
@@ -48,7 +47,6 @@ final class ConnectorHandler
      */
     public function processEvent(string $id, Request $request): ProcessDto
     {
-        /** @var ConnectorInterface $conn */
         $conn = $this->loader->getConnector($id);
 
         return $this->connManager->processEvent($conn, $request);
@@ -74,7 +72,6 @@ final class ConnectorHandler
      */
     public function processAction(string $id, Request $request): ProcessDto
     {
-        /** @var ConnectorInterface $conn */
         $conn = $this->loader->getConnector($id);
 
         return $this->connManager->processAction($conn, $request);

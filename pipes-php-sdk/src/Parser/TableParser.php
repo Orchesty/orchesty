@@ -8,11 +8,9 @@ use Hanaboso\Utils\String\Strings;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Reader\Exception as ReaderException;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
-use PhpOffice\PhpSpreadsheet\Writer\Exception as WriterException;
 use PhpOffice\PhpSpreadsheet\Writer\Html;
 use PhpOffice\PhpSpreadsheet\Writer\IWriter;
 use PhpOffice\PhpSpreadsheet\Writer\Ods;
@@ -33,7 +31,6 @@ final class TableParser implements TableParserInterface
      *
      * @return string
      * @throws Exception
-     * @throws ReaderException
      */
     public function parseToJson(string $path, ?bool $hasHeaders = FALSE): string
     {
@@ -72,9 +69,7 @@ final class TableParser implements TableParserInterface
      * @param bool|null $hasHeaders
      *
      * @return string
-     * @throws Exception
      * @throws TableParserException
-     * @throws WriterException
      */
     public function parseFromJson(
         string $path,

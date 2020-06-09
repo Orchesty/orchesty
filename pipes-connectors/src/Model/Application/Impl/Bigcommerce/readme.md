@@ -11,4 +11,4 @@ Přihlásím se na Developer portal  → https://devtools.bigcommerce.com/my/app
 
 Vytvořím aplikaci  → Create an App  → v záložce Technical vyplním Auth Callback a přidám Scopes, dole uložím
 
-U aplicace je View Client Id, po kliknutí se zobrazí Client ID a Client Secret
+U aplikace je View Client Id, po kliknutí se zobrazí Client ID a Client Secret

@@ -8,7 +8,6 @@ use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use HbPFAppStoreTests\ControllerTestCaseAbstract;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class WebhookControllerTest
@@ -36,7 +35,6 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
         $this->insertApp();
 
         self::$client->request('POST', '/webhook/applications/null/users/bar/subscribe');
-        /** @var Response $response */
         $response = self::$client->getResponse();
 
         self::assertEquals('200', $response->getStatusCode());
@@ -77,7 +75,6 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
         $this->insertApp();
 
         self::$client->request('POST', '/webhook/applications/null/users/bar/unsubscribe');
-        /** @var Response $response */
         $response = self::$client->getResponse();
 
         self::assertEquals('200', $response->getStatusCode());

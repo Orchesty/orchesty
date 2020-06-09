@@ -73,12 +73,12 @@ final class WisepopsApplicationTest extends DatabaseTestCaseAbstract
         );
 
         self::assertEquals(
-            $dto->getHeaders(),
             [
                 'Content-Type'  => 'application/json',
                 'Accept'        => 'application/json',
                 'Authorization' => 'WISEPOPS-API key="123"',
-            ]
+            ],
+            $dto->getHeaders()
         );
     }
 

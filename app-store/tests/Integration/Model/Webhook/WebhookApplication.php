@@ -2,6 +2,7 @@
 
 namespace HbPFAppStoreTests\Integration\Model\Webhook;
 
+use Exception;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\CommonsBundle\Enum\AuthorizationTypeEnum;
@@ -170,6 +171,7 @@ final class WebhookApplication extends ApplicationAbstract implements WebhookApp
      * @param ApplicationInstall $install
      *
      * @return string
+     * @throws Exception
      */
     public function processWebhookSubscribeResponse(ResponseDto $dto, ApplicationInstall $install): string
     {
@@ -182,6 +184,7 @@ final class WebhookApplication extends ApplicationAbstract implements WebhookApp
      * @param ResponseDto $dto
      *
      * @return bool
+     *             @throws Exception
      */
     public function processWebhookUnsubscribeResponse(ResponseDto $dto): bool
     {

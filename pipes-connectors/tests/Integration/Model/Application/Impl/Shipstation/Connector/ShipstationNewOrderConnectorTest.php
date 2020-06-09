@@ -84,7 +84,7 @@ final class ShipstationNewOrderConnectorTest extends DatabaseTestCaseAbstract
             );
         }
 
-        self::assertEquals($responseNoUrl->getHeaders()['pf-result-code'], ProcessDto::STOP_AND_FAILED);
+        self::assertEquals(ProcessDto::STOP_AND_FAILED, $responseNoUrl->getHeaders()['pf-result-code']);
     }
 
     /**

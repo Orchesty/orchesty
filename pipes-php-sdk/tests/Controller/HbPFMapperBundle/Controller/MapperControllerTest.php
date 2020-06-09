@@ -7,9 +7,7 @@ use Hanaboso\PipesPhpSdk\HbPFMapperBundle\Exception\MapperException;
 use Hanaboso\PipesPhpSdk\HbPFMapperBundle\Handler\MapperHandler;
 use Hanaboso\Utils\String\Json;
 use PipesPhpSdkTests\ControllerTestCaseAbstract;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class MapperControllerTest
@@ -30,7 +28,6 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
 
         $this->client->request('POST', '/mapper/null/process/test', [], [], [], '{"test":1}');
 
-        /** @var Response $response */
         $response = $this->client->getResponse();
 
         self::assertEquals(200, $response->getStatusCode());
@@ -46,7 +43,6 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
 
         $this->client->request('POST', '/mapper/null/process/test', [], [], [], '{"test":1}');
 
-        /** @var Response $response */
         $response = $this->client->getResponse();
 
         self::assertEquals(500, $response->getStatusCode());
@@ -63,7 +59,6 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
 
         $this->client->request('POST', '/mapper/null/process', $params, [], [], '{"test":1}');
 
-        /** @var Response $response */
         $response = $this->client->getResponse();
 
         self::assertEquals(200, $response->getStatusCode());
@@ -80,7 +75,6 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
         $this->prepareMapperHandlerMockException('process', new MapperException());
         $this->client->request('POST', '/mapper/null/process', [], [], [], '{"test":1}');
 
-        /** @var Response $response */
         $response = $this->client->getResponse();
 
         self::assertEquals(500, $response->getStatusCode());
@@ -99,7 +93,6 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
         $this->mockNodeControllerHandler();
         $this->client->request('GET', '/mapper/list');
 
-        /** @var Response $response */
         $response = $this->client->getResponse();
 
         self::assertTrue(
@@ -138,9 +131,7 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
             ->method($methodName)
             ->willReturn($returnValue);
 
-        /** @var ContainerInterface $container */
-        $container = $this->client->getContainer();
-        $container->set('hbpf.mapper.handler.mapper', $mapperHandlerMock);
+        self::$container->set('hbpf.mapper.handler.mapper', $mapperHandlerMock);
     }
 
     /**
@@ -156,9 +147,7 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
             ->method($methodName)
             ->willThrowException($returnValue);
 
-        /** @var ContainerInterface $container */
-        $container = $this->client->getContainer();
-        $container->set('hbpf.mapper.handler.mapper', $mapperHandlerMock);
+        self::$container->set('hbpf.mapper.handler.mapper', $mapperHandlerMock);
     }
 
     /**

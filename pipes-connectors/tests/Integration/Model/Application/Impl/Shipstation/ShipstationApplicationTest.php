@@ -56,8 +56,8 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
 
         $requestUn = $this->application->getWebhookUnsubscribeRequestDto($applicationInstall, '358');
 
-        self::assertEquals($requestSub->getUriString(), 'https://ssapi.shipstation.com/webhooks/subscribe');
-        self::assertEquals($requestUn->getUriString(), 'https://ssapi.shipstation.com/webhooks/358');
+        self::assertEquals('https://ssapi.shipstation.com/webhooks/subscribe', $requestSub->getUriString());
+        self::assertEquals('https://ssapi.shipstation.com/webhooks/358', $requestUn->getUriString());
     }
 
     /**

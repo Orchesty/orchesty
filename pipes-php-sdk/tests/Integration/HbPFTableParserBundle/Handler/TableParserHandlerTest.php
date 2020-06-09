@@ -27,17 +27,17 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
     /**
      * @var TableParserHandler
      */
-    private $handler;
+    private TableParserHandler $handler;
 
     /**
      * @var string
      */
-    private $path;
+    private string $path;
 
     /**
      * @var FileStorage
      */
-    private $storage;
+    private FileStorage $storage;
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler::parseToJson
@@ -66,7 +66,6 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler::getFile
-
      * @throws Exception
      */
     public function testGetFile(): void

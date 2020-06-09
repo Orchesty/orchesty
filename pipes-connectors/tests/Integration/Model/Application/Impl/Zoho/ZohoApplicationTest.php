@@ -83,7 +83,7 @@ class ZohoApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
         $fields = $this->application->getSettingsForm()->getFields();
         foreach ($fields as $field) {
-            self::assertContains(
+            self::assertContainsEquals(
                 $field->getKey(),
                 [OAuth2ApplicationAbstract::CLIENT_ID, OAuth2ApplicationAbstract::CLIENT_SECRET]
             );
@@ -109,12 +109,12 @@ class ZohoApplicationTest extends DatabaseTestCaseAbstract
         );
 
         self::assertEquals(
-            $dto->getHeaders(),
             [
                 'Content-Type'  => 'application/json',
                 'Accept'        => 'application/json',
                 'Authorization' => 'Bearer token123',
-            ]
+            ],
+            $dto->getHeaders()
         );
     }
 

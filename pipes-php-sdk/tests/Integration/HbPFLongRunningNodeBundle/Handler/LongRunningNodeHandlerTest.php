@@ -66,6 +66,8 @@ final class LongRunningNodeHandlerTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Handler\LongRunningNodeHandler::test
+     *
+     * @throws Exception
      */
     public function testTest(): void
     {
@@ -96,7 +98,6 @@ final class LongRunningNodeHandlerTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Handler\LongRunningNodeHandler::getTasks
-
      * @throws Exception
      */
     public function testGetTasks(): void
@@ -124,6 +125,8 @@ final class LongRunningNodeHandlerTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Handler\LongRunningNodeHandler::updateLongRunningNode
+     *
+     * @throws Exception
      */
     public function testUpdateRunningNode(): void
     {
@@ -136,6 +139,8 @@ final class LongRunningNodeHandlerTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Handler\LongRunningNodeHandler::updateLongRunningNode
+     *
+     * @throws Exception
      */
     public function testUpdateRunningNodeErr(): void
     {

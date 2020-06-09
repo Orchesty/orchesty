@@ -100,11 +100,11 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
      * @param string $url
      *
      * @return object
+     * @throws Exception
      */
     protected function sendGet(string $url): object
     {
         self::$client->request('GET', $url);
-        /** @var Response $response */
         $response = self::$client->getResponse();
 
         return $this->returnResponse($response);
@@ -116,6 +116,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
      * @param mixed[]|null $content
      *
      * @return object
+     * @throws Exception
      */
     protected function sendPost(string $url, array $parameters, ?array $content = NULL): object
     {
@@ -128,7 +129,6 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
             $content ? Json::encode($content) : ''
         );
 
-        /** @var Response $response */
         $response = self::$client->getResponse();
 
         return $this->returnResponse($response);
@@ -140,6 +140,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
      * @param mixed[]|null $content
      *
      * @return object
+     * @throws Exception
      */
     protected function sendPut(string $url, array $parameters, ?array $content = NULL): object
     {
@@ -152,7 +153,6 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
             $content ? Json::encode($content) : ''
         );
 
-        /** @var Response $response */
         $response = self::$client->getResponse();
 
         return $this->returnResponse($response);
@@ -162,12 +162,12 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
      * @param string $url
      *
      * @return object
+     * @throws Exception
      */
     protected function sendDelete(string $url): object
     {
         self::$client->request('DELETE', $url);
 
-        /** @var Response $response */
         $response = self::$client->getResponse();
 
         return $this->returnResponse($response);
@@ -177,6 +177,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
      * @param Response $response
      *
      * @return object
+     * @throws Exception
      */
     protected function returnResponse(Response $response): object
     {

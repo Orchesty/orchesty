@@ -82,7 +82,7 @@ final class HubspotCreateContactMapperTest extends DatabaseTestCaseAbstract
             )
         );
 
-        self::assertEquals($dtoNoBody->getHeaders()['pf-result-code'], ProcessDto::STOP_AND_FAILED);
+        self::assertEquals(ProcessDto::STOP_AND_FAILED, $dtoNoBody->getHeaders()['pf-result-code']);
     }
 
 }

@@ -105,6 +105,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::setAuthorizationTokenAction
+     *
+     * @throws Exception
      */
     public function testSetAuthorizationTokenAction(): void
     {
@@ -149,6 +151,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::setAuthorizationTokenQueryAction
+     *
+     * @throws Exception
      */
     public function testSetAuthorizationTokenQueryAction(): void
     {
