@@ -43,11 +43,6 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
     abstract protected function getAccessTokenUrl(): string;
 
     /**
-     * @return string
-     */
-    abstract protected function getRedirectUrl(): string;
-
-    /**
      * OAuth1ApplicationAbstract constructor.
      *
      * @param OAuth1Provider $provider

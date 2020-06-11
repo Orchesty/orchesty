@@ -183,12 +183,4 @@ final class NullOAuth1Application extends OAuth1ApplicationAbstract implements O
         return 'access/token/url.com';
     }
 
-    /**
-     * @return string
-     */
-    protected function getRedirectUrl(): string
-    {
-        return 'redirect/url.com';
-    }
-
 }
