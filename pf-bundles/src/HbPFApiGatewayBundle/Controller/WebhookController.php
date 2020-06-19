@@ -2,7 +2,9 @@
 
 namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller;
 
+use Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -16,6 +18,21 @@ final class WebhookController extends AbstractController
 {
 
     /**
+     * @var ServiceLocator
+     */
+    private ServiceLocator $locator;
+
+    /**
+     * WebhookController constructor.
+     *
+     * @param ServiceLocator $locator
+     */
+    public function __construct(ServiceLocator $locator)
+    {
+        $this->locator = $locator;
+    }
+
+    /**
      * @Route("/webhook/applications/{key}/users/{user}/subscribe", methods={"POST", "OPTIONS"})
      *
      * @param Request $request
@@ -26,14 +43,8 @@ final class WebhookController extends AbstractController
      */
     public function subscribeWebhooksAction(Request $request, string $key, string $user): Response
     {
-        return $this->forward(
-            'Hanaboso\HbPFAppStore\Controller\WebhookController::subscribeWebhooksAction',
-            [
-                'request' => $request,
-                'key'     => $key,
-                'user'    => $user,
-            ]
-        );
+        //TODO: refactor after ServiceLocatorMS will be done
+        return new JsonResponse($this->locator->subscribeWebhook($key, $user, $request->request->all()));
     }
 
     /**
@@ -47,14 +58,8 @@ final class WebhookController extends AbstractController
      */
     public function unsubscribeWebhooksAction(Request $request, string $key, string $user): Response
     {
-        return $this->forward(
-            'Hanaboso\HbPFAppStore\Controller\WebhookController::unsubscribeWebhooksAction',
-            [
-                'request' => $request,
-                'key'     => $key,
-                'user'    => $user,
-            ]
-        );
+        //TODO: refactor after ServiceLocatorMS will be done
+        return new JsonResponse($this->locator->unSubscribeWebhook($key, $user, $request->request->all()));
     }
 
 }

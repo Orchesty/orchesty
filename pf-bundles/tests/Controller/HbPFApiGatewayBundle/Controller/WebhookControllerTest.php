@@ -2,6 +2,9 @@
 
 namespace PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller;
 
+use Exception;
+use Hanaboso\PipesFramework\Configurator\Document\Sdk;
+use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 
 /**
@@ -19,6 +22,7 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
      */
     public function testSubscribeWebhookAction(): void
     {
+        $this->createApplication();
         $this->assertResponse(__DIR__ . '/data/WebhookController/subscribeWebhooksRequest.json');
     }
 
@@ -27,7 +31,24 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
      */
     public function testUnsubscribeWebhookAction(): void
     {
+        $this->createApplication();
         $this->assertResponse(__DIR__ . '/data/WebhookController/unsubscribeWebhooksRequest.json');
+    }
+
+    /**
+     * @return ApplicationInstall
+     * @throws Exception
+     */
+    private function createApplication(): ApplicationInstall
+    {
+        $application = (new ApplicationInstall())->setKey('null')->setUser('user');
+        $this->pfd($application);
+
+        $sdk = new Sdk();
+        $sdk->setKey('php-sdk')->setValue('php-sdk');
+        $this->pfd($sdk);
+
+        return $application;
     }
 
 }

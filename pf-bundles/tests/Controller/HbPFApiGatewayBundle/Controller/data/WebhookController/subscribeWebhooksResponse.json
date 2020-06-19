@@ -1,9 +1,4 @@
 {
-    "http": 404,
-    "body": {
-        "status": "NOT_FOUND",
-        "error_code": 3002,
-        "type": "Hanaboso\\PipesPhpSdk\\Application\\Exception\\ApplicationInstallException",
-        "message": "Application [key] was not found ."
-    }
+    "http": 200,
+    "body": []
 }

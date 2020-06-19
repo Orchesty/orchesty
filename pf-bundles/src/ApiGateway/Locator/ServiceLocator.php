@@ -246,6 +246,42 @@ final class ServiceLocator implements LoggerAwareInterface
     }
 
     /**
+     * -------------------------------------------- Webhooks -----------------------------------------
+     */
+
+    /**
+     * @param string  $key
+     * @param string  $user
+     * @param mixed[] $body
+     *
+     * @return mixed[]
+     */
+    public function subscribeWebhook(string $key, string $user, array $body): array
+    {
+        return $this->doRequest(
+            sprintf('webhook/applications/%s/users/%s/subscribe', $key, $user),
+            CurlManager::METHOD_POST,
+            $body
+        );
+    }
+
+    /**
+     * @param string  $key
+     * @param string  $user
+     * @param mixed[] $body
+     *
+     * @return mixed[]
+     */
+    public function unSubscribeWebhook(string $key, string $user, array $body): array
+    {
+        return $this->doRequest(
+            sprintf('webhook/applications/%s/users/%s/unsubscribe', $key, $user),
+            CurlManager::METHOD_POST,
+            $body
+        );
+    }
+
+    /**
      * --------------------------------------------- HELPERS -----------------------------------------
      */
 
@@ -253,7 +289,7 @@ final class ServiceLocator implements LoggerAwareInterface
      * @param string  $url
      * @param string  $method
      * @param mixed[] $body
-     * @param bool    $all
+     * @param bool    $multiple
      *
      * @return mixed[]
      */
@@ -261,7 +297,7 @@ final class ServiceLocator implements LoggerAwareInterface
         string $url,
         string $method = CurlManager::METHOD_GET,
         array $body = [],
-        bool $all = FALSE
+        bool $multiple = FALSE
     ): array
     {
         $out = [];
@@ -276,7 +312,7 @@ final class ServiceLocator implements LoggerAwareInterface
 
                 $res = $this->curlManager->send($dto);
                 if ($res->getStatusCode() === 200 && !empty($res->getJsonBody())) {
-                    if (!$all) {
+                    if (!$multiple) {
                         $out = array_merge($res->getJsonBody(), ['host' => $ip]);
 
                         break;
