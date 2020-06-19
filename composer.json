@@ -1,18 +1,8 @@
 {
     "name": "hanaboso/notification-sender",
-    "license": "proprietary",
     "description": "NotificationSender for Symfony",
     "version": "1.1.10",
-    "autoload": {
-        "psr-4": {
-            "Hanaboso\\NotificationSender\\": "src"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "NotificationSenderTests\\": "tests"
-        }
-    },
+    "license": "proprietary",
     "require": {
         "php": "^7.4",
         "ext-ctype": "*",
@@ -25,9 +15,6 @@
         "hanaboso/rest-bundle": "^1.0",
         "hanaboso/utils": "^1.0"
     },
-    "require-dev": {
-        "hanaboso/php-check-utils": "^1.1"
-    },
     "replace": {
         "ralouphie/getallheaders": "*",
         "symfony/polyfill-ctype": "*",
@@ -36,5 +23,18 @@
         "symfony/polyfill-mbstring": "*",
         "symfony/polyfill-php72": "*",
         "symfony/polyfill-php73": "*"
+    },
+    "require-dev": {
+        "hanaboso/php-check-utils": "^1.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Hanaboso\\NotificationSender\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "NotificationSenderTests\\": "tests"
+        }
     }
 }
