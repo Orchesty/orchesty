@@ -1,6 +1,6 @@
 FROM docker.elastic.co/logstash/logstash-oss:6.2.2
 
-ARG type
+ARG TYPE
 
 # EVNS
 ENV MONGO_HOST=''
@@ -17,10 +17,12 @@ USER root
 
 RUN if [ "$TYPE" = "mongo" ] ; then \
     cd /usr/share/logstash/pipeline/  \
-    && rm logstash_elastics.conf && mv logstash_mongo.conf logstash.conf; \
+    && rm logstash_elastics.conf && mv logstash_mongo.conf logstash.conf \
+    && echo "Using config for MongoDB!"; \
   else \
     cd /usr/share/logstash/pipeline/  \
-    && rm logstash_mongo.conf && mv logstash_elastics.conf logstash.conf; \
+    && rm logstash_mongo.conf && mv logstash_elastics.conf logstash.conf \
+    && echo "Using config for ElasticSearch!"; \
   fi
 
 
