@@ -43,3 +43,5 @@ services:
 
     Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\WebhookController:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\WebhookController
+        arguments:
+            - '@hbpp.service.locator'

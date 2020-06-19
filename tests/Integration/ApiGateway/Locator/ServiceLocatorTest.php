@@ -257,6 +257,34 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::subscribeWebhook
+     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::doRequest
+     *
+     * @throws Exception
+     */
+    public function testSubscribeWebhook(): void
+    {
+        $dto = new ResponseDto(200, '', Json::encode([]), []);
+
+        $res = $this->createLocator($dto)->subscribeWebhook('key', 'user', []);
+        self::assertEquals([], $res);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::unSubscribeWebhook
+     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::doRequest
+     *
+     * @throws Exception
+     */
+    public function testUnSubscribeWebhook(): void
+    {
+        $dto = new ResponseDto(200, '', Json::encode([]), []);
+
+        $res = $this->createLocator($dto)->unSubscribeWebhook('key', 'user', []);
+        self::assertEquals([], $res);
+    }
+
+    /**
      * ------------------------------------ HELPERS --------------------------------------------
      */
 
