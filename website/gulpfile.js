@@ -4,6 +4,7 @@ const contact = require('gulp-concat');
 const del = require('del');
 const gulp = require('gulp');
 const htmlmin = require('gulp-htmlmin');
+const imagemin = require('gulp-imagemin');
 const jshint = require('gulp-jshint');
 const prettyError = require('gulp-prettyerror');
 const sass = require('gulp-sass');
@@ -38,7 +39,7 @@ gulp.task('markdown', async () => {
 
 gulp.task('add-fonts', () => {
   return gulp
-    .src(['assets/fonts/*.*'])
+    .src(['assets/fonts/Roboto/*.*'])
     .pipe(gulp.dest('build/fonts/'));
 });
 
@@ -111,7 +112,14 @@ gulp.task('jshint', () => {
 gulp.task('copy-images', () => {
   return gulp
     .src('./assets/img/*')
+    .pipe(imagemin())
     .pipe(gulp.dest('./build/img'));
+});
+gulp.task('copy-uploads', () => {
+  return gulp
+    .src('./assets/uploads/*/*')
+    .pipe(imagemin())
+    .pipe(gulp.dest('./build/uploads'));
 });
 
 // COPY ICONS
@@ -141,6 +149,8 @@ gulp.task('clean', () => {
 // WATCH
 gulp.task('watch', () => {
   gulp.watch('./assets/scss/**/*.scss', gulp.series('compile-scss'));
+  gulp.watch('./assets/uploads/**/*.*', gulp.series('copy-uploads'));
+  gulp.watch('./assets/img/**/*.*', gulp.series('copy-images'));
   gulp.watch('./assets/js/**/*.js', gulp.series('jshint', 'concat-js'));
   gulp.watch(['./src/**/*', './handlebars/**/*'], gulp.series('markdown'));
 });
@@ -153,6 +163,7 @@ gulp.task('build:prod', gulp.series(
     'add-fonts',
     'compile-scss',
     'copy-images',
+    'copy-uploads',
     'copy-icons',
     'concat-js',
     'markdown'
@@ -172,6 +183,7 @@ gulp.task('build:dev', gulp.series(
     'add-fonts',
     'compile-scss',
     'copy-images',
+    'copy-uploads',
     'copy-icons',
     'concat-js',
     'markdown'

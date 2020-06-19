@@ -13,7 +13,7 @@ input:focus {
 
 // DO NOT OVERFLOW
 #main-content {
-  padding: 0 20px;
+  padding: 0 20px 40px;
 
   figure,
   img {
@@ -22,11 +22,14 @@ input:focus {
 
   pre {
     overflow-y: auto;
+    font-size: 1rem;
+    line-height: 1.4em;
   }
 
   a {
     overflow-wrap: break-word;
   }
+
 }
 
 @media (max-width: map-get($breakpoints-max, "md")) {
@@ -94,7 +97,6 @@ table {
 #main-content {
   & :not(pre) > code {
     padding: 2px 4px;
-    font-size: 0.9em;
     color: $inline-block-clr;
     background-color: $inline-block-bg;
     border-radius: $border-radius;
@@ -121,6 +123,7 @@ table {
     border-radius: $border-radius;
     border: $border $code-block-border;
     position: relative;
+    margin-bottom: 2rem;
 
 
     & label {
@@ -143,21 +146,24 @@ table {
       overflow-x: auto;
       font-size: 13px;
       line-height: 19px;
-      color: #ddd;
       background-color: $code-block-bg;
     }
 
     & pre {
-      margin-left: -200px;
       border: none;
+
+      & .hljs-inner {
+        margin: -20px 0 0 -270px;
+      }
     }
 
     & input.tab-link {
       padding: 5px 10px 5px 10px;
       border: none;
-      font-weight: bold;
+      font-weight: normal;
       background-color: $code-block-header-bg;
     }
+
 
     & .copy-button {
       position: absolute;
@@ -194,7 +200,7 @@ table {
   /* Atelier-Savanna Comment */
   .hljs-comment,
   .hljs-quote {
-    color: #5f6d64;
+    color: #a7a7a7;
   }
 
   /* Atelier-Savanna Red */
@@ -272,4 +278,5 @@ table {
     font-weight: bold;
   }
 }
+
 // CODE BLOCK

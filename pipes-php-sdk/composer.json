@@ -1,18 +1,8 @@
 {
     "name": "hanaboso/pipes-php-sdk",
-    "license": "proprietary",
     "description": "PHP sdk for PipesFramework",
     "version": "1.3.7",
-    "autoload": {
-        "psr-4": {
-            "Hanaboso\\PipesPhpSdk\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "PipesPhpSdkTests\\": "tests/"
-        }
-    },
+    "license": "proprietary",
     "require": {
         "php": "^7.4",
         "ext-json": "*",
@@ -33,5 +23,15 @@
     "require-dev": {
         "hanaboso/php-check-utils": "^1.1",
         "hanaboso/rest-bundle": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Hanaboso\\PipesPhpSdk\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PipesPhpSdkTests\\": "tests/"
+        }
     }
 }

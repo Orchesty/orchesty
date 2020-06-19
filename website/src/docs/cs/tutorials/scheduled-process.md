@@ -1,7 +1,7 @@
 ---
 layout: main.hbs
 collection: documentation
-name: Jak vytvořit proces pro plánované zasílání dávky dat do SaaS
+name: Plánované spouštění procesu a stránkování zdrojových dat
 parent: Tutorials
 level: 2
 index: 60

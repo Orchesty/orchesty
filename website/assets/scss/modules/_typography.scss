@@ -1,8 +1,20 @@
 @font-face {
   font-family: "Roboto";
-  src: url("../fonts/Roboto-Regular.woff2") format("woff2");
+  src: url("/fonts/Roboto-Regular.ttf") format("truetype");
   font-weight: 300;
   font-style: normal;
+}
+
+@font-face {
+  font-family: "Roboto";
+  src: url("/fonts/Roboto-Bold.ttf") format("truetype");
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: "Roboto";
+  src: url("/fonts/Roboto-Italic.ttf") format("truetype");
+  font-style: italic;
 }
 
 $primary-font: "Roboto", "Arial";
@@ -24,12 +36,11 @@ h2 {
   font-weight: 300;
 }
 
-p {
+p, ul {
   margin-bottom: 1rem;
 }
 
-*,
-.regular-text {
+body, .regular-text {
   color: $regular-text;
   font-size: 1rem;
   font-family: $primary-font;
@@ -103,6 +114,23 @@ button {
     &:hover {
       color: darken($text-light, 8%);
     }
+  }
+}
+
+.external-link {
+  word-break: keep-all;
+  white-space: nowrap;
+
+  svg {
+    fill: $primary-dark;
+    margin: 0 2px;
+    position: relative;
+    top: 2px;
+    width: 15px;
+    min-width: 15px;
+    height: 15px;
+    min-height: 15px;
+    transform: rotate(135deg);
   }
 }
 

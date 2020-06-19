@@ -1,8 +1,21 @@
 {
     "name": "hanaboso/pipes-connectors",
-    "license": "proprietary",
     "description": "Connectors for PipesFramework",
-    "version": "1.4.3",
+    "version": "1.4.4",
+    "license": "proprietary",
+    "require": {
+        "php": "^7.4",
+        "ext-ctype": "*",
+        "ext-intl": "*",
+        "ext-mbstring": "*",
+        "ext-pgsql": "*",
+        "hanaboso/app-store": "^1.4",
+        "hanaboso/pipes-php-sdk": "^1.3",
+        "hanaboso/rabbit-mq-bundle": "^1.3"
+    },
+    "require-dev": {
+        "hanaboso/php-check-utils": "^1.1"
+    },
     "autoload": {
         "psr-4": {
             "Hanaboso\\HbPFConnectors\\": "src"
@@ -12,19 +25,6 @@
         "psr-4": {
             "HbPFConnectorsTests\\": "tests"
         }
-    },
-    "require": {
-        "php": "^7.4",
-        "ext-ctype": "*",
-        "ext-intl": "*",
-        "ext-mbstring": "*",
-        "ext-pgsql": "*",
-        "hanaboso/app-store": "^1.4",
-        "hanaboso/rabbit-mq-bundle": "^1.3",
-        "hanaboso/pipes-php-sdk": "^1.3"
-    },
-    "require-dev": {
-        "hanaboso/php-check-utils": "^1.1"
     },
     "repositories": [
         {

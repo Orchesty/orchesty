@@ -1,3 +1,6 @@
+parameters:
+    starting_point_host: ''
+
 services:
     _defaults:
         public: '%public.services%'

@@ -57,6 +57,7 @@ composer-install:
 
 composer-update:
 	$(DE) composer update --no-suggest
+	$(DE) composer normalize
 
 clear-cache:
 	$(DE) rm -rf var/log

@@ -1,4 +1,5 @@
 const marked = require('marked');
+const url = require('url');
 
 const markdownRenderer = new marked.Renderer()
 
@@ -11,9 +12,46 @@ markdownRenderer.image = function (href, title, text) {
     </figcaption>
   </figure>`
 }
+
+markdownRenderer.link = function (href, title, text) {
+  let outLink = false;
+  let out = '';
+  let parsed = url.parse(href);
+
+  if (parsed === null) {
+    return text;
+  }
+
+  if (parsed.protocol !== null && parsed.host !== null) {
+    outLink = true;
+  }
+
+  if (outLink) {
+    out += '<span class="external-link">';
+  }
+
+  out += '<a href="' + parsed.href + '"';
+
+  if (title) {
+    out += ' title="' + title + '"';
+  }
+
+  if (outLink) {
+    out += ' target="_blank"';
+  }
+  out += '>' + text + '</a>';
+
+  if (outLink) {
+    out += '<svg class="icon" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>';
+    out += '</span>';
+  }
+
+  return out;
+}
+
 markdownRenderer.code = function (code, infostring, escaped) {
   let lang = (infostring || '').match(/\S*/)[0]
-  let index = (infostring || '1').match(/[\d*]/)
+  let index = (infostring || '1').match(/[\d*]{2}|[\d*]/)
   index = index == null ? 1 : index;
 
   let highlighted = code
@@ -50,9 +88,9 @@ markdownRenderer.code = function (code, infostring, escaped) {
   }
 
   return '<div class="code-block-' + index + ' tab-content" lang="' + escape(lang) + '" >'
-    + '<code><pre>'
+    + '<code><pre><div class="hljs-inner">'
     + (escaped ? highlighted : escape(code))
-    + '</pre></code>'
+    + '</div></pre></code>'
     + '</div>'
 }
 

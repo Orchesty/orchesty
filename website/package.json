@@ -17,6 +17,7 @@
     "gulp-concat": "^2.6.1",
     "gulp-debug": "^4.0.0",
     "gulp-htmlmin": "^5.0.1",
+    "gulp-imagemin": "^7.1.0",
     "gulp-jshint": "^2.1.0",
     "gulp-prettyerror": "^2.0.0",
     "gulp-sass": "^4.1.0",

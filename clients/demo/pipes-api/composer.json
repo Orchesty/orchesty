@@ -1,17 +1,7 @@
 {
     "name": "hanaboso/demo",
-    "license": "proprietary",
     "type": "project",
-    "autoload": {
-        "psr-4": {
-            "Demo\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "DemoTests\\": "tests/"
-        }
-    },
+    "license": "proprietary",
     "require": {
         "php": "^7.4",
         "ext-json": "*",
@@ -26,8 +16,18 @@
         "ratchet/pawl": "^0.3"
     },
     "require-dev": {
-        "hanaboso/php-check-utils": "^1.0",
-        "clue/block-react": "^1.2"
+        "clue/block-react": "^1.2",
+        "hanaboso/php-check-utils": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Demo\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "DemoTests\\": "tests/"
+        }
     },
     "repositories": [
         {

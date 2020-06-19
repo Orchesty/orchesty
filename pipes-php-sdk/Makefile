@@ -22,6 +22,7 @@ composer-install:
 
 composer-update:
 	$(DEC) update --no-suggest
+	$(DEC) normalize
 
 composer-outdated:
 	$(DEC) outdated
