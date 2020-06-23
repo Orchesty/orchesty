@@ -5,7 +5,6 @@ namespace DemoTests\Integration\CustomNode;
 use Demo\CustomNode\BatchCustomNode;
 use DemoTests\KernelTestCaseAbstract;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use React\EventLoop\Factory;
 
 /**
  * Class BatchCustomNodeTest
@@ -22,21 +21,16 @@ final class BatchCustomNodeTest extends KernelTestCaseAbstract
     {
         /** @var BatchCustomNode $customNode */
         $customNode = self::$container->get('hbpf.custom_node.batch');
-        $loop       = Factory::create();
-
         $customNode->processBatch(
             new ProcessDto(),
-            $loop,
             static function (): void {
                 self::assertTrue(TRUE);
             }
         )->then(
-            static function () use ($loop): void {
+            static function (): void {
                 self::assertTrue(TRUE);
-
-                $loop->stop();
             }
-        );
+        )->wait();
     }
 
     /**

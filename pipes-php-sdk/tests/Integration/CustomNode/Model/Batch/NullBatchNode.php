@@ -2,13 +2,13 @@
 
 namespace PipesPhpSdkTests\Integration\CustomNode\Model\Batch;
 
+use GuzzleHttp\Promise\PromiseInterface;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeInterface;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchInterface;
-use React\EventLoop\LoopInterface;
-use React\Promise\Promise;
-use React\Promise\PromiseInterface;
+use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchTrait;
+use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\SuccessMessage;
 
 /**
  * Class NullBatchNode
@@ -18,20 +18,20 @@ use React\Promise\PromiseInterface;
 final class NullBatchNode implements BatchInterface, CustomNodeInterface
 {
 
+    use BatchTrait;
+
     /**
-     * @param ProcessDto    $dto
-     * @param LoopInterface $loop
-     * @param callable      $callbackItem
+     * @param ProcessDto $dto
+     * @param callable   $callbackItem
      *
      * @return PromiseInterface
      */
-    public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
+    public function processBatch(ProcessDto $dto, callable $callbackItem): PromiseInterface
     {
-        $dto;
-        $loop;
-        $callbackItem;
+        $p = $callbackItem(new SuccessMessage(1));
+        $p->resolve($dto->getData());
 
-        return new Promise(static fn($result) => $result, static fn($result) => $result);
+        return $this->createPromise();
     }
 
     /**

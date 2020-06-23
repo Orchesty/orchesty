@@ -2,9 +2,8 @@
 
 namespace Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch;
 
+use GuzzleHttp\Promise\PromiseInterface;
 use PhpAmqpLib\Message\AMQPMessage;
-use React\EventLoop\LoopInterface;
-use React\Promise\PromiseInterface;
 
 /**
  * Interface BatchActionInterface
@@ -15,13 +14,12 @@ interface BatchActionInterface
 {
 
     /**
-     * @param AMQPMessage   $message
-     * @param LoopInterface $loop
-     * @param callable      $itemCallBack
+     * @param AMQPMessage $message
+     * @param callable    $itemCallBack
      *
      * @return PromiseInterface
      */
-    public function batchAction(AMQPMessage $message, LoopInterface $loop, callable $itemCallBack): PromiseInterface;
+    public function batchAction(AMQPMessage $message, callable $itemCallBack): PromiseInterface;
 
     /**
      * @param string $id

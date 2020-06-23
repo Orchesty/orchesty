@@ -5,7 +5,6 @@ namespace DemoTests\Integration\Connector;
 use Demo\Connector\BatchConnector;
 use DemoTests\KernelTestCaseAbstract;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use React\EventLoop\Factory;
 use Throwable;
 
 /**
@@ -36,28 +35,19 @@ final class BatchConnectorTest extends KernelTestCaseAbstract
      */
     public function testProcessBatch(): void
     {
-        $loop = Factory::create();
-
         $this->connector->processBatch(
             new ProcessDto(),
-            $loop,
             static function (): void {
                 self::assertTrue(TRUE);
             }
         )->then(
-            static function () use ($loop): void {
+            static function (): void {
                 self::assertTrue(TRUE);
-
-                $loop->stop();
             },
-            static function (Throwable $throwable) use ($loop): void {
-                $loop->stop();
-
+            static function (Throwable $throwable): void {
                 self::fail(sprintf('%s%s%s', $throwable->getMessage(), PHP_EOL, $throwable->getTraceAsString()));
             }
-        );
-
-        $loop->run();
+        )->wait();
     }
 
     /**

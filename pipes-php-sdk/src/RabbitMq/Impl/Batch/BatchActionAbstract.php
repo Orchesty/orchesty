@@ -2,6 +2,8 @@
 
 namespace Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch;
 
+use GuzzleHttp\Promise\PromiseInterface;
+use GuzzleHttp\Promise\RejectedPromise;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesPhpSdk\Utils\ProcessDtoFactory;
 use Hanaboso\Utils\System\PipesHeaders;
@@ -11,10 +13,6 @@ use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use RabbitMqBundle\Utils\Message;
-use React\EventLoop\LoopInterface;
-use React\Promise\PromiseInterface;
-use function React\Promise\reject;
-use function React\Promise\resolve;
 
 /**
  * Class BatchActionAbstract
@@ -23,6 +21,8 @@ use function React\Promise\resolve;
  */
 abstract class BatchActionAbstract implements BatchActionInterface, LoggerAwareInterface
 {
+
+    use BatchTrait;
 
     /**
      * @var LoggerInterface
@@ -46,24 +46,17 @@ abstract class BatchActionAbstract implements BatchActionInterface, LoggerAwareI
     }
 
     /**
-     * @param AMQPMessage   $message
-     * @param LoopInterface $loop
-     * @param callable      $itemCallBack
+     * @param AMQPMessage $message
+     * @param callable    $itemCallBack
      *
      * @return PromiseInterface
      */
-    public function batchAction(AMQPMessage $message, LoopInterface $loop, callable $itemCallBack): PromiseInterface
+    public function batchAction(AMQPMessage $message, callable $itemCallBack): PromiseInterface
     {
-        $callback = fn(BatchInterface $node) => $node->processBatch(
-            $this->createProcessDto($message),
-            $loop,
-            $itemCallBack
-        );
-
         return $this
             ->validateHeaders($message)
             ->then(fn(string $serviceName) => $this->getBatchService($serviceName))
-            ->then($callback);
+            ->then(fn(BatchInterface $node) => $node->processBatch($this->createProcessDto($message), $itemCallBack));
     }
 
     /**
@@ -76,12 +69,17 @@ abstract class BatchActionAbstract implements BatchActionInterface, LoggerAwareI
         $headers = Message::getHeaders($message);
 
         if ($this->isEmpty(PipesHeaders::get(PipesHeaders::NODE_NAME, $headers))) {
-            return reject(
+            return new RejectedPromise(
                 new InvalidArgumentException(sprintf('Missing "%s" in the message header.', PipesHeaders::NODE_NAME))
             );
         }
 
-        return resolve(PipesHeaders::get(PipesHeaders::NODE_NAME, $headers));
+        $promise = $this->createPromise(static fn() => PipesHeaders::get(PipesHeaders::NODE_NAME, $headers));
+        $promise->then(
+            static fn() => PipesHeaders::get(PipesHeaders::NODE_NAME, $headers)
+        );
+
+        return $promise;
     }
 
     /**

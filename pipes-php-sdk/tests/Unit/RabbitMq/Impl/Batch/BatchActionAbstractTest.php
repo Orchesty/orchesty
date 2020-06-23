@@ -4,12 +4,12 @@ namespace PipesPhpSdkTests\Unit\RabbitMq\Impl\Batch;
 
 use Exception;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchActionAbstract;
+use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchInterface;
+use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchTrait;
 use Monolog\Logger;
 use PhpAmqpLib\Message\AMQPMessage;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 use RabbitMqBundle\Utils\Message;
-use React\EventLoop\Factory;
-use Throwable;
 
 /**
  * Class BatchActionAbstractTest
@@ -18,6 +18,8 @@ use Throwable;
  */
 final class BatchActionAbstractTest extends KernelTestCaseAbstract
 {
+
+    use BatchTrait;
 
     /**
      * @var callable
@@ -30,6 +32,7 @@ final class BatchActionAbstractTest extends KernelTestCaseAbstract
     public function setUp(): void
     {
         $this->callback = static function (): void {
+            self::assertFake();
         };
     }
 
@@ -38,27 +41,22 @@ final class BatchActionAbstractTest extends KernelTestCaseAbstract
      * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchActionAbstract::setLogger
      * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchActionAbstract::validateHeaders
      * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchActionAbstract::isEmpty
-
      * @throws Exception
      */
     public function testValidateHeaders(): void
     {
-        $loop = Factory::create();
-
         /** @var BatchActionAbstract $batchAction */
         $batchAction = $this->getMockForAbstractClass(BatchActionAbstract::class);
         $batchAction->setLogger(new Logger('logger'));
         $batchAction
-            ->batchAction($this->createMessage(), $loop, $this->callback)
+            ->batchAction($this->createMessage(), $this->callback)
             ->then(
                 NULL,
-                static function (Exception $e) use ($loop): void {
+                static function (Exception $e): void {
                     self::assertSame('Missing "node-name" in the message header.', $e->getMessage());
-                    $loop->stop();
                 }
-            )->done();
+            )->wait();
 
-        $loop->run();
         self::assertFake();
     }
 
@@ -66,32 +64,27 @@ final class BatchActionAbstractTest extends KernelTestCaseAbstract
      * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchActionAbstract::validateHeaders
      * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchActionAbstract::batchAction
      * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchActionAbstract::createProcessDto
-
      * @throws Exception
      */
     public function testBatchAction(): void
     {
-        $loop = Factory::create();
+        $node = self::createMock(BatchInterface::class);
+        $node->method('processBatch')->willReturn($this->createPromise());
 
-        /** @var BatchActionAbstract $batchAction */
         $batchAction = $this->getMockForAbstractClass(BatchActionAbstract::class);
-
+        $batchAction->method('getBatchService')->willReturn($node);
+        $batchAction->setLogger(new Logger('logger'));
         $batchAction
-            ->batchAction($this->createMessage(['pf-node-name' => 'abc']), $loop, $this->callback)
+            ->batchAction($this->createMessage(['pf-node-name' => 'abc']), $this->callback)
             ->then(
-                static function () use ($loop): void {
+                static function (): void {
                     self::assertTrue(TRUE);
-
-                    $loop->stop();
                 },
-                static function (Throwable $throwable) use ($loop): void {
-                    $loop->stop();
-
+                static function ($throwable): void {
                     self::fail(sprintf('%s%s%s', $throwable->getMessage(), PHP_EOL, $throwable->getTraceAsString()));
                 }
-            )->done();
+            )->wait();
 
-        $loop->run();
         self::assertFake();
     }
 

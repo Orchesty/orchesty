@@ -15,7 +15,6 @@ use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\Utils\String\Json;
 use PHPUnit\Framework\MockObject\MockObject;
-use React\EventLoop\Factory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Throwable;
 
@@ -195,11 +194,8 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
      */
     protected function assertBatch(BatchInterface $batch, ProcessDto $dto, ?Closure $closure = NULL): void
     {
-        $loop = Factory::create();
-
         $batch->processBatch(
             $dto,
-            $loop,
             $closure ?: static function (): void {
                 self::assertTrue(TRUE);
             }
@@ -207,12 +203,10 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
             static function (): void {
                 self::assertTrue(TRUE);
             },
-            static function (): void {
-                self::fail('Something gone wrong!');
+            static function ($e): void {
+                self::fail(sprintf('Something gone wrong!: %s', $e));
             }
-        );
-
-        $loop->run();
+        )->wait();
     }
 
     /**

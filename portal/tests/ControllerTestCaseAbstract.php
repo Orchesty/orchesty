@@ -3,8 +3,8 @@
 namespace PortalTests;
 
 use Exception;
-use Hanaboso\CommonsBundle\Utils\Json;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\ControllerTestTrait;
+use Hanaboso\Utils\String\Json;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;

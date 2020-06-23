@@ -3,6 +3,8 @@
 namespace Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch;
 
 use Exception;
+use GuzzleHttp\Promise\PromiseInterface;
+use GuzzleHttp\Promise\RejectedPromise;
 use Hanaboso\CommonsBundle\Enum\MetricsEnum;
 use Hanaboso\CommonsBundle\Metrics\MetricsSenderLoader;
 use Hanaboso\CommonsBundle\Utils\CurlMetricUtils;
@@ -18,12 +20,7 @@ use RabbitMqBundle\Connection\Connection;
 use RabbitMqBundle\Consumer\AsyncCallbackInterface;
 use RabbitMqBundle\Consumer\DebugMessageTrait;
 use RabbitMqBundle\Utils\Message;
-use React\EventLoop\LoopInterface;
-use React\Promise\Promise;
-use React\Promise\PromiseInterface;
 use Throwable;
-use function React\Promise\reject;
-use function React\Promise\resolve;
 
 /**
  * Class BatchConsumerCallback
@@ -34,6 +31,7 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
 {
 
     use DebugMessageTrait;
+    use BatchTrait;
 
     // Properties
     private const REPLY_TO       = 'reply-to';
@@ -82,19 +80,13 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
     }
 
     /**
-     * @param AMQPMessage   $message
-     * @param Connection    $connection
-     * @param int           $channelId
-     * @param LoopInterface $loop
+     * @param AMQPMessage $message
+     * @param Connection  $connection
+     * @param int         $channelId
      *
      * @return PromiseInterface
      */
-    public function processMessage(
-        AMQPMessage $message,
-        Connection $connection,
-        int $channelId,
-        LoopInterface $loop
-    ): PromiseInterface
+    public function processMessage(AMQPMessage $message, Connection $connection, int $channelId): PromiseInterface
     {
         $this->startMetrics();
 
@@ -127,21 +119,21 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
                 }
             )
             ->then(
-                function (AMQPChannel $channel) use ($message, $headers, $loop): PromiseInterface {
+                function (AMQPChannel $channel) use ($message, $headers): PromiseInterface {
                     switch ($headers[self::TYPE]) {
                         case 'test':
                             return $this->testAction($channel, $message, $headers);
                         case 'batch':
-                            return $this->batchAction($message, $channel, $loop);
+                            return $this->batchAction($message, $channel);
                         default:
-                            return reject(
+                            return new RejectedPromise(
                                 new InvalidArgumentException(sprintf('Unsupported type "%s".', $headers[self::TYPE]))
                             );
                     }
                 }
             )->otherwise(
                 function (Throwable $e) use (
-                    $replyChannel,
+                    &$replyChannel,
                     $connection,
                     $channelId,
                     $message,
@@ -165,25 +157,13 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
                                     array_merge(['exception' => $e], PipesHeaders::debugInfo($headers))
                                 );
 
-                                return reject($e);
+                                return new RejectedPromise($e);
                             }
                         );
                 }
-            )->always(
-                function () use ($message, &$replyChannel, $connection, $channelId): void {
-                    /** @var AMQPChannel|null $channel */
-                    $channel      = $replyChannel;
-                    $replyChannel = $channel;
-                    Message::ack($message, $connection, $channelId);
-
-                    if ($replyChannel !== NULL) {
-                        $replyChannel->close();
-                        unset($replyChannel);
-                        unset($channel);
-                    }
-
-                    $this->sendMetrics($message, $this->currentMetrics);
-                }
+            )->then(
+                $this->alwaysCallback($message, $replyChannel, $connection, $channelId, TRUE),
+                $this->alwaysCallback($message, $replyChannel, $connection, $channelId, FALSE),
             );
     }
 
@@ -208,7 +188,8 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
 
         $channel->basic_publish(Message::create('', $headers), '', $headers[self::REPLY_TO] ?? '');
 
-        return (new Promise(static fn(callable $resolve) => $resolve()))->then(
+        $promise = $this->createPromise();
+        $promise->then(
             function () use ($headers): void {
                 $this->logger->error(
                     'Published test item error.',
@@ -219,6 +200,8 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
                 );
             }
         );
+
+        return $promise;
     }
 
     /**
@@ -239,15 +222,15 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
         $headers = Message::getHeaders($message);
 
         if ($this->isEmpty($headers[self::REPLY_TO] ?? '')) {
-            return reject(new InvalidArgumentException(sprintf(self::MISSING_HEADER, self::REPLY_TO)));
+            return new RejectedPromise(new InvalidArgumentException(sprintf(self::MISSING_HEADER, self::REPLY_TO)));
         }
 
         if ($this->isEmpty($headers[self::TYPE] ?? '')) {
-            return reject(new InvalidArgumentException(sprintf(self::MISSING_HEADER, self::TYPE)));
+            return new RejectedPromise(new InvalidArgumentException(sprintf(self::MISSING_HEADER, self::TYPE)));
         }
 
         if ($this->isEmpty(PipesHeaders::get(PipesHeaders::NODE_ID, $headers))) {
-            return reject(
+            return new RejectedPromise(
                 new InvalidArgumentException(
                     sprintf(self::MISSING_HEADER, PipesHeaders::createKey(PipesHeaders::NODE_ID))
                 )
@@ -255,7 +238,7 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
         }
 
         if ($this->isEmpty(PipesHeaders::get(PipesHeaders::TOPOLOGY_ID, $headers))) {
-            return reject(
+            return new RejectedPromise(
                 new InvalidArgumentException(
                     sprintf(self::MISSING_HEADER, PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID))
                 )
@@ -263,7 +246,7 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
         }
 
         if ($this->isEmpty(PipesHeaders::get(PipesHeaders::CORRELATION_ID, $headers))) {
-            return reject(
+            return new RejectedPromise(
                 new InvalidArgumentException(
                     sprintf(
                         self::MISSING_HEADER,
@@ -274,7 +257,7 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
         }
 
         if ($this->isEmpty(PipesHeaders::get(PipesHeaders::PROCESS_ID, $headers))) {
-            return reject(
+            return new RejectedPromise(
                 new InvalidArgumentException(
                     sprintf(self::MISSING_HEADER, PipesHeaders::createKey(PipesHeaders::PROCESS_ID))
                 )
@@ -282,14 +265,14 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
         }
 
         if (!array_key_exists(PipesHeaders::createKey(PipesHeaders::PARENT_ID), $headers)) {
-            return reject(
+            return new RejectedPromise(
                 new InvalidArgumentException(
                     sprintf(self::MISSING_HEADER, PipesHeaders::createKey(PipesHeaders::PARENT_ID))
                 )
             );
         }
 
-        return resolve();
+        return $this->createPromise();
     }
 
     /**
@@ -333,7 +316,8 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
         $headers = array_merge($headers, [PipesHeaders::createKey(PipesHeaders::RESULT_CODE) => 0]);
         $channel->basic_publish(Message::create('', $headers), '', $headers[self::REPLY_TO] ?? '');
 
-        return (new Promise(static fn(callable $resolve) => $resolve()))->then(
+        $promise = $this->createPromise();
+        $promise->then(
             function () use ($headers): void {
                 $this->logger->debug(
                     'Published test item.',
@@ -344,21 +328,23 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
                 );
             }
         );
+
+        return $promise;
     }
 
     /**
-     * @param AMQPMessage   $message
-     * @param AMQPChannel   $channel
-     * @param LoopInterface $loop
+     * @param AMQPMessage $message
+     * @param AMQPChannel $channel
      *
      * @return PromiseInterface
      * @internal param Channel $channel
      */
-    private function batchAction(AMQPMessage $message, AMQPChannel $channel, LoopInterface $loop): PromiseInterface
+    private function batchAction(AMQPMessage $message, AMQPChannel $channel): PromiseInterface
     {
         $callback = fn(SuccessMessage $successMessage) => $this->itemCallback($channel, $message, $successMessage);
 
-        return $this->batchAction->batchAction($message, $loop, $callback)
+        return $this->batchAction
+            ->batchAction($message, $callback)
             ->then(fn() => $this->batchCallback($channel, $message));
     }
 
@@ -388,7 +374,7 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
                 )
             );
 
-            return resolve();
+            return $this->createPromise();
         }
 
         $resultMessage = sprintf(
@@ -414,7 +400,8 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
             $headers[self::REPLY_TO] ?? ''
         );
 
-        return (new Promise(static fn(callable $resolve) => $resolve()))->then(
+        $promise = $this->createPromise();
+        $promise->then(
             function () use ($successMessage, $headers): void {
                 $this->logger->debug(
                     sprintf('Published batch item %s.', $successMessage->getSequenceId()),
@@ -425,6 +412,8 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
                 );
             }
         );
+
+        return $promise;
     }
 
     /**
@@ -456,7 +445,8 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
 
         $channel->basic_publish(Message::create('', $headers), '', $headers[self::REPLY_TO] ?? '');
 
-        return (new Promise(static fn(callable $resolve) => $resolve()))->then(
+        $promise = $this->createPromise();
+        $promise->then(
             function () use ($headers): void {
                 $this->logger->debug(
                     'Published batch end.',
@@ -467,6 +457,8 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
                 );
             }
         );
+
+        return $promise;
     }
 
     /**
@@ -495,7 +487,8 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
 
         $channel->basic_publish(Message::create('', $headers), '', $headers[self::REPLY_TO] ?? '');
 
-        return (new Promise(static fn(callable $resolve) => $resolve()))->then(
+        $promise = $this->createPromise();
+        $promise->then(
             function () use ($headers): void {
                 $this->logger->error(
                     'Published batch error end.',
@@ -506,6 +499,47 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
                 );
             }
         );
+
+        return $promise;
+    }
+
+    /**
+     * @param AMQPMessage      $message
+     * @param AMQPChannel|null $replyChannel
+     * @param Connection       $connection
+     * @param int              $channelId
+     * @param bool             $resolve
+     *
+     * @return callable
+     */
+    private function alwaysCallback(
+        AMQPMessage $message,
+        ?AMQPChannel &$replyChannel,
+        Connection $connection,
+        int $channelId,
+        bool $resolve
+    ): callable
+    {
+        return function ($data) use ($message, &$replyChannel, $connection, $channelId, $resolve) {
+            /** @var AMQPChannel|null $channel */
+            $channel      = $replyChannel;
+            $replyChannel = $channel;
+            Message::ack($message, $connection, $channelId);
+
+            if ($replyChannel !== NULL) {
+                $replyChannel->close();
+                unset($replyChannel);
+                unset($channel);
+            }
+
+            $this->sendMetrics($message, $this->currentMetrics);
+
+            if (!$resolve) {
+                return new RejectedPromise($data);
+            }
+
+            return $data;
+        };
     }
 
     /**

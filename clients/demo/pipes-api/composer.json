@@ -16,7 +16,6 @@
         "ratchet/pawl": "^0.3"
     },
     "require-dev": {
-        "clue/block-react": "^1.2",
         "hanaboso/php-check-utils": "^1.0"
     },
     "autoload": {

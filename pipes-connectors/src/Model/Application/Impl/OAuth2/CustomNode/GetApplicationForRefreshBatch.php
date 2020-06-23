@@ -5,19 +5,18 @@ namespace Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\CustomNode;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
+use GuzzleHttp\Promise\PromiseInterface;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchInterface;
+use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchTrait;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\SuccessMessage;
 use Hanaboso\Utils\Date\DateTimeUtils;
 use Hanaboso\Utils\Exception\DateTimeException;
 use Hanaboso\Utils\System\PipesHeaders;
-use React\EventLoop\LoopInterface;
-use React\Promise\PromiseInterface;
-use function React\Promise\resolve;
 
 /**
  * Class GetApplicationForRefreshBatch
@@ -26,6 +25,8 @@ use function React\Promise\resolve;
  */
 class GetApplicationForRefreshBatch extends CustomNodeAbstract implements BatchInterface
 {
+
+    use BatchTrait;
 
     public const APPLICATION_ID = 'application-id';
 
@@ -45,19 +46,19 @@ class GetApplicationForRefreshBatch extends CustomNodeAbstract implements BatchI
     }
 
     /**
-     * @param ProcessDto    $dto
-     * @param LoopInterface $loop
-     * @param callable      $callbackItem
+     * @param ProcessDto $dto
+     * @param callable   $callbackItem
      *
      * @return PromiseInterface
      * @throws MongoDBException
      * @throws DateTimeException
      */
-    public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
+    public function processBatch(ProcessDto $dto, callable $callbackItem): PromiseInterface
     {
         $dto;
-        $loop;
+        $i    = 1;
         $time = DateTimeUtils::getUtcDateTime('1 hour');
+
         /** @var ApplicationInstall[] $applications */
         $applications = $this->repository
             ->createQueryBuilder()
@@ -66,14 +67,14 @@ class GetApplicationForRefreshBatch extends CustomNodeAbstract implements BatchI
             ->field('expires')->notEqual(NULL)
             ->getQuery()
             ->execute();
-        $i            = 1;
+
         foreach ($applications as $app) {
             $message = new SuccessMessage($i);
             $callbackItem($message->addHeader(PipesHeaders::createKey(self::APPLICATION_ID), $app->getId()));
             $i++;
         }
 
-        return resolve();
+        return $this->createPromise();
     }
 
     /**

@@ -2,9 +2,8 @@
 
 namespace Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch;
 
+use GuzzleHttp\Promise\PromiseInterface;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use React\EventLoop\LoopInterface;
-use React\Promise\PromiseInterface;
 
 /**
  * Interface BatchInterface
@@ -15,12 +14,11 @@ interface BatchInterface
 {
 
     /**
-     * @param ProcessDto    $dto
-     * @param LoopInterface $loop
-     * @param callable      $callbackItem
+     * @param ProcessDto $dto
+     * @param callable   $callbackItem
      *
      * @return PromiseInterface
      */
-    public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface;
+    public function processBatch(ProcessDto $dto, callable $callbackItem): PromiseInterface;
 
 }

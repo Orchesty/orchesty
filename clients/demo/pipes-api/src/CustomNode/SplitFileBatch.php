@@ -2,16 +2,15 @@
 
 namespace Demo\CustomNode;
 
+use GuzzleHttp\Promise\PromiseInterface;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchInterface;
+use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchTrait;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\SuccessMessage;
 use Hanaboso\Utils\Date\DateTimeUtils;
 use Hanaboso\Utils\Exception\DateTimeException;
 use Hanaboso\Utils\String\Json;
-use React\EventLoop\LoopInterface;
-use React\Promise\PromiseInterface;
-use function React\Promise\resolve;
 
 /**
  * Class SplitFileBatch
@@ -21,17 +20,17 @@ use function React\Promise\resolve;
 class SplitFileBatch extends CustomNodeAbstract implements BatchInterface
 {
 
+    use BatchTrait;
+
     /**
-     * @param ProcessDto    $dto
-     * @param LoopInterface $loop
-     * @param callable      $callbackItem
+     * @param ProcessDto $dto
+     * @param callable   $callbackItem
      *
      * @return PromiseInterface
      * @throws DateTimeException
      */
-    public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
+    public function processBatch(ProcessDto $dto, callable $callbackItem): PromiseInterface
     {
-        $loop;
         $data = Json::decode($dto->getData());
 
         if (array_key_exists('data', $data)) {
@@ -42,12 +41,12 @@ class SplitFileBatch extends CustomNodeAbstract implements BatchInterface
                 unset($data['asks']);
             }
 
-            return resolve()
+            return $this->createPromise(static fn() => (new SuccessMessage(0))->setData(Json::encode($data)))
                 ->then(static fn() => (new SuccessMessage(0))->setData(Json::encode($data)))
                 ->then($callbackItem);
         }
 
-        return resolve();
+        return $this->createPromise();
     }
 
     /**

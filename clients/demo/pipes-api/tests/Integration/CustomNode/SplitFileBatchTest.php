@@ -6,7 +6,6 @@ use Demo\CustomNode\SplitFileBatch;
 use DemoTests\KernelTestCaseAbstract;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\Utils\Exception\DateTimeException;
-use React\EventLoop\Factory;
 
 /**
  * Class SplitFileBatchTest
@@ -25,36 +24,29 @@ final class SplitFileBatchTest extends KernelTestCaseAbstract
     {
         /** @var SplitFileBatch $customNode */
         $customNode = self::$container->get('hbpf.custom_node.split-file');
-        $loop       = Factory::create();
         $dto        = $customNode->process(new ProcessDto());
 
         $customNode->processBatch(
             $dto,
-            $loop,
             static function (): void {
                 self::assertTrue(TRUE);
             }
         )->then(
-            static function () use ($loop): void {
+            static function (): void {
                 self::assertTrue(TRUE);
-
-                $loop->stop();
             }
-        );
+        )->wait();
 
         $customNode->processBatch(
             (new ProcessDto())->setData('{"data":{"bids":"something","asks":"something"}}'),
-            $loop,
             static function (): void {
                 self::assertTrue(TRUE);
             }
         )->then(
-            static function () use ($loop): void {
+            static function (): void {
                 self::assertTrue(TRUE);
-
-                $loop->stop();
             }
-        );
+        )->wait();
     }
 
 }

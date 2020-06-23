@@ -2,13 +2,12 @@
 
 namespace PipesPhpSdkTests\Unit\Connector\Model\BatchConnector;
 
+use GuzzleHttp\Promise\PromiseInterface;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Connector\ConnectorInterface;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchInterface;
-use React\EventLoop\LoopInterface;
-use React\Promise\Promise;
-use React\Promise\PromiseInterface;
+use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchTrait;
 
 /**
  * Class NullBatchConnector
@@ -18,20 +17,20 @@ use React\Promise\PromiseInterface;
 final class NullBatchConnector implements BatchInterface, ConnectorInterface
 {
 
+    use BatchTrait;
+
     /**
-     * @param ProcessDto    $dto
-     * @param LoopInterface $loop
-     * @param callable      $callbackItem
+     * @param ProcessDto $dto
+     * @param callable   $callbackItem
      *
      * @return PromiseInterface
      */
-    public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
+    public function processBatch(ProcessDto $dto, callable $callbackItem): PromiseInterface
     {
         $dto;
-        $loop;
         $callbackItem;
 
-        return new Promise(static fn($result) => $result, static fn($result) => $result);
+        return $this->createPromise();
     }
 
     /**

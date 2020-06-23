@@ -8,6 +8,7 @@ use Hanaboso\CommonsBundle\Metrics\MetricsSenderLoader;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchActionInterface;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchInterface;
+use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchTrait;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\SuccessMessage;
 use Hanaboso\Utils\System\PipesHeaders;
 use InvalidArgumentException;
@@ -18,9 +19,7 @@ use PhpAmqpLib\Message\AMQPMessage;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 use RabbitMqBundle\Connection\Connection;
 use RabbitMqBundle\Utils\Message;
-use React\EventLoop\Factory;
 use Throwable;
-use function React\Promise\resolve;
 
 /**
  * Class BatchConsumerCallbackTest
@@ -29,6 +28,8 @@ use function React\Promise\resolve;
  */
 final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
 {
+
+    use BatchTrait;
 
     /**
      * @covers       \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback
@@ -41,6 +42,7 @@ final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
      * @covers       \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::publishSuccessTestMessage()
      * @covers       \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::batchCallback()
      * @covers       \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::itemCallback()
+     * @covers       \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::alwaysCallback()
      *
      * @dataProvider validateMessageDataProvider
      *
@@ -51,11 +53,9 @@ final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
      */
     public function testValidateMessage(array $headers, string $message): void
     {
-        $loop = Factory::create();
-
         $batchAction = self::createMock(BatchActionInterface::class);
         $channel     = self::createMock(AMQPChannel::class);
-        $channel->method('basic_publish')->willReturn(resolve());
+        $channel->method('basic_publish')->willReturn($this->createPromise());
         $influxSender = self::createMock(InfluxDbSender::class);
         $loader       = new MetricsSenderLoader('influx', $influxSender, NULL);
         $callback     = new BatchConsumerCallback($batchAction, $loader);
@@ -64,18 +64,14 @@ final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
         $connection->expects(self::any())->method('getChannel')->willReturn($channel);
 
         $callback
-            ->processMessage($this->createMessage($headers), $connection, 1, $loop)
+            ->processMessage($this->createMessage($headers), $connection, 1)
             ->then(
                 NULL,
-                static function (Exception $e) use ($loop, $message): void {
+                static function ($e) use ($message): void {
                     self::assertInstanceOf(InvalidArgumentException::class, $e);
                     self::assertSame($message, $e->getMessage());
-                    $loop->stop();
                 }
-            )
-            ->done();
-
-        $loop->run();
+            )->wait();
     }
 
     /**
@@ -148,18 +144,17 @@ final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
      * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::publishSuccessTestMessage
      * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::batchCallback
      * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::itemCallback
+     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::alwaysCallback
      *
      * @throws Exception
      */
     public function testProcessMessageBatchAction(): void
     {
-        $loop = Factory::create();
+        $batchAction = self::$container->get('hbpf.custom_nodes.batch_action_callback');
 
-        $batchAction = self::createMock(BatchActionInterface::class);
-        $batchAction->method('batchAction')->willReturn(resolve());
         $channel = self::createMock(AMQPChannel::class);
-        $channel->method('queue_declare')->willReturn(resolve());
-        $channel->method('basic_publish')->willReturn(resolve());
+        $channel->method('queue_declare')->willReturn($this->createPromise());
+        $channel->method('basic_publish')->willReturn($this->createPromise());
         $client = self::createMock(AMQPSocketConnection::class);
         $client->method('channel')->willReturn($channel);
         $influxSender = self::createMock(InfluxDbSender::class);
@@ -172,29 +167,23 @@ final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
         $headers = [
             'reply-to'                                            => 'reply',
             'type'                                                => 'batch',
-            PipesHeaders::createKey(PipesHeaders::NODE_ID)        => '132',
+            PipesHeaders::createKey(PipesHeaders::NODE_ID)        => 'batch-null',
+            PipesHeaders::createKey(PipesHeaders::NODE_NAME)      => 'batch-null',
             PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID)    => '132',
             PipesHeaders::createKey(PipesHeaders::CORRELATION_ID) => '123',
             PipesHeaders::createKey(PipesHeaders::PROCESS_ID)     => '123',
             PipesHeaders::createKey(PipesHeaders::PARENT_ID)      => '',
         ];
         $callback
-            ->processMessage($this->createMessage($headers), $connection, 1, $loop)
+            ->processMessage($this->createMessage($headers), $connection, 1)
             ->then(
-                static function () use ($loop): void {
+                static function (): void {
                     self::assertTrue(TRUE);
-
-                    $loop->stop();
                 },
-                static function (Throwable $throwable) use ($loop): void {
-                    $loop->stop();
-
+                static function (Throwable $throwable): void {
                     self::fail(sprintf('%s%s%s', $throwable->getMessage(), PHP_EOL, $throwable->getTraceAsString()));
                 }
-            )
-            ->done();
-
-        $loop->run();
+            )->wait();
     }
 
     /**
@@ -210,14 +199,12 @@ final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
      */
     public function testProcessMessageSuccessTestAction(): void
     {
-        $loop = Factory::create();
-
         $batchAction = self::createMock(BatchActionInterface::class);
-        $batchAction->method('batchAction')->willReturn(resolve());
+        $batchAction->method('batchAction')->willReturn($this->createPromise());
         $batchAction->method('getBatchService')->willReturn(self::createMock(BatchInterface::class));
         $channel = self::createMock(AMQPChannel::class);
-        $channel->method('queue_declare')->willReturn(resolve());
-        $channel->method('basic_publish')->willReturn(resolve());
+        $channel->method('queue_declare')->willReturn($this->createPromise());
+        $channel->method('basic_publish')->willReturn($this->createPromise());
         $client = self::createMock(AMQPSocketConnection::class);
         $client->method('channel')->willReturn($channel);
         $influxSender = self::createMock(InfluxDbSender::class);
@@ -238,22 +225,15 @@ final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
             PipesHeaders::createKey(PipesHeaders::NODE_NAME)      => 'test',
         ];
         $callback
-            ->processMessage($this->createMessage($headers), $connection, 1, $loop)
+            ->processMessage($this->createMessage($headers), $connection, 1)
             ->then(
-                static function () use ($loop): void {
+                static function (): void {
                     self::assertTrue(TRUE);
-
-                    $loop->stop();
                 },
-                static function (Throwable $throwable) use ($loop): void {
-                    $loop->stop();
-
+                static function (Throwable $throwable): void {
                     self::fail(sprintf('%s%s%s', $throwable->getMessage(), PHP_EOL, $throwable->getTraceAsString()));
                 }
-            )
-            ->done();
-
-        $loop->run();
+            )->wait();
     }
 
     /**
@@ -269,14 +249,12 @@ final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
      */
     public function testProcessErrorMessageTestAction(): void
     {
-        $loop = Factory::create();
-
         $batchAction = self::createMock(BatchActionInterface::class);
-        $batchAction->method('batchAction')->willReturn(resolve());
+        $batchAction->method('batchAction')->willReturn($this->createPromise());
         $batchAction->method('getBatchService')->willThrowException(new Exception());
         $channel = self::createMock(AMQPChannel::class);
-        $channel->method('queue_declare')->willReturn(resolve());
-        $channel->method('basic_publish')->willReturn(resolve());
+        $channel->method('queue_declare')->willReturn($this->createPromise());
+        $channel->method('basic_publish')->willReturn($this->createPromise());
         $client = self::createMock(AMQPSocketConnection::class);
         $client->method('channel')->willReturn($channel);
         $influxSender = self::createMock(InfluxDbSender::class);
@@ -297,22 +275,15 @@ final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
             PipesHeaders::createKey(PipesHeaders::NODE_NAME)      => 'test',
         ];
         $callback
-            ->processMessage($this->createMessage($headers), $connection, 1, $loop)
+            ->processMessage($this->createMessage($headers), $connection, 1)
             ->then(
-                static function () use ($loop): void {
+                static function (): void {
                     self::assertTrue(TRUE);
-
-                    $loop->stop();
                 },
-                static function (Throwable $throwable) use ($loop): void {
-                    $loop->stop();
-
+                static function (Throwable $throwable): void {
                     self::fail(sprintf('%s%s%s', $throwable->getMessage(), PHP_EOL, $throwable->getTraceAsString()));
                 }
-            )
-            ->done();
-
-        $loop->run();
+            )->wait();
     }
 
     /**
@@ -324,13 +295,11 @@ final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
      */
     public function testProcessMessageBadType(): void
     {
-        $loop = Factory::create();
-
         $batchAction = self::createMock(BatchActionInterface::class);
-        $batchAction->method('batchAction')->willReturn(resolve());
+        $batchAction->method('batchAction')->willReturn($this->createPromise());
         $channel = self::createMock(AMQPChannel::class);
-        $channel->method('queue_declare')->willReturn(resolve());
-        $channel->method('basic_publish')->willReturn(resolve());
+        $channel->method('queue_declare')->willReturn($this->createPromise());
+        $channel->method('basic_publish')->willReturn($this->createPromise());
         $client = self::createMock(AMQPSocketConnection::class);
         $client->method('channel')->willReturn($channel);
         $influxSender = self::createMock(InfluxDbSender::class);
@@ -351,18 +320,14 @@ final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
             PipesHeaders::createKey(PipesHeaders::PARENT_ID)      => '',
         ];
         $callback
-            ->processMessage($this->createMessage($headers), $connection, 1, $loop)
+            ->processMessage($this->createMessage($headers), $connection, 1)
             ->then(
                 NULL,
-                static function (Exception $e) use ($loop): void {
+                static function (Exception $e): void {
                     self::assertInstanceOf(InvalidArgumentException::class, $e);
                     self::assertSame('Unsupported type "unknown".', $e->getMessage());
-                    $loop->stop();
                 }
-            )
-            ->done();
-
-        $loop->run();
+            )->wait();
     }
 
     /**
