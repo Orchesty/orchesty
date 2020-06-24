@@ -1,6 +1,7 @@
 package router
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -13,6 +14,8 @@ import (
 	"starting-point/pkg/service"
 	"starting-point/pkg/storage"
 	"starting-point/pkg/utils"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // HandleClear handles context clear
@@ -212,6 +215,12 @@ func getUser(r *http.Request) string {
 
 	if data, err := ioutil.ReadAll(r.Body); err == nil {
 		innerData := map[string]interface{}{}
+
+		if r.Body.Close() != nil {
+			log.Error(fmt.Sprintf("Close stream error: %s", err))
+		}
+
+		r.Body = ioutil.NopCloser(bytes.NewBuffer(data))
 
 		if json.Unmarshal(data, &innerData) == nil {
 			if user, exists := innerData[utils.UserID]; exists {
