@@ -21,6 +21,10 @@ func GetBodyFromStream(r *http.Request) (b []byte) {
 		log.Error(fmt.Sprintf("Convert stream to []byte error: %s", err))
 	}
 
+	if r.Body.Close() != nil {
+		log.Error(fmt.Sprintf("Close stream error: %s", err))
+	}
+
 	r.Body = ioutil.NopCloser(bytes.NewBuffer(b))
 
 	return
