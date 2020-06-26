@@ -68,7 +68,7 @@ final class AirtableNewRecordConnector extends ConnectorAbstract
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
-        $applicationInstall = $this->repository->findUsersAppDefaultHeaders($dto);
+        $applicationInstall = $this->repository->findUserAppByHeaders($dto);
 
         /** @var AirtableApplication $app */
         $app = $this->getApplication();

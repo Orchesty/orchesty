@@ -49,7 +49,7 @@ final class ShoptetRegisterWebhookConnector extends ShoptetConnectorAbstract
     {
         /** @var ShoptetApplication $application */
         $application        = $this->application;
-        $applicationInstall = $this->repository->findUsersAppDefaultHeaders($dto);
+        $applicationInstall = $this->repository->findUserAppByHeaders($dto);
 
         $requestDto = $application
             ->getRequestDto($applicationInstall, CurlManager::METHOD_POST, $this->getUrl(self::WEBHOOK_URL))

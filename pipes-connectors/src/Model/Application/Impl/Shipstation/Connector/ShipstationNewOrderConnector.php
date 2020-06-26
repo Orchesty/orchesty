@@ -67,7 +67,7 @@ final class ShipstationNewOrderConnector extends ConnectorAbstract
      */
     public function processEvent(ProcessDto $dto): ProcessDto
     {
-        $applicationInstall = $this->repository->findUsersAppDefaultHeaders($dto);
+        $applicationInstall = $this->repository->findUserAppByHeaders($dto);
 
         $url = $this->getJsonContent($dto)['resource_url'] ?? NULL;
         if (!$url) {

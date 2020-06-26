@@ -81,7 +81,7 @@ final class HubspotCreateContactConnector extends ConnectorAbstract
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
-        $applicationInstall = $this->repository->findUsersAppDefaultHeaders($dto);
+        $applicationInstall = $this->repository->findUserAppByHeaders($dto);
 
         $return = $this->curlManager->send(
             $this->getApplication()->getRequestDto(

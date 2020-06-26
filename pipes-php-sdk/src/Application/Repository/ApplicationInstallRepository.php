@@ -48,12 +48,17 @@ final class ApplicationInstallRepository extends DocumentRepository
 
     /**
      * @param ProcessDto $dto
+     * @param bool       $clear
      *
      * @return ApplicationInstall
      * @throws ApplicationInstallException
      */
-    public function findUsersAppDefaultHeaders(ProcessDto $dto): ApplicationInstall
+    public function findUserAppByHeaders(ProcessDto $dto, bool $clear = TRUE): ApplicationInstall
     {
+        if ($clear) {
+            $this->clear();
+        }
+
         return $this->findUserApp(
             (string) PipesHeaders::get('application', $dto->getHeaders()),
             (string) PipesHeaders::get('user', $dto->getHeaders())

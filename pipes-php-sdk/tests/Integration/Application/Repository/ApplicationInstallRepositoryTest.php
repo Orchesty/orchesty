@@ -81,11 +81,11 @@ final class ApplicationInstallRepositoryTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository::findUsersAppDefaultHeaders
+     * @covers \Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository::findUserAppByHeaders
      *
      * @throws Exception
      */
-    public function testFindUsersAppDefaultHeaders(): void
+    public function testFindUserAppByHeaders(): void
     {
         $this->createApps();
         $dto = (new ProcessDto())->setHeaders(['pf-application' => 'hubspot', 'pf-user' => 'user2']);
@@ -93,7 +93,7 @@ final class ApplicationInstallRepositoryTest extends DatabaseTestCaseAbstract
         /** @var ApplicationInstallRepository $appInstallRepository */
         $appInstallRepository = $this->dm->getRepository(ApplicationInstall::class);
 
-        $applicationInstall = $appInstallRepository->findUsersAppDefaultHeaders($dto);
+        $applicationInstall = $appInstallRepository->findUserAppByHeaders($dto);
         self::assertFalse($applicationInstall->isDeleted());
     }
 

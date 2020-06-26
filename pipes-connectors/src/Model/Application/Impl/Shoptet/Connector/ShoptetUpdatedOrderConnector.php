@@ -55,7 +55,7 @@ final class ShoptetUpdatedOrderConnector extends ShoptetConnectorAbstract
             $data = $this->processResponse(
                 $this->sender->send(
                     $this->getApplication()->getRequestDto(
-                        $this->repository->findUsersAppDefaultHeaders($dto),
+                        $this->repository->findUserAppByHeaders($dto),
                         CurlManager::METHOD_GET,
                         $this->getUrl(self::URL, $this->getContentByKey($dto, self::EVENT_INSTANCE))
                     )->setDebugInfo($dto)

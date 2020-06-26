@@ -36,7 +36,7 @@ class ShoptetGetApiAccessTokenConnector extends ShoptetConnectorAbstract
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
-        $applicationInstall = $this->repository->findUsersAppDefaultHeaders($dto);
+        $applicationInstall = $this->repository->findUserAppByHeaders($dto);
         $response           = $this->processActionArray($applicationInstall, $dto);
 
         return $this->setJsonContent($dto, $response);

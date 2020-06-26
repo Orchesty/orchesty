@@ -81,7 +81,7 @@ final class MailchimpTagContactConnector extends ConnectorAbstract
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
-        $applicationInstall = $this->repository->findUsersAppDefaultHeaders($dto);
+        $applicationInstall = $this->repository->findUserAppByHeaders($dto);
         $apiEndpoint        = $applicationInstall->getSettings()[MailchimpApplication::API_KEYPOINT];
 
         $return = $this->curlManager->send(

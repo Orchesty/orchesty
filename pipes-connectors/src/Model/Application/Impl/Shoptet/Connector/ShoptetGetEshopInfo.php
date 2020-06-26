@@ -41,7 +41,7 @@ class ShoptetGetEshopInfo extends ShoptetConnectorAbstract
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
-        $applicationInstall = $this->repository->findUsersAppDefaultHeaders($dto);
+        $applicationInstall = $this->repository->findUserAppByHeaders($dto);
         try {
             $response = $this->processActionArray($applicationInstall, $dto);
         } catch (CurlException $exception) {

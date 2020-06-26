@@ -63,7 +63,7 @@ abstract class AwsObjectConnectorAbstract extends ConnectorAbstract
      */
     protected function getApplicationInstall(ProcessDto $dto): ApplicationInstall
     {
-        return $this->repository->findUsersAppDefaultHeaders($dto);
+        return $this->repository->findUserAppByHeaders($dto);
     }
 
     /**
