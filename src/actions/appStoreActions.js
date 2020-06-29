@@ -20,6 +20,19 @@ function loadList(id, loadingState = true) {
 
     return serverRequest(dispatch, 'GET', '/applications').then((response) => {
       return serverRequest(dispatch, 'GET', `/applications/users/${window.store.getState().auth.user.id}`).then((innerResponse) => {
+        if (response.length === 0){
+          let empty = {
+            count: 0,
+            limit: 0,
+            offset: 0,
+            total: 0,
+            items: [],
+          }
+
+          dispatch(listReceive(id, empty));
+          return empty;
+        }
+
         let items = response.items.map(item => {
           item = processItem(item);
           const innerItem = innerResponse.items.filter(({ key }) => key === item.key);
