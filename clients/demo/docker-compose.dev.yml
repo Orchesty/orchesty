@@ -9,16 +9,60 @@ version: '2.2'
 
 services:
     ## BEGIN DEV
+    php-sdk:
+        image: hanabosocom/php-dev:php-7.4-alpine
+        user: ${DEV_UID}:${DEV_GID}
+        environment:
+            COMPOSER_HOME: ${HOME}/dev/.composer
+            BACKEND_HOST: ${BACKEND_URL}/
+            EMAIL_DSN: gmail://dev.email.hb@gmail.com:jVME2RkX9xyYhj9v@localhost
+            ELASTIC_HOST: elasticsearch
+            ELASTIC_INDEX: index
+            METRICS_SERVICE: 'influx'
+            METRICS_HOST: 'kapacitor'
+            METRICS_PORT: '9100'
+            REDIS_DSN: redis://redis
+            STARTING_POINT_DSN: starting-point:8080
+            RABBIT_DSN: amqp://rabbitmq:5672/
+        working_dir: /var/www/pipes/clients/demo/pipes-api
+        volumes:
+            - ../../:/var/www/pipes
+            - ${SSH_AUTH_SOCK}:${SSH_AUTH}
+            - ${HOME}/dev/.composer:${HOME}/dev/.composer
+    ## END DEV
+    ## BEGIN STAGE
+    #donwlader:
+    #    image: dkr.hanaboso.net/pipes/demo/php-api:${TAG_MONOLITH}
+    #    environment:
+    #      BACKEND_HOST: ${BACKEND_URL}/
+    #      EMAIL_DSN: gmail://dev.email.hb@gmail.com:jVME2RkX9xyYhj9v@localhost
+    #      ELASTIC_HOST: elasticsearch
+    #      ELASTIC_INDEX: 'logstash-2018.01.31'
+    #      METRICS_SERVICE: 'influx'
+    #      METRICS_HOST: 'kapacitor'
+    #      METRICS_PORT: '9100'
+    #      REDIS_DSN: redis://redis
+    #      STARTING_POINT_DSN: starting-point:8080
+    #      RABBIT_DSN: amqp://rabbitmq:5672/
+    #      PHP_FPM_MAX_REQUESTS: 5000
+    ## END STAGE
+
+    ## BEGIN DEV
     downloader:
         image: hanabosocom/php-dev:php-7.4-alpine
         user: ${DEV_UID}:${DEV_GID}
         environment:
-            BACKEND_HOST: ${BACKEND_URL}/
-            FRONTEND_HOST: ${BACKEND_URL}/
-            ELASTIC_HOST: elasticsearch
-            ELASTIC_INDEX: 'index'
-            METRICS_SERVICE: influx
             COMPOSER_HOME: ${HOME}/dev/.composer
+            BACKEND_HOST: ${BACKEND_URL}/
+            EMAIL_DSN: gmail://dev.email.hb@gmail.com:jVME2RkX9xyYhj9v@localhost
+            ELASTIC_HOST: elasticsearch
+            ELASTIC_INDEX: index
+            METRICS_SERVICE: 'influx'
+            METRICS_HOST: 'kapacitor'
+            METRICS_PORT: '9100'
+            REDIS_DSN: redis://redis
+            STARTING_POINT_DSN: starting-point:8080
+            RABBIT_DSN: amqp://rabbitmq:5672/
         command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console downloader:run'
         working_dir: /var/www/pipes/clients/demo/pipes-api
         volumes:
@@ -32,10 +76,16 @@ services:
     #    command: bin/console downloader:run
     #    environment:
     #      BACKEND_HOST: ${BACKEND_URL}/
-    #      FRONTEND_HOST: ${BACKEND_URL}/
+    #      EMAIL_DSN: gmail://dev.email.hb@gmail.com:jVME2RkX9xyYhj9v@localhost
     #      ELASTIC_HOST: elasticsearch
     #      ELASTIC_INDEX: 'logstash-2018.01.31'
-    #      METRICS_SERVICE: influx
+    #      METRICS_SERVICE: 'influx'
+    #      METRICS_HOST: 'kapacitor'
+    #      METRICS_PORT: '9100'
+    #      REDIS_DSN: redis://redis
+    #      STARTING_POINT_DSN: starting-point:8080
+    #      RABBIT_DSN: amqp://rabbitmq:5672/
+    #      PHP_FPM_MAX_REQUESTS: 5000
     ## END STAGE
 
     ## BEGIN DEV
@@ -43,22 +93,17 @@ services:
         image: hanabosocom/php-dev:php-7.4-alpine
         user: ${DEV_UID}:${DEV_GID}
         environment:
+            COMPOSER_HOME: ${HOME}/dev/.composer
             BACKEND_HOST: ${BACKEND_URL}/
-            FRONTEND_HOST: ${BACKEND_URL}/
+            EMAIL_DSN: gmail://dev.email.hb@gmail.com:jVME2RkX9xyYhj9v@localhost
             ELASTIC_HOST: elasticsearch
             ELASTIC_INDEX: index
-            METRICS_SERVICE: influx
+            METRICS_SERVICE: 'influx'
+            METRICS_HOST: 'kapacitor'
+            METRICS_PORT: '9100'
             REDIS_DSN: redis://redis
-            FTP_API_DSN: ftp-api
-            MAILER_API_DSN: mailer-api
-            MAPPER_API_DSN: mapper-api
-            MONOLITH_API_DSN: monolith-api
-            MULTI_PROBE_DSN: multi-probe:8007
             STARTING_POINT_DSN: starting-point:8080
-            CRON_DSN: cron-api:8080
-            TOPOLOGY_API_DSN: topology-api:80
-            XML_PARSER_API_DSN: xml-parser-api
-            COMPOSER_HOME: ${HOME}/dev/.composer
+            RABBIT_DSN: amqp://rabbitmq:5672/
         command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit_mq:consumer:batch'
         working_dir: /var/www/pipes/clients/demo/pipes-api
         volumes:
@@ -72,20 +117,15 @@ services:
     #    command: bin/console rabbit_mq:consumer:batch
     #    environment:
     #      BACKEND_HOST: ${BACKEND_URL}/
-    #      FRONTEND_HOST: ${BACKEND_URL}/
+    #      EMAIL_DSN: gmail://dev.email.hb@gmail.com:jVME2RkX9xyYhj9v@localhost
     #      ELASTIC_HOST: elasticsearch
     #      ELASTIC_INDEX: 'logstash-2018.01.31'
-    #      METRICS_SERVICE: influx
+    #      METRICS_SERVICE: 'influx'
+    #      METRICS_HOST: 'kapacitor'
+    #      METRICS_PORT: '9100'
     #      REDIS_DSN: redis://redis
-    #      FTP_API_DSN: ftp-api
-    #      MAILER_API_DSN: mailer-api
-    #      MAPPER_API_DSN: mapper-api
-    #      MONOLITH_API_DSN: monolith-api
-    #      MULTI_PROBE_DSN: multi-probe:8007
     #      STARTING_POINT_DSN: starting-point:8080
-    #      CRON_DSN: cron-api:8080
-    #      TOPOLOGY_API_DSN: topology-api:80
-    #      XML_PARSER_API_DSN: xml-parser-api
+    #      RABBIT_DSN: amqp://rabbitmq:5672/
     #      PHP_FPM_MAX_REQUESTS: 5000
     ## END STAGE
 
@@ -94,22 +134,17 @@ services:
         image: hanabosocom/php-dev:php-7.4-alpine
         user: ${DEV_UID}:${DEV_GID}
         environment:
+            COMPOSER_HOME: ${HOME}/dev/.composer
             BACKEND_HOST: ${BACKEND_URL}/
-            FRONTEND_HOST: ${BACKEND_URL}/
+            EMAIL_DSN: gmail://dev.email.hb@gmail.com:jVME2RkX9xyYhj9v@localhost
             ELASTIC_HOST: elasticsearch
             ELASTIC_INDEX: index
-            METRICS_SERVICE: influx
+            METRICS_SERVICE: 'influx'
+            METRICS_HOST: 'kapacitor'
+            METRICS_PORT: '9100'
             REDIS_DSN: redis://redis
-            FTP_API_DSN: ftp-api
-            MAILER_API_DSN: mailer-api
-            MAPPER_API_DSN: mapper-api
-            MONOLITH_API_DSN: monolith-api
-            MULTI_PROBE_DSN: multi-probe:8007
             STARTING_POINT_DSN: starting-point:8080
-            CRON_DSN: cron-api:8080
-            TOPOLOGY_API_DSN: topology-api:80
-            XML_PARSER_API_DSN: xml-parser-api
-            COMPOSER_HOME: ${HOME}/dev/.composer
+            RABBIT_DSN: amqp://rabbitmq:5672/
         command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit_mq:consumer:batch-connector'
         working_dir: /var/www/pipes/clients/demo/pipes-api
         volumes:
@@ -123,20 +158,15 @@ services:
     #    command: bin/console rabbit_mq:consumer:batch-connector
     #    environment:
     #      BACKEND_HOST: ${BACKEND_URL}/
-    #      FRONTEND_HOST: ${BACKEND_URL}/
+    #      EMAIL_DSN: gmail://dev.email.hb@gmail.com:jVME2RkX9xyYhj9v@localhost
     #      ELASTIC_HOST: elasticsearch
     #      ELASTIC_INDEX: 'logstash-2018.01.31'
-    #      METRICS_SERVICE: influx
+    #      METRICS_SERVICE: 'influx'
+    #      METRICS_HOST: 'kapacitor'
+    #      METRICS_PORT: '9100'
     #      REDIS_DSN: redis://redis
-    #      FTP_API_DSN: ftp-api
-    #      MAILER_API_DSN: mailer-api
-    #      MAPPER_API_DSN: mapper-api
-    #      MONOLITH_API_DSN: monolith-api
-    #      MULTI_PROBE_DSN: multi-probe:8007
     #      STARTING_POINT_DSN: starting-point:8080
-    #      CRON_DSN: cron-api:8080
-    #      TOPOLOGY_API_DSN: topology-api:80
-    #      XML_PARSER_API_DSN: xml-parser-api
+    #      RABBIT_DSN: amqp://rabbitmq:5672/
     #      PHP_FPM_MAX_REQUESTS: 5000
     ## END STAGE
 
@@ -147,22 +177,17 @@ services:
         command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit_mq:consumer:long-running-node'
         working_dir: /var/www/pipes/clients/demo/pipes-api
         environment:
+            COMPOSER_HOME: ${HOME}/dev/.composer
             BACKEND_HOST: ${BACKEND_URL}/
-            FRONTEND_HOST: ${BACKEND_URL}/
+            EMAIL_DSN: gmail://dev.email.hb@gmail.com:jVME2RkX9xyYhj9v@localhost
             ELASTIC_HOST: elasticsearch
             ELASTIC_INDEX: index
-            METRICS_SERVICE: influx
+            METRICS_SERVICE: 'influx'
+            METRICS_HOST: 'kapacitor'
+            METRICS_PORT: '9100'
             REDIS_DSN: redis://redis
-            FTP_API_DSN: ftp-api
-            MAILER_API_DSN: mailer-api
-            MAPPER_API_DSN: mapper-api
-            MONOLITH_API_DSN: monolith-api
-            MULTI_PROBE_DSN: multi-probe:8007
             STARTING_POINT_DSN: starting-point:8080
-            CRON_DSN: cron-api:8080
-            TOPOLOGY_API_DSN: topology-api:80
-            XML_PARSER_API_DSN: xml-parser-api
-            COMPOSER_HOME: ${HOME}/dev/.composer
+            RABBIT_DSN: amqp://rabbitmq:5672/
         volumes:
             - ../../:/var/www/pipes
             - ${SSH_AUTH_SOCK}:${SSH_AUTH}
@@ -174,20 +199,15 @@ services:
     #    command: bin/console rabbit_mq:consumer:long-running-node
     #    environment:
     #      BACKEND_HOST: ${BACKEND_URL}/
-    #      FRONTEND_HOST: ${BACKEND_URL}/
+    #      EMAIL_DSN: gmail://dev.email.hb@gmail.com:jVME2RkX9xyYhj9v@localhost
     #      ELASTIC_HOST: elasticsearch
     #      ELASTIC_INDEX: 'logstash-2018.01.31'
-    #      METRICS_SERVICE: influx
+    #      METRICS_SERVICE: 'influx'
+    #      METRICS_HOST: 'kapacitor'
+    #      METRICS_PORT: '9100'
     #      REDIS_DSN: redis://redis
-    #      FTP_API_DSN: ftp-api
-    #      MAILER_API_DSN: mailer-api
-    #      MAPPER_API_DSN: mapper-api
-    #      MONOLITH_API_DSN: monolith-api
-    #      MULTI_PROBE_DSN: multi-probe:8007
     #      STARTING_POINT_DSN: starting-point:8080
-    #      CRON_DSN: cron-api:8080
-    #      TOPOLOGY_API_DSN: topology-api:80
-    #      XML_PARSER_API_DSN: xml-parser-api
+    #      RABBIT_DSN: amqp://rabbitmq:5672/
     #      PHP_FPM_MAX_REQUESTS: 5000
     ## END STAGE
 
@@ -196,22 +216,17 @@ services:
         image: hanabosocom/php-dev:php-7.4-alpine
         user: ${DEV_UID}:${DEV_GID}
         environment:
+            COMPOSER_HOME: ${HOME}/dev/.composer
             BACKEND_HOST: ${BACKEND_URL}/
-            FRONTEND_HOST: ${BACKEND_URL}/
+            EMAIL_DSN: gmail://dev.email.hb@gmail.com:jVME2RkX9xyYhj9v@localhost
             ELASTIC_HOST: elasticsearch
             ELASTIC_INDEX: index
-            METRICS_SERVICE: influx
+            METRICS_SERVICE: 'influx'
+            METRICS_HOST: 'kapacitor'
+            METRICS_PORT: '9100'
             REDIS_DSN: redis://redis
-            FTP_API_DSN: ftp-api
-            MAILER_API_DSN: mailer-api
-            MAPPER_API_DSN: mapper-api
-            MONOLITH_API_DSN: monolith-api
-            MULTI_PROBE_DSN: multi-probe:8007
             STARTING_POINT_DSN: starting-point:8080
-            CRON_DSN: cron-api:8080
-            TOPOLOGY_API_DSN: topology-api:80
-            XML_PARSER_API_DSN: xml-parser-api
-            COMPOSER_HOME: ${HOME}/dev/.composer
+            RABBIT_DSN: amqp://rabbitmq:5672/
         command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit_mq:consumer:status-service'
         working_dir: /var/www/pipes/clients/demo/pipes-api
         volumes:
@@ -225,20 +240,15 @@ services:
     #    command: bin/console rabbit_mq:consumer:status-service
     #    environment:
     #      BACKEND_HOST: ${BACKEND_URL}/
-    #      FRONTEND_HOST: ${BACKEND_URL}/
+    #      EMAIL_DSN: gmail://dev.email.hb@gmail.com:jVME2RkX9xyYhj9v@localhost
     #      ELASTIC_HOST: elasticsearch
     #      ELASTIC_INDEX: 'logstash-2018.01.31'
-    #      METRICS_SERVICE: influx
+    #      METRICS_SERVICE: 'influx'
+    #      METRICS_HOST: 'kapacitor'
+    #      METRICS_PORT: '9100'
     #      REDIS_DSN: redis://redis
-    #      FTP_API_DSN: ftp-api
-    #      MAILER_API_DSN: mailer-api
-    #      MAPPER_API_DSN: mapper-api
-    #      MONOLITH_API_DSN: monolith-api
-    #      MULTI_PROBE_DSN: multi-probe:8007
     #      STARTING_POINT_DSN: starting-point:8080
-    #      CRON_DSN: cron-api:8080
-    #      TOPOLOGY_API_DSN: topology-api:80
-    #      XML_PARSER_API_DSN: xml-parser-api
+    #      RABBIT_DSN: amqp://rabbitmq:5672/
     #      PHP_FPM_MAX_REQUESTS: 5000
     ## END STAGE
 
@@ -334,75 +344,6 @@ services:
 
     # PHP Services monolith
     ## BEGIN DEV
-    monolith-api:
-        image: hanabosocom/php-dev:php-7.4-alpine
-        user: ${DEV_UID}:${DEV_GID}
-        ports:
-            - ${DEV_IP}:80:80
-        environment:
-            PHP_WEBROOT: /var/www/pipes/clients/demo/pipes-api/public
-            PHP_IDE_CONFIG: ${PHP_IDE_CONFIG}
-            BACKEND_HOST: ${BACKEND_URL}/
-            FRONTEND_HOST: ${BACKEND_URL}/
-            ELASTIC_HOST: elasticsearch
-            ELASTIC_INDEX: 'index'
-            SMTP_USER: dev.email.hb@gmail.com
-            SMTP_PASSWORD: jVME2RkX9xyYhj9v
-            METRICS_HOST: 'kapacitor'
-            METRICS_PORT: '9100'
-            METRICS_SERVICE: 'influx'
-            REDIS_DSN: 'redis://redis'
-            COMPOSER_HOME: ${HOME}/dev/.composer
-            #METRICS_HOST: 'mongo'
-            #METRICS_PORT: '27017'
-            #METRICS_SERVICE: 'mongo'
-            FTP_API_DSN: ftp-api
-            MAILER_API_DSN: mailer-api
-            MAPPER_API_DSN: mapper-api
-            MONOLITH_API_DSN: monolith-api
-            MULTI_PROBE_DSN: multi-probe:8007
-            STARTING_POINT_DSN: starting-point:8080
-            CRON_DSN: cron-api:8080
-            TOPOLOGY_API_DSN: topology-api:8080
-            XML_PARSER_API_DSN: xml-parser-api
-        working_dir: /var/www/pipes/clients/demo/pipes-api
-        volumes:
-            - ../../:/var/www/pipes
-            - ${SSH_AUTH_SOCK}:${SSH_AUTH}
-            - ${HOME}/dev/.composer:${HOME}/dev/.composer
-    ## END DEV
-    ## BEGIN STAGE
-    #monolith-api:
-    #    image: dkr.hanaboso.net/pipes/demo/php-api:${TAG_MONOLITH}
-    #    environment:
-    #      BACKEND_HOST: ${BACKEND_URL}/
-    #      FRONTEND_HOST: ${BACKEND_URL}/
-    #      ELASTIC_HOST: elasticsearch
-    #      ELASTIC_INDEX: 'logstash-2018.01.31'
-    #      SMTP_USER: dev.email.hb@gmail.com
-    #      SMTP_PASSWORD: jVME2RkX9xyYhj9v
-    #      METRICS_HOST: 'kapacitor'
-    #      METRICS_PORT: '9100'
-    #      METRICS_SERVICE: 'influx'
-    #      REDIS_DSN: 'redis://redis'
-    #      FTP_API_DSN: ftp-api
-    #      MAILER_API_DSN: mailer-api
-    #      MAPPER_API_DSN: mapper-api
-    #      MONOLITH_API_DSN: monolith-api
-    #      MULTI_PROBE_DSN: multi-probe:8007
-    #      STARTING_POINT_DSN: starting-point:8080
-    #      CRON_DSN: cron-api:8080
-    #      TOPOLOGY_API_DSN: topology-api:8080
-    #      XML_PARSER_API_DSN: xml-parser-api
-    #    secrets:
-    #      - source: clevermonitor-ca.pem
-    #        target: /var/www/html/var/secret/ca.crt
-    #      - source: clevermonitor-hanaboso.pem
-    #        target: /var/www/html/var/secret/keypair.pem
-    ## END STAGE
-
-    # PHP Services monolith
-    ## BEGIN DEV
     notification-sender-api:
         image: dkr.hanaboso.net/pipes/notification-sender:master
         environment:
@@ -477,6 +418,77 @@ services:
     #        target: /root/.docker/config.json
     ## END STAGE
 
+    # PHP Services monolith
+    ## BEGIN DEV
+    backend:
+        image: hanabosocom/php-dev:php-7.4-alpine
+        user: ${DEV_UID}:${DEV_GID}
+        ports:
+            - ${DEV_IP}:80:80
+        environment:
+            PHP_WEBROOT: /var/www/pipes/pf-bundles/public
+            PHP_IDE_CONFIG: ${PHP_IDE_CONFIG}
+            COMPOSER_HOME: ${HOME}/dev/.composer
+            BACKEND_HOST: ${BACKEND_URL}/
+            FRONTEND_HOST: ${BACKEND_URL}/
+            BACKEND_DSN: ${BACKEND_URL}/
+            FRONTEND_DSN: ${BACKEND_URL}/
+            SMTP_USER: dev.email.hb@gmail.com
+            SMTP_PASSWORD: jVME2RkX9xyYhj9v
+            METRICS_HOST: 'kapacitor'
+            METRICS_PORT: '9100'
+            METRICS_SERVICE: 'influx'
+            ELASTIC_HOST: elasticsearch
+            ELASTIC_INDEX: 'index'
+            REDIS_DSN: 'redis://redis'
+            CRON_DSN: cron-api:8080
+            FTP_API_DSN: ftp-api
+            MAILER_API_DSN: mailer-api
+            MAPPER_API_DSN: mapper-api
+            MONOLITH_API_DSN: php-sdk
+            MULTI_PROBE_DSN: multi-probe:8007
+            STARTING_POINT_DSN: starting-point:8080
+            TOPOLOGY_API_DSN: topology-api:8080
+            XML_PARSER_API_DSN: xml-parser-api
+            RABBIT_DSN: amqp://rabbitmq:5672/
+            NOTIFICATION_DSN: notification-sender-api
+            WORKER_DEFAULT_PORT: 8008
+        working_dir: /var/www/pipes/clients/demo/pipes-api
+        volumes:
+            - ../../:/var/www/pipes
+            - ${SSH_AUTH_SOCK}:${SSH_AUTH}
+            - ${HOME}/dev/.composer:${HOME}/dev/.composer
+    ## END DEV
+    ## BEGIN STAGE
+    #monolith-api:
+    #    image: dkr.hanaboso.net/pipes/demo/php-api:${TAG_MONOLITH}
+    #    environment:
+    #      BACKEND_HOST: ${BACKEND_URL}/
+    #      FRONTEND_HOST: ${BACKEND_URL}/
+    #      BACKEND_DSN: ${BACKEND_URL}/
+    #      FRONTEND_DSN: ${BACKEND_URL}/
+    #      SMTP_USER: dev.email.hb@gmail.com
+    #      SMTP_PASSWORD: jVME2RkX9xyYhj9v
+    #      METRICS_HOST: 'kapacitor'
+    #      METRICS_PORT: '9100'
+    #      METRICS_SERVICE: 'influx'
+    #      ELASTIC_HOST: elasticsearch
+    #      ELASTIC_INDEX: 'logstash-2018.01.31'
+    #      REDIS_DSN: 'redis://redis'
+    #      CRON_DSN: cron-api:8080
+    #      FTP_API_DSN: ftp-api
+    #      MAILER_API_DSN: mailer-api
+    #      MAPPER_API_DSN: mapper-api
+    #      MONOLITH_API_DSN: php-sdk
+    #      MULTI_PROBE_DSN: multi-probe:8007
+    #      STARTING_POINT_DSN: starting-point:8080
+    #      TOPOLOGY_API_DSN: topology-api:8080
+    #      XML_PARSER_API_DSN: xml-parser-api
+    #      RABBIT_DSN: amqp://rabbitmq:5672/
+    #      NOTIFICATION_DSN: notification-sender-api
+    #      WORKER_DEFAULT_PORT: 8008
+    ## END STAGE
+
     frontend:
         ## BEGIN DEV
         image: dkr.hanaboso.net/pipes/pipes/nodejs-build:dev
@@ -511,6 +523,32 @@ services:
         ports:
             - ${DEV_IP}:3030:3030
         # - ${DEV_IP}:8080:80
+
+    ## BEGIN DEV
+    cron-api:
+        image: hanabosocom/go-base:dev
+        user: ${DEV_UID}:${DEV_GID}
+        environment:
+            DEV_UID: ${DEV_UID}
+            DEV_GID: ${DEV_GID}
+            APP_DEBUG: 'true'
+            MONGO_DSN: mongodb://mongo/cron?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
+            MONGO_COLLECTION: cron_table
+        volumes:
+            - ../../cron:/app
+        command: /bin/sh -c '
+            su-exec root chmod u+s /usr/bin/crontab &&
+            su-exec root chmod 777 /etc/crontabs/root &&
+            su-exec root crond -l 0 -L /var/log/cron.log &&
+            go run cmd/cron.go'
+    ## END DEV
+    ## BEGIN STAGE
+    #cron-api:
+    #    image: dkr.hanaboso.net/pipes/pipes/cron:master
+    #    environment:
+    #      MONGO_DSN: mongodb://mongo/cron?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
+    #      MONGO_COLLECTION: cron_table
+    ## END STAGE
 
     # RabbitMQ
     rabbitmq:
@@ -588,7 +626,7 @@ services:
             #METRICS_DSN: mongodb://mongo/metrics?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
         volumes:
             - ../../rabbitmq-telegraf:/app
-        command: go run cmd/main.go
+        command: go run main.go
     ## END DEV
     ## BEGIN STAGE
     #telegraf:
@@ -600,32 +638,6 @@ services:
     kapacitor:
         image: dkr.hanaboso.net/pipes/pipes/kapacitor:dev
         hostname: kapacitor
-
-    ## BEGIN DEV
-    cron-api:
-        image: hanabosocom/go-base:dev
-        user: ${DEV_UID}:${DEV_GID}
-        environment:
-            DEV_UID: ${DEV_UID}
-            DEV_GID: ${DEV_GID}
-            APP_DEBUG: 'true'
-            MONGO_DSN: mongodb://mongo/cron?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
-            MONGO_COLLECTION: cron_table
-        volumes:
-            - ../../cron:/app
-        command: /bin/sh -c '
-            su-exec root chmod u+s /usr/bin/crontab &&
-            su-exec root chmod 777 /etc/crontabs/root &&
-            su-exec root crond -l 0 -L /var/log/cron.log &&
-            go run cmd/cron.go'
-    ## END DEV
-    ## BEGIN STAGE
-    #cron-api:
-    #    image: dkr.hanaboso.net/pipes/pipes/cron:master
-    #    environment:
-    #      MONGO_DSN: mongodb://mongo/cron?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
-    #      MONGO_COLLECTION: cron_table
-    ## END STAGE
 
     ## BEGIN DEV
     tsa:
@@ -680,10 +692,6 @@ volumes:
 #
 #secrets:
 #  stage-staff.pem:
-#    external: true
-#  clevermonitor-ca.pem:
-#    external: true
-#  clevermonitor-hanaboso.pem:
 #    external: true
 #  docker-ca.pem:
 #    external: true

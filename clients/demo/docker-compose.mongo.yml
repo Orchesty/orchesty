@@ -147,11 +147,6 @@ services:
             - ${DOCKER_SOCKET_PATH}:/var/run/docker.sock
             - ../topology:/srv/topology
 
-    telegraf:
-        image: dkr.hanaboso.net/pipes/pipes/rabbitmq-telegraf:master
-        environment:
-            METRICS_DSN: mongodb://mongo/metrics?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
-
     cron-api:
         image: dkr.hanaboso.net/pipes/pipes/cron:master
         environment:
@@ -222,6 +217,11 @@ services:
             - MONGO_DB=demo
             - MONGO_COLLECTION=Logs
             - LS_JAVA_OPTS=-Xms512m -Xmx512m
+
+    telegraf:
+        image: dkr.hanaboso.net/pipes/pipes/rabbitmq-telegraf:master
+        environment:
+            METRICS_DSN: mongodb://mongo/metrics?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
 
 volumes:
     redis:
