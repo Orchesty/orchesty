@@ -4,9 +4,6 @@ import {connect} from 'react-redux';
 import * as topologyActions from 'actions/topologyActions';
 import * as metricsActions from 'actions/metricsActions';
 import * as nodeActions from 'actions/nodeActions';
-import StateComponent from 'wrappers/StateComponent';
-import stateMerge from 'utils/stateMerge';
-import {stateType} from 'rootApp/types';
 
 import 'diagram-js/assets/diagram-js.css';
 import 'bpmn-js/assets/bpmn-font/css/bpmn-embedded.css';
@@ -20,6 +17,7 @@ import download from 'utils/download';
 import {menuItemType} from 'rootApp/types';
 import SidebarNodeMetrics from 'rootApp/views/components/metrics/SidebarNodeMetrics';
 import SidebarTopologyMetrics from 'rootApp/views/components/metrics/SidebarTopologyMetrics';
+import SidebarStartingPointUrl from 'rootApp/views/components/node/SidebarStartingPointUrl';
 import serverRequest from 'services/apiGatewayServer';
 
 class BpmnIoComponent extends React.Component {
@@ -154,7 +152,7 @@ class BpmnIoComponent extends React.Component {
   selectionChanged(event){
     const {selectedId} = this.state;
     if (event.newSelection.length > 0) {
-      if (selectedId != event.newSelection[0].id){
+      if (selectedId !== event.newSelection[0].id){
         this.setState({selectedId: event.newSelection[0].id});
       }
     } else if (selectedId) {
@@ -279,7 +277,7 @@ class BpmnIoComponent extends React.Component {
   }
 
   render() {
-    const {topologyId, metricsRange, showEditorPropPanel} = this.props;
+    const {topologyId, topologyName, userId, metricsRange, showEditorPropPanel} = this.props;
     const {selectedId} = this.state;
     return (
       <div ref={self => {this.setSelf(self)}} className="bpmn-io-component">
@@ -287,6 +285,7 @@ class BpmnIoComponent extends React.Component {
         <div className={'node-box' + (showEditorPropPanel ? '' : ' hidden')}>
           <a href="#" className="close-link" onClick={this.propPanelToggle}><i className="fa fa-times" /></a>
           <div ref={this.setPropertiesElement} className="bpmn-io-properties"/>
+          {topologyId && selectedId && <SidebarStartingPointUrl topologyId={topologyId} topologyName={topologyName} schemaId={selectedId} user={userId}/>}
           {topologyId && selectedId && <SidebarNodeMetrics topologyId={topologyId} schemaId={selectedId} metricsRange={metricsRange} />}
           {topologyId && !selectedId && <SidebarTopologyMetrics topologyId={topologyId} metricsRange={metricsRange} />}
         </div>
@@ -310,16 +309,15 @@ BpmnIoComponent.propTypes = {
   metricsRange: PropTypes.object,
   onPropPanelToggle: PropTypes.func.isRequired,
   showEditorPropPanel: PropTypes.bool.isRequired,
-  nodesMetrics: PropTypes.object
+  nodesMetrics: PropTypes.object,
+  userId: PropTypes.string
 };
 
 
 function mapStateToProps(state, ownProps){
-	const {node, metrics} = state;
+	const {node, metrics, auth: {user: {id}}} = state;
 
 	let nodesMetrics = {};
-
-	const nodeList = node.lists['@topology-' + ownProps.topologyId]; // kvuli success | ma items s nody
 
 	const topologyKey = ownProps.metricsRange ? `${ownProps.topologyId}[${ownProps.metricsRange.since}-${ownProps.metricsRange.till}]` : ownProps.topologyId;
 	const topologyMetricsElement = metrics.topologies[topologyKey];
@@ -338,7 +336,8 @@ function mapStateToProps(state, ownProps){
 
 	return {
 		metrics: nodesMetrics,
-		node: node
+		node: node,
+		userId: id,
 	}
 }
 

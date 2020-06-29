@@ -13,6 +13,7 @@ services:
         image: hanabosocom/php-dev:php-7.4-alpine
         user: ${DEV_UID}:${DEV_GID}
         environment:
+            PHP_WEBROOT: /var/www/pipes/clients/demo/pipes-api/public
             COMPOSER_HOME: ${HOME}/dev/.composer
             BACKEND_HOST: ${BACKEND_URL}/
             EMAIL_DSN: gmail://dev.email.hb@gmail.com:jVME2RkX9xyYhj9v@localhost
@@ -286,11 +287,6 @@ services:
         command: './dist/src/bin/pipes.js start multi_counter'
         ports:
             - ${DEV_IP}:8005:8005
-        # TODO: unify usages and remove the alias
-        networks:
-            default:
-                aliases:
-                    - multi-counter-api
 
     ## BEGIN DEV
     starting-point:
@@ -435,6 +431,8 @@ services:
             FRONTEND_DSN: ${BACKEND_URL}/
             SMTP_USER: dev.email.hb@gmail.com
             SMTP_PASSWORD: jVME2RkX9xyYhj9v
+            MONGODB_DSN: mongodb://mongo
+            MONGODB_DB: demo
             METRICS_HOST: 'kapacitor'
             METRICS_PORT: '9100'
             METRICS_SERVICE: 'influx'
@@ -453,15 +451,15 @@ services:
             RABBIT_DSN: amqp://rabbitmq:5672/
             NOTIFICATION_DSN: notification-sender-api
             WORKER_DEFAULT_PORT: 8008
-        working_dir: /var/www/pipes/clients/demo/pipes-api
+        working_dir: /var/www/pipes/pf-bundles
         volumes:
             - ../../:/var/www/pipes
             - ${SSH_AUTH_SOCK}:${SSH_AUTH}
             - ${HOME}/dev/.composer:${HOME}/dev/.composer
     ## END DEV
     ## BEGIN STAGE
-    #monolith-api:
-    #    image: dkr.hanaboso.net/pipes/demo/php-api:${TAG_MONOLITH}
+    #backend:
+    #    image: dkr.hanaboso.net/pipes/pipes/pf-bundle:${TAG_MONOLITH}
     #    environment:
     #      BACKEND_HOST: ${BACKEND_URL}/
     #      FRONTEND_HOST: ${BACKEND_URL}/
@@ -469,6 +467,8 @@ services:
     #      FRONTEND_DSN: ${BACKEND_URL}/
     #      SMTP_USER: dev.email.hb@gmail.com
     #      SMTP_PASSWORD: jVME2RkX9xyYhj9v
+    #      MONGODB_DSN: mongodb://mongo/demo
+    #      MONGODB_DB: demo
     #      METRICS_HOST: 'kapacitor'
     #      METRICS_PORT: '9100'
     #      METRICS_SERVICE: 'influx'
@@ -496,6 +496,7 @@ services:
         working_dir: /var/www/pipes/frontend
         environment:
             NPM_INSTALL: ${NPM_INSTALL}
+            STARTING_POINT_URL: starting-point:8080
             NPM_START: "yes" # webpackserver
         ports:
             - ${DEV_IP}:81:8080
@@ -509,6 +510,7 @@ services:
     #    environment:
     #      BACKEND_URL: ${BACKEND_URL}
     #      FRONTEND_URL: ${BACKEND_URL}
+    #      STARTING_POINT_URL: starting-point:8080
     #    ports:
     #      - ${PUBLISH_HTTP_PORT}:80
     ## END STAGE

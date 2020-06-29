@@ -120,11 +120,12 @@ class AppStoreDetail extends Component {
           <h1>{name} Application</h1>
           <h3>{description}</h3>
           <h5>
-            {applicationType.substr(0, 1).toUpperCase() + applicationType.substr(1).toLowerCase()} connection
+            Connection type: {applicationType.substr(0, 1).toUpperCase() + applicationType.substr(1).toLowerCase()} connection
           </h5>
           <h5>
-            {authorizationType.substr(0, 1).toUpperCase() + authorizationType.substr(1).toLowerCase()} authorization {expires && `(expires ${expires})`}
+            Authorization type: {authorizationType.substr(0, 1).toUpperCase() + authorizationType.substr(1).toLowerCase()} {expires && `(expires ${expires})`}
           </h5>
+          <h5>Service name: hbpf.application.{application}</h5>
         </div>
         <br />
         <br />

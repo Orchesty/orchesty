@@ -64,14 +64,6 @@ http {
 
 	include /etc/nginx/conf.d/*.conf;
 
-	# resolve_ prefix before any hostname causes it to be periodicaly replaced
-	# with its current IP address by upstream_resolver.sh
-
-	upstream monolith-api-upstream {
-		server resolve_monolith-api;
-		keepalive 64;
-	}
-
 	server {
 		server_name _;
 		listen 80 default_server;
@@ -80,39 +72,6 @@ http {
 			root /var/www/html;
 			rewrite ^/ui$ /ui/ permanent;
 			try_files $uri /ui/index.html =404;
-		}
-
-		location /grafana/ {
-			proxy_pass http://resolve_grafana:3000/;
-		}
-
-		location /spitter-api {
-			proxy_pass http://resolve_spitter-api:3000/;
-		}
-
-		location /starting-point/ {
-			proxy_pass http://resolve_starting-point:8080/;
-		}
-
-		location /socket.io {
-			proxy_pass http://resolve_stream;
-			proxy_http_version 1.1;
-			proxy_set_header Upgrade $http_upgrade;
-			proxy_set_header Connection "upgrade";
-		}
-
-		# FCGI api-demo route
-		location /api-demo {
-			include fastcgi_params;
-			fastcgi_param SCRIPT_NAME index.php;
-			fastcgi_param SCRIPT_FILENAME /var/www/html/www/index.php; # TODO: make non-CM specific
-			fastcgi_param PATH_INFO $request_uri;
-			fastcgi_pass resolve_api-demo-fpm:9000;
-		}
-
-		# monolith route (API fallback)
-		location / {
-			proxy_pass http://monolith-api-upstream;
 		}
 	}
 }

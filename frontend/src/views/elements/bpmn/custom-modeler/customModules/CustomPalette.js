@@ -82,33 +82,33 @@ PaletteProvider.prototype.getPaletteEntries = function () {
         },
       },
     },
-    'space-tool': {
-      group: 'tools',
-      className: 'bpmn-icon-space-tool',
-      title: translate('Activate the create/remove space tool'),
-      action: {
-        click(event) {
-          spaceTool.activateSelection(event);
-        },
-      },
-    },
-    'global-connect-tool': {
-      group: 'tools',
-      className: 'bpmn-icon-connection-multi',
-      title: translate('Activate the global connect tool'),
-      action: {
-        click(event) {
-          globalConnect.toggle(event);
-        },
-      },
-    },
+    // 'space-tool': {
+    //   group: 'tools',
+    //   className: 'bpmn-icon-space-tool',
+    //   title: translate('Activate the create/remove space tool'),
+    //   action: {
+    //     click(event) {
+    //       spaceTool.activateSelection(event);
+    //     },
+    //   },
+    // },
+    // 'global-connect-tool': {
+    //   group: 'tools',
+    //   className: 'bpmn-icon-connection-multi',
+    //   title: translate('Activate the global connect tool'),
+    //   action: {
+    //     click(event) {
+    //       globalConnect.toggle(event);
+    //     },
+    //   },
+    // },
     'tool-separator': {
       group: 'tools',
       separator: true,
     },
     'create.cron-event': createAction('bpmn:Event', 'events', 'bpmn-icon-start-event-timer', 'Cron', { pipesType: 'cron' }),
     'create.webhook-event': createAction('bpmn:Event', 'events', 'bpmn-icon-start-event-signal', 'Webhook', { pipesType: 'webhook' }),
-    'create.signal-event': createAction('bpmn:Event', 'events', 'bpmn-icon-start-event-escalation', 'Signal', { pipesType: 'signal' }),
+    // 'create.signal-event': createAction('bpmn:Event', 'events', 'bpmn-icon-start-event-escalation', 'Signal', { pipesType: 'signal' }),
     'create.start-event': createAction('bpmn:Event', 'events', 'bpmn-icon-start-event-none', 'Start', { pipesType: 'start' }),
     'event-separator': {
       group: 'events',
@@ -117,12 +117,12 @@ PaletteProvider.prototype.getPaletteEntries = function () {
     'create.connector': createAction('bpmn:Task', 'activity', 'bpmn-icon-service-task', 'Connector', { pipesType: 'connector' }),
     'create.batch_connector': createAction('bpmn:Task', 'activity', 'bpmn-icon-pipes-batch-connector', 'Batch connector', { pipesType: 'batch_connector' }),
     'create.custom': createAction('bpmn:Task', 'activity', 'bpmn-icon-task-none', 'Custom', { pipesType: 'custom' }),
-    'create.batch': createAction('bpmn:Task', 'activity', 'bpmn-icon-pipes-batch', 'Batch', { pipesType: 'batch' }),
-    'create.xml_parser': createAction('bpmn:Task', 'activity', 'bpmn-icon-script-task', 'XML parser', { pipesType: 'xml_parser' }),
-    'create.table_parser': createAction('bpmn:Task', 'activity', 'bpmn-icon-script-task', 'Table parser', { pipesType: 'table_parser' }),
-    'create.splitter': createAction('bpmn:Task', 'activity', 'bpmn-icon-pipes-splitter', 'Splitter', { pipesType: 'splitter' }),
-    'create.resequencer': createAction('bpmn:Task', 'activity', 'bpmn-icon-pipes-resequencer-task', 'Resequencer', { pipesType: 'resequencer' }),
-    'create.debug': createAction('bpmn:Task', 'activity', 'bpmn-icon-pipes-debug-node', 'Debug', { pipesType: 'debug' }),
+    // 'create.batch': createAction('bpmn:Task', 'activity', 'bpmn-icon-pipes-batch', 'Batch', { pipesType: 'batch' }),
+    // 'create.xml_parser': createAction('bpmn:Task', 'activity', 'bpmn-icon-script-task', 'XML parser', { pipesType: 'xml_parser' }),
+    // 'create.table_parser': createAction('bpmn:Task', 'activity', 'bpmn-icon-script-task', 'Table parser', { pipesType: 'table_parser' }),
+    // 'create.splitter': createAction('bpmn:Task', 'activity', 'bpmn-icon-pipes-splitter', 'Splitter', { pipesType: 'splitter' }),
+    // 'create.resequencer': createAction('bpmn:Task', 'activity', 'bpmn-icon-pipes-resequencer-task', 'Resequencer', { pipesType: 'resequencer' }),
+    // 'create.debug': createAction('bpmn:Task', 'activity', 'bpmn-icon-pipes-debug-node', 'Debug', { pipesType: 'debug' }),
     'create.user': createAction('bpmn:Task', 'activity', 'bpmn-icon-user', 'User task', { pipesType: 'user' }),
     'activity-separator': {
       group: 'activity',

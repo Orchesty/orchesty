@@ -43,8 +43,8 @@ export default function (group, element, translate) {
     const serviceName = document.getElementById('camunda-name-select');
     const nodeType = pipesType === 'batch_connector' ? 'connector' : pipesType;
     let sdkHostValue = implementationTypes[0];
-    if (sdkHost) {
-      sdkHostValue = sdkHost.value;
+    if (sdkHost && serviceName) {
+      sdkHostValue = sdkHost.options[sdkHost.selectedIndex].text;
 
       const length = serviceName.options.length;
       for (let i = 0; i < length; i++) {
@@ -54,6 +54,10 @@ export default function (group, element, translate) {
       pipesNodes[sdkHostValue][nodeType].map(item => {
         serviceName.options.add(new Option(item, item));
       });
+    }
+
+    if(!sdkHostValue || pipesNodes.length === 0) {
+      return {};
     }
 
     group.entries.push(entryFactory.selectBox({
