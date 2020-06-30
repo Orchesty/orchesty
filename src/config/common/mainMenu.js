@@ -25,7 +25,7 @@ export default dispatch => [
   },
   {
     type: menuItemType.ACTION,
-    caption: 'Human Tasks',
+    caption: 'User Tasks',
     action: () => dispatch(applicationActions.openPage('human_tasks_list')),
   },
   {
@@ -40,7 +40,7 @@ export default dispatch => [
   },
   {
     type: menuItemType.ACTION,
-    caption: 'SDK Implementations',
+    caption: 'Implementations',
     action: () => dispatch(applicationActions.openPage('sdk_impls_list')),
   },
 ];

@@ -1,5 +1,4 @@
-import React from 'react'
-import PropTypes from 'prop-types';
+import React from 'react';
 import Modal from 'wrappers/Modal';
 import TopologyCategoryChange from 'components/topology/TopologyCategoryChange';
 

@@ -68,7 +68,7 @@ export default {
   },
   human_tasks_list: {
     key: 'human_tasks_list',
-    caption: 'Human Tasks',
+    caption: 'User Tasks',
     needAuth: true,
     simpleRoute: '/human_tasks',
   },
@@ -96,7 +96,7 @@ export default {
   },
   sdk_impls_list: {
     key: 'sdk_impls_list',
-    caption: 'SDK Implementations',
+    caption: 'Implementations',
     needAuth: true,
     simpleRoute: '/sdk_implementations',
   },

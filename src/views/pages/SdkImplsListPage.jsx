@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import { connect } from 'react-redux';
 import Page from '../wrappers/Page';
 import Panel from '../wrappers/Panel';
@@ -28,4 +28,4 @@ const mapDispatchToProps = (dispatch, { componentKey }) => {
   }
 };
 
-export default Page(Panel(connect(mapStateToProps, mapDispatchToProps)(SdkImplsListTable), { title: 'SDK Implementations' }));
+export default Page(Panel(connect(mapStateToProps, mapDispatchToProps)(SdkImplsListTable), { title: 'Implementations' }));

@@ -1,10 +1,7 @@
-import React from 'react'
-import PropTypes from 'prop-types';
-
+import React from 'react';
 import ReactTagsInput from 'react-tagsinput';
 
 import './TagsInput.less';
-// import 'react-tagsinput/react-tagsinput.css'
 
 
 class TagsInput extends React.Component {

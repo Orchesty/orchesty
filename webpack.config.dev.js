@@ -29,7 +29,8 @@ module.exports = merge(common, {
   ],
   resolve: {
     alias: {
-      'config-env': configPath
+      'config-env': configPath,
+      'react-dom': '@hot-loader/react-dom'
     }
   },
   module: {

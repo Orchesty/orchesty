@@ -1,5 +1,5 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import StateComponent from '../../../views/wrappers/StateComponent';
 import { Field, reduxForm } from 'redux-form';
@@ -20,7 +20,7 @@ class AppStoreDetail extends Component {
     getApplication(application, userId);
   }
 
-  componentWillMount() {
+  componentDidMount() {
     const { name } = this.props;
 
     document.title = `${name ? `${name} Application` : 'Application Store'} | Pipes Manager`;

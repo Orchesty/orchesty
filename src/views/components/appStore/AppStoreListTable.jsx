@@ -1,5 +1,5 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import AbstractTable from '../AbstractTable';
 import StateComponent from '../../../views/wrappers/StateComponent';
@@ -8,7 +8,7 @@ import './AppStoreListTable.less';
 
 class AppStoreListTable extends AbstractTable {
 
-  componentWillMount() {
+  componentDidMount() {
     document.title = 'Application Store | Pipes Manager';
   }
 
@@ -55,7 +55,7 @@ class AppStoreListTable extends AbstractTable {
     }
 
     return (
-      <div className={event => this.getClassName(event)}>
+      <div className={this.getClassName()}>
         <div className="table-wrapper">
           <table className="table table-hover app-store">
             <thead>{this._renderHead()}</thead>

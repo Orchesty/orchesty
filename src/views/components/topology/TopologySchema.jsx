@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
@@ -20,11 +20,11 @@ class TopologySchema extends React.Component {
     this.schemaImported = this.schemaImported.bind(this);
   }
 
-  componentWillMount(){
+  componentDidMount(){
     this._needSchema(this.props);
   }
 
-  componentWillReceiveProps(nextProps){
+  UNSAFE_componentWillReceiveProps(nextProps){
     this._needSchema(nextProps);
   }
 

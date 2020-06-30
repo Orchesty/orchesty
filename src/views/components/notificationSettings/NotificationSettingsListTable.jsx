@@ -1,5 +1,5 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import AbstractTable from '../AbstractTable';
 import StateComponent from '../../../views/wrappers/StateComponent';
@@ -7,7 +7,7 @@ import './NotificationSettingsListTable.less';
 
 class NotificationSettingsListTable extends AbstractTable {
 
-  componentWillMount() {
+  componentDidMount() {
     document.title = 'Notification Settings | Pipes Manager';
   }
 
@@ -65,7 +65,7 @@ class NotificationSettingsListTable extends AbstractTable {
     }
 
     return (
-      <div className={event => this.getClassName(event)}>
+      <div className={this.getClassName()}>
         <div className="table-wrapper">
           <table className="table table-hover">
             <thead>{this._renderHead()}</thead>

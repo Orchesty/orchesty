@@ -48,7 +48,7 @@ PaletteProvider.prototype.getPaletteEntries = function () {
       create.start(event, shape);
     }
 
-    const shortType = type.replace(/^bpmn\:/, '');
+    const shortType = type.replace(/^bpmn:/, '');
 
     return {
       group,

@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import { connect } from 'react-redux';
 
 import * as humanTasksActions from 'actions/humanTaskActions';
@@ -32,4 +32,4 @@ function mapActionsToProps(dispatch, ownProps) {
   }
 }
 
-export default Page(Panel(connect(mapStateToProps, mapActionsToProps)(HumanTasksListTable), { title: 'Human Tasks' }));
+export default Page(Panel(connect(mapStateToProps, mapActionsToProps)(HumanTasksListTable), { title: 'User Tasks' }));

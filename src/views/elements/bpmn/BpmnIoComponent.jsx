@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import * as topologyActions from 'actions/topologyActions';
@@ -81,12 +81,9 @@ class BpmnIoComponent extends React.Component {
     ]);
   }
 
-  componentWillMount(){
-    this._sendActions();
-  }
-
   componentDidMount() {
     this.createBpmn();
+    this._sendActions();
   }
 
   componentWillUnmount(){

@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import StateComponent from 'rootApp/views/wrappers/StateComponent';
 import {connect} from 'react-redux';
 import Panel from 'rootApp/views/wrappers/Panel';

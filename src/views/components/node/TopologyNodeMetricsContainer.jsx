@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
@@ -8,7 +8,6 @@ import stateMerge from 'utils/stateMerge';
 
 import StateComponent from 'wrappers/StateComponent';
 import NodeMetrics from 'components/metrics/NodeMetrics';
-import {needTopology} from 'rootApp/actions/topologyActions';
 import {stateType} from 'rootApp/types';
 import TopologyMetrics from 'components/metrics/TopologyMetrics';
 import * as applicationActions from 'rootApp/actions/applicationActions';

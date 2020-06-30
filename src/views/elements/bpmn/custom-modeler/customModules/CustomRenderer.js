@@ -1,7 +1,7 @@
 import inherits from 'inherits';
 import BaseRenderer from 'diagram-js/lib/draw/BaseRenderer';
 import BpmnRenderer from 'bpmn-js/lib/draw/BpmnRenderer';
-import { is, getBusinessObject } from 'bpmn-js/lib/util/ModelUtil';
+import { is } from 'bpmn-js/lib/util/ModelUtil';
 import svgAppend from 'tiny-svg/lib/append';
 import svgAttr from 'tiny-svg/lib/attr';
 import svgCreate from 'tiny-svg/lib/create';
@@ -34,19 +34,16 @@ function CustomRenderer(eventBus, styles, pathMap, canvas) {
         const timerCircle = this.bpmnRenderer.handlers['bpmn:Event'](parentGfx, element);
         this.bpmnRenderer.handlers['bpmn:TimerEventDefinition'](parentGfx, element);
         return timerCircle;
-        break;
 
       case 'webhook':
         const webhookCircle = this.bpmnRenderer.handlers['bpmn:Event'](parentGfx, element);
         this.bpmnRenderer.handlers['bpmn:SignalEventDefinition'](parentGfx, element);
         return webhookCircle;
-        break;
 
       case 'signal':
         const signalCircle = this.bpmnRenderer.handlers['bpmn:Event'](parentGfx, element);
         this.bpmnRenderer.handlers['bpmn:EscalationEventDefinition'](parentGfx, element);
         return signalCircle;
-        break;
 
       case 'splitter':
         const splitterTask = this.bpmnRenderer.handlers['bpmn:Task'](parentGfx, element);
@@ -62,7 +59,6 @@ function CustomRenderer(eventBus, styles, pathMap, canvas) {
         });
 
         return splitterTask;
-        break;
 
       case 'batch':
         const batchTask = this.bpmnRenderer.handlers['bpmn:Task'](parentGfx, element);
@@ -78,7 +74,6 @@ function CustomRenderer(eventBus, styles, pathMap, canvas) {
         });
 
         return batchTask;
-        break;
 
       case 'batch_connector':
         const batchConnectorTask = this.bpmnRenderer.handlers['bpmn:ServiceTask'](parentGfx, element);
@@ -94,7 +89,6 @@ function CustomRenderer(eventBus, styles, pathMap, canvas) {
         });
 
         return batchConnectorTask;
-        break;
 
       case 'resequencer':
         const resequencerTask = this.bpmnRenderer.handlers['bpmn:Task'](parentGfx, element);
@@ -130,7 +124,6 @@ function CustomRenderer(eventBus, styles, pathMap, canvas) {
         });
 
         return resequencerTask;
-        break;
 
       case 'debug':
         const debugTask = this.bpmnRenderer.handlers['bpmn:Task'](parentGfx, element);
@@ -166,7 +159,6 @@ function CustomRenderer(eventBus, styles, pathMap, canvas) {
         });
 
         return debugTask;
-        break;
 
       case 'connector':
         return this.bpmnRenderer.handlers['bpmn:ServiceTask'](parentGfx, element);

@@ -1,6 +1,6 @@
-import React from 'react'
+import React from 'react';
 import PropTypes from 'prop-types';
-import Moment from 'react-moment';
+import moment from 'moment';
 import AbstractTable from 'components/AbstractTable';
 import StateComponent from 'wrappers/StateComponent';
 import SortTh from 'elements/table/SortTh';
@@ -9,7 +9,7 @@ import ListPagination from 'elements/table/ListPagination';
 import LogListFilter from 'components/log/LogListFilter';
 
 class LogListTable extends AbstractTable {
-  componentWillMount() {
+  componentDidMount() {
     document.title = 'Logs | Pipes Manager';
   }
 
@@ -38,7 +38,7 @@ class LogListTable extends AbstractTable {
       const item = elements[id];
       return (
         <tr key={item.id}>
-          <td className="col-md-1 no-wrap"><Moment format="DD. MM. YYYY HH:mm:ss" date={item.time}/></td>
+          <td className="col-md-1 no-wrap">{moment(item.date).format("DD. MM. YYYY HH:mm:ss")}</td>
           <td className="col-md-1 no-wrap">{item.severity}</td>
           <td className="col-md-1 no-wrap">{item.topology_id}</td>
           <td className="col-md-1 no-wrap">{item.topology_name}</td>

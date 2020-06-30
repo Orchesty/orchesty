@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import { connect } from 'react-redux';
 import config from '../config';
 import * as applicationActions from 'actions/applicationActions';
@@ -28,7 +28,7 @@ class App extends React.Component {
     this.checkAuthPage(props);
   }
 
-  componentWillReceiveProps(nextProps){
+  componentDidUpdate(nextProps){
     this.checkAuthPage(nextProps);
   }
 

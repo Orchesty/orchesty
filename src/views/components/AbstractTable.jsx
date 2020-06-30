@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import ListPagination from 'elements/table/ListPagination';
@@ -17,7 +17,7 @@ class AbstractTable extends React.Component {
     }
   }
 
-  componentWillReceiveProps(nextProps){
+  componentDidUpdate(nextProps){
     this._checkList(nextProps);
   }
 

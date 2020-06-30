@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import * as generalSearchActions from 'actions/generalSearchActions';
@@ -29,7 +29,7 @@ class GeneralSearch extends React.Component {
     };
   }
 
-  componentWillReceiveProps(newProps){
+  componentDidUpdate(newProps){
     const items = newProps.generalSearch.items;
     const selected = this.state.selected;
     if (selected && (!items || items.find(item => item.objectType === selected.objectType && item.id === selected.id) === undefined)){

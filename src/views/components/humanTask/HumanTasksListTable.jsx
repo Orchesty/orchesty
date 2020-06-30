@@ -1,7 +1,7 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import Moment from 'react-moment';
-import JSONTree from 'react-json-tree'
+import React from 'react';
+import PropTypes from 'prop-types';
+import JSONTree from 'react-json-tree';
+import moment from 'moment';
 import { connect } from 'react-redux';
 import AbstractTable from '../AbstractTable';
 import SortTh from 'elements/table/SortTh';
@@ -21,11 +21,9 @@ class HumanTasksListTable extends AbstractTable {
     this.onApply = this.onApply.bind(this);
   }
 
-  componentWillMount() {
-    document.title = 'Human Tasks | Pipes Manager';
-  }
 
   componentDidMount() {
+    document.title = 'User Tasks | Pipes Manager';
     let params = {};
     const { topologies, initialize, initialized } = this.props;
 
@@ -136,7 +134,7 @@ class HumanTasksListTable extends AbstractTable {
       return (
         <tr key={item.name}>
           <td className="col-md-2">{item.nodeName}</td>
-          <td className="col-md-2"><Moment format="DD. MM. YYYY HH:mm:ss">{item.created}</Moment></td>
+          <td className="col-md-2">{moment(item.date).format("DD. MM. YYYY HH:mm:ss")}</td>
           <td className="json">
             <JSONTree
               data={JSON.parse(item.data || '{}')}
@@ -172,12 +170,12 @@ class HumanTasksListTable extends AbstractTable {
     }
 
     return (
-      <div className={event => this.getClassName(event)}>
+      <div className={this.getClassName()}>
         <form className="filter form-horizontal">
           <div className="form-group col-lg-3 col-md-3 col-sm-3 col-xs-12">
             <label className="control-label">Topology</label>
             <div className="input-prepend input-group">
-              <span className="add-on input-group-addon"><i className="fa fa-eye"></i></span>
+              <span className="add-on input-group-addon"><i className="fa fa-eye"/></span>
               <select onLoad={this.onTopologyChange}
                       onChange={this.onTopologyChange}
                       value={topologyId}
@@ -191,7 +189,7 @@ class HumanTasksListTable extends AbstractTable {
           <div className="form-group col-lg-3 col-md-3 col-sm-6 col-xs-12">
             <label className="control-label">Node</label>
             <div className="input-prepend input-group">
-              <span className="add-on input-group-addon"><i className="fa fa-eye"></i></span>
+              <span className="add-on input-group-addon"><i className="fa fa-eye"/></span>
               <select onChange={this.onNodeChange} value={nodeId} className="form-control" placeholder="Topology">
                 <option key="all" value="all">All nodes</option>
                 {nodes.map(({ _id, customName }) => <option key={_id} value={_id}>{customName}</option>)}
@@ -201,7 +199,7 @@ class HumanTasksListTable extends AbstractTable {
           <div className="form-group col-lg-3 col-md-3 col-sm-6 col-xs-12">
             <label className="control-label">Search</label>
             <div className="input-prepend input-group">
-              <span className="add-on input-group-addon"><i className="fa fa-eye"></i></span>
+              <span className="add-on input-group-addon"><i className="fa fa-eye"/></span>
               <input onChange={this.onLogsChange}
                      onKeyPress={this.onLogsPress}
                      value={auditLogs}

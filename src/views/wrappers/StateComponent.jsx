@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
 import {stateType} from 'rootApp/types';
 
@@ -13,18 +13,18 @@ export default (WrappedComponent, stateFunc) => {
       super(props);
     }
 
-    componentWillMount(){
+    UNSAFE_componentWillMount(){
       this._needData(this.props, true);
     }
 
-    componentWillReceiveProps(nextProps){
+    UNSAFE_componentWillReceiveProps(nextProps){
       this._needData(nextProps, false);
     }
 
     _needData(props, mount){
       const {state, notLoadedCallback} = props;
       const calcState = typeof stateFunc == 'function' ? stateFunc(this.props) : state;
-      if ((!calcState || calcState == stateType.NOT_LOADED || (mount && calcState == stateType.ERROR)) && notLoadedCallback) {
+      if ((!calcState || calcState === stateType.NOT_LOADED || (mount && calcState === stateType.ERROR)) && notLoadedCallback) {
         notLoadedCallback();
       }
     }
