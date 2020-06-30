@@ -2,9 +2,8 @@
 !src
 !.babelrc
 !entrypoint.sh
-!nginx.conf.tpl
+!nginx.conf
 !package.json
 !package-lock.json
-!upstream_resolver
 !webpack.config.common.js
 !webpack.config.prod.js

@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
@@ -27,6 +27,7 @@ class TopologyDetail extends React.Component {
   }
 
   componentDidMount() {
+    this._sendActions(this.props);
     const {metricsRefreshInterval} = config.params;
     if (config.params.metricsRefreshInterval) {
       this.rangeIntervalId = setInterval(() => {
@@ -45,11 +46,7 @@ class TopologyDetail extends React.Component {
     this.rangeIntervalId = null;
   }
 
-  componentWillMount(){
-    this._sendActions(this.props);
-  }
-
-  componentWillReceiveProps(props){
+  UNSAFE_componentWillReceiveProps(props){
     this._sendActions(props);
   }
 
@@ -158,12 +155,12 @@ class TopologyDetail extends React.Component {
     setActions(pageActions);
   }
 
-  schemaImported(msg){
+  schemaImported(){
     this.props.onChangeTab('schema');
   }
 
   render() {
-    const {topologyId, activeTab, setActions, topology, onChangeTopology, componentKey, metricsRange, altMetricsRange, interval, pageId} = this.props;
+    const {topologyId, activeTab, topology, onChangeTopology, componentKey, metricsRange, altMetricsRange, interval, pageId} = this.props;
     const schemaVisible = activeTab === 'schema';
     const newComponentKey = `${componentKey}.${topologyId}`;
     document.title = `${topology.name}.v${topology.version} | Pipes Manager`;

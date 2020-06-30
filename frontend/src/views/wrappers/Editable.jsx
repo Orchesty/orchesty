@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import * as editableActions from 'actions/editableActions';
@@ -14,7 +14,7 @@ export default (EditComponent, View, parameters = {valueKey: 'value'}) => {
       this.editDone = this.editDone.bind(this);
     }
 
-    componentWillMount(){
+    componentDidMount(){
       const {setControlFunction, switchEdit, switchView} = this.props;
       if (setControlFunction){
         setControlFunction({

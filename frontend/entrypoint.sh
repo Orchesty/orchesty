@@ -16,7 +16,4 @@ fi
 sed -ri "s|http://url\.to\.backend|$BACKEND_URL|g" -i /var/www/html/ui/bundle.js
 sed -ri "s|http://url\.to\.starting-point|$STARTING_POINT_URL|g" -i /var/www/html/ui/bundle.js
 
-upstream_resolver
-upstream_resolver --periodic &
-
 exec "$@"

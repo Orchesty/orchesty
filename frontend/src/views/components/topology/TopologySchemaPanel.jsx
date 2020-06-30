@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import {connect} from 'react-redux';
 import Panel from 'rootApp/views/wrappers/Panel';
 import MetricsDateRangeHeader from '../metrics/MetricsDateRangeHeader';
@@ -10,9 +10,6 @@ import {stateType} from 'rootApp/types';
 
 function mapStateToProps(state, ownProps){
   const {topology} = state;
-  let key = ownProps.topologyId;
-  key = ownProps.interval ? `${key}[${ownProps.interval}]` : key;
-  key = ownProps.metricsRange ? `${key}[${ownProps.metricsRange.since}-${ownProps.metricsRange.till}]` : key;
   const topologyElement = topology.elements[ownProps.topologyId];
   const topologyState = getTopologyState(topologyElement);
 

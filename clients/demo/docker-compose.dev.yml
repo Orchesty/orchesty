@@ -595,9 +595,6 @@ services:
             - MONGO_COLLECTION=Logs
             - LS_JAVA_OPTS=-Xms512m -Xmx512m
         #command: --log.level debug
-        ## BEGIN DEV
-        restart: on-failure
-        ## END DEV
         ## BEGIN STAGE
         #deploy:
         #  restart_policy:
@@ -647,14 +644,12 @@ services:
         ports:
             - ${DEV_IP}:8085:80
         mem_limit: 128M
-        restart: always
     ## END DEV
 
     ## BEGIN DEV
     fakes3:
         image: olalond3/fakes3
         mem_limit: 128M
-        restart: always
     ## END DEV
 
 ## BEGIN DEV

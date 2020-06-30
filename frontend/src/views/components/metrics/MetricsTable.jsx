@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import PropTypes from 'prop-types';
 import StateComponent from 'rootApp/views/wrappers/StateComponent';
 
@@ -38,15 +38,15 @@ class MetricsTable extends React.Component {
                 <td>Min: {data.waiting_time.min}</td>
                 <td>Min: {data.process_time.min}</td>
                 <td>Min: {data.cpu_time.min}</td>
-                <td></td>
+                <td/>
                 <td>Min: {data.request_time.min}</td>
               </tr>
               <tr>
-                <td></td>
+                <td/>
                 <td>Avg: {data.waiting_time.avg}</td>
                 <td>Avg: {data.process_time.avg}</td>
                 <td>Avg: {data.cpu_time.avg}</td>
-                <td></td>
+                <td/>
                 <td>Avg: {data.request_time.avg}</td>
               </tr>
           </tbody>

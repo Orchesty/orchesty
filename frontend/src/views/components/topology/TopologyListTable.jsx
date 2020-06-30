@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import processes from 'enums/processes';
@@ -24,7 +24,7 @@ class TopologyListTable extends React.Component {
     }
   }
 
-  componentWillReceiveProps(nextProps){
+  componentDidUpdate(nextProps){
     this._checkList(nextProps);
   }
 
@@ -53,7 +53,7 @@ class TopologyListTable extends React.Component {
   render() {
     const {list, elements, listChangeFilter, openModal, clone, topologyDelete, publish, changeCategory, openPage, list: {items}} = this.props;
 
-    let rows = null;
+    let rows;
     if (items){
       rows = items.map(id => {
           const item = elements[id];

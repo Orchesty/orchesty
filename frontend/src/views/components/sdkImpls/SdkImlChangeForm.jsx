@@ -1,11 +1,12 @@
-import React from 'react'
+import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Field, reduxForm } from 'redux-form'
+import { Field, reduxForm } from 'redux-form';
 import { FormTextInput } from '../../elements/formInputs';
 import * as sdkImplsActions from '../../../actions/sdkImplsActions';
 
 class SdkImlChangeForm extends React.Component {
+
   constructor(props) {
     super(props);
     this.onSubmit = this.onSubmit.bind(this);

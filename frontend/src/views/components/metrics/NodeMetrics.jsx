@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import PropTypes from 'prop-types';
 import Panel from 'rootApp/views/wrappers/Panel';
 import {connect} from 'react-redux';
@@ -14,11 +14,11 @@ class NodeMetrics extends React.Component {
     super(props);
   }
 
-  componentWillMount(){
+  UNSAFE_componentWillMount(){
     this.sendActions(this.props);
   }
 
-  componentWillReceiveProps(props){
+  UNSAFE_componentWillReceiveProps(props){
     if (props.tests !== this.props.tests || props.node !== this.props.node){
       this.sendActions(props);
     }

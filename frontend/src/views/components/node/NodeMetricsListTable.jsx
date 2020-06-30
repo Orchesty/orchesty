@@ -18,7 +18,7 @@ class NodeMetricsListTable extends React.Component {
     }
   }
 
-  componentWillReceiveProps(nextProps){
+  componentDidUpdate(nextProps){
     this._checkList(nextProps);
   }
 
@@ -34,7 +34,7 @@ class NodeMetricsListTable extends React.Component {
   }
 
   render() {
-    const {list, elements, topologyElements, metricsElements, withTopology, onlyEvents, listChangePage} = this.props;
+    const {list, elements, metricsElements, withTopology, onlyEvents, listChangePage} = this.props;
     const rows = list && list.items ? list.items.map(id => {
       const item = elements[id];
       if (!onlyEvents || item.handler === 'event') {

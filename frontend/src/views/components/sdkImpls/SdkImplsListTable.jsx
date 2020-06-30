@@ -1,5 +1,5 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import AbstractTable from '../AbstractTable';
 import StateComponent from '../../../views/wrappers/StateComponent';
@@ -7,8 +7,8 @@ import ActionButtonPanel from '../../elements/actions/ActionButtonPanel';
 
 class SdkImplsListTable extends AbstractTable {
 
-  componentWillMount() {
-    document.title = 'SDK Implementations | Pipes Manager';
+  componentDidMount() {
+    document.title = 'Implementations | Pipes Manager';
   }
 
   _renderHead() {
@@ -72,7 +72,7 @@ class SdkImplsListTable extends AbstractTable {
     }
 
     return (
-      <div className={event => this.getClassName(event)}>
+      <div className={this.getClassName()}>
         <div className="table-wrapper">
           <table className="table table-hover">
             <thead>{this._renderHead()}</thead>

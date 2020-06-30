@@ -1,5 +1,4 @@
-import React from 'react'
-import PropTypes from 'prop-types';
+import React from 'react';
 import Panel from 'wrappers/Panel';
 import ProcessChart from './ProcessChart';
 
