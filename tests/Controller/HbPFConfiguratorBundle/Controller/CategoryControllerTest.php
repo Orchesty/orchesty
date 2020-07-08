@@ -163,7 +163,7 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
             $category = (new Category())
                 ->setName(sprintf('name %s', $i))
                 ->setParent($i > 2 ? $categories[0]->getId() : NULL);
-            $this->persistAndFlush($category);
+            $this->pfd($category);
 
             $categories[] = $category;
         }

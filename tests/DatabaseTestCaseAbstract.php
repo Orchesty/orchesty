@@ -6,7 +6,6 @@ use Exception;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\CustomAssertTrait;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\DatabaseTestTrait;
 use Hanaboso\Utils\String\Json;
-use Symfony\Component\HttpFoundation\Session\Session;
 
 /**
  * Class DatabaseTestCaseAbstract
@@ -20,11 +19,6 @@ abstract class DatabaseTestCaseAbstract extends KernelTestCaseAbstract
     use CustomAssertTrait;
 
     /**
-     * @var Session<mixed>
-     */
-    protected $session;
-
-    /**
      * @throws Exception
      */
     protected function setUp(): void
@@ -32,21 +26,7 @@ abstract class DatabaseTestCaseAbstract extends KernelTestCaseAbstract
         parent::setUp();
 
         $this->dm = self::$container->get('doctrine_mongodb.odm.default_document_manager');
-        $this->dm->getClient()->dropDatabase('pipes');
-        $this->session = new Session();
-        $this->session->invalidate();
         $this->clearMongo();
-    }
-
-    /**
-     * @param object $document
-     *
-     * @throws Exception
-     */
-    protected function persistAndFlush($document): void
-    {
-        $this->dm->persist($document);
-        $this->dm->flush();
     }
 
     /**

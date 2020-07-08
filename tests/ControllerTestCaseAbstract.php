@@ -7,11 +7,9 @@ use Hanaboso\PhpCheckUtils\PhpUnit\Traits\ControllerTestTrait;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\CustomAssertTrait;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\DatabaseTestTrait;
 use Hanaboso\UserBundle\Document\User;
-use Hanaboso\UserBundle\Model\Security\SecurityManager;
 use Hanaboso\UserBundle\Model\Token;
 use Hanaboso\Utils\String\Json;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Encoder\NativePasswordEncoder;
 
@@ -62,17 +60,6 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     }
 
     /**
-     * @param object $document
-     *
-     * @throws Exception
-     */
-    protected function persistAndFlush($document): void
-    {
-        $this->dm->persist($document);
-        $this->dm->flush();
-    }
-
-    /**
      * @param string $username
      * @param string $password
      *
@@ -81,29 +68,13 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
      */
     protected function loginUser(string $username, string $password): User
     {
-        $this->session      = self::$container->get('session');
-        $this->tokenStorage = self::$container->get('security.token_storage');
-        $this->session->invalidate();
-        $this->session->start();
-
         $user = new User();
         $user
             ->setEmail($username)
             ->setPassword($this->encoder->encodePassword($password, ''));
 
-        $this->persistAndFlush($user);
-
-        $token = new Token($user, $password, SecurityManager::SECURED_AREA, ['admin']);
-        $this->tokenStorage->setToken($token);
-
-        $this->session->set(
-            sprintf('%s%s', SecurityManager::SECURITY_KEY, SecurityManager::SECURED_AREA),
-            serialize($token)
-        );
-        $this->session->save();
-
-        $cookie = new Cookie($this->session->getName(), $this->session->getId());
-        $this->client->getCookieJar()->set($cookie);
+        $this->pfd($user);
+        $this->setClientCookies($user, $user->getPassword(), Token::class);
 
         return $user;
     }

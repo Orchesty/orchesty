@@ -33,7 +33,7 @@ final class RepeaterListenerTest extends ControllerTestCaseAbstract
     public function testOnRepeatableException(): void
     {
         $node = (new Node())->setSystemConfigs((new SystemConfigDto('', '', 1, TRUE, 5, 20)));
-        $this->persistAndFlush($node);
+        $this->pfd($node);
 
         $nodeRepository = $this->dm->getRepository(Node::class);
         $node           = $nodeRepository->findAll()[0];
@@ -88,7 +88,7 @@ final class RepeaterListenerTest extends ControllerTestCaseAbstract
     public function testException(): void
     {
         $node = (new Node())->setSystemConfigs((new SystemConfigDto('', '', 1, FALSE, 5, 20)));
-        $this->persistAndFlush($node);
+        $this->pfd($node);
         $listener = new RepeaterListener($this->dm);
         $dto      = new ProcessDto();
         $dto->setHeaders([PipesHeaders::createKey(PipesHeaders::NODE_ID) => $node->getId()]);

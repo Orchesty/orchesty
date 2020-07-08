@@ -226,7 +226,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             ->setName('Topology')
             ->setDescr('Topology')
             ->setEnabled(TRUE);
-        $this->persistAndFlush($topology);
+        $this->pfd($topology);
 
         $this->client->request(
             'PUT',
@@ -291,7 +291,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             ->setName('Topology')
             ->setDescr('Topology')
             ->setEnabled(TRUE);
-        $this->persistAndFlush($topology);
+        $this->pfd($topology);
 
         $this->client->request(
             'PUT',
@@ -324,7 +324,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             ->setName('Topology')
             ->setDescr('Topology')
             ->setEnabled(TRUE);
-        $this->persistAndFlush($topology);
+        $this->pfd($topology);
 
         $this->client->request(
             'PUT',
@@ -361,7 +361,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             ->setName('Topology')
             ->setDescr('Topology')
             ->setEnabled(TRUE);
-        $this->persistAndFlush($topology);
+        $this->pfd($topology);
 
         $this->client->request(
             'PUT',
@@ -445,7 +445,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             ->setName('Topology')
             ->setDescr('Topology')
             ->setEnabled(TRUE);
-        $this->persistAndFlush($topology);
+        $this->pfd($topology);
 
         $this->mockHandler('deleteTopology', new ResponseDto(200, '', '{}', []));
 
@@ -464,7 +464,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             ->setName('Topology')
             ->setDescr('Topology')
             ->setEnabled(TRUE);
-        $this->persistAndFlush($topology);
+        $this->pfd($topology);
 
         $this->assertResponse(
             __DIR__ . '/data/Topology/deleteTopologyErrRequest.json',
@@ -515,7 +515,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             ->setEnabled(TRUE);
         $this->dm->persist($topology);
         $node = (new Node())->setTopology($topology->getId());
-        $this->persistAndFlush($node);
+        $this->pfd($node);
 
         $this->assertResponse(
             __DIR__ . '/data/Topology/testPublishTopologyRequest.json',
@@ -638,7 +638,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
                 ->setEnabled(TRUE)
                 ->setBpmn($this->getBpmnArray())
                 ->setRawBpmn($this->getBpmn());
-            $this->persistAndFlush($topology);
+            $this->pfd($topology);
 
             $topologies[] = $topology;
         }
