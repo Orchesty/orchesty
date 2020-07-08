@@ -68,7 +68,7 @@ final class MailchimpTagContactConnectorTest extends DatabaseTestCaseAbstract
             ]
         );
 
-        $this->pf($applicationInstall);
+        $this->pfd($applicationInstall);
 
         $dto      = DataProvider::getProcessDto(
             $app->getKey(),
@@ -109,7 +109,7 @@ final class MailchimpTagContactConnectorTest extends DatabaseTestCaseAbstract
             'password'
         );
 
-        $this->pf($applicationInstall);
+        $this->pfd($applicationInstall);
         self::expectException(ConnectorException::class);
         $mailchimpCreateContactConnector->processEvent(
             DataProvider::getProcessDto(

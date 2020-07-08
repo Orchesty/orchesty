@@ -1,0 +1,115 @@
+<?php declare(strict_types=1);
+
+namespace Hanaboso\HbPFConnectors\Model\Application\Impl\SendGrid\Connector;
+
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
+use Hanaboso\HbPFConnectors\Model\Application\Impl\SendGrid\SendGridApplication;
+use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
+use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
+use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
+use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
+use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessEventNotSupportedTrait;
+use Hanaboso\Utils\Exception\PipesFrameworkException;
+use Hanaboso\Utils\String\Json;
+
+/**
+ * Class SendGridSendEmailConnector
+ *
+ * @package Hanaboso\HbPFConnectors\Model\Application\Impl\SendGrid\Connector
+ */
+final class SendGridSendEmailConnector extends ConnectorAbstract
+{
+
+    use ProcessEventNotSupportedTrait;
+
+    /**
+     * @var CurlManager
+     */
+    private CurlManager $sender;
+
+    /**
+     * @var ApplicationInstallRepository
+     */
+    private ApplicationInstallRepository $repository;
+
+    /**
+     * SendGridSendEmailConnector constructor.
+     *
+     * @param DocumentManager $dm
+     * @param CurlManager     $sender
+     */
+    public function __construct(DocumentManager $dm, CurlManager $sender)
+    {
+        $this->sender     = $sender;
+        $this->repository = $dm->getRepository(ApplicationInstall::class);
+    }
+
+    /**
+     * @return string
+     */
+    public function getId(): string
+    {
+        return 'send-grid.send-email';
+    }
+
+    /**
+     * @param ProcessDto $dto
+     *
+     * @return ProcessDto
+     * @throws ConnectorException
+     * @throws ApplicationInstallException
+     */
+    public function processAction(ProcessDto $dto): ProcessDto
+    {
+        $applicationInstall = $this->repository->findUserAppByHeaders($dto);
+        $data               = $this->getJsonContent($dto);
+        if (!isset($data['email'], $data['name'], $data['subject'])) {
+            throw new ConnectorException('Some data is missing. Keys [email, name, subject] is required.');
+        }
+
+        $body = [
+            'personalizations' => [
+                [
+                    'to'      => [
+                        [
+                            'email' => $data['email'],
+                            'name'  => $data['name'],
+                        ],
+                    ],
+                    'subject' => $data['subject'],
+                ],
+            ],
+            'from'             => [
+                'email' => 'noreply@johndoe.com',
+                'name'  => 'John Doe',
+            ],
+            'reply_to'         => [
+                'email' => 'noreply@johndoe.com',
+                'name'  => 'John Doe',
+            ],
+            'template_id'      => '1',
+        ];
+
+        $url     = sprintf('%s/mail/send', SendGridApplication::BASE_URL);
+        $request = $this->getApplication()
+            ->getRequestDto($applicationInstall, CurlManager::METHOD_POST, $url, Json::encode($body))
+            ->setDebugInfo($dto);
+
+        try {
+            $response = $this->sender->send($request);
+
+            if (!$this->evaluateStatusCode($response->getStatusCode(), $dto)) {
+                return $dto;
+            }
+        } catch (CurlException|PipesFrameworkException $e) {
+            throw new ConnectorException($e->getMessage(), $e->getCode(), $e);
+        }
+
+        return $dto->setData($response->getBody());
+    }
+
+}

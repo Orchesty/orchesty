@@ -81,7 +81,7 @@ class ShoptetRegisterWebhookConnectorTest extends DatabaseTestCaseAbstract
             self::SETTINGS,
             self::NON_ENCRYPTED_SETTINGS
         );
-        $this->pf($applicationInstall);
+        $this->pfd($applicationInstall);
 
         $dto = $this->connector->processAction(
             $this->prepareProcessDto(
@@ -107,7 +107,7 @@ class ShoptetRegisterWebhookConnectorTest extends DatabaseTestCaseAbstract
             self::SETTINGS,
             self::NON_ENCRYPTED_SETTINGS
         );
-        $this->pf($applicationInstall);
+        $this->pfd($applicationInstall);
 
         self::assertException(
             OnRepeatException::class,

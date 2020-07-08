@@ -8,7 +8,7 @@ import ActionButtonPanel from '../../elements/actions/ActionButtonPanel';
 class SdkImplsListTable extends AbstractTable {
 
   componentDidMount() {
-    document.title = 'Implementations | Pipes Manager';
+    document.title = 'Services | Pipes Manager';
   }
 
   _renderHead() {

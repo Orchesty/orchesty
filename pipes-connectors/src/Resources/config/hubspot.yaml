@@ -2,18 +2,19 @@ services:
     _defaults:
         public: '%public.services%'
 
-    hbpf.application.hubspot:
-        class: Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\HubspotApplication
+    hbpf.application.hub-spot:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\HubSpotApplication
         arguments:
             - '@hbpf.providers.oauth2_provider'
 
-    hbpf.connector.hubspot_create_contact:
-        class: Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Connector\HubspotCreateContactConnector
+    hbpf.connector.hub-spot.create-contact:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Connector\HubSpotCreateContactConnector
         arguments:
             - '@hbpf.transport.curl_manager'
             - '@doctrine_mongodb.odm.default_document_manager'
         calls:
-            - ['setApplication',['@hbpf.application.hubspot']]
+            - ['setApplication',['@hbpf.application.hub-spot']]
+            - ['setLogger', ['@monolog.logger.commons']]
 
-    hbpf.custom_node.hubspot_create_contact:
-        class: Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Mapper\HubspotCreateContactMapper
+    hbpf.custom_node.hub-spot.create-contact:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Mapper\HubSpotCreateContactMapper

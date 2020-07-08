@@ -99,7 +99,7 @@ class ZohoApplicationTest extends DatabaseTestCaseAbstract
     {
         $this->setApplication();
         $applicationInstall = DataProvider::getOauth2AppInstall($this->application->getKey());
-        $this->pf($applicationInstall);
+        $this->pfd($applicationInstall);
 
         $dto = $this->application->getRequestDto(
             $applicationInstall,
@@ -156,7 +156,7 @@ class ZohoApplicationTest extends DatabaseTestCaseAbstract
             'token123',
             self::CLIENT_ID
         );
-        $this->pf($applicationInstall);
+        $this->pfd($applicationInstall);
         self::assertTrue($this->application->isAuthorized($applicationInstall));
         $this->application->authorize($applicationInstall);
     }

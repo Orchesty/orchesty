@@ -45,7 +45,7 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
             'token123',
             self::CLIENT_ID
         );
-        $this->pf($applicationInstall);
+        $this->pfd($applicationInstall);
         self::assertEquals(TRUE, $this->application->isAuthorized($applicationInstall));
         $this->application->authorize($applicationInstall);
     }
@@ -57,7 +57,7 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
     {
         $this->setApplication();
         $applicationInstall = new ApplicationInstall();
-        $this->pf($applicationInstall);
+        $this->pfd($applicationInstall);
         self::assertEquals(FALSE, $this->application->isAuthorized($applicationInstall));
     }
 
@@ -250,7 +250,7 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
             self::CLIENT_ID,
             'secret'
         );
-        $this->pf($applicationInstall);
+        $this->pfd($applicationInstall);
         $this->setProperty($this->application, 'provider', $providerMock);
         $return = $this->application->setAuthorizationToken(
             $applicationInstall,

@@ -92,7 +92,7 @@ final class AirtableApplicationTest extends DatabaseTestCaseAbstract
                 ],
             ]
         );
-        $this->pf($applicationInstall);
+        $this->pfd($applicationInstall);
         $this->dm->clear();
         self::assertEquals(TRUE, $this->app->isAuthorized($applicationInstall));
     }
@@ -113,7 +113,7 @@ final class AirtableApplicationTest extends DatabaseTestCaseAbstract
                 ],
             ]
         );
-        $this->pf($applicationInstall);
+        $this->pfd($applicationInstall);
         $this->dm->clear();
         $this->expectException(AuthorizationException::class);
         $this->app->getRequestDto(

@@ -72,7 +72,7 @@ final class ShoptetUpdatedOrderConnectorTest extends DatabaseTestCaseAbstract
             self::SETTINGS,
             self::NON_ENCRYPTED_SETTINGS
         );
-        $this->pf($applicationInstall);
+        $this->pfd($applicationInstall);
 
         $this->setProperty(
             $this->connector,
@@ -100,7 +100,7 @@ final class ShoptetUpdatedOrderConnectorTest extends DatabaseTestCaseAbstract
     public function testProcessEventMissingEventInstance(): void
     {
         $applicationInstall = DataProvider::createApplicationInstall(ShoptetApplication::SHOPTET_KEY, self::USER);
-        $this->pf($applicationInstall);
+        $this->pfd($applicationInstall);
 
         self::assertException(
             ConnectorException::class,
@@ -129,7 +129,7 @@ final class ShoptetUpdatedOrderConnectorTest extends DatabaseTestCaseAbstract
             self::SETTINGS,
             self::NON_ENCRYPTED_SETTINGS
         );
-        $this->pf($applicationInstall);
+        $this->pfd($applicationInstall);
 
         $this->setProperty(
             $this->connector,
@@ -162,7 +162,7 @@ final class ShoptetUpdatedOrderConnectorTest extends DatabaseTestCaseAbstract
             self::SETTINGS,
             self::NON_ENCRYPTED_SETTINGS
         );
-        $this->pf($applicationInstall);
+        $this->pfd($applicationInstall);
 
         $this->setProperty(
             $this->connector,
@@ -202,7 +202,7 @@ final class ShoptetUpdatedOrderConnectorTest extends DatabaseTestCaseAbstract
             self::SETTINGS,
             self::NON_ENCRYPTED_SETTINGS
         );
-        $this->pf($applicationInstall);
+        $this->pfd($applicationInstall);
 
         $this->setProperty(
             $this->connector,

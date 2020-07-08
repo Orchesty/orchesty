@@ -355,7 +355,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $topology = (new Topology())
             ->setName('Topology')
             ->setDescr('Topology');
-        $this->persistAndFlush($topology);
+        $this->pfd($topology);
 
         $result = $this->manager->saveTopologySchema($topology, '', $this->getSchema('schema.json'));
 
@@ -524,7 +524,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $topology = (new Topology())
             ->setName('Topology')
             ->setDescr('Topology');
-        $this->persistAndFlush($topology);
+        $this->pfd($topology);
 
         self::expectException(TopologyException::class);
         self::expectExceptionCode(TopologyException::TOPOLOGY_NODE_NAME_NOT_FOUND);
@@ -553,7 +553,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $topology = (new Topology())
             ->setName('Topology')
             ->setDescr('Topology');
-        $this->persistAndFlush($topology);
+        $this->pfd($topology);
 
         self::expectException(TopologyException::class);
         self::expectExceptionCode(TopologyException::TOPOLOGY_NODE_TYPE_NOT_EXIST);
@@ -582,7 +582,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $topology = (new Topology())
             ->setName('Topology')
             ->setDescr('Topology');
-        $this->persistAndFlush($topology);
+        $this->pfd($topology);
 
         self::expectException(TopologyException::class);
         self::expectExceptionCode(TopologyException::TOPOLOGY_NODE_CRON_NOT_VALID);
@@ -606,11 +606,11 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $top
             ->setName('name')
             ->setVisibility(TopologyStatusEnum::PUBLIC);
-        $this->persistAndFlush($top);
+        $this->pfd($top);
         $node->setName('node')->setType(TypeEnum::MAPPER)->setTopology($top->getId());
         $node2->setName('node')->setType(TypeEnum::CRON)->setTopology($top->getId());
-        $this->persistAndFlush($node);
-        $this->persistAndFlush($node2);
+        $this->pfd($node);
+        $this->pfd($node2);
 
         self::expectException(TopologyException::class);
         self::expectExceptionCode(TopologyException::CANNOT_DELETE_PUBLIC_TOPOLOGY);
@@ -631,11 +631,11 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $top
             ->setName('name')
             ->setVisibility(TopologyStatusEnum::DRAFT);
-        $this->persistAndFlush($top);
+        $this->pfd($top);
         $node->setName('node')->setType(TypeEnum::MAPPER)->setTopology($top->getId());
         $node2->setName('node')->setType(TypeEnum::CRON)->setTopology($top->getId());
-        $this->persistAndFlush($node);
-        $this->persistAndFlush($node2);
+        $this->pfd($node);
+        $this->pfd($node2);
 
         $this->manager->deleteTopology($top);
         $this->dm->clear();

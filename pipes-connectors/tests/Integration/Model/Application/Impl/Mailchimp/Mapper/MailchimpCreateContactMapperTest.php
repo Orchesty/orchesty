@@ -49,7 +49,7 @@ final class MailchimpCreateContactMapperTest extends DatabaseTestCaseAbstract
             ]
         );
 
-        $this->pf($applicationInstall);
+        $this->pfd($applicationInstall);
 
         $dto = DataProvider::getProcessDto(
             $app->getKey(),

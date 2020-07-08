@@ -52,7 +52,7 @@ final class NutshellCreateContactConnectorTest extends DatabaseTestCaseAbstract
         $data = (string) file_get_contents(__DIR__ . '/Data/newContact.json');
         $this->mockSender($data);
         $applicationInstall = DataProvider::getBasicAppInstall('nutshell');
-        $this->pf($applicationInstall);
+        $this->pfd($applicationInstall);
 
         $dto    = (new ProcessDto())->setData($data)->setHeaders(
             [

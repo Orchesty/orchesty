@@ -141,7 +141,7 @@ final class ShoptetGetEshopInfoTest extends DatabaseTestCaseAbstract
                 'getApiKey' => ['receivingStatus' => 'unlock'],
             ]
         );
-        $this->pf($applicationInstall);
+        $this->pfd($applicationInstall);
 
         return $applicationInstall;
     }

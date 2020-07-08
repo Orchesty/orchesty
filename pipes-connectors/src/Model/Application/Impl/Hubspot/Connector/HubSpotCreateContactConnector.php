@@ -4,24 +4,30 @@ namespace Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Connector;
 
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
-use Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\HubspotApplication;
+use Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\HubSpotApplication;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
+use Hanaboso\Utils\String\Json;
+use Hanaboso\Utils\System\PipesHeaders;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 /**
- * Class HubspotCreateContactConnector
+ * Class HubSpotCreateContactConnector
  *
  * @package Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Connector
  */
-final class HubspotCreateContactConnector extends ConnectorAbstract
+final class HubSpotCreateContactConnector extends ConnectorAbstract implements LoggerAwareInterface
 {
 
     /**
@@ -35,7 +41,12 @@ final class HubspotCreateContactConnector extends ConnectorAbstract
     private ApplicationInstallRepository $repository;
 
     /**
-     * HubspotCreateContactConnector constructor.
+     * @var LoggerInterface
+     */
+    private LoggerInterface $logger;
+
+    /**
+     * HubSpotCreateContactConnector constructor.
      *
      * @param CurlManagerInterface $curlManager
      * @param DocumentManager      $dm
@@ -44,6 +55,7 @@ final class HubspotCreateContactConnector extends ConnectorAbstract
     {
         $this->curlManager = $curlManager;
         $this->repository  = $dm->getRepository(ApplicationInstall::class);
+        $this->logger      = new NullLogger();
     }
 
     /**
@@ -51,7 +63,19 @@ final class HubspotCreateContactConnector extends ConnectorAbstract
      */
     public function getId(): string
     {
-        return 'hubspot_create_contact';
+        return 'hub-spot.create-contact';
+    }
+
+    /**
+     * @param LoggerInterface $logger
+     *
+     * @return self
+     */
+    public function setLogger(LoggerInterface $logger): self
+    {
+        $this->logger = $logger;
+
+        return $this;
     }
 
     /**
@@ -82,25 +106,36 @@ final class HubspotCreateContactConnector extends ConnectorAbstract
     public function processAction(ProcessDto $dto): ProcessDto
     {
         $applicationInstall = $this->repository->findUserAppByHeaders($dto);
+        $body               = $this->getJsonContent($dto);
 
-        $return = $this->curlManager->send(
-            $this->getApplication()->getRequestDto(
-                $applicationInstall,
-                CurlManager::METHOD_POST,
-                sprintf('%s/contacts/v1/contact/', HubspotApplication::BASE_URL),
-                $dto->getData()
-            )
-        );
+        try {
+            $response = $this->curlManager->send(
+                $this->getApplication()->getRequestDto(
+                    $applicationInstall,
+                    CurlManager::METHOD_POST,
+                    sprintf('%s/contacts/v1/contact/', HubSpotApplication::BASE_URL),
+                    Json::encode($body)
+                )->setDebugInfo($dto)
+            );
+            $message  = $response->getJsonBody()['validationResults'][0]['message'] ?? NULL;
+            $this->evaluateStatusCode($response->getStatusCode(), $dto, $message);
 
-        $json = $return->getJsonBody();
+            if ($response->getStatusCode() === 409) {
+                $parsed = $response->getJsonBody();
+                $this->logger->error(
+                    sprintf('Contact "%s" already exist.', $parsed['identityProfile']['identity'][0]['value'] ?? ''),
+                    array_merge(
+                        ['response' => $response->getBody(), PipesHeaders::debugInfo($dto->getHeaders())]
+                    )
+                );
+            }
 
-        unset($json['correlationId'], $json['requestId']);
+            $dto->setData($response->getBody());
+        } catch (CurlException | ConnectorException $e) {
+            throw new OnRepeatException($dto, $e->getMessage(), $e->getCode(), $e);
+        }
 
-        $message    = $json['validationResults'][0]['message'] ?? NULL;
-        $statusCode = $return->getStatusCode();
-        $this->evaluateStatusCode($statusCode, $dto, $message);
-
-        return $this->setJsonContent($dto, $json);
+        return $dto;
     }
 
 }

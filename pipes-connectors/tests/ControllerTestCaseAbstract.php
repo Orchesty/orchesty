@@ -2,13 +2,13 @@
 
 namespace HbPFConnectorsTests;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
+use Hanaboso\PhpCheckUtils\PhpUnit\Traits\ControllerTestTrait;
+use Hanaboso\PhpCheckUtils\PhpUnit\Traits\CustomAssertTrait;
+use Hanaboso\PhpCheckUtils\PhpUnit\Traits\DatabaseTestTrait;
 use Hanaboso\Utils\String\Json;
-use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Security\Core\Encoder\NativePasswordEncoder;
 
 /**
@@ -19,30 +19,14 @@ use Symfony\Component\Security\Core\Encoder\NativePasswordEncoder;
 abstract class ControllerTestCaseAbstract extends WebTestCase
 {
 
-    /**
-     * @var DocumentManager
-     */
-    protected DocumentManager $dm;
-
-    /**
-     * @var mixed[]
-     */
-    protected array $session;
-
-    /**
-     * @var TokenStorage
-     */
-    protected TokenStorage $tokenStorage;
+    use ControllerTestTrait;
+    use DatabaseTestTrait;
+    use CustomAssertTrait;
 
     /**
      * @var NativePasswordEncoder
      */
     protected NativePasswordEncoder $encoder;
-
-    /**
-     * @var KernelBrowser
-     */
-    protected static KernelBrowser $client;
 
     /**
      * ControllerTestCaseAbstract constructor.
@@ -65,34 +49,9 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     {
         parent::setUp();
 
-        $this->setupClient();
-    }
-
-    /**
-     * @throws Exception
-     */
-    protected function setupClient(): void
-    {
-        self::$client = self::createClient([], []);
-
+        $this->startClient();
         $this->dm = self::$container->get('doctrine_mongodb.odm.default_document_manager');
-        $this->dm->getConfiguration()->setDefaultDB($this->getMongoDatabaseName());
-
-        $documents = $this->dm->getMetadataFactory()->getAllMetadata();
-        foreach ($documents as $document) {
-            $this->dm->getDocumentCollection($document->getName())->drop();
-        }
-    }
-
-    /**
-     * @param object $document
-     *
-     * @throws Exception
-     */
-    protected function persistAndFlush($document): void
-    {
-        $this->dm->persist($document);
-        $this->dm->flush();
+        $this->clearMongo();
     }
 
     /**
@@ -103,8 +62,8 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
      */
     protected function sendGet(string $url): object
     {
-        self::$client->request('GET', $url);
-        $response = self::$client->getResponse();
+        $this->client->request('GET', $url);
+        $response = $this->client->getResponse();
 
         return $this->returnResponse($response);
     }
@@ -119,7 +78,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
      */
     protected function sendPost(string $url, array $parameters, ?array $content = NULL): object
     {
-        self::$client->request(
+        $this->client->request(
             'POST',
             $url,
             $parameters,
@@ -128,7 +87,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
             $content ? Json::encode($content) : ''
         );
 
-        $response = self::$client->getResponse();
+        $response = $this->client->getResponse();
 
         return $this->returnResponse($response);
     }
@@ -143,7 +102,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
      */
     protected function sendPut(string $url, array $parameters, ?array $content = NULL): object
     {
-        self::$client->request(
+        $this->client->request(
             'PUT',
             $url,
             $parameters,
@@ -152,7 +111,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
             $content ? Json::encode($content) : ''
         );
 
-        $response = self::$client->getResponse();
+        $response = $this->client->getResponse();
 
         return $this->returnResponse($response);
     }
@@ -165,9 +124,9 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
      */
     protected function sendDelete(string $url): object
     {
-        self::$client->request('DELETE', $url);
+        $this->client->request('DELETE', $url);
 
-        $response = self::$client->getResponse();
+        $response = $this->client->getResponse();
 
         return $this->returnResponse($response);
     }
@@ -190,14 +149,6 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
             'status'  => $response->getStatusCode(),
             'content' => (object) $content,
         ];
-    }
-
-    /**
-     * @return string
-     */
-    private function getMongoDatabaseName(): string
-    {
-        return sprintf('%s%s', $this->dm->getConfiguration()->getDefaultDB(), getenv('TEST_TOKEN'));
     }
 
 }

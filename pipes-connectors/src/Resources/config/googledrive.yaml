@@ -1,0 +1,16 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf.application.google-drive:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\GoogleDrive\GoogleDriveApplication
+        arguments:
+            - '@hbpf.providers.oauth2_provider'
+
+    hbpf.connector.google-drive.upload-file:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\GoogleDrive\Connector\GoogleDriveUploadFileConnector
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setApplication', ['@hbpf.application.google-drive']]

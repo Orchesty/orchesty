@@ -40,7 +40,7 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
                 MailchimpApplication::AUDIENCE_ID                 => 'c9e7f***5b',
             ]
         );
-        $this->pf($applicationInstall);
+        $this->pfd($applicationInstall);
         //        $app->authorize($applicationInstall);
         self::assertEmpty([]);
     }

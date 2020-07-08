@@ -197,7 +197,7 @@ final class ShopifyApplicationTest extends DatabaseTestCaseAbstract
                     ],
             ]
         );
-        $this->pf($applicationInstall);
+        $this->pfd($applicationInstall);
 
         return $applicationInstall;
     }

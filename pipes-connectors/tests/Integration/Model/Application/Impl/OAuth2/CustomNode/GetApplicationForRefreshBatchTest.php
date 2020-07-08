@@ -25,7 +25,7 @@ class GetApplicationForRefreshBatchTest extends DatabaseTestCaseAbstract
      */
     public function testProcessBatch(): void
     {
-        $this->pf((new ApplicationInstall())->setExpires(DateTimeUtils::getUtcDateTime()));
+        $this->pfd((new ApplicationInstall())->setExpires(DateTimeUtils::getUtcDateTime()));
 
         $this->assertBatch(
             self::$container->get('hbpf.custom_node.get_application_for_refresh_batch'),

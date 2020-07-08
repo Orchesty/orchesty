@@ -1,0 +1,14 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf.application.send-grid:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\SendGrid\SendGridApplication
+
+    hbpf.connector.send-grid.send-email:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\SendGrid\Connector\SendGridSendEmailConnector
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+        calls:
+            - ['setApplication', ['@hbpf.application.send-grid']]

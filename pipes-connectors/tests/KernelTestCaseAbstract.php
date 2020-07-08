@@ -3,7 +3,6 @@
 namespace HbPFConnectorsTests;
 
 use Closure;
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Redirect\RedirectInterface;
@@ -27,11 +26,6 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
 {
 
     /**
-     * @var DocumentManager
-     */
-    protected $dm;
-
-    /**
      *
      */
     protected function setUp(): void
@@ -39,7 +33,6 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
         parent::setUp();
 
         self::bootKernel();
-        $this->dm = self::$container->get('doctrine_mongodb.odm.default_document_manager');
     }
 
     /**

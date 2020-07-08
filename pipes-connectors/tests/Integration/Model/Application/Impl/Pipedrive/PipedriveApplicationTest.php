@@ -145,7 +145,7 @@ final class PipedriveApplicationTest extends DatabaseTestCaseAbstract
             $this->application->getKey(),
             self::TOKEN
         );
-        $this->pf($applicationInstall);
+        $this->pfd($applicationInstall);
         $this->dm->clear();
 
         self::assertEquals(TRUE, $this->application->isAuthorized($applicationInstall));

@@ -8,11 +8,11 @@ use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\String\Json;
 
 /**
- * Class HubspotCreateContactMapper
+ * Class HubSpotCreateContactMapper
  *
  * @package Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Mapper
  */
-final class HubspotCreateContactMapper extends CustomNodeAbstract
+final class HubSpotCreateContactMapper extends CustomNodeAbstract
 {
 
     /**

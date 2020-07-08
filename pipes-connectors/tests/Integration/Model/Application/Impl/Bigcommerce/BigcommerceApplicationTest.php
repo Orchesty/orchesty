@@ -42,7 +42,7 @@ final class BigcommerceApplicationTest extends DatabaseTestCaseAbstract
             'http://127.0.0.11:8000/applications/authorize/token'
         );
 
-        $this->pf($applicationInstall);
+        $this->pfd($applicationInstall);
         self::assertTrue($this->application->isAuthorized($applicationInstall));
         $this->application->authorize($applicationInstall);
     }
@@ -54,7 +54,7 @@ final class BigcommerceApplicationTest extends DatabaseTestCaseAbstract
     {
         $bigcommerceApplication = $this->application;
         $applicationInstall     = new ApplicationInstall();
-        $this->pf($applicationInstall);
+        $this->pfd($applicationInstall);
         self::assertEquals(FALSE, $bigcommerceApplication->isAuthorized($applicationInstall));
     }
 
@@ -70,7 +70,7 @@ final class BigcommerceApplicationTest extends DatabaseTestCaseAbstract
             self::CLIENT_ID,
             self::CLIENT_SECRET
         );
-        $this->pf($applicationInstall);
+        $this->pfd($applicationInstall);
         $dto = $this->application->getRequestDto(
             $applicationInstall,
             'POST',

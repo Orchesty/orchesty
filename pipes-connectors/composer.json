@@ -1,7 +1,7 @@
 {
     "name": "hanaboso/pipes-connectors",
     "description": "Connectors for PipesFramework",
-    "version": "1.4.6",
+    "version": "1.4.7",
     "license": "proprietary",
     "require": {
         "php": "^7.4",

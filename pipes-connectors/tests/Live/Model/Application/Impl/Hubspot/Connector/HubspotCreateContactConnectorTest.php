@@ -3,7 +3,7 @@
 namespace HbPFConnectorsTests\Live\Model\Application\Impl\Hubspot\Connector;
 
 use Exception;
-use Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Connector\HubspotCreateContactConnector;
+use Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Connector\HubSpotCreateContactConnector;
 use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
 
@@ -20,15 +20,15 @@ final class HubspotCreateContactConnectorTest extends DatabaseTestCaseAbstract
      */
     public function testProcessAction(): void
     {
-        $app                           = self::$container->get('hbpf.application.hubspot');
-        $hubspotCreateContactConnector = new HubspotCreateContactConnector(
+        $app                           = self::$container->get('hbpf.application.hub-spot');
+        $hubspotCreateContactConnector = new HubSpotCreateContactConnector(
             self::$container->get('hbpf.transport.curl_manager'),
             $this->dm
         );
 
         $hubspotCreateContactConnector->setApplication($app);
 
-        $this->pf(
+        $this->pfd(
             DataProvider::getOauth2AppInstall(
                 $app->getKey(),
                 'user',

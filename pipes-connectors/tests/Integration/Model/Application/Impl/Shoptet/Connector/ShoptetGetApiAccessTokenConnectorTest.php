@@ -113,7 +113,7 @@ final class ShoptetGetApiAccessTokenConnectorTest extends DatabaseTestCaseAbstra
                 ApplicationAbstract::FORM                    => [ShoptetApplication::API_TOKEN_URL => self::API_TOKEN_URL],
             ]
         );
-        $this->pf($applicationInstall);
+        $this->pfd($applicationInstall);
 
         return $applicationInstall;
     }

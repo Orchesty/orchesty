@@ -55,7 +55,7 @@ final class ShipstationNewOrderConnectorTest extends DatabaseTestCaseAbstract
             self::API_SECRET
         );
 
-        $this->pf($applicationInstall);
+        $this->pfd($applicationInstall);
         $response = $shipstationNewOrderConnector->processEvent(
             DataProvider::getProcessDto(
                 $app->getKey(),
@@ -106,7 +106,7 @@ final class ShipstationNewOrderConnectorTest extends DatabaseTestCaseAbstract
             self::API_SECRET
         );
 
-        $this->pf($applicationInstall);
+        $this->pfd($applicationInstall);
         self::expectException(ConnectorException::class);
         $shipstationNewOrderConnector->processAction(
             DataProvider::getProcessDto(

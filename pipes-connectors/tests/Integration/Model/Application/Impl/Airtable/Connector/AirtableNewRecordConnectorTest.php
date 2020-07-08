@@ -155,7 +155,7 @@ final class AirtableNewRecordConnectorTest extends DatabaseTestCaseAbstract
 
         $applicationInstall->setUser('user');
         $applicationInstall->setKey('airtable');
-        $this->pf($applicationInstall);
+        $this->pfd($applicationInstall);
         $this->dm->clear();
 
         return $this->setApplication();

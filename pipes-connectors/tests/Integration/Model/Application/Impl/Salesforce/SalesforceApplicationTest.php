@@ -103,7 +103,7 @@ final class SalesforceApplicationTest extends DatabaseTestCaseAbstract
     {
         $this->setApplication();
         $applicationInstall = DataProvider::getOauth2AppInstall($this->application->getKey());
-        $this->pf($applicationInstall);
+        $this->pfd($applicationInstall);
 
         $dto = $this->application->getRequestDto(
             $applicationInstall,
@@ -159,7 +159,7 @@ final class SalesforceApplicationTest extends DatabaseTestCaseAbstract
             'token123',
             self::CLIENT_ID
         );
-        $this->pf($applicationInstall);
+        $this->pfd($applicationInstall);
         self::assertEquals(TRUE, $this->application->isAuthorized($applicationInstall));
         $this->application->authorize($applicationInstall);
     }

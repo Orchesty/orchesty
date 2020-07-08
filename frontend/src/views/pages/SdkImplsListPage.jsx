@@ -28,4 +28,4 @@ const mapDispatchToProps = (dispatch, { componentKey }) => {
   }
 };
 
-export default Page(Panel(connect(mapStateToProps, mapDispatchToProps)(SdkImplsListTable), { title: 'Implementations' }));
+export default Page(Panel(connect(mapStateToProps, mapDispatchToProps)(SdkImplsListTable), { title: 'Services' }));

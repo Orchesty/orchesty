@@ -56,7 +56,7 @@ final class RefreshOAuth2TokenCustomNodeTest extends DatabaseTestCaseAbstract
                 ],
             ]
         );
-        $this->pf($applicationInstall);
+        $this->pfd($applicationInstall);
         $this->dm->clear();
         $dto = DataProvider::getProcessDto(
             'mailchimp',

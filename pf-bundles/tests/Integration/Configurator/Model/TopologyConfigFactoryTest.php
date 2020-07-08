@@ -49,19 +49,19 @@ class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
         $node4 = (new Node())->setTopology('123')->setName('example4')->setType(TypeEnum::CONNECTOR);
         $node5 = (new Node())->setTopology('123')->setName('example5')->setType(TypeEnum::USER);
 
-        $this->persistAndFlush($node1);
-        $this->persistAndFlush($node2);
+        $this->pfd($node1);
+        $this->pfd($node2);
 
         $embedNode = new EmbedNode();
         $embedNode->setName('embedNode2');
         $this->setProperty($embedNode, 'id', $node2->getId());
         $node1->addNext($embedNode);
-        $this->persistAndFlush($node1);
+        $this->pfd($node1);
 
-        $this->persistAndFlush($embedNode);
-        $this->persistAndFlush($node3);
-        $this->persistAndFlush($node4);
-        $this->persistAndFlush($node5);
+        $this->pfd($embedNode);
+        $this->pfd($node3);
+        $this->pfd($node4);
+        $this->pfd($node5);
 
         /** @var NodeRepository $nodeRepository */
         $nodeRepository = $this->dm->getRepository(Node::class);

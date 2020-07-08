@@ -18,21 +18,20 @@ use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Utils\ScopeFormatter;
 use Hanaboso\Utils\String\Json;
+use JsonException;
 
 /**
- * Class HubspotApplication
+ * Class HubSpotApplication
  *
  * @package Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot
  */
-final class HubspotApplication extends OAuth2ApplicationAbstract implements WebhookApplicationInterface
+final class HubSpotApplication extends OAuth2ApplicationAbstract implements WebhookApplicationInterface
 {
 
     public const    BASE_URL    = 'https://api.hubapi.com';
     public const    HUBSPOT_URL = 'https://app.hubspot.com/oauth/authorize';
     public const    TOKEN_URL   = 'https://api.hubapi.com/oauth/v1/token';
     public const    APP_ID      = 'app_id';
-    public const    HAPI_KEY    = 'hapi_key';
-    public const    USER_ID     = 'user_id';
 
     protected const SCOPE_SEPARATOR = ScopeFormatter::SPACE;
 
@@ -51,7 +50,7 @@ final class HubspotApplication extends OAuth2ApplicationAbstract implements Webh
      */
     public function getKey(): string
     {
-        return 'hubspot';
+        return 'hub-spot';
     }
 
     /**
@@ -59,7 +58,7 @@ final class HubspotApplication extends OAuth2ApplicationAbstract implements Webh
      */
     public function getName(): string
     {
-        return 'Hubspot';
+        return 'HubSpot Application';
     }
 
     /**
@@ -67,7 +66,7 @@ final class HubspotApplication extends OAuth2ApplicationAbstract implements Webh
      */
     public function getDescription(): string
     {
-        return 'Hubspot v1';
+        return 'HubSpot offers a full stack of software for marketing, sales, and customer service, with a completely free CRM at its core. They’re powerful alone — but even better when used together.';
     }
 
     /**
@@ -93,8 +92,8 @@ final class HubspotApplication extends OAuth2ApplicationAbstract implements Webh
      * @param string|null        $data
      *
      * @return RequestDto
-     * @throws ApplicationInstallException
      * @throws CurlException
+     * @throws ApplicationInstallException
      */
     public function getRequestDto(
         ApplicationInstall $applicationInstall,
@@ -103,7 +102,7 @@ final class HubspotApplication extends OAuth2ApplicationAbstract implements Webh
         ?string $data = NULL
     ): RequestDto
     {
-        $request = new RequestDto($method, $this->getUri($url));
+        $request = new RequestDto($method, $this->getUri($url ?? self::BASE_URL));
         $request->setHeaders(
             [
                 'Content-Type'  => 'application/json',
@@ -121,17 +120,14 @@ final class HubspotApplication extends OAuth2ApplicationAbstract implements Webh
 
     /**
      * @return Form
-     * @throws ApplicationInstallException
      */
     public function getSettingsForm(): Form
     {
         $form = new Form();
         $form
             ->addField(new Field(Field::TEXT, OAuth2ApplicationInterface::CLIENT_ID, 'Client Id', NULL, TRUE))
-            ->addField(new Field(Field::TEXT, OAuth2ApplicationInterface::CLIENT_SECRET, 'Client Secret', TRUE))
-            ->addField(new Field(Field::TEXT, self::APP_ID, 'Application Id', NULL, TRUE))
-            ->addField(new Field(Field::TEXT, self::HAPI_KEY, 'Hapi Key', NULL, TRUE))
-            ->addField(new Field(Field::TEXT, self::USER_ID, 'User Id', NULL, TRUE));
+            ->addField(new Field(Field::PASSWORD, OAuth2ApplicationInterface::CLIENT_SECRET, 'Client Secret', TRUE))
+            ->addField(new Field(Field::TEXT, self::APP_ID, 'Application Id', NULL, TRUE));
 
         return $form;
     }
@@ -142,8 +138,8 @@ final class HubspotApplication extends OAuth2ApplicationAbstract implements Webh
     public function getWebhookSubscriptions(): array
     {
         return [
-            new WebhookSubscription('Create Contact', 'starting-point', '', ['name' => 'contact.creation']),
-            new WebhookSubscription('Delete Contact', 'starting-point', '', ['name' => 'contact.deletion']),
+            new WebhookSubscription('Create Contact', 'Webhook', '', ['name' => 'contact.creation']),
+            new WebhookSubscription('Delete Contact', 'Webhook', '', ['name' => 'contact.deletion']),
         ];
     }
 
@@ -154,6 +150,7 @@ final class HubspotApplication extends OAuth2ApplicationAbstract implements Webh
      *
      * @return RequestDto
      * @throws CurlException
+     * @throws ApplicationInstallException
      */
     public function getWebhookSubscribeRequestDto(
         ApplicationInstall $applicationInstall,
@@ -161,35 +158,23 @@ final class HubspotApplication extends OAuth2ApplicationAbstract implements Webh
         string $url
     ): RequestDto
     {
-
-        $url;
-        $request = new RequestDto(
-            CurlManager::METHOD_POST,
-            $this->getUri(
-                sprintf(
-                    '%s/webhooks/v1/%s/subscriptions?hapikey=%s&userId=%s',
-                    self::BASE_URL,
-                    $applicationInstall->getSettings()[ApplicationAbstract::FORM][self::APP_ID],
-                    $applicationInstall->getSettings()[ApplicationAbstract::FORM][self::HAPI_KEY],
-                    $applicationInstall->getSettings()[ApplicationAbstract::FORM][self::USER_ID]
-                )
-            ),
-            ['Content-Type' => 'application/json']
+        $hubspotUrl = sprintf(
+            '%s/webhooks/v1/%s/subscriptions',
+            self::BASE_URL,
+            $applicationInstall->getSettings()[ApplicationAbstract::FORM][self::APP_ID]
+        );
+        $body       = Json::encode(
+            [
+                'webhookUrl'          => $url,
+                'subscriptionDetails' => [
+                    'subscriptionType' => $subscription->getParameters()['name'],
+                    'propertyName'     => 'email',
+                ],
+                'enabled'             => FALSE,
+            ]
         );
 
-        $request->setBody(
-            Json::encode(
-                [
-                    'subscriptionDetails' => [
-                        'subscriptionType' => $subscription->getParameters()['name'],
-                        'propertyName'     => 'email',
-                    ],
-                    'enabled'             => FALSE,
-                ]
-            )
-        );
-
-        return $request;
+        return $this->getRequestDto($applicationInstall, CurlManager::METHOD_POST, $hubspotUrl, $body);
     }
 
     /**
@@ -198,23 +183,18 @@ final class HubspotApplication extends OAuth2ApplicationAbstract implements Webh
      *
      * @return RequestDto
      * @throws CurlException
+     * @throws ApplicationInstallException
      */
     public function getWebhookUnsubscribeRequestDto(ApplicationInstall $applicationInstall, string $id): RequestDto
     {
-        return new RequestDto(
-            CurlManager::METHOD_DELETE,
-            $this->getUri(
-                sprintf(
-                    '%s/webhooks/v1/%s/subscriptions/%s?hapikey=%s&userId=%s',
-                    self::BASE_URL,
-                    $applicationInstall->getSettings()[ApplicationAbstract::FORM][self::APP_ID],
-                    $id,
-                    $applicationInstall->getSettings()[ApplicationAbstract::FORM][self::HAPI_KEY],
-                    $applicationInstall->getSettings()[ApplicationAbstract::FORM][self::USER_ID]
-                )
-            ),
-            ['Content-Type' => 'application/json']
+        $url = sprintf(
+            '%s/webhooks/v1/%s/subscriptions/%s',
+            self::BASE_URL,
+            $applicationInstall->getSettings()[ApplicationAbstract::FORM][self::APP_ID],
+            $id
         );
+
+        return $this->getRequestDto($applicationInstall, CurlManager::METHOD_DELETE, $url);
     }
 
     /**
@@ -222,12 +202,13 @@ final class HubspotApplication extends OAuth2ApplicationAbstract implements Webh
      * @param ApplicationInstall $install
      *
      * @return string
+     * @throws JsonException
      */
     public function processWebhookSubscribeResponse(ResponseDto $dto, ApplicationInstall $install): string
     {
         $install;
 
-        return (string) Json::decode($dto->getBody())['id'];
+        return $dto->getJsonBody()['id'] ?? '';
     }
 
     /**
@@ -237,10 +218,12 @@ final class HubspotApplication extends OAuth2ApplicationAbstract implements Webh
      */
     public function processWebhookUnsubscribeResponse(ResponseDto $dto): bool
     {
-        $dto;
-
         return $dto->getStatusCode() === 204;
     }
+
+    /**
+     * -------------------------------------------- HELPERS ------------------------------------
+     */
 
     /**
      * @param ApplicationInstall $applicationInstall

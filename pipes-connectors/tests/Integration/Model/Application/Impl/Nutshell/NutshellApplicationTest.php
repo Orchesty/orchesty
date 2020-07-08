@@ -35,7 +35,7 @@ final class NutshellApplicationTest extends DatabaseTestCaseAbstract
     public function testAuthorization(): void
     {
         $applicationInstall = DataProvider::getBasicAppInstall($this->application->getKey(), self::USER, self::API_KEY);
-        $this->pf($applicationInstall);
+        $this->pfd($applicationInstall);
 
         $dto = $this->application->getRequestDto(
             $applicationInstall,

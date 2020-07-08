@@ -19,7 +19,7 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
      */
     public function testAutorize(): void
     {
-        $app                = self::$container->get('hbpf.application.hubspot');
+        $app                = self::$container->get('hbpf.application.hub-spot');
         $applicationInstall = DataProvider::getOauth2AppInstall(
             $app->getKey(),
             'user',
@@ -27,7 +27,7 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
             '3cc4771e-deb7-4905-8e6b-d2**********',
             '5ef27043-34cc-43d1-9751-65**********'
         );
-        $this->pf($applicationInstall);
+        $this->pfd($applicationInstall);
         //        $app->authorize($applicationInstall);
         self::assertEmpty([]);
     }

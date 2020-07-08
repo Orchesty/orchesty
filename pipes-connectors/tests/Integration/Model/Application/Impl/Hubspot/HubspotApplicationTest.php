@@ -6,8 +6,8 @@ use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
-use Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Connector\HubspotCreateContactConnector;
-use Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\HubspotApplication;
+use Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Connector\HubSpotCreateContactConnector;
+use Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\HubSpotApplication;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
@@ -27,9 +27,9 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
     private const CLIENT_ID = '3cc4771e-deb7-4905-8e6b-d2**********';
 
     /**
-     * @var HubspotApplication
+     * @var HubSpotApplication
      */
-    private HubspotApplication $application;
+    private HubSpotApplication $application;
 
     /**
      *
@@ -46,7 +46,7 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
     public function testName(): void
     {
         $this->setApplication();
-        self::assertEquals('Hubspot', $this->application->getName());
+        self::assertEquals('HubSpot Application', $this->application->getName());
     }
 
     /**
@@ -56,7 +56,7 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
     {
         $this->setApplication();
         self::assertEquals(
-            'Hubspot v1',
+            'HubSpot offers a full stack of software for marketing, sales, and customer service, with a completely free CRM at its core. They’re powerful alone — but even better when used together.',
             $this->application->getDescription()
         );
     }
@@ -72,9 +72,7 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
             self::assertContainsEquals(
                 $field->getKey(),
                 [
-                    HubspotApplication::USER_ID,
-                    HubspotApplication::HAPI_KEY,
-                    HubspotApplication::APP_ID,
+                    HubSpotApplication::APP_ID,
                     OAuth2ApplicationInterface::CLIENT_ID,
                     OAuth2ApplicationInterface::CLIENT_SECRET,
                 ]
@@ -94,7 +92,7 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
             'token',
             self::CLIENT_ID
         );
-        $this->pf($applicationInstall);
+        $this->pfd($applicationInstall);
         self::assertEquals(TRUE, $this->application->isAuthorized($applicationInstall));
         $this->application->authorize($applicationInstall);
     }
@@ -106,7 +104,7 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
     {
         $this->setApplication();
         $applicationInstall = new ApplicationInstall();
-        $this->pf($applicationInstall);
+        $this->pfd($applicationInstall);
         self::assertEquals(FALSE, $this->application->isAuthorized($applicationInstall));
     }
 
@@ -152,7 +150,7 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
     public function testGetWebhookSubscribeRequestDto(): void
     {
         $this->setApplication();
-        $hubspotCreateContactConnector = new HubspotCreateContactConnector(
+        $hubspotCreateContactConnector = new HubSpotCreateContactConnector(
             self::$container->get('hbpf.transport.curl_manager'),
             $this->dm
         );
@@ -162,14 +160,12 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
         $applicationInstall->setSettings(
             [
                 ApplicationAbstract::FORM                    => [
-                    HubspotApplication::APP_ID   => '123xx',
-                    HubspotApplication::HAPI_KEY => '21a0d413-e204-4138-9ede-************',
-                    HubspotApplication::USER_ID  => '89*****',
+                    HubSpotApplication::APP_ID => '123xx',
                 ],
                 ApplicationInterface::AUTHORIZATION_SETTINGS => [ApplicationInterface::TOKEN => [OAuth2Provider::ACCESS_TOKEN => 'token123']],
             ]
         );
-        $this->pf(DataProvider::getOauth2AppInstall($this->application->getKey()));
+        $this->pfd(DataProvider::getOauth2AppInstall($this->application->getKey()));
         $webhookSubscription = new WebhookSubscription(
             'name',
             'node',
@@ -189,15 +185,15 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
         self::assertEquals('POST', $response->getMethod());
         self::assertEquals('DELETE', $responseUn->getMethod());
         self::assertEquals(
-            'https://api.hubapi.com/webhooks/v1/123xx/subscriptions?hapikey=21a0d413-e204-4138-9ede-************&userId=89*****',
+            'https://api.hubapi.com/webhooks/v1/123xx/subscriptions',
             $response->getUriString()
         );
         self::assertEquals(
-            '{"subscriptionDetails":{"subscriptionType":"name2","propertyName":"email"},"enabled":false}',
+            '{"webhookUrl":"","subscriptionDetails":{"subscriptionType":"name2","propertyName":"email"},"enabled":false}',
             $response->getBody()
         );
         self::assertEquals(
-            'https://api.hubapi.com/webhooks/v1/123xx/subscriptions/id123?hapikey=21a0d413-e204-4138-9ede-************&userId=89*****',
+            'https://api.hubapi.com/webhooks/v1/123xx/subscriptions/id123',
             $responseUn->getUriString()
         );
     }
@@ -207,8 +203,8 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
      */
     private function setApplication(): void
     {
-        $this->mockRedirect(HubspotApplication::HUBSPOT_URL, self::CLIENT_ID, 'contacts');
-        $this->application = self::$container->get('hbpf.application.hubspot');
+        $this->mockRedirect(HubSpotApplication::HUBSPOT_URL, self::CLIENT_ID, 'contacts');
+        $this->application = self::$container->get('hbpf.application.hub-spot');
     }
 
 }

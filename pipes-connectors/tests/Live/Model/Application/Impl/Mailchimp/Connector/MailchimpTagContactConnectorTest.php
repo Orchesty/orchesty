@@ -44,7 +44,7 @@ final class MailchimpTagContactConnectorTest extends DatabaseTestCaseAbstract
             ]
         );
 
-        $this->pf($applicationInstall);
+        $this->pfd($applicationInstall);
         $this->dm->clear();
         //        $data = (string) file_get_contents(sprintf('%s/Data/automation.json', __DIR__), TRUE);
         //        $mailchimpTagContactConnector->processAction(

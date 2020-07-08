@@ -4,6 +4,8 @@ namespace HbPFConnectorsTests;
 
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
@@ -84,7 +86,7 @@ final class DataProvider
      *
      * @return ProcessDto
      */
-    public static function getProcessDto(string $key, string $user = 'user', string $body = ''): ProcessDto
+    public static function getProcessDto(string $key = '', string $user = 'user', string $body = '{}'): ProcessDto
     {
         $dto = new ProcessDto();
         $dto
@@ -120,6 +122,28 @@ final class DataProvider
             ->setUser($user)
             ->setSettings($settings)
             ->setNonEncryptedSettings($nonEncryptedSettings);
+    }
+
+    /**
+     * @param string $body
+     * @param int    $code
+     *
+     * @return ResponseDto
+     */
+    public static function createResponseDto(string $body = '{}', int $code = 200): ResponseDto
+    {
+        return new ResponseDto($code, '', $body, []);
+    }
+
+    /**
+     * @param string  $name
+     * @param mixed[] $data
+     *
+     * @return WebhookSubscription
+     */
+    public static function createWebhookSubscription(string $name, array $data = []): WebhookSubscription
+    {
+        return new WebhookSubscription($name, 'sp', '', $data);
     }
 
 }

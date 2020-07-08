@@ -4,7 +4,7 @@ namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Hubspot\Mapper;
 
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Mapper\HubspotCreateContactMapper;
+use Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Mapper\HubSpotCreateContactMapper;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shipstation\Connector\ShipstationNewOrderConnector;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DatabaseTestCaseAbstract;
@@ -51,7 +51,7 @@ final class HubspotCreateContactMapperTest extends DatabaseTestCaseAbstract
             self::API_SECRET
         );
 
-        $this->pf($applicationInstall);
+        $this->pfd($applicationInstall);
 
         $response = $shipstationNewOrderConnector->processEvent(
             DataProvider::getProcessDto(
@@ -71,7 +71,7 @@ final class HubspotCreateContactMapperTest extends DatabaseTestCaseAbstract
 
         $response->setData((string) file_get_contents(sprintf('%s/Data/responseShipstation.json', __DIR__), TRUE));
 
-        $hubspotCreateContactMapper = new HubspotCreateContactMapper();
+        $hubspotCreateContactMapper = new HubSpotCreateContactMapper();
         $dto                        = $hubspotCreateContactMapper->process($response);
         $dtoNoBody                  = $hubspotCreateContactMapper->process($responseNoBody);
 
