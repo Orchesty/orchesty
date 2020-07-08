@@ -96,7 +96,7 @@ export default {
   },
   sdk_impls_list: {
     key: 'sdk_impls_list',
-    caption: 'Implementations',
+    caption: 'Services',
     needAuth: true,
     simpleRoute: '/sdk_implementations',
   },

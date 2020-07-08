@@ -26,7 +26,7 @@ export default function (group, element, translate) {
   if (element.type !== 'bpmn:Process') {
     group.entries.push(entryFactory.selectBox({
       id: 'sdkHost',
-      label: 'Implementation',
+      label: 'Services',
       selectOptions: implementationTypesNames.map(({ key, value }) => ({ name: value, value: key })),
       modelProperty: 'sdkHost',
       getProperty(element) {

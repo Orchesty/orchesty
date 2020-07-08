@@ -40,7 +40,7 @@ export default dispatch => [
   },
   {
     type: menuItemType.ACTION,
-    caption: 'Implementations',
+    caption: 'Services',
     action: () => dispatch(applicationActions.openPage('sdk_impls_list')),
   },
 ];
