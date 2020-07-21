@@ -117,6 +117,7 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
     private function createNode(): Node
     {
         $node = new Node();
+        $node->setTopology('1');
 
         $this->pfd($node);
 

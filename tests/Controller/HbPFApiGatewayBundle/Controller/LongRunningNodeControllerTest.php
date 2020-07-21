@@ -139,6 +139,15 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
     ): LongRunningNodeData
     {
         $longRunningData = (new LongRunningNodeData())
+            ->setParentId('1')
+            ->setCorrelationId('2')
+            ->setSequenceId('3')
+            ->setProcessId('7')
+            ->setState('state')
+            ->setAuditLogs([])
+            ->setUpdatedBy('4')
+            ->setData('data')
+            ->setContentType('string')
             ->setTopologyId($topologyId)
             ->setTopologyName($topologyName)
             ->setNodeId($nodeId)

@@ -58,6 +58,7 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
     public function testGetNode(): void
     {
         $node = new Node();
+        $node->setTopology('1');
         $this->pfd($node);
 
         $this->assertResponse(
