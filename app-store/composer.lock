@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cf7ce8d037331d958652902fb1249d36",
+    "content-hash": "34561a1560061eeb0d1cc28922d0347e",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -1651,11 +1651,11 @@
         },
         {
             "name": "hanaboso/pipes-php-sdk",
-            "version": "1.4.2",
+            "version": "1.4.3",
             "dist": {
                 "type": "path",
                 "url": "../pipes-php-sdk",
-                "reference": "20fca80616fd22b1aeb0afbf9bfdb38f04fbe735"
+                "reference": "2275d6361c6e032dab2d60d29365d4c6c7f9fe0d"
             },
             "require": {
                 "ext-json": "*",
@@ -10060,20 +10060,20 @@
         },
         {
             "name": "phpstan/phpstan-doctrine",
-            "version": "0.12.18",
+            "version": "0.12.19",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-doctrine.git",
-                "reference": "7de8b3232d024608facfc3360397d951dcb2f42b"
+                "reference": "78376cbf68e0c30c2ff16d6e38f3acf1fdd386b4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-doctrine/zipball/7de8b3232d024608facfc3360397d951dcb2f42b",
-                "reference": "7de8b3232d024608facfc3360397d951dcb2f42b",
+                "url": "https://api.github.com/repos/phpstan/phpstan-doctrine/zipball/78376cbf68e0c30c2ff16d6e38f3acf1fdd386b4",
+                "reference": "78376cbf68e0c30c2ff16d6e38f3acf1fdd386b4",
                 "shasum": ""
             },
             "require": {
-                "php": "~7.1",
+                "php": "^7.1 || ^8.0",
                 "phpstan/phpstan": "^0.12.33"
             },
             "conflict": {
@@ -10122,24 +10122,24 @@
                 "MIT"
             ],
             "description": "Doctrine extensions for PHPStan",
-            "time": "2020-07-18T10:46:43+00:00"
+            "time": "2020-07-21T14:46:27+00:00"
         },
         {
             "name": "phpstan/phpstan-nette",
-            "version": "0.12.7",
+            "version": "0.12.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-nette.git",
-                "reference": "0ab0353127624c195c0c2a0cf8fcda9e136c4840"
+                "reference": "ff3e7c05d7cd1648b1c1bd5f50f5265255a520a9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-nette/zipball/0ab0353127624c195c0c2a0cf8fcda9e136c4840",
-                "reference": "0ab0353127624c195c0c2a0cf8fcda9e136c4840",
+                "url": "https://api.github.com/repos/phpstan/phpstan-nette/zipball/ff3e7c05d7cd1648b1c1bd5f50f5265255a520a9",
+                "reference": "ff3e7c05d7cd1648b1c1bd5f50f5265255a520a9",
                 "shasum": ""
             },
             "require": {
-                "php": "~7.1",
+                "php": "^7.1 || ^8.0",
                 "phpstan/phpstan": "^0.12.33"
             },
             "conflict": {
@@ -10186,24 +10186,24 @@
                 "MIT"
             ],
             "description": "Nette Framework class reflection extension for PHPStan",
-            "time": "2020-07-17T17:18:38+00:00"
+            "time": "2020-07-21T14:47:32+00:00"
         },
         {
             "name": "phpstan/phpstan-phpunit",
-            "version": "0.12.12",
+            "version": "0.12.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-phpunit.git",
-                "reference": "c6acfc9d251562c03f8693cd9127f329ba32ed39"
+                "reference": "92fb18f91ded4981e24862cc34fb19eeced64099"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-phpunit/zipball/c6acfc9d251562c03f8693cd9127f329ba32ed39",
-                "reference": "c6acfc9d251562c03f8693cd9127f329ba32ed39",
+                "url": "https://api.github.com/repos/phpstan/phpstan-phpunit/zipball/92fb18f91ded4981e24862cc34fb19eeced64099",
+                "reference": "92fb18f91ded4981e24862cc34fb19eeced64099",
                 "shasum": ""
             },
             "require": {
-                "php": "~7.1",
+                "php": "^7.1 || ^8.0",
                 "phpstan/phpstan": "^0.12.33"
             },
             "conflict": {
@@ -10242,25 +10242,25 @@
                 "MIT"
             ],
             "description": "PHPUnit extensions and rules for PHPStan",
-            "time": "2020-07-16T09:41:06+00:00"
+            "time": "2020-07-21T14:48:45+00:00"
         },
         {
             "name": "phpstan/phpstan-strict-rules",
-            "version": "0.12.3",
+            "version": "0.12.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-strict-rules.git",
-                "reference": "937283265620af9e2005743134ebb4e197b12d8e"
+                "reference": "9b86e1eb77c796628e239820a01a2d327d607a5e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-strict-rules/zipball/937283265620af9e2005743134ebb4e197b12d8e",
-                "reference": "937283265620af9e2005743134ebb4e197b12d8e",
+                "url": "https://api.github.com/repos/phpstan/phpstan-strict-rules/zipball/9b86e1eb77c796628e239820a01a2d327d607a5e",
+                "reference": "9b86e1eb77c796628e239820a01a2d327d607a5e",
                 "shasum": ""
             },
             "require": {
-                "php": "~7.1",
-                "phpstan/phpstan": "^0.12.6"
+                "php": "^7.1 || ^8.0",
+                "phpstan/phpstan": "^0.12.33"
             },
             "require-dev": {
                 "consistence/coding-standard": "^3.0.1",
@@ -10293,7 +10293,7 @@
                 "MIT"
             ],
             "description": "Extra strict and opinionated rules for PHPStan",
-            "time": "2020-07-16T08:58:37+00:00"
+            "time": "2020-07-21T14:49:47+00:00"
         },
         {
             "name": "phpstan/phpstan-symfony",

@@ -16,6 +16,8 @@ use Symfony\Component\HttpFoundation\Request;
 final class ApplicationHandler
 {
 
+    private const SYNC_METHODS = 'syncMethods';
+
     /**
      * @var ApplicationManager
      */
@@ -49,10 +51,16 @@ final class ApplicationHandler
      *
      * @return mixed[]
      * @throws ApplicationInstallException
+     * @throws ReflectionException
      */
     public function getApplicationByKey(string $key): array
     {
-        return $this->applicationManager->getApplication($key)->toArray();
+        return array_merge(
+            $this->applicationManager->getApplication($key)->toArray(),
+            [
+                self::SYNC_METHODS => $this->applicationManager->getSynchronousActions($key),
+            ]
+        );
     }
 
     /**

@@ -23,7 +23,6 @@ final class ApplicationHandler
 {
 
     private const AUTHORIZED           = 'authorized';
-    private const SYNC_METHODS         = 'sync_actions';
     private const WEBHOOK_SETTINGS     = 'webhookSettings';
     private const APPLICATION_SETTINGS = 'applicationSettings';
 
@@ -65,8 +64,7 @@ final class ApplicationHandler
                     return array_merge(
                         $applicationInstall->toArray(),
                         [
-                            self::AUTHORIZED   => $application->isAuthorized($applicationInstall),
-                            self::SYNC_METHODS => $this->applicationManager->getSynchronousActions($key),
+                            self::AUTHORIZED => $application->isAuthorized($applicationInstall),
                         ]
                     );
                 },
@@ -97,7 +95,6 @@ final class ApplicationHandler
                 self::WEBHOOK_SETTINGS     => $application->getApplicationType() === ApplicationTypeEnum::WEBHOOK ?
                     $this->webhookManager->getWebhooks($application, $user) :
                     [],
-                self::SYNC_METHODS         => $this->applicationManager->getSynchronousActions($key),
             ],
         );
     }
@@ -122,7 +119,6 @@ final class ApplicationHandler
             [
                 self::AUTHORIZED           => $application->isAuthorized($applicationInstall),
                 self::APPLICATION_SETTINGS => $application->getApplicationForm($applicationInstall),
-                self::SYNC_METHODS         => $this->applicationManager->getSynchronousActions($key),
             ],
         );
     }
@@ -143,7 +139,6 @@ final class ApplicationHandler
             [
                 self::AUTHORIZED           => FALSE,
                 self::APPLICATION_SETTINGS => NULL,
-                self::SYNC_METHODS         => [],
             ],
         );
     }

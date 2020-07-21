@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import StateComponent from '../../../views/wrappers/StateComponent';
-import { Field, reduxForm } from 'redux-form';
+import {Field, reduxForm} from 'redux-form';
 import TextInput from '../../elements/input/TextInput';
 import createSubscription from './AppStoreSubscribeForm';
 import PasswordInput from '../../elements/input/PasswordInput';
@@ -15,18 +15,18 @@ class AppStoreDetail extends Component {
   constructor(props) {
     super(props);
 
-    const { getApplication, application, userId } = props;
+    const {getApplication, application, userId} = props;
 
     getApplication(application, userId);
   }
 
   componentDidMount() {
-    const { name } = this.props;
+    const {name} = this.props;
 
     document.title = `${name ? `${name} Application` : 'Application Store'} | Pipes Manager`;
   }
 
-  static createRow({ type, key, label, choices, disabled, required, readOnly }) {
+  static createRow({type, key, label, choices, disabled, required, readOnly}) {
     return (
       <div key={key} className="form-group">
         <label>{label}</label>
@@ -34,7 +34,7 @@ class AppStoreDetail extends Component {
           <Field
             component={AppStoreDetail.getType(type)}
             name={key}
-            options={Object.entries(choices).map(([key, value]) => ({ value: key, label: value }))}
+            options={Object.entries(choices).map(([key, value]) => ({value: key, label: value}))}
             required={required}
             disabled={disabled}
             readOnly={readOnly}
@@ -54,10 +54,10 @@ class AppStoreDetail extends Component {
     );
   }
 
-  static createSubscription({ name }) {
+  static createSubscription({name}) {
     return (
       <div key={name}>
-        <Field component={TextInput} name="topology" label="Topology" />
+        <Field component={TextInput} name="topology" label="Topology"/>
       </div>
     )
   }
@@ -79,7 +79,7 @@ class AppStoreDetail extends Component {
 
   render() {
     const {
-      initialValues: { client_id, client_secret },
+      initialValues: {client_id, client_secret},
       name,
       userId,
       expires,
@@ -97,13 +97,14 @@ class AppStoreDetail extends Component {
       uninstallApplication,
       subscribeApplication,
       unsubscribeApplication,
+      syncMethods,
     } = this.props;
 
     if (!applicationType || !authorizationType) {
       return null;
     }
 
-    const subscriptions = webhookSettings && webhookSettings.map(({ name, topology, default: defaultV, enabled }) => ({
+    const subscriptions = webhookSettings && webhookSettings.map(({name, topology, default: defaultV, enabled}) => ({
       application,
       name,
       topology,
@@ -120,12 +121,14 @@ class AppStoreDetail extends Component {
           <h1>{name} Application</h1>
           <h3>{description}</h3>
           <h5>
-            Authorization type: {authorizationType.substr(0, 1).toUpperCase() + authorizationType.substr(1).toLowerCase()} {expires && `(expires ${expires})`}
+            Authorization
+            type: {authorizationType.substr(0, 1).toUpperCase() + authorizationType.substr(1).toLowerCase()} {expires && `(expires ${expires})`}
           </h5>
           <h5>Service name: hbpf.application.{application}</h5>
+          {syncMethods.length > 0 ? (<h5>Available synchronous methods: {syncMethods.join(', ')}</h5>) : ('')}
         </div>
-        <br />
-        <br />
+        <br/>
+        <br/>
         {applicationSettings ? (
           <div>
             <div className="text-center">
@@ -146,19 +149,20 @@ class AppStoreDetail extends Component {
               }
             </div>
             <div className="row">
-              <br />
-              <br />
+              <br/>
+              <br/>
               <div className="col-md-6 col-md-offset-3">
-                <form onSubmit={handleSubmit(data => changeApplication(application, userId, data, applicationSettings))}>
+                <form
+                  onSubmit={handleSubmit(data => changeApplication(application, userId, data, applicationSettings))}>
                   {applicationSettings && applicationSettings.map(setting => AppStoreDetail.createRow(setting))}
                   <div className="text-center">
                     <button type="submit" className="btn btn-lg btn-primary">Save Settings</button>
                   </div>
                 </form>
-                <br />
-                <br />
+                <br/>
+                <br/>
                 {authorized && subscriptions && subscriptions.map(
-                  ({ Subscription, name, ...rest }) => <Subscription key={name} name={name} {...rest} />
+                  ({Subscription, name, ...rest}) => <Subscription key={name} name={name} {...rest} />
                 )}
               </div>
             </div>
@@ -196,34 +200,34 @@ AppStoreDetail.propTypes = {
   applicationSettings: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
 };
 
-const mapStateToProps = ({ appStore: { applications }, auth: { user: { id: userId } } }, { application }) => {
+const mapStateToProps = ({appStore: {applications}, auth: {user: {id: userId}}}, {application}) => {
   const innerApplication = applications[application];
   const applicationSettings = innerApplication && innerApplication.applicationSettings || [];
 
   return {
     userId,
     ...innerApplication,
-    initialValues: applicationSettings.reduce((accumulator, { key, value }) => ({ ...accumulator, [key]: value }), {})
+    initialValues: applicationSettings.reduce((accumulator, {key, value}) => ({...accumulator, [key]: value}), {})
   };
 };
 
-const validate = (values, { applicationSettings }) => {
+const validate = (values, {applicationSettings}) => {
   return Object.entries(values).map(([key, value]) => {
-    const { type, label, required } = applicationSettings.filter(({ key: innerKey }) => innerKey === key)[0];
+    const {type, label, required} = applicationSettings.filter(({key: innerKey}) => innerKey === key)[0];
 
     if (!value && required) {
-      return { [key]: `${label} is required` }
+      return {[key]: `${label} is required`}
     }
 
     switch (type) {
       case 'number':
-        return !/\d+/.test(value) ? { [key]: `${label} must be an integer` } : {};
+        return !/\d+/.test(value) ? {[key]: `${label} must be an integer`} : {};
       case 'url':
-        return !/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/.test(value) ? { [key]: `${label} must be an URL` } : {};
+        return !/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/.test(value) ? {[key]: `${label} must be an URL`} : {};
       default:
         return {};
     }
-  }).reduce((accumulator, value) => ({ ...accumulator, ...value }), {});
+  }).reduce((accumulator, value) => ({...accumulator, ...value}), {});
 };
 
 const formConfig = {

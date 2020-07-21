@@ -73,6 +73,7 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
                 'authorization_type' => 'basic',
                 'application_type'   => 'cron',
                 'description'        => 'Application for test purposes',
+                'syncMethods'        => ['testSynchronous', 'returnBody'],
             ],
             $this->handler->getApplicationByKey('null')
         );
