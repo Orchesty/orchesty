@@ -91,6 +91,7 @@ abstract class RabbitCustomNode extends CustomNodeAbstract implements LoggerAwar
      * @return ProcessDto
      * @throws LockException
      * @throws MappingException
+     * @throws Exception
      */
     public function process(ProcessDto $dto): ProcessDto
     {
@@ -216,7 +217,7 @@ abstract class RabbitCustomNode extends CustomNodeAbstract implements LoggerAwar
     }
 
     /**
-     *
+     * @throws Exception
      */
     private function unbindChannels(): void
     {

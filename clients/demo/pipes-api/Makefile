@@ -32,19 +32,19 @@ clear-cache:
 	$(DE) php bin/console cache:warmup --env=test
 
 phpcodesniffer:
-	$(DE) php ./vendor/bin/phpcs --standard=./tests/ruleset.xml src tests
+	$(DE) php ./vendor/bin/phpcs --parallel=$$(nproc) --standard=./tests/ruleset.xml src tests
 
 phpstan:
 	$(DE) php ./vendor/bin/phpstan analyse -c ./tests/phpstan.neon -l 8 src tests
 
 phpintegration:
-	$(DE) php ./vendor/bin/phpunit -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist --colors tests/Integration
+	$(DE) php ./vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --colors tests/Integration
 
 phpcontroller:
-	$(DE) php ./vendor/bin/phpunit -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist --colors tests/Controller
+	$(DE) php ./vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --colors tests/Controller
 
 phpcoverage:
-	$(DE) ./vendor/bin/paratest -c vendor/hanaboso/php-check-utils/phpunit.xml.dist -p 4 --coverage-html var/coverage --whitelist src --exclude-group live tests
+	$(DE) ./vendor/bin/paratest -c vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --coverage-html var/coverage --whitelist src --exclude-group live tests
 
 phpcoverage-ci:
 	$(DE) ./vendor/hanaboso/php-check-utils/bin/coverage.sh -c 50

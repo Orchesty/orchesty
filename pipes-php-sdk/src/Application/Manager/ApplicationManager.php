@@ -2,53 +2,67 @@
 
 namespace Hanaboso\PipesPhpSdk\Application\Manager;
 
+use Doctrine\Common\Annotations\CachedReader;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Loader\ApplicationLoader;
 use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
+use Hanaboso\PipesPhpSdk\Application\Utils\SynchronousAction;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1\OAuth1ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
+use ReflectionClass;
+use ReflectionException;
+use ReflectionMethod;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class ApplicationManager
  *
  * @package Hanaboso\PipesPhpSdk\Application\Manager
  */
-final class ApplicationManager
+class ApplicationManager
 {
 
     /**
      * @var ApplicationLoader
      */
-    private ApplicationLoader $loader;
+    protected ApplicationLoader $loader;
 
     /**
      * @var DocumentManager
      */
-    private DocumentManager $dm;
+    protected DocumentManager $dm;
 
     /**
      * @var ObjectRepository<ApplicationInstall>&ApplicationInstallRepository
      */
-    private $repository;
+    protected $repository;
+
+    /**
+     * @var CachedReader
+     */
+    private CachedReader $reader;
 
     /**
      * ApplicationManager constructor.
      *
      * @param DocumentManager   $dm
      * @param ApplicationLoader $loader
+     * @param CachedReader      $reader
      */
-    public function __construct(DocumentManager $dm, ApplicationLoader $loader)
+    public function __construct(DocumentManager $dm, ApplicationLoader $loader, CachedReader $reader)
     {
         $this->loader     = $loader;
         $this->dm         = $dm;
         $this->repository = $this->dm->getRepository(ApplicationInstall::class);
+        $this->reader     = $reader;
     }
 
     /**
@@ -68,6 +82,53 @@ final class ApplicationManager
     public function getApplication(string $key): ApplicationInterface
     {
         return $this->loader->getApplication($key);
+    }
+
+    /**
+     * @param string $key
+     *
+     * @return string[]
+     * @throws ApplicationInstallException
+     * @throws ReflectionException
+     */
+    public function getSynchronousActions(string $key): array
+    {
+        $actions    = [];
+        $reflection = new ReflectionClass($this->getApplication($key));
+        $methods    = $reflection->getMethods(ReflectionMethod::IS_PUBLIC);
+        foreach ($methods as $method) {
+            if ($this->reader->getMethodAnnotation($method, SynchronousAction::class)) {
+                $actions = array_merge($actions, [$method->getName()]);
+            }
+        }
+
+        return $actions;
+    }
+
+    /**
+     * @param string  $key
+     * @param string  $method
+     * @param Request $request
+     *
+     * @return mixed
+     * @throws ApplicationInstallException
+     */
+    public function runSynchronousAction(string $key, string $method, Request $request)
+    {
+        $app = $this->getApplication($key);
+
+        if (method_exists($app, $method)) {
+            if ($request->getMethod() === CurlManager::METHOD_GET) {
+                return $app->$method();
+            }
+
+            return $app->$method($request);
+        }
+
+        throw new ApplicationInstallException(
+            sprintf('Method "%s" was not found for Application "%s".', $method, $key),
+            ApplicationInstallException::METHOD_NOT_FOUND
+        );
     }
 
     /**

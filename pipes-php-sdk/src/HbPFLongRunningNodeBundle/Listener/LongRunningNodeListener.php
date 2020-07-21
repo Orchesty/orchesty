@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Listener;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\CommonsBundle\Event\ProcessStatusEvent;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -34,6 +35,8 @@ final class LongRunningNodeListener implements EventSubscriberInterface
 
     /**
      * @param ProcessStatusEvent $event
+     *
+     * @throws MongoDBException
      */
     public function onFinish(ProcessStatusEvent $event): void
     {

@@ -1,7 +1,7 @@
 {
     "name": "hanaboso/app-store",
     "description": "App store for PipesFramework",
-    "version": "1.4.2",
+    "version": "1.4.3",
     "license": "proprietary",
     "require": {
         "php": "^7.4",

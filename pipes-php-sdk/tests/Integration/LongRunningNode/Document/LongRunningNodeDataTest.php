@@ -46,13 +46,16 @@ final class LongRunningNodeDataTest extends DatabaseTestCaseAbstract
     {
         $document = (new LongRunningNodeData())
             ->setParentId('1')
+            ->setTopologyName('topology')
             ->setCorrelationId('2')
             ->setSequenceId('3')
+            ->setProcessId('7')
             ->setState('state')
             ->setAuditLogs([])
             ->setUpdatedBy('4')
             ->setTopologyId('5')
             ->setNodeId('6')
+            ->setNodeName('node')
             ->setData('data')
             ->setContentType('string');
         $this->pfd($document);

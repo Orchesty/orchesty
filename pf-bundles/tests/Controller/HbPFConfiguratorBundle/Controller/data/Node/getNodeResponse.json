@@ -3,7 +3,7 @@
     "body": {
         "_id": "5e329f9b5ef3694da71d42b3",
         "name": "",
-        "topology_id": "",
+        "topology_id": "1",
         "next": [],
         "type": "custom",
         "handler": "event",

@@ -60,6 +60,8 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController::testAction
+     *
+     * @throws Exception
      */
     public function testAction(): void
     {
@@ -73,6 +75,8 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController::testAction
+     *
+     * @throws Exception
      */
     public function testActionErr(): void
     {
@@ -82,6 +86,8 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController::getTasksByIdAction
+     *
+     * @throws Exception
      */
     public function testGetTasksByIdAction(): void
     {
@@ -101,6 +107,8 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController::getTasksByIdAction
+     *
+     * @throws Exception
      */
     public function testGetTasksByIdActionErr(): void
     {
@@ -114,6 +122,8 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController::getTasksAction
+     *
+     * @throws Exception
      */
     public function testGetTasksAction(): void
     {
@@ -133,6 +143,8 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController::getTasksAction
+     *
+     * @throws Exception
      */
     public function testGetTasksActionErr(): void
     {
@@ -146,6 +158,8 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController::getNodeTasksByIdAction
+     *
+     * @throws Exception
      */
     public function testGetNodeTasksByIdAction(): void
     {
@@ -165,6 +179,8 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController::getNodeTasksByIdAction
+     *
+     * @throws Exception
      */
     public function testGetNodeTasksByIdActionErr(): void
     {
@@ -178,6 +194,8 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController::getNodeTasksAction
+     *
+     * @throws Exception
      */
     public function testGetNodeTasksAction(): void
     {
@@ -197,6 +215,8 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController::getNodeTasksAction
+     *
+     * @throws Exception
      */
     public function testGetNodeTasksActionErr(): void
     {
@@ -210,6 +230,8 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController::listOfLongRunningNodesAction
+     *
+     * @throws Exception
      */
     public function testListOfLongRunningNodesAction(): void
     {
@@ -223,6 +245,8 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController::listOfLongRunningNodesAction
+     *
+     * @throws Exception
      */
     public function testListOfLongRunningNodesActionErr(): void
     {
@@ -239,6 +263,8 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController::updateLongRunningAction
+     *
+     * @throws Exception
      */
     public function testUpdateLongRunningAction(): void
     {
@@ -252,6 +278,8 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController::updateLongRunningAction
+     *
+     * @throws Exception
      */
     public function testUpdateLongRunningActionErr(): void
     {

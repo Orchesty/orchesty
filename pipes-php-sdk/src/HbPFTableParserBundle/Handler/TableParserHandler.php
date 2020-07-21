@@ -2,16 +2,13 @@
 
 namespace Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler;
 
-use Doctrine\ODM\MongoDB\LockException;
-use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Hanaboso\CommonsBundle\Exception\FileStorageException;
 use Hanaboso\CommonsBundle\FileStorage\FileStorage;
 use Hanaboso\PipesPhpSdk\Parser\Exception\TableParserException;
 use Hanaboso\PipesPhpSdk\Parser\TableParser;
+use JsonException;
 use PhpOffice\PhpSpreadsheet\Exception;
-use PhpOffice\PhpSpreadsheet\Reader\Exception as ReaderException;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Exception as WriterException;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
@@ -50,9 +47,6 @@ final class TableParserHandler
      * @return string
      * @throws Exception
      * @throws FileStorageException
-     * @throws LockException
-     * @throws MappingException
-     * @throws ReaderException
      * @throws TableParserHandlerException
      */
     public function parseToJson(array $data): string
@@ -83,11 +77,9 @@ final class TableParserHandler
      * @return string
      * @throws Exception
      * @throws FileStorageException
-     * @throws LockException
-     * @throws MappingException
      * @throws TableParserException
      * @throws TableParserHandlerException
-     * @throws WriterException
+     * @throws JsonException
      */
     public function parseFromJson(string $type, array $data): string
     {

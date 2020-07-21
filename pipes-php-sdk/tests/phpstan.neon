@@ -7,9 +7,10 @@ parameters:
     symfony:
         container_xml_path: %rootDir%/../../../var/cache/test/PipesPhpSdkTests_app_KernelTestDebugContainer.xml
     ignoreErrors:
-        - '#Access to an undefined property#'
-        - '#PHPDoc tag @var for variable \$connection contains unresolvable type#'
         - '#Parameter \#2 \$auth_session_handle of method OAuth::getAccessToken\(\) expects string, null given.#'
         -
-            message: '#PHPDoc tag @var for variable .+ contains unresolvable type.#'
-            path: /*
+            message: '#Access to an undefined property#'
+            path: ../tests/*
+        -
+            message: '#Variable method call on Hanaboso\\PipesPhpSdk\\Application\\Base\\ApplicationInterface.#'
+            path:  ../src/Application/Manager/ApplicationManager.php

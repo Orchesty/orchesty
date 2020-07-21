@@ -7,6 +7,7 @@ use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessExceptionTrait;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\SuccessMessage;
 use Hanaboso\Utils\String\Json;
+use JsonException;
 
 /**
  * Trait ProcessContentTrait
@@ -26,6 +27,7 @@ trait ProcessContentTrait
      *
      * @return mixed
      * @throws ConnectorException
+     * @throws JsonException
      */
     protected function getContentByKey($dto, string $key, array $contents = [], bool $throw = TRUE)
     {
@@ -45,6 +47,7 @@ trait ProcessContentTrait
      *
      * @return mixed[]
      * @throws ConnectorException
+     * @throws JsonException
      */
     protected function checkRequiredContent($dto, array $parameters): array
     {

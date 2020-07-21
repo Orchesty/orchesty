@@ -9,6 +9,7 @@ use Hanaboso\CommonsBundle\Enum\StatusEnum;
 use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
 use Hanaboso\Utils\Exception\EnumException;
 use Hanaboso\Utils\String\Json;
+use JsonException;
 
 /**
  * Class Topology
@@ -33,56 +34,56 @@ class Topology
      *
      * @ODM\Field(type="string")
      */
-    protected $name = '';
+    protected string $name;
 
     /**
      * @var int
      *
      * @ODM\Field(type="int", options={"default":"1"})
      */
-    protected $version = 1;
+    protected int $version = 1;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    protected $descr = '';
+    protected string $descr = '';
 
     /**
      * @var string
      *
      * @ODM\Field(type="string", options={"default":"draft"})
      */
-    protected $visibility = TopologyStatusEnum::DRAFT;
+    protected string $visibility = TopologyStatusEnum::DRAFT;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    protected $status = StatusEnum::NEW;
+    protected string $status = StatusEnum::NEW;
 
     /**
      * @var bool
      *
      * @ODM\Field(type="boolean", options={"default":"1"})
      */
-    protected $enabled = TRUE;
+    protected bool $enabled = TRUE;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    protected $bpmn = '';
+    protected string $bpmn = '';
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    protected $rawBpmn = '';
+    protected string $rawBpmn = '';
 
     /**
      * @var string|null
@@ -90,14 +91,14 @@ class Topology
      * @ODM\Field(type="string")
      * @ODM\Index()
      */
-    protected $category = NULL;
+    protected ?string $category = NULL;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    protected $contentHash = '';
+    protected string $contentHash = '';
 
     /**
      * Topology constructor.
@@ -240,6 +241,7 @@ class Topology
 
     /**
      * @return mixed[]
+     * @throws JsonException
      */
     public function getBpmn(): array
     {

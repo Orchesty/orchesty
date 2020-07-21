@@ -3,14 +3,13 @@
 namespace PipesPhpSdkTests\Integration\HbPFApplicationBundle\Handler;
 
 use Exception;
-use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager;
-use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler;
-use InvalidArgumentException;
 use PipesPhpSdkTests\DatabaseTestCaseAbstract;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class ApplicationHandlerTest
@@ -80,49 +79,29 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler::updateApplicationSettings
+     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler::getSynchronousActions
      *
      * @throws Exception
      */
-    public function testUpdateApplicationSettings(): void
+    public function testGetSynchronousActions(): void
     {
-        $applicationInstall = $this->createApplicationInstall();
-        $this->handler->updateApplicationSettings(
-            'null',
-            'user',
-            [BasicApplicationInterface::USER => 'thisIsMe']
-        );
-
-        self::assertEquals('thisIsMe', $applicationInstall->getSettings()[ApplicationAbstract::FORM]['user']);
+        self::assertEquals(['testSynchronous', 'returnBody'], $this->handler->getSynchronousActions('null'));
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler::updateApplicationPassword
+     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler::runSynchronousAction
      *
      * @throws Exception
      */
-    public function testUpdateApplicationPassword(): void
+    public function testRunSynchronousAction(): void
     {
-        $applicationInstall = $this->createApplicationInstall();
-        $this->handler->updateApplicationPassword('null', 'user', ['password' => '__very_secret__']);
+        $r = new Request([]);
+        $r->setMethod(CurlManager::METHOD_GET);
 
         self::assertEquals(
-            '__very_secret__',
-            $applicationInstall->getSettings(
-            )[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::PASSWORD]
+            'ok',
+            $this->handler->runSynchronousAction('null', 'testSynchronous', $r)
         );
-    }
-
-    /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler::updateApplicationPassword
-     *
-     * @throws Exception
-     */
-    public function testUpdateApplicationPasswordErr(): void
-    {
-        $this->createApplicationInstall();
-        self::expectException(InvalidArgumentException::class);
-        $this->handler->updateApplicationPassword('null', 'user', ['passwd' => '__very_secret__']);
     }
 
     /**

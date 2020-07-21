@@ -27,7 +27,7 @@ class Category
      *
      * @ODM\Field(type="string")
      */
-    protected $name;
+    protected string $name;
 
     /**
      * @var string|null
@@ -35,16 +35,7 @@ class Category
      * @ODM\Field(type="string")
      * @ODM\Index()
      */
-    protected $parent;
-
-    /**
-     * Category constructor.
-     */
-    public function __construct()
-    {
-        $this->name   = '';
-        $this->parent = NULL;
-    }
+    protected ?string $parent = NULL;
 
     /**
      * @return string

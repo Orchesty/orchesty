@@ -8,6 +8,7 @@ use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\Utils\String\Json;
 use HbPFAppStoreTests\ControllerTestCaseAbstract;
+use HbPFAppStoreTests\Integration\Model\NullApplication;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -91,8 +92,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
      */
     public function testInstallApplication(): void
     {
-        $application = self::createMock(ApplicationAbstract::class);
-        $application->method('toArray')->willReturn(['user' => 'bar']);
+        $application = new NullApplication();
         self::$container->set('hbpf.application.example', $application);
 
         $response = (array) $this->sendPost('/applications/example/users/bar/install', []);

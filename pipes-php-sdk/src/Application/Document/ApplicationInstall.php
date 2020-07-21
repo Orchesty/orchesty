@@ -39,40 +39,40 @@ class ApplicationInstall
      *
      * @ODM\Field(type="string")
      */
-    private $user;
+    private string $user;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $key;
+    private string $key;
 
     /**
-     * @var DateTime | null
+     * @var DateTime|null
      *
      * @ODM\Field(type="date", nullable=true)
      */
-    private $expires;
+    private ?DateTime $expires = NULL;
 
     /**
      * @var mixed[]
      */
-    private $settings = [];
+    private array $settings = [];
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $encryptedSettings;
+    private string $encryptedSettings;
 
     /**
      * @var mixed[]
      *
      * @ODM\Field(type="hash")
      */
-    private $nonEncryptedSettings = [];
+    private array $nonEncryptedSettings = [];
 
     /**
      * ApplicationInstall constructor.

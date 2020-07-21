@@ -73,6 +73,51 @@ final class ApplicationController
     }
 
     /**
+     * @Route("/applications/{key}/sync/list", methods={"GET"})
+     *
+     * @param string $key
+     *
+     * @return Response
+     */
+    public function getSynchronousActionsAction(string $key): Response
+    {
+        try {
+            return $this->getResponse($this->applicationHandler->getSynchronousActions($key));
+        } catch (ApplicationInstallException $e) {
+            return $this->getErrorResponse($e, 404, ControllerUtils::NOT_FOUND);
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
+        }
+    }
+
+    /**
+     * @Route("/applications/{key}/sync/{method}", methods={"GET", "POST"})
+     *
+     * @param Request $request
+     * @param string  $key
+     * @param string  $method
+     *
+     * @return Response
+     */
+    public function runSynchronousActionsAction(Request $request, string $key, string $method): Response
+    {
+        try {
+            $res = $this->applicationHandler->runSynchronousAction($key, $method, $request);
+            $res = is_array($res) ? $res : [$res];
+
+            return $this->getResponse($res);
+        } catch (ApplicationInstallException $e) {
+            if ($e->getCode() === ApplicationInstallException::METHOD_NOT_FOUND) {
+                return $this->getErrorResponse($e);
+            }
+
+            return $this->getErrorResponse($e, 404, ControllerUtils::NOT_FOUND);
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
+        }
+    }
+
+    /**
      * @Route("/applications/{key}/users/{user}/authorize", methods={"GET"})
      *
      * @param Request $request

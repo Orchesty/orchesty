@@ -13,6 +13,7 @@ use Hanaboso\CommonsBundle\Exception\NodeException;
 use Hanaboso\PipesPhpSdk\Database\Document\Dto\SystemConfigDto;
 use Hanaboso\PipesPhpSdk\Database\Document\Embed\EmbedNode;
 use Hanaboso\Utils\Exception\EnumException;
+use JsonException;
 
 /**
  * Class Node
@@ -32,14 +33,14 @@ class Node
      *
      * @ODM\Field(type="string")
      */
-    protected $schemaId = '';
+    protected string $schemaId;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    protected $name = '';
+    protected string $name;
 
     /**
      * @var string
@@ -47,7 +48,7 @@ class Node
      * @ODM\Field(type="string")
      * @ODM\Index()
      */
-    protected $topology = '';
+    protected string $topology;
 
     /**
      * @var mixed[]|Collection<string, EmbedNode>
@@ -61,42 +62,42 @@ class Node
      *
      * @ODM\Field(type="string")
      */
-    protected $type = TypeEnum::CUSTOM;
+    protected string $type = TypeEnum::CUSTOM;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    protected $handler = HandlerEnum::EVENT;
+    protected string $handler = HandlerEnum::EVENT;
 
     /**
      * @var bool
      *
      * @ODM\Field(type="boolean", options={"default":"1"})
      */
-    protected $enabled = TRUE;
+    protected bool $enabled = TRUE;
 
     /**
      * @var string|null
      *
      * @ODM\Field(type="string")
      */
-    protected $cron = NULL;
+    protected ?string $cron = NULL;
 
     /**
      * @var string|null
      *
      * @ODM\Field(type="string")
      */
-    protected $cronParams = NULL;
+    protected ?string $cronParams = NULL;
 
     /**
      * @var string|null
      *
      * @ODM\Field(type="string")
      */
-    protected $systemConfigs = NULL;
+    protected ?string $systemConfigs = NULL;
 
     /**
      * Node constructor.
@@ -342,6 +343,7 @@ class Node
 
     /**
      * @return SystemConfigDto|null
+     * @throws JsonException
      */
     public function getSystemConfigs(): ?SystemConfigDto
     {

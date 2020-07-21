@@ -7,7 +7,9 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Form;
+use Hanaboso\PipesPhpSdk\Application\Utils\SynchronousAction;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class TestNullApplication
@@ -39,6 +41,26 @@ final class TestNullApplication extends BasicApplicationAbstract
     public function getDescription(): string
     {
         return 'Application for test purposes';
+    }
+
+    /**
+     * @SynchronousAction()
+     * @return string
+     */
+    public function testSynchronous(): string
+    {
+        return 'ok';
+    }
+
+    /**
+     * @SynchronousAction()
+     * @param Request $r
+     *
+     * @return mixed[]
+     */
+    public function returnBody(Request $r): array
+    {
+        return $r->request->all();
     }
 
     /**

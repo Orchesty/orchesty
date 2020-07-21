@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesPhpSdk\Database\Document\Dto;
 
 use Hanaboso\Utils\String\Json;
+use JsonException;
 
 /**
  * Class SystemConfigDto
@@ -84,6 +85,7 @@ final class SystemConfigDto
      * @param string $param
      *
      * @return SystemConfigDto
+     * @throws JsonException
      */
     public static function fromString(string $param): SystemConfigDto
     {

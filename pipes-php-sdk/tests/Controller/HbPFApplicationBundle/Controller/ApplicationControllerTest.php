@@ -21,6 +21,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::listOfApplicationsAction
+     *
+     * @throws Exception
      */
     public function testListOfApplications(): void
     {
@@ -32,6 +34,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::listOfApplicationsAction
+     *
+     * @throws Exception
      */
     public function testListOfApplicationsErr(): void
     {
@@ -70,8 +74,68 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::getSynchronousActionsAction
+     *
+     * @throws Exception
+     */
+    public function testGetSynchronousActionsAction(): void
+    {
+        $response = $this->sendGet(sprintf('/applications/%s/sync/list', 'null'));
+        self::assertEquals(['testSynchronous', 'returnBody'], (array) $response->content);
+
+        $response = $this->sendGet(sprintf('/applications/%s/sync/list', 'example'));
+        self::assertEquals(404, $response->status);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::getSynchronousActionsAction
+     *
+     * @throws Exception
+     */
+    public function testGetSynchronousActionsActionErr(): void
+    {
+        $this->mockHandler('getSynchronousActions', new Exception());
+        $response = $this->sendGet(sprintf('/applications/%s/sync/list', 'null'));
+        self::assertEquals(500, $response->status);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::runSynchronousActionsAction
+     *
+     * @throws Exception
+     */
+    public function testRunSynchronousActionsAction(): void
+    {
+        $response = $this->sendGet(sprintf('/applications/%s/sync/%s', 'null', 'testSynchronous'));
+        self::assertEquals(['ok'], (array) $response->content);
+
+        $response = $this->sendPost(sprintf('/applications/%s/sync/%s', 'null', 'returnBody'), ['data']);
+        self::assertEquals(['data'], (array) $response->content);
+
+        $response = $this->sendGet(sprintf('/applications/%s/sync/%s', 'example', 'testSynchronous'));
+        self::assertEquals(404, $response->status);
+
+        $response = $this->sendGet(sprintf('/applications/%s/sync/%s', 'null', 'notExist'));
+        self::assertEquals(500, $response->status);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::runSynchronousActionsAction
+     *
+     * @throws Exception
+     */
+    public function testRunSynchronousActionsActionErr(): void
+    {
+        $this->mockHandler('runSynchronousAction', new Exception());
+        $response = $this->sendGet(sprintf('/applications/%s/sync/%s', 'null', 'testSynchronous'));
+        self::assertEquals(500, $response->status);
+    }
+
+    /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController
      * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::authorizeApplicationAction
+     *
+     * @throws Exception
      */
     public function testAuthorizeApplicationAction(): void
     {
@@ -83,6 +147,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::authorizeApplicationAction
+     *
+     * @throws Exception
      */
     public function testAuthorizeApplicationActionNotFound(): void
     {
@@ -94,6 +160,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::authorizeApplicationAction
+     *
+     * @throws Exception
      */
     public function testAuthorizeApplicationActionErr(): void
     {
@@ -129,6 +197,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::setAuthorizationTokenAction
+     *
+     * @throws Exception
      */
     public function testSetAuthorizationTokenActionNotFound(): void
     {
@@ -140,6 +210,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::setAuthorizationTokenAction
+     *
+     * @throws Exception
      */
     public function testSetAuthorizationTokenActionErr(): void
     {
@@ -173,6 +245,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::setAuthorizationTokenQueryAction
+     *
+     * @throws Exception
      */
     public function testSetAuthorizationTokenQueryActionNotFound(): void
     {
@@ -184,6 +258,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::setAuthorizationTokenQueryAction
+     *
+     * @throws Exception
      */
     public function testSetAuthorizationTokenQueryActionErr(): void
     {

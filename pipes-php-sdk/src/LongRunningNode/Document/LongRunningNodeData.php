@@ -11,6 +11,7 @@ use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\Utils\Date\DateTimeUtils;
 use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\System\PipesHeaders;
+use JsonException;
 use PhpAmqpLib\Message\AMQPMessage;
 use RabbitMqBundle\Utils\Message;
 
@@ -54,77 +55,77 @@ class LongRunningNodeData
      *
      * @ODM\Field(type="string")
      */
-    private $parentId;
+    private string $parentId;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $correlationId;
+    private string $correlationId;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $sequenceId;
+    private string $sequenceId;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $topologyId;
+    private string $topologyId;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $nodeId;
+    private string $nodeId;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $topologyName;
+    private string $topologyName;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $nodeName;
+    private string $nodeName;
 
     /**
      * @var string|null
      *
      * @ODM\Field(type="string", nullable=true)
      */
-    private $parentProcess;
+    private ?string $parentProcess = NULL;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $processId;
+    private string $processId;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $state;
+    private string $state;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $data;
+    private string $data;
 
     /**
      * @var mixed[]|string
@@ -138,7 +139,7 @@ class LongRunningNodeData
      *
      * @ODM\Field(type="string", nullable=true)
      */
-    private $updatedBy;
+    private ?string $updatedBy = NULL;
 
     /**
      * @var mixed[]|string
@@ -152,7 +153,7 @@ class LongRunningNodeData
      *
      * @ODM\Field(type="string")
      */
-    private $contentType;
+    private string $contentType;
 
     /**
      * LongRunningNodeData constructor.
@@ -414,6 +415,7 @@ class LongRunningNodeData
 
     /**
      * @return mixed[]
+     * @throws JsonException
      */
     public function getHeaders(): array
     {
@@ -454,6 +456,7 @@ class LongRunningNodeData
 
     /**
      * @return mixed[]
+     * @throws JsonException
      */
     public function getAuditLogs(): array
     {
@@ -509,6 +512,7 @@ class LongRunningNodeData
 
     /**
      * @ODM\PostLoad()
+     * @throws JsonException
      */
     public function postLoad(): void
     {
@@ -522,6 +526,7 @@ class LongRunningNodeData
 
     /**
      * @return ProcessDto
+     * @throws JsonException
      */
     public function toProcessDto(): ProcessDto
     {

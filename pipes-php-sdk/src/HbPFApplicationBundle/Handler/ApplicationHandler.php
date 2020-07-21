@@ -3,10 +3,10 @@
 namespace Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler;
 
 use Doctrine\ODM\MongoDB\MongoDBException;
-use Exception;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager;
-use InvalidArgumentException;
+use ReflectionException;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class ApplicationHandler
@@ -56,34 +56,28 @@ final class ApplicationHandler
     }
 
     /**
-     * @param string  $key
-     * @param string  $user
-     * @param mixed[] $data
+     * @param string $key
      *
-     * @return mixed[]
-     * @throws Exception
+     * @return string[]
+     * @throws ApplicationInstallException
+     * @throws ReflectionException
      */
-    public function updateApplicationSettings(string $key, string $user, array $data): array
+    public function getSynchronousActions(string $key): array
     {
-        return $this->applicationManager->saveApplicationSettings($key, $user, $data)->toArray();
+        return $this->applicationManager->getSynchronousActions($key);
     }
 
     /**
      * @param string  $key
-     * @param string  $user
-     * @param mixed[] $data
+     * @param string  $method
+     * @param Request $request
      *
-     * @return mixed[]
-     * @throws Exception
+     * @return mixed
+     * @throws ApplicationInstallException
      */
-    public function updateApplicationPassword(string $key, string $user, array $data): array
+    public function runSynchronousAction(string $key, string $method, Request $request)
     {
-        if (!array_key_exists('password', $data)) {
-            throw new InvalidArgumentException('Field password is not included.');
-        }
-        $password = $data['password'];
-
-        return $this->applicationManager->saveApplicationPassword($key, $user, $password)->toArray();
+        return $this->applicationManager->runSynchronousAction($key, $method, $request);
     }
 
     /**

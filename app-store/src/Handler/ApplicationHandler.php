@@ -11,8 +11,8 @@ use Hanaboso\HbPFAppStore\Model\Webhook\WebhookManager;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
-use Hanaboso\Utils\Exception\DateTimeException;
 use InvalidArgumentException;
+use ReflectionException;
 
 /**
  * Class ApplicationHandler
@@ -23,6 +23,7 @@ final class ApplicationHandler
 {
 
     private const AUTHORIZED           = 'authorized';
+    private const SYNC_METHODS         = 'sync_actions';
     private const WEBHOOK_SETTINGS     = 'webhookSettings';
     private const APPLICATION_SETTINGS = 'applicationSettings';
 
@@ -58,11 +59,15 @@ final class ApplicationHandler
         return [
             'items' => array_map(
                 function (ApplicationInstall $applicationInstall): array {
-                    $application = $this->applicationManager->getApplication($applicationInstall->getKey());
+                    $key         = $applicationInstall->getKey();
+                    $application = $this->applicationManager->getApplication($key);
 
                     return array_merge(
                         $applicationInstall->toArray(),
-                        [self::AUTHORIZED => $application->isAuthorized($applicationInstall)]
+                        [
+                            self::AUTHORIZED   => $application->isAuthorized($applicationInstall),
+                            self::SYNC_METHODS => $this->applicationManager->getSynchronousActions($key),
+                        ]
                     );
                 },
                 $this->applicationManager->getInstalledApplications($user)
@@ -76,6 +81,7 @@ final class ApplicationHandler
      *
      * @return mixed[]
      * @throws ApplicationInstallException
+     * @throws ReflectionException
      */
     public function getApplicationByKeyAndUser(string $key, string $user): array
     {
@@ -91,6 +97,7 @@ final class ApplicationHandler
                 self::WEBHOOK_SETTINGS     => $application->getApplicationType() === ApplicationTypeEnum::WEBHOOK ?
                     $this->webhookManager->getWebhooks($application, $user) :
                     [],
+                self::SYNC_METHODS         => $this->applicationManager->getSynchronousActions($key),
             ],
         );
     }
@@ -102,7 +109,7 @@ final class ApplicationHandler
      * @return mixed[]
      * @throws ApplicationInstallException
      * @throws MongoDBException
-     * @throws DateTimeException
+     * @throws ReflectionException
      */
     public function installApplication(string $key, string $user): array
     {
@@ -115,6 +122,7 @@ final class ApplicationHandler
             [
                 self::AUTHORIZED           => $application->isAuthorized($applicationInstall),
                 self::APPLICATION_SETTINGS => $application->getApplicationForm($applicationInstall),
+                self::SYNC_METHODS         => $this->applicationManager->getSynchronousActions($key),
             ],
         );
     }
@@ -135,6 +143,7 @@ final class ApplicationHandler
             [
                 self::AUTHORIZED           => FALSE,
                 self::APPLICATION_SETTINGS => NULL,
+                self::SYNC_METHODS         => [],
             ],
         );
     }

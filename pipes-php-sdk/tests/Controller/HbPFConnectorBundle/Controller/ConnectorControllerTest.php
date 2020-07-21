@@ -77,6 +77,8 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Controller\ConnectorController::processEventTestAction
+     *
+     * @throws Exception
      */
     public function testProcessEventTestActionErr(): void
     {
@@ -86,6 +88,8 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Controller\ConnectorController::processActionAction
+     *
+     * @throws Exception
      */
     public function testProcessActionActionErr(): void
     {
@@ -97,6 +101,8 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Controller\ConnectorController::processActionAction
+     *
+     * @throws Exception
      */
     public function testProcessActionActionErr2(): void
     {
@@ -126,6 +132,8 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Controller\ConnectorController::processActionTestAction
+     *
+     * @throws Exception
      */
     public function testProcessActionTestActionErr(): void
     {
@@ -135,6 +143,8 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Controller\ConnectorController::listOfConnectorsAction
+     *
+     * @throws Exception
      */
     public function testListOfConnectorsAction(): void
     {

@@ -7,6 +7,7 @@ use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeAbstract as BaseLongRunningNodeAbstract;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeInterface;
+use JsonException;
 use PhpAmqpLib\Message\AMQPMessage;
 
 /**
@@ -33,6 +34,7 @@ abstract class LongRunningNodeAbstract extends BaseLongRunningNodeAbstract imple
      * @param mixed[]             $requestData
      *
      * @return ProcessDto
+     * @throws JsonException
      */
     public function afterAction(LongRunningNodeData $data, array $requestData): ProcessDto
     {

@@ -79,6 +79,8 @@ final class NodeTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\Database\Document\Node::setType
+     *
+     * @throws Exception
      */
     public function testSetTypeErr(): void
     {
@@ -89,6 +91,8 @@ final class NodeTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\Database\Document\Node::setHandler
+     *
+     * @throws Exception
      */
     public function testSetHandler(): void
     {
@@ -99,6 +103,8 @@ final class NodeTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\Database\Document\Node::getSystemConfigs
+     *
+     * @throws Exception
      */
     public function testGetSystemConfigs(): void
     {

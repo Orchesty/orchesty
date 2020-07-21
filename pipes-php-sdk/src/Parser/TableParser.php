@@ -5,6 +5,7 @@ namespace Hanaboso\PipesPhpSdk\Parser;
 use Hanaboso\PipesPhpSdk\Parser\Exception\TableParserException;
 use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\String\Strings;
+use JsonException;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -69,7 +70,9 @@ final class TableParser implements TableParserInterface
      * @param bool|null $hasHeaders
      *
      * @return string
+     * @throws Exception
      * @throws TableParserException
+     * @throws JsonException
      */
     public function parseFromJson(
         string $path,

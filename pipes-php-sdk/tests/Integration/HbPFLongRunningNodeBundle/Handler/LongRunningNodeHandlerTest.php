@@ -131,6 +131,20 @@ final class LongRunningNodeHandlerTest extends DatabaseTestCaseAbstract
     public function testUpdateRunningNode(): void
     {
         $node = new LongRunningNodeData();
+        $node
+            ->setParentId('1')
+            ->setTopologyName('topology')
+            ->setCorrelationId('2')
+            ->setSequenceId('3')
+            ->setProcessId('7')
+            ->setState('state')
+            ->setAuditLogs([])
+            ->setUpdatedBy('4')
+            ->setTopologyId('5')
+            ->setNodeId('6')
+            ->setNodeName('node')
+            ->setData('data')
+            ->setContentType('string');
         $this->pfd($node);
 
         $result = $this->handler->updateLongRunningNode($node->getId(), ['data' => ['foo' => 'bar']]);

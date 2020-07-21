@@ -31,22 +31,22 @@ init: .env docker-up-force composer-install
 
 #CI
 phpcodesniffer:
-	$(DE) vendor/bin/phpcs --standard=tests/ruleset.xml src tests
+	$(DE) vendor/bin/phpcs --parallel=$$(nproc) --standard=tests/ruleset.xml src tests
 
 phpstan:
 	$(DE) vendor/bin/phpstan analyse -c tests/phpstan.neon -l 8 src tests
 
 phpunit:
-	$(DE) vendor/bin/phpunit -c vendor/hanaboso/php-check-utils/phpunit.xml.dist tests/Unit
+	$(DE) vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --colors tests/Unit
 
 phpcontroller:
-	$(DE) vendor/bin/phpunit -c vendor/hanaboso/php-check-utils/phpunit.xml.dist tests/Controller
+	$(DE) vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --colors tests/Controller
 
 phpintegration:
-	$(DE) vendor/bin/phpunit -c vendor/hanaboso/php-check-utils/phpunit.xml.dist tests/Integration
+	$(DE) vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --colors tests/Integration
 
 phpcoverage:
-	$(DE) vendor/bin/paratest -c vendor/hanaboso/php-check-utils/phpunit.xml.dist -p 8 --coverage-html var/coverage --whitelist src tests
+	$(DE) vendor/bin/paratest -c vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --coverage-html var/coverage --whitelist src tests
 
 phpcoverage-ci:
 	$(DE) vendor/hanaboso/php-check-utils/bin/coverage.sh

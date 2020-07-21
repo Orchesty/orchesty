@@ -9,7 +9,7 @@ use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;
-use Symfony\Component\Routing\RouteCollectionBuilder;
+use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 
 /**
  * Class Kernel
@@ -57,16 +57,16 @@ final class Kernel extends BaseKernel
     }
 
     /**
-     * @param RouteCollectionBuilder $routes
+     * @param RoutingConfigurator $routes
      *
      * @throws Exception
      */
-    protected function configureRoutes(RouteCollectionBuilder $routes): void
+    protected function configureRoutes(RoutingConfigurator $routes): void
     {
         $confDir = $this->getConfigDir();
-        $routes->import(sprintf('%s/{routes}/*%s', $confDir, self::CONFIG_EXTS), '/', 'glob');
-        $routes->import(sprintf('%s/{routes}/%s/**/*%s', $confDir, $this->environment, self::CONFIG_EXTS), '/', 'glob');
-        $routes->import(sprintf('%s/{routes}%s', $confDir, self::CONFIG_EXTS), '/', 'glob');
+        $routes->import(sprintf('%s/{routes}/*%s', $confDir, self::CONFIG_EXTS), 'glob');
+        $routes->import(sprintf('%s/{routes}/%s/**/*%s', $confDir, $this->environment, self::CONFIG_EXTS), 'glob');
+        $routes->import(sprintf('%s/{routes}%s', $confDir, self::CONFIG_EXTS), 'glob');
     }
 
     /**

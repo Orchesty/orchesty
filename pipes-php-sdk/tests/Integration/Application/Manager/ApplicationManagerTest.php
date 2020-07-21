@@ -2,15 +2,21 @@
 
 namespace PipesPhpSdkTests\Integration\Application\Manager;
 
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\CachedReader;
+use Doctrine\Common\Cache\ApcuCache;
 use Exception;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Loader\ApplicationLoader;
 use Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use PipesPhpSdkTests\DatabaseTestCaseAbstract;
 use PipesPhpSdkTests\Integration\Application\TestOAuth2NullApplication;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class ApplicationManagerTest
@@ -41,6 +47,55 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
     public function testGetApplication(): void
     {
         self::assertEquals('null-key', $this->manager->getApplication('null')->getKey());
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager::getSynchronousActions
+     *
+     * @throws Exception
+     */
+    public function testGetSynchronousActions(): void
+    {
+        self::assertEquals(['testSynchronous', 'returnBody'], $this->manager->getSynchronousActions('null'));
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager::runSynchronousAction
+     *
+     * @throws Exception
+     */
+    public function testRunSynchronousAction(): void
+    {
+        $r = new Request([]);
+        $r->setMethod(CurlManager::METHOD_GET);
+
+        self::assertEquals(
+            'ok',
+            $this->manager->runSynchronousAction('null', 'testSynchronous', $r)
+        );
+
+        $r = new Request([], ['data']);
+        $r->setMethod(CurlManager::METHOD_POST);
+
+        self::assertEquals(
+            ['data'],
+            $this->manager->runSynchronousAction('null', 'returnBody', $r)
+        );
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager::runSynchronousAction
+     *
+     * @throws Exception
+     */
+    public function testRunSynchronousActionException(): void
+    {
+        $r = new Request([]);
+        $r->setMethod(CurlManager::METHOD_GET);
+
+        self::expectException(ApplicationInstallException::class);
+        self::expectExceptionCode(ApplicationInstallException::METHOD_NOT_FOUND);
+        $this->manager->runSynchronousAction('null', 'notExist', $r);
     }
 
     /**
@@ -93,7 +148,8 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
         $app->expects(self::any())->method('setAuthorizationToken')->willReturnSelf();
         $loader = self::createPartialMock(ApplicationLoader::class, ['getApplication']);
         $loader->expects(self::any())->method('getApplication')->willReturn($app);
-        $manager = new ApplicationManager($this->dm, $loader);
+        $reader  = new CachedReader(new AnnotationReader(), new ApcuCache());
+        $manager = new ApplicationManager($this->dm, $loader, $reader);
 
         self::assertEquals(
             ['redirect_url' => '/test/redirect'],
