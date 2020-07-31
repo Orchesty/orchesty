@@ -33,3 +33,19 @@ spec:
             limits:
               memory: 1Gi
               cpu: "2"
+{{- with .Values.global.monolith.hostPathMounts }}
+{{- if .}}
+          volumeMounts:
+{{- range . }}
+            - name: {{ .name }}
+              mountPath: {{ .dest }}
+              mountPropagation: HostToContainer
+{{- end }}
+      volumes:
+{{- range . }}
+        - name: {{ .name }}
+          hostPath:
+            path: {{ .src }}
+{{- end }}
+{{- end }}
+{{- end }}

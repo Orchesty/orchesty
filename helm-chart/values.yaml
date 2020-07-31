@@ -44,6 +44,7 @@ global:
 
   monolith:
     extraEnv: []
+    hostPathMounts: []
 
   startingPoint:
     serviceAnnotations: {}
