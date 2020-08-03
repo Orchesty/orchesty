@@ -125,7 +125,9 @@ class AppStoreDetail extends Component {
             type: {authorizationType.substr(0, 1).toUpperCase() + authorizationType.substr(1).toLowerCase()} {expires && `(expires ${expires})`}
           </h5>
           <h5>Service name: hbpf.application.{application}</h5>
-          {syncMethods.length > 0 ? (<h5>Available synchronous methods: {syncMethods.join(', ')}</h5>) : ('')}
+          {syncMethods ? (
+            syncMethods.length > 0 ? (<h5>Available synchronous methods: {syncMethods.join(', ')}</h5>) : ('')
+          ) : ('')}
         </div>
         <br/>
         <br/>
