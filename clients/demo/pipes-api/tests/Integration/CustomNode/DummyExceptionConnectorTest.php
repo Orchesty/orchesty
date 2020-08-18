@@ -26,8 +26,8 @@ final class DummyExceptionConnectorTest extends KernelTestCaseAbstract
     public function testProcess(): void
     {
         $this->getFunctionMock('Demo\CustomNode', 'mt_rand')
-            ->expects(self::at(0))
-            ->willReturn(5);
+            ->expects(self::exactly(1))
+            ->willReturnOnConsecutiveCalls(...[5]);
 
         /** @var DummyExceptionConnector $connector */
         $connector = self::$container->get('hbpf.custom_node.dummy-exception');

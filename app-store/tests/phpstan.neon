@@ -6,3 +6,16 @@ parameters:
 		objectManagerLoader: DocumentManagerLoader.php
 	symfony:
 		container_xml_path: %rootDir%/../../../var/cache/test/HbPFAppStoreTests_app_KernelTestDebugContainer.xml
+	ergebnis:
+		classesAllowedToBeExtended:
+			- Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract
+			- Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager
+			- Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract
+			- Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1\OAuth1ApplicationAbstract
+			- HbPFAppStoreTests\ControllerTestCaseAbstract
+			- HbPFAppStoreTests\DatabaseTestCaseAbstract
+			- HbPFAppStoreTests\KernelTestCaseAbstract
+
+		classesNotRequiredToBeAbstractOrFinal:
+			- Hanaboso\HbPFAppStore\Document\Synchronization
+			- Hanaboso\HbPFAppStore\Document\Webhook

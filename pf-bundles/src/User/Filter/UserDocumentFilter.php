@@ -11,7 +11,7 @@ use Hanaboso\UserBundle\Document\User;
  *
  * @package Hanaboso\PipesFramework\User\Filter
  */
-class UserDocumentFilter extends GridFilterAbstract
+final class UserDocumentFilter extends GridFilterAbstract
 {
 
     /**

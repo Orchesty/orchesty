@@ -17,7 +17,7 @@ use Psr\Log\NullLogger;
  *
  * @package Demo\CustomNode
  */
-class DummyExceptionConnector extends CustomNodeAbstract implements LoggerAwareInterface
+final class DummyExceptionConnector extends CustomNodeAbstract implements LoggerAwareInterface
 {
 
     /**

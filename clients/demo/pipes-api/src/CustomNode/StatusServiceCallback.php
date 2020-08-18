@@ -3,7 +3,9 @@
 namespace Demo\CustomNode;
 
 use Hanaboso\CommonsBundle\Enum\NotificationEventEnum;
+use Hanaboso\CommonsBundle\Event\ProcessStatusEvent;
 use Hanaboso\PipesPhpSdk\StatusService\StatusServiceCallback as PipesStatusServiceCallback;
+use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\String\Json;
 use JsonException;
 use PhpAmqpLib\Message\AMQPMessage;
@@ -53,6 +55,7 @@ final class StatusServiceCallback extends PipesStatusServiceCallback
      * @param int         $channelId
      *
      * @throws JsonException
+     * @throws PipesFrameworkException
      */
     public function processMessage(AMQPMessage $message, Connection $connection, int $channelId): void
     {
@@ -78,6 +81,25 @@ final class StatusServiceCallback extends PipesStatusServiceCallback
                 );
             }
         }
+
+        if (!isset($data['process_id'])) {
+            throw new PipesFrameworkException(
+                "Missing message's content in StatusServiceCallback [process_id].",
+                PipesFrameworkException::REQUIRED_PARAMETER_NOT_FOUND
+            );
+        }
+
+        if (!isset($data['success'])) {
+            throw new PipesFrameworkException(
+                "Missing message's content in StatusServiceCallback [success].",
+                PipesFrameworkException::REQUIRED_PARAMETER_NOT_FOUND
+            );
+        }
+
+        $this->eventDispatcher->dispatch(
+            new ProcessStatusEvent($data['process_id'], (bool) $data['success']),
+            ProcessStatusEvent::PROCESS_FINISHED
+        );
 
         Message::ack($message, $connection, $channelId);
     }

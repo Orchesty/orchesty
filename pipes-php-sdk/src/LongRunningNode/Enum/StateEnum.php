@@ -12,15 +12,17 @@ use Hanaboso\Utils\Enum\EnumAbstract;
 final class StateEnum extends EnumAbstract
 {
 
-    public const PENDING     = 'pending';
-    public const IN_PROGRESS = 'in_progress';
+    public const NEW      = 'new';
+    public const ACCEPTED = 'accepted';
+    public const CANCELED = 'canceled';
 
     /**
      * @var string[]
      */
     protected static array $choices = [
-        self::PENDING     => self::PENDING,
-        self::IN_PROGRESS => self::IN_PROGRESS,
+        self::NEW      => self::NEW,
+        self::ACCEPTED => self::ACCEPTED,
+        self::CANCELED => self::CANCELED,
     ];
 
 }

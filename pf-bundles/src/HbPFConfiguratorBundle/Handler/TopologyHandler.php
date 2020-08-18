@@ -34,7 +34,7 @@ use Throwable;
  *
  * @package Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler
  */
-class TopologyHandler
+final class TopologyHandler
 {
 
     /**

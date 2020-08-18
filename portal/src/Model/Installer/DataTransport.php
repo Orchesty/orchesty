@@ -9,7 +9,7 @@ use Hanaboso\Portal\Model\Installer\Exception\InstallerException;
  *
  * @package Hanaboso\Portal\Model\Installer
  */
-class DataTransport
+final class DataTransport
 {
 
     /**

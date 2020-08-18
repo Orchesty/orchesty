@@ -12,6 +12,7 @@ services:
             REDIS_DSN: redis://redis
             STARTING_POINT_DSN: starting-point:8080
             RABBIT_DSN: amqp://rabbitmq:5672/
+            USER_TASK_LISTENER_ENABLE: 'false'
 
     batch:
         image: dkr.hanaboso.net/pipes/demo/php-api:master
@@ -24,6 +25,7 @@ services:
             REDIS_DSN: redis://redis
             STARTING_POINT_DSN: starting-point:8080
             RABBIT_DSN: amqp://rabbitmq:5672/
+            USER_TASK_LISTENER_ENABLE: 'false'
         command: bin/console rabbit_mq:consumer:batch
 
     batch-connector:
@@ -37,6 +39,7 @@ services:
             REDIS_DSN: redis://redis
             STARTING_POINT_DSN: starting-point:8080
             RABBIT_DSN: amqp://rabbitmq:5672/
+            USER_TASK_LISTENER_ENABLE: 'false'
         command: bin/console rabbit_mq:consumer:batch-connector
 
     long-running-node:
@@ -50,6 +53,7 @@ services:
             REDIS_DSN: redis://redis
             STARTING_POINT_DSN: starting-point:8080
             RABBIT_DSN: amqp://rabbitmq:5672/
+            USER_TASK_LISTENER_ENABLE: 'false'
         command: bin/console rabbit_mq:consumer:long-running-node
 
     status-service:
@@ -63,6 +67,7 @@ services:
             REDIS_DSN: redis://redis
             STARTING_POINT_DSN: starting-point:8080
             RABBIT_DSN: amqp://rabbitmq:5672/
+            USER_TASK_LISTENER_ENABLE: 'false'
         command: bin/console rabbit_mq:consumer:status-service
 
     multi-probe:

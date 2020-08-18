@@ -18,7 +18,7 @@ use Hanaboso\PipesPhpSdk\Database\Repository\TopologyRepository;
  *
  * @package Hanaboso\PipesFramework\Configurator\Model
  */
-class CategoryManager
+final class CategoryManager
 {
 
     /**

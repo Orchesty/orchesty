@@ -11,7 +11,7 @@ use Hanaboso\Portal\Model\Installer\Installer;
  *
  * @package Hanaboso\Portal\Handler
  */
-class InstallerHandler
+final class InstallerHandler
 {
 
     /**

@@ -7,3 +7,9 @@ parameters:
     ignoreErrors:
         - '#Variable (property access|method call) on#'
         - '#Variable method call on \$this(Hanaboso\Portal\Model\Installer\Installer).#'
+    ergebnis:
+        classesAllowedToBeExtended:
+            - Hanaboso\Portal\DependencyInjection\PortalExtension
+            - Hanaboso\Utils\Exception\PipesFrameworkExceptionAbstract
+            - PortalTests\ControllerTestCaseAbstract
+            - PortalTests\KernelTestCaseAbstract

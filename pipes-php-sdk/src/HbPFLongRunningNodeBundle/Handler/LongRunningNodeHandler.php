@@ -9,9 +9,11 @@ use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\MongoDataGrid\GridRequestDto;
 use Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Loader\LongRunningNodeLoader;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData;
+use Hanaboso\PipesPhpSdk\LongRunningNode\Enum\StateEnum;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Exception\LongRunningNodeException;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeFilter;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeManager;
+use Hanaboso\Utils\Exception\EnumException;
 use Hanaboso\Utils\System\PipesHeaders;
 
 /**
@@ -71,6 +73,7 @@ final class LongRunningNodeHandler
      * @return ProcessDto
      * @throws LongRunningNodeException
      * @throws MongoDBException
+     * @throws EnumException
      */
     public function process(string $nodeId, array $data, array $headers): ProcessDto
     {
@@ -86,13 +89,13 @@ final class LongRunningNodeHandler
             );
         }
 
-        $this->dm->remove($doc);
+        $stopHeader = PipesHeaders::get(PipesHeaders::PF_STOP, $headers);
+        $doc->setState($stopHeader ? StateEnum::CANCELED : StateEnum::ACCEPTED);
         $this->dm->flush();
         $this->dm->clear();
 
         $dto = $service->afterAction($doc, $data);
 
-        $stopHeader = PipesHeaders::get(PipesHeaders::PF_STOP, $headers);
         if ($stopHeader) {
             $dto->addHeader(PipesHeaders::createKey(PipesHeaders::RESULT_CODE), $stopHeader);
         }

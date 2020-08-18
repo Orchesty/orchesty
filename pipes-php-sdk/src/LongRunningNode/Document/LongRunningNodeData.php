@@ -8,6 +8,7 @@ use Hanaboso\CommonsBundle\Database\Traits\Document\CreatedTrait;
 use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
 use Hanaboso\CommonsBundle\Database\Traits\Document\UpdatedTrait;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\PipesPhpSdk\LongRunningNode\Enum\StateEnum;
 use Hanaboso\Utils\Date\DateTimeUtils;
 use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\System\PipesHeaders;
@@ -45,6 +46,7 @@ class LongRunningNodeData
     public const NODE_NAME     = 'nodeName';
     public const TOPOLOGY_NAME = 'topologyName';
     public const PROCESS_ID    = 'processId';
+    public const STATE         = 'state';
     public const CREATED       = 'created';
     public const UPDATED       = 'updated';
     public const AUDIT_LOGS    = 'auditLogs';
@@ -118,7 +120,7 @@ class LongRunningNodeData
      *
      * @ODM\Field(type="string")
      */
-    private string $state;
+    private string $state = StateEnum::NEW;
 
     /**
      * @var string
@@ -553,8 +555,8 @@ class LongRunningNodeData
             'state'          => $this->state,
             'data'           => $this->data,
             'headers'        => $this->headers,
-            'created'        => $this->created->format('Y-m-d H:i:s'),
-            'updated'        => $this->updated->format('Y-m-d H:i:s'),
+            'created'        => $this->created->format(DateTimeUtils::DATE_TIME),
+            'updated'        => $this->updated->format(DateTimeUtils::DATE_TIME),
             'updated_by'     => $this->updatedBy,
             'audit_logs'     => $this->auditLogs,
             'content_type'   => $this->contentType,

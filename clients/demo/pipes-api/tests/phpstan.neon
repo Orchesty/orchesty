@@ -4,3 +4,11 @@ includes:
 parameters:
 	symfony:
 		container_xml_path: %rootDir%/../../../var/cache/test/Demo_KernelTestDebugContainer.xml
+	ergebnis:
+		classesAllowedToBeExtended:
+			- DemoTests\KernelTestCaseAbstract
+			- Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract
+			- Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract
+			- Hanaboso\PipesPhpSdk\CustomNode\Impl\RabbitCustomNode
+			- Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeAbstract
+			- Hanaboso\PipesPhpSdk\StatusService\StatusServiceCallback

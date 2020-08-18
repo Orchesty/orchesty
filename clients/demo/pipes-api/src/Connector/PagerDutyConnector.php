@@ -23,7 +23,7 @@ use JK\Utils\CzechHolidays;
  *
  * @package Demo\Connector
  */
-class PagerDutyConnector extends ConnectorAbstract
+final class PagerDutyConnector extends ConnectorAbstract
 {
 
     use ProcessEventNotSupportedTrait;

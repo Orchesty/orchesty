@@ -17,7 +17,7 @@ use Hanaboso\Utils\String\Json;
  *
  * @package Demo\CustomNode
  */
-class SplitFileBatch extends CustomNodeAbstract implements BatchInterface
+final class SplitFileBatch extends CustomNodeAbstract implements BatchInterface
 {
 
     use BatchTrait;

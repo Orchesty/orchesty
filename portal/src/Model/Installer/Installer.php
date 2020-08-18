@@ -12,7 +12,7 @@ use Throwable;
  *
  * @package Hanaboso\Portal\Model\Installer
  */
-class Installer
+final class Installer
 {
 
     public const ELASTICSEARCH = 'elasticsearch';

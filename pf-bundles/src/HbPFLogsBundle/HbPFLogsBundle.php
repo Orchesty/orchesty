@@ -13,7 +13,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  *
  * @codeCoverageIgnore
  */
-class HbPFLogsBundle extends Bundle
+final class HbPFLogsBundle extends Bundle
 {
 
     public const KEY = 'hb_pf_logs';

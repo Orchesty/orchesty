@@ -12,7 +12,7 @@ use Hanaboso\PipesFramework\User\Filter\UserDocumentFilter;
  *
  * @package Hanaboso\PipesFramework\User\Manager
  */
-class UserManager
+final class UserManager
 {
 
     /**

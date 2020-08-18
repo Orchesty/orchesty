@@ -24,7 +24,7 @@ use Throwable;
  *
  * @package Hanaboso\PipesFramework\Configurator\Cron
  */
-class CronManager
+final class CronManager
 {
 
     private const CURL_COMMAND = "echo \"[CRON] [$(date +'%%Y-%%m-%%dT%%TZ')] Requesting %s: $(curl -H 'Accept: application/json' -H 'Content-Type: application/json' -X POST -d '{%s}' -s %s)\" >> /proc/1/fd/1";

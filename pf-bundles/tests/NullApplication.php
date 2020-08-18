@@ -22,7 +22,7 @@ use Hanaboso\Utils\String\Json;
  *
  * @package PipesFrameworkTests
  */
-class NullApplication extends BasicApplicationAbstract implements WebhookApplicationInterface
+final class NullApplication extends BasicApplicationAbstract implements WebhookApplicationInterface
 {
 
     /**

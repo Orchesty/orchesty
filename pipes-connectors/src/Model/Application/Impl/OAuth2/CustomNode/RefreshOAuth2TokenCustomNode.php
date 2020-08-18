@@ -21,7 +21,7 @@ use Hanaboso\Utils\System\PipesHeaders;
  *
  * @package Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\CustomNode
  */
-class RefreshOAuth2TokenCustomNode extends CustomNodeAbstract
+final class RefreshOAuth2TokenCustomNode extends CustomNodeAbstract
 {
 
     /**

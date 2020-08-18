@@ -26,7 +26,7 @@ use Throwable;
  *
  * @package Demo\Command
  */
-class DownloaderCommand extends Command
+final class DownloaderCommand extends Command
 {
 
     /**

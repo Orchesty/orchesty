@@ -14,7 +14,7 @@ use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
  *
  * @package Demo\CustomNode
  */
-class IdnesConnector extends CustomNodeAbstract
+final class IdnesConnector extends CustomNodeAbstract
 {
 
     /**

@@ -19,7 +19,7 @@ use Symfony\Component\Finder\SplFileInfo;
  *
  * @package Hanaboso\PipesFramework\TopologyInstaller
  */
-class TopologiesComparator
+final class TopologiesComparator
 {
 
     /**

@@ -9,7 +9,7 @@ use Exception;
  *
  * @package Hanaboso\Portal\Model\Installer\Exception
  */
-class InstallerException extends Exception
+final class InstallerException extends Exception
 {
 
     public const INVALID_INPUT = 0;

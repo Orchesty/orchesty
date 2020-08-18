@@ -20,7 +20,7 @@ use Throwable;
  *
  * @package Hanaboso\PipesFramework\Notification\Model
  */
-class NotificationManager implements LoggerAwareInterface
+final class NotificationManager implements LoggerAwareInterface
 {
 
     private const LIST = '%s/notifications/settings';

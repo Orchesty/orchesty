@@ -18,7 +18,7 @@ use HbPFConnectorsTests\DataProvider;
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Shoptet\Connector
  */
-class ShoptetRegisterWebhookConnectorTest extends DatabaseTestCaseAbstract
+final class ShoptetRegisterWebhookConnectorTest extends DatabaseTestCaseAbstract
 {
 
     use PrivateTrait;

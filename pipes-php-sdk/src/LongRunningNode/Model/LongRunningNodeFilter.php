@@ -5,6 +5,7 @@ namespace Hanaboso\PipesPhpSdk\LongRunningNode\Model;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Hanaboso\MongoDataGrid\GridFilterAbstract;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData;
+use Hanaboso\PipesPhpSdk\LongRunningNode\Enum\StateEnum;
 
 /**
  * Class LongRunningNodeFilter
@@ -79,7 +80,7 @@ final class LongRunningNodeFilter extends GridFilterAbstract
                     LongRunningNodeData::NODE_NAME,
                     LongRunningNodeData::PROCESS_ID,
                 ]
-            );
+            )->field(LongRunningNodeData::STATE)->equals(StateEnum::NEW);
     }
 
     /**

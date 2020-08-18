@@ -14,7 +14,7 @@ use Hanaboso\Utils\String\Json;
  *
  * @package Demo\CustomNode
  */
-class SplitFileBatch2 extends RabbitCustomNode
+final class SplitFileBatch2 extends RabbitCustomNode
 {
 
     /**

@@ -16,7 +16,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
  * @package Hanaboso\HbPFConnectors\DependencyInjection
  * @codeCoverageIgnore
  */
-class HbPFConnectorsExtension extends Extension implements PrependExtensionInterface
+final class HbPFConnectorsExtension extends Extension implements PrependExtensionInterface
 {
 
     /**

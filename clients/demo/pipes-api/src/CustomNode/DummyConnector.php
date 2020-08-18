@@ -10,7 +10,7 @@ use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
  *
  * @package Demo\CustomNode
  */
-class DummyConnector extends CustomNodeAbstract
+final class DummyConnector extends CustomNodeAbstract
 {
 
     /**

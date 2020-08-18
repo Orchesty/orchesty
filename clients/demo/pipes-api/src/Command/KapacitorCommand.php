@@ -15,7 +15,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  *
  * @package Demo\Command
  */
-class KapacitorCommand extends Command
+final class KapacitorCommand extends Command
 {
 
     /**

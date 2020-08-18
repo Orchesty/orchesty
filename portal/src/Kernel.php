@@ -18,7 +18,7 @@ use Symfony\Component\Routing\RouteCollectionBuilder;
  * @package Hanaboso\Portal
  * @codeCoverageIgnore
  */
-class Kernel extends BaseKernel
+final class Kernel extends BaseKernel
 {
 
     use MicroKernelTrait;

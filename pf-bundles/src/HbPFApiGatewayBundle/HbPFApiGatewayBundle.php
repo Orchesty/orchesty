@@ -9,7 +9,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  *
  * @package Hanaboso\PipesFramework\HbPFApiGatewayBundle
  */
-class HbPFApiGatewayBundle extends Bundle
+final class HbPFApiGatewayBundle extends Bundle
 {
 
 }

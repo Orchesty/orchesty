@@ -16,7 +16,7 @@ use Throwable;
  *
  * @package Hanaboso\Portal\Controller
  */
-class InstallerController
+final class InstallerController
 {
 
     use ControllerTrait;

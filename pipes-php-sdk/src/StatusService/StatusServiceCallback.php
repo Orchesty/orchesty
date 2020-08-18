@@ -24,7 +24,7 @@ class StatusServiceCallback implements CallbackInterface
     /**
      * @var EventDispatcherInterface
      */
-    private EventDispatcherInterface $eventDispatcher;
+    protected EventDispatcherInterface $eventDispatcher;
 
     /**
      * StatusServiceCallback constructor.

@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @package Demo\Controller
  */
-class DefaultController
+final class DefaultController
 {
 
     use ControllerTrait;

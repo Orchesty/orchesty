@@ -10,7 +10,7 @@ use Hanaboso\PipesPhpSdk\Database\Document\Topology;
  *
  * @package Hanaboso\PipesFramework\Configurator\Utils
  */
-class CronUtils
+final class CronUtils
 {
 
     /**

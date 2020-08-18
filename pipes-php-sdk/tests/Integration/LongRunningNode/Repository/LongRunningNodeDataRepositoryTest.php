@@ -4,6 +4,7 @@ namespace PipesPhpSdkTests\Integration\LongRunningNode\Repository;
 
 use Exception;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData;
+use Hanaboso\PipesPhpSdk\LongRunningNode\Enum\StateEnum;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Repository\LongRunningNodeDataRepository;
 use PipesPhpSdkTests\DatabaseTestCaseAbstract;
 
@@ -14,6 +15,25 @@ use PipesPhpSdkTests\DatabaseTestCaseAbstract;
  */
 final class LongRunningNodeDataRepositoryTest extends DatabaseTestCaseAbstract
 {
+
+    /**
+     * @var LongRunningNodeDataRepository
+     */
+    private LongRunningNodeDataRepository $repository;
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Repository\LongRunningNodeDataRepository::getProcessed
+     *
+     * @throws Exception
+     */
+    public function testGetProcessed(): void
+    {
+        $this->dm->persist((new LongRunningNodeData())->setProcessId('processId')->setState(StateEnum::ACCEPTED));
+        $this->dm->flush();
+
+        self::assertNotNull($this->repository->getProcessed('processId'));
+        self::assertNull($this->repository->getProcessed('anotherProcessId'));
+    }
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Repository\LongRunningNodeDataRepository::getGroupStats
@@ -34,6 +54,16 @@ final class LongRunningNodeDataRepositoryTest extends DatabaseTestCaseAbstract
             ],
             $res
         );
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->repository = $this->dm->getRepository(LongRunningNodeData::class);
     }
 
     /**

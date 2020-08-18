@@ -19,7 +19,7 @@ use Hanaboso\Utils\String\Json;
  *
  * @package Demo\CustomNode
  */
-class SendDutyEmail extends CustomNodeAbstract
+final class SendDutyEmail extends CustomNodeAbstract
 {
 
     private const FROM    = 'dev.email.hb@gmail.com';

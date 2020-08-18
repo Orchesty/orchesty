@@ -15,7 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @package Hanaboso\PipesFramework\HbPFLogsBundle\Controller
  */
-class LogsController
+final class LogsController
 {
 
     use ControllerTrait;

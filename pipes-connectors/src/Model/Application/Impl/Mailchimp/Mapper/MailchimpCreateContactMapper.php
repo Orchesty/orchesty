@@ -12,7 +12,7 @@ use Hanaboso\Utils\String\Json;
  *
  * @package Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\Mapper
  */
-class MailchimpCreateContactMapper extends CustomNodeAbstract
+final class MailchimpCreateContactMapper extends CustomNodeAbstract
 {
 
     /**

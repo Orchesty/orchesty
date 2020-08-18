@@ -26,20 +26,6 @@ abstract class ApplicationAbstract implements ApplicationInterface
     }
 
     /**
-     * @return mixed[]
-     */
-    public function toArray(): array
-    {
-        return [
-            'name'               => $this->getName(),
-            'authorization_type' => $this->getAuthorizationType(),
-            'application_type'   => $this->getApplicationType(),
-            'key'                => $this->getKey(),
-            'description'        => $this->getDescription(),
-        ];
-    }
-
-    /**
      * @param ApplicationInstall $applicationInstall
      *
      * @return mixed[]
@@ -91,6 +77,20 @@ abstract class ApplicationAbstract implements ApplicationInterface
     public function getUri(?string $url): Uri
     {
         return new Uri(sprintf('%s', ltrim($url ?? '', '/')));
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public function toArray(): array
+    {
+        return [
+            'name'               => $this->getName(),
+            'authorization_type' => $this->getAuthorizationType(),
+            'application_type'   => $this->getApplicationType(),
+            'key'                => $this->getKey(),
+            'description'        => $this->getDescription(),
+        ];
     }
 
 }

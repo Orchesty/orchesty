@@ -13,7 +13,7 @@ use Hanaboso\Utils\System\PipesHeaders;
  *
  * @package Demo\CustomNode
  */
-class DummyConnectorSplit extends CustomNodeAbstract
+final class DummyConnectorSplit extends CustomNodeAbstract
 {
 
     /**

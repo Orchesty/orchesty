@@ -14,7 +14,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
  * @package Hanaboso\Portal\DependencyInjection
  * @codeCoverageIgnore
  */
-class PortalExtension extends Extension
+final class PortalExtension extends Extension
 {
 
     /**

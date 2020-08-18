@@ -25,7 +25,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
  *
  * @package Hanaboso\PipesFramework\ApiGateway\Listener
  */
-class RepeaterListener implements EventSubscriberInterface, LoggerAwareInterface
+final class RepeaterListener implements EventSubscriberInterface, LoggerAwareInterface
 {
 
     use ControllerTrait;

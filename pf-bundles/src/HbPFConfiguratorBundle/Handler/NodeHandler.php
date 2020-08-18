@@ -18,7 +18,7 @@ use Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository;
  *
  * @package Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler
  */
-class NodeHandler
+final class NodeHandler
 {
 
     /**

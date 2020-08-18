@@ -16,7 +16,7 @@ use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessEventNotSupportedTrait;
  *
  * @package Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector
  */
-class ShoptetGetEshopInfo extends ShoptetConnectorAbstract
+final class ShoptetGetEshopInfo extends ShoptetConnectorAbstract
 {
 
     use ProcessEventNotSupportedTrait;

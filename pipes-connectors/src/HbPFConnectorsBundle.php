@@ -9,7 +9,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  *
  * @package Hanaboso\HbPFConnectors
  */
-class HbPFConnectorsBundle extends Bundle
+final class HbPFConnectorsBundle extends Bundle
 {
 
 }

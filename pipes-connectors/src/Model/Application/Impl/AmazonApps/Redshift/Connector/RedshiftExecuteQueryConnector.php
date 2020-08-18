@@ -13,7 +13,7 @@ use Throwable;
  *
  * @package Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\Redshift\Connector
  */
-class RedshiftExecuteQueryConnector extends RedshiftObjectConnectorAbstract
+final class RedshiftExecuteQueryConnector extends RedshiftObjectConnectorAbstract
 {
 
     /**

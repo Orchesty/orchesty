@@ -18,7 +18,7 @@ use Throwable;
  *
  * @package Demo\CustomNode
  */
-class FilterStockExchange extends CustomNodeAbstract implements LoggerAwareInterface
+final class FilterStockExchange extends CustomNodeAbstract implements LoggerAwareInterface
 {
 
     /**

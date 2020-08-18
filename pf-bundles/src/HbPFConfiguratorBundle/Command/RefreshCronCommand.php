@@ -17,7 +17,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  *
  * @package Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command
  */
-class RefreshCronCommand extends Command
+final class RefreshCronCommand extends Command
 {
 
     private const CMD_NAME = 'cron:refresh';

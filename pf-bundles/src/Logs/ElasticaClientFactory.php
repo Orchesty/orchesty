@@ -10,7 +10,7 @@ use Hanaboso\Utils\String\DsnParser;
  *
  * @package Hanaboso\PipesFramework\Logs
  */
-class ElasticaClientFactory
+final class ElasticaClientFactory
 {
 
     /**

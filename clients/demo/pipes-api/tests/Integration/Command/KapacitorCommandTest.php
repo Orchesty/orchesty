@@ -11,7 +11,7 @@ use Symfony\Component\Console\Tester\CommandTester;
  *
  * @package DemoTests\Integration\Command
  */
-class KapacitorCommandTest extends KernelTestCaseAbstract
+final class KapacitorCommandTest extends KernelTestCaseAbstract
 {
 
     /**

@@ -7,7 +7,7 @@ namespace HbPFConnectorsTests;
  *
  * @package HbPFConnectorsTests
  */
-class MockCurlMethod
+final class MockCurlMethod
 {
 
     /**

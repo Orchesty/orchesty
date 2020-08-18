@@ -14,3 +14,37 @@ parameters:
         -
             message: '#Variable method call on Hanaboso\\PipesPhpSdk\\Application\\Base\\ApplicationInterface.#'
             path:  ../src/Application/Manager/ApplicationManager.php
+    ergebnis:
+        classesAllowedToBeExtended:
+            - Hanaboso\MongoDataGrid\GridFilterAbstract
+            - Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract
+            - Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract
+            - Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1\OAuth1ApplicationAbstract
+            - Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract
+            - Hanaboso\PipesPhpSdk\Authorization\Provider\OAuthProviderAbstract
+            - Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract
+            - Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract
+            - Hanaboso\PipesPhpSdk\CustomNode\Impl\RabbitCustomNode
+            - Hanaboso\PipesPhpSdk\Joiner\JoinerAbstract
+            - Hanaboso\PipesPhpSdk\LongRunningNode\Model\Impl\LongRunningNodeAbstract
+            - Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeAbstract
+            - Hanaboso\PipesPhpSdk\Mapper\MapperAbstract
+            - Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchActionAbstract
+            - Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchActionAbstract
+            - Hanaboso\Utils\Enum\EnumAbstract
+            - Hanaboso\Utils\Exception\PipesFrameworkExceptionAbstract
+            - PipesPhpSdkTests\ControllerTestCaseAbstract
+            - PipesPhpSdkTests\DatabaseTestCaseAbstract
+            - PipesPhpSdkTests\KernelTestCaseAbstract
+            - RabbitMqBundle\Consumer\AsyncConsumer
+            - RabbitMqBundle\Consumer\Consumer
+
+        classesNotRequiredToBeAbstractOrFinal:
+        	- Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall
+        	- Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager
+        	- Hanaboso\PipesPhpSdk\Database\Document\Category
+        	- Hanaboso\PipesPhpSdk\Database\Document\Embed\EmbedNode
+        	- Hanaboso\PipesPhpSdk\Database\Document\Node
+        	- Hanaboso\PipesPhpSdk\Database\Document\Topology
+        	- Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData
+        	- Hanaboso\PipesPhpSdk\StatusService\StatusServiceCallback

@@ -9,7 +9,7 @@ use Symfony\Component\Finder\Finder;
  *
  * @package Hanaboso\PipesFramework\TopologyInstaller
  */
-class TplgLoader
+final class TplgLoader
 {
 
     public const TPLG = '.tplg';

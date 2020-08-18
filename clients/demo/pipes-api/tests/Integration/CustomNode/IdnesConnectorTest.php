@@ -12,7 +12,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
  *
  * @package DemoTests\Integration\CustomNode
  */
-class IdnesConnectorTest extends KernelTestCaseAbstract
+final class IdnesConnectorTest extends KernelTestCaseAbstract
 {
 
     /**

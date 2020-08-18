@@ -15,7 +15,7 @@ use Throwable;
  *
  * @package Hanaboso\PipesFramework\HbPFMetricsBundle\Controller
  */
-class MetricsController
+final class MetricsController
 {
 
     use ControllerTrait;

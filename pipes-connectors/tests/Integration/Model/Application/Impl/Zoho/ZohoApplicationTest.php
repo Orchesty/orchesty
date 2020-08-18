@@ -15,7 +15,7 @@ use HbPFConnectorsTests\DataProvider;
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Zoho
  */
-class ZohoApplicationTest extends DatabaseTestCaseAbstract
+final class ZohoApplicationTest extends DatabaseTestCaseAbstract
 {
 
     private const CLIENT_ID = '123';

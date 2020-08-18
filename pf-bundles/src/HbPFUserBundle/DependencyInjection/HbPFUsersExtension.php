@@ -15,7 +15,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
  *
  * @codeCoverageIgnore
  */
-class HbPFUsersExtension extends Extension
+final class HbPFUsersExtension extends Extension
 {
 
     /**

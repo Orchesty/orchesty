@@ -24,13 +24,20 @@ final class LongRunningNodeListener implements EventSubscriberInterface
     private DocumentManager $dm;
 
     /**
+     * @var bool
+     */
+    private bool $enabled;
+
+    /**
      * LongRunningNodeListener constructor.
      *
      * @param DocumentManager $dm
+     * @param bool            $enabled
      */
-    public function __construct(DocumentManager $dm)
+    public function __construct(DocumentManager $dm, bool $enabled)
     {
-        $this->dm = $dm;
+        $this->dm      = $dm;
+        $this->enabled = $enabled;
     }
 
     /**
@@ -40,21 +47,19 @@ final class LongRunningNodeListener implements EventSubscriberInterface
      */
     public function onFinish(ProcessStatusEvent $event): void
     {
-        if ($event->getStatus()) {
+        if ($event->getStatus() && $this->enabled) {
             $repo       = $this->dm->getRepository(LongRunningNodeData::class);
             $processIds = [$event->getProcessId()];
             $removedIds = [];
 
-            while (!empty($processIds)) {
-                $processId = array_pop($processIds);
-                /** @var LongRunningNodeData|null $doc */
-                $doc = $repo->findOneBy(['processId' => $processId]);
+            while ($processIds) {
+                $document = $repo->getProcessed((string) array_pop($processIds));
 
-                if ($doc) {
-                    if (!in_array($doc->getId(), $removedIds, TRUE)) {
-                        $processIds[] = $doc->getParentProcess();
-                        $removedIds[] = $doc->getId();
-                        $this->dm->remove($doc);
+                if ($document) {
+                    if (!in_array($document->getId(), $removedIds, TRUE)) {
+                        $processIds[] = $document->getParentProcess();
+                        $removedIds[] = $document->getId();
+                        $this->dm->remove($document);
                     }
                 }
             }

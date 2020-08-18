@@ -16,7 +16,7 @@ use HbPFConnectorsTests\DatabaseTestCaseAbstract;
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\OAuth2\CustomNode
  */
-class GetApplicationForRefreshBatchTest extends DatabaseTestCaseAbstract
+final class GetApplicationForRefreshBatchTest extends DatabaseTestCaseAbstract
 {
 
     /**

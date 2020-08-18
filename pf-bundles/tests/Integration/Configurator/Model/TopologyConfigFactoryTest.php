@@ -22,7 +22,7 @@ use PipesFrameworkTests\DatabaseTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Integration\Configurator\Model
  */
-class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
+final class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
 {
 
     /**

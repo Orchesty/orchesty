@@ -23,7 +23,7 @@ use Hanaboso\Utils\System\PipesHeaders;
  *
  * @package Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\CustomNode
  */
-class GetApplicationForRefreshBatch extends CustomNodeAbstract implements BatchInterface
+final class GetApplicationForRefreshBatch extends CustomNodeAbstract implements BatchInterface
 {
 
     use BatchTrait;

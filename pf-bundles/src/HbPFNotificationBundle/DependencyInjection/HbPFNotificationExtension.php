@@ -15,7 +15,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
  *
  * @codeCoverageIgnore
  */
-class HbPFNotificationExtension extends Extension
+final class HbPFNotificationExtension extends Extension
 {
 
     /**

@@ -14,6 +14,7 @@ use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\Utils\String\Json;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\MockObject\Stub\ReturnCallback;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Throwable;
 
@@ -77,23 +78,24 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
     protected function mockCurl(array $array): MockObject
     {
         $mock = self::createMock(CurlManagerInterface::class);
-        foreach ($array as $key => $mockCurlMethod) {
-            $mock->expects(self::at($key))->method('send')->willReturnCallback(
-                function (RequestDto $dto, array $options = []) use ($mockCurlMethod): ResponseDto {
-                    $dto;
-                    $options;
 
-                    $body = $this->getFile($mockCurlMethod->getFileName());
-
-                    return new ResponseDto(
-                        $mockCurlMethod->getCode(),
-                        '',
-                        $body,
-                        $mockCurlMethod->getHeaders()
-                    );
-                }
+        $mock
+            ->expects(self::exactly(count($array)))
+            ->method('send')
+            ->willReturnOnConsecutiveCalls(
+                ...array_map(
+                    fn($mockCurlMethod) => new ReturnCallback(
+                        fn(): ResponseDto => new ResponseDto(
+                            $mockCurlMethod->getCode(),
+                            '',
+                            $this->getFile($mockCurlMethod->getFileName()),
+                            $mockCurlMethod->getHeaders()
+                        )
+                    ),
+                    $array
+                )
             );
-        }
+
         self::$container->set('hbpf.transport.curl_manager', $mock);
 
         return $mock;
@@ -211,11 +213,12 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
     {
         /** @var CurlManager|MockObject $sender */
         $sender = self::createPartialMock(CurlManager::class, ['send']);
-        $i      = 0;
-
-        foreach ($closures as $closure) {
-            $sender->expects(self::at($i++))->method('send')->willReturnCallback($closure);
-        }
+        $sender
+            ->expects(self::exactly(count($closures)))
+            ->method('send')
+            ->willReturnOnConsecutiveCalls(
+                ...array_map(static fn(Closure $closure) => new ReturnCallback($closure), $closures)
+            );
 
         return $sender;
     }

@@ -10,3 +10,19 @@ parameters:
 		- '#Access to an undefined property*#'
 		- '#Unreachable statement \- code above always terminates.#'
 		- '#PHPDoc tag @var for variable \$(application|innerApplication|providerMock) contains unresolvable type#'
+	ergebnis:
+		classesAllowedToBeExtended:
+			- Hanaboso\HbPFConnectors\DependencyInjection\HbPFConnectorsExtension
+			- Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\AwsApplicationAbstract
+			- Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\AwsObjectConnectorAbstract
+			- Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\Redshift\Connector\RedshiftExecuteQueryConnector
+			- Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\Redshift\Connector\RedshiftObjectConnectorAbstract
+			- Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\Connector\S3ObjectConnectorAbstract
+			- Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetConnectorAbstract
+			- Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract
+			- Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract
+			- Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract
+			- Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract
+			- HbPFConnectorsTests\ControllerTestCaseAbstract
+			- HbPFConnectorsTests\DatabaseTestCaseAbstract
+			- HbPFConnectorsTests\KernelTestCaseAbstract

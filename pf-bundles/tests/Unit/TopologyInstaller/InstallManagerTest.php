@@ -16,7 +16,6 @@ use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\PipesPhpSdk\Database\Repository\TopologyRepository;
 use Monolog\Logger;
-use PHPUnit\Framework\MockObject\MockObject;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 use Predis\Client;
 use Predis\Connection\Parameters;
@@ -127,12 +126,10 @@ final class InstallManagerTest extends KernelTestCaseAbstract
     private function createManager(Topology $savedTopo, array $dirs = []): InstallManager
     {
         $repo = $this->createMock(TopologyRepository::class);
-        /** @var DocumentManager|MockObject $dm */
-        $dm = $this->createMock(DocumentManager::class);
+        $dm   = $this->createMock(DocumentManager::class);
         $dm->method('getRepository')->willReturn($repo);
         $dm->method('persist')->willReturn(TRUE);
 
-        /** @var TopologyManager|MockObject $topologyManager */
         $topologyManager = $this->createMock(TopologyManager::class);
         $topologyManager->method('createTopology')->willReturn(new Topology());
         $topologyManager->method('publishTopology')->willReturn(new Topology());
@@ -143,12 +140,10 @@ final class InstallManagerTest extends KernelTestCaseAbstract
             }
         );
 
-        /** @var TopologyGeneratorBridge|MockObject $requestHandler */
         $requestHandler = $this->createMock(TopologyGeneratorBridge::class);
         $requestHandler->method('runTopology')->willReturn(new ResponseDto(200, '', '', []));
         $requestHandler->method('deleteTopology')->willReturn(new ResponseDto(200, '', '', []));
 
-        /** @var CategoryParser|MockObject $categoryParser */
         $categoryParser = $this->createMock(CategoryParser::class);
         $categoryParser->method('classifyTopology')->willReturnCallback(
             static function (): void {

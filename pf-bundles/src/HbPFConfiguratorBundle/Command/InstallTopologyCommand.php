@@ -18,7 +18,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  *
  * @package Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command
  */
-class InstallTopologyCommand extends Command
+final class InstallTopologyCommand extends Command
 {
 
     private const CREATE = 'create';
