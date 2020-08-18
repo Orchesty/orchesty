@@ -15,7 +15,7 @@ use Hanaboso\PipesPhpSdk\Database\Document\Topology;
  *
  * @package Hanaboso\PipesFramework\HbPFMetricsBundle\Handler
  */
-class MetricsHandler
+final class MetricsHandler
 {
 
     /**

@@ -20,7 +20,7 @@ use RuntimeException;
  *
  * @package Hanaboso\PipesFramework\TopologyInstaller
  */
-class CategoryParser
+final class CategoryParser
 {
 
     public const ALL = '*';

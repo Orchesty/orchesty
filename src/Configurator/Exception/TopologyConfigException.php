@@ -9,7 +9,7 @@ use Hanaboso\Utils\Exception\PipesFrameworkExceptionAbstract;
  *
  * @package Hanaboso\PipesFramework\Configurator\Exception
  */
-class TopologyConfigException extends PipesFrameworkExceptionAbstract
+final class TopologyConfigException extends PipesFrameworkExceptionAbstract
 {
 
 }

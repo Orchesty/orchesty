@@ -10,7 +10,7 @@ use Hanaboso\PipesFramework\Logs\LogsInterface;
  *
  * @package Hanaboso\PipesFramework\HbPFLogsBundle\Handler
  */
-class LogsHandler
+final class LogsHandler
 {
 
     /**

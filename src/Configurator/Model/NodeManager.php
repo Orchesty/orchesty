@@ -14,7 +14,7 @@ use Hanaboso\PipesPhpSdk\Database\Document\Node;
  *
  * @package Hanaboso\PipesFramework\Configurator\Model
  */
-class NodeManager
+final class NodeManager
 {
 
     /**

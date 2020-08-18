@@ -15,7 +15,7 @@ use Hanaboso\Utils\String\Json;
  *
  * @package Hanaboso\PipesFramework\Utils
  */
-class TopologySchemaUtils
+final class TopologySchemaUtils
 {
 
     private const BPMN_PROCESS = 'bpmn:process';

@@ -9,7 +9,7 @@ use Hanaboso\Utils\Exception\PipesFrameworkExceptionAbstract;
  *
  * @package Hanaboso\PipesFramework\Configurator\Exception
  */
-class TopologyException extends PipesFrameworkExceptionAbstract
+final class TopologyException extends PipesFrameworkExceptionAbstract
 {
 
     public const INVALID_TOPOLOGY_TYPE            = self::OFFSET + 1;

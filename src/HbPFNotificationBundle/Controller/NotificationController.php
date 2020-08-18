@@ -17,7 +17,7 @@ use Throwable;
  *
  * @package Hanaboso\PipesFramework\HbPFNotificationBundle\Controller
  */
-class NotificationController
+final class NotificationController
 {
 
     use ControllerTrait;

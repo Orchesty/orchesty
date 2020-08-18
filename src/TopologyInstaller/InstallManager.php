@@ -32,7 +32,7 @@ use Throwable;
  *
  * @package Hanaboso\PipesFramework\TopologyInstaller
  */
-class InstallManager implements LoggerAwareInterface
+final class InstallManager implements LoggerAwareInterface
 {
 
     public const AUTO_INSTALL_KEY = 'auto-install-key';

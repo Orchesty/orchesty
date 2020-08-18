@@ -9,7 +9,7 @@ use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
  *
  * @package Hanaboso\PipesFramework\Utils\Dto
  */
-class Schema
+final class Schema
 {
 
     private const LIMIT = 100;

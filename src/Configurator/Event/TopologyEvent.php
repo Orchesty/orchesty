@@ -9,7 +9,7 @@ use Symfony\Contracts\EventDispatcher\Event;
  *
  * @package Hanaboso\PipesFramework\Configurator\Event
  */
-class TopologyEvent extends Event
+final class TopologyEvent extends Event
 {
 
     public const EVENT = 'topology_event';

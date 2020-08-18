@@ -9,7 +9,7 @@ use Hanaboso\AclBundle\Enum\ResourceEnum as AclResourceEnum;
  *
  * @package Hanaboso\PipesFramework
  */
-class ResourceEnum extends AclResourceEnum
+final class ResourceEnum extends AclResourceEnum
 {
 
     public const NODE     = 'node';

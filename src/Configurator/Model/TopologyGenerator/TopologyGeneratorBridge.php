@@ -23,7 +23,7 @@ use Hanaboso\Utils\String\Json;
  *
  * @package Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator
  */
-class TopologyGeneratorBridge
+final class TopologyGeneratorBridge
 {
 
     public const MULTI_PROBE    = 'multi-probe';

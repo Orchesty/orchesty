@@ -12,7 +12,7 @@ use Hanaboso\PipesFramework\Configurator\Document\Sdk;
  *
  * @phpstan-extends DocumentRepository<Sdk>
  */
-class SdkRepository extends DocumentRepository
+final class SdkRepository extends DocumentRepository
 {
 
 }

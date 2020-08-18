@@ -19,7 +19,7 @@ use Symfony\Component\DependencyInjection\Definition;
  *
  * @codeCoverageIgnore
  */
-class LogsCompilerPass implements CompilerPassInterface
+final class LogsCompilerPass implements CompilerPassInterface
 {
 
     /**

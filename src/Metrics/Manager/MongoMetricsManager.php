@@ -24,7 +24,7 @@ use LogicException;
  *
  * @package Hanaboso\PipesFramework\Metrics\Manager
  */
-class MongoMetricsManager extends MetricsManagerAbstract
+final class MongoMetricsManager extends MetricsManagerAbstract
 {
 
     /**

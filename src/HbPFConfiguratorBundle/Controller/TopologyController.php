@@ -17,7 +17,7 @@ use Throwable;
  *
  * @package Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller
  */
-class TopologyController
+final class TopologyController
 {
 
     use ControllerTrait;

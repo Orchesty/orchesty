@@ -11,7 +11,6 @@ use Hanaboso\PipesFramework\TopologyInstaller\InstallManager;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
-use PHPUnit\Framework\MockObject\MockObject;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 use Predis\Client;
 use Predis\Connection\Parameters;
@@ -125,7 +124,6 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
      */
     private function getManager(): InstallManager
     {
-        /** @var MockObject|TopologyGeneratorBridge $requestHandler */
         $requestHandler = self::createMock(TopologyGeneratorBridge::class);
         $requestHandler->method('runTopology')->willReturn(new ResponseDto(200, '', '', []));
         $requestHandler->method('deleteTopology')->willReturn(new ResponseDto(200, '', '', []));

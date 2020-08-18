@@ -4,6 +4,7 @@ namespace PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller;
 
 use Exception;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData;
+use Hanaboso\PipesPhpSdk\LongRunningNode\Enum\StateEnum;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 
 /**
@@ -143,7 +144,7 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
             ->setCorrelationId('2')
             ->setSequenceId('3')
             ->setProcessId('7')
-            ->setState('state')
+            ->setState(StateEnum::NEW)
             ->setAuditLogs([])
             ->setUpdatedBy('4')
             ->setData('data')

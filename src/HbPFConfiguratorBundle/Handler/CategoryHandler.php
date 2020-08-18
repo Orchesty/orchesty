@@ -16,7 +16,7 @@ use Hanaboso\PipesPhpSdk\Database\Document\Category;
  *
  * @package Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler
  */
-class CategoryHandler
+final class CategoryHandler
 {
 
     /**

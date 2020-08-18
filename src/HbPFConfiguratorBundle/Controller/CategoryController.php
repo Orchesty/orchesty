@@ -16,7 +16,7 @@ use Throwable;
  *
  * @package Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller
  */
-class CategoryController
+final class CategoryController
 {
 
     use ControllerTrait;

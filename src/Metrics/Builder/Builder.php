@@ -10,7 +10,7 @@ use InvalidArgumentException;
  *
  * @package Hanaboso\PipesFramework\Metrics\Builder
  */
-class Builder extends InfluxDbBuilder
+final class Builder extends InfluxDbBuilder
 {
 
     /**

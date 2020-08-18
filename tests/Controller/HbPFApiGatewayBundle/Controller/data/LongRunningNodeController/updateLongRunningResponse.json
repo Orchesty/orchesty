@@ -10,7 +10,7 @@
         "parent_process": null,
         "process_id": "7",
         "sequence_id": "3",
-        "state": "state",
+        "state": "new",
         "data": "data",
         "headers": "[]",
         "created": "2010-10-10 10:10:10",

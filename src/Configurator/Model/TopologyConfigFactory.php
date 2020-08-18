@@ -19,7 +19,7 @@ use Hanaboso\Utils\String\DsnParser;
  *
  * @package Hanaboso\PipesFramework\Configurator\Model
  */
-class TopologyConfigFactory
+final class TopologyConfigFactory
 {
 
     public const ENVIRONMENT            = 'environment';

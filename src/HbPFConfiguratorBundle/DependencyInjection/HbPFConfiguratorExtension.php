@@ -18,7 +18,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
  *
  * @codeCoverageIgnore
  */
-class HbPFConfiguratorExtension extends Extension implements PrependExtensionInterface
+final class HbPFConfiguratorExtension extends Extension implements PrependExtensionInterface
 {
 
     /**

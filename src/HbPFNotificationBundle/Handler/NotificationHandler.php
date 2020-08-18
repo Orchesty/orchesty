@@ -12,7 +12,7 @@ use Hanaboso\Utils\String\Json;
  *
  * @package Hanaboso\PipesFramework\HbPFNotificationBundle\Handler
  */
-class NotificationHandler
+final class NotificationHandler
 {
 
     /**

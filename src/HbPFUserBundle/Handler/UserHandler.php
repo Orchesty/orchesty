@@ -21,7 +21,7 @@ use Hanaboso\Utils\System\ControllerUtils;
  *
  * @package Hanaboso\PipesFramework\HbPFUserBundle\Handler
  */
-class UserHandler
+final class UserHandler
 {
 
     private const SETTINGS = 'settings';

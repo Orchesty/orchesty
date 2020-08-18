@@ -13,7 +13,7 @@ use InfluxDB\Query\Builder as InfluxDbBuilder;
  *
  * @package Hanaboso\PipesFramework\Metrics\Client
  */
-class MetricsClient implements ClientInterface
+final class MetricsClient implements ClientInterface
 {
 
     /**

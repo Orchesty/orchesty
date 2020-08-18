@@ -32,7 +32,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
  *
  * @package Hanaboso\PipesFramework\ApiGateway\Listener
  */
-class ControllerExceptionListener implements EventSubscriberInterface, LoggerAwareInterface
+final class ControllerExceptionListener implements EventSubscriberInterface, LoggerAwareInterface
 {
 
     use ControllerTrait;

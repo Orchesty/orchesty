@@ -8,7 +8,6 @@ use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Handler\ConnectorHandler;
-use PHPUnit\Framework\MockObject\MockObject;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -159,7 +158,6 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
      */
     private function prepareNodeHandlerMock(string $methodName, $returnValue = TRUE): void
     {
-        /** @var NodeHandler|MockObject $nodeHandlerMock */
         $nodeHandlerMock = self::createMock(NodeHandler::class);
         $nodeHandlerMock
             ->method($methodName)

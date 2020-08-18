@@ -20,7 +20,7 @@ use Throwable;
  *
  * @package Hanaboso\PipesFramework\HbPFUserBundle\Controller
  */
-class UserController
+final class UserController
 {
 
     use ControllerTrait;

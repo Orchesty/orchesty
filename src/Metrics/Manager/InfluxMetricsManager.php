@@ -20,7 +20,7 @@ use Throwable;
  *
  * @package Hanaboso\PipesFramework\Metrics\Manager
  */
-class InfluxMetricsManager extends MetricsManagerAbstract
+final class InfluxMetricsManager extends MetricsManagerAbstract
 {
 
     /**

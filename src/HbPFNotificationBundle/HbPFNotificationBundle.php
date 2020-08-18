@@ -9,7 +9,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  *
  * @package Hanaboso\PipesFramework\HbPFNotificationBundle
  */
-class HbPFNotificationBundle extends Bundle
+final class HbPFNotificationBundle extends Bundle
 {
 
 }
