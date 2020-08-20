@@ -8,3 +8,8 @@ parameters:
         - '%kernel.project_dir%/vendor/hanaboso/pipes-php-sdk/src/HbPFMapperBundle/Resources/config/'
         - '%kernel.project_dir%/config/packages/test/'
     applications: ['%kernel.project_dir%/config/packages/test']
+
+framework:
+    session:
+        cookie_secure: false
+        cookie_samesite: 'none'
