@@ -10,7 +10,7 @@ export default function (group, element, translate) {
 
   group.entries.push(entryFactory.validationAwareTextField({
     id: 'rabbitPrefetch',
-    label: 'Rabbit prefetch',
+    label: 'Prefetch',
     modelProperty: 'rabbitPrefetch',
     validate: (element, values) => {
       if (element.type === 'bpmn:Process') {
@@ -18,7 +18,7 @@ export default function (group, element, translate) {
       }
 
       if (values.rabbitPrefetch && !/\d+/.test(values.rabbitPrefetch)) {
-        return { rabbitPrefetch: 'Rabbit prefetch must be an integer.' };
+        return { rabbitPrefetch: 'Prefetch must be an integer.' };
       }
 
       return {};
