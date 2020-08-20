@@ -55,15 +55,6 @@ class TopologyForm extends React.Component {
 
   render() {
     const {addNew, initialValues} = this.props;
-
-    let enabledReadonly = false;
-    let enabledDescripton = "";
-
-    if (addNew || !initialValues.visibility || initialValues.visibility !== 'public') {
-        enabledReadonly = true;
-        enabledDescripton = "Please publish topology first";
-    }
-
     const nameReadOnly = !(addNew || initialValues.visibility !== 'public');
 
     return (
@@ -71,7 +62,6 @@ class TopologyForm extends React.Component {
         {!addNew && <Field name="_id" component={FormTextInput} label="Id" readOnly/>}
         <Field name="name" component={FormTextInput} label="Name" readOnly={nameReadOnly} autoFocus/>
         <Field name="descr" component={FormTextInput} label="Description" />
-        <Field name="enabled" component={FormCheckboxInput} label="Enabled" description={enabledDescripton} readOnly={enabledReadonly} />
         <button ref={this.setButton} className="hidden" />
       </form>
     );

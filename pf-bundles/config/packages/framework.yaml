@@ -10,5 +10,7 @@ framework:
     test: false
     session:
         handler_id: hbpf.commons.session_handler
+        cookie_secure: true
+        cookie_samesite: 'strict'
     router:
         strict_requirements: ~
