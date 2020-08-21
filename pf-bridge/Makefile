@@ -1,5 +1,5 @@
-IMAGE=dkr.hanaboso.net/pipes/pipes/frontend
-PUBLIC_IMAGE=hanaboso/pipes-frontend
+IMAGE=dkr.hanaboso.net/pipes/pipes/pf-bridge
+PUBLIC_IMAGE=hanaboso/pipes-pf-bridge
 
 build:
 	docker build -t ${IMAGE}:${TAG} --pull .

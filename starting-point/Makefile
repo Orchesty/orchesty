@@ -2,6 +2,7 @@ DC=docker-compose
 DE=docker-compose exec -T app
 REGISTRY=dkr.hanaboso.net/pipes/pipes
 IMAGE=dkr.hanaboso.net/pipes/pipes/starting-point
+PUBLIC_IMAGE=hanaboso/pipes-starting-point
 
 .env:
 	sed -e 's/{DEV_UID}/$(shell id -u)/g' \
@@ -12,6 +13,8 @@ IMAGE=dkr.hanaboso.net/pipes/pipes/starting-point
 build:
 	docker build -t ${IMAGE}:${TAG} --pull .
 	docker push ${IMAGE}:${TAG}
+	docker tag ${IMAGE}:${TAG} $(PUBLIC_IMAGE):$(TAG)
+	docker push $(PUBLIC_IMAGE):$(TAG)
 
 docker-up-force: .env
 	$(DC) pull

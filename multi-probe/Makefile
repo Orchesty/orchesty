@@ -1,18 +1,18 @@
 .PHONY: docker-build docker-push go-test
 
 DOCKER_SERVICE_NAME := multi-probe
-DOCKER_DEFAULT_TAG := dev
 DOCKER_REGISTRY := dkr.hanaboso.net/pipes/pipes/
+PUBLIC_IMAGE=hanaboso/pipes-
 
 lint:
 	gofmt -w cmd pkg
 	golint ./cmd/... ./pkg/...
 
-docker-build:
-	docker build -t $(DOCKER_SERVICE_NAME):$(DOCKER_DEFAULT_TAG) -t $(DOCKER_REGISTRY)$(DOCKER_SERVICE_NAME):$(DOCKER_DEFAULT_TAG) .
-
-docker-push:
-	docker push $(DOCKER_REGISTRY)$(DOCKER_SERVICE_NAME):$(DOCKER_DEFAULT_TAG)
+build:
+	docker build -t $(DOCKER_SERVICE_NAME):$(TAG) -t $(DOCKER_REGISTRY)$(DOCKER_SERVICE_NAME):$(TAG) .
+	docker push $(DOCKER_REGISTRY)$(DOCKER_SERVICE_NAME):$(TAG)
+	docker tag  $(DOCKER_REGISTRY)$(DOCKER_SERVICE_NAME):$(TAG) $(PUBLIC_IMAGE)$(DOCKER_SERVICE_NAME):$(TAG)
+	docker push $(PUBLIC_IMAGE)$(DOCKER_SERVICE_NAME):$(TAG)
 
 go-test:
 	go test ./...

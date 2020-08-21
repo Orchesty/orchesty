@@ -82,7 +82,7 @@ func (probe *Server) Start(port int) {
 // Stop stops the probe's http server gracefully
 func (probe *Server) Stop() {
 	log.Println("Stopping probe http server.")
-	if err := probe.httpServer.Shutdown(nil); err != nil {
+	if err := probe.httpServer.Close(); err != nil {
 		panic(err) // failure/timeout shutting down the server gracefully
 	}
 }
@@ -108,20 +108,20 @@ func (probe *Server) handleAddRequest(res http.ResponseWriter, req *http.Request
 
 	if err != nil {
 		res.WriteHeader(http.StatusBadRequest)
-		res.Write(getErrorResponseBody(err))
+		_,_ = res.Write(getErrorResponseBody(err))
 		return
 	}
 
 	err = json.Unmarshal(data, &receivedTopology)
 	if err != nil {
 		res.WriteHeader(http.StatusBadRequest)
-		res.Write(getErrorResponseBody(err))
+		_,_ = res.Write(getErrorResponseBody(err))
 		return
 	}
 
 	if receivedTopology.TopologyId == "" || len(receivedTopology.Bridges) == 0 {
 		res.WriteHeader(http.StatusBadRequest)
-		res.Write(getErrorResponseBody(fmt.Errorf("please provide valid topology")))
+		_,_ = res.Write(getErrorResponseBody(fmt.Errorf("please provide valid topology")))
 		log.Println("Invalid topology provided.")
 		return
 	}
@@ -148,14 +148,14 @@ func (probe *Server) handleAddRequest(res http.ResponseWriter, req *http.Request
 		msg := "Unable to add topology " + receivedTopology.TopologyId + " Redis err:" + err.Error()
 		log.Println(msg, err)
 		res.WriteHeader(http.StatusBadRequest)
-		res.Write(getErrorResponseBody(fmt.Errorf(msg)))
+		_,_ = res.Write(getErrorResponseBody(fmt.Errorf(msg)))
 		return
 	}
 
 	log.Println("Added topology: " + receivedTopology.TopologyId)
 
 	res.WriteHeader(http.StatusOK)
-	res.Write(getSuccessResponseBody(receivedTopology.TopologyId))
+	_,_ = res.Write(getSuccessResponseBody(receivedTopology.TopologyId))
 }
 
 // handleRemoveRequest removes key from topologies map if it exists there
@@ -167,21 +167,21 @@ func (probe *Server) handleRemoveRequest(res http.ResponseWriter, req *http.Requ
 	_, err := probe.getTopology(topologyId)
 	if err != nil {
 		res.WriteHeader(http.StatusBadRequest)
-		res.Write(getErrorResponseBody(err))
+		_,_ = res.Write(getErrorResponseBody(err))
 		return
 	}
 
 	err = probe.Storage.Delete(topologyId)
 	if err != nil {
 		res.WriteHeader(http.StatusBadRequest)
-		res.Write(getErrorResponseBody(fmt.Errorf("cannot delete. Error: %s", err)))
+		_,_ = res.Write(getErrorResponseBody(fmt.Errorf("cannot delete. Error: %s", err)))
 		return
 	}
 
 	log.Println("Removed topology: " + topologyId)
 
 	res.WriteHeader(http.StatusOK)
-	res.Write(getSuccessResponseBody(topologyId))
+	_,_ = res.Write(getSuccessResponseBody(topologyId))
 }
 
 // handleListRequest returns the json list of all maintained topologies and their bridge's urls
@@ -191,14 +191,14 @@ func (probe *Server) handleListRequest(res http.ResponseWriter, req *http.Reques
 	topologies, err := probe.Storage.Keys()
 	if err != nil {
 		res.WriteHeader(http.StatusInternalServerError)
-		res.Write(getErrorResponseBody(err))
+		_,_ = res.Write(getErrorResponseBody(err))
 		return
 	}
 
 	log.Println(fmt.Sprintf("Topology list now contains %d topologies", len(topologies)))
 
 	res.WriteHeader(http.StatusOK)
-	res.Write(getSuccessResponseBody(strings.Join(topologies, ",")))
+	_,_ = res.Write(getSuccessResponseBody(strings.Join(topologies, ",")))
 }
 
 // handleStatusRequest creates http request to all topology nodes and returns the overall result
@@ -210,7 +210,7 @@ func (probe *Server) handleStatusRequest(res http.ResponseWriter, req *http.Requ
 	topo, err := probe.getTopology(topologyId)
 	if err != nil {
 		res.WriteHeader(http.StatusBadRequest)
-		res.Write(getErrorResponseBody(err))
+		_,_ = res.Write(getErrorResponseBody(err))
 		return
 	}
 
@@ -251,7 +251,7 @@ func (probe *Server) handleStatusRequest(res http.ResponseWriter, req *http.Requ
 	out, _ := json.Marshal(body)
 
 	res.WriteHeader(http.StatusOK)
-	res.Write(out)
+	_,_ = res.Write(out)
 }
 
 // getTopology return the bridges information for given topologyId or returns error
