@@ -199,7 +199,7 @@ multi-probe-image:
     stage: stage3
     script:
         - cd $REPO_ROOT/multi-probe
-        - make build push TAG=${CI_BUILD_REF_NAME}
+        - make build TAG=${CI_BUILD_REF_NAME}
     only:
         - dev
         - master
