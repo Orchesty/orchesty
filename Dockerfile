@@ -1,8 +1,16 @@
-FROM node:10-alpine
+FROM node:14-alpine
+COPY . ./app
+RUN cd /app && npm i && npm run build
 
-RUN apk update --no-cache && apk upgrade --no-cache && apk add --no-cache curl nano vim
-
-COPY . /srv/app
+FROM node:14-alpine
+RUN apk update --no-cache && \
+    apk upgrade --no-cache && \
+    apk add \
+    bash \
+    bind-tools \
+    procps
+COPY --from=0 /app /srv/app
+RUN chmod +x -R /srv/app/dist/src/bin
 
 WORKDIR /srv/app
 
