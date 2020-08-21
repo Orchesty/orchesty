@@ -68,7 +68,7 @@ pf-bridge-build:
     script:
         - DIR=pf-bridge
         - skip_unmodified $DIR
-        - ${DIR}/build.sh ${CI_BUILD_REF_NAME}
+        - make build TAG=${CI_BUILD_REF_NAME}
     only:
         - dev
         - master
@@ -199,9 +199,7 @@ multi-probe-image:
     stage: stage3
     script:
         - cd $REPO_ROOT/multi-probe
-        - IMAGE=dkr.hanaboso.net/pipes/pipes/multi-probe:${CI_BUILD_REF_NAME}
-        - docker build -t ${IMAGE} .
-        - docker push ${IMAGE}
+        - make build push TAG=${CI_BUILD_REF_NAME}
     only:
         - dev
         - master
@@ -307,6 +305,17 @@ rabbitmq-telegraf:
     stage: stage3
     script:
         - DIR=rabbitmq-telegraf
+        - skip_unmodified $DIR
+        - cd $DIR
+        - make build TAG=${CI_BUILD_REF_NAME}
+    only:
+        - master
+        - ci
+
+cron:
+    stage: stage3
+    script:
+        - DIR=cron
         - skip_unmodified $DIR
         - cd $DIR
         - make build TAG=${CI_BUILD_REF_NAME}

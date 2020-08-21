@@ -3,6 +3,7 @@
 DC=docker-compose
 DE=docker-compose exec -T app
 IMAGE=dkr.hanaboso.net/pipes/notification-sender
+PUBLIC_IMAGE=hanaboso/pipes-notification-sender
 
 .env:
 	sed -e "s/{DEV_UID}/$(shell id -u)/g" \
@@ -18,6 +19,8 @@ docker-compose.ci.yml:
 build: .env
 	docker build -t $(IMAGE):${TAG} --pull .
 	docker push $(IMAGE):${TAG}
+	docker tag ${IMAGE}:${TAG} $(PUBLIC_IMAGE):$(TAG)
+	docker push $(PUBLIC_IMAGE):$(TAG)
 
 docker-up-force: .env
 	$(DC) pull

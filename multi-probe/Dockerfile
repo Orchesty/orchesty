@@ -1,12 +1,9 @@
-# Build the binary
-FROM golang:latest
-WORKDIR /app/cmd/
-COPY ./ /app
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o ./../build/multi-probe .
+FROM hanabosocom/go-base:dev
+COPY . .
+RUN go build -ldflags='-s -w' -o /multi-probe ./cmd/probe.go && upx -9 /multi-probe
 
-# Create runnable image with the binary only
-FROM scratch
-USER 65534:65534
-WORKDIR /usr/local/bin
-COPY --from=0 /app/build/multi-probe .
-CMD ["./multi-probe"]
+FROM alpine
+RUN apk update --no-cache && apk upgrade --no-cache
+COPY --from=0 /multi-probe /bin/multi-probe
+WORKDIR /bin
+CMD ./multi-probe

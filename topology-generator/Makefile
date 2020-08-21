@@ -1,6 +1,7 @@
 DC=docker-compose
 DE=docker-compose exec -T app
 IMAGE=dkr.hanaboso.net/pipes/pipes/topology-api-v2
+PUBLIC_IMAGE=hanaboso/pipes-topology-api-v2
 
 .env:
 	sed -e 's/{DEV_UID}/$(shell id -u)/g' \
@@ -11,6 +12,8 @@ IMAGE=dkr.hanaboso.net/pipes/pipes/topology-api-v2
 build:
 	docker build -t ${IMAGE}:${TAG} --pull .
 	docker push ${IMAGE}:${TAG}
+	docker tag ${IMAGE}:${TAG} $(PUBLIC_IMAGE):$(TAG)
+	docker push $(PUBLIC_IMAGE):$(TAG)
 
 docker-up-force: .env
 	$(DC) pull
