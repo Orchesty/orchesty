@@ -1,0 +1,12 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    listener.repeater:
+        class: Hanaboso\PipesPhpSdk\Listener\RepeaterListener
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]
+        tags:
+            - { name: kernel.event_subscriber }

@@ -26,6 +26,11 @@ doctrine_mongodb:
     document_managers:
         default:
             mappings:
+                SdkDocument:
+                    type: annotation
+                    is_bundle: false
+                    dir: "%kernel.project_dir%/vendor/hanaboso/pipes-php-sdk/src/Database/Document"
+                    prefix: Hanaboso\PipesPhpSdk\Database\Document
                 ApplicationDocument:
                     type: annotation
                     is_bundle: false

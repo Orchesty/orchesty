@@ -23,3 +23,4 @@ services:
         class: Hanaboso\PipesPhpSdk\StatusService\StatusServiceCallback
         arguments:
             - '@event_dispatcher'
+            - '@rabbit_mq.publisher.pipes-notifications'

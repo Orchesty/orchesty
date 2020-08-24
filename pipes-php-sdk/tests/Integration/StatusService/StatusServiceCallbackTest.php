@@ -54,6 +54,23 @@ final class StatusServiceCallbackTest extends KernelTestCaseAbstract
      *
      * @throws Exception
      */
+    public function testProcessMessageFalse(): void
+    {
+        $message = Message::create('{"process_id":"1","success":false}');
+        // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+        $message->delivery_info = ['delivery_tag' => ''];
+        // phpcs:enable
+
+        $this->callback->processMessage($message, $this->connection, 1);
+
+        self::assertFake();
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\StatusService\StatusServiceCallback::processMessage
+     *
+     * @throws Exception
+     */
     public function testProcessMessageMissingProcessId(): void
     {
         self::expectException(PipesFrameworkException::class);

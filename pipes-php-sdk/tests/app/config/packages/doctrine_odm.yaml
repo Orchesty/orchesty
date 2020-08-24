@@ -26,7 +26,7 @@ doctrine_mongodb:
     document_managers:
         default:
             mappings:
-                CommonsDocument:
+                SdkDocument:
                     type: annotation
                     is_bundle: false
                     dir: "%kernel.project_dir%/src/Database/Document"

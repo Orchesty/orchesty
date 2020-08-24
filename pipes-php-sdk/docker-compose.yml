@@ -18,6 +18,7 @@ services:
             - PHP_WEBROOT=/var/www/tests/app/public
             - USER_TASK_LISTENER_ENABLE=false
             - METRICS_SERVICE=mongo
+            - RABBIT_DSN=amqp://rabbitmq:5672
 
     mongo:
         image: mongo:latest
@@ -25,6 +26,12 @@ services:
             - ${DEV_IP}:27017:27017
         volumes:
             - mongo:/data/db
+
+    rabbitmq:
+        image: rabbitmq:management-alpine
+        ports:
+            - ${DEV_IP}:15672:15672
+            - ${DEV_IP}:5672:5672
 
     swagger-ui:
         image: swaggerapi/swagger-ui

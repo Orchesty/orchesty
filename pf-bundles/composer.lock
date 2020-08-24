@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "45d5a1c638e010e7af3ca195080e6dbe",
+    "content-hash": "711d917b62ca194aff304ad86461fd62",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.150.1",
+            "version": "3.150.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "d59b85d6854e58154e22a796322ba153ef69ade2"
+                "reference": "1aef7e270f15347df82279f05d85f551f85c8b87"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/d59b85d6854e58154e22a796322ba153ef69ade2",
-                "reference": "d59b85d6854e58154e22a796322ba153ef69ade2",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/1aef7e270f15347df82279f05d85f551f85c8b87",
+                "reference": "1aef7e270f15347df82279f05d85f551f85c8b87",
                 "shasum": ""
             },
             "require": {
@@ -89,7 +89,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2020-08-19T18:19:07+00:00"
+            "time": "2020-08-20T18:12:35+00:00"
         },
         {
             "name": "aws/aws-sdk-php-symfony",
@@ -2375,11 +2375,11 @@
         },
         {
             "name": "hanaboso/pipes-php-sdk",
-            "version": "1.4.4",
+            "version": "1.4.5",
             "dist": {
                 "type": "path",
                 "url": "../pipes-php-sdk",
-                "reference": "50b59eba464906e5c8f41f37f83056a9f4b91c69"
+                "reference": "951be005740840430202590fa5c48e70225afb3a"
             },
             "require": {
                 "ext-json": "*",
@@ -2550,16 +2550,16 @@
         },
         {
             "name": "hanaboso/utils",
-            "version": "1.0.20",
+            "version": "1.0.21",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/utils.git",
-                "reference": "ccc2f7d71940354d14c4d3fea923c54a182f1586"
+                "reference": "17f63ba24ac19e6a5d50f5b89665b0c73b7473ed"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/utils/zipball/ccc2f7d71940354d14c4d3fea923c54a182f1586",
-                "reference": "ccc2f7d71940354d14c4d3fea923c54a182f1586",
+                "url": "https://api.github.com/repos/hanaboso/utils/zipball/17f63ba24ac19e6a5d50f5b89665b0c73b7473ed",
+                "reference": "17f63ba24ac19e6a5d50f5b89665b0c73b7473ed",
                 "shasum": ""
             },
             "require": {
@@ -2599,7 +2599,7 @@
                     "role": "Developer"
                 }
             ],
-            "time": "2020-06-30T07:16:58+00:00"
+            "time": "2020-08-20T09:46:33+00:00"
         },
         {
             "name": "influxdb/influxdb-php",

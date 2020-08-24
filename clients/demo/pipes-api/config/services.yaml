@@ -147,9 +147,3 @@ services:
         class: EmailServiceBundle\Mailer\Mailer
         arguments:
             - '@EmailServiceBundle\Transport\Impl\SwiftMailerTransport'
-
-    hbpf.custom_nodes.status_service.status_service_callback:
-        class: Demo\CustomNode\StatusServiceCallback
-        arguments:
-            - '@event_dispatcher'
-            - '@rabbit_mq.publisher.pipes-notifications'

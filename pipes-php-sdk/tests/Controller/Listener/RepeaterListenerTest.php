@@ -1,15 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace PipesFrameworkTests\Controller\ApiGateway\Listener;
+namespace PipesPhpSdkTests\Controller\Listener;
 
 use Exception;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\PipesFramework\ApiGateway\Listener\RepeaterListener;
 use Hanaboso\PipesPhpSdk\Database\Document\Dto\SystemConfigDto;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
+use Hanaboso\PipesPhpSdk\Listener\RepeaterListener;
 use Hanaboso\Utils\System\PipesHeaders;
-use PipesFrameworkTests\ControllerTestCaseAbstract;
+use PipesPhpSdkTests\ControllerTestCaseAbstract;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -18,15 +18,15 @@ use Throwable;
 /**
  * Class RepeaterListenerTest
  *
- * @package PipesFrameworkTests\Controller\ApiGateway\Listener
+ * @package PipesPhpSdkTests\Controller\Listener
  *
- * @covers  \Hanaboso\PipesFramework\ApiGateway\Listener\RepeaterListener
+ * @covers  \Hanaboso\PipesPhpSdk\Listener\RepeaterListener
  */
 final class RepeaterListenerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Listener\RepeaterListener::onRepeatableException
+     * @covers \Hanaboso\PipesPhpSdk\Listener\RepeaterListener::onRepeatableException
      *
      * @throws Exception
      */
@@ -67,7 +67,7 @@ final class RepeaterListenerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Listener\RepeaterListener::onRepeatableException
+     * @covers \Hanaboso\PipesPhpSdk\Listener\RepeaterListener::onRepeatableException
      *
      * @throws Exception
      */
@@ -81,7 +81,7 @@ final class RepeaterListenerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Listener\RepeaterListener::onRepeatableException
+     * @covers \Hanaboso\PipesPhpSdk\Listener\RepeaterListener::onRepeatableException
      *
      * @throws Exception
      */
@@ -99,7 +99,7 @@ final class RepeaterListenerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Listener\RepeaterListener::onRepeatableException
+     * @covers \Hanaboso\PipesPhpSdk\Listener\RepeaterListener::onRepeatableException
      *
      * @throws Exception
      */
@@ -126,7 +126,7 @@ final class RepeaterListenerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Listener\RepeaterListener::getSubscribedEvents
+     * @covers \Hanaboso\PipesPhpSdk\Listener\RepeaterListener::getSubscribedEvents
      */
     public function testGetSubscribedEvents(): void
     {

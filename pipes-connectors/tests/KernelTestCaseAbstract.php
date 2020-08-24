@@ -211,7 +211,6 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
      */
     protected function prepareSender(Closure ...$closures): CurlManager
     {
-        /** @var CurlManager|MockObject $sender */
         $sender = self::createPartialMock(CurlManager::class, ['send']);
         $sender
             ->expects(self::exactly(count($closures)))

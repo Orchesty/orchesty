@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesFramework\ApiGateway\Listener;
+namespace Hanaboso\PipesPhpSdk\Listener;
 
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -23,7 +23,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 /**
  * Class RepeaterListener
  *
- * @package Hanaboso\PipesFramework\ApiGateway\Listener
+ * @package Hanaboso\PipesPhpSdk\Listener
  */
 final class RepeaterListener implements EventSubscriberInterface, LoggerAwareInterface
 {
