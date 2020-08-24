@@ -90,7 +90,7 @@ export default {
     needAuth: true,
     createUrl: ({ args: { application } }) => ({ path: `/app_store/${application}` }),
     acceptUrl: path => {
-      const match = /\app_store\/(\w+)/g.exec(path);
+      const match = /\app_store\/([a-zA-Z0-9_-]+)/g.exec(path);
       return match && match[1] ? { args: { application: match[1] } } : false;
     }
   },
