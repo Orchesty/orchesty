@@ -12,7 +12,6 @@ use RabbitMqBundle\Connection\Connection;
 use RabbitMqBundle\Consumer\CallbackInterface;
 use RabbitMqBundle\Publisher\Publisher;
 use RabbitMqBundle\Utils\Message;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**

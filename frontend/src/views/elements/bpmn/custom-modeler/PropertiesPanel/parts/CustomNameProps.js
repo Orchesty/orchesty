@@ -19,7 +19,14 @@ export default function (group, element, translate) {
   });
 
   const pipesType = getBusinessObject(element).pipesType;
-  const pipesNodes = JSON.parse(localStorage.getItem('pipes-nodes-list') || '[]');
+  const storageList = localStorage.getItem('pipes-nodes-list');
+
+  let list = '[]';
+  if (storageList && storageList !== "undefined") {
+    list = storageList;
+  }
+
+  const pipesNodes = JSON.parse(list);
   const implementationTypes = Object.keys(pipesNodes);
   const implementationTypesNames = JSON.parse(localStorage.getItem('pipes')).node.implementations;
 
