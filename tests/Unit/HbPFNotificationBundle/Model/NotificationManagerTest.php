@@ -10,7 +10,6 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Notification\Exception\NotificationException;
 use Hanaboso\PipesFramework\Notification\Model\NotificationManager;
 use Monolog\Logger;
-use PHPUnit\Framework\MockObject\MockObject;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 
 /**
@@ -115,7 +114,6 @@ final class NotificationManagerTest extends KernelTestCaseAbstract
      */
     private function getManager(callable $callback): NotificationManager
     {
-        /** @var CurlManager|MockObject $curlManager */
         $curlManager = self::createPartialMock(CurlManager::class, ['send']);
         $curlManager->method('send')->willReturnCallback($callback);
 

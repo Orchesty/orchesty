@@ -8,7 +8,6 @@ use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator;
 use Hanaboso\PipesFramework\Configurator\Model\CategoryManager;
 use Hanaboso\PipesPhpSdk\Database\Document\Category;
 use Hanaboso\PipesPhpSdk\Database\Repository\CategoryRepository;
-use PHPUnit\Framework\MockObject\MockObject;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 
 /**
@@ -82,7 +81,6 @@ final class CategoryManagerTest extends KernelTestCaseAbstract
         $dm->method('persist')->willReturn(TRUE);
         $dm->method('getRepository')->willReturn($repository);
 
-        /** @var MockObject|DatabaseManagerLocator $dml */
         $dml = self::createPartialMock(DatabaseManagerLocator::class, ['getDm']);
         $dml->method('getDm')->willReturn($dm);
 
