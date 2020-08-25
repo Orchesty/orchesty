@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.150.2",
+            "version": "3.150.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "1aef7e270f15347df82279f05d85f551f85c8b87"
+                "reference": "4c4e1cef09a6b510eae7a871ec394d124b5005fe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/1aef7e270f15347df82279f05d85f551f85c8b87",
-                "reference": "1aef7e270f15347df82279f05d85f551f85c8b87",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/4c4e1cef09a6b510eae7a871ec394d124b5005fe",
+                "reference": "4c4e1cef09a6b510eae7a871ec394d124b5005fe",
                 "shasum": ""
             },
             "require": {
@@ -89,7 +89,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2020-08-20T18:12:35+00:00"
+            "time": "2020-08-24T18:17:53+00:00"
         },
         {
             "name": "aws/aws-sdk-php-symfony",
@@ -2248,16 +2248,16 @@
         },
         {
             "name": "hanaboso/commons-bundle",
-            "version": "2.0.12",
+            "version": "2.0.15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/commons-bundle.git",
-                "reference": "3297e1630b2228ac4bf1f0b977e556b27e462754"
+                "reference": "2b582a2131df1dee2fe239ae7048fadd3f85e314"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/commons-bundle/zipball/3297e1630b2228ac4bf1f0b977e556b27e462754",
-                "reference": "3297e1630b2228ac4bf1f0b977e556b27e462754",
+                "url": "https://api.github.com/repos/hanaboso/commons-bundle/zipball/2b582a2131df1dee2fe239ae7048fadd3f85e314",
+                "reference": "2b582a2131df1dee2fe239ae7048fadd3f85e314",
                 "shasum": ""
             },
             "require": {
@@ -2274,10 +2274,10 @@
                 "ext-pdo": "*",
                 "ext-soap": "*",
                 "ext-sockets": "*",
-                "guzzlehttp/guzzle": "^6.5",
+                "guzzlehttp/guzzle": "^6.0 || ^7.0",
                 "hanaboso/utils": "^1.0",
                 "php": "^7.4",
-                "php-imap/php-imap": "^3.1",
+                "php-imap/php-imap": "^4.1",
                 "phpseclib/phpseclib": "^2.0",
                 "predis/predis": "^1.1",
                 "windwalker/crypt": "^3.5"
@@ -2298,7 +2298,7 @@
             "license": [
                 "proprietary"
             ],
-            "time": "2020-06-23T15:29:34+00:00"
+            "time": "2020-08-24T17:45:12+00:00"
         },
         {
             "name": "hanaboso/email-service-bundle",
@@ -3656,16 +3656,16 @@
         },
         {
             "name": "php-imap/php-imap",
-            "version": "3.1.0",
+            "version": "4.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/barbushin/php-imap.git",
-                "reference": "1df5b8b17527829a990475292b6794f06aaa4843"
+                "reference": "7ca3d19451bfe6de47186b52f4b266179a5858b9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/barbushin/php-imap/zipball/1df5b8b17527829a990475292b6794f06aaa4843",
-                "reference": "1df5b8b17527829a990475292b6794f06aaa4843",
+                "url": "https://api.github.com/repos/barbushin/php-imap/zipball/7ca3d19451bfe6de47186b52f4b266179a5858b9",
+                "reference": "7ca3d19451bfe6de47186b52f4b266179a5858b9",
                 "shasum": ""
             },
             "require": {
@@ -3673,16 +3673,22 @@
                 "ext-iconv": "*",
                 "ext-imap": "*",
                 "ext-mbstring": "*",
-                "php": ">=5.6"
+                "php": "^7.2"
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^2.16",
                 "jakub-onderka/php-parallel-lint": "^1.0",
-                "paragonie/random_compat": "^1",
-                "phpunit/phpunit": "^5.7"
+                "maglnet/composer-require-checker": "^2.0",
+                "paragonie/hidden-string": "^1.0",
+                "phpunit/phpunit": "^8.5",
+                "povils/phpmnd": "^2.2",
+                "psalm/plugin-phpunit": "^0.10.0",
+                "roave/security-advisories": "dev-master",
+                "sebastian/phpcpd": "^4.1",
+                "vimeo/psalm": "^3.11.5"
             },
             "suggest": {
-                "ext-fileinfo": "To facilitate IncomingMailAttachment::getMimeType() auto-detection"
+                "ext-fileinfo": "To facilitate IncomingMailAttachment::getFileInfo() auto-detection"
             },
             "type": "library",
             "autoload": {
@@ -3711,7 +3717,7 @@
                 "pop3",
                 "receive emails"
             ],
-            "time": "2020-04-10T11:43:19+00:00"
+            "time": "2020-06-14T20:18:24+00:00"
         },
         {
             "name": "phpoffice/phpspreadsheet",
@@ -9480,16 +9486,16 @@
         },
         {
             "name": "hanaboso/php-check-utils",
-            "version": "1.1.34",
+            "version": "1.1.35",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/php-check-utils.git",
-                "reference": "7d4ba630c408f173122e039124402b6bc8ff3ff0"
+                "reference": "8b1ca12151fdec71a5cb04aae493dcd743c99c46"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/php-check-utils/zipball/7d4ba630c408f173122e039124402b6bc8ff3ff0",
-                "reference": "7d4ba630c408f173122e039124402b6bc8ff3ff0",
+                "url": "https://api.github.com/repos/hanaboso/php-check-utils/zipball/8b1ca12151fdec71a5cb04aae493dcd743c99c46",
+                "reference": "8b1ca12151fdec71a5cb04aae493dcd743c99c46",
                 "shasum": ""
             },
             "require": {
@@ -9550,7 +9556,7 @@
                 }
             ],
             "description": "Utils for php development - CodeSniffer, PhpStan, PhpUnit, PhpStorm",
-            "time": "2020-08-18T10:19:08+00:00"
+            "time": "2020-08-25T06:49:57+00:00"
         },
         {
             "name": "justinrainbow/json-schema",
@@ -10903,16 +10909,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "0.12.38",
+            "version": "0.12.39",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "ad606c5f1c641b465b739e79a3a0f1a5a57cf1b4"
+                "reference": "f970cab80f0a681019dc669bf8c72905845dadaa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/ad606c5f1c641b465b739e79a3a0f1a5a57cf1b4",
-                "reference": "ad606c5f1c641b465b739e79a3a0f1a5a57cf1b4",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/f970cab80f0a681019dc669bf8c72905845dadaa",
+                "reference": "f970cab80f0a681019dc669bf8c72905845dadaa",
                 "shasum": ""
             },
             "require": {
@@ -10955,7 +10961,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-08-19T08:13:30+00:00"
+            "time": "2020-08-24T21:34:53+00:00"
         },
         {
             "name": "phpstan/phpstan-doctrine",
@@ -12567,16 +12573,16 @@
         },
         {
             "name": "spaze/phpstan-disallowed-calls",
-            "version": "v0.12.1",
+            "version": "v0.12.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spaze/phpstan-disallowed-calls.git",
-                "reference": "8aa127b2026da2730841b4513de91de4f8edd667"
+                "reference": "c6cb5c3961b73fec035517497c84976940986ca7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spaze/phpstan-disallowed-calls/zipball/8aa127b2026da2730841b4513de91de4f8edd667",
-                "reference": "8aa127b2026da2730841b4513de91de4f8edd667",
+                "url": "https://api.github.com/repos/spaze/phpstan-disallowed-calls/zipball/c6cb5c3961b73fec035517497c84976940986ca7",
+                "reference": "c6cb5c3961b73fec035517497c84976940986ca7",
                 "shasum": ""
             },
             "require": {
@@ -12605,7 +12611,7 @@
                 }
             ],
             "description": "Disallowed method and function calls plug-in for PHPStan",
-            "time": "2020-01-06T17:27:03+00:00"
+            "time": "2020-08-24T21:50:08+00:00"
         },
         {
             "name": "squizlabs/php_codesniffer",

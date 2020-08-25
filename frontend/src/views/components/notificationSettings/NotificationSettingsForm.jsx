@@ -64,7 +64,7 @@ class NotificationSettingsChangeForm extends React.Component {
         settings.push(
           <Field key="method" name="method" component={FormSelectInput} label="Method" options={methods} />,
           <Field key="url" name="url" component={FormTextInput} label="Url" />,
-          <Field key="headers" name="headers" component={FormTextAreaInput} rows={10} label="Headers (one per line)" />,
+          <Field key="headers" name="headers" component={FormTextAreaInput} rows={10} label="Headers (key:value one per line)" />,
         );
         break;
       case "email":

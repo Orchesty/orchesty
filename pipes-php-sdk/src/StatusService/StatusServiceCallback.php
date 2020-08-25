@@ -77,9 +77,7 @@ class StatusServiceCallback implements CallbackInterface
             );
         }
 
-        /** @var EventDispatcher $ed */
-        $ed = $this->eventDispatcher;
-        $ed->dispatch(
+        $this->eventDispatcher->dispatch(
             new ProcessStatusEvent($data[self::PROCESS_ID], (bool) $data[self::SUCCESS]),
             ProcessStatusEvent::PROCESS_FINISHED
         );
