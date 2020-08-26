@@ -12,7 +12,7 @@ describe("MongoMessageStorage", () => {
     before(async () => {
         const mongo = await MongoClient.connect(
             `mongodb://${mongoStorageOptions.host}/${mongoStorageOptions.db}`,
-            {useNewUrlParser: true},
+            {useNewUrlParser: true, useUnifiedTopology: true},
         );
         db = mongo.db();
     });

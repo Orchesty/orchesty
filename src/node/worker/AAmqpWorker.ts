@@ -1,7 +1,7 @@
 import {Channel, Message as AmqpMessage} from "amqplib";
 import {Connection, Publisher} from "amqplib-plus";
 import {Container} from "hb-utils/dist/lib/Container";
-import * as uuid4 from "uuid/v4";
+import { v4 as uuid4 } from 'uuid';
 import logger from "../../logger/Logger";
 import Headers from "../../message/Headers";
 import JobMessage from "../../message/JobMessage";

@@ -1,6 +1,5 @@
 import { assert } from "chai";
-import "mocha";
-
+import * as mocha from "mocha";
 import * as bodyParser from "body-parser";
 import * as express from "express";
 import * as http from "http";
@@ -280,6 +279,6 @@ describe("HttpWorker", () => {
             assert.equal(outMsg.getResult().code, ResultCode.HTTP_ERROR);
             assert.equal(outMsg.getContent(), JSON.stringify({ val: "original" }));
         }
-    });
+    }).timeout(5000);
 
 });

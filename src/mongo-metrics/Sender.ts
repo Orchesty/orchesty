@@ -16,7 +16,7 @@ export class Sender {
         private readonly collection: string,
     ) {
 
-        this.client = new MongoClient(`mongodb://${host}:${port}`, {useNewUrlParser: true});
+        this.client = new MongoClient(`mongodb://${host}:${port}`, {useNewUrlParser: true, useUnifiedTopology: true});
         this.collection = collection;
     }
 

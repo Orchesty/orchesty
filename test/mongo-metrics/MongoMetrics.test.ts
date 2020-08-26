@@ -6,7 +6,7 @@ describe("Metrics", () => {
 
     it("should create in defined format", async () => {
         const tags = {name: "appname", host: "10.28.30.45"};
-        const m = new MongoMetrics("measurementName", tags, "127.0.0.127");
+        const m = new MongoMetrics("measurementName", tags, "mongo");
 
         const lineWithTime = await m.send({value1: 10000, value2: "some value"});
         const lineWithoutTime = await m.send({value1: 10000, value2: "some value2"}, false);
@@ -27,7 +27,7 @@ describe("Metrics", () => {
 
     it("should create in defined format with lately added and removed tag", async () => {
         const tags = {name : "appname", host: "10.28.30.45"};
-        const m = new MongoMetrics("measurementName", tags, "127.0.0.127");
+        const m = new MongoMetrics("measurementName", tags, "mongo");
 
         m.addTag("added", "foo");
         m.removeTag("invalid");
