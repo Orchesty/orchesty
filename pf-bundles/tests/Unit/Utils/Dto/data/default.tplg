@@ -24,10 +24,10 @@
         </bpmn:task>
         <bpmn:sequenceFlow id="SequenceFlow_00j2wst" sourceRef="Event_1lqi8dm" targetRef="Task_1taayin"/>
         <bpmn:sequenceFlow id="SequenceFlow_14kr2it" sourceRef="Task_1taayin" targetRef="Task_152x7cw"/>
-        <bpmn:task id="Task_0h8gpta" pipes:pipesType="connector" pipes:sdkHost="php" pipes:rabbitPrefetch="9" pipes:repeaterEnabled="true" pipes:repeaterHops="9" pipes:repeaterInterval="9" name="cleverconnectors-update-subscriptions-connector">
+        <bpmn:task id="Task_0h8gpta" pipes:pipesType="connector" pipes:sdkHost="php" pipes:rabbitPrefetch="9" pipes:repeaterEnabled="true" pipes:repeaterHops="9" pipes:repeaterInterval="9" name="hanaboso-update-subscriptions-connector">
             <bpmn:incoming>SequenceFlow_1wvt3jb</bpmn:incoming>
         </bpmn:task>
-        <bpmn:task id="Task_0fzjb0y" pipes:pipesType="connector" name="cleverconnectors-delete-subscriptions-connector">
+        <bpmn:task id="Task_0fzjb0y" pipes:pipesType="connector" name="hanaboso-delete-subscriptions-connector">
             <bpmn:incoming>SequenceFlow_04obi6b</bpmn:incoming>
         </bpmn:task>
         <bpmn:sequenceFlow id="SequenceFlow_1wvt3jb" sourceRef="Task_1wcc82o" targetRef="Task_0h8gpta"/>
@@ -43,7 +43,7 @@
             <bpmn:incoming>SequenceFlow_1wd2m8w</bpmn:incoming>
             <bpmn:outgoing>SequenceFlow_1t05t75</bpmn:outgoing>
         </bpmn:task>
-        <bpmn:task id="Task_00wzy7d" pipes:pipesType="connector" name="cleverconnectors-create-subscriptions-connector">
+        <bpmn:task id="Task_00wzy7d" pipes:pipesType="connector" name="hanaboso-create-subscriptions-connector">
             <bpmn:incoming>SequenceFlow_1t05t75</bpmn:incoming>
         </bpmn:task>
         <bpmn:sequenceFlow id="SequenceFlow_1wd2m8w" sourceRef="Task_1niijps" targetRef="Task_0nwvqkt"/>

@@ -13,13 +13,13 @@
         "hanaboso/app-store": "^1.4",
         "hanaboso/email-service-bundle": "^1.1",
         "hanaboso/mongo-data-grid": "~1.3.0",
-        "hanaboso/pipes-php-sdk": "^1.3",
-        "hanaboso/rabbit-mq-bundle": "^1.3",
+        "hanaboso/pipes-php-sdk": "^1.4",
+        "hanaboso/rabbit-mq-bundle": "^1.4",
         "hanaboso/rest-bundle": "^1.0",
         "hanaboso/user-bundle": "^1.3",
         "influxdb/influxdb-php": "^1.15",
-        "ruflin/elastica": "^6.1",
-        "symfony/serializer": "^5.0"
+        "ruflin/elastica": "^7.0",
+        "symfony/serializer": "^5.1"
     },
     "require-dev": {
         "hanaboso/php-check-utils": "^1.1"

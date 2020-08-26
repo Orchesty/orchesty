@@ -63,17 +63,6 @@ lib-python-build:
         - master
         - ci
 
-pf-bridge-build:
-    stage: stage1
-    script:
-        - DIR=pf-bridge
-        - skip_unmodified $DIR
-        - make build TAG=${CI_BUILD_REF_NAME}
-    only:
-        - dev
-        - master
-        - ci
-
 # GO LANG
 .go_test: &go_test
     script:
@@ -184,16 +173,9 @@ pf-bridge-test:
     script:
         - DIR=pf-bridge
         - skip_unmodified $DIR
-        - cd $REPO_ROOT/$DIR/test
+        - cd $REPO_ROOT/$DIR
         - export COMPOSE_PROJECT_NAME="p${CI_PIPELINE_ID}-bridge"  # CLEANUP bridge
-        - export RABBITMQ_HOST=rabbitmq
-        - export METRICS_HOST=influxdb
-        - docker-compose pull
-        - docker-compose up -d
-        - docker-compose exec -T test npm run lint
-        - docker-compose exec -T test sh -c 'while [ $(curl -s -o /dev/null -w "%{http_code}" http://guest:guest@rabbitmq:15672/api/overview) == 000 ]; do sleep 1; done'
-        - docker-compose exec -T test npm run testunit
-        - docker-compose exec -T test npm run testintegration
+        - make test docker-down-clean
 
 multi-probe-image:
     stage: stage3
@@ -318,6 +300,16 @@ cron:
         - DIR=cron
         - skip_unmodified $DIR
         - cd $DIR
+        - make build TAG=${CI_BUILD_REF_NAME}
+    only:
+        - master
+        - ci
+
+pf-bridge-build:
+    stage: stage3
+    script:
+        - DIR=pf-bridge
+        - skip_unmodified $DIR
         - make build TAG=${CI_BUILD_REF_NAME}
     only:
         - master
@@ -517,10 +509,10 @@ cleanup:
         - make ${COMPOSE_FILE} docker-down-clean || echo "demo-pipes-api cleanup phase failed"
 
         - ": bridge"
-        - cd $REPO_ROOT/pf-bridge/test
+        - cd $REPO_ROOT/pf-bridge
         - export COMPOSE_FILE=docker-compose.yml
         - export COMPOSE_PROJECT_NAME=p${CI_PIPELINE_ID}-bridge
-        - docker-compose down -v || echo "bridge cleanup phase failed"
+        - make docker-down-clean || echo "bridge cleanup phase failed"
 
         - ": multi-probe"
         - cd $REPO_ROOT/multi-probe

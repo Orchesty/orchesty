@@ -128,12 +128,7 @@ class MongoMessageStorage implements IMessageStorage {
      */
     private createConnection(): void {
         const url = `mongodb://${this.settings.host}/${this.settings.db}`;
-        const options: MongoClientOptions = {
-            useNewUrlParser: true,
-            autoReconnect : true,
-            reconnectTries: Number.MAX_SAFE_INTEGER, // keep trying reconnect almost forever
-            reconnectInterval: RECONNECT_INTERVAL,
-        };
+        const options: MongoClientOptions = {useNewUrlParser: true, useUnifiedTopology: true};
 
         this.db = MongoClient.connect(url, options)
             .then((client: MongoClient) => {

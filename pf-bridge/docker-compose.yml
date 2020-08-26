@@ -1,11 +1,32 @@
-version: '2.2'
+version: '2'
 services:
+  rabbitmq:
+    image: 'rabbitmq:management-alpine'
+  redis:
+    image: 'redis:alpine'
+  influxdb:
+    image: 'influxdb:alpine'
   mongo:
-      image: mongo:3.6
-      ports:
-        - ${DEV_IP}:27017:27017
-      volumes:
-        - mongo:/data/db
+    image: 'mongo:3.4'
+  # logstash dummy (tests fail on nonexistent hostname)
+  logstash:
+    image: busybox
 
-volumes:
-  mongo: {}
+  test:
+      image: node:14-alpine
+      working_dir: /srv/app
+      volumes:
+      - ./:/srv/app
+      environment:
+        - RABBITMQ_HOST=rabbitmq
+        - REDIS_HOST=redis
+        - MONGO_HOST=mongo
+        - METRICS_HOST=influxdb
+        - METRICS_PORT=8086
+      depends_on:
+        - rabbitmq
+        - redis
+        - mongo
+        - influxdb
+        - logstash
+      command: sleep infinity
