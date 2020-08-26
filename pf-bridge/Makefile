@@ -17,6 +17,6 @@ build:
 	docker push $(PUBLIC_IMAGE):$(TAG)
 
 fasttest:
-	docker-compose exec test npm run fulltest
+	docker-compose exec -T test npm run fulltest
 
 test: docker-up-force fasttest
