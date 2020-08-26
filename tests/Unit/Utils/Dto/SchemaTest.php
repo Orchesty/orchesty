@@ -127,18 +127,19 @@ final class SchemaTest extends KernelTestCaseAbstract
      */
     private function getExpected(): string
     {
-        return md5(
+        return hash(
+            'sha256',
             Json::encode(
                 [
-                    0 => 'cleverconnectors-create-subscriptions-connector:connector',
-                    1 => 'cleverconnectors-delete-subscriptions-connector:connector',
-                    2 => 'cleverconnectors-update-subscriptions-connector:connector',
-                    3 => 'hubspot-created-contact-mapper:custom',
-                    4 => 'hubspot-deleted-contact-mapper:custom',
-                    5 => 'hubspot-get-contact-connector:connector',
-                    6 => 'hubspot-updated-contact-connector:webhook',
-                    7 => 'hubspot-updated-contact-mapper:custom',
-                    8 => 'universal-splitter:splitter',
+                    0 => ':hubspot-updated-contact-connector:webhook',
+                    1 => 'Event_1lqi8dm:universal-splitter:splitter',
+                    2 => 'Task_0nwvqkt:hanaboso-create-subscriptions-connector:connector',
+                    3 => 'Task_152x7cw:hanaboso-delete-subscriptions-connector:connector',
+                    4 => 'Task_1niijps:hubspot-created-contact-mapper:custom',
+                    5 => 'Task_1niijps:hubspot-updated-contact-mapper:custom',
+                    6 => 'Task_1taayin:hubspot-deleted-contact-mapper:custom',
+                    7 => 'Task_1taayin:hubspot-get-contact-connector:connector',
+                    8 => 'Task_1wcc82o:hanaboso-update-subscriptions-connector:connector',
                 ]
             )
         );

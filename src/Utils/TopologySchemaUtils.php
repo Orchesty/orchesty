@@ -153,7 +153,7 @@ final class TopologySchemaUtils
      */
     public static function getIndexHash(Schema $schema): string
     {
-        return md5(Json::encode($schema->buildIndex()));
+        return hash('sha256', Json::encode($schema->buildIndex()));
     }
 
     /**

@@ -209,9 +209,9 @@ final class ElasticLogsTest extends DatabaseTestCaseAbstract
         $this->dm->flush();
 
         for ($i = 1; $i <= 10; $i++) {
-            $index->getType('_doc')->addDocument(
+            $index->addDocument(
                 new Document(
-                    $i,
+                    (string) $i,
                     [
                         '@timestamp' => DateTimeUtils::getUtcDateTime(),
                         'version'    => sprintf('Version %s', $i),

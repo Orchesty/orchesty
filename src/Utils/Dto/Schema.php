@@ -108,15 +108,15 @@ final class Schema
         $count   = 1;
         $index   = [];
         $index[] = $this->getIndexItem($this->startNode);
-        $nextIds = $this->sequences[$this->startNode];
+        $nextIds = $this->getNextIds($this->startNode);
 
         while ($nextIds) {
             $ids = [];
             foreach ($nextIds as $nextId) {
                 $index[] = $this->getIndexItem($nextId);
-                if (isset($this->sequences[$nextId])) {
+                if (!empty($this->getNextIds($nextId))) {
                     $this->checkInfiniteLoop($count);
-                    $ids = array_merge($ids, $this->sequences[$nextId]);
+                    $ids = array_merge($ids, $this->getNextIds($nextId));
                     $count++;
                 }
             }
@@ -132,13 +132,48 @@ final class Schema
     /**
      * @param string $id
      *
+     * @return mixed[]
+     */
+    private function getNextIds(string $id): array
+    {
+        $ids    = [];
+        [, $id] = $this->getParentFromNextId($id);
+        foreach ($this->sequences[$id] ?? [] as $child) {
+            $ids[] = sprintf('%s||%s', $id, $child);
+        }
+
+        return $ids;
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return mixed[]
+     */
+    private function getParentFromNextId(string $id): array
+    {
+        $parsed = explode('||', $id);
+        if (count($parsed) > 1) {
+            [$parent, $id] = $parsed;
+        } else {
+            $parent = '';
+            $id     = $parsed[0];
+        }
+
+        return [$parent, $id];
+    }
+
+    /**
+     * @param string $id
+     *
      * @return string
      */
     private function getIndexItem(string $id): string
     {
-        $node = $this->nodes[$id];
+        [$parent, $id] = $this->getParentFromNextId($id);
+        $node          = $this->nodes[$id];
 
-        return sprintf('%s:%s', $node->getName(), $node->getPipesType());
+        return sprintf('%s:%s:%s', $parent, $node->getName(), $node->getPipesType());
     }
 
     /**
