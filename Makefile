@@ -18,6 +18,8 @@ build:
 
 fasttest:
 	docker-compose exec -T test npm install
+	docker-compose exec -T test npm build
+	docker-compose exec -T test npm lint
 	docker-compose exec -T test npm run testunit
 	docker-compose exec -T test npm run testintegration
 
