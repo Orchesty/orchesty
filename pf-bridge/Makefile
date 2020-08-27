@@ -3,11 +3,11 @@
 IMAGE=dkr.hanaboso.net/pipes/pipes/pf-bridge
 PUBLIC_IMAGE=hanaboso/pipes-pf-bridge
 
-docker-up-force:
+docker-up-force: .env
 	docker-compose pull
 	docker-compose up -d --force-recreate
 
-docker-down-clean:
+docker-down-clean: .env
 	docker-compose down -v
 
 build:
@@ -24,3 +24,8 @@ fasttest:
 	docker-compose exec -T test npm run testintegration
 
 test: docker-up-force fasttest
+
+.env:
+	sed -e "s|{DEV_UID}|$(shell id -u)|g" \
+		-e "s|{DEV_GID}|$(shell id -u)|g" \
+		.env.dist >> .env; \
