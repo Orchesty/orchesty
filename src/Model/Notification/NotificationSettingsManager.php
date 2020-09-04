@@ -2,9 +2,9 @@
 
 namespace Hanaboso\NotificationSender\Model\Notification;
 
-use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
+use Doctrine\Persistence\ObjectRepository;
 use Hanaboso\CommonsBundle\Enum\NotificationSenderEnum;
 use Hanaboso\NotificationSender\Document\NotificationSettings;
 use Hanaboso\NotificationSender\Exception\NotificationException;
