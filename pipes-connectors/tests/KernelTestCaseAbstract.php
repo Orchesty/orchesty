@@ -130,11 +130,7 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
      */
     protected function assertSuccessProcessResponse(ProcessDto $response, string $fileName): void
     {
-        self::assertProcessResponse(
-            $response,
-            $fileName
-        );
-
+        self::assertProcessResponse($response, $fileName);
         self::assertArrayNotHasKey('pf-result-code', $response->getHeaders());
     }
 
@@ -146,11 +142,7 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
      */
     protected function assertFailedProcessResponse(ProcessDto $response, string $fileName): void
     {
-        self::assertProcessResponse(
-            $response,
-            $fileName
-        );
-
+        self::assertProcessResponse($response, $fileName);
         self::assertEquals($response->getHeaders()['pf-result-code'], ProcessDto::STOP_AND_FAILED);
     }
 

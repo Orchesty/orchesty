@@ -102,10 +102,7 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
             )
         );
 
-        $requestUn = $this->application->getWebhookUnsubscribeRequestDto(
-            $applicationInstall,
-            '358'
-        );
+        $requestUn = $this->application->getWebhookUnsubscribeRequestDto($applicationInstall, '358');
 
         self::assertEquals(
             sprintf(

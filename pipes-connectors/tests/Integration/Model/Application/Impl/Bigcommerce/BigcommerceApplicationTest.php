@@ -71,12 +71,7 @@ final class BigcommerceApplicationTest extends DatabaseTestCaseAbstract
             self::CLIENT_SECRET
         );
         $this->pfd($applicationInstall);
-        $dto = $this->application->getRequestDto(
-            $applicationInstall,
-            'POST',
-            'url',
-            '{"data":"hello data"}'
-        );
+        $dto = $this->application->getRequestDto($applicationInstall, 'POST', 'url', '{"data":"hello data"}');
         self::assertEquals('{"data":"hello data"}', $dto->getBody());
     }
 

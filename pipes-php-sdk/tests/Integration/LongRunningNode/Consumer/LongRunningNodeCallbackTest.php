@@ -21,7 +21,6 @@ final class LongRunningNodeCallbackTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Consumer\LongRunningNodeCallback
      * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Consumer\LongRunningNodeCallback::processMessage
-
      * @throws Exception
      */
     public function testProcessMessage(): void
@@ -37,19 +36,14 @@ final class LongRunningNodeCallbackTest extends DatabaseTestCaseAbstract
                 'application_headers' => new AMQPTable([PipesHeaders::createKey(PipesHeaders::NODE_NAME) => 'null']),
             ]
         );
-        $this->setProperty($ampq, 'delivery_info', ['delivery_tag' => 2]);
-        $node->processMessage(
-            $ampq,
-            $connection,
-            2
-        );
+        $ampq->setDeliveryTag(2);
+        $node->processMessage($ampq, $connection, 2);
 
         self::assertFake();
     }
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\LongRunningNode\Consumer\LongRunningNodeCallback::processMessage
-
      * @throws Exception
      */
     public function testProcessMessageErr(): void
@@ -67,11 +61,7 @@ final class LongRunningNodeCallbackTest extends DatabaseTestCaseAbstract
         );
 
         self::expectException(OnRepeatException::class);
-        $node->processMessage(
-            $ampq,
-            $connection,
-            2
-        );
+        $node->processMessage($ampq, $connection, 2);
     }
 
 }

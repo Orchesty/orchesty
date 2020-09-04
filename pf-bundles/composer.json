@@ -1,8 +1,8 @@
 {
     "name": "hanaboso/pipes-framework",
     "description": "PipesFramework for Symfony",
-    "version": "1.4.6",
-    "license": "proprietary",
+    "version": "1.4.7",
+    "license": "GPL-3.0-or-later",
     "require": {
         "php": "^7.4",
         "ext-ctype": "*",

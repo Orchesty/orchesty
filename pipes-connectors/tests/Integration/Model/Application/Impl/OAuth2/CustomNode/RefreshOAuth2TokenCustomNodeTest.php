@@ -58,11 +58,7 @@ final class RefreshOAuth2TokenCustomNodeTest extends DatabaseTestCaseAbstract
         );
         $this->pfd($applicationInstall);
         $this->dm->clear();
-        $dto = DataProvider::getProcessDto(
-            'mailchimp',
-            'user',
-            '{"body":"body"}'
-        );
+        $dto = DataProvider::getProcessDto('mailchimp', 'user', '{"body":"body"}');
         $dto->setHeaders(
             [
                 PipesHeaders::createKey(PipesHeaders::USER)                            => ['user'],

@@ -41,9 +41,7 @@ final class GetApplicationForRefreshBatchTest extends DatabaseTestCaseAbstract
      */
     public function testProcess(): void
     {
-        $getAppForRefreshBatchCreateContactConnector = new GetApplicationForRefreshBatch(
-            $this->dm
-        );
+        $getAppForRefreshBatchCreateContactConnector = new GetApplicationForRefreshBatch($this->dm);
         $this->expectException(ConnectorException::class);
         $getAppForRefreshBatchCreateContactConnector->process(new ProcessDto());
     }

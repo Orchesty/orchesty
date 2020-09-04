@@ -198,10 +198,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetTopologySchemaNotFound(): void
     {
-        $this->client->request(
-            'GET',
-            '/api/topologies/999/schema.bpmn'
-        );
+        $this->client->request('GET', '/api/topologies/999/schema.bpmn');
 
         /** @var Response $response */
         $response = $this->client->getResponse();

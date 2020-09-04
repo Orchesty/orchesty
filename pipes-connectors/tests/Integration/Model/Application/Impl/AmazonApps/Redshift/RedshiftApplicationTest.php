@@ -229,11 +229,7 @@ final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
      */
     public function testSetApplicationInstallException(): void
     {
-        self::assertException(
-            ApplicationInstallException::class,
-            0,
-            'Login into application was unsuccessful.'
-        );
+        self::assertException(ApplicationInstallException::class, 0, 'Login into application was unsuccessful.');
 
         $client = self::createPartialMock(RedshiftClient::class, ['__call']);
         $client->method('__call')->willReturnCallback(static fn(): Result => new Result(['Clusters' => [FALSE]]));
@@ -280,11 +276,7 @@ final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
      */
     public function testGetConnectionException(): void
     {
-        self::assertException(
-            ApplicationInstallException::class,
-            0,
-            'Connection to Redshift db was unsuccessful.'
-        );
+        self::assertException(ApplicationInstallException::class, 0, 'Connection to Redshift db was unsuccessful.');
 
         $this->prepareConnection(static fn() => FALSE);
 

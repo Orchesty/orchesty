@@ -5,18 +5,18 @@
     "require": {
         "php": "^7.4",
         "ext-json": "*",
-        "hanaboso/app-store": "^1.3",
+        "hanaboso/app-store": "^1.4",
         "hanaboso/commons-bundle": "^2.0",
-        "hanaboso/email-service-bundle": "^1.0",
-        "hanaboso/pipes-connectors": "^1.3",
-        "hanaboso/pipes-php-sdk": "^1.2",
-        "hanaboso/rabbit-mq-bundle": "^1.3",
+        "hanaboso/email-service-bundle": "^1.1",
+        "hanaboso/pipes-connectors": "^1.4",
+        "hanaboso/pipes-php-sdk": "^1.4",
+        "hanaboso/rabbit-mq-bundle": "^1.4",
         "hanaboso/rest-bundle": "^1.0",
         "kucharovic/czech-holidays": "^1.0",
         "ratchet/pawl": "^0.3"
     },
     "require-dev": {
-        "hanaboso/php-check-utils": "^1.0"
+        "hanaboso/php-check-utils": "^1.1"
     },
     "autoload": {
         "psr-4": {

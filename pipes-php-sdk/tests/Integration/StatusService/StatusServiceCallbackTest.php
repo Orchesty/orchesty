@@ -40,9 +40,7 @@ final class StatusServiceCallbackTest extends KernelTestCaseAbstract
     public function testProcessMessage(): void
     {
         $message = Message::create('{"process_id":"1","success":true}');
-        // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-        $message->delivery_info = ['delivery_tag' => ''];
-        // phpcs:enable
+        $message->setDeliveryTag(1);
 
         $this->callback->processMessage($message, $this->connection, 1);
 
@@ -57,9 +55,7 @@ final class StatusServiceCallbackTest extends KernelTestCaseAbstract
     public function testProcessMessageFalse(): void
     {
         $message = Message::create('{"process_id":"1","success":false}');
-        // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-        $message->delivery_info = ['delivery_tag' => ''];
-        // phpcs:enable
+        $message->setDeliveryTag(1);
 
         $this->callback->processMessage($message, $this->connection, 1);
 

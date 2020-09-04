@@ -197,10 +197,7 @@ final class Schema
     private function checkInfiniteLoop(int $count): void
     {
         if ($count >= self::LIMIT) {
-            throw new TopologyException(
-                'Invalid schema - infinite loop',
-                TopologyException::SCHEMA_INFINITE_LOOP
-            );
+            throw new TopologyException('Invalid schema - infinite loop', TopologyException::SCHEMA_INFINITE_LOOP);
         }
     }
 

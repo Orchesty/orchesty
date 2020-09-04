@@ -18,6 +18,6 @@ services:
             COMPOSER_HOME: ${HOME}/dev/.composer
             KERNEL_CLASS: Demo\Kernel
         volumes:
-            - ../../../:/var/www/pipes
+            - ../../../:/var/www/pipes:cached
             - ${SSH_AUTH}:/tmp/.ssh-auth-sock
-            - ${HOME}/dev/.composer:${HOME}/dev/.composer
+            - ${HOME}/dev/.composer:${HOME}/dev/.composer:cached

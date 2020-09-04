@@ -41,10 +41,7 @@ final class OAuth2Wrapper extends GenericProvider
         }
 
         if (!is_array($res)) {
-            throw new AuthorizationException(
-                $res,
-                AuthorizationException::AUTHORIZATION_RESPONSE_ARRAY_EXPECTED
-            );
+            throw new AuthorizationException($res, AuthorizationException::AUTHORIZATION_RESPONSE_ARRAY_EXPECTED);
         }
 
         return $res;

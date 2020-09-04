@@ -187,10 +187,7 @@ final class MongoMetricsManager extends MetricsManagerAbstract
             ->setMin($res[self::REQUEST_MIN])
             ->setMax($res[self::REQUEST_MAX])
             ->setTotal($res[self::REQUEST_COUNT])
-            ->setAvg(
-                $res[self::REQUEST_COUNT],
-                $res[self::REQUEST_SUM]
-            );
+            ->setAvg($res[self::REQUEST_COUNT], $res[self::REQUEST_SUM]);
     }
 
     /**
@@ -230,10 +227,7 @@ final class MongoMetricsManager extends MetricsManagerAbstract
         return (new MetricsDto())
             ->setMax($res[self::QUEUE_MAX])
             ->setTotal($res[self::QUEUE_COUNT])
-            ->setAvg(
-                $res[self::QUEUE_COUNT],
-                $res[self::QUEUE_SUM]
-            );
+            ->setAvg($res[self::QUEUE_COUNT], $res[self::QUEUE_SUM]);
     }
 
     /**
@@ -271,10 +265,7 @@ final class MongoMetricsManager extends MetricsManagerAbstract
             ->setMin($res[self::CPU_MIN])
             ->setMax($res[self::CPU_MAX])
             ->setTotal($res[self::CPU_COUNT])
-            ->setAvg(
-                $res[self::CPU_COUNT],
-                $res[self::CPU_SUM]
-            );
+            ->setAvg($res[self::CPU_COUNT], $res[self::CPU_SUM]);
     }
 
     /**
@@ -324,10 +315,7 @@ final class MongoMetricsManager extends MetricsManagerAbstract
                 ->setMin($res[self::PROCESS_TIME_MIN])
                 ->setMax($res[self::PROCESS_TIME_MAX])
                 ->setTotal($res[self::PROCESS_TIME_COUNT])
-                ->setAvg(
-                    $res[self::PROCESS_TIME_COUNT],
-                    $res[self::PROCESS_TIME_SUM]
-                ),
+                ->setAvg($res[self::PROCESS_TIME_COUNT], $res[self::PROCESS_TIME_SUM]),
             (new MetricsDto())
                 ->setTotal($res[self::NODE_TOTAL_SUM])
                 ->setErrors($res[self::NODE_ERROR_SUM]),
@@ -390,17 +378,11 @@ final class MongoMetricsManager extends MetricsManagerAbstract
             (new MetricsDto())
                 ->setMin($res[self::PROCESSED_MIN])
                 ->setMax($res[self::PROCESSED_MAX])
-                ->setAvg(
-                    $res[self::PROCESSED_COUNT],
-                    $res[self::PROCESSED_SUM]
-                ),
+                ->setAvg($res[self::PROCESSED_COUNT], $res[self::PROCESSED_SUM]),
             (new MetricsDto())
                 ->setMin($res[self::WAIT_MIN])
                 ->setMax($res[self::WAIT_MAX])
-                ->setAvg(
-                    $res[self::WAIT_COUNT],
-                    $res[self::WAIT_SUM]
-                ),
+                ->setAvg($res[self::WAIT_COUNT], $res[self::WAIT_SUM]),
             (new MetricsDto())
                 ->setTotal($res[self::NODE_TOTAL_SUM])
                 ->setErrors($res[self::NODE_ERROR_SUM]),

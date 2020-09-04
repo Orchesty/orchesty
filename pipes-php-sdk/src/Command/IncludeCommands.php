@@ -52,10 +52,7 @@ final class IncludeCommands extends BundleApplication
     public function getIncludedCommands(): array
     {
         // help and list commands are added before container instantiation
-        return array_merge(
-            $this->defaultCommands,
-            $this->includedCommands
-        );
+        return array_merge($this->defaultCommands, $this->includedCommands);
     }
 
     /**

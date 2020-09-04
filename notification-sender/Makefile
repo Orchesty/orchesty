@@ -5,11 +5,20 @@ DE=docker-compose exec -T app
 IMAGE=dkr.hanaboso.net/pipes/notification-sender
 PUBLIC_IMAGE=hanaboso/pipes-notification-sender
 
+ALIAS?=alias
+Darwin:
+	sudo ifconfig lo0 $(ALIAS) $(shell awk '$$1 ~ /^DEV_IP/' .env.dist | sed -e "s/^DEV_IP=//")
+Linux:
+	@echo 'skipping ...'
+.lo0-up:
+	-@make `uname`
+.lo0-down:
+	-@make `uname` ALIAS='-alias'
 .env:
-	sed -e "s/{DEV_UID}/$(shell id -u)/g" \
-		-e "s/{DEV_GID}/$(shell id -u)/g" \
+	sed -e "s/{DEV_UID}/$(shell if [ "$(shell uname)" = "Linux" ]; then echo $(shell id -u); else echo '1001'; fi)/g" \
+		-e "s/{DEV_GID}/$(shell if [ "$(shell uname)" = "Linux" ]; then echo $(shell id -g); else echo '1001'; fi)/g" \
 		-e "s/{SSH_AUTH}/$(shell if [ "$(shell uname)" = "Linux" ]; then echo '${SSH_AUTH_SOCK}' | sed 's/\//\\\//g'; else echo '\/run\/host-services\/ssh-auth.sock'; fi)/g" \
-		.env.dist >> .env; \
+		.env.dist > .env; \
 
 docker-compose.ci.yml:
 	# Comment out any port forwarding
@@ -22,11 +31,11 @@ build: .env
 	docker tag ${IMAGE}:${TAG} $(PUBLIC_IMAGE):$(TAG)
 	docker push $(PUBLIC_IMAGE):$(TAG)
 
-docker-up-force: .env
+docker-up-force: .env .lo0-up
 	$(DC) pull
 	$(DC) up -d --force-recreate --remove-orphans
 
-docker-down-clean: .env
+docker-down-clean: .env .lo0-down
 	$(DC) down -v
 
 # Composer
@@ -70,7 +79,7 @@ phpcoverage: database-clear
 	$(DE) php vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --coverage-html var/coverage --whitelist src tests
 
 phpcoverage-ci:
-	$(DE) ./vendor/hanaboso/php-check-utils/bin/coverage.sh
+	$(DE) ./vendor/hanaboso/php-check-utils/bin/coverage.sh -p $$(nproc)
 
 test: docker-up-force composer-install fasttest docker-down-clean
 

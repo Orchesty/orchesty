@@ -2,11 +2,11 @@
 
 namespace Hanaboso\PipesFramework\TopologyInstaller;
 
-use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
+use Doctrine\Persistence\ObjectRepository;
 use Hanaboso\CommonsBundle\Exception\CategoryException;
 use Hanaboso\PipesFramework\Configurator\Model\CategoryManager;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\TopologyFile;

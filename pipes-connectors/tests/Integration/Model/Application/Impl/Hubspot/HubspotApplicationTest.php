@@ -177,10 +177,7 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
             $webhookSubscription,
             ''
         );
-        $responseUn          = $this->application->getWebhookUnsubscribeRequestDto(
-            $applicationInstall,
-            'id123'
-        );
+        $responseUn          = $this->application->getWebhookUnsubscribeRequestDto($applicationInstall, 'id123');
 
         self::assertEquals('POST', $response->getMethod());
         self::assertEquals('DELETE', $responseUn->getMethod());

@@ -419,10 +419,7 @@ final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
     private function createMessage(array $headers = [], string $content = ''): AMQPMessage
     {
         $message = Message::create($content, $headers);
-        // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-        $message->delivery_info['delivery_tag'] = 'delivery_tag';
-
-        // phpcs:enable
+        $message->setDeliveryTag(1);
 
         return $message;
     }

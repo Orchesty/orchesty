@@ -82,7 +82,9 @@ final class MetricsController
     public function topologyRequestsCountMetricsAction(Request $request, string $topology): Response
     {
         try {
-            return $this->getResponse($this->metricsHandler->getRequestsCountMetrics($topology, $request->query->all()));
+            return $this->getResponse(
+                $this->metricsHandler->getRequestsCountMetrics($topology, $request->query->all())
+            );
         } catch (Throwable $e) {
             return $this->getErrorResponse($e, 400);
         }

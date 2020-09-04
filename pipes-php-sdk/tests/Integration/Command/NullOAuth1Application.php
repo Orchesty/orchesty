@@ -92,23 +92,9 @@ final class NullOAuth1Application extends OAuth1ApplicationAbstract implements O
      */
     public function getSettingsForm(): Form
     {
-        $field1 = new Field(
-            Field::TEXT,
-            'settings1',
-            'Client 11'
-        );
-
-        $field2 = new Field(
-            Field::TEXT,
-            'settings2',
-            'Client 22'
-        );
-
-        $field3 = new Field(
-            Field::PASSWORD,
-            'settings3',
-            'Client 33'
-        );
+        $field1 = new Field(Field::TEXT, 'settings1', 'Client 11');
+        $field2 = new Field(Field::TEXT, 'settings2', 'Client 22');
+        $field3 = new Field(Field::PASSWORD, 'settings3', 'Client 33');
 
         $form = new Form();
         $form

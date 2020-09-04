@@ -41,9 +41,7 @@ final class NotificationMessageCallbackTest extends DatabaseTestCaseAbstract
     public function testProcessMessage(): void
     {
         $message = Message::create(['pipes' => ['notification_type' => NotificationEventEnum::ACCESS_EXPIRATION]]);
-        // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-        $message->delivery_info['delivery_tag'] = 'delivery_tag';
-        // phpcs:enable
+        $message->setDeliveryTag(1);
 
         $this->callback->processMessage(
             $message,

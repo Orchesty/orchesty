@@ -6,9 +6,9 @@ services:
         ports:
             - ${DEV_IP}:80:80
         volumes:
-            - ./:/var/www
+            - ./:/var/www:cached
             - ${SSH_AUTH}:/tmp/.ssh-auth-sock
-            - ${HOME}/dev/.composer:${HOME}/dev/.composer
+            - ${HOME}/dev/.composer:${HOME}/dev/.composer:cached
         environment:
             - DEV_UID=${DEV_UID}
             - DEV_GID=${DEV_GID}

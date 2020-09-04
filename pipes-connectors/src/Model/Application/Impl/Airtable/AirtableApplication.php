@@ -141,12 +141,8 @@ final class AirtableApplication extends BasicApplicationAbstract
      */
     private function getAccessToken(ApplicationInstall $applicationInstall): string
     {
-        if (isset(
-            $applicationInstall->getSettings(
-            )[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::TOKEN]
-        )) {
-            return $applicationInstall->getSettings(
-            )[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::TOKEN];
+        if (isset($applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::TOKEN])) {
+            return $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::TOKEN];
         }
 
         throw new AuthorizationException(

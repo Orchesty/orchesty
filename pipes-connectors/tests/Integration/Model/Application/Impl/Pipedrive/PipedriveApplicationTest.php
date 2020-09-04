@@ -49,10 +49,7 @@ final class PipedriveApplicationTest extends DatabaseTestCaseAbstract
             'https://seznam.cz'
         );
 
-        $requestUn = $this->application->getWebhookUnsubscribeRequestDto(
-            $applicationInstall,
-            '388'
-        );
+        $requestUn = $this->application->getWebhookUnsubscribeRequestDto($applicationInstall, '388');
 
         self::assertEquals(
             'https://api.pipedrive.com/v1/webhooks?api_token=ebcebe5e73aa8ba62**********80c05377fcd63',

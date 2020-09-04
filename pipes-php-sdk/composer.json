@@ -1,8 +1,8 @@
 {
     "name": "hanaboso/pipes-php-sdk",
     "description": "PHP sdk for PipesFramework",
-    "version": "1.4.5",
-    "license": "proprietary",
+    "version": "1.4.6",
+    "license": "GPL-3.0-or-later",
     "require": {
         "php": "^7.4",
         "ext-json": "*",

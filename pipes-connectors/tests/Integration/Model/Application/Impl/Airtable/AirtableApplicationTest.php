@@ -116,10 +116,7 @@ final class AirtableApplicationTest extends DatabaseTestCaseAbstract
         $this->pfd($applicationInstall);
         $this->dm->clear();
         $this->expectException(AuthorizationException::class);
-        $this->app->getRequestDto(
-            $applicationInstall,
-            'POST'
-        );
+        $this->app->getRequestDto($applicationInstall, 'POST');
     }
 
     /**

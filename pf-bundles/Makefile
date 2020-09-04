@@ -6,6 +6,21 @@ DC=docker-compose
 DE=docker-compose exec -T app
 DEC=docker-compose exec -T app composer
 
+ALIAS?=alias
+Darwin:
+	sudo ifconfig lo0 $(ALIAS) $(shell awk '$$1 ~ /^DEV_IP/' .env.dist | sed -e "s/^DEV_IP=//")
+Linux:
+	@echo 'skipping ...'
+.lo0-up:
+	-@make `uname`
+.lo0-down:
+	-@make `uname` ALIAS='-alias'
+.env:
+	sed -e "s/{DEV_UID}/$(shell if [ "$(shell uname)" = "Linux" ]; then echo $(shell id -u); else echo '1001'; fi)/g" \
+		-e "s/{DEV_GID}/$(shell if [ "$(shell uname)" = "Linux" ]; then echo $(shell id -g); else echo '1001'; fi)/g" \
+		-e "s/{SSH_AUTH}/$(shell if [ "$(shell uname)" = "Linux" ]; then echo '${SSH_AUTH_SOCK}' | sed 's/\//\\\//g'; else echo '\/run\/host-services\/ssh-auth.sock'; fi)/g" \
+		.env.dist > .env; \
+
 # Build
 build: .env
 	cp .dockerignore ../.dockerignore
@@ -16,11 +31,11 @@ build: .env
 	rm ../.dockerignore || true
 
 # Docker
-docker-up-force: .env
+docker-up-force: .env .lo0-up
 	$(DC) pull
 	$(DC) up -d --force-recreate --remove-orphans
 
-docker-down-clean: .env
+docker-down-clean: .env .lo0-down
 	$(DC) down -v
 
 #Composer
@@ -57,7 +72,7 @@ phpcoverage:
 	$(DE) ./vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --coverage-html var/coverage --whitelist src tests
 
 phpcoverage-ci:
-	$(DE) ./vendor/hanaboso/php-check-utils/bin/coverage.sh
+	$(DE) ./vendor/hanaboso/php-check-utils/bin/coverage.sh -p $$(nproc)
 
 phpmanual-up:
 	cd tests/Manual; $(MAKE) docker-up-force;
@@ -87,9 +102,3 @@ clear-cache:
 
 database-create:
 	$(DE) php bin/console doctrine:mongodb:schema:create --dm=metrics || true
-
-.env:
-	sed -e "s|{DEV_UID}|$(shell id -u)|g" \
-		-e "s|{DEV_GID}|$(shell id -u)|g" \
-		-e "s/{SSH_AUTH}/$(shell if [ "$(shell uname)" = "Linux" ]; then echo '${SSH_AUTH_SOCK}' | sed 's/\//\\\//g'; else echo '\/run\/host-services\/ssh-auth.sock'; fi)/g" \
-		.env.dist >> .env; \
