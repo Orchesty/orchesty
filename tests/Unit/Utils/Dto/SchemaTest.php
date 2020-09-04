@@ -26,6 +26,8 @@ final class SchemaTest extends KernelTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::addSequence
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::setStartNode
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getNodes
+     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getNextIds
+     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getParentFromNextId
      *
      * @throws Exception
      */
@@ -42,6 +44,8 @@ final class SchemaTest extends KernelTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::checkStartNode
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getIndexItem
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::checkInfiniteLoop
+     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getNextIds
+     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getParentFromNextId
      *
      * @throws Exception
      */
@@ -58,6 +62,8 @@ final class SchemaTest extends KernelTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::checkStartNode
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getIndexItem
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::checkInfiniteLoop
+     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getNextIds
+     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getParentFromNextId
      *
      * @throws Exception
      */
@@ -74,6 +80,8 @@ final class SchemaTest extends KernelTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::checkStartNode
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getIndexItem
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::checkInfiniteLoop
+     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getNextIds
+     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getParentFromNextId
      *
      * @throws Exception
      */
@@ -92,6 +100,8 @@ final class SchemaTest extends KernelTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::checkStartNode
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getIndexItem
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::checkInfiniteLoop
+     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getParentFromNextId
+     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getNextIds
      *
      * @throws Exception
      */

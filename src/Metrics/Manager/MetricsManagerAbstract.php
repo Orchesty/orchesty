@@ -2,8 +2,8 @@
 
 namespace Hanaboso\PipesFramework\Metrics\Manager;
 
-use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\Persistence\ObjectRepository;
 use Hanaboso\PipesFramework\Metrics\Dto\MetricsDto;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;

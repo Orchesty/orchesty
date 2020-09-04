@@ -6,11 +6,11 @@ services:
         ports:
             - ${DEV_IP}:80:80
         volumes:
-            - ./:/var/www
-            - ../app-store:/var/app-store
-            - ../pipes-php-sdk:/var/pipes-php-sdk
+            - ./:/var/www:cached
+            - ../app-store:/var/app-store:cached
+            - ../pipes-php-sdk:/var/pipes-php-sdk:cached
             - ${SSH_AUTH}:/tmp/.ssh-auth-sock
-            - ${HOME}/dev/.composer:${HOME}/dev/.composer
+            - ${HOME}/dev/.composer:${HOME}/dev/.composer:cached
         environment:
             - DEV_UID=${DEV_UID}
             - DEV_GID=${DEV_GID}

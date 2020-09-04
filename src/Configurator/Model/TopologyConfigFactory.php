@@ -2,10 +2,10 @@
 
 namespace Hanaboso\PipesFramework\Configurator\Model;
 
-use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\Persistence\ObjectRepository;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyConfigException;

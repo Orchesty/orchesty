@@ -2,8 +2,8 @@
 
 namespace PipesFrameworkTests\Integration\Configurator\Model;
 
-use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
+use Doctrine\Persistence\ObjectRepository;
 use Exception;
 use Hanaboso\PipesFramework\Configurator\Document\Sdk;
 use Hanaboso\PipesFramework\Configurator\Model\SdkManager;

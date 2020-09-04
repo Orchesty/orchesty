@@ -2,8 +2,8 @@
 
 namespace Hanaboso\PipesFramework\Configurator\Cron;
 
-use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\Persistence\ObjectRepository;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Exception\CronException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
