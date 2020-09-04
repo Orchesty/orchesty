@@ -11,7 +11,7 @@ function mapStateToProps(state, { componentKey }) {
 
 export default connect(mapStateToProps)(Modal(SdkImlChangeForm, {
   title: 'Change Service',
-  submitCaption: 'Change',
+  submitCaption: 'Save',
   closeCaption: 'Cancel',
   size: 'lg'
 }));
