@@ -9,8 +9,10 @@ framework:
     http_method_override: true
     test: false
     session:
-        handler_id: hbpf.commons.session_handler
-        cookie_secure: true
-        cookie_samesite: 'strict'
+        handler_id: session.handler.mongodb
+        #        handler_id: hbpf.commons.session_handler
+        #        handler_id: 'session.handler.native_file'
+        cookie_secure: false
+        cookie_samesite: 'lax'
     router:
         strict_requirements: ~

@@ -16,3 +16,6 @@ parameters:
 
     cron_host: "%env(string:CRON_DSN)%"
     starting_point_host: "%env(string:STARTING_POINT_DSN)%"
+
+    env(REDIS_DSN): "redis://redis"
+    redis_dsn: '%env(string:REDIS_DSN)%'

@@ -157,7 +157,7 @@ final class InstallManagerTest extends KernelTestCaseAbstract
             $requestHandler,
             $categoryParser,
             $decoder,
-            (string) getenv('REDIS_DSN'),
+            self::$container->getParameter('redis_dsn'),
             $dirs
         );
     }
@@ -179,7 +179,7 @@ final class InstallManagerTest extends KernelTestCaseAbstract
         $dto->addUpdate(new UpdateObject($topo, new TopologyFile('file-upl.tplg', __DIR__ . '/data/file-upl.tplg')));
         $dto->addDelete([$topo2]);
 
-        $client = new Client(Parameters::create((string) getenv('REDIS_DSN')));
+        $client = new Client(Parameters::create(self::$container->getParameter('redis_dsn')));
         $client->set(InstallManager::AUTO_INSTALL_KEY, serialize($dto));
     }
 

@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.151.6",
+            "version": "3.152.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "b34231eb116dd7dada37f6d30d88343a992c9c3e"
+                "reference": "c5b43109dc0ecf77c4a18a8504ca3023f705b306"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/b34231eb116dd7dada37f6d30d88343a992c9c3e",
-                "reference": "b34231eb116dd7dada37f6d30d88343a992c9c3e",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/c5b43109dc0ecf77c4a18a8504ca3023f705b306",
+                "reference": "c5b43109dc0ecf77c4a18a8504ca3023f705b306",
                 "shasum": ""
             },
             "require": {
@@ -89,7 +89,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2020-09-03T18:17:59+00:00"
+            "time": "2020-09-04T18:16:32+00:00"
         },
         {
             "name": "aws/aws-sdk-php-symfony",
@@ -1760,16 +1760,16 @@
         },
         {
             "name": "egulias/email-validator",
-            "version": "2.1.19",
+            "version": "2.1.20",
             "source": {
                 "type": "git",
                 "url": "https://github.com/egulias/EmailValidator.git",
-                "reference": "840d5603eb84cc81a6a0382adac3293e57c1c64c"
+                "reference": "f46887bc48db66c7f38f668eb7d6ae54583617ff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/egulias/EmailValidator/zipball/840d5603eb84cc81a6a0382adac3293e57c1c64c",
-                "reference": "840d5603eb84cc81a6a0382adac3293e57c1c64c",
+                "url": "https://api.github.com/repos/egulias/EmailValidator/zipball/f46887bc48db66c7f38f668eb7d6ae54583617ff",
+                "reference": "f46887bc48db66c7f38f668eb7d6ae54583617ff",
                 "shasum": ""
             },
             "require": {
@@ -1814,7 +1814,7 @@
                 "validation",
                 "validator"
             ],
-            "time": "2020-08-08T21:28:19+00:00"
+            "time": "2020-09-06T13:44:32+00:00"
         },
         {
             "name": "elasticsearch/elasticsearch",
@@ -2171,16 +2171,16 @@
         },
         {
             "name": "hanaboso/acl-bundle",
-            "version": "1.3.8",
+            "version": "1.3.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/acl-bundle.git",
-                "reference": "365c5d144fe8fd895f102bf5cb9f3a3716bea55b"
+                "reference": "fcd98e349e4a5dcc7c0d552ef22bc9cb639ca3c2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/acl-bundle/zipball/365c5d144fe8fd895f102bf5cb9f3a3716bea55b",
-                "reference": "365c5d144fe8fd895f102bf5cb9f3a3716bea55b",
+                "url": "https://api.github.com/repos/hanaboso/acl-bundle/zipball/fcd98e349e4a5dcc7c0d552ef22bc9cb639ca3c2",
+                "reference": "fcd98e349e4a5dcc7c0d552ef22bc9cb639ca3c2",
                 "shasum": ""
             },
             "require": {
@@ -2202,7 +2202,7 @@
             "license": [
                 "Apache-2.0"
             ],
-            "time": "2020-09-04T10:16:00+00:00"
+            "time": "2020-09-07T07:28:55+00:00"
         },
         {
             "name": "hanaboso/app-store",
@@ -2501,16 +2501,16 @@
         },
         {
             "name": "hanaboso/user-bundle",
-            "version": "1.3.13",
+            "version": "1.3.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/user-bundle.git",
-                "reference": "02d5449d5cded08fd017891836eea33afc55cb42"
+                "reference": "8d80c362398b96837a7615ede435b2eff22ad4a5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/user-bundle/zipball/02d5449d5cded08fd017891836eea33afc55cb42",
-                "reference": "02d5449d5cded08fd017891836eea33afc55cb42",
+                "url": "https://api.github.com/repos/hanaboso/user-bundle/zipball/8d80c362398b96837a7615ede435b2eff22ad4a5",
+                "reference": "8d80c362398b96837a7615ede435b2eff22ad4a5",
                 "shasum": ""
             },
             "require": {
@@ -2540,7 +2540,7 @@
             "license": [
                 "Apache-2.0"
             ],
-            "time": "2020-09-04T09:03:08+00:00"
+            "time": "2020-09-07T08:59:31+00:00"
         },
         {
             "name": "hanaboso/utils",
@@ -11273,16 +11273,16 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "9.1.7",
+            "version": "9.1.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "2ef92bec3186a827faf7362ff92ae4e8ec2e49d2"
+                "reference": "f98f8466126d83b55b924a94d2244c53c216b8fb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/2ef92bec3186a827faf7362ff92ae4e8ec2e49d2",
-                "reference": "2ef92bec3186a827faf7362ff92ae4e8ec2e49d2",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/f98f8466126d83b55b924a94d2244c53c216b8fb",
+                "reference": "f98f8466126d83b55b924a94d2244c53c216b8fb",
                 "shasum": ""
             },
             "require": {
@@ -11342,7 +11342,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-09-03T07:09:19+00:00"
+            "time": "2020-09-07T08:07:10+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",

@@ -175,7 +175,9 @@ final class TopologyGeneratorBridge
         if ($responseDto->getStatusCode() === 200) {
             return Json::decode($responseDto->getBody());
         } else {
-            throw new CurlException(sprintf('Request error: %s', $responseDto->getReasonPhrase()));
+            throw new CurlException(
+                sprintf('Request error: %s, %s', $responseDto->getReasonPhrase(), $responseDto->getBody())
+            );
         }
     }
 
