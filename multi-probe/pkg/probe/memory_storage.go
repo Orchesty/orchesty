@@ -23,7 +23,7 @@ func (s memoryStorage) Get(key string) (string, error) {
 		return "", errors.New("not found")
 	}
 
-	return res.(string), nil
+	return string(res.([]uint8)), nil
 }
 
 func (s memoryStorage) Delete(key string) error {
