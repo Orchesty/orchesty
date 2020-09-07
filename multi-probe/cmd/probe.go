@@ -5,34 +5,20 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"strconv"
 	"syscall"
 	"time"
 
-	"github.com/go-redis/redis"
-
-	"multi-probe/pkg/env"
 	"multi-probe/pkg/probe"
 )
 
 // main runs the
 func main() {
-	host := env.GetEnv("REDIS_HOST", "localhost")
-	port := env.GetEnv("REDIS_PORT", "6379")
-	pass := env.GetEnv("REDIS_PASS", "")
-	db, _ := strconv.Atoi(env.GetEnv("REDIS_DB", "0"))
-
-	rCli := redis.NewClient(&redis.Options{
-		Addr:     host + ":" + port,
-		Password: pass,
-		DB:       db,
-	})
-	storage := probe.RedisStorage{Client: rCli}
+	storage := probe.GetStorage()
 
 	var httpClient = http.Client{Timeout: time.Second * 10}
 	var checker = probe.HttpCheck{Client: &httpClient}
 
-	srv := probe.Server{Storage: &storage, CheckerSvc: &checker}
+	srv := probe.Server{Storage: storage, CheckerSvc: &checker}
 	srv.Start(8007)
 
 	gracefulShutdown(&srv)
