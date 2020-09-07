@@ -28,7 +28,7 @@ export const amqpConnectionOptions: IConnectionOptions = {
 
 export const amqpFaucetOptions = {
     prefetch: parseInt(process.env.FAUCET_PREFETCH, 10) || 5,
-    dead_letter_exchange: { name: "pipes.dead-letter", type: "direct", options: {} },
+    dead_letter_exchange: {name: "pipes.dead-letter", type: "direct", options: {}},
 };
 
 export const metricsOptions = {
@@ -96,4 +96,5 @@ export const limiterOptions: ILimiterSettings = {
 
 export const counterOptions = {
     prefetch: parseInt(process.env.COUNTER_PREFETCH, 10) || 10,
+    storage: process.env.COUNTER_STORAGE || "memory",
 };

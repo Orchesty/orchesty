@@ -4,15 +4,21 @@ parameters:
     docker_pf_bridge_image: "%env(string:DOCKER_PF_BRIDGE_IMAGE)%"
     env(DOCKER_PF_BRIDGE_IMAGE): pf-bridge:dev
 
+    env(FTP_API_DSN): "ftp-api"
+    ftp_api_host: "%env(string:FTP_API_DSN)%"
+    env(MAPPER_API_DSN): "mapper-api"
+    mapper_api_host: "%env(string:MAPPER_API_DSN)%"
+    env(MAILER_API_DSN): "mailer-api"
+    mailer_api_host: "%env(string:MAILER_API_DSN)%"
+    env(XML_PARSER_API_DSN): "xml-parser-api"
+    xml_parser_api_host: "%env(string:XML_PARSER_API_DSN)%"
+
+
     worker_default_port: "%env(int:WORKER_DEFAULT_PORT)%"
     multi_probe_host: "%env(string:MULTI_PROBE_DSN)%"
     topology_api: "%env(string:TOPOLOGY_API_DSN)%"
     starting_point: "%env(string:STARTING_POINT_DSN)%"
-    ftp_api_host: "%env(string:FTP_API_DSN)%"
-    mailer_api_host: "%env(string:MAILER_API_DSN)%"
-    mapper_api_host: "%env(string:MAPPER_API_DSN)%"
     monolith_api_host: "%env(string:MONOLITH_API_DSN)%"
-    xml_parser_api_host: "%env(string:XML_PARSER_API_DSN)%"
     metrics_host: "%env(string:METRICS_HOST)%"
     metrics_port: "%env(string:METRICS_PORT)%"
 

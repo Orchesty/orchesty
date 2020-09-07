@@ -5,6 +5,11 @@ services:
     ##########################
     #    Session Handlers    #
     ##########################
+    session.handler.mongodb:
+        class: Symfony\Component\HttpFoundation\Session\Storage\Handler\MongoDbSessionHandler
+        arguments:
+            - "@doctrine_mongodb.odm.default_connection"
+            - {database: "%env(string:MONGODB_DB)%", collection: "Session"}
 
     hbpf.commons.session_handler:
         class: Hanaboso\CommonsBundle\Session\Handler\CachedSessionHandler
@@ -14,7 +19,7 @@ services:
     hbpf.commons.redis_session_handler:
         class: Hanaboso\CommonsBundle\Session\Handler\RedisSessionHandler
         arguments:
-            - '%env(string:REDIS_DSN)%'
+            - '%redis_dsn%'
 
     ##########################
     #        Metrics         #
@@ -135,4 +140,4 @@ services:
             - '@hbpf.user.provider.resource'
             - '%resource_enum%'
             - '%acl_use_cache%'
-            - '%env(string:REDIS_DSN)%'
+            - '%redis_dsn%'

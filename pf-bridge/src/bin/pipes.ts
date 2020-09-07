@@ -27,7 +27,7 @@ const argv = yargs
 
 const loadTopologyConfigFromFile = (): ITopologyConfig => {
     try {
-        return JSON.parse(fs.readFileSync("topology/topology.json", "utf8"));
+        return JSON.parse(fs.readFileSync("/srv/app/topology/topology.json", "utf8"));
     } catch (e) {
         logger.error("Cannot start program: ", {error: e, node_id: `${argv.service}`});
         process.exit(126);
@@ -88,7 +88,9 @@ const main = async () => {
         logger.info("SIGINT received");
 
         // Force hard exit after timeout
-        setTimeout(() => { process.exit(0); }, SIGTERM_TIMEOUT);
+        setTimeout(() => {
+            process.exit(0);
+        }, SIGTERM_TIMEOUT);
 
         const stopProms: Promise<void>[] = [];
         toStop.forEach((svc: IStoppable) => {

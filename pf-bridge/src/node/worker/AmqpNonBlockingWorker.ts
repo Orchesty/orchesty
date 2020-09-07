@@ -49,7 +49,7 @@ class AmqpNonBlockingWorker extends AAmqpWorker {
             });
 
             if (item.getResult().code !== ResultCode.SUCCESS) {
-                logger.warn(`Worker[type='amqprpc'] received non-Success batch-item message`, logger.ctxFromMsg(item));
+                logger.error(`Worker[type='amqprpc'] received non-Success batch-item message`, logger.ctxFromMsg(item));
                 return;
             }
 
@@ -68,7 +68,7 @@ class AmqpNonBlockingWorker extends AAmqpWorker {
     public async onBatchEnd(corrId: string, msg: AmqpMessage): Promise<void> {
         const stored: IWaiting = this.waiting.get(corrId);
         if (!stored) {
-            logger.warn(`Worker[type='amqprpc'] cannot resolve non-existing waiting promise[corrId=${corrId}]`);
+            logger.error(`Worker[type='amqprpc'] cannot resolve non-existing waiting promise[corrId=${corrId}]`);
             return;
         }
 
@@ -88,7 +88,7 @@ class AmqpNonBlockingWorker extends AAmqpWorker {
             await this.counterPublisher.send(msg);
             await this.partialForwarder.forwardPart(msg);
         } catch (e) {
-            logger.warn(`Worker[type='amqprpc'] partial forward failed.`, logger.ctxFromMsg(msg, e));
+            logger.error(`Worker[type='amqprpc'] partial forward failed.`, logger.ctxFromMsg(msg, e));
             return;
         }
     }

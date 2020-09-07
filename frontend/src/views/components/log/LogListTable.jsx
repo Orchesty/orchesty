@@ -38,7 +38,7 @@ class LogListTable extends AbstractTable {
       const item = elements[id];
       return (
         <tr key={item.id}>
-          <td className="col-md-1 no-wrap">{moment(item.date).format("DD. MM. YYYY HH:mm:ss")}</td>
+          <td className="col-md-1 no-wrap">{moment(item.timestamp).format("DD. MM. YYYY HH:mm:ss")}</td>
           <td className="col-md-1 no-wrap">{item.severity}</td>
           <td className="col-md-1 no-wrap">{item.topology_id}</td>
           <td className="col-md-1 no-wrap">{item.topology_name}</td>

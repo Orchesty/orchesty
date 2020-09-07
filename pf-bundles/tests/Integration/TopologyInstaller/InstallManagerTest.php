@@ -128,7 +128,7 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
         $requestHandler->method('runTopology')->willReturn(new ResponseDto(200, '', '', []));
         $requestHandler->method('deleteTopology')->willReturn(new ResponseDto(200, '', '', []));
 
-        $this->redis     = new Client(Parameters::create((string) getenv('REDIS_DSN')));
+        $this->redis     = new Client(Parameters::create(self::$container->getParameter('redis_dsn')));
         $topologyManager = self::$container->get('hbpf.configurator.manager.topology');
         $dir             = sprintf('%s/data', __DIR__);
         $categoryManager = self::$container->get('hbpf.configurator.manager.category');
@@ -143,7 +143,7 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
             $requestHandler,
             $categoryParser,
             $xmlDecoder,
-            (string) getenv('REDIS_DSN'),
+            self::$container->getParameter('redis_dsn'),
             [$dir]
         );
     }

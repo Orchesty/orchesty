@@ -4,7 +4,7 @@ import {Metrics} from "metrics-sender/dist/lib/metrics/Metrics";
 import {MongoMetrics} from "./mongo-metrics/MongoMetrics";
 import {
     amqpConnectionOptions, limiterOptions, metricsOptions, multiProbeOptions, persistentQueues, redisStorageOptions,
-    topologyTerminatorOptions,
+    topologyTerminatorOptions, counterOptions
 } from "./config";
 import RedisStorage from "./counter/storage/RedisStorage";
 import LimiterPublisher from "./limiter/amqp/LimiterPublisher";
@@ -31,6 +31,7 @@ import UppercaseWorker from "./node/worker/UppercaseWorker";
 import MultiProbeConnector from "./probe/MultiProbeConnector";
 import Terminator from "./terminator/Terminator";
 import INodeConfigProvider from "./topology/INodeConfigProvider";
+import InMemoryStorage from "./counter/storage/InMemoryStorage";
 
 class DIContainer extends Container {
 
@@ -46,8 +47,11 @@ class DIContainer extends Container {
     private setServices() {
         this.set("amqp.connection", new Connection(amqpConnectionOptions, logger));
 
-        // this.set("counter.storage", () => new InMemoryStorage());
-        this.set("counter.storage", () => new RedisStorage(redisStorageOptions));
+        if (counterOptions.storage === "memory") {
+            this.set("counter.storage", () => new InMemoryStorage());
+        }else{
+            this.set("counter.storage", () => new RedisStorage(redisStorageOptions));
+        }
 
         this.set("probe.multi", new MultiProbeConnector(multiProbeOptions.host, multiProbeOptions.port));
 

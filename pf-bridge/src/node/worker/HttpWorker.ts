@@ -252,7 +252,7 @@ class HttpWorker extends AWorker {
      */
     private onRequestError(msg: JobMessage, reqParams: request.Options, err: any): void {
         if (err.code === "ETIMEDOUT" || err.code === "ESOCKETTIMEDOUT") {
-            logger.warn(`Worker[type='http'] http timeout error. Repeating message.`, logger.ctxFromMsg(msg, err));
+            logger.error(`Worker[type='http'] http timeout error. Repeating message.`, logger.ctxFromMsg(msg, err));
             msg.setResult({ code: ResultCode.REPEAT,  message: err.message });
 
             const h = msg.getHeaders();
@@ -263,7 +263,7 @@ class HttpWorker extends AWorker {
             return;
         }
 
-        logger.warn(`Worker[type='http'] http error: ${err}.`, logger.ctxFromMsg(msg, err));
+        logger.error(`Worker[type='http'] http error: ${err}.`, logger.ctxFromMsg(msg, err));
         msg.setResult({
             code: ResultCode.HTTP_ERROR,
             message: err,
@@ -280,7 +280,7 @@ class HttpWorker extends AWorker {
     private onInvalidStatusCode(msg: JobMessage, req: request.Options, statusCode: number, response: string): void {
         const context = logger.ctxFromMsg(msg);
         context.data = JSON.stringify({request: { body: req.body }, response});
-        logger.warn(
+        logger.error(
             `Worker[type='http'] received response with statusCode="${statusCode}" body="${req.body}"`,
             context,
         );
@@ -297,7 +297,7 @@ class HttpWorker extends AWorker {
      * @param {JobMessage} msg
      */
     private onInvalidResponseHeaders(msg: JobMessage): void {
-        logger.warn(
+        logger.error(
             `Worker[type='http'] received response with missing mandatory headers.`,
             logger.ctxFromMsg(msg),
         );
@@ -309,7 +309,7 @@ class HttpWorker extends AWorker {
      * @param {JobMessage} msg
      */
     private onMissingResultCode(msg: JobMessage): void {
-        logger.warn(
+        logger.error(
             `Worker[type='http'] received response with missing result code header.`,
             logger.ctxFromMsg(msg),
         );
