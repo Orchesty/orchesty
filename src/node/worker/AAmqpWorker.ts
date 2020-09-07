@@ -253,7 +253,7 @@ abstract class AAmqpWorker extends AWorker {
         const corrId = msg.properties.correlationId;
 
         if (!this.waiting.has(corrId)) {
-            logger.warn(
+            logger.error(
                 `Worker[type='amqprpc'] received result with unknown correlationId`,
                 { node_id: this.settings.node_label.id, correlation_id: corrId },
             );
@@ -272,7 +272,7 @@ abstract class AAmqpWorker extends AWorker {
                 this.onBatchEnd(corrId, msg);
                 break;
             default:
-                logger.warn(
+                logger.error(
                     `Worker[type='amqprpc'] received result of unknown type: ${msg.properties.type}`,
                     { node_id: this.settings.node_label.id, correlation_id: corrId },
                 );

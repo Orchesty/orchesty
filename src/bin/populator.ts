@@ -13,7 +13,7 @@ const POPULATOR_QUEUE = process.env.POPULATOR_QUEUE || "";
 
 const loadTopologyConfigFromFile = (): ITopologyConfig => {
     try {
-        return JSON.parse(fs.readFileSync("topology/topology.json", "utf8"));
+        return JSON.parse(fs.readFileSync("/srv/app/topology/topology.json", "utf8"));
     } catch (e) {
         logger.error("Cannot start program: ", {error: e});
         process.exit(126);

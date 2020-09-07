@@ -85,7 +85,7 @@ class JsonSplitterWorker extends AWorker {
     private setError(msg: JobMessage, message: string, err: any): void {
         msg.setResult({ code: ResultCode.INVALID_CONTENT, message });
 
-        logger.warn(
+        logger.error(
             `Worker[type'splitter'] could not parse json message. ${msg.getResult().message}`,
             logger.ctxFromMsg(msg, err),
         );
