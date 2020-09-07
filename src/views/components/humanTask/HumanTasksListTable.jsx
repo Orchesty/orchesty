@@ -134,7 +134,7 @@ class HumanTasksListTable extends AbstractTable {
       return (
         <tr key={item.name}>
           <td className="col-md-2">{item.nodeName}</td>
-          <td className="col-md-2">{moment(item.date).format("DD. MM. YYYY HH:mm:ss")}</td>
+          <td className="col-md-2">{moment(item.created).format("DD. MM. YYYY HH:mm:ss")}</td>
           <td className="json">
             <JSONTree
               data={JSON.parse(item.data || '{}')}

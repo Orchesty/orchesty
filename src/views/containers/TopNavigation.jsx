@@ -10,6 +10,7 @@ import TopMainMenu from './TopMainMenu';
 import UserMenu from './UserMenu';
 
 import './TopNavigation.less';
+import logo from '../../static/logo.png';
 
 class TopNavigation extends React.Component {
   constructor(props) {
@@ -26,7 +27,7 @@ class TopNavigation extends React.Component {
   render() {
     return (
       <div className="top-navigation">
-        <div className="app-name" onClick={this.mainPageClick}><i className="fa fa-connectdevelop" /> Pipes</div>
+        <div className="app-name" onClick={this.mainPageClick}><img src={logo} alt={"logo"}/></div>
         <TopMainMenu />
         <div className="middle-content" />
         <GeneralSearch />
