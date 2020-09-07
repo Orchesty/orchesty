@@ -44,6 +44,7 @@ const topologyName = prefix + "topology-name"
 const pfTimeStamp = prefix + "published-timestamp"
 const resultCode = prefix + "result-code"
 const pfStop = prefix + "stop"
+const processStarted = prefix + "process-started"
 const startingPointInit = prefix + "from-starting-point"
 
 // Others headers
@@ -87,6 +88,7 @@ func (b *headerBuilder) BldHumanTaskHeaders(topology storage.Topology, headers h
 		CorrelationID:  topology.Node.HumanTask.CorrelationID,
 		documentHeader: topology.Node.HumanTask.ID.Hex(),
 		resultCode:     "0",
+		processStarted: time.Now().UTC().Unix() * 1000,
 	}
 
 	if stop {
@@ -98,14 +100,15 @@ func (b *headerBuilder) BldHumanTaskHeaders(topology storage.Topology, headers h
 
 func (b *headerBuilder) BldProcessHeaders(topology storage.Topology, headers http.Header) (h amqp.Table, c string, d uint8, t time.Time) {
 	h = amqp.Table{
-		parentID:      "",
-		sequenceID:    "1",
-		topologyID:    topology.ID.Hex(),
-		topologyName:  topology.Name,
-		contentType:   jsonType,
-		pfTimeStamp:   time.Now().UTC().Unix() * 1000,
-		processID:     uuid.New().String(),
-		CorrelationID: uuid.New().String(),
+		parentID:       "",
+		sequenceID:     "1",
+		topologyID:     topology.ID.Hex(),
+		topologyName:   topology.Name,
+		contentType:    jsonType,
+		pfTimeStamp:    time.Now().UTC().Unix() * 1000,
+		processID:      uuid.New().String(),
+		CorrelationID:  uuid.New().String(),
+		processStarted: time.Now().UTC().Unix() * 1000,
 	}
 
 	arrayFilter(headers, h)
