@@ -1,12 +1,11 @@
 package probe
 
 import (
-	"errors"
+	"fmt"
 	"github.com/patrickmn/go-cache"
 	"time"
 )
 
-// Redis is Redis storage implementation for probe
 type memoryStorage struct {
 	c *cache.Cache
 }
@@ -20,7 +19,7 @@ func (s memoryStorage) Set(key string, value []byte) error {
 func (s memoryStorage) Get(key string) (string, error) {
 	res, ok := s.c.Get(key)
 	if !ok {
-		return "", errors.New("not found")
+		return "", fmt.Errorf("key [%s] not found", key)
 	}
 
 	return string(res.([]uint8)), nil
