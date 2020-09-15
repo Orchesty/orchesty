@@ -45,3 +45,6 @@ services:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\WebhookController
         arguments:
             - '@hbpp.service.locator'
+
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyProgressController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyProgressController

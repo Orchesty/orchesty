@@ -22,14 +22,14 @@ class RabbitMetrics
      *
      * @ODM\EmbedOne(targetDocument="Hanaboso\PipesFramework\Metrics\Document\RabbitMetricsFields")
      */
-    private $fields;
+    private RabbitMetricsFields $fields;
 
     /**
      * @var Tags
      *
      * @ODM\EmbedOne(targetDocument="Hanaboso\PipesFramework\Metrics\Document\Tags")
      */
-    private $tags;
+    private Tags $tags;
 
     /**
      * @return RabbitMetricsFields

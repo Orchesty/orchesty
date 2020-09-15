@@ -36,7 +36,9 @@ parameters:
 			- PipesFrameworkTests\KernelTestCaseAbstract
 
 		classesNotRequiredToBeAbstractOrFinal:
+			- Hanaboso\PipesFramework\Configurator\Document\NodeProgress
 			- Hanaboso\PipesFramework\Configurator\Document\Sdk
+			- Hanaboso\PipesFramework\Configurator\Document\TopologyProgress
 			- Hanaboso\PipesFramework\Logs\Document\Logs
 			- Hanaboso\PipesFramework\Logs\Document\Pipes
 			- Hanaboso\PipesFramework\Logs\Document\Stacktrace

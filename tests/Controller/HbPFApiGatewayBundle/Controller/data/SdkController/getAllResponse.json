@@ -4,8 +4,8 @@
         "items": [
             {
                 "id": "123456789",
-                "key": null,
-                "value": null
+                "key": "key",
+                "value": "val"
             }
         ]
     }

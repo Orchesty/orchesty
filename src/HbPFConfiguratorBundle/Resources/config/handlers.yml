@@ -25,3 +25,8 @@ services:
         class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\SdkHandler
         arguments:
             - '@hbpf.configurator.manager.sdk'
+
+    hbpf.configurator.handler.topology_progress:
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyProgressHandler
+        arguments:
+            - '@hbpf.configurator.manager.topology_progress'
