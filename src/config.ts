@@ -34,6 +34,7 @@ export const amqpFaucetOptions = {
 export const metricsOptions = {
     node_measurement: process.env.METRICS_MEASUREMENT || "pipes_node",
     counter_measurement: process.env.COUNTER_MEASUREMENT || "pipes_counter",
+    service: process.env.METRICS_SERVICE || "influx",
     server: process.env.METRICS_HOST || "influxdb",
     port: parseInt(process.env.METRICS_PORT, 10) || 8089,
 };
@@ -97,4 +98,8 @@ export const limiterOptions: ILimiterSettings = {
 export const counterOptions = {
     prefetch: parseInt(process.env.COUNTER_PREFETCH, 10) || 10,
     storage: process.env.COUNTER_STORAGE || "memory",
+    saveProgress: !(process.env.PROGRESS_SAVE === "false") || false,
+    progressDsn: process.env.PROGRESS_DSN || "mongodb://mongo:27017/progress",
+    progressCollection: process.env.PROGRESS_COLLECTION || "Progress",
+    progressExpireAfter: parseInt(process.env.PROGRESS_EXPIRE_AFTER) || 60*60*24*30,
 };

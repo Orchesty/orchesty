@@ -129,6 +129,22 @@ class CounterMessage extends AMessage implements IMessage {
         return this.headers.getPFHeader(Headers.TOPOLOGY_ID);
     }
 
+    /**
+     *
+     * @return {string}
+     */
+    public getTopologyName(): string {
+        return this.headers.getPFHeader(Headers.TOPOLOGY_NAME);
+    }
+
+    /**
+     *
+     * @return {number}
+     */
+    public getCreatedTime(): number {
+        return Number(this.headers.getPFHeader(Headers.PROCESS_STARTED));
+    }
+
     public isOk(): boolean {
         return [
             ResultCode.SUCCESS,
@@ -155,7 +171,7 @@ class CounterMessage extends AMessage implements IMessage {
 
     public isFromStartingPoint(): boolean {
         return this.headers.hasPFHeader(Headers.FROM_STARTING_POINT) &&
-            this.headers.getHeader(Headers.FROM_STARTING_POINT) === "1";
+            this.headers.getPFHeader(Headers.FROM_STARTING_POINT) === "1";
     }
 
 }

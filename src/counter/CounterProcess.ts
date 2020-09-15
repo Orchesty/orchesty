@@ -99,10 +99,7 @@ class CounterProcess {
      * @private
      */
     public static isProcessFinished(job: ICounterProcessInfo) {
-        if (job.nok + job.ok === job.total) {
-            return true;
-        }
-        return false;
+        return job.nok + job.ok === job.total;
     }
 
 }
