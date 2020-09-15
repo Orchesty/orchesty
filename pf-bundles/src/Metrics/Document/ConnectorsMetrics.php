@@ -22,14 +22,14 @@ class ConnectorsMetrics
      *
      * @ODM\EmbedOne(targetDocument="Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetricsFields")
      */
-    private $fields;
+    private ConnectorsMetricsFields $fields;
 
     /**
      * @var Tags
      *
      * @ODM\EmbedOne(targetDocument="Hanaboso\PipesFramework\Metrics\Document\Tags")
      */
-    private $tags;
+    private Tags $tags;
 
     /**
      * @return ConnectorsMetricsFields

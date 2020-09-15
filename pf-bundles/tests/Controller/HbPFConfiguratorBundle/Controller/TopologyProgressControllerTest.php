@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller;
+namespace PipesFrameworkTests\Controller\HbPFConfiguratorBundle\Controller;
 
 use Exception;
 use Hanaboso\PipesFramework\Configurator\Document\NodeProgress;
@@ -11,13 +11,13 @@ use PipesFrameworkTests\ControllerTestCaseAbstract;
 /**
  * Class TopologyProgressControllerTest
  *
- * @package PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller
+ * @package PipesFrameworkTests\Controller\HbPFConfiguratorBundle\Controller
  */
 final class TopologyProgressControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyProgressController::getProgressTopologyAction
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyProgressController::getProgressTopologyAction
      *
      * @throws Exception
      */

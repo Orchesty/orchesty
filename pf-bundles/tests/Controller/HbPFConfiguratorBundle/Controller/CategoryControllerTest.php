@@ -59,6 +59,8 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler::createCategory
      * @covers \Hanaboso\PipesFramework\Configurator\Model\CategoryManager::createCategory
      * @covers \Hanaboso\PipesFramework\Configurator\Model\CategoryManager::setCategoryData
+     *
+     * @throws Exception
      */
     public function testCreateCategoryErr(): void
     {
@@ -144,6 +146,8 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\CategoryController::deleteCategoryAction
      * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler::deleteCategory
+     *
+     * @throws Exception
      */
     public function testDeleteCategoryNotFound(): void
     {

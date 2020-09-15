@@ -9,7 +9,6 @@ use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Handler\ConnectorHandler;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class NodeControllerTest
@@ -71,6 +70,8 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController::getNodeAction
      * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler::getNode
      * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler::getNodeById
+     *
+     * @throws Exception
      */
     public function testGetNodeNotFound(): void
     {
@@ -162,8 +163,6 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
         $nodeHandlerMock
             ->method($methodName)
             ->willThrowException($returnValue);
-
-        /** @var ContainerInterface $container */
         $container = $this->client->getContainer();
         $container->set('hbpf.configurator.handler.node', $nodeHandlerMock);
     }

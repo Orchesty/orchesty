@@ -17,6 +17,7 @@ use Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository;
 use Hanaboso\Utils\String\Json;
+use JsonException;
 
 /**
  * Class TopologyGeneratorBridge
@@ -88,6 +89,7 @@ final class TopologyGeneratorBridge
      * @throws TopologyConfigException
      * @throws LockException
      * @throws MappingException
+     * @throws JsonException
      */
     public function generateTopology(string $topologyId): ResponseDto
     {
@@ -165,6 +167,7 @@ final class TopologyGeneratorBridge
      *
      * @return mixed[]
      * @throws CurlException
+     * @throws JsonException
      */
     public function runTest(string $topologyId): array
     {
@@ -186,6 +189,7 @@ final class TopologyGeneratorBridge
      *
      * @return mixed[]
      * @throws CurlException
+     * @throws JsonException
      */
     public function invalidateTopologyCache(string $topologyName): array
     {

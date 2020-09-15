@@ -41,35 +41,35 @@ class Logs
      *
      * @ODM\Field(type="date", name="@timestamp")
      */
-    private $timestamp;
+    private DateTime $timestamp;
 
     /**
      * @var Pipes
      *
      * @ODM\EmbedOne(targetDocument="Hanaboso\PipesFramework\Logs\Document\Pipes")
      */
-    private $pipes;
+    private Pipes $pipes;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string", name="@version")
      */
-    private $version;
+    private string $version;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $message;
+    private string $message;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $host;
+    private string $host;
 
     /**
      * @return DateTime

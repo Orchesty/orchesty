@@ -2,6 +2,7 @@
 
 namespace PipesFrameworkTests\Controller\HbPFNotificationBundle\Controller;
 
+use Exception;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
@@ -21,6 +22,8 @@ final class NotificationControllerTest extends ControllerTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\HbPFNotificationBundle\Controller\NotificationController::getSettingAction
      * @covers \Hanaboso\PipesFramework\HbPFNotificationBundle\Handler\NotificationHandler
      * @covers \Hanaboso\PipesFramework\HbPFNotificationBundle\Handler\NotificationHandler::getSettings
+     *
+     * @throws Exception
      */
     public function testGetSettingsAction(): void
     {
@@ -32,6 +35,8 @@ final class NotificationControllerTest extends ControllerTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesFramework\HbPFNotificationBundle\Controller\NotificationController::getSettingsAction
      * @covers \Hanaboso\PipesFramework\HbPFNotificationBundle\Handler\NotificationHandler::getSettings
+     *
+     * @throws Exception
      */
     public function testGetSettingsActionErr(): void
     {
@@ -42,6 +47,8 @@ final class NotificationControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\HbPFNotificationBundle\Controller\NotificationController::getSettingEventsAction
+     *
+     * @throws Exception
      */
     public function testGetSettingsEventAction(): void
     {
@@ -51,6 +58,8 @@ final class NotificationControllerTest extends ControllerTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesFramework\HbPFNotificationBundle\Controller\NotificationController::getSettingAction
      * @covers \Hanaboso\PipesFramework\HbPFNotificationBundle\Handler\NotificationHandler::getSetting
+     *
+     * @throws Exception
      */
     public function testGetSettingAction(): void
     {
@@ -62,6 +71,8 @@ final class NotificationControllerTest extends ControllerTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesFramework\HbPFNotificationBundle\Controller\NotificationController::getSettingAction
      * @covers \Hanaboso\PipesFramework\HbPFNotificationBundle\Handler\NotificationHandler::getSetting
+     *
+     * @throws Exception
      */
     public function testGetSettingErrAction(): void
     {
@@ -73,6 +84,8 @@ final class NotificationControllerTest extends ControllerTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesFramework\HbPFNotificationBundle\Controller\NotificationController::updateSettingsAction
      * @covers \Hanaboso\PipesFramework\HbPFNotificationBundle\Handler\NotificationHandler::updateSettings
+     *
+     * @throws Exception
      */
     public function testUpdateSettingsAction(): void
     {
@@ -84,6 +97,8 @@ final class NotificationControllerTest extends ControllerTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesFramework\HbPFNotificationBundle\Controller\NotificationController::updateSettingsAction
      * @covers \Hanaboso\PipesFramework\HbPFNotificationBundle\Handler\NotificationHandler::updateSettings
+     *
+     * @throws Exception
      */
     public function testUpdateSettingsActionErr(): void
     {

@@ -25,6 +25,7 @@ use Hanaboso\Utils\Cron\CronParser;
 use Hanaboso\Utils\Exception\EnumException;
 use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\String\Strings;
+use JsonException;
 
 /**
  * Class TopologyManager
@@ -121,6 +122,7 @@ final class TopologyManager
      * @throws NodeException
      * @throws TopologyException
      * @throws MongoDBException
+     * @throws JsonException
      */
     public function saveTopologySchema(Topology $topology, string $content, array $data): Topology
     {
@@ -206,6 +208,7 @@ final class TopologyManager
      * @throws NodeException
      * @throws TopologyException
      * @throws MongoDBException
+     * @throws JsonException
      */
     public function cloneTopology(Topology $topology): Topology
     {
@@ -278,6 +281,7 @@ final class TopologyManager
      * @return mixed[]
      * @throws CronException
      * @throws CurlException
+     * @throws JsonException
      */
     public function getCronTopologies(): array
     {
@@ -328,6 +332,7 @@ final class TopologyManager
      * @param Topology $topology
      *
      * @return Topology
+     * @throws JsonException
      */
     private function cloneTopologyShallow(Topology $topology): Topology
     {

@@ -38,21 +38,21 @@ class Tags
      *
      * @ODM\Field(type="string")
      */
-    private $nodeId;
+    private string $nodeId;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $topologyId;
+    private string $topologyId;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $queue;
+    private string $queue;
 
     /**
      * @return string

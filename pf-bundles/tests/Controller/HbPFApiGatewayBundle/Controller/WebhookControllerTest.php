@@ -19,6 +19,8 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\WebhookController::subscribeWebhooksAction
+     *
+     * @throws Exception
      */
     public function testSubscribeWebhookAction(): void
     {
@@ -28,6 +30,8 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\WebhookController::unsubscribeWebhooksAction
+     *
+     * @throws Exception
      */
     public function testUnsubscribeWebhookAction(): void
     {

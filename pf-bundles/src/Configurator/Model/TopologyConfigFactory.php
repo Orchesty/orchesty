@@ -13,6 +13,8 @@ use Hanaboso\PipesPhpSdk\Database\Document\Dto\SystemConfigDto;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository;
 use Hanaboso\Utils\String\DsnParser;
+use Hanaboso\Utils\String\Json;
+use JsonException;
 
 /**
  * Class TopologyConfigFactory
@@ -106,6 +108,7 @@ final class TopologyConfigFactory
      * @throws LockException
      * @throws MappingException
      * @throws TopologyConfigException
+     * @throws JsonException
      */
     public function create(array $nodes): string
     {
@@ -114,7 +117,7 @@ final class TopologyConfigFactory
             self::NODE_CONFIG => $this->loopNodes($nodes),
         ];
 
-        return json_encode($result, JSON_FORCE_OBJECT | JSON_THROW_ON_ERROR);
+        return Json::encode($result, JSON_FORCE_OBJECT | JSON_THROW_ON_ERROR);
     }
 
     /**
@@ -124,6 +127,7 @@ final class TopologyConfigFactory
      * @throws TopologyConfigException
      * @throws LockException
      * @throws MappingException
+     * @throws JsonException
      */
     private function loopNodes(array $nodes): array
     {
@@ -168,6 +172,7 @@ final class TopologyConfigFactory
      * @param Node $node
      *
      * @return mixed[]|null
+     * @throws JsonException
      */
     private function getFaucet(Node $node): ?array
     {
@@ -190,6 +195,7 @@ final class TopologyConfigFactory
      *
      * @return mixed[]
      * @throws TopologyConfigException
+     * @throws JsonException
      */
     private function getWorkers(Node $node, bool $nextConnector): array
     {
@@ -486,6 +492,7 @@ final class TopologyConfigFactory
      *
      * @return mixed[]
      * @throws TopologyConfigException
+     * @throws JsonException
      */
     private function assembleNode(Node $node, bool $nextConnector): array
     {

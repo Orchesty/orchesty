@@ -6,6 +6,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Notification\Exception\NotificationException;
 use Hanaboso\PipesFramework\Notification\Model\NotificationManager;
 use Hanaboso\Utils\String\Json;
+use JsonException;
 
 /**
  * Class NotificationHandler
@@ -34,6 +35,7 @@ final class NotificationHandler
      * @return mixed[]
      * @throws NotificationException
      * @throws CurlException
+     * @throws JsonException
      */
     public function getSettings(): array
     {
@@ -46,6 +48,7 @@ final class NotificationHandler
      * @return mixed[]
      * @throws CurlException
      * @throws NotificationException
+     * @throws JsonException
      */
     public function getSetting(string $id): array
     {
@@ -59,6 +62,7 @@ final class NotificationHandler
      * @return mixed[]
      * @throws CurlException
      * @throws NotificationException
+     * @throws JsonException
      */
     public function updateSettings(string $id, array $data): array
     {

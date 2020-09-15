@@ -918,6 +918,8 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
      * @param string $name
      *
      * @return mixed[]
+     *
+     * @throws Exception
      */
     private function getSchema(string $name = 'schema.json'): array
     {

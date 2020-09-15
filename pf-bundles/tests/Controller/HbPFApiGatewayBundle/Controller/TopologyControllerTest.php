@@ -20,6 +20,8 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyController::createTopologyAction
+     *
+     * @throws Exception
      */
     public function testCreateTopologiesAction(): void
     {
@@ -41,6 +43,8 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyController::getCronTopologiesAction
+     *
+     * @throws Exception
      */
     public function testGetCronTopologiesAction(): void
     {
@@ -66,6 +70,8 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyController::createTopologyAction
+     *
+     * @throws Exception
      */
     public function testCreateTopologyAction(): void
     {
@@ -179,6 +185,8 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyController::testAction
+     *
+     * @throws Exception
      */
     public function testTestTopologyAction(): void
     {
@@ -191,6 +199,8 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @return string
+     *
+     * @throws Exception
      */
     private function createTopology(): string
     {

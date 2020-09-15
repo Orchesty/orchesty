@@ -3,8 +3,6 @@
 namespace Hanaboso\PipesFramework\HbPFMetricsBundle\Handler;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\LockException;
-use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Hanaboso\PipesFramework\Metrics\Exception\MetricsException;
 use Hanaboso\PipesFramework\Metrics\Manager\MetricsManagerLoader;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
@@ -45,8 +43,6 @@ final class MetricsHandler
      * @param mixed[] $params
      *
      * @return mixed[]
-     * @throws LockException
-     * @throws MappingException
      * @throws MetricsException
      */
     public function getTopologyMetrics(string $topologyId, array $params): array
@@ -60,8 +56,6 @@ final class MetricsHandler
      * @param mixed[] $params
      *
      * @return mixed[]
-     * @throws LockException
-     * @throws MappingException
      * @throws MetricsException
      */
     public function getNodeMetrics(string $topologyId, string $nodeId, array $params): array
@@ -78,8 +72,6 @@ final class MetricsHandler
      * @param mixed[] $params
      *
      * @return mixed[]
-     * @throws LockException
-     * @throws MappingException
      * @throws MetricsException
      */
     public function getRequestsCountMetrics(string $topologyId, array $params): array
@@ -94,8 +86,6 @@ final class MetricsHandler
      * @param string $id
      *
      * @return Topology
-     * @throws LockException
-     * @throws MappingException
      * @throws MetricsException
      */
     private function getTopologyById(string $id): Topology

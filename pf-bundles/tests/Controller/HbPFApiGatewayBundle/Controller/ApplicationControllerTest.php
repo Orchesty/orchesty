@@ -25,6 +25,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::listOfApplicationsAction
+     *
+     * @throws Exception
      */
     public function testListApplicationsAction(): void
     {
@@ -33,6 +35,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::getApplicationAction
+     *
+     * @throws Exception
      */
     public function testGetApplicationAction(): void
     {
