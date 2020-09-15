@@ -20,21 +20,21 @@ class MonolithMetricsFields
      *
      * @ODM\Field(type="float", name="fpm_cpu_kernel_time")
      */
-    private $kernelTime;
+    private float $kernelTime;
 
     /**
      * @var float
      *
      * @ODM\Field(type="float", name="fpm_cpu_user_time")
      */
-    private $userTime;
+    private float $userTime;
 
     /**
      * @var DateTime
      *
      * @ODM\Field(type="date")
      */
-    private $created;
+    private DateTime $created;
 
     /**
      * @return float

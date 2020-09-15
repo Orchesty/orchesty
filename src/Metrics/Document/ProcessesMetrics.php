@@ -22,14 +22,14 @@ class ProcessesMetrics
      *
      * @ODM\EmbedOne(targetDocument="Hanaboso\PipesFramework\Metrics\Document\ProcessesMetricsFields")
      */
-    private $fields;
+    private ProcessesMetricsFields $fields;
 
     /**
      * @var Tags
      *
      * @ODM\EmbedOne(targetDocument="Hanaboso\PipesFramework\Metrics\Document\Tags")
      */
-    private $tags;
+    private Tags $tags;
 
     /**
      * @return ProcessesMetricsFields

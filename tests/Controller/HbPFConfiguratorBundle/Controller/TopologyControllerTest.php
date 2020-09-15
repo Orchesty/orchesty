@@ -14,8 +14,6 @@ use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\Utils\String\Json;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
 /**
@@ -61,8 +59,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         $nodeHandlerMock
             ->method('getTopologies')
             ->willThrowException(new MongoDBException());
-
-        /** @var ContainerInterface $container */
         $container = $this->client->getContainer();
         $container->set('hbpf.configurator.handler.topology', $nodeHandlerMock);
 
@@ -178,8 +174,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             'GET',
             sprintf('/api/topologies/%s/schema.bpmn', $topology->getId())
         );
-
-        /** @var Response $response */
         $response = $this->client->getResponse();
         $response = (object) [
             'status'  => $response->getStatusCode(),
@@ -187,7 +181,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         ];
 
         self::assertEquals(200, $response->status);
-        self::assertEquals($topology->getRawBpmn(), $response->content);
+        self::assertEquals($topology->getRawBpmn(), $response->getContent());
     }
 
     /**
@@ -199,11 +193,9 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     public function testGetTopologySchemaNotFound(): void
     {
         $this->client->request('GET', '/api/topologies/999/schema.bpmn');
-
-        /** @var Response $response */
         $response = $this->client->getResponse();
         $response = $this->returnResponse($response);
-        $content  = $response->content;
+        $content  = $response->getContent();
 
         self::assertEquals(500, $response->status);
         self::assertEquals(TopologyException::class, $content->type);
@@ -236,8 +228,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             ],
             $this->getBpmn()
         );
-
-        /** @var Response $response */
         $response = $this->client->getResponse();
         $response = $this->returnResponse($response);
         self::assertEquals(200, $response->status);
@@ -253,7 +243,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
      */
     public function testSaveTopologySchemaNotFound(): void
     {
-
         $this->client->request(
             'PUT',
             '/api/topologies/999/schema.bpmn',
@@ -265,11 +254,9 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             ],
             $this->getBpmn()
         );
-
-        /** @var Response $response */
         $response = $this->client->getResponse();
         $response = $this->returnResponse($response);
-        $content  = $response->content;
+        $content  = $response->getContent();
         self::assertEquals(500, $response->status);
         self::assertEquals(TopologyException::class, $content->type);
         self::assertEquals(2_402, $content->errorCode);
@@ -301,8 +288,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             ],
             str_replace('name="Start Event"', '', $this->getBpmn())
         );
-
-        /** @var Response $response */
         $response = $this->client->getResponse();
         $response = $this->returnResponse($response);
         self::assertEquals(400, $response->status);
@@ -334,8 +319,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             ],
             str_replace('pipes:pipesType="custom"', 'pipes:pipesType="Unknown"', $this->getBpmn())
         );
-
-        /** @var Response $response */
         $response = $this->client->getResponse();
         $response = (object) [
             'status'  => $response->getStatusCode(),
@@ -371,8 +354,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             ],
             str_replace('pipes:cronTime="*/2 * * * *"', 'pipes:cronTime="Unknown"', $this->getBpmn())
         );
-
-        /** @var Response $response */
         $response = $this->client->getResponse();
         $response = $this->returnResponse($response);
         self::assertEquals(400, $response->status);
@@ -419,15 +400,13 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             'GET',
             sprintf('/api/topologies/%s/schema.bpmn', $topology->getId())
         );
-
-        /** @var Response $response */
         $response = $this->client->getResponse();
         $response = (object) [
             'status'  => $response->getStatusCode(),
             'content' => $response->getContent(),
         ];
         self::assertEquals(200, $response->status);
-        self::assertEquals($this->getBpmn(), $response->content);
+        self::assertEquals($this->getBpmn(), $response->getContent());
     }
 
     /**
@@ -677,8 +656,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         } else {
             $configuratorHandlerMock->method($methodName)->willReturn($res);
         }
-
-        /** @var ContainerInterface $container */
         $container = $this->client->getContainer();
         $container->set('hbpf.configurator.handler.topology', $configuratorHandlerMock);
     }

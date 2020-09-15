@@ -4,13 +4,12 @@ namespace Hanaboso\PipesFramework;
 
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
-use Symfony\Component\Config\Exception\LoaderLoadException;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;
-use Symfony\Component\Routing\RouteCollectionBuilder;
+use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 
 /**
  * Class Kernel
@@ -58,16 +57,14 @@ final class Kernel extends BaseKernel
     }
 
     /**
-     * @param RouteCollectionBuilder $routes
-     *
-     * @throws LoaderLoadException
+     * @param RoutingConfigurator $routes
      */
-    protected function configureRoutes(RouteCollectionBuilder $routes): void
+    protected function configureRoutes(RoutingConfigurator $routes): void
     {
         $confDir = $this->getConfigDir();
-        $routes->import(sprintf('%s/{routes}/*%s', $confDir, self::CONFIG_EXTS), '/', 'glob');
-        $routes->import(sprintf('%s/{routes}/%s/**/*%s', $confDir, $this->environment, self::CONFIG_EXTS), '/', 'glob');
-        $routes->import(sprintf('%s/{routes}%s', $confDir, self::CONFIG_EXTS), '/', 'glob');
+        $routes->import(sprintf('%s/{routes}/*%s', $confDir, self::CONFIG_EXTS), 'glob');
+        $routes->import(sprintf('%s/{routes}/%s/**/*%s', $confDir, $this->environment, self::CONFIG_EXTS), 'glob');
+        $routes->import(sprintf('%s/{routes}%s', $confDir, self::CONFIG_EXTS), 'glob');
     }
 
     /**

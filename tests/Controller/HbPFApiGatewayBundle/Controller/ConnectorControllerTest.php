@@ -2,6 +2,7 @@
 
 namespace PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller;
 
+use Exception;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 
 /**
@@ -16,6 +17,8 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ConnectorController::processEvent
+     *
+     * @throws Exception
      */
     public function testProcessEventAction(): void
     {
@@ -24,6 +27,8 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ConnectorController::processAction
+     *
+     * @throws Exception
      */
     public function testProcessActionAction(): void
     {

@@ -105,7 +105,6 @@ final class CategoryHandler
      * @return mixed[]
      * @throws CategoryException
      * @throws MongoDBException
-     * @throws MappingException
      */
     public function deleteCategory(string $id): array
     {
@@ -121,11 +120,10 @@ final class CategoryHandler
      *
      * @return Category
      * @throws CategoryException
-     * @throws LockException
-     * @throws MappingException
      */
     private function getCategory(string $id): Category
     {
+        /** @var Category|null $category */
         $category = $this->dm->getRepository(Category::class)->find($id);
         if (empty($category)) {
             throw new CategoryException(sprintf('Category [%s] not found', $id), CategoryException::CATEGORY_NOT_FOUND);

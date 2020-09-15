@@ -27,6 +27,7 @@ use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\String\UriParams;
 use Hanaboso\Utils\System\ControllerUtils;
+use JsonException;
 use Throwable;
 
 /**
@@ -84,11 +85,11 @@ final class TopologyHandler
     }
 
     /**
-     * @param int  $limit
-     * @param int  $offset
-     * @param null $orderBy
+     * @param int|null $limit
+     * @param int|null $offset
+     * @param null     $orderBy
      *
-     * @return mixed[]
+     * @return array[]
      * @throws MongoDBException
      */
     public function getTopologies(?int $limit = NULL, ?int $offset = NULL, $orderBy = NULL): array
@@ -116,6 +117,7 @@ final class TopologyHandler
      * @return mixed[]
      * @throws CurlException
      * @throws CronException
+     * @throws JsonException
      */
     public function getCronTopologies(): array
     {
@@ -161,6 +163,7 @@ final class TopologyHandler
      * @throws TopologyException
      * @throws MongoDBException
      * @throws CurlException
+     * @throws JsonException
      */
     public function updateTopology(string $id, array $data): array
     {
@@ -194,6 +197,7 @@ final class TopologyHandler
      * @throws NodeException
      * @throws TopologyException
      * @throws MongoDBException
+     * @throws JsonException
      */
     public function saveTopologySchema(string $id, string $content, array $data): array
     {
@@ -258,6 +262,7 @@ final class TopologyHandler
      * @throws NodeException
      * @throws TopologyException
      * @throws MongoDBException
+     * @throws JsonException
      */
     public function cloneTopology(string $id): array
     {
@@ -275,6 +280,7 @@ final class TopologyHandler
      * @throws CurlException
      * @throws TopologyException
      * @throws MongoDBException
+     * @throws JsonException
      */
     public function deleteTopology(string $id): ResponseDto
     {
@@ -301,6 +307,7 @@ final class TopologyHandler
      * @throws TopologyException
      * @throws LockException
      * @throws MappingException
+     * @throws JsonException
      */
     public function runTest(string $topologyId): array
     {

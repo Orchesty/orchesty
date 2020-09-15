@@ -20,14 +20,14 @@ class ConnectorsMetricsFields
      *
      * @ODM\Field(type="int", name="sent_request_total_duration")
      */
-    private $totalDuration;
+    private int $totalDuration;
 
     /**
      * @var DateTime
      *
      * @ODM\Field(type="date")
      */
-    private $created;
+    private DateTime $created;
 
     /**
      * @return int

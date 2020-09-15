@@ -19,6 +19,7 @@ use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\RestBundle\Exception\XmlDecoderException;
 use Hanaboso\RestBundle\Model\Decoder\XmlDecoder;
 use Hanaboso\Utils\Exception\EnumException;
+use JsonException;
 use Predis\Client;
 use Predis\Connection\Parameters;
 use Psr\Log\LoggerAwareInterface;
@@ -300,6 +301,7 @@ final class InstallManager implements LoggerAwareInterface
      * @throws TopologyConfigException
      * @throws TopologyException
      * @throws XmlDecoderException
+     * @throws JsonException
      */
     private function makeRunnable(Topology $topology, string $content): Topology
     {

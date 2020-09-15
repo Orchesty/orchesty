@@ -4,7 +4,6 @@ namespace Hanaboso\PipesFramework\HbPFUserBundle\Handler;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
-use Doctrine\Persistence\ObjectRepository;
 use Hanaboso\MongoDataGrid\GridRequestDto;
 use Hanaboso\PipesFramework\User\Document\UserSettings;
 use Hanaboso\PipesFramework\User\Manager\UserManager as UsersManager;
@@ -144,7 +143,6 @@ final class UserHandler
      */
     private function getSettings(string $id): ?UserSettings
     {
-        /** @var ObjectRepository<UserSettings> $userRepository */
         $userRepository = $this->dm->getRepository(UserSettings::class);
         /** @var UserSettings|null $userSettings */
         $userSettings = $userRepository->findOneBy(['userId' => $id]);
@@ -164,6 +162,7 @@ final class UserHandler
      */
     private function getUser(string $id): User
     {
+        /** @var User|null $user */
         $user = $this->dm->getRepository(User::class)->findOneBy(['id' => $id]);
 
         if (!$user) {

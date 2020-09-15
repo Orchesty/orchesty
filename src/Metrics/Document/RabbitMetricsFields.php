@@ -20,14 +20,14 @@ class RabbitMetricsFields
      *
      * @ODM\Field(type="int", name="messages")
      */
-    private $messages;
+    private int $messages;
 
     /**
      * @var DateTime
      *
      * @ODM\Field(type="date")
      */
-    private $created;
+    private DateTime $created;
 
     /**
      * @return int

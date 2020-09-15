@@ -91,7 +91,7 @@ final class MetricsDto
     }
 
     /**
-     * @param int $errors
+     * @param mixed $errors
      *
      * @return MetricsDto
      */

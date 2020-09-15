@@ -20,77 +20,77 @@ class Pipes
      *
      * @ODM\Field(type="date")
      */
-    private $timestamp;
+    private DateTime $timestamp;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $type;
+    private string $type;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $hostname;
+    private string $hostname;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $channel;
+    private string $channel;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $severity;
+    private string $severity;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string", name="correlation_id")
      */
-    private $correlationId;
+    private string $correlationId;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string", name="topology_id")
      */
-    private $topologyId;
+    private string $topologyId;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string", name="topology_name")
      */
-    private $topologyName;
+    private string $topologyName;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string", name="node_id")
      */
-    private $nodeId;
+    private string $nodeId;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string", name="node_name")
      */
-    private $nodeName;
+    private string $nodeName;
 
     /**
      * @var Stacktrace
      *
      * @ODM\EmbedOne(targetDocument="Hanaboso\PipesFramework\Logs\Document\Stacktrace")
      */
-    private $stacktrace;
+    private Stacktrace $stacktrace;
 
     /**
      * @return DateTime

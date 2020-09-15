@@ -20,28 +20,28 @@ class BridgesMetricsFields
      *
      * @ODM\Field(type="bool", name="bridge_job_result_success")
      */
-    private $success;
+    private bool $success;
 
     /**
      * @var int
      *
      * @ODM\Field(type="int", name="bridge_job_waiting_duration")
      */
-    private $waitingDuration;
+    private int $waitingDuration;
 
     /**
      * @var int
      *
      * @ODM\Field(type="int", name="bridge_job_total_duration")
      */
-    private $totalDuration;
+    private int $totalDuration;
 
     /**
      * @var DateTime
      *
      * @ODM\Field(type="date")
      */
-    private $created;
+    private DateTime $created;
 
     /**
      * @return bool

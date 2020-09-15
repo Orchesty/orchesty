@@ -20,21 +20,21 @@ class ProcessesMetricsFields
      *
      * @ODM\Field(type="bool", name="counter_process_result")
      */
-    private $success;
+    private bool $success;
 
     /**
      * @var int
      *
      * @ODM\Field(type="int", name="counter_process_duration")
      */
-    private $duration;
+    private int $duration;
 
     /**
      * @var DateTime
      *
      * @ODM\Field(type="date")
      */
-    private $created;
+    private DateTime $created;
 
     /**
      * @return bool

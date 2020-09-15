@@ -19,35 +19,35 @@ class Stacktrace
      *
      * @ODM\Field(type="string")
      */
-    private $message;
+    private string $message;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $class;
+    private string $class;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $file;
+    private string $file;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $trace;
+    private string $trace;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $code;
+    private string $code;
 
     /**
      * @return string

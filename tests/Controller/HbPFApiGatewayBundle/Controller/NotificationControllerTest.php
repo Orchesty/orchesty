@@ -17,6 +17,8 @@ final class NotificationControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NotificationController::getSettingsAction
+     *
+     * @throws Exception
      */
     public function testGetSettingsAction(): void
     {
@@ -28,6 +30,8 @@ final class NotificationControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NotificationController::getSettingEventsAction
+     *
+     * @throws Exception
      */
     public function testGetSettingEventsAction(): void
     {

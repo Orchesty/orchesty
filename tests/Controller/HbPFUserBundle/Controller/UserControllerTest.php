@@ -3,7 +3,6 @@
 namespace PipesFrameworkTests\Controller\HbPFUserBundle\Controller;
 
 use Doctrine\ODM\MongoDB\MongoDBException;
-use Doctrine\Persistence\ObjectRepository;
 use Exception;
 use Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController;
 use Hanaboso\PipesFramework\HbPFUserBundle\Handler\UserHandler;
@@ -154,7 +153,6 @@ final class UserControllerTest extends ControllerTestCaseAbstract
         $this->pfd($user);
 
         $this->assertResponse(__DIR__ . '/data/saveSettingsRequest.json', [], [':id' => $user->getId()]);
-        /** @var ObjectRepository<UserSettings> $repository */
         $repository = $this->dm->getRepository(UserSettings::class);
         /** @var UserSettings $setting */
         $setting = $repository->findOneBy(['userId' => $user->getId()]);
@@ -234,7 +232,6 @@ final class UserControllerTest extends ControllerTestCaseAbstract
      */
     public function testLoginUserAction(): void
     {
-        /** @var ObjectRepository<User> $repository */
         $repository = $this->dm->getRepository(User::class);
         /** @var User $user */
         $user = $repository->findOneBy(['email' => 'test@example.com']);

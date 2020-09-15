@@ -2,6 +2,7 @@
 
 namespace PipesFrameworkTests\Controller\HbPFLogsBundle\Controller;
 
+use Exception;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 
 /**
@@ -17,6 +18,8 @@ final class LogsControllerTest extends ControllerTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\HbPFLogsBundle\Controller\LogsController::getDataForTableAction
      * @covers \Hanaboso\PipesFramework\HbPFLogsBundle\Handler\LogsHandler
      * @covers \Hanaboso\PipesFramework\HbPFLogsBundle\Handler\LogsHandler::getData
+     *
+     * @throws Exception
      */
     public function testGetDataForTableAction(): void
     {

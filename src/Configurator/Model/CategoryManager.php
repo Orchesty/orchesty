@@ -43,8 +43,6 @@ final class CategoryManager
      *
      * @return Category
      * @throws CategoryException
-     * @throws LockException
-     * @throws MappingException
      * @throws MongoDBException
      */
     public function createCategory(array $data): Category
@@ -62,8 +60,6 @@ final class CategoryManager
      *
      * @return Category
      * @throws CategoryException
-     * @throws LockException
-     * @throws MappingException
      * @throws MongoDBException
      */
     public function updateCategory(Category $category, array $data): Category
@@ -105,8 +101,6 @@ final class CategoryManager
      *
      * @return Category
      * @throws CategoryException
-     * @throws LockException
-     * @throws MappingException
      */
     private function setCategoryData(Category $category, array $data): Category
     {
