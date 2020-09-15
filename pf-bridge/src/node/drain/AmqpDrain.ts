@@ -277,7 +277,7 @@ class AmqpDrain implements IDrain, IPartialForwarder {
     /**
      *
      * @param {JobMessage} message
-     * @param {number} followforceFollowersCountersCount
+     * @param {number} forceFollowersCount
      */
     private async forwardToCounterOnly(message: JobMessage, forceFollowersCount: number = null): Promise<void> {
         try {

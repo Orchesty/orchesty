@@ -3,7 +3,7 @@ import "mocha";
 
 import {Channel, Message} from "amqplib";
 import {Connection, Publisher} from "amqplib-plus";
-import {amqpConnectionOptions, persistentQueues, redisStorageOptions} from "../../src/config";
+import {amqpConnectionOptions, counterOptions, persistentQueues, redisStorageOptions} from "../../src/config";
 import {SimpleConsumer} from "../../src/consumer/SimpleConsumer";
 import {default as Counter, ICounterSettings} from "../../src/counter/Counter";
 import {ICounterProcessInfo} from "../../src/counter/CounterProcess";
@@ -12,12 +12,17 @@ import InMemoryStorage from "../../src/counter/storage/InMemoryStorage";
 import RedisStorage from "../../src/counter/storage/RedisStorage";
 import {ResultCode} from "../../src/message/ResultCode";
 import Terminator from "../../src/terminator/Terminator";
+import {MongoProgressStorage} from "../../src/counter/storage/MongoProgressStorage";
 
 const conn = new Connection(amqpConnectionOptions);
 const metricsMock = {
     send: () => Promise.resolve("sent"),
-    addTag: () => { return; },
-    removeTag: () => { return; },
+    addTag: () => {
+        return;
+    },
+    removeTag: () => {
+        return;
+    },
 };
 
 const runCounterTest = async (counter: Counter, testOutputQueue: any, done: any) => {
@@ -322,7 +327,7 @@ const runCounterTest = async (counter: Counter, testOutputQueue: any, done: any)
     const publisher = new Publisher(conn, preparePublisher);
     const prepareConsumer = (ch: Channel): Promise<void> => {
         return new Promise(async (resolve) => {
-            const q = await ch.assertQueue(testOutputQueue.name, { durable: persistentQueues });
+            const q = await ch.assertQueue(testOutputQueue.name, {durable: persistentQueues});
             await ch.bindQueue(
                 q.queue,
                 counter.getSettings().pub.exchange.name,
@@ -374,7 +379,13 @@ describe("Counter", () => {
         const storage = new InMemoryStorage();
         const terminator = new Terminator(7955, storage);
         const distributor = new Distributor();
-        const counter = new Counter(counterSettings, conn, storage, distributor, terminator, metricsMock);
+        const progress = new MongoProgressStorage(
+            counterOptions.saveProgress,
+            counterOptions.progressDsn,
+            counterOptions.progressCollection,
+            counterOptions.progressExpireAfter
+        );
+        const counter = new Counter(counterSettings, conn, storage, distributor, terminator, metricsMock, progress);
         runCounterTest(counter, testOutputQueue, done);
     });
 
@@ -395,7 +406,13 @@ describe("Counter", () => {
         const storage = new RedisStorage(redisStorageOptions);
         const terminator = new Terminator(7956, storage);
         const distributor = new Distributor();
-        const counter = new Counter(counterSettings, conn, storage, distributor, terminator, metricsMock);
+        const progress = new MongoProgressStorage(
+            counterOptions.saveProgress,
+            counterOptions.progressDsn,
+            counterOptions.progressCollection,
+            counterOptions.progressExpireAfter
+        );
+        const counter = new Counter(counterSettings, conn, storage, distributor, terminator, metricsMock, progress);
         runCounterTest(counter, testOutputQueue, done);
     });
 
@@ -411,7 +428,13 @@ describe("Counter", () => {
         const storage = new InMemoryStorage();
         const terminator = new Terminator(7957, storage);
         const distributor = new Distributor();
-        const counter = new Counter(counterSettings, conn, storage, distributor, terminator, metricsMock);
+        const progress = new MongoProgressStorage(
+            counterOptions.saveProgress,
+            counterOptions.progressDsn,
+            counterOptions.progressCollection,
+            counterOptions.progressExpireAfter
+        );
+        const counter = new Counter(counterSettings, conn, storage, distributor, terminator, metricsMock, progress);
 
         const emptyFields: any = {};
         const emptyProps: any = {};

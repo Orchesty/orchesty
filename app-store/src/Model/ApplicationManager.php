@@ -14,7 +14,6 @@ use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Loader\ApplicationLoader;
 use Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager as SdkApplicationManager;
-use Hanaboso\Utils\Exception\DateTimeException;
 
 /**
  * Class ApplicationManager
@@ -123,7 +122,6 @@ final class ApplicationManager extends SdkApplicationManager
      * @param mixed[]            $data
      *
      * @throws ApplicationInstallException
-     * @throws DateTimeException
      * @throws MongoDBException
      * @throws CurlException
      */

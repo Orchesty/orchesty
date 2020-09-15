@@ -16,7 +16,7 @@ func TestBldCounterHeaders(t *testing.T) {
 	topology := storage.Topology{Name: "Topology", ID: primitive.NewObjectID(), Node: &storage.Node{ID: primitive.NewObjectID(), Name: "Node"}}
 	builder := NewHeaderBuilder(2)
 
-	h, c, d, ti := builder.BldCounterHeaders(topology, headers)
+	h, c, d, ti := builder.BldCounterHeaders(topology, headers, "corr-id-123")
 
 	assert.NotEmpty(t, h)
 	assert.Equal(t, "ok", h["pf-test"])

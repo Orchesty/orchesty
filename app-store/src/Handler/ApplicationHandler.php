@@ -3,6 +3,7 @@
 namespace Hanaboso\HbPFAppStore\Handler;
 
 use Doctrine\ODM\MongoDB\MongoDBException;
+use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\HbPFAppStore\Model\ApplicationManager;
@@ -12,7 +13,6 @@ use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
 use InvalidArgumentException;
-use ReflectionException;
 
 /**
  * Class ApplicationHandler
@@ -52,6 +52,7 @@ final class ApplicationHandler
      * @param string $user
      *
      * @return mixed[]
+     * @throws ApplicationInstallException
      */
     public function getApplicationsByUser(string $user): array
     {
@@ -79,7 +80,6 @@ final class ApplicationHandler
      *
      * @return mixed[]
      * @throws ApplicationInstallException
-     * @throws ReflectionException
      */
     public function getApplicationByKeyAndUser(string $key, string $user): array
     {
@@ -106,7 +106,6 @@ final class ApplicationHandler
      * @return mixed[]
      * @throws ApplicationInstallException
      * @throws MongoDBException
-     * @throws ReflectionException
      */
     public function installApplication(string $key, string $user): array
     {
@@ -149,8 +148,7 @@ final class ApplicationHandler
      * @param mixed[] $data
      *
      * @return mixed[]
-     * @throws ApplicationInstallException
-     * @throws MongoDBException
+     * @throws Exception
      */
     public function updateApplicationSettings(string $key, string $user, array $data): array
     {
@@ -166,8 +164,7 @@ final class ApplicationHandler
      * @param mixed[] $data
      *
      * @return mixed[]
-     * @throws ApplicationInstallException
-     * @throws MongoDBException
+     * @throws Exception
      */
     public function updateApplicationPassword(string $key, string $user, array $data): array
     {

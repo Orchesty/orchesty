@@ -13,6 +13,7 @@ use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository;
 use Hanaboso\Utils\System\PipesHeaders;
 use Hanaboso\Utils\Traits\ControllerTrait;
+use JsonException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -124,6 +125,7 @@ final class RepeaterListener implements EventSubscriberInterface, LoggerAwareInt
      * @return mixed[]
      * @throws LockException
      * @throws MappingException
+     * @throws JsonException
      */
     private function getRepeaterStuff(OnRepeatException $e, ProcessDto $dto): array
     {

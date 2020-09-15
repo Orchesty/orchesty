@@ -14,7 +14,6 @@ use Hanaboso\HbPFAppStore\Repository\WebhookRepository;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use HbPFAppStoreTests\DatabaseTestCaseAbstract;
-use PHPUnit\Framework\MockObject\MockObject;
 
 /**
  * Class WebhookManagerTest
@@ -204,7 +203,6 @@ final class WebhookManagerTest extends DatabaseTestCaseAbstract
      */
     private function getService(Closure $closure): WebhookManager
     {
-        /** @var CurlManagerInterface|MockObject $manager */
         $manager = self::createMock(CurlManagerInterface::class);
         $manager->expects(self::any())->method('send')->willReturnCallback($closure);
 

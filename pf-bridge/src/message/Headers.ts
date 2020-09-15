@@ -12,6 +12,7 @@ class Headers {
     public static readonly PROCESS_ID = "process-id";
     public static readonly PARENT_ID = "parent-id";
     public static readonly SEQUENCE_ID = "sequence-id";
+    public static readonly PROCESS_STARTED = "process-started";
 
     // topology related headers
     public static readonly TOPOLOGY_ID = "topology-id";

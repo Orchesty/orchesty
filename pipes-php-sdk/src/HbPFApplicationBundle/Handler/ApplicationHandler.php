@@ -35,6 +35,7 @@ final class ApplicationHandler
 
     /**
      * @return mixed[]
+     * @throws ApplicationInstallException
      */
     public function getApplications(): array
     {

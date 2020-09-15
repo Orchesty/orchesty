@@ -42,56 +42,56 @@ class Synchronization
      *
      * @ODM\Field(type="string")
      */
-    private $key = '';
+    private string $key = '';
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $user = '';
+    private string $user = '';
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $status = '';
+    private string $status = '';
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $internalId = '';
+    private string $internalId = '';
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $externalId = '';
+    private string $externalId = '';
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $internalHash = '';
+    private string $internalHash = '';
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $externalHash = '';
+    private string $externalHash = '';
 
     /**
      * @var mixed[]
      *
      * @ODM\Field(type="hash")
      */
-    private $data = [];
+    private array $data = [];
 
     /**
      * Synchronization constructor.

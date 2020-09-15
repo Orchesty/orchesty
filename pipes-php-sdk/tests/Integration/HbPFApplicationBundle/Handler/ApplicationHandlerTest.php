@@ -27,6 +27,8 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler
      * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler::getApplications
+     *
+     * @throws Exception
      */
     public function testGetApplications(): void
     {

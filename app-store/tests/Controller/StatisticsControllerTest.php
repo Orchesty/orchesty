@@ -55,6 +55,8 @@ final class StatisticsControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\HbPFAppStore\Controller\StatisticsController::getApplicationsBasicDataAction
+     *
+     * @throws Exception
      */
     public function testGetApplicationBasicDataErr(): void
     {
@@ -84,6 +86,8 @@ final class StatisticsControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\HbPFAppStore\Controller\StatisticsController::getApplicationsUsersAction
+     *
+     * @throws Exception
      */
     public function testGetApplicationUserErr(): void
     {

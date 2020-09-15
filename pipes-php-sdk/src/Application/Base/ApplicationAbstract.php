@@ -34,8 +34,6 @@ abstract class ApplicationAbstract implements ApplicationInterface
     {
         $settings = $applicationInstall->getSettings()[self::FORM] ?? [];
         $form     = $this->getSettingsForm();
-
-        /** @var Field $field */
         foreach ($form->getFields() as $field) {
             if (array_key_exists($field->getKey(), $settings)) {
                 if ($field->getType() === Field::PASSWORD) {

@@ -42,6 +42,8 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\HbPFAppStore\Controller\WebhookController::subscribeWebhooksAction
+     *
+     * @throws Exception
      */
     public function testSubscribeWebhooksErr(): void
     {
@@ -53,6 +55,8 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\HbPFAppStore\Controller\WebhookController::subscribeWebhooksAction
+     *
+     * @throws Exception
      */
     public function testSubscribeWebhooksErr2(): void
     {
@@ -82,6 +86,8 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\HbPFAppStore\Controller\WebhookController::unsubscribeWebhooksAction
+     *
+     * @throws Exception
      */
     public function testUnsubscribeWebhooksErr(): void
     {
@@ -93,6 +99,8 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\HbPFAppStore\Controller\WebhookController::unsubscribeWebhooksAction
+     *
+     * @throws Exception
      */
     public function testUnsubscribeWebhooksErr2(): void
     {

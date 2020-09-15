@@ -3,8 +3,14 @@ import {Container} from "hb-utils/dist/lib/Container";
 import {Metrics} from "metrics-sender/dist/lib/metrics/Metrics";
 import {MongoMetrics} from "./mongo-metrics/MongoMetrics";
 import {
-    amqpConnectionOptions, limiterOptions, metricsOptions, multiProbeOptions, persistentQueues, redisStorageOptions,
-    topologyTerminatorOptions, counterOptions
+    amqpConnectionOptions,
+    counterOptions,
+    limiterOptions,
+    metricsOptions,
+    multiProbeOptions,
+    persistentQueues,
+    redisStorageOptions,
+    topologyTerminatorOptions
 } from "./config";
 import RedisStorage from "./counter/storage/RedisStorage";
 import LimiterPublisher from "./limiter/amqp/LimiterPublisher";
@@ -32,6 +38,7 @@ import MultiProbeConnector from "./probe/MultiProbeConnector";
 import Terminator from "./terminator/Terminator";
 import INodeConfigProvider from "./topology/INodeConfigProvider";
 import InMemoryStorage from "./counter/storage/InMemoryStorage";
+import {MongoProgressStorage} from "./counter/storage/MongoProgressStorage";
 
 class DIContainer extends Container {
 
@@ -49,9 +56,16 @@ class DIContainer extends Container {
 
         if (counterOptions.storage === "memory") {
             this.set("counter.storage", () => new InMemoryStorage());
-        }else{
+        } else {
             this.set("counter.storage", () => new RedisStorage(redisStorageOptions));
         }
+
+        this.set("counter.mongoProgressStorage", () => new MongoProgressStorage(
+            counterOptions.saveProgress,
+            counterOptions.progressDsn,
+            counterOptions.progressCollection,
+            counterOptions.progressExpireAfter
+        ))
 
         this.set("probe.multi", new MultiProbeConnector(multiProbeOptions.host, multiProbeOptions.port));
 
@@ -71,8 +85,7 @@ class DIContainer extends Container {
         });
 
         this.set("metrics", (topology: string, node: string, measurement: string) => {
-            const env = process.env.METRICS_SERVICE;
-            if (env === "mongo") {
+            if (metricsOptions.service === "mongo") {
                 return new MongoMetrics(
                     measurement,
                     {topology_id: topology, node_id: node},
@@ -111,7 +124,7 @@ class DIContainer extends Container {
             const assertionPub = new AssertionPublisher(
                 this.get("amqp.connection"),
                 () => Promise.resolve(),
-                { durable: persistentQueues },
+                {durable: persistentQueues},
             );
             const metrics = this.get("metrics")(
                 settings.node_label.topology_id,

@@ -44,6 +44,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\HbPFAppStore\Controller\ApplicationController::getUsersApplicationAction
+     *
+     * @throws Exception
      */
     public function testGetUsersApplicationErr(): void
     {
@@ -77,6 +79,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\HbPFAppStore\Controller\ApplicationController::getApplicationDetailAction
+     *
+     * @throws Exception
      */
     public function testApplicationDetailErr(): void
     {
@@ -89,6 +93,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     /**
      * @covers \Hanaboso\HbPFAppStore\Controller\ApplicationController::installApplicationAction
      * @covers \Hanaboso\HbPFAppStore\Handler\ApplicationHandler::installApplication
+     *
+     * @throws Exception
      */
     public function testInstallApplication(): void
     {
@@ -104,6 +110,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\HbPFAppStore\Controller\ApplicationController::installApplicationAction
+     *
+     * @throws Exception
      */
     public function testInstallApplicationErr(): void
     {
@@ -146,6 +154,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\HbPFAppStore\Controller\ApplicationController::uninstallApplicationAction
+     *
+     * @throws Exception
      */
     public function testUninstallApplicationErr(): void
     {
@@ -179,6 +189,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\HbPFAppStore\Controller\ApplicationController::updateApplicationSettingsAction
+     *
+     * @throws Exception
      */
     public function testUpdateApplicationSettingsErr(): void
     {
@@ -208,6 +220,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\HbPFAppStore\Controller\ApplicationController::saveApplicationPasswordAction
+     *
+     * @throws Exception
      */
     public function testSaveApplicationPasswordErr(): void
     {

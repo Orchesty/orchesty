@@ -87,6 +87,9 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
     private function createSdk(): Sdk
     {
         $sdk = new Sdk();
+        $sdk
+            ->setKey('key')
+            ->setValue('val');
 
         $this->pfd($sdk);
 

@@ -26,14 +26,14 @@ class Sdk
      *
      * @ODM\Field(type="string")
      */
-    private $key;
+    private string $key;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $value;
+    private string $value;
 
     /**
      * @return string

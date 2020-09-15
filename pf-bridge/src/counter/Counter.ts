@@ -13,6 +13,7 @@ import {default as CounterProcess, ICounterProcessInfo} from "./CounterProcess";
 import Distributor from "./distributor/Distributor";
 import ICounter from "./ICounter";
 import ICounterStorage from "./storage/ICounterStorage";
+import {MongoProgressStorage} from "./storage/MongoProgressStorage";
 
 export interface ICounterSettings {
     sub: {
@@ -69,9 +70,9 @@ export default class Counter implements ICounter, IStoppable {
 
     private static isSkippable(cm: CounterMessage): boolean {
         return cm.getResultCode() === ResultCode.SUCCESS &&
-               cm.getFollowing() === 1 &&
-               cm.getMultiplier() === 1 &&
-               cm.isFromStartingPoint() === false;
+            cm.getFollowing() === 1 &&
+            cm.getMultiplier() === 1 &&
+            cm.isFromStartingPoint() === false;
     }
 
     private settings: any;
@@ -83,6 +84,7 @@ export default class Counter implements ICounter, IStoppable {
     private metrics: IMetrics;
     private consumerTag: string;
     private readBuffer: Distributor;
+    private progressStorage: MongoProgressStorage;
 
     constructor(
         settings: ICounterSettings,
@@ -91,6 +93,7 @@ export default class Counter implements ICounter, IStoppable {
         readBuffer: Distributor,
         terminator: Terminator,
         metrics: IMetrics,
+        progressStorage: MongoProgressStorage
     ) {
         this.settings = settings;
         this.connection = connection;
@@ -98,6 +101,7 @@ export default class Counter implements ICounter, IStoppable {
         this.readBuffer = readBuffer;
         this.terminator = terminator;
         this.metrics = metrics;
+        this.progressStorage = progressStorage;
 
         this.prepareConsumer();
         this.preparePublisher();
@@ -264,8 +268,10 @@ export default class Counter implements ICounter, IStoppable {
             processInfo.end_timestamp = Date.now();
             await this.onJobFinished(processInfo, cm);
             await this.storage.remove(topologyId, processId);
+            await this.progressStorage.upsertProgress(cm, processInfo.end_timestamp, processInfo.success ? 'OK' : 'NOK');
         } else {
             await this.storage.add(topologyId, processInfo);
+            await this.progressStorage.upsertProgress(cm);
         }
 
         return Promise.resolve();
@@ -287,10 +293,10 @@ export default class Counter implements ICounter, IStoppable {
             return await this.evaluateParent(process, cm);
         }
 
-        this.publishResult(process);
-        this.terminator.tryTerminate(process.topology);
+        await this.publishResult(process);
+        await this.terminator.tryTerminate(process.topology);
 
-        this.notify(process);
+        await this.notify(process);
     }
 
     /**
@@ -326,7 +332,7 @@ export default class Counter implements ICounter, IStoppable {
     private async publishResult(process: ICounterProcessInfo): Promise<void> {
         const ex = this.settings.pub.exchange;
         const rKey = this.settings.pub.routing_key;
-        const options: Options.Publish = { contentType: "application/json" };
+        const options: Options.Publish = {contentType: "application/json"};
 
         await this.publisher.publish(ex.name, rKey, Buffer.from(JSON.stringify(process)), options);
     }

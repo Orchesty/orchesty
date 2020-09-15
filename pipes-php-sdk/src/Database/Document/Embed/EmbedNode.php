@@ -64,7 +64,7 @@ class EmbedNode
      *
      * @return EmbedNode
      */
-    public function setName($name): EmbedNode
+    public function setName(string $name): EmbedNode
     {
         $this->name = $name;
 
@@ -74,7 +74,7 @@ class EmbedNode
     /**
      * @param string $id
      */
-    protected function setId($id): void
+    protected function setId(string $id): void
     {
         $this->id = $id;
     }

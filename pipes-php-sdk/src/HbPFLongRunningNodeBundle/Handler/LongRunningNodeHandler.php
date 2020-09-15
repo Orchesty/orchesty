@@ -13,7 +13,6 @@ use Hanaboso\PipesPhpSdk\LongRunningNode\Enum\StateEnum;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Exception\LongRunningNodeException;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeFilter;
 use Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeManager;
-use Hanaboso\Utils\Exception\EnumException;
 use Hanaboso\Utils\System\PipesHeaders;
 
 /**
@@ -73,7 +72,6 @@ final class LongRunningNodeHandler
      * @return ProcessDto
      * @throws LongRunningNodeException
      * @throws MongoDBException
-     * @throws EnumException
      */
     public function process(string $nodeId, array $data, array $headers): ProcessDto
     {

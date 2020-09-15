@@ -29,56 +29,56 @@ class Webhook
      *
      * @ODM\Field(type="string")
      */
-    private $name;
+    private string $name;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $user;
+    private string $user;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $token;
+    private string $token;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $node;
+    private string $node;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $topology;
+    private string $topology;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $application;
+    private string $application;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private $webhookId;
+    private string $webhookId;
 
     /**
      * @var bool
      *
      * @ODM\Field(type="boolean")
      */
-    private $unsubscribeFailed = FALSE;
+    private bool $unsubscribeFailed = FALSE;
 
     /**
      * Webhook constructor.

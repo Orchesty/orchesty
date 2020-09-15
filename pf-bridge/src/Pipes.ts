@@ -83,6 +83,7 @@ class Pipes implements INodeConfigProvider {
             new Distributor(),
             this.dic.get("topology.terminator")(false),
             this.dic.get("metrics")(topo.id, "counter", metricsOptions.counter_measurement),
+            this.dic.get("counter.mongoProgressStorage")(),
         );
 
         await counter.start();
@@ -106,6 +107,7 @@ class Pipes implements INodeConfigProvider {
             new Distributor(),
             this.dic.get("topology.terminator")(true),
             this.dic.get("metrics")(topoId, "multi-counter", metricsOptions.counter_measurement),
+            this.dic.get("counter.mongoProgressStorage")(),
         );
 
         await counter.start();

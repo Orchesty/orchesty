@@ -14,7 +14,7 @@ import (
 type HeaderBuilder interface {
 	BldHeaders(topology storage.Topology, headers http.Header, isHuman bool, isStop bool) (h amqp.Table, c string, d uint8, t time.Time)
 	BldHumanTaskHeaders(topology storage.Topology, headers http.Header, stop bool) (h amqp.Table, c string, d uint8, t time.Time)
-	BldCounterHeaders(storage.Topology, http.Header) (h amqp.Table, c string, d uint8, t time.Time)
+	BldCounterHeaders(storage.Topology, http.Header, string) (h amqp.Table, c string, d uint8, t time.Time)
 	BldProcessHeaders(storage.Topology, http.Header) (h amqp.Table, c string, d uint8, t time.Time)
 }
 
@@ -64,7 +64,7 @@ func (b *headerBuilder) BldHeaders(topology storage.Topology, headers http.Heade
 	return b.BldProcessHeaders(topology, headers)
 }
 
-func (b *headerBuilder) BldCounterHeaders(topology storage.Topology, headers http.Header) (h amqp.Table, c string, d uint8, t time.Time) {
+func (b *headerBuilder) BldCounterHeaders(topology storage.Topology, headers http.Header, corrID string) (h amqp.Table, c string, d uint8, t time.Time) {
 	h, c, d, t = b.BldProcessHeaders(topology, headers)
 
 	h[htype] = "counter_message"
@@ -72,12 +72,12 @@ func (b *headerBuilder) BldCounterHeaders(topology storage.Topology, headers htt
 	h[nodeID] = "starting_point"
 	h[nodeName] = "starting_point"
 	h[startingPointInit] = "1"
+	h[CorrelationID] = corrID
 
 	return
 }
 
 func (b *headerBuilder) BldHumanTaskHeaders(topology storage.Topology, headers http.Header, stop bool) (h amqp.Table, c string, d uint8, t time.Time) {
-
 	h = amqp.Table{
 		parentID:       topology.Node.HumanTask.ParentID,
 		sequenceID:     topology.Node.HumanTask.SequenceID,

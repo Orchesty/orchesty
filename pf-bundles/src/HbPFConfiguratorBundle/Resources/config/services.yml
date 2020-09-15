@@ -36,7 +36,7 @@ services:
             - '@hbpf.category.parser'
             - '@rest.decoder.xml'
             - '%env(string:REDIS_DSN)%'
-            - [] #todo: add dirs
+            - '%installer_dirs%'
 
     hbpf.category.parser:
         class: Hanaboso\PipesFramework\TopologyInstaller\CategoryParser
