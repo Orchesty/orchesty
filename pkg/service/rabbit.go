@@ -76,17 +76,16 @@ func (r *RabbitDefault) SndMessage(
 	// Create Queue & Message
 	q := rabbitmq.GetProcessQueue(topology)
 	m := amqp.Publishing{Body: utils.GetBodyFromStream(request), Headers: h, ContentType: c, DeliveryMode: d, Timestamp: t}
+	corrID := m.Headers[utils.CorrelationID]
 
 	// Init Counter
-	r.initCounterProcess(request.Header, topology)
+	r.initCounterProcess(request.Header, topology, corrID.(string))
 
 	// Declare Queue & Publish Message
 	r.connection.Declare(q)
 	r.publisher.Publish(m, q.Name)
 
 	// Send Metrics
-	corrID := m.Headers[utils.CorrelationID]
-
 	if err := r.metrics.Send(config.Config.Metrics.Measurement, utils.GetTags(topology, corrID.(string)), utils.GetFields(init)); err != nil {
 		log.Error(fmt.Sprintf("Metrics error: %+v", err))
 	}
@@ -108,7 +107,7 @@ func (r *RabbitDefault) IsMetricsConnected() bool {
 	return r.metrics.IsConnected()
 }
 
-func (r *RabbitDefault) initCounterProcess(httpHeaders http.Header, topology storage.Topology) {
+func (r *RabbitDefault) initCounterProcess(httpHeaders http.Header, topology storage.Topology, corrID string) {
 	// Create ProcessMessage body
 	body, err := json.Marshal(
 		CounterBody{
@@ -121,7 +120,7 @@ func (r *RabbitDefault) initCounterProcess(httpHeaders http.Header, topology sto
 	}
 
 	// Create ProcessMessage headers
-	h, c, d, t := r.builder.BldCounterHeaders(topology, httpHeaders)
+	h, c, d, t := r.builder.BldCounterHeaders(topology, httpHeaders, corrID)
 
 	// Create & Publish Message
 	msg := amqp.Publishing{Body: body, Headers: h, ContentType: c, DeliveryMode: d, Timestamp: t}
