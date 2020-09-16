@@ -127,7 +127,7 @@ class NodeProgress
     public function toArray(): array
     {
         return [
-            'process_id' => $this->processId,
+            'processId' => $this->processId,
             'id'         => $this->nodeId,
             'name'       => $this->nodeName,
             'status'     => $this->status,

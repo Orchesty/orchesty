@@ -1,0 +1,27 @@
+{
+    "http": 200,
+    "body": {
+        "items": [
+            {
+                "id": "123456789",
+                "name": "name",
+                "correlationId": "corr-id-1234",
+                "duration": 10000,
+                "status": "OK",
+                "nodesProcessed": 1,
+                "nodesRemaining": 2,
+                "nodesTotal": 3,
+                "nodes": [
+                    {
+                        "process_id": "proc-id-1234",
+                        "id": "12345",
+                        "name": "node-name",
+                        "status": "OK"
+                    }
+                ],
+                "started": "2010-10-10 10:10:10",
+                "finished": "2010-10-10 10:10:20"
+            }
+        ]
+    }
+}

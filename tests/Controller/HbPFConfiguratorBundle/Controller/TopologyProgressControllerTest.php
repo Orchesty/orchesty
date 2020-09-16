@@ -17,7 +17,12 @@ final class TopologyProgressControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyProgressController::__construct
      * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyProgressController::getProgressTopologyAction
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyProgressHandler::__construct
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyProgressHandler::getProgress
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\ProgressManager::__construct
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\ProgressManager::getProgress
      *
      * @throws Exception
      */

@@ -13,6 +13,6 @@ framework:
         #        handler_id: hbpf.commons.session_handler
         #        handler_id: 'session.handler.native_file'
         cookie_secure: false
-        cookie_samesite: 'lax'
+        cookie_samesite: 'none'
     router:
         strict_requirements: ~

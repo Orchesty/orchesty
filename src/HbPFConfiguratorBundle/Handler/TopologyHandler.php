@@ -89,7 +89,7 @@ final class TopologyHandler
      * @param int|null $offset
      * @param null     $orderBy
      *
-     * @return array[]
+     * @return mixed[]
      * @throws MongoDBException
      */
     public function getTopologies(?int $limit = NULL, ?int $offset = NULL, $orderBy = NULL): array
