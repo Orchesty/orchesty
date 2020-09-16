@@ -15,6 +15,7 @@ import appStore from './appStore';
 import sdkImpls from './sdkImpls';
 import auth from './auth';
 import process from './process';
+import processesList from './processesList';
 import server from './server';
 import editable from './editable';
 import metrics from './metrics';
@@ -37,6 +38,7 @@ const rootReducer = combineReducers({
   appStore,
   sdkImpls,
   process,
+  processesList,
   server,
   form,
   editable,

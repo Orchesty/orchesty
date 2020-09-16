@@ -1,6 +1,6 @@
 import * as types from 'rootApp/actionTypes';
 import listFactory from './factories/listFactory';
-import serverRequest, { sortToQuery, rawRequest, rawRequestJSONReceive } from 'services/apiGatewayServer';
+import serverRequest, {rawRequest, rawRequestJSONReceive, sortToQuery} from 'services/apiGatewayServer';
 import objectEquals from 'utils/objectEquals';
 
 import processes from 'enums/processes';
@@ -11,10 +11,10 @@ import * as processActions from './processActions';
 import * as nodeActions from './nodeActions';
 import * as applicationActions from './applicationActions';
 import * as topologyGroupActions from './topologyGroupActions';
-import { listType, stateType } from 'rootApp/types';
+import {listType, stateType} from 'rootApp/types';
 import filterCallback from 'rootApp/utils/filterCallback';
 import nestedValue from 'rootApp/utils/nestedValue';
-import { getPageId } from 'rootApp/utils/pageUtils';
+import {getPageId} from 'rootApp/utils/pageUtils';
 import * as metricsActions from 'rootApp/actions/metricsActions';
 
 const {
@@ -55,6 +55,13 @@ function receiveSchema(id, data) {
 function receiveTest(data) {
   return {
     type: types.TOPOLOGY_RECEIVE_TEST,
+    data,
+  };
+}
+
+function receiveProcessesList(data) {
+  return {
+    type: types.TOPOLOGY_RECEIVE_PROCESSES,
     data,
   };
 }
@@ -266,7 +273,7 @@ export function topologyDelete(id, redirectToList = false) {
       if (response) {
         dispatch(invalidateLists());
         if (redirectToList) {
-          dispatch(applicationActions.closePage(getPageId('topology_detail', { topologyId: id })));
+          dispatch(applicationActions.closePage(getPageId('topology_detail', {topologyId: id})));
         }
         dispatch(remove(id));
       }
@@ -373,4 +380,16 @@ export function testTopology(id, silent = false) {
       return response;
     });
   };
+}
+
+export function loadProcesses(id) {
+  return (dispatch) => {
+    return serverRequest(dispatch, 'GET', `/progress/topology/${id}`).then((response) => {
+      if (response) {
+        dispatch(receiveProcessesList(response));
+      }
+
+      return response;
+    });
+  }
 }
