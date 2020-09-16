@@ -7,7 +7,6 @@ use Hanaboso\Utils\Traits\ControllerTrait;
 use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Throwable;
 
 /**
  * Class TopologyProgressController
@@ -44,13 +43,9 @@ final class TopologyProgressController
      */
     public function getProgressTopologyAction(string $topologyId): Response
     {
-        try {
-            $data = $this->handler->getProgress($topologyId);
+        $data = $this->handler->getProgress($topologyId);
 
-            return $this->getResponse($data);
-        } catch (Throwable $e) {
-            return $this->getErrorResponse($e);
-        }
+        return $this->getResponse($data);
     }
 
 }

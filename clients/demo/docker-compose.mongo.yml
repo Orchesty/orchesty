@@ -4,101 +4,91 @@ services:
     php-sdk:
         image: dkr.hanaboso.net/pipes/demo/php-api:master
         environment:
-            BACKEND_HOST: ${BACKEND_URL}/
-            EMAIL_DSN: gmail://dev.email.hb@gmail.com:jVME2RkX9xyYhj9v@localhost
+            BACKEND_HOST: ${BACKEND_URL}
+            MONGODB_DSN: mongodb://mongo/demo
+            METRICS_DSN: mongodb://mongo/metrics
+            METRICS_DB: metrics
+            MONGODB_DB: demo
+            RABBIT_DSN: amqp://rabbitmq:5672
             METRICS_SERVICE: mongo
-            METRICS_HOST: mongo
-            METRICS_PORT: 27017
-            REDIS_DSN: redis://redis
-            STARTING_POINT_DSN: starting-point:8080
-            RABBIT_DSN: amqp://rabbitmq:5672/
-            USER_TASK_LISTENER_ENABLE: 'false'
-
-    batch:
-        image: dkr.hanaboso.net/pipes/demo/php-api:master
-        environment:
-            BACKEND_HOST: ${BACKEND_URL}/
-            EMAIL_DSN: gmail://dev.email.hb@gmail.com:jVME2RkX9xyYhj9v@localhost
-            METRICS_SERVICE: mongo
-            METRICS_HOST: mongo
-            METRICS_PORT: 27017
-            REDIS_DSN: redis://redis
-            STARTING_POINT_DSN: starting-point:8080
-            RABBIT_DSN: amqp://rabbitmq:5672/
-            USER_TASK_LISTENER_ENABLE: 'false'
-        command: bin/console rabbit_mq:consumer:batch
+            USER_TASK_LISTENER_ENABLE: 0
+        mem_limit: 64MB
 
     batch-connector:
         image: dkr.hanaboso.net/pipes/demo/php-api:master
         environment:
-            BACKEND_HOST: ${BACKEND_URL}/
-            EMAIL_DSN: gmail://dev.email.hb@gmail.com:jVME2RkX9xyYhj9v@localhost
+            BACKEND_HOST: ${BACKEND_URL}
+            MONGODB_DSN: mongodb://mongo/demo
+            METRICS_DSN: mongodb://mongo/metrics
+            METRICS_DB: metrics
+            MONGODB_DB: demo
+            RABBIT_DSN: amqp://rabbitmq:5672
             METRICS_SERVICE: mongo
-            METRICS_HOST: mongo
-            METRICS_PORT: 27017
-            REDIS_DSN: redis://redis
-            STARTING_POINT_DSN: starting-point:8080
-            RABBIT_DSN: amqp://rabbitmq:5672/
-            USER_TASK_LISTENER_ENABLE: 'false'
+            USER_TASK_LISTENER_ENABLE: 0
         command: bin/console rabbit_mq:consumer:batch-connector
 
     long-running-node:
         image: dkr.hanaboso.net/pipes/demo/php-api:master
         environment:
-            BACKEND_HOST: ${BACKEND_URL}/
-            EMAIL_DSN: gmail://dev.email.hb@gmail.com:jVME2RkX9xyYhj9v@localhost
+            BACKEND_HOST: ${BACKEND_URL}
+            MONGODB_DSN: mongodb://mongo/demo
+            METRICS_DSN: mongodb://mongo/metrics
+            METRICS_DB: metrics
+            MONGODB_DB: demo
+            RABBIT_DSN: amqp://rabbitmq:5672
             METRICS_SERVICE: mongo
-            METRICS_HOST: mongo
-            METRICS_PORT: 27017
-            REDIS_DSN: redis://redis
-            STARTING_POINT_DSN: starting-point:8080
-            RABBIT_DSN: amqp://rabbitmq:5672/
-            USER_TASK_LISTENER_ENABLE: 'false'
+            USER_TASK_LISTENER_ENABLE: 0
         command: bin/console rabbit_mq:consumer:long-running-node
 
     status-service:
         image: dkr.hanaboso.net/pipes/demo/php-api:master
         environment:
-            BACKEND_HOST: ${BACKEND_URL}/
-            EMAIL_DSN: gmail://dev.email.hb@gmail.com:jVME2RkX9xyYhj9v@localhost
+            BACKEND_HOST: ${BACKEND_URL}
+            MONGODB_DSN: mongodb://mongo/demo
+            METRICS_DSN: mongodb://mongo/metrics
+            METRICS_DB: metrics
+            MONGODB_DB: demo
+            RABBIT_DSN: amqp://rabbitmq:5672
             METRICS_SERVICE: mongo
-            METRICS_HOST: mongo
-            METRICS_PORT: 27017
-            REDIS_DSN: redis://redis
-            STARTING_POINT_DSN: starting-point:8080
-            RABBIT_DSN: amqp://rabbitmq:5672/
-            USER_TASK_LISTENER_ENABLE: 'false'
+            USER_TASK_LISTENER_ENABLE: 0
         command: bin/console rabbit_mq:consumer:status-service
 
-    multi-probe:
-        image: dkr.hanaboso.net/pipes/pipes/multi-probe:dev
+    notification-sender-api:
+        image: dkr.hanaboso.net/pipes/notification-sender:master
         environment:
-            REDIS_HOST: redis
-            REDIS_PORT: 6379
-            REDIS_PASS: ''
-            REDIS_DB:  0
+            MONGO_HOST: mongo
+        mem_limit: 64MB
+
+    notification-sender-consumer:
+        image: dkr.hanaboso.net/pipes/notification-sender:master
+        environment:
+            RABBITMQ_DSN: amqp://rabbitmq:5672
+            MONGO_HOST: mongo
+        command: bin/console rabbit_mq:consumer:notification
+        mem_limit: 64MB
+
+    multi-probe:
+        image: dkr.hanaboso.net/pipes/pipes/multi-probe:master
+        mem_limit: 64MB
 
     multi-counter:
-        image: dkr.hanaboso.net/pipes/pipes/pf-bridge:dev
+        image: dkr.hanaboso.net/pipes/pipes/pf-bridge:master
         environment:
-            RABBITMQ_HOST: rabbitmq
-            RABBITMQ_PORT: 5672
-            RABBITMQ_USER: guest
-            RABBITMQ_PASS: guest
-            RABBITMQ_VHOST: /
-            REDIS_HOST: redis
-            REDIS_PORT: 6379
-            REDIS_PASS: ''
-            REDIS_DB: 0
-            COUNTER_PREFETCH: 100
             METRICS_SERVICE: mongo
             METRICS_HOST: mongo
             METRICS_PORT: 27017
+            PROGRESS_DSN: mongodb://mongo/demo
+            PROGRESS_SAVE: 'true'
         command: ./dist/src/bin/pipes.js start multi_counter
-        networks:
-            default:
-                aliases:
-                    - multi-counter-api
+        mem_limit: 128MB
+
+    repeater:
+        image: hanaboso/pipes-pf-bridge:master
+        environment:
+            MONGO_HOST: mongo
+            REPEATER_CHECK_TIMEOUT: 5000
+        command: ./dist/src/bin/pipes.js start repeater
+        mem_limit: 128MB
 
     starting-point:
         image: dkr.hanaboso.net/pipes/pipes/starting-point:master
@@ -108,35 +98,9 @@ services:
             RABBIT_COUNTER_QUEUE_DURABLE: 'true'
             RABBIT_QUEUE_DURABLE: 'true'
             RABBIT_DELIVERY_MODE: 2
-            APP_CLEANUP_TIME: 300
-            GOROUTINE_LIMIT: 1000
         ports:
             - ${DEV_IP}:82:8080
-
-    repeater:
-        image: dkr.hanaboso.net/pipes/pipes/pf-bridge:dev
-        environment:
-            RABBITMQ_HOST: rabbitmq
-            RABBITMQ_PORT: 5672
-            RABBITMQ_USER: guest
-            RABBITMQ_PASS: guest
-            RABBITMQ_VHOST: /
-            MONGO_HOST: mongo
-            REPEATER_CHECK_TIMEOUT: 5000
-        command: ./dist/src/bin/pipes.js start repeater
-
-    notification-sender-api:
-        image: dkr.hanaboso.net/pipes/notification-sender:master
-        environment:
-            MONGO_HOST: mongo
-            RABBITMQ_DSN: amqp://rabbitmq:5672
-
-    notification-sender-consumer:
-        image: dkr.hanaboso.net/pipes/notification-sender:master
-        environment:
-            MONGO_HOST: mongo
-            RABBITMQ_DSN: amqp://rabbitmq:5672
-        command: bin/console rabbit_mq:consumer:notification
+        mem_limit: 64MB
 
     topology-api:
         image: dkr.hanaboso.net/pipes/pipes/topology-api-v2:master
@@ -151,20 +115,30 @@ services:
         volumes:
             - ${DOCKER_SOCKET_PATH}:/var/run/docker.sock
             - ../topology:/srv/topology
+        mem_limit: 64MB
+
+    telegraf:
+        image: dkr.hanaboso.net/pipes/pipes/rabbitmq-telegraf:master
+        environment:
+            METRICS_DSN: mongodb://mongo/metrics?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
+        mem_limit: 64MB
 
     cron-api:
         image: dkr.hanaboso.net/pipes/pipes/cron:master
         environment:
             MONGO_DSN: mongodb://mongo/cron?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
             MONGO_COLLECTION: cron
+        mem_limit: 64MB
 
     frontend:
         image: dkr.hanaboso.net/pipes/pipes/frontend:master
         environment:
             BACKEND_URL: ${BACKEND_URL}:80
-            STARTING_POINT_URL: ${BACKEND_URL}:82
+            FRONTEND_URL: ${BACKEND_URL}:80
+            STARTING_POINT_URL: http://${DEV_IP}:82
         ports:
             - ${DEV_IP}:81:80
+        mem_limit: 64MB
 
     backend:
         image: dkr.hanaboso.net/pipes/pipes/pf-bundle:master
@@ -173,47 +147,20 @@ services:
         environment:
             BACKEND_DSN: ${BACKEND_URL}/
             FRONTEND_DSN: ${BACKEND_URL}/
-            BACKEND_HOST: ${BACKEND_URL}/
-            FRONTEND_HOST: ${BACKEND_URL}/
-            SMTP_USER: dev.email.hb@gmail.com
-            SMTP_PASSWORD: jVME2RkX9xyYhj9v
+            NOTIFICATION_DSN: notification-sender-api
+            RABBIT_DSN: amqp://rabbitmq:5672/
+            MONGODB_DSN: mongodb://mongo/demo
+            MONGODB_DB: demo
             METRICS_SERVICE: mongo
             METRICS_HOST: mongo
             METRICS_PORT: 27017
-            MONGODB_DSN: mongodb://mongo
-            MONGODB_DB: demo
-            REDIS_DSN: redis://redis
             CRON_DSN: cron-api:8080
-            FTP_API_DSN: ftp-api
-            MAILER_API_DSN: mailer-api
-            MAPPER_API_DSN: mapper-api
             MONOLITH_API_DSN: php-sdk
             MULTI_PROBE_DSN: multi-probe:8007
             STARTING_POINT_DSN: starting-point:8080
             TOPOLOGY_API_DSN: topology-api:8080
-            XML_PARSER_API_DSN: xml-parser-api
-            RABBIT_DSN: amqp://rabbitmq:5672/
-            NOTIFICATION_DSN: notification-sender-api
             WORKER_DEFAULT_PORT: 8008
-
-    redis:
-        image: redis:alpine
-        volumes:
-            - redis:/data
-
-    mongo:
-        image: mongo
-        ports:
-            - ${DEV_IP}:27017:27017
-        volumes:
-            - mongodb:/data/db
-
-    rabbitmq:
-        image: rabbitmq:3-management-alpine
-        ports:
-            - ${DEV_IP}:15672:15672
-        volumes:
-            - rabbitmq:/var/lib/rabbitmq
+            mem_limit: 64MB
 
     logstash:
         image: dkr.hanaboso.net/pipes/pipes/logstash-mongo:master
@@ -222,13 +169,24 @@ services:
             - MONGO_DB=demo
             - MONGO_COLLECTION=Logs
             - LS_JAVA_OPTS=-Xms512m -Xmx512m
+        mem_limit: 768MB
 
-    telegraf:
-        image: dkr.hanaboso.net/pipes/pipes/rabbitmq-telegraf:master
-        environment:
-            METRICS_DSN: mongodb://mongo/metrics?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
+    mongo:
+        image: mongo
+        ports:
+            - ${DEV_IP}:27017:27017
+        volumes:
+            - mongodb:/data/db
+        mem_limit: 256MB
+
+    rabbitmq:
+        image: rabbitmq:3-management-alpine
+        ports:
+            - ${DEV_IP}:15672:15672
+        volumes:
+            - rabbitmq:/var/lib/rabbitmq
+        mem_limit: 512MB
 
 volumes:
-    redis:
     mongodb:
     rabbitmq:

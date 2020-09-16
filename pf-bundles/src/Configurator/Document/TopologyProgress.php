@@ -74,7 +74,7 @@ class TopologyProgress
      *
      * @ODM\Field(type="integer")
      */
-    private ?int $finishedAt;
+    private ?int $finishedAt = null;
 
     /**
      * @var Collection<string, NodeProgress>

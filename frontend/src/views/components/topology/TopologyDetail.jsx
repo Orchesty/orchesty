@@ -13,6 +13,7 @@ import './TopologyDetail.less';
 import {menuItemType} from 'rootApp/types';
 import TopologySchemaPanel from './TopologySchemaPanel';
 import config from 'rootApp/config';
+import TopologyNodeProcessesContainer from "../node/TopologyNodeProcessesContainer";
 
 class TopologyDetail extends React.Component {
   constructor(props) {
@@ -87,6 +88,14 @@ class TopologyDetail extends React.Component {
         action: () => onChangeTab('graphs'),
         color: activeTab === 'graphs' ? 'info' : 'default',
         round: true
+      },
+      {
+        caption: 'Processes',
+        icon: 'fa fa-terminal',
+        type: menuItemType.ACTION,
+        action: () => onChangeTab('processes'),
+        color: activeTab === 'processes' ? 'info' : 'default',
+        round: true
       }
     ];
     if (edit){
@@ -160,7 +169,7 @@ class TopologyDetail extends React.Component {
   }
 
   render() {
-    const {topologyId, activeTab, topology, onChangeTopology, componentKey, metricsRange, altMetricsRange, interval, pageId} = this.props;
+    const {topologyId, activeTab, topology, onChangeTopology, componentKey, metricsRange, altMetricsRange, interval, pageId, passProps} = this.props;
     const schemaVisible = activeTab === 'schema';
     const newComponentKey = `${componentKey}.${topologyId}`;
     document.title = `${topology.name}.v${topology.version} | Pipes Manager`;
@@ -170,6 +179,7 @@ class TopologyDetail extends React.Component {
         <div className="tab-content">
           {activeTab === 'nodes' && <TopologyNodeMetricsContainer pageId={pageId} topologyId={topologyId} componentKey={`${newComponentKey}.metrics`} metricsRange={metricsRange} altMetricsRange={altMetricsRange} />}
           {activeTab === 'graphs' && <TopologyNodeGraphsContainer pageId={pageId} topologyId={topologyId} componentKey={`${newComponentKey}.graphs`} metricsRange={metricsRange} altMetricsRange={altMetricsRange} interval={interval} />}
+          {activeTab === 'processes' && <TopologyNodeProcessesContainer pageId={pageId} topologyId={topologyId} componentKey={`${newComponentKey}.processes`} {...passProps}/>}
           <div className={'schema-wrapper' + ( schemaVisible ? '' : ' hidden')}>
             <TopologySchemaPanel
               pageId={pageId}

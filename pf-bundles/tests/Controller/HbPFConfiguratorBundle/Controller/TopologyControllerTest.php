@@ -181,7 +181,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         ];
 
         self::assertEquals(200, $response->status);
-        self::assertEquals($topology->getRawBpmn(), $response->getContent());
+        self::assertEquals($topology->getRawBpmn(), $response->content);
     }
 
     /**
@@ -195,7 +195,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         $this->client->request('GET', '/api/topologies/999/schema.bpmn');
         $response = $this->client->getResponse();
         $response = $this->returnResponse($response);
-        $content  = $response->getContent();
+        $content  = $response->content;
 
         self::assertEquals(500, $response->status);
         self::assertEquals(TopologyException::class, $content->type);
@@ -256,7 +256,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         );
         $response = $this->client->getResponse();
         $response = $this->returnResponse($response);
-        $content  = $response->getContent();
+        $content  = $response->content;
         self::assertEquals(500, $response->status);
         self::assertEquals(TopologyException::class, $content->type);
         self::assertEquals(2_402, $content->errorCode);
@@ -406,7 +406,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             'content' => $response->getContent(),
         ];
         self::assertEquals(200, $response->status);
-        self::assertEquals($this->getBpmn(), $response->getContent());
+        self::assertEquals($this->getBpmn(), $response->content);
     }
 
     /**
