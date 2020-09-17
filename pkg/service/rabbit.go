@@ -79,7 +79,7 @@ func (r *RabbitDefault) SndMessage(
 	corrID := m.Headers[utils.CorrelationID]
 
 	// Init Counter
-	r.initCounterProcess(request.Header, topology, corrID.(string))
+	r.initCounterProcess(request.Header, topology, corrID.(string), isHuman)
 
 	// Declare Queue & Publish Message
 	r.connection.Declare(q)
@@ -107,7 +107,7 @@ func (r *RabbitDefault) IsMetricsConnected() bool {
 	return r.metrics.IsConnected()
 }
 
-func (r *RabbitDefault) initCounterProcess(httpHeaders http.Header, topology storage.Topology, corrID string) {
+func (r *RabbitDefault) initCounterProcess(httpHeaders http.Header, topology storage.Topology, corrID string, isHuman bool) {
 	// Create ProcessMessage body
 	body, err := json.Marshal(
 		CounterBody{
@@ -120,7 +120,15 @@ func (r *RabbitDefault) initCounterProcess(httpHeaders http.Header, topology sto
 	}
 
 	// Create ProcessMessage headers
-	h, c, d, t := r.builder.BldCounterHeaders(topology, httpHeaders, corrID)
+	h, c, d, t := r.builder.BldCounterHeaders(topology, httpHeaders)
+	h[utils.CorrelationID] = corrID
+
+	if isHuman {
+		h[utils.NodeID] = topology.Node.ID.Hex()
+		h[utils.NodeName] = topology.Node.Name
+		h[utils.ProcessID] = topology.Node.HumanTask.ProcessID
+		h[utils.CorrelationID] = topology.Node.HumanTask.CorrelationID
+	}
 
 	// Create & Publish Message
 	msg := amqp.Publishing{Body: body, Headers: h, ContentType: c, DeliveryMode: d, Timestamp: t}

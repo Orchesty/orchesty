@@ -14,7 +14,7 @@ import (
 type HeaderBuilder interface {
 	BldHeaders(topology storage.Topology, headers http.Header, isHuman bool, isStop bool) (h amqp.Table, c string, d uint8, t time.Time)
 	BldHumanTaskHeaders(topology storage.Topology, headers http.Header, stop bool) (h amqp.Table, c string, d uint8, t time.Time)
-	BldCounterHeaders(storage.Topology, http.Header, string) (h amqp.Table, c string, d uint8, t time.Time)
+	BldCounterHeaders(storage.Topology, http.Header) (h amqp.Table, c string, d uint8, t time.Time)
 	BldProcessHeaders(storage.Topology, http.Header) (h amqp.Table, c string, d uint8, t time.Time)
 }
 
@@ -33,12 +33,18 @@ const ApplicationID = prefix + "application"
 // UserID header
 const UserID = prefix + "user"
 
+// NodeID header
+const NodeID = prefix + "node-id"
+
+// NodeName header
+const NodeName = prefix + "node-name"
+
+// ProcessID header
+const ProcessID = prefix + "process-id"
+
 // Prefixed pipes headers
 const parentID = prefix + "parent-id"
-const processID = prefix + "process-id"
 const sequenceID = prefix + "sequence-id"
-const nodeID = prefix + "node-id"
-const nodeName = prefix + "node-name"
 const topologyID = prefix + "topology-id"
 const topologyName = prefix + "topology-name"
 const pfTimeStamp = prefix + "published-timestamp"
@@ -64,15 +70,14 @@ func (b *headerBuilder) BldHeaders(topology storage.Topology, headers http.Heade
 	return b.BldProcessHeaders(topology, headers)
 }
 
-func (b *headerBuilder) BldCounterHeaders(topology storage.Topology, headers http.Header, corrID string) (h amqp.Table, c string, d uint8, t time.Time) {
+func (b *headerBuilder) BldCounterHeaders(topology storage.Topology, headers http.Header) (h amqp.Table, c string, d uint8, t time.Time) {
 	h, c, d, t = b.BldProcessHeaders(topology, headers)
 
 	h[htype] = "counter_message"
 	h[appID] = "starting_point"
-	h[nodeID] = "starting_point"
-	h[nodeName] = "starting_point"
+	h[NodeID] = "starting_point"
+	h[NodeName] = "starting_point"
 	h[startingPointInit] = "1"
-	h[CorrelationID] = corrID
 
 	return
 }
@@ -84,7 +89,7 @@ func (b *headerBuilder) BldHumanTaskHeaders(topology storage.Topology, headers h
 		topologyID:     topology.ID.Hex(),
 		topologyName:   topology.Name,
 		pfTimeStamp:    time.Now().UTC().Unix() * 1000,
-		processID:      topology.Node.HumanTask.ProcessID,
+		ProcessID:      topology.Node.HumanTask.ProcessID,
 		CorrelationID:  topology.Node.HumanTask.CorrelationID,
 		documentHeader: topology.Node.HumanTask.ID.Hex(),
 		resultCode:     "0",
@@ -106,7 +111,7 @@ func (b *headerBuilder) BldProcessHeaders(topology storage.Topology, headers htt
 		topologyName:   topology.Name,
 		contentType:    jsonType,
 		pfTimeStamp:    time.Now().UTC().Unix() * 1000,
-		processID:      uuid.New().String(),
+		ProcessID:      uuid.New().String(),
 		CorrelationID:  uuid.New().String(),
 		processStarted: time.Now().UTC().Unix() * 1000,
 	}

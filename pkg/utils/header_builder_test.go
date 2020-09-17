@@ -16,7 +16,7 @@ func TestBldCounterHeaders(t *testing.T) {
 	topology := storage.Topology{Name: "Topology", ID: primitive.NewObjectID(), Node: &storage.Node{ID: primitive.NewObjectID(), Name: "Node"}}
 	builder := NewHeaderBuilder(2)
 
-	h, c, d, ti := builder.BldCounterHeaders(topology, headers, "corr-id-123")
+	h, c, d, ti := builder.BldCounterHeaders(topology, headers)
 
 	assert.NotEmpty(t, h)
 	assert.Equal(t, "ok", h["pf-test"])
@@ -51,7 +51,7 @@ func TestHumanHeaders(t *testing.T) {
 	topology := storage.Topology{Name: "Topology", ID: primitive.NewObjectID(), Node: &storage.Node{ID: primitive.NewObjectID(), Name: "Node", HumanTask: &storage.HumanTask{
 		ID:            primitive.NewObjectID(),
 		CorrelationID: "correlationID",
-		ProcessID:     "processID",
+		ProcessID:     "ProcessID",
 		ContentType:   "contentType",
 		SequenceID:    "sequenceID",
 		ParentID:      "parentID",
