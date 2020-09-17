@@ -33,3 +33,9 @@ export default function CustomElementFactory(bpmnFactory, moddle, translate) {
 }
 
 inherits(CustomElementFactory, ElementFactory);
+
+CustomElementFactory.$inject = [
+  'bpmnFactory',
+  'moddle',
+  'translate'
+];
