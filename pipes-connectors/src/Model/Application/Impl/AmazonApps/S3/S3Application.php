@@ -6,7 +6,6 @@ use Aws\S3\S3Client;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\AwsApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Form;
 
@@ -46,7 +45,6 @@ final class S3Application extends AwsApplicationAbstract
 
     /**
      * @return Form
-     * @throws ApplicationInstallException
      */
     public function getSettingsForm(): Form
     {

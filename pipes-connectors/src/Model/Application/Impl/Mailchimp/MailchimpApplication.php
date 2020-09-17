@@ -20,6 +20,7 @@ use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
 use Hanaboso\Utils\String\Json;
+use JsonException;
 
 /**
  * Class MailchimpApplication
@@ -137,7 +138,6 @@ final class MailchimpApplication extends OAuth2ApplicationAbstract implements We
 
     /**
      * @return Form
-     * @throws ApplicationInstallException
      */
     public function getSettingsForm(): Form
     {
@@ -157,6 +157,7 @@ final class MailchimpApplication extends OAuth2ApplicationAbstract implements We
      * @throws ApplicationInstallException
      * @throws AuthorizationException
      * @throws CurlException
+     * @throws JsonException
      */
     public function setAuthorizationToken(
         ApplicationInstall $applicationInstall,
@@ -180,6 +181,7 @@ final class MailchimpApplication extends OAuth2ApplicationAbstract implements We
      * @return string
      * @throws ApplicationInstallException
      * @throws CurlException
+     * @throws JsonException
      */
     public function getApiEndpoint(ApplicationInstall $applicationInstall): string
     {
@@ -272,6 +274,7 @@ final class MailchimpApplication extends OAuth2ApplicationAbstract implements We
      * @param ApplicationInstall $install
      *
      * @return string
+     * @throws JsonException
      */
     public function processWebhookSubscribeResponse(ResponseDto $dto, ApplicationInstall $install): string
     {

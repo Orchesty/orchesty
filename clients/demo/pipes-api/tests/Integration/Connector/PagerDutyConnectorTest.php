@@ -12,7 +12,6 @@ use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
-use PHPUnit\Framework\MockObject\MockObject;
 use ReflectionException;
 
 /**
@@ -127,7 +126,6 @@ final class PagerDutyConnectorTest extends KernelTestCaseAbstract
      */
     private function prepareService(Closure $closure): PagerDutyConnector
     {
-        /** @var CurlManagerInterface|MockObject $curl */
         $curl = self::createMock(CurlManagerInterface::class);
         $curl->method('send')->willReturnCallback($closure);
 

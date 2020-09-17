@@ -39,7 +39,6 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     protected function sendGet(string $url, array $parameters = [], array $headers = []): ControllerResponse
     {
         $this->client->request('GET', $url, $parameters, [], $headers);
-        /** @var Response $response */
         $response = $this->client->getResponse();
 
         return $this->processResponse($response);
@@ -63,7 +62,6 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     ): ControllerResponse
     {
         $this->client->request('POST', $url, $parameters, $files, $headers, $content);
-        /** @var Response $response */
         $response = $this->client->getResponse();
 
         return $this->processResponse($response);
@@ -85,7 +83,6 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     ): ControllerResponse
     {
         $this->client->request('PUT', $url, $parameters, $files, $headers);
-        /** @var Response $response */
         $response = $this->client->getResponse();
 
         return $this->processResponse($response);
@@ -100,7 +97,6 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     protected function sendDelete(string $url, array $headers = []): ControllerResponse
     {
         $this->client->request('DELETE', $url, [], [], $headers);
-        /** @var Response $response */
         $response = $this->client->getResponse();
 
         return $this->processResponse($response);

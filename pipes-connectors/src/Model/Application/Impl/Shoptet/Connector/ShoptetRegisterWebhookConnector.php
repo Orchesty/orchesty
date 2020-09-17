@@ -13,6 +13,7 @@ use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessEventNotSupportedTrait;
 use Hanaboso\Utils\Exception\DateTimeException;
 use Hanaboso\Utils\String\Json;
+use JsonException;
 
 /**
  * Class ShoptetRegisterWebhookConnector
@@ -44,6 +45,7 @@ final class ShoptetRegisterWebhookConnector extends ShoptetConnectorAbstract
      * @throws MongoDBException
      * @throws OnRepeatException
      * @throws ConnectorException
+     * @throws JsonException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {

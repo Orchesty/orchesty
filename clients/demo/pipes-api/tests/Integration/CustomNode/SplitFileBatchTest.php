@@ -4,8 +4,8 @@ namespace DemoTests\Integration\CustomNode;
 
 use Demo\CustomNode\SplitFileBatch;
 use DemoTests\KernelTestCaseAbstract;
+use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\Utils\Exception\DateTimeException;
 
 /**
  * Class SplitFileBatchTest
@@ -18,7 +18,8 @@ final class SplitFileBatchTest extends KernelTestCaseAbstract
     /**
      * @covers \Demo\CustomNode\SplitFileBatch::processBatch
      * @covers \Demo\CustomNode\SplitFileBatch::process
-     * @throws DateTimeException
+     *
+     * @throws Exception
      */
     public function testProcessBatch(): void
     {

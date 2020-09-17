@@ -7,7 +7,6 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\HbPFAppStore\Model\ApplicationManager;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
-use Hanaboso\Utils\Exception\DateTimeException;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\System\ControllerUtils;
 
@@ -43,7 +42,6 @@ final class WebhookHandler
      * @throws PipesFrameworkException
      * @throws MongoDBException
      * @throws CurlException
-     * @throws DateTimeException
      */
     public function subscribeWebhooks(string $key, string $user, array $data = []): void
     {

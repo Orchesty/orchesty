@@ -13,12 +13,12 @@ final class ControllerResponse
     /**
      * @var int
      */
-    private $status;
+    private int $status;
 
     /**
      * @var mixed[]
      */
-    private $content;
+    private array $content;
 
     /**
      * ControllerResponse constructor.

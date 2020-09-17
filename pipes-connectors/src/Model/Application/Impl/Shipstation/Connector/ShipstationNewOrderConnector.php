@@ -15,6 +15,7 @@ use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessActionNotSupportedTrait;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
+use JsonException;
 
 /**
  * Class ShipstationNewOrderConnector
@@ -64,6 +65,7 @@ final class ShipstationNewOrderConnector extends ConnectorAbstract
      * @throws CurlException
      * @throws PipesFrameworkException
      * @throws ConnectorException
+     * @throws JsonException
      */
     public function processEvent(ProcessDto $dto): ProcessDto
     {

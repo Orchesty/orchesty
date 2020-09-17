@@ -13,7 +13,6 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\Utils\String\Json;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\MockObject\Stub\ReturnCallback;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Throwable;
@@ -41,9 +40,9 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
      * @param string $clientId
      * @param string $scopes
      *
-     * @return MockObject
+     * @return RedirectInterface
      */
-    protected function mockRedirect(string $baseUrl, string $clientId, string $scopes = ''): MockObject
+    protected function mockRedirect(string $baseUrl, string $clientId, string $scopes = ''): RedirectInterface
     {
         if (!empty($scopes)) {
             $scopes = sprintf('&scope=%s', $scopes);
@@ -73,9 +72,9 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
     /**
      * @param mixed[] $array
      *
-     * @return MockObject
+     * @return CurlManagerInterface
      */
-    protected function mockCurl(array $array): MockObject
+    protected function mockCurl(array $array): CurlManagerInterface
     {
         $mock = self::createMock(CurlManagerInterface::class);
 

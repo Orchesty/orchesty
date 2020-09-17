@@ -13,7 +13,6 @@ use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DatabaseTestCaseAbstract;
-use PHPUnit\Framework\MockObject\MockObject;
 use Throwable;
 
 /**
@@ -53,7 +52,6 @@ final class S3GetObjectConnectorTest extends DatabaseTestCaseAbstract
             self::assertEquals('Test', $content['name']);
             self::assertEquals('Content', $content['content']);
         } catch (Throwable $throwable) { // Sometimes fails on CI, use mock when it's happen...
-            /** @var S3Client|MockObject $client */
             $client = self::createPartialMock(S3Client::class, ['__call']);
             $client->method('__call')->willReturnCallback(
                 static function (string $method, array $parameters): void {

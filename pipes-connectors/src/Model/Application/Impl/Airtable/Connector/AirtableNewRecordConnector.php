@@ -12,6 +12,7 @@ use Hanaboso\HbPFConnectors\Model\Application\Impl\Airtable\AirtableApplication;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
+use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessEventNotSupportedTrait;
@@ -65,6 +66,7 @@ final class AirtableNewRecordConnector extends ConnectorAbstract
      * @throws CurlException
      * @throws PipesFrameworkException
      * @throws ConnectorException
+     * @throws AuthorizationException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {

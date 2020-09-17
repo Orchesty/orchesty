@@ -11,11 +11,11 @@ use Hanaboso\HbPFAppStore\Model\Webhook\WebhookApplicationInterface;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Form;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
 use Hanaboso\Utils\String\Json;
+use JsonException;
 
 /**
  * Class WisepopsApplication
@@ -98,7 +98,6 @@ final class WisepopsApplication extends BasicApplicationAbstract implements Webh
 
     /**
      * @return Form
-     * @throws ApplicationInstallException
      */
     public function getSettingsForm(): Form
     {
@@ -166,6 +165,7 @@ final class WisepopsApplication extends BasicApplicationAbstract implements Webh
      * @param ApplicationInstall $install
      *
      * @return string
+     * @throws JsonException
      */
     public function processWebhookSubscribeResponse(ResponseDto $dto, ApplicationInstall $install): string
     {

@@ -149,6 +149,8 @@ final class NotificationSettingsControllerTest extends ControllerTestCaseAbstrac
 
     /**
      * @return string
+     *
+     * @throws Exception
      */
     private function getSettingsId(): string
     {

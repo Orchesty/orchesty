@@ -22,7 +22,7 @@ final class InstallerTest extends KernelTestCaseAbstract
     /**
      * @var mixed[]
      */
-    protected $logsServices = [
+    protected array $logsServices = [
         'logs' => [
             'elasticsearch',
             'logstash',

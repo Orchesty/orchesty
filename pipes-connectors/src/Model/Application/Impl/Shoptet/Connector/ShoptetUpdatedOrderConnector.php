@@ -12,6 +12,7 @@ use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessActionNotSupportedTrait;
 use Hanaboso\PipesPhpSdk\Utils\ProcessContentTrait;
 use Hanaboso\Utils\System\PipesHeaders;
+use JsonException;
 
 /**
  * Class ShoptetUpdatedOrderConnector
@@ -44,6 +45,7 @@ final class ShoptetUpdatedOrderConnector extends ShoptetConnectorAbstract
      * @throws ApplicationInstallException
      * @throws ConnectorException
      * @throws OnRepeatException
+     * @throws JsonException
      */
     public function processEvent(ProcessDto $dto): ProcessDto
     {

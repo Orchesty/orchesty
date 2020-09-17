@@ -15,6 +15,7 @@ use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessEventNotSupportedTrait;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\String\Json;
+use JsonException;
 
 /**
  * Class SendGridSendEmailConnector
@@ -62,6 +63,7 @@ final class SendGridSendEmailConnector extends ConnectorAbstract
      * @return ProcessDto
      * @throws ConnectorException
      * @throws ApplicationInstallException
+     * @throws JsonException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {

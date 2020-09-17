@@ -106,7 +106,6 @@ final class QuickbooksApplication extends OAuth2ApplicationAbstract
 
     /**
      * @return Form
-     * @throws ApplicationInstallException
      */
     public function getSettingsForm(): Form
     {

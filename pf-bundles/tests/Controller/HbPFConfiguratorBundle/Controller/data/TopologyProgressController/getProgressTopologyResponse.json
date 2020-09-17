@@ -13,7 +13,7 @@
                 "nodesTotal": 3,
                 "nodes": [
                     {
-                        "process_id": "proc-id-1234",
+                        "processId": "proc-id-1234",
                         "id": "12345",
                         "name": "node-name",
                         "status": "OK"

@@ -6,6 +6,7 @@ use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\Redshift\RedshiftApplication;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
+use JsonException;
 use Throwable;
 
 /**
@@ -22,6 +23,7 @@ final class RedshiftExecuteQueryConnector extends RedshiftObjectConnectorAbstrac
      * @return ProcessDto
      * @throws ApplicationInstallException
      * @throws ConnectorException
+     * @throws JsonException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {

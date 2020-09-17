@@ -85,7 +85,6 @@ final class ZohoApplication extends OAuth2ApplicationAbstract
 
     /**
      * @return Form
-     * @throws ApplicationInstallException
      */
     public function getSettingsForm(): Form
     {

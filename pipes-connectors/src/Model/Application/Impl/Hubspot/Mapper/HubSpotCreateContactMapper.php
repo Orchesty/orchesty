@@ -6,6 +6,7 @@ use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\String\Json;
+use JsonException;
 
 /**
  * Class HubSpotCreateContactMapper
@@ -20,6 +21,7 @@ final class HubSpotCreateContactMapper extends CustomNodeAbstract
      *
      * @return ProcessDto
      * @throws PipesFrameworkException
+     * @throws JsonException
      */
     public function process(ProcessDto $dto): ProcessDto
     {
@@ -108,7 +110,7 @@ final class HubSpotCreateContactMapper extends CustomNodeAbstract
     }
 
     /**
-     * @param string $name
+     * @param string|null $name
      *
      * @return mixed[]
      */

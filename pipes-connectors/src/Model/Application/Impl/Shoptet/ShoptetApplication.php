@@ -151,7 +151,6 @@ final class ShoptetApplication extends OAuth2ApplicationAbstract implements Webh
 
     /**
      * @return Form
-     * @throws ApplicationInstallException
      */
     public function getSettingsForm(): Form
     {

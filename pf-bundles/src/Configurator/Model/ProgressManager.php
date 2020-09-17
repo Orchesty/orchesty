@@ -36,7 +36,8 @@ final class ProgressManager
     public function getProgress(string $topologyId): array
     {
         $res  = [];
-        $docs = $this->dm->getRepository(TopologyProgress::class)->findBy(['topologyId' => $topologyId]);
+        $docs = $this->dm->getRepository(TopologyProgress::class)
+            ->findBy(['topologyId' => $topologyId],['created' =>'desc'], 20);
 
         foreach ($docs ?? [] as $doc) {
             $res[] = $doc->toArray();

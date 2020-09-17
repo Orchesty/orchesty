@@ -7,7 +7,6 @@ use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\HbPFAppStore\Document\Synchronization;
-use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessEventNotSupportedTrait;
 use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessExceptionTrait;
@@ -64,7 +63,7 @@ final class ShoptetCreateOrderConnector extends ShoptetConnectorAbstract
             $this->setHeader($dto, Synchronization::EXTERNAL_ID_HEADER, $externalId);
 
             return $this->setJsonContent($dto, $response);
-        } catch (ApplicationInstallException | CurlException | JsonException $e) {
+        } catch (CurlException | JsonException $e) {
             throw $this->createRepeatException($dto, $e, self::REPEATER_INTERVAL);
         }
     }

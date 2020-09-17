@@ -22,7 +22,7 @@ final class TimeStamperHumanTask extends LongRunningNodeAbstract
     /**
      * @var DocumentManager
      */
-    private $dm;
+    private DocumentManager $dm;
 
     /**
      * TimeStamperHumanTask constructor.

@@ -120,7 +120,7 @@ final class GoogleDriveApplicationTest extends DatabaseTestCaseAbstract
      */
 
     /**
-     *
+     * @throws Exception
      */
     protected function setUp(): void
     {

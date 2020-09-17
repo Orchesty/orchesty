@@ -3,8 +3,6 @@
 namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\LockException;
-use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocatorInterface;
 use Hanaboso\CommonsBundle\Exception\CategoryException;
@@ -69,8 +67,6 @@ final class CategoryHandler
      *
      * @return mixed[]
      * @throws CategoryException
-     * @throws LockException
-     * @throws MappingException
      * @throws MongoDBException
      */
     public function createCategory(array $data): array
@@ -86,8 +82,6 @@ final class CategoryHandler
      *
      * @return mixed[]
      * @throws CategoryException
-     * @throws LockException
-     * @throws MappingException
      * @throws MongoDBException
      */
     public function updateCategory(string $id, array $data): array

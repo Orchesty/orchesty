@@ -42,7 +42,7 @@ final class DownloaderCommand extends Command
     /**
      * @var TimerInterface
      */
-    private $heartbeat;
+    private TimerInterface $heartbeat;
 
     /**
      * @var LoopInterface

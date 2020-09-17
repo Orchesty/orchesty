@@ -13,6 +13,7 @@ use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
 use Hanaboso\Utils\Date\DateTimeUtils;
 use Hanaboso\Utils\Exception\DateTimeException;
 use Hanaboso\Utils\String\Json;
+use JsonException;
 
 /**
  * Class SendDutyEmail
@@ -35,12 +36,12 @@ final class SendDutyEmail extends CustomNodeAbstract
     /**
      * @var Mailer
      */
-    private $mailer;
+    private Mailer $mailer;
 
     /**
      * @var PagerDutyConnector
      */
-    private $dutyConnector;
+    private PagerDutyConnector $dutyConnector;
 
     /**
      * SendDutyEmail constructor.
@@ -62,6 +63,7 @@ final class SendDutyEmail extends CustomNodeAbstract
      * @throws DateTimeException
      * @throws MailerException
      * @throws ConnectorException
+     * @throws JsonException
      */
     public function process(ProcessDto $dto): ProcessDto
     {

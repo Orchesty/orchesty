@@ -4,6 +4,7 @@ namespace DemoTests\Integration\CustomNode;
 
 use Demo\CustomNode\BatchCustomNode;
 use DemoTests\KernelTestCaseAbstract;
+use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 
 /**
@@ -16,6 +17,8 @@ final class BatchCustomNodeTest extends KernelTestCaseAbstract
 
     /**
      * @covers \Demo\CustomNode\BatchCustomNode::processBatch
+     *
+     * @throws Exception
      */
     public function testProcessBatch(): void
     {
@@ -40,9 +43,7 @@ final class BatchCustomNodeTest extends KernelTestCaseAbstract
     {
         /** @var BatchCustomNode $customNode */
         $customNode = self::$container->get('hbpf.custom_node.batch');
-
-        /** @var ProcessDto $result */
-        $result = $customNode->process((new ProcessDto())->setData('{"foo":"bar"}'));
+        $result     = $customNode->process((new ProcessDto())->setData('{"foo":"bar"}'));
 
         self::assertEquals('{"foo":"bar"}', $result->getData());
     }

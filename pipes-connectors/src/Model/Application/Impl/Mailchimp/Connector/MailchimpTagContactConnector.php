@@ -15,6 +15,7 @@ use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
+use JsonException;
 
 /**
  * Class MailchimpTagContactConnector
@@ -78,6 +79,7 @@ final class MailchimpTagContactConnector extends ConnectorAbstract
      * @throws CurlException
      * @throws PipesFrameworkException
      * @throws ConnectorException
+     * @throws JsonException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {

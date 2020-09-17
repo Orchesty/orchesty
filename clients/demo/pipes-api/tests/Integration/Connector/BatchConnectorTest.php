@@ -4,6 +4,7 @@ namespace DemoTests\Integration\Connector;
 
 use Demo\Connector\BatchConnector;
 use DemoTests\KernelTestCaseAbstract;
+use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Throwable;
 
@@ -32,6 +33,8 @@ final class BatchConnectorTest extends KernelTestCaseAbstract
 
     /**
      * @covers \Demo\Connector\BatchConnector::processBatch
+     *
+     * @throws Exception
      */
     public function testProcessBatch(): void
     {

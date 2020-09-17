@@ -9,7 +9,6 @@ use EmailServiceBundle\Transport\TransportInterface;
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\Utils\String\Json;
-use PHPUnit\Framework\MockObject\MockObject;
 
 /**
  * Class SendDutyEmailTest
@@ -29,7 +28,6 @@ final class SendDutyEmailTest extends KernelTestCaseAbstract
      */
     public function testSend(): void
     {
-        /** @var TransportInterface|MockObject $transport */
         $transport = $this->createPartialMock(TransportInterface::class, ['send', 'setLogger']);
         $transport->method('send')->willReturn(1);
 

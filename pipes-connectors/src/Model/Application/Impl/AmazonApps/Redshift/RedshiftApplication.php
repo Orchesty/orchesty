@@ -54,7 +54,6 @@ final class RedshiftApplication extends AwsApplicationAbstract
 
     /**
      * @return Form
-     * @throws ApplicationInstallException
      */
     public function getSettingsForm(): Form
     {
@@ -128,7 +127,8 @@ final class RedshiftApplication extends AwsApplicationAbstract
             [
                 RedshiftApplication::CLUSTER_IDENTIFIER => $cluster[RedshiftApplication::CLUSTER_IDENTIFIER],
                 RedshiftApplication::MASTER_USER        => $cluster[RedshiftApplication::MASTER_USER],
-                RedshiftApplication::DB_PASSWORD        => $applicationInstall->getSettings()[self::FORM][self::DB_PASSWORD],
+                RedshiftApplication::DB_PASSWORD        => $applicationInstall->getSettings(
+                )[self::FORM][self::DB_PASSWORD],
                 RedshiftApplication::DBNAME             => $cluster[RedshiftApplication::DBNAME],
                 RedshiftApplication::HOST               => $cluster[RedshiftApplication::ENDPOINT][RedshiftApplication::ADDRESS],
                 RedshiftApplication::PORT               => $cluster[RedshiftApplication::ENDPOINT][RedshiftApplication::PORT],

@@ -110,7 +110,7 @@ final class SendGridApplicationTest extends DatabaseTestCaseAbstract
      */
 
     /**
-     *
+     * @throws Exception
      */
     protected function setUp(): void
     {

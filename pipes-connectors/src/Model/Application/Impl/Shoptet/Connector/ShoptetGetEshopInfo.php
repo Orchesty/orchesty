@@ -10,6 +10,7 @@ use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessEventNotSupportedTrait;
+use JsonException;
 
 /**
  * Class ShoptetGetEshopInfo
@@ -38,6 +39,7 @@ final class ShoptetGetEshopInfo extends ShoptetConnectorAbstract
      * @throws ApplicationInstallException
      * @throws OnRepeatException
      * @throws ConnectorException
+     * @throws JsonException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
@@ -58,6 +60,7 @@ final class ShoptetGetEshopInfo extends ShoptetConnectorAbstract
      * @return mixed[]
      * @throws CurlException
      * @throws ConnectorException
+     * @throws JsonException
      */
     public function processActionArray(ApplicationInstall $applicationInstall, ?ProcessDto $processDto = NULL): array
     {

@@ -8,7 +8,6 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
-use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessEventNotSupportedTrait;
 use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessExceptionTrait;
@@ -69,7 +68,7 @@ final class ShoptetUpdateOrderConnector extends ShoptetConnectorAbstract
             );
 
             return $this->setJsonContent($dto, $response)->setStopProcess();
-        } catch (ApplicationInstallException | CurlException | JsonException $e) {
+        } catch (CurlException | JsonException $e) {
             throw $this->createRepeatException($dto, $e, self::REPEATER_INTERVAL);
         }
     }

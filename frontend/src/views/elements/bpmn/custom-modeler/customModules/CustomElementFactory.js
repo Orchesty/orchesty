@@ -1,26 +1,18 @@
-import assign from 'lodash/object/assign';
+import { assign } from 'lodash';
 import inherits from 'inherits';
 import ElementFactory from 'bpmn-js/lib/features/modeling/ElementFactory';
-import LabelUtil from 'bpmn-js/lib/util/LabelUtil';
+import {DEFAULT_LABEL_SIZE} from 'bpmn-js/lib/util/LabelUtil';
 
 
 /**
  * A custom factory that knows how to create BPMN _and_ custom elements.
  */
-function CustomElementFactory(bpmnFactory, moddle, translate) {
+export default function CustomElementFactory(bpmnFactory, moddle, translate) {
   ElementFactory.call(this, bpmnFactory, moddle, translate);
 
-  /**
-   * Create a diagram-js element with the given type (any of shape, connection, label).
-   *
-   * @param  {String} elementType
-   * @param  {Object} attrs
-   *
-   * @return {djs.model.Base}
-   */
   this.create = function (elementType, attrs) {
     if (elementType === 'label') {
-      return this.baseCreate(elementType, assign({ type: 'label' }, LabelUtil.DEFAULT_LABEL_SIZE, attrs));
+      return this.baseCreate(elementType, assign({ type: 'label' }, DEFAULT_LABEL_SIZE, attrs));
     }
 
     const element = this.createBpmnElement(elementType, attrs);
@@ -41,5 +33,3 @@ function CustomElementFactory(bpmnFactory, moddle, translate) {
 }
 
 inherits(CustomElementFactory, ElementFactory);
-
-module.exports = CustomElementFactory;

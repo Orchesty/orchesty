@@ -17,6 +17,7 @@ use Hanaboso\Utils\Date\DateTimeUtils;
 use Hanaboso\Utils\Exception\DateTimeException;
 use Hanaboso\Utils\String\Json;
 use JK\Utils\CzechHolidays;
+use JsonException;
 
 /**
  * Class PagerDutyConnector
@@ -31,7 +32,7 @@ final class PagerDutyConnector extends ConnectorAbstract
     /**
      * @var CurlManagerInterface
      */
-    private $curlManager;
+    private CurlManagerInterface $curlManager;
 
     /**
      * PagerDutyConnector constructor.
@@ -58,6 +59,7 @@ final class PagerDutyConnector extends ConnectorAbstract
      * @throws CurlException
      * @throws ConnectorException
      * @throws DateTimeException
+     * @throws JsonException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
@@ -172,6 +174,7 @@ final class PagerDutyConnector extends ConnectorAbstract
      *
      * @return Uri
      * @throws DateTimeException
+     * @throws JsonException
      */
     private function getUrl(ProcessDto $dto): Uri
     {

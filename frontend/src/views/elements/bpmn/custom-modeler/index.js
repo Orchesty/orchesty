@@ -2,14 +2,25 @@ import Modeler from 'bpmn-js/lib/Modeler';
 import inherits from 'inherits';
 
 import PropertiesPanelModule from 'bpmn-js-properties-panel';
-import PropertiesProviderModule from './PropertiesPanel';
+import PropertiesProviderModule from './PropertiesPanel/PropertiesProvider';
 import PipesModdleDescriptor from './descriptors/pipes.json';
+import CustomContextPadProvider from "./customModules/CustomContextPadProvider";
+import CustomElementFactory from "./customModules/CustomElementFactory";
+import CustomRenderer from "./customModules/CustomRenderer";
+import CustomPalette from "./customModules/CustomPalette";
+import TouchInteractionEvents from "diagram-js/lib/features/touch/TouchInteractionEvents";
 
-function CustomModeler(options) {
+export default function CustomModeler(options) {
   options.additionalModules = [
     ...options.additionalModules || [],
     PropertiesPanelModule,
-    PropertiesProviderModule,
+    { __init__: [ 'propertiesProvider', 'customRenderer', 'contextPadProvider', 'elementFactory', 'paletteProvider', 'touchInteractionEvents' ]},
+    {propertiesProvider: ['type', PropertiesProviderModule]},
+    {customRenderer: ['type', CustomRenderer]},
+    {contextPadProvider: ['type', CustomContextPadProvider]},
+    {elementFactory: ['type', CustomElementFactory]},
+    {paletteProvider: ['type', CustomPalette]},
+    {touchInteractionEvents: [ 'type', TouchInteractionEvents ],},
   ];
 
   options.moddleExtensions = {
@@ -20,12 +31,3 @@ function CustomModeler(options) {
 }
 
 inherits(CustomModeler, Modeler);
-
-CustomModeler.prototype._modules = [].concat(
-  CustomModeler.prototype._modules,
-  [
-    require('./customModules'),
-  ],
-);
-
-module.exports = CustomModeler;

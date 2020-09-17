@@ -16,6 +16,7 @@ use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessEventNotSupportedTrait;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\String\Json;
+use JsonException;
 
 /**
  * Class NutshellCreateContactConnector
@@ -65,6 +66,7 @@ final class NutshellCreateContactConnector extends ConnectorAbstract
      * @throws CurlException
      * @throws PipesFrameworkException
      * @throws ConnectorException
+     * @throws JsonException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {

@@ -24,12 +24,12 @@ final class FilterStockExchange extends CustomNodeAbstract implements LoggerAwar
     /**
      * @var string
      */
-    private $key;
+    private string $key;
 
     /**
      * @var LoggerInterface
      */
-    private $logger;
+    private LoggerInterface $logger;
 
     /**
      * FilterStockExchange constructor.

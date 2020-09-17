@@ -8,6 +8,7 @@ use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\S3Application;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
+use JsonException;
 
 /**
  * Class S3DeleteObjectConnector
@@ -24,6 +25,7 @@ final class S3DeleteObjectConnector extends S3ObjectConnectorAbstract
      * @throws ConnectorException
      * @throws OnRepeatException
      * @throws ApplicationInstallException
+     * @throws JsonException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {

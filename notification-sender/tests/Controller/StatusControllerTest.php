@@ -25,6 +25,8 @@ final class StatusControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\NotificationSender\Controller\StatusController::getStatusAction
+     *
+     * @throws Exception
      */
     public function testGetStatus(): void
     {

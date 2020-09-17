@@ -11,6 +11,7 @@ use Hanaboso\CommonsBundle\Database\Traits\Document\UpdatedTrait;
 use Hanaboso\CommonsBundle\Enum\NotificationEventEnum;
 use Hanaboso\Utils\Date\DateTimeUtils;
 use Hanaboso\Utils\Exception\DateTimeException;
+use Hanaboso\Utils\Exception\EnumException;
 
 /**
  * Class NotificationSettings
@@ -124,6 +125,7 @@ class NotificationSettings
      * @param mixed[] $events
      *
      * @return NotificationSettings
+     * @throws EnumException
      */
     public function setEvents(array $events): NotificationSettings
     {

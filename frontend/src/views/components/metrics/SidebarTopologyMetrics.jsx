@@ -5,10 +5,19 @@ import * as metricsActions from 'actions/metricsActions';
 import StateComponent from 'wrappers/StateComponent';
 
 import './SidebarTopologyMetrics.less';
+import prettyMilliseconds from "pretty-ms";
 
 class SidebarTopologyMetrics extends React.Component {
   constructor(props, context) {
     super(props, context);
+  }
+
+  _humanizeDuration(time) {
+    if (time === "n/a") {
+      return time;
+    }
+
+    return prettyMilliseconds(Number(time), {keepDecimalsOnWholeSeconds: true});
   }
 
   render() {
@@ -21,9 +30,9 @@ class SidebarTopologyMetrics extends React.Component {
           <div className={'sub-count' + (data.process.errors > 0 ? ' red' : '')}><span className="count_bottom">Failed: {data.process.errors}</span></div>
         </div>
         <div className="metric-item">
-          <span className="count_top">Average Process Time [ms]</span>
-          <div className="count">{data.process_time.avg}</div>
-          <div className="sub-count"><span className="count_bottom">Min: {data.process_time.min}</span> | <span className="count_bottom">Max: {data.process_time.max}</span></div>
+          <span className="count_top">Average Process Time</span>
+          <div className="count">{this._humanizeDuration(data.process_time.avg)}</div>
+          <div className="sub-count"><span className="count_bottom">Min: {this._humanizeDuration(data.process_time.min)}</span> | <span className="count_bottom">Max: {this._humanizeDuration(data.process_time.max)}</span></div>
         </div>
       </div>
     );

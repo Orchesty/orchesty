@@ -11,6 +11,7 @@ use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\SuccessMessage;
 use Hanaboso\Utils\Date\DateTimeUtils;
 use Hanaboso\Utils\Exception\DateTimeException;
 use Hanaboso\Utils\String\Json;
+use JsonException;
 
 /**
  * Class SplitFileBatch
@@ -28,6 +29,7 @@ final class SplitFileBatch extends CustomNodeAbstract implements BatchInterface
      *
      * @return PromiseInterface
      * @throws DateTimeException
+     * @throws JsonException
      */
     public function processBatch(ProcessDto $dto, callable $callbackItem): PromiseInterface
     {

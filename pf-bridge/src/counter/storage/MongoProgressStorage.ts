@@ -15,11 +15,11 @@ interface IProcessMessage {
     created: Date;
     duration: number;
     followers: number;
-    startedAt: number;
+    startedAt: Date;
     status: string;
     topologyId: string;
     topologyName: string;
-    finishedAt?: number;
+    finishedAt?: Date;
     nodes?: IPNodeProcess[];
 }
 
@@ -74,14 +74,14 @@ export class MongoProgressStorage {
             created: new Date(),
             duration: duration,
             followers: cm.getFollowing() * cm.getMultiplier(),
-            startedAt: cm.getCreatedTime(),
+            startedAt: new Date(cm.getCreatedTime()),
             status: status ?? "IP",
             topologyId: cm.getTopologyId(),
             topologyName: cm.getTopologyName(),
         };
 
         if (end) {
-            document.finishedAt = end;
+            document.finishedAt = new Date(end);
         }
 
         const filter = {correlationId: document.correlationId, topologyId: document.topologyId};
