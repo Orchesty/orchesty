@@ -1,6 +1,6 @@
-import assign from 'lodash/object/assign';
+import { assign } from 'lodash';
 
-function PaletteProvider(palette, create, elementFactory, spaceTool, lassoTool, handTool, globalConnect, translate) {
+export default function PaletteProvider(palette, create, elementFactory, spaceTool, lassoTool, handTool, globalConnect, translate) {
   this._palette = palette;
   this._create = create;
   this._elementFactory = elementFactory;
@@ -12,8 +12,6 @@ function PaletteProvider(palette, create, elementFactory, spaceTool, lassoTool, 
 
   palette.registerProvider(this);
 }
-
-module.exports = PaletteProvider;
 
 PaletteProvider.$inject = [
   'palette',

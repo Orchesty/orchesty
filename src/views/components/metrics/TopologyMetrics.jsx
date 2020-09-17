@@ -4,10 +4,19 @@ import {connect} from 'react-redux';
 import Panel from 'rootApp/views/wrappers/Panel';
 import MetricsDateRangeHeader from 'rootApp/views/components/metrics/MetricsDateRangeHeader';
 import getTopologyState from 'rootApp/utils/getTopologyState';
+import prettyMilliseconds from "pretty-ms";
 
 class TopologyMetrics extends React.Component {
   constructor(props) {
     super(props);
+  }
+
+  _humanizeDuration(time) {
+    if (time === "n/a") {
+      return time;
+    }
+
+    return prettyMilliseconds(Number(time), {keepDecimalsOnWholeSeconds: true});
   }
 
   render() {
@@ -27,9 +36,9 @@ class TopologyMetrics extends React.Component {
           <span className={'count_bottom ' + errorColor}>Failed: {data.process.errors}</span>
         </div>
         <div className="tile_stats_count">
-          <span className="count_top">Average Process Time [ms]</span>
-          <div className="count">{data.process_time.avg}</div>
-          <span className="count_bottom blue">Min: {data.process_time.min}</span> | <span className="count_bottom blue">Max: {data.process_time.max}</span>
+          <span className="count_top">Average Process Time</span>
+          <div className="count">{this._humanizeDuration(data.process_time.avg)}</div>
+          <span className="count_bottom blue">Min: {this._humanizeDuration(data.process_time.min)}</span> | <span className="count_bottom blue">Max: {this._humanizeDuration(data.process_time.max)}</span>
         </div>
       </div>
     );

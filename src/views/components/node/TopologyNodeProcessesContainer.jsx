@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
 import * as topologyActions from "../../../actions/topologyActions";
+import moment from "moment";
+import prettyMilliseconds from "pretty-ms";
 
 class TopologyNodeProcessesContainer extends React.Component {
   constructor(props) {
@@ -29,7 +31,7 @@ class TopologyNodeProcessesContainer extends React.Component {
   _renderHead() {
     return (
       <tr>
-        <th className="col-md-2">CorrelationId</th>
+        <th className="col-md-2">Correlation Id</th>
         <th className="col-md-2">Started</th>
         <th className="col-md-2">Finished</th>
         <th className="col-md-2">Duration (ms)</th>
@@ -44,18 +46,17 @@ class TopologyNodeProcessesContainer extends React.Component {
     const {items} = this.props;
 
     return items && !items.empty ? items.map(item => {
-      console.log(item);
       return (
         <tr key={item.correlationId}>
           <td className="col-md-2">{item.correlationId}</td>
-          <td className="col-md-2">{item.started}</td>
-          <td className="col-md-2">{item.finished}</td>
-          <td className="col-md-2">{item.duration}</td>
+          <td className="col-md-2">{moment(item.started).format("DD. MM. YYYY HH:mm:ss")}</td>
+          <td className="col-md-2">{item.finished ? moment(item.finished).format("DD. MM. YYYY HH:mm:ss") : ""}</td>
+          <td className="col-md-2">{prettyMilliseconds(item.duration)}</td>
           <td className="col-md-1">{this._mapStatuses(item.status)}</td>
           <td className="col-md-1">{item.nodesProcessed}/{item.nodesTotal}</td>
           <td className="col-md-2">
             {item.nodes.map((node) => {
-              return (<p key={node.processId}>{`${node.name} - ${this._mapStatuses(node.status)}`}</p>)
+              return (<p key={node.id}>{`${node.name} - ${this._mapStatuses(node.status)}`}</p>)
             })}
           </td>
         </tr>

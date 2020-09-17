@@ -8,10 +8,19 @@ import StateComponent from 'wrappers/StateComponent';
 
 import './SidebarNodeMetrics.less';
 import {stateType} from 'rootApp/types';
+import prettyMilliseconds from "pretty-ms";
 
 class SidebarNodeMetrics extends React.Component {
   constructor(props, context) {
     super(props, context);
+  }
+
+  _humanizeDuration(time) {
+    if (time === "n/a") {
+      return time;
+    }
+
+    return prettyMilliseconds(Number(time), {keepDecimalsOnWholeSeconds: true});
   }
 
   render() {
@@ -29,14 +38,14 @@ class SidebarNodeMetrics extends React.Component {
           <div className="sub-count"><span className="count_bottom">Max: {data.queue_depth.max}</span></div>
         </div>
         <div className="metric-item">
-          <span className="count_top">Waiting Time [ms]:</span>
-          <div className="count">{data.waiting_time.avg}</div>
-          <div className="sub-count"><span className="count_bottom">Min: {data.waiting_time.min}</span> | <span className="count_bottom">Max: {data.waiting_time.max}</span></div>
+          <span className="count_top">Waiting Time:</span>
+          <div className="count">{this._humanizeDuration(data.waiting_time.avg)}</div>
+          <div className="sub-count"><span className="count_bottom">Min: {this._humanizeDuration(data.waiting_time.min)}</span> | <span className="count_bottom">Max: {this._humanizeDuration(data.waiting_time.max)}</span></div>
         </div>
         <div className="metric-item">
-          <span className="count_top">Process Time [ms]:</span>
-          <div className="count">{data.process_time.avg}</div>
-          <div className="sub-count"><span className="count_bottom">Min: {data.process_time.min}</span> | <span className="count_bottom">Max: {data.process_time.max}</span></div>
+          <span className="count_top">Process Time:</span>
+          <div className="count">{this._humanizeDuration(data.process_time.avg)}</div>
+          <div className="sub-count"><span className="count_bottom">Min: {this._humanizeDuration(data.process_time.min)}</span> | <span className="count_bottom">Max: {this._humanizeDuration(data.process_time.max)}</span></div>
         </div>
         <div className="metric-item">
           <span className="count_top">CPU Time:</span>
@@ -44,9 +53,9 @@ class SidebarNodeMetrics extends React.Component {
           <div className="sub-count"><span className="count_bottom">Min: {data.cpu_time.min}</span> | <span className="count_bottom">Max: {data.cpu_time.max}</span></div>
         </div>
         <div className="metric-item">
-          <span className="count_top">Request Time [ms]:</span>
-          <div className="count">{data.request_time.avg}</div>
-          <div className="sub-count"><span className="count_bottom">Min: {data.request_time.min}</span> | <span className="count_bottom">Max: {data.request_time.max}</span></div>
+          <span className="count_top">Request Time:</span>
+          <div className="count">{this._humanizeDuration(data.request_time.avg)}</div>
+          <div className="sub-count"><span className="count_bottom">Min: {this._humanizeDuration(data.request_time.min)}</span> | <span className="count_bottom">Max: {this._humanizeDuration(data.request_time.max)}</span></div>
         </div>
       </div>
     );

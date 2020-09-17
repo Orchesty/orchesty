@@ -62,7 +62,7 @@ function createGeneralTabGroups(element, bpmnFactory, elementRegistry, translate
   ];
 }
 
-function PipesPropertiesProvider(eventBus, bpmnFactory, elementRegistry, translate) {
+export default function PipesPropertiesProvider(eventBus, bpmnFactory, elementRegistry, translate) {
   PropertiesActivator.call(this, eventBus);
 
   this.getTabs = function (element) {
@@ -81,5 +81,3 @@ function PipesPropertiesProvider(eventBus, bpmnFactory, elementRegistry, transla
 PipesPropertiesProvider.$inject = ['eventBus', 'bpmnFactory', 'elementRegistry', 'translate'];
 
 inherits(PipesPropertiesProvider, PropertiesActivator);
-
-module.exports = PipesPropertiesProvider;

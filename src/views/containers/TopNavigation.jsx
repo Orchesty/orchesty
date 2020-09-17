@@ -44,7 +44,7 @@ function mapStateToProps(state){
 
 function mapActionsToProps(dispatch){
   return {
-    toggleMainMenu: id => dispatch(applicationActions.toggleMainMenu()),
+    // toggleMainMenu: id => dispatch(applicationActions.toggleMainMenu()),
     openMainPage: () => dispatch(applicationActions.openPage(config.params.mainPage))
   }
 }

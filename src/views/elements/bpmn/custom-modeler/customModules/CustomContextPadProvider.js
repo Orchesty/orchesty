@@ -1,13 +1,14 @@
 import inherits from 'inherits';
 import ContextPadProvider from 'bpmn-js/lib/features/context-pad/ContextPadProvider';
-import bind from 'lodash/function/bind';
+import { bind } from 'lodash';
 import { is } from 'bpmn-js/lib/util/ModelUtil';
 
-function CustomContextPadProvider(
-  eventBus, contextPad, modeling, elementFactory, connect,
-  create, popupMenu, canvas, rules, translate,
+export default function CustomContextPadProvider(
+  config, injector, eventBus, contextPad, modeling,
+  elementFactory, connect, create, popupMenu,
+  canvas, rules, translate
 ) {
-  ContextPadProvider.call(this, eventBus, contextPad, modeling, elementFactory, connect, create, popupMenu, canvas, rules, translate);
+  ContextPadProvider.call(this, config, injector, eventBus, contextPad, modeling, elementFactory, connect, create, popupMenu, canvas, rules, translate);
 
   const cached = bind(this.getContextPadEntries, this);
 
@@ -32,6 +33,8 @@ function CustomContextPadProvider(
 inherits(CustomContextPadProvider, ContextPadProvider);
 
 CustomContextPadProvider.$inject = [
+  'config',
+  'injector',
   'eventBus',
   'contextPad',
   'modeling',
@@ -43,5 +46,3 @@ CustomContextPadProvider.$inject = [
   'rules',
   'translate',
 ];
-
-module.exports = CustomContextPadProvider;

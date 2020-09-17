@@ -19,7 +19,7 @@ export default function (group, element, translate) {
     },
     validate(element, values) {
       const bo = getBusinessObject(element);
-      const idError = utils.isIdValid(bo, values.id);
+      const idError = utils.isIdValid(bo, values.id, translate);
 
       return idError ? { id: idError } : {};
     },

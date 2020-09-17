@@ -38,7 +38,18 @@ class DateRangeInput extends React.Component {
     const till = moment(value.till);
     const valueStr = typeof value == 'object' ? `${since.format('DD.MM.YYYY HH:mm:ss')} - ${till.format('DD.MM.YYYY HH:mm:ss')}` : value;
     return (
-      <DateRangePicker containerStyles={{display: 'block'}} ranges={rangesMetrics} autoUpdateInput={false} locale={{format: 'DD.MM.YYYY HH:mm:ss'}}  timePicker24Hour timePicker timePickerSeconds opens="left" onApply={this.datePickerChanged} startDate={value ? since : undefined} endDate={value ? till : undefined}>
+      <DateRangePicker
+        containerStyles={{display: 'block'}}
+        ranges={rangesMetrics}
+        autoUpdateInput={false}
+        locale={{format: 'DD.MM.YYYY HH:mm:ss'}}
+        timePicker24Hour
+        timePicker
+        timePickerSeconds
+        opens="left"
+        onApply={this.datePickerChanged}
+        startDate={value ? since : undefined}
+        endDate={value ? till : undefined}>
         <input type="text" className={'form-control' + (touched && error ? ' parsley-error' : '')} onChange={()=>{}} value={valueStr} {...input} readOnly={readOnly}/>
       </DateRangePicker>
     );

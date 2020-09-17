@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Panel from 'rootApp/views/wrappers/Panel';
 import {connect} from 'react-redux';
+import prettyMilliseconds from "pretty-ms";
 
 import './NodeMetrics.less';
 import {menuItemType} from 'rootApp/types';
@@ -14,20 +15,20 @@ class NodeMetrics extends React.Component {
     super(props);
   }
 
-  UNSAFE_componentWillMount(){
+  UNSAFE_componentWillMount() {
     this.sendActions(this.props);
   }
 
-  UNSAFE_componentWillReceiveProps(props){
-    if (props.tests !== this.props.tests || props.node !== this.props.node){
+  UNSAFE_componentWillReceiveProps(props) {
+    if (props.tests !== this.props.tests || props.node !== this.props.node) {
       this.sendActions(props);
     }
   }
 
-  sendActions(props){
+  sendActions(props) {
     const {node, setActions, metrics, tests, topology, runNode, updateNode} = props;
     const actions = [];
-    if (metrics.data.process.errors){
+    if (metrics.data.process.errors) {
       actions.push({
         type: menuItemType.BADGE,
         icon: 'bg-red white',
@@ -35,15 +36,15 @@ class NodeMetrics extends React.Component {
       });
     }
     const test = tests[node._id];
-    if (test){
+    if (test) {
       actions.push({
         type: menuItemType.TEXT,
         icon: test.code === 200 ? 'fa fa-check green' : 'fa fa-warning orange',
         caption: test.message
       });
     }
-    if (node.handler === 'event'){
-      if (topology.enabled){
+    if (node.handler === 'event') {
+      if (topology.enabled) {
         actions.push({
           type: menuItemType.ACTION,
           icon: 'fa fa-play',
@@ -64,13 +65,21 @@ class NodeMetrics extends React.Component {
     setActions(actions);
   }
 
+  _humanizeDuration(time) {
+    if (time === "n/a") {
+      return time;
+    }
+
+    return prettyMilliseconds(Number(time), {keepDecimalsOnWholeSeconds: true});
+  }
+
   render() {
     const {metrics: {data}} = this.props;
 
     let errorColor = 'green';
 
     if (data.process.errors > 0) {
-	    errorColor = 'red';
+      errorColor = 'red';
     }
 
     return (
@@ -86,24 +95,28 @@ class NodeMetrics extends React.Component {
           <span className="count_bottom blue">Max: {data.queue_depth.max}</span>
         </div>
         <div className="tile_stats_count">
-          <span className="count_top">Waiting Time [ms]</span>
-          <div className="count">{data.waiting_time.avg}</div>
-          <span className="count_bottom blue">Min: {data.waiting_time.min}</span> | <span className="count_bottom blue">Max: {data.waiting_time.max}</span>
+          <span className="count_top">Waiting Time</span>
+          <div className="count">{this._humanizeDuration(data.waiting_time.avg)}</div>
+          <span className="count_bottom blue">Min: {this._humanizeDuration(data.waiting_time.min)}</span> | <span
+          className="count_bottom blue">Max: {this._humanizeDuration(data.waiting_time.max)}</span>
         </div>
         <div className="tile_stats_count">
-          <span className="count_top">Process Time [ms]</span>
-          <div className="count">{data.process_time.avg}</div>
-          <span className="count_bottom blue">Min: {data.process_time.min}</span> | <span className="count_bottom blue">Max: {data.process_time.max}</span>
+          <span className="count_top">Process Time</span>
+          <div className="count">{this._humanizeDuration(data.process_time.avg)}</div>
+          <span className="count_bottom blue">Min: {this._humanizeDuration(data.process_time.min)}</span> | <span
+          className="count_bottom blue">Max: {this._humanizeDuration(data.process_time.max)}</span>
         </div>
         <div className="tile_stats_count">
           <span className="count_top">CPU Time</span>
           <div className="count">{data.cpu_time.avg}</div>
-          <span className="count_bottom blue">Min: {data.cpu_time.min}</span> | <span className="count_bottom blue">Max: {data.cpu_time.max}</span>
+          <span className="count_bottom blue">Min: {data.cpu_time.min}</span> | <span
+          className="count_bottom blue">Max: {data.cpu_time.max}</span>
         </div>
         <div className="tile_stats_count">
-          <span className="count_top">Request Time [ms]</span>
-          <div className="count">{data.request_time.avg}</div>
-          <span className="count_bottom blue">Min: {data.request_time.min}</span> | <span className="count_bottom blue">Max: {data.request_time.max}</span>
+          <span className="count_top">Request Time</span>
+          <div className="count">{this._humanizeDuration(data.request_time.avg)}</div>
+          <span className="count_bottom blue">Min: {this._humanizeDuration(data.request_time.min)}</span> | <span
+          className="count_bottom blue">Max: {this._humanizeDuration(data.request_time.max)}</span>
         </div>
       </div>
     );
@@ -119,7 +132,7 @@ NodeMetrics.propTypes = {
   updateNode: PropTypes.func
 };
 
-function mapStateToProps(state, ownProps){
+function mapStateToProps(state, ownProps) {
   const {node, metrics, topology} = state;
   const key = ownProps.metricsRange ? `${ownProps.nodeId}[${ownProps.metricsRange.since}-${ownProps.metricsRange.till}]` : ownProps.nodeId;
   const nodeElement = node.elements[ownProps.nodeId];
@@ -135,12 +148,17 @@ function mapStateToProps(state, ownProps){
   }
 }
 
-function mapActionsToProps(dispatch, { nodeId, nodeName, nodeType, topologyId, topologyName }){
+function mapActionsToProps(dispatch, {nodeId, nodeName, nodeType, topologyId, topologyName}) {
   return {
     updateNode: data => dispatch(nodeActions.nodeUpdate(nodeId, data)),
-    runNode:() => dispatch(applicationActions.openModal('node_run', { nodeId, nodeName, nodeType, topologyId, topologyName })),
+    runNode: () => dispatch(applicationActions.openModal('node_run', {
+      nodeId,
+      nodeName,
+      nodeType,
+      topologyId,
+      topologyName
+    })),
   }
 }
-
 
 export default connect(mapStateToProps, mapActionsToProps)(Panel(StateComponent(NodeMetrics)));

@@ -1,11 +1,10 @@
 const path = require('path');
 const fs = require('fs');
-const webpack = require('webpack');
-const merge = require('webpack-merge');
+const {merge} = require('webpack-merge');
 const common = require('./webpack.config.common.js');
 
 let configPath = path.join(__dirname, 'src', 'config', 'local');
-if (!fs.existsSync(configPath)){
+if (!fs.existsSync(configPath)) {
   configPath = path.join(__dirname, 'src', 'config', 'dev');
 }
 
@@ -24,21 +23,24 @@ module.exports = merge(common, {
     filename: 'bundle.js',
     publicPath: '/ui/'
   },
-  plugins: [
-    new webpack.NamedModulesPlugin()
-  ],
   resolve: {
     alias: {
       'config-env': configPath,
-      'react-dom': '@hot-loader/react-dom'
+      'react-dom': '@hot-loader/react-dom',
     }
   },
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.jsx?$/,
-        exclude: /node_modules/,
-        loaders: ['react-hot-loader/webpack', 'babel-loader?presets[]=react,presets[]=es2015,presets[]=es2016,presets[]=es2017']
+        exclude: /(node_modules|bower_components)/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-react'],
+            plugins: ['react-hot-loader/babel', '@babel/plugin-proposal-object-rest-spread']
+          }
+        }
       }
     ]
   },

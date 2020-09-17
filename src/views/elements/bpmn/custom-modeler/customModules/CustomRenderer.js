@@ -1,18 +1,16 @@
 import inherits from 'inherits';
 import BaseRenderer from 'diagram-js/lib/draw/BaseRenderer';
 import BpmnRenderer from 'bpmn-js/lib/draw/BpmnRenderer';
-import { is } from 'bpmn-js/lib/util/ModelUtil';
-import svgAppend from 'tiny-svg/lib/append';
-import svgAttr from 'tiny-svg/lib/attr';
-import svgCreate from 'tiny-svg/lib/create';
+import {is} from 'bpmn-js/lib/util/ModelUtil';
+import {append, attr, create} from 'tiny-svg';
 
 /**
  * A renderer that knows how to render custom elements.
  */
-function CustomRenderer(eventBus, styles, pathMap, canvas) {
+export default function CustomRenderer(config, eventBus, styles, pathMap, canvas, textRenderer) {
   BaseRenderer.call(this, eventBus, 1500);
 
-  this.bpmnRenderer = new BpmnRenderer(eventBus, styles, pathMap, canvas);
+  this.bpmnRenderer = new BpmnRenderer(config, eventBus, styles, pathMap, canvas, textRenderer, 500);
   this.computeStyle = styles.computeStyle;
   this.pathMap = pathMap;
 
@@ -31,17 +29,22 @@ function CustomRenderer(eventBus, styles, pathMap, canvas) {
 
     switch (pipesType) {
       case 'cron':
-        const timerCircle = this.bpmnRenderer.handlers['bpmn:Event'](parentGfx, element);
-        this.bpmnRenderer.handlers['bpmn:TimerEventDefinition'](parentGfx, element);
+        const timerCircle = this.bpmnRenderer.handlers['bpmn:Event'](parentGfx, element, {});
+        this.bpmnRenderer.handlers['bpmn:TimerEventDefinition'](parentGfx, element,);
         return timerCircle;
 
+      case 'start':
+        const start = this.bpmnRenderer.handlers['bpmn:Event'](parentGfx, element, {});
+        this.bpmnRenderer.handlers['bpmn:StartEvent'](parentGfx, element,);
+        return start;
+
       case 'webhook':
-        const webhookCircle = this.bpmnRenderer.handlers['bpmn:Event'](parentGfx, element);
+        const webhookCircle = this.bpmnRenderer.handlers['bpmn:Event'](parentGfx, element, {});
         this.bpmnRenderer.handlers['bpmn:SignalEventDefinition'](parentGfx, element);
         return webhookCircle;
 
       case 'signal':
-        const signalCircle = this.bpmnRenderer.handlers['bpmn:Event'](parentGfx, element);
+        const signalCircle = this.bpmnRenderer.handlers['bpmn:Event'](parentGfx, element, {});
         this.bpmnRenderer.handlers['bpmn:EscalationEventDefinition'](parentGfx, element);
         return signalCircle;
 
@@ -49,7 +52,7 @@ function CustomRenderer(eventBus, styles, pathMap, canvas) {
         const splitterTask = this.bpmnRenderer.handlers['bpmn:Task'](parentGfx, element);
 
         const splitterDathData = this.pathMap.getScaledPath('PIPES_SPLITTER', {
-          abspos: { x: 0, y: 0 },
+          abspos: {x: 0, y: 0},
         });
 
         this.drawPath(parentGfx, splitterDathData, {
@@ -64,7 +67,7 @@ function CustomRenderer(eventBus, styles, pathMap, canvas) {
         const batchTask = this.bpmnRenderer.handlers['bpmn:Task'](parentGfx, element);
 
         const batchPathData = this.pathMap.getScaledPath('PIPES_BATCH', {
-          abspos: { x: 0, y: 0 },
+          abspos: {x: 0, y: 0},
         });
 
         this.drawPath(parentGfx, batchPathData, {
@@ -79,7 +82,7 @@ function CustomRenderer(eventBus, styles, pathMap, canvas) {
         const batchConnectorTask = this.bpmnRenderer.handlers['bpmn:ServiceTask'](parentGfx, element);
 
         const batchConnectorPathData = this.pathMap.getScaledPath('PIPES_REPEATER', {
-          abspos: { x: 0, y: 0 },
+          abspos: {x: 0, y: 0},
         });
 
         this.drawPath(parentGfx, batchConnectorPathData, {
@@ -94,7 +97,7 @@ function CustomRenderer(eventBus, styles, pathMap, canvas) {
         const resequencerTask = this.bpmnRenderer.handlers['bpmn:Task'](parentGfx, element);
 
         const resequencerTaskPathData1 = this.pathMap.getScaledPath('PIPES_RESEQUENCER_1', {
-          abspos: { x: 0, y: 0 },
+          abspos: {x: 0, y: 0},
         });
 
         this.drawPath(parentGfx, resequencerTaskPathData1, {
@@ -104,7 +107,7 @@ function CustomRenderer(eventBus, styles, pathMap, canvas) {
         });
 
         const resequencerTaskPathData2 = this.pathMap.getScaledPath('PIPES_RESEQUENCER_2', {
-          abspos: { x: 0, y: 0 },
+          abspos: {x: 0, y: 0},
         });
 
         this.drawPath(parentGfx, resequencerTaskPathData2, {
@@ -114,7 +117,7 @@ function CustomRenderer(eventBus, styles, pathMap, canvas) {
         });
 
         const resequencerTaskPathData3 = this.pathMap.getScaledPath('PIPES_RESEQUENCER_3', {
-          abspos: { x: 0, y: 0 },
+          abspos: {x: 0, y: 0},
         });
 
         this.drawPath(parentGfx, resequencerTaskPathData3, {
@@ -129,7 +132,7 @@ function CustomRenderer(eventBus, styles, pathMap, canvas) {
         const debugTask = this.bpmnRenderer.handlers['bpmn:Task'](parentGfx, element);
 
         const debugTaskPathData1 = this.pathMap.getScaledPath('PIPES_DEBUG_1', {
-          abspos: { x: 0, y: 0 },
+          abspos: {x: 0, y: 0},
         });
 
         this.drawPath(parentGfx, debugTaskPathData1, {
@@ -139,7 +142,7 @@ function CustomRenderer(eventBus, styles, pathMap, canvas) {
         });
 
         const debugTaskPathData2 = this.pathMap.getScaledPath('PIPES_DEBUG_2', {
-          abspos: { x: 0, y: 0 },
+          abspos: {x: 0, y: 0},
         });
 
         this.drawPath(parentGfx, debugTaskPathData2, {
@@ -149,7 +152,7 @@ function CustomRenderer(eventBus, styles, pathMap, canvas) {
         });
 
         const debugTaskPathData3 = this.pathMap.getScaledPath('PIPES_DEBUG_3', {
-          abspos: { x: 0, y: 0 },
+          abspos: {x: 0, y: 0},
         });
 
         this.drawPath(parentGfx, debugTaskPathData3, {
@@ -170,8 +173,8 @@ function CustomRenderer(eventBus, styles, pathMap, canvas) {
       case 'table_parser':
         return this.bpmnRenderer.handlers['bpmn:ScriptTask'](parentGfx, element);
 
-	    case 'user':
-		    return this.bpmnRenderer.handlers['bpmn:UserTask'](parentGfx, element);
+      case 'user':
+        return this.bpmnRenderer.handlers['bpmn:UserTask'](parentGfx, element);
     }
   };
 
@@ -181,12 +184,10 @@ function CustomRenderer(eventBus, styles, pathMap, canvas) {
       stroke: 'black',
     });
 
-    const path = svgCreate('path');
-
-    svgAttr(path, { d });
-    svgAttr(path, attrs);
-
-    svgAppend(parentGfx, path);
+    const path = create('path');
+    attr(path, {d});
+    attr(path, attrs);
+    append(parentGfx, path);
 
     return path;
   };
@@ -228,4 +229,6 @@ function CustomRenderer(eventBus, styles, pathMap, canvas) {
 
 inherits(CustomRenderer, BaseRenderer);
 
-module.exports = CustomRenderer;
+CustomRenderer.$inject = [
+  'config', 'eventBus','styles', 'pathMap', 'canvas', 'textRenderer'
+];
