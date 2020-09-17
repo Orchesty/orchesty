@@ -8,19 +8,17 @@ import CustomContextPadProvider from "./customModules/CustomContextPadProvider";
 import CustomElementFactory from "./customModules/CustomElementFactory";
 import CustomRenderer from "./customModules/CustomRenderer";
 import CustomPalette from "./customModules/CustomPalette";
-import TouchInteractionEvents from "diagram-js/lib/features/touch/TouchInteractionEvents";
 
 export default function CustomModeler(options) {
   options.additionalModules = [
     ...options.additionalModules || [],
     PropertiesPanelModule,
-    { __init__: [ 'propertiesProvider', 'customRenderer', 'contextPadProvider', 'elementFactory', 'paletteProvider', 'touchInteractionEvents' ]},
+    {__init__: ['propertiesProvider', 'customRenderer', 'contextPadProvider', 'elementFactory', 'paletteProvider']},
     {propertiesProvider: ['type', PropertiesProviderModule]},
     {customRenderer: ['type', CustomRenderer]},
     {contextPadProvider: ['type', CustomContextPadProvider]},
     {elementFactory: ['type', CustomElementFactory]},
     {paletteProvider: ['type', CustomPalette]},
-    {touchInteractionEvents: [ 'type', TouchInteractionEvents ],},
   ];
 
   options.moddleExtensions = {
