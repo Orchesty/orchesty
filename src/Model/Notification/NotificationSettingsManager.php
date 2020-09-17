@@ -18,6 +18,7 @@ use Hanaboso\NotificationSender\Model\Notification\Sender\CurlSender;
 use Hanaboso\NotificationSender\Model\Notification\Sender\EmailSender;
 use Hanaboso\NotificationSender\Model\Notification\Sender\RabbitSender;
 use Hanaboso\NotificationSender\Repository\NotificationSettingsRepository;
+use Hanaboso\Utils\Exception\EnumException;
 use Symfony\Component\DependencyInjection\Argument\RewindableGenerator;
 use Throwable;
 
@@ -145,6 +146,7 @@ final class NotificationSettingsManager
      * @return mixed[]
      * @throws NotificationException
      * @throws MongoDBException
+     * @throws EnumException
      */
     public function saveSettings(string $id, array $data): array
     {
