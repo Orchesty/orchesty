@@ -48,8 +48,8 @@ final class TopologyProgressControllerTest extends ControllerTestCaseAbstract
             ->setCorrelationId('corr-id-1234')
             ->setStatus('OK')
             ->setFollowers(2)
-            ->setStartedAt(DateTimeUtils::getUtcDateTime('2010-10-10 10:10:10')->getTimestamp())
-            ->setFinishedAt(DateTimeUtils::getUtcDateTime('2010-10-10 10:10:10')->modify('+ 10 second')->getTimestamp())
+            ->setStartedAt(DateTimeUtils::getUtcDateTime('2010-10-10 10:10:10'))
+            ->setFinishedAt(DateTimeUtils::getUtcDateTime('2010-10-10 10:10:10')->modify('+ 10 second'))
             ->setDuration(10_000)
             ->addNode(
                 (new NodeProgress())

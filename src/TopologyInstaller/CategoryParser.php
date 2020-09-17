@@ -3,8 +3,6 @@
 namespace Hanaboso\PipesFramework\TopologyInstaller;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\LockException;
-use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\Persistence\ObjectRepository;
 use Hanaboso\CommonsBundle\Exception\CategoryException;
@@ -137,8 +135,6 @@ final class CategoryParser
      * @param TopologyFile $file
      *
      * @throws CategoryException
-     * @throws LockException
-     * @throws MappingException
      * @throws MongoDBException
      */
     public function classifyTopology(Topology $topology, TopologyFile $file): void
@@ -317,8 +313,6 @@ final class CategoryParser
      *
      * @return Category
      * @throws CategoryException
-     * @throws LockException
-     * @throws MappingException
      * @throws MongoDBException
      */
     private function createCategory(string $name, string $parent): Category

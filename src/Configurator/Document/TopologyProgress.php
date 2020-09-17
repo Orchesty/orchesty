@@ -2,6 +2,7 @@
 
 namespace Hanaboso\PipesFramework\Configurator\Document;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -63,18 +64,18 @@ class TopologyProgress
     private int $duration;
 
     /**
-     * @var int
+     * @var DateTime
      *
-     * @ODM\Field(type="integer")
+     * @ODM\Field(type="date")
      */
-    private int $startedAt;
+    private DateTime $startedAt;
 
     /**
-     * @var int|null
+     * @var DateTime|null
      *
-     * @ODM\Field(type="integer")
+     * @ODM\Field(type="date")
      */
-    private ?int $finishedAt = null;
+    private ?DateTime $finishedAt = NULL;
 
     /**
      * @var Collection<string, NodeProgress>
@@ -220,19 +221,19 @@ class TopologyProgress
     }
 
     /**
-     * @return int
+     * @return DateTime
      */
-    public function getStartedAt(): int
+    public function getStartedAt(): DateTime
     {
         return $this->startedAt;
     }
 
     /**
-     * @param int $startedAt
+     * @param DateTime $startedAt
      *
      * @return TopologyProgress
      */
-    public function setStartedAt(int $startedAt): TopologyProgress
+    public function setStartedAt(DateTime $startedAt): TopologyProgress
     {
         $this->startedAt = $startedAt;
 
@@ -240,19 +241,19 @@ class TopologyProgress
     }
 
     /**
-     * @return int|null
+     * @return DateTime|null
      */
-    public function getFinishedAt(): ?int
+    public function getFinishedAt(): ?DateTime
     {
         return $this->finishedAt;
     }
 
     /**
-     * @param int|null $finishedAt
+     * @param DateTime|null $finishedAt
      *
      * @return TopologyProgress
      */
-    public function setFinishedAt(?int $finishedAt): TopologyProgress
+    public function setFinishedAt(?DateTime $finishedAt): TopologyProgress
     {
         $this->finishedAt = $finishedAt;
 
@@ -284,9 +285,7 @@ class TopologyProgress
      */
     public function toArray(): array
     {
-        $finished = $this->finishedAt ?
-            DateTimeUtils::getUtcDateTimeFromTimeStamp($this->finishedAt)->format(DateTimeUtils::DATE_TIME) :
-            NULL;
+        $finished = $this->finishedAt ? $this->finishedAt->format(DateTimeUtils::DATE_TIME) : NULL;
         $count    = $this->nodes->count();
         $nodes    = [];
         foreach ($this->nodes as $node) {
@@ -303,9 +302,7 @@ class TopologyProgress
             'nodesRemaining' => $this->followers,
             'nodesTotal'     => $this->followers + $count,
             'nodes'          => $nodes,
-            'started'        => DateTimeUtils::getUtcDateTimeFromTimeStamp($this->startedAt)->format(
-                DateTimeUtils::DATE_TIME
-            ),
+            'started'        => $this->startedAt->format(DateTimeUtils::DATE_TIME),
             'finished'       => $finished,
         ];
     }

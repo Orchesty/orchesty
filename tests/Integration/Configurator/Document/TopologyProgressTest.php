@@ -52,7 +52,7 @@ final class TopologyProgressTest extends DatabaseTestCaseAbstract
      */
     public function testDocument(): void
     {
-        $t = DateTimeUtils::getUtcDateTime()->getTimestamp();
+        $t = DateTimeUtils::getUtcDateTime();
 
         $node = new NodeProgress();
         $node
@@ -98,14 +98,14 @@ final class TopologyProgressTest extends DatabaseTestCaseAbstract
                 'nodesProcessed' => 1,
                 'nodesRemaining' => 1,
                 'nodesTotal'     => 2,
-                'started'        => DateTimeUtils::getUtcDateTimeFromTimeStamp($t)->format(DateTimeUtils::DATE_TIME),
-                'finished'       => DateTimeUtils::getUtcDateTimeFromTimeStamp($t)->format(DateTimeUtils::DATE_TIME),
+                'started'        => $t->format(DateTimeUtils::DATE_TIME),
+                'finished'       => $t->format(DateTimeUtils::DATE_TIME),
                 'nodes'          => [
                     [
-                        'id'         => 'id',
-                        'name'       => 'name',
-                        'process_id' => 'p-id',
-                        'status'     => 'OK',
+                        'id'        => 'id',
+                        'name'      => 'name',
+                        'processId' => 'p-id',
+                        'status'    => 'OK',
                     ],
                 ],
             ],
