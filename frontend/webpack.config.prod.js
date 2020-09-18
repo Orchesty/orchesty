@@ -15,7 +15,6 @@ console.log('App config file:', configPath);
 
 module.exports = merge(common, {
     mode: "production",
-    devtool: 'source-map',
     entry: [
       '@babel/polyfill',
       './src/main_prod.jsx' // Your appʼs entry point
@@ -55,7 +54,6 @@ module.exports = merge(common, {
   },
     optimization: {
       minimize: true,
-      namedModules: true
     }
   }
 );
