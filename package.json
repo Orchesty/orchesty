@@ -80,7 +80,7 @@
     "react-hot-loader": "^4.12.21",
     "redux-devtools-extension": "^2.13.8",
     "style-loader": "^1.2.1",
-    "webpack": "^4.44.1",
+    "webpack": "^4.44.2",
     "webpack-cli": "^3.3.12",
     "webpack-dev-server": "^3.1.10",
     "webpack-merge": "^5.1.4"
