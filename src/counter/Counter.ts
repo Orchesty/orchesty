@@ -197,6 +197,7 @@ export default class Counter implements ICounter, IStoppable {
 
             // optimization: skip evaluating success messages with only 1 follower
             if (Counter.isSkippable(cm)) {
+                await this.progressStorage.upsertProgress(cm);
                 return Promise.resolve(true);
             }
 
