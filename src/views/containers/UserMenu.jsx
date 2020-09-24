@@ -19,11 +19,6 @@ class UserMenu extends React.Component {
         items: [
           {
             type: menuItemType.ACTION,
-            caption: 'Profile',
-            action: alert.bind(window, 'TODO')
-          },
-          {
-            type: menuItemType.ACTION,
             caption: 'Log Out',
             action: logout
           }
@@ -31,7 +26,7 @@ class UserMenu extends React.Component {
       };
       return (
         <div className="user-menu">
-          <ActionButton anchorTag item={menu} buttonClassName={buttonClassName} right />
+          <ActionButton anchorTag item={menu} buttonClassName={buttonClassName} right/>
         </div>
       );
     } else {
@@ -46,18 +41,17 @@ UserMenu.propTypes = {
   logout: PropTypes.func.isRequired
 };
 
-function mapStateToProps(state){
+function mapStateToProps(state) {
   const {auth} = state;
   return {
     user: auth.user
   }
 }
 
-function mapActionsToProps(dispatch){
+function mapActionsToProps(dispatch) {
   return {
     logout: () => dispatch(authActions.logout())
   }
 }
-
 
 export default connect(mapStateToProps, mapActionsToProps)(UserMenu);

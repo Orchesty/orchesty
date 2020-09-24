@@ -34,7 +34,7 @@ class TopologyNodeProcessesContainer extends React.Component {
         <th className="col-md-2">Correlation Id</th>
         <th className="col-md-2">Started</th>
         <th className="col-md-2">Finished</th>
-        <th className="col-md-2">Duration (ms)</th>
+        <th className="col-md-2">Duration</th>
         <th className="col-md-1">Status</th>
         <th className="col-md-1">Progress</th>
         <th className="col-md-2">Nodes</th>

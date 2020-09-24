@@ -74,7 +74,7 @@ class NodeMetrics extends React.Component {
   }
 
   render() {
-    const {metrics: {data}} = this.props;
+    const {metrics: {data}, nodeType} = this.props;
 
     let errorColor = 'green';
 
@@ -112,12 +112,18 @@ class NodeMetrics extends React.Component {
           <span className="count_bottom blue">Min: {data.cpu_time.min}</span> | <span
           className="count_bottom blue">Max: {data.cpu_time.max}</span>
         </div>
+
         <div className="tile_stats_count">
-          <span className="count_top">Request Time</span>
-          <div className="count">{this._humanizeDuration(data.request_time.avg)}</div>
-          <span className="count_bottom blue">Min: {this._humanizeDuration(data.request_time.min)}</span> | <span
-          className="count_bottom blue">Max: {this._humanizeDuration(data.request_time.max)}</span>
+          {(nodeType === "connector" || data.request_time.avg !== "n/a") &&
+          <div>
+            <span className="count_top">Request Time</span>
+            <div className="count">{this._humanizeDuration(data.request_time.avg)}</div>
+            <span className="count_bottom blue">Min: {this._humanizeDuration(data.request_time.min)}</span> | <span
+            className="count_bottom blue">Max: {this._humanizeDuration(data.request_time.max)}</span>
+          </div>
+          }
         </div>
+
       </div>
     );
   }

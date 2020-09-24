@@ -1,6 +1,6 @@
 import React from 'react'
 import {Field, reduxForm} from 'redux-form'
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 
 import * as authActions from 'actions/authActions';
@@ -8,9 +8,7 @@ import * as applicationActions from 'actions/applicationActions';
 
 import TextInput from 'elements/input/TextInput';
 import PasswordInput from 'elements/input/PasswordInput';
-import StateButton from 'elements/input/StateButton';
 import NonAuthPage from 'wrappers/NonAuthPage';
-import processes from "rootApp/enums/processes";
 
 class LoginPage extends React.Component {
   constructor(props) {
@@ -20,16 +18,16 @@ class LoginPage extends React.Component {
     this.resetPasswordClick = this.resetPasswordClick.bind(this);
   }
 
-  onSubmit(data){
+  onSubmit(data) {
     this.props.login(data);
   }
 
-  registrationClick(e){
+  registrationClick(e) {
     e.preventDefault();
     this.props.switchToRegistration();
   }
 
-  resetPasswordClick(e){
+  resetPasswordClick(e) {
     e.preventDefault();
     this.props.switchToResetPassword();
   }
@@ -40,24 +38,24 @@ class LoginPage extends React.Component {
       <form onSubmit={this.props.handleSubmit(this.onSubmit)}>
         <h1>Login</h1>
         <div>
-          <Field name="email" component={TextInput} label="Email" />
+          <Field name="email" component={TextInput} label="Email"/>
         </div>
         <div>
-          <Field name="password" component={PasswordInput} label="Password" />
+          <Field name="password" component={PasswordInput} label="Password"/>
         </div>
-        <div>
-          <StateButton type="submit" color="default" processId={processes.authLogin(componentKey)}>Log in</StateButton>
-          <a className="reset_pass" href="#" onClick={this.resetPasswordClick}>Lost your password?</a>
-        </div>
+        {/*<div>*/}
+        {/*  <StateButton type="submit" color="default" processId={processes.authLogin(componentKey)}>Log in</StateButton>*/}
+        {/*  <a className="reset_pass" href="#" onClick={this.resetPasswordClick}>Lost your password?</a>*/}
+        {/*</div>*/}
 
-        <div className="clearfix" />
+        <div className="clearfix"/>
 
-        <div className="separator">
-          <p className="change_link">New to site?
-            <a href="#" className="to_register" onClick={this.registrationClick}> Create Account </a>
-          </p>
-          <div className="clearfix" />
-        </div>
+        {/*<div className="separator">*/}
+        {/*  <p className="change_link">New to site?*/}
+        {/*    <a href="#" className="to_register" onClick={this.registrationClick}> Create Account </a>*/}
+        {/*  </p>*/}
+        {/*  <div className="clearfix" />*/}
+        {/*</div>*/}
       </form>
     );
   }
@@ -70,7 +68,7 @@ LoginPage.propTypes = {
   componentKey: PropTypes.string.isRequired
 };
 
-function validate(values){
+function validate(values) {
   const errors = {};
   if (!values.email) {
     errors.email = 'Email is required';
@@ -86,7 +84,7 @@ function mapStateToProps(state, ownProps) {
   return {};
 }
 
-function mapActionsToProps(dispatch, ownProps){
+function mapActionsToProps(dispatch, ownProps) {
   return {
     login: data => dispatch(authActions.login(data, ownProps.componentKey)),
     switchToRegistration: () => dispatch(applicationActions.openPage('registration')),
@@ -94,4 +92,7 @@ function mapActionsToProps(dispatch, ownProps){
   }
 }
 
-export default NonAuthPage(connect(mapStateToProps, mapActionsToProps)(reduxForm({validate, form: 'login'})(LoginPage)));
+export default NonAuthPage(connect(mapStateToProps, mapActionsToProps)(reduxForm({
+  validate,
+  form: 'login'
+})(LoginPage)));

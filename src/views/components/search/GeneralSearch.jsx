@@ -29,51 +29,51 @@ class GeneralSearch extends React.Component {
     };
   }
 
-  componentDidUpdate(newProps){
+  componentDidUpdate(newProps) {
     const items = newProps.generalSearch.items;
     const selected = this.state.selected;
-    if (selected && (!items || items.find(item => item.objectType === selected.objectType && item.id === selected.id) === undefined)){
+    if (selected && (!items || items.find(item => item.objectType === selected.objectType && item.id === selected.id) === undefined)) {
       this.setState({selected: null});
     }
   }
 
-  componentDidMount(){
+  componentDidMount() {
     document.addEventListener('focus', this.onFocus, true);
     document.addEventListener('keydown', this.onHotKey, true);
   }
 
-  componentWillUnmount(){
+  componentWillUnmount() {
     document.removeEventListener('focus', this.onFocus, true);
     document.removeEventListener('keydown', this.onHotKey, true);
   }
 
-  setSelf(self){
+  setSelf(self) {
     this._self = self;
   }
 
-  setSelfInput(selfInput){
+  setSelfInput(selfInput) {
     this._setSelfInput = selfInput;
   }
 
-  onHotKey(e){
-    if (hotKeyCompare(e, config.params.hotKeys.generalSearch)){
+  onHotKey(e) {
+    if (hotKeyCompare(e, config.params.hotKeys.generalSearch)) {
       e.preventDefault();
-      if (this._setSelfInput){
+      if (this._setSelfInput) {
         this._setSelfInput.focus();
       }
     }
   }
 
-  onFocus(e){
+  onFocus(e) {
     const newFocused = this._self && e.target && (this._self === e.target || this._self.contains(e.target));
     this.setState({focused: newFocused});
   }
 
-  changed(e){
+  changed(e) {
     this.props.searchAction(e.target.value);
   }
 
-  itemClick(item, e){
+  itemClick(item, e) {
     e.preventDefault();
     this.redirect(item);
   }
@@ -88,23 +88,23 @@ class GeneralSearch extends React.Component {
     config.params.clearGeneralSearch ? clearAction() : this.lostFocus();
   }
 
-  lostFocus(){
+  lostFocus() {
     document.body.focus();
   }
 
-  select(item){
+  select(item) {
     this.setState({selected: item});
   }
 
-  moveDown(){
+  moveDown() {
     this.setState(state => {
       const {generalSearch: {items}} = this.props;
       const selected = state.selected;
-      if (items && items.length > 0){
+      if (items && items.length > 0) {
         let index = 0;
-        if (selected){
+        if (selected) {
           index = items.reduce((oldIndex, item, index) => item.objectType === selected.objectType && item.id === selected.id ? index + 1 : oldIndex, 0);
-          if (index >= items.length){
+          if (index >= items.length) {
             index = 0;
           }
         }
@@ -115,16 +115,16 @@ class GeneralSearch extends React.Component {
     });
   }
 
-  moveUp(){
+  moveUp() {
     this.setState(state => {
       const {generalSearch: {items}} = this.props;
       const selected = state.selected;
-      if (items && items.length > 0){
+      if (items && items.length > 0) {
         let index = -1;
-        if (selected){
+        if (selected) {
           index = items.reduce((oldIndex, item, index) => item.objectType === selected.objectType && item.id === selected.id ? index - 1 : oldIndex, -1);
         }
-        if (index < 0){
+        if (index < 0) {
           index = items.length - 1;
         }
         return {selected: items[index]};
@@ -134,14 +134,14 @@ class GeneralSearch extends React.Component {
     });
   }
 
-  enter(){
-    if (this.state.selected){
+  enter() {
+    if (this.state.selected) {
       this.redirect(this.state.selected);
     }
   }
 
-  keyPressed(e){
-    switch (e.keyCode){
+  keyPressed(e) {
+    switch (e.keyCode) {
       case 40:
         this.moveDown();
         e.preventDefault();
@@ -184,7 +184,7 @@ class GeneralSearch extends React.Component {
             value={generalSearch.search}
           />
           <span className="input-group-btn">
-            <button className="btn btn-default" type="button">Go!</button>
+            <button className="btn btn-default" type="button">Search</button>
           </span>
         </div>
         {
@@ -205,7 +205,7 @@ GeneralSearch.propTypes = {
   redirectActions: PropTypes.object.isRequired
 };
 
-function mapStateToProps(state, ownProps){
+function mapStateToProps(state) {
   const {generalSearch} = state;
   return {
     generalSearch,
@@ -213,7 +213,7 @@ function mapStateToProps(state, ownProps){
   };
 }
 
-function mapActionsToProps(dispatch, ownProps){
+function mapActionsToProps(dispatch) {
   return {
     searchAction: searchStr => dispatch(generalSearchActions.search(searchStr)),
     clearAction: () => dispatch(generalSearchActions.clear()),

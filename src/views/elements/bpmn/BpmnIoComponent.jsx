@@ -204,51 +204,57 @@ class BpmnIoComponent extends React.Component {
     onPropPanelToggle();
   }
 
-  loadXML() {
-    const schema = (this.props.schema && this.props.schema !== '') ? this.props.schema : emptySchema;
-    this._modeler.importXML(schema, err => {
-      err && this.props.onError(String(err));
-    });
-  }
-
-  exportBPMN() {
+  async loadXML() {
     if (this._modeler) {
-      this._modeler.saveXML({format: true}, (err, xml) => {
-        if (err) {
-          err && this.props.onError(String(err));
-        } else {
-          const {topologyName} = this.props;
-          download(xml, (topologyName ? topologyName : 'export') + '.tplg', 'application/bpmn+xml');
-        }
-      })
+      try {
+        const schema = (this.props.schema && this.props.schema !== '') ? this.props.schema : emptySchema;
+        await this._modeler.importXML(schema);
+      } catch (err) {
+        this.props.onError(String(err));
+      }
     }
   }
 
-  exportSVG() {
+  async exportBPMN() {
     if (this._modeler) {
-      this._modeler.saveSVG((err, svg) => {
-        if (err) {
-          err && this.props.onError(String(err));
-        } else {
-          const {topologyName} = this.props;
-          download(svg, (topologyName ? topologyName : 'export') + '.svg', 'image/svg+xml');
-        }
-      });
+      try {
+        const result = await this._modeler.saveXML({format: true});
+        const {xml} = result;
+        const {topologyName} = this.props;
+        download(xml, (topologyName ? topologyName : 'export') + '.tplg', 'application/bpmn+xml');
+      } catch (err) {
+        this.props.onError(String(err));
+      }
     }
   }
 
-  saveBPMN() {
+  async exportSVG() {
     if (this._modeler) {
-      this._modeler.saveXML((err, xml) => {
-        if (err) {
-          err && this.props.onError(String(err));
-        } else if (this.props.onSave) {
+      try {
+        const result = await this._modeler.saveSVG(options);
+        const {svg} = result;
+        const {topologyName} = this.props;
+        download(svg, (topologyName ? topologyName : 'export') + '.svg', 'image/svg+xml');
+      } catch (err) {
+        this.props.onError(String(err));
+      }
+    }
+  }
+
+  async saveBPMN() {
+    if (this._modeler) {
+      try {
+        const result = await this._modeler.saveXML({format: true});
+        const {xml} = result;
+        if (this.props.onSave) {
           this.props.onSave(xml);
           this._changed = false;
           this._sendActions();
           this._saved = true;
         }
-      });
+      } catch (err) {
+        this.props.onError(String(err));
+      }
     }
   }
 
@@ -258,15 +264,14 @@ class BpmnIoComponent extends React.Component {
     }
   }
 
-  openBPMN(data) {
+  async openBPMN(data) {
     if (this._modeler) {
-      this._modeler.importXML(data.content, err => {
-        if (err) {
-          err && this.props.onError(String(err));
-        } else {
-          this.props.onImport(`File [${data.file.name}] imported.`);
-        }
-      });
+      try {
+        await this._modeler.importXML(data.content);
+        this.props.onImport(`File [${data.file.name}] imported.`);
+      } catch (err) {
+        this.props.onError(String(err));
+      }
     }
   }
 

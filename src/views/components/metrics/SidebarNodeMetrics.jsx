@@ -24,13 +24,14 @@ class SidebarNodeMetrics extends React.Component {
   }
 
   render() {
-    const {metrics: {data}} = this.props;
+    const {metrics: {data}, nodeType} = this.props;
     return (
       <div className="sidebar-node-metrics">
         <div className="metric-item">
           <span className="count_top">Total Processes:</span>
           <div className="count">{data.process.total}</div>
-          <div className={'sub-count' + (data.process.errors > 0 ? ' red' : '')}><span className="count_bottom">Failed: {data.process.errors}</span></div>
+          <div className={'sub-count' + (data.process.errors > 0 ? ' red' : '')}><span
+            className="count_bottom">Failed: {data.process.errors}</span></div>
         </div>
         <div className="metric-item">
           <span className="count_top">Queue Depth [msg]:</span>
@@ -40,36 +41,43 @@ class SidebarNodeMetrics extends React.Component {
         <div className="metric-item">
           <span className="count_top">Waiting Time:</span>
           <div className="count">{this._humanizeDuration(data.waiting_time.avg)}</div>
-          <div className="sub-count"><span className="count_bottom">Min: {this._humanizeDuration(data.waiting_time.min)}</span> | <span className="count_bottom">Max: {this._humanizeDuration(data.waiting_time.max)}</span></div>
+          <div className="sub-count"><span
+            className="count_bottom">Min: {this._humanizeDuration(data.waiting_time.min)}</span> | <span
+            className="count_bottom">Max: {this._humanizeDuration(data.waiting_time.max)}</span></div>
         </div>
         <div className="metric-item">
           <span className="count_top">Process Time:</span>
           <div className="count">{this._humanizeDuration(data.process_time.avg)}</div>
-          <div className="sub-count"><span className="count_bottom">Min: {this._humanizeDuration(data.process_time.min)}</span> | <span className="count_bottom">Max: {this._humanizeDuration(data.process_time.max)}</span></div>
+          <div className="sub-count"><span
+            className="count_bottom">Min: {this._humanizeDuration(data.process_time.min)}</span> | <span
+            className="count_bottom">Max: {this._humanizeDuration(data.process_time.max)}</span></div>
         </div>
         <div className="metric-item">
           <span className="count_top">CPU Time:</span>
           <div className="count">{data.cpu_time.avg}</div>
-          <div className="sub-count"><span className="count_bottom">Min: {data.cpu_time.min}</span> | <span className="count_bottom">Max: {data.cpu_time.max}</span></div>
+          <div className="sub-count"><span className="count_bottom">Min: {data.cpu_time.min}</span> | <span
+            className="count_bottom">Max: {data.cpu_time.max}</span></div>
         </div>
+        {(nodeType === 'connector' || data.request_time.avg !== "n/a") &&
         <div className="metric-item">
           <span className="count_top">Request Time:</span>
           <div className="count">{this._humanizeDuration(data.request_time.avg)}</div>
-          <div className="sub-count"><span className="count_bottom">Min: {this._humanizeDuration(data.request_time.min)}</span> | <span className="count_bottom">Max: {this._humanizeDuration(data.request_time.max)}</span></div>
+          <div className="sub-count"><span
+            className="count_bottom">Min: {this._humanizeDuration(data.request_time.min)}</span> | <span
+            className="count_bottom">Max: {this._humanizeDuration(data.request_time.max)}</span></div>
         </div>
+        }
       </div>
     );
   }
 }
 
-SidebarNodeMetrics.propTypes = {
+SidebarNodeMetrics.propTypes = {};
 
-};
-
-function mapStateToProps(state, ownProps){
+function mapStateToProps(state, ownProps) {
   const {node, metrics} = state;
   if (ownProps.schemaId) {
-    const searched = Object.values(node.elements).filter(node => node.topology_id=== ownProps.topologyId && node.schema_id === ownProps.schemaId);
+    const searched = Object.values(node.elements).filter(node => node.topology_id === ownProps.topologyId && node.schema_id === ownProps.schemaId);
     if (searched.length > 0) {
       const key = ownProps.metricsRange ? `${ownProps.topologyId}[${ownProps.metricsRange.since}-${ownProps.metricsRange.till}]` : ownProps.topologyId;
       const nodeKey = ownProps.metricsRange ? `${searched[0]._id}[${ownProps.metricsRange.since}-${ownProps.metricsRange.till}]` : ownProps.nodeId;
@@ -87,7 +95,7 @@ function mapStateToProps(state, ownProps){
   }
 }
 
-function mapActionsToProps(dispatch, ownProps){
+function mapActionsToProps(dispatch, ownProps) {
   const needNodeList = forced => dispatch(nodeActions.needNodesForTopology(ownProps.topologyId, forced));
   const needMetricsList = forced => dispatch(metricsActions.needTopologyMetrics(ownProps.topologyId, ownProps.metricsRange, forced));
   return {
