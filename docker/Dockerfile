@@ -1,4 +1,4 @@
-FROM node:14-alpine
+FROM node:14
 
 RUN apt-get update && \
     apt-get install -y --force-yes sudo socat netcat nginx-extras && \
@@ -6,8 +6,6 @@ RUN apt-get update && \
 
 ENV SSH_AUTH_SOCK=/ssh-agent
 ENV WEBROOT /var/www/html
-
-COPY nginx.conf /etc/nginx/
 
 # Allow these binaries to be executed with root privileges (Don't you dare use this in prod image!)
 RUN chmod u+s /usr/sbin/useradd && \
