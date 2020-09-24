@@ -28,6 +28,7 @@ use NotificationSenderTests\Integration\Model\Notification\Handler\Impl\NullUnkn
  * @covers  \Hanaboso\NotificationSender\Model\Notification\Sender\CurlSender
  * @covers  \Hanaboso\NotificationSender\Model\Notification\Sender\EmailSender
  * @covers  \Hanaboso\NotificationSender\Model\Notification\Sender\RabbitSender
+ * @covers  \Hanaboso\NotificationSender\Listener\NotificationSettingsListener
  */
 final class NotificationManagerTest extends DatabaseTestCaseAbstract
 {

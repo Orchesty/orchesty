@@ -66,6 +66,7 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
                 ->setEvents(self::EVENTS)
                 ->setSettings([EmailDto::EMAILS => ['one@example.com', 'two@example.com']])
         );
+        $this->dm->clear();
 
         $handlers = $this->manager->listSettings();
         self::assertEquals(

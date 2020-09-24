@@ -5,6 +5,7 @@ parameters:
         dumper:
             inline_factories: true
 
+    env(APP_SECRET): ASERGTNHMUUKUIP8616SEVSVN,.SWEWDAFAF@AWFAFAF156486651AFSEF4S3G15
     env(MONGO_HOST): mongodb
     env(MONGO_PORT): null
     env(MONGO_DB): notification-sender

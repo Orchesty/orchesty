@@ -109,7 +109,6 @@ final class NotificationSettingsManager
             if (!$setting) {
                 $setting = (new NotificationSettings())->setClass($class);
                 $this->dm->persist($setting);
-                $this->dm->flush();
             }
 
             $data[] = $setting->toArray($handler->getType(), $handler->getName());
@@ -179,6 +178,7 @@ final class NotificationSettingsManager
         $this->validateSettings($setting, $handler, $data[NotificationSettings::SETTINGS]);
 
         $this->dm->flush();
+        $this->dm->refresh($setting);
 
         return $setting->toArray($handler->getType(), $handler->getName());
     }

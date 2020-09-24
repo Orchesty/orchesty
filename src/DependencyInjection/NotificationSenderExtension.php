@@ -32,6 +32,7 @@ final class NotificationSenderExtension extends Extension
         $loader->load('callbacks.yaml');
         $loader->load('controllers.yaml');
         $loader->load('handlers.yaml');
+        $loader->load('listeners.yaml');
         $loader->load('managers.yaml');
         $loader->load('senders.yaml');
     }

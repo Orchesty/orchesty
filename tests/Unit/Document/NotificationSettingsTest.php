@@ -28,16 +28,15 @@ final class NotificationSettingsTest extends KernelTestCaseAbstract
             ->setEvents([NotificationEventEnum::ACCESS_EXPIRATION])
             ->setSettings([EmailDto::EMAILS => ['one@example.com', 'two@example.com']])
             ->setStatus(TRUE)
-            ->setStatusMessage(NULL);
+            ->setStatusMessage(NULL)
+            ->setEncryptedSettings('aaa');
 
         self::assertEquals('Class', $settings->getClass());
+        self::assertEquals('aaa', $settings->getEncryptedSettings());
         self::assertNotEmpty($settings->getEvents());
         self::assertNotEmpty($settings->getSettings());
         self::assertTrue($settings->isStatus());
         self::assertNull($settings->getStatusMessage());
-
-        $settings->preFlush();
-        $settings->postLoad();
 
         $settings = $settings->toArray('Type', 'Name');
 
