@@ -178,7 +178,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
         $this->assertResponse(
             __DIR__ . '/data/TopologyController/deleteTopologyRequest.json',
-            ['_id' => '123456789'],
+            ['message' => 'CurlManager::send() failed: cURL error 6: Could not resolve host: topology-api (see https://curl.haxx.se/libcurl/c/libcurl-errors.html)'],
             [':id' => $topology->getId()]
         );
     }
@@ -192,7 +192,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     {
         $this->assertResponse(
             __DIR__ . '/data/TopologyController/testTopologyRequest.json',
-            ['_id' => '123456789'],
+            ['message' => 'CurlManager::send() failed: cURL error 6: Could not resolve host: topology-api (see https://curl.haxx.se/libcurl/c/libcurl-errors.html)'],
             [':id' => $this->createTopology()]
         );
     }

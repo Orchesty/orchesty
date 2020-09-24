@@ -127,7 +127,7 @@ final class TopologyGeneratorBridgeTest extends KernelTestCaseAbstract
             static function (RequestDto $request): ResponseDto {
                 self::assertEquals(CurlManager::METHOD_POST, $request->getMethod());
                 self::assertEquals(
-                    'http://starting-point/topologies/topology/invalidate-cache',
+                    'starting-point/topologies/topology/invalidate-cache',
                     $request->getUri(TRUE)
                 );
                 self::assertEquals('', $request->getBody());
@@ -150,7 +150,7 @@ final class TopologyGeneratorBridgeTest extends KernelTestCaseAbstract
             static function (RequestDto $request): ResponseDto {
                 self::assertEquals(CurlManager::METHOD_POST, $request->getMethod());
                 self::assertEquals(
-                    'http://starting-point/topologies/topology/invalidate-cache',
+                    'starting-point/topologies/topology/invalidate-cache',
                     $request->getUri(TRUE)
                 );
                 self::assertEquals('', $request->getBody());

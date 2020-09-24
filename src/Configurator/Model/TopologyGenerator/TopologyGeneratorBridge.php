@@ -34,7 +34,7 @@ final class TopologyGeneratorBridge
     protected const BASE_TOPOLOGY_URL      = 'http://%s/v1/api/topologies/%s';
     protected const GENERATOR_TOPOLOGY_URL = 'http://%s/v1/api/topologies/%s';
     protected const MULTI_PROBE_URL        = 'http://%s/topology/status?topologyId=%s';
-    protected const STARTING_POINT_URL     = 'http://%s/topologies/%s/invalidate-cache';
+    protected const STARTING_POINT_URL     = '%s/topologies/%s/invalidate-cache';
 
     private const HEADERS = ['Content-Type' => 'application/json'];
 

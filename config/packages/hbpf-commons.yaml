@@ -11,15 +11,19 @@ services:
             - "@doctrine_mongodb.odm.default_connection"
             - {database: "%env(string:MONGODB_DB)%", collection: "Session"}
 
-    hbpf.commons.session_handler:
-        class: Hanaboso\CommonsBundle\Session\Handler\CachedSessionHandler
-        arguments:
-            - '@hbpf.commons.redis_session_handler'
+    ##########################
+    #        Crypts          #
+    ##########################
 
-    hbpf.commons.redis_session_handler:
-        class: Hanaboso\CommonsBundle\Session\Handler\RedisSessionHandler
+    hbpf.commons.crypt.crypt_manager:
+        class: Hanaboso\CommonsBundle\Crypt\CryptManager
         arguments:
-            - '%redis_dsn%'
+            - ['@hbpf.commons.crypt.windwalker']
+
+    hbpf.commons.crypt.windwalker:
+        class: Hanaboso\CommonsBundle\Crypt\Impl\WindwalkerCrypt
+        arguments:
+            - '%kernel.secret%'
 
     ##########################
     #        Metrics         #

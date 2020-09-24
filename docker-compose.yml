@@ -21,7 +21,6 @@ services:
             - FRONTEND_HOST=${DEV_IP}
             - BACKEND_DSN=${DEV_IP}
             - NOTIFICATION_DSN=http://notification-sender-api
-            - REDIS_DSN=redis://redis:6379/10
             - MULTI_PROBE_DSN=multi-probe:8007
             - TOPOLOGY_API_DSN=topology-api:80
             - MONGODB_DSN=mongodb://mongo
