@@ -102,7 +102,12 @@ final class ServiceLocator implements LoggerAwareInterface
      */
     public function getUserApps(string $user): array
     {
-        return $this->doRequest(sprintf('applications/users/%s', $user), CurlManager::METHOD_GET, [], TRUE);
+        $res = $this->doRequest(sprintf('applications/users/%s', $user), CurlManager::METHOD_GET, [], TRUE);
+        if (empty($res) || !isset($res['items'])) {
+            $res['items'] = [];
+        }
+
+        return $res;
     }
 
     /**

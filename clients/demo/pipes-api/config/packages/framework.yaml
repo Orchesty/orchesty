@@ -6,10 +6,6 @@ framework:
         enabled: false
     default_locale: '%locale%'
     trusted_hosts: ~
-    session:
-        handler_id: hbpf.commons.session_handler
-        cookie_secure: false
-        cookie_samesite: 'lax'
     fragments: ~
     http_method_override: true
     test: false

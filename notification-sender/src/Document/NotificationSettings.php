@@ -3,8 +3,6 @@
 namespace Hanaboso\NotificationSender\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Hanaboso\CommonsBundle\Crypt\CryptManager;
-use Hanaboso\CommonsBundle\Crypt\Exceptions\CryptException;
 use Hanaboso\CommonsBundle\Database\Traits\Document\CreatedTrait;
 use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
 use Hanaboso\CommonsBundle\Database\Traits\Document\UpdatedTrait;
@@ -40,8 +38,6 @@ class NotificationSettings
     public const STATUS         = 'status';
     public const STATUS_MESSAGE = 'status_message';
 
-    private const EMPTY = '01_N86jVkKpY154CDLSDO92ZLH4PVg3zxZ6ea83UBanK9o=:hUijwPbtwKyeK8Wa9WwWxOuJJ5CDRL2v9CJYYdAg1Fg=:LmP28iFgUwppq42xmve7tI+cnT+WD+sD:A4YIOJjqBHWm3WDTTu67jbHuPb+2Og==';
-
     /**
      * @var string
      *
@@ -58,6 +54,8 @@ class NotificationSettings
 
     /**
      * @var mixed[]
+     *
+     * @ODM\Field(type="hash")
      */
     private array $settings = [];
 
@@ -155,6 +153,26 @@ class NotificationSettings
     }
 
     /**
+     * @return string
+     */
+    public function getEncryptedSettings(): string
+    {
+        return $this->encryptedSettings;
+    }
+
+    /**
+     * @param string $encryptedSettings
+     *
+     * @return NotificationSettings
+     */
+    public function setEncryptedSettings(string $encryptedSettings): NotificationSettings
+    {
+        $this->encryptedSettings = $encryptedSettings;
+
+        return $this;
+    }
+
+    /**
      * @return bool
      */
     public function isStatus(): bool
@@ -192,24 +210,6 @@ class NotificationSettings
         $this->statusMessage = $statusMessage;
 
         return $this;
-    }
-
-    /**
-     * @ODM\PreFlush
-     * @throws CryptException
-     */
-    public function preFlush(): void
-    {
-        $this->encryptedSettings = CryptManager::encrypt($this->settings);
-    }
-
-    /**
-     * @ODM\PostLoad
-     * @throws CryptException
-     */
-    public function postLoad(): void
-    {
-        $this->settings = CryptManager::decrypt($this->encryptedSettings ?: self::EMPTY);
     }
 
     /**

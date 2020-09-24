@@ -83,7 +83,7 @@ class AmqpDrain implements IDrain, IPartialForwarder {
      * @param {JobMessage} message
      */
     public forward(message: JobMessage): void {
-
+        message.getHeaders().setHeader(Headers.PF_HEADERS_PREFIX + Headers.PUBLISHED_TIMESTAMP, Date.now().toString());
         if (message.getType() === MessageType.PROCESS) {
             this.forwardProcessMessage(message);
             return;

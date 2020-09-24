@@ -1,5 +1,5 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import config from '../config';
 import * as applicationActions from 'actions/applicationActions';
 
@@ -28,7 +28,7 @@ class App extends React.Component {
     this.checkAuthPage(props);
   }
 
-  componentDidUpdate(nextProps){
+  componentDidUpdate(nextProps) {
     this.checkAuthPage(nextProps);
   }
 
@@ -55,13 +55,13 @@ class App extends React.Component {
               <ActivePage/>
             </div>
           </div>
-          <Toaster />
-          <ActiveModal />
-          <ActiveContextMenu />
+          <Toaster/>
+          <ActiveModal/>
+          <ActiveContextMenu/>
         </div>
       );
     } else {
-      switch (page.key){
+      switch (page.key) {
         case 'login':
           return <LoginPage componentKey={page.key} {...page.args}/>;
         case 'registration':
@@ -73,13 +73,13 @@ class App extends React.Component {
         case 'user_activation':
           return <ActivationPage componentKey={page.key} {...page.args} />;
         default:
-          return <Error404Page />;
+          return <Error404Page/>;
       }
     }
   }
 }
 
-function mapStateToProps(state){
+function mapStateToProps(state) {
   const {application, auth} = state;
 
   return {
@@ -88,10 +88,10 @@ function mapStateToProps(state){
   }
 }
 
-function mapActionsToProps(dispatch){
+function mapActionsToProps(dispatch) {
   return {
     openPage: (key, args) => dispatch(applicationActions.openPage(key, args))
   }
 }
 
-export default connect(mapStateToProps,mapActionsToProps)(App);
+export default connect(mapStateToProps, mapActionsToProps)(App);

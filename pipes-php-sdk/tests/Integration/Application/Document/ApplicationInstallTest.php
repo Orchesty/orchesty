@@ -22,6 +22,7 @@ final class ApplicationInstallTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall::setNonEncryptedSettings
      * @covers \Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall::toArray
      * @covers \Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall
+     * @covers \Hanaboso\PipesPhpSdk\Application\Listener\ApplicationInstallListener
      *
      * @throws Exception
      */
@@ -33,10 +34,22 @@ final class ApplicationInstallTest extends DatabaseTestCaseAbstract
             ->setExpires(DateTimeUtils::getUtcDateTime('now'))
             ->setNonEncryptedSettings(['lock' => TRUE]);
         $this->pfd($applicationInstall);
+        $this->dm->clear();
+
+        /** @var ApplicationInstall $applicationInstall */
+        $applicationInstall = $this->dm->getRepository(ApplicationInstall::class)->find($applicationInstall->getId());
 
         self::assertInstanceOf(DateTime::class, $applicationInstall->getExpires());
         self::assertEquals(['lock' => TRUE], $applicationInstall->getNonEncryptedSettings());
         self::assertEquals(8, count($applicationInstall->toArray()));
+
+        $applicationInstall->setSettings(['secret' => 'settings']);
+        $this->pfd($applicationInstall);
+        $this->dm->clear();
+
+        /** @var ApplicationInstall $applicationInstall */
+        $applicationInstall = $this->dm->getRepository(ApplicationInstall::class)->find($applicationInstall->getId());
+        self::assertEquals(['secret' => 'settings'], $applicationInstall->getSettings());
     }
 
 }

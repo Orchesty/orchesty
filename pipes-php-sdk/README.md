@@ -44,4 +44,3 @@ Dále je možné vytvořit Application, která poskytuje možnost autorizaci pro
 - MariaDB (optional)
 - RabbitMQ (optional)
 - InfluxDB (optional)
-- Redis (optional)

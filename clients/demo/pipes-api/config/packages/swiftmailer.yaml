@@ -2,6 +2,7 @@ parameters:
     mailer_from: dev.email.hb@gmail.com
     mailer_async: false
     mailer_builder_id: generic
+    env(EMAIL_DSN): ''
 
 swiftmailer:
     url: '%env(EMAIL_DSN)%'

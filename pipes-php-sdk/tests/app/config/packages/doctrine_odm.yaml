@@ -25,6 +25,7 @@ doctrine_mongodb:
                 socketTimeoutMS: 5000
     document_managers:
         default:
+            connection: default
             mappings:
                 SdkDocument:
                     type: annotation

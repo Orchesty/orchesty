@@ -2,6 +2,24 @@ services:
     _defaults:
         public: '%public.services%'
 
+    ##########################
+    #        Crypts          #
+    ##########################
+
+    hbpf.commons.crypt.crypt_manager:
+        class: Hanaboso\CommonsBundle\Crypt\CryptManager
+        arguments:
+            - ['@hbpf.commons.crypt.windwalker']
+
+    hbpf.commons.crypt.windwalker:
+        class: Hanaboso\CommonsBundle\Crypt\Impl\WindwalkerCrypt
+        arguments:
+            - '%kernel.secret%'
+
+    ##########################
+    #   Transport Services   #
+    ##########################
+
     hbpf.transport.curl_manager:
         class: Hanaboso\CommonsBundle\Transport\Curl\CurlManager
         arguments:

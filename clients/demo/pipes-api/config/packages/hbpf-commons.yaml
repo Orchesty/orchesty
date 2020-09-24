@@ -3,18 +3,18 @@ services:
         public: '%public.services%'
 
     ##########################
-    #    Session Handlers    #
+    #        Crypts          #
     ##########################
 
-    hbpf.commons.session_handler:
-        class: Hanaboso\CommonsBundle\Session\Handler\CachedSessionHandler
+    hbpf.commons.crypt.crypt_manager:
+        class: Hanaboso\CommonsBundle\Crypt\CryptManager
         arguments:
-            - '@hbpf.commons.redis_session_handler'
+            - ['@hbpf.commons.crypt.windwalker']
 
-    hbpf.commons.redis_session_handler:
-        class: Hanaboso\CommonsBundle\Session\Handler\RedisSessionHandler
+    hbpf.commons.crypt.windwalker:
+        class: Hanaboso\CommonsBundle\Crypt\Impl\WindwalkerCrypt
         arguments:
-            - '%env(string:REDIS_DSN)%'
+            - '%kernel.secret%'
 
     ##########################
     #        Metrics         #

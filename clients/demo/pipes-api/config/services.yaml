@@ -11,9 +11,11 @@ parameters:
     access_token_refresh_interval: 3600
     node_services_dirs:
         - '%kernel.project_dir%/config'
-        - '%kernel.root_dir%/../vendor/hanaboso/pipes-connectors/src/Resources/config/'
+        - '%kernel.project_dir%/vendor/hanaboso/pipes-connectors/src/Resources/config/'
+        - '%kernel.project_dir%/vendor/hanaboso/pipes-php-sdk/src/HbPFLongRunningNodeBundle/Resources'
 
-    applications: ['%kernel.root_dir%/../vendor/hanaboso/pipes-connectors/src/Resources/config/']
+    applications:
+        - '%kernel.project_dir%/vendor/hanaboso/pipes-connectors/src/Resources/config/'
 
     kernel.root_dir: '%kernel.project_dir%/src'
 
@@ -147,3 +149,28 @@ services:
         class: EmailServiceBundle\Mailer\Mailer
         arguments:
             - '@EmailServiceBundle\Transport\Impl\SwiftMailerTransport'
+
+    hbpf.custom_node.hub-spot.create-multiple-contact-mapper:
+        class: Demo\CustomNode\HubSpotCreateMultipleContactsMapper
+
+    hbpf.connector.get-users:
+        class: Demo\Connector\GetUsersConnector
+        arguments:
+            - '@hbpf.transport.curl_manager'
+
+    hbpf.connector.hub-spot.create-multiple-contact:
+        class: Demo\Connector\HubSpotCreateMultipleContactsConnector
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+        calls:
+            - [ 'setApplication', [ '@hbpf.application.hub-spot' ] ]
+            - [ 'setLogger', [ '@monolog.logger.commons' ] ]
+
+    hbpf.connector.load-application-users.hub-spot:
+        class: Hanaboso\PipesPhpSdk\RabbitMq\Impl\BatchConnector\LoadApplicationUsersConnector
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - 'hub-spot'
+        calls:
+            - [ 'setApplication', [ '@hbpf.application.hub-spot' ] ]

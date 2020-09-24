@@ -1,7 +1,6 @@
 ---
-
 ## BEGIN DEV
-version: '2.2'
+version: '2.4'
 ## END DEV
 ## BEGIN STAGE
 #version: '3.3'
@@ -19,13 +18,12 @@ services:
             EMAIL_DSN: gmail://dev.email.hb@gmail.com:jVME2RkX9xyYhj9v@localhost
             ELASTIC_HOST: elasticsearch
             ELASTIC_INDEX: index
-            METRICS_SERVICE: 'influx'
-            METRICS_HOST: 'kapacitor'
-            METRICS_PORT: '9100'
-            REDIS_DSN: redis://redis
+            METRICS_SERVICE: influx
+            METRICS_HOST: kapacitor
+            METRICS_PORT: 9100
             STARTING_POINT_DSN: starting-point:8080
             RABBIT_DSN: amqp://rabbitmq:5672/
-            USER_TASK_LISTENER_ENABLE: 'false'
+            USER_TASK_LISTENER_ENABLE: 0
         working_dir: /var/www/pipes/clients/demo/pipes-api
         volumes:
             - ../../:/var/www/pipes
@@ -33,106 +31,19 @@ services:
             - ${HOME}/dev/.composer:${HOME}/dev/.composer
     ## END DEV
     ## BEGIN STAGE
-    #donwlader:
+    #php-sdk:
     #    image: dkr.hanaboso.net/pipes/demo/php-api:${TAG_MONOLITH}
     #    environment:
     #      BACKEND_HOST: ${BACKEND_URL}/
     #      EMAIL_DSN: gmail://dev.email.hb@gmail.com:jVME2RkX9xyYhj9v@localhost
     #      ELASTIC_HOST: elasticsearch
-    #      ELASTIC_INDEX: 'logstash-2018.01.31'
-    #      METRICS_SERVICE: 'influx'
-    #      METRICS_HOST: 'kapacitor'
-    #      METRICS_PORT: '9100'
-    #      REDIS_DSN: redis://redis
-    #      STARTING_POINT_DSN: starting-point:8080
+    #      ELASTIC_INDEX: logstash-2018.01.31
+    #      METRICS_SERVICE: influx
+    #      METRICS_HOST: kapacitor
+    #      METRICS_PORT: 9100
+    #      STARTING_POINT_DSN: ${SP_URL}
     #      RABBIT_DSN: amqp://rabbitmq:5672/
-    #      USER_TASK_LISTENER_ENABLE: 'false'
-    #      PHP_FPM_MAX_REQUESTS: 5000
-    ## END STAGE
-
-    ## BEGIN DEV
-    downloader:
-        image: hanabosocom/php-dev:php-7.4-alpine
-        user: ${DEV_UID}:${DEV_GID}
-        environment:
-            COMPOSER_HOME: ${HOME}/dev/.composer
-            BACKEND_HOST: ${BACKEND_URL}/
-            EMAIL_DSN: gmail://dev.email.hb@gmail.com:jVME2RkX9xyYhj9v@localhost
-            ELASTIC_HOST: elasticsearch
-            ELASTIC_INDEX: index
-            METRICS_SERVICE: 'influx'
-            METRICS_HOST: 'kapacitor'
-            METRICS_PORT: '9100'
-            REDIS_DSN: redis://redis
-            STARTING_POINT_DSN: starting-point:8080
-            RABBIT_DSN: amqp://rabbitmq:5672/
-            USER_TASK_LISTENER_ENABLE: 'false'
-        command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console downloader:run'
-        working_dir: /var/www/pipes/clients/demo/pipes-api
-        volumes:
-            - ../../:/var/www/pipes
-            - ${SSH_AUTH_SOCK}:${SSH_AUTH}
-            - ${HOME}/dev/.composer:${HOME}/dev/.composer
-    ## END DEV
-    ## BEGIN STAGE
-    #donwlader:
-    #    image: dkr.hanaboso.net/pipes/demo/php-api:${TAG_MONOLITH}
-    #    command: bin/console downloader:run
-    #    environment:
-    #      BACKEND_HOST: ${BACKEND_URL}/
-    #      EMAIL_DSN: gmail://dev.email.hb@gmail.com:jVME2RkX9xyYhj9v@localhost
-    #      ELASTIC_HOST: elasticsearch
-    #      ELASTIC_INDEX: 'logstash-2018.01.31'
-    #      METRICS_SERVICE: 'influx'
-    #      METRICS_HOST: 'kapacitor'
-    #      METRICS_PORT: '9100'
-    #      REDIS_DSN: redis://redis
-    #      STARTING_POINT_DSN: starting-point:8080
-    #      RABBIT_DSN: amqp://rabbitmq:5672/
-    #      USER_TASK_LISTENER_ENABLE: 'false'
-    #      PHP_FPM_MAX_REQUESTS: 5000
-    ## END STAGE
-
-    ## BEGIN DEV
-    batch:
-        image: hanabosocom/php-dev:php-7.4-alpine
-        user: ${DEV_UID}:${DEV_GID}
-        environment:
-            COMPOSER_HOME: ${HOME}/dev/.composer
-            BACKEND_HOST: ${BACKEND_URL}/
-            EMAIL_DSN: gmail://dev.email.hb@gmail.com:jVME2RkX9xyYhj9v@localhost
-            ELASTIC_HOST: elasticsearch
-            ELASTIC_INDEX: index
-            METRICS_SERVICE: 'influx'
-            METRICS_HOST: 'kapacitor'
-            METRICS_PORT: '9100'
-            REDIS_DSN: redis://redis
-            STARTING_POINT_DSN: starting-point:8080
-            RABBIT_DSN: amqp://rabbitmq:5672/
-            USER_TASK_LISTENER_ENABLE: 'false'
-        command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit_mq:consumer:batch'
-        working_dir: /var/www/pipes/clients/demo/pipes-api
-        volumes:
-            - ../../:/var/www/pipes
-            - ${SSH_AUTH_SOCK}:${SSH_AUTH}
-            - ${HOME}/dev/.composer:${HOME}/dev/.composer
-    ## END DEV
-    ## BEGIN STAGE
-    #batch:
-    #    image: dkr.hanaboso.net/pipes/demo/php-api:${TAG_MONOLITH}
-    #    command: bin/console rabbit_mq:consumer:batch
-    #    environment:
-    #      BACKEND_HOST: ${BACKEND_URL}/
-    #      EMAIL_DSN: gmail://dev.email.hb@gmail.com:jVME2RkX9xyYhj9v@localhost
-    #      ELASTIC_HOST: elasticsearch
-    #      ELASTIC_INDEX: 'logstash-2018.01.31'
-    #      METRICS_SERVICE: 'influx'
-    #      METRICS_HOST: 'kapacitor'
-    #      METRICS_PORT: '9100'
-    #      REDIS_DSN: redis://redis
-    #      STARTING_POINT_DSN: starting-point:8080
-    #      RABBIT_DSN: amqp://rabbitmq:5672/
-    #      USER_TASK_LISTENER_ENABLE: 'false'
+    #      USER_TASK_LISTENER_ENABLE: 0
     #      PHP_FPM_MAX_REQUESTS: 5000
     ## END STAGE
 
@@ -143,16 +54,13 @@ services:
         environment:
             COMPOSER_HOME: ${HOME}/dev/.composer
             BACKEND_HOST: ${BACKEND_URL}/
-            EMAIL_DSN: gmail://dev.email.hb@gmail.com:jVME2RkX9xyYhj9v@localhost
             ELASTIC_HOST: elasticsearch
             ELASTIC_INDEX: index
-            METRICS_SERVICE: 'influx'
-            METRICS_HOST: 'kapacitor'
-            METRICS_PORT: '9100'
-            REDIS_DSN: redis://redis
-            STARTING_POINT_DSN: starting-point:8080
+            METRICS_SERVICE: influx
+            METRICS_HOST: kapacitor
+            METRICS_PORT: 9100
             RABBIT_DSN: amqp://rabbitmq:5672/
-            USER_TASK_LISTENER_ENABLE: 'false'
+            USER_TASK_LISTENER_ENABLE: 0
         command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit_mq:consumer:batch-connector'
         working_dir: /var/www/pipes/clients/demo/pipes-api
         volumes:
@@ -166,16 +74,13 @@ services:
     #    command: bin/console rabbit_mq:consumer:batch-connector
     #    environment:
     #      BACKEND_HOST: ${BACKEND_URL}/
-    #      EMAIL_DSN: gmail://dev.email.hb@gmail.com:jVME2RkX9xyYhj9v@localhost
     #      ELASTIC_HOST: elasticsearch
-    #      ELASTIC_INDEX: 'logstash-2018.01.31'
-    #      METRICS_SERVICE: 'influx'
-    #      METRICS_HOST: 'kapacitor'
-    #      METRICS_PORT: '9100'
-    #      REDIS_DSN: redis://redis
-    #      STARTING_POINT_DSN: starting-point:8080
+    #      ELASTIC_INDEX: logstash-2018.01.31
+    #      METRICS_SERVICE: influx
+    #      METRICS_HOST: kapacitor
+    #      METRICS_PORT: 9100
     #      RABBIT_DSN: amqp://rabbitmq:5672/
-    #      USER_TASK_LISTENER_ENABLE: 'false'
+    #      USER_TASK_LISTENER_ENABLE: 0
     #      PHP_FPM_MAX_REQUESTS: 5000
     ## END STAGE
 
@@ -188,16 +93,13 @@ services:
         environment:
             COMPOSER_HOME: ${HOME}/dev/.composer
             BACKEND_HOST: ${BACKEND_URL}/
-            EMAIL_DSN: gmail://dev.email.hb@gmail.com:jVME2RkX9xyYhj9v@localhost
             ELASTIC_HOST: elasticsearch
             ELASTIC_INDEX: index
-            METRICS_SERVICE: 'influx'
-            METRICS_HOST: 'kapacitor'
-            METRICS_PORT: '9100'
-            REDIS_DSN: redis://redis
-            STARTING_POINT_DSN: starting-point:8080
+            METRICS_SERVICE: influx
+            METRICS_HOST: kapacitor
+            METRICS_PORT: 9100
             RABBIT_DSN: amqp://rabbitmq:5672/
-            USER_TASK_LISTENER_ENABLE: 'false'
+            USER_TASK_LISTENER_ENABLE: 0
         volumes:
             - ../../:/var/www/pipes
             - ${SSH_AUTH_SOCK}:${SSH_AUTH}
@@ -209,16 +111,13 @@ services:
     #    command: bin/console rabbit_mq:consumer:long-running-node
     #    environment:
     #      BACKEND_HOST: ${BACKEND_URL}/
-    #      EMAIL_DSN: gmail://dev.email.hb@gmail.com:jVME2RkX9xyYhj9v@localhost
     #      ELASTIC_HOST: elasticsearch
-    #      ELASTIC_INDEX: 'logstash-2018.01.31'
-    #      METRICS_SERVICE: 'influx'
-    #      METRICS_HOST: 'kapacitor'
-    #      METRICS_PORT: '9100'
-    #      REDIS_DSN: redis://redis
-    #      STARTING_POINT_DSN: starting-point:8080
+    #      ELASTIC_INDEX: logstash-2018.01.31
+    #      METRICS_SERVICE: influx
+    #      METRICS_HOST: kapacitor
+    #      METRICS_PORT: 9100
     #      RABBIT_DSN: amqp://rabbitmq:5672/
-    #      USER_TASK_LISTENER_ENABLE: 'false'
+    #      USER_TASK_LISTENER_ENABLE: 0
     #      PHP_FPM_MAX_REQUESTS: 5000
     ## END STAGE
 
@@ -229,16 +128,13 @@ services:
         environment:
             COMPOSER_HOME: ${HOME}/dev/.composer
             BACKEND_HOST: ${BACKEND_URL}/
-            EMAIL_DSN: gmail://dev.email.hb@gmail.com:jVME2RkX9xyYhj9v@localhost
             ELASTIC_HOST: elasticsearch
             ELASTIC_INDEX: index
-            METRICS_SERVICE: 'influx'
-            METRICS_HOST: 'kapacitor'
-            METRICS_PORT: '9100'
-            REDIS_DSN: redis://redis
-            STARTING_POINT_DSN: starting-point:8080
+            METRICS_SERVICE: influx
+            METRICS_HOST: kapacitor
+            METRICS_PORT: 9100
             RABBIT_DSN: amqp://rabbitmq:5672/
-            USER_TASK_LISTENER_ENABLE: 'false'
+            USER_TASK_LISTENER_ENABLE: 0
         command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit_mq:consumer:status-service'
         working_dir: /var/www/pipes/clients/demo/pipes-api
         volumes:
@@ -252,53 +148,71 @@ services:
     #    command: bin/console rabbit_mq:consumer:status-service
     #    environment:
     #      BACKEND_HOST: ${BACKEND_URL}/
-    #      EMAIL_DSN: gmail://dev.email.hb@gmail.com:jVME2RkX9xyYhj9v@localhost
     #      ELASTIC_HOST: elasticsearch
-    #      ELASTIC_INDEX: 'logstash-2018.01.31'
-    #      METRICS_SERVICE: 'influx'
-    #      METRICS_HOST: 'kapacitor'
-    #      METRICS_PORT: '9100'
-    #      REDIS_DSN: redis://redis
-    #      STARTING_POINT_DSN: starting-point:8080
+    #      ELASTIC_INDEX: logstash-2018.01.31
+    #      METRICS_SERVICE: influx
+    #      METRICS_HOST: kapacitor
+    #      METRICS_PORT: 9100
     #      RABBIT_DSN: amqp://rabbitmq:5672/
-    #      USER_TASK_LISTENER_ENABLE: 'false'
+    #      USER_TASK_LISTENER_ENABLE: 0
     #      PHP_FPM_MAX_REQUESTS: 5000
     ## END STAGE
 
-    multi-probe:
-        image: 'dkr.hanaboso.net/pipes/pipes/multi-probe:dev'
+    ## BEGIN DEV
+    notification-sender-api:
+        image: dkr.hanaboso.net/pipes/notification-sender:master
         environment:
-            REDIS_HOST: 'redis'
-            REDIS_PORT: '6379'
-            REDIS_PASS: ''
-            REDIS_DB: '0'
+            MONGO_HOST: mongo
+    ## END DEV
+    ## BEGIN STAGE
+    #notification-sender-api:
+    #    image: dkr.hanaboso.net/pipes/notification-sender:master
+    #    environment:
+    #      MONGO_HOST: mongo
+    ## END STAGE
+
+    ## BEGIN DEV
+    notification-sender-consumer:
+        image: dkr.hanaboso.net/pipes/notification-sender:master
+        command: bash -c 'while ! [ -f vendor/autoload.php ]; do sleep 1; echo "sleep 1"; done; bin/console rabbit_mq:consumer:notification'
+        working_dir: /var/www
+        environment:
+            MONGO_HOST: mongo
+            RABBITMQ_DSN: amqp://rabbitmq:5672
+    ## END DEV
+    ## BEGIN STAGE
+    #notification-sender-consumer:
+    #    image: dkr.hanaboso.net/pipes/notification-sender:master
+    #    command: bin/console rabbit_mq:consumer:notification
+    #    environment:
+    #      MONGO_HOST: mongo
+    #      RABBITMQ_DSN: amqp://rabbitmq:5672
+    ## END STAGE
+
+    multi-probe:
+        image: dkr.hanaboso.net/pipes/pipes/multi-probe:master
         ports:
             - ${DEV_IP}:8007:8007
 
     multi-counter:
-        image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
-        user: ${DEV_UID}:${DEV_GID}
+        image: dkr.hanaboso.net/pipes/pipes/pf-bridge:master
         environment:
             # NODE_ENV: debug
-            RABBITMQ_HOST: rabbitmq
-            RABBITMQ_PORT: '5672'
-            RABBITMQ_USER: guest
-            RABBITMQ_PASS: guest
-            RABBITMQ_VHOST: /
-            REDIS_HOST: 'redis'
-            REDIS_PORT: '6379'
-            REDIS_PASS: ''
-            REDIS_DB: '0'
-            COUNTER_PREFETCH: '100'
-            METRICS_HOST: 'kapacitor'
-            METRICS_PORT: '9100'
-            METRICS_SERVICE: 'influx'
-            #METRICS_HOST: 'mongo'
-            #METRICS_PORT: '27017'
-            #METRICS_SERVICE: 'mongo'
+            METRICS_HOST: kapacitor
+            METRICS_PORT: 9100
+            METRICS_SERVICE: influx
+            PROGRESS_DSN: mongodb://mongo/demo
+            PROGRESS_SAVE: 'true'
         command: './dist/src/bin/pipes.js start multi_counter'
         ports:
             - ${DEV_IP}:8005:8005
+
+    repeater:
+        image: dkr.hanaboso.net/pipes/pipes/pf-bridge:master
+        environment:
+            MONGO_HOST: mongo
+            REPEATER_CHECK_TIMEOUT: 5000
+        command: './dist/src/bin/pipes.js start repeater'
 
     ## BEGIN DEV
     starting-point:
@@ -334,53 +248,7 @@ services:
     #    APP_CLEANUP_TIME: 300
     #    GOROUTINE_LIMIT: 1000
     #  ports:
-    #    - ${DEV_IP}:82:8080
-    ## END STAGE
-
-    repeater:
-        image: 'dkr.hanaboso.net/pipes/pipes/pf-bridge:dev'
-        user: ${DEV_UID}:${DEV_GID}
-        command: './dist/src/bin/pipes.js start repeater'
-        environment:
-            RABBITMQ_HOST: rabbitmq
-            RABBITMQ_PORT: '5672'
-            RABBITMQ_USER: guest
-            RABBITMQ_PASS: guest
-            RABBITMQ_VHOST: /
-            MONGO_HOST: mongo
-            REPEATER_CHECK_TIMEOUT: '5000'
-
-    # PHP Services monolith
-    ## BEGIN DEV
-    notification-sender-api:
-        image: dkr.hanaboso.net/pipes/notification-sender:master
-        environment:
-            MONGO_HOST: mongo
-    ## END DEV
-    ## BEGIN STAGE
-    #notification-sender-api:
-    #    image: dkr.hanaboso.net/pipes/notification-sender:master
-    #    environment:
-    #      MONGO_HOST: mongo
-    ## END STAGE
-
-    # PHP Services monolith
-    ## BEGIN DEV
-    notification-sender-consumer:
-        image: dkr.hanaboso.net/pipes/notification-sender:master
-        command: bash -c 'while ! [ -f vendor/autoload.php ]; do sleep 1; echo "sleep 1"; done; bin/console rabbit_mq:consumer:notification'
-        working_dir: /var/www
-        environment:
-            MONGO_HOST: mongo
-            RABBITMQ_DSN: amqp://rabbitmq:5672
-    ## END DEV
-    ## BEGIN STAGE
-    #notification-sender-consumer:
-    #    image: dkr.hanaboso.net/pipes/notification-sender:master
-    #    command: bash -c 'while ! [ -f vendor/autoload.php ]; do sleep 1; echo "sleep 1"; done; bin/console rabbit_mq:consumer:notification'
-    #    environment:
-    #      MONGO_HOST: mongo
-    #      RABBITMQ_DSN: amqp://rabbitmq:5672
+    #    - ${PUBLISH_SP_HTTP_PORT}:8080
     ## END STAGE
 
     ## BEGIN DEV
@@ -426,117 +294,25 @@ services:
     #        target: /root/.docker/config.json
     ## END STAGE
 
-    # PHP Services monolith
     ## BEGIN DEV
-    backend:
-        image: hanabosocom/php-dev:php-7.4-alpine
+    telegraf:
+        image: hanabosocom/go-base:dev
         user: ${DEV_UID}:${DEV_GID}
-        ports:
-            - ${DEV_IP}:80:80
         environment:
-            PHP_WEBROOT: /var/www/pipes/pf-bundles/public
-            PHP_IDE_CONFIG: ${PHP_IDE_CONFIG}
-            COMPOSER_HOME: ${HOME}/dev/.composer
-            BACKEND_HOST: ${BACKEND_URL}/
-            FRONTEND_HOST: ${BACKEND_URL}/
-            BACKEND_DSN: ${BACKEND_URL}/
-            FRONTEND_DSN: ${BACKEND_URL}/
-            SMTP_USER: dev.email.hb@gmail.com
-            SMTP_PASSWORD: jVME2RkX9xyYhj9v
-            MONGODB_DSN: mongodb://mongo
-            MONGODB_DB: demo
-            METRICS_HOST: 'kapacitor'
-            METRICS_PORT: '9100'
-            METRICS_SERVICE: 'influx'
-            ELASTIC_HOST: elasticsearch
-            ELASTIC_INDEX: 'index'
-            REDIS_DSN: 'redis://redis'
-            CRON_DSN: cron-api:8080
-            FTP_API_DSN: ftp-api
-            MAILER_API_DSN: mailer-api
-            MAPPER_API_DSN: mapper-api
-            MONOLITH_API_DSN: php-sdk
-            MULTI_PROBE_DSN: multi-probe:8007
-            STARTING_POINT_DSN: starting-point:8080
-            TOPOLOGY_API_DSN: topology-api:8080
-            XML_PARSER_API_DSN: xml-parser-api
-            RABBIT_DSN: amqp://rabbitmq:5672/
-            NOTIFICATION_DSN: notification-sender-api
-            WORKER_DEFAULT_PORT: 8008
-        working_dir: /var/www/pipes/pf-bundles
+            DEV_UID: ${DEV_UID}
+            DEV_GID: ${DEV_GID}
+            APP_DEBUG: 'true'
+            METRICS_DSN: influxdb://kapacitor:9100
         volumes:
-            - ../../:/var/www/pipes
-            - ${SSH_AUTH_SOCK}:${SSH_AUTH}
-            - ${HOME}/dev/.composer:${HOME}/dev/.composer
+            - ../../rabbitmq-telegraf:/app
+        command: go run main.go
     ## END DEV
     ## BEGIN STAGE
-    #backend:
-    #    image: dkr.hanaboso.net/pipes/pipes/pf-bundle:${TAG_MONOLITH}
+    #telegraf:
+    #    image: dkr.hanaboso.net/pipes/pipes/rabbitmq-telegraf:master
     #    environment:
-    #      BACKEND_HOST: ${BACKEND_URL}/
-    #      FRONTEND_HOST: ${BACKEND_URL}/
-    #      BACKEND_DSN: ${BACKEND_URL}/
-    #      FRONTEND_DSN: ${BACKEND_URL}/
-    #      SMTP_USER: dev.email.hb@gmail.com
-    #      SMTP_PASSWORD: jVME2RkX9xyYhj9v
-    #      MONGODB_DSN: mongodb://mongo/demo
-    #      MONGODB_DB: demo
-    #      METRICS_HOST: 'kapacitor'
-    #      METRICS_PORT: '9100'
-    #      METRICS_SERVICE: 'influx'
-    #      ELASTIC_HOST: elasticsearch
-    #      ELASTIC_INDEX: 'logstash-2018.01.31'
-    #      REDIS_DSN: 'redis://redis'
-    #      CRON_DSN: cron-api:8080
-    #      FTP_API_DSN: ftp-api
-    #      MAILER_API_DSN: mailer-api
-    #      MAPPER_API_DSN: mapper-api
-    #      MONOLITH_API_DSN: php-sdk
-    #      MULTI_PROBE_DSN: multi-probe:8007
-    #      STARTING_POINT_DSN: starting-point:8080
-    #      TOPOLOGY_API_DSN: topology-api:8080
-    #      XML_PARSER_API_DSN: xml-parser-api
-    #      RABBIT_DSN: amqp://rabbitmq:5672/
-    #      NOTIFICATION_DSN: notification-sender-api
-    #      WORKER_DEFAULT_PORT: 8008
+    #      METRICS_DSN: influxdb://kapacitor:9100
     ## END STAGE
-
-    frontend:
-        ## BEGIN DEV
-        image: dkr.hanaboso.net/pipes/pipes/nodejs-build:dev
-        user: ${DEV_UID}:${DEV_GID}
-        working_dir: /var/www/pipes/frontend
-        environment:
-            NPM_INSTALL: ${NPM_INSTALL}
-            STARTING_POINT_URL: starting-point:8080
-            NPM_START: "yes" # webpackserver
-        ports:
-            - ${DEV_IP}:81:8080
-        volumes:
-            - ../../:/var/www/pipes
-            - ./stack/nginx.conf:/etc/nginx/nginx.conf
-        # TODO: Use dynamic dns resolution in Nginx instead
-    ## END DEV
-    ## BEGIN STAGE
-    #    image: dkr.hanaboso.net/pipes/pipes/frontend:${TAG_FRONTEND}
-    #    environment:
-    #      BACKEND_URL: ${BACKEND_URL}
-    #      FRONTEND_URL: ${BACKEND_URL}
-    #      STARTING_POINT_URL: starting-point:8080
-    #    ports:
-    #      - ${PUBLISH_HTTP_PORT}:80
-    ## END STAGE
-
-    stream:
-        image: dkr.hanaboso.net/pipes/pipes/stream:dev
-        environment:
-            - RABBITMQ_HOST=rabbitmq
-            - STREAM_WS_PORT=80
-            - STREAM_HTTP_PORT=3030
-            - STREAM_QUEUE=pipes.stream
-        ports:
-            - ${DEV_IP}:3030:3030
-        # - ${DEV_IP}:8080:80
 
     ## BEGIN DEV
     cron-api:
@@ -564,6 +340,89 @@ services:
     #      MONGO_COLLECTION: cron_table
     ## END STAGE
 
+    frontend:
+        ## BEGIN DEV
+        image: dkr.hanaboso.net/pipes/pipes/nodejs-build:dev
+        user: ${DEV_UID}:${DEV_GID}
+        working_dir: /var/www/pipes/frontend
+        environment:
+            FRONTEND_URL: ${BACKEND_URL}:80
+            BACKEND_URL: ${BACKEND_URL}:81
+            STARTING_POINT_URL: http://${DEV_IP}:82
+        ports:
+            - ${DEV_IP}:80:8080
+        volumes:
+            - ../../:/var/www/pipes
+    ## END DEV
+    ## BEGIN STAGE
+    #    image: dkr.hanaboso.net/pipes/pipes/frontend:${TAG_FRONTEND}
+    #    environment:
+    #      BACKEND_URL: ${BACKEND_URL}
+    #      FRONTEND_URL: ${FRONTEND_URL}
+    #      STARTING_POINT_URL: ${SP_URL}
+    #    ports:
+    #      - ${PUBLISH_FE_HTTP_PORT}:80
+    ## END STAGE
+
+    # PHP Services monolith
+    ## BEGIN DEV
+    backend:
+        image: hanabosocom/php-dev:php-7.4-alpine
+        user: ${DEV_UID}:${DEV_GID}
+        ports:
+            - ${DEV_IP}:80:80
+        environment:
+            PHP_WEBROOT: /var/www/pipes/pf-bundles/public
+            PHP_IDE_CONFIG: ${PHP_IDE_CONFIG}
+            COMPOSER_HOME: ${HOME}/dev/.composer
+            BACKEND_DSN: ${BACKEND_URL}/
+            FRONTEND_DSN: ${BACKEND_URL}/
+            NOTIFICATION_DSN: notification-sender-api
+            RABBIT_DSN: amqp://rabbitmq:5672/
+            MONGODB_DSN: mongodb://mongo
+            MONGODB_DB: demo
+            METRICS_HOST: kapacitor
+            METRICS_PORT: 9100
+            METRICS_SERVICE: influx
+            ELASTIC_HOST: elasticsearch
+            ELASTIC_INDEX: index
+            CRON_DSN: cron-api:8080
+            MONOLITH_API_DSN: php-sdk
+            MULTI_PROBE_DSN: multi-probe:8007
+            STARTING_POINT_DSN: starting-point:8080
+            TOPOLOGY_API_DSN: topology-api:8080
+            WORKER_DEFAULT_PORT: 8008
+        working_dir: /var/www/pipes/pf-bundles
+        volumes:
+            - ../../:/var/www/pipes
+            - ${SSH_AUTH_SOCK}:${SSH_AUTH}
+            - ${HOME}/dev/.composer:${HOME}/dev/.composer
+    ## END DEV
+    ## BEGIN STAGE
+    #backend:
+    #    image: dkr.hanaboso.net/pipes/pipes/pf-bundle:${TAG_MONOLITH}
+    #    ports:
+    #      - ${PUBLISH_BE_HTTP_PORT}:80
+    #    environment:
+    #      BACKEND_DSN: ${BACKEND_URL}/
+    #      FRONTEND_DSN: ${BACKEND_URL}/
+    #      MONGODB_DSN: mongodb://mongo/demo
+    #      MONGODB_DB: demo
+    #      METRICS_HOST: kapacitor
+    #      METRICS_PORT: 9100
+    #      METRICS_SERVICE: influx
+    #      ELASTIC_HOST: elasticsearch
+    #      ELASTIC_INDEX: logstash-2018.01.31
+    #      CRON_DSN: cron-api:8080
+    #      MONOLITH_API_DSN: php-sdk
+    #      MULTI_PROBE_DSN: multi-probe:8007
+    #      STARTING_POINT_DSN: ${SP_URL}
+    #      TOPOLOGY_API_DSN: topology-api:8080
+    #      RABBIT_DSN: amqp://rabbitmq:5672/
+    #      NOTIFICATION_DSN: notification-sender-api
+    #      WORKER_DEFAULT_PORT: 8008
+    ## END STAGE
+
     # RabbitMQ
     rabbitmq:
         image: rabbitmq:3-management-alpine
@@ -589,20 +448,13 @@ services:
     #    deploy:
     #      resources:
     #        limits:
-    #          memory: 2G
+    #          memory: 3G
     ## END STAGE
-
-    redis:
-        image: redis:3.2-alpine
-        ports:
-            - ${DEV_IP}:6379:6379
-        volumes:
-            - redis:/data
 
     logstash:
         image: dkr.hanaboso.net/pipes/pipes/logstash-mongo:master
         environment:
-            - MONGO_DSN=mongodb://mongo:27017
+            - MONGO_DSN=mongodb://mongo:27017/demo?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
             - MONGO_DB=demo
             - MONGO_COLLECTION=Logs
             - LS_JAVA_OPTS=-Xms512m -Xmx512m
@@ -624,27 +476,6 @@ services:
             - ${DEV_IP}:8089:8089/udp
         volumes:
             - influxdb:/var/lib/influxdb
-
-    ## BEGIN DEV
-    telegraf:
-        image: hanabosocom/go-base:dev
-        user: ${DEV_UID}:${DEV_GID}
-        environment:
-            DEV_UID: ${DEV_UID}
-            DEV_GID: ${DEV_GID}
-            APP_DEBUG: 'true'
-            METRICS_DSN: influxdb://kapacitor:9100
-            #METRICS_DSN: mongodb://mongo/metrics?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
-        volumes:
-            - ../../rabbitmq-telegraf:/app
-        command: go run main.go
-    ## END DEV
-    ## BEGIN STAGE
-    #telegraf:
-    #    image: dkr.hanaboso.net/pipes/pipes/rabbitmq-telegraf:master
-    #    environment:
-    #      METRICS_DSN: influxdb://kapacitor:9100
-    ## END STAGE
 
     kapacitor:
         image: dkr.hanaboso.net/pipes/pipes/kapacitor:dev
@@ -668,7 +499,6 @@ services:
 volumes:
     mongodb: {}
     rabbitmq: {}
-    redis: {}
     influxdb: {}
 ## END DEV
 
@@ -691,12 +521,6 @@ volumes:
 #    driver_opts:
 #      type: none
 #      device: /srv/persistent-data/${DEPLOYMENT_PREFIX}/rabbitmq
-#      o: bind
-#  redis:
-#    driver: local
-#    driver_opts:
-#      type: none
-#      device: /srv/persistent-data/${DEPLOYMENT_PREFIX}/redis
 #      o: bind
 #
 #secrets:

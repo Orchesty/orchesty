@@ -41,16 +41,10 @@ lib-python-dev-build:
 njs-build-image:
     stage: stage1
     script:
-        - cd $REPO_ROOT/frontend/docker/build
-        - IMAGE=dkr.hanaboso.net/pipes/pipes/nodejs-build:${CI_BUILD_REF_NAME}
-        - docker build -t ${IMAGE} .
-        - docker push ${IMAGE}
-        - IMAGE=hanabosocom/nodejs-build:${CI_BUILD_REF_NAME}
-        - docker build -t ${IMAGE} .
-        - docker push ${IMAGE}
+        - cd $REPO_ROOT/frontend/
+        - make build-dev TAG=${CI_BUILD_REF_NAME}
     only:
         - dev
-        - master
         - ci
 
 lib-python-build:
@@ -443,18 +437,16 @@ stage-demo:
     stage: stage5
     when: manual
     script:
-        - rsync -av --delete --exclude '.git' ./ ~/stage_demo
-        - cd ~/stage_demo/clients/demo
-        - export COMPOSE_PROJECT_NAME=stagedemo
-        - export NPM_INSTALL="yes"
-        - make docker-pull-dev init-dev DEV_YML=docker-compose.ci.yml
-    script:
         - cd clients/demo
         - make docker-compose.ci.yml
         - source <(../../build/bin/map-branch-image-tags.sh ./branch-image-tag-map ${CI_BUILD_REF_NAME} -e)
         - export DEPLOYMENT_PREFIX=demo
-        - export PUBLISH_HTTP_PORT=6539
-        - export BACKEND_URL=https://pipes-demo.stage.hanaboso.net
+        - export PUBLISH_FE_HTTP_PORT=6539
+        - export PUBLISH_BE_HTTP_PORT=14046
+        - export PUBLISH_SP_HTTP_PORT=82
+        - export BACKEND_URL=https://api-pipes-demo.stage.hanaboso.net
+        - export FRONTEND_URL=https://pipes-demo.stage.hanaboso.net
+        - export SP_URL=https://sp-pipes-demo.stage.hanaboso.net
         - export DOCKER_HOST=192.168.10.31:2376
         - export DOCKER_TLS_VERIFY=1
         - docker stack deploy --with-registry-auth -c docker-compose.ci.yml ${DEPLOYMENT_PREFIX}

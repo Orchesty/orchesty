@@ -69,6 +69,21 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::getUserApps
+     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::doRequest
+     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::getSdks
+     *
+     * @throws Exception
+     */
+    public function testGetUserAppsNoResponse(): void
+    {
+        $dto = new ResponseDto(200, '', Json::encode([]), []);
+
+        $res = $this->createLocator($dto)->getUserApps('user');
+        self::assertEquals(['items' => []], $res);
+    }
+
+    /**
      * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::getAppDetail
      * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::doRequest
      * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::getSdks

@@ -83,7 +83,7 @@ services:
         mem_limit: 128MB
 
     repeater:
-        image: hanaboso/pipes-pf-bridge:master
+        image: dkr.hanaboso.net/pipes/pipes/pf-bridge:master
         environment:
             MONGO_HOST: mongo
             REPEATER_CHECK_TIMEOUT: 5000
@@ -160,7 +160,7 @@ services:
             STARTING_POINT_DSN: starting-point:8080
             TOPOLOGY_API_DSN: topology-api:8080
             WORKER_DEFAULT_PORT: 8008
-            mem_limit: 64MB
+        mem_limit: 64MB
 
     logstash:
         image: dkr.hanaboso.net/pipes/pipes/logstash-mongo:master

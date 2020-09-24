@@ -1,7 +1,7 @@
 {
     "name": "hanaboso/pipes-connectors",
     "description": "Connectors for PipesFramework",
-    "version": "1.4.9",
+    "version": "1.5.0",
     "license": "GPL-3.0-or-later",
     "require": {
         "php": "^7.4",
@@ -9,8 +9,8 @@
         "ext-intl": "*",
         "ext-mbstring": "*",
         "ext-pgsql": "*",
-        "hanaboso/app-store": "^1.4",
-        "hanaboso/pipes-php-sdk": "^1.4",
+        "hanaboso/app-store": "^1.5",
+        "hanaboso/pipes-php-sdk": "^1.5",
         "hanaboso/rabbit-mq-bundle": "^1.4"
     },
     "require-dev": {

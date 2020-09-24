@@ -1,7 +1,7 @@
 {
     "name": "hanaboso/notification-sender",
     "description": "NotificationSender for Symfony",
-    "version": "1.1.12",
+    "version": "1.2.0",
     "license": "GPL-3.0-or-later",
     "require": {
         "php": "^7.4",
@@ -9,7 +9,7 @@
         "ext-iconv": "*",
         "ext-intl": "*",
         "ext-mbstring": "*",
-        "hanaboso/commons-bundle": "^2.0",
+        "hanaboso/commons-bundle": "^2.1",
         "hanaboso/email-service-bundle": "^1.1",
         "hanaboso/rabbit-mq-bundle": "^1.4",
         "hanaboso/rest-bundle": "^1.0",

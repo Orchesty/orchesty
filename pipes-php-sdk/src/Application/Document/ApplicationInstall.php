@@ -4,8 +4,6 @@ namespace Hanaboso\PipesPhpSdk\Application\Document;
 
 use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Hanaboso\CommonsBundle\Crypt\CryptManager;
-use Hanaboso\CommonsBundle\Crypt\Exceptions\CryptException;
 use Hanaboso\CommonsBundle\Database\Traits\Document\CreatedTrait;
 use Hanaboso\CommonsBundle\Database\Traits\Document\DeletedTrait;
 use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
@@ -32,8 +30,6 @@ class ApplicationInstall
     public const USER = 'user';
     public const KEY  = 'key';
 
-    private const EMPTY = '01_N86jVkKpY154CDLSDO92ZLH4PVg3zxZ6ea83UBanK9o=:hUijwPbtwKyeK8Wa9WwWxOuJJ5CDRL2v9CJYYdAg1Fg=:LmP28iFgUwppq42xmve7tI+cnT+WD+sD:A4YIOJjqBHWm3WDTTu67jbHuPb+2Og==';
-
     /**
      * @var string
      *
@@ -57,6 +53,8 @@ class ApplicationInstall
 
     /**
      * @var mixed[]
+     *
+     * @ODM\Field(type="hash")
      */
     private array $settings = [];
 
@@ -65,7 +63,7 @@ class ApplicationInstall
      *
      * @ODM\Field(type="string")
      */
-    private string $encryptedSettings;
+    private string $encryptedSettings = '';
 
     /**
      * @var mixed[]
@@ -101,6 +99,26 @@ class ApplicationInstall
     public function setSettings(array $settings): ApplicationInstall
     {
         $this->settings = array_merge($this->settings, $settings);
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEncryptedSettings(): string
+    {
+        return $this->encryptedSettings;
+    }
+
+    /**
+     * @param string $encryptedSettings
+     *
+     * @return ApplicationInstall
+     */
+    public function setEncryptedSettings(string $encryptedSettings): ApplicationInstall
+    {
+        $this->encryptedSettings = $encryptedSettings;
 
         return $this;
     }
@@ -183,26 +201,6 @@ class ApplicationInstall
         $this->nonEncryptedSettings = $nonEncryptedSettings;
 
         return $this;
-    }
-
-    /**
-     * @ODM\PreFlush
-     *
-     * @throws CryptException
-     */
-    public function preFlush(): void
-    {
-        $this->encryptedSettings = CryptManager::encrypt($this->settings);
-    }
-
-    /**
-     * @ODM\PostLoad
-     *
-     * @throws CryptException
-     */
-    public function postLoad(): void
-    {
-        $this->settings = CryptManager::decrypt($this->encryptedSettings ?: self::EMPTY);
     }
 
     /**

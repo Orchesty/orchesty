@@ -10,3 +10,11 @@ services:
             - ['setLogger', ['@monolog.logger.commons']]
         tags:
             - { name: kernel.event_subscriber }
+
+    listener.application_install:
+        class: Hanaboso\PipesPhpSdk\Application\Listener\ApplicationInstallListener
+        arguments:
+            - '@hbpf.commons.crypt.crypt_manager'
+        tags:
+            -  { name: doctrine_mongodb.odm.event_listener, event: preFlush }
+            -  { name: doctrine_mongodb.odm.event_listener, event: postLoad }

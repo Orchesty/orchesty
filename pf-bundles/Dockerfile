@@ -5,7 +5,12 @@ RUN cd pf-bundles && \
     sed -i -e 's/"symlink": true/"symlink": false/g' composer.json && \
     sed -i -e 's/"symlink": true/"symlink": false/g' composer.lock && \
     composer install -a --no-dev && \
-    APP_ENV=prod APP_DEBUG=0 MONGODB_DSN=mongodb://mongo:27017 MONGODB_DB=pipes bin/console cache:warmup
+    APP_ENV=prod APP_DEBUG=0 NOTIFICATION_DSN=notification-sender-api RABBIT_DSN=amqp://rabbitmq:5672/ \
+    MONGODB_DSN=mongodb://mongo:27017 MONGODB_DB=pipes \
+    METRICS_HOST=kapacitor METRICS_PORT=9100 METRICS_SERVICE=influx ELASTIC_HOST=elasticsearch ELASTIC_INDEX=index \
+    CRON_DSN=cron-api:8080 MONOLITH_API_DSN=php-sdk MULTI_PROBE_DSN=multi-probe:8007 \
+    TOPOLOGY_API_DSN=topology-api:8080 WORKER_DEFAULT_PORT=8008 STARTING_POINT_DSN=starting-point:8080 \
+    bin/console cache:warmup
 
 FROM hanabosocom/php-base:php-7.4-alpine
 ENV APP_DEBUG=0 APP_ENV=prod PHP_FPM_MAX_CHILDREN=10 PHP_FPM_MAX_REQUESTS=500

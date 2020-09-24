@@ -60,8 +60,8 @@ final class ApplicationInstallRepository extends DocumentRepository
         }
 
         return $this->findUserApp(
-            (string) PipesHeaders::get('application', $dto->getHeaders()),
-            (string) PipesHeaders::get('user', $dto->getHeaders())
+            (string) PipesHeaders::get(PipesHeaders::APPLICATION, $dto->getHeaders()),
+            (string) PipesHeaders::get(PipesHeaders::USER, $dto->getHeaders())
         );
     }
 

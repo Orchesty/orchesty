@@ -7,6 +7,7 @@ interface IPNodeProcess {
     nodeId: string;
     nodeName: string;
     status: string;
+    updated: Date;
 }
 
 interface IProcessMessage {
@@ -59,14 +60,14 @@ export class MongoProgressStorage {
             });
         }
 
-
         const duration = moment(end ?? Date.now()).diff(moment(cm.getCreatedTime()), "millisecond");
 
         const node: IPNodeProcess = {
             processId: cm.getProcessId(),
             nodeId: cm.getNodeId(),
             nodeName: cm.getNodeLabel().node_name,
-            status: cm.isOk() ? "OK" : "NOK"
+            status: cm.isOk() ? "OK" : "NOK",
+            updated: new Date()
         };
 
         const document: IProcessMessage = {

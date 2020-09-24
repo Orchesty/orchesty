@@ -109,6 +109,10 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
 
         $applicationInstall = $this->manager
             ->saveApplicationSettings('null', 'user', ['user' => 'user789']);
+        $this->dm->clear();
+
+        /** @var ApplicationInstall $applicationInstall */
+        $applicationInstall = $this->dm->getRepository(ApplicationInstall::class)->find($applicationInstall->getId());
 
         self::assertEquals(
             'user789',

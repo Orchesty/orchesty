@@ -14,11 +14,12 @@ RUN apk update --no-cache && \
     rm /etc/nginx/nginx.conf && \
     rm -rf /etc/nginx/conf.d
 
+RUN rm -rf /var/www/html/*
 COPY entrypoint.sh /
 COPY nginx.conf /etc/nginx
 COPY --from=0 /dist /var/www/html/ui
 
-WORKDIR /var/www/html
+WORKDIR /var/www/html/ui
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 

@@ -78,7 +78,7 @@ phpcontroller: database-clear
 phpcoverage: database-clear
 	$(DE) php vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --coverage-html var/coverage --whitelist src tests
 
-phpcoverage-ci:
+phpcoverage-ci: database-clear
 	$(DE) ./vendor/hanaboso/php-check-utils/bin/coverage.sh -p $$(nproc)
 
 test: docker-up-force composer-install fasttest docker-down-clean

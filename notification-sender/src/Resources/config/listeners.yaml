@@ -1,0 +1,11 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    listener.notification_settings:
+        class: Hanaboso\NotificationSender\Listener\NotificationSettingsListener
+        arguments:
+            - '@hbpf.commons.crypt.crypt_manager'
+        tags:
+            -  { name: doctrine_mongodb.odm.event_listener, event: preFlush }
+            -  { name: doctrine_mongodb.odm.event_listener, event: postLoad }

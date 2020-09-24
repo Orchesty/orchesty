@@ -6,7 +6,7 @@ import {Field, reduxForm} from 'redux-form'
 import * as topologyActions from 'actions/topologyActions';
 import * as applicationActions from 'actions/applicationActions';
 
-import {FormTextInput, FormCheckboxInput} from 'elements/formInputs';
+import {FormTextInput} from 'elements/formInputs';
 
 class TopologyForm extends React.Component {
   constructor(props) {
@@ -20,27 +20,27 @@ class TopologyForm extends React.Component {
     this.props.setSubmit(this.submit.bind(this));
   }
 
-  setButton(button){
+  setButton(button) {
     this._button = button;
   }
 
-  submit(){
+  submit() {
     this._button.click();
   }
 
-  onSubmit(data){
+  onSubmit(data) {
     const {addNew, initialValues} = this.props;
     const {name, descr, enabled} = data;
     const sendData = {descr, enabled: Boolean(enabled)};
-    if (addNew || initialValues.visibility !== 'public'){
+    if (addNew || initialValues.visibility !== 'public') {
       sendData['name'] = name;
     }
     this.props.commitAction(sendData).then(
       response => {
-        const { onSuccess, openTopology, isNew } = this.props;
+        const {onSuccess, openTopology, isNew} = this.props;
 
-        if (response){
-          if (onSuccess){
+        if (response) {
+          if (onSuccess) {
             onSuccess(this);
           }
 
@@ -61,8 +61,8 @@ class TopologyForm extends React.Component {
       <form className="form-horizontal form-label-left" onSubmit={this.props.handleSubmit(this.onSubmit)}>
         {!addNew && <Field name="_id" component={FormTextInput} label="Id" readOnly/>}
         <Field name="name" component={FormTextInput} label="Name" readOnly={nameReadOnly} autoFocus/>
-        <Field name="descr" component={FormTextInput} label="Description" />
-        <button ref={this.setButton} className="hidden" />
+        <Field name="descr" component={FormTextInput} label="Description"/>
+        <button ref={this.setButton} className="hidden"/>
       </form>
     );
   }
@@ -78,7 +78,7 @@ TopologyForm.propTypes = {
   commitAction: PropTypes.func.isRequired
 };
 
-function validate(values){
+function validate(values) {
   const errors = {};
   if (!values.name) {
     errors.name = 'Name is required';
@@ -95,12 +95,12 @@ function mapStateToProps(state, ownProps) {
   };
 }
 
-function mapActionsToProps(dispatch, ownProps){
+function mapActionsToProps(dispatch, ownProps) {
   return {
     commitAction: (data) => dispatch(
       ownProps.addNew ? topologyActions.topologyCreate(Object.assign(data, {category: ownProps.categoryId ? ownProps.categoryId : null}), ownProps.newProcessId) : topologyActions.topologyUpdate(ownProps.topologyId, data)
     ),
-    openTopology: id => dispatch(applicationActions.openPage('topology_detail', { topologyId: id, activeTab: 'schema' }))
+    openTopology: id => dispatch(applicationActions.openPage('topology_detail', {topologyId: id, activeTab: 'schema'}))
   }
 }
 

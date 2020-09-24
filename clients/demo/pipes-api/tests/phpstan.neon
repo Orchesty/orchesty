@@ -6,6 +6,7 @@ parameters:
 		container_xml_path: %rootDir%/../../../var/cache/test/Demo_KernelTestDebugContainer.xml
 	ergebnis:
 		classesAllowedToBeExtended:
+			- Demo\Connector\HubSpotCreateContactAbstract
 			- DemoTests\KernelTestCaseAbstract
 			- Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract
 			- Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract

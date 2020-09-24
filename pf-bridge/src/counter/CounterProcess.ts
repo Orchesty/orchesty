@@ -59,7 +59,7 @@ class CounterProcess {
             nok: 0,
             success: true,
             messages: [],
-            start_timestamp: Date.now(),
+            start_timestamp: cm.getCreatedTime(),
             end_timestamp: 0,
         };
     }
