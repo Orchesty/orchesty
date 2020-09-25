@@ -8,7 +8,9 @@ import * as applicationActions from 'actions/applicationActions';
 
 import TextInput from 'elements/input/TextInput';
 import PasswordInput from 'elements/input/PasswordInput';
+import StateButton from 'elements/input/StateButton';
 import NonAuthPage from 'wrappers/NonAuthPage';
+import processes from "rootApp/enums/processes";
 
 class LoginPage extends React.Component {
   constructor(props) {
@@ -43,10 +45,10 @@ class LoginPage extends React.Component {
         <div>
           <Field name="password" component={PasswordInput} label="Password"/>
         </div>
-        {/*<div>*/}
-        {/*  <StateButton type="submit" color="default" processId={processes.authLogin(componentKey)}>Log in</StateButton>*/}
-        {/*  <a className="reset_pass" href="#" onClick={this.resetPasswordClick}>Lost your password?</a>*/}
-        {/*</div>*/}
+        <div>
+          <StateButton type="submit" color="default" processId={processes.authLogin(componentKey)}>Log in</StateButton>
+          {/*<a className="reset_pass" href="#" onClick={this.resetPasswordClick}>Lost your password?</a>*/}
+        </div>
 
         <div className="clearfix"/>
 
