@@ -46,7 +46,7 @@ func setTestEnv() {
 	os.Setenv("RABBITMQ_PASS", "guest")
 	os.Setenv("RABBITMQ_INPUT_QUEUE", "limiter.test_input")
 
-	os.Setenv("LIMITER_PORT", "3030")
+	os.Setenv("LIMITER_ADDR", "127.0.0.1:3030")
 }
 
 func timeoutExit(t *testing.T, stopTest chan bool) {
@@ -125,7 +125,7 @@ func connectRemotes() (rabbitmq.Connection, *storage.Mongo) {
 }
 
 func clientCheckCall(t *testing.T, publisher rabbitmq.Publisher, key string, time int, val int, expected bool) bool {
-	limiterHost := "localhost:" + os.Getenv("LIMITER_PORT")
+	limiterHost := os.Getenv("LIMITER_ADDR")
 
 	reqID := stringsUtils.Random(5, true)
 	content := tcp.CreateTCPCheckRequestContent(reqID, key, time, val)

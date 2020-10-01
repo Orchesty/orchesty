@@ -24,6 +24,7 @@ func (s *Mongo) Connect() {
 	var err error
 	s.logger.Info(fmt.Sprintf("Mongo DB connecting to: %s", s.host), nil)
 	s.session, err = mgo.Dial(s.host)
+	s.session.SetMode(mgo.Monotonic, true)
 
 	if err != nil {
 		s.logger.Error(fmt.Sprintf("Mongo DB error: %s", err), logger.Context{"error": err})
@@ -55,22 +56,31 @@ func (s *Mongo) CanHandle(key string, time int, value int) (bool, error) {
 
 // Remove removes the document by it's unique id
 func (s *Mongo) Remove(key string, id bson.ObjectId) (bool, error) {
-	c := s.getActiveSession().DB(s.db).C(s.collection)
-	err := c.RemoveId(id)
+	session := s.getActiveSession()
+	defer session.Close()
 
-	if err != nil {
+	c := session.DB(s.db).C(s.collection)
+
+	if err := c.RemoveId(id); err != nil {
 		return false, err
 	}
 
 	return true, nil
 }
 
+// ClearCacheItem remove key from memory cache
+func (s *Mongo) ClearCacheItem(key string, val int) bool {
+	return true
+}
+
 // Save persists Message to mongo storage and returns it's limitKey
 func (s *Mongo) Save(m *Message) (string, error) {
-	c := s.getActiveSession().DB(s.db).C(s.collection)
-	err := c.Insert(m)
+	session := s.getActiveSession()
+	defer session.Close()
 
-	if err != nil {
+	c := session.DB(s.db).C(s.collection)
+
+	if err := c.Insert(m); err != nil {
 		return m.LimitKey, err
 	}
 
@@ -79,7 +89,11 @@ func (s *Mongo) Save(m *Message) (string, error) {
 
 // Exists return boolean if any document found with given key or returns error if some mongo error occurs
 func (s *Mongo) Exists(key string) (bool, error) {
-	c := s.getActiveSession().DB(s.db).C(s.collection)
+	session := s.getActiveSession()
+	defer session.Close()
+
+	c := session.DB(s.db).C(s.collection)
+
 	count, err := c.Find(bson.M{"limitkey": key}).Limit(1).Count()
 
 	if err != nil {
@@ -96,11 +110,12 @@ func (s *Mongo) Exists(key string) (bool, error) {
 // Get tries to find up to X messages in the storage by their key, where X is the length param value
 func (s *Mongo) Get(key string, length int) ([]*Message, error) {
 	var messages []*Message
-	c := s.getActiveSession().DB(s.db).C(s.collection)
+	session := s.getActiveSession()
+	defer session.Close()
 
-	err := c.Find(bson.M{"limitkey": key}).Limit(length).Sort("created").Iter().All(&messages)
+	c := session.DB(s.db).C(s.collection)
 
-	if err != nil {
+	if err := c.Find(bson.M{"limitkey": key}).Limit(length).Sort("created").Iter().All(&messages); err != nil {
 		return make([]*Message, 0), err
 	}
 
@@ -109,7 +124,10 @@ func (s *Mongo) Get(key string, length int) ([]*Message, error) {
 
 // Count tries to find up to X messages in the storage by their key, where X is the length param value
 func (s *Mongo) Count(key string) (int, error) {
-	c := s.getActiveSession().DB(s.db).C(s.collection)
+	session := s.getActiveSession()
+	defer session.Close()
+
+	c := session.DB(s.db).C(s.collection)
 
 	return c.Find(bson.M{"limitkey": key}).Count()
 }
@@ -141,10 +159,12 @@ func (s *Mongo) GetDistinctFirstItems() (map[string]*Message, error) {
 // getDistinctKeys returns the distinct limitkey values from collection
 func (s *Mongo) getDistinctKeys() ([]string, error) {
 	var keys []string
-	c := s.getActiveSession().DB(s.db).C(s.collection)
-	err := c.Find(nil).Distinct("limitkey", &keys)
+	session := s.getActiveSession()
+	defer session.Close()
 
-	if err != nil {
+	c := session.DB(s.db).C(s.collection)
+
+	if err := c.Find(nil).Distinct("limitkey", &keys); err != nil {
 		return make([]string, 0), err
 	}
 
@@ -153,12 +173,17 @@ func (s *Mongo) getDistinctKeys() ([]string, error) {
 
 // getActiveSession always returns the active session
 func (s *Mongo) getActiveSession() *mgo.Session {
-	return s.session.Clone()
+	return s.session.Copy()
 }
 
 // DropCollection drops current collection
 func (s *Mongo) DropCollection() {
-	s.session.DB(s.db).C(s.collection).DropCollection()
+	session := s.getActiveSession()
+	defer session.Close()
+
+	if err := session.DB(s.db).C(s.collection).DropCollection(); err != nil {
+		s.logger.Error(fmt.Sprintf("failed drop collection %v", err), logger.Context{"error": err})
+	}
 }
 
 // NewMongo returns the pointer to new created mongo storage instance
