@@ -1,11 +1,12 @@
 package limiter
 
 import (
+	"fmt"
+
 	"limiter/pkg/logger"
 	"limiter/pkg/rabbitmq"
 	"limiter/pkg/storage"
 
-	"fmt"
 	"github.com/streadway/amqp"
 )
 
@@ -40,9 +41,12 @@ func NewLimiter(
 // Start initializes the timers and starts consumption
 func (l *limiter) Start() {
 	l.msgTimer.Init()
+
 	go l.consumer.Consume(func(msg <-chan amqp.Delivery) {
 		for m := range msg {
-			l.handleAmqpMessage(m)
+			if err := l.handleAmqpMessage(m); err != nil {
+				l.logger.Error(fmt.Sprintf("failed to consume message [%v]", err), nil)
+			}
 		}
 	})
 }
@@ -65,7 +69,11 @@ func (l *limiter) IsFreeLimit(key string, time int, value int) (bool, error) {
 // handleAmqpMessage is called whenever new amqp message is consumed
 // should create storage message object and save it, or discard it if the message key is blacklisted
 func (l *limiter) handleAmqpMessage(m amqp.Delivery) error {
-	defer m.Ack(false)
+	defer func() {
+		if err := m.Ack(false); err != nil {
+			l.logger.Error(fmt.Sprintf("failed to ack message [%v]", err), nil)
+		}
+	}()
 
 	context := ctxFromDelivery(m)
 	l.logger.Info("Limiter received message from RabbitMQ", context)

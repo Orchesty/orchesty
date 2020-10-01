@@ -79,11 +79,17 @@ func (mt *messageTimer) release(key string, count int) bool {
 		mt.deleteMessage(m)
 	}
 
-	exists, err := mt.storage.Exists(key)
+	exists := false
+	if msgs == nil {
+		mt.storage.ClearCacheItem(key, 0)
+	} else {
+		//todo: proc kdyz je v mongu nic stale se kouka na kes
+		exists, err = mt.storage.Exists(key)
 
-	if err != nil {
-		mt.logger.Error(fmt.Sprintf("Release could not check if some messages exist for key %s Error: %s", key, err), logger.Context{"error": err})
-		return true
+		if err != nil {
+			mt.logger.Error(fmt.Sprintf("Release could not check if some messages exist for key %s Error: %s", key, err), logger.Context{"error": err})
+			return true
+		}
 	}
 
 	return exists

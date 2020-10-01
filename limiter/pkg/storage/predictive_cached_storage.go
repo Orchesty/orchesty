@@ -50,6 +50,38 @@ func (cm *PredictiveCachedStorage) Remove(key string, id bson.ObjectId) (bool, e
 	return cm.db.Remove(key, id)
 }
 
+// ClearCacheItem remove key from memory cache
+func (cm *PredictiveCachedStorage) ClearCacheItem(key string, val int) bool {
+	item, ok := cm.cache[key]
+	if !ok {
+		return false
+	}
+	item.count = 0
+	cm.cache[key] = item
+
+	return true
+}
+
+func (cm *PredictiveCachedStorage) canHandleTicker(t <-chan time.Time, key string) {
+	for range t {
+		cm.logger.Info(fmt.Sprintf("Handle tick for key: '%s' at: %v", key, t), nil)
+		i, _ := cm.getCachedItem(key)
+		i.count = i.count - i.max
+
+		if i.count > 0 {
+			cm.saveCachedItem(key, i)
+			continue
+		}
+
+		if i.ticker != nil {
+			cm.logger.Info(fmt.Sprintf("Remove ticker for key %s", key), nil)
+			i.ticker.Stop()
+		}
+
+		delete(cm.cache, key)
+	}
+}
+
 // CanHandle decides whether the message can be processed
 func (cm *PredictiveCachedStorage) CanHandle(key string, interval int, value int) (bool, error) {
 	item, isNew := cm.getCachedItem(key)
@@ -57,23 +89,7 @@ func (cm *PredictiveCachedStorage) CanHandle(key string, interval int, value int
 		item.max = value
 
 		item.ticker = time.NewTicker(time.Second * time.Duration(interval))
-		go func() {
-			for range item.ticker.C {
-				i, _ := cm.getCachedItem(key)
-				i.count = i.count - i.max
-
-				if i.count > 0 {
-					cm.saveCachedItem(key, i)
-					continue
-				}
-
-				if i.ticker != nil {
-					i.ticker.Stop()
-				}
-
-				delete(cm.cache, key)
-			}
-		}()
+		go cm.canHandleTicker(item.ticker.C, key)
 	}
 
 	item.count++
@@ -109,7 +125,9 @@ func (cm *PredictiveCachedStorage) hasCachedItem(key string) bool {
 func (cm *PredictiveCachedStorage) getCachedItem(key string) (cacheItem, bool) {
 	item, ok := cm.cache[key]
 	if ok {
-		return item, false
+		if item.ticker != nil {
+			return item, false
+		}
 	}
 
 	item = cacheItem{}

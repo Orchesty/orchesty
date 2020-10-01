@@ -9,6 +9,10 @@ import (
 
 type csMongoMock struct{}
 
+func (mm *csMongoMock) ClearCacheItem(key string, val int) bool {
+	return true
+}
+
 func (mm *csMongoMock) CanHandle(key string, interval int, value int) (bool, error) {
 	has, _ := mm.Exists(key)
 
