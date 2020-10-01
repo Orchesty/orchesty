@@ -80,6 +80,17 @@ func (cs *CachedStorage) Remove(key string, id bson.ObjectId) (bool, error) {
 	return true, nil
 }
 
+// ClearCacheItem remove key from memory cache
+func (cs *CachedStorage) ClearCacheItem(key string, val int) bool {
+	_, ok := cs.cache[key]
+	if !ok {
+		return false
+	}
+	cs.cache[key] = 0
+
+	return true
+}
+
 func (cs *CachedStorage) increaseCount(key string) {
 	cs.cache[key] = cs.getCount(key) + 1
 }

@@ -31,6 +31,8 @@ type Saver interface {
 type Remover interface {
 	// Remove removes the document by it's unique object id
 	Remove(key string, id bson.ObjectId) (bool, error)
+	// ClearCacheItem remove item in cache
+	ClearCacheItem(key string, val int) bool
 }
 
 // Finder should be used for searching in storage

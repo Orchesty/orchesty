@@ -13,6 +13,10 @@ import (
 
 type mongoMock struct{}
 
+func (mm *mongoMock) ClearCacheItem(key string, val int) bool {
+	return true
+}
+
 func (mm *mongoMock) CanHandle(key string, time int, value int) (bool, error) {
 	return mm.Exists(key)
 }

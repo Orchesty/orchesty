@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -18,25 +19,35 @@ import (
 
 // main runs the limiter program
 func main() {
-	os.Setenv("APP_NAME", "limiter")
+	if err := os.Setenv("APP_NAME", "limiter"); err != nil {
+		fmt.Printf("can't set environment APP_NAME [%v]", err)
+		os.Exit(1)
+	}
 
 	prepareLogger()
 	store := prepareStorage()
 	guard := prepareGuard(store)
-	consumer, publisher := prepareRabbit()
+	consumer, publisher, err := prepareRabbit()
+	if err != nil {
+		logger.GetLogger().Error(fmt.Sprintf("failed to prepare rabbit connection [%v]", err), nil)
+		os.Exit(1)
+	}
 
 	timerChan := make(chan *storage.Message)
+	//TODO: this is only fix prevent call fatal in goroutines
+	serverFault := make(chan bool, 1)
 	mt := limiter.NewMessageTimer(store, publisher, timerChan, logger.GetLogger())
 	lim := limiter.NewLimiter(store, consumer, mt, timerChan, guard, logger.GetLogger())
 
 	// starts the tcp server
 	tcpServer := tcp.NewTCPServer(lim, logger.GetLogger())
-	limiterPort, _ := strconv.Atoi(env.GetEnv("LIMITER_PORT", "3333"))
-	go tcpServer.Start(limiterPort)
+	limiterAddr := env.GetEnv("LIMITER_ADDR", "127.0.0.1:3333")
+
+	go tcpServer.Start(limiterAddr, serverFault)
 
 	lim.Start()
 
-	gracefulShutdown(tcpServer, consumer, publisher)
+	gracefulShutdown(tcpServer, consumer, publisher, serverFault)
 }
 
 func prepareStorage() storage.Storage {
@@ -50,9 +61,12 @@ func prepareStorage() storage.Storage {
 	return storage.NewPredictiveCachedStorage(db, time.Hour*24, logger.GetLogger())
 }
 
-func prepareRabbit() (rabbitmq.Consumer, rabbitmq.Publisher) {
+func prepareRabbit() (rabbitmq.Consumer, rabbitmq.Publisher, error) {
 	inputQueue := env.GetEnv("RABBITMQ_INPUT_QUEUE", "pipes.limiter")
-	rabbitPort, _ := strconv.Atoi(env.GetEnv("RABBITMQ_PORT", "5672"))
+	rabbitPort, err := strconv.Atoi(env.GetEnv("RABBITMQ_PORT", "5672"))
+	if err != nil {
+		return nil, nil, fmt.Errorf("can't get RABBITMQ_PORT [%v]", err)
+	}
 	conn := rabbitmq.NewConnection(
 		env.GetEnv("RABBITMQ_HOST", "rabbitmq"),
 		rabbitPort,
@@ -69,7 +83,7 @@ func prepareRabbit() (rabbitmq.Consumer, rabbitmq.Publisher) {
 	consumer := rabbitmq.NewConsumer(conn, inputQueue, logger.GetLogger())
 	publisher := rabbitmq.NewPublisher(conn, "", logger.GetLogger())
 
-	return consumer, publisher
+	return consumer, publisher, nil
 }
 
 func prepareLogger() {
@@ -103,9 +117,25 @@ func prepareGuard(storage storage.Storage) limiter.Guard {
 }
 
 // gracefulShutdown handles SIGINT and SIGTERM signal to stop the app gracefully
-func gracefulShutdown(srv *tcp.Server, c rabbitmq.Consumer, p rabbitmq.Publisher) {
+func gracefulShutdown(srv *tcp.Server, c rabbitmq.Consumer, p rabbitmq.Publisher, fault <-chan bool) {
 	sigs := make(chan os.Signal, 1)
 	quit := make(chan bool, 1)
+
+	closeSources := func() {
+		srv.Stop()
+		c.Stop()
+		p.Stop()
+
+		quit <- true
+	}
+
+	go func() {
+		<-fault
+		log.Println()
+		logger.GetLogger().Info("Fault signal from tcp server received", nil)
+
+		closeSources()
+	}()
 
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 
@@ -114,11 +144,7 @@ func gracefulShutdown(srv *tcp.Server, c rabbitmq.Consumer, p rabbitmq.Publisher
 		log.Println()
 		logger.GetLogger().Info("Signal received: "+sig.String(), nil)
 
-		srv.Stop()
-		c.Stop()
-		p.Stop()
-
-		quit <- true
+		closeSources()
 	}()
 
 	<-quit

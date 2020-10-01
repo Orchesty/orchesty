@@ -97,29 +97,45 @@ func NewTCPServer(lim limiter.Limiter, logger logger.Logger) *Server {
 }
 
 // Start starts the tcp server
-func (srv *Server) Start(port int) {
-	cmdAddr, _ := net.ResolveTCPAddr(connType, connHost+":"+strconv.Itoa(port))
-	listener, err := net.ListenTCP(connType, cmdAddr)
+func (srv *Server) Start(addr string, fault chan<- bool) {
+	cmdAddr, err := net.ResolveTCPAddr(connType, addr)
 	if err != nil {
-		srv.logger.Fatal(fmt.Sprintf("TCP Server error listening: %s", err.Error()), logger.Context{"error": err})
+		srv.logger.Error(fmt.Sprintf("TCP Server error listening: %s", err.Error()), logger.Context{"error": err})
+		fault <- true
+		return
 	}
 
-	srv.logger.Info(fmt.Sprintf("TCP server listening on port: %s", strconv.Itoa(port)), nil)
+	listener, err := net.ListenTCP(connType, cmdAddr)
+	if err != nil {
+		srv.logger.Error(fmt.Sprintf("TCP Server error listening: %s", err.Error()), logger.Context{"error": err})
+		fault <- true
+		return
+	}
+
+	srv.logger.Info(fmt.Sprintf("TCP server listening on address: %s", addr), nil)
 
 	srv.listener = listener
-	defer listener.Close()
+	defer func() {
+		if err := listener.Close(); err != nil {
+			srv.logger.Error(fmt.Sprintf("failed to close listener [%v]", err), nil)
+		}
+	}()
 
 	quitChan := make(chan os.Signal, 1)
 	signal.Notify(quitChan, os.Interrupt, os.Kill, syscall.SIGTERM)
 
 	for {
-		listener.SetDeadline(time.Now().Add(1e9))
+		if err := listener.SetDeadline(time.Now().Add(1e9)); err != nil {
+			srv.logger.Error(fmt.Sprintf("failed to set deadline [%v]", err), nil)
+			continue
+		}
+
 		conn, err := listener.AcceptTCP()
 		if opErr, ok := err.(*net.OpError); ok && opErr.Timeout() {
 			continue
 		}
 		if err != nil {
-			// srv.logger.Error(fmt.Sprintf("Tcp Server error accepting: %s", err.Error()), nil)
+			srv.logger.Error(fmt.Sprintf("Tcp Server error accepting: %s", err.Error()), nil)
 			continue
 		}
 		srv.wg.Add(1)
@@ -134,13 +150,22 @@ func (srv *Server) Start(port int) {
 // Stop stops the tcp server listener and waits for open goroutines to complete
 func (srv *Server) Stop() {
 	srv.logger.Info("Stopping TCP server", nil)
-	srv.listener.Close()
+	if srv.listener != nil {
+		if err := srv.listener.Close(); err != nil {
+			srv.logger.Error(fmt.Sprintf("failed to stop TCP listener [%v]", err), nil)
+		}
+	}
+
 	srv.wg.Wait()
 }
 
 // handleRequest handles incoming tcp request
 func (srv *Server) handleRequest(conn net.Conn) {
-	defer conn.Close()
+	defer func() {
+		if err := conn.Close(); err != nil {
+			srv.logger.Error(fmt.Sprintf("failed to close connection [%v]", err), nil)
+		}
+	}()
 
 	req, err := populateRequest(conn)
 	if err != nil {
@@ -160,7 +185,9 @@ func (srv *Server) handleRequest(conn net.Conn) {
 	}
 
 	response := strings.Join([]string{req.name, req.id, result}, ";")
-	conn.Write([]byte(response))
+	if _, err := conn.Write([]byte(response)); err != nil {
+		srv.logger.Error(fmt.Sprintf("failed to write response: %s", err), nil)
+	}
 
 	srv.logger.Info(fmt.Sprintf("Tcp Server response sent: %s", response), nil)
 }
@@ -174,6 +201,7 @@ func (*Server) handleHealthCheckRequest(req request) string {
 func (srv *Server) handleLimitCheckRequest(req request) string {
 	// send to elastic
 	srv.logger.Metrics(req.key, "", nil)
+
 	isFree, err := srv.lim.IsFreeLimit(req.key, req.time, req.value)
 	if err != nil {
 		return "Error evaluating limit: " + err.Error()

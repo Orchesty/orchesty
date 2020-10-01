@@ -1,10 +1,12 @@
 package tcp
 
 import (
-	"github.com/stretchr/testify/assert"
-	"limiter/pkg/logger"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
+
+	"limiter/pkg/logger"
 )
 
 type positiveLimiter struct{}
@@ -27,8 +29,10 @@ func (dec *negativeLimiter) IsFreeLimit(key string, time int, value int) (bool, 
 func TestServerHealthCheck(t *testing.T) {
 	pos := positiveLimiter{}
 	tcpServer := NewTCPServer(&pos, logger.GetNullLogger())
-	go tcpServer.Start(3334)
+	fault := make(chan bool, 1)
+	go tcpServer.Start("127.0.0.1:3334", fault)
 	defer tcpServer.Stop()
+	defer close(fault)
 
 	// waiting for servers to start
 	time.Sleep(time.Millisecond * 20)
@@ -42,10 +46,15 @@ func TestServerHealthCheck(t *testing.T) {
 func TestServerLimitCheck(t *testing.T) {
 	posServer := NewTCPServer(&positiveLimiter{}, logger.GetNullLogger())
 	negServer := NewTCPServer(&negativeLimiter{}, logger.GetNullLogger())
-	go posServer.Start(3334)
-	go negServer.Start(3335)
+	faultPos := make(chan bool, 1)
+	faultNeg := make(chan bool, 1)
+
+	go posServer.Start("127.0.0.1:3334", faultPos)
+	go negServer.Start("127.0.0.1:3335", faultNeg)
 	defer posServer.Stop()
 	defer negServer.Stop()
+	defer close(faultPos)
+	defer close(faultNeg)
 
 	// waiting for servers to start
 	time.Sleep(time.Millisecond * 20)
