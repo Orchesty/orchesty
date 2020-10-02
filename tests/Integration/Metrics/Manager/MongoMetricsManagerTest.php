@@ -7,6 +7,7 @@ use Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\Utils\Date\DateTimeUtils;
+use Hanaboso\Utils\Exception\DateTimeException;
 use Hanaboso\Utils\System\NodeGeneratorUtils;
 use LogicException;
 use MongoDB\Client;
@@ -504,6 +505,50 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getApplicationMetrics
+     * @throws DateTimeException
+     * @throws Exception
+     */
+    public function testGetApplicationMetrics(): void
+    {
+        $topo = $this->createTopo();
+        $node = $this->createNode($topo);
+        $this->setFakeData($topo, $node);
+
+        $manager = $this->getManager();
+        $result  = $manager->getApplicationMetrics(
+            [
+                'from' => '-10 day',
+                'to'   => '+10 day',
+            ],
+            'nutshell'
+        );
+        self::assertEquals(2, $result['application']);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getUserMetrics
+     * @throws DateTimeException
+     * @throws Exception
+     */
+    public function testGetUserMetrics(): void
+    {
+        $topo = $this->createTopo();
+        $node = $this->createNode($topo);
+        $this->setFakeData($topo, $node);
+
+        $manager = $this->getManager();
+        $result  = $manager->getUserMetrics(
+            [
+                'from' => '-10 day',
+                'to'   => '+10 day',
+            ],
+            'user1'
+        );
+        self::assertEquals(2, $result['user']);
+    }
+
+    /**
      * @throws Exception
      */
     protected function setUp(): void
@@ -608,8 +653,11 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
 
         $doc = [
             'tags'   => [
-                MongoMetricsManager::TOPOLOGY => $topology->getId(),
-                MongoMetricsManager::NODE     => $node->getId(),
+                MongoMetricsManager::TOPOLOGY    => $topology->getId(),
+                MongoMetricsManager::NODE        => $node->getId(),
+                MongoMetricsManager::APPLICATION => 'nutshell',
+                MongoMetricsManager::USER        => 'user2',
+                MongoMetricsManager::CORRELATION => '456-789',
             ],
             'fields' => [
                 'sent_request_total_duration' => 15,
@@ -691,8 +739,11 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
 
         $doc = [
             'tags'   => [
-                MongoMetricsManager::TOPOLOGY => $topology->getId(),
-                MongoMetricsManager::NODE     => $node->getId(),
+                MongoMetricsManager::TOPOLOGY    => $topology->getId(),
+                MongoMetricsManager::NODE        => $node->getId(),
+                MongoMetricsManager::APPLICATION => 'nutshell',
+                MongoMetricsManager::USER        => 'user1',
+                MongoMetricsManager::CORRELATION => '456-789',
             ],
             'fields' => [
                 'sent_request_total_duration' => 5,
@@ -703,8 +754,11 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
 
         $doc = [
             'tags'   => [
-                MongoMetricsManager::TOPOLOGY => $topology->getId(),
-                MongoMetricsManager::NODE     => $node->getId(),
+                MongoMetricsManager::TOPOLOGY    => $topology->getId(),
+                MongoMetricsManager::NODE        => $node->getId(),
+                MongoMetricsManager::APPLICATION => 'nutshell',
+                MongoMetricsManager::USER        => 'user1',
+                MongoMetricsManager::CORRELATION => '123-456',
             ],
             'fields' => [
                 'sent_request_total_duration' => 15,

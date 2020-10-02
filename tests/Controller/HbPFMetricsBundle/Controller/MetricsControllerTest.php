@@ -7,6 +7,7 @@ use Hanaboso\PipesFramework\Metrics\Exception\MetricsException;
 use Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
+use JsonException;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 use Throwable;
 
@@ -131,6 +132,72 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
             __DIR__ . '/data/topologyRequestMetricsCountErrRequest.json',
             [],
             [':id' => $topo->getId()]
+        );
+    }
+
+    /**
+     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::applicationMetricsAction
+     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler::getApplicationMetrics
+     *
+     * @throws JsonException
+     */
+    public function testApplicationMetrics(): void
+    {
+        $this->mockMetricsManager('getApplicationMetrics', ['count' => 5]);
+
+        $this->assertResponse(
+            __DIR__ . '/data/applicationMetricsRequest.json',
+            [],
+            [':key' => 'superApp']
+        );
+    }
+
+    /**
+     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::applicationMetricsAction
+     *
+     * @throws Exception
+     */
+    public function testApplicationErr(): void
+    {
+        $this->mockMetricsManager('getApplicationMetrics', new Exception());
+
+        $this->assertResponse(
+            __DIR__ . '/data/applicationMetricsErrRequest.json',
+            [],
+            [':key' => 'superApp']
+        );
+    }
+
+    /**
+     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::userMetricsAction
+     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler::getUserMetrics
+     *
+     * @throws JsonException
+     */
+    public function testUserMetrics(): void
+    {
+        $this->mockMetricsManager('getUserMetrics', ['count' => 3]);
+
+        $this->assertResponse(
+            __DIR__ . '/data/userMetricsRequest.json',
+            [],
+            [':user' => '123-456-789']
+        );
+    }
+
+    /**
+     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::userMetricsAction
+     *
+     * @throws Exception
+     */
+    public function testUserErr(): void
+    {
+        $this->mockMetricsManager('getUserMetrics', new Exception());
+
+        $this->assertResponse(
+            __DIR__ . '/data/userMetricsErrRequest.json',
+            [],
+            [':key' => 'superApp']
         );
     }
 

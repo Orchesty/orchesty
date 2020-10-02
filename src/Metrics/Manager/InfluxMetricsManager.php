@@ -221,6 +221,72 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
     }
 
     /**
+     * @param mixed[]     $params
+     *
+     * @param string|null $key
+     *
+     * @return mixed[]
+     * @throws DateTimeException
+     * @throws MetricsException
+     */
+    public function getApplicationMetrics(array $params, ?string $key): array
+    {
+        $dateFrom = $params['from'] ?? NULL;
+        $dateTo   = $params['to'] ?? NULL;
+
+        $groupBy = sprintf('correlation_id');
+        $where   = [];
+        if ($key) {
+            $where = [sprintf("%s = '%s'", self::APPLICATION, $key)];
+        }
+
+        $result = $this->runQuery(
+            sprintf('COUNT(%s) AS app_count', self::APP_COUNT),
+            $this->connectorTable,
+            $where,
+            $groupBy,
+            $dateFrom,
+            $dateTo,
+            TRUE
+        );
+
+        return ['application' => $result];
+    }
+
+    /**
+     * @param mixed[]     $params
+     * @param string|null $user
+     *
+     * @return mixed[]
+     * @throws DateTimeException
+     * @throws MetricsException
+     */
+    public function getUserMetrics(array $params, ?string $user): array
+    {
+        $dateFrom = $params['from'] ?? NULL;
+        $dateTo   = $params['to'] ?? NULL;
+
+        $groupBy = sprintf('correlation_id');
+
+        $where = [];
+        if ($user) {
+            $where = [sprintf("%s = '%s'", self::USER, $user)];
+        }
+
+        $result = $this->runQuery(
+            sprintf('COUNT(%s) AS user_count', self::USER_COUNT),
+            $this->connectorTable,
+            $where,
+            $groupBy,
+            $dateFrom,
+            $dateTo,
+            TRUE
+        );
+
+        return ['user' => $result];
+    }
+
+    /**
      * -------------------------------------------- HELPERS ---------------------------------------------
      */
 

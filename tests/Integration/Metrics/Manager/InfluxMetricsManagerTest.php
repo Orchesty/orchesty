@@ -201,6 +201,52 @@ final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager::getApplicationMetrics
+     * @throws Exception
+     */
+    public function testGetApplicationMetrics(): void
+    {
+        $topo = $this->createTopo();
+        $node = $this->createNode($topo);
+
+        $this->setFakeData($topo, $node, 'nutshell');
+
+        $manager = $this->getManager();
+        $result  = $manager->getApplicationMetrics(
+            [
+                'from' => '-10 day',
+                'to'   => '+10 day',
+            ],
+            'nutshell'
+        );
+
+        self::assertCount(0, $result['application']);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager::getUserMetrics
+     * @throws Exception
+     */
+    public function testGetUserMetrics(): void
+    {
+        $topo = $this->createTopo();
+        $node = $this->createNode($topo);
+
+        $this->setFakeData($topo, $node, 'nutshell', 'user123');
+
+        $manager = $this->getManager();
+        $result  = $manager->getUserMetrics(
+            [
+                'from' => '-10 day',
+                'to'   => '+10 day',
+            ],
+            'user123'
+        );
+
+        self::assertCount(0, $result['user']);
+    }
+
+    /**
      * @covers \Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager::runQuery
      *
      * @throws Exception
@@ -299,12 +345,15 @@ final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @param Topology $topology
-     * @param Node     $node
+     * @param Topology    $topology
+     * @param Node        $node
+     * @param string|null $key
+     *
+     * @param string|null $user
      *
      * @throws Exception
      */
-    private function setFakeData(Topology $topology, Node $node): void
+    private function setFakeData(Topology $topology, Node $node, ?string $key = NULL, ?string $user = NULL): void
     {
         $database = $this->getClient()->getDatabase('test');
 
@@ -538,6 +587,85 @@ final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
             ),
         ];
 
+        $database->writePoints($points, Database::PRECISION_NANOSECONDS);
+        usleep(10);
+        $points = [
+            new Point(
+                'connectors',
+                NULL,
+                [
+                    InfluxMetricsManager::USER        => $user,
+                    InfluxMetricsManager::APPLICATION => $key,
+                    InfluxMetricsManager::CORRELATION => '123',
+                ],
+                [
+                    InfluxMetricsManager::APP_COUNT  => 1,
+                    InfluxMetricsManager::USER_COUNT => 1,
+                ]
+            ),
+        ];
+
+        $database->writePoints($points, Database::PRECISION_NANOSECONDS);
+        usleep(10);
+        $points = [
+            new Point(
+                'connectors',
+                NULL,
+                [
+                    InfluxMetricsManager::USER        => $user,
+                    InfluxMetricsManager::APPLICATION => $key,
+                    InfluxMetricsManager::CORRELATION => '123',
+                ],
+                [
+                    InfluxMetricsManager::APP_COUNT  => 1,
+                    InfluxMetricsManager::USER_COUNT => 1,
+                ]
+            ),
+        ];
+
+        $database->writePoints($points, Database::PRECISION_NANOSECONDS);
+
+        usleep(10);
+        $points = [
+            new Point(
+                'connectors',
+                NULL,
+                [
+                    InfluxMetricsManager::USER        => $user,
+                    InfluxMetricsManager::APPLICATION => $key,
+                    InfluxMetricsManager::CORRELATION => '456',
+                ],
+                [
+                    InfluxMetricsManager::AVG_TIME   => 5,
+                    InfluxMetricsManager::MIN_TIME   => 2,
+                    InfluxMetricsManager::MAX_TIME   => 10,
+                    InfluxMetricsManager::APP_COUNT  => 1,
+                    InfluxMetricsManager::USER_COUNT => 1,
+                ]
+            ),
+        ];
+        $database->writePoints($points, Database::PRECISION_NANOSECONDS);
+
+        usleep(10);
+        $points = [
+            new Point(
+                'connectors',
+                NULL,
+                [
+                    InfluxMetricsManager::TOPOLOGY    => $topology->getId(),
+                    InfluxMetricsManager::USER        => $user,
+                    InfluxMetricsManager::APPLICATION => $key,
+                    InfluxMetricsManager::CORRELATION => '789',
+                ],
+                [
+                    InfluxMetricsManager::AVG_TIME   => 5,
+                    InfluxMetricsManager::MIN_TIME   => 2,
+                    InfluxMetricsManager::MAX_TIME   => 10,
+                    InfluxMetricsManager::APP_COUNT  => 1,
+                    InfluxMetricsManager::USER_COUNT => 1,
+                ]
+            ),
+        ];
         $database->writePoints($points, Database::PRECISION_NANOSECONDS);
     }
 
