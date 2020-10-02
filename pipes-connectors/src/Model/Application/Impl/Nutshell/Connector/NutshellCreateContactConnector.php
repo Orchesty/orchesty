@@ -83,7 +83,7 @@ final class NutshellCreateContactConnector extends ConnectorAbstract
                 CurlManager::METHOD_POST,
                 NutshellApplication::BASE_URL,
                 Json::encode($data)
-            )
+            )->setDebugInfo($dto)
         );
 
         $statusCode = $return->getStatusCode();

@@ -83,6 +83,28 @@ final class MetricsHandler
     }
 
     /**
+     * @param mixed[]     $params
+     * @param string|null $key
+     *
+     * @return mixed[]
+     */
+    public function getApplicationMetrics(array $params, ?string $key): array
+    {
+        return $this->loader->getManager()->getApplicationMetrics($params, $key);
+    }
+
+    /**
+     * @param mixed[]     $params
+     * @param string|null $user
+     *
+     * @return mixed[]
+     */
+    public function getUserMetrics(array $params, ?string $user): array
+    {
+        return $this->loader->getManager()->getUserMetrics($params, $user);
+    }
+
+    /**
      * @param string $id
      *
      * @return Topology

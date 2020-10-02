@@ -13,7 +13,7 @@ var connectorData = stream
    |window()
        .period(sample)
        .every(sample)
-   |groupBy('node_id')
+   |groupBy('node_id', 'application_id', 'user_id', 'correlation_id')
 
 // Monolith data
 var reqAvg = connectorData
@@ -36,9 +36,22 @@ var reqCount = connectorData
     |count('sent_request_total_duration')
         .as('time')
 
+var user_id = connectorData
+    |count('user_id')
+        .as('count')
+
+var app_id = connectorData
+    |count('application_id')
+        .as('count')
+
 reqAvg
-   |join(reqMin, reqMax, reqSum, reqCount)
-       .as('avg', 'min', 'max', 'sum', 'count')
+   |join(reqMin, reqMax, reqSum, reqCount, user_id, app_id)
+       .as('avg', 'min', 'max', 'sum', 'count', 'user_id', 'app_id')
+   |delete()
+       .field('min.user_id')
+       .field('max.user_id')
+       .field('min.application_id')
+       .field('max.application_id')
    |influxDBOut()
        .database('pipes')
        .measurement('connectors')

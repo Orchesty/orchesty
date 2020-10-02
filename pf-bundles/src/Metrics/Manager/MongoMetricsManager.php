@@ -149,6 +149,64 @@ final class MongoMetricsManager extends MetricsManagerAbstract
     }
 
     /**
+     * @param mixed[]     $params
+     * @param string|null $key
+     *
+     * @return mixed[]
+     * @throws DateTimeException
+     */
+    public function getApplicationMetrics(array $params, ?string $key): array
+    {
+        [$dateFrom, $dateTo] = $this->parseDateRange($params);
+
+        $where = [];
+        if ($key) {
+            $where = [self::APPLICATION => $key];
+        }
+
+        $qb = $this->metricsDm->createAggregationBuilder(ConnectorsMetrics::class);
+        $this->addConditions($qb, $dateFrom, $dateTo, $where, ConnectorsMetrics::class);
+
+        $result = $qb
+            ->group()
+            ->field('_id')
+            ->expression('$tags.correlation_id')
+            ->execute()
+            ->toArray();
+
+        return ['application' => count($result)];
+    }
+
+    /**
+     * @param mixed[]     $params
+     * @param string|null $user
+     *
+     * @return mixed[]
+     * @throws DateTimeException
+     */
+    public function getUserMetrics(array $params, ?string $user): array
+    {
+        [$dateFrom, $dateTo] = $this->parseDateRange($params);
+
+        $where = [];
+        if ($user) {
+            $where = [self::USER => $user];
+        }
+
+        $qb = $this->metricsDm->createAggregationBuilder(ConnectorsMetrics::class);
+        $this->addConditions($qb, $dateFrom, $dateTo, $where, ConnectorsMetrics::class);
+
+        $result = $qb
+            ->group()
+            ->field('_id')
+            ->expression('$tags.correlation_id')
+            ->execute()
+            ->toArray();
+
+        return ['user' => count($result)];
+    }
+
+    /**
      * -------------------------------------------- HELPERS ---------------------------------------------
      */
 

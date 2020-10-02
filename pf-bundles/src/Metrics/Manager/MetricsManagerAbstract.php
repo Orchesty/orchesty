@@ -30,9 +30,12 @@ abstract class MetricsManagerAbstract implements LoggerAwareInterface
     public const COUNTER_PROCESS_TIME = 'counter_process_time';
 
     // TAGS
-    public const TOPOLOGY = 'topology_id';
-    public const NODE     = 'node_id';
-    public const QUEUE    = 'queue';
+    public const TOPOLOGY    = 'topology_id';
+    public const NODE        = 'node_id';
+    public const QUEUE       = 'queue';
+    public const USER        = 'user_id';
+    public const APPLICATION = 'application_id';
+    public const CORRELATION = 'correlation_id';
 
     // METRICS
     public const AVG_MESSAGES = 'avg.message';
@@ -56,6 +59,9 @@ abstract class MetricsManagerAbstract implements LoggerAwareInterface
     public const CPU_KERNEL_MIN = 'cpu_min.kernel';
     public const CPU_KERNEL_MAX = 'cpu_max.kernel';
     public const CPU_KERNEL_AVG = 'cpu_kernel.avg';
+
+    public const USER_COUNT = 'user_id.count';
+    public const APP_COUNT  = 'app_id.count';
 
     // ALIASES - COUNT
     protected const PROCESSED_COUNT    = 'top_processed_count';
@@ -167,6 +173,22 @@ abstract class MetricsManagerAbstract implements LoggerAwareInterface
      * @return mixed[]
      */
     abstract public function getTopologyRequestCountMetrics(Topology $topology, array $params): array;
+
+    /**
+     * @param mixed[]     $params
+     * @param string|null $key
+     *
+     * @return mixed[]
+     */
+    abstract public function getApplicationMetrics(array $params, ?string $key): array;
+
+    /**
+     * @param mixed[]     $params
+     * @param string|null $user
+     *
+     * @return mixed[]
+     */
+    abstract public function getUserMetrics(array $params, ?string $user): array;
 
     /**
      * MetricsManagerAbstract constructor.
