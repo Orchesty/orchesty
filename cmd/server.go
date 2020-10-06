@@ -30,7 +30,7 @@ func startServer(sc *services.ServiceContainer) *http.Server {
 		if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			logContext(config.Logger, map[string]interface{}{
 				"address": s.Addr,
-			}).Fatal(err)
+			}).Fatal(err) //todo: fatal nikdy neni dobre zvlaste v gorutine
 		}
 	}()
 

@@ -2,9 +2,11 @@ package services
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/docker/docker/api/types"
 	"github.com/stretchr/testify/require"
-	"testing"
+
 	"topology-generator/pkg/config"
 	"topology-generator/pkg/model"
 )
@@ -53,6 +55,10 @@ func TestDockerClient_MultiNodeDockerCompose(t *testing.T) {
 			MetricsService:      "",
 			WorkerDefaultPort:   8888,
 			GeneratorMode:       "compose",
+			Limits: model.Limits{
+				Memory: "128M",
+				CPU:    "0.5",
+			},
 		},
 	}, multiConfigGenerator, db, topologyID)
 	if err != nil {
@@ -106,17 +112,18 @@ func TestDockerClient_MultiNodeDockerCompose(t *testing.T) {
 
 func TestDockerClient_DockerCompose(t *testing.T) {
 	configGenerator := config.GeneratorConfig{
-		Path:              "/tmp",
-		TopologyPath:      "/srv/app/topology/topology.json",
-		ProjectSourcePath: "/tmp",
-
-		Mode:              "compose",
-		ClusterConfig:     "",
-		Namespace:         "",
-		Prefix:            "",
-		Network:           "demo_default",
-		MultiNode:         false,
-		WorkerDefaultPort: 0,
+		Path:                     "/tmp",
+		TopologyPath:             "/srv/app/topology/topology.json",
+		ProjectSourcePath:        "/tmp",
+		Mode:                     "compose",
+		ClusterConfig:            "",
+		Namespace:                "",
+		Prefix:                   "",
+		Network:                  "demo_default",
+		MultiNode:                false,
+		WorkerDefaultPort:        0,
+		WorkerDefaultLimitMemory: "2048",
+		WorkerDefaultLimitCPU:    "2",
 	}
 
 	setupDockerTest()
@@ -192,17 +199,18 @@ func TestDockerClient_DockerCompose(t *testing.T) {
 func TestDockerClient_Swarm(t *testing.T) {
 	setupDockerTest()
 	configGenerator := config.GeneratorConfig{
-		Path:              "/tmp",
-		TopologyPath:      "/srv/app/topology/topology.json",
-		ProjectSourcePath: "/tmp",
-
-		Mode:              "swarm",
-		ClusterConfig:     "",
-		Namespace:         "",
-		Prefix:            "pre4",
-		Network:           "demo_default_swarm",
-		MultiNode:         true,
-		WorkerDefaultPort: 800,
+		Path:                     "/tmp",
+		TopologyPath:             "/srv/app/topology/topology.json",
+		ProjectSourcePath:        "/tmp",
+		Mode:                     "swarm",
+		ClusterConfig:            "",
+		Namespace:                "",
+		Prefix:                   "pre4",
+		Network:                  "demo_default_swarm",
+		MultiNode:                true,
+		WorkerDefaultPort:        800,
+		WorkerDefaultLimitMemory: "2048",
+		WorkerDefaultLimitCPU:    "2",
 	}
 
 	ts, err := NewTopologyService(model.NodeConfig{

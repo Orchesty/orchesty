@@ -42,6 +42,12 @@ const (
 	ModeKubernetes Adapter = "k8s"
 )
 
+// Limits set resource limits
+type Limits struct {
+	Memory string `json:"memory"`
+	CPU    string `json:"cpu"`
+}
+
 // NodeConfig NodeConfig
 type NodeConfig struct {
 	NodeConfig  map[string]NodeUserParams `json:"node_config"`
@@ -69,6 +75,7 @@ type Environment struct {
 	MetricsService    string  `json:"metrics_service"`
 	WorkerDefaultPort int     `json:"worker_default_port"`
 	GeneratorMode     Adapter `json:"generator_mode"`
+	Limits            Limits  `json:"limits"`
 }
 
 // GetBridges GetBridges

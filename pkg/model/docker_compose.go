@@ -42,6 +42,8 @@ type Service struct {
 	Volumes     []string                         `yaml:"volumes,omitempty" json:"volumes,omitempty"`
 	Configs     []ServiceConfigs                 `yaml:"configs,omitempty" json:"configs,omitempty"`
 	Command     string                           `yaml:"command,omitempty" json:"command,omitempty"`
+	MemLimit    string                           `yaml:"mem_limit"`
+	Cpus        float64                          `yaml:"cpus"`
 }
 
 // DockerCompose DockerCompose

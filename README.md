@@ -50,8 +50,16 @@ Topology generator se dále stará i o korektní ukončení běžící topologie
     - Connection string pro připojení do MongoDB
     - Například: `rabbitmq`
 
+## Worker environment
+- WORKER_DEFAULT_PORT
+    * 8088
+- WORKER_DEFAULT_LIMIT_MEMORY
+    * 536870912b => 512MB
+- WORKER_DEFAULT_LIMIT_CPU
+    * 1
+
 ## Použité technologie
-- Go 1.13+
+- Go 1.14
 
 ## Závislosti
 - Docker-socket

@@ -3,9 +3,12 @@ package services
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
+	"strings"
+
 	log "github.com/hanaboso/go-log/pkg"
 	"gopkg.in/yaml.v2"
-	"strings"
+
 	"topology-generator/pkg/config"
 	"topology-generator/pkg/fscommands"
 	"topology-generator/pkg/model"
@@ -222,6 +225,11 @@ func (ts *TopologyService) getKubernetesContainers(mountName string) ([]model.Co
 		i++
 	}
 
+	limits, err := getResourceLimits(ts.nodeConfig.Environment.Limits, ts.generatorConfig.WorkerDefaultLimitMemory, ts.generatorConfig.WorkerDefaultLimitCPU)
+	if err != nil {
+		return nil, fmt.Errorf("error getting resource limit. reason %v", err)
+	}
+
 	if multiNode {
 		command := strings.Split(getMultiBridgeStartCommand(), " ")
 		return []model.Container{
@@ -230,8 +238,11 @@ func (ts *TopologyService) getKubernetesContainers(mountName string) ([]model.Co
 				Command: []string{command[0]},
 				Args:    command[1:],
 				Image:   getDockerImage(registry, image),
-				Ports:   ports,
-				Env:     env,
+				Resources: model.Resources{
+					Limits: limits,
+				},
+				Ports: ports,
+				Env:   env,
 				VolumeMounts: []model.VolumeMount{
 					{
 						Name:      mountName,
@@ -241,6 +252,7 @@ func (ts *TopologyService) getKubernetesContainers(mountName string) ([]model.Co
 			},
 		}, nil
 	}
+
 	containers := make([]model.Container, len(ts.Nodes))
 	for i, node := range ts.Nodes {
 		command := strings.Split(getSingleBridgeStartCommand(model.CreateServiceName(node.GetServiceName())), " ")
@@ -249,6 +261,9 @@ func (ts *TopologyService) getKubernetesContainers(mountName string) ([]model.Co
 			Command: []string{command[0]},
 			Args:    command[1:],
 			Image:   getDockerImage(registry, image),
+			Resources: model.Resources{
+				Limits: limits,
+			},
 			Ports: []model.Port{
 				{
 					ContainerPort: ts.nodeConfig.Environment.WorkerDefaultPort,
@@ -284,6 +299,20 @@ func (ts *TopologyService) getDockerServices(mode model.Adapter) (map[string]*mo
 		return nil, err
 	}
 
+	memory := ts.generatorConfig.WorkerDefaultLimitMemory
+	if ts.nodeConfig.Environment.Limits.Memory != "" {
+		memory = ts.nodeConfig.Environment.Limits.Memory
+	}
+
+	cpu := ts.generatorConfig.WorkerDefaultLimitCPU
+	if ts.nodeConfig.Environment.Limits.CPU != "" {
+		cpu = ts.nodeConfig.Environment.Limits.CPU
+	}
+	cpus, err := strconv.ParseFloat(cpu, 32)
+	if err != nil {
+		return nil, fmt.Errorf("failed parse cpu limit. reason: %v", err)
+	}
+
 	// Add bridges
 	if multiNode {
 		services[ts.Topology.GetMultiNodeName()] = &model.Service{
@@ -293,6 +322,8 @@ func (ts *TopologyService) getDockerServices(mode model.Adapter) (map[string]*mo
 			Volumes:     ts.Topology.GetVolumes(mode, projectPath, topologyPath),
 			Configs:     getDockerServiceConfigs(mode, topologyPath, configName),
 			Command:     getMultiBridgeStartCommand(),
+			MemLimit:    memory,
+			Cpus:        cpus,
 		}
 	} else {
 		var node model.Node
@@ -304,6 +335,8 @@ func (ts *TopologyService) getDockerServices(mode model.Adapter) (map[string]*mo
 				Volumes:     ts.Topology.GetVolumes(mode, projectPath, topologyPath),
 				Configs:     getDockerServiceConfigs(mode, topologyPath, configName),
 				Command:     getSingleBridgeStartCommand(model.CreateServiceName(node.GetServiceName())),
+				MemLimit:    memory,
+				Cpus:        cpus,
 			}
 		}
 	}
