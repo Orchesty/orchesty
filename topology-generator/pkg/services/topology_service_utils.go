@@ -2,6 +2,7 @@ package services
 
 import (
 	"fmt"
+	"strconv"
 
 	"topology-generator/pkg/model"
 )
@@ -87,4 +88,25 @@ func getPodName(topologyID string) string {
 // GetDstDir GetDstDir
 func GetDstDir(path string, saveDir string) string {
 	return fmt.Sprintf("%s/%s", path, saveDir)
+}
+
+func getResourceLimits(limits model.Limits, defaultMemory, defaultCPU string) (model.ResourceLimits, error) {
+	c := defaultCPU
+	if limits.CPU != "" {
+		c = limits.CPU
+	}
+	cpu, err := strconv.Atoi(c)
+	if err != nil {
+		return model.ResourceLimits{}, fmt.Errorf("failed get cpu limit. reason: %v", err)
+	}
+
+	memory := defaultMemory
+	if limits.Memory != "" {
+		memory = limits.Memory
+	}
+
+	return model.ResourceLimits{
+		Memory: memory,
+		CPU:    cpu,
+	}, nil
 }

@@ -33,10 +33,22 @@ type EnvItem struct {
 	Value string
 }
 
+// ResourceLimits ResourceLimits
+type ResourceLimits struct {
+	Memory string `yaml:"memory"`
+	CPU    int    `yaml:"cpu"`
+}
+
+// Resources Resources
+type Resources struct {
+	Limits ResourceLimits `yaml:"limits"`
+}
+
 // Container Container
 type Container struct {
 	Name         string
 	Image        string
+	Resources    Resources `yaml:"resources"`
 	Command      []string
 	Args         []string
 	Ports        []Port
