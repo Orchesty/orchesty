@@ -2,6 +2,11 @@ package services
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"strings"
+	"testing"
+
 	"github.com/hanaboso/go-log/pkg/zap"
 	"github.com/stretchr/testify/require"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -9,10 +14,7 @@ import (
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/kubernetes/fake"
-	"log"
-	"os"
-	"strings"
-	"testing"
+
 	"topology-generator/pkg/config"
 	"topology-generator/pkg/model"
 )
@@ -151,8 +153,14 @@ func TestClient_Create(t *testing.T) {
 		{
 			Name:    getPodName(topologyID),
 			Command: []string{command[0]},
-			Args:    command[1:],
-			Image:   getDockerImage(registry, image),
+			Resources: model.Resources{
+				Limits: model.ResourceLimits{
+					Memory: "128",
+					CPU:    1,
+				},
+			},
+			Args:  command[1:],
+			Image: getDockerImage(registry, image),
 			Ports: []model.Port{
 				{
 					ContainerPort: 80008,
@@ -462,6 +470,10 @@ func TestClient_Generate(t *testing.T) {
 			MetricsService:      "",
 			WorkerDefaultPort:   8888,
 			GeneratorMode:       "",
+			Limits: model.Limits{
+				Memory: "128M",
+				CPU:    "1",
+			},
 		},
 	}, testConfigGenerator, testDb{
 		mockGetTopology: func(id string) (topology *model.Topology, e error) {
@@ -520,6 +532,10 @@ func TestClient_GenerateMulti(t *testing.T) {
 			MetricsService:      "",
 			WorkerDefaultPort:   8888,
 			GeneratorMode:       "",
+			Limits: model.Limits{
+				Memory: "128",
+				CPU:    "1",
+			},
 		},
 	}, testConfigGenerator, testDb{
 		mockGetTopology: func(id string) (topology *model.Topology, e error) {
@@ -764,6 +780,10 @@ func TestClient_GenerateFails(t *testing.T) {
 			MetricsService:      "",
 			WorkerDefaultPort:   8888,
 			GeneratorMode:       "compose",
+			Limits: model.Limits{
+				Memory: "64M",
+				CPU:    "2",
+			},
 		},
 	}
 

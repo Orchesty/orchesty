@@ -25,16 +25,18 @@ type (
 
 	// GeneratorConfig GeneratorConfig
 	GeneratorConfig struct {
-		Path              string        `default:"/opt/srv/topology" env:"GENERATOR_PATH"`
-		TopologyPath      string        `default:"/srv/app/topology/topology.json" env:"TOPOLOGY_PATH"` // for node configuration, path in docker
-		ProjectSourcePath string        `default:"/" env:"PROJECT_SOURCE_PATH"`                         // path where is stored local files relevant to docker.sock
-		Mode              model.Adapter `default:"compose" env:"GENERATOR_MODE"`
-		ClusterConfig     string        `default:"" env:"K8S_CLUSTER_CONFIG"`
-		Namespace         string        `default:"default" env:"K8S_NAMESPACE"`
-		Prefix            string        `default:"dev" env:"DEPLOYMENT_PREFIX"`
-		Network           string        `default:"client" env:"GENERATOR_NETWORK"`
-		MultiNode         bool          `default:"true" env:"MULTI_NODE"`
-		WorkerDefaultPort int           `default:"8088" env:"WORKER_DEFAULT_PORT"`
+		Path                     string        `default:"/opt/srv/topology" env:"GENERATOR_PATH"`
+		TopologyPath             string        `default:"/srv/app/topology/topology.json" env:"TOPOLOGY_PATH"` // for node configuration, path in docker
+		ProjectSourcePath        string        `default:"/" env:"PROJECT_SOURCE_PATH"`                         // path where is stored local files relevant to docker.sock
+		Mode                     model.Adapter `default:"compose" env:"GENERATOR_MODE"`
+		ClusterConfig            string        `default:"" env:"K8S_CLUSTER_CONFIG"`
+		Namespace                string        `default:"default" env:"K8S_NAMESPACE"`
+		Prefix                   string        `default:"dev" env:"DEPLOYMENT_PREFIX"`
+		Network                  string        `default:"client" env:"GENERATOR_NETWORK"`
+		MultiNode                bool          `default:"true" env:"MULTI_NODE"`
+		WorkerDefaultPort        int           `default:"8088" env:"WORKER_DEFAULT_PORT"`
+		WorkerDefaultLimitMemory string        `default:"536870912" env:"WORKER_DEFAULT_LIMIT_MEMORY"`
+		WorkerDefaultLimitCPU    string        `default:"1" env:"WORKER_DEFAULT_LIMIT_CPU"`
 	}
 
 	config struct {
