@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\CustomNode;
+namespace Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\Connector;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
@@ -9,8 +9,9 @@ use GuzzleHttp\Promise\PromiseInterface;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
-use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
-use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
+use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
+use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessActionNotSupportedTrait;
+use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessEventNotSupportedTrait;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchTrait;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\SuccessMessage;
@@ -19,16 +20,18 @@ use Hanaboso\Utils\Exception\DateTimeException;
 use Hanaboso\Utils\System\PipesHeaders;
 
 /**
- * Class GetApplicationForRefreshBatch
+ * Class GetApplicationForRefreshBatchConnector
  *
- * @package Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\CustomNode
+ * @package Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\Connector
  */
-final class GetApplicationForRefreshBatch extends CustomNodeAbstract implements BatchInterface
+final class GetApplicationForRefreshBatchConnector extends ConnectorAbstract implements BatchInterface
 {
 
+    use ProcessActionNotSupportedTrait;
+    use ProcessEventNotSupportedTrait;
     use BatchTrait;
 
-    public const APPLICATION_ID = 'application-id';
+    public const APPLICATION_ID = 'get_application_for_refresh';
 
     /**
      * @var ObjectRepository<ApplicationInstall>&ApplicationInstallRepository
@@ -36,13 +39,21 @@ final class GetApplicationForRefreshBatch extends CustomNodeAbstract implements 
     private $repository;
 
     /**
-     * GetApplicationForRefreshBatch constructor.
+     * GetApplicationForRefreshBatchConnector constructor.
      *
      * @param DocumentManager $dm
      */
     public function __construct(DocumentManager $dm)
     {
         $this->repository = $dm->getRepository(ApplicationInstall::class);
+    }
+
+    /**
+     * @return string
+     */
+    public function getId(): string
+    {
+        return self::APPLICATION_ID;
     }
 
     /**
@@ -75,22 +86,6 @@ final class GetApplicationForRefreshBatch extends CustomNodeAbstract implements 
         }
 
         return $this->createPromise();
-    }
-
-    /**
-     * @param ProcessDto $dto
-     *
-     * @return ProcessDto
-     * @throws ConnectorException
-     */
-    public function process(ProcessDto $dto): ProcessDto
-    {
-        $dto;
-
-        throw new ConnectorException(
-            'Process is not implemented',
-            ConnectorException::CUSTOM_NODE_DOES_NOT_HAVE_PROCESS_ACTION
-        );
     }
 
 }

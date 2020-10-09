@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:pipes="http://www.omg.org/spec/Pipes/20100524/MODEL" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="Process_1" isExecutable="false">
+    <bpmn:event id="Event_17r3mqm" pipes:pipesType="cron" pipes:cronTime="*/5 * * * *" name="Cron">
+      <bpmn:outgoing>Flow_1j7p5qa</bpmn:outgoing>
+    </bpmn:event>
+    <bpmn:task id="Activity_1gkwxlt" pipes:pipesType="batch_connector" name="batch-get_application_for_refresh">
+      <bpmn:incoming>Flow_1j7p5qa</bpmn:incoming>
+      <bpmn:outgoing>Flow_10tfun7</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Activity_0w5k0px" pipes:pipesType="batch_connector" name="batch-refresh_oauth2_token">
+      <bpmn:incoming>Flow_10tfun7</bpmn:incoming>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_1j7p5qa" sourceRef="Event_17r3mqm" targetRef="Activity_1gkwxlt" />
+    <bpmn:sequenceFlow id="Flow_10tfun7" sourceRef="Activity_1gkwxlt" targetRef="Activity_0w5k0px" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1">
+      <bpmndi:BPMNEdge id="Flow_10tfun7_di" bpmnElement="Flow_10tfun7">
+        <di:waypoint x="500" y="250" />
+        <di:waypoint x="610" y="250" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1j7p5qa_di" bpmnElement="Flow_1j7p5qa">
+        <di:waypoint x="288" y="250" />
+        <di:waypoint x="400" y="250" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_17r3mqm_di" bpmnElement="Event_17r3mqm">
+        <dc:Bounds x="252" y="232" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="258" y="271" width="24" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1gkwxlt_di" bpmnElement="Activity_1gkwxlt">
+        <dc:Bounds x="400" y="210" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0w5k0px_di" bpmnElement="Activity_0w5k0px">
+        <dc:Bounds x="610" y="210" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

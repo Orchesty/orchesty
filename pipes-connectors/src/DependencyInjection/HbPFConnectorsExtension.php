@@ -41,7 +41,7 @@ final class HbPFConnectorsExtension extends Extension implements PrependExtensio
         $this->processConfiguration($configuration, $configs);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
-        $loader->load('services.yaml');
+        $loader->load('refreshoauth.yaml');
         $loader->load('airtable.yaml');
         $loader->load('amazon.yaml');
         $loader->load('bigcommerce.yaml');

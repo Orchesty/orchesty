@@ -3,8 +3,8 @@
 namespace HbPFConnectorsTests\Integration\Model\Application\Impl\OAuth2\CustomNode;
 
 use Exception;
-use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\CustomNode\GetApplicationForRefreshBatch;
+use GuzzleHttp\Promise\Promise;
+use Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\Connector\GetApplicationForRefreshBatchConnector;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
@@ -28,6 +28,11 @@ final class RefreshOAuth2TokenCustomNodeTest extends DatabaseTestCaseAbstract
      */
     public function testProcess(): void
     {
+
+        $callback = static function (): void {
+            self::assertFake();
+        };
+
         $providerMock = self::createMock(OAuth2Provider::class);
         $providerMock->method('refreshAccessToken')->willReturn(
             [
@@ -37,7 +42,7 @@ final class RefreshOAuth2TokenCustomNodeTest extends DatabaseTestCaseAbstract
         );
 
         self::$container->set('hbpf.providers.oauth2_provider', $providerMock);
-        $application        = self::$container->get('hbpf.custom_node.refresh_oauth2_token');
+        $application        = self::$container->get('hbpf.connector.batch-refresh_oauth2_token');
         $applicationInstall = DataProvider::getOauth2AppInstall(
             'mailchimp',
             'user',
@@ -61,17 +66,29 @@ final class RefreshOAuth2TokenCustomNodeTest extends DatabaseTestCaseAbstract
         $dto = DataProvider::getProcessDto('mailchimp', 'user', '{"body":"body"}');
         $dto->setHeaders(
             [
-                PipesHeaders::createKey(PipesHeaders::USER)                            => ['user'],
-                PipesHeaders::createKey(PipesHeaders::APPLICATION)                     => ['mailchimp'],
-                PipesHeaders::createKey(GetApplicationForRefreshBatch::APPLICATION_ID) => [
+                PipesHeaders::createKey(PipesHeaders::USER)                                     => ['user'],
+                PipesHeaders::createKey(PipesHeaders::APPLICATION)                              => ['mailchimp'],
+                PipesHeaders::createKey(GetApplicationForRefreshBatchConnector::APPLICATION_ID) => [
                     $applicationInstall->getId(),
                 ],
             ]
         );
 
-        $response = $application->process($dto);
-        self::assertEquals('{"body":"body"}', $response->getData());
-        self::assertEquals(ProcessDto::class, get_class($response));
+        $response = $application->processBatch($dto, $callback);
+        $response->then(static function ($arg): void {
+            self::assertEquals('{"body":"body"}', $arg);
+        });
+        self::assertEquals(Promise::class, get_class($response));
+    }
+
+    /**
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\Connector\RefreshOAuth2TokenBatchConnector::getId
+     */
+    public function testGetId(): void
+    {
+        $application = self::$container->get('hbpf.connector.batch-refresh_oauth2_token');
+
+        self::assertEquals('refresh_oauth2_token', $application->getId());
     }
 
 }

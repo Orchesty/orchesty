@@ -1,0 +1,14 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf.connector.batch-get_application_for_refresh:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\Connector\GetApplicationForRefreshBatchConnector
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.connector.batch-refresh_oauth2_token:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\Connector\RefreshOAuth2TokenBatchConnector
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.application.loader'
