@@ -4,7 +4,7 @@ import utils from 'bpmn-js-properties-panel/lib/Utils';
 import { getBusinessObject } from 'bpmn-js/lib/util/ModelUtil';
 
 export default function (group, element, translate) {
-  group.entries.push(entryFactory.validationAwareTextField({
+  group.entries.push(entryFactory.validationAwareTextField(translate,{
     id: 'id',
     label: translate('Id'),
     modelProperty: 'id',

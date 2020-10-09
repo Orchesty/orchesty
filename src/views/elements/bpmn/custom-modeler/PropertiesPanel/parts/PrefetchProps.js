@@ -1,6 +1,6 @@
 import entryFactory from 'bpmn-js-properties-panel/lib/factory/EntryFactory';
 import cmdHelper from 'bpmn-js-properties-panel/lib/helper/CmdHelper';
-import { getBusinessObject } from 'bpmn-js/lib/util/ModelUtil';
+import {getBusinessObject} from 'bpmn-js/lib/util/ModelUtil';
 
 export default function (group, element, translate) {
   const allowedTypes = ['connector', 'batch_connector'];
@@ -8,7 +8,7 @@ export default function (group, element, translate) {
     return;
   }
 
-  group.entries.push(entryFactory.validationAwareTextField({
+  group.entries.push(entryFactory.validationAwareTextField(translate, {
     id: 'rabbitPrefetch',
     label: 'Prefetch',
     modelProperty: 'rabbitPrefetch',
@@ -18,7 +18,7 @@ export default function (group, element, translate) {
       }
 
       if (values.rabbitPrefetch && !/\d+/.test(values.rabbitPrefetch)) {
-        return { rabbitPrefetch: 'Prefetch must be an integer.' };
+        return {rabbitPrefetch: 'Prefetch must be an integer.'};
       }
 
       return {};
