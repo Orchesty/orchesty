@@ -7,8 +7,8 @@ services:
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
 
-    hbpf.connector.batch-refresh_oauth2_token:
-        class: Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\Connector\RefreshOAuth2TokenBatchConnector
+    hbpf.custom_node.refresh_oauth2_token:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\Connector\RefreshOAuth2TokenNode
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.application.loader'

@@ -1,6 +1,6 @@
 import entryFactory from 'bpmn-js-properties-panel/lib/factory/EntryFactory';
 import cmdHelper from 'bpmn-js-properties-panel/lib/helper/CmdHelper';
-import { getBusinessObject, is } from 'bpmn-js/lib/util/ModelUtil';
+import {getBusinessObject, is} from 'bpmn-js/lib/util/ModelUtil';
 import apiGatewayServer from 'services/apiGatewayServer';
 
 export default function (group, element, translate) {
@@ -14,7 +14,8 @@ export default function (group, element, translate) {
     modelProperty = 'text';
   }
 
-  apiGatewayServer(() => {}, 'GET', '/nodes/list/name', null).then(response => {
+  apiGatewayServer(() => {
+  }, 'GET', '/nodes/list/name', null).then(response => {
     localStorage.setItem('pipes-nodes-list', JSON.stringify(response));
   });
 
@@ -31,10 +32,10 @@ export default function (group, element, translate) {
   const implementationTypesNames = JSON.parse(localStorage.getItem('pipes')).node.implementations;
 
   if (element.type !== 'bpmn:Process') {
-    group.entries.push(entryFactory.selectBox({
+    group.entries.push(entryFactory.selectBox(translate, {
       id: 'sdkHost',
       label: 'Services',
-      selectOptions: implementationTypesNames.map(({ key, value }) => ({ name: value, value: key })),
+      selectOptions: implementationTypesNames.map(({key, value}) => ({name: value, value: key})),
       modelProperty: 'sdkHost',
       getProperty(element) {
         return getBusinessObject(element).sdkHost;
@@ -63,14 +64,14 @@ export default function (group, element, translate) {
       });
     }
 
-    if(!sdkHostValue || pipesNodes.length === 0) {
+    if (!sdkHostValue || pipesNodes.length === 0) {
       return {};
     }
 
-    group.entries.push(entryFactory.selectBox({
+    group.entries.push(entryFactory.selectBox(translate, {
       id: 'name',
       label: 'Name',
-      selectOptions: pipesNodes[sdkHostValue][nodeType].map(item => ({ name: item, value: item })),
+      selectOptions: pipesNodes[sdkHostValue][nodeType].map(item => ({name: item, value: item})),
       modelProperty,
       validate: (element, values) => {
         if (element.type === 'bpmn:Process') {
@@ -78,7 +79,7 @@ export default function (group, element, translate) {
         }
 
         if (!values.name || values.name === 'Custom') {
-          return { name: 'Name must not be empty.' };
+          return {name: 'Name must not be empty.'};
         }
 
         return {};
@@ -91,7 +92,7 @@ export default function (group, element, translate) {
       },
     }));
   } else {
-    group.entries.push(entryFactory.validationAwareTextField({
+    group.entries.push(entryFactory.validationAwareTextField(translate, {
       id: 'name',
       label: 'Name',
       modelProperty,
@@ -101,11 +102,11 @@ export default function (group, element, translate) {
         }
 
         if (/\s/.test(values.name)) {
-          return { name: 'Name must not contain spaces.' };
+          return {name: 'Name must not contain spaces.'};
         }
 
         if (!values.name) {
-          return { name: 'Name must not be empty.' };
+          return {name: 'Name must not be empty.'};
         }
 
         return {};

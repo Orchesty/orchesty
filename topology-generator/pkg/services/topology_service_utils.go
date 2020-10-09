@@ -12,7 +12,7 @@ func getDockerGeneratorVersion(mode model.Adapter) string {
 		return "3.3"
 	}
 
-	return "2"
+	return "2.4"
 }
 
 func getDockerNetworks(adapter model.Adapter, network string) map[string]*model.NetworkConfig {

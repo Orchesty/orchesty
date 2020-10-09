@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace HbPFConnectorsTests\Integration\Model\Application\Impl\OAuth2\CustomNode;
+namespace HbPFConnectorsTests\Integration\Model\Application\Impl\OAuth2\Connector;
 
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
@@ -14,7 +14,7 @@ use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 /**
  * Class GetApplicationForRefreshBatchTest
  *
- * @package HbPFConnectorsTests\Integration\Model\Application\Impl\OAuth2\CustomNode
+ * @package HbPFConnectorsTests\Integration\Model\Application\Impl\OAuth2\Connector
  */
 final class GetApplicationForRefreshBatchTest extends DatabaseTestCaseAbstract
 {

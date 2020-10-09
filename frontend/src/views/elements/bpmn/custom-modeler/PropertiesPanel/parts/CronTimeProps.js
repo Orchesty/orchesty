@@ -1,6 +1,6 @@
 import entryFactory from 'bpmn-js-properties-panel/lib/factory/EntryFactory';
 import cmdHelper from 'bpmn-js-properties-panel/lib/helper/CmdHelper';
-import { getBusinessObject } from 'bpmn-js/lib/util/ModelUtil';
+import {getBusinessObject} from 'bpmn-js/lib/util/ModelUtil';
 import cronParser from 'cron-parser';
 
 export default function (group, element, translate) {
@@ -8,7 +8,7 @@ export default function (group, element, translate) {
     return;
   }
 
-  group.entries.push(entryFactory.validationAwareTextField({
+  group.entries.push(entryFactory.validationAwareTextField(translate, {
     id: 'cronTime',
     label: 'Cron time',
     description: 'eg. */2 * * * *',

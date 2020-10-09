@@ -346,11 +346,11 @@ services:
         user: ${DEV_UID}:${DEV_GID}
         working_dir: /var/www/pipes/frontend
         environment:
-            FRONTEND_URL: ${BACKEND_URL}:80
-            BACKEND_URL: ${BACKEND_URL}:81
+            FRONTEND_URL: ${BACKEND_URL}:81
+            BACKEND_URL: ${BACKEND_URL}:80
             STARTING_POINT_URL: http://${DEV_IP}:82
         ports:
-            - ${DEV_IP}:80:8080
+            - ${DEV_IP}:81:8080
         volumes:
             - ../../:/var/www/pipes
     ## END DEV

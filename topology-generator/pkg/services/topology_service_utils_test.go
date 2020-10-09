@@ -16,7 +16,7 @@ func TestGetDockerTopologyInfo(t *testing.T) {
 			mode   model.Adapter
 			result string
 		}{
-			{mode: model.ModeCompose, result: "2"},
+			{mode: model.ModeCompose, result: "2.4"},
 			{mode: model.ModeSwarm, result: "3.3"},
 		}
 		var result string

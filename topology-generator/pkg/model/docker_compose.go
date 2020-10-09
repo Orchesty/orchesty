@@ -48,7 +48,7 @@ type Service struct {
 
 // DockerCompose DockerCompose
 type DockerCompose struct {
-	Version  string                    `yaml:"version" json:"version" default:"2"`
+	Version  string                    `yaml:"version" json:"version" default:"2.4"`
 	Services map[string]*Service       `yaml:"services" json:"services"`
 	Networks map[string]*NetworkConfig `yaml:"networks,omitempty" json:"networks,omitempty"`
 	Configs  map[string]*Configs       `yaml:"configs,omitempty" json:"configs,omitempty"`

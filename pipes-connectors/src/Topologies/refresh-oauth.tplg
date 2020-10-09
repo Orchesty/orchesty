@@ -6,19 +6,19 @@
     </bpmn:event>
     <bpmn:task id="Activity_1gkwxlt" pipes:pipesType="batch_connector" name="batch-get_application_for_refresh">
       <bpmn:incoming>Flow_1j7p5qa</bpmn:incoming>
-      <bpmn:outgoing>Flow_10tfun7</bpmn:outgoing>
-    </bpmn:task>
-    <bpmn:task id="Activity_0w5k0px" pipes:pipesType="batch_connector" name="batch-refresh_oauth2_token">
-      <bpmn:incoming>Flow_10tfun7</bpmn:incoming>
+      <bpmn:outgoing>Flow_0u8mkwk</bpmn:outgoing>
     </bpmn:task>
     <bpmn:sequenceFlow id="Flow_1j7p5qa" sourceRef="Event_17r3mqm" targetRef="Activity_1gkwxlt" />
-    <bpmn:sequenceFlow id="Flow_10tfun7" sourceRef="Activity_1gkwxlt" targetRef="Activity_0w5k0px" />
+    <bpmn:task id="Activity_0snfe9q" pipes:pipesType="custom" name="refresh_oauth2_token">
+      <bpmn:incoming>Flow_0u8mkwk</bpmn:incoming>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_0u8mkwk" sourceRef="Activity_1gkwxlt" targetRef="Activity_0snfe9q" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1">
-      <bpmndi:BPMNEdge id="Flow_10tfun7_di" bpmnElement="Flow_10tfun7">
+      <bpmndi:BPMNEdge id="Flow_0u8mkwk_di" bpmnElement="Flow_0u8mkwk">
         <di:waypoint x="500" y="250" />
-        <di:waypoint x="610" y="250" />
+        <di:waypoint x="600" y="250" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1j7p5qa_di" bpmnElement="Flow_1j7p5qa">
         <di:waypoint x="288" y="250" />
@@ -33,8 +33,8 @@
       <bpmndi:BPMNShape id="Activity_1gkwxlt_di" bpmnElement="Activity_1gkwxlt">
         <dc:Bounds x="400" y="210" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0w5k0px_di" bpmnElement="Activity_0w5k0px">
-        <dc:Bounds x="610" y="210" width="100" height="80" />
+      <bpmndi:BPMNShape id="Activity_0snfe9q_di" bpmnElement="Activity_0snfe9q">
+        <dc:Bounds x="600" y="210" width="100" height="80" />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
