@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
 use EmailServiceBundle\EmailServiceBundle;
 use Hanaboso\CommonsBundle\HbPFCommonsBundle;
@@ -21,7 +20,6 @@ use Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle;
 
 return [
     DebugBundle::class           => ['dev' => TRUE, 'test' => TRUE],
-    DoctrineBundle::class        => ['all' => TRUE],
     DoctrineMongoDBBundle::class => ['all' => TRUE],
     FrameworkBundle::class       => ['all' => TRUE],
     MonologBundle::class         => ['all' => TRUE],

@@ -9,7 +9,6 @@ use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\Utils\String\Json;
 use HbPFAppStoreTests\ControllerTestCaseAbstract;
 use HbPFAppStoreTests\Integration\Model\NullApplication;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class ApplicationControllerTest
@@ -266,7 +265,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
                 }
             );
 
-        /** @var ContainerInterface $container */
         $container = self::$client->getContainer();
         $container->set('hbpf._application.handler.application', $handler);
     }

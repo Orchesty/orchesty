@@ -7,7 +7,6 @@ use Hanaboso\PipesFramework\Metrics\Exception\MetricsException;
 use Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
-use JsonException;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 use Throwable;
 
@@ -139,7 +138,7 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::applicationMetricsAction
      * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler::getApplicationMetrics
      *
-     * @throws JsonException
+     * @throws Exception
      */
     public function testApplicationMetrics(): void
     {
@@ -172,7 +171,7 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::userMetricsAction
      * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler::getUserMetrics
      *
-     * @throws JsonException
+     * @throws Exception
      */
     public function testUserMetrics(): void
     {

@@ -8,7 +8,6 @@ use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler;
 use Hanaboso\Utils\String\Base64;
 use PipesPhpSdkTests\ControllerTestCaseAbstract;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -286,7 +285,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
             $handler->expects(self::any())->method($method);
         }
 
-        /** @var ContainerInterface $container */
         $container = $this->client->getContainer();
         $container->set('hbpf.application.handler', $handler);
     }

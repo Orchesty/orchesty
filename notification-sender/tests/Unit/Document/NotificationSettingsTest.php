@@ -31,6 +31,8 @@ final class NotificationSettingsTest extends KernelTestCaseAbstract
             ->setStatusMessage(NULL)
             ->setEncryptedSettings('aaa');
 
+        $this->setProperty($settings, 'id', '1');
+
         self::assertEquals('Class', $settings->getClass());
         self::assertEquals('aaa', $settings->getEncryptedSettings());
         self::assertNotEmpty($settings->getEvents());
@@ -42,7 +44,7 @@ final class NotificationSettingsTest extends KernelTestCaseAbstract
 
         self::assertEquals(
             [
-                NotificationSettings::ID             => NULL,
+                NotificationSettings::ID             => '1',
                 NotificationSettings::CREATED        => $settings[NotificationSettings::CREATED],
                 NotificationSettings::UPDATED        => $settings[NotificationSettings::UPDATED],
                 NotificationSettings::NAME           => 'Name',

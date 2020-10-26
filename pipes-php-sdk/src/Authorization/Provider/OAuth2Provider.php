@@ -3,14 +3,13 @@
 namespace Hanaboso\PipesPhpSdk\Authorization\Provider;
 
 use Exception;
+use GuzzleHttp\Psr7\Query;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth2DtoInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Utils\ScopeFormatter;
 use Hanaboso\PipesPhpSdk\Authorization\Wrapper\OAuth2Wrapper;
 use Hanaboso\Utils\String\Base64;
 use Psr\Log\LoggerAwareInterface;
-use function GuzzleHttp\Psr7\build_query;
-use function GuzzleHttp\Psr7\parse_query;
 
 /**
  * Class OAuth2Provider
@@ -167,7 +166,7 @@ final class OAuth2Provider extends OAuthProviderAbstract implements OAuth2Provid
 
         $scopes = ScopeFormatter::getScopes($scopes, $separator);
         $url    = sprintf('%s%s', $authorizeUrl, $scopes);
-        $query  = parse_query($url);
+        $query  = Query::parse($url);
         $host   = key($query);
         $v      = reset($query);
         unset($query[$host]);
@@ -183,7 +182,7 @@ final class OAuth2Provider extends OAuthProviderAbstract implements OAuth2Provid
             $query[self::STATE] = $state;
         }
 
-        return sprintf('%s?%s', $host[0], build_query($query, FALSE));
+        return sprintf('%s?%s', $host[0], Query::build($query, FALSE));
     }
 
     /**

@@ -6,7 +6,7 @@
         "php": "^7.4",
         "ext-json": "*",
         "hanaboso/app-store": "^1.5",
-        "hanaboso/commons-bundle": "^2.1",
+        "hanaboso/commons-bundle": "^2.2",
         "hanaboso/email-service-bundle": "^1.1",
         "hanaboso/pipes-connectors": "^1.5",
         "hanaboso/pipes-php-sdk": "^1.5",
@@ -16,7 +16,10 @@
         "ratchet/pawl": "^0.3"
     },
     "require-dev": {
-        "hanaboso/php-check-utils": "^1.1"
+        "hanaboso/php-check-utils": "^1.1",
+        "symfony/debug-bundle": "^5.1",
+        "symfony/security-bundle": "^5.1",
+        "symfony/serializer": "^5.1"
     },
     "autoload": {
         "psr-4": {

@@ -32,10 +32,10 @@ docker-down-clean: .env .lo0-down
 
 #Composer
 composer-install:
-	$(DEC) install --no-suggest
+	$(DEC) install
 
 composer-update:
-	$(DEC) update --no-suggest
+	$(DEC) update
 	$(DEC) normalize
 
 composer-outdated:

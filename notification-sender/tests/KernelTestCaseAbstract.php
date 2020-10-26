@@ -2,6 +2,7 @@
 
 namespace NotificationSenderTests;
 
+use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 /**
@@ -11,6 +12,8 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
  */
 abstract class KernelTestCaseAbstract extends KernelTestCase
 {
+
+    use PrivateTrait;
 
     /**
      *

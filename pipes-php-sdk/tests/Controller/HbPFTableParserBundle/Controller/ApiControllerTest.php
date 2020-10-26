@@ -11,7 +11,6 @@ use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\String\Json;
 use JsonException;
 use PipesPhpSdkTests\ControllerTestCaseAbstract;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class ApiControllerTest
@@ -277,7 +276,6 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
             ->method($methodName)
             ->willThrowException($returnValue);
 
-        /** @var ContainerInterface $container */
         $container = $this->client->getContainer();
         $container->set('hbpf.parser.table.handler', $mapperHandlerMock);
     }

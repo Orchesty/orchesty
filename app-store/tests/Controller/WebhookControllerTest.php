@@ -7,7 +7,6 @@ use Hanaboso\HbPFAppStore\Handler\WebhookHandler;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use HbPFAppStoreTests\ControllerTestCaseAbstract;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class WebhookControllerTest
@@ -130,7 +129,6 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
                 }
             );
 
-        /** @var ContainerInterface $container */
         $container = self::$client->getContainer();
         $container->set('hbpf._application.handler.application', $handler);
     }
