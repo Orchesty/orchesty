@@ -46,7 +46,6 @@ destroy-mongo:
 	docker-compose -f docker-compose.mongo.yml down -v
 
 composer-update-dev:
-	$(DE_DEV) php-sdk composer global require hirak/prestissimo
 	$(DE_DEV) php-sdk composer update --no-suggest
 
 build: .env

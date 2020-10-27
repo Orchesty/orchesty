@@ -1,5 +1,4 @@
 FROM hanabosocom/php-base:php-7.4-alpine
-RUN apk add composer --no-cache && composer global require hirak/prestissimo
 COPY . .
 RUN composer install -a --no-dev && APP_ENV=prod APP_DEBUG=0 bin/console cache:warmup
 

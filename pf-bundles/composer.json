@@ -25,6 +25,18 @@
         "symfony/security-bundle": "^5.1",
         "symfony/serializer": "^5.1"
     },
+    "replace": {
+        "ralouphie/getallheaders": "*",
+        "symfony/polyfill-ctype": "*",
+        "symfony/polyfill-iconv": "*",
+        "symfony/polyfill-intl-grapheme": "*",
+        "symfony/polyfill-intl-icu": "*",
+        "symfony/polyfill-intl-idn": "*",
+        "symfony/polyfill-intl-normalizer": "*",
+        "symfony/polyfill-mbstring": "*",
+        "symfony/polyfill-php72": "*",
+        "symfony/polyfill-php73": "*"
+    },
     "require-dev": {
         "hanaboso/php-check-utils": "^1.1"
     },

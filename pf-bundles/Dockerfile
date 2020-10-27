@@ -1,5 +1,4 @@
 FROM hanabosocom/php-base:php-7.4-alpine
-RUN apk add composer --no-cache && composer global require hirak/prestissimo
 COPY . .
 RUN cd pf-bundles && \
     sed -i -e 's/"symlink": true/"symlink": false/g' composer.json && \
