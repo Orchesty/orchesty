@@ -53,17 +53,11 @@ spec:
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
             - name: RABBITMQ_VHOST # todo: fix / in code or start supporting DSN
               value: "/$(__RABBITMQ_VHOST)"
-            - name: REDIS_HOST
+            - name: PROGRESS_DSN # mongodb DSN
               valueFrom:
                 configMapKeyRef:
-                  key: redis_host
+                  key: mongodb_dsn
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: REDIS_PORT
-              value: "6379"
-            - name: REDIS_PASS
-              value: ""
-            - name: REDIS_DB
-              value: "0"
             - name: COUNTER_PREFETCH
               value: "100"
             - name: METRICS_HOST

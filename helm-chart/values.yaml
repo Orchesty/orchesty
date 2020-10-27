@@ -43,6 +43,7 @@ global:
     enabled: true
 
   monolith:
+    userTaskListenerEnable: 1
     extraEnv: []
     hostPathMounts: []
 

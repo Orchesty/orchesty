@@ -29,6 +29,8 @@ spec:
               value: "{{ .Values.global.frontend_url }}"
             - name: FRONTEND_URL
               value: "{{ .Values.global.frontend_url }}"
+            - name: STARTING_POINT_URL
+              value: "http://starting-point:8080"
           resources:
             requests:
               memory: 64Mi

@@ -24,18 +24,7 @@ spec:
           ports:
             - name: http
               containerPort: 8007
-          env:
-            - name: REDIS_HOST
-              valueFrom:
-                configMapKeyRef:
-                  key: redis_host
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: REDIS_PORT
-              value: "6379"
-            - name: REDIS_PASS
-              value: ""
-            - name: REDIS_DB
-              value: "0"
+          env: []
           resources:
             requests:
               memory: 64Mi

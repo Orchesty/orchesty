@@ -120,15 +120,10 @@ TODO: move to _monolith-env.tpl
   value: elasticsearch
 - name: ELASTIC_INDEX
   value: logstash
-- name: SMTP_USER
+- name: EMAIL_DSN
   valueFrom:
     configMapKeyRef:
-      key: smtp_user
-      name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-- name: SMTP_PASSWORD
-  valueFrom:
-    configMapKeyRef:
-      key: smtp_password
+      key: email_dsn
       name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
 - name: METRICS_HOST
 {{- if .Values.global.monitoring.useInfluxDB }}
@@ -148,18 +143,11 @@ TODO: move to _monolith-env.tpl
     configMapKeyRef:
       key: rabbitmq_dsn
       name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-- name: REDIS_DSN
-  valueFrom:
-    configMapKeyRef:
-      key: redis_dsn
-      name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
 - name: ELASTICSEARCH_DSN
   valueFrom:
     configMapKeyRef:
       key: elasticsearch_dsn
       name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-- name: MAPPER_API_DSN
-  value: mapper-api
 - name: MULTI_PROBE_DSN
   value: multi-probe:8007
 - name: STARTING_POINT_DSN
@@ -178,10 +166,8 @@ TODO: move to _monolith-env.tpl
   value: "5000"
 - name: PHP_FPM_MAX_CHILDREN
   value: "20"
-- name: FTP_API_DSN
-  value: ftp-api
-- name: MAILER_API_DSN
-  value: mailer-api
+- name: USER_TASK_LISTENER_ENABLE
+  value: "{{ .Values.global.monolith.userTaskListenerEnable }}"
 {{ if .Values.global.monolith.extraEnv -}}
 {{ toYaml .Values.global.monolith.extraEnv }}
 {{- end -}}
