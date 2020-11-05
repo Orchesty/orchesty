@@ -15,6 +15,8 @@ import Repeater from "./repeater/Repeater";
 import MongoMessageStorage from "./repeater/storage/MongoMessageStorage";
 import {default as Configurator, INodeConfig, ITopologyConfig, ITopologyConfigSkeleton} from "./topology/Configurator";
 import INodeConfigProvider from "./topology/INodeConfigProvider";
+import {IAdditionalHeaders} from "./node/IAdditionalHeaders";
+import Headers from "./message/Headers";
 
 class Pipes implements INodeConfigProvider {
 
@@ -206,6 +208,23 @@ class Pipes implements INodeConfigProvider {
             this.dic.get(nodeCfg.worker.type)(nodeCfg.worker.settings);
 
         const metrics: IMetrics = this.dic.get("metrics")(topo.topology_id, id, metricsOptions.node_measurement);
+
+        // create folowers array
+        if (nodeCfg.next.length > 0) {
+            const headers = new Map<string, string>();
+            const parts : IAdditionalHeaders[] = [];
+            for (const name of nodeCfg.next) {
+                for (const n of topo.nodes) {
+                    if (n.id === name) {
+                        parts.push({id: name, name: n.label.node_name, type: n.worker.type});
+                    }
+                }
+            }
+
+            const b = new Buffer(JSON.stringify(parts));
+            headers.set(Headers.WORKER_FOLLOWERS, b.toString('base64'));
+            worker.setAdditionalHeaders(headers);
+        }
 
         const node = new Node(id, worker, faucet, drain, metrics);
 
