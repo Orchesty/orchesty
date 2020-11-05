@@ -12,6 +12,9 @@ interface IWorker {
 
     isWorkerReady: WorkerReadyFn;
 
+    setAdditionalHeaders(headers: Map<string, string>): void;
+
+    getAdditionalHeaders(): Map<string, string>;
 }
 
 export default IWorker;

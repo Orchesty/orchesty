@@ -162,6 +162,13 @@ class HttpWorker extends AWorker {
         httpHeaders.setPFHeader(Headers.NODE_ID, this.settings.node_label.node_id);
         httpHeaders.setPFHeader(Headers.NODE_NAME, this.settings.node_label.node_name);
 
+        // add special header with next nods
+        if (this.additionalHeaders !== undefined) {
+            this.additionalHeaders.forEach((value: string, key: string) => {
+                httpHeaders.setPFHeader(key, value);
+            });
+        }
+
         return httpHeaders;
     }
 
