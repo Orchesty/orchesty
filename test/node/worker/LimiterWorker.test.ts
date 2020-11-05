@@ -17,9 +17,11 @@ describe("LimiterWorker", () => {
         };
 
         const workerMock: IWorker = {
+            getAdditionalHeaders: () => null,
+            setAdditionalHeaders: () => null,
             isWorkerReady: async () => false,
             processData: async () => null,
-            processService: async () => null,
+            processService: async () => null
         };
 
         const faucetConf: any = { settings: { exchange: {name: "exname"}, routing_key: "rk"}};
@@ -59,9 +61,11 @@ describe("LimiterWorker", () => {
             };
 
             const workerMock: IWorker = {
+                getAdditionalHeaders: () => null,
+                setAdditionalHeaders: async() => null,
                 isWorkerReady: async () => true,
                 processData: async () => null,
-                processService: async () => null,
+                processService: async () => null
             };
 
             const faucetConf: any = { settings: { exchange: {name: "exname"}, routing_key: "rk"}};
@@ -95,9 +99,11 @@ describe("LimiterWorker", () => {
             };
 
             const workerMock: IWorker = {
+                getAdditionalHeaders: () => null,
+                setAdditionalHeaders: () => null,
                 isWorkerReady: async () => true,
                 processData: async () => null,
-                processService: async () => null,
+                processService: async () => null
             };
 
             const faucetConf: any = { settings: { exchange: {name: "exname"}, routing_key: "rk"}};

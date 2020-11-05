@@ -73,6 +73,9 @@ class Headers {
     public static readonly CONTENT_TYPE = "content-type";
     public static readonly DOCUMENT_ID = "doc-id";
 
+    // base64 encoded JSON with node followers
+    public static readonly WORKER_FOLLOWERS = "worker-followers";
+
     public static readonly HEADERS_WHITELIST = [
         Headers.CONTENT_TYPE,
     ];

@@ -160,3 +160,21 @@ Každá topologie obsahuje svojí Bridge, která je spuštěna v samostatném co
 - Redis
 - InfluxDB (optional)
 - Logstash (optional)
+
+## Novinky
+ - pole followeru zasilané workerem, pokud je vyplněno pole next: [].
+ hlavička 
+ ```
+ pf-worker-folowers: W3siaWQiOiI1ZjYwZGMzYWQzOWQ2MjUzZDk0Yjc0YzQtZGViIiwibmFtZSI6ImRlYnVnIiwidHlwZSI6Indvcmtlci5sb25nX3J1bm5pbmcifV0=
+ ```
+ 
+ jedná se o base64 serializin JSON objekt
+ ```
+    [
+        {
+            "id":"5f60dc3ad39d6253d94b74c4-deb",
+            "name":"debug",
+            "type":"worker.long_running"
+        }
+    ]
+ ```
