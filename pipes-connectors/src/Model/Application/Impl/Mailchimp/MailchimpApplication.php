@@ -166,7 +166,7 @@ final class MailchimpApplication extends OAuth2ApplicationAbstract implements We
     {
         parent::setAuthorizationToken($applicationInstall, $token);
 
-        $applicationInstall->setSettings(
+        $applicationInstall->addSettings(
             [
                 self::API_KEYPOINT => $this->getApiEndpoint($applicationInstall),
             ]

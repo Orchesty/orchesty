@@ -136,7 +136,7 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
         $settings                                                                            = $applicationInstall->getSettings(
         );
         $settings[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN] = $token;
-        $applicationInstall->setSettings($settings);
+        $applicationInstall->addSettings($settings);
 
         return $this;
     }
@@ -166,7 +166,7 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
         $settings                                                                                   = $applicationInstall->getSettings(
         );
         $settings[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::REDIRECT_URL] = $redirectUrl;
-        $applicationInstall->setSettings($settings);
+        $applicationInstall->addSettings($settings);
 
         return $this;
     }
@@ -187,12 +187,13 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
     protected function saveOauthStuff(): callable
     {
         return static function (DocumentManager $dm, OAuth1Dto $dto, array $data): void {
-            $dto->getApplicationInstall()->setSettings(
+            $dto->getApplicationInstall()->addSettings(
                 [ApplicationInterface::AUTHORIZATION_SETTINGS => [OAuth1ApplicationInterface::OAUTH => $data]]
             );
 
             $dm->persist($dto->getApplicationInstall());
             $dm->flush();
+            $dm->refresh($dto->getApplicationInstall());
         };
     }
 

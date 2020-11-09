@@ -138,7 +138,7 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
         $settings                                                                            = $applicationInstall->getSettings(
         );
         $settings[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN] = $token;
-        $applicationInstall->setSettings($settings);
+        $applicationInstall->addSettings($settings);
 
         return $applicationInstall;
     }
@@ -168,7 +168,7 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
         $settings = $applicationInstall->getSettings();
 
         $settings[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::REDIRECT_URL] = $redirectUrl;
-        $applicationInstall->setSettings($settings);
+        $applicationInstall->addSettings($settings);
 
         return $this;
     }
@@ -193,7 +193,7 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
         $settings = $applicationInstall->getSettings();
 
         $settings[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN] = $token;
-        $applicationInstall->setSettings($settings);
+        $applicationInstall->addSettings($settings);
 
         return $this;
     }
@@ -230,7 +230,7 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
             if (in_array($key, self::CREDENTIALS, TRUE)) {
                 $settings                                                          = $applicationInstall->getSettings();
                 $settings[BasicApplicationInterface::AUTHORIZATION_SETTINGS][$key] = $value;
-                $applicationInstall->setSettings($settings);
+                $applicationInstall->addSettings($settings);
             }
         }
 

@@ -141,14 +141,13 @@ class ApplicationManager
      */
     public function saveApplicationSettings(string $key, string $user, array $data): ApplicationInstall
     {
-        $application = $this->loader->getApplication($key)
-            ->setApplicationSettings(
-                $this->repository->findUserApp($key, $user),
-                $data
-            );
+        /** @var BasicApplicationInterface $application */
+        $application        = $this->loader->getApplication($key);
+        $applicationInstall = $application->setApplicationSettings($this->repository->findUserApp($key, $user), $data);
         $this->dm->flush();
+        $this->dm->refresh($applicationInstall);
 
-        return $application;
+        return $applicationInstall;
     }
 
     /**
@@ -161,13 +160,13 @@ class ApplicationManager
      */
     public function saveApplicationPassword(string $key, string $user, string $password): ApplicationInstall
     {
+        $applicationInstall = $this->repository->findUserApp($key, $user);
+
         /** @var BasicApplicationInterface $application */
         $application = $this->loader->getApplication($key);
-        $application = $application->setApplicationPassword(
-            $this->repository->findUserApp($key, $user),
-            $password
-        );
+        $application = $application->setApplicationPassword($applicationInstall, $password);
         $this->dm->flush();
+        $this->dm->refresh($applicationInstall);
 
         return $application;
     }
@@ -189,6 +188,7 @@ class ApplicationManager
         $application = $this->loader->getApplication($key);
         $application->setFrontendRedirectUrl($applicationInstall, $redirectUrl);
         $this->dm->flush();
+        $this->dm->refresh($applicationInstall);
 
         return $application->authorize($applicationInstall);
     }
@@ -210,6 +210,7 @@ class ApplicationManager
         $application = $this->loader->getApplication($key);
         $application->setAuthorizationToken($applicationInstall, $token);
         $this->dm->flush();
+        $this->dm->refresh($applicationInstall);
 
         return [ApplicationInterface::REDIRECT_URL => $application->getFrontendRedirectUrl($applicationInstall)];
     }

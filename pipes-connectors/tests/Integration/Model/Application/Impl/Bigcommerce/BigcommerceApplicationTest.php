@@ -43,6 +43,7 @@ final class BigcommerceApplicationTest extends DatabaseTestCaseAbstract
         );
 
         $this->pfd($applicationInstall);
+        $this->dm->refresh($applicationInstall);
         self::assertTrue($this->application->isAuthorized($applicationInstall));
         $this->application->authorize($applicationInstall);
     }
@@ -55,6 +56,7 @@ final class BigcommerceApplicationTest extends DatabaseTestCaseAbstract
         $bigcommerceApplication = $this->application;
         $applicationInstall     = new ApplicationInstall();
         $this->pfd($applicationInstall);
+        $this->dm->refresh($applicationInstall);
         self::assertEquals(FALSE, $bigcommerceApplication->isAuthorized($applicationInstall));
     }
 
@@ -71,6 +73,7 @@ final class BigcommerceApplicationTest extends DatabaseTestCaseAbstract
             self::CLIENT_SECRET
         );
         $this->pfd($applicationInstall);
+        $this->dm->refresh($applicationInstall);
         $dto = $this->application->getRequestDto($applicationInstall, 'POST', 'url', '{"data":"hello data"}');
         self::assertEquals('{"data":"hello data"}', $dto->getBody());
     }

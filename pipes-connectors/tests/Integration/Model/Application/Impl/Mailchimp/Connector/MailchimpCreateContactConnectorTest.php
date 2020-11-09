@@ -58,7 +58,7 @@ final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
             'fa830d8d4308625ba**********de659'
         );
 
-        $applicationInstall->setSettings(
+        $applicationInstall->addSettings(
             [
                 ApplicationAbstract::FORM          => [
                     MailchimpApplication::AUDIENCE_ID => '2a8******8',
@@ -68,6 +68,7 @@ final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
         );
 
         $this->pfd($applicationInstall);
+        $this->dm->refresh($applicationInstall);
 
         $dto      = DataProvider::getProcessDto(
             $app->getKey(),
@@ -109,6 +110,7 @@ final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
         );
 
         $this->pfd($applicationInstall);
+        $this->dm->refresh($applicationInstall);
         self::expectException(ConnectorException::class);
         $mailchimpCreateContactConnector->processEvent(
             DataProvider::getProcessDto(

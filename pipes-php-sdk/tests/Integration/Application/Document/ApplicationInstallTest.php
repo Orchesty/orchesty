@@ -20,6 +20,10 @@ final class ApplicationInstallTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall::getExpires
      * @covers \Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall::getNonEncryptedSettings
      * @covers \Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall::setNonEncryptedSettings
+     * @covers \Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall::addNonEncryptedSettings
+     * @covers \Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall::setSettings
+     * @covers \Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall::getSettings
+     * @covers \Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall::addSettings
      * @covers \Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall::toArray
      * @covers \Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall
      * @covers \Hanaboso\PipesPhpSdk\Application\Listener\ApplicationInstallListener
@@ -32,7 +36,8 @@ final class ApplicationInstallTest extends DatabaseTestCaseAbstract
             ->setUser('user')
             ->setKey('null-key')
             ->setExpires(DateTimeUtils::getUtcDateTime('now'))
-            ->setNonEncryptedSettings(['lock' => TRUE]);
+            ->setNonEncryptedSettings(['lock' => TRUE])
+            ->addNonEncryptedSettings(['unlock' => FALSE]);
         $this->pfd($applicationInstall);
         $this->dm->clear();
 
@@ -40,16 +45,17 @@ final class ApplicationInstallTest extends DatabaseTestCaseAbstract
         $applicationInstall = $this->dm->getRepository(ApplicationInstall::class)->find($applicationInstall->getId());
 
         self::assertInstanceOf(DateTime::class, $applicationInstall->getExpires());
-        self::assertEquals(['lock' => TRUE], $applicationInstall->getNonEncryptedSettings());
+        self::assertEquals(['lock' => TRUE, 'unlock' => FALSE], $applicationInstall->getNonEncryptedSettings());
         self::assertEquals(8, count($applicationInstall->toArray()));
 
         $applicationInstall->setSettings(['secret' => 'settings']);
+        $applicationInstall->addSettings(['token' => '123']);
         $this->pfd($applicationInstall);
         $this->dm->clear();
 
         /** @var ApplicationInstall $applicationInstall */
         $applicationInstall = $this->dm->getRepository(ApplicationInstall::class)->find($applicationInstall->getId());
-        self::assertEquals(['secret' => 'settings'], $applicationInstall->getSettings());
+        self::assertEquals(['secret' => 'settings', 'token' => '123'], $applicationInstall->getSettings());
     }
 
 }

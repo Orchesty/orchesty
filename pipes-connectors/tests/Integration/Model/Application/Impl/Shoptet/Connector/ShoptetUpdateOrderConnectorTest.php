@@ -97,6 +97,7 @@ final class ShoptetUpdateOrderConnectorTest extends DatabaseTestCaseAbstract
             self::NON_ENCRYPTED_SETTINGS
         );
         $this->pfd($applicationInstall);
+        $this->dm->refresh($applicationInstall);
 
         $dto = $this->connector->processAction(
             $this->prepareProcessDto(
@@ -172,6 +173,7 @@ final class ShoptetUpdateOrderConnectorTest extends DatabaseTestCaseAbstract
             self::NON_ENCRYPTED_SETTINGS
         );
         $this->pfd($applicationInstall);
+        $this->dm->refresh($applicationInstall);
 
         $this->connector->processAction(
             $this->prepareProcessDto(
@@ -214,6 +216,7 @@ final class ShoptetUpdateOrderConnectorTest extends DatabaseTestCaseAbstract
             self::NON_ENCRYPTED_SETTINGS
         );
         $this->pfd($applicationInstall);
+        $this->dm->refresh($applicationInstall);
 
         $this->connector->processAction(
             $this->prepareProcessDto(
@@ -261,6 +264,7 @@ final class ShoptetUpdateOrderConnectorTest extends DatabaseTestCaseAbstract
             self::NON_ENCRYPTED_SETTINGS
         );
         $this->pfd($applicationInstall);
+        $this->dm->refresh($applicationInstall);
 
         $this->connector->processAction(
             $this->prepareProcessDto(

@@ -230,6 +230,7 @@ final class OAuth2ApplicationAbstractTest extends DatabaseTestCaseAbstract
             ->setSettings($settings);
 
         $this->pfd($applicationInstall);
+        $this->dm->refresh($applicationInstall);
 
         return $applicationInstall;
     }

@@ -46,6 +46,7 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
             self::CLIENT_ID
         );
         $this->pfd($applicationInstall);
+        $this->dm->refresh($applicationInstall);
         self::assertEquals(TRUE, $this->application->isAuthorized($applicationInstall));
         $this->application->authorize($applicationInstall);
     }
@@ -81,7 +82,7 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
             'user',
             'fa830d8d4308*****c307906e83de659'
         );
-        $applicationInstall->setSettings(
+        $applicationInstall->addSettings(
             [
                 ApplicationAbstract::FORM          => [MailchimpApplication::AUDIENCE_ID => '2a8******8'],
                 MailchimpApplication::API_KEYPOINT => $this->application->getApiEndpoint($applicationInstall),
@@ -248,6 +249,7 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
             'secret'
         );
         $this->pfd($applicationInstall);
+        $this->dm->refresh($applicationInstall);
         $this->setProperty($this->application, 'provider', $providerMock);
         $return = $this->application->setAuthorizationToken(
             $applicationInstall,

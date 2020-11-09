@@ -36,6 +36,7 @@ final class NutshellApplicationTest extends DatabaseTestCaseAbstract
     {
         $applicationInstall = DataProvider::getBasicAppInstall($this->application->getKey(), self::USER, self::API_KEY);
         $this->pfd($applicationInstall);
+        $this->dm->refresh($applicationInstall);
 
         $dto = $this->application->getRequestDto(
             $applicationInstall,

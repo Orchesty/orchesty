@@ -111,6 +111,7 @@ final class ZendeskApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
         $applicationInstall = DataProvider::getOauth2AppInstall($this->application->getKey());
         $this->pfd($applicationInstall);
+        $this->dm->refresh($applicationInstall);
 
         $dto = $this->application->getRequestDto(
             $applicationInstall,
@@ -154,7 +155,7 @@ final class ZendeskApplicationTest extends DatabaseTestCaseAbstract
     {
         $this->setApplication();
         $applicationInstall = DataProvider::getOauth2AppInstall($this->application->getKey())
-            ->setSettings([ApplicationAbstract::FORM => ['subdomain' => 'domain123']]);
+            ->addSettings([ApplicationAbstract::FORM => ['subdomain' => 'domain123']]);
 
         $authUrl = $this->application->getTokenUrlWithSubdomain($applicationInstall);
 
@@ -171,7 +172,7 @@ final class ZendeskApplicationTest extends DatabaseTestCaseAbstract
     {
         $this->setApplication();
         $applicationInstall = DataProvider::getOauth2AppInstall($this->application->getKey())
-            ->setSettings([ApplicationAbstract::FORM => ['subdomain' => 'domain123']]);
+            ->addSettings([ApplicationAbstract::FORM => ['subdomain' => 'domain123']]);
 
         $this->application->authorize($applicationInstall);
         self::assertTrue($this->application->isAuthorized($applicationInstall));
@@ -204,7 +205,7 @@ final class ZendeskApplicationTest extends DatabaseTestCaseAbstract
     {
         $this->setApplication();
         $applicationInstall = DataProvider::getOauth2AppInstall($this->application->getKey())
-            ->setSettings([ApplicationAbstract::FORM => ['subdomain' => 'domain123']]);
+            ->addSettings([ApplicationAbstract::FORM => ['subdomain' => 'domain123']]);
 
         $crateDto = $this->invokeMethod(
             $this->application,

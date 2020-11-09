@@ -57,7 +57,7 @@ abstract class BasicApplicationAbstract extends ApplicationAbstract implements B
 
         $settings[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::PASSWORD] = $password;
 
-        return $applicationInstall->setSettings($settings);
+        return $applicationInstall->addSettings($settings);
     }
 
     /**
@@ -72,7 +72,7 @@ abstract class BasicApplicationAbstract extends ApplicationAbstract implements B
 
         $settings[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::USER] = $user;
 
-        return $applicationInstall->setSettings($settings);
+        return $applicationInstall->addSettings($settings);
     }
 
     /**
@@ -87,7 +87,7 @@ abstract class BasicApplicationAbstract extends ApplicationAbstract implements B
 
         $settings[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::TOKEN] = $token;
 
-        return $applicationInstall->setSettings($settings);
+        return $applicationInstall->addSettings($settings);
     }
 
     /**

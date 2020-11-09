@@ -64,7 +64,7 @@ abstract class ApplicationAbstract implements ApplicationInterface
             }
         }
 
-        return $applicationInstall->setSettings([self::FORM => $preparedSetting]);
+        return $applicationInstall->addSettings([self::FORM => $preparedSetting]);
     }
 
     /**

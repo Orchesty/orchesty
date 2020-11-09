@@ -204,7 +204,7 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
     {
         $this->setApplication();
         $applicationInstall = DataProvider::getOauth2AppInstall($this->application->getKey())
-            ->setSettings(
+            ->addSettings(
                 [ApplicationAbstract::FORM => ['api_token_url' => 'https://12345.myshoptet.com/action/ApiOAuthServer/getAccessToken']]
             );
 
@@ -294,7 +294,7 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
     {
         $this->setApplication();
         $applicationInstall = (new ApplicationInstall())
-            ->setSettings(
+            ->addSettings(
                 [
                     'clientSettings' => [
                         'token' => [
@@ -304,8 +304,8 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
                     ],
                 ]
             );
-        $this->dm->persist($applicationInstall);
-        $this->dm->flush();
+        $this->pfd($applicationInstall);
+        $this->dm->refresh($applicationInstall);
         $dto = $this->application->getWebhookUnsubscribeRequestDto($applicationInstall, '123');
 
         self::assertEquals('/token.a.b.c', $dto->getHeaders()['Shoptet-Access-Token']);
@@ -354,7 +354,7 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
     {
         $this->setApplication();
         $applicationInstall = (new ApplicationInstall())
-            ->setSettings(
+            ->addSettings(
                 [
                     ApplicationInterface::AUTHORIZATION_SETTINGS => [
                         ApplicationInterface::TOKEN => [OAuth2Provider::ACCESS_TOKEN => '___access_token___'],
@@ -365,8 +365,8 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
                         ],
                 ]
             );
-        $this->dm->persist($applicationInstall);
-        $this->dm->flush();
+        $this->pfd($applicationInstall);
+        $this->dm->refresh($applicationInstall);
         $dto = $this->application->getApiTokenDto($applicationInstall);
 
         self::assertEquals(
@@ -387,7 +387,7 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
     {
         $this->setApplication();
         $applicationInstall = DataProvider::getOauth2AppInstall($this->application->getKey())
-            ->setSettings(
+            ->addSettings(
                 [
                     ApplicationAbstract::FORM =>
                         [

@@ -98,6 +98,18 @@ class ApplicationInstall
      */
     public function setSettings(array $settings): ApplicationInstall
     {
+        $this->settings = $settings;
+
+        return $this;
+    }
+
+    /**
+     * @param mixed[] $settings
+     *
+     * @return ApplicationInstall
+     */
+    public function addSettings(array $settings): ApplicationInstall
+    {
         $this->settings = array_merge($this->settings, $settings);
 
         return $this;
@@ -199,6 +211,18 @@ class ApplicationInstall
     public function setNonEncryptedSettings(array $nonEncryptedSettings): ApplicationInstall
     {
         $this->nonEncryptedSettings = $nonEncryptedSettings;
+
+        return $this;
+    }
+
+    /**
+     * @param mixed[] $nonEncryptedSettings
+     *
+     * @return ApplicationInstall
+     */
+    public function addNonEncryptedSettings(array $nonEncryptedSettings): ApplicationInstall
+    {
+        $this->nonEncryptedSettings = array_merge($this->nonEncryptedSettings, $nonEncryptedSettings);
 
         return $this;
     }

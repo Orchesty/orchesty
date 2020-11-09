@@ -44,7 +44,7 @@ composer-install:
 
 composer-update:
 	$(DE) composer update
-	$(DE) composer normalize
+#	$(DE) composer normalize
 
 clear-cache:
 	$(DE) rm -rf var/log

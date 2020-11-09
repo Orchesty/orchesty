@@ -36,7 +36,7 @@ composer-install:
 
 composer-update:
 	$(DEC) update
-	$(DEC) normalize
+#	$(DEC) normalize
 
 composer-outdated:
 	$(DEC) outdated

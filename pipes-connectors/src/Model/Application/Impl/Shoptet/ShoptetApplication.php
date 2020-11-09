@@ -358,7 +358,7 @@ final class ShoptetApplication extends OAuth2ApplicationAbstract implements Webh
         if (!$token) {
             $requestDto = $this->getApiTokenDto($applicationInstall);
             $token      = $this->sender->send($requestDto)->getJsonBody();
-            $applicationInstall->setSettings(
+            $applicationInstall->addSettings(
                 [
                     self::CLIENT_SETTINGS => [
                         self::TOKEN => [

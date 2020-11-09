@@ -126,6 +126,7 @@ final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
 
         $this->dm->persist($application);
         $this->dm->flush();
+        $this->dm->refresh($application);
 
         self::assertTrue($this->application->isAuthorized($application));
     }
