@@ -39,26 +39,30 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.css$/,
-        loaders: ['style-loader', 'css-loader']
+        test: /\.(css|less)$/,
+        use: 'style-loader'
+      },
+      {
+        test: /\.(css|less)$/,
+        use: 'css-loader'
       },
       {
         test: /\.less$/,
-        loaders: ['style-loader', 'css-loader', 'less-loader']
+        use: 'less-loader'
       },
       {
         test: /\.(png|jpg)$/,
-        loader: 'url-loader?name=files/[hash].[ext]&limit=16384'
+        use: 'url-loader?name=files/[hash].[ext]&limit=16384'
       },
       {
         test: /\.(xml|bpmn)$/,
         loader: 'raw-loader'
       },
-      {test: /\.woff(\?.*)?$/, loader: "url-loader?name=files/[hash].[ext]&limit=1000"},
-      {test: /\.woff2(\?.*)?$/, loader: "url-loader?name=files/[hash].[ext]&limit=1000"},
-      {test: /\.ttf(\?.*)?$/, loader: "url-loader?name=files/[hash].[ext]&limit=1000"},
-      {test: /\.eot(\?.*)?$/, loader: "file-loader?name=files/[hash].[ext]&limit=1000"},
-      {test: /\.svg(\?.*)?$/, loader: "url-loader?name=files/[hash].[ext]&limit=1000"}
+      {test: /\.woff(\?.*)?$/, use: "url-loader?name=files/[hash].[ext]&limit=1000"},
+      {test: /\.woff2(\?.*)?$/, use: "url-loader?name=files/[hash].[ext]&limit=1000"},
+      {test: /\.ttf(\?.*)?$/, use: "url-loader?name=files/[hash].[ext]&limit=1000"},
+      {test: /\.eot(\?.*)?$/, use: "file-loader?name=files/[hash].[ext]&limit=1000"},
+      {test: /\.svg(\?.*)?$/, use: "url-loader?name=files/[hash].[ext]&limit=1000"}
     ]
   }
 };
