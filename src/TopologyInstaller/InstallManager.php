@@ -13,6 +13,7 @@ use Hanaboso\PipesFramework\Configurator\Exception\TopologyConfigException;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
+use Hanaboso\PipesFramework\TopologyInstaller\Cache\TopologyInstallerCacheInterface;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
@@ -20,8 +21,6 @@ use Hanaboso\RestBundle\Exception\XmlDecoderException;
 use Hanaboso\RestBundle\Model\Decoder\XmlDecoder;
 use Hanaboso\Utils\Exception\EnumException;
 use JsonException;
-use Predis\Client;
-use Predis\Connection\Parameters;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -77,20 +76,20 @@ final class InstallManager implements LoggerAwareInterface
     private XmlDecoder $decoder;
 
     /**
-     * @var string
+     * @var TopologyInstallerCacheInterface
      */
-    private string $redisDsn;
+    private TopologyInstallerCacheInterface $installerCache;
 
     /**
      * InstallManager constructor.
      *
-     * @param DocumentManager         $dm
-     * @param TopologyManager         $topologyManager
-     * @param TopologyGeneratorBridge $requestHandler
-     * @param CategoryParser          $categoryParser
-     * @param XmlDecoder              $decoder
-     * @param string                  $redisDsn
-     * @param mixed[]                 $dirs
+     * @param DocumentManager                 $dm
+     * @param TopologyManager                 $topologyManager
+     * @param TopologyGeneratorBridge         $requestHandler
+     * @param CategoryParser                  $categoryParser
+     * @param XmlDecoder                      $decoder
+     * @param TopologyInstallerCacheInterface $installerCache
+     * @param mixed[]                         $dirs
      */
     public function __construct(
         DocumentManager $dm,
@@ -98,7 +97,7 @@ final class InstallManager implements LoggerAwareInterface
         TopologyGeneratorBridge $requestHandler,
         CategoryParser $categoryParser,
         XmlDecoder $decoder,
-        string $redisDsn,
+        TopologyInstallerCacheInterface $installerCache,
         array $dirs
     )
     {
@@ -106,10 +105,10 @@ final class InstallManager implements LoggerAwareInterface
         $this->topologyManager = $topologyManager;
         $this->requestHandler  = $requestHandler;
         $this->categoryParser  = $categoryParser;
+        $this->decoder         = $decoder;
         $this->comparator      = new TopologiesComparator($dm->getRepository(Topology::class), $decoder, $dirs);
         $this->logger          = new NullLogger();
-        $this->decoder         = $decoder;
-        $this->redisDsn        = $redisDsn;
+        $this->installerCache  = $installerCache;
     }
 
     /**
@@ -126,8 +125,8 @@ final class InstallManager implements LoggerAwareInterface
      */
     public function prepareInstall(bool $makeCreate, bool $makeUpdate, bool $makeDelete, bool $force = FALSE): array
     {
-        $result = $this->comparator->compare();
-        $this->getRedisClient()->set(self::AUTO_INSTALL_KEY, serialize($result));
+        $result = $this->generateResult();
+        $this->installerCache->set(self::AUTO_INSTALL_KEY, $result);
 
         if ($force) {
             return $this->makeInstall($makeCreate, $makeUpdate, $makeDelete);
@@ -154,20 +153,18 @@ final class InstallManager implements LoggerAwareInterface
      * @param bool $makeDelete
      *
      * @return mixed[]
-     * @throws ConnectorException
+     * @throws MongoDBException
+     * @throws TopologyException
+     * @throws XmlDecoderException
      */
     public function makeInstall(bool $makeCreate, bool $makeUpdate, bool $makeDelete): array
     {
-        $client = $this->getRedisClient();
-        $record = $client->get(self::AUTO_INSTALL_KEY);
-
-        if (!$record) {
-            throw new ConnectorException('Redis record not found!. Please run prepareInstall first.');
-        }
-
-        /** @var CompareResultDto $result */
-        $result = unserialize($record);
+        $result = $this->installerCache->get(self::AUTO_INSTALL_KEY);
         $errors = [];
+
+        if ($result === NULL) {
+            $result = $this->generateResult();
+        }
 
         if ($makeCreate) {
             $errors[self::CREATE] = $this->makeCreate($result);
@@ -181,17 +178,20 @@ final class InstallManager implements LoggerAwareInterface
             $errors[self::DELETE] = $this->makeDelete($result);
         }
 
-        $client->del([self::AUTO_INSTALL_KEY]);
+        $this->installerCache->delete(self::AUTO_INSTALL_KEY);
 
         return $errors;
     }
 
     /**
-     * @return Client<mixed>
+     * @return CompareResultDto
+     * @throws MongoDBException
+     * @throws TopologyException
+     * @throws XmlDecoderException
      */
-    private function getRedisClient(): Client
+    private function generateResult(): CompareResultDto
     {
-        return new Client(Parameters::create($this->redisDsn));
+        return $this->comparator->compare();
     }
 
     /**
