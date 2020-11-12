@@ -6,10 +6,10 @@ use Exception;
 use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge;
+use Hanaboso\PipesFramework\TopologyInstaller\Cache\RedisCache;
 use Hanaboso\PipesFramework\TopologyInstaller\CategoryParser;
 use Hanaboso\PipesFramework\TopologyInstaller\InstallManager;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
-use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 use Predis\Client;
@@ -43,6 +43,7 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\UpdateObject::getFile
      * @covers \Hanaboso\PipesFramework\TopologyInstaller\TopologiesComparator::compare
      * @covers \Hanaboso\PipesFramework\TopologyInstaller\TopologiesComparator::prepareFiles
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Cache\RedisCache
      *
      * @throws Exception
      */
@@ -82,6 +83,7 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::makeRunnable
      * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::makeUpdate
      * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::makeDelete
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Cache\RedisCache
      *
      * @throws Exception
      */
@@ -108,14 +110,17 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::makeInstall
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Cache\RedisCache
      *
      * @throws Exception
      */
     public function testMakeInstallEx(): void
     {
         $manager = $this->getManager();
-        $this->expectException(ConnectorException::class);
-        $manager->makeInstall(TRUE, TRUE, TRUE);
+        $output  = $manager->makeInstall(TRUE, TRUE, TRUE);
+        self::assertArrayHasKey('create', $output);
+        self::assertArrayHasKey('update', $output);
+        self::assertArrayHasKey('delete', $output);
     }
 
     /**
@@ -136,6 +141,7 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
         $categoryParser->addRoot('systems', $dir);
 
         $xmlDecoder = self::$container->get('rest.decoder.xml');
+        $redisCache = new RedisCache(self::$container->getParameter('redis_dsn'));
 
         return new InstallManager(
             $this->dm,
@@ -143,7 +149,7 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
             $requestHandler,
             $categoryParser,
             $xmlDecoder,
-            self::$container->getParameter('redis_dsn'),
+            $redisCache,
             [$dir]
         );
     }

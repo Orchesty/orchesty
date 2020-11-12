@@ -7,18 +7,16 @@ use Exception;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
+use Hanaboso\PipesFramework\TopologyInstaller\Cache\NullCache;
 use Hanaboso\PipesFramework\TopologyInstaller\CategoryParser;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\TopologyFile;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\UpdateObject;
 use Hanaboso\PipesFramework\TopologyInstaller\InstallManager;
-use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\PipesPhpSdk\Database\Repository\TopologyRepository;
 use Monolog\Logger;
 use PipesFrameworkTests\KernelTestCaseAbstract;
-use Predis\Client;
-use Predis\Connection\Parameters;
 
 /**
  * Class InstallManagerTest
@@ -33,14 +31,13 @@ final class InstallManagerTest extends KernelTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::setLogger
      * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::prepareInstall
      * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::generateOutput
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Cache\NullCache
      *
      * @throws Exception
      */
     public function testPrepareInstall(): void
     {
-        $topo = new Topology();
-        $this->createRedisRecord();
-
+        $topo    = new Topology();
         $manager = $this->createManager($topo, []);
         $manager->setLogger(new Logger('logger'));
         $output = $manager->prepareInstall(TRUE, TRUE, TRUE);
@@ -61,6 +58,7 @@ final class InstallManagerTest extends KernelTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::makeRunnable
      * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::makeDeletable
      * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::logException
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Cache\NullCache
      *
      * @throws Exception
      */
@@ -68,18 +66,17 @@ final class InstallManagerTest extends KernelTestCaseAbstract
     {
         $topo = new Topology();
         $this->setProperty($topo, 'id', '123');
-        $this->createRedisRecord();
 
         $manager = $this->createManager($topo, []);
         $output  = $manager->makeInstall(TRUE, TRUE, TRUE);
         self::assertArrayHasKey('create', $output);
         self::assertArrayHasKey('update', $output);
         self::assertArrayHasKey('delete', $output);
-        self::assertNotEmpty($output['delete']);
     }
 
     /**
      * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::makeInstall
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Cache\NullCache
      *
      * @throws Exception
      */
@@ -89,16 +86,94 @@ final class InstallManagerTest extends KernelTestCaseAbstract
         $this->setProperty($topo, 'id', '123');
 
         $manager = $this->createManager($topo, []);
-        $this->expectException(ConnectorException::class);
-        $manager->makeInstall(TRUE, TRUE, TRUE);
+        $output  = $manager->makeInstall(TRUE, TRUE, TRUE);
+        self::assertArrayHasKey('create', $output);
+        self::assertArrayHasKey('update', $output);
+        self::assertArrayHasKey('delete', $output);
+        self::assertEmpty($output['delete']);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::makeCreate
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::logException
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Cache\NullCache
+     *
+     * @throws Exception
+     */
+    public function testMakeCreateEx(): void
+    {
+        $topo = new Topology();
+        $this->setProperty($topo, 'id', '123');
+        $manager = $this->createManager($topo, []);
+
+        $dm = $this->createMock(DocumentManager::class);
+        $dm->expects(self::any())->method('persist')->willThrowException(new Exception());
+        $this->setProperty($manager, 'dm', $dm);
+
+        $dto = new CompareResultDto();
+        $dto->addCreate(new TopologyFile('file.tplg', __DIR__ . '/data/file.tplg'));
+
+        $result = $this->invokeMethod($manager, 'makeCreate', [$dto]);
+
+        self::assertArrayHasKey('file', $result);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::makeUpdate
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::logException
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Cache\NullCache
+     *
+     * @throws Exception
+     */
+    public function testMakeUpdateEx(): void
+    {
+        $topo = new Topology();
+        $topo->setName('name');
+        $this->setProperty($topo, 'id', '123');
+        $manager = $this->createManager($topo, []);
+
+        $dm = $this->createMock(DocumentManager::class);
+        $dm->expects(self::any())->method('persist')->willThrowException(new Exception());
+        $this->setProperty($manager, 'dm', $dm);
+
+        $dto = new CompareResultDto();
+        $dto->addUpdate(new UpdateObject($topo, new TopologyFile('file-upl.tplg', __DIR__ . '/data/file-upl.tplg')));
+
+        $result = $this->invokeMethod($manager, 'makeUpdate', [$dto]);
+
+        self::assertArrayHasKey('name', $result);
     }
 
     /**
      * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::makeDelete
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::makeDeletable
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Cache\NullCache
      *
      * @throws Exception
      */
     public function testMakeDelete(): void
+    {
+        $topo = new Topology();
+        $topo->setName('name');
+        $this->setProperty($topo, 'id', '123');
+        $manager = $this->createManager($topo, []);
+
+        $dto = new CompareResultDto();
+        $dto->addDelete([$topo]);
+
+        $result = $this->invokeMethod($manager, 'makeDelete', [$dto]);
+
+        self::assertEquals(['name' =>''],$result);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::makeDelete
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::logException
+     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Cache\NullCache
+     *
+     * @throws Exception
+     */
+    public function testMakeDeleteEx(): void
     {
         $topo = new Topology();
         $this->setProperty($topo, 'id', '123');
@@ -149,7 +224,8 @@ final class InstallManagerTest extends KernelTestCaseAbstract
             static function (): void {
             }
         );
-        $decoder = self::$container->get('rest.decoder.xml');
+        $decoder    = self::$container->get('rest.decoder.xml');
+        $redisCache = new NullCache();
 
         return new InstallManager(
             $dm,
@@ -157,30 +233,9 @@ final class InstallManagerTest extends KernelTestCaseAbstract
             $requestHandler,
             $categoryParser,
             $decoder,
-            self::$container->getParameter('redis_dsn'),
+            $redisCache,
             $dirs
         );
-    }
-
-    /**
-     * @throws Exception
-     */
-    private function createRedisRecord(): void
-    {
-        $topo = new Topology();
-        $topo->setName('file-upl');
-
-        $topo2 = new Topology();
-        $topo2->setName('file-del');
-        $this->setProperty($topo2, 'id', '345');
-
-        $dto = new CompareResultDto();
-        $dto->addCreate(new TopologyFile('file.tplg', __DIR__ . '/data/file.tplg'));
-        $dto->addUpdate(new UpdateObject($topo, new TopologyFile('file-upl.tplg', __DIR__ . '/data/file-upl.tplg')));
-        $dto->addDelete([$topo2]);
-
-        $client = new Client(Parameters::create(self::$container->getParameter('redis_dsn')));
-        $client->set(InstallManager::AUTO_INSTALL_KEY, serialize($dto));
     }
 
 }

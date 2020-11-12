@@ -35,8 +35,16 @@ services:
             - '@hbpf.topology_generator.bridge'
             - '@hbpf.category.parser'
             - '@rest.decoder.xml'
-            - '%env(string:REDIS_DSN)%'
+            - '@hbpf.install.cache.null'
             - '%installer_dirs%'
+
+    hbpf.install.cache.null:
+        class: Hanaboso\PipesFramework\TopologyInstaller\Cache\NullCache
+
+    hbpf.install.cache.redis:
+        class: Hanaboso\PipesFramework\TopologyInstaller\Cache\RedisCache
+        arguments:
+            - '%env(string:REDIS_DSN)%'
 
     hbpf.category.parser:
         class: Hanaboso\PipesFramework\TopologyInstaller\CategoryParser
