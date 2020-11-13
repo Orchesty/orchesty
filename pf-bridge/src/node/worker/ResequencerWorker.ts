@@ -28,6 +28,13 @@ class ResequencerWorker extends AWorker {
      * @inheritdoc
      */
     public processData(msg: JobMessage): Promise<JobMessage[]> {
+        // add special header with next nods
+        if (this.additionalHeaders !== undefined) {
+            this.additionalHeaders.forEach((value: string, key: string) => {
+                msg.getHeaders().setPFHeader(key, value);
+            });
+        }
+
         const sId = msg.getSequenceId();
         const waitingFor = this.resequencer.getWaitingForSequenceId(msg.getProcessId());
         logger.debug(`Worker[type=resequencer] accepted message with sequenceId="${sId} \

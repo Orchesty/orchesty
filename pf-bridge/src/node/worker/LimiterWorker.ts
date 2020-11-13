@@ -77,6 +77,13 @@ export default class LimiterWorker extends AWorker {
             msg.getHeaders().setPFHeader(Headers.LIMIT_RETURN_EXCHANGE, faucet.exchange.name);
             msg.getHeaders().setPFHeader(Headers.LIMIT_RETURN_ROUTING_KEY, faucet.routing_key);
 
+            // add special header with next nods
+            if (this.additionalHeaders !== undefined) {
+                this.additionalHeaders.forEach((value: string, key: string) => {
+                    msg.getHeaders().setPFHeader(key, value);
+                });
+            }
+
             await this.limiter.postpone(msg);
         } catch (e) {
             logger.error("Worker[type='limiter'] cannot postpone message.", {error: e});
