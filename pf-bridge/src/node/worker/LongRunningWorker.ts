@@ -95,6 +95,13 @@ class LongRunningWorker extends AWorker {
     public processData(msg: JobMessage): Promise<JobMessage[]> {
         const hasDocument = msg.getHeaders().hasPFHeader(Headers.DOCUMENT_ID);
 
+        // add special header with next nods
+        if (this.additionalHeaders !== undefined) {
+            this.additionalHeaders.forEach((value: string, key: string) => {
+                msg.getHeaders().setPFHeader(key, value);
+            });
+        }
+
         return new Promise((resolve, reject) => {
             if (hasDocument) {
                 const reqParams: any = this.getJobRequestParams(msg);

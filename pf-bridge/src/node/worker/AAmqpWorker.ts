@@ -117,6 +117,13 @@ abstract class AAmqpWorker extends AWorker {
         headersToSend.setPFHeader(Headers.NODE_ID, this.settings.node_label.node_id);
         headersToSend.setPFHeader(Headers.NODE_NAME, this.settings.node_label.node_name);
 
+        // add special header with next nods
+        if (this.additionalHeaders !== undefined) {
+            this.additionalHeaders.forEach((value: string, key: string) => {
+                headersToSend.setPFHeader(key, value);
+            });
+        }
+
         try {
             await this.publisher.sendToQueue(
                 this.settings.publish_queue.name,

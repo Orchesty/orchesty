@@ -29,6 +29,13 @@ class NullWorker extends AWorker {
      * @inheritdoc
      */
     public async processData(msg: JobMessage): Promise<JobMessage[]> {
+        // add special header with next nods
+        if (this.additionalHeaders !== undefined) {
+            this.additionalHeaders.forEach((value: string, key: string) => {
+                msg.getHeaders().setPFHeader(key, value);
+            });
+        }
+
         if (this.settings && this.settings.node_label.node_name.toLowerCase() === "debug") {
             msg.setResult({code: ResultCode.SUCCESS, message: "Debug worker passed message."});
 

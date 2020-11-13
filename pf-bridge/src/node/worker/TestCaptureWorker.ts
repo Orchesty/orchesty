@@ -17,6 +17,13 @@ class TestCaptureWorker extends AWorker {
      * @inheritdoc
      */
     public processData(msg: JobMessage): Promise<JobMessage[]> {
+        // add special header with next nods
+        if (this.additionalHeaders !== undefined) {
+            this.additionalHeaders.forEach((value: string, key: string) => {
+                msg.getHeaders().setPFHeader(key, value);
+            });
+        }
+
         this.captured.push({body: msg.getContent(), headers: msg.getHeaders().getRaw()});
 
         msg.setResult({code: ResultCode.SUCCESS, message: "Test worker OK"});

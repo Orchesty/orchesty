@@ -107,6 +107,13 @@ class JsonSplitterWorker extends AWorker {
             headers.setPFHeader(Headers.SEQUENCE_ID, `${i}`);
             headers.setHeader("content-type", "application/json");
 
+            // add special header with next nods
+            if (this.additionalHeaders !== undefined) {
+                this.additionalHeaders.forEach((value: string, key: string) => {
+                    headers.setPFHeader(key, value);
+                });
+            }
+
             const splitMsg = new JobMessage(this.settings.node_label, headers.getRaw(), body);
             splitMsg.getMeasurement().setPublished(msg.getMeasurement().getPublished());
             splitMsg.getMeasurement().setReceived(msg.getMeasurement().getReceived());
