@@ -500,16 +500,16 @@
         },
         {
             "name": "doctrine/dbal",
-            "version": "2.12.0",
+            "version": "2.12.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/dbal.git",
-                "reference": "c6d37b4c42aaa3c3ee175f05eca68056f4185646"
+                "reference": "adce7a954a1c2f14f85e94aed90c8489af204086"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/dbal/zipball/c6d37b4c42aaa3c3ee175f05eca68056f4185646",
-                "reference": "c6d37b4c42aaa3c3ee175f05eca68056f4185646",
+                "url": "https://api.github.com/repos/doctrine/dbal/zipball/adce7a954a1c2f14f85e94aed90c8489af204086",
+                "reference": "adce7a954a1c2f14f85e94aed90c8489af204086",
                 "shasum": ""
             },
             "require": {
@@ -591,7 +591,7 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/dbal/issues",
-                "source": "https://github.com/doctrine/dbal/tree/2.12.0"
+                "source": "https://github.com/doctrine/dbal/tree/2.12.1"
             },
             "funding": [
                 {
@@ -607,7 +607,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-10-22T17:26:24+00:00"
+            "time": "2020-11-14T20:26:58+00:00"
         },
         {
             "name": "doctrine/doctrine-bundle",
@@ -721,23 +721,23 @@
         },
         {
             "name": "doctrine/doctrine-fixtures-bundle",
-            "version": "3.3.2",
+            "version": "3.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/DoctrineFixturesBundle.git",
-                "reference": "a2179f447425d9e784fb9bc224e533a0ab083b98"
+                "reference": "870189619a7770f468ffb0b80925302e065a3b34"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/DoctrineFixturesBundle/zipball/a2179f447425d9e784fb9bc224e533a0ab083b98",
-                "reference": "a2179f447425d9e784fb9bc224e533a0ab083b98",
+                "url": "https://api.github.com/repos/doctrine/DoctrineFixturesBundle/zipball/870189619a7770f468ffb0b80925302e065a3b34",
+                "reference": "870189619a7770f468ffb0b80925302e065a3b34",
                 "shasum": ""
             },
             "require": {
                 "doctrine/data-fixtures": "^1.3",
                 "doctrine/doctrine-bundle": "^1.11|^2.0",
                 "doctrine/orm": "^2.6.0",
-                "doctrine/persistence": "^1.3|^2.0",
+                "doctrine/persistence": "^1.3.7|^2.0",
                 "php": "^7.1 || ^8.0",
                 "symfony/config": "^3.4|^4.3|^5.0",
                 "symfony/console": "^3.4|^4.3|^5.0",
@@ -747,15 +747,10 @@
             },
             "require-dev": {
                 "doctrine/coding-standard": "^6.0",
-                "phpunit/phpunit": "^7.4 || ^9.2",
+                "phpunit/phpunit": "^7.4 || ^8.0 || ^9.2",
                 "symfony/phpunit-bridge": "^4.1|^5.0"
             },
             "type": "symfony-bundle",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.3.x-dev"
-                }
-            },
             "autoload": {
                 "psr-4": {
                     "Doctrine\\Bundle\\FixturesBundle\\": ""
@@ -787,7 +782,7 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/DoctrineFixturesBundle/issues",
-                "source": "https://github.com/doctrine/DoctrineFixturesBundle/tree/3.3.x"
+                "source": "https://github.com/doctrine/DoctrineFixturesBundle/tree/3.4.0"
             },
             "funding": [
                 {
@@ -803,7 +798,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-09-01T07:06:14+00:00"
+            "time": "2020-11-14T09:36:49+00:00"
         },
         {
             "name": "doctrine/event-manager",
@@ -1661,16 +1656,16 @@
         },
         {
             "name": "egulias/email-validator",
-            "version": "2.1.23",
+            "version": "2.1.24",
             "source": {
                 "type": "git",
                 "url": "https://github.com/egulias/EmailValidator.git",
-                "reference": "5fa792ad1853ae2bc60528dd3e5cbf4542d3c1df"
+                "reference": "ca90a3291eee1538cd48ff25163240695bd95448"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/egulias/EmailValidator/zipball/5fa792ad1853ae2bc60528dd3e5cbf4542d3c1df",
-                "reference": "5fa792ad1853ae2bc60528dd3e5cbf4542d3c1df",
+                "url": "https://api.github.com/repos/egulias/EmailValidator/zipball/ca90a3291eee1538cd48ff25163240695bd95448",
+                "reference": "ca90a3291eee1538cd48ff25163240695bd95448",
                 "shasum": ""
             },
             "require": {
@@ -1717,9 +1712,15 @@
             ],
             "support": {
                 "issues": "https://github.com/egulias/EmailValidator/issues",
-                "source": "https://github.com/egulias/EmailValidator/tree/2.1.23"
+                "source": "https://github.com/egulias/EmailValidator/tree/2.1.24"
             },
-            "time": "2020-10-31T20:37:35+00:00"
+            "funding": [
+                {
+                    "url": "https://github.com/egulias",
+                    "type": "github"
+                }
+            ],
+            "time": "2020-11-14T15:56:27+00:00"
         },
         {
             "name": "elasticsearch/elasticsearch",
@@ -2264,25 +2265,25 @@
         },
         {
             "name": "hanaboso/email-service-bundle",
-            "version": "1.1.6",
+            "version": "1.1.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/email-service-bundle.git",
-                "reference": "7faeccacafe945358e5bc8dcaee06b3fed8cb036"
+                "reference": "507e94d3f23946ce303446b57594019e9e81b34d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/email-service-bundle/zipball/7faeccacafe945358e5bc8dcaee06b3fed8cb036",
-                "reference": "7faeccacafe945358e5bc8dcaee06b3fed8cb036",
+                "url": "https://api.github.com/repos/hanaboso/email-service-bundle/zipball/507e94d3f23946ce303446b57594019e9e81b34d",
+                "reference": "507e94d3f23946ce303446b57594019e9e81b34d",
                 "shasum": ""
             },
             "require": {
                 "ext-iconv": "*",
-                "hanaboso/commons-bundle": "^2.0",
+                "hanaboso/commons-bundle": "^2.2",
                 "php": "^7.4",
-                "symfony/monolog-bundle": "^3.5",
-                "symfony/swiftmailer-bundle": "^3.4",
-                "twig/twig": "^3.0"
+                "symfony/monolog-bundle": "^3.6",
+                "symfony/swiftmailer-bundle": "^3.5",
+                "twig/twig": "^3.1"
             },
             "require-dev": {
                 "hanaboso/php-check-utils": "^1.1"
@@ -2298,9 +2299,9 @@
                 "Apache-2.0"
             ],
             "support": {
-                "source": "https://github.com/hanaboso/email-service-bundle/tree/1.1.6"
+                "source": "https://github.com/hanaboso/email-service-bundle/tree/1.1.7"
             },
-            "time": "2020-09-03T13:36:37+00:00"
+            "time": "2020-11-13T16:16:15+00:00"
         },
         {
             "name": "hanaboso/mongo-data-grid",
@@ -2392,27 +2393,27 @@
         },
         {
             "name": "hanaboso/rabbit-mq-bundle",
-            "version": "1.4.3",
+            "version": "1.4.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/rabbit-mq-bundle.git",
-                "reference": "f7468a62b89f0c5389bc75fa8d2069a3a83b5a84"
+                "reference": "9b2535824f22a9488a23afc1bdb7300115c1414a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/rabbit-mq-bundle/zipball/f7468a62b89f0c5389bc75fa8d2069a3a83b5a84",
-                "reference": "f7468a62b89f0c5389bc75fa8d2069a3a83b5a84",
+                "url": "https://api.github.com/repos/hanaboso/rabbit-mq-bundle/zipball/9b2535824f22a9488a23afc1bdb7300115c1414a",
+                "reference": "9b2535824f22a9488a23afc1bdb7300115c1414a",
                 "shasum": ""
             },
             "require": {
                 "ext-ctype": "*",
                 "ext-intl": "*",
                 "ext-mbstring": "*",
-                "guzzlehttp/promises": "^1.3",
+                "guzzlehttp/promises": "^1.4",
                 "hanaboso/utils": "^1.0",
                 "php": "^7.4",
                 "php-amqplib/php-amqplib": "^2.12",
-                "symfony/monolog-bundle": "^3.5",
+                "symfony/monolog-bundle": "^3.6",
                 "symfony/yaml": "^5.1"
             },
             "require-dev": {
@@ -2429,9 +2430,9 @@
                 "Apache-2.0"
             ],
             "support": {
-                "source": "https://github.com/hanaboso/rabbit-mq-bundle/tree/1.4.3"
+                "source": "https://github.com/hanaboso/rabbit-mq-bundle/tree/1.4.4"
             },
-            "time": "2020-09-03T14:11:32+00:00"
+            "time": "2020-11-13T16:26:15+00:00"
         },
         {
             "name": "hanaboso/rest-bundle",
@@ -2481,24 +2482,19 @@
         },
         {
             "name": "hanaboso/user-bundle",
-            "version": "1.3.14",
+            "version": "1.3.15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/user-bundle.git",
-                "reference": "8d80c362398b96837a7615ede435b2eff22ad4a5"
+                "reference": "5ae6ecd68f9b2cea99f0ed436017a3137314aac9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/user-bundle/zipball/8d80c362398b96837a7615ede435b2eff22ad4a5",
-                "reference": "8d80c362398b96837a7615ede435b2eff22ad4a5",
+                "url": "https://api.github.com/repos/hanaboso/user-bundle/zipball/5ae6ecd68f9b2cea99f0ed436017a3137314aac9",
+                "reference": "5ae6ecd68f9b2cea99f0ed436017a3137314aac9",
                 "shasum": ""
             },
             "require": {
-                "doctrine/orm": "^2.7",
-                "ext-ctype": "*",
-                "ext-iconv": "*",
-                "ext-intl": "*",
-                "ext-mbstring": "*",
                 "hanaboso/commons-bundle": "^2.0",
                 "hanaboso/email-service-bundle": "^1.1",
                 "hanaboso/rabbit-mq-bundle": "^1.4",
@@ -2506,9 +2502,16 @@
                 "php": "^7.4"
             },
             "require-dev": {
+                "doctrine/doctrine-bundle": "^2.2",
+                "doctrine/mongodb-odm-bundle": "^4.2",
+                "doctrine/orm": "^2.7",
                 "hanaboso/php-check-utils": "^1.1",
-                "symfony/monolog-bundle": "^3.5",
+                "symfony/monolog-bundle": "^3.6",
                 "symfony/security-bundle": "^5.1"
+            },
+            "suggest": {
+                "doctrine/doctrine-bundle": "Install me, if you using MySQL.",
+                "doctrine/mongodb-odm-bundle": "Install me, if you using MongoDB."
             },
             "type": "library",
             "autoload": {
@@ -2521,9 +2524,9 @@
                 "Apache-2.0"
             ],
             "support": {
-                "source": "https://github.com/hanaboso/user-bundle/tree/1.3.14"
+                "source": "https://github.com/hanaboso/user-bundle/tree/1.3.15"
             },
-            "time": "2020-09-07T08:59:31+00:00"
+            "time": "2020-11-16T12:10:03+00:00"
         },
         {
             "name": "hanaboso/utils",
@@ -3382,16 +3385,16 @@
         },
         {
             "name": "myclabs/php-enum",
-            "version": "1.7.6",
+            "version": "1.7.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/myclabs/php-enum.git",
-                "reference": "5f36467c7a87e20fbdc51e524fd8f9d1de80187c"
+                "reference": "d178027d1e679832db9f38248fcc7200647dc2b7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/myclabs/php-enum/zipball/5f36467c7a87e20fbdc51e524fd8f9d1de80187c",
-                "reference": "5f36467c7a87e20fbdc51e524fd8f9d1de80187c",
+                "url": "https://api.github.com/repos/myclabs/php-enum/zipball/d178027d1e679832db9f38248fcc7200647dc2b7",
+                "reference": "d178027d1e679832db9f38248fcc7200647dc2b7",
                 "shasum": ""
             },
             "require": {
@@ -3426,22 +3429,32 @@
             ],
             "support": {
                 "issues": "https://github.com/myclabs/php-enum/issues",
-                "source": "https://github.com/myclabs/php-enum/tree/master"
+                "source": "https://github.com/myclabs/php-enum/tree/1.7.7"
             },
-            "time": "2020-02-14T08:15:52+00:00"
+            "funding": [
+                {
+                    "url": "https://github.com/mnapoli",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/myclabs/php-enum",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2020-11-14T18:14:52+00:00"
         },
         {
             "name": "ocramius/proxy-manager",
-            "version": "2.9.1",
+            "version": "2.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Ocramius/ProxyManager.git",
-                "reference": "7452942d38ae36223b0f8408619181f69799eb5c"
+                "reference": "f65ae0f9dcbdd9d6ad3abb721a9e09c3d7d868a4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Ocramius/ProxyManager/zipball/7452942d38ae36223b0f8408619181f69799eb5c",
-                "reference": "7452942d38ae36223b0f8408619181f69799eb5c",
+                "url": "https://api.github.com/repos/Ocramius/ProxyManager/zipball/f65ae0f9dcbdd9d6ad3abb721a9e09c3d7d868a4",
+                "reference": "f65ae0f9dcbdd9d6ad3abb721a9e09c3d7d868a4",
                 "shasum": ""
             },
             "require": {
@@ -3506,7 +3519,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Ocramius/ProxyManager/issues",
-                "source": "https://github.com/Ocramius/ProxyManager/tree/2.9.1"
+                "source": "https://github.com/Ocramius/ProxyManager/tree/2.10.0"
             },
             "funding": [
                 {
@@ -3518,7 +3531,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-08-26T16:19:12+00:00"
+            "time": "2020-11-12T17:04:46+00:00"
         },
         {
             "name": "paragonie/random_compat",
@@ -7927,16 +7940,16 @@
         },
         {
             "name": "myclabs/deep-copy",
-            "version": "1.10.1",
+            "version": "1.10.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/myclabs/DeepCopy.git",
-                "reference": "969b211f9a51aa1f6c01d1d2aef56d3bd91598e5"
+                "reference": "776f831124e9c62e1a2c601ecc52e776d8bb7220"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/969b211f9a51aa1f6c01d1d2aef56d3bd91598e5",
-                "reference": "969b211f9a51aa1f6c01d1d2aef56d3bd91598e5",
+                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/776f831124e9c62e1a2c601ecc52e776d8bb7220",
+                "reference": "776f831124e9c62e1a2c601ecc52e776d8bb7220",
                 "shasum": ""
             },
             "require": {
@@ -7973,7 +7986,7 @@
             ],
             "support": {
                 "issues": "https://github.com/myclabs/DeepCopy/issues",
-                "source": "https://github.com/myclabs/DeepCopy/tree/1.x"
+                "source": "https://github.com/myclabs/DeepCopy/tree/1.10.2"
             },
             "funding": [
                 {
@@ -7981,7 +7994,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-06-29T13:22:24+00:00"
+            "time": "2020-11-13T09:40:50+00:00"
         },
         {
             "name": "nikic/php-parser",
@@ -8613,16 +8626,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "0.12.54",
+            "version": "0.12.55",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "45c7b999a4b7dd9ac5558bdaaf23dcebbef88223"
+                "reference": "4382b2b2059ec7e5135d07685ec1e3e16ae32d16"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/45c7b999a4b7dd9ac5558bdaaf23dcebbef88223",
-                "reference": "45c7b999a4b7dd9ac5558bdaaf23dcebbef88223",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/4382b2b2059ec7e5135d07685ec1e3e16ae32d16",
+                "reference": "4382b2b2059ec7e5135d07685ec1e3e16ae32d16",
                 "shasum": ""
             },
             "require": {
@@ -8653,7 +8666,7 @@
             "description": "PHPStan - PHP Static Analysis Tool",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan/issues",
-                "source": "https://github.com/phpstan/phpstan/tree/0.12.54"
+                "source": "https://github.com/phpstan/phpstan/tree/0.12.55"
             },
             "funding": [
                 {
@@ -8669,7 +8682,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-11-05T13:36:26+00:00"
+            "time": "2020-11-14T10:20:35+00:00"
         },
         {
             "name": "phpstan/phpstan-doctrine",
@@ -10457,27 +10470,27 @@
         },
         {
             "name": "spaze/phpstan-disallowed-calls",
-            "version": "v1.0.0",
+            "version": "v1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spaze/phpstan-disallowed-calls.git",
-                "reference": "f5dab10c0d35a8232b6c0d8aee7100443ceb8b53"
+                "reference": "24feac6714a42e8e54735cfdfe22bfb42d759b78"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spaze/phpstan-disallowed-calls/zipball/f5dab10c0d35a8232b6c0d8aee7100443ceb8b53",
-                "reference": "f5dab10c0d35a8232b6c0d8aee7100443ceb8b53",
+                "url": "https://api.github.com/repos/spaze/phpstan-disallowed-calls/zipball/24feac6714a42e8e54735cfdfe22bfb42d759b78",
+                "reference": "24feac6714a42e8e54735cfdfe22bfb42d759b78",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.1",
+                "php": ">=7.1",
                 "phpstan/phpstan": "^0.12"
             },
             "require-dev": {
                 "php-parallel-lint/php-console-highlighter": "^0.5.0",
                 "php-parallel-lint/php-parallel-lint": "^1.2",
-                "phpunit/phpunit": "^7.0",
-                "spaze/coding-standard": "^0.0.3"
+                "phpunit/phpunit": "^7.0 || ^9.4.2",
+                "spaze/coding-standard": "^0.0.4"
             },
             "type": "phpstan-extension",
             "extra": {
@@ -10506,9 +10519,9 @@
             "description": "Disallowed method and function calls plug-in for PHPStan",
             "support": {
                 "issues": "https://github.com/spaze/phpstan-disallowed-calls/issues",
-                "source": "https://github.com/spaze/phpstan-disallowed-calls/tree/v1.0.0"
+                "source": "https://github.com/spaze/phpstan-disallowed-calls/tree/v1.0.1"
             },
-            "time": "2020-10-18T22:00:23+00:00"
+            "time": "2020-11-12T21:03:35+00:00"
         },
         {
             "name": "squizlabs/php_codesniffer",

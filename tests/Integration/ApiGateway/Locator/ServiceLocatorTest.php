@@ -12,6 +12,7 @@ use Hanaboso\Utils\String\Json;
 use LogicException;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 use Psr\Log\NullLogger;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class ServiceLocatorTest
@@ -296,6 +297,36 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
         $dto = new ResponseDto(200, '', Json::encode([]), []);
 
         $res = $this->createLocator($dto)->unSubscribeWebhook('key', 'user', []);
+        self::assertEquals([], $res);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::listSyncActions
+     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::doRequest
+     *
+     * @throws Exception
+     */
+    public function testListSyncActions(): void
+    {
+        $dto = new ResponseDto(200, '', Json::encode([]), []);
+
+        $res = $this->createLocator($dto)->listSyncActions('key');
+        self::assertEquals([], $res);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::runSyncActions
+     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::doRequest
+     *
+     * @throws Exception
+     */
+    public function testRunSyncActions(): void
+    {
+        $dto = new ResponseDto(200, '', Json::encode([]), []);
+        $req = new Request(['aa' => 'bb']);
+        $req->setMethod('post');
+
+        $res = $this->createLocator($dto)->runSyncActions($req, 'key', 'someMethod');
         self::assertEquals([], $res);
     }
 

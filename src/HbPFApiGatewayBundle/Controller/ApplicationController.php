@@ -165,6 +165,34 @@ final class ApplicationController extends AbstractController
     }
 
     /**
+     * @Route("/applications/{key}/sync/list", methods={"GET", "OPTIONS"})
+     *
+     * @param string $key
+     *
+     * @return Response
+     */
+    public function getSynchronousActionsAction(string $key): Response
+    {
+        //TODO: refactor after ServiceLocatorMS will be done
+        return new JsonResponse($this->locator->listSyncActions($key));
+    }
+
+    /**
+     * @Route("/applications/{key}/sync/{method}", methods={"GET", "POST"})
+     *
+     * @param Request $request
+     * @param string  $key
+     * @param string  $method
+     *
+     * @return Response
+     */
+    public function runSynchronousActionsAction(Request $request, string $key, string $method): Response
+    {
+        //TODO: refactor after ServiceLocatorMS will be done
+        return new JsonResponse($this->locator->runSyncActions($request, $key, $method));
+    }
+
+    /**
      * @Route("/applications/{key}/users/{user}/authorize/token", methods={"GET", "OPTIONS"})
      *
      * @param Request $request
@@ -200,7 +228,6 @@ final class ApplicationController extends AbstractController
      * @Route("/applications/statistics/application/{key}", methods={"GET", "OPTIONS"})
      *
      * @param Request     $request
-     *
      * @param string|null $key
      *
      * @return Response
@@ -217,7 +244,6 @@ final class ApplicationController extends AbstractController
      * @Route("/applications/statistics/user/{user}", methods={"GET", "OPTIONS"})
      *
      * @param Request     $request
-     *
      * @param string|null $user
      *
      * @return Response

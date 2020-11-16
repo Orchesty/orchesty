@@ -284,6 +284,26 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::getSynchronousActionsAction
+     *
+     * @throws Exception
+     */
+    public function testGetSynchronousActionsAction(): void
+    {
+        $this->assertResponse(__DIR__ . '/data/ApplicationController/getSynchronousActionsRequest.json',);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::runSynchronousActionsAction
+     *
+     * @throws Exception
+     */
+    public function testRunSynchronousActionsAction(): void
+    {
+        $this->assertResponse(__DIR__ . '/data/ApplicationController/runSynchronousActionsRequest.json',);
+    }
+
+    /**
      * @return ApplicationInstall
      * @throws Exception
      */
