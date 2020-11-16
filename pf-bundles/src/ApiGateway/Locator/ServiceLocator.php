@@ -16,6 +16,7 @@ use LogicException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use Symfony\Component\HttpFoundation\Request;
 use Throwable;
 
 /**
@@ -222,6 +223,37 @@ final class ServiceLocator implements LoggerAwareInterface
     }
 
     /**
+     * @param string $key
+     *
+     * @return mixed[]
+     */
+    public function listSyncActions(string $key): array
+    {
+        return $this->doRequest(
+            sprintf('/applications/%s/sync/list', $key),
+            CurlManager::METHOD_GET
+        );
+    }
+
+    /**
+     * @param Request $request
+     * @param string  $key
+     * @param string  $method
+     *
+     * @return mixed[]
+     */
+    public function runSyncActions(Request $request, string $key, string $method): array
+    {
+        return $this->doRequest(
+            sprintf('/applications/%s/sync/%s%s', $key, $method, $this->queryToString($request->query->all())),
+            $request->getMethod(),
+            $request->request->all(),
+            FALSE,
+            $request->headers->all()
+        );
+    }
+
+    /**
      * --------------------------------------------- Nodes -----------------------------------------
      */
 
@@ -295,6 +327,7 @@ final class ServiceLocator implements LoggerAwareInterface
      * @param string  $method
      * @param mixed[] $body
      * @param bool    $multiple
+     * @param mixed[] $headers
      *
      * @return mixed[]
      */
@@ -302,7 +335,8 @@ final class ServiceLocator implements LoggerAwareInterface
         string $url,
         string $method = CurlManager::METHOD_GET,
         array $body = [],
-        bool $multiple = FALSE
+        bool $multiple = FALSE,
+        array $headers = []
     ): array
     {
         $out = [];
@@ -310,7 +344,7 @@ final class ServiceLocator implements LoggerAwareInterface
             try {
                 $ip = $sdk->getKey();
 
-                $dto = new RequestDto($method, new Uri(sprintf('%s/%s', $ip, $url)));
+                $dto = new RequestDto($method, new Uri(sprintf('%s/%s', $ip, $url)), $headers);
                 if (!empty($body)) {
                     $dto->setBody(Json::encode($body));
                 }

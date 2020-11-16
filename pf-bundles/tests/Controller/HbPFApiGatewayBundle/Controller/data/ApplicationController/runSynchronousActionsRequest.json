@@ -1,0 +1,5 @@
+{
+    "http": "GET /api/applications/null/sync/syncMethod",
+    "body": [],
+    "headers": []
+}
