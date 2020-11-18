@@ -27,6 +27,9 @@ security:
         unsecured_generator:
             pattern: ^/api/topology/(generate|run|stop|delete|info)/\w+
             security: false
+        unsecured_applications:
+            pattern: ^/api/applications/\w+/sync/*
+            security: false
         secured_area:
             pattern: ^/
             security: true
