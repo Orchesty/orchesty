@@ -145,6 +145,7 @@ services:
         ports:
             - ${DEV_IP}:80:80
         environment:
+            X_AUTH_KEY: 260fa668b70e651dc26b87d5f75a82d7
             BACKEND_DSN: ${BACKEND_URL}/
             FRONTEND_DSN: ${BACKEND_URL}/
             NOTIFICATION_DSN: notification-sender-api

@@ -1,7 +1,7 @@
 {
     "name": "hanaboso/pipes-framework",
     "description": "PipesFramework for Symfony",
-    "version": "1.5.3",
+    "version": "1.5.4",
     "license": "GPL-3.0-or-later",
     "require": {
         "php": "^7.4",
@@ -11,7 +11,7 @@
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-mongodb": "*",
-        "hanaboso/acl-bundle": "^1.3",
+        "hanaboso/acl-bundle": "^1.4",
         "hanaboso/app-store": "^1.5",
         "hanaboso/email-service-bundle": "^1.1",
         "hanaboso/mongo-data-grid": "~1.3.0",

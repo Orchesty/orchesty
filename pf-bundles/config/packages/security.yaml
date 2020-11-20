@@ -8,28 +8,21 @@ security:
             mongodb:
                 class: Hanaboso\UserBundle\Document\User
                 property: email
+        api_provider:
+            mongodb:
+                class: Hanaboso\UserBundle\Document\User
+                property: email
     firewalls:
         unsecured_user_api:
             pattern: ^/(api/user/login|api/user/logout|api/user/\w+/activate|api/user/\w+/set_password|api/user/reset_password|api/user/register)
             security: false
-        unsecured_user:
-            pattern: ^/(user/login|user/logout|user/\w+/activate|user/\w+/verify|user/\w+/set_password|user/reset_password|user/register)
-            security: false
-        unsecured_starting_point:
-            pattern: ^/(topologies/*|api/topologies/*|node/*|api/node/*)
-            security: false
-        unsecured_long_running:
-            pattern: ^/(longRunning/*|api/longRunning/*)
-            security: false
-        unsecured_connectors:
-            pattern: ^/(authorizations/*|api/authorizations/*|connector/*|api/connector/*|webhook/*|api/webhook/*|mapper/*|api/mapper/*|mailer/*|api/mailer/*|custom_node/*|api/custom_node/*|parser/*|api/parser/*|joiner/*|api/joiner/*)
-            security: false
-        unsecured_generator:
-            pattern: ^/api/topology/(generate|run|stop|delete|info)/\w+
-            security: false
         unsecured_applications:
-            pattern: ^/api/applications/\w+/sync/*
-            security: false
+            pattern: ^/api/applications/.*/(sync|users)/.*
+            stateless: true
+            provider: api_provider
+            guard:
+                authenticators:
+                    - hbpf.authenticator.api_key
         secured_area:
             pattern: ^/
             security: true

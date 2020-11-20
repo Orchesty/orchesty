@@ -374,6 +374,7 @@ services:
         environment:
             PHP_WEBROOT: /var/www/pipes/pf-bundles/public
             PHP_IDE_CONFIG: ${PHP_IDE_CONFIG}
+            X_AUTH_KEY: 260fa668b70e651dc26b87d5f75a82d7
             COMPOSER_HOME: ${HOME}/dev/.composer
             BACKEND_DSN: ${BACKEND_URL}/
             FRONTEND_DSN: ${BACKEND_URL}/
@@ -406,6 +407,7 @@ services:
     #    environment:
     #      BACKEND_DSN: ${BACKEND_URL}/
     #      FRONTEND_DSN: ${BACKEND_URL}/
+    #      X_AUTH_KEY: 260fa668b70e651dc26b87d5f75a82d7
     #      MONGODB_DSN: mongodb://mongo/demo
     #      MONGODB_DB: demo
     #      METRICS_HOST: kapacitor

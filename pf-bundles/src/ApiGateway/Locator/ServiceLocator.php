@@ -230,7 +230,7 @@ final class ServiceLocator implements LoggerAwareInterface
     public function listSyncActions(string $key): array
     {
         return $this->doRequest(
-            sprintf('/applications/%s/sync/list', $key),
+            sprintf('applications/%s/sync/list', $key),
             CurlManager::METHOD_GET
         );
     }
@@ -245,7 +245,7 @@ final class ServiceLocator implements LoggerAwareInterface
     public function runSyncActions(Request $request, string $key, string $method): array
     {
         return $this->doRequest(
-            sprintf('/applications/%s/sync/%s%s', $key, $method, $this->queryToString($request->query->all())),
+            sprintf('applications/%s/sync/%s%s', $key, $method, $this->queryToString($request->query->all())),
             $request->getMethod(),
             $request->request->all(),
             FALSE,

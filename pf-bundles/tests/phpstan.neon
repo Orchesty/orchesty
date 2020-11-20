@@ -34,6 +34,7 @@ parameters:
 			- PipesFrameworkTests\ControllerTestCaseAbstract
 			- PipesFrameworkTests\DatabaseTestCaseAbstract
 			- PipesFrameworkTests\KernelTestCaseAbstract
+			- Symfony\Component\Security\Guard\AbstractGuardAuthenticator
 
 		classesNotRequiredToBeAbstractOrFinal:
 			- Hanaboso\PipesFramework\Configurator\Document\NodeProgress
