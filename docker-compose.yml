@@ -14,6 +14,7 @@ services:
         environment:
             - DEV_UID=${DEV_UID}
             - DEV_GID=${DEV_GID}
+            - X_AUTH_KEY=abc-123
             - KERNEL_CLASS=Hanaboso\PipesFramework\Kernel
             - PHP_IDE_CONFIG=${PHP_IDE_CONFIG}
             - COMPOSER_HOME=${HOME}/dev/.composer

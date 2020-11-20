@@ -164,5 +164,7 @@ services:
             - '@hbpf.database_manager_locator'
             - '@hbpf.user.provider.resource'
             - '%resource_enum%'
-            - '%acl_use_cache%'
-            - '%redis_dsn%'
+            - '@hbpf.acl.cache.null'
+
+    hbpf.acl.cache.null:
+        class: Hanaboso\AclBundle\Cache\NullCache

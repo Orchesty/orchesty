@@ -190,21 +190,14 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
      */
     public function testTestTopologyAction(): void
     {
+        $topology = (new Topology())->setName('Topology');
+        $this->pfd($topology);
+
         $this->assertResponse(
             __DIR__ . '/data/TopologyController/testTopologyRequest.json',
             ['message' => 'CurlManager::send() failed: cURL error 6: Could not resolve host: topology-api (see https://curl.haxx.se/libcurl/c/libcurl-errors.html)'],
-            [':id' => $this->createTopology()]
+            [':id' => $topology->getId()]
         );
-    }
-
-    /**
-     * @return string
-     *
-     * @throws Exception
-     */
-    private function createTopology(): string
-    {
-        return $this->sendRequest('POST', '/api/topologies', ['name' => 'Topology'])['body']['_id'];
     }
 
 }
