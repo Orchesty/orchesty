@@ -2,8 +2,6 @@ package services
 
 import (
 	"fmt"
-	"strconv"
-
 	"topology-generator/pkg/model"
 )
 
@@ -90,14 +88,10 @@ func GetDstDir(path string, saveDir string) string {
 	return fmt.Sprintf("%s/%s", path, saveDir)
 }
 
-func getResourceLimits(limits model.Limits, defaultMemory, defaultCPU string) (model.ResourceLimits, error) {
-	c := defaultCPU
+func getResourceLimits(limits model.Limits, defaultMemory, defaultCPU string) model.ResourceLimits {
+	cpu := defaultCPU
 	if limits.CPU != "" {
-		c = limits.CPU
-	}
-	cpu, err := strconv.Atoi(c)
-	if err != nil {
-		return model.ResourceLimits{}, fmt.Errorf("failed get cpu limit. reason: %v", err)
+		cpu = limits.CPU
 	}
 
 	memory := defaultMemory
@@ -108,5 +102,22 @@ func getResourceLimits(limits model.Limits, defaultMemory, defaultCPU string) (m
 	return model.ResourceLimits{
 		Memory: memory,
 		CPU:    cpu,
-	}, nil
+	}
+}
+
+func getResourceRequests(limits model.Requests, defaultMemory, defaultCPU string) model.ResourceRequests {
+	cpu := defaultCPU
+	if limits.CPU != "" {
+		cpu = limits.CPU
+	}
+
+	memory := defaultMemory
+	if limits.Memory != "" {
+		memory = limits.Memory
+	}
+
+	return model.ResourceRequests{
+		Memory: memory,
+		CPU:    cpu,
+	}
 }
