@@ -156,7 +156,11 @@ func TestClient_Create(t *testing.T) {
 			Resources: model.Resources{
 				Limits: model.ResourceLimits{
 					Memory: "128",
-					CPU:    1,
+					CPU:    "1",
+				},
+				Requests: model.ResourceRequests{
+					Memory: "128",
+					CPU:    "1",
 				},
 			},
 			Args:  command[1:],
@@ -471,8 +475,12 @@ func TestClient_Generate(t *testing.T) {
 			WorkerDefaultPort:   8888,
 			GeneratorMode:       "",
 			Limits: model.Limits{
-				Memory: "128M",
-				CPU:    "1",
+				Memory: "128Mi",
+				CPU:    "100m",
+			},
+			Requests: model.Requests{
+				Memory: "128Mi",
+				CPU:    "100m",
 			},
 		},
 	}, testConfigGenerator, testDb{
@@ -533,8 +541,12 @@ func TestClient_GenerateMulti(t *testing.T) {
 			WorkerDefaultPort:   8888,
 			GeneratorMode:       "",
 			Limits: model.Limits{
-				Memory: "128",
-				CPU:    "1",
+				Memory: "128Mi",
+				CPU:    "100m",
+			},
+			Requests: model.Requests{
+				Memory: "128Mi",
+				CPU:    "100m",
 			},
 		},
 	}, testConfigGenerator, testDb{
@@ -781,8 +793,12 @@ func TestClient_GenerateFails(t *testing.T) {
 			WorkerDefaultPort:   8888,
 			GeneratorMode:       "compose",
 			Limits: model.Limits{
-				Memory: "64M",
-				CPU:    "2",
+				Memory: "64Mi",
+				CPU:    "200m",
+			},
+			Requests: model.Requests{
+				Memory: "64Mi",
+				CPU:    "200m",
 			},
 		},
 	}

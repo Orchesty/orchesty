@@ -48,6 +48,12 @@ type Limits struct {
 	CPU    string `json:"cpu"`
 }
 
+// Requests set resource limits
+type Requests struct {
+	Memory string `json:"memory"`
+	CPU    string `json:"cpu"`
+}
+
 // NodeConfig NodeConfig
 type NodeConfig struct {
 	NodeConfig  map[string]NodeUserParams `json:"node_config"`
@@ -65,17 +71,18 @@ type Environment struct {
 	DockerRegistry      string `json:"docker_registry"`
 	DockerPfBridgeImage string `json:"docker_pf_bridge_image"`
 	//RabbitMqDsn         string  `json:"rabbitmq_dsn"`
-	RabbitMqHost      string  `json:"rabbitmq_host"`
-	RabbitMqUser      string  `json:"rabbitmq_user"`
-	RabbitMqPass      string  `json:"rabbitmq_pass"`
-	RabbitMqVHost     string  `json:"rabbitmq_vhost"`
-	MultiProbeHost    string  `json:"multi_probe_host"`
-	MetricsHost       string  `json:"metrics_host"`
-	MetricsPort       string  `json:"metrics_port"`
-	MetricsService    string  `json:"metrics_service"`
-	WorkerDefaultPort int     `json:"worker_default_port"`
-	GeneratorMode     Adapter `json:"generator_mode"`
-	Limits            Limits  `json:"limits"`
+	RabbitMqHost      string   `json:"rabbitmq_host"`
+	RabbitMqUser      string   `json:"rabbitmq_user"`
+	RabbitMqPass      string   `json:"rabbitmq_pass"`
+	RabbitMqVHost     string   `json:"rabbitmq_vhost"`
+	MultiProbeHost    string   `json:"multi_probe_host"`
+	MetricsHost       string   `json:"metrics_host"`
+	MetricsPort       string   `json:"metrics_port"`
+	MetricsService    string   `json:"metrics_service"`
+	WorkerDefaultPort int      `json:"worker_default_port"`
+	GeneratorMode     Adapter  `json:"generator_mode"`
+	Limits            Limits   `json:"limits"`
+	Requests          Requests `json:"requests"`
 }
 
 // GetBridges GetBridges
