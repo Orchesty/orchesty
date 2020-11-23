@@ -225,10 +225,8 @@ func (ts *TopologyService) getKubernetesContainers(mountName string) ([]model.Co
 		i++
 	}
 
-	limits, err := getResourceLimits(ts.nodeConfig.Environment.Limits, ts.generatorConfig.WorkerDefaultLimitMemory, ts.generatorConfig.WorkerDefaultLimitCPU)
-	if err != nil {
-		return nil, fmt.Errorf("error getting resource limit. reason %v", err)
-	}
+	limits := getResourceLimits(ts.nodeConfig.Environment.Limits, ts.generatorConfig.WorkerDefaultLimitMemory, ts.generatorConfig.WorkerDefaultLimitCPU)
+	requests := getResourceRequests(ts.nodeConfig.Environment.Requests, ts.generatorConfig.WorkerDefaultRequestMemory, ts.generatorConfig.WorkerDefaultRequestCPU)
 
 	if multiNode {
 		command := strings.Split(getMultiBridgeStartCommand(), " ")
@@ -239,7 +237,8 @@ func (ts *TopologyService) getKubernetesContainers(mountName string) ([]model.Co
 				Args:    command[1:],
 				Image:   getDockerImage(registry, image),
 				Resources: model.Resources{
-					Limits: limits,
+					Limits:   limits,
+					Requests: requests,
 				},
 				Ports: ports,
 				Env:   env,
@@ -262,7 +261,8 @@ func (ts *TopologyService) getKubernetesContainers(mountName string) ([]model.Co
 			Args:    command[1:],
 			Image:   getDockerImage(registry, image),
 			Resources: model.Resources{
-				Limits: limits,
+				Limits:   limits,
+				Requests: requests,
 			},
 			Ports: []model.Port{
 				{
