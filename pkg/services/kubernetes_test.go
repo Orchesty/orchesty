@@ -823,7 +823,7 @@ func TestClient_GenerateFails(t *testing.T) {
 		require.Equal(t, "failed generating topology. Reason: error creating topology json. Reason: missing nodes", err.Error())
 	})
 
-	t.Run("Check that generate fails on creating config map", func(t *testing.T) {
+	t.Run("Check that generate doesnt fails on creating existing config map", func(t *testing.T) {
 		setup()
 
 		ts, err := NewTopologyService(nodeConfig, configGenerator, testDb{
@@ -849,11 +849,10 @@ func TestClient_GenerateFails(t *testing.T) {
 		}
 		err = testClient.Generate(ts)
 
-		require.NotNil(t, err)
-		require.Equal(t, "creating config map failed. Reason: configmaps \"configmap-5dc0474e4e9acc00282bb942\" already exists", err.Error())
+		require.Nil(t, err)
 	})
 
-	t.Run("Check that generate fails on creating deployment", func(t *testing.T) {
+	t.Run("Check that generate doesnt fails on creating existing deployment", func(t *testing.T) {
 		setup()
 
 		ts, err := NewTopologyService(nodeConfig, configGenerator, testDb{
@@ -878,11 +877,10 @@ func TestClient_GenerateFails(t *testing.T) {
 		}
 		err = testClient.Generate(ts)
 
-		require.NotNil(t, err)
-		require.Equal(t, "creating deployment failed. Reason: deployments.apps \"topology-5dc0474e4e9acc00282bb942\" already exists", err.Error())
+		require.Nil(t, err)
 	})
 
-	t.Run("Check that generate fails on creating service", func(t *testing.T) {
+	t.Run("Check that generate doesnt fails on creating existing service", func(t *testing.T) {
 		setup()
 
 		ts, err := NewTopologyService(nodeConfig, configGenerator, testDb{
@@ -907,8 +905,7 @@ func TestClient_GenerateFails(t *testing.T) {
 		}
 		err = testClient.Generate(ts)
 
-		require.NotNil(t, err)
-		require.Equal(t, "creating service in cluster failed. Reason: services \"mb-5dc0474e4e9acc00282bb942\" already exists", err.Error())
+		require.Nil(t, err)
 	})
 }
 

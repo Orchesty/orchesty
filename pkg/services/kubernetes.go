@@ -14,6 +14,7 @@ import (
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/retry"
+	"strings"
 	"topology-generator/pkg/config"
 	"topology-generator/pkg/fscommands"
 	"topology-generator/pkg/model"
@@ -153,6 +154,15 @@ func (c kubernetesClient) createService(obj []byte) error {
 	}
 	s := res.(*coreV1.Service)
 	_, err = c.serviceClient.Create(s)
+	// delete service and try to create it again
+	if err != nil && strings.Contains(err.Error(), "already exists") {
+		err = c.deleteService(s.Name)
+		if err != nil {
+			return fmt.Errorf("failed deleting already created service [name=%s], reason: %v", s.Name, err)
+		}
+		_, err = c.serviceClient.Create(s)
+		return err
+	}
 	return err
 }
 
@@ -193,6 +203,15 @@ func (c kubernetesClient) createConfigMap(obj []byte) error {
 	}
 	cm := res.(*coreV1.ConfigMap)
 	_, err = c.configClient.Create(cm)
+	// delete config map and try to create it again
+	if err != nil && strings.Contains(err.Error(), "already exists") {
+		err = c.deleteConfigMap(cm.Name)
+		if err != nil {
+			return fmt.Errorf("failed deleting already created configmap [name=%s], reason: %v", cm.Name, err)
+		}
+		_, err = c.configClient.Create(cm)
+		return err
+	}
 	return err
 }
 
@@ -204,7 +223,15 @@ func (c kubernetesClient) create(obj []byte) error {
 	}
 	deployment := res.(*appsV1.Deployment)
 	_, err = c.deploymentClient.Create(deployment)
-
+	// delete deployment and try to create it again
+	if err != nil && strings.Contains(err.Error(), "already exists") {
+		err = c.delete(deployment.Name)
+		if err != nil {
+			return fmt.Errorf("failed deleting already created deployment [name=%s], reason: %v", deployment.Name, err)
+		}
+		_, err = c.deploymentClient.Create(deployment)
+		return err
+	}
 	return err
 }
 
