@@ -29,6 +29,7 @@ func (k *Kubernetes) GenerateAction(c *ContextWrapper) {
 	}
 	err = c.Sc.Kubernetes.Generate(topologyService)
 	if err != nil {
+		logContext().Error(err)
 		c.WithCode(http.StatusInternalServerError, gin.H{"message": fmt.Sprintf("Generating Kuberneted deployment failed because: %v", err)})
 		return
 	}
@@ -50,6 +51,7 @@ func (k *Kubernetes) RunStopAction(c *ContextWrapper) {
 	err := c.Sc.Kubernetes.RunStop(id, c.Sc.Mongo, body.Action)
 
 	if err != nil {
+		logContext().Error(err)
 		c.WithCode(http.StatusInternalServerError, gin.H{"message": fmt.Sprintf("Error trying to run/stop deployment fpr topology %s. Reason: %v", id, err)})
 		return
 	}
@@ -63,6 +65,7 @@ func (k *Kubernetes) DeleteAction(c *ContextWrapper) {
 	err := c.Sc.Kubernetes.DeleteAll(id, c.Sc.Mongo, config.Generator)
 
 	if err != nil {
+		logContext().Error(err)
 		c.WithCode(http.StatusInternalServerError, gin.H{"message": fmt.Sprintf("Error deleting deployment. Reason: %v", err)})
 		return
 	}
