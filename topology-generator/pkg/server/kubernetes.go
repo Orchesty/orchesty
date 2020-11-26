@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strings"
 	"topology-generator/pkg/config"
 	"topology-generator/pkg/model"
 	"topology-generator/pkg/services"
@@ -73,13 +74,13 @@ func (k *Kubernetes) InfoAction(c *ContextWrapper) {
 	id := c.Param("topologyId")
 
 	containers, err := c.Sc.Kubernetes.Info(services.GetDeploymentName(id))
-	if err != nil {
+	if err != nil && !strings.Contains(err.Error(), "not found") {
 		c.NOK(err)
 		return
 	}
 
 	var message = fmt.Sprintf("Topology ID: %s. Not found", id)
-	if len(containers) == 0 {
+	if err != nil && strings.Contains(err.Error(), "not found") {
 		c.WithCode(http.StatusNotFound, gin.H{"": message, "docker-info": containers})
 		return
 	}
