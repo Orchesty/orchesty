@@ -1,18 +1,18 @@
 .PHONY: docker-build docker-push go-test
 
-DOCKER_SERVICE_NAME := limiter
-DOCKER_DEFAULT_TAG := dev
-DOCKER_REGISTRY := dkr.hanaboso.net/pipes/pipes/
+TAG := dev
+DOCKER_REGISTRY := dkr.hanaboso.net/pipes/pipes/limiter
+PUBLIC_REGISTRY := hanaboso/limiter
 
 lint:
 	gofmt -w cmd pkg
 	golint ./cmd/... ./pkg/...
 
-docker-build:
-	docker build -t $(DOCKER_SERVICE_NAME):$(DOCKER_DEFAULT_TAG) -t $(DOCKER_REGISTRY)$(DOCKER_SERVICE_NAME):$(DOCKER_DEFAULT_TAG) .
-
-docker-push:
-	docker push $(DOCKER_REGISTRY)$(DOCKER_SERVICE_NAME):$(DOCKER_DEFAULT_TAG)
+build:
+	docker build -t $(DOCKER_REGISTRY):$(TAG) .
+	docker push $(DOCKER_REGISTRY):$(TAG)
+	docker tag ${DOCKER_REGISTRY}:${TAG} $(PUBLIC_REGISTRY):$(TAG)
+	docker push $(PUBLIC_REGISTRY):$(TAG)
 
 go-test:
 	# for mac users: $ sudo ifconfig lo0 alias 127.0.0.10 up

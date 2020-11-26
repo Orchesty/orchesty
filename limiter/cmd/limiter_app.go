@@ -76,7 +76,7 @@ func prepareRabbit() (rabbitmq.Consumer, rabbitmq.Publisher, error) {
 	)
 
 	// Input queue
-	conn.AddQueue(rabbitmq.Queue{Name: inputQueue})
+	conn.AddQueue(rabbitmq.Queue{Name: inputQueue, Durable: true})
 	conn.Connect()
 	conn.Setup()
 
