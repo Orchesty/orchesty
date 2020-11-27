@@ -34,16 +34,20 @@ spec:
           env:
             - name: LS_JAVA_OPTS
               value: "-Xms512m -Xmx512m"
-            - name: MONGODB_DSN
+            - name: __MONGODB_AUTH_HOST
               valueFrom:
                 configMapKeyRef:
-                  key: mongodb_dsn
+                  key: mongodb_auth_and_hosts
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: MONGODB_DATABASE
+            - name: MONGO_DSN
+              value: "mongodb://$(__MONGODB_AUTH_HOST)"
+            - name: MONGO_DB
               valueFrom:
                 configMapKeyRef:
                   key: mongodb_database
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: MONGO_COLLECTION
+              value: Logs
           volumeMounts:
             - name: config-volume
               subPath: logstash.conf

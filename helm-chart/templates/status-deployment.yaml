@@ -8,22 +8,30 @@ metadata:
 {{ include "pipes.labels" . | indent 4 }}
 {{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 4 }}
 spec:
+  replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
 {{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 6 }}
   template:
     metadata:
       labels:
+        timestamp: "{{ now | date "20060102150405" }}"
 {{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 8 }}
     spec:
 {{ include "pipes.imagePullSecrets" . | indent 6 }}
       containers:
         - name: php-w-nginx
-          image: {{ include "pipes.imageFullname" (dict "image" "monolith" "root" .) }}
+          image: {{ include "pipes.imageFullname" (dict "image" "php-sdk" "root" .) }}
           imagePullPolicy: Always
           args: ["bin/console", "rabbit_mq:consumer:status-service"]
           env:
 {{ include "pipes.monolithEnv" . | indent 12 }}
+{{- range $name, $def := .Values.global.phpSdk.extraEnv }}
+            - name: {{ $name }}
+              {{- $def | toYaml | nindent 14}}
+{{- end }}
           resources:
             requests:
               memory: 128Mi

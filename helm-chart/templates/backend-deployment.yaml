@@ -1,5 +1,4 @@
-{{- $componentName := "batch" -}}
-{{- if .Values.global.batch.enabled -}}
+{{- $componentName := "backend" -}}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -15,21 +14,23 @@ spec:
   template:
     metadata:
       labels:
+        timestamp: "{{ now | date "20060102150405" }}"
 {{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 8 }}
     spec:
 {{ include "pipes.imagePullSecrets" . | indent 6 }}
       containers:
         - name: php-w-nginx
-          image: {{ include "pipes.imageFullname" (dict "image" "monolith" "root" .) }}
-          imagePullPolicy: Always          
-          args: ["bin/console", "rabbit_mq:consumer:batch"]
+          image: {{ include "pipes.imageFullname" (dict "image" "backend" "root" .) }}
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 80
           env:
 {{ include "pipes.monolithEnv" . | indent 12 }}
           resources:
             requests:
-              memory: 128Mi
+              memory: 512Mi
               cpu: 25m
             limits:
               memory: 1Gi
               cpu: "2"
-{{- end -}}

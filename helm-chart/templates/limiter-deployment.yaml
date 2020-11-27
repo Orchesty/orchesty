@@ -1,5 +1,5 @@
 ---
-{{- $componentName := "repeater" -}}
+{{- $componentName := "limiter" -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -21,20 +21,17 @@ spec:
     spec:
 {{ include "pipes.imagePullSecrets" . | indent 6 }}
       containers:
-        - name: repeater
-          image: {{ include "pipes.imageFullname" (dict "image" "bridge" "root" .) }}
+        - name: {{ $componentName }}
+          image: {{ include "pipes.imageFullname" (dict "image" "limiter" "root" .) }}
           imagePullPolicy: Always
-          args: ["./dist/src/bin/pipes.js", "start", "repeater"]
+          ports:
+            - name: http
+              containerPort: 3333
           env:
             - name: RABBITMQ_HOST
               valueFrom:
                 configMapKeyRef:
                   key: rabbitmq_host
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: RABBITMQ_PORT
-              valueFrom:
-                configMapKeyRef:
-                  key: rabbitmq_port
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
             - name: RABBITMQ_USER
               valueFrom:
@@ -46,13 +43,6 @@ spec:
                 configMapKeyRef:
                   key: rabbitmq_password
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: __RABBITMQ_VHOST
-              valueFrom:
-                configMapKeyRef:
-                  key: rabbitmq_vhost
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: RABBITMQ_VHOST # todo: fix / in code or start supporting DSN
-              value: "/$(__RABBITMQ_VHOST)"
             - name: MONGO_HOST
               valueFrom:
                 configMapKeyRef:
@@ -61,14 +51,19 @@ spec:
             - name: MONGO_DB
               valueFrom:
                 configMapKeyRef:
-                  key: mongodb_db_and_opts
+                  key: mongodb_database
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: REPEATER_CHECK_TIMEOUT
-              value: "5000"
+            - name: MONGO_COLLECTION
+              value: LimiterMessages
+            # todo: mongo auth, when limiter supports it
+            - name: LOGSTASH_HOST
+              value: logstash
+            - name: LOGSTASH_PORT
+              value: "5120"
           resources:
             requests:
               memory: 128Mi
               cpu: 25m
             limits:
-              memory: 128Mi
+              memory: 512Mi
               cpu: "2"

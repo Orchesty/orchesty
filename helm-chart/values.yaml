@@ -1,11 +1,12 @@
 global:
-  backend_url: https://pipes-api.example.com
-  frontend_url: https://pipes-ui.example.com
+  frontend_url: https://pipes.example.com
+  backend_url: https://backend.pipes.example.com
+  starting_point_url: http://starting-point.pipes.example.com
 
   imageRegistry:
-    enablePullSecret: true
-    server: dkr.hanaboso.net
-    path: pipes/pipes
+    enablePullSecret: false
+    server: docker.io
+    path: hanaboso
     username: ""
     password: ""
   
@@ -13,18 +14,20 @@ global:
     # note: you can currently override image used in topologies only by changing images.bridge
 
   images:
-    monolith: monolith:master
-    frontend: frontend:dev
-    cron-api: cron:master
-    bridge: pf-bridge:master
-    multi-probe: multi-probe:dev
-    notification-sender: notification-sender:master
-    starting-point: starting-point:master
+    php-sdk: pipes-pf-bundle:master
+    backend: pipes-pf-bundle:master
+    frontend: pipes-frontend:master
+    cron-api: pipes-cron:master
+    bridge: pipes-pf-bridge:master
+    limiter: limiter:master
+    multi-probe: pipes-multi-probe:master
+    notification-sender: pipes-notification-sender:master
+    starting-point: pipes-starting-point:master
     stream: stream:dev
-    topology-api: topology-api-v2:master
-    logstash: logstash:master
+    topology-api: pipes-topology-api-v2:master
+    logstash: pipes-logstash-mongo:master
     kapacitor: kapacitor:master
-    telegraf: rabbitmq-telegraf:master
+    telegraf: pipes-telegraf:master
 
   monitoring:
     useInfluxDB: true
@@ -33,19 +36,16 @@ global:
   api:
     serviceAnnotations: {}
 
-  batch:
-    enabled: true
-
   frontend:
     serviceAnnotations: {}
 
   longRunningNode:
     enabled: true
 
-  monolith:
-    userTaskListenerEnable: 1
-    extraEnv: []
-    hostPathMounts: []
+  phpSdk:
+    extraEnv: {}
+#     FOO:
+#       value: bar
 
   startingPoint:
     serviceAnnotations: {}
@@ -53,6 +53,10 @@ global:
   topology:
     manageServiceAccount: true
     manageRBAC: true
+
+  worker:
+    hostPathMounts: []
+
 
 nameOverride: ""
 fullnameOverride: ""

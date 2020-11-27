@@ -8,6 +8,9 @@ metadata:
 {{ include "pipes.labels" . | indent 4 }}
 {{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 4 }}
 spec:
+  replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
 {{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 6 }}
@@ -39,6 +42,14 @@ spec:
               value: /srv/topology
             - name: MONGO_DSN
               value: "$(__MONGODB_DSN)&connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500"
+            - name: WORKER_DEFAULT_LIMIT_MEMORY
+              value: "512Mi"
+            - name: WORKER_DEFAULT_LIMIT_CPU
+              value: "1"
+            - name: WORKER_DEFAULT_REQUEST_MEMORY
+              value: "128Mi"
+            - name: WORKER_DEFAULT_REQUEST_CPU
+              value: "100m"
           resources:
             requests:
               memory: 128Mi
