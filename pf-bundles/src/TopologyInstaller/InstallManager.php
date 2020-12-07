@@ -15,7 +15,6 @@ use Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGenerat
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
 use Hanaboso\PipesFramework\TopologyInstaller\Cache\TopologyInstallerCacheInterface;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto;
-use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\RestBundle\Exception\XmlDecoderException;
 use Hanaboso\RestBundle\Model\Decoder\XmlDecoder;
@@ -90,6 +89,7 @@ final class InstallManager implements LoggerAwareInterface
      * @param XmlDecoder                      $decoder
      * @param TopologyInstallerCacheInterface $installerCache
      * @param mixed[]                         $dirs
+     * @param bool                            $checkInfiniteLoop
      */
     public function __construct(
         DocumentManager $dm,
@@ -98,7 +98,8 @@ final class InstallManager implements LoggerAwareInterface
         CategoryParser $categoryParser,
         XmlDecoder $decoder,
         TopologyInstallerCacheInterface $installerCache,
-        array $dirs
+        array $dirs,
+        bool $checkInfiniteLoop
     )
     {
         $this->dm              = $dm;
@@ -106,9 +107,14 @@ final class InstallManager implements LoggerAwareInterface
         $this->requestHandler  = $requestHandler;
         $this->categoryParser  = $categoryParser;
         $this->decoder         = $decoder;
-        $this->comparator      = new TopologiesComparator($dm->getRepository(Topology::class), $decoder, $dirs);
-        $this->logger          = new NullLogger();
         $this->installerCache  = $installerCache;
+        $this->logger          = new NullLogger();
+        $this->comparator      = new TopologiesComparator(
+            $dm->getRepository(Topology::class),
+            $decoder,
+            $dirs,
+            $checkInfiniteLoop
+        );
     }
 
     /**
@@ -118,7 +124,6 @@ final class InstallManager implements LoggerAwareInterface
      * @param bool $force
      *
      * @return mixed[]
-     * @throws ConnectorException
      * @throws MongoDBException
      * @throws TopologyException
      * @throws XmlDecoderException

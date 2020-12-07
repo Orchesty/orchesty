@@ -17,4 +17,5 @@ services:
             - '@hbpf.commons.crypt.crypt_manager'
         tags:
             -  { name: doctrine_mongodb.odm.event_listener, event: preFlush }
+            -  { name: doctrine_mongodb.odm.event_listener, event: postFlush }
             -  { name: doctrine_mongodb.odm.event_listener, event: postLoad }

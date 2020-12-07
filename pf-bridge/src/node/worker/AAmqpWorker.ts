@@ -56,7 +56,7 @@ abstract class AAmqpWorker extends AWorker {
         this.waiting = new Container();
         this.resultsQueue = {
             name: `pipes.${settings.node_label.topology_id}.${settings.node_label.id}_reply`,
-            options: settings.publish_queue.options || { durable: false, exclusive: false, autoDelete: false },
+            options: settings.publish_queue.options || { durable: true, exclusive: false, autoDelete: false },
             prefetch: 1,
         };
 

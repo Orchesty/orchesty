@@ -12,8 +12,6 @@ use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 final class Schema
 {
 
-    private const LIMIT = 100;
-
     /**
      * @var NodeSchemaDto[]
      */
@@ -94,10 +92,12 @@ final class Schema
     /**
      * Creates index used to
      *
+     * @param bool $checkInfiniteLoop
+     *
      * @return mixed[]
      * @throws TopologyException
      */
-    public function buildIndex(): array
+    public function buildIndex(bool $checkInfiniteLoop = TRUE): array
     {
         if (!empty($this->nodes)) {
             $this->checkStartNode();
@@ -105,23 +105,20 @@ final class Schema
             return [];
         }
 
-        $count   = 1;
         $index   = [];
         $index[] = $this->getIndexItem($this->startNode);
         $nextIds = $this->getNextIds($this->startNode);
 
-        while ($nextIds) {
-            $ids = [];
-            foreach ($nextIds as $nextId) {
-                $index[] = $this->getIndexItem($nextId);
-                if (!empty($this->getNextIds($nextId))) {
-                    $this->checkInfiniteLoop($count);
-                    $ids = array_merge($ids, $this->getNextIds($nextId));
-                    $count++;
+        while (!empty($nextIds)) {
+            $nextId  = array_shift($nextIds);
+            $index[] = $this->getIndexItem($nextId);
+            foreach ($this->getNextIds($nextId) as $follower) {
+                if (!in_array($this->getIndexItem($follower), $index, TRUE)) {
+                    $nextIds[] = $follower;
+                } else if ($checkInfiniteLoop) {
+                    $this->isInfinity();
                 }
             }
-
-            $nextIds = $ids;
         }
 
         sort($index);
@@ -136,31 +133,12 @@ final class Schema
      */
     private function getNextIds(string $id): array
     {
-        $ids    = [];
-        [, $id] = $this->getParentFromNextId($id);
+        $ids = [];
         foreach ($this->sequences[$id] ?? [] as $child) {
-            $ids[] = sprintf('%s||%s', $id, $child);
+            $ids[] = $child;
         }
 
         return $ids;
-    }
-
-    /**
-     * @param string $id
-     *
-     * @return mixed[]
-     */
-    private function getParentFromNextId(string $id): array
-    {
-        $parsed = explode('||', $id);
-        if (count($parsed) > 1) {
-            [$parent, $id] = $parsed;
-        } else {
-            $parent = '';
-            $id     = $parsed[0];
-        }
-
-        return [$parent, $id];
     }
 
     /**
@@ -170,10 +148,9 @@ final class Schema
      */
     private function getIndexItem(string $id): string
     {
-        [$parent, $id] = $this->getParentFromNextId($id);
-        $node          = $this->nodes[$id];
+        $node = $this->nodes[$id];
 
-        return sprintf('%s:%s:%s', $parent, $node->getName(), $node->getPipesType());
+        return sprintf('%s:%s:%s', $node->getId(), $node->getName(), $node->getPipesType());
     }
 
     /**
@@ -190,15 +167,11 @@ final class Schema
     }
 
     /**
-     * @param int $count
-     *
      * @throws TopologyException
      */
-    private function checkInfiniteLoop(int $count): void
+    private function isInfinity(): void
     {
-        if ($count >= self::LIMIT) {
-            throw new TopologyException('Invalid schema - infinite loop', TopologyException::SCHEMA_INFINITE_LOOP);
-        }
+        throw new TopologyException('Invalid schema - infinite loop', TopologyException::SCHEMA_INFINITE_LOOP);
     }
 
 }

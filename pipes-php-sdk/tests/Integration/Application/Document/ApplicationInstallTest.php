@@ -51,6 +51,8 @@ final class ApplicationInstallTest extends DatabaseTestCaseAbstract
         $applicationInstall->setSettings(['secret' => 'settings']);
         $applicationInstall->addSettings(['token' => '123']);
         $this->pfd($applicationInstall);
+        self::assertEquals(['secret' => 'settings', 'token' => '123'], $applicationInstall->getSettings());
+
         $this->dm->clear();
 
         /** @var ApplicationInstall $applicationInstall */

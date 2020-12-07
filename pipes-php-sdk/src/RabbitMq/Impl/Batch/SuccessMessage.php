@@ -111,6 +111,20 @@ final class SuccessMessage
         return $this->headers[$key] ?? '';
     }
 
+    /**
+     * @param string $key
+     *
+     * @return $this
+     */
+    public function removeHeader(string $key): SuccessMessage
+    {
+        if ($this->hasHeader($key)) {
+            unset($this->headers[$key]);
+        }
+
+        return $this;
+    }
+
     // HELPERS
 
     /**

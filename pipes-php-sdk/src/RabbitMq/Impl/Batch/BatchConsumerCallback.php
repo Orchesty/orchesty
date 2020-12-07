@@ -36,6 +36,7 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
     // Properties
     private const REPLY_TO       = 'reply-to';
     private const TYPE           = 'type';
+    private const PERSISTENCE    = 'delivery-mode';
     private const MISSING_HEADER = 'Missing "%s" in the message header.';
 
     /**
@@ -113,7 +114,7 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
                 static function (AMQPChannel $channel) use ($headers, &$replyChannel): AMQPChannel {
                     $replyChannel = $channel;
 
-                    $channel->queue_declare($headers[self::REPLY_TO] ?? '', FALSE, FALSE, FALSE, FALSE);
+                    $channel->queue_declare($headers[self::REPLY_TO] ?? '', FALSE, TRUE, FALSE, FALSE);
 
                     return $channel;
                 }
@@ -343,9 +344,12 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
     {
         $callback = fn(SuccessMessage $successMessage) => $this->itemCallback($channel, $message, $successMessage);
 
-        return $this->batchAction
+        $this->batchAction
             ->batchAction($message, $callback)
-            ->then(fn() => $this->batchCallback($channel, $message));
+            ->then(fn() => $this->batchCallback($channel, $message))
+            ->wait();
+
+        return $this->createPromise();
     }
 
     /**
@@ -425,38 +429,45 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
      */
     private function batchCallback(AMQPChannel $channel, AMQPMessage $message): PromiseInterface
     {
-        $headers       = Message::getHeaders($message);
-        $resultMessage = sprintf(
-            'Batch end for node %s.',
-            PipesHeaders::get(PipesHeaders::NODE_NAME, $headers)
-        );
-
-        $headers = array_merge(
-            $headers,
-            [
-                self::TYPE                                            => 'batch_end',
-                PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE) => $resultMessage,
-            ]
-        );
-
-        if (!($headers[PipesHeaders::createKey(PipesHeaders::RESULT_CODE)] ?? '')) {
-            $headers[PipesHeaders::createKey(PipesHeaders::RESULT_CODE)] = 0;
-        }
-
-        $channel->basic_publish(Message::create('', $headers), '', $headers[self::REPLY_TO] ?? '');
-
         $promise = $this->createPromise();
-        $promise->then(
-            function () use ($headers): void {
-                $this->logger->debug(
-                    'Published batch end.',
-                    array_merge(
-                        $this->prepareMessage('', '', $headers[self::REPLY_TO] ?? '', $headers),
-                        PipesHeaders::debugInfo($headers)
-                    )
-                );
-            }
-        );
+        $promise
+            ->then(
+                static function () use ($channel, $message): array {
+                    $headers       = Message::getHeaders($message);
+                    $resultMessage = sprintf(
+                        'Batch end for node %s.',
+                        PipesHeaders::get(PipesHeaders::NODE_NAME, $headers)
+                    );
+
+                    $headers = array_merge(
+                        $headers,
+                        [
+                            self::TYPE                                            => 'batch_end',
+                            self::PERSISTENCE                                     => 2,
+                            PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE) => $resultMessage,
+                        ]
+                    );
+
+                    if (!($headers[PipesHeaders::createKey(PipesHeaders::RESULT_CODE)] ?? '')) {
+                        $headers[PipesHeaders::createKey(PipesHeaders::RESULT_CODE)] = 0;
+                    }
+
+                    $channel->basic_publish(Message::create('', $headers), '', $headers[self::REPLY_TO] ?? '');
+
+                    return $headers;
+                }
+            )
+            ->then(
+                function (array $headers): void {
+                    $this->logger->debug(
+                        'Published batch end.',
+                        array_merge(
+                            $this->prepareMessage('', '', $headers[self::REPLY_TO] ?? '', $headers),
+                            PipesHeaders::debugInfo($headers)
+                        )
+                    );
+                }
+            );
 
         return $promise;
     }

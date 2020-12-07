@@ -150,7 +150,8 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
             $categoryParser,
             $xmlDecoder,
             $redisCache,
-            [$dir]
+            [$dir],
+            TRUE
         );
     }
 

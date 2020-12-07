@@ -186,7 +186,6 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
                 [ApplicationInterface::AUTHORIZATION_SETTINGS => [BasicApplicationInterface::PASSWORD => 'passwd987']]
             );
         $this->pfd($applicationInstall);
-        $this->dm->refresh($applicationInstall);
 
         return $applicationInstall;
     }

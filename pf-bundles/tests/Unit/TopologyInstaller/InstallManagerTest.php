@@ -163,7 +163,7 @@ final class InstallManagerTest extends KernelTestCaseAbstract
 
         $result = $this->invokeMethod($manager, 'makeDelete', [$dto]);
 
-        self::assertEquals(['name' =>''],$result);
+        self::assertEquals(['name' => ''], $result);
     }
 
     /**
@@ -234,7 +234,8 @@ final class InstallManagerTest extends KernelTestCaseAbstract
             $categoryParser,
             $decoder,
             $redisCache,
-            $dirs
+            $dirs,
+            TRUE
         );
     }
 

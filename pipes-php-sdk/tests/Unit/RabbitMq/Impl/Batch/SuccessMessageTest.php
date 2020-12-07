@@ -29,14 +29,23 @@ final class SuccessMessageTest extends KernelTestCaseAbstract
     public function testSuccessMessage(): void
     {
         $message = new SuccessMessage(5);
-
-        $message->setData('data')->setResultCode(202)->setMessage('message')->setResultCode(203);
+        $message
+            ->addHeader('header1', 'aaa')
+            ->setData('data')
+            ->setMessage('message')
+            ->setResultCode(203);
 
         self::assertEquals('data', $message->getData());
         self::assertEquals(5, $message->getSequenceId());
         self::assertEquals('message', $message->getHeader(PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE)));
-        self::assertEquals(['pf-result-code' => 203, 'pf-result-message' => 'message'], $message->getHeaders());
+        self::assertEquals(
+            ['pf-result-code' => 203, 'pf-result-message' => 'message', 'header1' => 'aaa'],
+            $message->getHeaders()
+        );
         self::assertTrue($message->hasHeader(PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE)));
+
+        $message->removeHeader('header1');
+        self::assertEquals('', $message->getHeader('header1'));
 
         self::expectException(InvalidArgumentException::class);
         new SuccessMessage(-5);

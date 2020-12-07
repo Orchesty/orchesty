@@ -1,6 +1,9 @@
 parameters:
     installer_dirs: []
 
+    checkInfiniteLoop: "%env(bool:CHECK_INFINITY_LOOP)%"
+    env(CHECK_INFINITY_LOOP): true
+
     docker_registry: "%env(string:DOCKER_REGISTRY)%"
     env(DOCKER_REGISTRY): dkr.hanaboso.net/pipes/pipes
     docker_pf_bridge_image: "%env(string:DOCKER_PF_BRIDGE_IMAGE)%"

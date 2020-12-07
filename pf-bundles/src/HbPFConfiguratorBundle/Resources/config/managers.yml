@@ -7,6 +7,7 @@ services:
         arguments:
             - '@hbpf.database_manager_locator'
             - '@hbpf.cron.manager'
+            - '%checkInfiniteLoop%'
 
     hbpf.configurator.manager.node:
         class: Hanaboso\PipesFramework\Configurator\Model\NodeManager

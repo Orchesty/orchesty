@@ -120,7 +120,6 @@ final class ApplicationAbstractTest extends DatabaseTestCaseAbstract
                 ]
             );
         $this->pfd($applicationInstall);
-        $this->dm->refresh($applicationInstall);
 
         return $applicationInstall;
     }

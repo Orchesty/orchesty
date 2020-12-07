@@ -145,7 +145,7 @@ func (probe *Server) handleAddRequest(res http.ResponseWriter, req *http.Request
 
 	err = probe.Storage.Set(receivedTopology.TopologyId, topologyString)
 	if err != nil {
-		msg := "Unable to add topology " + receivedTopology.TopologyId + " Redis err:" + err.Error()
+		msg := "Unable to add topology " + receivedTopology.TopologyId + " Storage err:" + err.Error()
 		log.Println(msg, err)
 		res.WriteHeader(http.StatusBadRequest)
 		_, _ = res.Write(getErrorResponseBody(fmt.Errorf(msg)))

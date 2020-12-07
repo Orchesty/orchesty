@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesPhpSdk\Application\Listener;
 
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
+use Doctrine\ODM\MongoDB\Event\PostFlushEventArgs;
 use Doctrine\ODM\MongoDB\Event\PreFlushEventArgs;
 use Hanaboso\CommonsBundle\Crypt\CryptManager;
 use Hanaboso\CommonsBundle\Crypt\Exceptions\CryptException;
@@ -39,13 +40,7 @@ final class ApplicationInstallListener
     public function postLoad(LifecycleEventArgs $args): void
     {
         $document = $args->getDocument();
-
-        if ($document instanceof ApplicationInstall) {
-            $document->setSettings(
-                !empty($document->getEncryptedSettings()) ?
-                    $this->cryptManager->decrypt($document->getEncryptedSettings()) : []
-            );
-        }
+        $this->decrypt([$document]);
     }
 
     /**
@@ -57,9 +52,40 @@ final class ApplicationInstallListener
     {
         $uof = $args->getDocumentManager()->getUnitOfWork();
         $uof->computeChangeSets();
-        $this->processDocuments($uof->getScheduledDocumentInsertions());
-        $this->processDocuments($uof->getScheduledDocumentUpdates());
-        $this->processDocuments($uof->getScheduledDocumentUpserts());
+        $this->encrypt($uof->getScheduledDocumentInsertions());
+        $this->encrypt($uof->getScheduledDocumentUpdates());
+        $this->encrypt($uof->getScheduledDocumentUpserts());
+    }
+
+    /**
+     * @param PostFlushEventArgs $args
+     *
+     * @throws CryptException
+     */
+    public function postFlush(PostFlushEventArgs $args): void
+    {
+        $uof = $args->getDocumentManager()->getUnitOfWork();
+        $this->decrypt($uof->getIdentityMap());
+    }
+
+    /**
+     * ------------------------------- HELPERS ----------------------------------------
+     */
+
+    /**
+     * @param mixed[] $documents
+     *
+     * @throws CryptException
+     */
+    private function encrypt(array $documents): void
+    {
+        foreach ($documents as $document) {
+            if ($document instanceof ApplicationInstall) {
+                $document
+                    ->setEncryptedSettings($this->cryptManager->encrypt($document->getSettings()))
+                    ->setSettings([]);
+            }
+        }
     }
 
     /**
@@ -67,13 +93,18 @@ final class ApplicationInstallListener
      *
      * @throws CryptException
      */
-    private function processDocuments(array $documents): void
+    private function decrypt(array $documents): void
     {
         foreach ($documents as $document) {
+            if (is_array($document)) {
+                $this->decrypt($document);
+            }
+
             if ($document instanceof ApplicationInstall) {
-                $document
-                    ->setEncryptedSettings($this->cryptManager->encrypt($document->getSettings()))
-                    ->setSettings([]);
+                $document->setSettings(
+                    !empty($document->getEncryptedSettings()) ?
+                        $this->cryptManager->decrypt($document->getEncryptedSettings()) : []
+                );
             }
         }
     }
