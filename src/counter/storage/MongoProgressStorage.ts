@@ -1,6 +1,7 @@
 import {MongoClient} from "mongodb";
 import {default as CounterMessage} from "../../message/CounterMessage";
 import moment = require("moment");
+import logger from "../../logger/Logger";
 
 interface IPNodeProcess {
     processId: string;
@@ -55,11 +56,6 @@ export class MongoProgressStorage {
      * @param status
      */
     public upsertProgress(cm: CounterMessage, end?: number, status?: string): Promise<string> {
-        if (!this.enabled) {
-            return new Promise(() => {
-            });
-        }
-
         const duration = moment(end ?? Date.now()).diff(moment(cm.getCreatedTime()), "millisecond");
 
         const node: IPNodeProcess = {
@@ -83,6 +79,13 @@ export class MongoProgressStorage {
 
         if (end) {
             document.finishedAt = new Date(end);
+        }
+
+        if (!this.enabled) {
+            return new Promise((resolve) => {
+                logger.debug('ProgressUpsert skipped.');
+                resolve(JSON.stringify(document));
+            });
         }
 
         const filter = {correlationId: document.correlationId, topologyId: document.topologyId};
