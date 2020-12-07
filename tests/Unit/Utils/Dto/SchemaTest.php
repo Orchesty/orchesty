@@ -21,13 +21,12 @@ final class SchemaTest extends KernelTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::buildIndex
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::checkStartNode
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getIndexItem
-     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::checkInfiniteLoop
+     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::isInfinity
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::addNode
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::addSequence
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::setStartNode
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getNodes
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getNextIds
-     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getParentFromNextId
      *
      * @throws Exception
      */
@@ -43,27 +42,8 @@ final class SchemaTest extends KernelTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::buildIndex
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::checkStartNode
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getIndexItem
-     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::checkInfiniteLoop
+     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::isInfinity
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getNextIds
-     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getParentFromNextId
-     *
-     * @throws Exception
-     */
-    public function testBuildIndexSameHash(): void
-    {
-        $content = $this->load('ignored-change-same-hash.tplg');
-        $schema  = TopologySchemaUtils::getSchemaObject($this->getXmlDecoder()->decode($content));
-
-        self::assertEquals($this->getExpected(), TopologySchemaUtils::getIndexHash($schema));
-    }
-
-    /**
-     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::buildIndex
-     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::checkStartNode
-     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getIndexItem
-     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::checkInfiniteLoop
-     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getNextIds
-     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getParentFromNextId
      *
      * @throws Exception
      */
@@ -79,9 +59,8 @@ final class SchemaTest extends KernelTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::buildIndex
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::checkStartNode
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getIndexItem
-     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::checkInfiniteLoop
+     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::isInfinity
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getNextIds
-     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getParentFromNextId
      *
      * @throws Exception
      */
@@ -99,8 +78,7 @@ final class SchemaTest extends KernelTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::buildIndex
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::checkStartNode
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getIndexItem
-     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::checkInfiniteLoop
-     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getParentFromNextId
+     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::isInfinity
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getNextIds
      *
      * @throws Exception
@@ -141,15 +119,15 @@ final class SchemaTest extends KernelTestCaseAbstract
             'sha256',
             Json::encode(
                 [
-                    0 => ':hubspot-updated-contact-connector:webhook',
-                    1 => 'Event_1lqi8dm:universal-splitter:splitter',
-                    2 => 'Task_0nwvqkt:hanaboso-create-subscriptions-connector:connector',
-                    3 => 'Task_152x7cw:hanaboso-delete-subscriptions-connector:connector',
-                    4 => 'Task_1niijps:hubspot-created-contact-mapper:custom',
-                    5 => 'Task_1niijps:hubspot-updated-contact-mapper:custom',
-                    6 => 'Task_1taayin:hubspot-deleted-contact-mapper:custom',
-                    7 => 'Task_1taayin:hubspot-get-contact-connector:connector',
-                    8 => 'Task_1wcc82o:hanaboso-update-subscriptions-connector:connector',
+                    0 => 'Event_1lqi8dm:hubspot-updated-contact-connector:webhook',
+                    1 => 'Task_00wzy7d:hanaboso-create-subscriptions-connector:connector',
+                    2 => 'Task_0fzjb0y:hanaboso-delete-subscriptions-connector:connector',
+                    3 => 'Task_0h8gpta:hanaboso-update-subscriptions-connector:connector',
+                    4 => 'Task_0nwvqkt:hubspot-created-contact-mapper:custom',
+                    5 => 'Task_152x7cw:hubspot-deleted-contact-mapper:custom',
+                    6 => 'Task_1niijps:hubspot-get-contact-connector:connector',
+                    7 => 'Task_1taayin:universal-splitter:splitter',
+                    8 => 'Task_1wcc82o:hubspot-updated-contact-mapper:custom',
                 ]
             )
         );

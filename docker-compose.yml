@@ -21,6 +21,7 @@ services:
             - FRONTEND_DSN=${DEV_IP}
             - FRONTEND_HOST=${DEV_IP}
             - BACKEND_DSN=${DEV_IP}
+            - CHECK_INFINITY_LOOP=true
             - NOTIFICATION_DSN=http://notification-sender-api
             - MULTI_PROBE_DSN=multi-probe:8007
             - TOPOLOGY_API_DSN=topology-api:80

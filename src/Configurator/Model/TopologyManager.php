@@ -53,18 +53,25 @@ final class TopologyManager
     private CronManager $cronManager;
 
     /**
+     * @var bool
+     */
+    private bool $checkInfiniteLoop;
+
+    /**
      * TopologyManager constructor.
      *
      * @param DatabaseManagerLocator $dml
      * @param CronManager            $cronManager
+     * @param bool                   $checkInfiniteLoop
      */
-    function __construct(DatabaseManagerLocator $dml, CronManager $cronManager)
+    function __construct(DatabaseManagerLocator $dml, CronManager $cronManager, bool $checkInfiniteLoop)
     {
         /** @var DocumentManager $dm */
         $dm                       = $dml->getDm();
         $this->dm                 = $dm;
         $this->topologyRepository = $this->dm->getRepository(Topology::class);
         $this->cronManager        = $cronManager;
+        $this->checkInfiniteLoop  = $checkInfiniteLoop;
     }
 
     /**
@@ -127,7 +134,7 @@ final class TopologyManager
     public function saveTopologySchema(Topology $topology, string $content, array $data): Topology
     {
         $newSchemaObject = TopologySchemaUtils::getSchemaObject($data);
-        $newSchemaMd5    = TopologySchemaUtils::getIndexHash($newSchemaObject);
+        $newSchemaMd5    = TopologySchemaUtils::getIndexHash($newSchemaObject, $this->checkInfiniteLoop);
 
         $cloned              = FALSE;
         $originalContentHash = $topology->getContentHash();

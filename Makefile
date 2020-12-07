@@ -44,7 +44,7 @@ composer-install:
 
 composer-update:
 	$(DEC) update
-#	$(DEC) normalize
+	$(DEC) normalize
 
 composer-outdated:
 	$(DEC) outdated
@@ -96,8 +96,7 @@ console:
 	$(DE) php bin/console ${command}
 
 clear-cache:
-	$(DE) rm -rf var/log
-	$(DE) php bin/console cache:clear --env=test
+	$(DE) rm -rf var
 	$(DE) php bin/console cache:warmup --env=test
 
 database-create:

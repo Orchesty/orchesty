@@ -147,13 +147,14 @@ final class TopologySchemaUtils
 
     /**
      * @param Schema $schema
+     * @param bool   $checkInfiniteLoop
      *
      * @return string
      * @throws TopologyException
      */
-    public static function getIndexHash(Schema $schema): string
+    public static function getIndexHash(Schema $schema, bool $checkInfiniteLoop = TRUE): string
     {
-        return hash('sha256', Json::encode($schema->buildIndex()));
+        return hash('sha256', Json::encode($schema->buildIndex($checkInfiniteLoop)));
     }
 
     /**

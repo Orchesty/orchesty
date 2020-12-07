@@ -37,6 +37,7 @@ services:
             - '@rest.decoder.xml'
             - '@hbpf.install.cache.null'
             - '%installer_dirs%'
+            - '%checkInfiniteLoop%'
 
     hbpf.install.cache.null:
         class: Hanaboso\PipesFramework\TopologyInstaller\Cache\NullCache

@@ -75,7 +75,7 @@ final class TopologiesComparatorTest extends DatabaseTestCaseAbstract
         $dir = sprintf('%s/data', __DIR__);
         /** @var TopologyRepository $repo */
         $repo       = $this->dm->getRepository(Topology::class);
-        $comparator = new TopologiesComparator($repo, $xmlDecoder, [$dir]);
+        $comparator = new TopologiesComparator($repo, $xmlDecoder, [$dir], TRUE);
 
         $result = $comparator->compare();
         $create = $result->getCreate();

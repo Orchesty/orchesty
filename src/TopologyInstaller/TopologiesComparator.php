@@ -38,17 +38,29 @@ final class TopologiesComparator
     private XmlDecoder $decoder;
 
     /**
+     * @var bool
+     */
+    private bool $checkInfiniteLoop;
+
+    /**
      * TopologiesComparator constructor.
      *
      * @param TopologyRepository $repository
      * @param XmlDecoder         $decoder
      * @param mixed[]            $dirs
+     * @param bool               $checkInfiniteLoop
      */
-    public function __construct(TopologyRepository $repository, XmlDecoder $decoder, array $dirs)
+    public function __construct(
+        TopologyRepository $repository,
+        XmlDecoder $decoder,
+        array $dirs,
+        bool $checkInfiniteLoop
+    )
     {
-        $this->dirs       = $dirs;
-        $this->repository = $repository;
-        $this->decoder    = $decoder;
+        $this->dirs              = $dirs;
+        $this->repository        = $repository;
+        $this->decoder           = $decoder;
+        $this->checkInfiniteLoop = $checkInfiniteLoop;
     }
 
     /**
@@ -107,7 +119,7 @@ final class TopologiesComparator
     {
         $newSchema = TopologySchemaUtils::getSchemaObject($this->decoder->decode($file->getContents()));
 
-        return $topology->getContentHash() == TopologySchemaUtils::getIndexHash($newSchema);
+        return $topology->getContentHash() == TopologySchemaUtils::getIndexHash($newSchema, $this->checkInfiniteLoop);
     }
 
 }
