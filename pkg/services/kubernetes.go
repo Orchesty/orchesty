@@ -333,5 +333,5 @@ func int32Ptr(i int32) *int32 { return &i }
 
 func getKubernetPortName(nodeID string) string {
 	length := len(nodeID)
-	return nodeID[length-10 : length]
+	return "p" + nodeID[length-9 : length]
 }
