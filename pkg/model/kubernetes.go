@@ -53,14 +53,15 @@ type Resources struct {
 
 // Container Container
 type Container struct {
-	Name         string
-	Image        string
-	Resources    Resources `yaml:"resources"`
-	Command      []string
-	Args         []string
-	Ports        []Port
-	Env          []EnvItem
-	VolumeMounts []VolumeMount `yaml:"volumeMounts"`
+	Name            string
+	Image           string
+	Resources       Resources `yaml:"resources"`
+	Command         []string
+	ImagePullPolicy string
+	Args            []string
+	Ports           []Port
+	Env             []EnvItem
+	VolumeMounts    []VolumeMount `yaml:"volumeMounts"`
 }
 
 // ConfigMapVolume ConfigMapVolume
