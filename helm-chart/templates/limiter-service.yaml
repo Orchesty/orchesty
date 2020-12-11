@@ -18,7 +18,7 @@ spec:
       targetPort: http
 
     # hardcoded in bridge for now
-    - name: http_legacy
+    - name: http-legacy
       protocol: TCP
       port: 3333
       targetPort: http
