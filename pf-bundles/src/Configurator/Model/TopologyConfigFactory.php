@@ -43,13 +43,14 @@ final class TopologyConfigFactory
     public const MONOLITH_API_HOST      = 'monolith_api_host';
     public const XML_PARSER_API_HOST    = 'xml_parser_api_host';
 
-    public const NODE_CONFIG     = 'node_config';
-    public const WORKER          = 'worker';
-    public const TYPE            = 'type';
-    public const SETTINGS        = 'settings';
-    public const FAUCET          = 'faucet';
-    public const PREFETCH        = 'prefetch';
-    public const SPLITTER_AMQRPC = 'splitter.amqprpc';
+    public const NODE_CONFIG             = 'node_config';
+    public const WORKER                  = 'worker';
+    public const TYPE                    = 'type';
+    public const SETTINGS                = 'settings';
+    public const FAUCET                  = 'faucet';
+    public const PREFETCH                = 'prefetch';
+    public const SPLITTER_AMQRPC         = 'splitter.amqprpc';
+    public const SPLITTER_AMQRPC_LIMITED = 'splitter.amqprpc_limited';
 
     public const WORKER_NULL            = 'worker.null';
     public const WORKER_RESEQUENCER     = 'worker.resequencer';
@@ -57,6 +58,7 @@ final class TopologyConfigFactory
     public const WORKER_HTTP_XML_PARSER = 'worker.http_xml_parser';
     public const WORKER_LONG_RUNNING    = 'worker.long_running';
     public const WORKER_HTTP            = 'worker.http';
+    public const WORKER_HTTP_LIMITED    = 'worker.http_limited';
     public const HOST                   = 'host';
 
     public const PROCESS_PATH  = 'process_path';
@@ -244,7 +246,7 @@ final class TopologyConfigFactory
         switch ($node->getType()) {
             case sprintf('%s', TypeEnum::BATCH):
             case sprintf('%s', TypeEnum::BATCH_CONNECTOR):
-                $workerType = self::SPLITTER_AMQRPC;
+                $workerType = self::SPLITTER_AMQRPC_LIMITED;
 
                 break;
             case sprintf('%s', TypeEnum::WEBHOOK):
@@ -272,7 +274,7 @@ final class TopologyConfigFactory
 
                 break;
             default:
-                $workerType = self::WORKER_HTTP;
+                $workerType = self::WORKER_HTTP_LIMITED;
         }
 
         return $workerType;

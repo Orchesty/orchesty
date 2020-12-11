@@ -3,8 +3,10 @@
 namespace PipesPhpSdkTests\Unit\RabbitMq\Impl\Batch;
 
 use Exception;
+use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\CommonsBundle\Metrics\Impl\InfluxDbSender;
 use Hanaboso\CommonsBundle\Metrics\MetricsSenderLoader;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchActionInterface;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchInterface;
@@ -326,6 +328,50 @@ final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
                 static function (Exception $e): void {
                     self::assertInstanceOf(InvalidArgumentException::class, $e);
                     self::assertSame('Unsupported type "unknown".', $e->getMessage());
+                }
+            )->wait();
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::processMessage
+     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::batchCallback
+     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::itemCallback
+     *
+     * @throws Exception
+     */
+    public function testProcessMessageRepeater(): void
+    {
+        $batchAction = self::createMock(BatchActionInterface::class);
+        $batchAction->method('batchAction')->willThrowException(new OnRepeatException(new ProcessDto(),'repeated'));
+        $channel = self::createMock(AMQPChannel::class);
+        $channel->method('queue_declare')->willReturn($this->createPromise());
+        $channel->method('basic_publish')->willReturn($this->createPromise());
+        $client = self::createMock(AMQPSocketConnection::class);
+        $client->method('channel')->willReturn($channel);
+        $influxSender = self::createMock(InfluxDbSender::class);
+        $loader       = new MetricsSenderLoader('influx', $influxSender, NULL);
+
+        $callback   = new BatchConsumerCallback($batchAction, $loader);
+        $connection = self::createMock(Connection::class);
+        $connection->expects(self::any())->method('getChannel')->willReturn($channel);
+        $connection->expects(self::any())->method('getClient')->willReturn($client);
+
+        $headers = [
+            'reply-to'                                            => 'reply',
+            'type'                                                => 'batch',
+            PipesHeaders::createKey(PipesHeaders::NODE_ID)        => '132',
+            PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID)    => '132',
+            PipesHeaders::createKey(PipesHeaders::CORRELATION_ID) => '123',
+            PipesHeaders::createKey(PipesHeaders::PROCESS_ID)     => '123',
+            PipesHeaders::createKey(PipesHeaders::PARENT_ID)      => '',
+        ];
+        $callback
+            ->processMessage($this->createMessage($headers), $connection, 1)
+            ->then(
+                NULL,
+                static function (Exception $e): void {
+                    self::assertInstanceOf(OnRepeatException::class, $e);
+                    self::assertSame('repeated', $e->getMessage());
                 }
             )->wait();
     }

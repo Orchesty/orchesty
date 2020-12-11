@@ -6,6 +6,7 @@ use Exception;
 use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Promise\RejectedPromise;
 use Hanaboso\CommonsBundle\Enum\MetricsEnum;
+use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\CommonsBundle\Metrics\MetricsSenderLoader;
 use Hanaboso\CommonsBundle\Utils\CurlMetricUtils;
 use Hanaboso\Utils\System\PipesHeaders;
@@ -34,10 +35,12 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
     use BatchTrait;
 
     // Properties
-    private const REPLY_TO       = 'reply-to';
-    private const TYPE           = 'type';
-    private const PERSISTENCE    = 'delivery-mode';
-    private const MISSING_HEADER = 'Missing "%s" in the message header.';
+    private const  REPLY_TO          = 'reply-to';
+    private const  TYPE              = 'type';
+    private const  PERSISTENCE       = 'delivery-mode';
+    private const  MISSING_HEADER    = 'Missing "%s" in the message header.';
+    private const  BATCH_END_TYPE    = 'batch_end';
+    private const  BATCH_REPEAT_TYPE = 'batch_repeat';
 
     /**
      * @var BatchActionInterface
@@ -145,11 +148,17 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
                         $replyChannel = $connection->getChannel($channelId);
                     }
 
+                    $type = self::BATCH_END_TYPE;
+                    if ($e instanceof OnRepeatException) {
+                        $type = self::BATCH_REPEAT_TYPE;
+                    }
+
                     return $this
                         ->batchErrorCallback(
                             $replyChannel,
                             $message,
-                            new ErrorMessage(2_001, $e->getMessage())
+                            new ErrorMessage(2_001, $e->getMessage()),
+                            $type
                         )
                         ->then(
                             function () use ($e, $headers): PromiseInterface {
@@ -442,7 +451,7 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
                     $headers = array_merge(
                         $headers,
                         [
-                            self::TYPE                                            => 'batch_end',
+                            self::TYPE                                            => self::BATCH_END_TYPE,
                             self::PERSISTENCE                                     => 2,
                             PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE) => $resultMessage,
                         ]
@@ -476,20 +485,22 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
      * @param AMQPChannel  $channel
      * @param AMQPMessage  $message
      * @param ErrorMessage $errorMessage
+     * @param string       $type
      *
      * @return PromiseInterface
      */
     private function batchErrorCallback(
         AMQPChannel $channel,
         AMQPMessage $message,
-        ErrorMessage $errorMessage
+        ErrorMessage $errorMessage,
+        string $type = self::BATCH_END_TYPE
     ): PromiseInterface
     {
         $headers = Message::getHeaders($message);
         $headers = array_merge(
             $headers,
             [
-                self::TYPE                                            => 'batch_end',
+                self::TYPE                                            => $type,
                 PipesHeaders::createKey(PipesHeaders::RESULT_CODE)    => $errorMessage->getCode(),
                 PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE) => $errorMessage->getMessage(),
                 PipesHeaders::createKey(PipesHeaders::RESULT_DETAIL)  => $errorMessage->getDetail(),
