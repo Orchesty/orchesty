@@ -12,6 +12,13 @@ spec:
   selector:
 {{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 4 }}
   ports:
-    - protocol: TCP
+    - name: http
+      protocol: TCP
       port: 80
+      targetPort: http
+
+    # hardcoded in bridge for now
+    - name: http_legacy
+      protocol: TCP
+      port: 3333
       targetPort: http

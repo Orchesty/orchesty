@@ -36,11 +36,17 @@ global:
   api:
     serviceAnnotations: {}
 
+  backend:
+    checkInfinityLoop: true
+
   frontend:
     serviceAnnotations: {}
 
   longRunningNode:
     enabled: true
+
+  multiCounter:
+    progressSave: true
 
   phpSdk:
     extraEnv: {}

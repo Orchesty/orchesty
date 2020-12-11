@@ -29,6 +29,8 @@ spec:
             - name: http
               containerPort: 8005
           env:
+            - name: PROGRESS_SAVE
+              value: "{{ .Values.global.multiCounter.progressSave }}"
             - name: RABBITMQ_HOST
               valueFrom:
                 configMapKeyRef:
