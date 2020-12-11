@@ -209,7 +209,7 @@ class Pipes implements INodeConfigProvider {
 
         const metrics: IMetrics = this.dic.get("metrics")(topo.topology_id, id, metricsOptions.node_measurement);
 
-        // create folowers array
+        // create followers array
         if (nodeCfg.next.length > 0) {
             const headers = new Map<string, string>();
             const parts : IAdditionalHeaders[] = [];
@@ -221,7 +221,7 @@ class Pipes implements INodeConfigProvider {
                 }
             }
 
-            const b = new Buffer(JSON.stringify(parts));
+            const b = Buffer.from(JSON.stringify(parts));
             headers.set(Headers.WORKER_FOLLOWERS, b.toString('base64'));
             worker.setAdditionalHeaders(headers);
         }

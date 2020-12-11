@@ -7,6 +7,8 @@ import {ResultCode} from "../../message/ResultCode";
 import {ICounterPublisher} from "../drain/amqp/CounterPublisher";
 import IPartialForwarder from "../drain/IPartialForwarder";
 import AAmqpWorker, {IAmqpWorkerSettings, IWaiting} from "./AAmqpWorker";
+import {IPublisher} from "amqplib-plus/dist/IPublisher";
+import {repeaterOptions} from "../../config";
 
 /**
  * This Non-blocking worker forwards all incoming response messages immediately using partialForwarder when received
@@ -20,12 +22,14 @@ class AmqpNonBlockingWorker extends AAmqpWorker {
      * @param {IAmqpWorkerSettings} settings
      * @param {IPartialForwarder} partialForwarder
      * @param {ICounterPublisher} counterPublisher
+     * @param {IPublisher} nonStandardPublisher
      */
     constructor(
         protected connection: Connection,
         protected settings: IAmqpWorkerSettings,
         private partialForwarder: IPartialForwarder,
         private counterPublisher: ICounterPublisher,
+        private nonStandardPublisher: IPublisher,
     ) {
         super(connection, settings);
     }
@@ -75,6 +79,26 @@ class AmqpNonBlockingWorker extends AAmqpWorker {
         stored.message.setResult(this.getResultFromBatchEnd(msg));
         stored.resolveFn([stored.message]); // Resolves waiting promise
         this.waiting.delete(corrId);
+    }
+
+    /**
+     * Resolves the stored promise with populated message
+     * @param {string} corrId
+     * @param {AmqpMessage} msg
+     */
+    public async onRepeatBatch(corrId: string, msg: AmqpMessage): Promise<void> {
+        //TODO: use queue names from settings
+        //TODO: use persistence of message from settings
+
+        // Set the queue name where to repeat the message and send it to repeater
+        logger.info('repeater reached');
+        const h = new Headers(msg.properties.headers);
+        h.setPFHeader(Headers.REPEAT_QUEUE, 'pipes.batch_connector');
+        await this.nonStandardPublisher.sendToQueue(repeaterOptions.input.queue.name, msg.content, {
+            headers: h.getRaw(),
+            persistent: false,
+        });
+        logger.info('repeater send');
     }
 
     /**

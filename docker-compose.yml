@@ -8,9 +8,17 @@ services:
     image: 'influxdb:alpine'
   mongo:
     image: 'mongo:3.4'
-  # logstash dummy (tests fail on nonexistent hostname)
   logstash:
-    image: busybox
+      image: kedlas/udplogger:latest
+      ports:
+          - 4444/udp
+  limiter:
+    image: hanaboso/limiter:master
+    environment:
+      - MONGO_HOST=mongo
+      - RABBITMQ_HOST=rabbitmq
+      - LOGSTASH_HOST=logstash
+      - LOGSTASH_PORT=4444
 
   test:
       image: node:14-alpine

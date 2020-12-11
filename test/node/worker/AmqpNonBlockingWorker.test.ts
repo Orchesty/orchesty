@@ -13,6 +13,7 @@ import {IAmqpWorkerSettings, IWaiting} from "../../../src/node/worker/AAmqpWorke
 import AmqpNonBlockingWorker from "../../../src/node/worker/AmqpNonBlockingWorker";
 import {INodeLabel} from "../../../src/topology/Configurator";
 import {SimpleConsumer} from "../../../src/consumer/SimpleConsumer";
+import {IPublisher} from "amqplib-plus/dist/IPublisher";
 
 const conn = new Connection(amqpConnectionOptions);
 
@@ -37,7 +38,11 @@ describe("AmqpNonBlockingWorker", () => {
         const counterPublisher: ICounterPublisher = {
             send: async () => { assert.fail("This should be never called."); },
         };
-        const rpcWorker = new AmqpNonBlockingWorker(conn, settings, forwarder, counterPublisher);
+        const assertionPublisher: IPublisher = {
+            sendToQueue: ():  Promise<void> => { assert.fail("This should be never called."); },
+            publish: ():  Promise<void> => { assert.fail("This should be never called."); },
+        };
+        const rpcWorker = new AmqpNonBlockingWorker(conn, settings, forwarder, counterPublisher, assertionPublisher);
 
         const headers = new Headers();
         headers.setPFHeader(Headers.RESULT_CODE, `${ResultCode.UNKNOWN_ERROR}`);
@@ -76,7 +81,11 @@ describe("AmqpNonBlockingWorker", () => {
         const counterPublisher: ICounterPublisher = {
             send: async () => Promise.resolve(),
         };
-        const rpcWorker = new AmqpNonBlockingWorker(conn, settings, partialForwarder, counterPublisher);
+        const assertionPublisher: IPublisher = {
+            sendToQueue: ():  Promise<void> => { assert.fail("This should be never called."); },
+            publish: ():  Promise<void> => { assert.fail("This should be never called."); },
+        };
+        const rpcWorker = new AmqpNonBlockingWorker(conn, settings, partialForwarder, counterPublisher, assertionPublisher);
 
         const publisher = new Publisher(conn, (ch: Channel) =>  Promise.resolve() );
         const externalWorkerMock = new SimpleConsumer(
@@ -135,7 +144,11 @@ describe("AmqpNonBlockingWorker", () => {
         const counterPublisher: ICounterPublisher = {
             send: async () => Promise.resolve(),
         };
-        const rpcWorker = new AmqpNonBlockingWorker(conn, settings, partialForwarder, counterPublisher);
+        const assertionPublisher: IPublisher = {
+            sendToQueue: ():  Promise<void> => { assert.fail("This should be never called."); },
+            publish: ():  Promise<void> => { assert.fail("This should be never called."); },
+        };
+        const rpcWorker = new AmqpNonBlockingWorker(conn, settings, partialForwarder, counterPublisher, assertionPublisher);
         const publisher = new Publisher(conn, (ch: Channel) =>  Promise.resolve() );
         const externalWorkerMock = new SimpleConsumer(
             conn,
