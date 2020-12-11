@@ -261,6 +261,7 @@ func (ts *TopologyService) getKubernetesContainers(mountName string) ([]model.Co
 			Command: []string{command[0]},
 			Args:    command[1:],
 			Image:   getDockerImage(registry, image),
+			ImagePullPolicy: "always",
 			Resources: model.Resources{
 				Limits:   limits,
 				Requests: requests,
