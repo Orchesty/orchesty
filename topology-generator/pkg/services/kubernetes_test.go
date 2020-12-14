@@ -2,6 +2,7 @@ package services
 
 import (
 	"fmt"
+	v12 "k8s.io/api/core/v1"
 	"log"
 	"os"
 	"strings"
@@ -163,8 +164,9 @@ func TestClient_Create(t *testing.T) {
 					CPU:    "1",
 				},
 			},
-			Args:  command[1:],
-			Image: getDockerImage(registry, image),
+			Args:            command[1:],
+			Image:           getDockerImage(registry, image),
+			ImagePullPolicy: string(v12.PullAlways),
 			Ports: []model.Port{
 				{
 					ContainerPort: 80008,
@@ -217,8 +219,9 @@ func TestClient_Create(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	d, err := testClient.deploymentClient.Get(deploymentName, v1.GetOptions{})
+	ctx, cancel := testClient.createContext()
+	defer cancel()
+	d, err := testClient.deploymentClient.Get(ctx, deploymentName, v1.GetOptions{})
 
 	if err != nil {
 		t.Fatal(err)
@@ -254,7 +257,10 @@ func TestClient_CreateConfigMap(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	cm, err := testClient.configClient.Get(configMapName, v1.GetOptions{})
+	ctx, cancel := testClient.createContext()
+	defer cancel()
+
+	cm, err := testClient.configClient.Get(ctx, configMapName, v1.GetOptions{})
 
 	if err != nil {
 		t.Fatal(err)
@@ -295,7 +301,9 @@ func TestClient_CreateService(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	res, err := testClient.serviceClient.Get(deploymentName, v1.GetOptions{})
+	ctx, cancel := testClient.createContext()
+	defer cancel()
+	res, err := testClient.serviceClient.Get(ctx, deploymentName, v1.GetOptions{})
 
 	if err != nil {
 		t.Fatal(err)
@@ -315,8 +323,9 @@ func TestClient_Delete(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	d, err := testClient.deploymentClient.Get(deploymentName, v1.GetOptions{})
+	ctx, cancel := testClient.createContext()
+	defer cancel()
+	d, err := testClient.deploymentClient.Get(ctx, deploymentName, v1.GetOptions{})
 	require.NotNil(t, err, "Err cannot be null, deployment shouldnt exists")
 	require.Nil(t, d, "Deployment should be nil, because it has been deleted")
 }
@@ -329,8 +338,9 @@ func TestClient_DeleteConfigMap(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	c, err := testClient.configClient.Get(configMapName, v1.GetOptions{})
+	ctx, cancel := testClient.createContext()
+	defer cancel()
+	c, err := testClient.configClient.Get(ctx, configMapName, v1.GetOptions{})
 	require.NotNil(t, err, "Err cannot be null, config map shouldnt exists")
 	require.Nil(t, c, "Config Map should be nil, because it has been deleted")
 }
@@ -343,8 +353,9 @@ func TestClient_DeleteService(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	c, err := testClient.configClient.Get(deploymentName, v1.GetOptions{})
+	ctx, cancel := testClient.createContext()
+	defer cancel()
+	c, err := testClient.configClient.Get(ctx, deploymentName, v1.GetOptions{})
 	require.NotNil(t, err, "Err cannot be null, config map shouldnt exists")
 	require.Nil(t, c, "Config Map should be nil, because it has been deleted")
 }
@@ -356,7 +367,9 @@ func TestClient_Start(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	d, err := testClient.deploymentClient.Get(deploymentName, v1.GetOptions{})
+	ctx, cancel := testClient.createContext()
+	defer cancel()
+	d, err := testClient.deploymentClient.Get(ctx, deploymentName, v1.GetOptions{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -370,7 +383,9 @@ func TestClient_Stop(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	d, err := testClient.deploymentClient.Get(deploymentName, v1.GetOptions{})
+	ctx, cancel := testClient.createContext()
+	defer cancel()
+	d, err := testClient.deploymentClient.Get(ctx, deploymentName, v1.GetOptions{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -426,18 +441,19 @@ func TestClient_DeleteAll(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	cm, err := testClient.configClient.Get(GetConfigMapName(topologyID), v1.GetOptions{})
+	ctx, cancel := testClient.createContext()
+	defer cancel()
+	cm, err := testClient.configClient.Get(ctx, GetConfigMapName(topologyID), v1.GetOptions{})
 
 	require.NotNil(t, err, "Getting deleted config map should return error")
 	require.Nil(t, cm, "Deleted config map should be nil after calling get for it")
 
-	d, err := testClient.deploymentClient.Get(GetDeploymentName(topologyID), v1.GetOptions{})
+	d, err := testClient.deploymentClient.Get(ctx, GetDeploymentName(topologyID), v1.GetOptions{})
 
 	require.NotNil(t, err, "Getting deleted deployment should return error")
 	require.Nil(t, d, "Deleted deployment should be nil after calling get for it")
 
-	s, err := testClient.serviceClient.Get(GetDeploymentName(topologyID), v1.GetOptions{})
+	s, err := testClient.serviceClient.Get(ctx, GetDeploymentName(topologyID), v1.GetOptions{})
 
 	require.NotNil(t, err, "Getting deleted service should return error")
 	require.Nil(t, s, "Deleted service should be nil after calling get for it")
@@ -498,21 +514,22 @@ func TestClient_Generate(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	d, err := testClient.deploymentClient.Get(GetDeploymentName(topologyID), v1.GetOptions{})
+	ctx, cancel := testClient.createContext()
+	defer cancel()
+	d, err := testClient.deploymentClient.Get(ctx, GetDeploymentName(topologyID), v1.GetOptions{})
 	if err != nil {
 		t.Fatal(err)
 	}
 	require.NotNil(t, d, "Deployment cannot be nil")
 
-	s, err := testClient.serviceClient.Get(fmt.Sprintf("mb-%s", topologyID), v1.GetOptions{})
+	s, err := testClient.serviceClient.Get(ctx, fmt.Sprintf("mb-%s", topologyID), v1.GetOptions{})
 	if err != nil {
 		t.Fatal(err)
 	}
 	require.Equal(t, s.Spec.Selector["app"], d.Spec.Template.ObjectMeta.Labels["app"])
 	require.NotNil(t, s, "Service cannot be nil")
 
-	cm, err := testClient.configClient.Get(GetConfigMapName(topologyID), v1.GetOptions{})
+	cm, err := testClient.configClient.Get(ctx, GetConfigMapName(topologyID), v1.GetOptions{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -564,20 +581,21 @@ func TestClient_GenerateMulti(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	d, err := testClient.deploymentClient.Get(GetDeploymentName(topologyID), v1.GetOptions{})
+	ctx, cancel := testClient.createContext()
+	defer cancel()
+	d, err := testClient.deploymentClient.Get(ctx, GetDeploymentName(topologyID), v1.GetOptions{})
 	if err != nil {
 		t.Fatal(err)
 	}
 	require.NotNil(t, d, "Deployment cannot be nil")
 
-	s, err := testClient.serviceClient.Get(fmt.Sprintf("mb-%s", topologyID), v1.GetOptions{})
+	s, err := testClient.serviceClient.Get(ctx, fmt.Sprintf("mb-%s", topologyID), v1.GetOptions{})
 	if err != nil {
 		t.Fatal(err)
 	}
 	require.NotNil(t, s, "Service cannot be nil")
 
-	cm, err := testClient.configClient.Get(GetConfigMapName(topologyID), v1.GetOptions{})
+	cm, err := testClient.configClient.Get(ctx, GetConfigMapName(topologyID), v1.GetOptions{})
 	if err != nil {
 		t.Fatal(err)
 	}

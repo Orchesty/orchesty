@@ -57,7 +57,7 @@ type Container struct {
 	Image           string
 	Resources       Resources `yaml:"resources"`
 	Command         []string
-	ImagePullPolicy string
+	ImagePullPolicy string `yaml:"imagePullPolicy"`
 	Args            []string
 	Ports           []Port
 	Env             []EnvItem
