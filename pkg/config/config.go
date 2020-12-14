@@ -2,6 +2,7 @@ package config
 
 import (
 	"os"
+	"time"
 
 	"topology-generator/pkg/model"
 
@@ -31,6 +32,7 @@ type (
 		Mode                       model.Adapter `default:"compose" env:"GENERATOR_MODE"`
 		ClusterConfig              string        `default:"" env:"K8S_CLUSTER_CONFIG"`
 		Namespace                  string        `default:"default" env:"K8S_NAMESPACE"`
+		K8sTimeout                 time.Duration `default:"30" env:"K8S_TIMEOUT"`
 		Prefix                     string        `default:"dev" env:"DEPLOYMENT_PREFIX"`
 		Network                    string        `default:"client" env:"GENERATOR_NETWORK"`
 		MultiNode                  bool          `default:"true" env:"MULTI_NODE"`

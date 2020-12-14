@@ -1,6 +1,7 @@
 package services
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	log "github.com/hanaboso/go-log/pkg"
@@ -15,6 +16,7 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/retry"
 	"strings"
+	"time"
 	"topology-generator/pkg/config"
 	"topology-generator/pkg/fscommands"
 	"topology-generator/pkg/model"
@@ -152,8 +154,11 @@ func (c kubernetesClient) createService(obj []byte) error {
 	if err != nil {
 		return fmt.Errorf("error decoding new Service from file because: %v", err)
 	}
+	ctx, cancel := c.createContext()
+	defer cancel()
+
 	s := res.(*coreV1.Service)
-	_, err = c.serviceClient.Create(s)
+	_, err = c.serviceClient.Create(ctx, s, metaV1.CreateOptions{})
 	// if already exists, dont throw error
 	if err != nil && strings.Contains(err.Error(), "already exists") {
 		return nil
@@ -163,23 +168,30 @@ func (c kubernetesClient) createService(obj []byte) error {
 
 func (c kubernetesClient) deleteService(name string) error {
 	deletePolicy := metaV1.DeletePropagationForeground
+	ctx, cancel := c.createContext()
+	defer cancel()
 
-	return c.serviceClient.Delete(name, &metaV1.DeleteOptions{
+	return c.serviceClient.Delete(ctx, name, metaV1.DeleteOptions{
 		PropagationPolicy: &deletePolicy,
 	})
 }
 
 func (c kubernetesClient) deleteConfigMap(name string) error {
 	deletePolicy := metaV1.DeletePropagationForeground
+	ctx, cancel := c.createContext()
+	defer cancel()
 
-	return c.configClient.Delete(name, &metaV1.DeleteOptions{
+	return c.configClient.Delete(ctx, name, metaV1.DeleteOptions{
 		PropagationPolicy: &deletePolicy,
 	})
 }
 
 // Info Info
 func (c kubernetesClient) Info(name string) ([]coreV1.Container, error) {
-	deployment, err := c.deploymentClient.Get(name, metaV1.GetOptions{})
+	ctx, cancel := c.createContext()
+	defer cancel()
+
+	deployment, err := c.deploymentClient.Get(ctx, name, metaV1.GetOptions{})
 	if err != nil {
 		return nil, fmt.Errorf("error getting deployement. Reason: %v", err)
 	}
@@ -196,8 +208,10 @@ func (c kubernetesClient) createConfigMap(obj []byte) error {
 	if err != nil {
 		return fmt.Errorf("error decoding new Config map from file because: %v", err)
 	}
+	ctx, cancel := c.createContext()
+	defer cancel()
 	cm := res.(*coreV1.ConfigMap)
-	_, err = c.configClient.Create(cm)
+	_, err = c.configClient.Create(ctx, cm, metaV1.CreateOptions{})
 	// if already exists, dont throw error
 	if err != nil && strings.Contains(err.Error(), "already exists") {
 		return nil
@@ -211,8 +225,11 @@ func (c kubernetesClient) create(obj []byte) error {
 	if err != nil {
 		return fmt.Errorf("error decoding new Deployment from file because: %v", err)
 	}
+	ctx, cancel := c.createContext()
+	defer cancel()
+
 	deployment := res.(*appsV1.Deployment)
-	_, err = c.deploymentClient.Create(deployment)
+	_, err = c.deploymentClient.Create(ctx, deployment, metaV1.CreateOptions{})
 	// if already exists, dont throw error
 	if err != nil && strings.Contains(err.Error(), "already exists") {
 		return nil
@@ -221,13 +238,16 @@ func (c kubernetesClient) create(obj []byte) error {
 }
 
 func (c kubernetesClient) start(name string) error {
+	ctx, cancel := c.createContext()
+	defer cancel()
+
 	retryErr := retry.RetryOnConflict(retry.DefaultRetry, func() error {
-		deployment, err := c.deploymentClient.Get(name, metaV1.GetOptions{})
+		deployment, err := c.deploymentClient.Get(ctx, name, metaV1.GetOptions{})
 		if err != nil {
 			return fmt.Errorf("error getting deployement. Reason: %v", err)
 		}
 		deployment.Spec.Replicas = int32Ptr(1)
-		_, updateErr := c.deploymentClient.Update(deployment)
+		_, updateErr := c.deploymentClient.Update(ctx, deployment, metaV1.UpdateOptions{})
 
 		return updateErr
 	})
@@ -240,13 +260,16 @@ func (c kubernetesClient) start(name string) error {
 }
 
 func (c kubernetesClient) stop(name string) error {
+	ctx, cancel := c.createContext()
+	defer cancel()
+
 	retryErr := retry.RetryOnConflict(retry.DefaultRetry, func() error {
-		deployment, err := c.deploymentClient.Get(name, metaV1.GetOptions{})
+		deployment, err := c.deploymentClient.Get(ctx, name, metaV1.GetOptions{})
 		if err != nil {
 			return fmt.Errorf("error getting deployement. Reason: %v", err)
 		}
 		deployment.Spec.Replicas = new(int32)
-		_, updateErr := c.deploymentClient.Update(deployment)
+		_, updateErr := c.deploymentClient.Update(ctx, deployment, metaV1.UpdateOptions{})
 		return updateErr
 	})
 	if retryErr != nil {
@@ -257,8 +280,10 @@ func (c kubernetesClient) stop(name string) error {
 
 func (c kubernetesClient) delete(name string) error {
 	deletePolicy := metaV1.DeletePropagationForeground
+	ctx, cancel := c.createContext()
+	defer cancel()
 
-	return c.deploymentClient.Delete(name, &metaV1.DeleteOptions{
+	return c.deploymentClient.Delete(ctx, name, metaV1.DeleteOptions{
 		PropagationPolicy: &deletePolicy,
 	})
 }
@@ -272,6 +297,13 @@ func (c kubernetesClient) logContext(data map[string]interface{}) log.Logger {
 	data["type"] = "mongodb"
 
 	return c.logger.WithFields(data)
+}
+
+func (c kubernetesClient) createContext() (context.Context, context.CancelFunc) {
+	backgroundCtx := context.Background()
+	ctx, cancel := context.WithTimeout(backgroundCtx, config.Generator.K8sTimeout*time.Second)
+
+	return ctx, cancel
 }
 
 // KubernetesSvc KubernetesSvc
@@ -333,5 +365,5 @@ func int32Ptr(i int32) *int32 { return &i }
 
 func getKubernetPortName(nodeID string) string {
 	length := len(nodeID)
-	return "p" + nodeID[length-9 : length]
+	return "p" + nodeID[length-9:length]
 }
