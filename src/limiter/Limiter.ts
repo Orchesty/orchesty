@@ -94,12 +94,19 @@ export default class Limiter implements ILimiter {
             return true;
         }
 
+        // If is message from limiter, force true and avoid never ending loop
+        if (msg.getHeaders().hasPFHeader(Headers.LIMIT_MESSAGE_FROM_LIMITER)) {
+
+            msg.getHeaders().removePFHeader(Headers.LIMIT_MESSAGE_FROM_LIMITER);
+            return true;
+        }
+
         try {
             const content = Limiter.createCheckLimitRequest(msg);
             const resp = await this.tcpClient.send(content);
             const result = resp.split(";");
 
-           return result.length === 3 && result[2] === LIMIT_CHECK_RESPONSE_FREE;
+            return result.length === 3 && result[2] === LIMIT_CHECK_RESPONSE_FREE;
         } catch (e) {
             logger.error("TcpLimiter can be processed error:", {error: e});
             // We do not know the limiter result allow processing

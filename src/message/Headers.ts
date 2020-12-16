@@ -60,6 +60,7 @@ class Headers {
     public static readonly LIMIT_VALUE = "limit-value";
     public static readonly LIMIT_RETURN_EXCHANGE = "limit-return-exchange";
     public static readonly LIMIT_RETURN_ROUTING_KEY = "limit-return-routing-key";
+    public static readonly LIMIT_MESSAGE_FROM_LIMITER = "limit-message-from-limiter";
 
     //
     // Other headers
