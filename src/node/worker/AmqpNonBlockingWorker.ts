@@ -8,7 +8,7 @@ import {ICounterPublisher} from "../drain/amqp/CounterPublisher";
 import IPartialForwarder from "../drain/IPartialForwarder";
 import AAmqpWorker, {IAmqpWorkerSettings, IWaiting} from "./AAmqpWorker";
 import {IPublisher} from "amqplib-plus/dist/IPublisher";
-import {repeaterOptions} from "../../config";
+import {persistentMessages, repeaterOptions} from "../../config";
 
 /**
  * This Non-blocking worker forwards all incoming response messages immediately using partialForwarder when received
@@ -87,18 +87,22 @@ class AmqpNonBlockingWorker extends AAmqpWorker {
      * @param {AmqpMessage} msg
      */
     public async onRepeatBatch(corrId: string, msg: AmqpMessage): Promise<void> {
-        //TODO: use queue names from settings
-        //TODO: use persistence of message from settings
+        logger.debug('batch repeater reached');
+        const stored: IWaiting = this.waiting.get(corrId);
+        stored.message.setResult({ code: ResultCode.SPLITTER_BATCH_END, message: 'done' });
+        stored.resolveFn([stored.message]);
+        this.waiting.delete(corrId);
 
         // Set the queue name where to repeat the message and send it to repeater
-        logger.info('repeater reached');
         const h = new Headers(msg.properties.headers);
-        h.setPFHeader(Headers.REPEAT_QUEUE, 'pipes.batch_connector');
-        await this.nonStandardPublisher.sendToQueue(repeaterOptions.input.queue.name, msg.content, {
+        h.setPFHeader(Headers.REPEAT_QUEUE, this.getOriginalQueueName());
+        h.setHeader(Headers.REPLY_TO, this.getReplyQueueName());
+        h.setHeader('type', 'batch');
+
+        return await this.nonStandardPublisher.sendToQueue(repeaterOptions.input.queue.name, msg.content, {
             headers: h.getRaw(),
-            persistent: false,
+            persistent: persistentMessages,
         });
-        logger.info('repeater send');
     }
 
     /**

@@ -56,14 +56,14 @@ abstract class AAmqpWorker extends AWorker {
 
         this.waiting = new Container();
         this.resultsQueue = {
-            name: `pipes.${settings.node_label.topology_id}.${settings.node_label.id}_reply`,
+            name: this.getReplyQueueName(),
             options: settings.publish_queue.options || { durable: true, exclusive: false, autoDelete: false },
             prefetch: 1,
         };
 
         const publisherPrepare = async (ch: Channel): Promise<void> => {
             const q = settings.publish_queue;
-            await ch.assertQueue(q.name, q.options || { durable: false, exclusive: false, autoDelete: false });
+            await ch.assertQueue(q.name, q.options || { durable: true, exclusive: false, autoDelete: false });
         };
 
         const resultsConsumerPrepare = async (ch: Channel): Promise<void> => {
@@ -251,13 +251,7 @@ abstract class AAmqpWorker extends AWorker {
             return false;
         }
 
-        if (msg.getResult().code === ResultCode.SUCCESS ||
-            msg.getResult().code === ResultCode.SPLITTER_BATCH_END
-        ) {
-            return true;
-        }
-
-        return false;
+        return msg.getResult().code === ResultCode.SUCCESS || msg.getResult().code === ResultCode.SPLITTER_BATCH_END;
     }
 
     /**
@@ -312,6 +306,14 @@ abstract class AAmqpWorker extends AWorker {
             code: ResultCode.MESSAGE_ALREADY_BEING_PROCESSED,
             message: `Message[correlation_id=${msg.getCorrelationId()}] is already being processed.`,
         });
+    }
+
+    protected getOriginalQueueName(): string{
+        return `pipes.${this.settings.node_label.topology_id}.${this.settings.node_label.id}`;
+    }
+
+    protected getReplyQueueName(): string{
+        return `pipes.${this.settings.node_label.topology_id}.${this.settings.node_label.id}_reply`;
     }
 
 }

@@ -69,10 +69,7 @@ export default class TcpLimiter implements ILimiter {
 
         const result = await this.sendOverTcp(content);
 
-        if (result === LIMIT_CHECK_RESPONSE_FREE) {
-            return true;
-        }
-        return false;
+        return result === LIMIT_CHECK_RESPONSE_FREE;
     }
 
     /**
