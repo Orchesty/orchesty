@@ -141,8 +141,8 @@ func (srv *Server) Start(addr string, fault chan<- bool) {
 		srv.wg.Add(1)
 
 		go func() {
-			srv.wg.Done()
 			srv.handleRequest(conn)
+			srv.wg.Done()
 		}()
 	}
 }
@@ -204,6 +204,7 @@ func (srv *Server) handleLimitCheckRequest(req request) string {
 
 	isFree, err := srv.lim.IsFreeLimit(req.key, req.time, req.value)
 	if err != nil {
+		srv.logger.Error(fmt.Sprintf("failed check free limit => %v", err), nil)
 		return "Error evaluating limit: " + err.Error()
 	}
 

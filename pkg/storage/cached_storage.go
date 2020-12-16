@@ -1,6 +1,8 @@
 package storage
 
 import (
+	"sync"
+
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -8,11 +10,12 @@ import (
 type CachedStorage struct {
 	db    Storage
 	cache map[string]int
+	m     sync.Mutex
 }
 
 // NewCachedMongo returns the pointer to new created mongo storage instance
 func NewCachedMongo(db Storage) *CachedStorage {
-	return &CachedStorage{db, make(map[string]int, 0)}
+	return &CachedStorage{db, make(map[string]int, 0), sync.Mutex{}}
 }
 
 // Get returns the message form storage
@@ -22,6 +25,9 @@ func (cs *CachedStorage) Get(key string, length int) ([]*Message, error) {
 
 // Count returns the number of items in storage by key
 func (cs *CachedStorage) Count(key string) (int, error) {
+	cs.m.Lock()
+	defer cs.m.Unlock()
+
 	_, ok := cs.cache[key]
 	if ok {
 		return cs.cache[key], nil
@@ -92,10 +98,16 @@ func (cs *CachedStorage) ClearCacheItem(key string, val int) bool {
 }
 
 func (cs *CachedStorage) increaseCount(key string) {
+	cs.m.Lock()
+	defer cs.m.Unlock()
+
 	cs.cache[key] = cs.getCount(key) + 1
 }
 
 func (cs *CachedStorage) decreaseCount(key string) {
+	cs.m.Lock()
+	defer cs.m.Unlock()
+
 	cs.cache[key] = cs.getCount(key) - 1
 }
 

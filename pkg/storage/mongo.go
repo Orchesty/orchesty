@@ -23,7 +23,7 @@ type Mongo struct {
 func (s *Mongo) Connect() {
 	var err error
 	s.logger.Info(fmt.Sprintf("Mongo DB connecting to: %s", s.host), nil)
-	s.session, err = mgo.Dial(s.host)
+	s.session, err = mgo.DialWithTimeout(s.host, 2500*time.Millisecond)
 	s.session.SetMode(mgo.Monotonic, true)
 
 	if err != nil {
