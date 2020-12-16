@@ -126,15 +126,15 @@ describe("Limiter", () => {
     //
 
     it.skip("isReady against live go server #integration", async () => {
-        const tcp = new TcpClient("localhost", 3333);
+        const tcp = new TcpClient("limiter", 3333);
         const publisher: any = {};
         const limiter = new Limiter(tcp, publisher);
         const result = await limiter.isReady();
         assert.isTrue(result);
     });
 
-    it.skip("check limit against live go server #integration", async () => {
-        const tcp = new TcpClient("localhost", 3333);
+    it("check limit against live go server #integration", async () => {
+        const tcp = new TcpClient("limiter", 3333);
         const publisher: any = {};
         const limiter = new Limiter(tcp, publisher);
 

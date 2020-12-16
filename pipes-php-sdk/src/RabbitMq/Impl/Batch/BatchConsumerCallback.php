@@ -9,13 +9,14 @@ use Hanaboso\CommonsBundle\Enum\MetricsEnum;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\CommonsBundle\Metrics\MetricsSenderLoader;
 use Hanaboso\CommonsBundle\Utils\CurlMetricUtils;
+use Hanaboso\PipesPhpSdk\Utils\RepeaterTrait;
 use Hanaboso\Utils\System\PipesHeaders;
+use Hanaboso\Utils\Traits\LoggerTrait;
 use InvalidArgumentException;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
 use PhpAmqpLib\Wire\AMQPTable;
 use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use RabbitMqBundle\Connection\Connection;
 use RabbitMqBundle\Consumer\AsyncCallbackInterface;
@@ -28,39 +29,36 @@ use Throwable;
  *
  * @package Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch
  */
-final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterface
+class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterface
 {
 
     use DebugMessageTrait;
     use BatchTrait;
+    use RepeaterTrait;
+    use LoggerTrait;
 
     // Properties
-    private const  REPLY_TO          = 'reply-to';
-    private const  TYPE              = 'type';
-    private const  PERSISTENCE       = 'delivery-mode';
-    private const  MISSING_HEADER    = 'Missing "%s" in the message header.';
-    private const  BATCH_END_TYPE    = 'batch_end';
-    private const  BATCH_REPEAT_TYPE = 'batch_repeat';
+    protected const  REPLY_TO          = 'reply-to';
+    protected const  TYPE              = 'type';
+    protected const  PERSISTENCE       = 'delivery-mode';
+    protected const  MISSING_HEADER    = 'Missing "%s" in the message header.';
+    protected const  BATCH_END_TYPE    = 'batch_end';
+    protected const  BATCH_REPEAT_TYPE = 'batch_repeat';
 
     /**
      * @var BatchActionInterface
      */
-    private BatchActionInterface $batchAction;
+    protected BatchActionInterface $batchAction;
 
     /**
      * @var MetricsSenderLoader
      */
-    private MetricsSenderLoader $sender;
-
-    /**
-     * @var LoggerInterface
-     */
-    private LoggerInterface $logger;
+    protected MetricsSenderLoader $sender;
 
     /**
      * @var mixed[]
      */
-    private array $currentMetrics = [];
+    protected array $currentMetrics = [];
 
     /**
      * BatchConsumerCallback constructor.
@@ -73,14 +71,6 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
         $this->batchAction = $batchAction;
         $this->sender      = $sender;
         $this->logger      = new NullLogger();
-    }
-
-    /**
-     * @param LoggerInterface $logger
-     */
-    public function setLogger(LoggerInterface $logger): void
-    {
-        $this->logger = $logger;
     }
 
     /**
@@ -124,15 +114,37 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
             )
             ->then(
                 function (AMQPChannel $channel) use ($message, $headers): PromiseInterface {
-                    switch ($headers[self::TYPE]) {
-                        case 'test':
-                            return $this->testAction($channel, $message, $headers);
-                        case 'batch':
-                            return $this->batchAction($message, $channel);
-                        default:
-                            return new RejectedPromise(
-                                new InvalidArgumentException(sprintf('Unsupported type "%s".', $headers[self::TYPE]))
-                            );
+                    try {
+                        $this->logger->error($headers[self::REPLY_TO]);
+                        $this->logger->error($headers[self::TYPE]);
+                        switch ($headers[self::TYPE]) {
+                            case 'test':
+                                return $this->testAction($channel, $message, $headers);
+                            case 'batch':
+                                return $this->batchAction($message, $channel);
+                            default:
+                                return new RejectedPromise(
+                                    new InvalidArgumentException(
+                                        sprintf('Unsupported type "%s".', $headers[self::TYPE])
+                                    )
+                                );
+                        }
+                    } catch (OnRepeatException $e) {
+                        $h = Message::getHeaders($message);
+                        if (!$this->hasRepeaterHeaders($h)) {
+                            [$interval, $hops] = $this->getRepeaterStuff($e);
+
+                            $h = $this->setHopHeaders($h, $interval, $hops);
+                        }
+
+                        $h = $this->setNextHop($h);
+
+                        $h[self::REPLY_TO] ??= $h[self::REPLY_TO];
+
+                        $message->set(Message::APPLICATION_HEADERS, new AMQPTable($h));
+                        $this->batchCallback($channel, $message, self::BATCH_REPEAT_TYPE)->wait();
+
+                        return $this->createPromise();
                     }
                 }
             )->otherwise(
@@ -148,17 +160,11 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
                         $replyChannel = $connection->getChannel($channelId);
                     }
 
-                    $type = self::BATCH_END_TYPE;
-                    if ($e instanceof OnRepeatException) {
-                        $type = self::BATCH_REPEAT_TYPE;
-                    }
-
                     return $this
                         ->batchErrorCallback(
                             $replyChannel,
                             $message,
-                            new ErrorMessage(2_001, $e->getMessage()),
-                            $type
+                            new ErrorMessage(2_001, $e->getMessage())
                         )
                         ->then(
                             function () use ($e, $headers): PromiseInterface {
@@ -217,7 +223,7 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
     /**
      *
      */
-    private function startMetrics(): void
+    protected function startMetrics(): void
     {
         $this->currentMetrics = CurlMetricUtils::getCurrentMetrics();
     }
@@ -227,7 +233,7 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
      *
      * @return PromiseInterface
      */
-    private function validate(AMQPMessage $message): PromiseInterface
+    protected function validate(AMQPMessage $message): PromiseInterface
     {
         $headers = Message::getHeaders($message);
 
@@ -290,7 +296,7 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
      *
      * @return bool
      */
-    private function isEmpty(?string $value): bool
+    protected function isEmpty(?string $value): bool
     {
         return $value === '' || $value === NULL;
     }
@@ -302,7 +308,7 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
      *
      * @return PromiseInterface
      */
-    private function testAction(AMQPChannel $channel, AMQPMessage $message, array $headers): PromiseInterface
+    protected function testAction(AMQPChannel $channel, AMQPMessage $message, array $headers): PromiseInterface
     {
         try {
             /** @var string $nodeName */
@@ -321,7 +327,7 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
      *
      * @return PromiseInterface
      */
-    private function publishSuccessTestMessage(AMQPChannel $channel, array $headers): PromiseInterface
+    protected function publishSuccessTestMessage(AMQPChannel $channel, array $headers): PromiseInterface
     {
         $headers = array_merge($headers, [PipesHeaders::createKey(PipesHeaders::RESULT_CODE) => 0]);
         $channel->basic_publish(Message::create('', $headers), '', $headers[self::REPLY_TO] ?? '');
@@ -349,7 +355,7 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
      * @return PromiseInterface
      * @internal param Channel $channel
      */
-    private function batchAction(AMQPMessage $message, AMQPChannel $channel): PromiseInterface
+    protected function batchAction(AMQPMessage $message, AMQPChannel $channel): PromiseInterface
     {
         $callback = fn(SuccessMessage $successMessage) => $this->itemCallback($channel, $message, $successMessage);
 
@@ -368,7 +374,7 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
      *
      * @return PromiseInterface
      */
-    private function itemCallback(
+    protected function itemCallback(
         AMQPChannel $channel,
         AMQPMessage $message,
         SuccessMessage $successMessage
@@ -432,16 +438,20 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
     /**
      * @param AMQPChannel $channel
      * @param AMQPMessage $message
+     * @param string      $type
      *
      * @return PromiseInterface
-     * @throws Exception
      */
-    private function batchCallback(AMQPChannel $channel, AMQPMessage $message): PromiseInterface
+    protected function batchCallback(
+        AMQPChannel $channel,
+        AMQPMessage $message,
+        string $type = self::BATCH_END_TYPE
+    ): PromiseInterface
     {
         $promise = $this->createPromise();
         $promise
             ->then(
-                static function () use ($channel, $message): array {
+                static function () use ($channel, $message, $type): array {
                     $headers       = Message::getHeaders($message);
                     $resultMessage = sprintf(
                         'Batch end for node %s.',
@@ -451,7 +461,7 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
                     $headers = array_merge(
                         $headers,
                         [
-                            self::TYPE                                            => self::BATCH_END_TYPE,
+                            self::TYPE                                            => $type,
                             self::PERSISTENCE                                     => 2,
                             PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE) => $resultMessage,
                         ]
@@ -489,7 +499,7 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
      *
      * @return PromiseInterface
      */
-    private function batchErrorCallback(
+    protected function batchErrorCallback(
         AMQPChannel $channel,
         AMQPMessage $message,
         ErrorMessage $errorMessage,
@@ -534,7 +544,7 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
      *
      * @return callable
      */
-    private function alwaysCallback(
+    protected function alwaysCallback(
         AMQPMessage $message,
         ?AMQPChannel &$replyChannel,
         Connection $connection,
@@ -570,7 +580,7 @@ final class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAware
      *
      * @throws Exception
      */
-    private function sendMetrics(AMQPMessage $message, array $startMetrics): void
+    protected function sendMetrics(AMQPMessage $message, array $startMetrics): void
     {
         $headers = Message::getHeaders($message);
 

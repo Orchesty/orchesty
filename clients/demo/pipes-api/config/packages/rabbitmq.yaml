@@ -11,4 +11,4 @@ rabbit_mq:
 
     queues:
         pipes.batch_connector:
-        pipes.batch:
+            durable: true
