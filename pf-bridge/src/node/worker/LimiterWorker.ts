@@ -41,11 +41,14 @@ export default class LimiterWorker extends AWorker {
         const can = await this.limiter.canBeProcessed(msg);
 
         if (!can) {
+            logger.debug(`LimitedWorker: cant process`);
             await this.postpone(msg);
             return [];
         }
 
         const all = await this.worker.processData(msg);
+
+        logger.debug(`LimitedWorker: after process`);
         const processed: JobMessage[] = [];
 
         all.forEach((out: JobMessage) => {
@@ -82,6 +85,7 @@ export default class LimiterWorker extends AWorker {
             const faucet: IAmqpFaucetSettings = this.faucetConfig.settings;
             msg.getHeaders().setPFHeader(Headers.LIMIT_RETURN_EXCHANGE, faucet.exchange.name);
             msg.getHeaders().setPFHeader(Headers.LIMIT_RETURN_ROUTING_KEY, faucet.routing_key);
+            msg.getHeaders().setPFHeader(Headers.LIMIT_MESSAGE_FROM_LIMITER, 'true');
 
             await this.limiter.postpone(msg);
         } catch (e) {
