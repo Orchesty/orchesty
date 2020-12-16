@@ -34,6 +34,7 @@ abstract class AAmqpWorker extends AWorker {
 
     public static readonly BATCH_REQUEST_TYPE = "batch";
     public static readonly BATCH_END_TYPE = "batch_end";
+    public static readonly BATCH_REPEAT_TYPE = "batch_repeat";
     public static readonly BATCH_ITEM_TYPE = "batch_item";
 
     protected waiting: Container;
@@ -55,14 +56,14 @@ abstract class AAmqpWorker extends AWorker {
 
         this.waiting = new Container();
         this.resultsQueue = {
-            name: `pipes.${settings.node_label.topology_id}.${settings.node_label.id}_reply`,
+            name: this.getReplyQueueName(),
             options: settings.publish_queue.options || { durable: true, exclusive: false, autoDelete: false },
             prefetch: 1,
         };
 
         const publisherPrepare = async (ch: Channel): Promise<void> => {
             const q = settings.publish_queue;
-            await ch.assertQueue(q.name, q.options || { durable: false, exclusive: false, autoDelete: false });
+            await ch.assertQueue(q.name, q.options || { durable: true, exclusive: false, autoDelete: false });
         };
 
         const resultsConsumerPrepare = async (ch: Channel): Promise<void> => {
@@ -104,6 +105,14 @@ abstract class AAmqpWorker extends AWorker {
      * @param {Message} msg
      */
     public abstract onBatchEnd(corrId: string, msg: AmqpMessage): void;
+
+    /**
+     * Handle the worker's confirmation message informing you about the batch repeater
+     *
+     * @param {string} corrId
+     * @param {Message} msg
+     */
+    public abstract onRepeatBatch(corrId: string, msg: AmqpMessage): void;
 
     /**
      * Accepts message, returns unsatisfied promise, which should be satisfied later
@@ -242,13 +251,7 @@ abstract class AAmqpWorker extends AWorker {
             return false;
         }
 
-        if (msg.getResult().code === ResultCode.SUCCESS ||
-            msg.getResult().code === ResultCode.SPLITTER_BATCH_END
-        ) {
-            return true;
-        }
-
-        return false;
+        return msg.getResult().code === ResultCode.SUCCESS || msg.getResult().code === ResultCode.SPLITTER_BATCH_END;
     }
 
     /**
@@ -275,6 +278,9 @@ abstract class AAmqpWorker extends AWorker {
             case AAmqpWorker.BATCH_END_TYPE:
                 this.onBatchEnd(corrId, msg);
                 break;
+            case AAmqpWorker.BATCH_REPEAT_TYPE:
+                this.onRepeatBatch(corrId, msg);
+                break;
             case AAmqpWorker.TEST_TYPE:
                 this.onBatchEnd(corrId, msg);
                 break;
@@ -300,6 +306,14 @@ abstract class AAmqpWorker extends AWorker {
             code: ResultCode.MESSAGE_ALREADY_BEING_PROCESSED,
             message: `Message[correlation_id=${msg.getCorrelationId()}] is already being processed.`,
         });
+    }
+
+    protected getOriginalQueueName(): string{
+        return `pipes.${this.settings.node_label.topology_id}.${this.settings.node_label.id}`;
+    }
+
+    protected getReplyQueueName(): string{
+        return `pipes.${this.settings.node_label.topology_id}.${this.settings.node_label.id}_reply`;
     }
 
 }

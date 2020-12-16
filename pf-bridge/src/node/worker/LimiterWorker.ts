@@ -31,11 +31,17 @@ export default class LimiterWorker extends AWorker {
      * @inheritdoc
      */
     public async processData(msg: JobMessage): Promise<JobMessage[]> {
+        // add special header with next nods
+        if (this.additionalHeaders !== undefined) {
+            this.additionalHeaders.forEach((value: string, key: string) => {
+                msg.getHeaders().setPFHeader(key, value);
+            });
+        }
+
         const can = await this.limiter.canBeProcessed(msg);
 
         if (!can) {
-            this.postpone(msg);
-
+            await this.postpone(msg);
             return [];
         }
 
@@ -76,13 +82,6 @@ export default class LimiterWorker extends AWorker {
             const faucet: IAmqpFaucetSettings = this.faucetConfig.settings;
             msg.getHeaders().setPFHeader(Headers.LIMIT_RETURN_EXCHANGE, faucet.exchange.name);
             msg.getHeaders().setPFHeader(Headers.LIMIT_RETURN_ROUTING_KEY, faucet.routing_key);
-
-            // add special header with next nods
-            if (this.additionalHeaders !== undefined) {
-                this.additionalHeaders.forEach((value: string, key: string) => {
-                    msg.getHeaders().setPFHeader(key, value);
-                });
-            }
 
             await this.limiter.postpone(msg);
         } catch (e) {

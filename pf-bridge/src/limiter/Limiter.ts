@@ -99,11 +99,7 @@ export default class Limiter implements ILimiter {
             const resp = await this.tcpClient.send(content);
             const result = resp.split(";");
 
-            if (result.length === 3 && result[2] === LIMIT_CHECK_RESPONSE_FREE) {
-                return true;
-            }
-
-            return false;
+           return result.length === 3 && result[2] === LIMIT_CHECK_RESPONSE_FREE;
         } catch (e) {
             logger.error("TcpLimiter can be processed error:", {error: e});
             // We do not know the limiter result allow processing

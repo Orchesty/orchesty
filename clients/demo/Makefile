@@ -32,7 +32,7 @@ init-dev: .env
 	$(DC_DEV) pull
 	rm -rf pipes-api/var/cache/*
 	$(DC_DEV) up -d --force-recreate --remove-orphans
-	$(DE_DEV) php-sdk composer install --no-suggest
+	$(DE_DEV) php-sdk composer install
 	$(DE_DEV) php-sdk rm -rf var/cache/*
 
 destroy-dev:

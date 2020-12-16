@@ -3,6 +3,7 @@ package services
 import (
 	"encoding/json"
 	"fmt"
+	v1 "k8s.io/api/core/v1"
 	"strconv"
 	"strings"
 
@@ -232,10 +233,11 @@ func (ts *TopologyService) getKubernetesContainers(mountName string) ([]model.Co
 		command := strings.Split(getMultiBridgeStartCommand(), " ")
 		return []model.Container{
 			{
-				Name:    ts.Topology.GetMultiNodeName(),
-				Command: []string{command[0]},
-				Args:    command[1:],
-				Image:   getDockerImage(registry, image),
+				Name:            ts.Topology.GetMultiNodeName(),
+				Command:         []string{command[0]},
+				Args:            command[1:],
+				Image:           getDockerImage(registry, image),
+				ImagePullPolicy: string(v1.PullAlways),
 				Resources: model.Resources{
 					Limits:   limits,
 					Requests: requests,
@@ -256,10 +258,11 @@ func (ts *TopologyService) getKubernetesContainers(mountName string) ([]model.Co
 	for i, node := range ts.Nodes {
 		command := strings.Split(getSingleBridgeStartCommand(model.CreateServiceName(node.GetServiceName())), " ")
 		containers[i] = model.Container{
-			Name:    strings.ToLower(node.GetServiceName()),
-			Command: []string{command[0]},
-			Args:    command[1:],
-			Image:   getDockerImage(registry, image),
+			Name:            strings.ToLower(node.GetServiceName()),
+			Command:         []string{command[0]},
+			Args:            command[1:],
+			Image:           getDockerImage(registry, image),
+			ImagePullPolicy: string(v1.PullAlways),
 			Resources: model.Resources{
 				Limits:   limits,
 				Requests: requests,

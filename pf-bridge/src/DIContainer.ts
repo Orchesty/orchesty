@@ -192,11 +192,18 @@ class DIContainer extends Container {
         this.set(
             `${sPrefix}.amqprpc`,
             (settings: IAmqpWorkerSettings, fwd: IPartialForwarder, cps: ICounterPublisherSettings) => {
+
+                const p = new AssertionPublisher(this.get("amqp.connection"),
+                    () => Promise.resolve(),
+                    {durable: persistentQueues},
+                );
+
                 return new AmqpNonBlockingWorker(
                     this.get("amqp.connection"),
                     settings,
                     fwd,
                     this.get("counter.publisher")(cps),
+                    p
                 );
             },
         );
@@ -211,7 +218,7 @@ class DIContainer extends Container {
             (settings: IAmqpWorkerSettings, forwarder: IPartialForwarder, cps: ICounterPublisherSettings) => {
                 return new LimiterWorker(
                     this.get("limiter"),
-                    this.get(`${sPrefix}.amqprpc`)(settings, forwarder),
+                    this.get(`${sPrefix}.amqprpc`)(settings, forwarder, cps),
                     this.nodeConfigurator.getNodeConfig(settings.node_label.id, false).faucet,
                 );
             },
