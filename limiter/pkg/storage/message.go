@@ -83,6 +83,7 @@ func NewMessage(delivery *amqp.Delivery) (*Message, error) {
 		ContentType: delivery.ContentType,
 		Priority:    delivery.Priority,
 		ReplyTo:     delivery.ReplyTo,
+		Type: 		 delivery.Type,
 	}
 
 	return &Message{"", time.Now(), key.(string), lt, lv, exchange.(string), routingKey.(string), innerMsg}, nil

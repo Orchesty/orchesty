@@ -3,6 +3,7 @@ import {Connection, Publisher} from "amqplib-plus";
 import Headers from "../../message/Headers";
 import JobMessage from "../../message/JobMessage";
 import {ILimiterSettings} from "../Limiter";
+import {MessageType} from "../../message/AMessage";
 
 /**
  * This class will be injected to all drains and all counter result messages will be published using it
@@ -28,7 +29,7 @@ class LimiterPublisher extends Publisher {
     }
 
     /**
-     * Sends the counter info message
+     * Sends the limiter info message
      *
      * @param {JobMessage} message
      * @return {Promise<void>}
@@ -37,7 +38,7 @@ class LimiterPublisher extends Publisher {
         const options: Options.Publish = {
             contentType: message.getHeaders().getPFHeader(Headers.CONTENT_TYPE) || "",
             headers: message.getHeaders().getRaw(),
-            type: "job_message",
+            type: MessageType.PROCESS,
             timestamp: Date.now(),
         };
 
