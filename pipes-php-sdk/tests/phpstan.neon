@@ -47,6 +47,8 @@ parameters:
 			- Hanaboso\PipesPhpSdk\Database\Document\Embed\EmbedNode
 			- Hanaboso\PipesPhpSdk\Database\Document\Node
 			- Hanaboso\PipesPhpSdk\Database\Document\Topology
+			- Hanaboso\PipesPhpSdk\Listener\RepeaterListener
 			- Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData
+			- Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback
 			- Hanaboso\PipesPhpSdk\RabbitMq\Impl\BatchConnector\LoadApplicationUsersConnector
 			- Hanaboso\PipesPhpSdk\StatusService\StatusServiceCallback

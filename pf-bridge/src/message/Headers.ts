@@ -76,6 +76,9 @@ class Headers {
     // base64 encoded JSON with node followers
     public static readonly WORKER_FOLLOWERS = "worker-followers";
 
+    // Header for name of return queue from batch workers
+    public static readonly REPLY_TO = "reply-to";
+
     public static readonly HEADERS_WHITELIST = [
         Headers.CONTENT_TYPE,
     ];

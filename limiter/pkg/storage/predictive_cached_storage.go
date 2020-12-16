@@ -1,19 +1,59 @@
 package storage
 
 import (
-	"limiter/pkg/logger"
+	"fmt"
+	"sync"
+	"time"
 
 	"gopkg.in/mgo.v2/bson"
 
-	"fmt"
-	"time"
+	"limiter/pkg/logger"
 )
+
+type cacheHolder struct {
+	Cache sync.Map
+}
+
+func (ch *cacheHolder) get(key string) (cacheItem, bool) {
+	item, ok := ch.Cache.Load(key)
+	if !ok {
+		return cacheItem{}, false
+	}
+
+	value, ok := item.(cacheItem)
+	if !ok {
+		return cacheItem{}, false
+	}
+
+	return value, true
+}
+
+func (ch *cacheHolder) save(key string, value cacheItem) {
+	ch.Cache.Store(key, value)
+}
+
+func (ch *cacheHolder) delete(key string) {
+	ch.Cache.Delete(key)
+}
+
+func (ch *cacheHolder) len() int {
+	var length int
+	ch.Cache.Range(func(_, _ interface{}) bool {
+		length++
+
+		return true
+	})
+
+	return length
+}
 
 // PredictiveCachedStorage is storage that uses cache for easing the DB
 type PredictiveCachedStorage struct {
-	db     Storage
-	cache  map[string]cacheItem
-	logger logger.Logger
+	db       Storage
+	cache    map[string]cacheItem
+	newCache *cacheHolder
+	logger   logger.Logger
+	m        sync.Mutex
 }
 
 type cacheItem struct {
@@ -24,7 +64,8 @@ type cacheItem struct {
 
 // NewPredictiveCachedStorage returns the pointer to new created mongo storage instance
 func NewPredictiveCachedStorage(db Storage, duration time.Duration, logger logger.Logger) *PredictiveCachedStorage {
-	c := PredictiveCachedStorage{db, make(map[string]cacheItem, 100), logger}
+	cache := &cacheHolder{}
+	c := PredictiveCachedStorage{db, make(map[string]cacheItem, 100), cache, logger, sync.Mutex{}}
 	c.runCacheAutoClean(duration)
 
 	return &c
@@ -52,12 +93,12 @@ func (cm *PredictiveCachedStorage) Remove(key string, id bson.ObjectId) (bool, e
 
 // ClearCacheItem remove key from memory cache
 func (cm *PredictiveCachedStorage) ClearCacheItem(key string, val int) bool {
-	item, ok := cm.cache[key]
+	item, ok := cm.newCache.get(key)
 	if !ok {
 		return false
 	}
 	item.count = 0
-	cm.cache[key] = item
+	cm.newCache.save(key, item)
 
 	return true
 }
@@ -65,7 +106,12 @@ func (cm *PredictiveCachedStorage) ClearCacheItem(key string, val int) bool {
 func (cm *PredictiveCachedStorage) canHandleTicker(t <-chan time.Time, key string) {
 	for range t {
 		cm.logger.Info(fmt.Sprintf("Handle tick for key: '%s' at: %v", key, t), nil)
-		i, _ := cm.getCachedItem(key)
+		i, _, err := cm.getCachedItem(key)
+
+		if err != nil {
+			continue
+		}
+
 		i.count = i.count - i.max
 
 		if i.count > 0 {
@@ -77,14 +123,18 @@ func (cm *PredictiveCachedStorage) canHandleTicker(t <-chan time.Time, key strin
 			cm.logger.Info(fmt.Sprintf("Remove ticker for key %s", key), nil)
 			i.ticker.Stop()
 		}
-
-		delete(cm.cache, key)
+		cm.newCache.delete(key)
 	}
 }
 
 // CanHandle decides whether the message can be processed
 func (cm *PredictiveCachedStorage) CanHandle(key string, interval int, value int) (bool, error) {
-	item, isNew := cm.getCachedItem(key)
+	item, isNew, err := cm.getCachedItem(key)
+
+	if err != nil {
+		return false, fmt.Errorf("failed get cachedItem %s => %v", key, err)
+	}
+
 	if isNew {
 		item.max = value
 
@@ -100,7 +150,11 @@ func (cm *PredictiveCachedStorage) CanHandle(key string, interval int, value int
 
 // Count return the amount of messages with given key in storage
 func (cm *PredictiveCachedStorage) Count(key string) (int, error) {
-	i, _ := cm.getCachedItem(key)
+	i, _, err := cm.getCachedItem(key)
+
+	if err != nil {
+		return 0, err
+	}
 
 	return i.count, nil
 }
@@ -116,17 +170,17 @@ func (cm *PredictiveCachedStorage) Exists(key string) (bool, error) {
 }
 
 func (cm *PredictiveCachedStorage) hasCachedItem(key string) bool {
-	_, ok := cm.cache[key]
+	_, ok := cm.newCache.get(key)
 
 	return ok
 }
 
 // getCachedItem returns cachedItem for given key. New is set to true if cachedItem was created
-func (cm *PredictiveCachedStorage) getCachedItem(key string) (cacheItem, bool) {
-	item, ok := cm.cache[key]
+func (cm *PredictiveCachedStorage) getCachedItem(key string) (cacheItem, bool, error) {
+	item, ok := cm.newCache.get(key)
 	if ok {
 		if item.ticker != nil {
-			return item, false
+			return item, false, nil
 		}
 	}
 
@@ -134,18 +188,40 @@ func (cm *PredictiveCachedStorage) getCachedItem(key string) (cacheItem, bool) {
 
 	num, err := cm.db.Count(key)
 	if err != nil {
-		return item, true
+		cm.logger.Error(fmt.Sprintf("ERROR => %v", err), nil)
+		return item, false, err
 	}
 
 	item.count = num
 	cm.saveCachedItem(key, item)
 
-	return item, true
+	return item, true, nil
 }
 
 // saveCachedItem saves the item struct to memory
 func (cm *PredictiveCachedStorage) saveCachedItem(key string, item cacheItem) {
-	cm.cache[key] = item
+	cm.newCache.save(key, item)
+}
+
+func (cm *PredictiveCachedStorage) handler(key, value interface{}) bool {
+	k, ok := key.(string)
+	if !ok {
+		return false
+	}
+
+	item, ok := value.(cacheItem)
+	if !ok {
+		return false
+	}
+
+	if item.ticker != nil {
+		item.ticker.Stop()
+		cm.logger.Info("Cleaning predictive cache - "+k, nil)
+	} else {
+		cm.logger.Warning("Cleaning predictive cache - "+k+" (no ticker)", nil)
+	}
+
+	return true
 }
 
 // runCacheAutoClean starts ticker for cleaning cache
@@ -153,19 +229,12 @@ func (cm *PredictiveCachedStorage) runCacheAutoClean(duration time.Duration) {
 	cleanTick := time.NewTicker(duration)
 	go func() {
 		for range cleanTick.C {
-			cm.logger.Warning(fmt.Sprintf("Cleaning predictive cache %dx items...", len(cm.cache)), nil)
-			for k, item := range cm.cache {
-				if item.ticker != nil {
-					item.ticker.Stop()
-					cm.logger.Info("Cleaning predictive cache - "+k, nil)
-				} else {
-					cm.logger.Warning("Cleaning predictive cache - "+k+" (no ticker)", nil)
-				}
-			}
-
+			cm.logger.Warning(fmt.Sprintf("Cleaning predictive cache %dx items...", cm.newCache.len()), nil)
+			cm.newCache.Cache.Range(cm.handler)
 			cm.logger.Warning("Cleaning predictive cache ended.", nil)
 
-			cm.cache = make(map[string]cacheItem, 100)
+			//TODO: proc to sem tomas dal :D, musim proverit bezpecnost
+			cm.newCache = &cacheHolder{}
 		}
 	}()
 }

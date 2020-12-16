@@ -27,6 +27,8 @@ use Throwable;
  * Class BatchConsumerCallbackTest
  *
  * @package PipesPhpSdkTests\Unit\RabbitMq\Impl\Batch
+ *
+ * @covers  \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback
  */
 final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
 {
@@ -342,7 +344,7 @@ final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
     public function testProcessMessageRepeater(): void
     {
         $batchAction = self::createMock(BatchActionInterface::class);
-        $batchAction->method('batchAction')->willThrowException(new OnRepeatException(new ProcessDto(),'repeated'));
+        $batchAction->method('batchAction')->willThrowException(new OnRepeatException(new ProcessDto(), 'repeated'));
         $channel = self::createMock(AMQPChannel::class);
         $channel->method('queue_declare')->willReturn($this->createPromise());
         $channel->method('basic_publish')->willReturn($this->createPromise());
@@ -368,12 +370,63 @@ final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
         $callback
             ->processMessage($this->createMessage($headers), $connection, 1)
             ->then(
-                NULL,
-                static function (Exception $e): void {
-                    self::assertInstanceOf(OnRepeatException::class, $e);
-                    self::assertSame('repeated', $e->getMessage());
+                static function (): void {
+                    self::assertTrue(TRUE);
+                },
+                static function (Throwable $throwable): void {
+                    self::fail(sprintf('%s%s%s', $throwable->getMessage(), PHP_EOL, $throwable->getTraceAsString()));
                 }
             )->wait();
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::processMessage
+     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::batchCallback
+     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::itemCallback
+     *
+     * @throws Exception
+     */
+    public function testProcessMessageRepeaterLastHop(): void
+    {
+        $batchAction = self::createMock(BatchActionInterface::class);
+        $batchAction->method('batchAction')->willThrowException(new OnRepeatException(new ProcessDto(), 'repeated'));
+        $channel = self::createMock(AMQPChannel::class);
+        $channel->method('queue_declare')->willReturn($this->createPromise());
+        $channel->method('basic_publish')->willReturn($this->createPromise());
+        $client = self::createMock(AMQPSocketConnection::class);
+        $client->method('channel')->willReturn($channel);
+        $influxSender = self::createMock(InfluxDbSender::class);
+        $loader       = new MetricsSenderLoader('influx', $influxSender, NULL);
+
+        $callback   = new BatchConsumerCallback($batchAction, $loader);
+        $connection = self::createMock(Connection::class);
+        $connection->expects(self::any())->method('getChannel')->willReturn($channel);
+        $connection->expects(self::any())->method('getClient')->willReturn($client);
+
+        $headers = [
+            'reply-to'                                             => 'reply',
+            'type'                                                 => 'batch',
+            PipesHeaders::createKey(PipesHeaders::NODE_ID)         => '132',
+            PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID)     => '132',
+            PipesHeaders::createKey(PipesHeaders::CORRELATION_ID)  => '123',
+            PipesHeaders::createKey(PipesHeaders::PROCESS_ID)      => '123',
+            PipesHeaders::createKey(PipesHeaders::PARENT_ID)       => '',
+            PipesHeaders::createKey(PipesHeaders::REPEAT_MAX_HOPS) => '1',
+            PipesHeaders::createKey(PipesHeaders::REPEAT_HOPS)     => '1',
+        ];
+        $callback
+            ->processMessage($this->createMessage($headers), $connection, 1)
+            ->then(
+                static function (): void {
+                    self::assertTrue(TRUE);
+                },
+                static function (Throwable $throwable): void {
+                    self::fail(sprintf('%s%s%s', $throwable->getMessage(), PHP_EOL, $throwable->getTraceAsString()));
+                }
+            )->wait();
+
+        $val = $this->invokeMethod($callback, 'getHeaderValue', [['a' => ['v']], 'a']);
+        self::assertEquals('v', $val);
     }
 
     /**

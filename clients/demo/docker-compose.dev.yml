@@ -265,6 +265,8 @@ services:
             MONGO_DSN: mongodb://mongo/demo?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
             RABBITMQ_HOST: rabbitmq
             PROJECT_SOURCE_PATH: ${PROJECT_SOURCE_PATH}/../topology
+            WORKER_DEFAULT_LIMIT_CPU: 1
+            WORKER_DEFAULT_LIMIT_MEMORY: 200m
         volumes:
             - ./../../topology-generator/:/topology-generator
             - ${DOCKER_SOCKET_PATH}:/var/run/docker.sock
@@ -393,6 +395,8 @@ services:
             STARTING_POINT_DSN: starting-point:8080
             TOPOLOGY_API_DSN: topology-api:8080
             WORKER_DEFAULT_PORT: 8008
+            DOCKER_REGISTRY: hanaboso
+            DOCKER_PF_BRIDGE_IMAGE: pipes-pf-bridge:dev
         working_dir: /var/www/pipes/pf-bundles
         volumes:
             - ../../:/var/www/pipes

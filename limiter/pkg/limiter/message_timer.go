@@ -109,6 +109,7 @@ func (mt *messageTimer) loadExistingTimers() {
 func (mt *messageTimer) startHandleNewTimers() {
 	for m := range mt.timerChan {
 		if _, ok := mt.tickers[m.LimitKey]; !ok {
+			mt.logger.Info(fmt.Sprintf("Add ticker for key %s", m.LimitKey), nil)
 			mt.addTicker(m.LimitKey, m.LimitTime, m.LimitValue)
 		}
 	}
