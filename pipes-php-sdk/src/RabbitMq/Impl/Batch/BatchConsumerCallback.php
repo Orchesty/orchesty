@@ -115,8 +115,6 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
             ->then(
                 function (AMQPChannel $channel) use ($message, $headers): PromiseInterface {
                     try {
-                        $this->logger->error($headers[self::REPLY_TO]);
-                        $this->logger->error($headers[self::TYPE]);
                         switch ($headers[self::TYPE]) {
                             case 'test':
                                 return $this->testAction($channel, $message, $headers);
@@ -130,18 +128,15 @@ class BatchConsumerCallback implements AsyncCallbackInterface, LoggerAwareInterf
                                 );
                         }
                     } catch (OnRepeatException $e) {
-                        $h = Message::getHeaders($message);
+                        $h                   = Message::getHeaders($message);
+                        $h[self::REPLY_TO] ??= $h[self::REPLY_TO];
                         if (!$this->hasRepeaterHeaders($h)) {
                             [$interval, $hops] = $this->getRepeaterStuff($e);
 
                             $h = $this->setHopHeaders($h, $interval, $hops);
                         }
-
-                        $h = $this->setNextHop($h);
-
-                        $h[self::REPLY_TO] ??= $h[self::REPLY_TO];
-
                         $message->set(Message::APPLICATION_HEADERS, new AMQPTable($h));
+                        $message = $this->setNextHop($message);
                         $this->batchCallback($channel, $message, self::BATCH_REPEAT_TYPE)->wait();
 
                         return $this->createPromise();

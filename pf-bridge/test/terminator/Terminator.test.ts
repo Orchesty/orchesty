@@ -23,7 +23,7 @@ describe("Terminator", () => {
             topoApiMock.use(bodyParser.raw({ type: () => true }));
             topoApiMock.get("/remote-terminate", (req) => {
                 assert.deepEqual(req.body, {});
-                resolve();
+                resolve("");
             });
             topoApiMock.listen(7900);
         });
