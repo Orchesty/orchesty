@@ -110,7 +110,8 @@ func TestPredictiveCachedStorage_MongoNonEmptyDb(t *testing.T) {
 	assert.False(t, s.hasCachedItem("already-in-db"))
 
 	can, _ := s.CanHandle("already-in-db", 1, 2)
-	assert.False(t, can)
+	//TODO: add test for new behaviour - not check in mongo here
+	assert.True(t, can)
 	assert.True(t, s.hasCachedItem("already-in-db"))
 
 	// remove does not impact the cache
@@ -120,7 +121,8 @@ func TestPredictiveCachedStorage_MongoNonEmptyDb(t *testing.T) {
 	assert.True(t, s.hasCachedItem("already-in-db"))
 
 	can, _ = s.CanHandle("already-in-db", 1, 2)
-	assert.False(t, can)
+	//TODO: add test for new behaviour - not check in mongo here
+	assert.True(t, can)
 
 	can, _ = s.CanHandle("already-in-db", 1, 2)
 	assert.False(t, can)
@@ -148,7 +150,8 @@ func TestPredictiveCacheStorage_ItemTicker(t *testing.T) {
 	time.Sleep(time.Millisecond * 1050)
 
 	can, _ = s.CanHandle("key-A", 1, 2)
-	assert.True(t, can)
+	//TODO: add test for new behaviour - not check in mongo here
+	assert.False(t, can)
 
 	can, _ = s.CanHandle("key-A", 1, 2)
 	assert.False(t, can) // this one is over limit
@@ -190,5 +193,6 @@ func TestPredictiveCachedStorage_AutoClean(t *testing.T) {
 
 	// This key is found in db and even though the cache item does not exist CanHandle() should return false
 	can, _ = s.CanHandle("already-in-db", 10, 2)
-	assert.False(t, can)
+	//TODO: add test for new behaviour - not check in mongo here
+	assert.True(t, can)
 }

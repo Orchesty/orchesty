@@ -2,10 +2,11 @@ package storage
 
 import (
 	"fmt"
-	"github.com/streadway/amqp"
-	"gopkg.in/mgo.v2/bson"
 	"strconv"
 	"time"
+
+	"github.com/streadway/amqp"
+	"gopkg.in/mgo.v2/bson"
 )
 
 // LimitKeyHeader header defines the key by which the requests are limited
@@ -83,7 +84,7 @@ func NewMessage(delivery *amqp.Delivery) (*Message, error) {
 		ContentType: delivery.ContentType,
 		Priority:    delivery.Priority,
 		ReplyTo:     delivery.ReplyTo,
-		Type: 		 delivery.Type,
+		Type:        delivery.Type,
 	}
 
 	return &Message{"", time.Now(), key.(string), lt, lv, exchange.(string), routingKey.(string), innerMsg}, nil

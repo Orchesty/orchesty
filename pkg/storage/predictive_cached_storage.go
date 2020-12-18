@@ -105,15 +105,20 @@ func (cm *PredictiveCachedStorage) ClearCacheItem(key string, val int) bool {
 
 func (cm *PredictiveCachedStorage) canHandleTicker(t <-chan time.Time, key string) {
 	for range t {
-		cm.logger.Info(fmt.Sprintf("Handle tick for key: '%s' at: %v", key, t), nil)
+		_= <-t
 		i, _, err := cm.getCachedItem(key)
 
 		if err != nil {
 			continue
 		}
 
-		i.count = i.count - i.max
+		i.count, err = cm.db.Count(key)
+		if err != nil {
+			cm.logger.Error(fmt.Sprintf("ERROR => %v", err), nil)
+			continue
+		}
 
+		i.count = i.count - i.max
 		if i.count > 0 {
 			cm.saveCachedItem(key, i)
 			continue
@@ -135,11 +140,15 @@ func (cm *PredictiveCachedStorage) CanHandle(key string, interval int, value int
 		return false, fmt.Errorf("failed get cachedItem %s => %v", key, err)
 	}
 
-	if isNew {
+	if isNew || item.ticker == nil {
 		item.max = value
 
 		item.ticker = time.NewTicker(time.Second * time.Duration(interval))
 		go cm.canHandleTicker(item.ticker.C, key)
+	}
+
+	if item.ticker == nil {
+		return false, nil
 	}
 
 	item.count++
@@ -150,13 +159,19 @@ func (cm *PredictiveCachedStorage) CanHandle(key string, interval int, value int
 
 // Count return the amount of messages with given key in storage
 func (cm *PredictiveCachedStorage) Count(key string) (int, error) {
-	i, _, err := cm.getCachedItem(key)
+	_, _, err := cm.getCachedItem(key)
 
 	if err != nil {
 		return 0, err
 	}
 
-	return i.count, nil
+	currentCount, err := cm.db.Count(key)
+	if err != nil {
+		cm.logger.Error(fmt.Sprintf("ERROR => %v", err), nil)
+		return 0, err
+	}
+
+	return currentCount, nil
 }
 
 // Exists returns whether the key exists or not in storage
@@ -179,23 +194,10 @@ func (cm *PredictiveCachedStorage) hasCachedItem(key string) bool {
 func (cm *PredictiveCachedStorage) getCachedItem(key string) (cacheItem, bool, error) {
 	item, ok := cm.newCache.get(key)
 	if ok {
-		if item.ticker != nil {
-			return item, false, nil
-		}
+		return item, false, nil
 	}
 
-	item = cacheItem{}
-
-	num, err := cm.db.Count(key)
-	if err != nil {
-		cm.logger.Error(fmt.Sprintf("ERROR => %v", err), nil)
-		return item, false, err
-	}
-
-	item.count = num
-	cm.saveCachedItem(key, item)
-
-	return item, true, nil
+	return cacheItem{}, true, nil
 }
 
 // saveCachedItem saves the item struct to memory
