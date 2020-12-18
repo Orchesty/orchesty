@@ -18,9 +18,12 @@ export default class TcpClient {
 
         return new Promise((resolve, reject) => {
             const client = new net.Socket();
+            client.setKeepAlive();
+            client.setNoDelay();
 
             const timeout = setTimeout(() => {
                 logger.error("TcpClient: timeout reached")
+                client.destroy();
                 reject();
             }, 30000);
 
@@ -38,16 +41,19 @@ export default class TcpClient {
 
             client.on("end", () => {
                 clearInterval(timeout);
+                client.destroy();
                 logger.info("TcpClient: end event - rejected")
             });
 
             client.on("close", () => {
                 clearInterval(timeout);
+                client.destroy();
                 logger.info("TcpClient: close event")
             });
 
             client.on("error", (e: Error) => {
                 clearInterval(timeout);
+                client.destroy();
                 logger.error(`TcpClient: error event. Message: "${e.message}"`)
                 reject(e);
             });
