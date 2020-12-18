@@ -198,6 +198,14 @@ func (cm *PredictiveCachedStorage) getCachedItem(key string) (cacheItem, bool, e
 		return item, false, nil
 	}
 
+	item = cacheItem{}
+
+	num, err := cm.db.Count(key)
+	if err != nil {
+		cm.logger.Error(fmt.Sprintf("ERROR => %v", err), nil)
+		return item, false, err
+	}
+
 	return cacheItem{}, true, nil
 }
 
