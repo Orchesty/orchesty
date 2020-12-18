@@ -142,7 +142,6 @@ final class ShoptetGetEshopInfoTest extends DatabaseTestCaseAbstract
             ]
         );
         $this->pfd($applicationInstall);
-        $this->dm->refresh($applicationInstall);
 
         return $applicationInstall;
     }

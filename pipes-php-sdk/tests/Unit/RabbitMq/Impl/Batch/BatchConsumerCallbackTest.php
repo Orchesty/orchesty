@@ -430,20 +430,6 @@ final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::publishErrorTestMessage
-     */
-    public function testPublishErrorTestMessage(): void
-    {
-        $channel = self::createMock(AMQPChannel::class);
-        $channel->method('basic_publish');
-
-        $callback = self::$container->get('hbpf.custom_nodes.batch_callback');
-        $callback->publishErrorTestMessage($channel, new AMQPMessage(), new Exception());
-
-        self::assertFake();
-    }
-
-    /**
      * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::testAction
      *
      * @throws Exception
@@ -462,7 +448,7 @@ final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
         $this->invokeMethod(
             $batchCallback,
             'testAction',
-            [$channel, new AMQPMessage(), [PipesHeaders::createKey(PipesHeaders::NODE_NAME) => 'name']]
+            [$channel, Message::create('', [PipesHeaders::createKey(PipesHeaders::NODE_NAME) => 'name'])]
         );
         self::assertFake();
     }

@@ -114,7 +114,6 @@ final class ShoptetGetApiAccessTokenConnectorTest extends DatabaseTestCaseAbstra
             ]
         );
         $this->pfd($applicationInstall);
-        $this->dm->refresh($applicationInstall);
 
         return $applicationInstall;
     }

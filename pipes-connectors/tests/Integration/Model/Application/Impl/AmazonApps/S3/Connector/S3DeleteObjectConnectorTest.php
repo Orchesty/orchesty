@@ -138,8 +138,7 @@ final class S3DeleteObjectConnectorTest extends DatabaseTestCaseAbstract
                 ]
             );
 
-        $this->dm->persist($application);
-        $this->dm->flush();
+        $this->pfd($application);
     }
 
 }

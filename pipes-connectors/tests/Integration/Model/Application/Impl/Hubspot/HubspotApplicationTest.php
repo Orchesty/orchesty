@@ -93,7 +93,6 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
             self::CLIENT_ID
         );
         $this->pfd($applicationInstall);
-        $this->dm->refresh($applicationInstall);
         self::assertEquals(TRUE, $this->application->isAuthorized($applicationInstall));
         $this->application->authorize($applicationInstall);
     }
@@ -106,7 +105,6 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
         $applicationInstall = new ApplicationInstall();
         $this->pfd($applicationInstall);
-        $this->dm->refresh($applicationInstall);
         self::assertEquals(FALSE, $this->application->isAuthorized($applicationInstall));
     }
 

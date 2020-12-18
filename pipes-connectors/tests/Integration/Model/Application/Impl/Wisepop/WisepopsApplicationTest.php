@@ -194,7 +194,6 @@ final class WisepopsApplicationTest extends DatabaseTestCaseAbstract
             ->setKey('wisepops')
             ->setSettings([ApplicationAbstract::FORM => ['api_key' => '123']]);
         $this->pfd($applicationInstall);
-        $this->dm->refresh($applicationInstall);
 
         return $applicationInstall;
     }

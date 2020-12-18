@@ -136,8 +136,7 @@ final class RedshiftExecuteQueryConnectorTest extends DatabaseTestCaseAbstract
                 ]
             );
 
-        $this->dm->persist($application);
-        $this->dm->flush();
+        $this->pfd($application);
     }
 
     /**

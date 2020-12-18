@@ -111,7 +111,6 @@ final class ZendeskApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
         $applicationInstall = DataProvider::getOauth2AppInstall($this->application->getKey());
         $this->pfd($applicationInstall);
-        $this->dm->refresh($applicationInstall);
 
         $dto = $this->application->getRequestDto(
             $applicationInstall,

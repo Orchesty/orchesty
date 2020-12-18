@@ -119,7 +119,6 @@ final class QuickbooksApplicationTest extends DatabaseTestCaseAbstract
             [BasicApplicationAbstract::FORM => [QuickbooksApplication::APP_ID => self::SHOP_ID]]
         );
         $this->pfd($applicationInstall);
-        $this->dm->refresh($applicationInstall);
 
         $dto = $this->application->getRequestDto(
             $applicationInstall,
