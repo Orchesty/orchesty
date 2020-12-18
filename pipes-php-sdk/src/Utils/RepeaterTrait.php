@@ -11,6 +11,9 @@ use Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\System\PipesHeaders;
 use JsonException;
+use PhpAmqpLib\Message\AMQPMessage;
+use PhpAmqpLib\Wire\AMQPTable;
+use RabbitMqBundle\Utils\Message;
 
 /**
  * Trait RepeaterTrait
@@ -40,7 +43,7 @@ trait RepeaterTrait
         $dto
             ->addHeader($repeatInterval, (string) $interval)
             ->addHeader($repeatMaxHops, (string) $hops)
-            ->addHeader($repeatCode, '1001')
+            ->addHeader($repeatCode, (string) ProcessDto::REPEAT)
             ->addHeader($repeatHops, '0');
     }
 
@@ -61,10 +64,11 @@ trait RepeaterTrait
 
         if ($currentHop < $maxHop) {
             $dto
-                ->addHeader($repeatCode, '1001')
+                ->addHeader($repeatCode, (string) ProcessDto::REPEAT)
                 ->addHeader($repeatHops, (string) ++$currentHop);
         } else {
             $dto->setStopProcess(ProcessDto::STOP_AND_FAILED);
+            $this->lastRepeatCallbackDto($dto);
         }
     }
 
@@ -84,19 +88,20 @@ trait RepeaterTrait
 
         $headers[$repeatInterval] = (string) $interval;
         $headers[$repeatMaxHops]  = (string) $hops;
-        $headers[$repeatCode]     = '1001';
+        $headers[$repeatCode]     = (string) ProcessDto::REPEAT;
         $headers[$repeatHops]     = '0';
 
         return $headers;
     }
 
     /**
-     * @param mixed[] $headers
+     * @param AMQPMessage $message
      *
-     * @return mixed[]
+     * @return AMQPMessage
      */
-    protected function setNextHop(array $headers): array
+    protected function setNextHop(AMQPMessage $message): AMQPMessage
     {
+        $headers       = Message::getHeaders($message);
         $repeatMaxHops = PipesHeaders::createKey(PipesHeaders::REPEAT_MAX_HOPS);
         $repeatHops    = PipesHeaders::createKey(PipesHeaders::REPEAT_HOPS);
         $repeatCode    = PipesHeaders::createKey(PipesHeaders::RESULT_CODE);
@@ -105,13 +110,16 @@ trait RepeaterTrait
         $maxHop     = (int) $this->getHeaderValue($headers, $repeatMaxHops);
 
         if ($currentHop < $maxHop) {
-            $headers[$repeatCode] = '1001';
+            $headers[$repeatCode] = (string) ProcessDto::REPEAT;
             $headers[$repeatHops] = (string) ($currentHop + 1);
+            $message->set(Message::APPLICATION_HEADERS, new AMQPTable($headers));
         } else {
             $headers[PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE)] = (string) ProcessDto::STOP_AND_FAILED;
+            $message->set(Message::APPLICATION_HEADERS, new AMQPTable($headers));
+            $this->lastRepeatCallbackAmqp($message);
         }
 
-        return $headers;
+        return $message;
     }
 
     /**
@@ -176,6 +184,22 @@ trait RepeaterTrait
         }
 
         return $value == FALSE ? '' : (string) $value;
+    }
+
+    /**
+     * @param ProcessDto $dto
+     */
+    protected function lastRepeatCallbackDto(ProcessDto $dto): void
+    {
+        $dto;
+    }
+
+    /**
+     * @param AMQPMessage $message
+     */
+    protected function lastRepeatCallbackAmqp(AMQPMessage $message): void
+    {
+        $message;
     }
 
 }
