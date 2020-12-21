@@ -2,9 +2,10 @@ package logger
 
 import (
 	"encoding/json"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 type mockSender struct {
@@ -36,7 +37,7 @@ func TestLogger_Log(t *testing.T) {
 	l := NewLogger()
 	l.AddHandler(NewLogStashHandler(&mockSender{t: t}))
 
-	l.Log("info", "my-message", Context{"notification_type": "test"})
+	l.Log(InfoLevel, "my-message", Context{"notification_type": "test"})
 }
 
 type mockSenderMetrics struct {

@@ -3,6 +3,10 @@ Logger
 
 Using
 ------
+setting severity for logger [trace|debug|info|warning|error|fatal] 
+LOG_LEVEL=info
+
+
 ```go
 package main
 
