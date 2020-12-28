@@ -70,6 +70,15 @@ trait RepeaterTrait
             $dto->setStopProcess(ProcessDto::STOP_AND_FAILED);
             $this->lastRepeatCallbackDto($dto);
         }
+
+        $this->logger->debug(
+            'Repeater reached.',
+            [
+                'currentHop' => $currentHop,
+                'interval'   => $dto->getHeader(PipesHeaders::createKey(PipesHeaders::REPEAT_INTERVAL)),
+                'maxHops'    => $dto->getHeader(PipesHeaders::createKey(PipesHeaders::REPEAT_MAX_HOPS)),
+            ]
+        );
     }
 
     /**
