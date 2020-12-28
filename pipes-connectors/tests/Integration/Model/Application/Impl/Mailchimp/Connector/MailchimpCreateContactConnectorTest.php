@@ -68,7 +68,6 @@ final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
         );
 
         $this->pfd($applicationInstall);
-        $this->dm->refresh($applicationInstall);
 
         $dto      = DataProvider::getProcessDto(
             $app->getKey(),
@@ -110,7 +109,6 @@ final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
         );
 
         $this->pfd($applicationInstall);
-        $this->dm->refresh($applicationInstall);
         self::expectException(ConnectorException::class);
         $mailchimpCreateContactConnector->processEvent(
             DataProvider::getProcessDto(

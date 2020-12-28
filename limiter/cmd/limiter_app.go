@@ -24,7 +24,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	prepareLogger()
+	prepareLogger(env.GetEnv("LOG_LEVEL", "info"))
 	store := prepareStorage()
 	guard := prepareGuard(store)
 	consumer, publisher, err := prepareRabbit()
@@ -86,7 +86,14 @@ func prepareRabbit() (rabbitmq.Consumer, rabbitmq.Publisher, error) {
 	return consumer, publisher, nil
 }
 
-func prepareLogger() {
+func prepareLogger(severityLevel string) {
+	level, err := logger.ParseLevel(severityLevel)
+	if err != nil {
+		fmt.Printf("failed parse severity level %s => %s", severityLevel, err.Error())
+		return
+	}
+
+	logger.GetLogger().SetLevel(level)
 	logger.GetLogger().AddHandler(logger.NewLogStashHandler(logger.NewStdOutSender()))
 	logger.GetLogger().AddHandler(
 		logger.NewLogStashHandler(

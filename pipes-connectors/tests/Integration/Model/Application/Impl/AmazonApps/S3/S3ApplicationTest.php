@@ -116,10 +116,7 @@ final class S3ApplicationTest extends DatabaseTestCaseAbstract
             ]
         );
 
-        $this->dm->persist($application);
-        $this->dm->flush();
-        $this->dm->refresh($application);
-
+        $this->pfd($application);
         self::assertTrue($this->application->isAuthorized($application));
     }
 
@@ -131,11 +128,7 @@ final class S3ApplicationTest extends DatabaseTestCaseAbstract
     public function testIsNotAuthorized(): void
     {
         $application = new ApplicationInstall();
-
-        $this->dm->persist($application);
-        $this->dm->flush();
-        $this->dm->refresh($application);
-
+        $this->pfd($application);
         self::assertFalse($this->application->isAuthorized($application));
     }
 

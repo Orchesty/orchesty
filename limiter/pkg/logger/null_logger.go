@@ -8,7 +8,15 @@ import (
 type nullLogger struct {
 }
 
-func (l *nullLogger) Log(severity string, msg string, context Context) {
+func (l *nullLogger) SetLevel(severity Level) {
+	// void
+}
+
+func (l *nullLogger) Debug(msg string, context Context) {
+	// void
+}
+
+func (l *nullLogger) Log(severityLevel Level, msg string, context Context) {
 	// void
 }
 

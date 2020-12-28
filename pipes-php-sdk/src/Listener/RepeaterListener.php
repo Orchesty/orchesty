@@ -65,7 +65,6 @@ class RepeaterListener implements EventSubscriberInterface, LoggerAwareInterface
         }
 
         $this->setDtoNextHop($dto);
-
         $dto->addHeader(PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE), $e->getMessage());
 
         $response = new Response($dto->getData(), 200, $dto->getHeaders());
@@ -79,7 +78,7 @@ class RepeaterListener implements EventSubscriberInterface, LoggerAwareInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            KernelEvents::EXCEPTION => 'onRepeatableException',
+            KernelEvents::EXCEPTION => ['onRepeatableException', 2_048],
         ];
     }
 

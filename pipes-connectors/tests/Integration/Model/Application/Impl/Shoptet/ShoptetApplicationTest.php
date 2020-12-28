@@ -305,7 +305,6 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
                 ]
             );
         $this->pfd($applicationInstall);
-        $this->dm->refresh($applicationInstall);
         $dto = $this->application->getWebhookUnsubscribeRequestDto($applicationInstall, '123');
 
         self::assertEquals('/token.a.b.c', $dto->getHeaders()['Shoptet-Access-Token']);
@@ -366,7 +365,6 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
                 ]
             );
         $this->pfd($applicationInstall);
-        $this->dm->refresh($applicationInstall);
         $dto = $this->application->getApiTokenDto($applicationInstall);
 
         self::assertEquals(

@@ -106,7 +106,7 @@ func (cm *PredictiveCachedStorage) ClearCacheItem(key string, val int) bool {
 func (cm *PredictiveCachedStorage) canHandleTicker(t <-chan time.Time, key string) {
 	for range t {
 		tt := <-t
-		cm.logger.Log("debug", fmt.Sprintf("Handle tick for key: '%s' at: %s", key, tt.Format("2006-Jan-2 15:04:05")), nil)
+		cm.logger.Debug(fmt.Sprintf("Handle tick for key: '%s' at: %s", key, tt.Format("2006-Jan-2 15:04:05")), nil)
 		i, _, err := cm.getCachedItem(key)
 
 		if err != nil {
@@ -196,14 +196,6 @@ func (cm *PredictiveCachedStorage) getCachedItem(key string) (cacheItem, bool, e
 	item, ok := cm.newCache.get(key)
 	if ok {
 		return item, false, nil
-	}
-
-	item = cacheItem{}
-
-	num, err := cm.db.Count(key)
-	if err != nil {
-		cm.logger.Error(fmt.Sprintf("ERROR => %v", err), nil)
-		return item, false, err
 	}
 
 	return cacheItem{}, true, nil
