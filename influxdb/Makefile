@@ -1,10 +1,11 @@
-.PHONY: docker-build docker-push
+.PHONY: build
 
-DOCKER_TAG? = dev
-DOCKER_REGISTRY := dkr.hanaboso.net/pipes/pipes
+TAG? = dev
+DOCKER_REGISTRY := dkr.hanaboso.net/pipes/pipes/influxdb
+PUBLIC_REGISTRY := hanaboso/influxdb
 
-docker-build:
-	docker build -t $(DOCKER_REGISTRY)/influxdb:$(DOCKER_TAG) .
-
-docker-push:
-	docker push $(DOCKER_REGISTRY)/influxdb:$(DOCKER_TAG)
+build:
+	docker build -t $(DOCKER_REGISTRY):$(TAG) .
+	docker push $(DOCKER_REGISTRY):$(TAG)
+	docker tag ${DOCKER_REGISTRY}:${TAG} $(PUBLIC_REGISTRY):$(TAG)
+	docker push $(PUBLIC_REGISTRY):$(TAG)
