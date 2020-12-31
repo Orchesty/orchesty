@@ -21,7 +21,7 @@ final class BatchConnectorCallbackTest extends KernelTestCaseAbstract
      */
     public function testGetBatchService(): void
     {
-        $connector = self::$container->get('hbpf.custom_nodes.batch_connector_action_callback');
+        $connector = self::$container->get('hbpf.connectors.batch_connector_action_callback');
         $connector->getBatchService('batch-null');
 
         self::assertFake();

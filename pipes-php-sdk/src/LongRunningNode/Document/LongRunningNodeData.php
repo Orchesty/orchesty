@@ -182,17 +182,17 @@ class LongRunningNodeData
             ->setContentType((string) ($headers[PipesHeaders::CONTENT_TYPE] ?? 'application/json'))
             ->setData(Message::getBody($message))
             ->setHeaders($headers)
-            ->setParentId((string) ($headers[PipesHeaders::createKey(PipesHeaders::PARENT_ID)] ?? ''))
-            ->setCorrelationId((string) ($headers[PipesHeaders::createKey(PipesHeaders::CORRELATION_ID)] ?? ''))
-            ->setTopologyId((string) ($headers[PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID)] ?? ''))
-            ->setTopologyName((string) ($headers[PipesHeaders::createKey(PipesHeaders::TOPOLOGY_NAME)] ?? ''))
-            ->setNodeId((string) ($headers[PipesHeaders::createKey(PipesHeaders::NODE_ID)] ?? ''))
-            ->setNodeName((string) ($headers[PipesHeaders::createKey(PipesHeaders::NODE_NAME)] ?? ''))
-            ->setParentProcess((string) ($headers[PipesHeaders::createKey(self::PARENT_PROCESS_HEADER)] ?? ''))
-            ->setProcessId((string) ($headers[PipesHeaders::createKey(PipesHeaders::PROCESS_ID)] ?? ''))
-            ->setSequenceId((string) ($headers[PipesHeaders::createKey(PipesHeaders::SEQUENCE_ID)] ?? ''))
-            ->setUpdatedBy((string) ($headers[PipesHeaders::createKey(self::UPDATED_BY_HEADER)] ?? ''))
-            ->setAuditLogs(Json::decode((string) ($headers[PipesHeaders::createKey(self::AUDIT_LOGS_HEADER)] ?? '{}')));
+            ->setParentId(PipesHeaders::get(PipesHeaders::PARENT_ID, $headers) ?? '')
+            ->setCorrelationId(PipesHeaders::get(PipesHeaders::CORRELATION_ID, $headers) ?? '')
+            ->setTopologyId(PipesHeaders::get(PipesHeaders::TOPOLOGY_ID, $headers) ?? '')
+            ->setTopologyName(PipesHeaders::get(PipesHeaders::TOPOLOGY_NAME, $headers) ?? '')
+            ->setNodeId(PipesHeaders::get(PipesHeaders::NODE_ID, $headers) ?? '')
+            ->setNodeName(PipesHeaders::get(PipesHeaders::NODE_NAME, $headers) ?? '')
+            ->setParentProcess(PipesHeaders::get(self::PARENT_PROCESS_HEADER, $headers) ?? '')
+            ->setProcessId(PipesHeaders::get(PipesHeaders::PROCESS_ID, $headers) ?? '')
+            ->setSequenceId(PipesHeaders::get(PipesHeaders::SEQUENCE_ID, $headers) ?? '')
+            ->setUpdatedBy(PipesHeaders::get(self::UPDATED_BY_HEADER, $headers) ?? '')
+            ->setAuditLogs(Json::decode(PipesHeaders::get(self::AUDIT_LOGS_HEADER, $headers) ?? '{}'));
     }
 
     /**

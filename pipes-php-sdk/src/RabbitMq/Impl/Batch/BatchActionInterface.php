@@ -2,7 +2,6 @@
 
 namespace Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch;
 
-use GuzzleHttp\Promise\PromiseInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 
 /**
@@ -16,10 +15,8 @@ interface BatchActionInterface
     /**
      * @param AMQPMessage $message
      * @param callable    $itemCallBack
-     *
-     * @return PromiseInterface
      */
-    public function batchAction(AMQPMessage $message, callable $itemCallBack): PromiseInterface;
+    public function batchAction(AMQPMessage $message, callable $itemCallBack): void;
 
     /**
      * @param string $id

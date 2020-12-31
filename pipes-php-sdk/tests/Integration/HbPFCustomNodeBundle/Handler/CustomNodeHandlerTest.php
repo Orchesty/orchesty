@@ -49,7 +49,7 @@ final class CustomNodeHandlerTest extends DatabaseTestCaseAbstract
      */
     public function testGetCustomNodes(): void
     {
-        self::assertEquals(8, count($this->handler->getCustomNodes()));
+        self::assertEquals(7, count($this->handler->getCustomNodes()));
     }
 
     /**

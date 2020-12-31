@@ -88,7 +88,7 @@ services:
     hbpf.custom_node.dummy-exception:
         class: Demo\CustomNode\DummyExceptionConnector
         calls:
-            - ['setLogger', ['@monolog.logger.connector']]
+            - ['setLogger', ['@monolog.logger.commons']]
 
     hbpf.custom_node.filter-bids:
         class: Demo\CustomNode\FilterStockExchange
@@ -100,7 +100,7 @@ services:
         arguments:
             - 'asks'
         calls:
-            - ['setLogger', ['@monolog.logger.connector']]
+            - ['setLogger', ['@monolog.logger.commons']]
 
     hbpf.custom_node.idnes:
         class: Demo\CustomNode\IdnesConnector
@@ -115,7 +115,7 @@ services:
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.rabbit_mq.connection'
-            - '@rabbit_mq.publisher.test_batch'
+            - '@rabbit_mq.publisher.pipes-notifications'
 
     hbpf.rabbit_mq.connection:
         class: RabbitMqBundle\Connection\Connection
