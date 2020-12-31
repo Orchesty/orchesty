@@ -51,7 +51,7 @@ func (p *publisher) Publish(msg amqp.Publishing) {
 		}
 	}
 
-	p.logger.Info(fmt.Sprintf("Rabbit MQ publish message to exchange '%s' with routing key '%s'", p.exchange, p.routingKey), context)
+	p.logger.Debug(fmt.Sprintf("Rabbit MQ publish message to exchange '%s' with routing key '%s'", p.exchange, p.routingKey), context)
 }
 
 func (p *publisher) Stop() {

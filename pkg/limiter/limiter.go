@@ -76,7 +76,7 @@ func (l *limiter) handleAmqpMessage(m amqp.Delivery) error {
 	}()
 
 	context := ctxFromDelivery(m)
-	l.logger.Info("Limiter received message from RabbitMQ", context)
+	l.logger.Debug("Limiter received message from RabbitMQ", context)
 
 	msg, err := storage.NewMessage(&m)
 
@@ -100,7 +100,7 @@ func (l *limiter) handleAmqpMessage(m amqp.Delivery) error {
 		return err
 	}
 
-	l.logger.Info(fmt.Sprintf("Limiter accepted message, key: '%s'", msg.LimitKey), context)
+	l.logger.Debug(fmt.Sprintf("Limiter accepted message, key: '%s'", msg.LimitKey), context)
 	l.timerChan <- msg
 
 	return nil

@@ -172,7 +172,7 @@ func (srv *Server) handleRequest(conn net.Conn) {
 		srv.logger.Error(fmt.Sprintf("TCP server error reading request: %s", err), logger.Context{"error": err})
 		return
 	}
-	srv.logger.Info(fmt.Sprintf("Tcp Server request received: %v", req), nil)
+	srv.logger.Debug(fmt.Sprintf("Tcp Server request received: %v", req), nil)
 	result := ""
 
 	switch req.name {
@@ -189,7 +189,7 @@ func (srv *Server) handleRequest(conn net.Conn) {
 		srv.logger.Error(fmt.Sprintf("failed to write response: %s", err), nil)
 	}
 
-	srv.logger.Info(fmt.Sprintf("Tcp Server response sent: %s", response), nil)
+	srv.logger.Debug(fmt.Sprintf("Tcp Server response sent: %s", response), nil)
 }
 
 // handleHealthCheckRequest just writes the given string to response which means that it is alive

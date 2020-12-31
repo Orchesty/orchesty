@@ -120,7 +120,7 @@ func (l *logger) Metrics(key string, msg string, context Context) {
 		context["guid"] = data[1]
 	}
 
-	l.Info(msg, context)
+	l.Debug(msg, context)
 }
 
 func (l *logger) AddHandler(handler Handler) {

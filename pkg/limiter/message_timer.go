@@ -50,7 +50,7 @@ func (mt *messageTimer) addTicker(key string, duration int, count int) {
 	mt.logger.Info(fmt.Sprintf("Added ticker for key '%s'", key), nil)
 	go func() {
 		for t := range mt.tickers[key].C {
-			mt.logger.Info(fmt.Sprintf("Tick for key: '%s' at: %s", key, t), nil)
+			mt.logger.Debug(fmt.Sprintf("Tick for key: '%s' at: %s", key, t), nil)
 
 			hasNext := mt.release(key, count)
 			if hasNext == false {
