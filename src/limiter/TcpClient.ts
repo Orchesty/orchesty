@@ -18,7 +18,6 @@ export default class TcpClient {
 
         return new Promise((resolve, reject) => {
             const client = new net.Socket();
-            client.setKeepAlive();
             client.setNoDelay();
 
             const timeout = setTimeout(() => {
@@ -28,27 +27,29 @@ export default class TcpClient {
             }, 30000);
 
             client.connect(this.port, this.host, () => {
-                logger.info(`Tcp listener sending: ${content}`);
+                logger.debug(`Tcp listener sending: ${content}`);
                 client.write(Buffer.from(content));
             });
 
             client.on("data", (data: Buffer) => {
                 clearInterval(timeout);
                 client.destroy();
-                logger.info(`Tcp listener received: ${data.toString()}`);
+                logger.debug(`Tcp listener received: ${data.toString()}`);
                 resolve(data.toString());
             });
 
             client.on("end", () => {
                 clearInterval(timeout);
                 client.destroy();
-                logger.info("TcpClient: end event - rejected")
+                reject();
+                logger.debug("TcpClient: end event")
             });
 
             client.on("close", () => {
                 clearInterval(timeout);
                 client.destroy();
-                logger.info("TcpClient: close event")
+                reject();
+                logger.debug("TcpClient: close event")
             });
 
             client.on("error", (e: Error) => {

@@ -14,8 +14,8 @@ if (process.env.NODE_ENV === "test") {
 }
 
 // enable persistent mode until it is not disabled
-export const persistentQueues: boolean = !(process.env.PERSISTENT_QUEUES === "false"); // default true
-export const persistentMessages: boolean = !(process.env.PERSISTENT_MESSAGES === "false"); // default true
+export const persistentQueues: boolean = true;
+export const persistentMessages: boolean = true;
 
 export const amqpConnectionOptions: IConnectionOptions = {
     host: process.env.RABBITMQ_HOST || "rabbitmq",

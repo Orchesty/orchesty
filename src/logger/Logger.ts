@@ -16,7 +16,7 @@ export interface ILogContext {
     sequence_id?: number;
     result_code?: ResultCode;
     result_message?: string;
-    error?: Error;
+    error?: any;
     data?: string;
 }
 
@@ -81,11 +81,17 @@ class Logger implements ILogger {
         }
 
         if (context.error) {
-            if (context.error instanceof Error) {
-                line.stacktrace =  {
-                    message: context.error.message.replace( /\s\s+/g, " "),
-                    trace: context.error.stack,
+            if (context.error instanceof Object) {
+                line.stacktrace = {
+                    message: '',
+                    trace: ''
                 };
+                if (context.error.hasOwnProperty('message')) {
+                    line.stacktrace.message = context.error.message.replace( /\s\s+/g, " ");
+                }
+                if (context.error.hasOwnProperty('stack')) {
+                    line.stacktrace.trace = context.error.stack;
+                }
             } else {
                 line.stacktrace =  {
                     message: `${context.error}`.toString(),
