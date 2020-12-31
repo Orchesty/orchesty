@@ -45,6 +45,7 @@ export class MongoProgressStorage {
         this.enabled = enabled;
         if (enabled) {
             this.client = new MongoClient(dsn, {useNewUrlParser: true, useUnifiedTopology: true}).connect();
+            Promise.resolve(this.createIndexes(true));
             this.collection = collection;
             this.expireAfter = expireAfter;
         }
@@ -52,8 +53,8 @@ export class MongoProgressStorage {
 
     /**
      * @param {CounterMessage} cm
-     * @param end
-     * @param status
+     * @param {number} end
+     * @param {string} status
      */
     public upsertProgress(cm: CounterMessage, end?: number, status?: string): Promise<string> {
         const duration = moment(end ?? Date.now()).diff(moment(cm.getCreatedTime()), "millisecond");
@@ -92,42 +93,67 @@ export class MongoProgressStorage {
 
         return new Promise((resolve, reject) => {
 
-            this.client.then(
+            this.createIndexes(false).then(
+                (client) => {
+                    const collection = client.db().collection(this.collection);
+                    collection.updateOne(
+                        filter,
+                        {$set: document, $push: {nodes: node}},
+                        {upsert: true},
+                        (error) => {
+                            if (error !== null) {
+                                const m = `Failed to update document. Error: ${error}`;
+                                logger.error(m);
+                                return reject(m);
+                            }
+                        }
+                    )
+
+                    resolve(JSON.stringify(document));
+                }
+            );
+        });
+    }
+
+    /**
+     * @param {boolean} withCreateIndexes
+     */
+    private async createIndexes(withCreateIndexes: boolean): Promise<MongoClient> {
+        return new Promise((resolve, reject) => {
+            return this.client.then(
                 (client) => {
                     if (!client.isConnected()) {
                         client.connect((err: Error) => {
                             if (err !== null) {
-                                return reject(`Failed to connect to MongoDB. Error: ${err}`);
+                                const m = `Failed to connect to MongoDB. Error: ${err}`;
+                                logger.error(m);
+                                return reject(m);
                             }
                         });
                     }
 
-                    const collection = client.db().collection(this.collection);
-
-                    collection.createIndex({created: 1}, {expireAfterSeconds: this.expireAfter}).then(
-                        () => {
-                            collection.updateOne(
-                                filter,
-                                {$set: document, $addToSet: {nodes: node}},
-                                {upsert: true},
-                                (error) => {
-                                    if (error !== null) {
-                                        return reject(`Failed to update document. Error: ${error}`);
-                                    }
-                                }
-                            )
-                        },
-                        (err) => {
-                            return reject(`Failed to create ensure index in MongoDB. Error: ${err}`);
-                        }
-                    );
-
-                    resolve(JSON.stringify(document));
-                },
-                (err) => {
-                    if (err !== null) {
-                        return reject(`Failed to connect to MongoDB. Error: ${err}`);
+                    if (withCreateIndexes) {
+                        const collection = client.db().collection(this.collection);
+                        collection.createIndexes(
+                            [
+                                {key: {created: 1}, expireAfterSeconds: this.expireAfter},
+                                {key: {correlationId: 1}},
+                                {key: {topologyId: 1}},
+                                {key: {correlationId: 1, topologyId: 1}}
+                            ]
+                        ).then(
+                            () => {
+                                logger.info("Indexes created successfully.");
+                            },
+                            (err) => {
+                                const m = `Failed to create ensure index in MongoDB. Error: ${err}`;
+                                logger.error(m);
+                                return reject(m);
+                            }
+                        )
                     }
+
+                    resolve(client);
                 }
             )
         });
