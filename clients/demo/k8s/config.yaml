@@ -1,9 +1,0 @@
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: pipes-config
-data:
-  backend_url: http://10.107.11.67:30349
-  smtp_user: dev.email.hb@gmail.com
-  smtp_password: jVME2RkX9xyYhj9v

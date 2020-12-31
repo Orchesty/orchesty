@@ -89,7 +89,7 @@ export default class TcpLimiter implements ILimiter {
             const client = new net.Socket();
 
             client.connect(this.settings.port, this.settings.host, () => {
-                logger.info(`Tcp listener sending: ${content}`);
+                logger.debug(`Tcp listener sending: ${content}`);
                 client.write(content);
             });
 

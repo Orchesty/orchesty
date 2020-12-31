@@ -2,14 +2,14 @@
 
 namespace Hanaboso\PipesPhpSdk\Connector\Model\BatchConnector;
 
-use RabbitMqBundle\Consumer\AsyncConsumer;
+use RabbitMqBundle\Consumer\Consumer;
 
 /**
  * Class BatchConnectorConsumer
  *
  * @package Hanaboso\PipesPhpSdk\Connector\Model\BatchConnector
  */
-final class BatchConnectorConsumer extends AsyncConsumer
+final class BatchConnectorConsumer extends Consumer
 {
 
 }

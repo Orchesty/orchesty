@@ -6,7 +6,7 @@ use Exception;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchActionAbstract;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchInterface;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchTrait;
-use Monolog\Logger;
+use InvalidArgumentException;
 use PhpAmqpLib\Message\AMQPMessage;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 use RabbitMqBundle\Utils\Message;
@@ -38,8 +38,6 @@ final class BatchActionAbstractTest extends KernelTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchActionAbstract
-     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchActionAbstract::setLogger
-     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchActionAbstract::validateHeaders
      * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchActionAbstract::isEmpty
      * @throws Exception
      */
@@ -47,23 +45,13 @@ final class BatchActionAbstractTest extends KernelTestCaseAbstract
     {
         /** @var BatchActionAbstract $batchAction */
         $batchAction = $this->getMockForAbstractClass(BatchActionAbstract::class);
-        $batchAction->setLogger(new Logger('logger'));
-        $batchAction
-            ->batchAction($this->createMessage(), $this->callback)
-            ->then(
-                NULL,
-                static function (Exception $e): void {
-                    self::assertSame('Missing "node-name" in the message header.', $e->getMessage());
-                }
-            )->wait();
-
-        self::assertFake();
+        self::expectException(InvalidArgumentException::class);
+        self::expectExceptionMessage('Missing "node-name" in the message header.');
+        $batchAction->batchAction($this->createMessage(), $this->callback);
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchActionAbstract::validateHeaders
      * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchActionAbstract::batchAction
-     * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchActionAbstract::createProcessDto
      * @throws Exception
      */
     public function testBatchAction(): void
@@ -73,17 +61,7 @@ final class BatchActionAbstractTest extends KernelTestCaseAbstract
 
         $batchAction = $this->getMockForAbstractClass(BatchActionAbstract::class);
         $batchAction->method('getBatchService')->willReturn($node);
-        $batchAction->setLogger(new Logger('logger'));
-        $batchAction
-            ->batchAction($this->createMessage(['pf-node-name' => 'abc']), $this->callback)
-            ->then(
-                static function (): void {
-                    self::assertTrue(TRUE);
-                },
-                static function ($throwable): void {
-                    self::fail(sprintf('%s%s%s', $throwable->getMessage(), PHP_EOL, $throwable->getTraceAsString()));
-                }
-            )->wait();
+        $batchAction->batchAction($this->createMessage(['pf-node-name' => 'abc']), $this->callback);
 
         self::assertFake();
     }

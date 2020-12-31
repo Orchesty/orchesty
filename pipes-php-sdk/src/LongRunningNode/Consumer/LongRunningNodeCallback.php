@@ -57,7 +57,7 @@ final class LongRunningNodeCallback implements CallbackInterface
         try {
             $this->manager->saveDocument(
                 $this->loader
-                    ->getLongRunningNode($headers[PipesHeaders::createKey(PipesHeaders::NODE_NAME)] ?? '')
+                    ->getLongRunningNode(PipesHeaders::get(PipesHeaders::NODE_NAME, $headers) ?? '')
                     ->beforeAction($message)
             );
 

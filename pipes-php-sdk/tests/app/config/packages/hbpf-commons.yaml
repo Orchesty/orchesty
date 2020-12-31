@@ -119,11 +119,6 @@ services:
     hbpf.transport.curl_client_factory:
         class: Hanaboso\CommonsBundle\Transport\Curl\CurlClientFactory
 
-    hbpf.transport.udp_sender:
-        class: Hanaboso\CommonsBundle\Transport\Udp\UDPSender
-        calls:
-    #            - ['setLogger', ['@monolog.logger.commons']]
-
     hbpf.transport.curl_manager:
         class: Hanaboso\CommonsBundle\Transport\Curl\CurlManager
         arguments:

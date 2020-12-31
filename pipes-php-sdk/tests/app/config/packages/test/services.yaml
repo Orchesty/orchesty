@@ -21,9 +21,6 @@ services:
     hbpf.connector.batch-null:
         class: PipesPhpSdkTests\Unit\Connector\Model\BatchConnector\NullBatchConnector
 
-    hbpf.custom_node.batch-null:
-        class: PipesPhpSdkTests\Integration\CustomNode\Model\Batch\NullBatchNode
-
     hbpf.long_running.null:
         class: PipesPhpSdkTests\Unit\HbPFLongRunningNodeBundle\Loader\TestLongRunningNode
 
