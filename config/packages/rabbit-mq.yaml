@@ -1,5 +1,5 @@
 rabbit_mq:
-    logger: 'monolog.logger.rabbit-mq'
+    logger: 'monolog.logger.commons'
 
     connections:
         default:

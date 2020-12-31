@@ -1,19 +1,9 @@
 monolog:
     use_microseconds: false
-    channels: [commons, ftp, rabbit-mq]
+    channels: [commons]
     handlers:
         main:
-            type: rotating_file
-            path: "%kernel.logs_dir%/%kernel.environment%.log"
-            level: warning
-            max_files: 2
-        commons:
-            type: rotating_file
+            type: stream
             path: "%kernel.logs_dir%/%kernel.environment%.log"
             level: debug
-            channels: [commons]
-        ftp:
-            type: rotating_file
-            path: "%kernel.logs_dir%/%kernel.environment%.log"
-            level: debug
-            channels: [ftp]
+            channels: [ "!event" ]
