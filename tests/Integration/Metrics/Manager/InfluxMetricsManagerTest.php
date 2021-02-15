@@ -314,9 +314,13 @@ final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
      */
     private function getClient(): MetricsClient
     {
+        /** @var string $host */
         $host = self::$container->getParameter('influx.host');
+        /** @var int $port */
         $port = self::$container->getParameter('influx.api_port');
+        /** @var string $user */
         $user = self::$container->getParameter('influx.user');
+        /** @var string $pass */
         $pass = self::$container->getParameter('influx.password');
 
         return new MetricsClient($host, $port, $user, $pass, 'test');
@@ -327,10 +331,15 @@ final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
      */
     private function getManager(): InfluxMetricsManager
     {
-        $nodeTable    = self::$container->getParameter('influx.node_table');
-        $fpmTable     = self::$container->getParameter('influx.monolith_table');
-        $connTable    = self::$container->getParameter('influx.connector_table');
-        $rabbitTable  = self::$container->getParameter('influx.rabbit_table');
+        /** @var string $nodeTable */
+        $nodeTable = self::$container->getParameter('influx.node_table');
+        /** @var string $fpmTable */
+        $fpmTable = self::$container->getParameter('influx.monolith_table');
+        /** @var string $connTable */
+        $connTable = self::$container->getParameter('influx.connector_table');
+        /** @var string $rabbitTable */
+        $rabbitTable = self::$container->getParameter('influx.rabbit_table');
+        /** @var string $counterTable */
         $counterTable = self::$container->getParameter('influx.counter_table');
 
         return new InfluxMetricsManager(
