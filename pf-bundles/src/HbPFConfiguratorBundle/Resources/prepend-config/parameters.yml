@@ -1,5 +1,6 @@
 parameters:
-    installer_dirs: []
+    installer_dirs: "%env(json:INSTALLER_DIRS)%"
+    env(INSTALLER_DIRS): "[]"
 
     checkInfiniteLoop: "%env(bool:CHECK_INFINITY_LOOP)%"
     env(CHECK_INFINITY_LOOP): true
