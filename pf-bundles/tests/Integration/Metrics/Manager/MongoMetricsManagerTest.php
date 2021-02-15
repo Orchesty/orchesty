@@ -616,11 +616,22 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
         $client = $this->getClient();
         $this->setMinimalFakeData($topology, $node);
 
-        $processes = $client->selectCollection('metrics', self::$container->getParameter('mongodb.counter_table'));
-        $monolith  = $client->selectCollection('metrics', self::$container->getParameter('mongodb.monolith_table'));
-        $bridge    = $client->selectCollection('metrics', self::$container->getParameter('mongodb.node_table'));
-        $connector = $client->selectCollection('metrics', self::$container->getParameter('mongodb.connector_table'));
-        $rabbitmq  = $client->selectCollection('metrics', self::$container->getParameter('mongodb.rabbit_table'));
+        /** @var string $counterTable */
+        $counterTable = self::$container->getParameter('mongodb.counter_table');
+        /** @var string $monolithTable */
+        $monolithTable = self::$container->getParameter('mongodb.monolith_table');
+        /** @var string $nodeTable */
+        $nodeTable = self::$container->getParameter('mongodb.node_table');
+        /** @var string $connectorTable */
+        $connectorTable = self::$container->getParameter('mongodb.connector_table');
+        /** @var string $rabbitTable */
+        $rabbitTable = self::$container->getParameter('mongodb.rabbit_table');
+
+        $processes = $client->selectCollection('metrics', $counterTable);
+        $monolith  = $client->selectCollection('metrics', $monolithTable);
+        $bridge    = $client->selectCollection('metrics', $nodeTable);
+        $connector = $client->selectCollection('metrics', $connectorTable);
+        $rabbitmq  = $client->selectCollection('metrics', $rabbitTable);
 
         $doc = [
             'tags'   => [
@@ -829,11 +840,22 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
     {
         $client = $this->getClient();
 
-        $processes = $client->selectCollection('metrics', self::$container->getParameter('mongodb.counter_table'));
-        $monolith  = $client->selectCollection('metrics', self::$container->getParameter('mongodb.monolith_table'));
-        $bridge    = $client->selectCollection('metrics', self::$container->getParameter('mongodb.node_table'));
-        $connector = $client->selectCollection('metrics', self::$container->getParameter('mongodb.connector_table'));
-        $rabbitmq  = $client->selectCollection('metrics', self::$container->getParameter('mongodb.rabbit_table'));
+        /** @var string $counterTable */
+        $counterTable = self::$container->getParameter('mongodb.counter_table');
+        /** @var string $monolithTable */
+        $monolithTable = self::$container->getParameter('mongodb.monolith_table');
+        /** @var string $nodeTable */
+        $nodeTable = self::$container->getParameter('mongodb.node_table');
+        /** @var string $connectorTable */
+        $connectorTable = self::$container->getParameter('mongodb.connector_table');
+        /** @var string $rabbitTable */
+        $rabbitTable = self::$container->getParameter('mongodb.rabbit_table');
+
+        $processes = $client->selectCollection('metrics', $counterTable);
+        $monolith  = $client->selectCollection('metrics', $monolithTable);
+        $bridge    = $client->selectCollection('metrics', $nodeTable);
+        $connector = $client->selectCollection('metrics', $connectorTable);
+        $rabbitmq  = $client->selectCollection('metrics', $rabbitTable);
 
         $doc = [
             'tags'   => [
@@ -917,11 +939,23 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
     private function ensureCollections(): void
     {
         $client = $this->getClient();
-        $client->selectDatabase('metrics')->createCollection(self::$container->getParameter('mongodb.counter_table'));
-        $client->selectDatabase('metrics')->createCollection(self::$container->getParameter('mongodb.monolith_table'));
-        $client->selectDatabase('metrics')->createCollection(self::$container->getParameter('mongodb.node_table'));
-        $client->selectDatabase('metrics')->createCollection(self::$container->getParameter('mongodb.connector_table'));
-        $client->selectDatabase('metrics')->createCollection(self::$container->getParameter('mongodb.rabbit_table'));
+
+        /** @var string $counterTable */
+        $counterTable = self::$container->getParameter('mongodb.counter_table');
+        /** @var string $monolithTable */
+        $monolithTable = self::$container->getParameter('mongodb.monolith_table');
+        /** @var string $nodeTable */
+        $nodeTable = self::$container->getParameter('mongodb.node_table');
+        /** @var string $connectorTable */
+        $connectorTable = self::$container->getParameter('mongodb.connector_table');
+        /** @var string $rabbitTable */
+        $rabbitTable = self::$container->getParameter('mongodb.rabbit_table');
+
+        $client->selectDatabase('metrics')->createCollection($counterTable);
+        $client->selectDatabase('metrics')->createCollection($monolithTable);
+        $client->selectDatabase('metrics')->createCollection($nodeTable);
+        $client->selectDatabase('metrics')->createCollection($connectorTable);
+        $client->selectDatabase('metrics')->createCollection($rabbitTable);
     }
 
 }
