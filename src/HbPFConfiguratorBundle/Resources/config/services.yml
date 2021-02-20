@@ -52,3 +52,4 @@ services:
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.configurator.manager.category'
+            - '%installer_dirs%'
