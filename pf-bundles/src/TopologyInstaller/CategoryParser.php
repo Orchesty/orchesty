@@ -78,12 +78,14 @@ final class CategoryParser
      *
      * @param DocumentManager $dm
      * @param CategoryManager $categoryManager
+     * @param mixed[]         $roots
      */
-    public function __construct(DocumentManager $dm, CategoryManager $categoryManager)
+    public function __construct(DocumentManager $dm, CategoryManager $categoryManager, array $roots = [])
     {
         $this->dm                 = $dm;
         $this->categoryRepository = $this->dm->getRepository(Category::class);
         $this->categoryManager    = $categoryManager;
+        $this->roots              = $roots;
     }
 
     /**
