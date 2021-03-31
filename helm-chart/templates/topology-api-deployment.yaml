@@ -20,7 +20,7 @@ spec:
 {{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 8 }}
     spec:
 {{ include "pipes.imagePullSecrets" . | indent 6 }}
-      serviceAccountName: {{ include "pipes.fullname" (dict "suffix" "topology" "root" .) }}
+      serviceAccountName: {{ include "pipes.fullname" (dict "suffix" $componentName "root" .) }}
       containers:
         - name: topology-api
           image: {{ include "pipes.imageFullname" (dict "image" $componentName "root" .) }}
@@ -50,6 +50,10 @@ spec:
               value: "128Mi"
             - name: WORKER_DEFAULT_REQUEST_CPU
               value: "100m"
+{{- range $name, $def := .Values.global.topologyApi.topologiesExtraEnv }}
+            - name: APP_PASS_{{ $name }}
+              {{- $def | toYaml | nindent 14}}
+{{- end }}
           resources:
             requests:
               memory: 128Mi

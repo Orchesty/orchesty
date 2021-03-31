@@ -50,9 +50,12 @@ global:
   startingPoint:
     serviceAnnotations: {}
 
-  topology:
+  topologyApi:
     manageServiceAccount: true
     manageRBAC: true
+    topologiesExtraEnv: {}
+#     FOO:
+#       value: bar
 
   worker:
     hostPathMounts: []
