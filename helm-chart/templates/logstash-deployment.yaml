@@ -17,6 +17,7 @@ spec:
 {{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 8 }}
     spec:
 {{ include "pipes.imagePullSecrets" . | indent 6 }}
+      serviceAccountName: {{ include "pipes.fullname" (dict "suffix" $componentName "root" .) }}
       containers:
         - name: logstash
           image: {{ include "pipes.imageFullname" (dict "image" $componentName "root" .) }}
@@ -59,6 +60,18 @@ spec:
             limits:
               memory: 1Gi
               cpu: "2"
+{{ if eq .Values.global.monitoring.logStorage "google" }}
+        - name: fluentd
+          image: {{ include "pipes.imageFullname" (dict "image" "logstash-fluentd-google" "root" .) }}
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 100m
+            limits:
+              memory: 1Gi
+              cpu: "1"
+{{ end }}
       volumes:
         - name: config-volume
           configMap:

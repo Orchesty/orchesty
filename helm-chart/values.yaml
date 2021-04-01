@@ -28,19 +28,37 @@ global:
     logstash: pipes-logstash-mongo:master
     kapacitor: kapacitor:master
     telegraf: pipes-telegraf:master
+    logstash-fluentd-google: no-default-image-yet
 
   monitoring:
     useInfluxDB: true
     logStorage: elasticsearch
 
+    # Used unly when logStorage is "google"
+    # You must also add iam policy binding to that account:
+    # gcloud iam service-accounts add-iam-policy-binding \
+    #   --role roles/iam.workloadIdentityUser \
+    #   --member "serviceAccount:PROJECT-ID.svc.id.goog[NAMESPACE/KSA-NAME]" \
+    #   GSA-WITH-LOGS-WRITER-ROLE
+    #
+    # see https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity#authenticating_to
+    #
+    googleServiceAccount: gsa-with-Logs-Writer-role
+
   api:
     serviceAnnotations: {}
+
+  backend:
+    checkInfinityLoop: true
 
   frontend:
     serviceAnnotations: {}
 
   longRunningNode:
     enabled: true
+
+  multiCounter:
+    progressSave: true
 
   phpSdk:
     extraEnv: {}

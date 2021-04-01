@@ -25,14 +25,17 @@ spec:
           image: {{ include "pipes.imageFullname" (dict "image" $componentName "root" .) }}
           imagePullPolicy: Always
           env:
-            - name: METRICS_DSN
             {{- if .Values.global.monitoring.useInfluxDB }}
+            - name: METRICS_DSN
               value: influxdb://kapacitor:9100
             {{- else }}
+            - name: __MONGODB_DSN
               valueFrom:
                 configMapKeyRef:
                   key: mongodb_dsn
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: METRICS_DSN
+              value: "$(__MONGODB_DSN)&connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500"
             {{- end }}
             - name: __RABBITMQ_HOST
               valueFrom:
