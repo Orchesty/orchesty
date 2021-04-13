@@ -1,0 +1,24 @@
+version: '3.5'
+
+services:
+    app:
+        image: hanabosocom/go-base:dev
+        user: ${DEV_UID}:${DEV_GID}
+        environment:
+            APP_DEBUG: 'true'
+            RABBITMQ_DSN: ${RABBITMQ_DSN}
+        volumes:
+            - ./:/app
+            - ${GOPATH}/pkg:/go/pkg
+        ports:
+            - ${DEV_IP}:8080:8080
+            - ${DEV_IP}:6666:6666
+        command: /run.sh -p main.go -c api -l 6666
+        security_opt:
+            - 'seccomp:unconfined'
+
+    rabbitmq:
+        image: rabbitmq:3-management-alpine
+        ports:
+            - ${DEV_IP}:15672:15672
+            - ${DEV_IP}:5672:5672
