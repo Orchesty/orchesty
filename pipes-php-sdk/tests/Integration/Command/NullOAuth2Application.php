@@ -85,7 +85,7 @@ final class NullOAuth2Application extends OAuth2ApplicationAbstract
         ApplicationInstall $applicationInstall,
         string $method,
         ?string $url = NULL,
-        ?string $data = NULL
+        ?string $data = NULL,
     ): RequestDto
     {
         $applicationInstall;

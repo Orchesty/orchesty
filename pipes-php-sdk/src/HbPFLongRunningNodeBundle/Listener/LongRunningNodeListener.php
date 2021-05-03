@@ -19,25 +19,13 @@ final class LongRunningNodeListener implements EventSubscriberInterface
 {
 
     /**
-     * @var DocumentManager
-     */
-    private DocumentManager $dm;
-
-    /**
-     * @var bool
-     */
-    private bool $enabled;
-
-    /**
      * LongRunningNodeListener constructor.
      *
      * @param DocumentManager $dm
      * @param bool            $enabled
      */
-    public function __construct(DocumentManager $dm, bool $enabled)
+    public function __construct(private DocumentManager $dm, private bool $enabled)
     {
-        $this->dm      = $dm;
-        $this->enabled = $enabled;
     }
 
     /**

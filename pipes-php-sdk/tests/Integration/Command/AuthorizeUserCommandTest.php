@@ -76,7 +76,7 @@ final class AuthorizeUserCommandTest extends DatabaseTestCaseAbstract
                         OAuth1ApplicationInterface::CONSUMER_KEY => 'consumer.key',
                         OAuth1ApplicationInterface::TOKEN        => 'secret.key',
                     ],
-                ]
+                ],
             );
         $this->pfd($app);
 
@@ -90,7 +90,7 @@ final class AuthorizeUserCommandTest extends DatabaseTestCaseAbstract
             'authorize/url',
             static function (): void {
             },
-            []
+            [],
         );
 
         $this->expectOutputString('authorize/url?oauth_callback=127.0.0.4&oauth_token=aabbcc');
@@ -109,7 +109,7 @@ final class AuthorizeUserCommandTest extends DatabaseTestCaseAbstract
 
         self::assertStringContainsString(
             'Please make sure that your env is set to --env=oauthconsole.',
-            $commandTester->getDisplay()
+            $commandTester->getDisplay(),
         );
         self::assertEquals(1, $exitCode);
     }
@@ -128,7 +128,7 @@ final class AuthorizeUserCommandTest extends DatabaseTestCaseAbstract
 
         self::assertStringContainsString(
             'Please make sure that input parameters are string.',
-            $commandTester->getDisplay()
+            $commandTester->getDisplay(),
         );
     }
 

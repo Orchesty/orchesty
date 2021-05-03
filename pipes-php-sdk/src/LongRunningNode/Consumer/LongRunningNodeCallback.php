@@ -22,25 +22,13 @@ final class LongRunningNodeCallback implements CallbackInterface
 {
 
     /**
-     * @var LongRunningNodeManager
-     */
-    private LongRunningNodeManager $manager;
-
-    /**
-     * @var LongRunningNodeLoader
-     */
-    private LongRunningNodeLoader $loader;
-
-    /**
      * LongRunningNodeCallback constructor.
      *
      * @param LongRunningNodeManager $manager
      * @param LongRunningNodeLoader  $loader
      */
-    public function __construct(LongRunningNodeManager $manager, LongRunningNodeLoader $loader)
+    public function __construct(private LongRunningNodeManager $manager, private LongRunningNodeLoader $loader)
     {
-        $this->manager = $manager;
-        $this->loader  = $loader;
     }
 
     /**
@@ -58,7 +46,7 @@ final class LongRunningNodeCallback implements CallbackInterface
             $this->manager->saveDocument(
                 $this->loader
                     ->getLongRunningNode(PipesHeaders::get(PipesHeaders::NODE_NAME, $headers) ?? '')
-                    ->beforeAction($message)
+                    ->beforeAction($message),
             );
 
             Message::ack($message, $connection, $channelId);
@@ -67,7 +55,7 @@ final class LongRunningNodeCallback implements CallbackInterface
                 (new ProcessDto())->setData(Message::getBody($message))->setHeaders($headers),
                 $t->getMessage(),
                 $t->getCode(),
-                $t
+                $t,
             );
         }
     }

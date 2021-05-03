@@ -230,10 +230,10 @@ class Node
         try {
             TypeEnum::isValid($type);
             $this->type = $type;
-        } catch (EnumException $exception) {
+        } catch (EnumException) {
             throw new NodeException(
                 sprintf('Invalid node type "%s"', $type),
-                NodeException::INVALID_TYPE
+                NodeException::INVALID_TYPE,
             );
         }
 
@@ -259,10 +259,10 @@ class Node
         try {
             HandlerEnum::isValid($handler);
             $this->handler = $handler;
-        } catch (EnumException $exception) {
+        } catch (EnumException) {
             throw new NodeException(
                 sprintf('Invalid node handler value "%s"', $handler),
-                NodeException::INVALID_HANDLER
+                NodeException::INVALID_HANDLER,
             );
         }
 

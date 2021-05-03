@@ -17,25 +17,13 @@ final class ConnectorHandler
 {
 
     /**
-     * @var ConnectorManager
-     */
-    private ConnectorManager $connManager;
-
-    /**
-     * @var ConnectorLoader
-     */
-    private ConnectorLoader $loader;
-
-    /**
      * ConnectorHandler constructor.
      *
      * @param ConnectorManager $connManager
      * @param ConnectorLoader  $loader
      */
-    function __construct(ConnectorManager $connManager, ConnectorLoader $loader)
+    function __construct(private ConnectorManager $connManager, private ConnectorLoader $loader)
     {
-        $this->connManager = $connManager;
-        $this->loader      = $loader;
     }
 
     /**

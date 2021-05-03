@@ -34,7 +34,7 @@ final class ApplicationInstallRepositoryTest extends DatabaseTestCaseAbstract
 
         self::assertEquals(
             $this->getBasicData(),
-            $appInstallRepository->getApplicationsCount()
+            $appInstallRepository->getApplicationsCount(),
         );
     }
 
@@ -54,15 +54,15 @@ final class ApplicationInstallRepositoryTest extends DatabaseTestCaseAbstract
 
         self::assertEquals(
             $this->getApplicationsUsers('mailchimp'),
-            $appInstallRepository->getApplicationsCountDetails('mailchimp')
+            $appInstallRepository->getApplicationsCountDetails('mailchimp'),
         );
         self::assertEquals(
             $this->getApplicationsUsers('hubspot'),
-            $appInstallRepository->getApplicationsCountDetails('hubspot')
+            $appInstallRepository->getApplicationsCountDetails('hubspot'),
         );
         self::assertEquals(
             $this->getApplicationsUsers('shipstation'),
-            $appInstallRepository->getApplicationsCountDetails('shipstation')
+            $appInstallRepository->getApplicationsCountDetails('shipstation'),
         );
     }
 

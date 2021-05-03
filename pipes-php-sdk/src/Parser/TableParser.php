@@ -5,7 +5,6 @@ namespace Hanaboso\PipesPhpSdk\Parser;
 use Hanaboso\PipesPhpSdk\Parser\Exception\TableParserException;
 use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\String\Strings;
-use JsonException;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -72,12 +71,11 @@ final class TableParser implements TableParserInterface
      * @return string
      * @throws Exception
      * @throws TableParserException
-     * @throws JsonException
      */
     public function parseFromJson(
         string $path,
         string $type = TableParserInterface::XLSX,
-        ?bool $hasHeaders = FALSE
+        ?bool $hasHeaders = FALSE,
     ): string
     {
         $spreadsheet = new Spreadsheet();
@@ -116,23 +114,17 @@ final class TableParser implements TableParserInterface
      */
     public function createWriter(Spreadsheet $spreadsheet, string $type): IWriter
     {
-        switch ($type) {
-            case TableParserInterface::XLSX:
-                return new Xlsx($spreadsheet);
-            case sprintf('%s', TableParserInterface::XLS):
-                return new Xls($spreadsheet);
-            case sprintf('%s', TableParserInterface::ODS):
-                return new Ods($spreadsheet);
-            case sprintf('%s', TableParserInterface::CSV):
-                return new Csv($spreadsheet);
-            case sprintf('%s', TableParserInterface::HTML):
-                return new Html($spreadsheet);
-            default:
-                throw new TableParserException(
-                    sprintf('Unknown writer type: \'%s\'', $type),
-                    TableParserException::UNKNOWN_WRITER_TYPE
-                );
-        }
+        return match ($type) {
+            TableParserInterface::XLSX => new Xlsx($spreadsheet),
+            sprintf('%s', TableParserInterface::XLS) => new Xls($spreadsheet),
+            sprintf('%s', TableParserInterface::ODS) => new Ods($spreadsheet),
+            sprintf('%s', TableParserInterface::CSV) => new Csv($spreadsheet),
+            sprintf('%s', TableParserInterface::HTML) => new Html($spreadsheet),
+            default => throw new TableParserException(
+                sprintf('Unknown writer type: \'%s\'', $type),
+                TableParserException::UNKNOWN_WRITER_TYPE,
+            ),
+        };
     }
 
     /**

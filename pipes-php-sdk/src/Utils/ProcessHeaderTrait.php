@@ -46,7 +46,7 @@ trait ProcessHeaderTrait
      *
      * @return ProcessDto|SuccessMessage
      */
-    protected function setHeader($dto, string $key, string $value)
+    protected function setHeader(ProcessDto|SuccessMessage $dto, string $key, string $value): ProcessDto|SuccessMessage
     {
         return $dto->addHeader(PipesHeaders::createKey($key), $value);
     }

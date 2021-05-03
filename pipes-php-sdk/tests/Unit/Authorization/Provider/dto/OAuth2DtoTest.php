@@ -29,7 +29,7 @@ final class OAuth2DtoTest extends KernelTestCaseAbstract
                         OAuth2ApplicationInterface::CLIENT_ID     => '159',
                         OAuth2ApplicationInterface::CLIENT_SECRET => 'secret',
                     ],
-            ]
+            ],
         );
         $dto                = new OAuth2Dto($applicationInstall, 'auth/url', 'token/url');
         $dto->setRedirectUrl('redirect/url');

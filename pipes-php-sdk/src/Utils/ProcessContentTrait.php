@@ -27,9 +27,13 @@ trait ProcessContentTrait
      *
      * @return mixed
      * @throws ConnectorException
-     * @throws JsonException
      */
-    protected function getContentByKey($dto, string $key, array $contents = [], bool $throw = TRUE)
+    protected function getContentByKey(
+        ProcessDto|SuccessMessage $dto,
+        string $key,
+        array $contents = [],
+        bool $throw = TRUE,
+    ): mixed
     {
         $contents = $contents ?: Json::decode($dto->getData());
         $content  = $this->getByKey($contents, $key);
@@ -49,7 +53,7 @@ trait ProcessContentTrait
      * @throws ConnectorException
      * @throws JsonException
      */
-    protected function checkRequiredContent($dto, array $parameters): array
+    protected function checkRequiredContent(ProcessDto|SuccessMessage $dto, array $parameters): array
     {
         $data = Json::decode($dto->getData());
 
@@ -66,9 +70,9 @@ trait ProcessContentTrait
      *
      * @return mixed
      */
-    private function getByKey(array &$array, string $key)
+    private function getByKey(array &$array, string $key): mixed
     {
-        if (strpos($key, '.') === FALSE) {
+        if (!str_contains($key, '.')) {
             return $array[$key] ?? NULL;
         }
 

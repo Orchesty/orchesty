@@ -34,7 +34,7 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
                 self::assertEquals('node', $nodeId);
 
                 return new ProcessDto();
-            }
+            },
         );
 
         self::$container->set('hbpf.handler.long_running', $handler);
@@ -97,7 +97,7 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
                 'limit' => 10,
                 'total' => 10,
                 'items' => [],
-            ]
+            ],
         );
         self::$container->set('hbpf.handler.long_running', $handler);
 
@@ -133,7 +133,7 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
                 'limit' => 10,
                 'total' => 10,
                 'items' => [],
-            ]
+            ],
         );
         self::$container->set('hbpf.handler.long_running', $handler);
 
@@ -169,7 +169,7 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
                 'limit' => 10,
                 'total' => 10,
                 'items' => [],
-            ]
+            ],
         );
         self::$container->set('hbpf.handler.long_running', $handler);
 
@@ -205,7 +205,7 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
                 'limit' => 10,
                 'total' => 10,
                 'items' => [],
-            ]
+            ],
         );
         self::$container->set('hbpf.handler.long_running', $handler);
 

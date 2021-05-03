@@ -17,18 +17,12 @@ final class CustomNodeHandler
 {
 
     /**
-     * @var CustomNodeLoader
-     */
-    private CustomNodeLoader $loader;
-
-    /**
      * CustomNodeHandler constructor.
      *
      * @param CustomNodeLoader $loader
      */
-    function __construct(CustomNodeLoader $loader)
+    function __construct(private CustomNodeLoader $loader)
     {
-        $this->loader = $loader;
     }
 
     /**

@@ -18,18 +18,12 @@ final class ConnectorLoader
     private const CONNECTOR_PREFIX = 'hbpf.connector';
 
     /**
-     * @var ContainerInterface
-     */
-    private ContainerInterface $container;
-
-    /**
      * ConnectorLoader constructor.
      *
      * @param ContainerInterface $container
      */
-    function __construct(ContainerInterface $container)
+    function __construct(private ContainerInterface $container)
     {
-        $this->container = $container;
     }
 
     /**
@@ -48,7 +42,7 @@ final class ConnectorLoader
         } else {
             throw new ConnectorException(
                 sprintf('Service for [%s] connector was not found', $id),
-                ConnectorException::CONNECTOR_SERVICE_NOT_FOUND
+                ConnectorException::CONNECTOR_SERVICE_NOT_FOUND,
             );
         }
 

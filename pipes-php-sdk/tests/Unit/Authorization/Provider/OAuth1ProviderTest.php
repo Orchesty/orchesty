@@ -53,7 +53,7 @@ final class OAuth1ProviderTest extends KernelTestCaseAbstract
             'authorize/url',
             static function (): void {
             },
-            []
+            [],
         );
         self::assertEmpty([]);
     }
@@ -102,7 +102,7 @@ final class OAuth1ProviderTest extends KernelTestCaseAbstract
     {
         $install = new ApplicationInstall();
         $install->setSettings(
-            [BasicApplicationInterface::AUTHORIZATION_SETTINGS => [BasicApplicationInterface::TOKEN => $data]]
+            [BasicApplicationInterface::AUTHORIZATION_SETTINGS => [BasicApplicationInterface::TOKEN => $data]],
         );
         $provider = $this->getMockedProvider(['token']);
         $provider->setLogger(new Logger('logger'));
@@ -133,7 +133,7 @@ final class OAuth1ProviderTest extends KernelTestCaseAbstract
                         'oauth_token' => 'token', 'oauth_token_secret' => 'secret',
                     ],
                 ],
-            ]
+            ],
         );
         $dto = new OAuth1Dto($install);
 
@@ -176,7 +176,7 @@ final class OAuth1ProviderTest extends KernelTestCaseAbstract
     {
         $install = new ApplicationInstall();
         $install->setSettings(
-            [BasicApplicationInterface::AUTHORIZATION_SETTINGS => [BasicApplicationInterface::TOKEN => $data]]
+            [BasicApplicationInterface::AUTHORIZATION_SETTINGS => [BasicApplicationInterface::TOKEN => $data]],
         );
         $provider = $this->getMockedProvider(['token']);
         $provider->setLogger(new Logger('logger'));
@@ -221,8 +221,8 @@ final class OAuth1ProviderTest extends KernelTestCaseAbstract
                             OAuth1ApplicationInterface::CONSUMER_KEY    => 'consumer_key',
                             OAuth1ApplicationInterface::CONSUMER_SECRET => 'secret_key',
                         ],
-                    ]
-                )
+                    ],
+                ),
         );
         $this->invokeMethod($provider, 'createClient', [$dto]);
 
@@ -248,7 +248,7 @@ final class OAuth1ProviderTest extends KernelTestCaseAbstract
 
         $oauth = self::createPartialMock(
             OAuth::class,
-            ['getAccessToken', 'getRequestToken', 'setToken', 'getRequestHeader']
+            ['getAccessToken', 'getRequestToken', 'setToken', 'getRequestHeader'],
         );
         $oauth->method('getAccessToken')->willReturn($data);
         $oauth->method('getRequestToken')->willReturn($data);

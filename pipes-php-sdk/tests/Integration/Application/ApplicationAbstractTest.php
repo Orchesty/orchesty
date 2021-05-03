@@ -42,7 +42,7 @@ final class ApplicationAbstractTest extends DatabaseTestCaseAbstract
                 'key'                => 'null-key',
                 'description'        => 'Application for test purposes',
             ],
-            $this->application->toArray()
+            $this->application->toArray(),
         );
     }
 
@@ -75,12 +75,12 @@ final class ApplicationAbstractTest extends DatabaseTestCaseAbstract
 
         $applicationInstall = $this->application->setApplicationSettings(
             $applicationInstall,
-            ['user' => 'myUsername']
+            ['user' => 'myUsername'],
         );
 
         self::assertEquals(
             'myUsername',
-            $applicationInstall->getSettings()[ApplicationAbstract::FORM]['user']
+            $applicationInstall->getSettings()[ApplicationAbstract::FORM]['user'],
         );
     }
 
@@ -117,7 +117,7 @@ final class ApplicationAbstractTest extends DatabaseTestCaseAbstract
                         'user'     => 'user12',
                         'password' => '!@#$$%%',
                     ],
-                ]
+                ],
             );
         $this->pfd($applicationInstall);
 

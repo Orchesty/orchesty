@@ -23,7 +23,7 @@ final class ApplicationUtilsTest extends KernelTestCaseAbstract
 
         self::assertEquals(
             '/api/applications/key/users/user/authorize/token',
-            ApplicationUtils::generateUrl($applicationInstall)
+            ApplicationUtils::generateUrl($applicationInstall),
         );
     }
 

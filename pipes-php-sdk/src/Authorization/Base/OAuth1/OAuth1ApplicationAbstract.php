@@ -23,11 +23,6 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
 {
 
     /**
-     * @var OAuth1Provider
-     */
-    protected OAuth1Provider $provider;
-
-    /**
      * @return string
      */
     abstract protected function getTokenUrl(): string;
@@ -47,9 +42,8 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
      *
      * @param OAuth1Provider $provider
      */
-    public function __construct(OAuth1Provider $provider)
+    public function __construct(protected OAuth1Provider $provider)
     {
-        $this->provider = $provider;
     }
 
     /**
@@ -69,7 +63,7 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
     {
         return isset(
             $applicationInstall->getSettings(
-            )[ApplicationInterface::AUTHORIZATION_SETTINGS][OAuth1ApplicationInterface::TOKEN]
+            )[ApplicationInterface::AUTHORIZATION_SETTINGS][OAuth1ApplicationInterface::TOKEN],
         );
     }
 
@@ -90,10 +84,10 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
                     Field::TEXT,
                     ApplicationInterface::REDIRECT_URL,
                     'Redirect URL',
-                    $this->provider->getRedirectUri()
+                    $this->provider->getRedirectUri(),
                 )
                 )->setReadOnly(TRUE)->toArray(),
-            ]
+            ],
         );
     }
 
@@ -110,7 +104,7 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
             $this->createDto($applicationInstall),
             $this->getTokenUrl(),
             $this->getAuthorizeUrl(),
-            $this->saveOauthStuff()
+            $this->saveOauthStuff(),
         );
     }
 
@@ -124,13 +118,13 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
      */
     public function setAuthorizationToken(
         ApplicationInstall $applicationInstall,
-        array $token
+        array $token,
     ): OAuth1ApplicationInterface
     {
         $token = $this->provider->getAccessToken(
             $this->createDto($applicationInstall),
             $token,
-            $this->getAccessTokenUrl()
+            $this->getAccessTokenUrl(),
         );
 
         $settings                                                                            = $applicationInstall->getSettings(
@@ -160,7 +154,7 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
      */
     public function setFrontendRedirectUrl(
         ApplicationInstall $applicationInstall,
-        string $redirectUrl
+        string $redirectUrl,
     ): OAuth1ApplicationInterface
     {
         $settings                                                                                   = $applicationInstall->getSettings(
@@ -188,7 +182,7 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
     {
         return static function (DocumentManager $dm, OAuth1Dto $dto, array $data): void {
             $dto->getApplicationInstall()->addSettings(
-                [ApplicationInterface::AUTHORIZATION_SETTINGS => [OAuth1ApplicationInterface::OAUTH => $data]]
+                [ApplicationInterface::AUTHORIZATION_SETTINGS => [OAuth1ApplicationInterface::OAUTH => $data]],
             );
 
             $dm->persist($dto->getApplicationInstall());

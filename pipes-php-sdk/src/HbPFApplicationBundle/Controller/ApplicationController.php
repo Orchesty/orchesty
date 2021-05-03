@@ -25,18 +25,12 @@ final class ApplicationController
     use ControllerTrait;
 
     /**
-     * @var ApplicationHandler
-     */
-    private ApplicationHandler $applicationHandler;
-
-    /**
      * ApplicationController constructor.
      *
      * @param ApplicationHandler $applicationHandler
      */
-    public function __construct(ApplicationHandler $applicationHandler)
+    public function __construct(private ApplicationHandler $applicationHandler)
     {
-        $this->applicationHandler = $applicationHandler;
     }
 
     /**
@@ -129,7 +123,7 @@ final class ApplicationController
     public function authorizeApplicationAction(Request $request, string $key, string $user): Response
     {
         try {
-            $redirectUrl = $request->query->get('redirect_url', NULL);
+            $redirectUrl = $request->query->get('redirect_url');
             if (!$redirectUrl) {
                 throw new InvalidArgumentException('Missing "redirect_url" query parameter.');
             }

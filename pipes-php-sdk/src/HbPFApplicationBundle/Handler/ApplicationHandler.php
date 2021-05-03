@@ -19,18 +19,12 @@ final class ApplicationHandler
     private const SYNC_METHODS = 'syncMethods';
 
     /**
-     * @var ApplicationManager
-     */
-    private ApplicationManager $applicationManager;
-
-    /**
      * ApplicationHandler constructor.
      *
      * @param ApplicationManager $applicationManager
      */
-    public function __construct(ApplicationManager $applicationManager)
+    public function __construct(private ApplicationManager $applicationManager)
     {
-        $this->applicationManager = $applicationManager;
     }
 
     /**
@@ -42,7 +36,7 @@ final class ApplicationHandler
         return [
             'items' => array_map(
                 fn(string $key): array => $this->applicationManager->getApplication($key)->toArray(),
-                $this->applicationManager->getApplications()
+                $this->applicationManager->getApplications(),
             ),
         ];
     }
@@ -60,7 +54,7 @@ final class ApplicationHandler
             $this->applicationManager->getApplication($key)->toArray(),
             [
                 self::SYNC_METHODS => $this->applicationManager->getSynchronousActions($key),
-            ]
+            ],
         );
     }
 
@@ -84,7 +78,7 @@ final class ApplicationHandler
      * @return mixed
      * @throws ApplicationInstallException
      */
-    public function runSynchronousAction(string $key, string $method, Request $request)
+    public function runSynchronousAction(string $key, string $method, Request $request): mixed
     {
         return $this->applicationManager->runSynchronousAction($key, $method, $request);
     }

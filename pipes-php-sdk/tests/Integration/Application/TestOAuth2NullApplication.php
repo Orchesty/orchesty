@@ -55,7 +55,7 @@ final class TestOAuth2NullApplication extends OAuth2ApplicationAbstract
         ApplicationInstall $applicationInstall,
         string $method,
         ?string $url = NULL,
-        ?string $data = NULL
+        ?string $data = NULL,
     ): RequestDto
     {
         $applicationInstall;
@@ -65,7 +65,7 @@ final class TestOAuth2NullApplication extends OAuth2ApplicationAbstract
             [
                 'Content-Type' => 'application/vnd.shoptet.v1.0',
                 'Accept'       => 'application/json',
-            ]
+            ],
         );
         if (isset($data)) {
             $request->setBody($data);

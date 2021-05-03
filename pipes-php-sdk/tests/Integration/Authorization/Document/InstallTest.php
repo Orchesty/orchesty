@@ -33,7 +33,7 @@ final class InstallTest extends DatabaseTestCaseAbstract
         $data = $this->dm->getDocumentCollection(ApplicationInstall::class)->find(
             [
                 '_id' => new ObjectID($applicationInstall->getId()),
-            ]
+            ],
         )->toArray();
 
         $data = reset($data);

@@ -34,7 +34,7 @@ interface TableParserInterface
     public function parseFromJson(
         string $path,
         string $type = TableParserInterface::XLSX,
-        ?bool $hasHeaders = FALSE
+        ?bool $hasHeaders = FALSE,
     ): string;
 
 }

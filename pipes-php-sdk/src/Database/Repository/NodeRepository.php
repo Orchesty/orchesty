@@ -70,7 +70,7 @@ final class NodeRepository extends DocumentRepository
 
         if (!$node) {
             throw new LogicException(
-                sprintf('Starting Node not found for topology [%s]', $topology->getId())
+                sprintf('Starting Node not found for topology [%s]', $topology->getId()),
             );
         }
 

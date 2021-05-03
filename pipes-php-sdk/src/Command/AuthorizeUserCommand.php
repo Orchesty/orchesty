@@ -19,20 +19,13 @@ final class AuthorizeUserCommand extends Command
 {
 
     /**
-     * @var ApplicationManager
-     */
-    private ApplicationManager $applicationManager;
-
-    /**
      * AuthorizeUserCommand constructor.
      *
      * @param ApplicationManager $applicationManager
      */
-    public function __construct(ApplicationManager $applicationManager)
+    public function __construct(private ApplicationManager $applicationManager)
     {
         parent::__construct();
-
-        $this->applicationManager = $applicationManager;
     }
 
     /**

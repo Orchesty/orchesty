@@ -15,11 +15,6 @@ final class OAuth1Dto implements OAuth1DtoInterface
 {
 
     /**
-     * @var ApplicationInstall
-     */
-    private ApplicationInstall $applicationInstall;
-
-    /**
      * @var string
      */
     private string $consumerKey;
@@ -30,16 +25,6 @@ final class OAuth1Dto implements OAuth1DtoInterface
     private string $consumerSecret;
 
     /**
-     * @var string
-     */
-    private string $signatureMethod;
-
-    /**
-     * @var int
-     */
-    private int $authType;
-
-    /**
      * OAuth1Dto constructor.
      *
      * @param ApplicationInstall $applicationInstall
@@ -47,18 +32,15 @@ final class OAuth1Dto implements OAuth1DtoInterface
      * @param int                $authType
      */
     public function __construct(
-        ApplicationInstall $applicationInstall,
-        string $signatureMethod = OAUTH_SIG_METHOD_HMACSHA1,
-        int $authType = OAUTH_AUTH_TYPE_AUTHORIZATION
+        private ApplicationInstall $applicationInstall,
+        private string $signatureMethod = OAUTH_SIG_METHOD_HMACSHA1,
+        private int $authType = OAUTH_AUTH_TYPE_AUTHORIZATION,
     )
     {
-        $this->applicationInstall = $applicationInstall;
-        $this->signatureMethod    = $signatureMethod;
-        $this->authType           = $authType;
-        $this->consumerKey        = $applicationInstall->getSettings()
-                                    [BasicApplicationInterface::AUTHORIZATION_SETTINGS][OAuth1ApplicationInterface::CONSUMER_KEY] ?? '';
-        $this->consumerSecret     = $applicationInstall->getSettings()
-                                    [BasicApplicationInterface::AUTHORIZATION_SETTINGS][OAuth1ApplicationInterface::CONSUMER_SECRET] ?? '';
+        $this->consumerKey    = $applicationInstall->getSettings()
+                                [BasicApplicationInterface::AUTHORIZATION_SETTINGS][OAuth1ApplicationInterface::CONSUMER_KEY] ?? '';
+        $this->consumerSecret = $applicationInstall->getSettings()
+                                [BasicApplicationInterface::AUTHORIZATION_SETTINGS][OAuth1ApplicationInterface::CONSUMER_SECRET] ?? '';
     }
 
     /**

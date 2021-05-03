@@ -28,7 +28,7 @@ interface OAuth1ProviderInterface extends OAuthProviderInterface
         string $tokenUrl,
         string $authorizeUrl,
         callable $saveOauthStuffs,
-        array $scopes = []
+        array $scopes = [],
     ): string;
 
     /**

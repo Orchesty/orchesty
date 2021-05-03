@@ -52,7 +52,7 @@ final class LongRunningNodeDataRepositoryTest extends DatabaseTestCaseAbstract
                 'node0' => 2,
                 'node1' => 1,
             ],
-            $res
+            $res,
         );
     }
 

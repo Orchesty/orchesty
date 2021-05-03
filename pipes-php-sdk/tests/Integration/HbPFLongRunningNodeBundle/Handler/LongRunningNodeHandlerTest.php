@@ -39,7 +39,7 @@ final class LongRunningNodeHandlerTest extends DatabaseTestCaseAbstract
             [
                 PipesHeaders::createKey(LongRunningNodeData::DOCUMENT_ID_HEADER) => $node->getId(),
                 PipesHeaders::createKey(PipesHeaders::PF_STOP)                   => '200',
-            ]
+            ],
         );
 
         self::assertEquals(['pf-result-code' => '200'], $dto->getHeaders());
@@ -60,7 +60,7 @@ final class LongRunningNodeHandlerTest extends DatabaseTestCaseAbstract
             [
                 PipesHeaders::createKey(LongRunningNodeData::DOCUMENT_ID_HEADER) => '1',
                 PipesHeaders::createKey(PipesHeaders::PF_STOP)                   => '200',
-            ]
+            ],
         );
     }
 
@@ -92,7 +92,7 @@ final class LongRunningNodeHandlerTest extends DatabaseTestCaseAbstract
                 'total'  => 0,
                 'items'  => [],
             ],
-            $result
+            $result,
         );
     }
 
@@ -111,7 +111,7 @@ final class LongRunningNodeHandlerTest extends DatabaseTestCaseAbstract
                 'total'  => 0,
                 'items'  => [],
             ],
-            $result
+            $result,
         );
     }
 

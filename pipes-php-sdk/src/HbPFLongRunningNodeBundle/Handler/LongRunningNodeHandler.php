@@ -24,26 +24,6 @@ final class LongRunningNodeHandler
 {
 
     /**
-     * @var LongRunningNodeManager
-     */
-    private LongRunningNodeManager $manager;
-
-    /**
-     * @var LongRunningNodeLoader
-     */
-    private LongRunningNodeLoader $loader;
-
-    /**
-     * @var LongRunningNodeFilter
-     */
-    private LongRunningNodeFilter $filter;
-
-    /**
-     * @var DocumentManager
-     */
-    private DocumentManager $dm;
-
-    /**
      * LongRunningNodeHandler constructor.
      *
      * @param LongRunningNodeManager $manager
@@ -52,16 +32,12 @@ final class LongRunningNodeHandler
      * @param DocumentManager        $dm
      */
     public function __construct(
-        LongRunningNodeManager $manager,
-        LongRunningNodeLoader $loader,
-        LongRunningNodeFilter $filter,
-        DocumentManager $dm
+        private LongRunningNodeManager $manager,
+        private LongRunningNodeLoader $loader,
+        private LongRunningNodeFilter $filter,
+        private DocumentManager $dm,
     )
     {
-        $this->manager = $manager;
-        $this->loader  = $loader;
-        $this->filter  = $filter;
-        $this->dm      = $dm;
     }
 
     /**
@@ -83,7 +59,7 @@ final class LongRunningNodeHandler
         if (!$doc) {
             throw new LongRunningNodeException(
                 sprintf('LongRunningData document [%s] was not found', $docId),
-                LongRunningNodeException::LONG_RUNNING_DOCUMENT_NOT_FOUND
+                LongRunningNodeException::LONG_RUNNING_DOCUMENT_NOT_FOUND,
             );
         }
 
@@ -194,7 +170,7 @@ final class LongRunningNodeHandler
         if (!$node) {
             throw new LongRunningNodeException(
                 sprintf('LongRunningData document [%s] was not found', $id),
-                LongRunningNodeException::LONG_RUNNING_DOCUMENT_NOT_FOUND
+                LongRunningNodeException::LONG_RUNNING_DOCUMENT_NOT_FOUND,
             );
         }
 

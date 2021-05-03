@@ -9,8 +9,8 @@ use Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler;
 use Hanaboso\PipesPhpSdk\Parser\Exception\TableParserException;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\String\Json;
-use JsonException;
 use PipesPhpSdkTests\ControllerTestCaseAbstract;
+use Throwable;
 
 /**
  * Class ApiControllerTest
@@ -31,15 +31,15 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
             '/parser/csv/to/json',
             [
                 'file_id' => sprintf('%s/../../../Integration/Parser/data/input-10.csv', __DIR__),
-            ]
+            ],
         );
 
         self::assertEquals(200, $response->status);
         self::assertEquals(
             Json::decode(
-                (string) file_get_contents(__DIR__ . '/../../../Integration/Parser/data/output-10.json')
+                (string) file_get_contents(__DIR__ . '/../../../Integration/Parser/data/output-10.json'),
             ),
-            $response->content
+            $response->content,
         );
     }
 
@@ -122,7 +122,7 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
             '/parser/json/to/csv',
             [
                 'file_id' => __DIR__ . '/../../../Integration/Parser/data/output-10.json',
-            ]
+            ],
         );
 
         self::assertEquals(200, $response->status);
@@ -155,7 +155,7 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
             '/parser/json/to/unknown',
             [
                 'file_id' => sprintf('%s/../../../Integration/Parser/data/output-10.json', __DIR__),
-            ]
+            ],
         );
         $content  = $response->content;
 
@@ -214,7 +214,7 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
             '/parser/json/to/unknown',
             [
                 'file_id' => sprintf('%s/../../../Integration/Parser/data/output-10.json', __DIR__),
-            ]
+            ],
         );
         $content  = $response->content;
 
@@ -239,7 +239,7 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
             $parameters,
             [],
             [],
-            $content ? Json::encode($content) : ''
+            $content ? Json::encode($content) : '',
         );
 
         $response = $this->client->getResponse();
@@ -255,7 +255,7 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
                 'status'  => $response->getStatusCode(),
                 'content' => Json::decode((string) $response->getContent()),
             ];
-        } catch (JsonException $e) {
+        } catch (Throwable) {
             return (object) [
                 'status'  => $response->getStatusCode(),
                 'content' => (string) $response->getContent(),

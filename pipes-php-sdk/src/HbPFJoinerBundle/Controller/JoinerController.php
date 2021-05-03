@@ -22,18 +22,12 @@ final class JoinerController
     use ControllerTrait;
 
     /**
-     * @var JoinerHandler
-     */
-    private JoinerHandler $joinerHandler;
-
-    /**
      * JoinerController constructor.
      *
      * @param JoinerHandler $joinerHandler
      */
-    public function __construct(JoinerHandler $joinerHandler)
+    public function __construct(private JoinerHandler $joinerHandler)
     {
-        $this->joinerHandler = $joinerHandler;
     }
 
     /**

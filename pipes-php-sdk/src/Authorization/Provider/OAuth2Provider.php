@@ -36,7 +36,7 @@ final class OAuth2Provider extends OAuthProviderAbstract implements OAuth2Provid
     public function authorize(
         OAuth2DtoInterface $dto,
         array $scopes = [],
-        string $separator = ScopeFormatter::COMMA
+        string $separator = ScopeFormatter::COMMA,
     ): string
     {
         $client = $this->createClient($dto);
@@ -56,7 +56,7 @@ final class OAuth2Provider extends OAuthProviderAbstract implements OAuth2Provid
         if (!isset($request['code'])) {
             $this->throwException(
                 'Data from input is invalid! Field "code" is missing!',
-                AuthorizationException::AUTHORIZATION_OAUTH2_ERROR
+                AuthorizationException::AUTHORIZATION_OAUTH2_ERROR,
             );
         }
 
@@ -76,7 +76,7 @@ final class OAuth2Provider extends OAuthProviderAbstract implements OAuth2Provid
         if (!isset($token[self::REFRESH_TOKEN])) {
             $this->throwException(
                 'Refresh token not found! Refresh is not possible.',
-                AuthorizationException::AUTHORIZATION_OAUTH2_ERROR
+                AuthorizationException::AUTHORIZATION_OAUTH2_ERROR,
             );
         }
 
@@ -84,7 +84,7 @@ final class OAuth2Provider extends OAuthProviderAbstract implements OAuth2Provid
         $accessToken     = $this->getTokenByGrant(
             $dto,
             self::REFRESH_TOKEN,
-            [self::REFRESH_TOKEN => $oldRefreshToken]
+            [self::REFRESH_TOKEN => $oldRefreshToken],
         );
 
         $opts = [];
@@ -140,7 +140,7 @@ final class OAuth2Provider extends OAuthProviderAbstract implements OAuth2Provid
                 'urlAuthorize'            => $dto->getAuthorizeUrl(),
                 'urlAccessToken'          => $dto->getTokenUrl(),
                 'urlResourceOwnerDetails' => $dto->getAuthorizeUrl(),
-            ]
+            ],
         );
     }
 
@@ -156,7 +156,7 @@ final class OAuth2Provider extends OAuthProviderAbstract implements OAuth2Provid
         OAuth2DtoInterface $dto,
         string $authorizeUrl,
         array $scopes,
-        string $separator = ScopeFormatter::COMMA
+        string $separator = ScopeFormatter::COMMA,
     ): string
     {
         $state = NULL;

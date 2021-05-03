@@ -76,7 +76,7 @@ final class TestNullApplication extends BasicApplicationAbstract
         ApplicationInstall $applicationInstall,
         string $method,
         ?string $url = NULL,
-        ?string $data = NULL
+        ?string $data = NULL,
     ): RequestDto
     {
         $applicationInstall;
@@ -86,7 +86,7 @@ final class TestNullApplication extends BasicApplicationAbstract
             [
                 'Content-Type' => 'application/vnd.shoptet.v1.0',
                 'Accept'       => 'application/json',
-            ]
+            ],
         );
         if (isset($data)) {
             $request->setBody($data);

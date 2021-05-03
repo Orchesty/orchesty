@@ -79,7 +79,7 @@ final class LongRunningNodeFilter extends GridFilterAbstract
                     LongRunningNodeData::NODE_ID,
                     LongRunningNodeData::NODE_NAME,
                     LongRunningNodeData::PROCESS_ID,
-                ]
+                ],
             )->field(LongRunningNodeData::STATE)->equals(StateEnum::NEW);
     }
 

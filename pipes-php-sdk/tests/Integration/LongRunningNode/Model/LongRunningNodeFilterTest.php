@@ -39,7 +39,7 @@ final class LongRunningNodeFilterTest extends DatabaseTestCaseAbstract
                 'nodeName'     => 'nodeName',
                 'auditLogs'    => 'auditLogs',
             ],
-            $filerCols
+            $filerCols,
         );
 
         $orderCols = $this->invokeMethod($nodeFilter, 'orderCols');
@@ -48,7 +48,7 @@ final class LongRunningNodeFilterTest extends DatabaseTestCaseAbstract
                 'created'  => 'created',
                 'nodeName' => 'nodeName',
             ],
-            $orderCols
+            $orderCols,
         );
 
         $searchCols = $this->invokeMethod($nodeFilter, 'searchableCols');

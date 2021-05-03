@@ -15,11 +15,6 @@ abstract class OAuthProviderAbstract implements OAuthProviderInterface
 {
 
     /**
-     * @var string
-     */
-    protected string $backend;
-
-    /**
      * @var LoggerInterface
      */
     protected LoggerInterface $logger;
@@ -29,9 +24,8 @@ abstract class OAuthProviderAbstract implements OAuthProviderInterface
      *
      * @param string $backend
      */
-    public function __construct(string $backend)
+    public function __construct(protected string $backend)
     {
-        $this->backend = $backend;
     }
 
     /**

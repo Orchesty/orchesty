@@ -162,7 +162,7 @@ final class OAuth2ProviderTest extends KernelTestCaseAbstract
         $this->invokeMethod(
             $provider,
             'getTokenByGrant',
-            [new OAuth2Dto(new ApplicationInstall(), '/url/', ''), 'grand']
+            [new OAuth2Dto(new ApplicationInstall(), '/url/', ''), 'grand'],
         );
     }
 

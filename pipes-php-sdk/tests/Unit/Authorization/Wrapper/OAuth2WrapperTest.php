@@ -42,7 +42,7 @@ final class OAuth2WrapperTest extends KernelTestCaseAbstract
                 'urlAuthorize'            => 'auth/url',
                 'urlAccessToken'          => 'access/url',
                 'urlResourceOwnerDetails' => 'resource/url',
-            ]
+            ],
         );
 
         self::expectException(AuthorizationException::class);

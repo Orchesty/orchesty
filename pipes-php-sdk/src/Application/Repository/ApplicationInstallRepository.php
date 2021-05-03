@@ -39,7 +39,7 @@ final class ApplicationInstallRepository extends DocumentRepository
         if (!$app) {
             throw new ApplicationInstallException(
                 sprintf('Application [%s] was not found .', $key),
-                ApplicationInstallException::APP_WAS_NOT_FOUND
+                ApplicationInstallException::APP_WAS_NOT_FOUND,
             );
         }
 
@@ -61,7 +61,7 @@ final class ApplicationInstallRepository extends DocumentRepository
 
         return $this->findUserApp(
             (string) PipesHeaders::get(PipesHeaders::APPLICATION, $dto->getHeaders()),
-            (string) PipesHeaders::get(PipesHeaders::USER, $dto->getHeaders())
+            (string) PipesHeaders::get(PipesHeaders::USER, $dto->getHeaders()),
         );
     }
 
@@ -80,11 +80,11 @@ final class ApplicationInstallRepository extends DocumentRepository
                 $ab->expr()->cond(
                     $ab->expr()->addOr(
                         $ab->expr()->gte('$expires', new UTCDateTime(DateTimeUtils::getUtcDateTime())),
-                        $ab->expr()->eq('$expires', NULL)
+                        $ab->expr()->eq('$expires', NULL),
                     ),
                     1,
-                    0
-                )
+                    0,
+                ),
             )
             ->sort('id', 'ASC')
             ->execute()
@@ -118,10 +118,10 @@ final class ApplicationInstallRepository extends DocumentRepository
                     ->field('active')->expression(
                         $ab->expr()->addOr(
                             $ab->expr()->gte('$expires', new UTCDateTime(DateTimeUtils::getUtcDateTime())),
-                            $ab->expr()->eq('$expires', NULL)
-                        )
+                            $ab->expr()->eq('$expires', NULL),
+                        ),
                     )
-                    ->field('name')->ifNull('$user', '')
+                    ->field('name')->ifNull('$user', ''),
             )
             ->sort('id', 'ASC')
             ->execute()

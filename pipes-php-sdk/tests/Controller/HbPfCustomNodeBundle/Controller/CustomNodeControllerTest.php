@@ -34,7 +34,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
             [],
             [],
             [],
-            Json::encode(['test' => 'test'])
+            Json::encode(['test' => 'test']),
         );
 
         $response = $this->client->getResponse();
@@ -42,7 +42,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
         self::assertEquals(200, $response->getStatusCode());
         self::assertEquals(
             ['test' => 'test'],
-            Json::decode((string) $response->getContent())
+            Json::decode((string) $response->getContent()),
         );
     }
 
@@ -61,7 +61,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
             [],
             [],
             [],
-            Json::encode(['test' => 'test'])
+            Json::encode(['test' => 'test']),
         );
         $response = $this->client->getResponse();
 
@@ -87,7 +87,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
             [],
             [],
             [],
-            Json::encode(['test' => 'test'])
+            Json::encode(['test' => 'test']),
         );
         $response = $this->client->getResponse();
 
@@ -139,8 +139,8 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
             in_array(
                 'microsleep500000',
                 Json::decode((string) $response->getContent()),
-                TRUE
-            )
+                TRUE,
+            ),
         );
         self::assertEquals(200, $response->getStatusCode());
     }
@@ -188,7 +188,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
             ->method('processTest')
             ->willReturnCallback(
                 static function (): void {
-                }
+                },
             );
 
         self::$container->set('hbpf.handler.custom_node', $joinerHandlerMock);

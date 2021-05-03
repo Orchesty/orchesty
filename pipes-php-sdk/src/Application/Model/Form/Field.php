@@ -22,32 +22,7 @@ final class Field
     /**
      * @var string
      */
-    private string $type;
-
-    /**
-     * @var string
-     */
-    private string $key;
-
-    /**
-     * @var mixed|null
-     */
-    private $value;
-
-    /**
-     * @var string
-     */
-    private string $label;
-
-    /**
-     * @var string
-     */
     private string $description = '';
-
-    /**
-     * @var bool
-     */
-    private bool $required = FALSE;
 
     /**
      * @var bool
@@ -75,20 +50,20 @@ final class Field
      *
      * @throws ApplicationInstallException
      */
-    public function __construct(string $type, string $key, string $label, $value = NULL, bool $required = FALSE)
+    public function __construct(
+        private string $type,
+        private string $key,
+        private string $label,
+        private $value = NULL,
+        private bool $required = FALSE,
+    )
     {
         if (!in_array($type, $this->getTypes(), TRUE)) {
             throw new ApplicationInstallException(
                 sprintf('Invalid field type "%s"', $type),
-                ApplicationInstallException::INVALID_FIELD_TYPE
+                ApplicationInstallException::INVALID_FIELD_TYPE,
             );
         }
-
-        $this->type     = $type;
-        $this->key      = $key;
-        $this->value    = $value;
-        $this->label    = $label;
-        $this->required = $required;
     }
 
     /**
@@ -104,7 +79,7 @@ final class Field
      *
      * @return Field
      */
-    public function setValue($value): Field
+    public function setValue(mixed $value): Field
     {
         $this->value = $value;
 
@@ -192,9 +167,9 @@ final class Field
     }
 
     /**
-     * @return int|string|bool|null
+     * @return mixed
      */
-    public function getValue()
+    public function getValue(): mixed
     {
         return $this->value;
     }

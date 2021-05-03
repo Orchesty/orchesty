@@ -173,7 +173,7 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
         self::assertEquals(200, $response->getStatusCode());
         self::assertEquals(
             ['test' => 'test'],
-            Json::decode((string) $response->getContent())
+            Json::decode((string) $response->getContent()),
         );
     }
 
@@ -191,8 +191,8 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
             in_array(
                 'null',
                 Json::decode((string) $response->getContent()),
-                TRUE
-            )
+                TRUE,
+            ),
         );
         self::assertEquals(200, $response->getStatusCode());
     }

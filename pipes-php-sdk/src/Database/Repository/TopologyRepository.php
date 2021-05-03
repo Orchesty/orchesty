@@ -102,7 +102,7 @@ final  class TopologyRepository extends DocumentRepository
         $topology = $this->createQueryBuilder()
             ->field('visibility')->equals(TopologyStatusEnum::PUBLIC)
             ->field('deleted')->equals(FALSE)
-            ->sort('version', 1)
+            ->sort('version')
             ->getQuery()->execute();
         /** @var Topology[] $results */
         $results = $topology->toArray();

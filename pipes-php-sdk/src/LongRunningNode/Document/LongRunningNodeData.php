@@ -417,7 +417,6 @@ class LongRunningNodeData
 
     /**
      * @return mixed[]
-     * @throws JsonException
      */
     public function getHeaders(): array
     {
@@ -458,7 +457,6 @@ class LongRunningNodeData
 
     /**
      * @return mixed[]
-     * @throws JsonException
      */
     public function getAuditLogs(): array
     {
@@ -514,7 +512,6 @@ class LongRunningNodeData
 
     /**
      * @ODM\PostLoad()
-     * @throws JsonException
      */
     public function postLoad(): void
     {

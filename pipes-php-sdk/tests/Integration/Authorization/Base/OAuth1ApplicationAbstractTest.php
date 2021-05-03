@@ -43,7 +43,7 @@ final class OAuth1ApplicationAbstractTest extends DatabaseTestCaseAbstract
     public function testIsAuthorized(): void
     {
         $applicationInstall = $this->createApplicationInstall(
-            [ApplicationInterface::AUTHORIZATION_SETTINGS => [OAuth1ApplicationInterface::TOKEN => '__token__']]
+            [ApplicationInterface::AUTHORIZATION_SETTINGS => [OAuth1ApplicationInterface::TOKEN => '__token__']],
         );
         self::assertTrue($this->testApp->isAuthorized($applicationInstall));
     }
@@ -74,7 +74,7 @@ final class OAuth1ApplicationAbstractTest extends DatabaseTestCaseAbstract
                     OAuth1ApplicationInterface::CONSUMER_KEY    => 'key',
                     OAuth1ApplicationInterface::CONSUMER_SECRET => 'secret',
                 ],
-            ]
+            ],
         );
 
         $provider = $this->createPartialMock(OAuth1Provider::class, ['authorize']);
@@ -109,7 +109,7 @@ final class OAuth1ApplicationAbstractTest extends DatabaseTestCaseAbstract
         self::assertEquals(
             '__token__',
             $applicationInstall->getSettings(
-            )[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN]['access_token']
+            )[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN]['access_token'],
         );
     }
 
@@ -142,7 +142,7 @@ final class OAuth1ApplicationAbstractTest extends DatabaseTestCaseAbstract
         self::assertEquals(
             ['data'],
             $applicationInstall->getSettings(
-            )[ApplicationInterface::AUTHORIZATION_SETTINGS][OAuth1ApplicationInterface::OAUTH]
+            )[ApplicationInterface::AUTHORIZATION_SETTINGS][OAuth1ApplicationInterface::OAUTH],
         );
     }
 

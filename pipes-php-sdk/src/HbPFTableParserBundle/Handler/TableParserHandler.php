@@ -20,25 +20,13 @@ final class TableParserHandler
 {
 
     /**
-     * @var TableParser
-     */
-    private TableParser $tableParser;
-
-    /**
-     * @var FileStorage
-     */
-    private FileStorage $fileStorage;
-
-    /**
      * TableParserHandler constructor.
      *
      * @param TableParser $tableParser
      * @param FileStorage $fileStorage
      */
-    public function __construct(TableParser $tableParser, FileStorage $fileStorage)
+    public function __construct(private TableParser $tableParser, private FileStorage $fileStorage)
     {
-        $this->tableParser = $tableParser;
-        $this->fileStorage = $fileStorage;
     }
 
     /**
@@ -141,7 +129,7 @@ final class TableParserHandler
 
         throw new TableParserHandlerException(
             'Property not set: \'file_id\'',
-            TableParserHandlerException::PROPERTY_FILE_ID_NOT_SET
+            TableParserHandlerException::PROPERTY_FILE_ID_NOT_SET,
         );
     }
 

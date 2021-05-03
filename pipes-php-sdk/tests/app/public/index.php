@@ -14,7 +14,7 @@ if (filter_input(INPUT_SERVER, 'APP_DEBUG') ?? ((filter_input(INPUT_SERVER, 'APP
 // Request::setTrustedProxies(['0.0.0.0/0'], Request::HEADER_FORWARDED);
 $kernel   = new Kernel(
     filter_input(INPUT_SERVER, 'APP_ENV') ?? 'dev',
-    filter_input(INPUT_SERVER, 'APP_DEBUG') ?? ((filter_input(INPUT_SERVER, 'APP_ENV') ?? 'dev') !== 'prod')
+    filter_input(INPUT_SERVER, 'APP_DEBUG') ?? ((filter_input(INPUT_SERVER, 'APP_ENV') ?? 'dev') !== 'prod'),
 );
 $request  = Request::createFromGlobals();
 $response = $kernel->handle($request);

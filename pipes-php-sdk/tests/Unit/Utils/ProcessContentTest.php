@@ -56,7 +56,7 @@ final class ProcessContentTest extends KernelTestCaseAbstract
         $result = $this->invokeMethod(
             $content,
             'checkRequiredContent',
-            [(new ProcessDto())->setData('{"param1": "1"}'), ['param1']]
+            [(new ProcessDto())->setData('{"param1": "1"}'), ['param1']],
         );
 
         self::assertEquals(['param1' => '1'], $result);
@@ -75,7 +75,7 @@ final class ProcessContentTest extends KernelTestCaseAbstract
         $result = $this->invokeMethod(
             $content,
             'getByKey',
-            [&$arr, 'key.key2']
+            [&$arr, 'key.key2'],
         );
 
         self::assertEquals(1, $result);
@@ -94,7 +94,7 @@ final class ProcessContentTest extends KernelTestCaseAbstract
         $result = $this->invokeMethod(
             $content,
             'getByKey',
-            [&$arr, 'preKey.key']
+            [&$arr, 'preKey.key'],
         );
 
         self::assertNull($result);

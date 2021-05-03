@@ -18,18 +18,12 @@ final class ApplicationInstallListener
 {
 
     /**
-     * @var CryptManager
-     */
-    private CryptManager $cryptManager;
-
-    /**
      * ApplicationInstallListener constructor.
      *
      * @param CryptManager $cryptManager
      */
-    public function __construct(CryptManager $cryptManager)
+    public function __construct(private CryptManager $cryptManager)
     {
-        $this->cryptManager = $cryptManager;
     }
 
     /**
@@ -103,7 +97,7 @@ final class ApplicationInstallListener
             if ($document instanceof ApplicationInstall) {
                 $document->setSettings(
                     !empty($document->getEncryptedSettings()) ?
-                        $this->cryptManager->decrypt($document->getEncryptedSettings()) : []
+                        $this->cryptManager->decrypt($document->getEncryptedSettings()) : [],
                 );
             }
         }

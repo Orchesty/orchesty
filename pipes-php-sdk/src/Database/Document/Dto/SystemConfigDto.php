@@ -3,7 +3,6 @@
 namespace Hanaboso\PipesPhpSdk\Database\Document\Dto;
 
 use Hanaboso\Utils\String\Json;
-use JsonException;
 
 /**
  * Class SystemConfigDto
@@ -25,36 +24,6 @@ final class SystemConfigDto
     public const INTERVAL = 'interval';
 
     /**
-     * @var string
-     */
-    private string $sdkHost;
-
-    /**
-     * @var string
-     */
-    private string $bridgeHost;
-
-    /**
-     * @var int
-     */
-    private int $prefetch;
-
-    /**
-     * @var bool
-     */
-    private bool $repeaterEnabled;
-
-    /**
-     * @var int
-     */
-    private int $repeaterHops;
-
-    /**
-     * @var int
-     */
-    private int $repeaterInterval;
-
-    /**
      * SystemConfigDto constructor.
      *
      * @param string $sdkHost
@@ -65,27 +34,20 @@ final class SystemConfigDto
      * @param int    $repeaterInterval
      */
     public function __construct(
-        $sdkHost = '',
-        $bridgeHost = '',
-        $prefetch = 1,
-        $repeaterEnabled = FALSE,
-        $repeaterHops = 0,
-        $repeaterInterval = 0
+        private $sdkHost = '',
+        private $bridgeHost = '',
+        private $prefetch = 1,
+        private $repeaterEnabled = FALSE,
+        private $repeaterHops = 0,
+        private $repeaterInterval = 0,
     )
     {
-        $this->sdkHost          = $sdkHost;
-        $this->bridgeHost       = $bridgeHost;
-        $this->prefetch         = $prefetch;
-        $this->repeaterEnabled  = $repeaterEnabled;
-        $this->repeaterHops     = $repeaterHops;
-        $this->repeaterInterval = $repeaterInterval;
     }
 
     /**
      * @param string $param
      *
      * @return SystemConfigDto
-     * @throws JsonException
      */
     public static function fromString(string $param): SystemConfigDto
     {
@@ -97,7 +59,7 @@ final class SystemConfigDto
             $result[self::RABBIT][self::PREFETCH],
             $result[self::REPEATER][self::ENABLED],
             $result[self::REPEATER][self::HOPS],
-            $result[self::REPEATER][self::INTERVAL]
+            $result[self::REPEATER][self::INTERVAL],
         );
     }
 
@@ -116,7 +78,7 @@ final class SystemConfigDto
                     self::HOPS     => $this->getRepeaterHops(),
                     self::INTERVAL => $this->getRepeaterInterval(),
                 ],
-            ]
+            ],
         );
     }
 

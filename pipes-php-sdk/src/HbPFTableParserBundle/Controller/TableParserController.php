@@ -24,18 +24,12 @@ final class TableParserController
     use ControllerTrait;
 
     /**
-     * @var TableParserHandler
-     */
-    private TableParserHandler $tableParserHandler;
-
-    /**
      * TableParserController constructor.
      *
      * @param TableParserHandler $tableParserHandler
      */
-    public function __construct(TableParserHandler $tableParserHandler)
+    public function __construct(private TableParserHandler $tableParserHandler)
     {
-        $this->tableParserHandler = $tableParserHandler;
     }
 
     /**
@@ -49,8 +43,6 @@ final class TableParserController
     {
         try {
             return $this->getResponse($this->tableParserHandler->parseToJson($request->request->all()));
-        } catch (TableParserHandlerException | FileStorageException $e) {
-            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
         } catch (Throwable $e) {
             return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
         }
@@ -68,7 +60,7 @@ final class TableParserController
 
             return $this->getResponse([]);
         } catch (Throwable $e) {
-            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR);
+            return $this->getErrorResponse($e);
         }
     }
 
@@ -101,7 +93,7 @@ final class TableParserController
         try {
             return $this->getResponse($this->tableParserHandler->parseFromJsonTest($type));
         } catch (TableParserException $e) {
-            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR);
+            return $this->getErrorResponse($e);
         }
     }
 

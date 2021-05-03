@@ -99,8 +99,8 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
             in_array(
                 'handler.mapper',
                 Json::decode((string) $response->getContent()),
-                TRUE
-            )
+                TRUE,
+            ),
         );
         self::assertEquals(200, $response->getStatusCode());
     }

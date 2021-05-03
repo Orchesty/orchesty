@@ -25,7 +25,7 @@ trait ProcessEventNotSupportedTrait
 
         throw new ConnectorException(
             sprintf('Method %s::%s is not supported!', static::class, __FUNCTION__),
-            ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_EVENT
+            ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_EVENT,
         );
     }
 

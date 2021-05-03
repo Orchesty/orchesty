@@ -18,18 +18,12 @@ final class LongRunningNodeLoader
     private const PREFIX = 'hbpf.long_running';
 
     /**
-     * @var ContainerInterface
-     */
-    private ContainerInterface $container;
-
-    /**
      * LongRunningNodeLoader constructor.
      *
      * @param ContainerInterface $container
      */
-    function __construct(ContainerInterface $container)
+    function __construct(private ContainerInterface $container)
     {
-        $this->container = $container;
     }
 
     /**
@@ -50,7 +44,7 @@ final class LongRunningNodeLoader
 
         throw new LongRunningNodeException(
             sprintf('Service for [%s] long running node was not found', $id),
-            LongRunningNodeException::LONG_RUNNING_SERVICE_NOT_FOUND
+            LongRunningNodeException::LONG_RUNNING_SERVICE_NOT_FOUND,
         );
     }
 

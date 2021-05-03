@@ -18,18 +18,12 @@ final class JoinerLoader
     public const PREFIX = 'hbpf.joiner';
 
     /**
-     * @var ContainerInterface
-     */
-    private ContainerInterface $container;
-
-    /**
      * JoinerLoader constructor.
      *
      * @param ContainerInterface $container
      */
-    function __construct(ContainerInterface $container)
+    function __construct(private ContainerInterface $container)
     {
-        $this->container = $container;
     }
 
     /**
@@ -50,7 +44,7 @@ final class JoinerLoader
 
         throw new JoinerException(
             sprintf('Joiner [%s] not found.', $joiner),
-            JoinerException::JOINER_SERVICE_NOT_FOUND
+            JoinerException::JOINER_SERVICE_NOT_FOUND,
         );
     }
 

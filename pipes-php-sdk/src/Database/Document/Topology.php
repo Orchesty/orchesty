@@ -9,7 +9,6 @@ use Hanaboso\CommonsBundle\Enum\StatusEnum;
 use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
 use Hanaboso\Utils\Exception\EnumException;
 use Hanaboso\Utils\String\Json;
-use JsonException;
 
 /**
  * Class Topology
@@ -241,7 +240,6 @@ class Topology
 
     /**
      * @return mixed[]
-     * @throws JsonException
      */
     public function getBpmn(): array
     {

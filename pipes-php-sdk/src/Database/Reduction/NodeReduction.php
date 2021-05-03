@@ -13,6 +13,7 @@ final class NodeReduction
     /**
      * @var string[]
      */
+    //phpcs:disable
     public static array $typeExclude = [];
 
 }

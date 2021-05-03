@@ -97,7 +97,7 @@ final class RabbitCustomNodeTest extends DatabaseTestCaseAbstract
             [
                 PipesHeaders::createKey(PipesHeaders::NODE_ID)     => '123',
                 PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID) => '456',
-            ]
+            ],
         );
         self::expectException(InvalidArgumentException::class);
         self::expectExceptionMessage('Missing "pf-correlation-id" in the message header.');
@@ -117,7 +117,7 @@ final class RabbitCustomNodeTest extends DatabaseTestCaseAbstract
                 PipesHeaders::createKey(PipesHeaders::NODE_ID)        => '123',
                 PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID)    => '456',
                 PipesHeaders::createKey(PipesHeaders::CORRELATION_ID) => '789',
-            ]
+            ],
         );
         self::expectException(InvalidArgumentException::class);
         self::expectExceptionMessage('Missing "pf-process-id" in the message header.');
@@ -138,7 +138,7 @@ final class RabbitCustomNodeTest extends DatabaseTestCaseAbstract
                 PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID)    => '456',
                 PipesHeaders::createKey(PipesHeaders::CORRELATION_ID) => '789',
                 PipesHeaders::createKey(PipesHeaders::PROCESS_ID)     => '147',
-            ]
+            ],
         );
         self::expectException(InvalidArgumentException::class);
         self::expectExceptionMessage('Missing "pf-parent-id" in the message header.');
@@ -160,7 +160,7 @@ final class RabbitCustomNodeTest extends DatabaseTestCaseAbstract
                 PipesHeaders::createKey(PipesHeaders::CORRELATION_ID) => '789',
                 PipesHeaders::createKey(PipesHeaders::PROCESS_ID)     => '147',
                 PipesHeaders::createKey(PipesHeaders::PARENT_ID)      => '369',
-            ]
+            ],
         );
         $this->invokeMethod($this->nullConnector, 'validate', [$dto]);
         self::assertTrue(TRUE);
@@ -178,7 +178,7 @@ final class RabbitCustomNodeTest extends DatabaseTestCaseAbstract
                 PipesHeaders::createKey(PipesHeaders::NODE_ID)     => [1 => ['a']],
                 PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID) => '456',
                 PipesHeaders::createKey(PipesHeaders::PARENT_ID)   => '369',
-            ]
+            ],
         );
 
         $this->invokeMethod($this->nullConnector, 'normalizeHeaders', [$dto]);
@@ -208,7 +208,7 @@ final class RabbitCustomNodeTest extends DatabaseTestCaseAbstract
                 PipesHeaders::createKey(PipesHeaders::CORRELATION_ID) => '789',
                 PipesHeaders::createKey(PipesHeaders::PROCESS_ID)     => '147',
                 PipesHeaders::createKey(PipesHeaders::PARENT_ID)      => '369',
-            ]
+            ],
         );
 
         $this->invokeMethod($this->nullConnector, 'bindChannels', [$dto]);
@@ -252,7 +252,7 @@ final class RabbitCustomNodeTest extends DatabaseTestCaseAbstract
                 PipesHeaders::createKey(PipesHeaders::PROCESS_ID)     => '147',
                 PipesHeaders::createKey(PipesHeaders::PARENT_ID)      => '369',
                 'test'                                                => ['a' => 'a'],
-            ]
+            ],
         );
 
         $dto = $this->nullConnector->process($dto);

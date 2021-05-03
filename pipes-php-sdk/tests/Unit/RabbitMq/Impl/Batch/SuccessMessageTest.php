@@ -40,7 +40,7 @@ final class SuccessMessageTest extends KernelTestCaseAbstract
         self::assertEquals('message', $message->getHeader(PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE)));
         self::assertEquals(
             ['pf-result-code' => 203, 'pf-result-message' => 'message', 'header1' => 'aaa'],
-            $message->getHeaders()
+            $message->getHeaders(),
         );
         self::assertTrue($message->hasHeader(PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE)));
 

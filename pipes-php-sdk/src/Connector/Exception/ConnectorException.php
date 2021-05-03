@@ -26,11 +26,6 @@ final class ConnectorException extends PipesFrameworkExceptionAbstract
     protected const OFFSET = 1_000;
 
     /**
-     * @var ProcessDto|null
-     */
-    private ?ProcessDto $processDto;
-
-    /**
      * ConnectorException constructor.
      *
      * @param string          $message
@@ -38,11 +33,14 @@ final class ConnectorException extends PipesFrameworkExceptionAbstract
      * @param Throwable|null  $previous
      * @param ProcessDto|null $processDto
      */
-    public function __construct($message = '', $code = 0, ?Throwable $previous = NULL, ?ProcessDto $processDto = NULL)
+    public function __construct(
+        $message = '',
+        $code = 0,
+        ?Throwable $previous = NULL,
+        private ?ProcessDto $processDto = NULL,
+    )
     {
         parent::__construct($message, $code, $previous);
-
-        $this->processDto = $processDto;
     }
 
     /**

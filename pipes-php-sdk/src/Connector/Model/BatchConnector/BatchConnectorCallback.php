@@ -16,18 +16,12 @@ final class BatchConnectorCallback extends BatchActionAbstract
 {
 
     /**
-     * @var ConnectorLoader
-     */
-    private ConnectorLoader $connectorLoader;
-
-    /**
      * BatchConnectorCallback constructor.
      *
      * @param ConnectorLoader $connectorLoader
      */
-    public function __construct(ConnectorLoader $connectorLoader)
+    public function __construct(private ConnectorLoader $connectorLoader)
     {
-        $this->connectorLoader = $connectorLoader;
     }
 
     /**

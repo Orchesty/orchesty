@@ -28,25 +28,13 @@ class LoadApplicationUsersConnector extends ConnectorAbstract implements BatchIn
     use BatchTrait;
 
     /**
-     * @var DocumentManager
-     */
-    protected DocumentManager $dm;
-
-    /**
-     * @var string
-     */
-    protected string $appKey;
-
-    /**
      * LoadApplicationUsersConnector constructor.
      *
      * @param DocumentManager $dm
      * @param string          $appKey
      */
-    public function __construct(DocumentManager $dm, string $appKey)
+    public function __construct(protected DocumentManager $dm, protected string $appKey)
     {
-        $this->dm     = $dm;
-        $this->appKey = $appKey;
     }
 
     /**
@@ -69,7 +57,7 @@ class LoadApplicationUsersConnector extends ConnectorAbstract implements BatchIn
         $this->dm->clear();
 
         $filter = [ApplicationInstall::KEY => $this->appKey];
-        $user   = $dto->getHeader(PipesHeaders::createKey(PipesHeaders::USER), NULL);
+        $user   = $dto->getHeader(PipesHeaders::createKey(PipesHeaders::USER));
         $user   = is_array($user) ? reset($user) : $user;
         if ($user) {
             $filter[ApplicationInstall::USER] = $user;

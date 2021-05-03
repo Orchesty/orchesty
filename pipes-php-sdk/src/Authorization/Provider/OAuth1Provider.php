@@ -25,21 +25,14 @@ final class OAuth1Provider extends OAuthProviderAbstract implements OAuth1Provid
     private const OAUTH_VERIFIER = 'oauth_verifier';
 
     /**
-     * @var DocumentManager
-     */
-    private DocumentManager $dm;
-
-    /**
      * OAuth1Provider constructor.
      *
      * @param DocumentManager $dm
      * @param string          $backend
      */
-    public function __construct(DocumentManager $dm, string $backend)
+    public function __construct(private DocumentManager $dm, string $backend)
     {
         parent::__construct($backend);
-
-        $this->dm = $dm;
     }
 
     /**
@@ -58,7 +51,7 @@ final class OAuth1Provider extends OAuthProviderAbstract implements OAuth1Provid
         string $tokenUrl,
         string $authorizeUrl,
         callable $saveOauthStuffs,
-        array $scopes = []
+        array $scopes = [],
     ): string
     {
         $client       = $this->createClient($dto);
@@ -70,7 +63,7 @@ final class OAuth1Provider extends OAuthProviderAbstract implements OAuth1Provid
         } catch (Exception $e) {
             $this->throwException(
                 sprintf('OAuth error: %s', $e->getMessage()),
-                AuthorizationException::AUTHORIZATION_OAUTH1_ERROR
+                AuthorizationException::AUTHORIZATION_OAUTH1_ERROR,
             );
         }
 
@@ -82,7 +75,7 @@ final class OAuth1Provider extends OAuthProviderAbstract implements OAuth1Provid
             $authorizeUrl,
             $this->getRedirectUri(),
             $requestToken[self::OAUTH_TOKEN],
-            $scopes
+            $scopes,
         );
     }
 
@@ -100,7 +93,7 @@ final class OAuth1Provider extends OAuthProviderAbstract implements OAuth1Provid
         if (!array_key_exists(self::OAUTH_VERIFIER, $request)) {
             $this->throwException(
                 sprintf('OAuth error: Data "%s" is missing.', self::OAUTH_VERIFIER),
-                AuthorizationException::AUTHORIZATION_OAUTH1_ERROR
+                AuthorizationException::AUTHORIZATION_OAUTH1_ERROR,
             );
         }
 
@@ -109,7 +102,7 @@ final class OAuth1Provider extends OAuthProviderAbstract implements OAuth1Provid
         $client = $this->createClient($dto);
         $client->setToken(
             $dto->getToken()[self::OAUTH_TOKEN],
-            $dto->getToken()[self::OAUTH_TOKEN_SECRET]
+            $dto->getToken()[self::OAUTH_TOKEN_SECRET],
         );
 
         $token = [];
@@ -138,7 +131,7 @@ final class OAuth1Provider extends OAuthProviderAbstract implements OAuth1Provid
         $client = $this->createClient($dto);
         $client->setToken(
             $dto->getToken()[self::OAUTH_TOKEN],
-            $dto->getToken()[self::OAUTH_TOKEN_SECRET]
+            $dto->getToken()[self::OAUTH_TOKEN_SECRET],
         );
 
         return (string) $client->getRequestHeader($method, $url);
@@ -160,7 +153,7 @@ final class OAuth1Provider extends OAuthProviderAbstract implements OAuth1Provid
             $dto->getConsumerKey(),
             $dto->getConsumerSecret(),
             $dto->getSignatureMethod(),
-            $dto->getAuthType()
+            $dto->getAuthType(),
         );
     }
 
@@ -176,7 +169,7 @@ final class OAuth1Provider extends OAuthProviderAbstract implements OAuth1Provid
         string $authorizeUrl,
         string $redirectUrl,
         string $oauthToken,
-        array $scopes
+        array $scopes,
     ): string
     {
         return sprintf(
@@ -184,7 +177,7 @@ final class OAuth1Provider extends OAuthProviderAbstract implements OAuth1Provid
             $authorizeUrl,
             $redirectUrl,
             $oauthToken,
-            ScopeFormatter::getScopes($scopes)
+            ScopeFormatter::getScopes($scopes),
         );
     }
 
@@ -200,9 +193,9 @@ final class OAuth1Provider extends OAuthProviderAbstract implements OAuth1Provid
                 sprintf(
                     'OAuth error: Data "%s" or "%s" is missing.',
                     self::OAUTH_TOKEN_SECRET,
-                    self::OAUTH_TOKEN
+                    self::OAUTH_TOKEN,
                 ),
-                AuthorizationException::AUTHORIZATION_OAUTH1_ERROR
+                AuthorizationException::AUTHORIZATION_OAUTH1_ERROR,
             );
         }
     }

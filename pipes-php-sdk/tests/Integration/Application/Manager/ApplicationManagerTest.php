@@ -71,7 +71,7 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
 
         self::assertEquals(
             'ok',
-            $this->manager->runSynchronousAction('null', 'testSynchronous', $r)
+            $this->manager->runSynchronousAction('null', 'testSynchronous', $r),
         );
 
         $r = new Request([], ['data']);
@@ -79,7 +79,7 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
 
         self::assertEquals(
             ['data'],
-            $this->manager->runSynchronousAction('null', 'returnBody', $r)
+            $this->manager->runSynchronousAction('null', 'returnBody', $r),
         );
     }
 
@@ -116,7 +116,7 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
 
         self::assertEquals(
             'user789',
-            $applicationInstall->getSettings()[ApplicationAbstract::FORM]['user']
+            $applicationInstall->getSettings()[ApplicationAbstract::FORM]['user'],
         );
     }
 
@@ -132,7 +132,7 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
 
         self::assertEquals(
             ['password' => 'password123'],
-            $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS]
+            $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS],
         );
     }
 
@@ -145,7 +145,7 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
     {
         $applicationInstall = $this->createApplicationInstall('null2');
         $applicationInstall->setSettings(
-            [ApplicationInterface::AUTHORIZATION_SETTINGS => [ApplicationInterface::REDIRECT_URL => '/test/redirect']]
+            [ApplicationInterface::AUTHORIZATION_SETTINGS => [ApplicationInterface::REDIRECT_URL => '/test/redirect']],
         );
 
         $app = self::createPartialMock(TestOAuth2NullApplication::class, ['setAuthorizationToken']);
@@ -157,7 +157,7 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
 
         self::assertEquals(
             ['redirect_url' => '/test/redirect'],
-            $manager->saveAuthorizationToken('null2', 'user', ['code' => ['token']])
+            $manager->saveAuthorizationToken('null2', 'user', ['code' => ['token']]),
         );
     }
 
@@ -183,7 +183,7 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
             ->setKey($key)
             ->setUser('user')
             ->setSettings(
-                [ApplicationInterface::AUTHORIZATION_SETTINGS => [BasicApplicationInterface::PASSWORD => 'passwd987']]
+                [ApplicationInterface::AUTHORIZATION_SETTINGS => [BasicApplicationInterface::PASSWORD => 'passwd987']],
             );
         $this->pfd($applicationInstall);
 

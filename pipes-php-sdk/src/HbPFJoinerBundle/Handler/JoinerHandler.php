@@ -14,18 +14,12 @@ final class JoinerHandler
 {
 
     /**
-     * @var JoinerLoader
-     */
-    private JoinerLoader $loader;
-
-    /**
      * JoinerHandler constructor.
      *
      * @param JoinerLoader $loader
      */
-    function __construct(JoinerLoader $loader)
+    function __construct(private JoinerLoader $loader)
     {
-        $this->loader = $loader;
     }
 
     /**
@@ -55,13 +49,13 @@ final class JoinerHandler
         if (!isset($data['data'])) {
             throw new JoinerException(
                 'Data under \'data\' key are missing in request.',
-                JoinerException::MISSING_DATA_IN_REQUEST
+                JoinerException::MISSING_DATA_IN_REQUEST,
             );
         }
         if (!isset($data['count'])) {
             throw new JoinerException(
                 'Total data count under \'count\' key is missing in request.',
-                JoinerException::MISSING_DATA_IN_REQUEST
+                JoinerException::MISSING_DATA_IN_REQUEST,
             );
         }
     }

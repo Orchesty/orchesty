@@ -34,7 +34,7 @@ final class LongRunningNodeCallbackTest extends DatabaseTestCaseAbstract
             '',
             [
                 'application_headers' => new AMQPTable([PipesHeaders::createKey(PipesHeaders::NODE_NAME) => 'null']),
-            ]
+            ],
         );
         $ampq->setDeliveryTag(2);
         $node->processMessage($ampq, $connection, 2);
@@ -57,7 +57,7 @@ final class LongRunningNodeCallbackTest extends DatabaseTestCaseAbstract
             '',
             [
                 'application_headers' => new AMQPTable([PipesHeaders::createKey(PipesHeaders::NODE_NAME) => 'null']),
-            ]
+            ],
         );
 
         self::expectException(OnRepeatException::class);

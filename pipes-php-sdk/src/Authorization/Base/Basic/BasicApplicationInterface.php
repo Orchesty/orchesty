@@ -29,7 +29,7 @@ interface BasicApplicationInterface extends ApplicationInterface
      */
     public function setApplicationPassword(
         ApplicationInstall $applicationInstall,
-        string $password
+        string $password,
     ): ApplicationInstall;
 
     /**

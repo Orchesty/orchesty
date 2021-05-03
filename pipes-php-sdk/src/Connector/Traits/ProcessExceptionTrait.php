@@ -79,10 +79,10 @@ trait ProcessExceptionTrait
         ProcessDto $dto,
         Throwable $throwable,
         int $interval = 60_000,
-        int $maxHops = 10
+        int $maxHops = 10,
     ): OnRepeatException
     {
-        $message = sprintf("Connector '%s': %s: %s", $this->getId(), get_class($throwable), $throwable->getMessage());
+        $message = sprintf("Connector '%s': %s: %s", $this->getId(), $throwable::class, $throwable->getMessage());
 
         return (new OnRepeatException($dto, $message, $throwable->getCode(), $throwable))
             ->setInterval($interval)

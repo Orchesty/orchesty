@@ -18,7 +18,6 @@ use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1\OAuth1ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
 use ReflectionClass;
-use ReflectionException;
 use ReflectionMethod;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -31,24 +30,9 @@ class ApplicationManager
 {
 
     /**
-     * @var ApplicationLoader
-     */
-    protected ApplicationLoader $loader;
-
-    /**
-     * @var DocumentManager
-     */
-    protected DocumentManager $dm;
-
-    /**
      * @var ObjectRepository<ApplicationInstall>&ApplicationInstallRepository
      */
     protected $repository;
-
-    /**
-     * @var CachedReader
-     */
-    private CachedReader $reader;
 
     /**
      * ApplicationManager constructor.
@@ -57,12 +41,13 @@ class ApplicationManager
      * @param ApplicationLoader $loader
      * @param CachedReader      $reader
      */
-    public function __construct(DocumentManager $dm, ApplicationLoader $loader, CachedReader $reader)
+    public function __construct(
+        protected DocumentManager $dm,
+        protected ApplicationLoader $loader,
+        private CachedReader $reader,
+    )
     {
-        $this->loader     = $loader;
-        $this->dm         = $dm;
         $this->repository = $this->dm->getRepository(ApplicationInstall::class);
-        $this->reader     = $reader;
     }
 
     /**
@@ -89,7 +74,6 @@ class ApplicationManager
      *
      * @return string[]
      * @throws ApplicationInstallException
-     * @throws ReflectionException
      */
     public function getSynchronousActions(string $key): array
     {
@@ -113,7 +97,7 @@ class ApplicationManager
      * @return mixed
      * @throws ApplicationInstallException
      */
-    public function runSynchronousAction(string $key, string $method, Request $request)
+    public function runSynchronousAction(string $key, string $method, Request $request): mixed
     {
         $app = $this->getApplication($key);
 
@@ -127,7 +111,7 @@ class ApplicationManager
 
         throw new ApplicationInstallException(
             sprintf('Method "%s" was not found for Application "%s".', $method, $key),
-            ApplicationInstallException::METHOD_NOT_FOUND
+            ApplicationInstallException::METHOD_NOT_FOUND,
         );
     }
 

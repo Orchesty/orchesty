@@ -115,8 +115,8 @@ final class JoinerControllerTest extends ControllerTestCaseAbstract
             in_array(
                 'null',
                 Json::decode((string) $response->getContent()),
-                TRUE
-            )
+                TRUE,
+            ),
         );
         self::assertEquals(200, $response->getStatusCode());
     }
@@ -150,7 +150,7 @@ final class JoinerControllerTest extends ControllerTestCaseAbstract
             ->method('processJoinerTest')
             ->willReturnCallback(
                 static function (): void {
-                }
+                },
             );
 
         self::$container->set('hbpf.handler.joiner', $joinerHandlerMock);
@@ -163,7 +163,7 @@ final class JoinerControllerTest extends ControllerTestCaseAbstract
     {
         $joinerHandlerMock = self::createPartialMock(
             JoinerHandler::class,
-            ['processJoiner', 'processJoinerTest', 'getJoiners']
+            ['processJoiner', 'processJoinerTest', 'getJoiners'],
         );
         $joinerHandlerMock->expects(self::any())->method('processJoiner')->willThrowException(new JoinerException());
         $joinerHandlerMock->expects(self::any())->method('processJoinerTest')

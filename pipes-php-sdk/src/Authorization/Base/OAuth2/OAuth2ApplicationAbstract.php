@@ -31,11 +31,6 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
     ];
 
     /**
-     * @var OAuth2Provider
-     */
-    protected OAuth2Provider $provider;
-
-    /**
      * @return string
      */
     abstract public function getAuthUrl(): string;
@@ -50,9 +45,8 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
      *
      * @param OAuth2Provider $provider
      */
-    public function __construct(OAuth2Provider $provider)
+    public function __construct(protected OAuth2Provider $provider)
     {
-        $this->provider = $provider;
     }
 
     /**
@@ -73,7 +67,7 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
         return $this->provider->authorize(
             $this->createDto($applicationInstall),
             $this->getScopes($applicationInstall),
-            static::SCOPE_SEPARATOR
+            static::SCOPE_SEPARATOR,
         );
     }
 
@@ -86,7 +80,7 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
     {
         return isset(
             $applicationInstall->getSettings(
-            )[ApplicationInterface::AUTHORIZATION_SETTINGS][OAuth2ApplicationInterface::TOKEN][OAuth2Provider::ACCESS_TOKEN]
+            )[ApplicationInterface::AUTHORIZATION_SETTINGS][OAuth2ApplicationInterface::TOKEN][OAuth2Provider::ACCESS_TOKEN],
         );
     }
 
@@ -107,10 +101,10 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
                     Field::TEXT,
                     ApplicationInterface::REDIRECT_URL,
                     'Redirect URL',
-                    $this->provider->getRedirectUri()
+                    $this->provider->getRedirectUri(),
                 )
                 )->setReadOnly(TRUE)->toArray(),
-            ]
+            ],
         );
     }
 
@@ -125,13 +119,13 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
     {
         $token = $this->provider->refreshAccessToken(
             $this->createDto($applicationInstall),
-            $this->getTokens($applicationInstall)
+            $this->getTokens($applicationInstall),
         );
 
         if (isset($token[OAuth2Provider::EXPIRES])) {
             $applicationInstall->setExpires(
                 DateTimeUtils::getUtcDateTime()
-                    ->setTimestamp($token[OAuth2Provider::EXPIRES])
+                    ->setTimestamp($token[OAuth2Provider::EXPIRES]),
             );
         }
 
@@ -162,7 +156,7 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
      */
     public function setFrontendRedirectUrl(
         ApplicationInstall $applicationInstall,
-        string $redirectUrl
+        string $redirectUrl,
     ): OAuth2ApplicationInterface
     {
         $settings = $applicationInstall->getSettings();
@@ -182,7 +176,7 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
      */
     public function setAuthorizationToken(
         ApplicationInstall $applicationInstall,
-        array $token
+        array $token,
     ): OAuth2ApplicationInterface
     {
         $token = $this->provider->getAccessToken($this->createDto($applicationInstall), $token);
@@ -207,11 +201,12 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
     public function getAccessToken(ApplicationInstall $applicationInstall): string
     {
         if (isset($applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN][OAuth2Provider::ACCESS_TOKEN])) {
-            return $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN][OAuth2Provider::ACCESS_TOKEN];
+            return $applicationInstall->getSettings(
+            )[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN][OAuth2Provider::ACCESS_TOKEN];
         } else {
             throw new ApplicationInstallException(
                 'There is no access token',
-                ApplicationInstallException::AUTHORIZATION_OAUTH2_ERROR
+                ApplicationInstallException::AUTHORIZATION_OAUTH2_ERROR,
             );
         }
     }
@@ -269,7 +264,7 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
     /**
      * @param ApplicationInstall $applicationInstall
      *
-     * @return mixed[]|string[]
+     * @return mixed[]
      */
     protected function getScopes(ApplicationInstall $applicationInstall): array
     {

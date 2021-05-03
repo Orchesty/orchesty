@@ -36,16 +36,6 @@ abstract class RabbitCustomNode extends CustomNodeAbstract implements LoggerAwar
     protected LoggerInterface $logger;
 
     /**
-     * @var Connection
-     */
-    private Connection $connection;
-
-    /**
-     * @var Publisher
-     */
-    private Publisher $publisher;
-
-    /**
      * @var ObjectRepository<Node>|NodeRepository
      */
     private $nodeRepo;
@@ -77,12 +67,10 @@ abstract class RabbitCustomNode extends CustomNodeAbstract implements LoggerAwar
      * @param Connection      $connection
      * @param Publisher       $publisher
      */
-    public function __construct(DocumentManager $dm, Connection $connection, Publisher $publisher)
+    public function __construct(DocumentManager $dm, private Connection $connection, private Publisher $publisher)
     {
-        $this->publisher  = $publisher;
-        $this->connection = $connection;
-        $this->nodeRepo   = $dm->getRepository(Node::class);
-        $this->logger     = new NullLogger();
+        $this->nodeRepo = $dm->getRepository(Node::class);
+        $this->logger   = new NullLogger();
     }
 
     /**
@@ -142,31 +130,31 @@ abstract class RabbitCustomNode extends CustomNodeAbstract implements LoggerAwar
     {
         if ($this->isEmpty(PipesHeaders::get(PipesHeaders::NODE_ID, $dto->getHeaders()))) {
             throw new InvalidArgumentException(
-                sprintf('Missing "%s" in the message header.', PipesHeaders::createKey(PipesHeaders::NODE_ID))
+                sprintf('Missing "%s" in the message header.', PipesHeaders::createKey(PipesHeaders::NODE_ID)),
             );
         }
 
         if ($this->isEmpty(PipesHeaders::get(PipesHeaders::TOPOLOGY_ID, $dto->getHeaders()))) {
             throw new InvalidArgumentException(
-                sprintf('Missing "%s" in the message header.', PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID))
+                sprintf('Missing "%s" in the message header.', PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID)),
             );
         }
 
         if ($this->isEmpty(PipesHeaders::get(PipesHeaders::CORRELATION_ID, $dto->getHeaders()))) {
             throw new InvalidArgumentException(
-                sprintf('Missing "%s" in the message header.', PipesHeaders::createKey(PipesHeaders::CORRELATION_ID))
+                sprintf('Missing "%s" in the message header.', PipesHeaders::createKey(PipesHeaders::CORRELATION_ID)),
             );
         }
 
         if ($this->isEmpty(PipesHeaders::get(PipesHeaders::PROCESS_ID, $dto->getHeaders()))) {
             throw new InvalidArgumentException(
-                sprintf('Missing "%s" in the message header.', PipesHeaders::createKey(PipesHeaders::PROCESS_ID))
+                sprintf('Missing "%s" in the message header.', PipesHeaders::createKey(PipesHeaders::PROCESS_ID)),
             );
         }
 
         if (!array_key_exists(PipesHeaders::createKey(PipesHeaders::PARENT_ID), $dto->getHeaders())) {
             throw new InvalidArgumentException(
-                sprintf('Missing "%s" in the message header.', PipesHeaders::createKey(PipesHeaders::PARENT_ID))
+                sprintf('Missing "%s" in the message header.', PipesHeaders::createKey(PipesHeaders::PARENT_ID)),
             );
         }
     }
@@ -208,7 +196,7 @@ abstract class RabbitCustomNode extends CustomNodeAbstract implements LoggerAwar
             $que            = NodeGeneratorUtils::generateQueueNameFromStrings(
                 (string) $topId,
                 $next->getId(),
-                $next->getName()
+                $next->getName(),
             );
             $this->queues[] = $que;
 

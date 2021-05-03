@@ -24,18 +24,12 @@ final class MapperController
     use ControllerTrait;
 
     /**
-     * @var MapperHandler
-     */
-    private MapperHandler $mapperHandler;
-
-    /**
      * MapperController constructor.
      *
      * @param MapperHandler $mapperHandler
      */
-    public function __construct(MapperHandler $mapperHandler)
+    public function __construct(private MapperHandler $mapperHandler)
     {
-        $this->mapperHandler = $mapperHandler;
     }
 
     /**

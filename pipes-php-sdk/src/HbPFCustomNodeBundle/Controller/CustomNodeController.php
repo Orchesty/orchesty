@@ -75,7 +75,7 @@ final class CustomNodeController implements LoggerAwareInterface
 
             return $this->getResponse([]);
         } catch (Throwable $t) {
-            return $this->getErrorResponse($t, 500, ControllerUtils::INTERNAL_SERVER_ERROR);
+            return $this->getErrorResponse($t);
         }
     }
 

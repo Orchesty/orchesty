@@ -39,7 +39,7 @@ interface OAuth1ApplicationInterface extends ApplicationInterface
      */
     public function setFrontendRedirectUrl(
         ApplicationInstall $applicationInstall,
-        string $redirectUrl
+        string $redirectUrl,
     ): OAuth1ApplicationInterface;
 
     /**
@@ -50,7 +50,7 @@ interface OAuth1ApplicationInterface extends ApplicationInterface
      */
     public function setAuthorizationToken(
         ApplicationInstall $applicationInstall,
-        array $token
+        array $token,
     ): OAuth1ApplicationInterface;
 
 }

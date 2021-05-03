@@ -53,7 +53,7 @@ final class OAuth2ApplicationAbstractTest extends DatabaseTestCaseAbstract
                                 OAuth2Provider::ACCESS_TOKEN => 'access_token',
                             ],
                     ],
-            ]
+            ],
         );
 
         self::assertTrue($this->testApp->isAuthorized($applicationInstall));
@@ -86,7 +86,7 @@ final class OAuth2ApplicationAbstractTest extends DatabaseTestCaseAbstract
                         'expires_in'   => DateTimeUtils::getUtcDateTime('tomorrow')->getTimestamp(),
                     ],
                 ],
-            ]
+            ],
         );
         $provider           = self::createPartialMock(OAuth2Provider::class, ['refreshAccessToken']);
         $provider
@@ -96,7 +96,7 @@ final class OAuth2ApplicationAbstractTest extends DatabaseTestCaseAbstract
                 [
                     OAuth2Provider::EXPIRES      => DateTimeUtils::getUtcDateTime('tomorrow')->getTimestamp(),
                     OAuth2Provider::ACCESS_TOKEN => '__token__',
-                ]
+                ],
             );
 
         $application        = new NullOAuth2Application($provider);
@@ -105,7 +105,7 @@ final class OAuth2ApplicationAbstractTest extends DatabaseTestCaseAbstract
         self::assertEquals(
             '__token__',
             $applicationInstall->getSettings(
-            )[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN][OAuth2Provider::ACCESS_TOKEN]
+            )[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN][OAuth2Provider::ACCESS_TOKEN],
         );
     }
 
@@ -117,7 +117,7 @@ final class OAuth2ApplicationAbstractTest extends DatabaseTestCaseAbstract
     public function testGetFrontendRedirectUrl(): void
     {
         $applicationInstall = $this->createApplicationInstall(
-            [ApplicationInterface::AUTHORIZATION_SETTINGS => [ApplicationInterface::REDIRECT_URL => '/redirect/url']]
+            [ApplicationInterface::AUTHORIZATION_SETTINGS => [ApplicationInterface::REDIRECT_URL => '/redirect/url']],
         );
         self::assertEquals('/redirect/url', $this->testApp->getFrontendRedirectUrl($applicationInstall));
     }
@@ -139,7 +139,7 @@ final class OAuth2ApplicationAbstractTest extends DatabaseTestCaseAbstract
                 [
                     OAuth2Provider::EXPIRES      => DateTimeUtils::getUtcDateTime('tomorrow')->getTimestamp(),
                     OAuth2Provider::ACCESS_TOKEN => '__token__',
-                ]
+                ],
             );
         $application = new NullOAuth2Application($provider);
         $application->setAuthorizationToken($applicationInstall, ['code' => '__code__']);
@@ -147,7 +147,7 @@ final class OAuth2ApplicationAbstractTest extends DatabaseTestCaseAbstract
         self::assertEquals(
             '__token__',
             $applicationInstall->getSettings(
-            )[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN][OAuth2Provider::ACCESS_TOKEN]
+            )[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN][OAuth2Provider::ACCESS_TOKEN],
         );
     }
 
@@ -159,7 +159,7 @@ final class OAuth2ApplicationAbstractTest extends DatabaseTestCaseAbstract
     public function testGetAccessToken(): void
     {
         $applicationInstall = $this->createApplicationInstall(
-            [ApplicationInterface::AUTHORIZATION_SETTINGS => [ApplicationInterface::TOKEN => [OAuth2Provider::ACCESS_TOKEN => '__token__']]]
+            [ApplicationInterface::AUTHORIZATION_SETTINGS => [ApplicationInterface::TOKEN => [OAuth2Provider::ACCESS_TOKEN => '__token__']]],
         );
 
         self::assertEquals('__token__', $this->testApp->getAccessToken($applicationInstall));
@@ -183,12 +183,12 @@ final class OAuth2ApplicationAbstractTest extends DatabaseTestCaseAbstract
             [
                 OAuth2ApplicationInterface::CLIENT_ID     => '123',
                 OAuth2ApplicationInterface::CLIENT_SECRET => '__secret__',
-            ]
+            ],
         );
 
         self::assertEquals(
             '123',
-            $applicationInstall->getSettings()[ApplicationAbstract::FORM][OAuth2ApplicationInterface::CLIENT_ID]
+            $applicationInstall->getSettings()[ApplicationAbstract::FORM][OAuth2ApplicationInterface::CLIENT_ID],
         );
     }
 

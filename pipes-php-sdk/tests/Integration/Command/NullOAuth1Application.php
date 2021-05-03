@@ -77,7 +77,7 @@ final class NullOAuth1Application extends OAuth1ApplicationAbstract implements O
         ApplicationInstall $applicationInstall,
         string $method,
         ?string $url = NULL,
-        ?string $data = NULL
+        ?string $data = NULL,
     ): RequestDto
     {
         $applicationInstall;

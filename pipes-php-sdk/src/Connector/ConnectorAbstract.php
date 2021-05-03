@@ -7,7 +7,6 @@ use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\String\Json;
-use JsonException;
 
 /**
  * Class ConnectorAbstract
@@ -20,7 +19,7 @@ abstract class ConnectorAbstract implements ConnectorInterface
     /**
      * @var ApplicationInterface|null
      */
-    protected $application;
+    protected ?ApplicationInterface $application = NULL;
 
     /**
      * @var mixed[]
@@ -98,7 +97,6 @@ abstract class ConnectorAbstract implements ConnectorInterface
      * @param ProcessDto $dto
      *
      * @return mixed[]
-     * @throws JsonException
      */
     protected function getJsonContent(ProcessDto $dto): array
     {

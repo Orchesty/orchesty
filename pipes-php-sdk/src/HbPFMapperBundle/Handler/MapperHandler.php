@@ -14,18 +14,12 @@ final class MapperHandler
 {
 
     /**
-     * @var MapperLoader
-     */
-    private MapperLoader $mapperLoader;
-
-    /**
      * MapperHandler constructor.
      *
      * @param MapperLoader $mapperLoader
      */
-    public function __construct(MapperLoader $mapperLoader)
+    public function __construct(private MapperLoader $mapperLoader)
     {
-        $this->mapperLoader = $mapperLoader;
     }
 
     /**

@@ -18,18 +18,12 @@ final class MapperLoader
     public const PREFIX = 'hbpf.mapper';
 
     /**
-     * @var ContainerInterface
-     */
-    private ContainerInterface $container;
-
-    /**
      * MapperLoader constructor.
      *
      * @param ContainerInterface $container
      */
-    public function __construct(ContainerInterface $container)
+    public function __construct(private ContainerInterface $container)
     {
-        $this->container = $container;
     }
 
     /**
@@ -50,7 +44,7 @@ final class MapperLoader
 
         throw new MapperException(
             sprintf('Mapper \'%s\' not exist', $name),
-            MapperException::MAPPER_NOT_EXIST
+            MapperException::MAPPER_NOT_EXIST,
         );
     }
 

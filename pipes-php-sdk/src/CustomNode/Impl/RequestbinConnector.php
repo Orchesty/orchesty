@@ -18,25 +18,13 @@ final class RequestbinConnector extends CustomNodeAbstract
 {
 
     /**
-     * @var string
-     */
-    private string $url;
-
-    /**
-     * @var CurlManager
-     */
-    private CurlManager $curl;
-
-    /**
      * RequestbinConnector constructor.
      *
      * @param string      $url
      * @param CurlManager $curl
      */
-    public function __construct(string $url, CurlManager $curl)
+    public function __construct(private string $url, private CurlManager $curl)
     {
-        $this->url  = $url;
-        $this->curl = $curl;
     }
 
     /**

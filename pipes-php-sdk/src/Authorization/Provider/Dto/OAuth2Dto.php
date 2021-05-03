@@ -32,16 +32,6 @@ final class OAuth2Dto implements OAuth2DtoInterface
     /**
      * @var string
      */
-    private string $authorizeUrl;
-
-    /**
-     * @var string
-     */
-    private string $tokenUrl;
-
-    /**
-     * @var string
-     */
     private string $user = '';
 
     /**
@@ -56,10 +46,12 @@ final class OAuth2Dto implements OAuth2DtoInterface
      * @param string             $authorizeUrl
      * @param string             $tokenUrl
      */
-    public function __construct(ApplicationInstall $authorization, string $authorizeUrl, string $tokenUrl)
+    public function __construct(
+        ApplicationInstall $authorization,
+        private string $authorizeUrl,
+        private string $tokenUrl,
+    )
     {
-        $this->authorizeUrl = $authorizeUrl;
-        $this->tokenUrl     = $tokenUrl;
         $this->clientId     = $authorization->getSettings()
                               [BasicApplicationInterface::AUTHORIZATION_SETTINGS][OAuth2ApplicationInterface::CLIENT_ID] ?? '';
         $this->clientSecret = $authorization->getSettings()

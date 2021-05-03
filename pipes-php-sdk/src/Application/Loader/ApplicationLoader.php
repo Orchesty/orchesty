@@ -18,18 +18,12 @@ final class ApplicationLoader
     private const APPLICATION_PREFIX = 'hbpf.application';
 
     /**
-     * @var ContainerInterface
-     */
-    private ContainerInterface $container;
-
-    /**
      * ApplicationLoader constructor.
      *
      * @param ContainerInterface $container
      */
-    public function __construct(ContainerInterface $container)
+    public function __construct(private ContainerInterface $container)
     {
-        $this->container = $container;
     }
 
     /**
@@ -48,7 +42,7 @@ final class ApplicationLoader
         } else {
             throw new ApplicationInstallException(
                 sprintf('Application for [%s] was not found.', $key),
-                ApplicationInstallException::APP_WAS_NOT_FOUND
+                ApplicationInstallException::APP_WAS_NOT_FOUND,
             );
         }
 

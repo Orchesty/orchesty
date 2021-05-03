@@ -92,13 +92,13 @@ final class ConnectorAbstractTest extends KernelTestCaseAbstract
         $this->invokeMethod(
             $this->nullConnector,
             'setJsonContent',
-            [$dto, ['data' => 'something']]
+            [$dto, ['data' => 'something']],
         );
 
         $result = $this->invokeMethod(
             $this->nullConnector,
             'getJsonContent',
-            [$dto]
+            [$dto],
         );
         self::assertEquals(['data' => 'something'], $result);
     }

@@ -41,7 +41,7 @@ final class IncludeCommandTest extends DatabaseTestCaseAbstract
                 9  => 'cron:refresh',
                 10 => 'test:command',
             ],
-            $commands
+            $commands,
         );
     }
 

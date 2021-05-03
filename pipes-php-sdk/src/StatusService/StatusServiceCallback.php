@@ -30,25 +30,13 @@ class StatusServiceCallback implements CallbackInterface
     private const PROCESS_ID        = 'process_id';
 
     /**
-     * @var EventDispatcherInterface
-     */
-    protected EventDispatcherInterface $eventDispatcher;
-
-    /**
-     * @var Publisher
-     */
-    private Publisher $publisher;
-
-    /**
      * StatusServiceCallback constructor.
      *
      * @param EventDispatcherInterface $eventDispatcher
      * @param Publisher                $publisher
      */
-    public function __construct(EventDispatcherInterface $eventDispatcher, Publisher $publisher)
+    public function __construct(protected EventDispatcherInterface $eventDispatcher, private Publisher $publisher)
     {
-        $this->eventDispatcher = $eventDispatcher;
-        $this->publisher       = $publisher;
     }
 
     /**
@@ -65,20 +53,20 @@ class StatusServiceCallback implements CallbackInterface
         if (!isset($data[self::PROCESS_ID])) {
             throw new PipesFrameworkException(
                 'Missing message\'s content in StatusServiceCallback [process_id].',
-                PipesFrameworkException::REQUIRED_PARAMETER_NOT_FOUND
+                PipesFrameworkException::REQUIRED_PARAMETER_NOT_FOUND,
             );
         }
 
         if (!isset($data[self::SUCCESS])) {
             throw new PipesFrameworkException(
                 'Missing message\'s content in StatusServiceCallback [success].',
-                PipesFrameworkException::REQUIRED_PARAMETER_NOT_FOUND
+                PipesFrameworkException::REQUIRED_PARAMETER_NOT_FOUND,
             );
         }
 
         $this->eventDispatcher->dispatch(
             new ProcessStatusEvent($data[self::PROCESS_ID], (bool) $data[self::SUCCESS]),
-            ProcessStatusEvent::PROCESS_FINISHED
+            ProcessStatusEvent::PROCESS_FINISHED,
         );
 
         if ($data[self::SUCCESS]) {
@@ -105,8 +93,8 @@ class StatusServiceCallback implements CallbackInterface
                         self::SUBJECT           => $subject,
                         self::MESSAGE           => $message,
                     ],
-                ]
-            )
+                ],
+            ),
         );
     }
 

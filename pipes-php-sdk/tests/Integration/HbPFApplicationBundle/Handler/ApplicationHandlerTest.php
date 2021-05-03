@@ -77,7 +77,7 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
                 'description'        => 'Application for test purposes',
                 'syncMethods'        => ['testSynchronous', 'returnBody'],
             ],
-            $this->handler->getApplicationByKey('null')
+            $this->handler->getApplicationByKey('null'),
         );
     }
 
@@ -103,7 +103,7 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
 
         self::assertEquals(
             'ok',
-            $this->handler->runSynchronousAction('null', 'testSynchronous', $r)
+            $this->handler->runSynchronousAction('null', 'testSynchronous', $r),
         );
     }
 

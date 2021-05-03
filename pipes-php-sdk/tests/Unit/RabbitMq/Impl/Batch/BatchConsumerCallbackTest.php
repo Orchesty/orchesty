@@ -484,7 +484,7 @@ final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
         $channel = self::createMock(AMQPChannel::class);
         $channel->method('basic_publish');
 
-        $batchAction = self::createMock(BatchActionInterface::class,);
+        $batchAction = self::createMock(BatchActionInterface::class);
         $batchAction->method('getBatchService')->willThrowException(new Exception());
 
         $sender        = self::createMock(MetricsSenderLoader::class);
@@ -493,7 +493,7 @@ final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
         $this->invokeMethod(
             $batchCallback,
             'testAction',
-            [$channel, Message::create('', [PipesHeaders::createKey(PipesHeaders::NODE_NAME) => 'name'])]
+            [$channel, Message::create('', [PipesHeaders::createKey(PipesHeaders::NODE_NAME) => 'name'])],
         );
         self::assertFake();
     }
@@ -517,7 +517,7 @@ final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
                 $channel,
                 new AMQPMessage(),
                 (new SuccessMessage(2))->setResultCode(1_004),
-            ]
+            ],
         );
 
         self::assertFake();

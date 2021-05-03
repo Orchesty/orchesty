@@ -24,18 +24,12 @@ final class ConnectorController implements LoggerAwareInterface
     use ControllerTrait;
 
     /**
-     * @var ConnectorHandler
-     */
-    private ConnectorHandler $connectorHandler;
-
-    /**
      * ConnectorController constructor.
      *
      * @param ConnectorHandler $connectorHandler
      */
-    public function __construct(ConnectorHandler $connectorHandler)
+    public function __construct(private ConnectorHandler $connectorHandler)
     {
-        $this->connectorHandler = $connectorHandler;
     }
 
     /**

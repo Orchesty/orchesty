@@ -51,7 +51,7 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
             [
                 'file_id'     => sprintf('%s/input-10.xlsx', $this->path),
                 'has_headers' => FALSE,
-            ]
+            ],
         );
         self::assertEquals(file_get_contents(sprintf('%s/output-10.json', $this->path)), $result);
 
@@ -59,7 +59,7 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
             [
                 'file_id'     => sprintf('%s/input-10h.xlsx', $this->path),
                 'has_headers' => TRUE,
-            ]
+            ],
         );
         self::assertEquals(file_get_contents(sprintf('%s/output-10h.json', $this->path)), $result);
     }
@@ -156,13 +156,13 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
             [
                 'file_id'     => sprintf('%s/output-10.json', $this->path),
                 'has_headers' => FALSE,
-            ]
+            ],
         );
         $result     = $this->handler->parseToJson(
             [
                 'file_id'     => $resultPath,
                 'has_headers' => FALSE,
-            ]
+            ],
         );
         self::assertEquals(file_get_contents(sprintf('%s/output-10.json', $this->path)), $result);
         unlink($resultPath);
@@ -172,13 +172,13 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
             [
                 'file_id'     => sprintf('%s/output-10h.json', $this->path),
                 'has_headers' => TRUE,
-            ]
+            ],
         );
         $result     = $this->handler->parseToJson(
             [
                 'file_id'     => $resultPath,
                 'has_headers' => TRUE,
-            ]
+            ],
         );
         self::assertEquals(file_get_contents(sprintf('%s/output-10h.json', $this->path)), $result);
         unlink($resultPath);
@@ -198,13 +198,13 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
             TableParserInterface::XLSX,
             [
                 'file_id' => $file->getId(),
-            ]
+            ],
         );
         $result     = $this->handler->parseToJson(
             [
                 'file_id'     => $resultPath,
                 'has_headers' => FALSE,
-            ]
+            ],
         );
         self::assertEquals(file_get_contents(sprintf('%s/output-10.json', $this->path)), $result);
         unlink($resultPath);

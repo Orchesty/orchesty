@@ -18,18 +18,12 @@ final class CustomNodeLoader
     public const PREFIX = 'hbpf.custom_node';
 
     /**
-     * @var ContainerInterface
-     */
-    private ContainerInterface $container;
-
-    /**
      * CustomNodeLoader constructor.
      *
      * @param ContainerInterface $container
      */
-    function __construct(ContainerInterface $container)
+    function __construct(private ContainerInterface $container)
     {
-        $this->container = $container;
     }
 
     /**
@@ -50,7 +44,7 @@ final class CustomNodeLoader
 
         throw new CustomNodeException(
             sprintf('Node [%s] not found.', $serviceName),
-            CustomNodeException::CUSTOM_NODE_SERVICE_NOT_FOUND
+            CustomNodeException::CUSTOM_NODE_SERVICE_NOT_FOUND,
         );
     }
 

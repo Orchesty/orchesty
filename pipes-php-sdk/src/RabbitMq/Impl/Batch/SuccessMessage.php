@@ -14,11 +14,6 @@ final class SuccessMessage
 {
 
     /**
-     * @var int
-     */
-    private int $sequenceId;
-
-    /**
      * @var string
      */
     private string $data = '';
@@ -33,12 +28,11 @@ final class SuccessMessage
      *
      * @param int $sequenceId
      */
-    public function __construct(int $sequenceId)
+    public function __construct(private int $sequenceId)
     {
         if ($sequenceId < 0) {
             throw new InvalidArgumentException('Sequence ID must be grater or equal to 0.');
         }
-        $this->sequenceId = $sequenceId;
         $this->setResultCode(0);
     }
 

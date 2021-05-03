@@ -55,7 +55,7 @@ final class TraitTest extends KernelTestCaseAbstract
         $exception = $this->invokeMethod(
             $this->nullConnector,
             'createException',
-            ['%s. This is test exception', 'Uupps']
+            ['%s. This is test exception', 'Uupps'],
         );
 
         self::assertEquals("Connector 'null-test-trait': Uupps. This is test exception", $exception->getMessage());
@@ -72,12 +72,12 @@ final class TraitTest extends KernelTestCaseAbstract
         $exception = $this->invokeMethod(
             $this->nullConnector,
             'createMissingContentException',
-            ['Something']
+            ['Something'],
         );
 
         self::assertEquals(
             "Connector 'null-test-trait': Content 'Something' does not exist!",
-            $exception->getMessage()
+            $exception->getMessage(),
         );
         self::assertEquals(ConnectorException::CONNECTOR_FAILED_TO_PROCESS, $exception->getCode());
     }
@@ -92,12 +92,12 @@ final class TraitTest extends KernelTestCaseAbstract
         $exception = $this->invokeMethod(
             $this->nullConnector,
             'createMissingHeaderException',
-            ['Something']
+            ['Something'],
         );
 
         self::assertEquals(
             "Connector 'null-test-trait': Header 'Something' does not exist!",
-            $exception->getMessage()
+            $exception->getMessage(),
         );
         self::assertEquals(ConnectorException::CONNECTOR_FAILED_TO_PROCESS, $exception->getCode());
     }
@@ -112,12 +112,12 @@ final class TraitTest extends KernelTestCaseAbstract
         $exception = $this->invokeMethod(
             $this->nullConnector,
             'createMissingApplicationInstallException',
-            ['Something']
+            ['Something'],
         );
 
         self::assertEquals(
             "Connector 'null-test-trait': ApplicationInstall with key 'Something' does not exist!",
-            $exception->getMessage()
+            $exception->getMessage(),
         );
         self::assertEquals(ConnectorException::CONNECTOR_FAILED_TO_PROCESS, $exception->getCode());
     }
@@ -132,12 +132,12 @@ final class TraitTest extends KernelTestCaseAbstract
         $exception = $this->invokeMethod(
             $this->nullConnector,
             'createRepeatException',
-            [new ProcessDto(), new Exception('Upps. Something went wrong.'), 70_000, 15]
+            [new ProcessDto(), new Exception('Upps. Something went wrong.'), 70_000, 15],
         );
 
         self::assertEquals(
             "Connector 'null-test-trait': Exception: Upps. Something went wrong.",
-            $exception->getMessage()
+            $exception->getMessage(),
         );
         self::assertEquals(15, $exception->getMaxHops());
         self::assertEquals(70_000, $exception->getInterval());

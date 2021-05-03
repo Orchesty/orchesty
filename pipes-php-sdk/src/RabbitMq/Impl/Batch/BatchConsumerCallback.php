@@ -44,26 +44,14 @@ class BatchConsumerCallback implements CallbackInterface, LoggerAwareInterface
     protected const  BATCH_ITEM        = 'batch_item';
 
     /**
-     * @var BatchActionInterface
-     */
-    protected BatchActionInterface $batchAction;
-
-    /**
-     * @var MetricsSenderLoader
-     */
-    protected MetricsSenderLoader $sender;
-
-    /**
      * BatchConsumerCallback constructor.
      *
      * @param BatchActionInterface $batchAction
      * @param MetricsSenderLoader  $sender
      */
-    public function __construct(BatchActionInterface $batchAction, MetricsSenderLoader $sender)
+    public function __construct(protected BatchActionInterface $batchAction, protected MetricsSenderLoader $sender)
     {
-        $this->batchAction = $batchAction;
-        $this->sender      = $sender;
-        $this->logger      = new NullLogger();
+        $this->logger = new NullLogger();
     }
 
     /**
@@ -126,13 +114,13 @@ class BatchConsumerCallback implements CallbackInterface, LoggerAwareInterface
 
         if ($this->isEmpty(PipesHeaders::get(PipesHeaders::NODE_ID, $headers))) {
             throw new InvalidArgumentException(
-                sprintf(self::MISSING_HEADER, PipesHeaders::createKey(PipesHeaders::NODE_ID))
+                sprintf(self::MISSING_HEADER, PipesHeaders::createKey(PipesHeaders::NODE_ID)),
             );
         }
 
         if ($this->isEmpty(PipesHeaders::get(PipesHeaders::TOPOLOGY_ID, $headers))) {
             throw new InvalidArgumentException(
-                sprintf(self::MISSING_HEADER, PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID))
+                sprintf(self::MISSING_HEADER, PipesHeaders::createKey(PipesHeaders::TOPOLOGY_ID)),
             );
         }
 
@@ -140,20 +128,20 @@ class BatchConsumerCallback implements CallbackInterface, LoggerAwareInterface
             throw new InvalidArgumentException(
                 sprintf(
                     self::MISSING_HEADER,
-                    PipesHeaders::createKey(PipesHeaders::CORRELATION_ID)
-                )
+                    PipesHeaders::createKey(PipesHeaders::CORRELATION_ID),
+                ),
             );
         }
 
         if ($this->isEmpty(PipesHeaders::get(PipesHeaders::PROCESS_ID, $headers))) {
             throw new InvalidArgumentException(
-                sprintf(self::MISSING_HEADER, PipesHeaders::createKey(PipesHeaders::PROCESS_ID))
+                sprintf(self::MISSING_HEADER, PipesHeaders::createKey(PipesHeaders::PROCESS_ID)),
             );
         }
 
         if (!array_key_exists(PipesHeaders::createKey(PipesHeaders::PARENT_ID), $headers)) {
             throw new InvalidArgumentException(
-                sprintf(self::MISSING_HEADER, PipesHeaders::createKey(PipesHeaders::PARENT_ID))
+                sprintf(self::MISSING_HEADER, PipesHeaders::createKey(PipesHeaders::PARENT_ID)),
             );
         }
     }
@@ -199,8 +187,6 @@ class BatchConsumerCallback implements CallbackInterface, LoggerAwareInterface
     /**
      * @param AMQPChannel $channel
      * @param AMQPMessage $message
-     *
-     * @throws OnRepeatException
      */
     protected function batchAction(AMQPChannel $channel, AMQPMessage $message): void
     {
@@ -208,7 +194,7 @@ class BatchConsumerCallback implements CallbackInterface, LoggerAwareInterface
             $message,
             function (SuccessMessage $successMessage) use ($channel, $message): void {
                 $this->itemCallback($channel, $message, $successMessage);
-            }
+            },
         );
         $this->batchCallback($channel, $message);
     }
@@ -224,7 +210,7 @@ class BatchConsumerCallback implements CallbackInterface, LoggerAwareInterface
         $resultMessage = sprintf(
             'Batch item %s for node %s.',
             $successMessage->getSequenceId(),
-            PipesHeaders::get(PipesHeaders::NODE_NAME, $headers)
+            PipesHeaders::get(PipesHeaders::NODE_NAME, $headers),
         );
 
         $this->publish(
@@ -234,7 +220,7 @@ class BatchConsumerCallback implements CallbackInterface, LoggerAwareInterface
             $resultMessage,
             '',
             self::BATCH_ITEM,
-            $successMessage->getSequenceId()
+            $successMessage->getSequenceId(),
         );
 
         $this->log($message, sprintf('Published batch item %s.', $successMessage->getSequenceId()));
@@ -248,13 +234,13 @@ class BatchConsumerCallback implements CallbackInterface, LoggerAwareInterface
     protected function batchCallback(
         AMQPChannel $channel,
         AMQPMessage $message,
-        string $type = self::BATCH_END_TYPE
+        string $type = self::BATCH_END_TYPE,
     ): void
     {
         $headers       = Message::getHeaders($message);
         $resultMessage = sprintf(
             'Batch end for node %s.',
-            PipesHeaders::get(PipesHeaders::NODE_NAME, $headers)
+            PipesHeaders::get(PipesHeaders::NODE_NAME, $headers),
         );
 
         $resultCode = PipesHeaders::get(PipesHeaders::RESULT_CODE, $headers) ?? 0;
@@ -299,7 +285,7 @@ class BatchConsumerCallback implements CallbackInterface, LoggerAwareInterface
         string $resultMessage = '',
         string $resultDetail = '',
         ?string $type = NULL,
-        ?int $sequenceId = NULL
+        ?int $sequenceId = NULL,
     ): void
     {
         $body    = Message::getBody($message);
@@ -312,7 +298,7 @@ class BatchConsumerCallback implements CallbackInterface, LoggerAwareInterface
                 PipesHeaders::createKey(PipesHeaders::RESULT_MESSAGE) => $resultMessage,
                 PipesHeaders::createKey(PipesHeaders::RESULT_DETAIL)  => $resultDetail,
                 PipesHeaders::createKey(PipesHeaders::TIMESTAMP)      => (string) round(microtime(TRUE) * 1_000),
-            ]
+            ],
         );
 
         if ($type) {
@@ -356,7 +342,7 @@ class BatchConsumerCallback implements CallbackInterface, LoggerAwareInterface
                     MetricsEnum::TOPOLOGY_ID    => PipesHeaders::get(PipesHeaders::TOPOLOGY_ID, $headers),
                     MetricsEnum::CORRELATION_ID => PipesHeaders::get(PipesHeaders::CORRELATION_ID, $headers),
                     MetricsEnum::NODE_ID        => PipesHeaders::get(PipesHeaders::NODE_ID, $headers),
-                ]
+                ],
             );
         } catch (Throwable $t) {
             $this->log($message, sprintf('Send metrics failed: "%s"', $t->getMessage()), LogLevel::ERROR, [], $t);
@@ -375,7 +361,7 @@ class BatchConsumerCallback implements CallbackInterface, LoggerAwareInterface
         string $text,
         string $level = LogLevel::DEBUG,
         array $context = [],
-        ?Throwable $t = NULL
+        ?Throwable $t = NULL,
     ): void
     {
         $this->logger->log(
@@ -384,8 +370,8 @@ class BatchConsumerCallback implements CallbackInterface, LoggerAwareInterface
             array_merge(
                 PipesHeaders::debugInfo(Message::getHeaders($message)),
                 ['Exception' => $t, 'Message' => $message],
-                $context
-            )
+                $context,
+            ),
         );
     }
 

@@ -33,7 +33,7 @@ trait RepeaterTrait
      * @param string|int $interval
      * @param string|int $hops
      */
-    protected function setDtoHopHeaders(ProcessDto $dto, $interval, $hops): void
+    protected function setDtoHopHeaders(ProcessDto $dto,string|int $interval,string|int $hops): void
     {
         $repeatInterval = PipesHeaders::createKey(PipesHeaders::REPEAT_INTERVAL);
         $repeatMaxHops  = PipesHeaders::createKey(PipesHeaders::REPEAT_MAX_HOPS);
@@ -77,7 +77,7 @@ trait RepeaterTrait
                 'currentHop' => $currentHop,
                 'interval'   => $dto->getHeader(PipesHeaders::createKey(PipesHeaders::REPEAT_INTERVAL)),
                 'maxHops'    => $dto->getHeader(PipesHeaders::createKey(PipesHeaders::REPEAT_MAX_HOPS)),
-            ]
+            ],
         );
     }
 
@@ -88,7 +88,7 @@ trait RepeaterTrait
      *
      * @return mixed[]
      */
-    protected function setHopHeaders(array $headers, $interval, $hops): array
+    protected function setHopHeaders(array $headers,string|int $interval,string|int $hops): array
     {
         $repeatInterval = PipesHeaders::createKey(PipesHeaders::REPEAT_INTERVAL);
         $repeatMaxHops  = PipesHeaders::createKey(PipesHeaders::REPEAT_MAX_HOPS);

@@ -132,7 +132,7 @@ final class RepeaterListenerTest extends ControllerTestCaseAbstract
     {
         self::assertEquals(
             [KernelEvents::EXCEPTION => ['onRepeatableException', 2_048]],
-            RepeaterListener::getSubscribedEvents()
+            RepeaterListener::getSubscribedEvents(),
         );
     }
 

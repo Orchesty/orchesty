@@ -179,7 +179,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     {
         $this->mockHandler(
             'saveAuthToken',
-            [ApplicationInterface::REDIRECT_URL => '/applications/key/users/user/authorize']
+            [ApplicationInterface::REDIRECT_URL => '/applications/key/users/user/authorize'],
         );
 
         $this->sendRequest(
@@ -190,7 +190,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
             [],
             static function (Response $response): void {
                 self::assertEquals(200, $response->getStatusCode());
-            }
+            },
         );
     }
 
@@ -238,7 +238,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
             [],
             static function (Response $response): void {
                 self::assertEquals(200, $response->getStatusCode());
-            }
+            },
         );
     }
 

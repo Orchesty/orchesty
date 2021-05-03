@@ -28,7 +28,7 @@ abstract class BatchActionAbstract implements BatchActionInterface
 
         if ($this->isEmpty(PipesHeaders::get(PipesHeaders::NODE_NAME, $headers))) {
             throw new InvalidArgumentException(
-                sprintf('Missing "%s" in the message header.', PipesHeaders::NODE_NAME)
+                sprintf('Missing "%s" in the message header.', PipesHeaders::NODE_NAME),
             );
         }
 

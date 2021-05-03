@@ -38,7 +38,7 @@ final class OAuth1DtoTest extends KernelTestCaseAbstract
                             'expires_in'   => 'inFuture',
                         ],
                     ],
-                ]
+                ],
             )
             ->setKey('key');
 
@@ -54,7 +54,7 @@ final class OAuth1DtoTest extends KernelTestCaseAbstract
                 'access_token' => '__token__',
                 'expires_in'   => 'inFuture',
             ],
-            $dto->getToken()
+            $dto->getToken(),
         );
     }
 

@@ -28,7 +28,7 @@ final class ProcessHeaderTest extends KernelTestCaseAbstract
         $process = $this->invokeMethod(
             $process,
             'getHeaderByKey',
-            [(new ProcessDto()), 'key', [PipesHeaders::createKey('key') => 'data']]
+            [(new ProcessDto()), 'key', [PipesHeaders::createKey('key') => 'data']],
         );
 
         self::assertEquals('data', $process);

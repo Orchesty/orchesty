@@ -22,18 +22,12 @@ final class LongRunningNodeController
     use ControllerTrait;
 
     /**
-     * @var LongRunningNodeHandler
-     */
-    private LongRunningNodeHandler $handler;
-
-    /**
      * LongRunningNodeController constructor.
      *
      * @param LongRunningNodeHandler $handler
      */
-    public function __construct(LongRunningNodeHandler $handler)
+    public function __construct(private LongRunningNodeHandler $handler)
     {
-        $this->handler = $handler;
     }
 
     /**
@@ -69,7 +63,7 @@ final class LongRunningNodeController
 
             return $this->getResponse([]);
         } catch (Throwable $e) {
-            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR);
+            return $this->getErrorResponse($e);
         }
     }
 
@@ -85,7 +79,7 @@ final class LongRunningNodeController
     {
         try {
             return $this->getResponse(
-                $this->handler->getTasksById(new GridRequestDto($request->headers->all()), $topology)
+                $this->handler->getTasksById(new GridRequestDto($request->headers->all()), $topology),
             );
         } catch (Throwable $t) {
             return $this->getErrorResponse($t);
@@ -104,7 +98,7 @@ final class LongRunningNodeController
     {
         try {
             return $this->getResponse(
-                $this->handler->getTasks(new GridRequestDto($request->headers->all()), $topology)
+                $this->handler->getTasks(new GridRequestDto($request->headers->all()), $topology),
             );
         } catch (Throwable $t) {
             return $this->getErrorResponse($t, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
@@ -124,7 +118,7 @@ final class LongRunningNodeController
     {
         try {
             return $this->getResponse(
-                $this->handler->getTasksById(new GridRequestDto($request->headers->all()), $topology, $node)
+                $this->handler->getTasksById(new GridRequestDto($request->headers->all()), $topology, $node),
             );
         } catch (Throwable $t) {
             return $this->getErrorResponse($t, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
@@ -147,8 +141,8 @@ final class LongRunningNodeController
                 $this->handler->getTasks(
                     new GridRequestDto($request->headers->all()),
                     $topology,
-                    $node
-                )
+                    $node,
+                ),
             );
         } catch (Throwable $t) {
             return $this->getErrorResponse($t, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
