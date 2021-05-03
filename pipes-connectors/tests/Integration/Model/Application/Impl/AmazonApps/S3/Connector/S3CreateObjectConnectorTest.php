@@ -57,7 +57,7 @@ final class S3CreateObjectConnectorTest extends DatabaseTestCaseAbstract
         self::assertException(
             ConnectorException::class,
             ConnectorException::CONNECTOR_FAILED_TO_PROCESS,
-            "Connector 's3-create-object': Required parameter 'name' is not provided!"
+            "Connector 's3-create-object': Required parameter 'name' is not provided!",
         );
 
         $this->createApplication();
@@ -77,7 +77,7 @@ final class S3CreateObjectConnectorTest extends DatabaseTestCaseAbstract
         self::assertException(
             ConnectorException::class,
             ConnectorException::CONNECTOR_FAILED_TO_PROCESS,
-            "Connector 's3-create-object': Required parameter 'content' is not provided!"
+            "Connector 's3-create-object': Required parameter 'content' is not provided!",
         );
 
         $this->createApplication();
@@ -97,7 +97,7 @@ final class S3CreateObjectConnectorTest extends DatabaseTestCaseAbstract
         self::assertException(
             OnRepeatException::class,
             0,
-            "Connector 's3-create-object': Aws\S3\Exception\S3Exception: Something gone wrong!"
+            "Connector 's3-create-object': Aws\S3\Exception\S3Exception: Something gone wrong!",
         );
 
         $this->createApplication();
@@ -106,7 +106,7 @@ final class S3CreateObjectConnectorTest extends DatabaseTestCaseAbstract
         $client->method('__call')->willReturnCallback(
             static function (): void {
                 throw new S3Exception('Something gone wrong!', new Command('Unknown'));
-            }
+            },
         );
 
         $application = self::createPartialMock(S3Application::class, ['getS3Client']);
@@ -147,7 +147,7 @@ final class S3CreateObjectConnectorTest extends DatabaseTestCaseAbstract
                         S3Application::BUCKET   => 'Bucket',
                         S3Application::ENDPOINT => 'http://fakes3:4567',
                     ],
-                ]
+                ],
             );
 
         $this->pfd($application);

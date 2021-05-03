@@ -78,7 +78,7 @@ final class ShopifyApplicationTest extends DatabaseTestCaseAbstract
             $applicationInstall,
             CurlManager::METHOD_POST,
             '/customers.json',
-            (string) file_get_contents(__DIR__ . '/data/createCustomer.json')
+            (string) file_get_contents(__DIR__ . '/data/createCustomer.json'),
         );
 
         self::assertEquals('https://hana1.myshopify.com/admin/api/2020-01/customers.json', $request->getUri());
@@ -88,7 +88,7 @@ final class ShopifyApplicationTest extends DatabaseTestCaseAbstract
                 'Accept'                 => 'application/json',
                 'X-Shopify-Access-Token' => '079a9710da9264428749be8a148*****',
             ],
-            $request->getHeaders()
+            $request->getHeaders(),
         );
         self::assertEquals(file_get_contents(__DIR__ . '/data/createCustomer.json'), $request->getBody());
     }
@@ -107,7 +107,7 @@ final class ShopifyApplicationTest extends DatabaseTestCaseAbstract
                 [
                     BasicApplicationInterface::USER,
                     BasicApplicationInterface::PASSWORD,
-                ]
+                ],
             );
         }
     }
@@ -125,7 +125,7 @@ final class ShopifyApplicationTest extends DatabaseTestCaseAbstract
         $dto = $this->application->getWebhookSubscribeRequestDto(
             $applicationInstall,
             $this->application->getWebhookSubscriptions()[0],
-            'https://www.seznam.cz'
+            'https://www.seznam.cz',
         );
 
         self::assertEquals('https://hana1.myshopify.com/admin/api/2020-01/webhooks.json', $dto->getUri());
@@ -153,7 +153,7 @@ final class ShopifyApplicationTest extends DatabaseTestCaseAbstract
     {
         $response = $this->application->processWebhookSubscribeResponse(
             new ResponseDto(200, '', (string) file_get_contents(__DIR__ . '/data/createWebhookResponse.json'), []),
-            new ApplicationInstall()
+            new ApplicationInstall(),
         );
         self::assertEquals('1047897672', $response);
     }
@@ -164,7 +164,7 @@ final class ShopifyApplicationTest extends DatabaseTestCaseAbstract
     public function testProcessWebhookUnsubscribeResponse(): void
     {
         $response = $this->application->processWebhookUnsubscribeResponse(
-            new ResponseDto(200, '', '', [])
+            new ResponseDto(200, '', '', []),
         );
         self::assertEquals(200, $response);
     }
@@ -194,7 +194,7 @@ final class ShopifyApplicationTest extends DatabaseTestCaseAbstract
                         BasicApplicationInterface::USER     => self::ESHOP_NAME,
                         BasicApplicationInterface::PASSWORD => self::PASSWORD,
                     ],
-            ]
+            ],
         );
         $this->pfd($applicationInstall);
 

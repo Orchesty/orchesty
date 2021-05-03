@@ -78,7 +78,7 @@ final class AirtableApplicationTest extends DatabaseTestCaseAbstract
     public function testIsAuthorized(): void
     {
         $applicationInstall = DataProvider::getBasicAppInstall(
-            $this->app->getKey()
+            $this->app->getKey(),
         );
         $applicationInstall->setSettings(
             [
@@ -90,7 +90,7 @@ final class AirtableApplicationTest extends DatabaseTestCaseAbstract
                     AirtableApplication::BASE_ID    => self::BASE_ID,
                     AirtableApplication::TABLE_NAME => self::TABLE_NAME,
                 ],
-            ]
+            ],
         );
         $this->pfd($applicationInstall);
         self::assertEquals(TRUE, $this->app->isAuthorized($applicationInstall));
@@ -102,7 +102,7 @@ final class AirtableApplicationTest extends DatabaseTestCaseAbstract
     public function testNoToken(): void
     {
         $applicationInstall = DataProvider::getBasicAppInstall(
-            $this->app->getKey()
+            $this->app->getKey(),
         );
         $applicationInstall->setSettings(
             [
@@ -110,7 +110,7 @@ final class AirtableApplicationTest extends DatabaseTestCaseAbstract
                     AirtableApplication::BASE_ID    => self::BASE_ID,
                     AirtableApplication::TABLE_NAME => self::TABLE_NAME,
                 ],
-            ]
+            ],
         );
         $this->pfd($applicationInstall);
         $this->expectException(AuthorizationException::class);

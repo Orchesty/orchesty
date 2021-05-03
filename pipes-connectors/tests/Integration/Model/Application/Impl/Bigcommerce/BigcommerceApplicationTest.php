@@ -35,11 +35,11 @@ final class BigcommerceApplicationTest extends DatabaseTestCaseAbstract
             'user',
             'token',
             self::CLIENT_ID,
-            self::CLIENT_SECRET
+            self::CLIENT_SECRET,
         );
         $this->application->setFrontendRedirectUrl(
             $applicationInstall,
-            'http://127.0.0.11:8000/applications/authorize/token'
+            'http://127.0.0.11:8000/applications/authorize/token',
         );
 
         $this->pfd($applicationInstall);
@@ -68,7 +68,7 @@ final class BigcommerceApplicationTest extends DatabaseTestCaseAbstract
             'user',
             'token',
             self::CLIENT_ID,
-            self::CLIENT_SECRET
+            self::CLIENT_SECRET,
         );
         $this->pfd($applicationInstall);
         $dto = $this->application->getRequestDto($applicationInstall, 'POST', 'url', '{"data":"hello data"}');
@@ -82,7 +82,7 @@ final class BigcommerceApplicationTest extends DatabaseTestCaseAbstract
     {
         self::assertEquals(
             ApplicationTypeEnum::CRON,
-            $this->application->getApplicationType()
+            $this->application->getApplicationType(),
         );
     }
 
@@ -93,7 +93,7 @@ final class BigcommerceApplicationTest extends DatabaseTestCaseAbstract
     {
         self::assertEquals(
             'Bigcommerce',
-            $this->application->getName()
+            $this->application->getName(),
         );
     }
 
@@ -104,7 +104,7 @@ final class BigcommerceApplicationTest extends DatabaseTestCaseAbstract
     {
         self::assertEquals(
             'Bigcommerce v1',
-            $this->application->getDescription()
+            $this->application->getDescription(),
         );
     }
 

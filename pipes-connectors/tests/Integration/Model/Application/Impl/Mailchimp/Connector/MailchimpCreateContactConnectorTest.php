@@ -34,20 +34,20 @@ final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
                 new MockCurlMethod(
                     $code,
                     'responseDatacenter.json',
-                    []
+                    [],
                 ),
                 new MockCurlMethod(
                     $code,
                     sprintf('response%s.json', $code),
-                    []
+                    [],
                 ),
-            ]
+            ],
         );
 
         $app                             = self::$container->get('hbpf.application.mailchimp');
         $mailchimpCreateContactConnector = new MailchimpCreateContactConnector(
             self::$container->get('hbpf.transport.curl_manager'),
-            $this->dm
+            $this->dm,
         );
 
         $mailchimpCreateContactConnector->setApplication($app);
@@ -55,7 +55,7 @@ final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
         $applicationInstall = DataProvider::getOauth2AppInstall(
             $app->getKey(),
             'user',
-            'fa830d8d4308625ba**********de659'
+            'fa830d8d4308625ba**********de659',
         );
 
         $applicationInstall->addSettings(
@@ -64,7 +64,7 @@ final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
                     MailchimpApplication::AUDIENCE_ID => '2a8******8',
                 ],
                 MailchimpApplication::API_KEYPOINT => $app->getApiEndpoint($applicationInstall),
-            ]
+            ],
         );
 
         $this->pfd($applicationInstall);
@@ -72,19 +72,19 @@ final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
         $dto      = DataProvider::getProcessDto(
             $app->getKey(),
             'user',
-            (string) file_get_contents(__DIR__ . sprintf('/Data/response%s.json', $code), TRUE)
+            (string) file_get_contents(__DIR__ . sprintf('/Data/response%s.json', $code), TRUE),
         );
         $response = $mailchimpCreateContactConnector->processAction($dto);
 
         if ($isValid) {
             self::assertSuccessProcessResponse(
                 $response,
-                sprintf('response%s.json', $code)
+                sprintf('response%s.json', $code),
             );
         } else {
             self::assertFailedProcessResponse(
                 $response,
-                sprintf('response%s.json', $code)
+                sprintf('response%s.json', $code),
             );
         }
     }
@@ -97,7 +97,7 @@ final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
         $app                             = self::$container->get('hbpf.application.mailchimp');
         $mailchimpCreateContactConnector = new MailchimpCreateContactConnector(
             self::$container->get('hbpf.transport.curl_manager'),
-            $this->dm
+            $this->dm,
         );
 
         $mailchimpCreateContactConnector->setApplication($app);
@@ -105,7 +105,7 @@ final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
         $applicationInstall = DataProvider::getBasicAppInstall(
             $app->getKey(),
             'user',
-            'password'
+            'password',
         );
 
         $this->pfd($applicationInstall);
@@ -114,8 +114,8 @@ final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
             DataProvider::getProcessDto(
                 $app->getKey(),
                 'user',
-                ''
-            )
+                '',
+            ),
         );
     }
 
@@ -137,11 +137,11 @@ final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
     {
         $mailchimpCreateContactConnector = new MailchimpCreateContactConnector(
             self::$container->get('hbpf.transport.curl_manager'),
-            $this->dm
+            $this->dm,
         );
         self::assertEquals(
             'mailchimp_create_contact',
-            $mailchimpCreateContactConnector->getId()
+            $mailchimpCreateContactConnector->getId(),
         );
     }
 

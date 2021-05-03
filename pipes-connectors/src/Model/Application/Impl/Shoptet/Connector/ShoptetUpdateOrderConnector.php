@@ -59,12 +59,12 @@ final class ShoptetUpdateOrderConnector extends ShoptetConnectorAbstract
                             sprintf(
                                 self::URL,
                                 $applicationInstall->getSettings(
-                                )[ApplicationAbstract::FORM][ShoptetApplication::ESHOP_ID]
-                            )
-                        )
-                    )->setDebugInfo($dto)
+                                )[ApplicationAbstract::FORM][ShoptetApplication::ESHOP_ID],
+                            ),
+                        ),
+                    )->setDebugInfo($dto),
                 )->getJsonBody(),
-                $dto
+                $dto,
             );
 
             return $this->setJsonContent($dto, $response)->setStopProcess();

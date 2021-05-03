@@ -117,7 +117,7 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
                     'eshopId',
                     'oauth_url',
                     'api_token_url',
-                ]
+                ],
             );
         }
     }
@@ -144,11 +144,11 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
                             [
                                 'api_token_url' => 'https://12345.myshoptet.com/action/ApiOAuthServer/token',
                             ],
-                    ]
+                    ],
                 ),
             'POST',
             'http://example.com',
-            '"{"data":"data"}"'
+            '"{"data":"data"}"',
         );
 
         self::assertEquals('___access token___', $dto->getHeaders()['Shoptet-Access-Token']);
@@ -186,12 +186,12 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
         $applicationInstall = DataProvider::getOauth2AppInstall($this->application->getKey())
             ->setSettings(
-                [ApplicationAbstract::FORM => ['oauth_url' => 'https://12345.myshoptet.com/action/ApiOAuthServer/token']]
+                [ApplicationAbstract::FORM => ['oauth_url' => 'https://12345.myshoptet.com/action/ApiOAuthServer/token']],
             );
 
         self::assertEquals(
             'https://12345.myshoptet.com/action/ApiOAuthServer/token',
-            $this->application->getAuthUrlWithServerUrl($applicationInstall)
+            $this->application->getAuthUrlWithServerUrl($applicationInstall),
         );
     }
 
@@ -205,12 +205,12 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
         $applicationInstall = DataProvider::getOauth2AppInstall($this->application->getKey())
             ->addSettings(
-                [ApplicationAbstract::FORM => ['api_token_url' => 'https://12345.myshoptet.com/action/ApiOAuthServer/getAccessToken']]
+                [ApplicationAbstract::FORM => ['api_token_url' => 'https://12345.myshoptet.com/action/ApiOAuthServer/getAccessToken']],
             );
 
         self::assertEquals(
             'https://12345.myshoptet.com/action/ApiOAuthServer/getAccessToken',
-            $this->application->getTokenUrlWithServerUrl($applicationInstall)
+            $this->application->getTokenUrlWithServerUrl($applicationInstall),
         );
     }
 
@@ -238,7 +238,7 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
             ShoptetApplication::SHOPTET_KEY,
             'Webhook',
             'shoptet-uninstall',
-            ['event' => 'unsubscription']
+            ['event' => 'unsubscription'],
         );
         $dto          = $this->application->getWebhookSubscribeRequestDto(
             (new ApplicationInstall())
@@ -250,10 +250,10 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
                                 'expires_in'   => DateTimeUtils::getUtcDateTime('tomorrow')->getTimestamp(),
                             ],
                         ],
-                    ]
+                    ],
                 ),
             $subscription,
-            'www.nejaka.url'
+            'www.nejaka.url',
         );
 
         self::assertEquals('{"event":"unsubscription","url":"www.nejaka.url"}', $dto->getBody(),);
@@ -274,15 +274,15 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
             ShoptetApplication::SHOPTET_KEY,
             'Webhook',
             'shoptet-uninstall',
-            ['event' => 'unsubscription']
+            ['event' => 'unsubscription'],
         );
         $dto          = $this->application->getWebhookSubscribeRequestDto(
             new ApplicationInstall(),
             $subscription,
-            'www.nejaka.url'
+            'www.nejaka.url',
         );
 
-        self::assertEquals('{"event":"unsubscription","url":"www.nejaka.url"}', $dto->getBody(),);
+        self::assertEquals('{"event":"unsubscription","url":"www.nejaka.url"}', $dto->getBody());
     }
 
     /**
@@ -302,7 +302,7 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
                             'expires_in'   => DateTimeUtils::getUtcDateTime('tomorrow')->getTimestamp(),
                         ],
                     ],
-                ]
+                ],
             );
         $this->pfd($applicationInstall);
         $dto = $this->application->getWebhookUnsubscribeRequestDto($applicationInstall, '123');
@@ -320,7 +320,7 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
         $response = $this->application->processWebhookSubscribeResponse(
             new ResponseDto(200, 'test', '{"data": "data"}', []),
-            new ApplicationInstall()
+            new ApplicationInstall(),
         );
 
         self::assertEquals('{"data": "data"}', $response);
@@ -339,8 +339,8 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
                 200,
                 'test',
                 '{"data": "data"}',
-                []
-            )
+                [],
+            ),
         );
         self::assertTrue($response);
     }
@@ -362,7 +362,7 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
                         [
                             'api_token_url' => 'https://12345.myshoptet.com/action/ApiOAuthServer/token',
                         ],
-                ]
+                ],
             );
         $this->pfd($applicationInstall);
         $dto = $this->application->getApiTokenDto($applicationInstall);
@@ -373,7 +373,7 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
                 'Content-Type'  => 'application/json',
                 'Accept'        => 'application/json',
             ],
-            $dto->getHeaders()
+            $dto->getHeaders(),
         );
     }
 
@@ -392,13 +392,13 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
                             'api_token_url' => 'https://12345.myshoptet.com/action/ApiOAuthServer/token',
                             'oauth_url'     => 'https://12345.myshoptet.com/action/ApiOAuthServer/getAccessToken',
                         ],
-                ]
+                ],
             );
 
         $crateDto = $this->invokeMethod(
             $this->application,
             'createDto',
-            [$applicationInstall, 'http://127.0.0.66/api/api/plugins/shoptet']
+            [$applicationInstall, 'http://127.0.0.66/api/api/plugins/shoptet'],
         );
 
         self::assertEquals('http://127.0.0.66/api/api/plugins/shoptet', $crateDto->getRedirectUrl());
@@ -415,7 +415,7 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
 
         self::assertEquals(
             'http://starting-point/topologies/123/nodes/Start/run-by-name',
-            $this->application->getTopologyUrl('123')
+            $this->application->getTopologyUrl('123'),
         );
     }
 
@@ -442,13 +442,13 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
             [
                 'pf-user'        => 'user',
                 'pf-application' => ShoptetApplication::SHOPTET_KEY,
-            ]
+            ],
         );
 
         $this->setProperty(
             self::$container->get('hbpf.application.shoptet'),
             'sender',
-            $this->prepareSender($callback)
+            $this->prepareSender($callback),
         );
     }
 

@@ -75,7 +75,7 @@ final class PipedriveApplication extends BasicApplicationAbstract implements Web
         ApplicationInstall $applicationInstall,
         string $method,
         ?string $url = NULL,
-        ?string $data = NULL
+        ?string $data = NULL,
     ): RequestDto
     {
         $join    = strpos($url ?? '', '?') ? '&' : '?';
@@ -85,7 +85,7 @@ final class PipedriveApplication extends BasicApplicationAbstract implements Web
             [
                 'Accept'       => 'application/json',
                 'Content-Type' => 'application/json',
-            ]
+            ],
         );
         if (isset($data)) {
             $request->setBody($data);
@@ -116,7 +116,7 @@ final class PipedriveApplication extends BasicApplicationAbstract implements Web
         return
             isset(
                 $applicationInstall->getSettings(
-                )[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::USER]
+                )[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::USER],
             );
     }
 
@@ -133,7 +133,7 @@ final class PipedriveApplication extends BasicApplicationAbstract implements Web
                 [
                     'action' => self::ADDED,
                     'object' => self::ACTIVITY,
-                ]
+                ],
             ),
         ];
     }
@@ -149,7 +149,7 @@ final class PipedriveApplication extends BasicApplicationAbstract implements Web
     public function getWebhookSubscribeRequestDto(
         ApplicationInstall $applicationInstall,
         WebhookSubscription $subscription,
-        string $url
+        string $url,
     ): RequestDto
     {
         return $this->getRequestDto(
@@ -157,15 +157,15 @@ final class PipedriveApplication extends BasicApplicationAbstract implements Web
             CurlManager::METHOD_POST,
             sprintf(
                 '%s/v1/webhooks',
-                PipedriveApplication::PIPEDRIVE_URL
+                PipedriveApplication::PIPEDRIVE_URL,
             ),
             Json::encode(
                 [
                     'subscription_url' => $url,
                     'event_action'     => $subscription->getParameters()['action'],
                     'event_object'     => $subscription->getParameters()['object'],
-                ]
-            )
+                ],
+            ),
         );
     }
 
@@ -184,8 +184,8 @@ final class PipedriveApplication extends BasicApplicationAbstract implements Web
             sprintf(
                 '%s/v1/webhooks/%s',
                 PipedriveApplication::PIPEDRIVE_URL,
-                $id
-            )
+                $id,
+            ),
         );
     }
 

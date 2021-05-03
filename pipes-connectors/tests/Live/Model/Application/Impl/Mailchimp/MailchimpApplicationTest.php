@@ -29,7 +29,7 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
             'user',
             'token123',
             '6748****7235',
-            'f8fe8943e9b258b46d7220a5**********b67bd5178b71f738'
+            'f8fe8943e9b258b46d7220a5**********b67bd5178b71f738',
         );
         $applicationInstall = $applicationInstall->setSettings(
             [
@@ -38,7 +38,7 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
                         ApplicationInterface::REDIRECT_URL => 'xxxx',
                     ],
                 MailchimpApplication::AUDIENCE_ID                 => 'c9e7f***5b',
-            ]
+            ],
         );
         $this->pfd($applicationInstall);
         //        $app->authorize($applicationInstall);

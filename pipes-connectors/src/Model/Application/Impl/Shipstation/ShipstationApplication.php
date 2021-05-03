@@ -73,7 +73,7 @@ final class ShipstationApplication extends BasicApplicationAbstract implements W
         ApplicationInstall $applicationInstall,
         string $method,
         ?string $url = NULL,
-        ?string $data = NULL
+        ?string $data = NULL,
     ): RequestDto
     {
         $request = new RequestDto($method, $this->getUri($url));
@@ -82,7 +82,7 @@ final class ShipstationApplication extends BasicApplicationAbstract implements W
                 'Content-Type'  => 'application/json',
                 'Accept'        => 'application/json',
                 'Authorization' => sprintf('Basic %s', $this->getToken($applicationInstall)),
-            ]
+            ],
         );
         if (isset($data)) {
             $request->setBody($data);
@@ -126,7 +126,7 @@ final class ShipstationApplication extends BasicApplicationAbstract implements W
     public function getWebhookSubscribeRequestDto(
         ApplicationInstall $applicationInstall,
         WebhookSubscription $subscription,
-        string $url
+        string $url,
     ): RequestDto
     {
         return $this->getRequestDto(
@@ -134,7 +134,7 @@ final class ShipstationApplication extends BasicApplicationAbstract implements W
             CurlManager::METHOD_POST,
             sprintf(
                 '%s/webhooks/subscribe',
-                ShipstationApplication::SHIPSTATION_URL
+                ShipstationApplication::SHIPSTATION_URL,
             ),
             Json::encode(
                 [
@@ -142,8 +142,8 @@ final class ShipstationApplication extends BasicApplicationAbstract implements W
                     'event'      => self::ORDER_NOTIFY,
                     'store_id'   => NULL,
                     'name'       => $subscription->getParameters()['name'],
-                ]
-            )
+                ],
+            ),
         );
     }
 
@@ -162,8 +162,8 @@ final class ShipstationApplication extends BasicApplicationAbstract implements W
             sprintf(
                 '%s/webhooks/%s',
                 ShipstationApplication::SHIPSTATION_URL,
-                $id
-            )
+                $id,
+            ),
         );
     }
 
@@ -204,8 +204,8 @@ final class ShipstationApplication extends BasicApplicationAbstract implements W
                 $applicationInstall->getSettings(
                 )[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationAbstract::USER],
                 $applicationInstall->getSettings(
-                )[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationAbstract::PASSWORD]
-            )
+                )[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationAbstract::PASSWORD],
+            ),
         );
     }
 

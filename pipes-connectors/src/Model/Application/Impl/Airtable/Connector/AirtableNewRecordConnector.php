@@ -29,11 +29,6 @@ final class AirtableNewRecordConnector extends ConnectorAbstract
     use ProcessEventNotSupportedTrait;
 
     /**
-     * @var CurlManagerInterface
-     */
-    private CurlManagerInterface $curlManager;
-
-    /**
      * @var ApplicationInstallRepository&ObjectRepository<ApplicationInstall>
      */
     private ApplicationInstallRepository $repository;
@@ -44,10 +39,9 @@ final class AirtableNewRecordConnector extends ConnectorAbstract
      * @param CurlManagerInterface $curlManager
      * @param DocumentManager      $dm
      */
-    public function __construct(CurlManagerInterface $curlManager, DocumentManager $dm)
+    public function __construct(private CurlManagerInterface $curlManager, DocumentManager $dm)
     {
-        $this->curlManager = $curlManager;
-        $this->repository  = $dm->getRepository(ApplicationInstall::class);
+        $this->repository = $dm->getRepository(ApplicationInstall::class);
     }
 
     /**
@@ -86,15 +80,15 @@ final class AirtableNewRecordConnector extends ConnectorAbstract
             '%s/%s/%s',
             AirtableApplication::BASE_URL,
             $app->getValue($applicationInstall, AirtableApplication::BASE_ID),
-            $app->getValue($applicationInstall, AirtableApplication::TABLE_NAME)
+            $app->getValue($applicationInstall, AirtableApplication::TABLE_NAME),
         );
         $return = $this->curlManager->send(
             $app->getRequestDto(
                 $applicationInstall,
                 CurlManager::METHOD_POST,
                 $url,
-                $dto->getData()
-            )
+                $dto->getData(),
+            ),
         );
 
         $this->evaluateStatusCode($return->getStatusCode(), $dto);

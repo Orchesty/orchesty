@@ -68,15 +68,15 @@ final class ShoptetRegisterWebhookConnector extends ShoptetConnectorAbstract
                                             'event' => $subscription->getParameters()['event'],
                                             'url'   => $application->getTopologyUrl(
                                                 $subscription->getTopology(),
-                                                $subscription->getNode()
+                                                $subscription->getNode(),
                                             ),
                                         ],
                                     ],
-                                ]
-                            )
-                        )
+                                ],
+                            ),
+                        ),
                     )->getJsonBody(),
-                    $dto
+                    $dto,
                 );
             } catch (CurlException $exception) {
                 throw $this->createRepeatException($dto, $exception);

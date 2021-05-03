@@ -27,16 +27,6 @@ final class RefreshOAuth2TokenNode extends CustomNodeAbstract
 {
 
     /**
-     * @var DocumentManager
-     */
-    private DocumentManager $dm;
-
-    /**
-     * @var ApplicationLoader
-     */
-    private ApplicationLoader $loader;
-
-    /**
      * @var ObjectRepository<ApplicationInstall>&ApplicationInstallRepository
      */
     private ApplicationInstallRepository $repository;
@@ -47,11 +37,9 @@ final class RefreshOAuth2TokenNode extends CustomNodeAbstract
      * @param DocumentManager   $dm
      * @param ApplicationLoader $loader
      */
-    public function __construct(DocumentManager $dm, ApplicationLoader $loader)
+    public function __construct(private DocumentManager $dm, private ApplicationLoader $loader)
     {
-        $this->dm         = $dm;
         $this->repository = $dm->getRepository(ApplicationInstall::class);
-        $this->loader     = $loader;
     }
 
     /**

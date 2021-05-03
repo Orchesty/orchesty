@@ -28,11 +28,6 @@ final class ShipstationNewOrderConnector extends ConnectorAbstract
     use ProcessActionNotSupportedTrait;
 
     /**
-     * @var CurlManagerInterface
-     */
-    private CurlManagerInterface $curlManager;
-
-    /**
      * @var ApplicationInstallRepository&ObjectRepository<ApplicationInstall>
      */
     private ApplicationInstallRepository $repository;
@@ -43,10 +38,9 @@ final class ShipstationNewOrderConnector extends ConnectorAbstract
      * @param CurlManagerInterface $curlManager
      * @param DocumentManager      $dm
      */
-    public function __construct(CurlManagerInterface $curlManager, DocumentManager $dm)
+    public function __construct(private CurlManagerInterface $curlManager, DocumentManager $dm)
     {
-        $this->curlManager = $curlManager;
-        $this->repository  = $dm->getRepository(ApplicationInstall::class);
+        $this->repository = $dm->getRepository(ApplicationInstall::class);
     }
 
     /**
@@ -83,8 +77,8 @@ final class ShipstationNewOrderConnector extends ConnectorAbstract
                 $applicationInstall,
                 CurlManager::METHOD_GET,
                 $url,
-                NULL
-            )
+                NULL,
+            ),
         );
 
         $statusCode = $return->getStatusCode();

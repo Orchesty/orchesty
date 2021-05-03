@@ -43,7 +43,7 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
             $this->application->getKey(),
             'user',
             'token123',
-            self::CLIENT_ID
+            self::CLIENT_ID,
         );
         $this->pfd($applicationInstall);
         self::assertEquals(TRUE, $this->application->isAuthorized($applicationInstall));
@@ -71,21 +71,21 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
                 new MockCurlMethod(
                     200,
                     'responseDatacenter.json',
-                    []
+                    [],
                 ),
-            ]
+            ],
         );
         $this->setApplication();
         $applicationInstall = DataProvider::getOauth2AppInstall(
             $this->application->getKey(),
             'user',
-            'fa830d8d4308*****c307906e83de659'
+            'fa830d8d4308*****c307906e83de659',
         );
         $applicationInstall->addSettings(
             [
                 ApplicationAbstract::FORM          => [MailchimpApplication::AUDIENCE_ID => '2a8******8'],
                 MailchimpApplication::API_KEYPOINT => $this->application->getApiEndpoint($applicationInstall),
-            ]
+            ],
         );
 
         $subscription = new WebhookSubscription('test', 'node', 'xxx', ['name' => 0]);
@@ -98,8 +98,8 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
                 rtrim('www.xx.cz', '/'),
                 $subscription->getTopology(),
                 $subscription->getNode(),
-                bin2hex(random_bytes(25))
-            )
+                bin2hex(random_bytes(25)),
+            ),
         );
 
         $requestUn = $this->application->getWebhookUnsubscribeRequestDto($applicationInstall, '358');
@@ -108,18 +108,18 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
             sprintf(
                 '%s/3.0/lists/%s/webhooks',
                 $applicationInstall->getSettings()[MailchimpApplication::API_KEYPOINT],
-                $applicationInstall->getSettings()[ApplicationAbstract::FORM][MailchimpApplication::AUDIENCE_ID]
+                $applicationInstall->getSettings()[ApplicationAbstract::FORM][MailchimpApplication::AUDIENCE_ID],
             ),
-            $request->getUriString()
+            $request->getUriString(),
         );
 
         self::assertEquals(
             sprintf(
                 '%s/3.0/lists/%s/webhooks/358',
                 $applicationInstall->getSettings()[MailchimpApplication::API_KEYPOINT],
-                $applicationInstall->getSettings()[ApplicationAbstract::FORM][MailchimpApplication::AUDIENCE_ID]
+                $applicationInstall->getSettings()[ApplicationAbstract::FORM][MailchimpApplication::AUDIENCE_ID],
             ),
-            $requestUn->getUriString()
+            $requestUn->getUriString(),
         );
     }
 
@@ -131,7 +131,7 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
         self::assertEquals(
             'Mailchimp',
-            $this->application->getName()
+            $this->application->getName(),
         );
     }
 
@@ -143,7 +143,7 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
         self::assertEquals(
             'Mailchimp v3',
-            $this->application->getDescription()
+            $this->application->getDescription(),
         );
     }
 
@@ -155,7 +155,7 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
         self::assertEquals(
             ApplicationTypeEnum::WEBHOOK,
-            $this->application->getApplicationType()
+            $this->application->getApplicationType(),
         );
     }
 
@@ -173,7 +173,7 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
                     OAuth2ApplicationAbstract::CLIENT_ID,
                     OAuth2ApplicationAbstract::CLIENT_SECRET,
                     MailchimpApplication::AUDIENCE_ID,
-                ]
+                ],
             );
         }
     }
@@ -186,7 +186,7 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
         $response = $this->application->processWebhookSubscribeResponse(
             new ResponseDto(200, '', '{"id":"id88"}', []),
-            new ApplicationInstall()
+            new ApplicationInstall(),
         );
         self::assertEquals('id88', $response);
     }
@@ -198,7 +198,7 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
     {
         $this->setApplication();
         $response = $this->application->processWebhookUnsubscribeResponse(
-            new ResponseDto(204, '', '{"id":"id88"}', [])
+            new ResponseDto(204, '', '{"id":"id88"}', []),
         );
         self::assertEquals(TRUE, $response);
     }
@@ -213,7 +213,7 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
         foreach ($webhookSubcriptions as $webhookSubscription) {
             self::assertContains(
                 $webhookSubscription->getParameters()['name'],
-                ['subscribe', 'upemail', 'unsubscribe']
+                ['subscribe', 'upemail', 'unsubscribe'],
             );
         }
     }
@@ -228,16 +228,16 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
                 new MockCurlMethod(
                     200,
                     'responseDatacenter.json',
-                    []
+                    [],
                 ),
-            ]
+            ],
         );
         $providerMock = self::createPartialMock(OAuth2Provider::class, ['getAccessToken']);
         $providerMock->method('getAccessToken')->willReturn(
             [
                 'code'         => 'code123',
                 'access_token' => 'token333',
-            ]
+            ],
         );
         $this->setApplication();
         $applicationInstall = DataProvider::getOauth2AppInstall(
@@ -245,7 +245,7 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
             'user',
             'fa830d8d4308*****c307906e83de659',
             self::CLIENT_ID,
-            'secret'
+            'secret',
         );
         $this->pfd($applicationInstall);
         $this->setProperty($this->application, 'provider', $providerMock);
@@ -254,25 +254,22 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
             [
                 'code'         => 'code123',
                 'access_token' => 'token333',
-            ]
+            ],
         );
-        self::assertEquals(
-            MailchimpApplication::class,
-            get_class($return)
-        );
+        self::assertEquals(MailchimpApplication::class, $return::class,);
         self::assertEquals(
             'https://us3.api.mailchimp.com',
-            $applicationInstall->getSettings()[MailchimpApplication::API_KEYPOINT]
+            $applicationInstall->getSettings()[MailchimpApplication::API_KEYPOINT],
         );
         self::assertEquals(
             'code123',
             $applicationInstall->getSettings(
-            )[MailchimpApplication::AUTHORIZATION_SETTINGS][MailchimpApplication::TOKEN]['code']
+            )[MailchimpApplication::AUTHORIZATION_SETTINGS][MailchimpApplication::TOKEN]['code'],
         );
         self::assertEquals(
             'token333',
             $applicationInstall->getSettings(
-            )[MailchimpApplication::AUTHORIZATION_SETTINGS][MailchimpApplication::TOKEN]['access_token']
+            )[MailchimpApplication::AUTHORIZATION_SETTINGS][MailchimpApplication::TOKEN]['access_token'],
         );
     }
 

@@ -33,7 +33,7 @@ final class ZohoApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
         self::assertEquals(
             ApplicationTypeEnum::CRON,
-            $this->application->getApplicationType()
+            $this->application->getApplicationType(),
         );
     }
 
@@ -45,7 +45,7 @@ final class ZohoApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
         self::assertEquals(
             'zoho',
-            $this->application->getKey()
+            $this->application->getKey(),
         );
     }
 
@@ -57,7 +57,7 @@ final class ZohoApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
         self::assertEquals(
             'Zoho',
-            $this->application->getName()
+            $this->application->getName(),
         );
     }
 
@@ -69,7 +69,7 @@ final class ZohoApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
         self::assertEquals(
             'Zoho is a provider of a Customer Relationship Management (CRM) solution',
-            $this->application->getDescription()
+            $this->application->getDescription(),
         );
     }
 
@@ -85,7 +85,7 @@ final class ZohoApplicationTest extends DatabaseTestCaseAbstract
         foreach ($fields as $field) {
             self::assertContainsEquals(
                 $field->getKey(),
-                [OAuth2ApplicationAbstract::CLIENT_ID, OAuth2ApplicationAbstract::CLIENT_SECRET]
+                [OAuth2ApplicationAbstract::CLIENT_ID, OAuth2ApplicationAbstract::CLIENT_SECRET],
             );
         }
     }
@@ -105,7 +105,7 @@ final class ZohoApplicationTest extends DatabaseTestCaseAbstract
             $applicationInstall,
             CurlManager::METHOD_POST,
             'https://www.zohoapis.com/crm/v2/settings/modules',
-            'data'
+            'data',
         );
 
         self::assertEquals(
@@ -114,7 +114,7 @@ final class ZohoApplicationTest extends DatabaseTestCaseAbstract
                 'Accept'        => 'application/json',
                 'Authorization' => 'Bearer token123',
             ],
-            $dto->getHeaders()
+            $dto->getHeaders(),
         );
     }
 
@@ -126,7 +126,7 @@ final class ZohoApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
         self::assertEquals(
             'https://accounts.zoho.eu/oauth/v2/auth',
-            $this->application->getAuthUrl()
+            $this->application->getAuthUrl(),
         );
     }
 
@@ -138,7 +138,7 @@ final class ZohoApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
         self::assertEquals(
             'https://accounts.zoho.eu/oauth/v2/token',
-            $this->application->getTokenUrl()
+            $this->application->getTokenUrl(),
         );
     }
 
@@ -154,7 +154,7 @@ final class ZohoApplicationTest extends DatabaseTestCaseAbstract
             $this->application->getKey(),
             'user',
             'token123',
-            self::CLIENT_ID
+            self::CLIENT_ID,
         );
         $this->pfd($applicationInstall);
         self::assertTrue($this->application->isAuthorized($applicationInstall));
@@ -169,7 +169,7 @@ final class ZohoApplicationTest extends DatabaseTestCaseAbstract
         $this->mockRedirect(
             'https://accounts.zoho.eu/oauth/v2/auth',
             self::CLIENT_ID,
-            'ZohoCRM.modules.ALL ZohoCRM.settings.ALL'
+            'ZohoCRM.modules.ALL ZohoCRM.settings.ALL',
         );
         $this->application = self::$container->get('hbpf.application.zoho');
     }

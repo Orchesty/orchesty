@@ -73,7 +73,7 @@ final class ShopifyApplication extends BasicApplicationAbstract implements Webho
         ApplicationInstall $applicationInstall,
         string $method,
         ?string $url = NULL,
-        ?string $data = NULL
+        ?string $data = NULL,
     ): RequestDto
     {
         $uri     = sprintf('%s%s', $this->getBaseUrl($applicationInstall), $url);
@@ -83,7 +83,7 @@ final class ShopifyApplication extends BasicApplicationAbstract implements Webho
                 'Content-Type'           => 'application/json',
                 'Accept'                 => 'application/json',
                 'X-Shopify-Access-Token' => $this->getPassword($applicationInstall),
-            ]
+            ],
         );
 
         if (isset($data)) {
@@ -124,7 +124,7 @@ final class ShopifyApplication extends BasicApplicationAbstract implements Webho
     public function getWebhookSubscribeRequestDto(
         ApplicationInstall $applicationInstall,
         WebhookSubscription $subscription,
-        string $url
+        string $url,
     ): RequestDto
     {
         return $this->getRequestDto(
@@ -139,8 +139,8 @@ final class ShopifyApplication extends BasicApplicationAbstract implements Webho
                             'address' => $url,
                             'format'  => 'json',
                         ],
-                ]
-            )
+                ],
+            ),
         );
     }
 

@@ -33,37 +33,37 @@ final class PipedriveApplicationTest extends DatabaseTestCaseAbstract
     {
         $applicationInstall = DataProvider::getBasicAppInstall(
             $this->application->getKey(),
-            self::TOKEN
+            self::TOKEN,
         );
 
         $subscription = new WebhookSubscription(
             'New activity',
             'node',
             'xxx',
-            ['action' => 'added', 'object' => 'activity']
+            ['action' => 'added', 'object' => 'activity'],
         );
 
         $request = $this->application->getWebhookSubscribeRequestDto(
             $applicationInstall,
             $subscription,
-            'https://seznam.cz'
+            'https://seznam.cz',
         );
 
         $requestUn = $this->application->getWebhookUnsubscribeRequestDto($applicationInstall, '388');
 
         self::assertEquals(
             'https://api.pipedrive.com/v1/webhooks?api_token=ebcebe5e73aa8ba62**********80c05377fcd63',
-            $request->getUriString()
+            $request->getUriString(),
         );
 
         self::assertEquals(
             '{"subscription_url":"https:\/\/seznam.cz","event_action":"added","event_object":"activity"}',
-            $request->getBody()
+            $request->getBody(),
         );
 
         self::assertEquals(
             'https://api.pipedrive.com/v1/webhooks/388?api_token=ebcebe5e73aa8ba62**********80c05377fcd63',
-            $requestUn->getUriString()
+            $requestUn->getUriString(),
         );
     }
 
@@ -117,7 +117,7 @@ final class PipedriveApplicationTest extends DatabaseTestCaseAbstract
     {
         $response = $this->application->processWebhookSubscribeResponse(
             new ResponseDto(201, '', '{"data": {"id": 88888}}', []),
-            new ApplicationInstall()
+            new ApplicationInstall(),
         );
         self::assertEquals('88888', $response);
     }
@@ -128,7 +128,7 @@ final class PipedriveApplicationTest extends DatabaseTestCaseAbstract
     public function testProcessWebhookUnsubscribeResponse(): void
     {
         $response = $this->application->processWebhookUnsubscribeResponse(
-            new ResponseDto(200, '', '{"id":"id88"}', [])
+            new ResponseDto(200, '', '{"id":"id88"}', []),
         );
         self::assertEquals(200, $response);
     }
@@ -140,7 +140,7 @@ final class PipedriveApplicationTest extends DatabaseTestCaseAbstract
     {
         $applicationInstall = DataProvider::getBasicAppInstall(
             $this->application->getKey(),
-            self::TOKEN
+            self::TOKEN,
         );
         $this->pfd($applicationInstall);
 

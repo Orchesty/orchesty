@@ -47,21 +47,6 @@ final class ShoptetApplication extends OAuth2ApplicationAbstract implements Webh
     private const OAUTH_URL           = 'oauth_url';
 
     /**
-     * @var DocumentManager
-     */
-    private DocumentManager $dm;
-
-    /**
-     * @var CurlManager
-     */
-    private CurlManager $sender;
-
-    /**
-     * @var string
-     */
-    private string $startingPointHost;
-
-    /**
      * ShoptetApplication constructor.
      *
      * @param OAuth2Provider  $provider
@@ -71,16 +56,12 @@ final class ShoptetApplication extends OAuth2ApplicationAbstract implements Webh
      */
     public function __construct(
         OAuth2Provider $provider,
-        DocumentManager $dm,
-        CurlManager $sender,
-        string $startingPointHost
+        private DocumentManager $dm,
+        private CurlManager $sender,
+        private string $startingPointHost,
     )
     {
         parent::__construct($provider);
-
-        $this->dm                = $dm;
-        $this->sender            = $sender;
-        $this->startingPointHost = $startingPointHost;
     }
 
     /**
@@ -131,7 +112,7 @@ final class ShoptetApplication extends OAuth2ApplicationAbstract implements Webh
         ApplicationInstall $applicationInstall,
         string $method,
         ?string $url = NULL,
-        ?string $data = NULL
+        ?string $data = NULL,
     ): RequestDto
     {
         $request = new RequestDto($method, $this->getUri($url));
@@ -140,7 +121,7 @@ final class ShoptetApplication extends OAuth2ApplicationAbstract implements Webh
                 'Content-Type'         => 'application/vnd.shoptet.v1.0',
                 'Accept'               => 'application/json',
                 'Shoptet-Access-Token' => $this->getApiToken($applicationInstall),
-            ]
+            ],
         );
         if (isset($data)) {
             $request->setBody($data);
@@ -235,7 +216,7 @@ final class ShoptetApplication extends OAuth2ApplicationAbstract implements Webh
     public function getWebhookSubscribeRequestDto(
         ApplicationInstall $applicationInstall,
         WebhookSubscription $subscription,
-        string $url
+        string $url,
     ): RequestDto
     {
         return $this->getRequestDto(
@@ -246,8 +227,8 @@ final class ShoptetApplication extends OAuth2ApplicationAbstract implements Webh
                 [
                     'event' => $subscription->getParameters()['event'],
                     'url'   => $url,
-                ]
-            )
+                ],
+            ),
         );
     }
 
@@ -266,7 +247,7 @@ final class ShoptetApplication extends OAuth2ApplicationAbstract implements Webh
         return $this->getRequestDto(
             $applicationInstall,
             CurlManager::METHOD_POST,
-            sprintf('%s%s', self::SHOPTET_WEBHOOK_URL, $id)
+            sprintf('%s%s', self::SHOPTET_WEBHOOK_URL, $id),
         );
     }
 
@@ -306,14 +287,14 @@ final class ShoptetApplication extends OAuth2ApplicationAbstract implements Webh
 
         $request = new RequestDto(
             CurlManager::METHOD_POST,
-            $this->getUri($this->getTokenUrlWithServerUrl($applicationInstall))
+            $this->getUri($this->getTokenUrlWithServerUrl($applicationInstall)),
         );
         $request->setHeaders(
             [
                 'Authorization' => sprintf('Bearer %s', $oauthAccessToken),
                 'Content-Type'  => 'application/json',
                 'Accept'        => 'application/json',
-            ]
+            ],
         );
 
         return $request;
@@ -330,7 +311,7 @@ final class ShoptetApplication extends OAuth2ApplicationAbstract implements Webh
         $dto = new OAuth2Dto(
             $applicationInstall,
             $this->getAuthUrlWithServerUrl($applicationInstall),
-            $this->getTokenUrlWithServerUrl($applicationInstall)
+            $this->getTokenUrlWithServerUrl($applicationInstall),
         );
         $dto->setCustomAppDependencies($applicationInstall->getUser(), $applicationInstall->getKey());
 
@@ -365,11 +346,11 @@ final class ShoptetApplication extends OAuth2ApplicationAbstract implements Webh
                             self::ACCESS_TOKEN => $token[self::ACCESS_TOKEN],
                             self::EXPIRES_IN   =>
                                 DateTimeUtils::getUtcDateTime(
-                                    sprintf('now + %s sec', (string) $token[self::EXPIRES_IN])
+                                    sprintf('now + %s sec', (string) $token[self::EXPIRES_IN]),
                                 )->getTimestamp(),
                         ],
                     ],
-                ]
+                ],
             );
 
             $this->dm->flush();

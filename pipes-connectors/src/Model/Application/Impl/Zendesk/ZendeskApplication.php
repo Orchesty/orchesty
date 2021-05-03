@@ -67,7 +67,7 @@ final class ZendeskApplication extends OAuth2ApplicationAbstract
         ApplicationInstall $applicationInstall,
         string $method,
         ?string $url = NULL,
-        ?string $data = NULL
+        ?string $data = NULL,
     ): RequestDto
     {
         $request = new RequestDto($method, $this->getUri($url));
@@ -76,7 +76,7 @@ final class ZendeskApplication extends OAuth2ApplicationAbstract
                 'Content-Type'  => 'application/json',
                 'Accept'        => 'application/json',
                 'Authorization' => sprintf('Bearer %s', $this->getAccessToken($applicationInstall)),
-            ]
+            ],
         );
 
         if (!empty($data)) {
@@ -95,7 +95,7 @@ final class ZendeskApplication extends OAuth2ApplicationAbstract
             ->addField((new Field(Field::TEXT, self::SUBDOMAIN, 'Subdomain', NULL, TRUE)))
             ->addField((new Field(Field::TEXT, OAuth2ApplicationInterface::CLIENT_ID, 'Client Id', NULL, TRUE)))
             ->addField(
-                (new Field(Field::TEXT, OAuth2ApplicationInterface::CLIENT_SECRET, 'Client Secret', NULL, TRUE))
+                (new Field(Field::TEXT, OAuth2ApplicationInterface::CLIENT_SECRET, 'Client Secret', NULL, TRUE)),
             );
     }
 
@@ -146,7 +146,7 @@ final class ZendeskApplication extends OAuth2ApplicationAbstract
         $dto = new OAuth2Dto(
             $applicationInstall,
             $this->getAuthUrlWithSubdomain($applicationInstall),
-            $this->getTokenUrlWithSubdomain($applicationInstall)
+            $this->getTokenUrlWithSubdomain($applicationInstall),
         );
         $dto->setCustomAppDependencies($applicationInstall->getUser(), $applicationInstall->getKey());
 

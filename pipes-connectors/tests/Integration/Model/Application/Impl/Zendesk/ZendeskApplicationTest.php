@@ -38,7 +38,7 @@ final class ZendeskApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
         self::assertEquals(
             ApplicationTypeEnum::CRON,
-            $this->application->getApplicationType()
+            $this->application->getApplicationType(),
         );
     }
 
@@ -50,7 +50,7 @@ final class ZendeskApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
         self::assertEquals(
             'zendesk',
-            $this->application->getKey()
+            $this->application->getKey(),
         );
     }
 
@@ -62,7 +62,7 @@ final class ZendeskApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
         self::assertEquals(
             'Zendesk',
-            $this->application->getName()
+            $this->application->getName(),
         );
     }
 
@@ -74,7 +74,7 @@ final class ZendeskApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
         self::assertEquals(
             'Zendesk is a customer support software. It helps companies and organisations manage customer queries and problems through a ticketing system.',
-            $this->application->getDescription()
+            $this->application->getDescription(),
         );
     }
 
@@ -94,7 +94,7 @@ final class ZendeskApplicationTest extends DatabaseTestCaseAbstract
                     OAuth2ApplicationAbstract::CLIENT_ID,
                     OAuth2ApplicationAbstract::CLIENT_SECRET,
                     'subdomain',
-                ]
+                ],
             );
         }
     }
@@ -116,7 +116,7 @@ final class ZendeskApplicationTest extends DatabaseTestCaseAbstract
             $applicationInstall,
             CurlManager::METHOD_POST,
             'https://hanaboso.zendesk.com/api/v2/users',
-            'body'
+            'body',
         );
 
         self::assertEquals(
@@ -125,7 +125,7 @@ final class ZendeskApplicationTest extends DatabaseTestCaseAbstract
                 'Accept'        => 'application/json',
                 'Authorization' => 'Bearer token123',
             ],
-            $dto->getHeaders()
+            $dto->getHeaders(),
         );
     }
 
@@ -209,7 +209,7 @@ final class ZendeskApplicationTest extends DatabaseTestCaseAbstract
         $crateDto = $this->invokeMethod(
             $this->application,
             'createDto',
-            [$applicationInstall, 'http://127.0.0.66/api/applications/authorize/token']
+            [$applicationInstall, 'http://127.0.0.66/api/applications/authorize/token'],
         );
 
         self::assertEquals('http://127.0.0.66/api/applications/authorize/token', $crateDto->getRedirectUrl());

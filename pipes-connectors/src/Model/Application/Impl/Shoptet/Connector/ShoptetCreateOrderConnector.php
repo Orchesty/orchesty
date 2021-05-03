@@ -53,10 +53,10 @@ final class ShoptetCreateOrderConnector extends ShoptetConnectorAbstract
                         $applicationInstall,
                         CurlManager::METHOD_POST,
                         sprintf('%s%s', $this->host, self::URL),
-                        $dto->getData()
-                    )->setDebugInfo($dto)
+                        $dto->getData(),
+                    )->setDebugInfo($dto),
                 )->getJsonBody(),
-                $dto
+                $dto,
             );
 
             $externalId = $response[self::DATA][self::ORDER][self::CODE];

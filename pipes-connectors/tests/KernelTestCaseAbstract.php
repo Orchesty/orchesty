@@ -54,7 +54,7 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
             $baseUrl,
             $redirectUrl,
             $clientId,
-            $scopes
+            $scopes,
         );
 
         $mock = self::createMock(RedirectInterface::class);
@@ -62,7 +62,7 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
             static function (string $url) use ($expectedUrl): void {
                 $url = preg_replace('/state=[a-zA-Z0-9].*&/', 'state=state&', $url, 1);
                 self::assertEquals($expectedUrl, $url);
-            }
+            },
         );
         self::$container->set('hbpf.redirect', $mock);
 
@@ -88,11 +88,11 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
                             $mockCurlMethod->getCode(),
                             '',
                             $this->getFile($mockCurlMethod->getFileName()),
-                            $mockCurlMethod->getHeaders()
-                        )
+                            $mockCurlMethod->getHeaders(),
+                        ),
                     ),
-                    $array
-                )
+                    $array,
+                ),
             );
 
         self::$container->set('hbpf.transport.curl_manager', $mock);
@@ -117,7 +117,7 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
                 implode('/', $exploded),
                 $fileName,
             ),
-            TRUE
+            TRUE,
         );
     }
 
@@ -157,7 +157,7 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
         string $exception,
         ?int $exceptionCode = NULL,
         ?string $exceptionMessage = NULL,
-        bool $isExact = TRUE
+        bool $isExact = TRUE,
     ): void
     {
         self::expectException($exception);
@@ -184,14 +184,14 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
             $dto,
             $closure ?: static function (): void {
                 self::assertTrue(TRUE);
-            }
+            },
         )->then(
             static function (): void {
                 self::assertTrue(TRUE);
             },
             static function ($e): void {
                 self::fail(sprintf('Something gone wrong!: %s', $e));
-            }
+            },
         )->wait();
     }
 
@@ -207,7 +207,7 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
             ->expects(self::exactly(count($closures)))
             ->method('send')
             ->willReturnOnConsecutiveCalls(
-                ...array_map(static fn(Closure $closure) => new ReturnCallback($closure), $closures)
+                ...array_map(static fn(Closure $closure) => new ReturnCallback($closure), $closures),
             );
 
         return $sender;

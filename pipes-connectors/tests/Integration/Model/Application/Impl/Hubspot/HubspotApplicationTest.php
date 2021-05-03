@@ -57,7 +57,7 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
         self::assertEquals(
             'HubSpot offers a full stack of software for marketing, sales, and customer service, with a completely free CRM at its core. They’re powerful alone — but even better when used together.',
-            $this->application->getDescription()
+            $this->application->getDescription(),
         );
     }
 
@@ -75,7 +75,7 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
                     HubSpotApplication::APP_ID,
                     OAuth2ApplicationInterface::CLIENT_ID,
                     OAuth2ApplicationInterface::CLIENT_SECRET,
-                ]
+                ],
             );
         }
     }
@@ -90,7 +90,7 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
             $this->application->getKey(),
             'user',
             'token',
-            self::CLIENT_ID
+            self::CLIENT_ID,
         );
         $this->pfd($applicationInstall);
         self::assertEquals(TRUE, $this->application->isAuthorized($applicationInstall));
@@ -127,7 +127,7 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
         $response = $this->application->processWebhookSubscribeResponse(
             new ResponseDto(200, '', '{"id":"id88"}', []),
-            new ApplicationInstall()
+            new ApplicationInstall(),
         );
         self::assertEquals('id88', $response);
     }
@@ -139,7 +139,7 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
     {
         $this->setApplication();
         $response = $this->application->processWebhookUnsubscribeResponse(
-            new ResponseDto(204, '', '{"id":"id88"}', [])
+            new ResponseDto(204, '', '{"id":"id88"}', []),
         );
         self::assertEquals(TRUE, $response);
     }
@@ -152,7 +152,7 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
         $hubspotCreateContactConnector = new HubSpotCreateContactConnector(
             self::$container->get('hbpf.transport.curl_manager'),
-            $this->dm
+            $this->dm,
         );
 
         $hubspotCreateContactConnector->setApplication($this->application);
@@ -163,19 +163,19 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
                     HubSpotApplication::APP_ID => '123xx',
                 ],
                 ApplicationInterface::AUTHORIZATION_SETTINGS => [ApplicationInterface::TOKEN => [OAuth2Provider::ACCESS_TOKEN => 'token123']],
-            ]
+            ],
         );
         $this->pfd(DataProvider::getOauth2AppInstall($this->application->getKey()));
         $webhookSubscription = new WebhookSubscription(
             'name',
             'node',
             'topology',
-            ['name' => 'name2']
+            ['name' => 'name2'],
         );
         $response            = $this->application->getWebhookSubscribeRequestDto(
             $applicationInstall,
             $webhookSubscription,
-            ''
+            '',
         );
         $responseUn          = $this->application->getWebhookUnsubscribeRequestDto($applicationInstall, 'id123');
 
@@ -183,15 +183,15 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
         self::assertEquals('DELETE', $responseUn->getMethod());
         self::assertEquals(
             'https://api.hubapi.com/webhooks/v1/123xx/subscriptions',
-            $response->getUriString()
+            $response->getUriString(),
         );
         self::assertEquals(
             '{"webhookUrl":"","subscriptionDetails":{"subscriptionType":"name2","propertyName":"email"},"enabled":false}',
-            $response->getBody()
+            $response->getBody(),
         );
         self::assertEquals(
             'https://api.hubapi.com/webhooks/v1/123xx/subscriptions/id123',
-            $responseUn->getUriString()
+            $responseUn->getUriString(),
         );
     }
 

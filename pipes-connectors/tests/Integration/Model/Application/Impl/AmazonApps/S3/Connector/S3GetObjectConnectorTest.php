@@ -51,14 +51,14 @@ final class S3GetObjectConnectorTest extends DatabaseTestCaseAbstract
 
             self::assertEquals('Test', $content['name']);
             self::assertEquals('Content', $content['content']);
-        } catch (Throwable $throwable) { // Sometimes fails on CI, use mock when it's happen...
+        } catch (Throwable) { // Sometimes fails on CI, use mock when it's happen...
             $client = self::createPartialMock(S3Client::class, ['__call']);
             $client->method('__call')->willReturnCallback(
                 static function (string $method, array $parameters): void {
                     $method;
 
                     file_put_contents($parameters[0]['SaveAs'], 'Content');
-                }
+                },
             );
 
             $application = self::createPartialMock(S3Application::class, ['getS3Client']);
@@ -81,7 +81,7 @@ final class S3GetObjectConnectorTest extends DatabaseTestCaseAbstract
         self::assertException(
             ConnectorException::class,
             ConnectorException::CONNECTOR_FAILED_TO_PROCESS,
-            "Connector 's3-get-object': Required parameter 'name' is not provided!"
+            "Connector 's3-get-object': Required parameter 'name' is not provided!",
         );
 
         $this->createApplication();
@@ -105,7 +105,7 @@ final class S3GetObjectConnectorTest extends DatabaseTestCaseAbstract
         self::expectException(OnRepeatException::class);
         self::expectExceptionCode(0);
         self::expectExceptionMessage(
-            "Connector 's3-get-object': Aws\S3\Exception\S3Exception: Error executing \"GetObject\" on \"http://fakes3:4567/Bucket/Unknown\"; AWS HTTP error: Client error: `GET http://fakes3:4567/Bucket/Unknown` resulted in a `404 Not Found`"
+            "Connector 's3-get-object': Aws\S3\Exception\S3Exception: Error executing \"GetObject\" on \"http://fakes3:4567/Bucket/Unknown\"; AWS HTTP error: Client error: `GET http://fakes3:4567/Bucket/Unknown` resulted in a `404 Not Found`",
         );
 
         $this->connector->processAction($dto);
@@ -148,7 +148,7 @@ final class S3GetObjectConnectorTest extends DatabaseTestCaseAbstract
                         S3Application::BUCKET   => 'Bucket',
                         S3Application::ENDPOINT => 'http://fakes3:4567',
                     ],
-                ]
+                ],
             );
 
         $this->pfd($application);
