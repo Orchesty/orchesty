@@ -26,16 +26,6 @@ final class WebhookManager
     private const LENGTH = 25;
 
     /**
-     * @var DocumentManager
-     */
-    private DocumentManager $dm;
-
-    /**
-     * @var CurlManagerInterface
-     */
-    private CurlManagerInterface $manager;
-
-    /**
      * @var string
      */
     private string $hostname;
@@ -57,10 +47,8 @@ final class WebhookManager
      * @param CurlManagerInterface $manager
      * @param string               $hostname
      */
-    public function __construct(DocumentManager $dm, CurlManagerInterface $manager, string $hostname)
+    public function __construct(private DocumentManager $dm, private CurlManagerInterface $manager, string $hostname)
     {
-        $this->dm                = $dm;
-        $this->manager           = $manager;
         $this->hostname          = rtrim($hostname, '/');
         $this->repository        = $dm->getRepository(ApplicationInstall::class);
         $this->webhookRepository = $dm->getRepository(Webhook::class);
@@ -79,7 +67,7 @@ final class WebhookManager
             [
                 'application' => $application->getKey(),
                 'user'        => $userId,
-            ]
+            ],
         );
 
         return array_map(
@@ -89,7 +77,7 @@ final class WebhookManager
 
                 $webhooks = array_filter(
                     $webhooks,
-                    static fn(Webhook $webhook): bool => $webhook->getName() === $subscription->getName()
+                    static fn(Webhook $webhook): bool => $webhook->getName() === $subscription->getName(),
                 );
 
                 if ($webhooks) {
@@ -104,7 +92,7 @@ final class WebhookManager
                     'topology' => $topology,
                 ];
             },
-            $application->getWebhookSubscriptions()
+            $application->getWebhookSubscriptions(),
         );
     }
 
@@ -133,12 +121,12 @@ final class WebhookManager
             $request            = $application->getWebhookSubscribeRequestDto(
                 $applicationInstall,
                 $subscription,
-                sprintf(self::URL, $this->hostname, $name, $subscription->getNode(), $token)
+                sprintf(self::URL, $this->hostname, $name, $subscription->getNode(), $token),
             );
 
             $webhookId = $application->processWebhookSubscribeResponse(
                 $this->manager->send($request),
-                $applicationInstall
+                $applicationInstall,
             );
 
             $webhook = (new Webhook())
@@ -167,7 +155,7 @@ final class WebhookManager
     public function unsubscribeWebhooks(
         WebhookApplicationInterface $application,
         string $userId,
-        array $data = []
+        array $data = [],
     ): void
     {
         /** @var Webhook[] $webhooks */
@@ -175,7 +163,7 @@ final class WebhookManager
             [
                 Webhook::APPLICATION => $application->getKey(),
                 Webhook::USER        => $userId,
-            ]
+            ],
         );
 
         foreach ($webhooks as $webhook) {
@@ -185,7 +173,7 @@ final class WebhookManager
 
             $request = $application->getWebhookUnsubscribeRequestDto(
                 $this->repository->findUserApp($application->getKey(), $userId),
-                $webhook->getWebhookId()
+                $webhook->getWebhookId(),
             );
             if ($application->processWebhookUnsubscribeResponse($this->manager->send($request))) {
                 $this->dm->remove($webhook);

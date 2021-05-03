@@ -70,7 +70,7 @@ final class NullApplication extends BasicApplicationAbstract implements WebhookA
         ApplicationInstall $applicationInstall,
         string $method,
         ?string $url = NULL,
-        ?string $data = NULL
+        ?string $data = NULL,
     ): RequestDto
     {
         $applicationInstall;
@@ -127,7 +127,7 @@ final class NullApplication extends BasicApplicationAbstract implements WebhookA
     public function getWebhookSubscribeRequestDto(
         ApplicationInstall $applicationInstall,
         WebhookSubscription $subscription,
-        string $url
+        string $url,
     ): RequestDto
     {
         $applicationInstall;

@@ -66,7 +66,7 @@ final class NullOauthApplication extends OAuth1ApplicationAbstract
         ApplicationInstall $applicationInstall,
         string $method,
         ?string $url = NULL,
-        ?string $data = NULL
+        ?string $data = NULL,
     ): RequestDto
     {
         $applicationInstall;
@@ -107,7 +107,7 @@ final class NullOauthApplication extends OAuth1ApplicationAbstract
      */
     public function setAuthorizationToken(
         ApplicationInstall $applicationInstall,
-        array $token
+        array $token,
     ): OAuth1ApplicationInterface
     {
         $applicationInstall;

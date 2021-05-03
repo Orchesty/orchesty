@@ -21,18 +21,12 @@ final class StatisticsController
     use ControllerTrait;
 
     /**
-     * @var StatisticsHandler
-     */
-    private StatisticsHandler $statisticsHandler;
-
-    /**
      * StatisticsController constructor.
      *
      * @param StatisticsHandler $statisticsHandler
      */
-    public function __construct(StatisticsHandler $statisticsHandler)
+    public function __construct(private StatisticsHandler $statisticsHandler)
     {
-        $this->statisticsHandler = $statisticsHandler;
     }
 
     /**

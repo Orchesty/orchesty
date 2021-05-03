@@ -27,25 +27,13 @@ final class ApplicationHandler
     private const APPLICATION_SETTINGS = 'applicationSettings';
 
     /**
-     * @var ApplicationManager
-     */
-    private ApplicationManager $applicationManager;
-
-    /**
-     * @var WebhookManager
-     */
-    private WebhookManager $webhookManager;
-
-    /**
      * ApplicationHandler constructor.
      *
      * @param ApplicationManager $applicationManager
      * @param WebhookManager     $webhookManager
      */
-    public function __construct(ApplicationManager $applicationManager, WebhookManager $webhookManager)
+    public function __construct(private ApplicationManager $applicationManager, private WebhookManager $webhookManager)
     {
-        $this->applicationManager = $applicationManager;
-        $this->webhookManager     = $webhookManager;
     }
 
     /**
@@ -66,10 +54,10 @@ final class ApplicationHandler
                         $applicationInstall->toArray(),
                         [
                             self::AUTHORIZED => $application->isAuthorized($applicationInstall),
-                        ]
+                        ],
                     );
                 },
-                $this->applicationManager->getInstalledApplications($user)
+                $this->applicationManager->getInstalledApplications($user),
             ),
         ];
     }

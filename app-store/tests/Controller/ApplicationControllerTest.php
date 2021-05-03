@@ -28,7 +28,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     public function testGetUsersApplication(): void
     {
         $this->mockApplicationHandler(
-            Json::decode((string) file_get_contents(sprintf('%s/data/data.json', __DIR__)))
+            Json::decode((string) file_get_contents(sprintf('%s/data/data.json', __DIR__))),
         );
 
         self::$client->request('GET', '/applications/users/bar');
@@ -36,7 +36,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
 
         self::assertEquals(
             'bar',
-            Json::decode((string) $response->getContent())[0][ApplicationInstall::USER]
+            Json::decode((string) $response->getContent())[0][ApplicationInstall::USER],
         );
         self::assertEquals('200', $response->getStatusCode());
     }
@@ -138,7 +138,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
 
         self::assertEquals(
             'bar',
-            Json::decode((string) $response->getContent())[ApplicationInstall::USER]
+            Json::decode((string) $response->getContent())[ApplicationInstall::USER],
         );
         self::assertEquals('200', $response->getStatusCode());
 
@@ -178,7 +178,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         self::assertEquals('200', $response->getStatusCode());
         self::assertEquals(
             'test1',
-            Json::decode((string) $response->getContent())['new_settings']
+            Json::decode((string) $response->getContent())['new_settings'],
         );
 
         self::$client->request('PUT', '/applications/application/users/user/settings');
@@ -262,7 +262,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         $handler->method('authorizeApplication')
             ->willReturnCallback(
                 static function (): void {
-                }
+                },
             );
 
         $container = self::$client->getContainer();

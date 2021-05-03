@@ -116,7 +116,7 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
         $this->createApplicationInstall(
             'user',
             'null2',
-            [ApplicationInterface::AUTHORIZATION_SETTINGS => [ApplicationInterface::REDIRECT_URL => 'redirect_url']]
+            [ApplicationInterface::AUTHORIZATION_SETTINGS => [ApplicationInterface::REDIRECT_URL => 'redirect_url']],
         );
         $result = $this->handler->saveAuthToken('null2', 'user', ['token']);
 
@@ -144,7 +144,7 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
     private function createApplicationInstall(
         string $user = 'user',
         string $key = 'key',
-        array $settings = []
+        array $settings = [],
     ): ApplicationInstall
     {
         $applicationInstall = (new ApplicationInstall())

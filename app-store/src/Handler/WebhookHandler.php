@@ -19,18 +19,12 @@ final class WebhookHandler
 {
 
     /**
-     * @var ApplicationManager
-     */
-    private ApplicationManager $applicationManager;
-
-    /**
      * WebhookHandler constructor.
      *
      * @param ApplicationManager $applicationManager
      */
-    public function __construct(ApplicationManager $applicationManager)
+    public function __construct(private ApplicationManager $applicationManager)
     {
-        $this->applicationManager = $applicationManager;
     }
 
     /**
@@ -51,7 +45,7 @@ final class WebhookHandler
 
         $this->applicationManager->subscribeWebhooks(
             $this->applicationManager->getInstalledApplicationDetail($key, $user),
-            $data
+            $data,
         );
     }
 
@@ -73,7 +67,7 @@ final class WebhookHandler
 
         $this->applicationManager->unsubscribeWebhooks(
             $this->applicationManager->getInstalledApplicationDetail($key, $user),
-            $data
+            $data,
         );
     }
 

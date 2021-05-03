@@ -57,7 +57,7 @@ final class SynchronizationRepositoryTest extends DatabaseTestCaseAbstract
         $synchronization = $this->repository->update(
             $this->createApplication(),
             [self::USER => self::USER],
-            ['data.key' => 'Value']
+            ['data.key' => 'Value'],
         );
 
         self::assertEquals('Value', $synchronization->getData()['key']);
