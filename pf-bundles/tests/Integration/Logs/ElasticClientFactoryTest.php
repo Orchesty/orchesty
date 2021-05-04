@@ -27,7 +27,7 @@ final class ElasticClientFactoryTest extends DatabaseTestCaseAbstract
                     'port' => 9_200,
                 ],
             ],
-            $config['servers']
+            $config['servers'],
         );
     }
 

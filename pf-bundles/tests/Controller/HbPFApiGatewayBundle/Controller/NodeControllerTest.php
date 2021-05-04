@@ -27,7 +27,7 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/NodeController/getNodesRequest.json',
             ['_id' => '123456789', 'topology_id' => '123456789'],
-            [':id' => $this->createTopology()->getId()]
+            [':id' => $this->createTopology()->getId()],
         );
     }
 
@@ -41,7 +41,7 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/NodeController/getNodeRequest.json',
             ['_id' => '123456789', 'topology_id' => '123456789'],
-            [':id' => $this->createNode()->getId()]
+            [':id' => $this->createNode()->getId()],
         );
     }
 
@@ -55,7 +55,7 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/NodeController/updateNodeRequest.json',
             ['_id' => '123456789', 'topology_id' => '123456789'],
-            [':id' => $this->createNode()->getId()]
+            [':id' => $this->createNode()->getId()],
         );
     }
 
@@ -105,7 +105,7 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
     public function testListOfNodesEmpty(): void
     {
         $nodeController = self::$container->get(
-            'Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NodeController'
+            'Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NodeController',
         );
 
         $result = $nodeController->listOfNodesAction('something');

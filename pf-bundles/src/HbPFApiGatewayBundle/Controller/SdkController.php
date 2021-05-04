@@ -36,7 +36,7 @@ final class SdkController extends AbstractController
     {
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\SdkController::getOneAction',
-            ['id' => $id]
+            ['id' => $id],
         );
     }
 
@@ -51,7 +51,7 @@ final class SdkController extends AbstractController
     {
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\SdkController::createAction',
-            ['request' => $request]
+            ['request' => $request],
         );
     }
 
@@ -67,7 +67,7 @@ final class SdkController extends AbstractController
     {
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\SdkController::updateAction',
-            ['request' => $request, 'id' => $id]
+            ['request' => $request, 'id' => $id],
         );
     }
 
@@ -82,7 +82,7 @@ final class SdkController extends AbstractController
     {
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\SdkController::deleteAction',
-            ['id' => $id]
+            ['id' => $id],
         );
     }
 

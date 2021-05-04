@@ -39,7 +39,7 @@ final class ConnectorsMetricsTest extends DatabaseTestCaseAbstract
                         'topologyId' => '2',
                         'queue'      => '12',
                     ],
-                ]
+                ],
             )
             ->getQuery()
             ->execute();

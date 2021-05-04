@@ -20,18 +20,12 @@ final class ApplicationController extends AbstractController
 {
 
     /**
-     * @var ServiceLocator
-     */
-    private ServiceLocator $locator;
-
-    /**
      * ApplicationController constructor.
      *
      * @param ServiceLocator $locator
      */
-    public function __construct(ServiceLocator $locator)
+    public function __construct(private ServiceLocator $locator)
     {
-        $this->locator = $locator;
     }
 
     /**
@@ -236,7 +230,7 @@ final class ApplicationController extends AbstractController
     {
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::applicationMetricsAction',
-            ['request' => $request, 'key' => $key]
+            ['request' => $request, 'key' => $key],
         );
     }
 
@@ -252,7 +246,7 @@ final class ApplicationController extends AbstractController
     {
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::userMetricsAction',
-            ['request' => $request, 'user' => $user]
+            ['request' => $request, 'user' => $user],
         );
     }
 

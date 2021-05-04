@@ -86,26 +86,26 @@ final class CategoryParserTest extends DatabaseTestCaseAbstract
 
         // Check sub-cat of first root
         $subRoot = $this->dm->getRepository(Category::class)->findOneBy(
-            ['name' => 'SystemXYZ', 'parent' => $root->getId()]
+            ['name' => 'SystemXYZ', 'parent' => $root->getId()],
         );
         self::assertInstanceOf(Category::class, $subRoot);
         $sub2Root = $this->dm->getRepository(Category::class)->findOneBy(
-            ['name' => 'Folder-Cat', 'parent' => $subRoot->getId()]
+            ['name' => 'Folder-Cat', 'parent' => $subRoot->getId()],
         );
         self::assertInstanceOf(Category::class, $sub2Root);
 
         $subRoot = $this->dm->getRepository(Category::class)->findOneBy(
-            ['name' => 'SystemAAA', 'parent' => $root->getId()]
+            ['name' => 'SystemAAA', 'parent' => $root->getId()],
         );
         self::assertInstanceOf(Category::class, $subRoot);
         $sub2Root = $this->dm->getRepository(Category::class)->findOneBy(
-            ['name' => 'neu', 'parent' => $subRoot->getId()]
+            ['name' => 'neu', 'parent' => $subRoot->getId()],
         );
         self::assertInstanceOf(Category::class, $sub2Root);
 
         // Check sub-cat of third root
         $subRoot = $this->dm->getRepository(Category::class)->findOneBy(
-            ['name' => 'just-a-folder', 'parent' => $root3->getId()]
+            ['name' => 'just-a-folder', 'parent' => $root3->getId()],
         );
         self::assertInstanceOf(Category::class, $subRoot);
     }

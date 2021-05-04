@@ -64,7 +64,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/TopologyController/getTopologyRequest.json',
             ['_id' => '123456789'],
-            [':id' => $topology->getId()]
+            [':id' => $topology->getId()],
         );
     }
 
@@ -91,7 +91,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/TopologyController/updateTopologyRequest.json',
             ['_id' => '123456789'],
-            [':id' => $topology->getId()]
+            [':id' => $topology->getId()],
         );
     }
 
@@ -111,7 +111,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             [':id' => $topology->getId()],
             [],
             [],
-            static fn(Response $response): array => [$response->getContent()]
+            static fn(Response $response): array => [$response->getContent()],
         );
     }
 
@@ -128,7 +128,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/TopologyController/saveTopologySchemaRequest.json',
             ['_id' => '123456789'],
-            [':id' => $topology->getId()]
+            [':id' => $topology->getId()],
         );
     }
 
@@ -145,7 +145,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/TopologyController/publishTopologySchemaRequest.json',
             ['_id' => '123456789'],
-            [':id' => $topology->getId()]
+            [':id' => $topology->getId()],
         );
     }
 
@@ -162,7 +162,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/TopologyController/cloneTopologyRequest.json',
             ['_id' => '123456789'],
-            [':id' => $topology->getId()]
+            [':id' => $topology->getId()],
         );
     }
 
@@ -179,7 +179,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/TopologyController/deleteTopologyRequest.json',
             ['message' => 'CurlManager::send() failed: cURL error 6: Could not resolve host: topology-api (see https://curl.haxx.se/libcurl/c/libcurl-errors.html)'],
-            [':id' => $topology->getId()]
+            [':id' => $topology->getId()],
         );
     }
 
@@ -196,7 +196,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/TopologyController/testTopologyRequest.json',
             ['message' => 'CurlManager::send() failed: cURL error 6: Could not resolve host: topology-api (see https://curl.haxx.se/libcurl/c/libcurl-errors.html)'],
-            [':id' => $topology->getId()]
+            [':id' => $topology->getId()],
         );
     }
 

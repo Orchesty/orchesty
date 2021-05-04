@@ -36,7 +36,7 @@ final class SdkTest extends DatabaseTestCaseAbstract
                 'key'   => 'key',
                 'value' => 'value',
             ],
-            $sdk->toArray()
+            $sdk->toArray(),
         );
     }
 

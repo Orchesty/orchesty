@@ -18,18 +18,12 @@ final class WebhookController extends AbstractController
 {
 
     /**
-     * @var ServiceLocator
-     */
-    private ServiceLocator $locator;
-
-    /**
      * WebhookController constructor.
      *
      * @param ServiceLocator $locator
      */
-    public function __construct(ServiceLocator $locator)
+    public function __construct(private ServiceLocator $locator)
     {
-        $this->locator = $locator;
     }
 
     /**

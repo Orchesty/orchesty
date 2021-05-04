@@ -53,7 +53,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
             [
                 'from' => '-2 days',
                 'to'   => '+2 days',
-            ]
+            ],
         );
 
         self::assertCount(6, $result);
@@ -98,7 +98,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
                     'errors' => '1',
                 ],
             ],
-            $result
+            $result,
         );
     }
 
@@ -129,7 +129,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
             [
                 'from' => '-2 days',
                 'to'   => '+2 days',
-            ]
+            ],
         );
 
         self::assertCount(6, $result);
@@ -174,7 +174,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
                     'errors' => '0',
                 ],
             ],
-            $result
+            $result,
         );
     }
 
@@ -203,7 +203,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
             [
                 'from' => '-2 days',
                 'to'   => '+2 days',
-            ]
+            ],
         );
 
         self::assertCount(6, $result);
@@ -248,7 +248,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
                     'errors' => '0',
                 ],
             ],
-            $result
+            $result,
         );
     }
 
@@ -283,7 +283,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
             [
                 'from' => '-2 days',
                 'to'   => '+2 days',
-            ]
+            ],
         );
 
         self::assertCount(4, $result);
@@ -299,7 +299,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
                     'errors' => '3',
                 ],
             ],
-            $result['topology']
+            $result['topology'],
         );
         self::assertArrayHasKey($node->getId(), $result);
         $result = $result[$node->getId()];
@@ -340,7 +340,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
             [
                 'from' => '-2 days',
                 'to'   => '+2 days',
-            ]
+            ],
         );
 
         self::assertCount(2, $result);
@@ -356,7 +356,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
                     'errors' => '0',
                 ],
             ],
-            $result['topology']
+            $result['topology'],
         );
         self::assertArrayHasKey($node->getId(), $result);
     }
@@ -385,7 +385,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
             [
                 'from' => '-2 days',
                 'to'   => '+2 days',
-            ]
+            ],
         );
 
         self::assertCount(1, $result);
@@ -401,7 +401,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
                     'errors' => '0',
                 ],
             ],
-            $result['topology']
+            $result['topology'],
         );
 
         self::expectException(LogicException::class);
@@ -434,7 +434,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
             [
                 'from' => '-10 day',
                 'to'   => '+10 day',
-            ]
+            ],
         );
 
         self::assertCount(5, $result);
@@ -466,7 +466,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
             [
                 'from' => '-10 day',
                 'to'   => '+10 day',
-            ]
+            ],
         );
 
         self::assertCount(3, $result);
@@ -496,7 +496,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
             [
                 'from' => '-10 day',
                 'to'   => '+10 day',
-            ]
+            ],
         );
 
         self::assertCount(3, $result);
@@ -521,7 +521,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
                 'from' => '-10 day',
                 'to'   => '+10 day',
             ],
-            'nutshell'
+            'nutshell',
         );
         self::assertEquals(2, $result['application']);
     }
@@ -543,7 +543,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
                 'from' => '-10 day',
                 'to'   => '+10 day',
             ],
-            'user1'
+            'user1',
         );
         self::assertEquals(2, $result['user']);
     }
@@ -652,7 +652,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
                 MongoMetricsManager::QUEUE => NodeGeneratorUtils::generateQueueName(
                     $topology->getId(),
                     $node->getId(),
-                    $node->getName()
+                    $node->getName(),
                 ),
             ],
             'fields' => [
@@ -723,7 +723,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
                 MongoMetricsManager::QUEUE => NodeGeneratorUtils::generateQueueName(
                     $topology->getId(),
                     $node->getId(),
-                    $node->getName()
+                    $node->getName(),
                 ),
             ],
             'fields' => [
@@ -738,7 +738,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
                 MongoMetricsManager::QUEUE => NodeGeneratorUtils::generateQueueName(
                     $topology->getId(),
                     $node->getId(),
-                    $node->getName()
+                    $node->getName(),
                 ),
             ],
             'fields' => [
@@ -888,7 +888,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
                 MongoMetricsManager::QUEUE => NodeGeneratorUtils::generateQueueName(
                     $topology->getId(),
                     $node->getId(),
-                    $node->getName()
+                    $node->getName(),
                 ),
             ],
             'fields' => [

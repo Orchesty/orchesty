@@ -16,18 +16,12 @@ final class UserManager
 {
 
     /**
-     * @var UserDocumentFilter
-     */
-    private UserDocumentFilter $userFilter;
-
-    /**
      * UserManager constructor.
      *
      * @param UserDocumentFilter $userFilter
      */
-    public function __construct(UserDocumentFilter $userFilter)
+    public function __construct(private UserDocumentFilter $userFilter)
     {
-        $this->userFilter = $userFilter;
     }
 
     /**

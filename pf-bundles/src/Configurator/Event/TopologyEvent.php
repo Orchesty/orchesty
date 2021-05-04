@@ -15,24 +15,18 @@ final class TopologyEvent extends Event
     public const EVENT = 'topology_event';
 
     /**
-     * @var string
-     */
-    private string $topologyName;
-
-    /**
      * TopologyEvent constructor.
      *
      * @param string $topologyName
      */
-    public function __construct(string $topologyName)
+    public function __construct(private string $topologyName)
     {
-        $this->topologyName = $topologyName;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getTopologyName()
+    public function getTopologyName(): string
     {
         return $this->topologyName;
     }

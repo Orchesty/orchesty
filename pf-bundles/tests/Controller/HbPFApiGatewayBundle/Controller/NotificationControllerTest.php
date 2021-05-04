@@ -24,7 +24,7 @@ final class NotificationControllerTest extends ControllerTestCaseAbstract
     {
         $this->assertResponse(
             __DIR__ . '/data/NotificationController/getSettingsRequest.json',
-            ['id' => '123456789', 'created' => '2010-10-10 10:10:10', 'updated' => '2010-10-10 10:10:10']
+            ['id' => '123456789', 'created' => '2010-10-10 10:10:10', 'updated' => '2010-10-10 10:10:10'],
         );
     }
 

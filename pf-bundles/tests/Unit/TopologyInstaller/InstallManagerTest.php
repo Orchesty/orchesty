@@ -212,7 +212,7 @@ final class InstallManagerTest extends KernelTestCaseAbstract
         $topologyManager->method('saveTopologySchema')->willReturn($savedTopo);
         $topologyManager->method('deleteTopology')->willReturnCallback(
             static function (): void {
-            }
+            },
         );
 
         $requestHandler = $this->createMock(TopologyGeneratorBridge::class);
@@ -222,7 +222,7 @@ final class InstallManagerTest extends KernelTestCaseAbstract
         $categoryParser = $this->createMock(CategoryParser::class);
         $categoryParser->method('classifyTopology')->willReturnCallback(
             static function (): void {
-            }
+            },
         );
         $decoder    = self::$container->get('rest.decoder.xml');
         $redisCache = new NullCache();
@@ -235,7 +235,7 @@ final class InstallManagerTest extends KernelTestCaseAbstract
             $decoder,
             $redisCache,
             $dirs,
-            TRUE
+            TRUE,
         );
     }
 

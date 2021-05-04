@@ -35,25 +35,13 @@ abstract class LogsAbstract implements LogsInterface
     protected const LIMIT            = 1_000;
 
     /**
-     * @var DocumentManager
-     */
-    private DocumentManager $dm;
-
-    /**
-     * @var StartingPointsFilter
-     */
-    private StartingPointsFilter $startingPointsFilter;
-
-    /**
      * LogsAbstract constructor.
      *
      * @param DocumentManager      $dm
      * @param StartingPointsFilter $startingPointsFilter
      */
-    public function __construct(DocumentManager $dm, StartingPointsFilter $startingPointsFilter)
+    public function __construct(private DocumentManager $dm, private StartingPointsFilter $startingPointsFilter)
     {
-        $this->dm                   = $dm;
-        $this->startingPointsFilter = $startingPointsFilter;
     }
 
     /**
@@ -108,11 +96,11 @@ abstract class LogsAbstract implements LogsInterface
         try {
             /** @var Node|null $node */
             $node = $this->dm->getRepository(Node::class)->findOneBy(
-                [self::ID => new ObjectId(explode('-', $nodeId)[0])]
+                [self::ID => new ObjectId(explode('-', $nodeId)[0])],
             );
 
             return $node ? $node->getName() : '';
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             return '';
         }
     }
@@ -123,7 +111,7 @@ abstract class LogsAbstract implements LogsInterface
      *
      * @return mixed[]|string|null
      */
-    protected function getNonEmptyValue(array $data, string $property)
+    protected function getNonEmptyValue(array $data, string $property): array|string|NULL
     {
         return array_key_exists($property, $data) && $data[$property] !== '' ? $data[$property] : NULL;
     }

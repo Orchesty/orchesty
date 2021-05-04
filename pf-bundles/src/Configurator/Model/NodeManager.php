@@ -48,7 +48,7 @@ final class NodeManager
             if ($node->getHandler() != HandlerEnum::EVENT) {
                 throw new NodeException(
                     sprintf('Trying to enable/disable a non event Node'),
-                    NodeException::DISALLOWED_ACTION_ON_NON_EVENT_NODE
+                    NodeException::DISALLOWED_ACTION_ON_NON_EVENT_NODE,
                 );
             }
 

@@ -22,19 +22,13 @@ final class CategoryController
     use ControllerTrait;
 
     /**
-     * @var CategoryHandler
-     */
-    private CategoryHandler $categoryHandler;
-
-    /**
      * CategoryController constructor.
      *
      * @param CategoryHandler $categoryHandler
      */
-    public function __construct(CategoryHandler $categoryHandler)
+    public function __construct(private CategoryHandler $categoryHandler)
     {
-        $this->categoryHandler = $categoryHandler;
-        $this->logger          = new NullLogger();
+        $this->logger = new NullLogger();
     }
 
     /**

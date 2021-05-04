@@ -63,11 +63,11 @@ final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
         self::assertInstanceOf(Response::class, $eventMock->getResponse());
         self::assertArrayHasKey(
             PipesHeaders::createKey(PipesHeaders::RESULT_CODE),
-            $eventMock->getResponse()->headers->all()
+            $eventMock->getResponse()->headers->all(),
         );
         self::assertEquals(
             1_006,
-            $eventMock->getResponse()->headers->get(PipesHeaders::createKey(PipesHeaders::RESULT_CODE))
+            $eventMock->getResponse()->headers->get(PipesHeaders::createKey(PipesHeaders::RESULT_CODE)),
         );
     }
 
@@ -78,7 +78,7 @@ final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
     {
         self::assertEquals(
             [KernelEvents::EXCEPTION => 'onKernelException'],
-            ControllerExceptionListener::getSubscribedEvents()
+            ControllerExceptionListener::getSubscribedEvents(),
         );
     }
 
@@ -98,7 +98,7 @@ final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
         if ($response) {
             self::assertEquals(
                 1_006,
-                $response->headers->get(PipesHeaders::createKey(PipesHeaders::RESULT_CODE))
+                $response->headers->get(PipesHeaders::createKey(PipesHeaders::RESULT_CODE)),
             );
         }
     }

@@ -49,7 +49,7 @@ final class UserDocumentFilter extends GridFilterAbstract
                 [
                     'created',
                     'email',
-                ]
+                ],
             )->field('deleted')->equals(FALSE);
     }
 

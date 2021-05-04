@@ -27,7 +27,7 @@ final class LogsController extends AbstractController
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFLogsBundle\Controller\LogsController::getDataForTableAction',
             [],
-            $request->query->all()
+            $request->query->all(),
         );
     }
 

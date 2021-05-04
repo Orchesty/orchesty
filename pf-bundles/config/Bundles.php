@@ -24,14 +24,12 @@ use RabbitMqBundle\RabbitMqBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\MonologBundle\MonologBundle;
 use Symfony\Bundle\SecurityBundle\SecurityBundle;
-use Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle;
 
 return [
     DoctrineMongoDBBundle::class => ['all' => TRUE],
     FrameworkBundle::class       => ['all' => TRUE],
     MonologBundle::class         => ['all' => TRUE],
     SecurityBundle::class        => ['all' => TRUE],
-    SwiftmailerBundle::class     => ['all' => TRUE],
 
     HbPFCommonsBundle::class         => ['all' => TRUE],
     HbPFAclBundle::class             => ['all' => TRUE],

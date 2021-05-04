@@ -27,20 +27,13 @@ final class InstallTopologyCommand extends Command
     private const FORCE  = 'force';
 
     /**
-     * @var InstallManager
-     */
-    private InstallManager $manager;
-
-    /**
      * InstallTopologyCommand constructor.
      *
      * @param InstallManager $manager
      */
-    public function __construct(InstallManager $manager)
+    public function __construct(private InstallManager $manager)
     {
         parent::__construct();
-
-        $this->manager = $manager;
     }
 
     /**
@@ -55,10 +48,10 @@ final class InstallTopologyCommand extends Command
             ->addOption(self::DELETE, 'd', InputOption::VALUE_NONE, 'Delete')
             ->addOption(self::FORCE, 'force', InputOption::VALUE_NONE, 'Force')
             ->setDescription(
-                'Possible params are: -c for create, -u for update, -d for delete, --force for apply your changes.'
+                'Possible params are: -c for create, -u for update, -d for delete, --force for apply your changes.',
             )
             ->setHelp(
-                'Possible params are: -c for create, -u for update, -d for delete, --force for apply your changes.'
+                'Possible params are: -c for create, -u for update, -d for delete, --force for apply your changes.',
             );
     }
 

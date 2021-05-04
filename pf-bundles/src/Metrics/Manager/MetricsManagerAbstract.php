@@ -120,31 +120,6 @@ abstract class MetricsManagerAbstract implements LoggerAwareInterface
     protected NodeRepository $nodeRepository;
 
     /**
-     * @var string
-     */
-    protected string $nodeTable;
-
-    /**
-     * @var string
-     */
-    protected string $fpmTable;
-
-    /**
-     * @var string
-     */
-    protected string $rabbitTable;
-
-    /**
-     * @var string
-     */
-    protected string $counterTable;
-
-    /**
-     * @var string
-     */
-    protected string $connectorTable;
-
-    /**
      * @var LoggerInterface
      */
     protected LoggerInterface $logger;
@@ -202,18 +177,13 @@ abstract class MetricsManagerAbstract implements LoggerAwareInterface
      */
     public function __construct(
         DocumentManager $dm,
-        string $nodeTable,
-        string $fpmTable,
-        string $rabbitTable,
-        string $counterTable,
-        string $connectorTable
+        protected string $nodeTable,
+        protected string $fpmTable,
+        protected string $rabbitTable,
+        protected string $counterTable,
+        protected string $connectorTable,
     )
     {
-        $this->nodeTable      = $nodeTable;
-        $this->fpmTable       = $fpmTable;
-        $this->rabbitTable    = $rabbitTable;
-        $this->counterTable   = $counterTable;
-        $this->connectorTable = $connectorTable;
         $this->nodeRepository = $dm->getRepository(Node::class);
         $this->logger         = new NullLogger();
     }
@@ -277,7 +247,7 @@ abstract class MetricsManagerAbstract implements LoggerAwareInterface
         MetricsDto $cpu,
         MetricsDto $request,
         MetricsDto $error,
-        MetricsDto $counter
+        MetricsDto $counter,
     ): array
     {
         return [

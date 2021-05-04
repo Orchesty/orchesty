@@ -44,7 +44,7 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/Sdk/getOneRequest.json',
             ['id' => '5e32a9b8a1b2a70fef6fa273'],
-            [':id' => $this->createSdk('One')->getId()]
+            [':id' => $this->createSdk('One')->getId()],
         );
     }
 
@@ -97,7 +97,7 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/Sdk/updateRequest.json',
             ['id' => '5e32ac41505d6e1b5047eb43'],
-            [':id' => $this->createSdk('One')->getId()]
+            [':id' => $this->createSdk('One')->getId()],
         );
     }
 
@@ -127,7 +127,7 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/Sdk/deleteRequest.json',
             ['id' => '5e32ae5cb04e0b3566176113'],
-            [':id' => $this->createSdk('One')->getId()]
+            [':id' => $this->createSdk('One')->getId()],
         );
     }
 

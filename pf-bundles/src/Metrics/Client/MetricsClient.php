@@ -17,31 +17,6 @@ final class MetricsClient implements ClientInterface
 {
 
     /**
-     * @var string
-     */
-    private string $host;
-
-    /**
-     * @var int
-     */
-    private int $port;
-
-    /**
-     * @var string
-     */
-    private string $user;
-
-    /**
-     * @var string
-     */
-    private string $password;
-
-    /**
-     * @var string
-     */
-    private string $database;
-
-    /**
      * MetricsClient constructor.
      *
      * @param string $host
@@ -50,13 +25,14 @@ final class MetricsClient implements ClientInterface
      * @param string $password
      * @param string $database
      */
-    public function __construct(string $host, int $port, string $user, string $password, string $database)
+    public function __construct(
+        private string $host,
+        private int $port,
+        private string $user,
+        private string $password,
+        private string $database,
+    )
     {
-        $this->host     = $host;
-        $this->port     = $port;
-        $this->user     = $user;
-        $this->password = $password;
-        $this->database = $database;
     }
 
     /**
