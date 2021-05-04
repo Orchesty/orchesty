@@ -109,7 +109,7 @@ final class ApiKeyAuthenticatorTest extends KernelTestCaseAbstract
         $res = $this->getAuthenticator()->onAuthenticationSuccess(
             new Request(),
             self::createMock(TokenInterface::class),
-            'key'
+            'key',
         );
         self::assertEmpty($res);
     }

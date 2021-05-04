@@ -48,8 +48,8 @@ final class ElasticLogsTest extends DatabaseTestCaseAbstract
             new GridRequestDto(
                 [
                     'filter' => '{"severity":"ERROR"}',
-                ]
-            )
+                ],
+            ),
         );
 
         self::assertEquals(
@@ -73,7 +73,7 @@ final class ElasticLogsTest extends DatabaseTestCaseAbstract
                     ],
                 ],
             ],
-            $result
+            $result,
         );
     }
 
@@ -88,8 +88,8 @@ final class ElasticLogsTest extends DatabaseTestCaseAbstract
         $client->expects(self::any())->method('request')->willThrowException(
             new ResponseException(
                 new Request(''),
-                new Response(['error' => 'in order to sort on'])
-            )
+                new Response(['error' => 'in order to sort on']),
+            ),
         );
         $elLogs = new ElasticLogs($this->dm, new StartingPointsFilter($this->dm), $client);
         $elLogs->setIndex('');
@@ -111,8 +111,8 @@ final class ElasticLogsTest extends DatabaseTestCaseAbstract
         $client->expects(self::any())->method('request')->willThrowException(
             new ResponseException(
                 new Request(''),
-                new Response('')
-            )
+                new Response(''),
+            ),
         );
         $this->setProperty($logs, 'client', $client);
 
@@ -145,7 +145,7 @@ final class ElasticLogsTest extends DatabaseTestCaseAbstract
         $result = $this->invokeMethod(
             $logs,
             'getFilterAndSorter',
-            [new GridRequestDto(['filter' => '{"_MODIFIER_SEARCH":"search"}', 'orderby' => 'topology_id'])]
+            [new GridRequestDto(['filter' => '{"_MODIFIER_SEARCH":"search"}', 'orderby' => 'topology_id'])],
         );
 
         self::assertEquals(2, count($result));
@@ -236,8 +236,8 @@ final class ElasticLogsTest extends DatabaseTestCaseAbstract
                                 'code'    => sprintf('Code %s', $i),
                             ],
                         ],
-                    ]
-                )
+                    ],
+                ),
             );
         }
 

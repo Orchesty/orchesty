@@ -18,11 +18,6 @@ final class SdkManager
 {
 
     /**
-     * @var DocumentManager
-     */
-    private DocumentManager $dm;
-
-    /**
      * @var ObjectRepository<Sdk>&SdkRepository
      */
     private SdkRepository $repository;
@@ -32,9 +27,8 @@ final class SdkManager
      *
      * @param DocumentManager $dm
      */
-    public function __construct(DocumentManager $dm)
+    public function __construct(private DocumentManager $dm)
     {
-        $this->dm         = $dm;
         $this->repository = $dm->getRepository(Sdk::class);
     }
 

@@ -88,7 +88,7 @@ final class CategoryManager
         } else {
             throw new CategoryException(
                 'Category used by topology cannot be remove.',
-                CategoryException::CATEGORY_USED
+                CategoryException::CATEGORY_USED,
             );
         }
     }
@@ -111,7 +111,7 @@ final class CategoryManager
                 if (!$this->dm->getRepository(Category::class)->find($data['parent'])) {
                     throw new CategoryException(
                         sprintf('Parent node [%s] not found', $data['parent']),
-                        CategoryException::CATEGORY_NOT_FOUND
+                        CategoryException::CATEGORY_NOT_FOUND,
                     );
                 }
             }

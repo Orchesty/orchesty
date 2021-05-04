@@ -27,7 +27,7 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
 
         $this->assertResponse(
             __DIR__ . '/data/CategoryController/getCategoriesRequest.json',
-            ['_id' => '123456789', 'parent' => '123456789']
+            ['_id' => '123456789', 'parent' => '123456789'],
         );
     }
 
@@ -40,7 +40,7 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
     {
         $this->assertResponse(
             __DIR__ . '/data/CategoryController/createCategoryRequest.json',
-            ['_id' => '123456789']
+            ['_id' => '123456789'],
         );
     }
 
@@ -56,7 +56,7 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/CategoryController/updateCategoryRequest.json',
             ['_id' => '123456789', 'parent' => '123456789'],
-            [':id' => $category->getId()]
+            [':id' => $category->getId()],
         );
     }
 
@@ -72,7 +72,7 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/CategoryController/deleteCategoryRequest.json',
             [],
-            [':id' => $category->getId()]
+            [':id' => $category->getId()],
         );
     }
 

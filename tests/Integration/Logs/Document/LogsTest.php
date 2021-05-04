@@ -69,7 +69,7 @@ final class LogsTest extends DatabaseTestCaseAbstract
                             'code'    => 'code',
                         ],
                     ],
-                ]
+                ],
             )
             ->getQuery()
             ->execute();

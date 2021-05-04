@@ -16,22 +16,19 @@ final class MongoDbLogs extends LogsAbstract
 {
 
     /**
-     * @var LogsFilter
-     */
-    private LogsFilter $filter;
-
-    /**
      * MongoDbLogs constructor.
      *
      * @param DocumentManager      $dm
      * @param LogsFilter           $filter
      * @param StartingPointsFilter $startingPointsFilter
      */
-    public function __construct(DocumentManager $dm, LogsFilter $filter, StartingPointsFilter $startingPointsFilter)
+    public function __construct(
+        DocumentManager $dm,
+        private LogsFilter $filter,
+        StartingPointsFilter $startingPointsFilter,
+    )
     {
         parent::__construct($dm, $startingPointsFilter);
-
-        $this->filter = $filter;
     }
 
     /**

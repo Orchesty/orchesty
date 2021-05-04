@@ -13,25 +13,13 @@ final class UpdateObject
 {
 
     /**
-     * @var Topology
-     */
-    private Topology $topology;
-
-    /**
-     * @var TopologyFile
-     */
-    private TopologyFile $file;
-
-    /**
      * UpdateObject constructor.
      *
      * @param Topology     $topology
      * @param TopologyFile $file
      */
-    public function __construct(Topology $topology, TopologyFile $file)
+    public function __construct(private Topology $topology, private TopologyFile $file)
     {
-        $this->topology = $topology;
-        $this->file     = $file;
     }
 
     /**

@@ -40,7 +40,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         $this->createTopologies(4);
         $this->assertResponse(
             __DIR__ . '/data/Topology/getTopologiesRequest.json',
-            ['_id' => '5e32b04ce99e002a011e0d25']
+            ['_id' => '5e32b04ce99e002a011e0d25'],
         );
     }
 
@@ -64,7 +64,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
         $this->assertResponse(
             __DIR__ . '/data/Topology/getTopologiesErrRequest.json',
-            ['_id' => '5e32b04ce99e002a011e0d25']
+            ['_id' => '5e32b04ce99e002a011e0d25'],
         );
     }
 
@@ -83,7 +83,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/Topology/getTopologyRequest.json',
             ['_id' => '5e32b3de8602642bb3758653'],
-            [':id' => $topology->getId()]
+            [':id' => $topology->getId()],
         );
     }
 
@@ -111,7 +111,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     {
         $this->assertResponse(
             __DIR__ . '/data/Topology/createTopologyRequest.json',
-            ['_id' => '5e32b547b7c6da4b0c54ffc3']
+            ['_id' => '5e32b547b7c6da4b0c54ffc3'],
         );
     }
 
@@ -143,7 +143,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/Topology/updateTopologyRequest.json',
             ['_id' => '5e32bc7423cab649c23d4913'],
-            [':id' => $topology->getId()]
+            [':id' => $topology->getId()],
         );
     }
 
@@ -172,7 +172,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
         $this->client->request(
             'GET',
-            sprintf('/api/topologies/%s/schema.bpmn', $topology->getId())
+            sprintf('/api/topologies/%s/schema.bpmn', $topology->getId()),
         );
         $response = $this->client->getResponse();
         $response = (object) [
@@ -226,7 +226,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
                 'CONTENT_TYPE' => 'application/xml',
                 'ACCEPT'       => 'application/xml',
             ],
-            $this->getBpmn()
+            $this->getBpmn(),
         );
         $response = $this->client->getResponse();
         $response = $this->returnResponse($response);
@@ -252,7 +252,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
                 'CONTENT_TYPE' => 'application/xml',
                 'ACCEPT'       => 'application/xml',
             ],
-            $this->getBpmn()
+            $this->getBpmn(),
         );
         $response = $this->client->getResponse();
         $response = $this->returnResponse($response);
@@ -286,7 +286,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
                 'CONTENT_TYPE' => 'application/xml',
                 'ACCEPT'       => 'application/xml',
             ],
-            str_replace('name="Start Event"', '', $this->getBpmn())
+            str_replace('name="Start Event"', '', $this->getBpmn()),
         );
         $response = $this->client->getResponse();
         $response = $this->returnResponse($response);
@@ -317,7 +317,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
                 'CONTENT_TYPE' => 'application/xml',
                 'ACCEPT'       => 'application/xml',
             ],
-            str_replace('pipes:pipesType="custom"', 'pipes:pipesType="Unknown"', $this->getBpmn())
+            str_replace('pipes:pipesType="custom"', 'pipes:pipesType="Unknown"', $this->getBpmn()),
         );
         $response = $this->client->getResponse();
         $response = (object) [
@@ -352,7 +352,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
                 'CONTENT_TYPE' => 'application/xml',
                 'ACCEPT'       => 'application/xml',
             ],
-            str_replace('pipes:cronTime="*/2 * * * *"', 'pipes:cronTime="Unknown"', $this->getBpmn())
+            str_replace('pipes:cronTime="*/2 * * * *"', 'pipes:cronTime="Unknown"', $this->getBpmn()),
         );
         $response = $this->client->getResponse();
         $response = $this->returnResponse($response);
@@ -376,7 +376,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/Topology/saveTopologyRequest.json',
             ['_id' => '5e395287c5317130b67a4e83'],
-            [':id' => $topology->getId()]
+            [':id' => $topology->getId()],
         );
     }
 
@@ -398,7 +398,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
         $this->client->request(
             'GET',
-            sprintf('/api/topologies/%s/schema.bpmn', $topology->getId())
+            sprintf('/api/topologies/%s/schema.bpmn', $topology->getId()),
         );
         $response = $this->client->getResponse();
         $response = (object) [
@@ -445,7 +445,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/Topology/deleteTopologyErrRequest.json',
             ['message' => 'CurlManager::send() failed: cURL error 6: Could not resolve host: topology-api (see https://curl.haxx.se/libcurl/c/libcurl-errors.html)'],
-            [':id' => $topology->getId()]
+            [':id' => $topology->getId()],
         );
     }
 
@@ -470,7 +470,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
                         'node'            => 'Node',
                     ],
                 ],
-            ]
+            ],
         );
 
         $this->assertResponse(__DIR__ . '/data/Topology/getCronTopologiesRequest.json');
@@ -496,7 +496,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/Topology/testPublishTopologyRequest.json',
             [],
-            [':id' => $topology->getId()]
+            [':id' => $topology->getId()],
         );
     }
 
@@ -533,7 +533,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
                 'name'   => 'name',
                 'descr'  => 'desc',
                 'status' => 'status',
-            ]
+            ],
         );
 
         $this->assertResponse(__DIR__ . '/data/Topology/cloneTopologyRequest.json', [], [':id' => $topology->getId()]);

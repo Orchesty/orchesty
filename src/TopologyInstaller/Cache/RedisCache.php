@@ -15,18 +15,12 @@ final class RedisCache implements TopologyInstallerCacheInterface
 {
 
     /**
-     * @var string
-     */
-    private string $redisDsn;
-
-    /**
      * RedisCache constructor.
      *
      * @param string $redisDsn
      */
-    public function __construct(string $redisDsn)
+    public function __construct(private string $redisDsn)
     {
-        $this->redisDsn = $redisDsn;
     }
 
     /**

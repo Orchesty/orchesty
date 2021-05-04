@@ -122,7 +122,7 @@ final class TopologySchemaUtils
                         self::createConfigDto($innerProcess),
                         $innerProcess['@name'] ?? '',
                         $innerProcess['@pipes:cronTime'] ?? '',
-                        $innerProcess['@pipes:cronParams'] ?? ''
+                        $innerProcess['@pipes:cronParams'] ?? '',
                     );
 
                     $schema->addNode($innerProcess['@id'], $topologyDto);
@@ -196,7 +196,7 @@ final class TopologySchemaUtils
             intval($data[self::RABBIT_PREFETCH] ?? 1),
             ($data[self::REPEATER_ENABLED] ?? 'false') === 'true',
             intval($data[self::REPEATER_HOPS] ?? 0),
-            intval($data[self::REPEATER_INTERVAL] ?? 0)
+            intval($data[self::REPEATER_INTERVAL] ?? 0),
         );
     }
 

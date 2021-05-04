@@ -35,7 +35,7 @@ final class MetricsManagerLoaderTest extends KernelTestCaseAbstract
         new MetricsManagerLoader(
             'mongo',
             self::createMock(MetricsManagerAbstract::class),
-            self::createMock(MetricsManagerAbstract::class)
+            self::createMock(MetricsManagerAbstract::class),
         );
 
         if ($err) {

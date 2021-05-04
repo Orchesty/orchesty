@@ -26,11 +26,6 @@ final class CategoryParser
     /**
      * @var mixed[]
      */
-    private array $roots = [];
-
-    /**
-     * @var mixed[]
-     */
     private array $excludes = [];
 
     /**
@@ -59,19 +54,9 @@ final class CategoryParser
     private string $matchedRootAlias = '';
 
     /**
-     * @var DocumentManager
-     */
-    private DocumentManager $dm;
-
-    /**
      * @var ObjectRepository<Category>&CategoryRepository
      */
     private CategoryRepository $categoryRepository;
-
-    /**
-     * @var CategoryManager
-     */
-    private CategoryManager $categoryManager;
 
     /**
      * CategoryParser constructor.
@@ -80,12 +65,13 @@ final class CategoryParser
      * @param CategoryManager $categoryManager
      * @param mixed[]         $roots
      */
-    public function __construct(DocumentManager $dm, CategoryManager $categoryManager, array $roots = [])
+    public function __construct(
+        private DocumentManager $dm,
+        private CategoryManager $categoryManager,
+        private array $roots = [],
+    )
     {
-        $this->dm                 = $dm;
         $this->categoryRepository = $this->dm->getRepository(Category::class);
-        $this->categoryManager    = $categoryManager;
-        $this->roots              = $roots;
     }
 
     /**

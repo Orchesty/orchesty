@@ -60,11 +60,6 @@ final class ElasticLogs extends LogsAbstract
     ];
 
     /**
-     * @var Client
-     */
-    private Client $client;
-
-    /**
      * @var string
      */
     private string $index;
@@ -76,11 +71,9 @@ final class ElasticLogs extends LogsAbstract
      * @param StartingPointsFilter $startingPointsFilter
      * @param Client               $client
      */
-    public function __construct(DocumentManager $dm, StartingPointsFilter $startingPointsFilter, Client $client)
+    public function __construct(DocumentManager $dm, StartingPointsFilter $startingPointsFilter, private Client $client)
     {
         parent::__construct($dm, $startingPointsFilter);
-
-        $this->client = $client;
     }
 
     /**
@@ -174,7 +167,7 @@ final class ElasticLogs extends LogsAbstract
                 ],
                 $filter,
                 $sorter,
-            )
+            ),
         )->getData();
     }
 

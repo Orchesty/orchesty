@@ -23,27 +23,14 @@ final class RefreshCronCommand extends Command
     private const CMD_NAME = 'cron:refresh';
 
     /**
-     * @var DocumentManager
-     */
-    private DocumentManager $dm;
-
-    /**
-     * @var CronManager
-     */
-    private CronManager $cronManager;
-
-    /**
      * RefreshCronCommand constructor.
      *
      * @param DocumentManager $dm
      * @param CronManager     $cronManager
      */
-    public function __construct(DocumentManager $dm, CronManager $cronManager)
+    public function __construct(private DocumentManager $dm, private CronManager $cronManager)
     {
         parent::__construct(self::CMD_NAME);
-
-        $this->dm          = $dm;
-        $this->cronManager = $cronManager;
     }
 
     /**

@@ -44,8 +44,8 @@ final class MongoDbLogsTest extends DatabaseTestCaseAbstract
             new GridRequestDto(
                 [
                     'filter' => '{"correlation_id":"Correlation ID 5"}',
-                ]
-            )
+                ],
+            ),
         );
 
         self::assertEquals(
@@ -69,7 +69,7 @@ final class MongoDbLogsTest extends DatabaseTestCaseAbstract
                     ],
                 ],
             ],
-            $result
+            $result,
         );
     }
 

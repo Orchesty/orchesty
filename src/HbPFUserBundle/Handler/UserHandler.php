@@ -26,32 +26,18 @@ final class UserHandler
     private const SETTINGS = 'settings';
 
     /**
-     * @var UsersManager
-     */
-    private UsersManager $usersManager;
-
-    /**
-     * @var DocumentManager
-     */
-    private DocumentManager $dm;
-
-    /**
-     * @var UserManager
-     */
-    private UserManager $userManager;
-
-    /**
      * UserHandler constructor.
      *
      * @param UserManager     $userManager
      * @param UsersManager    $usersManager
      * @param DocumentManager $dm
      */
-    public function __construct(UserManager $userManager, UsersManager $usersManager, DocumentManager $dm)
+    public function __construct(
+        private UserManager $userManager,
+        private UsersManager $usersManager,
+        private DocumentManager $dm,
+    )
     {
-        $this->userManager  = $userManager;
-        $this->usersManager = $usersManager;
-        $this->dm           = $dm;
     }
 
     /**
@@ -168,7 +154,7 @@ final class UserHandler
         if (!$user) {
             throw new UserManagerException(
                 sprintf('User with id [%s] not found.', $id),
-                UserManagerException::USER_NOT_EXISTS
+                UserManagerException::USER_NOT_EXISTS,
             );
         }
 

@@ -153,7 +153,7 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
             $xmlDecoder,
             $redisCache,
             [$dir],
-            TRUE
+            TRUE,
         );
     }
 
@@ -173,11 +173,11 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
                         $xmlDecoder->decode(
                             $this->load(
                                 'file.tplg',
-                                TRUE
-                            )
-                        )
-                    )
-                )
+                                TRUE,
+                            ),
+                        ),
+                    ),
+                ),
             )
             ->setEnabled(TRUE)
             ->setVisibility(TopologyStatusEnum::PUBLIC);
@@ -193,11 +193,11 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
                         $xmlDecoder->decode(
                             $this->load(
                                 'file2.tplg',
-                                FALSE
-                            )
-                        )
-                    )
-                )
+                                FALSE,
+                            ),
+                        ),
+                    ),
+                ),
             )
             ->setEnabled(TRUE)
             ->setVisibility(TopologyStatusEnum::PUBLIC);

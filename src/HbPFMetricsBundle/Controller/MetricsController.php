@@ -21,19 +21,13 @@ final class MetricsController
     use ControllerTrait;
 
     /**
-     * @var MetricsHandler
-     */
-    private MetricsHandler $metricsHandler;
-
-    /**
      * MetricsController constructor.
      *
      * @param MetricsHandler $metricsHandler
      */
-    public function __construct(MetricsHandler $metricsHandler)
+    public function __construct(private MetricsHandler $metricsHandler)
     {
-        $this->metricsHandler = $metricsHandler;
-        $this->logger         = new NullLogger();
+        $this->logger = new NullLogger();
     }
 
     /**
@@ -83,7 +77,7 @@ final class MetricsController
     {
         try {
             return $this->getResponse(
-                $this->metricsHandler->getRequestsCountMetrics($topology, $request->query->all())
+                $this->metricsHandler->getRequestsCountMetrics($topology, $request->query->all()),
             );
         } catch (Throwable $e) {
             return $this->getErrorResponse($e, 400);
@@ -102,7 +96,7 @@ final class MetricsController
     {
         try {
             return $this->getResponse(
-                $this->metricsHandler->getApplicationMetrics($request->query->all(), $key)
+                $this->metricsHandler->getApplicationMetrics($request->query->all(), $key),
             );
         } catch (Throwable $e) {
             return $this->getErrorResponse($e, 400);
@@ -121,7 +115,7 @@ final class MetricsController
     {
         try {
             return $this->getResponse(
-                $this->metricsHandler->getUserMetrics($request->query->all(), $user)
+                $this->metricsHandler->getUserMetrics($request->query->all(), $user),
             );
         } catch (Throwable $e) {
             return $this->getErrorResponse($e, 400);

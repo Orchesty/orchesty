@@ -47,7 +47,7 @@ final class LogsCompilerPass implements CompilerPassInterface
                     $dm,
                     $startingPointsFilter,
                     $container->getDefinition('elastica.client'),
-                ]
+                ],
             ))->addMethodCall('setIndex', [$config['storage_name']]);
 
             $container->setDefinition(LogsInterface::class, $elastic);

@@ -26,7 +26,7 @@ final class CategoryController extends AbstractController
     {
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\CategoryController::getCategoriesAction',
-            ['query' => $request->query]
+            ['query' => $request->query],
         );
     }
 
@@ -38,7 +38,7 @@ final class CategoryController extends AbstractController
     public function createCategoryAction(): Response
     {
         return $this->forward(
-            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\CategoryController::createCategoryAction'
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\CategoryController::createCategoryAction',
         );
     }
 
@@ -53,7 +53,7 @@ final class CategoryController extends AbstractController
     {
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\CategoryController::updateCategoryAction',
-            ['id' => $id]
+            ['id' => $id],
         );
     }
 
@@ -68,7 +68,7 @@ final class CategoryController extends AbstractController
     {
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\CategoryController::deleteCategoryAction',
-            ['id' => $id]
+            ['id' => $id],
         );
     }
 

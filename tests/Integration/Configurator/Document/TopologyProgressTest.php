@@ -109,7 +109,7 @@ final class TopologyProgressTest extends DatabaseTestCaseAbstract
                     ],
                 ],
             ],
-            $progress->toArray()
+            $progress->toArray(),
         );
     }
 

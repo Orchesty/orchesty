@@ -49,19 +49,9 @@ final class TopologyHandler
     protected DocumentManager $dm;
 
     /**
-     * @var TopologyManager
-     */
-    protected TopologyManager $manager;
-
-    /**
      * @var CurlManagerInterface
      */
     protected CurlManagerInterface $curlManager;
-
-    /**
-     * @var TopologyGeneratorBridge
-     */
-    protected TopologyGeneratorBridge $generatorBridge;
 
     /**
      * TopologyHandler constructor.
@@ -72,16 +62,14 @@ final class TopologyHandler
      */
     public function __construct(
         DatabaseManagerLocator $dml,
-        TopologyManager $manager,
-        TopologyGeneratorBridge $generatorBridge
+        protected TopologyManager $manager,
+        protected TopologyGeneratorBridge $generatorBridge,
     )
     {
         /** @var DocumentManager $dm */
         $dm                       = $dml->getDm();
         $this->dm                 = $dm;
         $this->topologyRepository = $this->dm->getRepository(Topology::class);
-        $this->manager            = $manager;
-        $this->generatorBridge    = $generatorBridge;
     }
 
     /**
@@ -246,9 +234,9 @@ final class TopologyHandler
                     [
                         'generate_result' => $generateResultBody,
                         'run_result'      => $runResultBody,
-                    ]
+                    ],
                 ),
-                []
+                [],
             );
         } else {
             return new ResponseDto(200, '', Json::encode($data), []);
@@ -375,7 +363,7 @@ final class TopologyHandler
         if (!$res) {
             throw new TopologyException(
                 sprintf('Topology with [%s] id was not found.', $id),
-                TopologyException::TOPOLOGY_NOT_FOUND
+                TopologyException::TOPOLOGY_NOT_FOUND,
             );
         }
 

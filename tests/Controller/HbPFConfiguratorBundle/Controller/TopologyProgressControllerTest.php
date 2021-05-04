@@ -32,7 +32,7 @@ final class TopologyProgressControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/TopologyProgressController/getProgressTopologyRequest.json',
             [],
-            [':topologyId' => '123456789']
+            [':topologyId' => '123456789'],
         );
     }
 
@@ -61,7 +61,7 @@ final class TopologyProgressControllerTest extends ControllerTestCaseAbstract
                     ->setNodeId('12345')
                     ->setNodeName('node-name')
                     ->setStatus('OK')
-                    ->setProcessId('proc-id-1234')
+                    ->setProcessId('proc-id-1234'),
             );
 
         $this->pfd($progress);

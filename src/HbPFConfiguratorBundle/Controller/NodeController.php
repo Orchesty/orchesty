@@ -22,19 +22,13 @@ final class NodeController
     use ControllerTrait;
 
     /**
-     * @var NodeHandler
-     */
-    private NodeHandler $nodeHandler;
-
-    /**
      * NodeController constructor.
      *
      * @param NodeHandler $nodeHandler
      */
-    public function __construct(NodeHandler $nodeHandler)
+    public function __construct(private NodeHandler $nodeHandler)
     {
-        $this->nodeHandler = $nodeHandler;
-        $this->logger      = new NullLogger();
+        $this->logger = new NullLogger();
     }
 
     /**

@@ -644,8 +644,8 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
                 [
                     'id'      => $top->getId(),
                     'deleted' => FALSE,
-                ]
-            )
+                ],
+            ),
         );
         self::assertEmpty($this->dm->getRepository(Node::class)->findBy(['id' => $node->getId(), 'deleted' => FALSE]));
         self::assertEmpty($this->dm->getRepository(Node::class)->findBy(['id' => $node2->getId(), 'deleted' => FALSE]));
@@ -674,10 +674,10 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
                 sprintf(
                     '[{"topology":"%s", "node":"Node", "time":"*/1 * * * *"}, {"topology":"%s", "node":"Node", "time":"*/1 * * * *"}]',
                     $tp->getId(),
-                    $tp2->getId()
+                    $tp2->getId(),
                 ),
-                []
-            )
+                [],
+            ),
         );
 
         $this->setProperty($this->manager, 'cronManager', $cronManager);
@@ -709,7 +709,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
                     'time'     => '*/1 * * * *',
                 ],
             ],
-            $topologies
+            $topologies,
         );
     }
 
@@ -736,8 +736,8 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
                     $tp->getId(),
                     $tp2->getId(),
                 ),
-                []
-            )
+                [],
+            ),
         );
         $this->setProperty($this->manager, 'cronManager', $cronManager);
 
@@ -766,7 +766,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
                     'time'     => '*/1 * * * *',
                 ],
             ],
-            $topologies
+            $topologies,
         );
     }
 
@@ -779,7 +779,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     {
         $cronManager = self::createMock(CronManager::class);
         $cronManager->method('getAll')->willReturn(
-            new ResponseDto(200, 'OK', '[{"topology":"Topology", "node":"Node", "time":"*/1 * * * *"}]', [])
+            new ResponseDto(200, 'OK', '[{"topology":"Topology", "node":"Node", "time":"*/1 * * * *"}]', []),
         );
 
         $this->setProperty($this->manager, 'cronManager', $cronManager);
@@ -844,7 +844,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
                 $topology,
                 (new Schema())
                     ->addNode('1', new NodeSchemaDto('handler', $node->getId(), 'api', new SystemConfigDto(), 'name')),
-            ]
+            ],
         );
 
         self::assertFake();
@@ -898,7 +898,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
                     'enabled'  => TRUE,
                     'category' => 'category',
                 ],
-            ]
+            ],
         );
 
         self::assertFake();

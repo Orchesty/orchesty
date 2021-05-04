@@ -38,7 +38,7 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/SdkController/getOneRequest.json',
             ['id' => '123456789'],
-            [':id' => $this->createSdk()->getId()]
+            [':id' => $this->createSdk()->getId()],
         );
     }
 
@@ -62,7 +62,7 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/SdkController/updateRequest.json',
             ['id' => '123456789'],
-            [':id' => $this->createSdk()->getId()]
+            [':id' => $this->createSdk()->getId()],
         );
     }
 
@@ -76,7 +76,7 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/SdkController/deleteRequest.json',
             ['id' => '123456789'],
-            [':id' => $this->createSdk()->getId()]
+            [':id' => $this->createSdk()->getId()],
         );
     }
 

@@ -42,24 +42,9 @@ final class CronManager
     private const COMMAND  = 'command';
 
     /**
-     * @var CurlManagerInterface
-     */
-    private CurlManagerInterface $curlManager;
-
-    /**
      * @var ObjectRepository<Topology>&TopologyRepository
      */
     private TopologyRepository $topologyRepository;
-
-    /**
-     * @var string
-     */
-    private string $backend;
-
-    /**
-     * @var string
-     */
-    private string $cronHost;
 
     /**
      * CronManager constructor.
@@ -71,15 +56,12 @@ final class CronManager
      */
     public function __construct(
         DocumentManager $documentManager,
-        CurlManagerInterface $curlManager,
-        string $backend,
-        string $cronHost
+        private CurlManagerInterface $curlManager,
+        private string $backend,
+        private string $cronHost,
     )
     {
         $this->topologyRepository = $documentManager->getRepository(Topology::class);
-        $this->curlManager        = $curlManager;
-        $this->backend            = $backend;
-        $this->cronHost           = $cronHost;
     }
 
     /**
@@ -112,8 +94,8 @@ final class CronManager
                         self::NODE     => $nodeName,
                         self::TIME     => $node->getCron(),
                         self::COMMAND  => $this->getCommand($node),
-                    ]
-                )
+                    ],
+                ),
             );
 
         return $this->sendAndProcessRequest($dto);
@@ -135,8 +117,8 @@ final class CronManager
                     [
                         self::TIME    => $node->getCron(),
                         self::COMMAND => $this->getCommand($node),
-                    ]
-                )
+                    ],
+                ),
             );
 
         return $this->sendAndProcessRequest($dto);
@@ -343,7 +325,7 @@ final class CronManager
             [
                 'Accept'       => 'application/json',
                 'Content-Type' => 'application/json',
-            ]
+            ],
         );
 
         try {

@@ -17,25 +17,13 @@ final class MetricsHandler
 {
 
     /**
-     * @var DocumentManager
-     */
-    private DocumentManager $dm;
-
-    /**
-     * @var MetricsManagerLoader
-     */
-    private MetricsManagerLoader $loader;
-
-    /**
      * MetricsHandler constructor.
      *
      * @param DocumentManager      $dm
      * @param MetricsManagerLoader $loader
      */
-    public function __construct(DocumentManager $dm, MetricsManagerLoader $loader)
+    public function __construct(private DocumentManager $dm, private MetricsManagerLoader $loader)
     {
-        $this->dm     = $dm;
-        $this->loader = $loader;
     }
 
     /**
@@ -63,7 +51,7 @@ final class MetricsHandler
         return $this->loader->getManager()->getNodeMetrics(
             $this->getNodeByTopologyAndNodeId($topologyId, $nodeId),
             $this->getTopologyById($topologyId),
-            $params
+            $params,
         );
     }
 
@@ -78,7 +66,7 @@ final class MetricsHandler
     {
         return $this->loader->getManager()->getTopologyRequestCountMetrics(
             $this->getTopologyById($topologyId),
-            $params
+            $params,
         );
     }
 
@@ -118,7 +106,7 @@ final class MetricsHandler
         if (!$topology) {
             throw new MetricsException(
                 sprintf('Topology "%s" not found!', $id),
-                MetricsException::TOPOLOGY_NOT_FOUND
+                MetricsException::TOPOLOGY_NOT_FOUND,
             );
         }
 
@@ -140,7 +128,7 @@ final class MetricsHandler
         if (!$node) {
             throw new MetricsException(
                 sprintf('Node "%s" with topology "%s" not found!', $nodeId, $topologyId),
-                MetricsException::NODE_NOT_FOUND
+                MetricsException::NODE_NOT_FOUND,
             );
         }
 

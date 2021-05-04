@@ -44,8 +44,8 @@ final class TopologiesComparatorTest extends DatabaseTestCaseAbstract
             ->setRawBpmn($this->load('file.tplg', TRUE))
             ->setContentHash(
                 TopologySchemaUtils::getIndexHash(
-                    TopologySchemaUtils::getSchemaObject($xmlDecoder->decode($this->load('file.tplg', TRUE)))
-                )
+                    TopologySchemaUtils::getSchemaObject($xmlDecoder->decode($this->load('file.tplg', TRUE))),
+                ),
             )
             ->setEnabled(TRUE)
             ->setVisibility(TopologyStatusEnum::PUBLIC);
@@ -57,8 +57,8 @@ final class TopologiesComparatorTest extends DatabaseTestCaseAbstract
             ->setRawBpmn($this->load('file2.tplg', FALSE))
             ->setContentHash(
                 TopologySchemaUtils::getIndexHash(
-                    TopologySchemaUtils::getSchemaObject($xmlDecoder->decode($this->load('file2.tplg', FALSE)))
-                )
+                    TopologySchemaUtils::getSchemaObject($xmlDecoder->decode($this->load('file2.tplg', FALSE))),
+                ),
             )
             ->setEnabled(TRUE)
             ->setVisibility(TopologyStatusEnum::PUBLIC);

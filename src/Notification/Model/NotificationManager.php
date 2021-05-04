@@ -28,16 +28,6 @@ final class NotificationManager implements LoggerAwareInterface
     private const SAVE = '%s/notifications/settings/%s';
 
     /**
-     * @var CurlManagerInterface
-     */
-    private CurlManagerInterface $curlManager;
-
-    /**
-     * @var string
-     */
-    private string $backend;
-
-    /**
      * @var LoggerInterface
      */
     private LoggerInterface $logger;
@@ -48,11 +38,9 @@ final class NotificationManager implements LoggerAwareInterface
      * @param CurlManagerInterface $curlManager
      * @param string               $backend
      */
-    public function __construct(CurlManagerInterface $curlManager, string $backend)
+    public function __construct(private CurlManagerInterface $curlManager, private string $backend)
     {
-        $this->curlManager = $curlManager;
-        $this->backend     = $backend;
-        $this->logger      = new NullLogger();
+        $this->logger = new NullLogger();
     }
 
     /**
@@ -128,7 +116,7 @@ final class NotificationManager implements LoggerAwareInterface
             [
                 'Accept'       => 'application/json',
                 'Content-Type' => 'application/json',
-            ]
+            ],
         );
 
         try {
@@ -139,12 +127,12 @@ final class NotificationManager implements LoggerAwareInterface
                 [
                     'Exception' => Json::encode($e),
                     'Request'   => Json::encode($dto),
-                ]
+                ],
             );
 
             throw new NotificationException(
                 sprintf('Notification API failed: %s', $e->getMessage()),
-                NotificationException::NOTIFICATION_EXCEPTION
+                NotificationException::NOTIFICATION_EXCEPTION,
             );
         }
     }

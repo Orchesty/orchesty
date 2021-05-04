@@ -14,18 +14,12 @@ final class LogsHandler
 {
 
     /**
-     * @var LogsInterface
-     */
-    private LogsInterface $logs;
-
-    /**
      * LogsHandler constructor.
      *
      * @param LogsInterface $logs
      */
-    public function __construct(LogsInterface $logs)
+    public function __construct(private LogsInterface $logs)
     {
-        $this->logs = $logs;
     }
 
     /**

@@ -254,7 +254,7 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
                     'user'      => ['key' => 'null'],
                 ],
             ],
-            $res
+            $res,
         );
     }
 

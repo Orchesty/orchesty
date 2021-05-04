@@ -5,7 +5,7 @@ use Hanaboso\PipesFramework\Kernel;
 require __DIR__ . '/../vendor/autoload.php';
 $kernel = new Kernel(
     (string) (filter_input(INPUT_SERVER, 'APP_ENV') ?? 'test'),
-    (bool) (filter_input(INPUT_SERVER, 'APP_DEBUG') ?? TRUE)
+    (bool) (filter_input(INPUT_SERVER, 'APP_DEBUG') ?? TRUE),
 );
 $kernel->boot();
 

@@ -37,7 +37,7 @@ final class NotificationManagerTest extends KernelTestCaseAbstract
                 self::assertEquals('http://example.com/notifications/settings', $request->getUri(TRUE));
 
                 return new ResponseDto(200, 'OK', '', []);
-            }
+            },
         );
 
         $manager->setLogger(new Logger('logger'));
@@ -59,7 +59,7 @@ final class NotificationManagerTest extends KernelTestCaseAbstract
                 self::assertEquals('http://example.com/notifications/settings/id', $request->getUri(TRUE));
 
                 return new ResponseDto(200, 'OK', '', []);
-            }
+            },
         )->getSetting('id');
     }
 
@@ -79,7 +79,7 @@ final class NotificationManagerTest extends KernelTestCaseAbstract
                 self::assertEquals('{"type":"Type"}', $request->getBody());
 
                 return new ResponseDto(200, 'OK', '', []);
-            }
+            },
         )->updateSettings('id', ['type' => 'Type']);
     }
 
@@ -100,9 +100,9 @@ final class NotificationManagerTest extends KernelTestCaseAbstract
             static function (): void {
                 throw new NotificationException(
                     'Client error: `GET http://example.com/notification_settings` resulted in a `404 Not Found` response: Response',
-                    CurlException::REQUEST_FAILED
+                    CurlException::REQUEST_FAILED,
                 );
-            }
+            },
         )->getSettings();
     }
 

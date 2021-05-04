@@ -14,18 +14,12 @@ final class ProgressManager
 {
 
     /**
-     * @var DocumentManager
-     */
-    private DocumentManager $dm;
-
-    /**
      * ProgressManager constructor.
      *
      * @param DocumentManager $dm
      */
-    public function __construct(DocumentManager $dm)
+    public function __construct(private DocumentManager $dm)
     {
-        $this->dm = $dm;
     }
 
     /**

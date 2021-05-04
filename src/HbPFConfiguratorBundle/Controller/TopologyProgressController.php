@@ -19,19 +19,13 @@ final class TopologyProgressController
     use ControllerTrait;
 
     /**
-     * @var TopologyProgressHandler
-     */
-    private TopologyProgressHandler $handler;
-
-    /**
      * TopologyProgressController constructor.
      *
      * @param TopologyProgressHandler $handler
      */
-    public function __construct(TopologyProgressHandler $handler)
+    public function __construct(private TopologyProgressHandler $handler)
     {
-        $this->handler = $handler;
-        $this->logger  = new NullLogger();
+        $this->logger = new NullLogger();
     }
 
     /**

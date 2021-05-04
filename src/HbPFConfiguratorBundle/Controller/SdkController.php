@@ -24,19 +24,13 @@ final class SdkController extends AbstractController
     use ControllerTrait;
 
     /**
-     * @var SdkHandler
-     */
-    private SdkHandler $handler;
-
-    /**
      * SdkController constructor.
      *
      * @param SdkHandler $handler
      */
-    public function __construct(SdkHandler $handler)
+    public function __construct(private SdkHandler $handler)
     {
-        $this->handler = $handler;
-        $this->logger  = new NullLogger();
+        $this->logger = new NullLogger();
     }
 
     /**

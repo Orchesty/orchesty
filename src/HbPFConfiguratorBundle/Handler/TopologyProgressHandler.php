@@ -13,18 +13,12 @@ final class TopologyProgressHandler
 {
 
     /**
-     * @var ProgressManager
-     */
-    private ProgressManager $manager;
-
-    /**
      * TopologyProgressHandler constructor.
      *
      * @param ProgressManager $manager
      */
-    public function __construct(ProgressManager $manager)
+    public function __construct(private ProgressManager $manager)
     {
-        $this->manager = $manager;
     }
 
     /**

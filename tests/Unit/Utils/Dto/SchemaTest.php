@@ -128,8 +128,8 @@ final class SchemaTest extends KernelTestCaseAbstract
                     6 => 'Task_1niijps:hubspot-get-contact-connector:connector',
                     7 => 'Task_1taayin:universal-splitter:splitter',
                     8 => 'Task_1wcc82o:hubspot-updated-contact-mapper:custom',
-                ]
-            )
+                ],
+            ),
         );
     }
 

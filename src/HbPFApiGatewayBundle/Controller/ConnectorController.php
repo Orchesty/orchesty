@@ -25,7 +25,7 @@ final class ConnectorController extends AbstractController
     {
         return $this->forward(
             'Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Controller\ConnectorController::processEventAction',
-            ['id' => $id]
+            ['id' => $id],
         );
     }
 
@@ -40,7 +40,7 @@ final class ConnectorController extends AbstractController
     {
         return $this->forward(
             'Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Controller\ConnectorController::processActionAction',
-            ['id' => $id]
+            ['id' => $id],
         );
     }
 

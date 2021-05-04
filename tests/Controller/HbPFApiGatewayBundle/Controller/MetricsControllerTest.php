@@ -27,7 +27,7 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/MetricsController/topologyMetricsRequest.json',
             [],
-            [':id' => $this->createTopology()->getId()]
+            [':id' => $this->createTopology()->getId()],
         );
     }
 
@@ -43,7 +43,7 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/MetricsController/nodeMetricsRequest.json',
             [],
-            [':topologyId' => $topologyId, ':nodeId' => $this->createNode($topologyId)->getId()]
+            [':topologyId' => $topologyId, ':nodeId' => $this->createNode($topologyId)->getId()],
         );
     }
 
@@ -57,7 +57,7 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/MetricsController/topologyRequestsCountMetricsRequest.json',
             [],
-            [':id' => $this->createTopology()->getId()]
+            [':id' => $this->createTopology()->getId()],
         );
     }
 

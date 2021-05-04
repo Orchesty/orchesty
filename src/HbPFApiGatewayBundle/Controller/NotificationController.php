@@ -23,7 +23,7 @@ final class NotificationController extends AbstractController
     public function getSettingsAction(): Response
     {
         return $this->forward(
-            'Hanaboso\PipesFramework\HbPFNotificationBundle\Controller\NotificationController::getSettingsAction'
+            'Hanaboso\PipesFramework\HbPFNotificationBundle\Controller\NotificationController::getSettingsAction',
         );
     }
 
@@ -35,7 +35,7 @@ final class NotificationController extends AbstractController
     public function getSettingEventsAction(): Response
     {
         return $this->forward(
-            'Hanaboso\PipesFramework\HbPFNotificationBundle\Controller\NotificationController::getSettingEventsAction'
+            'Hanaboso\PipesFramework\HbPFNotificationBundle\Controller\NotificationController::getSettingEventsAction',
         );
     }
 
@@ -50,7 +50,7 @@ final class NotificationController extends AbstractController
     {
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFNotificationBundle\Controller\NotificationController::getSettingAction',
-            ['id' => $id]
+            ['id' => $id],
         );
     }
 
@@ -69,7 +69,7 @@ final class NotificationController extends AbstractController
             [
                 'request' => $request,
                 'id'      => $id,
-            ]
+            ],
         );
     }
 

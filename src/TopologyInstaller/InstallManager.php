@@ -40,44 +40,14 @@ final class InstallManager implements LoggerAwareInterface
     private const DELETE = 'delete';
 
     /**
-     * @var DocumentManager
-     */
-    private DocumentManager $dm;
-
-    /**
      * @var TopologiesComparator
      */
     private TopologiesComparator $comparator;
 
     /**
-     * @var TopologyManager
-     */
-    private TopologyManager $topologyManager;
-
-    /**
-     * @var TopologyGeneratorBridge
-     */
-    private TopologyGeneratorBridge $requestHandler;
-
-    /**
      * @var LoggerInterface
      */
     private LoggerInterface $logger;
-
-    /**
-     * @var CategoryParser
-     */
-    private CategoryParser $categoryParser;
-
-    /**
-     * @var XmlDecoder
-     */
-    private XmlDecoder $decoder;
-
-    /**
-     * @var TopologyInstallerCacheInterface
-     */
-    private TopologyInstallerCacheInterface $installerCache;
 
     /**
      * InstallManager constructor.
@@ -92,28 +62,22 @@ final class InstallManager implements LoggerAwareInterface
      * @param bool                            $checkInfiniteLoop
      */
     public function __construct(
-        DocumentManager $dm,
-        TopologyManager $topologyManager,
-        TopologyGeneratorBridge $requestHandler,
-        CategoryParser $categoryParser,
-        XmlDecoder $decoder,
-        TopologyInstallerCacheInterface $installerCache,
+        private DocumentManager $dm,
+        private TopologyManager $topologyManager,
+        private TopologyGeneratorBridge $requestHandler,
+        private CategoryParser $categoryParser,
+        private XmlDecoder $decoder,
+        private TopologyInstallerCacheInterface $installerCache,
         array $dirs,
-        bool $checkInfiniteLoop
+        bool $checkInfiniteLoop,
     )
     {
-        $this->dm              = $dm;
-        $this->topologyManager = $topologyManager;
-        $this->requestHandler  = $requestHandler;
-        $this->categoryParser  = $categoryParser;
-        $this->decoder         = $decoder;
-        $this->installerCache  = $installerCache;
-        $this->logger          = new NullLogger();
-        $this->comparator      = new TopologiesComparator(
+        $this->logger     = new NullLogger();
+        $this->comparator = new TopologiesComparator(
             $dm->getRepository(Topology::class),
             $decoder,
             $dirs,
-            $checkInfiniteLoop
+            $checkInfiniteLoop,
         );
     }
 
@@ -225,7 +189,7 @@ final class InstallManager implements LoggerAwareInterface
             try {
                 $message  = '';
                 $topology = $this->topologyManager->createTopology(
-                    ['name' => TplgLoader::getName($file->getName()), 'enabled' => TRUE]
+                    ['name' => TplgLoader::getName($file->getName()), 'enabled' => TRUE],
                 );
                 $this->makeRunnable($topology, $file->getFileContents());
                 $this->categoryParser->classifyTopology($topology, $file);

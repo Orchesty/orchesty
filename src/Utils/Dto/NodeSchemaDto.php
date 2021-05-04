@@ -21,41 +21,6 @@ final class NodeSchemaDto
     private const SYSTEM_CONFIGS = 'system_configs';
 
     /**
-     * @var string
-     */
-    private string $handler;
-
-    /**
-     * @var string
-     */
-    private string $id;
-
-    /**
-     * @var string
-     */
-    private string $name;
-
-    /**
-     * @var string
-     */
-    private string $cronTime;
-
-    /**
-     * @var string
-     */
-    private string $cronParams;
-
-    /**
-     * @var string
-     */
-    private string $pipesType;
-
-    /**
-     * @var SystemConfigDto
-     */
-    private SystemConfigDto $systemConfigs;
-
-    /**
      * NodeSchemaDto constructor.
      *
      * @param string          $handler
@@ -67,22 +32,15 @@ final class NodeSchemaDto
      * @param string          $cronParams
      */
     public function __construct(
-        string $handler,
-        string $id,
-        string $pipesType,
-        SystemConfigDto $systemConfigs,
-        string $name,
-        string $cronTime = '',
-        string $cronParams = ''
+        private string $handler,
+        private string $id,
+        private string $pipesType,
+        private SystemConfigDto $systemConfigs,
+        private string $name,
+        private string $cronTime = '',
+        private string $cronParams = '',
     )
     {
-        $this->handler       = $handler;
-        $this->id            = $id;
-        $this->pipesType     = $pipesType;
-        $this->systemConfigs = $systemConfigs;
-        $this->name          = $name;
-        $this->cronTime      = $cronTime;
-        $this->cronParams    = $cronParams;
     }
 
     /**

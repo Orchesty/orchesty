@@ -23,22 +23,16 @@ final class CategoryHandler
     private DocumentManager $dm;
 
     /**
-     * @var CategoryManager
-     */
-    private CategoryManager $categoryManager;
-
-    /**
      * CategoryHandler constructor.
      *
      * @param DatabaseManagerLocatorInterface $dml
      * @param CategoryManager                 $categoryManager
      */
-    public function __construct(DatabaseManagerLocatorInterface $dml, CategoryManager $categoryManager)
+    public function __construct(DatabaseManagerLocatorInterface $dml, private CategoryManager $categoryManager)
     {
         /** @var DocumentManager $dm */
-        $dm                    = $dml->getDm();
-        $this->dm              = $dm;
-        $this->categoryManager = $categoryManager;
+        $dm       = $dml->getDm();
+        $this->dm = $dm;
     }
 
     /**

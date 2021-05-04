@@ -41,7 +41,7 @@ final class MonolithMetricsTest extends DatabaseTestCaseAbstract
                         'topologyId' => '2',
                         'queue'      => '12',
                     ],
-                ]
+                ],
             )
             ->getQuery()
             ->execute();

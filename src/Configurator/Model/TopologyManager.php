@@ -48,30 +48,18 @@ final class TopologyManager
     private TopologyRepository $topologyRepository;
 
     /**
-     * @var CronManager
-     */
-    private CronManager $cronManager;
-
-    /**
-     * @var bool
-     */
-    private bool $checkInfiniteLoop;
-
-    /**
      * TopologyManager constructor.
      *
      * @param DatabaseManagerLocator $dml
      * @param CronManager            $cronManager
      * @param bool                   $checkInfiniteLoop
      */
-    function __construct(DatabaseManagerLocator $dml, CronManager $cronManager, bool $checkInfiniteLoop)
+    function __construct(DatabaseManagerLocator $dml, private CronManager $cronManager, private bool $checkInfiniteLoop)
     {
         /** @var DocumentManager $dm */
         $dm                       = $dml->getDm();
         $this->dm                 = $dm;
         $this->topologyRepository = $this->dm->getRepository(Topology::class);
-        $this->cronManager        = $cronManager;
-        $this->checkInfiniteLoop  = $checkInfiniteLoop;
     }
 
     /**
@@ -87,7 +75,7 @@ final class TopologyManager
         if ($this->topologyRepository->getTopologiesCountByName($data['name']) > 0) {
             throw new TopologyException(
                 sprintf('Topology with name \'%s\' already exists', $data['name']),
-                TopologyException::TOPOLOGY_NAME_ALREADY_EXISTS
+                TopologyException::TOPOLOGY_NAME_ALREADY_EXISTS,
             );
         }
 
@@ -183,7 +171,7 @@ final class TopologyManager
         if (empty($nodes)) {
             throw new TopologyException(
                 'Topology has no nodes. Please save your topology before publish it.',
-                TopologyException::TOPOLOGY_HAS_NO_NODES
+                TopologyException::TOPOLOGY_HAS_NO_NODES,
             );
         }
 
@@ -275,7 +263,7 @@ final class TopologyManager
         if ($topology->getVisibility() === TopologyStatusEnum::PUBLIC && $topology->isEnabled()) {
             throw new TopologyException(
                 'Cannot delete published topology which is enabled. Disable it first.',
-                TopologyException::CANNOT_DELETE_PUBLIC_TOPOLOGY
+                TopologyException::CANNOT_DELETE_PUBLIC_TOPOLOGY,
             );
         }
 
@@ -325,7 +313,7 @@ final class TopologyManager
                 }
 
                 return $result * -1;
-            }
+            },
         );
 
         return $result;
@@ -525,30 +513,30 @@ final class TopologyManager
         if (!$dto->getName()) {
             throw new TopologyException(
                 sprintf('Node [%s] name not found', $dto->getId()),
-                TopologyException::TOPOLOGY_NODE_NAME_NOT_FOUND
+                TopologyException::TOPOLOGY_NODE_NAME_NOT_FOUND,
             );
         }
 
         if (!$dto->getPipesType()) {
             throw new TopologyException(
                 sprintf('Node [%s] type not found', $dto->getId()),
-                TopologyException::TOPOLOGY_NODE_TYPE_NOT_FOUND
+                TopologyException::TOPOLOGY_NODE_TYPE_NOT_FOUND,
             );
         }
 
         try {
             TypeEnum::isValid($dto->getPipesType());
-        } catch (EnumException $e) {
+        } catch (EnumException) {
             throw new TopologyException(
                 sprintf('Node [%s] type [%s] not exist', $dto->getId(), $dto->getPipesType()),
-                TopologyException::TOPOLOGY_NODE_TYPE_NOT_EXIST
+                TopologyException::TOPOLOGY_NODE_TYPE_NOT_EXIST,
             );
         }
 
         if ($dto->getCronTime() && !CronParser::isValidExpression($dto->getCronTime())) {
             throw new TopologyException(
                 sprintf('Node [%s] cron [%s] not valid', $dto->getId(), $dto->getPipesType()),
-                TopologyException::TOPOLOGY_NODE_CRON_NOT_VALID
+                TopologyException::TOPOLOGY_NODE_CRON_NOT_VALID,
             );
         }
     }
@@ -568,13 +556,13 @@ final class TopologyManager
                 'topology' => $topology->getId(),
                 'schemaId' => $schemaId,
                 'deleted'  => FALSE,
-            ]
+            ],
         );
 
         if (!$node) {
             throw new NodeException(
                 sprintf('Node [schema id: %s] for topology %s not found.', $schemaId, $topology->getId()),
-                NodeException::NODE_NOT_FOUND
+                NodeException::NODE_NOT_FOUND,
             );
         }
 
@@ -597,7 +585,7 @@ final class TopologyManager
                 throw new TopologyException(
                     sprintf('Saving of Node [%s] & cron [%s] failed.', $schemaId, $type),
                     TopologyException::TOPOLOGY_NODE_CRON_NOT_AVAILABLE,
-                    $e
+                    $e,
                 );
             }
         }
@@ -643,7 +631,7 @@ final class TopologyManager
         if (isset($data['name']) && $topology->getVisibility() === TopologyStatusEnum::PUBLIC) {
             throw new TopologyException(
                 'Cannot change name of published topology',
-                TopologyException::TOPOLOGY_CANNOT_CHANGE_NAME
+                TopologyException::TOPOLOGY_CANNOT_CHANGE_NAME,
             );
         }
 
@@ -651,7 +639,7 @@ final class TopologyManager
             if ($this->topologyRepository->getTopologiesCountByName($data['name']) > 0) {
                 throw new TopologyException(
                     sprintf('Topology with name \'%s\' already exists', $data['name']),
-                    TopologyException::TOPOLOGY_NAME_ALREADY_EXISTS
+                    TopologyException::TOPOLOGY_NAME_ALREADY_EXISTS,
                 );
             }
         }

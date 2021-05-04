@@ -82,14 +82,14 @@ final class ControllerExceptionListener implements EventSubscriberInterface, Log
 
         $this->logger->error('Controller exception.', ['exception' => $e]);
 
-        if (!in_array(get_class($e), $this->exceptionClasses, TRUE)) {
+        if (!in_array($e::class, $this->exceptionClasses, TRUE)) {
             return;
         }
 
         $response = $this->getErrorResponse($e, 200);
         $response->headers->add(PipesHeaders::clear($event->getRequest()->headers->all()));
 
-        if (in_array(get_class($e), [ConnectorException::class], TRUE)) {
+        if (in_array($e::class, [ConnectorException::class], TRUE)) {
             /** @var ConnectorException $exception */
             $exception = $e;
             $dto       = $exception->getProcessDto();

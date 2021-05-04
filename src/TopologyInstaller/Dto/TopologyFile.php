@@ -14,25 +14,13 @@ final class TopologyFile
 {
 
     /**
-     * @var string
-     */
-    private string $name;
-
-    /**
-     * @var string
-     */
-    private string $path;
-
-    /**
      * TopologyFile constructor.
      *
      * @param string $name
      * @param string $path
      */
-    public function __construct(string $name, string $path)
+    public function __construct(private string $name, private string $path)
     {
-        $this->name = $name;
-        $this->path = $path;
     }
 
     /**

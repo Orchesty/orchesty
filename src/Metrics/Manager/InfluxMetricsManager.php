@@ -24,11 +24,6 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
 {
 
     /**
-     * @var ClientInterface
-     */
-    private ClientInterface $client;
-
-    /**
      * InfluxMetricsManager constructor.
      *
      * @param ClientInterface $client
@@ -40,18 +35,16 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
      * @param string          $connectorTable
      */
     public function __construct(
-        ClientInterface $client,
+        private ClientInterface $client,
         DocumentManager $dm,
         string $nodeTable,
         string $fpmTable,
         string $rabbitTable,
         string $counterTable,
-        string $connectorTable
+        string $connectorTable,
     )
     {
         parent::__construct($dm, $nodeTable, $fpmTable, $rabbitTable, $counterTable, $connectorTable);
-
-        $this->client = $client;
     }
 
     /**
@@ -72,7 +65,7 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
             $this->nodeTable,
             $this->fpmTable,
             $this->rabbitTable,
-            $this->connectorTable
+            $this->connectorTable,
         );
 
         $select = self::addStringSeparator(
@@ -84,8 +77,8 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
                     self::AVG_TIME         => self::REQUEST_COUNT,
                     self::AVG_MESSAGES     => self::QUEUE_COUNT,
                 ],
-                self::COUNT
-            )
+                self::COUNT,
+            ),
         );
 
         $select .= self::addStringSeparator(
@@ -99,8 +92,8 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
                     self::TOTAL_COUNT      => self::NODE_TOTAL_SUM,
                     self::AVG_MESSAGES     => self::QUEUE_SUM,
                 ],
-                self::SUM
-            )
+                self::SUM,
+            ),
         );
 
         $select .= self::addStringSeparator(
@@ -111,8 +104,8 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
                     self::CPU_KERNEL_MIN   => self::CPU_MIN,
                     self::MIN_TIME         => self::REQUEST_MIN,
                 ],
-                self::MIN
-            )
+                self::MIN,
+            ),
         );
 
         $select .= self::getFunctionForSelect(
@@ -123,7 +116,7 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
                 self::MAX_TIME         => self::REQUEST_MAX,
                 self::MAX_MESSAGES     => self::QUEUE_MAX,
             ],
-            self::MAX
+            self::MAX,
         );
 
         $where = [
@@ -183,8 +176,8 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
             'TIME(%s)',
             RetentionFactory::getRetention(
                 DateTimeUtils::getUtcDateTime($dateFrom),
-                DateTimeUtils::getUtcDateTime($dateTo)
-            )
+                DateTimeUtils::getUtcDateTime($dateTo),
+            ),
         );
 
         $data['requests'] = $this->runQuery(
@@ -194,7 +187,7 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
             $groupBy,
             $dateFrom,
             $dateTo,
-            TRUE
+            TRUE,
         );
 
         return $data;
@@ -247,7 +240,7 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
             $groupBy,
             $dateFrom,
             $dateTo,
-            TRUE
+            TRUE,
         );
 
         return ['application' => $result];
@@ -280,7 +273,7 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
             $groupBy,
             $dateFrom,
             $dateTo,
-            TRUE
+            TRUE,
         );
 
         return ['user' => $result];
@@ -310,7 +303,7 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
         ?string $group = NULL,
         ?string $dateFrom = NULL,
         ?string $dateTo = NULL,
-        bool $forGraph = FALSE
+        bool $forGraph = FALSE,
     ): array
     {
         $qb = $this->client->getQueryBuilder()
@@ -456,8 +449,8 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
             ', ',
             array_map(
                 static fn(string $item): string => sprintf('"%s".%s', $retention, $item),
-                explode(',', $fromTables)
-            )
+                explode(',', $fromTables),
+            ),
         );
     }
 
@@ -473,7 +466,7 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
             $data,
             static function (string &$value, string $key): void {
                 $value = sprintf('%s = \'%s\'', $key, $value);
-            }
+            },
         );
 
         return [implode(sprintf(' %s ', $delimiter), $data)];
@@ -512,7 +505,7 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
             $data,
             static function (string &$value, string $key) use ($function): void {
                 $value = sprintf('%s("%s") AS %s', $function, $key, $value);
-            }
+            },
         );
 
         return implode(', ', $data);

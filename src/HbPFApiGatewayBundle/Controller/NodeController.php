@@ -17,18 +17,12 @@ final class NodeController extends AbstractController
 {
 
     /**
-     * @var ServiceLocator
-     */
-    private ServiceLocator $locator;
-
-    /**
      * NodeController constructor.
      *
      * @param ServiceLocator $locator
      */
-    public function __construct(ServiceLocator $locator)
+    public function __construct(private ServiceLocator $locator)
     {
-        $this->locator = $locator;
     }
 
     /**
@@ -42,7 +36,7 @@ final class NodeController extends AbstractController
     {
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController::getNodesAction',
-            ['id' => $id]
+            ['id' => $id],
         );
     }
 
@@ -57,7 +51,7 @@ final class NodeController extends AbstractController
     {
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController::getNodeAction',
-            ['id' => $id]
+            ['id' => $id],
         );
     }
 
@@ -72,7 +66,7 @@ final class NodeController extends AbstractController
     {
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController::updateNodeAction',
-            ['id' => $id]
+            ['id' => $id],
         );
     }
 
@@ -88,20 +82,20 @@ final class NodeController extends AbstractController
         switch ($type) {
             case 'connector':
                 return $this->forward(
-                    'Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Controller\ConnectorController::listOfConnectorsAction'
+                    'Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Controller\ConnectorController::listOfConnectorsAction',
                 );
             case 'joiner':
             case 'custom_node':
                 return $this->forward(
-                    'Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Controller\CustomNodeController::listOfCustomNodesAction'
+                    'Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Controller\CustomNodeController::listOfCustomNodesAction',
                 );
             case 'long_running':
                 return $this->forward(
-                    'Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController::listOfLongRunningNodesAction'
+                    'Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController::listOfLongRunningNodesAction',
                 );
             case 'mapper':
                 return $this->forward(
-                    'Hanaboso\PipesPhpSdk\HbPFMapperBundle\Controller\MapperController::listOfMappersAction'
+                    'Hanaboso\PipesPhpSdk\HbPFMapperBundle\Controller\MapperController::listOfMappersAction',
                 );
         }
 

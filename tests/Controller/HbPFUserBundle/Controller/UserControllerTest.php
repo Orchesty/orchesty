@@ -55,7 +55,7 @@ final class UserControllerTest extends ControllerTestCaseAbstract
             [
                 'id'      => '5e565d74eb437f16e475a2e2',
                 'created' => '2020-02-26 12:00:00',
-            ]
+            ],
         );
     }
 
@@ -116,7 +116,7 @@ final class UserControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/getUserRequest.json',
             ['id' => '5e57a1ace2a2c66a577b8ff2'],
-            [':id' => $user->getId()]
+            [':id' => $user->getId()],
         );
     }
 

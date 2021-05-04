@@ -69,16 +69,6 @@ final class TopologyConfigFactory
     public const NAME          = 'name';
 
     /**
-     * @var mixed[]
-     */
-    private array $configs;
-
-    /**
-     * @var DocumentManager
-     */
-    private DocumentManager $dm;
-
-    /**
      * @var ObjectRepository<Node>&NodeRepository
      */
     private NodeRepository $nodeRepo;
@@ -89,9 +79,8 @@ final class TopologyConfigFactory
      * @param mixed[]         $configs
      * @param DocumentManager $dm
      */
-    public function __construct(array $configs, DocumentManager $dm)
+    public function __construct(private array $configs, private DocumentManager $dm)
     {
-        $this->configs = $configs;
 
         $parsed                              = DsnParser::rabbitParser($configs[self::RABBITMQ_DSN]);
         $this->configs[self::RABBITMQ_HOST]  = sprintf('%s:%s', $parsed[DsnParser::HOST], $parsed[DsnParser::PORT]);
@@ -99,7 +88,6 @@ final class TopologyConfigFactory
         $this->configs[self::RABBITMQ_USER]  = $parsed[DsnParser::USER] ?? 'guest';
         $this->configs[self::RABBITMQ_PASS]  = $parsed[DsnParser::PASSWORD] ?? 'guest';
 
-        $this->dm       = $dm;
         $this->nodeRepo = $this->dm->getRepository(Node::class);
     }
 

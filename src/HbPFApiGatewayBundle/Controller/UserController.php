@@ -133,7 +133,7 @@ final class UserController extends AbstractController
     {
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::saveUserSettingsAction',
-            ['id' => $id]
+            ['id' => $id],
         );
     }
 
@@ -148,7 +148,7 @@ final class UserController extends AbstractController
     {
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::getUserAction',
-            ['id' => $id]
+            ['id' => $id],
         );
     }
 

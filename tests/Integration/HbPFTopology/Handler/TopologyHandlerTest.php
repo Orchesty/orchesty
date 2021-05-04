@@ -197,7 +197,7 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
                 'invalidateTopologyCache',
                 'infoTopology',
                 'runTest',
-            ]
+            ],
         );
 
         if ($return instanceof Throwable) {
@@ -229,7 +229,7 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
     {
         $manager = self::createPartialMock(
             TopologyManager::class,
-            ['publishTopology', 'unPublishTopology', 'deleteTopology']
+            ['publishTopology', 'unPublishTopology', 'deleteTopology'],
         );
         $manager->expects(self::any())->method('publishTopology')->willReturn($topology);
         $manager->expects(self::any())->method('unPublishTopology')->willReturn($topology);

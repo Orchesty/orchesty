@@ -32,23 +32,17 @@ final class NodeHandler
     private DocumentManager $dm;
 
     /**
-     * @var NodeManager
-     */
-    private NodeManager $manager;
-
-    /**
      * NodeHandler constructor.
      *
      * @param DatabaseManagerLocator $dml
      * @param NodeManager            $manager
      */
-    public function __construct(DatabaseManagerLocator $dml, NodeManager $manager)
+    public function __construct(DatabaseManagerLocator $dml, private NodeManager $manager)
     {
         /** @var DocumentManager $dm */
         $dm                   = $dml->getDm();
         $this->dm             = $dm;
         $this->nodeRepository = $this->dm->getRepository(Node::class);
-        $this->manager        = $manager;
     }
 
     /**
@@ -133,7 +127,7 @@ final class NodeHandler
         if (!$res) {
             throw new NodeException(
                 sprintf('Node with [%s] id was not found.', $id),
-                NodeException::NODE_NOT_FOUND
+                NodeException::NODE_NOT_FOUND,
             );
         }
 

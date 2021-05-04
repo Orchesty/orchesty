@@ -33,16 +33,6 @@ final class ServiceLocator implements LoggerAwareInterface
     private $sdkRepository;
 
     /**
-     * @var CurlManager
-     */
-    private CurlManager $curlManager;
-
-    /**
-     * @var RedirectInterface
-     */
-    private RedirectInterface $redirect;
-
-    /**
      * @var LoggerInterface
      */
     private LoggerInterface $logger;
@@ -54,11 +44,13 @@ final class ServiceLocator implements LoggerAwareInterface
      * @param CurlManager       $curlManager
      * @param RedirectInterface $redirect
      */
-    public function __construct(DocumentManager $dm, CurlManager $curlManager, RedirectInterface $redirect)
+    public function __construct(
+        DocumentManager $dm,
+        private CurlManager $curlManager,
+        private RedirectInterface $redirect,
+    )
     {
         $this->sdkRepository = $dm->getRepository(Sdk::class);
-        $this->curlManager   = $curlManager;
-        $this->redirect      = $redirect;
         $this->logger        = new NullLogger();
     }
 
@@ -156,7 +148,7 @@ final class ServiceLocator implements LoggerAwareInterface
         return $this->doRequest(
             sprintf('applications/%s/users/%s/settings', $key, $user),
             CurlManager::METHOD_PUT,
-            $data
+            $data,
         );
     }
 
@@ -172,7 +164,7 @@ final class ServiceLocator implements LoggerAwareInterface
         return $this->doRequest(
             sprintf('applications/%s/users/%s/password', $key, $user),
             CurlManager::METHOD_PUT,
-            $data
+            $data,
         );
     }
 
@@ -187,7 +179,7 @@ final class ServiceLocator implements LoggerAwareInterface
     {
         return $this->doRequest(
             sprintf('applications/%s/users/%s/authorize/token%s', $key, $user, $this->queryToString($query)),
-            CurlManager::METHOD_GET
+            CurlManager::METHOD_GET,
         );
     }
 
@@ -200,7 +192,7 @@ final class ServiceLocator implements LoggerAwareInterface
     {
         return $this->doRequest(
             sprintf('applications/authorize/token%s', $this->queryToString($query)),
-            CurlManager::METHOD_GET
+            CurlManager::METHOD_GET,
         );
     }
 
@@ -213,7 +205,7 @@ final class ServiceLocator implements LoggerAwareInterface
     {
         $url = $this->doRequest(
             sprintf('applications/%s/users/%s/authorize?redirect_url=%s', $key, $user, $redirect),
-            CurlManager::METHOD_GET
+            CurlManager::METHOD_GET,
         );
         if (!isset($url['authorizeUrl'])) {
             throw new LogicException(sprintf('App %s is not found!', $key));
@@ -231,7 +223,7 @@ final class ServiceLocator implements LoggerAwareInterface
     {
         return $this->doRequest(
             sprintf('applications/%s/sync/list', $key),
-            CurlManager::METHOD_GET
+            CurlManager::METHOD_GET,
         );
     }
 
@@ -249,7 +241,7 @@ final class ServiceLocator implements LoggerAwareInterface
             $request->getMethod(),
             $request->request->all(),
             FALSE,
-            $request->headers->all()
+            $request->headers->all(),
         );
     }
 
@@ -298,7 +290,7 @@ final class ServiceLocator implements LoggerAwareInterface
         return $this->doRequest(
             sprintf('webhook/applications/%s/users/%s/subscribe', $key, $user),
             CurlManager::METHOD_POST,
-            $body
+            $body,
         );
     }
 
@@ -314,7 +306,7 @@ final class ServiceLocator implements LoggerAwareInterface
         return $this->doRequest(
             sprintf('webhook/applications/%s/users/%s/unsubscribe', $key, $user),
             CurlManager::METHOD_POST,
-            $body
+            $body,
         );
     }
 
@@ -336,7 +328,7 @@ final class ServiceLocator implements LoggerAwareInterface
         string $method = CurlManager::METHOD_GET,
         array $body = [],
         bool $multiple = FALSE,
-        array $headers = []
+        array $headers = [],
     ): array
     {
         $out = [];

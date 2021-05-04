@@ -39,24 +39,9 @@ final class TopologyGeneratorBridge
     private const HEADERS = ['Content-Type' => 'application/json'];
 
     /**
-     * @var CurlManagerInterface
-     */
-    protected CurlManagerInterface $curlManager;
-
-    /**
      * @var DocumentManager
      */
     private DocumentManager $dm;
-
-    /**
-     * @var TopologyConfigFactory
-     */
-    private TopologyConfigFactory $configFactory;
-
-    /**
-     * @var mixed[]
-     */
-    private array $configs;
 
     /**
      * TopologyGeneratorBridge constructor.
@@ -68,17 +53,14 @@ final class TopologyGeneratorBridge
      */
     public function __construct(
         DatabaseManagerLocator $dml,
-        CurlManagerInterface $curlManager,
-        TopologyConfigFactory $configFactory,
-        array $configs
+        protected CurlManagerInterface $curlManager,
+        private TopologyConfigFactory $configFactory,
+        private array $configs,
     )
     {
         /** @var DocumentManager $dm */
-        $dm                  = $dml->getDm();
-        $this->dm            = $dm;
-        $this->curlManager   = $curlManager;
-        $this->configFactory = $configFactory;
-        $this->configs       = $configs;
+        $dm       = $dml->getDm();
+        $this->dm = $dm;
     }
 
     /**
@@ -179,7 +161,7 @@ final class TopologyGeneratorBridge
             return Json::decode($responseDto->getBody());
         } else {
             throw new CurlException(
-                sprintf('Request error: %s, %s', $responseDto->getReasonPhrase(), $responseDto->getBody())
+                sprintf('Request error: %s, %s', $responseDto->getReasonPhrase(), $responseDto->getBody()),
             );
         }
     }

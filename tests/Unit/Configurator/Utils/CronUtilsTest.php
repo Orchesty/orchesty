@@ -32,7 +32,7 @@ final class CronUtilsTest extends KernelTestCaseAbstract
 
         self::assertEquals(
             '/topologies/test/nodes/id-1/run',
-            CronUtils::getTopologyUrl($topology, $node)
+            CronUtils::getTopologyUrl($topology, $node),
         );
     }
 

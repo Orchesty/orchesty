@@ -23,18 +23,12 @@ final class ApiKeyAuthenticator extends AbstractGuardAuthenticator
     public const AUTH_HEADER = 'X-Auth';
 
     /**
-     * @var string
-     */
-    private string $universalApiKey;
-
-    /**
      * ApiKeyAuthenticator constructor.
      *
      * @param string $universalApiKey
      */
-    public function __construct(string $universalApiKey)
+    public function __construct(private string $universalApiKey)
     {
-        $this->universalApiKey = $universalApiKey;
     }
 
     /**

@@ -58,7 +58,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
                 'id'      => '123456789',
                 'created' => '2010-10-10 10:10:10',
                 'updated' => '2010-10-10 10:10:10',
-            ]
+            ],
         );
     }
 
@@ -77,7 +77,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
                 'id'      => '123456789',
                 'created' => '2010-10-10 10:10:10',
                 'updated' => '2010-10-10 10:10:10',
-            ]
+            ],
         );
     }
 
@@ -106,7 +106,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
                 'id'      => '123456789',
                 'created' => '2010-10-10 10:10:10',
                 'updated' => '2010-10-10 10:10:10',
-            ]
+            ],
         );
     }
 
@@ -125,7 +125,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
                 'id'      => '123456789',
                 'created' => '2010-10-10 10:10:10',
                 'updated' => '2010-10-10 10:10:10',
-            ]
+            ],
         );
     }
 
@@ -144,7 +144,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
                 'id'      => '123456789',
                 'created' => '2010-10-10 10:10:10',
                 'updated' => '2010-10-10 10:10:10',
-            ]
+            ],
         );
     }
 
@@ -169,7 +169,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         $loader = new ServiceLocator(
             $this->dm,
             $curl,
-            self::createMock(RedirectInterface::class)
+            self::createMock(RedirectInterface::class),
         );
 
         self::$container->set('hbpp.service.locator', $loader);
@@ -189,7 +189,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         $loader = new ServiceLocator(
             $this->dm,
             self::$container->get('hbpf.transport.curl_manager'),
-            self::createMock(RedirectInterface::class)
+            self::createMock(RedirectInterface::class),
         );
 
         self::$container->set('hbpp.service.locator', $loader);
@@ -223,7 +223,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
                 $response;
 
                 return ['Redirect'];
-            }
+            },
         );
     }
 
@@ -251,7 +251,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
                 $response;
 
                 return ['Redirect'];
-            }
+            },
         );
     }
 
@@ -265,7 +265,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/ApplicationController/applicationStatisticsRequest.json',
             [],
-            [':key' => 'superApp']
+            [':key' => 'superApp'],
         );
     }
 
@@ -279,7 +279,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/ApplicationController/userStatisticsRequest.json',
             [],
-            [':user' => '123-456-789']
+            [':user' => '123-456-789'],
         );
     }
 

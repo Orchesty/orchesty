@@ -62,9 +62,9 @@ final class Schema
     }
 
     /**
-     * @return mixed
+     * @return mixed[]
      */
-    public function getSequences()
+    public function getSequences(): array
     {
         return $this->sequences;
     }
@@ -161,7 +161,7 @@ final class Schema
         if (empty($this->startNode)) {
             throw new TopologyException(
                 'Invalid schema - starting node was not found',
-                TopologyException::SCHEMA_START_NODE_MISSING
+                TopologyException::SCHEMA_START_NODE_MISSING,
             );
         }
     }
