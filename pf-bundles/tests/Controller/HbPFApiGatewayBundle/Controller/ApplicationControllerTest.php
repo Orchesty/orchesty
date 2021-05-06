@@ -290,7 +290,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetSynchronousActionsAction(): void
     {
-        $this->assertResponse(__DIR__ . '/data/ApplicationController/getSynchronousActionsRequest.json',);
+        $this->assertResponse(__DIR__ . '/data/ApplicationController/getSynchronousActionsRequest.json');
     }
 
     /**
@@ -300,14 +300,13 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
      */
     public function testRunSynchronousActionsAction(): void
     {
-        $this->assertResponse(__DIR__ . '/data/ApplicationController/runSynchronousActionsRequest.json',);
+        $this->assertResponse(__DIR__ . '/data/ApplicationController/runSynchronousActionsRequest.json');
     }
 
     /**
-     * @return ApplicationInstall
      * @throws Exception
      */
-    private function createApplication(): ApplicationInstall
+    private function createApplication(): void
     {
         $application = (new ApplicationInstall())->setKey('null')->setUser('user');
         $this->pfd($application);
@@ -315,8 +314,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         $sdk = new Sdk();
         $sdk->setKey('php-sdk')->setValue('php-sdk');
         $this->pfd($sdk);
-
-        return $application;
     }
 
 }

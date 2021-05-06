@@ -93,7 +93,7 @@ final class MongoDbLogsTest extends DatabaseTestCaseAbstract
             $pipes = new Pipes();
             $this->setProperty($pipes, 'timestamp', new DateTime());
             $this->setProperty($pipes, 'type', 'starting_point');
-            $this->setProperty($pipes, 'hostname', sprintf('Hostname '));
+            $this->setProperty($pipes, 'hostname', 'Hostname ');
             $this->setProperty($pipes, 'channel', sprintf('Channel %s', $i));
             $this->setProperty($pipes, 'severity', 'ERROR');
             $this->setProperty($pipes, 'correlationId', sprintf('Correlation ID %s', $i));

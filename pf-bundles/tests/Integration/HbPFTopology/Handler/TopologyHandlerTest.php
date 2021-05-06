@@ -185,7 +185,7 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
      *
      * @return TopologyGeneratorBridge
      */
-    private function mockGenerator($return): TopologyGeneratorBridge
+    private function mockGenerator(mixed $return): TopologyGeneratorBridge
     {
         $generator = self::createPartialMock(
             TopologyGeneratorBridge::class,

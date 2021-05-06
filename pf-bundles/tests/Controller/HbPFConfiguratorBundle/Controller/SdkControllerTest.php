@@ -111,7 +111,7 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
      */
     public function testUpdateNotFound(): void
     {
-        $this->assertResponse(__DIR__ . '/data/Sdk/updateNotFoundRequest.json',);
+        $this->assertResponse(__DIR__ . '/data/Sdk/updateNotFoundRequest.json');
     }
 
     /**
@@ -140,7 +140,7 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
      */
     public function testDeleteErr(): void
     {
-        $this->assertResponse(__DIR__ . '/data/Sdk/deleteErrRequest.json',);
+        $this->assertResponse(__DIR__ . '/data/Sdk/deleteErrRequest.json');
     }
 
     /**

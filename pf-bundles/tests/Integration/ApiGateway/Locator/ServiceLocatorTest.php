@@ -201,7 +201,7 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
     public function testAuthorize(): void
     {
         $dto = new ResponseDto(200, '', Json::encode(['authorizeUrl' => 'redirect/url']), []);
-        $this->createLocator($dto, FALSE)->authorize('key', 'user', 'redirect');
+        $this->createLocator($dto)->authorize('key', 'user', 'redirect');
         self::assertFake();
     }
 

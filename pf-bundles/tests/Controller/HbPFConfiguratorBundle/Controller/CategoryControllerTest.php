@@ -134,7 +134,7 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
      */
     public function testDeleteCategory(): void
     {
-        $categories = $this->createCategories(1);
+        $categories = $this->createCategories();
 
         $this->assertResponse(
             __DIR__ . '/data/Category/deleteCategoryRequest.json',

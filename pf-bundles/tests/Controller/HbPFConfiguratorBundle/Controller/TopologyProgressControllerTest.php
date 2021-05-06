@@ -41,10 +41,9 @@ final class TopologyProgressControllerTest extends ControllerTestCaseAbstract
      */
 
     /**
-     * @return TopologyProgress
      * @throws Exception
      */
-    private function createProgress(): TopologyProgress
+    private function createProgress(): void
     {
         $progress = new TopologyProgress();
         $progress
@@ -65,8 +64,6 @@ final class TopologyProgressControllerTest extends ControllerTestCaseAbstract
             );
 
         $this->pfd($progress);
-
-        return $progress;
     }
 
 }

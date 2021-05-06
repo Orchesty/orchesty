@@ -53,8 +53,8 @@ final class TopologiesComparator
 
         foreach ($files as $name => $file) {
             if (array_key_exists($name, $db)) {
-                if (!$this->isEqual($db[$name], $files[$name])) {
-                    $result->addUpdate(new UpdateObject($db[$name], TopologyFile::from($files[$name])));
+                if (!$this->isEqual($db[$name], $file)) {
+                    $result->addUpdate(new UpdateObject($db[$name], TopologyFile::from($file)));
                 }
                 unset($db[$name]);
             } else {
@@ -70,7 +70,7 @@ final class TopologiesComparator
     }
 
     /**
-     * @return mixed[]|SplFileInfo[]
+     * @return mixed[]
      */
     private function prepareFiles(): array
     {

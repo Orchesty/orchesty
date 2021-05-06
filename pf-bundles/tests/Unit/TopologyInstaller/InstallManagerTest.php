@@ -38,7 +38,7 @@ final class InstallManagerTest extends KernelTestCaseAbstract
     public function testPrepareInstall(): void
     {
         $topo    = new Topology();
-        $manager = $this->createManager($topo, []);
+        $manager = $this->createManager($topo);
         $manager->setLogger(new Logger('logger'));
         $output = $manager->prepareInstall(TRUE, TRUE, TRUE);
         self::assertArrayHasKey('create', $output);
@@ -67,7 +67,7 @@ final class InstallManagerTest extends KernelTestCaseAbstract
         $topo = new Topology();
         $this->setProperty($topo, 'id', '123');
 
-        $manager = $this->createManager($topo, []);
+        $manager = $this->createManager($topo);
         $output  = $manager->makeInstall(TRUE, TRUE, TRUE);
         self::assertArrayHasKey('create', $output);
         self::assertArrayHasKey('update', $output);
@@ -85,7 +85,7 @@ final class InstallManagerTest extends KernelTestCaseAbstract
         $topo = new Topology();
         $this->setProperty($topo, 'id', '123');
 
-        $manager = $this->createManager($topo, []);
+        $manager = $this->createManager($topo);
         $output  = $manager->makeInstall(TRUE, TRUE, TRUE);
         self::assertArrayHasKey('create', $output);
         self::assertArrayHasKey('update', $output);
@@ -104,7 +104,7 @@ final class InstallManagerTest extends KernelTestCaseAbstract
     {
         $topo = new Topology();
         $this->setProperty($topo, 'id', '123');
-        $manager = $this->createManager($topo, []);
+        $manager = $this->createManager($topo);
 
         $dm = $this->createMock(DocumentManager::class);
         $dm->expects(self::any())->method('persist')->willThrowException(new Exception());
@@ -130,7 +130,7 @@ final class InstallManagerTest extends KernelTestCaseAbstract
         $topo = new Topology();
         $topo->setName('name');
         $this->setProperty($topo, 'id', '123');
-        $manager = $this->createManager($topo, []);
+        $manager = $this->createManager($topo);
 
         $dm = $this->createMock(DocumentManager::class);
         $dm->expects(self::any())->method('persist')->willThrowException(new Exception());
@@ -156,7 +156,7 @@ final class InstallManagerTest extends KernelTestCaseAbstract
         $topo = new Topology();
         $topo->setName('name');
         $this->setProperty($topo, 'id', '123');
-        $manager = $this->createManager($topo, []);
+        $manager = $this->createManager($topo);
 
         $dto = new CompareResultDto();
         $dto->addDelete([$topo]);
@@ -177,7 +177,7 @@ final class InstallManagerTest extends KernelTestCaseAbstract
     {
         $topo = new Topology();
         $this->setProperty($topo, 'id', '123');
-        $manager = $this->createManager($topo, []);
+        $manager = $this->createManager($topo);
 
         $dm = $this->createMock(DocumentManager::class);
         $dm->expects(self::any())->method('persist')->willThrowException(new Exception());
@@ -193,12 +193,11 @@ final class InstallManagerTest extends KernelTestCaseAbstract
 
     /**
      * @param Topology $savedTopo
-     * @param mixed[]  $dirs
      *
      * @return InstallManager
      * @throws Exception
      */
-    private function createManager(Topology $savedTopo, array $dirs = []): InstallManager
+    private function createManager(Topology $savedTopo): InstallManager
     {
         $repo = $this->createMock(TopologyRepository::class);
         $dm   = $this->createMock(DocumentManager::class);
@@ -234,7 +233,7 @@ final class InstallManagerTest extends KernelTestCaseAbstract
             $categoryParser,
             $decoder,
             $redisCache,
-            $dirs,
+            [],
             TRUE,
         );
     }

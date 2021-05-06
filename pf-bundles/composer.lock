@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7ad2d8f3de4f3f1b24347ed1ee591337",
+    "content-hash": "6ffa7360349b9fd9930bb38983184c42",
     "packages": [
         {
             "name": "composer/package-versions-deprecated",
@@ -1505,22 +1505,22 @@
         },
         {
             "name": "hanaboso/app-store",
-            "version": "1.5.1",
+            "version": "1.6.0",
             "dist": {
                 "type": "path",
                 "url": "../app-store",
-                "reference": "570989d626ac35662c8f9d95a2d87ed64d31e585"
+                "reference": "86c94861c909f28ff4a0cb052d8de425eb4e02d3"
             },
             "require": {
-                "hanaboso/pipes-php-sdk": "^1.5",
-                "php": "^7.4"
+                "hanaboso/pipes-php-sdk": "^1.6",
+                "php": "^8.0"
             },
             "require-dev": {
                 "hanaboso/php-check-utils": "^1.1",
                 "hanaboso/rest-bundle": "^1.0",
-                "symfony/debug-bundle": "^5.1",
-                "symfony/security-bundle": "^5.1",
-                "symfony/serializer": "^5.1"
+                "symfony/debug-bundle": "^v5.2",
+                "symfony/security-bundle": "^v5.2",
+                "symfony/serializer": "^v5.2"
             },
             "type": "library",
             "autoload": {
@@ -1680,32 +1680,32 @@
         },
         {
             "name": "hanaboso/pipes-php-sdk",
-            "version": "1.5.9",
+            "version": "1.6.0",
             "dist": {
                 "type": "path",
                 "url": "../pipes-php-sdk",
-                "reference": "adbcddecfc4c91d319bf9fa98707eb8c3fb0bdb4"
+                "reference": "a55095c1294f2e46d7fb1290c154b23e7e5f5527"
             },
             "require": {
-                "doctrine/mongodb-odm-bundle": "^4.2",
+                "doctrine/mongodb-odm-bundle": "^4.3",
                 "ext-json": "*",
                 "ext-mongodb": "*",
                 "ext-oauth": "*",
-                "hanaboso/commons-bundle": "^2.2",
-                "hanaboso/mongo-data-grid": "~1.3.0",
-                "hanaboso/rabbit-mq-bundle": "^1.4",
+                "hanaboso/commons-bundle": "^2.3",
+                "hanaboso/mongo-data-grid": "~1.3.1",
+                "hanaboso/rabbit-mq-bundle": "^1.5",
                 "league/oauth2-client": "^2.6",
-                "php": "^7.4",
-                "phpoffice/phpspreadsheet": "^1.15",
-                "symfony/monolog-bundle": "^3.6",
-                "symfony/yaml": "^5.2"
+                "php": "^8.0",
+                "phpoffice/phpspreadsheet": "^1.17",
+                "symfony/monolog-bundle": "^v3.7",
+                "symfony/yaml": "^v5.2"
             },
             "require-dev": {
-                "hanaboso/php-check-utils": "^1.1",
-                "hanaboso/rest-bundle": "^1.0",
-                "symfony/debug-bundle": "^5.2",
-                "symfony/security-bundle": "^5.2",
-                "symfony/serializer": "^5.2"
+                "hanaboso/php-check-utils": "^1.2",
+                "hanaboso/rest-bundle": "^1.1",
+                "symfony/debug-bundle": "^v5.2",
+                "symfony/security-bundle": "^v5.2",
+                "symfony/serializer": "^v5.2"
             },
             "type": "library",
             "autoload": {
@@ -5562,89 +5562,6 @@
             "time": "2021-01-27T12:56:27+00:00"
         },
         {
-            "name": "symfony/polyfill-php80",
-            "version": "v1.22.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/polyfill-php80.git",
-                "reference": "dc3063ba22c2a1fd2f45ed856374d79114998f91"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-php80/zipball/dc3063ba22c2a1fd2f45ed856374d79114998f91",
-                "reference": "dc3063ba22c2a1fd2f45ed856374d79114998f91",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.1"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-main": "1.22-dev"
-                },
-                "thanks": {
-                    "name": "symfony/polyfill",
-                    "url": "https://github.com/symfony/polyfill"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Symfony\\Polyfill\\Php80\\": ""
-                },
-                "files": [
-                    "bootstrap.php"
-                ],
-                "classmap": [
-                    "Resources/stubs"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Ion Bazan",
-                    "email": "ion.bazan@gmail.com"
-                },
-                {
-                    "name": "Nicolas Grekas",
-                    "email": "p@tchwork.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                }
-            ],
-            "description": "Symfony polyfill backporting some PHP 8.0+ features to lower PHP versions",
-            "homepage": "https://symfony.com",
-            "keywords": [
-                "compatibility",
-                "polyfill",
-                "portable",
-                "shim"
-            ],
-            "support": {
-                "source": "https://github.com/symfony/polyfill-php80/tree/v1.22.1"
-            },
-            "funding": [
-                {
-                    "url": "https://symfony.com/sponsor",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://github.com/fabpot",
-                    "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
-                    "type": "tidelift"
-                }
-            ],
-            "time": "2021-01-07T16:49:33+00:00"
-        },
-        {
             "name": "symfony/property-access",
             "version": "v5.2.4",
             "source": {
@@ -8600,16 +8517,16 @@
         },
         {
             "name": "phpstan/phpstan-symfony",
-            "version": "0.12.30",
+            "version": "0.12.32",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-symfony.git",
-                "reference": "8377e227368bdec99d4753a8a050e162450c2217"
+                "reference": "f3fb189151b3a2cd99dbc5e7ae2b493d99111bf7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-symfony/zipball/8377e227368bdec99d4753a8a050e162450c2217",
-                "reference": "8377e227368bdec99d4753a8a050e162450c2217",
+                "url": "https://api.github.com/repos/phpstan/phpstan-symfony/zipball/f3fb189151b3a2cd99dbc5e7ae2b493d99111bf7",
+                "reference": "f3fb189151b3a2cd99dbc5e7ae2b493d99111bf7",
                 "shasum": ""
             },
             "require": {
@@ -8664,9 +8581,9 @@
             "description": "Symfony Framework extensions and rules for PHPStan",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan-symfony/issues",
-                "source": "https://github.com/phpstan/phpstan-symfony/tree/0.12.30"
+                "source": "https://github.com/phpstan/phpstan-symfony/tree/0.12.32"
             },
-            "time": "2021-05-03T09:17:26+00:00"
+            "time": "2021-05-04T17:47:30+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",

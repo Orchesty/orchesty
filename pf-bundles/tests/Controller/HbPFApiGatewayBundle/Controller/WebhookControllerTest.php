@@ -40,10 +40,9 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @return ApplicationInstall
      * @throws Exception
      */
-    private function createApplication(): ApplicationInstall
+    private function createApplication(): void
     {
         $application = (new ApplicationInstall())->setKey('null')->setUser('user');
         $this->pfd($application);
@@ -51,8 +50,6 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
         $sdk = new Sdk();
         $sdk->setKey('php-sdk')->setValue('php-sdk');
         $this->pfd($sdk);
-
-        return $application;
     }
 
 }

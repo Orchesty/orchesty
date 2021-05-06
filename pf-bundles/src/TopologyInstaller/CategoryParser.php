@@ -173,9 +173,9 @@ final class CategoryParser
     }
 
     /**
-     * @return mixed[]
+     *
      */
-    private function matchRoot(): array
+    private function matchRoot(): void
     {
         $categories = [];
         foreach ($this->roots as $alias => $path) {
@@ -197,8 +197,6 @@ final class CategoryParser
                 break;
             }
         }
-
-        return $categories;
     }
 
     /**

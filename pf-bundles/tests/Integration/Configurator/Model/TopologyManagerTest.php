@@ -31,7 +31,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     /**
      * @var TopologyManager
      */
-    private $manager;
+    private TopologyManager $manager;
 
     /**
      * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager
@@ -357,7 +357,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
             ->setDescr('Topology');
         $this->pfd($topology);
 
-        $result = $this->manager->saveTopologySchema($topology, '', $this->getSchema('schema.json'));
+        $result = $this->manager->saveTopologySchema($topology, '', $this->getSchema());
 
         /** @var Node[] $nodes */
         $nodes = $this->dm->getRepository(Node::class)->findBy(['topology' => $topology->getId()]);
@@ -416,7 +416,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $this->dm->flush();
         $this->dm->clear();
 
-        $result = $this->manager->saveTopologySchema($topology, '', $this->getSchema('schema.json'));
+        $result = $this->manager->saveTopologySchema($topology, '', $this->getSchema());
 
         self::assertNotEquals($topology->getId(), $result->getId());
 
@@ -452,7 +452,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $this->dm->flush();
         $this->dm->clear();
 
-        $result1 = $this->manager->saveTopologySchema($topology, '', $this->getSchema('schema.json'));
+        $result1 = $this->manager->saveTopologySchema($topology, '', $this->getSchema());
         $result2 = $this->manager->saveTopologySchema($result1, '', $this->getSchema('schema-update.json'));
 
         /** @var Node[] $nodes1 */
@@ -529,7 +529,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         self::expectException(TopologyException::class);
         self::expectExceptionCode(TopologyException::TOPOLOGY_NODE_NAME_NOT_FOUND);
 
-        $schema = $this->getSchema('schema.json');
+        $schema = $this->getSchema();
         unset($schema['bpmn:process']['bpmn:startEvent']['@name']);
         $this->manager->saveTopologySchema($topology, '', $schema);
     }
@@ -558,7 +558,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         self::expectException(TopologyException::class);
         self::expectExceptionCode(TopologyException::TOPOLOGY_NODE_TYPE_NOT_EXIST);
 
-        $schema                                                        = $this->getSchema('schema.json');
+        $schema                                                        = $this->getSchema();
         $schema['bpmn:process']['bpmn:startEvent']['@pipes:pipesType'] = 'Unknown';
         $this->manager->saveTopologySchema($topology, '', $schema);
     }
@@ -587,7 +587,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         self::expectException(TopologyException::class);
         self::expectExceptionCode(TopologyException::TOPOLOGY_NODE_CRON_NOT_VALID);
 
-        $schema                                                     = $this->getSchema('schema.json');
+        $schema                                                     = $this->getSchema();
         $schema['bpmn:process']['bpmn:event'][0]['@pipes:cronTime'] = 'Unknown';
         $this->manager->saveTopologySchema($topology, '', $schema);
     }

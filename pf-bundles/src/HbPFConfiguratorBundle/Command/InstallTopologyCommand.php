@@ -5,7 +5,6 @@ namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\TopologyInstaller\InstallManager;
-use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\RestBundle\Exception\XmlDecoderException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
@@ -60,7 +59,6 @@ final class InstallTopologyCommand extends Command
      * @param OutputInterface $output
      *
      * @return int
-     * @throws ConnectorException
      * @throws MongoDBException
      * @throws TopologyException
      * @throws XmlDecoderException
