@@ -14,18 +14,12 @@ final class StatisticsHandler
 {
 
     /**
-     * @var StatisticsManager
-     */
-    private StatisticsManager $statisticsManager;
-
-    /**
      * StatisticsHandler constructor.
      *
      * @param StatisticsManager $statisticsManager
      */
-    public function __construct(StatisticsManager $statisticsManager)
+    public function __construct(private StatisticsManager $statisticsManager)
     {
-        $this->statisticsManager = $statisticsManager;
     }
 
     /**

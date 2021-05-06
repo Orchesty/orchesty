@@ -24,11 +24,6 @@ final class ApplicationManager extends SdkApplicationManager
 {
 
     /**
-     * @var WebhookManager
-     */
-    private WebhookManager $webhook;
-
-    /**
      * ApplicationManager constructor.
      *
      * @param DocumentManager   $dm
@@ -40,12 +35,10 @@ final class ApplicationManager extends SdkApplicationManager
         DocumentManager $dm,
         ApplicationLoader $loader,
         CachedReader $reader,
-        WebhookManager $webhook
+        private WebhookManager $webhook,
     )
     {
         parent::__construct($dm, $loader, $reader);
-
-        $this->webhook = $webhook;
     }
 
     /**
@@ -83,7 +76,7 @@ final class ApplicationManager extends SdkApplicationManager
         if ($this->repository->findOneBy([ApplicationInstall::USER => $user, ApplicationInstall::KEY => $key])) {
             throw new ApplicationInstallException(
                 sprintf('Application [%s] was already installed.', $key),
-                ApplicationInstallException::APP_ALREADY_INSTALLED
+                ApplicationInstallException::APP_ALREADY_INSTALLED,
             );
         }
 

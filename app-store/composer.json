@@ -4,15 +4,15 @@
     "version": "1.5.1",
     "license": "GPL-3.0-or-later",
     "require": {
-        "php": "^7.4",
+        "php": "^8.0",
         "hanaboso/pipes-php-sdk": "^1.5"
     },
     "require-dev": {
         "hanaboso/php-check-utils": "^1.1",
         "hanaboso/rest-bundle": "^1.0",
-        "symfony/debug-bundle": "^5.1",
-        "symfony/security-bundle": "^5.1",
-        "symfony/serializer": "^5.1"
+        "symfony/debug-bundle": "^v5.2",
+        "symfony/security-bundle": "^v5.2",
+        "symfony/serializer": "^v5.2"
     },
     "autoload": {
         "psr-4": {

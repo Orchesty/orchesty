@@ -24,18 +24,12 @@ final class ApplicationController
     use ControllerTrait;
 
     /**
-     * @var ApplicationHandler
-     */
-    private ApplicationHandler $applicationHandler;
-
-    /**
      * ApplicationController constructor.
      *
      * @param ApplicationHandler $applicationHandler
      */
-    public function __construct(ApplicationHandler $applicationHandler)
+    public function __construct(private ApplicationHandler $applicationHandler)
     {
-        $this->applicationHandler = $applicationHandler;
     }
 
     /**
@@ -124,7 +118,7 @@ final class ApplicationController
     {
         try {
             return $this->getResponse(
-                $this->applicationHandler->updateApplicationSettings($key, $user, $request->request->all())
+                $this->applicationHandler->updateApplicationSettings($key, $user, $request->request->all()),
             );
         } catch (ApplicationInstallException $e) {
             return $this->getErrorResponse($e, 404, ControllerUtils::NOT_FOUND);
@@ -146,7 +140,7 @@ final class ApplicationController
     {
         try {
             return $this->getResponse(
-                $this->applicationHandler->updateApplicationPassword($key, $user, $request->request->all())
+                $this->applicationHandler->updateApplicationPassword($key, $user, $request->request->all()),
             );
         } catch (ApplicationInstallException $e) {
             return $this->getErrorResponse($e, 404, ControllerUtils::NOT_FOUND);

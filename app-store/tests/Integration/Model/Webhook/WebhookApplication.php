@@ -86,7 +86,7 @@ final class WebhookApplication extends ApplicationAbstract implements WebhookApp
         ApplicationInstall $applicationInstall,
         string $method,
         ?string $url = NULL,
-        ?string $data = NULL
+        ?string $data = NULL,
     ): RequestDto
     {
         $applicationInstall;
@@ -141,7 +141,7 @@ final class WebhookApplication extends ApplicationAbstract implements WebhookApp
     public function getWebhookSubscribeRequestDto(
         ApplicationInstall $applicationInstall,
         WebhookSubscription $subscription,
-        string $url
+        string $url,
     ): RequestDto
     {
         $applicationInstall;

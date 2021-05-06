@@ -138,7 +138,7 @@ final class WebhookManagerTest extends DatabaseTestCaseAbstract
                 'enabled'  => TRUE,
                 'topology' => '1',
             ],
-            $result[0]
+            $result[0],
         );
     }
 

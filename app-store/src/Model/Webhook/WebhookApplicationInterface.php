@@ -30,7 +30,7 @@ interface WebhookApplicationInterface extends ApplicationInterface
     public function getWebhookSubscribeRequestDto(
         ApplicationInstall $applicationInstall,
         WebhookSubscription $subscription,
-        string $url
+        string $url,
     ): RequestDto;
 
     /**

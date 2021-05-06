@@ -61,7 +61,7 @@ final class WebhookHandlerTest extends DatabaseTestCaseAbstract
     private function createApplicationInstall(
         string $user = 'user',
         string $key = 'key',
-        array $settings = []
+        array $settings = [],
     ): ApplicationInstall
     {
         $applicationInstall = (new ApplicationInstall())

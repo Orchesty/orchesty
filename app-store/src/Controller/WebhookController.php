@@ -22,18 +22,12 @@ final class WebhookController
     use ControllerTrait;
 
     /**
-     * @var WebhookHandler
-     */
-    private WebhookHandler $webhookHandler;
-
-    /**
      * WebhookController constructor.
      *
      * @param WebhookHandler $webhookHandler
      */
-    public function __construct(WebhookHandler $webhookHandler)
+    public function __construct(private WebhookHandler $webhookHandler)
     {
-        $this->webhookHandler = $webhookHandler;
     }
 
     /**

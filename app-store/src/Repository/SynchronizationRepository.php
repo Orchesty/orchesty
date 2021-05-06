@@ -63,16 +63,16 @@ final class SynchronizationRepository extends DocumentRepository
     public function update(
         ApplicationInstall $applicationInstall,
         array $filter = [],
-        array $data = []
+        array $data = [],
     ): Synchronization
     {
         /** @var Synchronization|null $synchronization */
         $synchronization = $this->processContent(
             $this->processFilter(
                 $this->createUpdateBuilder($applicationInstall),
-                $filter
+                $filter,
             ),
-            $data
+            $data,
         )->getQuery()->execute();
 
         if (!$synchronization) {
@@ -80,8 +80,8 @@ final class SynchronizationRepository extends DocumentRepository
                 sprintf(
                     "Synchronization document with key '%s' and user '%s' not found!",
                     $applicationInstall->getKey(),
-                    $applicationInstall->getUser()
-                )
+                    $applicationInstall->getUser(),
+                ),
             );
         }
 

@@ -126,7 +126,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
             $parameters,
             [],
             [],
-            $content ? Json::encode($content) : ''
+            $content ? Json::encode($content) : '',
         );
 
         $response = self::$client->getResponse();
@@ -150,7 +150,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
             $parameters,
             [],
             [],
-            $content ? Json::encode($content) : ''
+            $content ? Json::encode($content) : '',
         );
 
         $response = self::$client->getResponse();

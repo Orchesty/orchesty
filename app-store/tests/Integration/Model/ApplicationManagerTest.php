@@ -66,7 +66,7 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
             [
                 ApplicationInstall::USER => 'example3',
                 ApplicationInstall::KEY  => 'something',
-            ]
+            ],
         );
 
         self::assertIsObject($app);
@@ -114,7 +114,7 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
 
         self::assertEquals(
             'password123',
-            $app->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS]['password']
+            $app->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS]['password'],
         );
     }
 
@@ -131,7 +131,7 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
             [
                 'settings1' => 'some text',
                 'settings2' => 'example2',
-            ]
+            ],
         );
         $repository = $this->dm->getRepository(ApplicationInstall::class);
         /** @var ApplicationInstall $app */
@@ -154,7 +154,7 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
                 'settings1' => 'data1',
                 'settings2' => 'data2',
                 'settings3' => 'secret',
-            ]
+            ],
         );
         $values = $this->applicationManager->getApplicationSettings('null', 'example1');
 
@@ -176,7 +176,7 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
                 'settings1' => 'data1',
                 'settings2' => 'data2',
                 'password'  => 'secret123',
-            ]
+            ],
         );
 
         $repository = $this->dm->getRepository(ApplicationInstall::class);

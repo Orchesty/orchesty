@@ -14,26 +14,6 @@ final class WebhookSubscription
     public const TOPOLOGY = 'topology';
 
     /**
-     * @var string
-     */
-    private string $name;
-
-    /**
-     * @var string
-     */
-    private string $node;
-
-    /**
-     * @var string
-     */
-    private string $topology;
-
-    /**
-     * @var mixed[]
-     */
-    private array $parameters;
-
-    /**
      * WebhookSubscription constructor.
      *
      * @param string  $name
@@ -41,12 +21,13 @@ final class WebhookSubscription
      * @param string  $topology
      * @param mixed[] $parameters
      */
-    public function __construct(string $name, string $node, string $topology, array $parameters = [])
+    public function __construct(
+        private string $name,
+        private string $node,
+        private string $topology,
+        private array $parameters = [],
+    )
     {
-        $this->name       = $name;
-        $this->node       = $node;
-        $this->topology   = $topology;
-        $this->parameters = $parameters;
     }
 
     /**
