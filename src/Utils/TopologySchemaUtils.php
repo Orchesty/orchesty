@@ -164,23 +164,12 @@ final class TopologySchemaUtils
      */
     private static function getPipesType(string $type): string
     {
-        switch ($type) {
-            case self::GATEWAY:
-            case self::EXCLUSIVE_GATEWAY:
-            case self::BPMN_GATEWAY:
-            case self::BPMN_EXCLUSIVE_GATEWAY:
-                return TypeEnum::GATEWAY;
-            case self::EVENT:
-            case self::START_EVENT:
-            case self::BPMN_EVENT:
-            case self::BPMN_START_EVENT:
-                return TypeEnum::START;
-            case self::TASK:
-            case self::BPMN_TASK:
-                return TypeEnum::CUSTOM;
-            default:
-                return '';
-        }
+        return match ($type) {
+            self::GATEWAY, self::EXCLUSIVE_GATEWAY, self::BPMN_GATEWAY, self::BPMN_EXCLUSIVE_GATEWAY => TypeEnum::GATEWAY,
+            self::EVENT, self::START_EVENT, self::BPMN_EVENT, self::BPMN_START_EVENT => TypeEnum::START,
+            self::TASK, self::BPMN_TASK => TypeEnum::CUSTOM,
+            default => '',
+        };
     }
 
     /**

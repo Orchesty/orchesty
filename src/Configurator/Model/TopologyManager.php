@@ -436,12 +436,11 @@ final class TopologyManager
      * @param mixed[]       $embedNodes
      * @param NodeSchemaDto $dto
      *
-     * @return Node
      * @throws NodeException
      * @throws TopologyException
      * @throws MongoDBException
      */
-    private function createNode(Topology $topology, array &$nodes, array &$embedNodes, NodeSchemaDto $dto): Node
+    private function createNode(Topology $topology, array &$nodes, array &$embedNodes, NodeSchemaDto $dto): void
     {
         $this->checkNodeAttributes($dto);
         $node = $this->setNodeAttributes($topology, new Node(), $dto);
@@ -453,8 +452,6 @@ final class TopologyManager
         $embedNodes[$dto->getId()] = EmbedNode::from($node);
 
         $this->makePatchRequestForCron($node, $dto->getPipesType(), $dto->getId());
-
-        return $node;
     }
 
     /**
@@ -463,11 +460,10 @@ final class TopologyManager
      * @param mixed[]       $embedNodes
      * @param NodeSchemaDto $dto
      *
-     * @return Node
      * @throws NodeException
      * @throws TopologyException
      */
-    private function updateNode(Topology $topology, array &$nodes, array &$embedNodes, NodeSchemaDto $dto): Node
+    private function updateNode(Topology $topology, array &$nodes, array &$embedNodes, NodeSchemaDto $dto): void
     {
         $this->checkNodeAttributes($dto);
         $node = $this->getNodeBySchemaId($topology, $dto->getId());
@@ -477,8 +473,6 @@ final class TopologyManager
         $embedNodes[$dto->getId()] = EmbedNode::from($node);
 
         $this->makePatchRequestForCron($node, $dto->getPipesType(), $dto->getId());
-
-        return $node;
     }
 
     /**

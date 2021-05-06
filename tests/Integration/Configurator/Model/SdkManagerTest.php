@@ -21,12 +21,12 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
     /**
      * @var SdkManager
      */
-    private $manager;
+    private SdkManager $manager;
 
     /**
      * @var ObjectRepository<Sdk>&SdkRepository
      */
-    private $sdkRepo;
+    private SdkRepository $sdkRepo;
 
     /**
      * @covers \Hanaboso\PipesFramework\Configurator\Model\SdkManager::getAll

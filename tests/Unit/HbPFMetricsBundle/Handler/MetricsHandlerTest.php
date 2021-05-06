@@ -18,7 +18,7 @@ final class MetricsHandlerTest extends KernelTestCaseAbstract
     /**
      * @var MetricsHandler
      */
-    private $handler;
+    private MetricsHandler $handler;
 
     /**
      * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler::getTopologyById

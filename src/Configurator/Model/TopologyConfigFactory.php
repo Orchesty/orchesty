@@ -231,41 +231,16 @@ final class TopologyConfigFactory
      */
     private function getWorkerByType(Node $node): string
     {
-        switch ($node->getType()) {
-            case sprintf('%s', TypeEnum::BATCH):
-            case sprintf('%s', TypeEnum::BATCH_CONNECTOR):
-                $workerType = self::SPLITTER_AMQRPC_LIMITED;
-
-                break;
-            case sprintf('%s', TypeEnum::WEBHOOK):
-            case sprintf('%s', TypeEnum::GATEWAY):
-            case sprintf('%s', TypeEnum::DEBUG):
-            case sprintf('%s', TypeEnum::CRON):
-            case sprintf('%s', TypeEnum::START):
-                $workerType = self::WORKER_NULL;
-
-                break;
-            case sprintf('%s', TypeEnum::RESEQUENCER):
-                $workerType = self::WORKER_RESEQUENCER;
-
-                break;
-            case sprintf('%s', TypeEnum::SPLITTER):
-                $workerType = self::SPLITTER_JSON;
-
-                break;
-            case sprintf('%s', TypeEnum::XML_PARSER):
-                $workerType = self::WORKER_HTTP_XML_PARSER;
-
-                break;
-            case sprintf('%s', TypeEnum::USER):
-                $workerType = self::WORKER_LONG_RUNNING;
-
-                break;
-            default:
-                $workerType = self::WORKER_HTTP_LIMITED;
-        }
-
-        return $workerType;
+        return match ($node->getType()) {
+            sprintf('%s', TypeEnum::BATCH), sprintf('%s', TypeEnum::BATCH_CONNECTOR) => self::SPLITTER_AMQRPC_LIMITED,
+            sprintf('%s', TypeEnum::WEBHOOK), sprintf('%s', TypeEnum::GATEWAY), sprintf('%s', TypeEnum::DEBUG),
+            sprintf('%s', TypeEnum::CRON), sprintf('%s', TypeEnum::START) => self::WORKER_NULL,
+            sprintf('%s', TypeEnum::RESEQUENCER) => self::WORKER_RESEQUENCER,
+            sprintf('%s', TypeEnum::SPLITTER) => self::SPLITTER_JSON,
+            sprintf('%s', TypeEnum::XML_PARSER) => self::WORKER_HTTP_XML_PARSER,
+            sprintf('%s', TypeEnum::USER) => self::WORKER_LONG_RUNNING,
+            default => self::WORKER_HTTP_LIMITED,
+        };
     }
 
     /**
@@ -377,39 +352,17 @@ final class TopologyConfigFactory
             return $dto->getSdkHost();
         }
 
-        switch ($nodeType) {
-            case sprintf('%s', TypeEnum::XML_PARSER):
-                $host = $this->configs[self::XML_PARSER_API_HOST];
-
-                break;
-            case  sprintf('%s', TypeEnum::FTP):
-                $host = $this->configs[self::FTP_API_HOST];
-
-                break;
-            case sprintf('%s', TypeEnum::EMAIL):
-                $host = $this->configs[self::MAILER_API_HOST];
-
-                break;
-            case sprintf('%s', TypeEnum::MAPPER):
-                $host = $this->configs[self::MAPPER_API_HOST];
-
-                break;
-            case sprintf('%s', TypeEnum::BATCH_CONNECTOR):
-            case sprintf('%s', TypeEnum::TABLE_PARSER):
-            case sprintf('%s', TypeEnum::CONNECTOR):
-            case sprintf('%s', TypeEnum::WEBHOOK):
-            case sprintf('%s', TypeEnum::CUSTOM):
-            case sprintf('%s', TypeEnum::SIGNAL):
-            case sprintf('%s', TypeEnum::USER):
-            case sprintf('%s', TypeEnum::API):
-                $host = $this->configs[self::MONOLITH_API_HOST];
-
-                break;
-            default:
-                throw new TopologyConfigException(sprintf('Unknown type of host [%s].', $nodeType));
-        }
-
-        return $host;
+        return match ($nodeType) {
+            sprintf('%s', TypeEnum::XML_PARSER) => $this->configs[self::XML_PARSER_API_HOST],
+            sprintf('%s', TypeEnum::FTP) => $this->configs[self::FTP_API_HOST],
+            sprintf('%s', TypeEnum::EMAIL) => $this->configs[self::MAILER_API_HOST],
+            sprintf('%s', TypeEnum::MAPPER) => $this->configs[self::MAPPER_API_HOST],
+            sprintf('%s', TypeEnum::BATCH_CONNECTOR), sprintf('%s', TypeEnum::TABLE_PARSER),
+            sprintf('%s', TypeEnum::CONNECTOR), sprintf('%s', TypeEnum::WEBHOOK),
+            sprintf('%s', TypeEnum::CUSTOM), sprintf('%s', TypeEnum::SIGNAL),
+            sprintf('%s', TypeEnum::USER), sprintf('%s', TypeEnum::API) => $this->configs[self::MONOLITH_API_HOST],
+            default => throw new TopologyConfigException(sprintf('Unknown type of host [%s].', $nodeType)),
+        };
     }
 
     /**
@@ -419,15 +372,12 @@ final class TopologyConfigFactory
      */
     private function getPublishQueue(string $nodeType): array
     {
-        switch ($nodeType) {
-            case sprintf('%s', TypeEnum::BATCH):
-            case sprintf('%s', TypeEnum::BATCH_CONNECTOR):
-                return [
-                    self::NAME => sprintf('pipes.%s', $nodeType),
-                ];
-            default:
-                return [];
-        }
+        return match ($nodeType) {
+            sprintf('%s', TypeEnum::BATCH), sprintf('%s', TypeEnum::BATCH_CONNECTOR) => [
+                self::NAME => sprintf('pipes.%s', $nodeType),
+            ],
+            default => [],
+        };
     }
 
     /**
@@ -438,23 +388,15 @@ final class TopologyConfigFactory
      */
     private function getPort(string $nodeType): int
     {
-        switch ($nodeType) {
-            case sprintf('%s', TypeEnum::API):
-            case sprintf('%s', TypeEnum::BATCH):
-            case sprintf('%s', TypeEnum::BATCH_CONNECTOR):
-            case sprintf('%s', TypeEnum::CONNECTOR):
-            case sprintf('%s', TypeEnum::CUSTOM):
-            case sprintf('%s', TypeEnum::EMAIL):
-            case sprintf('%s', TypeEnum::FTP):
-            case sprintf('%s', TypeEnum::MAPPER):
-            case sprintf('%s', TypeEnum::SIGNAL):
-            case sprintf('%s', TypeEnum::TABLE_PARSER):
-            case sprintf('%s', TypeEnum::USER):
-            case sprintf('%s', TypeEnum::WEBHOOK):
-                return 80;
-            default:
-                throw new TopologyConfigException(sprintf('Unknown type for port [%s].', $nodeType));
-        }
+        return match ($nodeType) {
+            sprintf('%s', TypeEnum::API), sprintf('%s', TypeEnum::BATCH),
+            sprintf('%s', TypeEnum::BATCH_CONNECTOR), sprintf('%s', TypeEnum::CONNECTOR),
+            sprintf('%s', TypeEnum::CUSTOM), sprintf('%s', TypeEnum::EMAIL),
+            sprintf('%s', TypeEnum::FTP), sprintf('%s', TypeEnum::MAPPER),
+            sprintf('%s', TypeEnum::SIGNAL), sprintf('%s', TypeEnum::TABLE_PARSER),
+            sprintf('%s', TypeEnum::USER), sprintf('%s', TypeEnum::WEBHOOK) => 80,
+            default => throw new TopologyConfigException(sprintf('Unknown type for port [%s].', $nodeType)),
+        };
     }
 
     /**

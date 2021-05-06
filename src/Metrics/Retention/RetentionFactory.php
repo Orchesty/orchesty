@@ -46,16 +46,12 @@ final class RetentionFactory
      */
     public static function getRetentionInSeconds(DateTime $from, DateTime $to): int
     {
-        switch (self::getRetention($from, $to)) {
-            case self::MIN:
-                return 60;
-            case self::HALF_HOUR:
-                return 30 * 60;
-            case self::FOUR_HOUR:
-                return 4 * 60 * 60;
-            default:
-                return 5;
-        }
+        return match (self::getRetention($from, $to)) {
+            self::MIN => 60,
+            self::HALF_HOUR => 30 * 60,
+            self::FOUR_HOUR => 4 * 60 * 60,
+            default => 5,
+        };
     }
 
 }

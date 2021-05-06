@@ -227,7 +227,7 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
         $dateFrom = $params['from'] ?? NULL;
         $dateTo   = $params['to'] ?? NULL;
 
-        $groupBy = sprintf('correlation_id');
+        $groupBy = 'correlation_id';
         $where   = [];
         if ($key) {
             $where = [sprintf("%s = '%s'", self::APPLICATION, $key)];
@@ -259,7 +259,7 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
         $dateFrom = $params['from'] ?? NULL;
         $dateTo   = $params['to'] ?? NULL;
 
-        $groupBy = sprintf('correlation_id');
+        $groupBy = 'correlation_id';
 
         $where = [];
         if ($user) {
@@ -456,11 +456,10 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
 
     /**
      * @param mixed[] $data
-     * @param string  $delimiter
      *
      * @return mixed[]
      */
-    private static function getConditions(array $data, string $delimiter = 'or'): array
+    private static function getConditions(array $data): array
     {
         array_walk(
             $data,
@@ -469,7 +468,7 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
             },
         );
 
-        return [implode(sprintf(' %s ', $delimiter), $data)];
+        return [implode(' or ', $data)];
     }
 
     /**

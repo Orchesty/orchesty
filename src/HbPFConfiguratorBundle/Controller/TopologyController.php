@@ -39,7 +39,7 @@ final class TopologyController
      *
      * @return Response
      */
-    public function getTopologiesAction($query): Response
+    public function getTopologiesAction(mixed $query): Response
     {
         try {
             $limit  = $query->get('limit');

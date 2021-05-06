@@ -156,7 +156,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
      */
     public function testUpdateTopologyNotFound(): void
     {
-        $this->assertResponse(__DIR__ . '/data/Topology/updateTopologyNotFoundRequest.json',);
+        $this->assertResponse(__DIR__ . '/data/Topology/updateTopologyNotFoundRequest.json');
     }
 
     /**
@@ -509,7 +509,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     {
         $this->mockHandler('publishTopology', new TopologyException());
 
-        $this->assertResponse(__DIR__ . '/data/Topology/testPublishTopologyErrRequest.json',);
+        $this->assertResponse(__DIR__ . '/data/Topology/testPublishTopologyErrRequest.json');
     }
 
     /**
@@ -645,7 +645,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
      *
      * @throws Exception
      */
-    private function mockHandler(string $methodName, $res): void
+    private function mockHandler(string $methodName, mixed $res): void
     {
         $configuratorHandlerMock = $this->getMockBuilder(TopologyHandler::class)
             ->disableOriginalConstructor()

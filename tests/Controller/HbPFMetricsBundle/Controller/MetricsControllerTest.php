@@ -204,7 +204,7 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
      * @param string $fn
      * @param mixed  $return
      */
-    private function mockMetricsManager(string $fn, $return): void
+    private function mockMetricsManager(string $fn, mixed $return): void
     {
         $manager = self::createPartialMock(InfluxMetricsManager::class, [$fn]);
 

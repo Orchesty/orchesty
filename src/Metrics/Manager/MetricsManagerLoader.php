@@ -32,16 +32,13 @@ final class MetricsManagerLoader
      */
     public function getManager(): MetricsManagerAbstract
     {
-        switch ($this->metricsService) {
-            case 'mongo':
-                return $this->mongoManager;
-            case 'influx':
-                return $this->influxManager;
-            default:
-                throw new LogicException(
-                    sprintf('[%s] is not a valid option for metrics manager.', $this->metricsService),
-                );
-        }
+        return match ($this->metricsService) {
+            'mongo' => $this->mongoManager,
+            'influx' => $this->influxManager,
+            default => throw new LogicException(
+                sprintf('[%s] is not a valid option for metrics manager.', $this->metricsService),
+            ),
+        };
     }
 
 }

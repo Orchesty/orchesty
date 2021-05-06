@@ -513,18 +513,13 @@ final class MongoMetricsManager extends MetricsManagerAbstract
      */
     private function allowedTags(string $document): array
     {
-        switch ($document) {
-            case BridgesMetrics::class:
-                return Tags::BRIDGE_TAGS;
-            case RabbitMetrics::class:
-                return Tags::RABBIT_TAGS;
-            case ConnectorsMetrics::class:
-                return Tags::CONNECTOR_TAGS;
-            case MonolithMetrics::class:
-                return Tags::MONOLITH_TAGS;
-            default:
-                return [];
-        }
+        return match ($document) {
+            BridgesMetrics::class => Tags::BRIDGE_TAGS,
+            RabbitMetrics::class => Tags::RABBIT_TAGS,
+            ConnectorsMetrics::class => Tags::CONNECTOR_TAGS,
+            MonolithMetrics::class => Tags::MONOLITH_TAGS,
+            default => [],
+        };
     }
 
     /**

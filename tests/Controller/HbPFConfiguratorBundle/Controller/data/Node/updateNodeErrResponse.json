@@ -2,8 +2,8 @@
     "http": 500,
     "body": {
         "status": "INTERNAL_SERVER_ERROR",
-        "error_code": 8,
-        "type": "PHPUnit\\Framework\\Error\\Notice",
-        "message": "Undefined index: name"
+        "error_code": 2,
+        "type": "PHPUnit\\Framework\\Error\\Warning",
+        "message": "Undefined array key \"name\""
     }
 }

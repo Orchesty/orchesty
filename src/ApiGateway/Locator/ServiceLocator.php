@@ -30,7 +30,7 @@ final class ServiceLocator implements LoggerAwareInterface
     /**
      * @var ObjectRepository<Sdk>&SdkRepository
      */
-    private $sdkRepository;
+    private SdkRepository $sdkRepository;
 
     /**
      * @var LoggerInterface
@@ -179,7 +179,6 @@ final class ServiceLocator implements LoggerAwareInterface
     {
         return $this->doRequest(
             sprintf('applications/%s/users/%s/authorize/token%s', $key, $user, $this->queryToString($query)),
-            CurlManager::METHOD_GET,
         );
     }
 
@@ -192,7 +191,6 @@ final class ServiceLocator implements LoggerAwareInterface
     {
         return $this->doRequest(
             sprintf('applications/authorize/token%s', $this->queryToString($query)),
-            CurlManager::METHOD_GET,
         );
     }
 
@@ -205,7 +203,6 @@ final class ServiceLocator implements LoggerAwareInterface
     {
         $url = $this->doRequest(
             sprintf('applications/%s/users/%s/authorize?redirect_url=%s', $key, $user, $redirect),
-            CurlManager::METHOD_GET,
         );
         if (!isset($url['authorizeUrl'])) {
             throw new LogicException(sprintf('App %s is not found!', $key));
@@ -223,7 +220,6 @@ final class ServiceLocator implements LoggerAwareInterface
     {
         return $this->doRequest(
             sprintf('applications/%s/sync/list', $key),
-            CurlManager::METHOD_GET,
         );
     }
 

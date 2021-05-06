@@ -86,7 +86,7 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetNodeErr(): void
     {
-        $this->prepareNodeHandlerMock('getNode', new LockException('Its lock.'));
+        $this->prepareNodeHandlerMock();
 
         $node = new Node();
         $this->pfd($node);
@@ -136,7 +136,7 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
     public function testListOfNodes(): void
     {
         $type = 'connector';
-        $this->prepareNodeMock(ConnectorHandler::class, 'getConnectors');
+        $this->prepareNodeMock();
 
         $response = $this->sendGet(sprintf('/api/nodes/%s/list_nodes', $type));
         $content  = $response->content;
@@ -152,34 +152,28 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @param string $methodName
-     * @param mixed  $returnValue
-     *
      * @throws Exception
      */
-    private function prepareNodeHandlerMock(string $methodName, $returnValue = TRUE): void
+    private function prepareNodeHandlerMock(): void
     {
         $nodeHandlerMock = self::createMock(NodeHandler::class);
         $nodeHandlerMock
-            ->method($methodName)
-            ->willThrowException($returnValue);
+            ->method('getNode')
+            ->willThrowException(new LockException('Its lock.'));
         $container = $this->client->getContainer();
         $container->set('hbpf.configurator.handler.node', $nodeHandlerMock);
     }
 
     /**
-     * @phpstan-param class-string<mixed> $className
      *
-     * @param string $className
-     * @param string $methodName
      */
-    private function prepareNodeMock(string $className, string $methodName): void
+    private function prepareNodeMock(): void
     {
-        $nodeHandlerMock = $this->getMockBuilder($className)
+        $nodeHandlerMock = $this->getMockBuilder(ConnectorHandler::class)
             ->disableOriginalConstructor()
             ->getMock();
 
-        $nodeHandlerMock->method($methodName);
+        $nodeHandlerMock->method('getConnectors');
     }
 
 }

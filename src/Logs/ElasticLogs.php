@@ -101,7 +101,7 @@ final class ElasticLogs extends LogsAbstract
         try {
             $data = $this->getInnerData($filter, $sorter, $dto->getPage(), $dto->getLimit());
         } catch (ResponseException $e) { // Intentionally, because some fields can be missing in ElasticSearch...
-            if (strpos($e->getMessage(), self::EXCEPTION) === FALSE) {
+            if (!str_contains($e->getMessage(), self::EXCEPTION)) {
                 throw $e;
             }
 
