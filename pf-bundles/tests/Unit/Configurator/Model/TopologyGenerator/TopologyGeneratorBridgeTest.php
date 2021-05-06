@@ -34,7 +34,7 @@ final class TopologyGeneratorBridgeTest extends KernelTestCaseAbstract
                 self::assertEquals('http://topology-api/v1/api/topologies/topology', $request->getUri(TRUE));
 
                 return new ResponseDto(200, 'OK', '{}', []);
-            }
+            },
         )->generateTopology('topology');
     }
 
@@ -50,7 +50,7 @@ final class TopologyGeneratorBridgeTest extends KernelTestCaseAbstract
                 self::assertEquals('{"action":"start"}', $request->getBody());
 
                 return new ResponseDto(200, 'OK', '', []);
-            }
+            },
         )->runTopology('topology');
     }
 
@@ -66,7 +66,7 @@ final class TopologyGeneratorBridgeTest extends KernelTestCaseAbstract
                 self::assertEquals('{"action":"stop"}', $request->getBody());
 
                 return new ResponseDto(200, 'OK', '', []);
-            }
+            },
         )->stopTopology('topology');
     }
 
@@ -82,7 +82,7 @@ final class TopologyGeneratorBridgeTest extends KernelTestCaseAbstract
                 self::assertEquals('', $request->getBody());
 
                 return new ResponseDto(200, 'OK', '', []);
-            }
+            },
         )->deleteTopology('topology');
     }
 
@@ -98,7 +98,7 @@ final class TopologyGeneratorBridgeTest extends KernelTestCaseAbstract
                 self::assertEquals('', $request->getBody());
 
                 return new ResponseDto(200, 'OK', '', []);
-            }
+            },
         )->infoTopology('topology');
     }
 
@@ -114,7 +114,7 @@ final class TopologyGeneratorBridgeTest extends KernelTestCaseAbstract
                 self::assertEquals('', $request->getBody());
 
                 return new ResponseDto(200, 'OK', '{}', []);
-            }
+            },
         )->runTest('topology');
     }
 
@@ -128,12 +128,12 @@ final class TopologyGeneratorBridgeTest extends KernelTestCaseAbstract
                 self::assertEquals(CurlManager::METHOD_POST, $request->getMethod());
                 self::assertEquals(
                     'starting-point/topologies/topology/invalidate-cache',
-                    $request->getUri(TRUE)
+                    $request->getUri(TRUE),
                 );
                 self::assertEquals('', $request->getBody());
 
                 return new ResponseDto(200, 'OK', '{}', []);
-            }
+            },
         )->invalidateTopologyCache('topology');
     }
 
@@ -151,12 +151,12 @@ final class TopologyGeneratorBridgeTest extends KernelTestCaseAbstract
                 self::assertEquals(CurlManager::METHOD_POST, $request->getMethod());
                 self::assertEquals(
                     'starting-point/topologies/topology/invalidate-cache',
-                    $request->getUri(TRUE)
+                    $request->getUri(TRUE),
                 );
                 self::assertEquals('', $request->getBody());
 
                 return new ResponseDto(400, 'NOT OK', '{}', []);
-            }
+            },
         )->invalidateTopologyCache('topology');
     }
 
@@ -176,7 +176,7 @@ final class TopologyGeneratorBridgeTest extends KernelTestCaseAbstract
                 self::assertEquals('', $request->getBody());
 
                 return new ResponseDto(400, 'NOT OK', '{}', []);
-            }
+            },
         )->runTest('topology');
     }
 
@@ -212,7 +212,7 @@ final class TopologyGeneratorBridgeTest extends KernelTestCaseAbstract
                 TopologyGeneratorBridge::STARTING_POINT => 'starting-point',
                 TopologyGeneratorBridge::TOPOLOGY_API   => 'topology-api',
                 TopologyGeneratorBridge::MULTI_PROBE    => 'multi-probe',
-            ]
+            ],
         );
     }
 

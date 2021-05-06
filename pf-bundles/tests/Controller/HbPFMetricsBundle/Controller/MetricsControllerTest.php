@@ -32,7 +32,7 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
                 'topology' => [
                     'process_time' => ['min' => 4, 'avg' => 2, 'max' => 10], 'process' => ['fo' => 'bar'],
                 ],
-            ]
+            ],
         );
 
         $topo = $this->createTopo();
@@ -73,7 +73,7 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/nodeMetricsRequest.json',
             [],
-            [':topoId' => $topo->getId(), ':nodeId' => $node->getId()]
+            [':topoId' => $topo->getId(), ':nodeId' => $node->getId()],
         );
     }
 
@@ -94,7 +94,7 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/nodeMetricsErrRequest.json',
             [],
-            [':topoId' => $topo->getId(), ':nodeId' => $node->getId()]
+            [':topoId' => $topo->getId(), ':nodeId' => $node->getId()],
         );
     }
 
@@ -113,7 +113,7 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/topologyRequestMetricsCountRequest.json',
             [],
-            [':id' => $topo->getId()]
+            [':id' => $topo->getId()],
         );
     }
 
@@ -130,7 +130,7 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/topologyRequestMetricsCountErrRequest.json',
             [],
-            [':id' => $topo->getId()]
+            [':id' => $topo->getId()],
         );
     }
 
@@ -147,7 +147,7 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/applicationMetricsRequest.json',
             [],
-            [':key' => 'superApp']
+            [':key' => 'superApp'],
         );
     }
 
@@ -163,7 +163,7 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/applicationMetricsErrRequest.json',
             [],
-            [':key' => 'superApp']
+            [':key' => 'superApp'],
         );
     }
 
@@ -180,7 +180,7 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/userMetricsRequest.json',
             [],
-            [':user' => '123-456-789']
+            [':user' => '123-456-789'],
         );
     }
 
@@ -196,7 +196,7 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/userMetricsErrRequest.json',
             [],
-            [':key' => 'superApp']
+            [':key' => 'superApp'],
         );
     }
 

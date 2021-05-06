@@ -1,13 +1,15 @@
 parameters:
-
-    # Swift mailer params
-    mailer_transport: smtp
-    mailer_host: ''
-    mailer_port: ''
-    mailer_user: ''
-    mailer_password: ''
-
     # Mailer service params
     mailer_from: dev@hanaboso.com
     mailer_async: false
     mailer_builder_id: generic
+
+framework:
+    mailer:
+        dsn: '%env(EMAIL_DSN)%'
+
+services:
+    Symfony\Component\Mailer\Mailer:
+        class: Symfony\Component\Mailer\Mailer
+        arguments:
+            - '@mailer.transports'

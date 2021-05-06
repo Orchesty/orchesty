@@ -24,7 +24,7 @@ final class CronUtils
         return sprintf(
             '/topologies/%s/nodes/%s/run',
             $topology->getId(),
-            $node->getId()
+            $node->getId(),
         );
     }
 
@@ -39,7 +39,7 @@ final class CronUtils
         return sprintf(
             '%s/%s',
             $topology->getId(),
-            $node->getId()
+            $node->getId(),
         );
     }
 

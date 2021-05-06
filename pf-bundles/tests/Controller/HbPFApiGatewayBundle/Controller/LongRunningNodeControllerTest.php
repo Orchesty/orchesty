@@ -29,7 +29,7 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
             [],
             [],
             [],
-            ['HTTP_pf-doc-id' => $this->createLongRunningNodeData()->getId()]
+            ['HTTP_pf-doc-id' => $this->createLongRunningNodeData()->getId()],
         );
     }
 
@@ -45,7 +45,7 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
             [],
             [],
             [],
-            ['HTTP_pf-doc-id' => $this->createLongRunningNodeData()->getId()]
+            ['HTTP_pf-doc-id' => $this->createLongRunningNodeData()->getId()],
         );
     }
 
@@ -60,7 +60,7 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
 
         $this->assertResponse(
             __DIR__ . '/data/LongRunningNodeController/getTasksByIdRequest.json',
-            ['id' => '123456789', 'created' => '2010-10-10 10:10:10', 'updated' => '2010-10-10 10:10:10']
+            ['id' => '123456789', 'created' => '2010-10-10 10:10:10', 'updated' => '2010-10-10 10:10:10'],
         );
     }
 
@@ -75,7 +75,7 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
 
         $this->assertResponse(
             __DIR__ . '/data/LongRunningNodeController/getTasksRequest.json',
-            ['id' => '123456789', 'created' => '2010-10-10 10:10:10', 'updated' => '2010-10-10 10:10:10']
+            ['id' => '123456789', 'created' => '2010-10-10 10:10:10', 'updated' => '2010-10-10 10:10:10'],
         );
     }
 
@@ -90,7 +90,7 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
 
         $this->assertResponse(
             __DIR__ . '/data/LongRunningNodeController/getNodeTasksByIdRequest.json',
-            ['id' => '123456789', 'created' => '2010-10-10 10:10:10', 'updated' => '2010-10-10 10:10:10']
+            ['id' => '123456789', 'created' => '2010-10-10 10:10:10', 'updated' => '2010-10-10 10:10:10'],
         );
     }
 
@@ -105,7 +105,7 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
 
         $this->assertResponse(
             __DIR__ . '/data/LongRunningNodeController/getNodeTasksRequest.json',
-            ['id' => '123456789', 'created' => '2010-10-10 10:10:10', 'updated' => '2010-10-10 10:10:10']
+            ['id' => '123456789', 'created' => '2010-10-10 10:10:10', 'updated' => '2010-10-10 10:10:10'],
         );
     }
 
@@ -119,7 +119,7 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/LongRunningNodeController/updateLongRunningRequest.json',
             ['created' => '2010-10-10 10:10:10', 'updated' => '2010-10-10 10:10:10'],
-            [':id' => $this->createLongRunningNodeData()->getId()]
+            [':id' => $this->createLongRunningNodeData()->getId()],
         );
     }
 
@@ -136,7 +136,7 @@ final class LongRunningNodeControllerTest extends ControllerTestCaseAbstract
         string $topologyId = '',
         string $topologyName = '',
         string $nodeId = '',
-        string $nodeName = ''
+        string $nodeName = '',
     ): LongRunningNodeData
     {
         $longRunningData = (new LongRunningNodeData())

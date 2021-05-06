@@ -74,7 +74,7 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
             [
                 Sdk::KEY   => 'Key',
                 Sdk::VALUE => 'Value',
-            ]
+            ],
         );
 
         $this->dm->clear();
@@ -96,7 +96,7 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
             [
                 Sdk::KEY   => 'Key',
                 Sdk::VALUE => 'Value',
-            ]
+            ],
         );
 
         $this->dm->clear();

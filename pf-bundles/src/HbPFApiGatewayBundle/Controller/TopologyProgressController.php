@@ -28,7 +28,7 @@ final class TopologyProgressController extends AbstractController
     {
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyProgressController::getProgressTopologyAction',
-            ['topologyId' => $topologyId]
+            ['topologyId' => $topologyId],
         );
     }
 

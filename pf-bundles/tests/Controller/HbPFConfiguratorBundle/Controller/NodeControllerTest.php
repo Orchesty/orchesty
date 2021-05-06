@@ -41,7 +41,7 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
                 '_id'         => '5e329eb233609f28e8613114',
                 'topology_id' => '5e329eb233609f28e8613113',
             ],
-            [':id' => $topology->getId()]
+            [':id' => $topology->getId()],
         );
     }
 
@@ -62,7 +62,7 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/Node/getNodeRequest.json',
             ['_id' => '5e329f9b5ef3694da71d42b3'],
-            [':id' => $node->getId()]
+            [':id' => $node->getId()],
         );
     }
 
@@ -109,7 +109,7 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/Node/updateNodeRequest.json',
             ['_id' => '5e32a3bf1280c6296f258c83'],
-            [':id' => $node->getId()]
+            [':id' => $node->getId()],
         );
     }
 
@@ -126,7 +126,7 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/Node/updateNodeErrRequest.json',
             ['_id' => '5e32a3bf1280c6296f258c83'],
-            [':id' => $node->getId()]
+            [':id' => $node->getId()],
         );
     }
 

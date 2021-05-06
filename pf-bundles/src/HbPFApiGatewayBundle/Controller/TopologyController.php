@@ -29,7 +29,7 @@ final class TopologyController extends AbstractController
     {
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::getTopologiesAction',
-            ['query' => $request->query]
+            ['query' => $request->query],
         );
     }
 
@@ -41,7 +41,7 @@ final class TopologyController extends AbstractController
     public function getCronTopologiesAction(): Response
     {
         return $this->forward(
-            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::getCronTopologiesAction'
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::getCronTopologiesAction',
         );
     }
 
@@ -56,7 +56,7 @@ final class TopologyController extends AbstractController
     {
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::getTopologyAction',
-            ['id' => $id]
+            ['id' => $id],
         );
     }
 
@@ -68,7 +68,7 @@ final class TopologyController extends AbstractController
     public function createTopologyAction(): Response
     {
         return $this->forward(
-            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::createTopologyAction'
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::createTopologyAction',
         );
     }
 
@@ -83,7 +83,7 @@ final class TopologyController extends AbstractController
     {
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::updateTopologyAction',
-            ['id' => $id]
+            ['id' => $id],
         );
     }
 
@@ -98,7 +98,7 @@ final class TopologyController extends AbstractController
     {
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::getTopologySchemaAction',
-            ['id' => $id]
+            ['id' => $id],
         );
     }
 
@@ -113,7 +113,7 @@ final class TopologyController extends AbstractController
     {
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::saveTopologySchemaAction',
-            ['id' => $id]
+            ['id' => $id],
         );
     }
 
@@ -128,7 +128,7 @@ final class TopologyController extends AbstractController
     {
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::publishTopologyAction',
-            ['id' => $id]
+            ['id' => $id],
         );
     }
 
@@ -143,7 +143,7 @@ final class TopologyController extends AbstractController
     {
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::cloneTopologyAction',
-            ['id' => $id]
+            ['id' => $id],
         );
     }
 
@@ -158,7 +158,7 @@ final class TopologyController extends AbstractController
     {
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::deleteTopologyAction',
-            ['id' => $id]
+            ['id' => $id],
         );
     }
 
@@ -173,7 +173,7 @@ final class TopologyController extends AbstractController
     {
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::testAction',
-            ['topologyId' => $topologyId]
+            ['topologyId' => $topologyId],
         );
     }
 

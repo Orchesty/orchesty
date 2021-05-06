@@ -13,21 +13,6 @@ final class MetricsManagerLoader
 {
 
     /**
-     * @var string
-     */
-    private string $metricsService;
-
-    /**
-     * @var MetricsManagerAbstract
-     */
-    private MetricsManagerAbstract $influxManager;
-
-    /**
-     * @var MetricsManagerAbstract
-     */
-    private MetricsManagerAbstract $mongoManager;
-
-    /**
      * MetricsManagerLoader constructor.
      *
      * @param string                 $metricsService
@@ -35,14 +20,11 @@ final class MetricsManagerLoader
      * @param MetricsManagerAbstract $mongoManager
      */
     public function __construct(
-        string $metricsService,
-        MetricsManagerAbstract $influxManager,
-        MetricsManagerAbstract $mongoManager
+        private string $metricsService,
+        private MetricsManagerAbstract $influxManager,
+        private MetricsManagerAbstract $mongoManager,
     )
     {
-        $this->metricsService = $metricsService;
-        $this->influxManager  = $influxManager;
-        $this->mongoManager   = $mongoManager;
     }
 
     /**
@@ -57,7 +39,7 @@ final class MetricsManagerLoader
                 return $this->influxManager;
             default:
                 throw new LogicException(
-                    sprintf('[%s] is not a valid option for metrics manager.', $this->metricsService)
+                    sprintf('[%s] is not a valid option for metrics manager.', $this->metricsService),
                 );
         }
     }

@@ -34,7 +34,7 @@ final class NodeSchemaDtoTest extends KernelTestCaseAbstract
                 'pipes_type'     => 'pipes',
                 'system_configs' => new SystemConfigDto(),
             ],
-            $dto->toArray()
+            $dto->toArray(),
         );
     }
 

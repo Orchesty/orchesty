@@ -62,7 +62,7 @@ final class TopologySchemaUtilsTest extends KernelTestCaseAbstract
                 'Task_1niijps'  => ['Task_1wcc82o', 'Task_0nwvqkt'],
                 'Task_0nwvqkt'  => ['Task_00wzy7d'],
             ],
-            $schema->getSequences()
+            $schema->getSequences(),
         );
 
         $content = $this->load('tplg-no-process.tplg');

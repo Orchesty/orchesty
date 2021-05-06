@@ -17,18 +17,12 @@ final class NotificationHandler
 {
 
     /**
-     * @var NotificationManager
-     */
-    private NotificationManager $manager;
-
-    /**
      * NotificationHandler constructor.
      *
      * @param NotificationManager $manager
      */
-    public function __construct(NotificationManager $manager)
+    public function __construct(private NotificationManager $manager)
     {
-        $this->manager = $manager;
     }
 
     /**

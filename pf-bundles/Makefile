@@ -40,10 +40,10 @@ docker-down-clean: .env .lo0-down
 
 #Composer
 composer-install:
-	$(DEC) install
+	$(DEC) install --ignore-platform-reqs
 
 composer-update:
-	$(DEC) update
+	$(DEC) update --ignore-platform-reqs
 	$(DEC) normalize
 
 composer-outdated:

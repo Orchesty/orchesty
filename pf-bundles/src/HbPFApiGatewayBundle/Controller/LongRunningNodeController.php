@@ -27,7 +27,7 @@ final class LongRunningNodeController extends AbstractController
     {
         return $this->forward(
             'Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController::processAction',
-            ['request' => $request, 'id' => $id]
+            ['request' => $request, 'id' => $id],
         );
     }
 
@@ -42,7 +42,7 @@ final class LongRunningNodeController extends AbstractController
     {
         return $this->forward(
             'Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController::testAction',
-            ['id' => $id]
+            ['id' => $id],
         );
     }
 
@@ -57,7 +57,7 @@ final class LongRunningNodeController extends AbstractController
     {
         return $this->forward(
             'Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController::getTasksByIdAction',
-            ['topology' => $topology]
+            ['topology' => $topology],
         );
     }
 
@@ -72,7 +72,7 @@ final class LongRunningNodeController extends AbstractController
     {
         return $this->forward(
             'Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController::getTasksAction',
-            ['topology' => $topology]
+            ['topology' => $topology],
         );
     }
 
@@ -88,7 +88,7 @@ final class LongRunningNodeController extends AbstractController
     {
         return $this->forward(
             'Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController::getNodeTasksByIdAction',
-            ['topology' => $topology, 'node' => $node]
+            ['topology' => $topology, 'node' => $node],
         );
     }
 
@@ -104,7 +104,7 @@ final class LongRunningNodeController extends AbstractController
     {
         return $this->forward(
             'Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController::getNodeTasksAction',
-            ['topology' => $topology, 'node' => $node]
+            ['topology' => $topology, 'node' => $node],
         );
     }
 
@@ -123,7 +123,7 @@ final class LongRunningNodeController extends AbstractController
             [
                 'request' => $request,
                 'id'      => $id,
-            ]
+            ],
         );
     }
 

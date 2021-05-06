@@ -116,7 +116,7 @@ final class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
                 'process_path' => '/xml_parser',
                 'status_path'  => '/xml_parser/test',
             ],
-            $result
+            $result,
         );
 
         $node->setType(TypeEnum::TABLE_PARSER);
@@ -126,7 +126,7 @@ final class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
                 'process_path' => '/parser/json/to/example1/',
                 'status_path'  => '/parser/json/to/example1/test',
             ],
-            $result
+            $result,
         );
 
         $node->setType(TypeEnum::FTP);
@@ -136,7 +136,7 @@ final class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
                 'process_path' => '/connector/ftp/action',
                 'status_path'  => '/connector/ftp/action/test',
             ],
-            $result
+            $result,
         );
 
         $node->setType(TypeEnum::EMAIL);
@@ -146,7 +146,7 @@ final class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
                 'process_path' => '/mailer/email',
                 'status_path'  => '/mailer/email/test',
             ],
-            $result
+            $result,
         );
 
         $node->setType(TypeEnum::MAPPER);
@@ -156,7 +156,7 @@ final class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
                 'process_path' => '/mapper/example1/process',
                 'status_path'  => '/mapper/example1/test',
             ],
-            $result
+            $result,
         );
 
         $node->setType(TypeEnum::CONNECTOR);
@@ -166,7 +166,7 @@ final class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
                 'process_path' => '/connector/example1/webhook',
                 'status_path'  => '/connector/example1/webhook/test',
             ],
-            $result
+            $result,
         );
 
         $result = $this->invokeMethod($configFactory, 'getPaths', [$node, FALSE]);
@@ -175,7 +175,7 @@ final class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
                 'process_path' => '/connector/example1/action',
                 'status_path'  => '/connector/example1/action/test',
             ],
-            $result
+            $result,
         );
 
         $node->setType(TypeEnum::SIGNAL);
@@ -185,7 +185,7 @@ final class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
                 'process_path' => '/custom_node/signal/process',
                 'status_path'  => '/custom_node/signal/process/test',
             ],
-            $result
+            $result,
         );
 
         $node->setType(TypeEnum::USER);
@@ -195,7 +195,7 @@ final class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
                 'process_path' => '/longRunning/example1/process',
                 'status_path'  => '/longRunning/example1/process/test',
             ],
-            $result
+            $result,
         );
 
         $node->setType(TypeEnum::API);
@@ -205,7 +205,7 @@ final class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
                 'process_path' => '/connector/api/action',
                 'status_path'  => '/connector/api/action/test',
             ],
-            $result
+            $result,
         );
 
         $node->setType(TypeEnum::GATEWAY);

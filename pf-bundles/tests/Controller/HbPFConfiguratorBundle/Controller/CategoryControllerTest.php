@@ -32,7 +32,7 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
             [
                 '_id'    => '5e3293c74f674f452942a9d4',
                 'parent' => '5e32945ec6117b57df219493',
-            ]
+            ],
         );
     }
 
@@ -50,7 +50,7 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
     {
         $this->assertResponse(
             __DIR__ . '/data/Category/createCategoryRequest.json',
-            ['_id' => '5e3294f6486bd447291eb8e3']
+            ['_id' => '5e3294f6486bd447291eb8e3'],
         );
     }
 
@@ -85,7 +85,7 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
             __DIR__ . '/data/Category/updateCategoryRequest.json',
             ['_id' => '5e3297eee83e1850c8387dc4', 'parent' => '5e3297eee83e1850c8387dc3'],
             [':id' => $categories[1]->getId()],
-            ['parent' => $categories[0]->getId()]
+            ['parent' => $categories[0]->getId()],
         );
     }
 
@@ -121,7 +121,7 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/Category/updateCategoryErrRequest.json',
             [],
-            [':id' => $categories[1]->getId()]
+            [':id' => $categories[1]->getId()],
         );
     }
 
@@ -139,7 +139,7 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
         $this->assertResponse(
             __DIR__ . '/data/Category/deleteCategoryRequest.json',
             [],
-            [':id' => $categories[0]->getId()]
+            [':id' => $categories[0]->getId()],
         );
     }
 

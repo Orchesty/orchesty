@@ -88,7 +88,7 @@ final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
                     'errors' => '2',
                 ],
             ],
-            $result
+            $result,
         );
     }
 
@@ -133,7 +133,7 @@ final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
                     'errors' => '120',
                 ],
             ],
-            $result['topology']
+            $result['topology'],
         );
         $result = $result[$node->getId()];
 
@@ -179,7 +179,7 @@ final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
             [
                 'from' => '-10 day',
                 'to'   => '+10 day',
-            ]
+            ],
         );
 
         self::assertCount(5, $result);
@@ -195,7 +195,7 @@ final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
                     'errors' => '120',
                 ],
             ],
-            $result['topology']
+            $result['topology'],
         );
         self::assertCount(117, $result['requests']);
     }
@@ -217,7 +217,7 @@ final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
                 'from' => '-10 day',
                 'to'   => '+10 day',
             ],
-            'nutshell'
+            'nutshell',
         );
 
         self::assertCount(0, $result['application']);
@@ -240,7 +240,7 @@ final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
                 'from' => '-10 day',
                 'to'   => '+10 day',
             ],
-            'user123'
+            'user123',
         );
 
         self::assertCount(0, $result['user']);
@@ -349,7 +349,7 @@ final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
             $fpmTable,
             $rabbitTable,
             $counterTable,
-            $connTable
+            $connTable,
         );
     }
 
@@ -383,7 +383,7 @@ final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
                     InfluxMetricsManager::AVG_PROCESS_TIME => 6,
                     InfluxMetricsManager::FAILED_COUNT     => 1,
                     InfluxMetricsManager::TOTAL_COUNT      => 2,
-                ]
+                ],
             ),
         ];
         $database->writePoints($points, Database::PRECISION_NANOSECONDS);
@@ -400,7 +400,7 @@ final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
                     InfluxMetricsManager::MAX_TIME => 10,
                     InfluxMetricsManager::MIN_TIME => 2,
                     InfluxMetricsManager::AVG_TIME => 6,
-                ]
+                ],
             ),
         ];
 
@@ -418,7 +418,7 @@ final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
                     InfluxMetricsManager::CPU_KERNEL_MAX => 10,
                     InfluxMetricsManager::CPU_KERNEL_MIN => 2,
                     InfluxMetricsManager::CPU_KERNEL_AVG => 6,
-                ]
+                ],
             ),
         ];
 
@@ -432,13 +432,13 @@ final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
                     InfluxMetricsManager::QUEUE => NodeGeneratorUtils::generateQueueName(
                         $topology->getId(),
                         $node->getId(),
-                        $node->getName()
+                        $node->getName(),
                     ),
                 ],
                 [
                     InfluxMetricsManager::AVG_MESSAGES => 5,
                     InfluxMetricsManager::MAX_MESSAGES => 10,
-                ]
+                ],
             ),
         ];
 
@@ -457,7 +457,7 @@ final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
                     InfluxMetricsManager::MAX_TIME     => 2,
                     InfluxMetricsManager::FAILED_COUNT => 10,
                     InfluxMetricsManager::TOTAL_COUNT  => 100,
-                ]
+                ],
             ),
         ];
 
@@ -476,7 +476,7 @@ final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
                     InfluxMetricsManager::MAX_TIME     => 2,
                     InfluxMetricsManager::FAILED_COUNT => 10,
                     InfluxMetricsManager::TOTAL_COUNT  => 100,
-                ]
+                ],
             ),
         ];
 
@@ -499,7 +499,7 @@ final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
                     InfluxMetricsManager::AVG_PROCESS_TIME => 6,
                     InfluxMetricsManager::FAILED_COUNT     => 1,
                     InfluxMetricsManager::TOTAL_COUNT      => 2,
-                ]
+                ],
             ),
         ];
         $database->writePoints($points, Database::PRECISION_NANOSECONDS);
@@ -516,7 +516,7 @@ final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
                     InfluxMetricsManager::MAX_TIME => 10,
                     InfluxMetricsManager::MIN_TIME => 2,
                     InfluxMetricsManager::AVG_TIME => 6,
-                ]
+                ],
             ),
         ];
 
@@ -534,7 +534,7 @@ final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
                     InfluxMetricsManager::CPU_KERNEL_MAX => 10,
                     InfluxMetricsManager::CPU_KERNEL_MIN => 2,
                     InfluxMetricsManager::CPU_KERNEL_AVG => 6,
-                ]
+                ],
             ),
         ];
 
@@ -548,13 +548,13 @@ final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
                     InfluxMetricsManager::QUEUE => NodeGeneratorUtils::generateQueueName(
                         $topology->getId(),
                         $node->getId(),
-                        $node->getName()
+                        $node->getName(),
                     ),
                 ],
                 [
                     InfluxMetricsManager::AVG_MESSAGES => 5,
                     InfluxMetricsManager::MAX_MESSAGES => 10,
-                ]
+                ],
             ),
         ];
 
@@ -573,7 +573,7 @@ final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
                     InfluxMetricsManager::MAX_TIME     => 10,
                     InfluxMetricsManager::FAILED_COUNT => 10,
                     InfluxMetricsManager::TOTAL_COUNT  => 100,
-                ]
+                ],
             ),
         ];
 
@@ -592,7 +592,7 @@ final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
                     InfluxMetricsManager::MAX_TIME     => 2,
                     InfluxMetricsManager::FAILED_COUNT => 10,
                     InfluxMetricsManager::TOTAL_COUNT  => 100,
-                ]
+                ],
             ),
         ];
 
@@ -610,7 +610,7 @@ final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
                 [
                     InfluxMetricsManager::APP_COUNT  => 1,
                     InfluxMetricsManager::USER_COUNT => 1,
-                ]
+                ],
             ),
         ];
 
@@ -628,7 +628,7 @@ final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
                 [
                     InfluxMetricsManager::APP_COUNT  => 1,
                     InfluxMetricsManager::USER_COUNT => 1,
-                ]
+                ],
             ),
         ];
 
@@ -650,7 +650,7 @@ final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
                     InfluxMetricsManager::MAX_TIME   => 10,
                     InfluxMetricsManager::APP_COUNT  => 1,
                     InfluxMetricsManager::USER_COUNT => 1,
-                ]
+                ],
             ),
         ];
         $database->writePoints($points, Database::PRECISION_NANOSECONDS);
@@ -672,7 +672,7 @@ final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
                     InfluxMetricsManager::MAX_TIME   => 10,
                     InfluxMetricsManager::APP_COUNT  => 1,
                     InfluxMetricsManager::USER_COUNT => 1,
-                ]
+                ],
             ),
         ];
         $database->writePoints($points, Database::PRECISION_NANOSECONDS);

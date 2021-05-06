@@ -23,26 +23,6 @@ final class TopologiesComparator
 {
 
     /**
-     * @var mixed[]
-     */
-    private array $dirs;
-
-    /**
-     * @var TopologyRepository
-     */
-    private TopologyRepository $repository;
-
-    /**
-     * @var XmlDecoder
-     */
-    private XmlDecoder $decoder;
-
-    /**
-     * @var bool
-     */
-    private bool $checkInfiniteLoop;
-
-    /**
      * TopologiesComparator constructor.
      *
      * @param TopologyRepository $repository
@@ -51,16 +31,12 @@ final class TopologiesComparator
      * @param bool               $checkInfiniteLoop
      */
     public function __construct(
-        TopologyRepository $repository,
-        XmlDecoder $decoder,
-        array $dirs,
-        bool $checkInfiniteLoop
+        private TopologyRepository $repository,
+        private XmlDecoder $decoder,
+        private array $dirs,
+        private bool $checkInfiniteLoop,
     )
     {
-        $this->dirs              = $dirs;
-        $this->repository        = $repository;
-        $this->decoder           = $decoder;
-        $this->checkInfiniteLoop = $checkInfiniteLoop;
     }
 
     /**

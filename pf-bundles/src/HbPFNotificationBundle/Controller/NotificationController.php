@@ -23,19 +23,13 @@ final class NotificationController
     use ControllerTrait;
 
     /**
-     * @var NotificationHandler
-     */
-    private NotificationHandler $notificationHandler;
-
-    /**
      * NotificationController constructor.
      *
      * @param NotificationHandler $notificationHandler
      */
-    public function __construct(NotificationHandler $notificationHandler)
+    public function __construct(private NotificationHandler $notificationHandler)
     {
-        $this->notificationHandler = $notificationHandler;
-        $this->logger              = new NullLogger();
+        $this->logger = new NullLogger();
     }
 
     /**

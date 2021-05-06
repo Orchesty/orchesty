@@ -28,16 +28,6 @@ final class MongoMetricsManager extends MetricsManagerAbstract
 {
 
     /**
-     * @var DocumentManager
-     */
-    private DocumentManager $metricsDm;
-
-    /**
-     * @var int
-     */
-    private int $rabbitInterval;
-
-    /**
      * MongoMetricsManager constructor.
      *
      * @param DocumentManager $dm
@@ -56,14 +46,11 @@ final class MongoMetricsManager extends MetricsManagerAbstract
         string $rabbitTable,
         string $counterTable,
         string $connectorTable,
-        DocumentManager $metricsDm,
-        int $rabbitInterval
+        private DocumentManager $metricsDm,
+        private int $rabbitInterval,
     )
     {
         parent::__construct($dm, $nodeTable, $fpmTable, $rabbitTable, $counterTable, $connectorTable);
-
-        $this->metricsDm      = $metricsDm;
-        $this->rabbitInterval = $rabbitInterval;
     }
 
     /**
@@ -96,7 +83,7 @@ final class MongoMetricsManager extends MetricsManagerAbstract
             $cpu,
             $request,
             $error,
-            new MetricsDto()
+            new MetricsDto(),
         );
     }
 
@@ -122,7 +109,7 @@ final class MongoMetricsManager extends MetricsManagerAbstract
             new MetricsDto(),
             new MetricsDto(),
             $error,
-            $process
+            $process,
         );
     }
 
@@ -348,8 +335,8 @@ final class MongoMetricsManager extends MetricsManagerAbstract
                 $qb->expr()->cond(
                     $qb->expr()->eq('$fields.counter_process_result', FALSE),
                     1,
-                    0
-                )
+                    0,
+                ),
             )
             ->execute()
             ->toArray();
@@ -401,15 +388,15 @@ final class MongoMetricsManager extends MetricsManagerAbstract
             ->field('wait_count')->sum(1)
             ->field('wait_max')->max('$fields.bridge_job_waiting_duration')
             ->field('wait_min')->min(
-                $qb->expr()->ifNull('$fields.bridge_job_waiting_duration', 0)
+                $qb->expr()->ifNull('$fields.bridge_job_waiting_duration', 0),
             )
             ->field('total_count')->sum(1)
             ->field('request_error_sum')->sum(
                 $qb->expr()->cond(
                     $qb->expr()->eq('$fields.bridge_job_result_success', FALSE),
                     1,
-                    0
-                )
+                    0,
+                ),
             )
             ->execute()
             ->toArray();
@@ -508,7 +495,7 @@ final class MongoMetricsManager extends MetricsManagerAbstract
                     ->gte(DateTimeUtils::getUtcDateTime($dateFrom)->getTimestamp()),
                 $qb->matchExpr()
                     ->field('fields.created')
-                    ->lt(DateTimeUtils::getUtcDateTime($dateTo)->getTimestamp())
+                    ->lt(DateTimeUtils::getUtcDateTime($dateTo)->getTimestamp()),
             );
 
         $tags = $this->allowedTags($document);

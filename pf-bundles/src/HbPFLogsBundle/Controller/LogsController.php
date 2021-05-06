@@ -21,18 +21,12 @@ final class LogsController
     use ControllerTrait;
 
     /**
-     * @var LogsHandler
-     */
-    private LogsHandler $logsHandler;
-
-    /**
      * LogsController constructor.
      *
      * @param LogsHandler $logsHandler
      */
-    public function __construct(LogsHandler $logsHandler)
+    public function __construct(private LogsHandler $logsHandler)
     {
-        $this->logsHandler = $logsHandler;
     }
 
     /**

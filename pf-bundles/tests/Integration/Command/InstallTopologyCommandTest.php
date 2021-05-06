@@ -35,7 +35,7 @@ final class InstallTopologyCommandTest extends DatabaseTestCaseAbstract
                 '-u'      => NULL,
                 '-d'      => NULL,
                 '--force' => NULL,
-            ]
+            ],
         );
 
         self::assertStringContainsString('Topology name', $commandTester->getDisplay());

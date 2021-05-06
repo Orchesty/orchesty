@@ -18,18 +18,12 @@ final class SdkHandler
 {
 
     /**
-     * @var SdkManager
-     */
-    private SdkManager $manager;
-
-    /**
      * SdkHandler constructor.
      *
      * @param SdkManager $manager
      */
-    public function __construct(SdkManager $manager)
+    public function __construct(private SdkManager $manager)
     {
-        $this->manager = $manager;
     }
 
     /**

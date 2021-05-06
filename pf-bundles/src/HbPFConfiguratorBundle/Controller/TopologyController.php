@@ -23,19 +23,13 @@ final class TopologyController
     use ControllerTrait;
 
     /**
-     * @var TopologyHandler
-     */
-    private TopologyHandler $topologyHandler;
-
-    /**
      * TopologyController constructor.
      *
      * @param TopologyHandler $topologyHandler
      */
-    public function __construct(TopologyHandler $topologyHandler)
+    public function __construct(private TopologyHandler $topologyHandler)
     {
-        $this->topologyHandler = $topologyHandler;
-        $this->logger          = new NullLogger();
+        $this->logger = new NullLogger();
     }
 
     /**
@@ -53,7 +47,7 @@ final class TopologyController
             $data   = $this->topologyHandler->getTopologies(
                 isset($limit) ? (int) $limit : NULL,
                 isset($offset) ? (int) $offset : NULL,
-                $query->get('order_by')
+                $query->get('order_by'),
             );
 
             return $this->getResponse($data);
@@ -162,8 +156,8 @@ final class TopologyController
                 $this->topologyHandler->saveTopologySchema(
                     $id,
                     $content,
-                    $request->request->all()
-                )
+                    $request->request->all(),
+                ),
             );
         } catch (TopologyException | Throwable $e) {
             return $this->getErrorResponse(
@@ -176,8 +170,8 @@ final class TopologyController
                         TopologyException::TOPOLOGY_NODE_TYPE_NOT_EXIST,
                         TopologyException::TOPOLOGY_NODE_CRON_NOT_VALID,
                     ],
-                    TRUE
-                ) ? 400 : 500
+                    TRUE,
+                ) ? 400 : 500,
             );
         }
     }
