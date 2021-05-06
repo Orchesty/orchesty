@@ -47,7 +47,7 @@ final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
      *
      * @param mixed[] $headers
      *
-     * @throws Exception
+     * @throws Throwable
      */
     public function testValidateMessage(array $headers): void
     {
@@ -131,7 +131,7 @@ final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
      * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::batchCallback
      * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::itemCallback
      *
-     * @throws Exception
+     * @throws Throwable
      */
     public function testProcessMessageBatchAction(): void
     {
@@ -172,7 +172,7 @@ final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
      * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::batchCallback
      * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::itemCallback
      *
-     * @throws Exception
+     * @throws Throwable
      */
     public function testProcessMessageSuccessTestAction(): void
     {
@@ -212,7 +212,7 @@ final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
      * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::batchCallback
      * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::itemCallback
      *
-     * @throws Exception
+     * @throws Throwable
      */
     public function testProcessErrorMessageTestAction(): void
     {
@@ -285,7 +285,7 @@ final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
      * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::batchCallback
      * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::itemCallback
      *
-     * @throws Exception
+     * @throws Throwable
      */
     public function testProcessMessageBadType(): void
     {
@@ -321,7 +321,7 @@ final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
      * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::batchCallback
      * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::itemCallback
      *
-     * @throws Exception
+     * @throws Throwable
      */
     public function testProcessMessageRepeater(): void
     {
@@ -358,7 +358,7 @@ final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
      * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::batchCallback
      * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::itemCallback
      *
-     * @throws Exception
+     * @throws Throwable
      */
     public function testProcessMessageRepeaterLastHop(): void
     {
@@ -399,7 +399,7 @@ final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
      * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::batchCallback
      * @covers \Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback::itemCallback
      *
-     * @throws Exception
+     * @throws Throwable
      */
     public function testProcessMessageRepeaterError(): void
     {
@@ -542,13 +542,12 @@ final class BatchConsumerCallbackTest extends KernelTestCaseAbstract
 
     /**
      * @param mixed[] $headers
-     * @param string  $content
      *
      * @return AMQPMessage
      */
-    private function createMessage(array $headers = [], string $content = ''): AMQPMessage
+    private function createMessage(array $headers = []): AMQPMessage
     {
-        $message = Message::create($content, $headers);
+        $message = Message::create('', $headers);
         $message->setDeliveryTag(1);
 
         return $message;

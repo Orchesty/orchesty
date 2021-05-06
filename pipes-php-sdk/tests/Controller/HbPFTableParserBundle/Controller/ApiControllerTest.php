@@ -269,7 +269,7 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
      *
      * @throws Exception
      */
-    private function prepareTableParserErr(string $methodName, $returnValue): void
+    private function prepareTableParserErr(string $methodName, mixed $returnValue): void
     {
         $mapperHandlerMock = self::createMock(TableParserHandler::class);
         $mapperHandlerMock

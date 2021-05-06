@@ -22,7 +22,7 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
     /**
      * @var ApplicationHandler
      */
-    private $handler;
+    private ApplicationHandler $handler;
 
     /**
      * @covers \Hanaboso\HbPFAppStore\Handler\ApplicationHandler::getApplicationsByUser
@@ -33,8 +33,8 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
      */
     public function testGetApplicationsByUser(): void
     {
-        $this->createApplicationInstall('user', 'null');
-        $this->createApplicationInstall('user', 'webhook');
+        $this->createApplicationInstall('null');
+        $this->createApplicationInstall('webhook');
         $result = $this->handler->getApplicationsByUser('user');
 
         self::assertEquals(2, count($result['items']));
@@ -47,7 +47,7 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
      */
     public function testGetApplicationByKeyAndUser(): void
     {
-        $this->createApplicationInstall('user', 'webhook');
+        $this->createApplicationInstall('webhook');
 
         $result = $this->handler->getApplicationByKeyAndUser('webhook', 'user');
         self::assertEquals('Webhook', $result['name']);
@@ -61,7 +61,7 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
      */
     public function testUpdateApplicationSettings(): void
     {
-        $this->createApplicationInstall('user', 'null', ['form' => ['settings1' => 'Old settings']]);
+        $this->createApplicationInstall('null', ['form' => ['settings1' => 'Old settings']]);
         $result = $this->handler->updateApplicationSettings('null', 'user', ['settings1' => 'New settings']);
         self::assertEquals('New settings', $result['applicationSettings'][0]['value']);
     }
@@ -73,7 +73,7 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
      */
     public function testUpdateApplicationPassword(): void
     {
-        $this->createApplicationInstall('user', 'null');
+        $this->createApplicationInstall('null');
 
         $result = $this->handler->updateApplicationPassword('null', 'user', ['password' => '_newPasswd_']);
         self::assertEquals('_newPasswd_', $result['settings']['authorization_settings']['password']);
@@ -86,7 +86,7 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
      */
     public function testUpdateApplicationPasswordErr(): void
     {
-        $this->createApplicationInstall('user', 'null');
+        $this->createApplicationInstall('null');
 
         self::expectException(InvalidArgumentException::class);
         $this->handler->updateApplicationPassword('null', 'user', ['username' => 'newUsername']);
@@ -100,7 +100,7 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
      */
     public function testAuthorizeApplication(): void
     {
-        $this->createApplicationInstall('user', 'null2');
+        $this->createApplicationInstall('null2');
         $this->handler->authorizeApplication('null2', 'user', 'redirect/url');
         self::assertFake();
     }
@@ -114,7 +114,6 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
     public function testSaveAuthToken(): void
     {
         $this->createApplicationInstall(
-            'user',
             'null2',
             [ApplicationInterface::AUTHORIZATION_SETTINGS => [ApplicationInterface::REDIRECT_URL => 'redirect_url']],
         );
@@ -134,26 +133,18 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @param string  $user
      * @param string  $key
      * @param mixed[] $settings
      *
-     * @return ApplicationInstall
      * @throws Exception
      */
-    private function createApplicationInstall(
-        string $user = 'user',
-        string $key = 'key',
-        array $settings = [],
-    ): ApplicationInstall
+    private function createApplicationInstall(string $key = 'key', array $settings = []): void
     {
         $applicationInstall = (new ApplicationInstall())
-            ->setUser($user)
+            ->setUser('user')
             ->setKey($key)
             ->setSettings($settings);
         $this->persistAndFlush($applicationInstall);
-
-        return $applicationInstall;
     }
 
 }

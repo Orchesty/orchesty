@@ -1,11 +1,11 @@
 {
     "name": "hanaboso/app-store",
     "description": "App store for PipesFramework",
-    "version": "1.5.1",
+    "version": "1.6.0",
     "license": "GPL-3.0-or-later",
     "require": {
         "php": "^8.0",
-        "hanaboso/pipes-php-sdk": "^1.5"
+        "hanaboso/pipes-php-sdk": "^1.6"
     },
     "require-dev": {
         "hanaboso/php-check-utils": "^1.1",

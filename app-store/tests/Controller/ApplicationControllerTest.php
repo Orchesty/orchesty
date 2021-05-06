@@ -271,15 +271,14 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @param string $key
-     * @param string $user
      *
      * @throws Exception
      */
-    private function insertApp(string $key = 'someApp', string $user = 'bar'): void
+    private function insertApp(string $key = 'someApp'): void
     {
         $dto = new ApplicationInstall();
         $dto->setKey($key)
-            ->setUser($user);
+            ->setUser('bar');
 
         $this->persistAndFlush($dto);
     }

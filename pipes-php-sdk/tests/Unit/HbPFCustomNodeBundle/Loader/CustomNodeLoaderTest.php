@@ -19,7 +19,7 @@ final class CustomNodeLoaderTest extends KernelTestCaseAbstract
     /**
      * @var CustomNodeLoader
      */
-    private $customNodeLoader;
+    private CustomNodeLoader $customNodeLoader;
 
     /**
      * @throws Exception

@@ -21,7 +21,7 @@ final class LongRunningNodeHandlerTest extends DatabaseTestCaseAbstract
     /**
      * @var LongRunningNodeHandler
      */
-    private $handler;
+    private LongRunningNodeHandler $handler;
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Handler\LongRunningNodeHandler

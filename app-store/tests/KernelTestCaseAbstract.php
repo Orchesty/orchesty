@@ -21,7 +21,7 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
     /**
      * @var DocumentManager
      */
-    protected $dm;
+    protected DocumentManager $dm;
 
     /**
      *

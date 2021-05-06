@@ -18,7 +18,7 @@ final class ConnectorHandlerTest extends DatabaseTestCaseAbstract
     /**
      * @var ConnectorHandler
      */
-    private $handler;
+    private ConnectorHandler $handler;
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Handler\ConnectorHandler::processEvent

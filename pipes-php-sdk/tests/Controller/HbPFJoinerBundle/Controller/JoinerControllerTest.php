@@ -140,7 +140,7 @@ final class JoinerControllerTest extends ControllerTestCaseAbstract
      *
      * @throws Exception
      */
-    private function prepareJoinerHandlerMock($returnValue = 'Test'): void
+    private function prepareJoinerHandlerMock(mixed $returnValue = 'Test'): void
     {
         $joinerHandlerMock = self::createMock(JoinerHandler::class);
         $joinerHandlerMock

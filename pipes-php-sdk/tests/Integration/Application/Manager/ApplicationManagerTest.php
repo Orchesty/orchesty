@@ -29,7 +29,7 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
     /**
      * @var ApplicationManager
      */
-    private $manager;
+    private ApplicationManager $manager;
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager::getApplications

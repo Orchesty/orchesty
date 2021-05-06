@@ -24,7 +24,7 @@ final class OAuth1ApplicationAbstractTest extends DatabaseTestCaseAbstract
     /**
      * @var NullOAuth1Application
      */
-    private $testApp;
+    private NullOAuth1Application $testApp;
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1\OAuth1ApplicationAbstract

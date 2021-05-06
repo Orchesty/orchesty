@@ -39,14 +39,14 @@ final class Kernel extends BaseKernel
     }
 
     /**
-     * @param ContainerBuilder $container
+     * @param ContainerBuilder $c
      * @param LoaderInterface  $loader
      *
      * @throws Exception
      */
-    protected function configureContainer(ContainerBuilder $container, LoaderInterface $loader): void
+    protected function configureContainer(ContainerBuilder $c, LoaderInterface $loader): void
     {
-        $container->addResource(new FileResource(sprintf('%s/tests/app/config/bundles.php', $this->getProjectDir())));
+        $c->addResource(new FileResource(sprintf('%s/tests/app/config/bundles.php', $this->getProjectDir())));
         $confDir = $this->getConfigDir();
         $loader->load(sprintf('%s/{packages}/*%s', $confDir, self::CONFIG_EXTS), 'glob');
         $loader->load(sprintf('%s/{packages}/%s/**/*%s', $confDir, $this->environment, self::CONFIG_EXTS), 'glob');

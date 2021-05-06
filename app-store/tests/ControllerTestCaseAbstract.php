@@ -90,7 +90,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
      *
      * @throws Exception
      */
-    protected function persistAndFlush($document): void
+    protected function persistAndFlush(object $document): void
     {
         $this->dm->persist($document);
         $this->dm->flush();

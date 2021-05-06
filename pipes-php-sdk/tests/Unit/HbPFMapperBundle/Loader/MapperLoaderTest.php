@@ -19,7 +19,7 @@ final class MapperLoaderTest extends KernelTestCaseAbstract
     /**
      * @var MapperLoader
      */
-    private $mapperLoader;
+    private MapperLoader $mapperLoader;
 
     /**
      * @throws Exception

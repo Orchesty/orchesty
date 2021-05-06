@@ -23,7 +23,7 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
     /**
      * @var ApplicationManager
      */
-    private $applicationManager;
+    private ApplicationManager $applicationManager;
 
     /**
      * @throws Exception

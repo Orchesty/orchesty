@@ -18,7 +18,7 @@ final class JoinerHandlerTest extends DatabaseTestCaseAbstract
     /**
      * @var JoinerHandler
      */
-    private $handler;
+    private JoinerHandler $handler;
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Handler\JoinerHandler

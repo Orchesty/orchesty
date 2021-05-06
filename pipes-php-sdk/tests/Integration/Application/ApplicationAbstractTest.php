@@ -19,7 +19,7 @@ final class ApplicationAbstractTest extends DatabaseTestCaseAbstract
     /**
      * @var TestNullApplication
      */
-    private $application;
+    private TestNullApplication $application;
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract::getApplicationType

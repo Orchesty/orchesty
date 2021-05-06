@@ -27,7 +27,7 @@ final class OAuth2ApplicationAbstractTest extends DatabaseTestCaseAbstract
     /**
      * @var TestOAuth2NullApplication
      */
-    private $testApp;
+    private TestOAuth2NullApplication $testApp;
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract::getAuthorizationType

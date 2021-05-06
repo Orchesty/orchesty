@@ -51,7 +51,7 @@ final class AuthorizeUserCommand extends Command
     {
         $env = $input->getParameterOption(['--env', '-e']);
         if ($env !== 'oauthconsole') {
-            $output->writeln(sprintf('<error>Please make sure that your env is set to --env=oauthconsole.</error>'));
+            $output->writeln('<error>Please make sure that your env is set to --env=oauthconsole.</error>');
 
             return 1;
         }
@@ -65,7 +65,7 @@ final class AuthorizeUserCommand extends Command
         $user      = $helper->ask($input, $output, $question2);
 
         if (!is_string($key) || !is_string($user)) {
-            $output->writeln(sprintf('Please make sure that input parameters are string.'));
+            $output->writeln('Please make sure that input parameters are string.');
 
             return 1;
         }

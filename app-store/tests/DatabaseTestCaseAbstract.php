@@ -17,12 +17,12 @@ abstract class DatabaseTestCaseAbstract extends KernelTestCaseAbstract
     /**
      * @var DocumentManager
      */
-    protected $dm;
+    protected DocumentManager $dm;
 
     /**
      * @var Session<mixed>
      */
-    protected $session;
+    protected Session $session;
 
     /**
      * @throws Exception
@@ -49,7 +49,7 @@ abstract class DatabaseTestCaseAbstract extends KernelTestCaseAbstract
      *
      * @throws Exception
      */
-    protected function persistAndFlush($document): void
+    protected function persistAndFlush(object $document): void
     {
         $this->dm->persist($document);
         $this->dm->flush();

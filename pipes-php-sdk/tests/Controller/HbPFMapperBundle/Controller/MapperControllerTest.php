@@ -124,7 +124,7 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
      *
      * @throws Exception
      */
-    private function prepareMapperHandlerMock(string $methodName, $returnValue = 'Test'): void
+    private function prepareMapperHandlerMock(string $methodName, mixed $returnValue = 'Test'): void
     {
         $mapperHandlerMock = self::createMock(MapperHandler::class);
         $mapperHandlerMock
@@ -140,7 +140,7 @@ final class MapperControllerTest extends ControllerTestCaseAbstract
      *
      * @throws Exception
      */
-    private function prepareMapperHandlerMockException(string $methodName, $returnValue): void
+    private function prepareMapperHandlerMockException(string $methodName, mixed $returnValue): void
     {
         $mapperHandlerMock = self::createMock(MapperHandler::class);
         $mapperHandlerMock

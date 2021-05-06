@@ -26,7 +26,7 @@ final class WebhookManagerTest extends DatabaseTestCaseAbstract
     /**
      * @var WebhookApplication
      */
-    private $application;
+    private WebhookApplication $application;
 
     /**
      * @var ObjectRepository<Webhook>&WebhookRepository

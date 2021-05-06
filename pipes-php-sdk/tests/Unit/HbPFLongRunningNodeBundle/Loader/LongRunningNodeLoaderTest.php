@@ -18,7 +18,7 @@ final class LongRunningNodeLoaderTest extends KernelTestCaseAbstract
     /**
      * @var LongRunningNodeLoader
      */
-    private $loader;
+    private LongRunningNodeLoader $loader;
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Loader\LongRunningNodeLoader

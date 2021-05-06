@@ -24,7 +24,7 @@ final class SynchronizationRepositoryTest extends DatabaseTestCaseAbstract
     /**
      * @var SynchronizationRepository
      */
-    private $repository;
+    private SynchronizationRepository $repository;
 
     /**
      * @throws Exception
@@ -106,18 +106,15 @@ final class SynchronizationRepositoryTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @return Synchronization
      * @throws Exception
      */
-    private function createSynchronization(): Synchronization
+    private function createSynchronization(): void
     {
         $synchronization = ((new Synchronization())->setKey(self::KEY)->setUser(self::USER));
 
         $this->dm->persist($synchronization);
         $this->dm->flush();
         $this->dm->clear();
-
-        return $synchronization;
     }
 
 }

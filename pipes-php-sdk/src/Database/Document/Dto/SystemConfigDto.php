@@ -34,12 +34,12 @@ final class SystemConfigDto
      * @param int    $repeaterInterval
      */
     public function __construct(
-        private $sdkHost = '',
-        private $bridgeHost = '',
-        private $prefetch = 1,
-        private $repeaterEnabled = FALSE,
-        private $repeaterHops = 0,
-        private $repeaterInterval = 0,
+        private string $sdkHost = '',
+        private string $bridgeHost = '',
+        private int $prefetch = 1,
+        private bool $repeaterEnabled = FALSE,
+        private int $repeaterHops = 0,
+        private int $repeaterInterval = 0,
     )
     {
     }

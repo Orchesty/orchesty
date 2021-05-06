@@ -22,7 +22,7 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
     /**
      * @var ApplicationHandler
      */
-    private $handler;
+    private ApplicationHandler $handler;
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler
@@ -168,21 +168,16 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @param mixed[] $settings
-     *
-     * @return ApplicationInstall
      * @throws Exception
      */
-    private function createApplicationInstall(array $settings = []): ApplicationInstall
+    private function createApplicationInstall(): void
     {
         $applicationInstall = (new ApplicationInstall())
             ->setKey('null')
             ->setUser('user')
-            ->setSettings($settings);
+            ->setSettings([]);
 
         $this->pfd($applicationInstall);
-
-        return $applicationInstall;
     }
 
 }

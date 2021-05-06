@@ -18,7 +18,7 @@ final class CustomNodeHandlerTest extends DatabaseTestCaseAbstract
     /**
      * @var CustomNodeHandler
      */
-    private $handler;
+    private CustomNodeHandler $handler;
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Handler\CustomNodeHandler

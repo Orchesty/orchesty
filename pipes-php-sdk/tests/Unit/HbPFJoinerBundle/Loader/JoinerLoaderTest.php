@@ -17,7 +17,7 @@ final class JoinerLoaderTest extends KernelTestCaseAbstract
     /**
      * @var JoinerLoader
      */
-    private $loader;
+    private JoinerLoader $loader;
 
     /**
      *

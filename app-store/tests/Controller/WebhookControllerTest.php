@@ -134,16 +134,13 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @param string $key
-     * @param string $user
-     *
      * @throws Exception
      */
-    private function insertApp(string $key = 'null', string $user = 'bar'): void
+    private function insertApp(): void
     {
         $dto = new ApplicationInstall();
-        $dto->setKey($key)
-            ->setUser($user);
+        $dto->setKey('null')
+            ->setUser('bar');
 
         $this->persistAndFlush($dto);
     }
@@ -152,7 +149,7 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
      * @param string $fn
      * @param mixed  $return
      */
-    private function mockWebhookHandlerException(string $fn, $return): void
+    private function mockWebhookHandlerException(string $fn, mixed $return): void
     {
         $mock = self::createPartialMock(WebhookHandler::class, [$fn]);
         $mock->expects(self::any())->method($fn)->willThrowException($return);

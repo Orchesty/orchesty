@@ -17,7 +17,7 @@ final class ConnectorLoaderTest extends KernelTestCaseAbstract
     /**
      * @var  ConnectorLoader
      */
-    private $loader;
+    private ConnectorLoader $loader;
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Loader\ConnectorLoader::getConnector

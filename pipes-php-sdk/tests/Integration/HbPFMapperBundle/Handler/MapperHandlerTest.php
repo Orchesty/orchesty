@@ -17,7 +17,7 @@ final class MapperHandlerTest extends DatabaseTestCaseAbstract
     /**
      * @var MapperHandler
      */
-    private $handler;
+    private MapperHandler $handler;
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFMapperBundle\Handler\MapperHandler::process

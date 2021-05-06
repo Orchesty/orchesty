@@ -27,7 +27,7 @@ final class WebhookHandlerTest extends DatabaseTestCaseAbstract
         $mock->expects(self::any())->method('subscribeWebhooks');
         $handler = new WebhookHandler($mock);
 
-        $this->createApplicationInstall('user', 'webhook');
+        $this->createApplicationInstall('webhook');
         $handler->subscribeWebhooks('webhook', 'user', ['name' => 'name', 'topology' => 'topo']);
 
         self::assertFake();
@@ -44,33 +44,24 @@ final class WebhookHandlerTest extends DatabaseTestCaseAbstract
         $mock->expects(self::any())->method('unsubscribeWebhooks');
         $handler = new WebhookHandler($mock);
 
-        $this->createApplicationInstall('user', 'webhook');
+        $this->createApplicationInstall('webhook');
         $handler->unsubscribeWebhooks('webhook', 'user', ['name' => 'name', 'topology' => 'topo']);
 
         self::assertFake();
     }
 
     /**
-     * @param string  $user
-     * @param string  $key
-     * @param mixed[] $settings
+     * @param string $key
      *
-     * @return ApplicationInstall
      * @throws Exception
      */
-    private function createApplicationInstall(
-        string $user = 'user',
-        string $key = 'key',
-        array $settings = [],
-    ): ApplicationInstall
+    private function createApplicationInstall(string $key = 'key'): void
     {
         $applicationInstall = (new ApplicationInstall())
-            ->setUser($user)
+            ->setUser('user')
             ->setKey($key)
-            ->setSettings($settings);
+            ->setSettings([]);
         $this->persistAndFlush($applicationInstall);
-
-        return $applicationInstall;
     }
 
 }

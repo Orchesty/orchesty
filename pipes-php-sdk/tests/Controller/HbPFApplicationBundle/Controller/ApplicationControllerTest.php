@@ -152,7 +152,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     public function testAuthorizeApplicationActionNotFound(): void
     {
         $this->mockHandler('authorizeApplication', new ApplicationInstallException());
-        $response = $this->sendGet('/applications/key/users/user/authorize?redirect_url=http://example.com');
+        $response = $this->sendGet('/applications/key/users/user/authorize?redirect_url=https://example.com');
 
         self::assertEquals(404, $response->status);
     }
@@ -272,7 +272,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
      * @param string     $method
      * @param mixed|null $return
      */
-    private function mockHandler(string $method, $return = NULL): void
+    private function mockHandler(string $method, mixed $return = NULL): void
     {
         $handler = self::createPartialMock(ApplicationHandler::class, [$method]);
         if ($return) {
