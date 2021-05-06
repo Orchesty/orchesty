@@ -38,7 +38,7 @@ final class RedshiftExecuteQueryConnector extends RedshiftObjectConnectorAbstrac
         try {
             /** @var Resource $result */
             $result = pg_query($connection, $content[self::QUERY]);
-        } catch (Throwable $e) {
+        } catch (Throwable) {
             throw $this->createException(pg_last_error($connection));
         }
 

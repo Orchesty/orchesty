@@ -39,7 +39,7 @@ final class AirtableNewRecordConnectorTest extends DatabaseTestCaseAbstract
         $newRecordFile = file_get_contents(sprintf('%s/Data/newRecord.json', __DIR__), TRUE);
 
         $response = $airtableNewRecordConnector->processAction(
-            DataProvider::getProcessDto('airtable', 'user', (string) $newRecordFile)
+            DataProvider::getProcessDto('airtable', 'user', (string) $newRecordFile),
         );
 
         self::assertSuccessProcessResponse($response, 'response200.json');
@@ -55,7 +55,7 @@ final class AirtableNewRecordConnectorTest extends DatabaseTestCaseAbstract
         $airtableNewRecordConnector = $this->setApplicationAndMock(self::API_KEY);
         $newRecordFileNoFields      = file_get_contents(sprintf('%s/Data/newRecordNoFields.json', __DIR__), TRUE);
         $response                   = $airtableNewRecordConnector->processAction(
-            DataProvider::getProcessDto('airtable', 'user', (string) $newRecordFileNoFields)
+            DataProvider::getProcessDto('airtable', 'user', (string) $newRecordFileNoFields),
         );
 
         self::assertFailedProcessResponse($response, 'response500.json');
@@ -73,7 +73,7 @@ final class AirtableNewRecordConnectorTest extends DatabaseTestCaseAbstract
         $newRecordFile = file_get_contents(sprintf('%s/Data/newRecord.json', __DIR__), TRUE);
 
         $response = $airtableNewRecordConnector->processAction(
-            DataProvider::getProcessDto('airtable', 'user', (string) $newRecordFile)
+            DataProvider::getProcessDto('airtable', 'user', (string) $newRecordFile),
         );
 
         self::assertFailedProcessResponse($response, 'newRecord.json');
@@ -100,7 +100,7 @@ final class AirtableNewRecordConnectorTest extends DatabaseTestCaseAbstract
         $airtableNewRecordConnector = $this->setApplication();
         self::assertEquals(
             'airtable_new_record',
-            $airtableNewRecordConnector->getId()
+            $airtableNewRecordConnector->getId(),
         );
     }
 
@@ -123,7 +123,7 @@ final class AirtableNewRecordConnectorTest extends DatabaseTestCaseAbstract
         $app                        = self::$container->get('hbpf.application.airtable');
         $airtableNewRecordConnector = new AirtableNewRecordConnector(
             self::$container->get('hbpf.transport.curl_manager'),
-            $this->dm
+            $this->dm,
         );
 
         $airtableNewRecordConnector->setApplication($app);
@@ -150,7 +150,7 @@ final class AirtableNewRecordConnectorTest extends DatabaseTestCaseAbstract
                     AirtableApplication::BASE_ID    => $baseId,
                     AirtableApplication::TABLE_NAME => self::TABLE_NAME,
                 ],
-            ]
+            ],
         );
 
         $applicationInstall->setUser('user');

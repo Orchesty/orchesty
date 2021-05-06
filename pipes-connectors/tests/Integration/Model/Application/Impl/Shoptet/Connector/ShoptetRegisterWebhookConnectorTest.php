@@ -71,23 +71,23 @@ final class ShoptetRegisterWebhookConnectorTest extends DatabaseTestCaseAbstract
             $this->connector,
             self::SENDER,
             $this->prepareSender(
-                $this->prepareSenderResponse('{"data":null}')
-            )
+                $this->prepareSenderResponse('{"data":null}'),
+            ),
         );
 
         $applicationInstall = DataProvider::createApplicationInstall(
             ShoptetApplication::SHOPTET_KEY,
             self::USER,
             self::SETTINGS,
-            self::NON_ENCRYPTED_SETTINGS
+            self::NON_ENCRYPTED_SETTINGS,
         );
         $this->pfd($applicationInstall);
 
         $dto = $this->connector->processAction(
             $this->prepareProcessDto(
                 [],
-                self::HEADERS
-            )
+                self::HEADERS,
+            ),
         );
 
         self::assertEquals([], Json::decode($dto->getData()));
@@ -105,22 +105,22 @@ final class ShoptetRegisterWebhookConnectorTest extends DatabaseTestCaseAbstract
             ShoptetApplication::SHOPTET_KEY,
             self::USER,
             self::SETTINGS,
-            self::NON_ENCRYPTED_SETTINGS
+            self::NON_ENCRYPTED_SETTINGS,
         );
         $this->pfd($applicationInstall);
 
         self::assertException(
             OnRepeatException::class,
             CurlException::REQUEST_FAILED,
-            sprintf("Connector 'shoptet-register-webhook-connector': %s: Something gone wrong!", CurlException::class)
+            sprintf("Connector 'shoptet-register-webhook-connector': %s: Something gone wrong!", CurlException::class),
         );
 
         $this->setProperty(
             $this->connector,
             self::SENDER,
             $this->prepareSender(
-                $this->prepareSenderErrorResponse()
-            )
+                $this->prepareSenderErrorResponse(),
+            ),
         );
         $this->connector->processAction($this->prepareProcessDto([])->setHeaders(self::HEADERS));
     }
@@ -135,7 +135,7 @@ final class ShoptetRegisterWebhookConnectorTest extends DatabaseTestCaseAbstract
         self::assertException(
             ConnectorException::class,
             ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_EVENT,
-            sprintf('Method %s::processEvent is not supported!', ShoptetRegisterWebhookConnector::class)
+            sprintf('Method %s::processEvent is not supported!', ShoptetRegisterWebhookConnector::class),
         );
 
         $this->connector->processEvent($this->prepareProcessDto());

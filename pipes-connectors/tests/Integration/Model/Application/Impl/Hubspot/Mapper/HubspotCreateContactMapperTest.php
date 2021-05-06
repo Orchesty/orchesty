@@ -32,15 +32,15 @@ final class HubspotCreateContactMapperTest extends DatabaseTestCaseAbstract
                 new MockCurlMethod(
                     200,
                     'responseShipstation.json',
-                    []
+                    [],
                 ),
-            ]
+            ],
         );
 
         $shipstation                  = self::$container->get('hbpf.application.shipstation');
         $shipstationNewOrderConnector = new ShipstationNewOrderConnector(
             self::$container->get('hbpf.transport.curl_manager'),
-            $this->dm
+            $this->dm,
         );
 
         $shipstationNewOrderConnector->setApplication($shipstation);
@@ -48,7 +48,7 @@ final class HubspotCreateContactMapperTest extends DatabaseTestCaseAbstract
         $applicationInstall = DataProvider::getBasicAppInstall(
             $shipstation->getKey(),
             self::API_KEY,
-            self::API_SECRET
+            self::API_SECRET,
         );
 
         $this->pfd($applicationInstall);
@@ -57,16 +57,16 @@ final class HubspotCreateContactMapperTest extends DatabaseTestCaseAbstract
             DataProvider::getProcessDto(
                 $shipstation->getKey(),
                 self::API_KEY,
-                (string) file_get_contents(sprintf('%s/Data/newOrderShipstation.json', __DIR__), TRUE)
-            )
+                (string) file_get_contents(sprintf('%s/Data/newOrderShipstation.json', __DIR__), TRUE),
+            ),
         );
 
         $responseNoBody = $shipstationNewOrderConnector->processEvent(
             DataProvider::getProcessDto(
                 $shipstation->getKey(),
                 self::API_KEY,
-                '{}'
-            )
+                '{}',
+            ),
         );
 
         $response->setData((string) file_get_contents(sprintf('%s/Data/responseShipstation.json', __DIR__), TRUE));
@@ -78,8 +78,8 @@ final class HubspotCreateContactMapperTest extends DatabaseTestCaseAbstract
         self::assertEquals(
             Json::decode($dto->getData()),
             Json::decode(
-                (string) file_get_contents(__DIR__ . sprintf('/Data/requestHubspot.json'), TRUE)
-            )
+                (string) file_get_contents(__DIR__ . sprintf('/Data/requestHubspot.json'), TRUE),
+            ),
         );
 
         self::assertEquals(ProcessDto::STOP_AND_FAILED, $dtoNoBody->getHeaders()['pf-result-code']);

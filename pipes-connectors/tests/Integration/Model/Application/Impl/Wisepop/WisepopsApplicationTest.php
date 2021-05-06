@@ -69,7 +69,7 @@ final class WisepopsApplicationTest extends DatabaseTestCaseAbstract
         $dto                = $this->application->getRequestDto(
             $applicationInstall,
             CurlManager::METHOD_GET,
-            'https://app.wisepops.com/api1/wisepops'
+            'https://app.wisepops.com/api1/wisepops',
         );
 
         self::assertEquals(
@@ -78,7 +78,7 @@ final class WisepopsApplicationTest extends DatabaseTestCaseAbstract
                 'Accept'        => 'application/json',
                 'Authorization' => 'WISEPOPS-API key="123"',
             ],
-            $dto->getHeaders()
+            $dto->getHeaders(),
         );
     }
 
@@ -116,12 +116,12 @@ final class WisepopsApplicationTest extends DatabaseTestCaseAbstract
         $dto = $this->application->getWebhookSubscribeRequestDto(
             $applicationInstall,
             new WebhookSubscription('test', 'test', 'test', ['name' => 'email']),
-            'www.target_url...'
+            'www.target_url...',
         );
 
         self::assertEquals(
             Json::encode(['target_url' => 'www.target_url...', 'event' => 'email']),
-            $dto->getBody()
+            $dto->getBody(),
         );
     }
 
@@ -150,7 +150,7 @@ final class WisepopsApplicationTest extends DatabaseTestCaseAbstract
 
         self::assertEquals(
             '123-456-789',
-            $this->application->processWebhookSubscribeResponse($dto, $applicationInstall)
+            $this->application->processWebhookSubscribeResponse($dto, $applicationInstall),
         );
     }
 

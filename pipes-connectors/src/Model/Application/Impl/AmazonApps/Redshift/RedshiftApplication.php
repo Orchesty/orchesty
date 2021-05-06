@@ -103,7 +103,7 @@ final class RedshiftApplication extends AwsApplicationAbstract
                 ],
                 self::REGION      => $settings[self::REGION],
                 self::VERSION     => self::LATEST,
-            ]
+            ],
         );
     }
 
@@ -132,7 +132,7 @@ final class RedshiftApplication extends AwsApplicationAbstract
                 RedshiftApplication::DBNAME             => $cluster[RedshiftApplication::DBNAME],
                 RedshiftApplication::HOST               => $cluster[RedshiftApplication::ENDPOINT][RedshiftApplication::ADDRESS],
                 RedshiftApplication::PORT               => $cluster[RedshiftApplication::ENDPOINT][RedshiftApplication::PORT],
-            ]
+            ],
         );
     }
 
@@ -152,7 +152,7 @@ final class RedshiftApplication extends AwsApplicationAbstract
         $password = $settings[RedshiftApplication::DB_PASSWORD];
 
         $connection = pg_connect(
-            sprintf('host=%s port=%s dbname=%s user=%s password=%s', $host, $port, $dbname, $user, $password)
+            sprintf('host=%s port=%s dbname=%s user=%s password=%s', $host, $port, $dbname, $user, $password),
         );
         if ($connection === FALSE) {
             throw new ApplicationInstallException('Connection to Redshift db was unsuccessful.');

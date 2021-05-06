@@ -82,19 +82,19 @@ final class QuickbooksApplication extends OAuth2ApplicationAbstract
         ApplicationInstall $applicationInstall,
         string $method,
         ?string $url = NULL,
-        ?string $data = NULL
+        ?string $data = NULL,
     ): RequestDto
     {
         $request = new RequestDto(
             $method,
-            $this->getUri(sprintf('%s%s', $this->getBaseUrl($applicationInstall), $url))
+            $this->getUri(sprintf('%s%s', $this->getBaseUrl($applicationInstall), $url)),
         );
         $request->setHeaders(
             [
                 'Content-Type'  => 'application/json',
                 'Accept'        => 'application/json',
                 'Authorization' => sprintf('Bearer %s', $this->getAccessToken($applicationInstall)),
-            ]
+            ],
         );
 
         if (isset($data)) {
@@ -138,7 +138,7 @@ final class QuickbooksApplication extends OAuth2ApplicationAbstract
             '%s/%s/company/%s',
             self::BASE_URL,
             self::VERSION,
-            $applicationInstall->getSettings()[BasicApplicationAbstract::FORM][self::APP_ID]
+            $applicationInstall->getSettings()[BasicApplicationAbstract::FORM][self::APP_ID],
         );
     }
 

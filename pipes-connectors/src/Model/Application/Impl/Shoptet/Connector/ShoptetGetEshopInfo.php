@@ -67,7 +67,7 @@ final class ShoptetGetEshopInfo extends ShoptetConnectorAbstract
         $requestDto = $this->getApplication()->getRequestDto(
             $applicationInstall,
             CurlManager::METHOD_GET,
-            sprintf('%s%s', $this->host, self::GET_ESHOP_INFO)
+            sprintf('%s%s', $this->host, self::GET_ESHOP_INFO),
         );
         if ($processDto) {
             $requestDto->setDebugInfo($processDto);

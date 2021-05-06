@@ -64,7 +64,7 @@ final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
     {
         self::assertEquals(
             'Amazon Redshift is a fast, simple, cost-effective data warehousing service.',
-            $this->application->getDescription()
+            $this->application->getDescription(),
         );
     }
 
@@ -79,8 +79,8 @@ final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
             sprintf(
                 "Method '%s::getRequestDto' is not supported! Use '%s::getConnection' instead!",
                 RedshiftApplication::class,
-                RedshiftApplication::class
-            )
+                RedshiftApplication::class,
+            ),
         );
 
         $this->application->getRequestDto(new ApplicationInstall(), '');
@@ -101,7 +101,7 @@ final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
                     RedshiftApplication::SECRET,
                     RedshiftApplication::DB_PASSWORD,
                     RedshiftApplication::REGION,
-                ]
+                ],
             );
         }
     }
@@ -121,7 +121,7 @@ final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
                     RedshiftApplication::REGION      => 'eu-central-1',
                     RedshiftApplication::DB_PASSWORD => 'dbPasswd',
                 ],
-            ]
+            ],
         );
 
         $this->pfd($application);
@@ -180,7 +180,7 @@ final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
                         ],
                     ],
                 ],
-            ]
+            ],
         );
 
         $client = self::createPartialMock(RedshiftClient::class, ['__call']);
@@ -213,7 +213,7 @@ final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
                     'DBName',
                     'host',
                     'Port',
-                ]
+                ],
             );
         }
     }
@@ -285,8 +285,8 @@ final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
                     'MasterUsername' => '',
                     'Address'        => '',
                     'DbPassword'     => '',
-                ]
-            )
+                ],
+            ),
         );
     }
 
@@ -307,7 +307,7 @@ final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
     {
         $connection = $this->getFunctionMock(
             'Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\Redshift',
-            'pg_connect'
+            'pg_connect',
         );
 
         $connection->expects(self::any())->willReturnCallback($closure);

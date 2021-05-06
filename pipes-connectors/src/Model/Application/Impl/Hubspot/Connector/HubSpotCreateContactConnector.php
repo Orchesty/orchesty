@@ -32,11 +32,6 @@ final class HubSpotCreateContactConnector extends ConnectorAbstract implements L
 {
 
     /**
-     * @var CurlManagerInterface
-     */
-    private CurlManagerInterface $curlManager;
-
-    /**
      * @var ApplicationInstallRepository&ObjectRepository<ApplicationInstall>
      */
     private ApplicationInstallRepository $repository;
@@ -52,11 +47,10 @@ final class HubSpotCreateContactConnector extends ConnectorAbstract implements L
      * @param CurlManagerInterface $curlManager
      * @param DocumentManager      $dm
      */
-    public function __construct(CurlManagerInterface $curlManager, DocumentManager $dm)
+    public function __construct(private CurlManagerInterface $curlManager, DocumentManager $dm)
     {
-        $this->curlManager = $curlManager;
-        $this->repository  = $dm->getRepository(ApplicationInstall::class);
-        $this->logger      = new NullLogger();
+        $this->repository = $dm->getRepository(ApplicationInstall::class);
+        $this->logger     = new NullLogger();
     }
 
     /**
@@ -91,7 +85,7 @@ final class HubSpotCreateContactConnector extends ConnectorAbstract implements L
 
         throw new ConnectorException(
             'ProcessEvent is not implemented',
-            ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_EVENT
+            ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_EVENT,
         );
     }
 
@@ -115,8 +109,8 @@ final class HubSpotCreateContactConnector extends ConnectorAbstract implements L
                     $applicationInstall,
                     CurlManager::METHOD_POST,
                     sprintf('%s/contacts/v1/contact/', HubSpotApplication::BASE_URL),
-                    Json::encode($body)
-                )->setDebugInfo($dto)
+                    Json::encode($body),
+                )->setDebugInfo($dto),
             );
             $message  = $response->getJsonBody()['validationResults'][0]['message'] ?? NULL;
             $this->evaluateStatusCode($response->getStatusCode(), $dto, $message);
@@ -126,8 +120,8 @@ final class HubSpotCreateContactConnector extends ConnectorAbstract implements L
                 $this->logger->error(
                     sprintf('Contact "%s" already exist.', $parsed['identityProfile']['identity'][0]['value'] ?? ''),
                     array_merge(
-                        ['response' => $response->getBody(), PipesHeaders::debugInfo($dto->getHeaders())]
-                    )
+                        ['response' => $response->getBody(), PipesHeaders::debugInfo($dto->getHeaders())],
+                    ),
                 );
             }
 

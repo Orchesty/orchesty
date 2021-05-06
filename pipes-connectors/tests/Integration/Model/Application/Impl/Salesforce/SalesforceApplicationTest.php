@@ -33,7 +33,7 @@ final class SalesforceApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
         self::assertEquals(
             ApplicationTypeEnum::CRON,
-            $this->application->getApplicationType()
+            $this->application->getApplicationType(),
         );
     }
 
@@ -45,7 +45,7 @@ final class SalesforceApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
         self::assertEquals(
             'salesforce',
-            $this->application->getKey()
+            $this->application->getKey(),
         );
     }
 
@@ -57,7 +57,7 @@ final class SalesforceApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
         self::assertEquals(
             'Salesforce',
-            $this->application->getName()
+            $this->application->getName(),
         );
     }
 
@@ -69,7 +69,7 @@ final class SalesforceApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
         self::assertEquals(
             'Salesforce is one of the largest CRM platform.',
-            $this->application->getDescription()
+            $this->application->getDescription(),
         );
     }
 
@@ -89,7 +89,7 @@ final class SalesforceApplicationTest extends DatabaseTestCaseAbstract
                     OAuth2ApplicationAbstract::CLIENT_ID,
                     OAuth2ApplicationAbstract::CLIENT_SECRET,
                     'instance_name',
-                ]
+                ],
             );
         }
     }
@@ -109,7 +109,7 @@ final class SalesforceApplicationTest extends DatabaseTestCaseAbstract
             $applicationInstall,
             CurlManager::METHOD_POST,
             'https://yourInstance.salesforce.com/services/data/v20.0/sobjects/Account/',
-            'body'
+            'body',
         );
 
         self::assertEquals(
@@ -118,7 +118,7 @@ final class SalesforceApplicationTest extends DatabaseTestCaseAbstract
                 'Accept'        => 'application/json',
                 'Authorization' => 'Bearer token123',
             ],
-            $dto->getHeaders()
+            $dto->getHeaders(),
         );
     }
 
@@ -130,7 +130,7 @@ final class SalesforceApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
         self::assertEquals(
             'https://login.salesforce.com/services/oauth2/authorize',
-            $this->application->getAuthUrl()
+            $this->application->getAuthUrl(),
         );
     }
 
@@ -142,7 +142,7 @@ final class SalesforceApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
         self::assertEquals(
             'https://login.salesforce.com/services/oauth2/token',
-            $this->application->getTokenUrl()
+            $this->application->getTokenUrl(),
         );
     }
 
@@ -157,7 +157,7 @@ final class SalesforceApplicationTest extends DatabaseTestCaseAbstract
             $this->application->getKey(),
             'user',
             'token123',
-            self::CLIENT_ID
+            self::CLIENT_ID,
         );
         $this->pfd($applicationInstall);
         self::assertEquals(TRUE, $this->application->isAuthorized($applicationInstall));

@@ -32,7 +32,7 @@ final class RefreshOAuth2TokenCustomNodeTest extends DatabaseTestCaseAbstract
             [
                 'code'         => 'code123',
                 'access_token' => 'token333',
-            ]
+            ],
         );
 
         self::$container->set('hbpf.providers.oauth2_provider', $providerMock);
@@ -40,7 +40,7 @@ final class RefreshOAuth2TokenCustomNodeTest extends DatabaseTestCaseAbstract
         $applicationInstall = DataProvider::getOauth2AppInstall(
             'mailchimp',
             'user',
-            'fa830d8d43*****bac307906e83de659'
+            'fa830d8d43*****bac307906e83de659',
         );
 
         $applicationInstall->setExpires(DateTimeUtils::getUtcDateTime('+1 hour'));
@@ -53,7 +53,7 @@ final class RefreshOAuth2TokenCustomNodeTest extends DatabaseTestCaseAbstract
                         'refresh_token' => 'refresh_token22',
                     ],
                 ],
-            ]
+            ],
         );
         $this->pfd($applicationInstall);
         $this->dm->clear();
@@ -65,7 +65,7 @@ final class RefreshOAuth2TokenCustomNodeTest extends DatabaseTestCaseAbstract
                 PipesHeaders::createKey(GetApplicationForRefreshBatchConnector::APPLICATION_ID) => [
                     $applicationInstall->getId(),
                 ],
-            ]
+            ],
         );
 
         $response = $connector->process($dto);

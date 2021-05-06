@@ -58,7 +58,7 @@ final class NutshellCreateContactConnectorTest extends DatabaseTestCaseAbstract
             [
                 PipesHeaders::createKey('application') => 'nutshell',
                 PipesHeaders::createKey('user')        => 'user',
-            ]
+            ],
         );
         $result = $this->connector->processAction($dto);
 
@@ -84,7 +84,7 @@ final class NutshellCreateContactConnectorTest extends DatabaseTestCaseAbstract
     {
         $sender = self::createPartialMock(CurlManager::class, ['send']);
         $sender->expects(self::any())->method('send')->willReturn(
-            new ResponseDto(200, 'success', $data, [])
+            new ResponseDto(200, 'success', $data, []),
         );
         $this->setProperty($this->connector, 'curlManager', $sender);
     }

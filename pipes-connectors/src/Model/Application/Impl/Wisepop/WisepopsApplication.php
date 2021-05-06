@@ -74,7 +74,7 @@ final class WisepopsApplication extends BasicApplicationAbstract implements Webh
         ApplicationInstall $applicationInstall,
         string $method,
         ?string $url = NULL,
-        ?string $data = NULL
+        ?string $data = NULL,
     ): RequestDto
     {
         $request = new RequestDto($method, $this->getUri($url));
@@ -85,9 +85,9 @@ final class WisepopsApplication extends BasicApplicationAbstract implements Webh
                 'Authorization' =>
                     sprintf(
                         'WISEPOPS-API key="%s"',
-                        $applicationInstall->getSettings()[ApplicationAbstract::FORM][self::API_KEY]
+                        $applicationInstall->getSettings()[ApplicationAbstract::FORM][self::API_KEY],
                     ),
-            ]
+            ],
         );
         if (isset($data)) {
             $request->setBody($data);
@@ -128,7 +128,7 @@ final class WisepopsApplication extends BasicApplicationAbstract implements Webh
     public function getWebhookSubscribeRequestDto(
         ApplicationInstall $applicationInstall,
         WebhookSubscription $subscription,
-        string $url
+        string $url,
     ): RequestDto
     {
         return $this->getRequestDto(
@@ -139,8 +139,8 @@ final class WisepopsApplication extends BasicApplicationAbstract implements Webh
                 [
                     'target_url' => $url,
                     'event'      => $subscription->getParameters()['name'],
-                ]
-            )
+                ],
+            ),
         );
     }
 
@@ -156,7 +156,7 @@ final class WisepopsApplication extends BasicApplicationAbstract implements Webh
         return $this->getRequestDto(
             $applicationInstall,
             CurlManager::METHOD_DELETE,
-            sprintf('%s?hook_id=%s', WisepopsApplication::WISEPOOPS_URL, $id)
+            sprintf('%s?hook_id=%s', WisepopsApplication::WISEPOOPS_URL, $id),
         );
     }
 

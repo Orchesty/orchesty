@@ -57,7 +57,7 @@ final class NutshellApplication extends BasicApplicationAbstract
         ApplicationInstall $applicationInstall,
         string $method,
         ?string $url = NULL,
-        ?string $data = NULL
+        ?string $data = NULL,
     ): RequestDto
     {
         $request = new RequestDto($method, $this->getUri($url));
@@ -66,7 +66,7 @@ final class NutshellApplication extends BasicApplicationAbstract
                 'Content-Type'  => 'application/json',
                 'Accept'        => 'application/json',
                 'Authorization' => sprintf('Basic %s', $this->getToken($applicationInstall)),
-            ]
+            ],
         );
         if (isset($data)) {
             $request->setBody($data);
@@ -98,8 +98,8 @@ final class NutshellApplication extends BasicApplicationAbstract
                 $applicationInstall->getSettings(
                 )[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationAbstract::USER],
                 $applicationInstall->getSettings(
-                )[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationAbstract::PASSWORD]
-            )
+                )[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationAbstract::PASSWORD],
+            ),
         );
     }
 

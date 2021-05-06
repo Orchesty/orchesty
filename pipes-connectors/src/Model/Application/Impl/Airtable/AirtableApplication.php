@@ -63,7 +63,7 @@ final class AirtableApplication extends BasicApplicationAbstract
         ApplicationInstall $applicationInstall,
         string $method,
         ?string $url = NULL,
-        ?string $data = NULL
+        ?string $data = NULL,
     ): RequestDto
     {
         $request = new RequestDto($method, $this->getUri($url));
@@ -72,7 +72,7 @@ final class AirtableApplication extends BasicApplicationAbstract
                 'Content-Type'  => 'application/json',
                 'Accept'        => 'application/json',
                 'Authorization' => sprintf('Bearer %s', $this->getAccessToken($applicationInstall)),
-            ]
+            ],
         );
         if (isset($data)) {
             $request->setBody($data);
@@ -104,15 +104,15 @@ final class AirtableApplication extends BasicApplicationAbstract
         return
             isset(
                 $applicationInstall->getSettings(
-                )[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::TOKEN]
+                )[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::TOKEN],
             )
             &&
             isset(
-                $applicationInstall->getSettings()[ApplicationAbstract::FORM][AirtableApplication::BASE_ID]
+                $applicationInstall->getSettings()[ApplicationAbstract::FORM][AirtableApplication::BASE_ID],
             )
             &&
             isset(
-                $applicationInstall->getSettings()[ApplicationAbstract::FORM][AirtableApplication::TABLE_NAME]
+                $applicationInstall->getSettings()[ApplicationAbstract::FORM][AirtableApplication::TABLE_NAME],
             );
     }
 
@@ -145,7 +145,7 @@ final class AirtableApplication extends BasicApplicationAbstract
 
         throw new AuthorizationException(
             'There is no access token',
-            AuthorizationException::AUTHORIZATION_SETTINGS_NOT_FOUND
+            AuthorizationException::AUTHORIZATION_SETTINGS_NOT_FOUND,
         );
     }
 

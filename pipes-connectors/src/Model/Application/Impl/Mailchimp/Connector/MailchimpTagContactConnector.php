@@ -26,11 +26,6 @@ final class MailchimpTagContactConnector extends ConnectorAbstract
 {
 
     /**
-     * @var CurlManagerInterface
-     */
-    private CurlManagerInterface $curlManager;
-
-    /**
      * @var ObjectRepository<ApplicationInstall>&ApplicationInstallRepository
      */
     private ApplicationInstallRepository $repository;
@@ -41,10 +36,9 @@ final class MailchimpTagContactConnector extends ConnectorAbstract
      * @param CurlManagerInterface $curlManager
      * @param DocumentManager      $dm
      */
-    public function __construct(CurlManagerInterface $curlManager, DocumentManager $dm)
+    public function __construct(private CurlManagerInterface $curlManager, DocumentManager $dm)
     {
-        $this->curlManager = $curlManager;
-        $this->repository  = $dm->getRepository(ApplicationInstall::class);
+        $this->repository = $dm->getRepository(ApplicationInstall::class);
     }
 
     /**
@@ -67,7 +61,7 @@ final class MailchimpTagContactConnector extends ConnectorAbstract
 
         throw new ConnectorException(
             'ProcessEvent is not implemented',
-            ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_EVENT
+            ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_EVENT,
         );
     }
 
@@ -94,10 +88,10 @@ final class MailchimpTagContactConnector extends ConnectorAbstract
                     '%s/3.0/lists/%s/segments/%s/members',
                     $apiEndpoint,
                     $applicationInstall->getSettings()[MailchimpApplication::FORM][MailchimpApplication::AUDIENCE_ID],
-                    $applicationInstall->getSettings()[MailchimpApplication::SEGMENT_ID]
+                    $applicationInstall->getSettings()[MailchimpApplication::SEGMENT_ID],
                 ),
-                $dto->getData()
-            )
+                $dto->getData(),
+            ),
         );
 
         $json       = $return->getJsonBody();

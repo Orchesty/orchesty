@@ -24,7 +24,7 @@ final class MailchimpTagContactConnectorTest extends DatabaseTestCaseAbstract
         $app                          = self::$container->get('hbpf.application.mailchimp');
         $mailchimpTagContactConnector = new MailchimpTagContactConnector(
             self::$container->get('hbpf.transport.curl_manager'),
-            $this->dm
+            $this->dm,
         );
 
         $mailchimpTagContactConnector->setApplication($app);
@@ -32,7 +32,7 @@ final class MailchimpTagContactConnectorTest extends DatabaseTestCaseAbstract
         $applicationInstall = DataProvider::getOauth2AppInstall(
             $app->getKey(),
             'user',
-            'token123'
+            'token123',
         );
 
         $applicationInstall->setSettings(
@@ -41,7 +41,7 @@ final class MailchimpTagContactConnectorTest extends DatabaseTestCaseAbstract
                 MailchimpApplication::API_KEYPOINT => $app->getApiEndpoint($applicationInstall),
                 MailchimpApplication::SEGMENT_ID   => '181***',
                 'form'                             => ['audience_id' => '123'],
-            ]
+            ],
         );
 
         $this->pfd($applicationInstall);

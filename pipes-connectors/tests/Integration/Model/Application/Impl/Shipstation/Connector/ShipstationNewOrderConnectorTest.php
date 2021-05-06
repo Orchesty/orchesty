@@ -36,15 +36,15 @@ final class ShipstationNewOrderConnectorTest extends DatabaseTestCaseAbstract
                 new MockCurlMethod(
                     $code,
                     sprintf('response%s.json', $code),
-                    []
+                    [],
                 ),
-            ]
+            ],
         );
 
         $app                          = self::$container->get('hbpf.application.shipstation');
         $shipstationNewOrderConnector = new ShipstationNewOrderConnector(
             self::$container->get('hbpf.transport.curl_manager'),
-            $this->dm
+            $this->dm,
         );
 
         $shipstationNewOrderConnector->setApplication($app);
@@ -52,7 +52,7 @@ final class ShipstationNewOrderConnectorTest extends DatabaseTestCaseAbstract
         $applicationInstall = DataProvider::getBasicAppInstall(
             $app->getKey(),
             self::API_KEY,
-            self::API_SECRET
+            self::API_SECRET,
         );
 
         $this->pfd($applicationInstall);
@@ -60,27 +60,27 @@ final class ShipstationNewOrderConnectorTest extends DatabaseTestCaseAbstract
             DataProvider::getProcessDto(
                 $app->getKey(),
                 self::API_KEY,
-                (string) file_get_contents(sprintf('%s/Data/newOrder.json', __DIR__), TRUE)
-            )
+                (string) file_get_contents(sprintf('%s/Data/newOrder.json', __DIR__), TRUE),
+            ),
         );
 
         $responseNoUrl = $shipstationNewOrderConnector->processEvent(
             DataProvider::getProcessDto(
                 $app->getKey(),
                 self::API_KEY,
-                (string) file_get_contents(sprintf('%s/Data/newOrderNoUrl.json', __DIR__), TRUE)
-            )
+                (string) file_get_contents(sprintf('%s/Data/newOrderNoUrl.json', __DIR__), TRUE),
+            ),
         );
 
         if ($isValid) {
             self::assertSuccessProcessResponse(
                 $response,
-                sprintf('response%s.json', $code)
+                sprintf('response%s.json', $code),
             );
         } else {
             self::assertFailedProcessResponse(
                 $response,
-                sprintf('response%s.json', $code)
+                sprintf('response%s.json', $code),
             );
         }
 
@@ -95,7 +95,7 @@ final class ShipstationNewOrderConnectorTest extends DatabaseTestCaseAbstract
         $app                          = self::$container->get('hbpf.application.shipstation');
         $shipstationNewOrderConnector = new ShipstationNewOrderConnector(
             self::$container->get('hbpf.transport.curl_manager'),
-            $this->dm
+            $this->dm,
         );
 
         $shipstationNewOrderConnector->setApplication($app);
@@ -103,7 +103,7 @@ final class ShipstationNewOrderConnectorTest extends DatabaseTestCaseAbstract
         $applicationInstall = DataProvider::getBasicAppInstall(
             $app->getKey(),
             self::API_KEY,
-            self::API_SECRET
+            self::API_SECRET,
         );
 
         $this->pfd($applicationInstall);
@@ -112,8 +112,8 @@ final class ShipstationNewOrderConnectorTest extends DatabaseTestCaseAbstract
             DataProvider::getProcessDto(
                 $app->getKey(),
                 self::API_KEY,
-                (string) file_get_contents(sprintf('%s/Data/newOrder.json', __DIR__), TRUE)
-            )
+                (string) file_get_contents(sprintf('%s/Data/newOrder.json', __DIR__), TRUE),
+            ),
         );
     }
 
@@ -135,11 +135,11 @@ final class ShipstationNewOrderConnectorTest extends DatabaseTestCaseAbstract
     {
         $shipstationNewOrderConnector = new ShipstationNewOrderConnector(
             self::$container->get('hbpf.transport.curl_manager'),
-            $this->dm
+            $this->dm,
         );
         self::assertEquals(
             'shipstation_new_order',
-            $shipstationNewOrderConnector->getId()
+            $shipstationNewOrderConnector->getId(),
         );
     }
 

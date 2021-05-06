@@ -29,11 +29,6 @@ final class NutshellCreateContactConnector extends ConnectorAbstract
     use ProcessEventNotSupportedTrait;
 
     /**
-     * @var CurlManagerInterface
-     */
-    private CurlManagerInterface $curlManager;
-
-    /**
      * @var ApplicationInstallRepository
      */
     private $repository;
@@ -44,10 +39,9 @@ final class NutshellCreateContactConnector extends ConnectorAbstract
      * @param CurlManagerInterface $curlManager
      * @param DocumentManager      $dm
      */
-    public function __construct(CurlManagerInterface $curlManager, DocumentManager $dm)
+    public function __construct(private CurlManagerInterface $curlManager, DocumentManager $dm)
     {
-        $this->curlManager = $curlManager;
-        $this->repository  = $dm->getRepository(ApplicationInstall::class);
+        $this->repository = $dm->getRepository(ApplicationInstall::class);
     }
 
     /**
@@ -82,8 +76,8 @@ final class NutshellCreateContactConnector extends ConnectorAbstract
                 $applicationInstall,
                 CurlManager::METHOD_POST,
                 NutshellApplication::BASE_URL,
-                Json::encode($data)
-            )->setDebugInfo($dto)
+                Json::encode($data),
+            )->setDebugInfo($dto),
         );
 
         $statusCode = $return->getStatusCode();

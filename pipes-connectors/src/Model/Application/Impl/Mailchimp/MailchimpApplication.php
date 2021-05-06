@@ -38,21 +38,14 @@ final class MailchimpApplication extends OAuth2ApplicationAbstract implements We
     public const SEGMENT_ID               = 'segment_id';
 
     /**
-     * @var CurlManagerInterface
-     */
-    private CurlManagerInterface $curlManager;
-
-    /**
      * MailchimpApplication constructor.
      *
      * @param OAuth2Provider       $provider
      * @param CurlManagerInterface $curlManager
      */
-    public function __construct(OAuth2Provider $provider, CurlManagerInterface $curlManager)
+    public function __construct(OAuth2Provider $provider, private CurlManagerInterface $curlManager)
     {
         parent::__construct($provider);
-
-        $this->curlManager = $curlManager;
     }
 
     /**
@@ -117,7 +110,7 @@ final class MailchimpApplication extends OAuth2ApplicationAbstract implements We
         ApplicationInstall $applicationInstall,
         string $method,
         ?string $url = NULL,
-        ?string $data = NULL
+        ?string $data = NULL,
     ): RequestDto
     {
         $request = new RequestDto($method, $this->getUri($url));
@@ -126,7 +119,7 @@ final class MailchimpApplication extends OAuth2ApplicationAbstract implements We
                 'Content-Type'  => 'application/json',
                 'Accept'        => 'application/json',
                 'Authorization' => sprintf('OAuth %s', $this->getAccessToken($applicationInstall)),
-            ]
+            ],
         );
 
         if (!empty($data)) {
@@ -161,7 +154,7 @@ final class MailchimpApplication extends OAuth2ApplicationAbstract implements We
      */
     public function setAuthorizationToken(
         ApplicationInstall $applicationInstall,
-        array $token
+        array $token,
     ): OAuth2ApplicationInterface
     {
         parent::setAuthorizationToken($applicationInstall, $token);
@@ -169,7 +162,7 @@ final class MailchimpApplication extends OAuth2ApplicationAbstract implements We
         $applicationInstall->addSettings(
             [
                 self::API_KEYPOINT => $this->getApiEndpoint($applicationInstall),
-            ]
+            ],
         );
 
         return $this;
@@ -189,8 +182,8 @@ final class MailchimpApplication extends OAuth2ApplicationAbstract implements We
             $this->getRequestDto(
                 $applicationInstall,
                 CurlManager::METHOD_GET,
-                sprintf('%s/oauth2/metadata', self::MAILCHIMP_DATACENTER_URL)
-            )
+                sprintf('%s/oauth2/metadata', self::MAILCHIMP_DATACENTER_URL),
+            ),
         );
 
         return $return->getJsonBody()['api_endpoint'] ?? '';
@@ -220,7 +213,7 @@ final class MailchimpApplication extends OAuth2ApplicationAbstract implements We
     public function getWebhookSubscribeRequestDto(
         ApplicationInstall $applicationInstall,
         WebhookSubscription $subscription,
-        string $url
+        string $url,
     ): RequestDto
     {
         return $this->getRequestDto(
@@ -229,7 +222,7 @@ final class MailchimpApplication extends OAuth2ApplicationAbstract implements We
             sprintf(
                 '%s/3.0/lists/%s/webhooks',
                 $applicationInstall->getSettings()[self::API_KEYPOINT],
-                $applicationInstall->getSettings()[ApplicationAbstract::FORM][self::AUDIENCE_ID]
+                $applicationInstall->getSettings()[ApplicationAbstract::FORM][self::AUDIENCE_ID],
             ),
             Json::encode(
                 [
@@ -242,8 +235,8 @@ final class MailchimpApplication extends OAuth2ApplicationAbstract implements We
                         'admin' => TRUE,
                         'api'   => TRUE,
                     ],
-                ]
-            )
+                ],
+            ),
         );
     }
 
@@ -264,8 +257,8 @@ final class MailchimpApplication extends OAuth2ApplicationAbstract implements We
                 '%s/3.0/lists/%s/webhooks/%s',
                 $applicationInstall->getSettings()[self::API_KEYPOINT],
                 $applicationInstall->getSettings()[ApplicationAbstract::FORM][self::AUDIENCE_ID],
-                $id
-            )
+                $id,
+            ),
         );
     }
 

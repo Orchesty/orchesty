@@ -83,16 +83,16 @@ final class ShoptetCreateOrderConnectorTest extends DatabaseTestCaseAbstract
             $this->prepareSender(
                 $this->prepareSenderResponse(
                     (string) file_get_contents(__DIR__ . '/data/ShoptetImportResponse.json'),
-                    'POST https://api.myshoptet.com/api/orders'
-                )
-            )
+                    'POST https://api.myshoptet.com/api/orders',
+                ),
+            ),
         );
 
         $applicationInstall = DataProvider::createApplicationInstall(
             ShoptetApplication::SHOPTET_KEY,
             self::USER,
             self::SETTINGS,
-            self::NON_ENCRYPTED_SETTINGS
+            self::NON_ENCRYPTED_SETTINGS,
         );
         $this->pfd($applicationInstall);
 
@@ -101,8 +101,8 @@ final class ShoptetCreateOrderConnectorTest extends DatabaseTestCaseAbstract
                 [],
                 self::HEADERS + [
                     self::ID => $applicationInstall->getId(),
-                ]
-            )
+                ],
+            ),
         );
 
         $this->dm->clear();
@@ -120,7 +120,7 @@ final class ShoptetCreateOrderConnectorTest extends DatabaseTestCaseAbstract
         self::assertException(
             ConnectorException::class,
             ConnectorException::CONNECTOR_FAILED_TO_PROCESS,
-            "Connector 'shoptet-create-order': Header 'id' does not exist!"
+            "Connector 'shoptet-create-order': Header 'id' does not exist!",
         );
 
         $this->connector->processAction($this->prepareProcessDto([], [self::TYPE => 'Type']));
@@ -137,7 +137,7 @@ final class ShoptetCreateOrderConnectorTest extends DatabaseTestCaseAbstract
         self::assertException(
             ConnectorException::class,
             ConnectorException::CONNECTOR_FAILED_TO_PROCESS,
-            "Connector 'shoptet-create-order': ApplicationInstall with key 'Unknown' does not exist!"
+            "Connector 'shoptet-create-order': ApplicationInstall with key 'Unknown' does not exist!",
         );
 
         $this->connector->processAction($this->prepareProcessDto([], [self::ID => 'Unknown', self::TYPE => 'Type']));
@@ -153,20 +153,20 @@ final class ShoptetCreateOrderConnectorTest extends DatabaseTestCaseAbstract
         self::assertException(
             OnRepeatException::class,
             CurlException::REQUEST_FAILED,
-            sprintf("Connector 'shoptet-create-order': %s: Something gone wrong!", CurlException::class)
+            sprintf("Connector 'shoptet-create-order': %s: Something gone wrong!", CurlException::class),
         );
 
         $this->setProperty(
             $this->connector,
             self::SENDER,
-            $this->prepareSender($this->prepareSenderErrorResponse())
+            $this->prepareSender($this->prepareSenderErrorResponse()),
         );
 
         $applicationInstall = DataProvider::createApplicationInstall(
             ShoptetApplication::SHOPTET_KEY,
             self::USER,
             self::SETTINGS,
-            self::NON_ENCRYPTED_SETTINGS
+            self::NON_ENCRYPTED_SETTINGS,
         );
         $this->pfd($applicationInstall);
 
@@ -175,8 +175,8 @@ final class ShoptetCreateOrderConnectorTest extends DatabaseTestCaseAbstract
                 [],
                 [
                     self::ID => $applicationInstall->getId(),
-                ]
-            )
+                ],
+            ),
         );
     }
 
@@ -190,7 +190,7 @@ final class ShoptetCreateOrderConnectorTest extends DatabaseTestCaseAbstract
         self::assertException(
             ConnectorException::class,
             ConnectorException::CONNECTOR_FAILED_TO_PROCESS,
-            "Connector 'shoptet-create-order': ERROR: Something gone wrong!"
+            "Connector 'shoptet-create-order': ERROR: Something gone wrong!",
         );
 
         $this->setProperty(
@@ -198,16 +198,16 @@ final class ShoptetCreateOrderConnectorTest extends DatabaseTestCaseAbstract
             self::SENDER,
             $this->prepareSender(
                 $this->prepareSenderResponse(
-                    '{"errors":[{"errorCode":"ERROR","instance":"Instance","message":"Something gone wrong!"}],"data":null}'
-                )
-            )
+                    '{"errors":[{"errorCode":"ERROR","instance":"Instance","message":"Something gone wrong!"}],"data":null}',
+                ),
+            ),
         );
 
         $applicationInstall = DataProvider::createApplicationInstall(
             ShoptetApplication::SHOPTET_KEY,
             self::USER,
             self::SETTINGS,
-            self::NON_ENCRYPTED_SETTINGS
+            self::NON_ENCRYPTED_SETTINGS,
         );
         $this->pfd($applicationInstall);
 
@@ -217,8 +217,8 @@ final class ShoptetCreateOrderConnectorTest extends DatabaseTestCaseAbstract
                 [
                     self::TYPE => 'Type',
                     self::ID   => $applicationInstall->getId(),
-                ]
-            )
+                ],
+            ),
         );
     }
 
@@ -234,8 +234,8 @@ final class ShoptetCreateOrderConnectorTest extends DatabaseTestCaseAbstract
             ProcessDto::DO_NOT_CONTINUE,
             sprintf(
                 "Connector 'shoptet-create-order': %s: Connector 'shoptet-create-order': ERROR: Something gone wrong!",
-                ConnectorException::class
-            )
+                ConnectorException::class,
+            ),
         );
 
         $this->setProperty(
@@ -243,16 +243,16 @@ final class ShoptetCreateOrderConnectorTest extends DatabaseTestCaseAbstract
             self::SENDER,
             $this->prepareSender(
                 $this->prepareSenderResponse(
-                    '{"errors":[{"errorCode":"ERROR","instance":"url-locked","message":"Something gone wrong!"}],"data":null}'
-                )
-            )
+                    '{"errors":[{"errorCode":"ERROR","instance":"url-locked","message":"Something gone wrong!"}],"data":null}',
+                ),
+            ),
         );
 
         $applicationInstall = DataProvider::createApplicationInstall(
             ShoptetApplication::SHOPTET_KEY,
             self::USER,
             self::SETTINGS,
-            self::NON_ENCRYPTED_SETTINGS
+            self::NON_ENCRYPTED_SETTINGS,
         );
         $this->pfd($applicationInstall);
 
@@ -261,8 +261,8 @@ final class ShoptetCreateOrderConnectorTest extends DatabaseTestCaseAbstract
                 [],
                 [
                     self::ID => $applicationInstall->getId(),
-                ]
-            )
+                ],
+            ),
         );
     }
 
@@ -276,7 +276,7 @@ final class ShoptetCreateOrderConnectorTest extends DatabaseTestCaseAbstract
         self::assertException(
             ConnectorException::class,
             ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_EVENT,
-            sprintf('Method %s::processEvent is not supported!', ShoptetCreateOrderConnector::class)
+            sprintf('Method %s::processEvent is not supported!', ShoptetCreateOrderConnector::class),
         );
 
         $this->connector->processEvent($this->prepareProcessDto());

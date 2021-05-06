@@ -54,7 +54,7 @@ final class S3ApplicationTest extends DatabaseTestCaseAbstract
     {
         self::assertEquals(
             'Amazon Simple Storage Service (Amazon S3) is an object storage service that offers industry-leading scalability, data availability, security, and performance.',
-            $this->application->getDescription()
+            $this->application->getDescription(),
         );
     }
 
@@ -69,8 +69,8 @@ final class S3ApplicationTest extends DatabaseTestCaseAbstract
             sprintf(
                 "Method '%s::getRequestDto' is not supported! Use '%s::getConnection' instead!",
                 S3Application::class,
-                S3Application::class
-            )
+                S3Application::class,
+            ),
         );
 
         $this->application->getRequestDto(new ApplicationInstall(), '');
@@ -92,7 +92,7 @@ final class S3ApplicationTest extends DatabaseTestCaseAbstract
                     S3Application::BUCKET,
                     S3Application::REGION,
                     S3Application::ENDPOINT,
-                ]
+                ],
             );
         }
     }
@@ -113,7 +113,7 @@ final class S3ApplicationTest extends DatabaseTestCaseAbstract
                     S3Application::BUCKET   => 'Bucket',
                     S3Application::ENDPOINT => 'http://fakes3:4567',
                 ],
-            ]
+            ],
         );
 
         $this->pfd($application);

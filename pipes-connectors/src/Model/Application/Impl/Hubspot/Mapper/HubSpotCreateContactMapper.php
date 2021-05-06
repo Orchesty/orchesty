@@ -85,8 +85,8 @@ final class HubSpotCreateContactMapper extends CustomNodeAbstract
                     $data['billTo']['street1'] ?? NULL,
                     $data['billTo']['street2'] ?? NULL,
                     $data['billTo']['street3'] ?? NULL,
-                ]
-            )
+                ],
+            ),
         );
 
         $data['billTo']['streets'] = implode(
@@ -96,8 +96,8 @@ final class HubSpotCreateContactMapper extends CustomNodeAbstract
                     $data['shipTo']['street1'] ?? NULL,
                     $data['shipTo']['street2'] ?? NULL,
                     $data['shipTo']['street3'] ?? NULL,
-                ]
-            )
+                ],
+            ),
         );
 
         $data['shipTo']['firstName'] = $this->splitName($data['shipTo']['name'] ?? NULL)[0];

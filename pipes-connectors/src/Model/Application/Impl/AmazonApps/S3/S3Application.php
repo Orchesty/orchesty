@@ -95,8 +95,8 @@ final class S3Application extends AwsApplicationAbstract
                     self::REGION      => $settings[self::REGION],
                     self::VERSION     => self::LATEST,
                 ],
-                $endpoint ? [self::ENDPOINT => $settings[self::ENDPOINT]] : []
-            )
+                $endpoint ? [self::ENDPOINT => $settings[self::ENDPOINT]] : [],
+            ),
         );
     }
 

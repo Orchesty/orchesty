@@ -98,13 +98,13 @@ final class ShoptetGetEshopInfoTest extends DatabaseTestCaseAbstract
         self::assertException(
             OnRepeatException::class,
             CurlException::REQUEST_FAILED,
-            sprintf("Connector 'shoptet-get-eshop-info': %s: Something gone wrong!", CurlException::class)
+            sprintf("Connector 'shoptet-get-eshop-info': %s: Something gone wrong!", CurlException::class),
         );
 
         $this->setProperty(
             $this->connector,
             'sender',
-            $this->prepareSender($this->prepareSenderErrorResponse())
+            $this->prepareSender($this->prepareSenderErrorResponse()),
         );
 
         $this->connector->processAction($this->prepareProcessDto('{"data":"data"}', self::HEADERS));
@@ -139,7 +139,7 @@ final class ShoptetGetEshopInfoTest extends DatabaseTestCaseAbstract
             ],
             [
                 'getApiKey' => ['receivingStatus' => 'unlock'],
-            ]
+            ],
         );
         $this->pfd($applicationInstall);
 
@@ -156,7 +156,7 @@ final class ShoptetGetEshopInfoTest extends DatabaseTestCaseAbstract
         $this->setProperty(
             $this->connector,
             'sender',
-            $this->prepareSender(static fn() => new ResponseDto(200, 'Created', $jsonContent, self::HEADERS))
+            $this->prepareSender(static fn() => new ResponseDto(200, 'Created', $jsonContent, self::HEADERS)),
         );
     }
 

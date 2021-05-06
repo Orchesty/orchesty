@@ -45,7 +45,7 @@ final class S3CreateObjectConnector extends S3ObjectConnectorAbstract
                     self::BUCKET => $this->getBucket($applicationInstall),
                     self::KEY    => $content[self::NAME],
                     self::SOURCE => $path,
-                ]
+                ],
             );
         } catch (AwsException $e) {
             throw $this->createRepeatException($dto, $e);

@@ -61,7 +61,7 @@ abstract class AwsApplicationAbstract extends BasicApplicationAbstract
         ApplicationInstall $applicationInstall,
         string $method,
         ?string $url = NULL,
-        ?string $data = NULL
+        ?string $data = NULL,
     ): RequestDto
     {
         $applicationInstall;
@@ -76,7 +76,7 @@ abstract class AwsApplicationAbstract extends BasicApplicationAbstract
                 static::class,
                 __FUNCTION__,
                 static::class,
-            )
+            ),
         );
     }
 

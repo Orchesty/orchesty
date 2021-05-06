@@ -76,7 +76,7 @@ final class QuickbooksApplicationTest extends DatabaseTestCaseAbstract
     {
         self::assertEquals(
             'https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer',
-            $this->application->getTokenUrl()
+            $this->application->getTokenUrl(),
         );
     }
 
@@ -95,7 +95,7 @@ final class QuickbooksApplicationTest extends DatabaseTestCaseAbstract
                     'app_id',
                     OAuth2ApplicationInterface::CLIENT_ID,
                     OAuth2ApplicationInterface::CLIENT_SECRET,
-                ]
+                ],
             );
         }
     }
@@ -113,10 +113,10 @@ final class QuickbooksApplicationTest extends DatabaseTestCaseAbstract
             'user',
             'token',
             self::CLIENT_ID,
-            self::CLIENT_SECRET
+            self::CLIENT_SECRET,
         );
         $applicationInstall->addSettings(
-            [BasicApplicationAbstract::FORM => [QuickbooksApplication::APP_ID => self::SHOP_ID]]
+            [BasicApplicationAbstract::FORM => [QuickbooksApplication::APP_ID => self::SHOP_ID]],
         );
         $this->pfd($applicationInstall);
 
@@ -124,7 +124,7 @@ final class QuickbooksApplicationTest extends DatabaseTestCaseAbstract
             $applicationInstall,
             CurlManager::METHOD_POST,
             '/account',
-            '{"data":"oooo"}'
+            '{"data":"oooo"}',
         );
 
         self::assertEquals(
@@ -133,7 +133,7 @@ final class QuickbooksApplicationTest extends DatabaseTestCaseAbstract
                 'Accept'        => 'application/json',
                 'Authorization' => 'Bearer token',
             ],
-            $dto->getHeaders()
+            $dto->getHeaders(),
         );
         self::assertEquals('https://quickbooks.api.intuit.com/v3/company/13456789/account', $dto->getUri());
         self::assertEquals('{"data":"oooo"}', $dto->getBody());

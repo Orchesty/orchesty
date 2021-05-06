@@ -37,20 +37,14 @@ abstract class ShoptetConnectorAbstract extends ConnectorAbstract
     protected ApplicationInstallRepository $repository;
 
     /**
-     * @var CurlManager
-     */
-    protected CurlManager $sender;
-
-    /**
      * ShoptetConnectorAbstract constructor.
      *
      * @param DocumentManager $dm
      * @param CurlManager     $sender
      */
-    public function __construct(DocumentManager $dm, CurlManager $sender)
+    public function __construct(DocumentManager $dm, protected CurlManager $sender)
     {
         $this->repository = $dm->getRepository(ApplicationInstall::class);
-        $this->sender     = $sender;
         $this->host       = ShoptetApplication::SHOPTET_URL;
     }
 
@@ -98,9 +92,9 @@ abstract class ShoptetConnectorAbstract extends ConnectorAbstract
 
                             return sprintf('%s: %s', $message['errorCode'], $message['message']);
                         },
-                        $data['errors']
-                    )
-                )
+                        $data['errors'],
+                    ),
+                ),
             );
 
             if ($isRepeatable) {

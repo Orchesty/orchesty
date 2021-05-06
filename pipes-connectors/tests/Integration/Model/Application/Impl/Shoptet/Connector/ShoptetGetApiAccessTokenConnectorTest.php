@@ -111,7 +111,7 @@ final class ShoptetGetApiAccessTokenConnectorTest extends DatabaseTestCaseAbstra
                     ApplicationInterface::TOKEN => [OAuth2Provider::ACCESS_TOKEN => '___access_token__'],
                 ],
                 ApplicationAbstract::FORM                    => [ShoptetApplication::API_TOKEN_URL => self::API_TOKEN_URL],
-            ]
+            ],
         );
         $this->pfd($applicationInstall);
 
@@ -131,13 +131,13 @@ final class ShoptetGetApiAccessTokenConnectorTest extends DatabaseTestCaseAbstra
                 'Authorization' => sprintf('Bearer %s', '___access_token__'),
                 'Content-Type'  => 'application/json',
                 'Accept'        => 'application/json',
-            ]
+            ],
         );
 
         $this->setProperty(
             $this->connector,
             'sender',
-            $this->prepareSender($callback)
+            $this->prepareSender($callback),
         );
     }
 

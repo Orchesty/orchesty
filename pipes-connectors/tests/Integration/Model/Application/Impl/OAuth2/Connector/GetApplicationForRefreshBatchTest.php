@@ -32,7 +32,7 @@ final class GetApplicationForRefreshBatchTest extends DatabaseTestCaseAbstract
             new ProcessDto(),
             static function (SuccessMessage $successMessage): void {
                 self::assertEquals('', $successMessage->getData());
-            }
+            },
         );
     }
 

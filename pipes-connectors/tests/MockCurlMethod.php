@@ -11,32 +11,14 @@ final class MockCurlMethod
 {
 
     /**
-     * @var int
-     */
-    private int $code;
-
-    /**
-     * @var string
-     */
-    private string $fileName;
-
-    /**
-     * @var mixed[]
-     */
-    private array $headers;
-
-    /**
      * MockCurlMethod constructor.
      *
      * @param int     $code
      * @param string  $fileName
      * @param mixed[] $headers
      */
-    public function __construct(int $code, string $fileName, array $headers = [])
+    public function __construct(private int $code, private string $fileName, private array $headers = [])
     {
-        $this->code     = $code;
-        $this->fileName = $fileName;
-        $this->headers  = $headers;
     }
 
     /**

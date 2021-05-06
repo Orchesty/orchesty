@@ -37,7 +37,7 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
         $applicationInstall = DataProvider::getBasicAppInstall(
             $this->application->getKey(),
             self::API_KEY,
-            self::API_SECRET
+            self::API_SECRET,
         );
 
         $subscription = new WebhookSubscription('test', 'node', 'xxx', ['name' => 0]);
@@ -50,8 +50,8 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
                 rtrim('www.xx.cz', '/'),
                 $subscription->getTopology(),
                 $subscription->getNode(),
-                bin2hex(random_bytes(25))
-            )
+                bin2hex(random_bytes(25)),
+            ),
         );
 
         $requestUn = $this->application->getWebhookUnsubscribeRequestDto($applicationInstall, '358');
@@ -111,7 +111,7 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
     {
         $response = $this->application->processWebhookSubscribeResponse(
             new ResponseDto(200, '', '{"id":"id88"}', []),
-            new ApplicationInstall()
+            new ApplicationInstall(),
         );
         self::assertEquals('id88', $response);
     }
@@ -122,7 +122,7 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
     public function testProcessWebhookUnsubscribeResponse(): void
     {
         $response = $this->application->processWebhookUnsubscribeResponse(
-            new ResponseDto(200, '', '{"id":"id88"}', [])
+            new ResponseDto(200, '', '{"id":"id88"}', []),
         );
         self::assertEquals(200, $response);
     }
