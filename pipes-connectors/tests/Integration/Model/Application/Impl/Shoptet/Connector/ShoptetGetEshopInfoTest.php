@@ -34,7 +34,7 @@ final class ShoptetGetEshopInfoTest extends DatabaseTestCaseAbstract
     /**
      * @var ShoptetGetEshopInfo
      */
-    private $connector;
+    private ShoptetGetEshopInfo $connector;
 
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetGetEshopInfo::getId()

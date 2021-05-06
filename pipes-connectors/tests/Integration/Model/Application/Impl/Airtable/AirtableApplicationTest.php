@@ -27,7 +27,7 @@ final class AirtableApplicationTest extends DatabaseTestCaseAbstract
     /**
      * @var AirtableApplication
      */
-    private $app;
+    private AirtableApplication $app;
 
     /**
      * @throws Exception

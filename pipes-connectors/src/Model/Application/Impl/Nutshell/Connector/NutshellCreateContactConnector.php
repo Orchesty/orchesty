@@ -31,7 +31,7 @@ final class NutshellCreateContactConnector extends ConnectorAbstract
     /**
      * @var ApplicationInstallRepository
      */
-    private $repository;
+    private ApplicationInstallRepository $repository;
 
     /**
      * NutshellCreateContactConnector constructor.

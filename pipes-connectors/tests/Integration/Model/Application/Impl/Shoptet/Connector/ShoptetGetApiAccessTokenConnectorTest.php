@@ -36,7 +36,7 @@ final class ShoptetGetApiAccessTokenConnectorTest extends DatabaseTestCaseAbstra
     /**
      * @var ShoptetGetApiAccessTokenConnector
      */
-    private $connector;
+    private ShoptetGetApiAccessTokenConnector $connector;
 
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetGetApiAccessTokenConnector::getId

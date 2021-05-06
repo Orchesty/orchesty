@@ -54,7 +54,7 @@ final class MailchimpCreateContactMapperTest extends DatabaseTestCaseAbstract
         $dto = DataProvider::getProcessDto(
             $app->getKey(),
             'user',
-            (string) file_get_contents(__DIR__ . sprintf('/Data/responseHubspot.json'), TRUE),
+            (string) file_get_contents(__DIR__ . '/Data/responseHubspot.json', TRUE),
         );
 
         $mailchimpCreateContactMapper = new MailchimpCreateContactMapper();

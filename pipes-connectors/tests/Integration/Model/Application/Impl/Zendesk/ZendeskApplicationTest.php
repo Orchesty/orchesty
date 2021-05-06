@@ -209,10 +209,10 @@ final class ZendeskApplicationTest extends DatabaseTestCaseAbstract
         $crateDto = $this->invokeMethod(
             $this->application,
             'createDto',
-            [$applicationInstall, 'http://127.0.0.66/api/applications/authorize/token'],
+            [$applicationInstall, 'https://127.0.0.66/api/applications/authorize/token'],
         );
 
-        self::assertEquals('http://127.0.0.66/api/applications/authorize/token', $crateDto->getRedirectUrl());
+        self::assertEquals('https://127.0.0.66/api/applications/authorize/token', $crateDto->getRedirectUrl());
     }
 
     /**

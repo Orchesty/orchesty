@@ -28,7 +28,7 @@ final class NutshellCreateContactConnectorTest extends DatabaseTestCaseAbstract
     /**
      * @var NutshellCreateContactConnector
      */
-    private $connector;
+    private NutshellCreateContactConnector $connector;
 
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\Connector\NutshellCreateContactConnector::getId

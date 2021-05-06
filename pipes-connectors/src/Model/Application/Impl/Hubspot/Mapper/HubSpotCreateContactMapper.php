@@ -120,7 +120,7 @@ final class HubSpotCreateContactMapper extends CustomNodeAbstract
             return [NULL, NULL];
         }
         $name      = trim($name);
-        $lastName  = strpos($name, ' ') === FALSE ? '' : preg_replace('#.*\s([\w-]*)$#', '$1', $name);
+        $lastName  = !str_contains($name, ' ') ? '' : preg_replace('#.*\s([\w-]*)$#', '$1', $name);
         $firstName = trim((string) preg_replace(sprintf('#%s#', $lastName), '', $name));
 
         return [$firstName, $lastName];

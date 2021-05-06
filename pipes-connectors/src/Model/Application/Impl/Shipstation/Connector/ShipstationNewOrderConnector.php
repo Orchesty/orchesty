@@ -77,7 +77,6 @@ final class ShipstationNewOrderConnector extends ConnectorAbstract
                 $applicationInstall,
                 CurlManager::METHOD_GET,
                 $url,
-                NULL,
             ),
         );
 

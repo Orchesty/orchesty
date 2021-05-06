@@ -32,7 +32,7 @@ final class S3DeleteObjectConnectorTest extends DatabaseTestCaseAbstract
     /**
      * @var S3DeleteObjectConnector
      */
-    private $connector;
+    private S3DeleteObjectConnector $connector;
 
     /**
      * @throws Exception

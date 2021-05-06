@@ -68,7 +68,7 @@ final class AirtableNewRecordConnectorTest extends DatabaseTestCaseAbstract
      */
     public function testProcessActionNoBaseId(): void
     {
-        $airtableNewRecordConnector = $this->setApplicationAndMock(NULL);
+        $airtableNewRecordConnector = $this->setApplicationAndMock();
 
         $newRecordFile = file_get_contents(sprintf('%s/Data/newRecord.json', __DIR__), TRUE);
 

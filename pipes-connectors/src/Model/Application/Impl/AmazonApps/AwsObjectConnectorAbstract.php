@@ -38,7 +38,7 @@ abstract class AwsObjectConnectorAbstract extends ConnectorAbstract
     /**
      * @var ObjectRepository<ApplicationInstall>&ApplicationInstallRepository
      */
-    protected $repository;
+    protected ApplicationInstallRepository $repository;
 
     /**
      * @return string

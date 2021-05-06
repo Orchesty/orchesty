@@ -32,7 +32,7 @@ final class S3GetObjectConnectorTest extends DatabaseTestCaseAbstract
     /**
      * @var S3GetObjectConnector
      */
-    private $connector;
+    private S3GetObjectConnector $connector;
 
     /**
      * @throws Exception

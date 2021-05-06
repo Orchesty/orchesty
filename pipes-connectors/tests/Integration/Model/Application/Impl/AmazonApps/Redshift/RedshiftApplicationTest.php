@@ -31,7 +31,7 @@ final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
     /**
      * @var RedshiftApplication
      */
-    private $application;
+    private RedshiftApplication $application;
 
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\Redshift\RedshiftApplication::getKey

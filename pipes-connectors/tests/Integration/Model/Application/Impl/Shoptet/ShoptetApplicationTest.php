@@ -147,7 +147,7 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
                     ],
                 ),
             'POST',
-            'http://example.com',
+            'https://example.com',
             '"{"data":"data"}"',
         );
 
@@ -256,7 +256,7 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
             'www.nejaka.url',
         );
 
-        self::assertEquals('{"event":"unsubscription","url":"www.nejaka.url"}', $dto->getBody(),);
+        self::assertEquals('{"event":"unsubscription","url":"www.nejaka.url"}', $dto->getBody());
     }
 
     /**
@@ -398,10 +398,10 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
         $crateDto = $this->invokeMethod(
             $this->application,
             'createDto',
-            [$applicationInstall, 'http://127.0.0.66/api/api/plugins/shoptet'],
+            [$applicationInstall, 'https://127.0.0.66/api/api/plugins/shoptet'],
         );
 
-        self::assertEquals('http://127.0.0.66/api/api/plugins/shoptet', $crateDto->getRedirectUrl());
+        self::assertEquals('https://127.0.0.66/api/api/plugins/shoptet', $crateDto->getRedirectUrl());
     }
 
     /**
@@ -414,7 +414,7 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
         $this->setApplication();
 
         self::assertEquals(
-            'http://starting-point/topologies/123/nodes/Start/run-by-name',
+            'https://starting-point/topologies/123/nodes/Start/run-by-name',
             $this->application->getTopologyUrl('123'),
         );
     }

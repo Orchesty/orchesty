@@ -256,7 +256,7 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
                 'access_token' => 'token333',
             ],
         );
-        self::assertEquals(MailchimpApplication::class, $return::class,);
+        self::assertEquals(MailchimpApplication::class, $return::class);
         self::assertEquals(
             'https://us3.api.mailchimp.com',
             $applicationInstall->getSettings()[MailchimpApplication::API_KEYPOINT],

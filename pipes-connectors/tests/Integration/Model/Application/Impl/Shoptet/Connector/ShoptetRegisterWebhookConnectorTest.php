@@ -49,7 +49,7 @@ final class ShoptetRegisterWebhookConnectorTest extends DatabaseTestCaseAbstract
     /**
      * @var ShoptetRegisterWebhookConnector
      */
-    private $connector;
+    private ShoptetRegisterWebhookConnector $connector;
 
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetRegisterWebhookConnector::getId

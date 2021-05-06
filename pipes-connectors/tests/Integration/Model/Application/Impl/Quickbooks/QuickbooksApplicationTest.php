@@ -27,7 +27,7 @@ final class QuickbooksApplicationTest extends DatabaseTestCaseAbstract
     /**
      * @var QuickbooksApplication
      */
-    private $application;
+    private QuickbooksApplication $application;
 
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Quickbooks\QuickbooksApplication::getApplicationType

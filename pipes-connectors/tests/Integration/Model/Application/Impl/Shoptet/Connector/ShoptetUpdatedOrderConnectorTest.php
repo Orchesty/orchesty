@@ -48,7 +48,7 @@ final class ShoptetUpdatedOrderConnectorTest extends DatabaseTestCaseAbstract
     /**
      * @var ShoptetUpdatedOrderConnector
      */
-    private $connector;
+    private ShoptetUpdatedOrderConnector $connector;
 
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetUpdatedOrderConnector::getId

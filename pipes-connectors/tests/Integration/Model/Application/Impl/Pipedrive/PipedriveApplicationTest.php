@@ -24,7 +24,7 @@ final class PipedriveApplicationTest extends DatabaseTestCaseAbstract
     /**
      * @var PipedriveApplication
      */
-    private $application;
+    private PipedriveApplication $application;
 
     /**
      * @throws Exception

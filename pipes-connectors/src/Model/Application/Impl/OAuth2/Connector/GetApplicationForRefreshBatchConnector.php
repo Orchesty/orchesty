@@ -36,7 +36,7 @@ final class GetApplicationForRefreshBatchConnector extends ConnectorAbstract imp
     /**
      * @var ObjectRepository<ApplicationInstall>&ApplicationInstallRepository
      */
-    private $repository;
+    private ApplicationInstallRepository $repository;
 
     /**
      * GetApplicationForRefreshBatchConnector constructor.

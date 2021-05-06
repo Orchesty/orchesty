@@ -65,7 +65,6 @@ final class HubspotCreateContactMapperTest extends DatabaseTestCaseAbstract
             DataProvider::getProcessDto(
                 $shipstation->getKey(),
                 self::API_KEY,
-                '{}',
             ),
         );
 
@@ -78,7 +77,7 @@ final class HubspotCreateContactMapperTest extends DatabaseTestCaseAbstract
         self::assertEquals(
             Json::decode($dto->getData()),
             Json::decode(
-                (string) file_get_contents(__DIR__ . sprintf('/Data/requestHubspot.json'), TRUE),
+                (string) file_get_contents(__DIR__ . '/Data/requestHubspot.json', TRUE),
             ),
         );
 

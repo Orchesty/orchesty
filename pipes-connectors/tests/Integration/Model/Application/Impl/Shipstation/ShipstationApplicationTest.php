@@ -27,7 +27,7 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
     /**
      * @var ShipstationApplication
      */
-    private $application;
+    private ShipstationApplication $application;
 
     /**
      * @throws Exception

@@ -18,7 +18,7 @@
             "vatId": null,
             "taxId": null,
             "clientIPAddress": null,
-            "adminUrl": "http:\/\/ecommerceholding.myshoptet.com\/admin\/objednavky-detail?id=19",
+            "adminUrl": "https:\/\/ecommerceholding.myshoptet.com\/admin\/objednavky-detail?id=19",
             "billingAddress": {
                 "company": "Company J. D.",
                 "fullName": "John Doe",

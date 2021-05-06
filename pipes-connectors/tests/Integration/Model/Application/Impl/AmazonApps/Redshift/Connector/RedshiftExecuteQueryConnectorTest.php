@@ -32,7 +32,7 @@ final class RedshiftExecuteQueryConnectorTest extends DatabaseTestCaseAbstract
     /**
      * @var RedshiftExecuteQueryConnector
      */
-    private $connector;
+    private RedshiftExecuteQueryConnector $connector;
 
     /**
      * @throws Exception

@@ -19,10 +19,10 @@
             ]
         },
         "website": {
-            "value": "http://hubspot.com",
+            "value": "https://hubspot.com",
             "versions": [
                 {
-                    "value": "http://hubspot.com",
+                    "value": "https://hubspot.com",
                     "source-type": "INTEGRATION",
                     "source-id": "198676",
                     "source-label": null,

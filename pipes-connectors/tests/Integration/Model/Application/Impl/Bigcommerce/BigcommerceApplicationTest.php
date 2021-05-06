@@ -23,7 +23,7 @@ final class BigcommerceApplicationTest extends DatabaseTestCaseAbstract
     /**
      * @var BigcommerceApplication
      */
-    private $application;
+    private BigcommerceApplication $application;
 
     /**
      * @throws Exception

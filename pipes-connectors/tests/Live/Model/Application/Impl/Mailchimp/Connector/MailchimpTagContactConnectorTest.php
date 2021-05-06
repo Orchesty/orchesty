@@ -31,8 +31,6 @@ final class MailchimpTagContactConnectorTest extends DatabaseTestCaseAbstract
 
         $applicationInstall = DataProvider::getOauth2AppInstall(
             $app->getKey(),
-            'user',
-            'token123',
         );
 
         $applicationInstall->setSettings(

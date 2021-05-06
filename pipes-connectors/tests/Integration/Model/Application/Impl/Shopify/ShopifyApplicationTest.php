@@ -27,7 +27,7 @@ final class ShopifyApplicationTest extends DatabaseTestCaseAbstract
     /**
      * @var ShopifyApplication
      */
-    private $application;
+    private ShopifyApplication $application;
 
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shopify\ShopifyApplication

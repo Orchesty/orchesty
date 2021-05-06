@@ -5,13 +5,13 @@
             "eshopName": "Shoptet",
             "eshopTitle": "Shoptet",
             "eshopSubtitle": "Nakupujte snadno a rychle",
-            "url": "http://www.domena-eshopu.cz",
+            "url": "https://www.domena-eshopu.cz",
             "contactPerson": "Jan Novák",
             "email": "info@domena-eshopu.cz",
             "phone": "+420777888999",
             "mobilePhone": "+420777888999",
             "skypeAccount": "shoptet_123",
-            "contactPhotoUrl": "http://www.domena-eshopu.cz/...picture.jpg"
+            "contactPhotoUrl": "https://www.domena-eshopu.cz/...picture.jpg"
         },
         "billingInformation": {
             "companyId": "12345678",
@@ -81,7 +81,7 @@
             }
         ],
         "socialNetworks": {
-            "facebookUrl": "http://www.facebook.com/shoptet",
+            "facebookUrl": "https://www.facebook.com/shoptet",
             "facebookText": "Facebook profil",
             "twitterAccount": "shoptet_sro",
             "instagramAccount": "shoptet_sro"

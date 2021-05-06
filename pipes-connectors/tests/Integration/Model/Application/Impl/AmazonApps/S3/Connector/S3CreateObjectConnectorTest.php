@@ -32,7 +32,7 @@ final class S3CreateObjectConnectorTest extends DatabaseTestCaseAbstract
     /**
      * @var S3CreateObjectConnector
      */
-    private $connector;
+    private S3CreateObjectConnector $connector;
 
     /**
      * @throws Exception

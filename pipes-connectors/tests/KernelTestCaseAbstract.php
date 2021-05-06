@@ -219,7 +219,7 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
      *
      * @return Closure
      */
-    protected function prepareSenderResponse($data = '{}', ?string $url = NULL): Closure
+    protected function prepareSenderResponse(array|string $data = '{}', ?string $url = NULL): Closure
     {
         return static function (RequestDto $dto) use ($data, $url): ResponseDto {
             if ($url) {
@@ -248,7 +248,7 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
      *
      * @return ProcessDto
      */
-    protected function prepareProcessDto($data = [], $headers = []): ProcessDto
+    protected function prepareProcessDto(array|string $data = [], array $headers = []): ProcessDto
     {
         return (new ProcessDto())->setData(is_array($data) ? Json::encode($data) : $data)->setHeaders($headers);
     }

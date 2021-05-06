@@ -21,7 +21,7 @@ final class S3ApplicationTest extends DatabaseTestCaseAbstract
     /**
      * @var S3Application
      */
-    private $application;
+    private S3Application $application;
 
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\S3Application::getKey

@@ -24,7 +24,7 @@ final class WisepopsApplicationTest extends DatabaseTestCaseAbstract
     /**
      * @var WisepopsApplication
      */
-    private $application;
+    private WisepopsApplication $application;
 
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Wisepop\WisepopsApplication::getApplicationType

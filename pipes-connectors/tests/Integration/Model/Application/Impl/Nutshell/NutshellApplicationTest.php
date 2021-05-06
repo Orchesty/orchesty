@@ -23,7 +23,7 @@ final class NutshellApplicationTest extends DatabaseTestCaseAbstract
     /**
      * @var NutshellApplication
      */
-    private $application;
+    private NutshellApplication $application;
 
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\NutshellApplication::getRequestDto
@@ -40,12 +40,12 @@ final class NutshellApplicationTest extends DatabaseTestCaseAbstract
         $dto = $this->application->getRequestDto(
             $applicationInstall,
             CurlManager::METHOD_POST,
-            'http://app.nutshell.com/api/v1/json',
+            'https://app.nutshell.com/api/v1/json',
             '{"id": "apeye", "method": "getLead", "params": { "leadId": 1000 }, "data":{"username": "user@user.com"} }',
         );
 
         self::assertEquals('POST', $dto->getMethod());
-        self::assertEquals('http://app.nutshell.com/api/v1/json', $dto->getUriString());
+        self::assertEquals('https://app.nutshell.com/api/v1/json', $dto->getUriString());
         self::assertEquals(
             '{"id": "apeye", "method": "getLead", "params": { "leadId": 1000 }, "data":{"username": "user@user.com"} }',
             $dto->getBody(),
