@@ -26,10 +26,10 @@ docker-up-force: .env .lo0-up
 	$(DC) up -d --force-recreate --remove-orphans
 
 composer-install:
-	$(DEC) install
+	$(DEC) install --ignore-platform-reqs
 
 composer-update:
-	$(DEC) update
+	$(DEC) update --ignore-platform-reqs
 	$(DEC) normalize
 
 composer-outdated:

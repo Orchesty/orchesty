@@ -22,11 +22,6 @@ final class FilterStockExchange extends CustomNodeAbstract implements LoggerAwar
 {
 
     /**
-     * @var string
-     */
-    private string $key;
-
-    /**
      * @var LoggerInterface
      */
     private LoggerInterface $logger;
@@ -36,9 +31,8 @@ final class FilterStockExchange extends CustomNodeAbstract implements LoggerAwar
      *
      * @param string $key
      */
-    public function __construct(string $key)
+    public function __construct(private string $key)
     {
-        $this->key    = $key;
         $this->logger = new NullLogger();
     }
 

@@ -30,7 +30,7 @@ final class KapacitorCommandTest extends KernelTestCaseAbstract
         $commandTester->execute(
             [
                 'command' => $command->getName(),
-            ]
+            ],
         );
 
         self::assertStringContainsString('Kapacitor start', $commandTester->getDisplay());

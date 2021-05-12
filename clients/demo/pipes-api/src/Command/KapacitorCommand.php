@@ -54,7 +54,7 @@ final class KapacitorCommand extends Command
                     MetricsEnum::TOPOLOGY_ID    => '#999',
                     MetricsEnum::CORRELATION_ID => '#456',
                     MetricsEnum::NODE_ID        => '#123',
-                ]
+                ],
             );
             usleep(1_000);
             $i++;

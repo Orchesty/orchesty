@@ -20,18 +20,12 @@ final class TimeStamperHumanTask extends LongRunningNodeAbstract
 {
 
     /**
-     * @var DocumentManager
-     */
-    private DocumentManager $dm;
-
-    /**
      * TimeStamperHumanTask constructor.
      *
      * @param DocumentManager $dm
      */
-    public function __construct(DocumentManager $dm)
+    public function __construct(private DocumentManager $dm)
     {
-        $this->dm = $dm;
     }
 
     /**

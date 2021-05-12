@@ -1,10 +1,15 @@
+framework:
+    mailer:
+        dsn: '%env(EMAIL_DSN)%'
+
 parameters:
     mailer_from: dev.email.hb@gmail.com
     mailer_async: false
     mailer_builder_id: generic
     env(EMAIL_DSN): ''
 
-swiftmailer:
-    url: '%env(EMAIL_DSN)%'
-    disable_delivery: false
-    logging: true
+services:
+    Symfony\Component\Mailer\Mailer:
+        class: Symfony\Component\Mailer\Mailer
+        arguments:
+            - '@mailer.transports'

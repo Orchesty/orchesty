@@ -34,25 +34,13 @@ final class SendDutyEmail extends CustomNodeAbstract
     private const SUBJECT = 'Monitoring';
 
     /**
-     * @var Mailer
-     */
-    private Mailer $mailer;
-
-    /**
-     * @var PagerDutyConnector
-     */
-    private PagerDutyConnector $dutyConnector;
-
-    /**
      * SendDutyEmail constructor.
      *
      * @param Mailer             $mailer
      * @param PagerDutyConnector $dutyConnector
      */
-    public function __construct(Mailer $mailer, PagerDutyConnector $dutyConnector)
+    public function __construct(private Mailer $mailer, private PagerDutyConnector $dutyConnector)
     {
-        $this->mailer        = $mailer;
-        $this->dutyConnector = $dutyConnector;
     }
 
     /**
@@ -95,7 +83,7 @@ final class SendDutyEmail extends CustomNodeAbstract
     private function send(string $data, string $subject, string $to): void
     {
         $this->mailer->renderAndSend(
-            new GenericTransportMessage(self::FROM, $to, $subject, $data)
+            new GenericTransportMessage(self::FROM, $to, $subject, $data),
         );
     }
 
