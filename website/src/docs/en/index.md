@@ -1,10 +1,15 @@
 ---
 layout: main.hbs
 collection: documentation
-name: Homepage
+name: Getting started
 level: 1 
 index: 0
 lang: en
+
 ---
 
-This is pipes default homepage
+- [Orchestroid Installation](/docs/en/installation) 
+- [Orchestroid Admin](/docs/en/admin)
+- [Integration with Orchestroid](/docs/en/integration)
+- [Orchestration with Orchestroid](/docs/en/orchestration)
+- [Tutorials](/docs/en/tutorials)

@@ -3,11 +3,12 @@ layout: main.hbs
 collection: documentation
 name: Example
 level: 1 
-index: 100
+index: 900
 lang: cs
 
 lunr: true
 tags: example
+menu_exclude: true
 ---
 
 ## Obrázek

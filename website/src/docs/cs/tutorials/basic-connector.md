@@ -2,25 +2,26 @@
 layout: main.hbs
 collection: documentation
 name: Jak vytvořit konektor pro volání REST API
-parent: Tutorials
+parent: Tutoriály
 level: 2
 index: 10
 
 lunr: true
-tags: basic connector
+tags: basic connector konektor
+lang: cs
 ---
 
 
 V tomto článku se naučíme vytvořit konektor, kterým získáme data ze služby s rozhraním REST API. Konektor je v podstatě základním prvkem integračního procesu a jeho úkolem je odeslání požadavku a vyhodnocení odpovědi. V případě úspěšného volání konektor předává získanou odpověď do procesní topologie, kde s nimi můžeme dál pracovat. Úlohou konektoru je ale i vyhodnocení chybových odpovědí a nastavení chování po získání chybového kódu. PIPES nabízí několik možných scénářů, jak chybový stav volání ošetřit:
 
-- Opakované volání pomocí repeateru, kdy můžeme nastavit počet pokusů a interval mezi nimi.
+- Opakované volání pomocí Repeateru, kdy můžeme nastavit počet pokusů a interval mezi nimi.
 - Ukončení instance procesu, tedy vyhodnocení procesu jako neúspěšného. Tato možnost se nabízí i jako scénář po posledním neúspěšném opakovaném volání. 
 - Ignorování stavu, případně ošetření stavu v datech instance procesu.
-- Nastavení limiteru, což je možnost, která se využívá při překročení limitů volání vzdálené služby. Limiteru lze nastavit maximální počet volání v určitém časovém úseku. Jeho využití popisuje samostatná kapitola.
+- Nastavení Limiteru, což je možnost, která se využívá při překročení limitů volání vzdálené služby. Limiteru lze nastavit maximální počet volání v určitém časovém úseku. Jeho využití popisuje samostatná kapitola.
 
-## Co budete potřebovat?
-- Pro vytvoření nového konektoru předpokládáme, že máte nainstalované PIPES na svém localhostu. Pokud ne, podívejte se na článek [Instalace a spuštění PIPES](/docs/cs/installation). 
-- Připravenou službu s implementovaným balíčkem SDK, registrovanou v PIPES pro přímou integraci. Pokud službu ještě nemáte, podívejte se na kapitolu [Jak nastavit vlastní službu s využitím SDK pro přímou integraci s PIPES](/docs/cs/tutorials/sdk-settings).
+## Co budeme potřebovat?
+- Nainstalované PIPES na svém localhostu pro vytvoření nového konektoru. Instalaci můžete provést pomocí návodu [Instalace a spuštění PIPES](/docs/cs/installation).
+- Připravenou službu s implementovaným balíčkem SDK, registrovanou v PIPES pro přímou integraci. Pokud službu ještě nemáte, podívejte se na kapitolu [Jak použít vlastní službu s využitím SDK pro přímou integraci s PIPES](/docs/cs/tutorials/sdk-settings/).
 
 ## Vytvoření konektoru
 Vytvoříme konektor, který využije CURL Manager service pro získání dat z REST API testovací služby. Nejprve vytvoříme třídu konektoru, která rozšiřuje ConnectorAbstract.
@@ -47,7 +48,7 @@ final class GetUsersConnector extends ConnectorAbstract
 }
 ```
 
-Konektoru je potřeba definovat unikátní identifikátor service. k tomu slouží metoda `getId`.
+Konektoru je potřeba definovat unikátní identifikátor service. K tomu slouží metoda `getId`.
 
 ``` PHP 2
 
@@ -181,15 +182,15 @@ service:
 Přihlásíme se do uživatelského rozhraní a vytvoříme nový proces. V menu klikneme na **File -> New topology**.
 
 V detailu topologie se přepneme do záložky editoru. Nyní vytvoříme jednoduchý proces a ukážeme si, jak snadno nový konektor v procesu použijeme. Přetáhneme **Start event** z toolbaru na canvas.
-V toolbaru vybereme  prvek **Connector**, vložíme ho na canvas a propojíme se Start eventem.
+V toolbaru vybereme prvek **Connector**, vložíme ho na canvas a propojíme se Start eventem.
 
 ![](/uploads/scr_basic_connector/1_newtopo_bpmn.png "Basic Connector")
 
-Nyní nastavíme pro novou akci script, který bude vykonávat. V našem případě se jedná o testovací konektor, který jsme pojmenovali ``get-users``. Klikneme tedy na prvek akce na canvasu a v pravém sidebaru klikneme na rozbalovací nabídku **Name**. Pokud jsme správně provedli všechny předchozí kroky, měli bychom náš konektor vidět v rozbalovací nabídce. Pokud konektor nevidíte, zkontrolujte, že máte správně zaregistrovanou službu s SDK balíčkem a v ní správně zaregistrovanou službu s novým konektorem. Vybereme tedy položku ``get-users``. 
+Nyní nastavíme pro novou akci script, který bude vykonávat. V našem případě se jedná o testovací konektor, který jsme pojmenovali ``get-users``. Klikneme tedy na prvek akce na canvasu a v pravém sidebaru klikneme na rozbalovací nabídku **Name**. Pokud jsme správně provedli všechny předchozí kroky, měli bychom náš konektor vidět v rozbalovací nabídce. Pokud se konektor nezobrazil, zkontrolujeme že máme správně zaregistrovanou službu s SDK balíčkem a v ní náležitě zaregistrovanou službu s novým konektorem. Vybereme tedy položku ``get-users``. 
 
 ![](/uploads/scr_basic_connector/2_newtopo_bpmn_select.png "Select script")
 
-Tím máte vytvořený první proces, který získá data z testovací služby.
+Tím máme vytvořený první proces, který získá data z testovací služby.
 
 ## Otestování procesu
 
@@ -201,7 +202,7 @@ Připravený proces nyní uložíme a publikujeme. Uděláme to pomocí rozbalov
 
 ![](/uploads/scr_basic_connector/4_newtopo_publish.png "Pulikování procesu")
 
-Tlačítkem v horní liště procesu se přepneme do zobrazení metrik. Zde vidíme nejprve blok, zobrazující metriky procesu a následně bloky, zastupující jednotlivé uzly procesu. 
+Tlačítkem v horní liště procesu se přepneme do zobrazení metrik. Zde vidíme nejprve blok zobrazující metriky procesu a následně bloky zastupující jednotlivé uzly procesu. 
 
 ![](/uploads/scr_basic_connector/5_newtopo_start.png "Metriky procesu")
 
@@ -209,13 +210,13 @@ První blok procesních uzlů zastupuje Start event. Liší se od ostatních mim
 
 ![](/uploads/scr_basic_connector/6_newtopo_run.png "Spuštění procesu")
 
-Nyní přejdeme v horní liště do záložky **Human tasks**, kde ve zobrazené tabulce uvidíme záznam našeho debugovacího uzlu. Po rozkliknutí detailu záznamu pak uvidíme data, která nám v rámci této instance procesu přišla.
+Nyní přejdeme v horní liště do záložky **User Tasks**, kde ve zobrazené tabulce uvidíme záznam našeho debugovacího uzlu. Po rozkliknutí detailu záznamu uvidíme data, která nám v rámci této instance procesu přišla.
 
 ![](/uploads/scr_basic_connector/7_human_tasks_table.png "Debug pomocí User Tasku")
 
 ## Automatizovaný test
 
-Na závěr ještě ukážeme, jakým způsobem můžete napsat pro vytvořený konektor automatizovaný test. Rozhodně doporučujeme automatizované testy psát, protože testování by mělo být základem každé programátorské práce.
+Na závěr si ještě ukážeme, jakým způsobem můžeme napsat pro vytvořený konektor automatizovaný test. Rozhodně doporučujeme automatizované testy psát, protože testování by mělo být základem každé programátorské práce.
 
 ``` PHP 8
 
@@ -246,4 +247,4 @@ final class GetUsersConnectorTest extends DatabaseTestCaseAbstract
 }
 ```
 
-Doufáme, že vám tento návod pomohl. Naučili jsme se vytvořit jednoduchý konektor, který využijete, pokud se nemusíte napojovat na víc endpointů dané služby a pokud si vystačíte s Basic autorizací. V našem dalším návodu si ukážeme, jak vytvořit vlastní aplikaci, kterou lze následně využít pro psaní více konektorů jedné služby. [Klikněte zde, pokud se chcete naučit vytvářet vlastní aplikace.](/docs/cs/tutorials/basic-application)
+Doufáme, že vám tento návod pomohl. Naučili jsme se vytvořit jednoduchý konektor, který využijeme, jestliže že se nemusíme napojovat na víc endpointů dané služby a pokud si vystačíme s Basic autorizací. V našem dalším návodu si ukážeme, jak vytvořit vlastní aplikaci, kterou lze následně využít pro psaní více konektorů jedné služby. [Klikněte zde, pokud se chcete naučit vytvářet vlastní aplikace.](/docs/cs/tutorials/basic-application)

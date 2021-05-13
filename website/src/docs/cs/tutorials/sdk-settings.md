@@ -2,30 +2,31 @@
 layout: main.hbs
 collection: documentation
 name: Jak použít vlastní službu s využitím SDK pro přímou integraci s PIPES
-parent: Tutorials
+parent: Tutoriály
 level: 2
 index: 1
 
 lunr: true
-tags: sdk settings
+tags: nastavení sdk
+lang: cs
 ---
 
-Tento návod nás naučí, jak vybudovat vlastní službu, která může obsahovat libovolné rozšíření PIPES. Cokoliv chcete využívat ve svých procesech, můžete pomocí [PIPES SDK](/docs/cs/sdk) vytvářet a provozovat ve vlastních kontejnerech. Jednoduchou registrací v [PIPES Admin](/docs/cs/admin) se pak tyto služby stávají rozšířením PIPES. V takové službě můžete umístit rozšíření aplikací a konektorů [PIPES Appstore](/docs/cs/pipes-appstore), může obsahovat libovolný počet scriptů pro transformaci dat, nebo to může být i jednoúčelová služba, kterou chceme provozovat v samostatném kontejneru.
 
-## Registrace služby do docker-compose
+V tomto návodu se naučíme vytvořit vlastní službu, kterou integrujeme s orchestrační vrstvou PIPES. Tímto způsobem můžeme budovat kontejnery s vlastními službami, které chceme využívat ve svých procesech. Kromě datových transformací lze tyto kontejnery se službami využívat i pro vlastní sady aplikací a konektorů.
 
-Předpokladem je nainstalovaný Pipes-skeleton dle návodu, Pokud jste ještě tak neučinili přečtěte si [jak nainstalovat PIPES](/docs/cs/installation).
+## Co budeme potřebovat?
+- Nainstalované PIPES na svém localhostu pro vytvoření nového konektoru. Instalaci můžete provést pomocí návodu [Instalace a spuštění PIPES](/docs/cs/installation).
 
-Nyní se přesuňme na Pipes Admin dostupný na [http://127.0.0.10/ui/](http://127.0.0.10/ui/). Otevřeme záložku **SDK Implementations**:
+Instalací PIPES skeletonu máme připravený repozitář se službou, která má ve svých závislostech PIPES SDK. PHP SDK PIPES je ve skutečnosti Symfony bundle. Můžeme tedy využít i libovolný projekt, budovaný na Symfony, ve kterém pomocí composeru nainstalujeme potřebné závislosti. Pro lepší pochopení doporučujeme prostudovat článek o [architektuře a developmentu PIPES](/docs/cs/architecture).
 
-![SDK Implementations](/uploads/scr_sdk_settings/1_pipes_admin_sdk_implementation.png "SDK Implementations")
 
-Klikneme na **Create** a zaregistrujeme SDK jako službu do PIPES:
+## Registrace služby v PIPES Admin
+Pro přímou integraci s PIPES nyní stačí registrovat službu uvnitř [PIPES Admin](/docs/cs/admin). Ten je dostupný na [http://127.0.0.10/ui/](http://127.0.0.10/ui/). Otevřeme záložku **Implementations**:
+
+![Implementations](/uploads/scr_sdk_settings/1_pipes_admin_sdk_implementation.png "Implementations")
+
+Klikneme na **Create** a zadáme název služby a její URL. URL můžeme vyplnit ve tvaru **IP adresy** nebo **hostname**, které máme uvedeno v **docker-compose.yml**.
 
 ![Registrace SDK do PIPES](/uploads/scr_sdk_settings/2_pipes_admin_add_sdk.png "Registrace SDK do PIPES")
 
-``` infoBlock
-Url vyplnuǰte buď ve tvaru IP adresy nebo hostname.<br> V naší ukázce je url vyplněno jako <strong>php-sdk</strong>. Tento hostname jsme zjistili z docker-compose.yml.
-```
-
-Gratulujeme, nyní jsou PIPES připraveny pro budování procesů. Pojďme si vytvořit náš [první process](/docs/cs/tutorials/first-process).
+Gratulujeme, tímto způsobem můžeme registrovat libovolné množství služeb, které poběží ve svých kontejnerech a budeme je mít k dispozici pro budování procesů a integrací. Pojďme si tedy vytvořit náš [první proces](/docs/cs/tutorials/first-process).

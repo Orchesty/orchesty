@@ -2,21 +2,22 @@
 layout: main.hbs
 collection: documentation
 name: Jak vytvořit aplikaci s autorizací OAuth 2
-parent: Tutorials
+parent: Tutoriály
 level: 2
 index: 30
 
 lunr: true
-tags: oauth2 application
+tags: oauth2 application aplikace
+lang: cs
 ---
 
 V tomto návodu se naučíme vytvořit integraci se službou, která vyžaduje autorizaci protokolem OAuth 2.0, což je dnes asi nejpoužívanější způsob autorizace ke službám typu SaaS. Protokoly OAuth verze 1 i 2 vyžadují pro ověření uživatele přihlášení k účtu uživatelem pomocí GUI. Aplikace využívající OAuth 1 i 2 proto vytváří v PIPES Admin rozhraní i kompletní formulář pro autorizaci, včetně přesměrování na přihlašovací formulář integrované služby. Pro náš návod jsme zvolili cloudovou službu HubSpot, do které budeme importovat kontakty získané konektorem, který jsme se naučili v rámci [návodu na budování konektoru pro REST API](/docs/cs/tutorials/basic-connector). 
 
-## Co budete potřebovat?
-- Pro vytvoření nového konektoru předpokládáme, že máte nainstalované PIPES na svém localhostu. Pokud ne, instalaci můžete provézt s pomocí návodu [Instalace a spuštění PIPES](/docs/cs/installation)  
-- Připravenou službu s implementovaným balíčkem SDK, registrovanou v PIPES pro přímou integraci. Pokud službu ještě nemáte, podívejte se na kapitolu Jak nastavit vlastní službu s využitím SDK pro přímou integraci s PIPES.
-- Konektor na získání testovacích dat, připravený v rámci návodu [Jak vytvořit konektor pro volání REST API](/docs/cs/tutorials/basic-connector  "Jak vytvořit konektor pro volání REST API").
-- Pro lepší pochopení doporučujeme i nastudování návodu [Jak vytvořit aplikaci s basic autentizací](/docs/cs/tutorials/basic-application).
+## Co budeme potřebovat?
+- Nainstalované PIPES na svém localhostu pro vytvoření nového konektoru. Instalaci můžete provést pomocí návodu [Instalace a spuštění PIPES](/docs/cs/installation).
+- Připravenou službu s implementovaným balíčkem SDK, registrovanou v PIPES pro přímou integraci. Pokud službu ještě nemáte, podívejte se na kapitolu [Jak nastavit vlastní službu s využitím SDK pro přímou integraci s PIPES](/docs/cs/tutorials/sdk-settings/).
+- Konektor na získání testovacích dat připravený v rámci návodu [Jak vytvořit konektor pro volání REST API](/docs/cs/tutorials/basic-connector  "Jak vytvořit konektor pro volání REST API").
+- Doporučujeme nastudovat návod [Jak vytvořit aplikaci s basic autentizací](/docs/cs/tutorials/basic-application).
 
 ## Příprava aplikace
 Vytvoříme třídu aplikace, která bude rozšiřovat abstrakci OAuth2ApplicationAbstract.
@@ -102,7 +103,7 @@ public function getTokenUrl(): string
 }
 ```
 
-Nakonec ještě zaregistrujeme aplikaci jako službu:
+Nakonec zaregistrujeme aplikaci jako službu:
 
 ``` YAML 6
 
@@ -114,23 +115,23 @@ services:
             - '@hbpf.providers.oauth2_provider'
 ```
 
-Tím máme aplikaci připravenou. Můžeme se přihlásit do uživatelského rozhraní PIPES Admin, kde bychom měli nalézt naší novou aplikaci v nabídce **Appstore**.
+Tím máme aplikaci připravenou. Můžeme se přihlásit do uživatelského rozhraní PIPES Admin, kde bychom měli nalézt naši novou aplikaci v nabídce **Appstore**.
 ![](/uploads/scr_oauth2/1_hubspot_app_install1.png "HubSpot application")
 
 Nyní aplikaci nainstalujeme a vyzkoušíme si autorizaci pomocí OAuth 2.0. V detailu aplikace klikneme na tlačítko **Instalovat**. Do zobrazeného formuláře vložíme autorizační údaje k našemu účtu v HubSpot. Tyto údaje získáme po přihlášení do služby v záložce **Apps** a vybereme aplikaci.
 
 ![](/uploads/scr_oauth2/2_hubspot_apps.png "Hubspot -> Apps")
 
-Poté se překlikneme na záložku **Auth**, kde uvidíme potřebné údaje: **App ID**, **Client ID** a **Client Secret**.
+Poté přejdeme na záložku **Auth**, kde uvidíme potřebné údaje: **App ID**, **Client ID** a **Client Secret**.
 ![](/uploads/scr_oauth2/2_hubspot_auth.png "Hubspot -> Apps -> Auth")
 
 ## Vytvoření konektoru
 
 ``` infoBlock
-Doporučujeme mít nejprve prostudovaný návod <a href="/docs/cs/tutorials/basic-connector">Jak vytvořit konektor pro volání REST API</a>.
+Doporučujeme nejprve prostudovat návod <a href="/docs/cs/tutorials/basic-connector">Jak vytvořit konektor pro volání REST API</a>.
 ```
 
-Vytvoříme tedy nejprve třídu konektoru. Konektor bude vytvářet nové kontakty v aplikaci HubSpot. Využijeme proto endpoint, který umožňuje vytvářet v aplikaci HubSpot kontakty dávkově, viz [dokumentace HubSpot API](https://developers.HubSpot.com/docs/methods/contacts/batch_create_or_update). Třídu nazveme **HubSpotCreateMultipleContactsConnector**.
+Nejdřív tedy vytvoříme třídu konektoru. Konektor bude vytvářet nové kontakty v aplikaci HubSpot. Využijeme proto endpoint, který umožňuje vytvořit v aplikaci HubSpot kontakty dávkově, viz [dokumentace HubSpot API](https://developers.HubSpot.com/docs/methods/contacts/batch_create_or_update). Třídu nazveme **HubSpotCreateMultipleContactsConnector**.
 
 ``` PHP 7
 
@@ -171,7 +172,7 @@ public function getId(): string
 Nyní zpracujeme data získaná procesem a vytvoříme požadavek.
 
 ``` infoBlock
-Mapování dat přímo v konektoru není best practice. Takové řešení omezuje znovupoužitelnost konektoru a kód se v případě opakovaného volání vykonává vícekrát, než je nutné. Tato ukázka je pouze ilustrativní. Správné řešení si ukážeme níže.
+Mapování dat přímo v konektoru není nejlepším řešením. Takový postup omezuje znovupoužitelnost konektoru a kód se v případě opakovaného volání vykonává víckrát, než je nutné. Tato ukázka je pouze ilustrativní. Správné řešení si ukážeme níže.
 ```
 
 ``` PHP 9
@@ -340,7 +341,7 @@ service:
 
 ## Vytvoření integračního procesu
 
-Přistoupíme k sestavení jednoduchého procesu, který přenese data kontaktů z mezi dvěma cloudovými službami. V admin rozhraní vytvoříme nový proces pomocí **File -> New topology**. Na canvas vložíme Start event a propojíme ho s naším dříve vytvořeným konektorem pro získání testovacích kontaktů. Na canvas tedy přetáhneme z tollbaru prvek Connector a v pravém side baru mu nastavíme script test_users_connector.
+Přistoupíme k sestavení jednoduchého procesu, který přenese data kontaktů mezi dvěma cloudovými službami. V admin rozhraní vytvoříme nový proces pomocí **File -> New topology**. Na canvas vložíme Start event a propojíme ho s naším dříve vytvořeným konektorem pro získání testovacích kontaktů. Na canvas tedy přetáhneme z tollbaru prvek Connector a v pravém side baru mu nastavíme script test_users_connector.
 
 ![](/uploads/scr_oauth2/3_newtopo_bpmn_select.png "HubSpot - getUser connector")
 
@@ -348,16 +349,16 @@ Do procesu zapojíme další prvek Connector a vybereme mu script našeho konekt
 
 ![](/uploads/scr_oauth2/4_hubspot_topology_bpmn.png "HubSpot - create multiple contact connector")
 
-Uložíme a publikujeme proces. Tím máme hotový jednoduchý integrační proces a můžeme vyzkoušet jeho funkčnost. Přejdeme do záložky metrik procesu a spustíme instanci tlačítkem **Start** v bloku Start eventu. Náš proces neočekává žádná data, necháme tedy pole pro data prázdné a potvrdíme spuštění.
+Uložíme a proces publikujeme. Tím máme hotový jednoduchý integrační proces a můžeme vyzkoušet jeho funkčnost. Přejdeme do záložky metrik procesu a spustíme instanci tlačítkem **Start** v bloku Start eventu. Náš proces neočekává žádná data, necháme tedy pole pro data prázdné a potvrdíme spuštění.
 
 ![](/uploads/scr_oauth2/5_run_node_script_newtopo.png "Spuštění procesu")
 
-Pokud jsme vše provedli správně, v našem HubSpot účtu můžeme vidět nově naimportované kontakty.
+Pokud jsme vše provedli správně, v našem HubSpot účtu vidíme nově naimportované kontakty.
 
 ![](/uploads/scr_oauth2/6_hubspot_contacts.png "Kontakty v Hubspot")
 
 ## Optimalizace procesu
-Ukázali jsme si, jak vytvořit jednoduchý konektor pro uložení dávky kontaktů do služby HubSpot. Vysvětlili jsme si také, že mapování dat přímo v konektoru není optimální z několika důvodů. V případě opakovaného volání, které může nastat při neúspěšném volání a využití Repeateru, se takový kód vykonává zbytečně víckrát. Navíc konektor ztrácí svou znovupoužitelnost. Mnohem lepší bude použít mapování dat v samostatném scriptu. Vytvoříme tedy novou třídu, kterou pojmenujeme například **HubSpotCreateContactMapper**. Vytvořit nový mapper je opravdu jednoduché.
+Ukázali jsme si, jak vytvořit jednoduchý konektor pro uložení dávky kontaktů do služby HubSpot. Vysvětlili jsme si také, že mapování dat přímo v konektoru není optimální z několika důvodů. V případě opakovaného volání, které může nastat při neúspěšném volání a využití Repeateru, se takový kód vykonává zbytečně víckrát. Navíc konektor ztrácí svou znovupoužitelnost. Mnohem lepší je použít mapování dat v samostatném scriptu. Vytvoříme tedy novou třídu, kterou pojmenujeme například **HubSpotCreateContactMapper**. Vytvořit nový mapper je opravdu jednoduché.
 
 ``` PHP 13
 
@@ -425,7 +426,7 @@ services:
         class: Pipes\PhpSdk\Mapper\HubSpot\HubSpotCreateMultipleContactsMapper
 ```
 
-A ještě nesmíme zapomenout upravit původní kód konektoru. Metoda processAction pak bude vypadat následovně:
+A ještě musíme upravit původní kód konektoru. Metoda processAction pak bude vypadat následovně:
 
 ``` PHP 16
 
@@ -459,7 +460,7 @@ Nyní se přihlásíme do Admin aplikace a přepneme se do našeho procesu. Z to
 
 ![](/uploads/scr_oauth2/7_hubspot_mapper.png "HubSpot - optimalizace procesu")
 
-Update procesu vždy vytváří jeho novou verzi. Nemusíme se tedy bát neotestovaného provozu. Je třeba ještě přepnout novou verzi jako aktivní.
+Update procesu vždy vytváří jeho novou verzi. Nemusíme se tedy bát neotestovaného provozu. Je třeba ještě přepnout novou verzi na aktivní.
 
 Aktivní novou verzi můžeme nyní vyzkoušet. Tím máme vytvořený jednoduchý proces, který importuje dávku stažených dat do SaaS aplikace HubSpot. Endpoint pro vložení dávky kontaktů v HubSpot je nespornou výhodou jejich API. Bohužel takový komfort nebývá v REST API cloudových služeb samozřejmostí. 
-V příštím návodu se proto naučíme [jak vytvořit aplikaci, která využívá autorizaci OAuth1](/docs/cs/tutorials/oauth1-application). Pokud se chcete raději naučit [jak používat batch splitter v integračním procesu](/docs/cs/tutorials/batch-splitter), můžete tuto kapitolu přeskočit a vrátit se k ní, až budete OAuth1 potřebovat.
+V příštím návodu se proto naučíme, [jak vytvořit aplikaci, která využívá autorizaci OAuth1](/docs/cs/tutorials/oauth1-application). Pokud se chcete raději naučit, [jak používat Batch splitter v integračním procesu](/docs/cs/tutorials/batch-splitter), můžete tuto kapitolu přeskočit a vrátit se k ní, až budete OAuth1 potřebovat.
