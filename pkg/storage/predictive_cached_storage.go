@@ -5,30 +5,39 @@ import (
 	"sync"
 	"time"
 
+	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
 	"limiter/pkg/logger"
 )
 
-type cacheHolder struct {
-	Cache sync.Map
+type socketTimer struct {
+	*cacheItem
+	stop <-chan bool
 }
 
-func (ch *cacheHolder) get(key string) (cacheItem, bool) {
+type cacheHolder struct {
+	Cache       sync.Map
+	Timers      sync.Map
+	GroupCache  sync.Map
+	GroupTimers sync.Map
+}
+
+func (ch *cacheHolder) get(key string) (socketTimer, bool, error) {
 	item, ok := ch.Cache.Load(key)
 	if !ok {
-		return cacheItem{}, false
+		return socketTimer{}, false, nil
 	}
 
-	value, ok := item.(cacheItem)
+	value, ok := item.(socketTimer)
 	if !ok {
-		return cacheItem{}, false
+		return socketTimer{}, false, fmt.Errorf("cannot cast item to socketTimer")
 	}
 
-	return value, true
+	return value, true, nil
 }
 
-func (ch *cacheHolder) save(key string, value cacheItem) {
+func (ch *cacheHolder) save(key string, value socketTimer) {
 	ch.Cache.Store(key, value)
 }
 
@@ -47,6 +56,39 @@ func (ch *cacheHolder) len() int {
 	return length
 }
 
+func (ch *cacheHolder) getGroup(key string) (groupCache, bool, error) {
+	item, ok := ch.GroupCache.Load(key)
+	if !ok {
+		return groupCache{}, false, nil
+	}
+
+	value, ok := item.(groupCache)
+	if !ok {
+		return groupCache{}, false, fmt.Errorf("cannot cast item to groupCache")
+	}
+
+	return value, true, nil
+}
+
+func (ch *cacheHolder) saveGroup(key string, value groupCache) {
+	ch.GroupCache.Store(key, value)
+}
+
+func (ch *cacheHolder) deleteGroup(key string) {
+	ch.GroupCache.Delete(key)
+}
+
+func (ch *cacheHolder) lenGroup() int {
+	var length int
+	ch.GroupCache.Range(func(_, _ interface{}) bool {
+		length++
+
+		return true
+	})
+
+	return length
+}
+
 // PredictiveCachedStorage is storage that uses cache for easing the DB
 type PredictiveCachedStorage struct {
 	db       Storage
@@ -54,6 +96,7 @@ type PredictiveCachedStorage struct {
 	newCache *cacheHolder
 	logger   logger.Logger
 	m        sync.Mutex
+	//groupLimit *groupLimit
 }
 
 type cacheItem struct {
@@ -76,14 +119,29 @@ func (cm *PredictiveCachedStorage) Get(key string, length int) ([]*Message, erro
 	return cm.db.Get(key, length)
 }
 
+// GetMessages return stored keys
+func (cm *PredictiveCachedStorage) GetMessages(field, key string, length int) ([]*Message, error) {
+	return cm.db.GetMessages(field, key, length)
+}
+
 // GetDistinctFirstItems returns first message for every distinct key in storage
 func (cm *PredictiveCachedStorage) GetDistinctFirstItems() (map[string]*Message, error) {
 	return cm.db.GetDistinctFirstItems()
 }
 
+// GetDistinctGroupFirstItems return all saved groups
+func (cm *PredictiveCachedStorage) GetDistinctGroupFirstItems() (map[string]*Message, error) {
+	return cm.db.GetDistinctGroupFirstItems()
+}
+
 // Save persists document to mongo. Increases of cache counter should have already been done in Check
 func (cm *PredictiveCachedStorage) Save(m *Message) (string, error) {
 	return cm.db.Save(m)
+}
+
+// CreateIndex - create mongo indexes
+func (cm *PredictiveCachedStorage) CreateIndex(index mgo.Index) error {
+	return cm.db.CreateIndex(index)
 }
 
 // Remove tries to delete the concrete message from storage
@@ -93,7 +151,7 @@ func (cm *PredictiveCachedStorage) Remove(key string, id bson.ObjectId) (bool, e
 
 // ClearCacheItem remove key from memory cache
 func (cm *PredictiveCachedStorage) ClearCacheItem(key string, val int) bool {
-	item, ok := cm.newCache.get(key)
+	item, ok, _ := cm.newCache.get(key)
 	if !ok {
 		return false
 	}
@@ -103,70 +161,119 @@ func (cm *PredictiveCachedStorage) ClearCacheItem(key string, val int) bool {
 	return true
 }
 
-func (cm *PredictiveCachedStorage) canHandleTicker(t <-chan time.Time, key string) {
-	for range t {
-		tt := <-t
-		cm.logger.Debug(fmt.Sprintf("Handle tick for key: '%s' at: %s", key, tt.Format("2006-Jan-2 15:04:05")), nil)
-		i, _, err := cm.getCachedItem(key)
+func (cm *PredictiveCachedStorage) canHandleTicker(item *socketTimer, key string) {
+	_, ok := cm.newCache.Timers.Load(key)
+	if ok {
+		cm.logger.Error(fmt.Sprintf("try add new timers for exist key %s", key), nil)
+		return
+	}
 
-		if err != nil {
-			continue
-		}
+	// TODO: add context
+	for {
+		select {
+		case t := <-item.ticker.C:
+			cm.logger.Debug(fmt.Sprintf("Handle tick for key: '%s' at: %s", key, t.Format("2006-Jan-2 15:04:05")), nil)
+			i, _, err := cm.getCachedItem(key)
 
-		i.count, err = cm.db.Count(key)
-		if err != nil {
-			cm.logger.Error(fmt.Sprintf("ERROR => %v", err), nil)
-			continue
-		}
+			if err != nil /*|| !ok */ {
+				cm.logger.Error(fmt.Sprintf("failed to get cached item %s =>  %v", key, err), nil)
+				//cm.newCache.Timers.Delete(key)
+				continue
+			}
 
-		i.count = i.count - i.max
-		if i.count > 0 {
-			cm.saveCachedItem(key, i)
-			continue
-		}
+			count, err := cm.db.Count(key, item.max)
+			if err != nil {
+				cm.logger.Error(fmt.Sprintf("failed count saved messages in mongo for key item %s => %v", key, err), nil)
+				continue
+			}
+			i.count = count
 
-		if i.ticker != nil {
-			cm.logger.Info(fmt.Sprintf("Remove ticker for key %s", key), nil)
-			i.ticker.Stop()
+			cm.newCache.Timers.Store(key, time.Now().UTC())
+
+			i.count = i.count - i.max
+			if i.count > 0 {
+				cm.saveCachedItem(key, i)
+				continue
+			}
+
+			if i.ticker != nil {
+				cm.logger.Info(fmt.Sprintf("Remove ticker for key %s", key), nil)
+				i.ticker.Stop()
+			}
+			cm.newCache.delete(key)
+			cm.newCache.Timers.Delete(key)
+			return
+		case <-item.stop:
+			return
 		}
-		cm.newCache.delete(key)
 	}
 }
 
 // CanHandle decides whether the message can be processed
-func (cm *PredictiveCachedStorage) CanHandle(key string, interval int, value int) (bool, error) {
+func (cm *PredictiveCachedStorage) CanHandle(key string, interval int, value int, groupKey string, groupTime int, groupValue int) (bool, error) {
+	cm.m.Lock()
+	defer cm.m.Unlock()
+
 	item, isNew, err := cm.getCachedItem(key)
 
 	if err != nil {
 		return false, fmt.Errorf("failed get cachedItem %s => %v", key, err)
 	}
 
-	if isNew || item.ticker == nil {
-		item.max = value
-
-		item.ticker = time.NewTicker(time.Second * time.Duration(interval))
-		go cm.canHandleTicker(item.ticker.C, key)
-	}
-
-	if item.ticker == nil {
-		return false, nil
+	if isNew {
+		item = socketTimer{
+			cacheItem: &cacheItem{
+				ticker: time.NewTicker(time.Second * time.Duration(interval)),
+				max:    value,
+				count:  0,
+			},
+			stop: nil,
+		}
+		cm.logger.Debug(fmt.Sprintf("create new ticker for key %s", key), nil)
+		go cm.canHandleTicker(&item, key)
 	}
 
 	item.count++
 	cm.saveCachedItem(key, item)
 
-	return item.count <= item.max, nil
+	validGroup := true
+	if groupKey != "" {
+		itemGroup, isNewGroup, err := cm.getCachedGroupItem(groupKey)
+
+		if err != nil {
+			return false, fmt.Errorf("failed get groupCache %s => %v", groupKey, err)
+		}
+
+		if isNewGroup {
+			itemGroup = groupCache{
+				cacheItem: &cacheItem{
+					ticker: time.NewTicker(time.Second * time.Duration(groupTime)),
+					max:    groupValue,
+					count:  0,
+				},
+				Groups: make(map[string]*customerInfo, 0),
+			}
+			cm.logger.Debug(fmt.Sprintf("create new group ticker for key %s", groupKey), nil)
+			go cm.canHandleGroupTicker(&itemGroup, groupKey)
+		}
+
+		itemGroup.handleRequest(key, interval, groupValue, time.Now().UTC())
+		cm.saveCachedGroupItem(groupKey, itemGroup)
+		validGroup = itemGroup.canHandle(key, groupTime, value)
+	}
+
+	return item.count <= item.max && validGroup, nil
 }
 
 // Count return the amount of messages with given key in storage
-func (cm *PredictiveCachedStorage) Count(key string) (int, error) {
+func (cm *PredictiveCachedStorage) Count(key string, limit int) (int, error) {
 	_, _, err := cm.getCachedItem(key)
 
 	if err != nil {
 		return 0, err
 	}
 
-	currentCount, err := cm.db.Count(key)
+	currentCount, err := cm.db.Count(key, limit)
 	if err != nil {
 		cm.logger.Error(fmt.Sprintf("ERROR => %v", err), nil)
 		return 0, err
@@ -175,9 +282,14 @@ func (cm *PredictiveCachedStorage) Count(key string) (int, error) {
 	return currentCount, nil
 }
 
+// CountInGroup get group count
+func (cm *PredictiveCachedStorage) CountInGroup(keys []string, limit int) (int, error) {
+	return cm.db.CountInGroup(keys, limit)
+}
+
 // Exists returns whether the key exists or not in storage
 func (cm *PredictiveCachedStorage) Exists(key string) (bool, error) {
-	num, err := cm.Count(key)
+	num, err := cm.Count(key, 1)
 	if err != nil {
 		return false, err
 	}
@@ -186,24 +298,32 @@ func (cm *PredictiveCachedStorage) Exists(key string) (bool, error) {
 }
 
 func (cm *PredictiveCachedStorage) hasCachedItem(key string) bool {
-	_, ok := cm.newCache.get(key)
+	_, ok, _ := cm.newCache.get(key)
 
 	return ok
 }
 
 // getCachedItem returns cachedItem for given key. New is set to true if cachedItem was created
-func (cm *PredictiveCachedStorage) getCachedItem(key string) (cacheItem, bool, error) {
-	item, ok := cm.newCache.get(key)
+func (cm *PredictiveCachedStorage) getCachedItem(key string) (socketTimer, bool, error) {
+	item, ok, err := cm.newCache.get(key)
+	if err != nil {
+		return socketTimer{}, false, err
+	}
+
 	if ok {
 		return item, false, nil
 	}
 
-	return cacheItem{}, true, nil
+	return socketTimer{}, true, nil
 }
 
 // saveCachedItem saves the item struct to memory
-func (cm *PredictiveCachedStorage) saveCachedItem(key string, item cacheItem) {
+func (cm *PredictiveCachedStorage) saveCachedItem(key string, item socketTimer) {
 	cm.newCache.save(key, item)
+}
+
+func (cm *PredictiveCachedStorage) saveCachedGroupItem(key string, group groupCache) {
+	cm.newCache.saveGroup(key, group)
 }
 
 func (cm *PredictiveCachedStorage) handler(key, value interface{}) bool {
@@ -212,7 +332,7 @@ func (cm *PredictiveCachedStorage) handler(key, value interface{}) bool {
 		return false
 	}
 
-	item, ok := value.(cacheItem)
+	item, ok := value.(socketTimer)
 	if !ok {
 		return false
 	}

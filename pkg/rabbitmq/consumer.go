@@ -130,6 +130,6 @@ func (c *consumer) SetNoWait(noWait bool) {
 }
 
 // NewConsumer returns a newly created Consumer
-func NewConsumer(conn Connection, queue string, logger logger.Logger) (c Consumer) {
-	return &consumer{connection: conn, queue: queue, channelID: -1, logger: logger}
+func NewConsumer(conn Connection, queue string, logger logger.Logger, prefetchCount int) (c Consumer) {
+	return &consumer{connection: conn, queue: queue, channelID: -1, logger: logger, prefetchCount: prefetchCount}
 }

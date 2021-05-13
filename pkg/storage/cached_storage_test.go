@@ -3,6 +3,7 @@ package storage
 import (
 	"github.com/streadway/amqp"
 	"github.com/stretchr/testify/assert"
+	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"testing"
 )
@@ -13,7 +14,7 @@ func (mm *csMongoMock) ClearCacheItem(key string, val int) bool {
 	return true
 }
 
-func (mm *csMongoMock) CanHandle(key string, interval int, value int) (bool, error) {
+func (mm *csMongoMock) CanHandle(key string, interval int, value int, groupKey string, groupTime int, groupValue int) (bool, error) {
 	has, _ := mm.Exists(key)
 
 	return !has, nil
@@ -36,14 +37,31 @@ func (mm *csMongoMock) Remove(key string, id bson.ObjectId) (bool, error) {
 func (mm *csMongoMock) Get(key string, length int) ([]*Message, error) {
 	return make([]*Message, 0), nil
 }
-func (mm *csMongoMock) Count(key string) (int, error) {
+
+func (mm *csMongoMock) GetMessages(field, key string, length int) ([]*Message, error) {
+	return make([]*Message, 0), nil
+}
+
+func (mm *csMongoMock) Count(key string, limit int) (int, error) {
 	if key == "not-in-db" {
 		return 0, nil
 	}
 	return 2, nil
 }
+func (mm *csMongoMock) CountInGroup(keys []string, limit int) (int, error) {
+	panic("not implemented")
+}
+
 func (mm *csMongoMock) GetDistinctFirstItems() (map[string]*Message, error) {
 	return make(map[string]*Message, 0), nil
+}
+
+func (mm *csMongoMock) GetDistinctGroupFirstItems() (map[string]*Message, error) {
+	return make(map[string]*Message, 0), nil
+}
+
+func (mm *csMongoMock) CreateIndex(index mgo.Index) error {
+	return nil
 }
 
 func TestCachedMongoCountingWhenNotPreviouslyInDb(t *testing.T) {
@@ -92,13 +110,13 @@ func TestCachedMongoCountingWhenAlreadyInDb(t *testing.T) {
 	ex, _ = s.Exists("was-in-db")
 	assert.True(t, ex)
 
-	num, _ := s.Count("was-in-db")
+	num, _ := s.Count("was-in-db", 3)
 	assert.Equal(t, 3, num)
 
 	s.Save(msgA)
 	s.Save(msgA)
 
-	num, _ = s.Count("was-in-db")
+	num, _ = s.Count("was-in-db", 5)
 	assert.Equal(t, 5, num)
 
 	ex, _ = s.Exists("was-in-db")
@@ -109,6 +127,6 @@ func TestCachedMongoCountingWhenAlreadyInDb(t *testing.T) {
 	s.Remove("was-in-db", bson.NewObjectId())
 	s.Remove("was-in-db", bson.NewObjectId())
 
-	num, _ = s.Count("was-in-db")
+	num, _ = s.Count("was-in-db", 1)
 	assert.Equal(t, 1, num)
 }

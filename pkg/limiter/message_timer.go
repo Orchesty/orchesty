@@ -1,13 +1,13 @@
 package limiter
 
 import (
+	"fmt"
+	"time"
+
 	"limiter/pkg/logger"
+	"limiter/pkg/model"
 	"limiter/pkg/rabbitmq"
 	"limiter/pkg/storage"
-
-	"fmt"
-	"log"
-	"time"
 )
 
 // MessageTimer represents the timer that checks stored messages if they can become free
@@ -16,11 +16,12 @@ type MessageTimer interface {
 }
 
 type messageTimer struct {
-	tickers   map[string]*time.Ticker
 	storage   storage.Storage
 	publisher rabbitmq.Publisher
 	timerChan chan *storage.Message
 	logger    logger.Logger
+	groups    model.GroupCache
+	customers model.CustomerCache
 }
 
 // NewMessageTimer return a new MessageTimer instance
@@ -34,32 +35,59 @@ func NewMessageTimer(
 		storage:   s,
 		publisher: p,
 		timerChan: timerChan,
-		tickers:   make(map[string]*time.Ticker),
 		logger:    logger,
+		groups:    model.GroupCache{},
+		customers: model.CustomerCache{},
 	}
 }
 
 // Init loads and sets timers for already persisted messages and starts new timers handler
 func (mt *messageTimer) Init() {
+	mt.loadExistingGroupTimers()
 	mt.loadExistingTimers()
 	go mt.startHandleNewTimers()
 }
 
-func (mt *messageTimer) addTicker(key string, duration int, count int) {
-	mt.tickers[key] = time.NewTicker(time.Second * time.Duration(duration))
+func (mt *messageTimer) addTicker(key string, duration int, count int, groupData *model.RequestGroup) {
+	item, ok, _ := mt.customers.Get(key)
+	if !ok {
+		return
+	}
+
 	mt.logger.Info(fmt.Sprintf("Added ticker for key '%s'", key), nil)
 	go func() {
-		for t := range mt.tickers[key].C {
+		for t := range item.Ticker.C {
 			mt.logger.Debug(fmt.Sprintf("Tick for key: '%s' at: %s", key, t), nil)
+
+			validGroup := mt.canGroupHandle(groupData, key, count)
+			if !validGroup {
+				mt.logger.Debug(fmt.Sprintf("NOT ALLOW handle group: '%s' for base key: '%s'", groupData.Key, key), nil)
+				continue
+			}
+
+			if groupData != nil {
+				c, ok, _ := mt.groups.GetCustomer(key)
+				if !ok {
+					mt.groups.SaveCustomer(key, model.LevelOne{
+						Group:    groupData.Key,
+						Interval: duration,
+						Valid:    time.Now().UTC().Add(time.Second * time.Duration(duration)),
+						Count:    count,
+					})
+				} else {
+					c.Valid = time.Now().UTC().Add(time.Second * time.Duration(duration))
+					c.Count += count
+					mt.groups.SaveCustomer(key, c)
+				}
+			}
 
 			hasNext := mt.release(key, count)
 			if hasNext == false {
-				mt.tickers[key].Stop()
-				delete(mt.tickers, key)
+				item.Ticker.Stop()
+				mt.customers.Delete(key)
 				mt.logger.Info(fmt.Sprintf("Removed ticker for key '%s'", key), nil)
 				return
 			}
-
 		}
 	}()
 }
@@ -95,22 +123,90 @@ func (mt *messageTimer) release(key string, count int) bool {
 	return exists
 }
 
-func (mt *messageTimer) loadExistingTimers() {
-	items, err := mt.storage.GetDistinctFirstItems()
+func (mt *messageTimer) loadExistingGroupTimers() {
+	items, err := mt.storage.GetDistinctGroupFirstItems()
 	if err != nil {
-		log.Println("Init error:", err.Error())
+		mt.logger.Error(fmt.Sprintf("Init group error: %v", err.Error()), nil)
 	}
 
 	for _, i := range items {
-		mt.addTicker(i.LimitKey, i.LimitTime, i.LimitValue)
+		mt.groups.Save(i.GroupKey, model.CacheItem{
+			Ticker: time.NewTicker(time.Second * time.Duration(i.GroupTime)),
+			Max:    i.GroupValue,
+			Count:  0,
+		})
+
+		mt.addGroupTicker(i.GroupKey, i.GroupTime, i.GroupValue)
+	}
+}
+
+func (mt *messageTimer) loadExistingTimers() {
+	items, err := mt.storage.GetDistinctFirstItems()
+	if err != nil {
+		mt.logger.Error(fmt.Sprintf("Init error: %v", err.Error()), nil)
+	}
+
+	for _, i := range items {
+		var rg *model.RequestGroup
+		if i.GroupKey != "" {
+			rg = &model.RequestGroup{
+				Key:      i.GroupKey,
+				Interval: i.GroupTime,
+				Count:    i.GroupValue,
+			}
+			//
+			//mt.groups.Save(i.GroupKey, model.CacheItem{
+			//	Ticker: time.NewTicker(time.Second * time.Duration(i.GroupTime)),
+			//	Max:    i.GroupValue,
+			//	Count:  0,
+			//})
+			//
+			//mt.addGroupTicker(i.GroupKey, i.GroupTime, i.GroupValue)
+		}
+
+		mt.customers.Save(i.LimitKey, model.CacheItem{
+			Ticker: time.NewTicker(time.Second * time.Duration(i.LimitTime)),
+			Max:    i.LimitValue,
+			Count:  0,
+		})
+
+		mt.addTicker(i.LimitKey, i.LimitTime, i.LimitValue, rg)
 	}
 }
 
 func (mt *messageTimer) startHandleNewTimers() {
 	for m := range mt.timerChan {
-		if _, ok := mt.tickers[m.LimitKey]; !ok {
+		if m.GroupKey != "" {
+			_, ok, _ := mt.groups.Get(m.GroupKey)
+			if !ok {
+				mt.groups.Save(m.GroupKey, model.CacheItem{
+					Ticker: time.NewTicker(time.Second * time.Duration(m.GroupTime)),
+					Max:    m.GroupValue,
+					Count:  0,
+				})
+				mt.addGroupTicker(m.GroupKey, m.GroupTime, m.GroupValue)
+			}
+		}
+
+		_, ok, _ := mt.customers.Get(m.LimitKey)
+		if !ok {
+			var rg *model.RequestGroup
+			if m.GroupKey != "" {
+				rg = &model.RequestGroup{
+					Key:      m.GroupKey,
+					Interval: m.GroupTime,
+					Count:    m.GroupValue,
+				}
+			}
+
+			mt.customers.Save(m.LimitKey, model.CacheItem{
+				Ticker: time.NewTicker(time.Second * time.Duration(m.LimitTime)),
+				Max:    m.LimitValue,
+				Count:  0,
+			})
+
 			mt.logger.Info(fmt.Sprintf("Add ticker for key %s", m.LimitKey), nil)
-			mt.addTicker(m.LimitKey, m.LimitTime, m.LimitValue)
+			mt.addTicker(m.LimitKey, m.LimitTime, m.LimitValue, rg)
 		}
 	}
 }

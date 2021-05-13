@@ -13,7 +13,7 @@ type positiveLimiter struct{}
 
 func (dec *positiveLimiter) Start() {}
 func (dec *positiveLimiter) Stop()  {}
-func (dec *positiveLimiter) IsFreeLimit(key string, time int, value int) (bool, error) {
+func (dec *positiveLimiter) IsFreeLimit(key string, time int, value int, groupKey string, groupTime int, groupValue int) (bool, error) {
 	return true, nil
 }
 
@@ -21,7 +21,7 @@ type negativeLimiter struct{}
 
 func (dec *negativeLimiter) Start() {}
 func (dec *negativeLimiter) Stop()  {}
-func (dec *negativeLimiter) IsFreeLimit(key string, time int, value int) (bool, error) {
+func (dec *negativeLimiter) IsFreeLimit(key string, time int, value int, groupKey string, groupTime int, groupValue int) (bool, error) {
 	return false, nil
 }
 

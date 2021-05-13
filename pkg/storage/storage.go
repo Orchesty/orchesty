@@ -1,6 +1,9 @@
 package storage
 
-import "gopkg.in/mgo.v2/bson"
+import (
+	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
+)
 
 // Storage represents the DB
 type Storage interface {
@@ -18,13 +21,16 @@ type CheckerSaver interface {
 // Checker should be used for getting know if message can be processed
 type Checker interface {
 	// CanHandle returns true if message can be processed
-	CanHandle(key string, time int, val int) (bool, error)
+	CanHandle(key string, time int, val int, groupKey string, groupTime int, groupValue int) (bool, error)
 }
 
 // Saver should be used for adding items to storage
 type Saver interface {
 	// Save persists message to the storage and returns it's storage key
 	Save(m *Message) (string, error)
+
+	//CreateIndex run custom mongo command
+	CreateIndex(index mgo.Index) error
 }
 
 // Remover should be used for removing items from storage
@@ -42,12 +48,19 @@ type Finder interface {
 	Exists(key string) (bool, error)
 	// Returns the message or error if no message was found
 	Get(key string, length int) ([]*Message, error)
+	// GetMessages return messages with given key
+	GetMessages(field, key string, length int) ([]*Message, error)
 	// Count returns the number of messages with given key
-	Count(key string) (int, error)
+	Count(key string, limit int) (int, error)
+	// CountInGroup returns the number of messages with given key
+	CountInGroup(keys []string, limit int) (int, error)
 }
 
 // DistinctFinder is used for searching distinct items
 type DistinctFinder interface {
 	// GetDistinctFirstItems returns for every distinct limitkey the first record
 	GetDistinctFirstItems() (map[string]*Message, error)
+
+	// GetDistinctGroupFirstItems returns for every distinct groupkey the first record
+	GetDistinctGroupFirstItems() (map[string]*Message, error)
 }
