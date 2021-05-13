@@ -10,7 +10,7 @@ builder-image:
 
 build: builder-image
 	docker run -t --rm -v $(shell pwd)/../:/build -w /build/website -u $(shell id -u):$(shell id -g) -e PORTAL_API_URL=${PORTAL_API_URL} pipes-docs-builder bash -xc ' \
-	  yarn upgrade && \
+	  yarn install && \
 	  yarn run build'
 
 deploy:
@@ -49,3 +49,7 @@ yarn-install: builder-image
 
 yarn-upgrade: builder-image
 	docker run -t --rm -v $(shell pwd)/../:/build -w /build/website -u $(shell id -u):$(shell id -g) -e PORTAL_API_URL=${PORTAL_API_URL} pipes-docs-builder bash -xc 'yarn upgrade'
+
+start:
+	npx yarn install
+	npx yarn start

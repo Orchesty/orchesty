@@ -2,22 +2,23 @@
 layout: main.hbs
 collection: documentation
 name: Jak použít batch splitter v dávkovém procesu
-parent: Tutorials
+parent: Tutoriály
 level: 2
 index: 60
 
 lunr: true
 tags: batch splitter
+lang: cs
 ---
 
-V [minulém návodu](/docs/cs/tutorials/oauth2-application) jsme sestavili proces, který importoval dávku kontaktů do aplikace HubSpot. V praxi se ale velice často setkáme potřebou dávku dat rozdělit na jednotlivé entity. V tomto návodu si ukážeme, jak v takovém případě použít prvek **Batch splitter**. Ten očekává na vstupu pole dat. Výstupem je potom instance procesu pro každý objekt pole. 
+V [minulém návodu](/docs/cs/tutorials/oauth2-application) jsme sestavili proces, který importoval dávku kontaktů do aplikace HubSpot. V praxi se ale velice často setkáme s potřebou dávku dat rozdělit na jednotlivé entity. V tomto návodu si ukážeme, jak v takovém případě použít prvek **Batch splitter**. Ten očekává na vstupu pole dat. Výstupem je potom instance procesu pro každý objekt pole. 
 
 Pro náš návod upravíme proces importu kontaktů do HubSpot, který jsme vytvořili v [předchozím návodu](/docs/cs/tutorials/oauth2-application) tak, že místo endpointu pro zpracování dávky použijeme endpoint pro vložení samostatného kontaktu (viz. https://developers.hubspot.com/docs/methods/contacts/create_contact).
 
-## Co budete potřebovat?
-- Pro vytvoření nového konektoru předpokládáme, že máte nainstalované PIPES na svém localhostu. Pokud ne, instalaci můžete provézt s pomocí návodu [Instalace a spuštění PIPES](/docs/cs/installation)  
-- Připravenou službu s implementovaným balíčkem SDK, registrovanou v PIPES pro přímou integraci. Pokud službu ještě nemáte, podívejte se na kapitolu Jak nastavit vlastní službu s využitím SDK pro přímou integraci s PIPES.
-- Konektor na získání testovacích dat, připravený v rámci návodu [Jak vytvořit konektor pro volání REST API](/docs/cs/tutorials/basic-connector  "Jak vytvořit konektor pro volání REST API").
+## Co budeme potřebovat?
+- Nainstalované PIPES na svém localhostu pro vytvoření nového konektoru. Instalaci můžete provést pomocí návodu [Instalace a spuštění PIPES](/docs/cs/installation).
+- Připravenou službu s implementovaným balíčkem SDK, registrovanou v PIPES pro přímou integraci. Pokud službu ještě nemáte, podívejte se na kapitolu [Jak použít vlastní službu s využitím SDK pro přímou integraci s PIPES](/docs/cs/tutorials/sdk-settings/).
+- Konektor na získání testovacích dat připravený v rámci návodu [Jak vytvořit konektor pro volání REST API](/docs/cs/tutorials/basic-connector  "Jak vytvořit konektor pro volání REST API").
 - Aplikaci pro integraci SaaS služby HubSpot, kterou jsme připravili v rámci návodu [Jak vytvořit aplikaci s autorizací OAuth 2](/docs/cs/tutorials/oauth2-application)
 
 ## Úprava topologie procesu
@@ -25,14 +26,14 @@ Abychom správně rozuměli tomu, jak bude náš upravený proces vypadat, uprav
 
 ![](/uploads/scr_batch_splitter/1_batch_splitter_orgin.png "HubSpot - proces")
 
-Můžeme vytvořit i zcela nový proces, ale můžeme klidně vytvořit kopii v akčním menu topologie příkazem **Clone**. 
+Můžeme vytvořit zcela nový proces, nebo kopii v akčním menu topologie příkazem **Clone**. 
 
 ![](/uploads/scr_batch_splitter/2_batch_splitter_clone.png "Klonování procesu")
 
 Topologii upravíme následovně:
 1. Odstraníme stávající mapper a konektor pro vložení dávky kontaktů do HubSpot.
 2. Vložíme za konektor pro získání testovací dávky kontaktů prvek **Batch splitter**.
-3. Za prvek Batch splitter vložíme **Custom action** pro vytvoření nového mapperu.
+3. Za prvek Batch splitter vložíme **Custom action** pro vznik nového mapperu.
 4. Nakonec přidáme **Connector**, který bude volat HubSpot endpoint pro vytvoření kontaktu.
 
 ![](/uploads/scr_batch_splitter/3_batch_splitter_empty_topology.png "Nová topologie s Batch Splitterem")
@@ -50,18 +51,20 @@ use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
 use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessActionNotSupportedTrait;
 use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessEventNotSupportedTrait;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchInterface;
+use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchTrait;
 
 final class UsersBatchSplitter extends ConnectorAbstract implements BatchInterface
 {
 
     use ProcessActionNotSupportedTrait;
     use ProcessEventNotSupportedTrait;
+    use BatchTrait;
 
     ... required methods from interface
 }
 ```
 
-Splitteru je potřeba definovat unikátní identifikátor service. k tomu slouží metoda `getId`.
+Splitteru je potřeba definovat unikátní identifikátor služby. k tomu slouží metoda `getId`.
 
 ``` PHP 2
 
@@ -75,16 +78,14 @@ Posledním krokem je implementace samotné metody `processBatch`. Ta slouží k 
 
 ``` PHP 3
 
+use GuzzleHttp\Promise\PromiseInterface;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\SuccessMessage;
 use Hanaboso\Utils\String\Json;
-use React\EventLoop\LoopInterface;
-use React\Promise\PromiseInterface;
-use function React\Promise\resolve;
 
 ...
 
-public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $callbackItem): PromiseInterface
+public function processBatch(ProcessDto $dto, callable $callbackItem): PromiseInterface
 {
     $users = $this->getJsonContent($dto);
 
@@ -95,11 +96,11 @@ public function processBatch(ProcessDto $dto, LoopInterface $loop, callable $cal
         $callbackItem($message);
     }
 
-    return resolve();
+    return $this->createPromise();
 }
 ```
 
-Nyní stačí náš splitter jen zaregistrovat jako servicu. To uděláme následovně:
+Nyní stačí náš splitter zaregistrovat jako službu. To uděláme následovně:
 
 ``` YAML 4
 
@@ -110,7 +111,7 @@ services:
 ```
 
 ## Mapper
-Budeme mapovat stejné objekty, jako v minulém návodu. Pouze tentokrát nepůjde o pole objektů, ale o samostatný objekt.
+Budeme mapovat stejné objekty, jako v minulém návodu. Tentokrát však nepůjde o pole objektů, ale o samostatný objekt.
 
 ``` PHP 5
 
@@ -272,10 +273,10 @@ service:
             - ['setLogger', ['@monolog.logger.commons']]
 ```
 
-Pokud máme toto vše hotové, můžeme finálně upravit proces a otestovat.
+Pokud máme vše výše hotové, můžeme finálně upravit proces a otestovat.
 
 ## Nastavení služeb a otestování procesu
-V editoru procesu v aplikaci PIPES Admin nyní přiřadíme nové scripty jednotlivým uzlům našeho procesu. Pokud jsme vše udělali správně, měli bychom je mít dostupné v nabídce pro jednotlivé akce. Finální proces bude vypadat následovně:
+V editoru procesu v aplikaci PIPES Admin přiřadíme nové scripty jednotlivým uzlům našeho procesu. Pokud jsme vše udělali správně, máme je dostupné v nabídce pro jednotlivé akce. Finální proces bude vypadat následovně:
 
 ![](/uploads/scr_batch_splitter/4_batch_splitter_new_topology.png "Upravená topologie s Batch Splitterem")
 
@@ -283,17 +284,17 @@ Přepneme se do záložky metrik procesu a spustíme proces.
 
 ![](/uploads/scr_batch_splitter/5_batch_splitter_run.png "Spuštění topologie")
 
-Až proces doběhne, měli bychom vidět v metrikách jednotlivých uzlů, že zatím co první connector a batch splitter zpracovali jednu instanci procesu, mapper a HubSpot connector už zpracovávaly po 10 instancích. 
+Když proces doběhne, měli bychom vidět v metrikách jednotlivých uzlů, že zatím co první konektor a Batch splitter zpracovali jednu instanci procesu, mapper a HubSpot konektor už zpracovávaly po 10 instancích. 
 
 ![](/uploads/scr_batch_splitter/6_batch_splitter_metrics.png "Metriky procesu")
 
 Výsledek samozřejmě můžeme ověřit v aplikaci HubSpot.
 
 ``` infoBlock
-Pokud v Hubspotu kontakt existuje, dojde při dalším spuštění proces k jeho odmítnutí. 
+Pokud v Hubspotu kontakt existuje, dojde při dalším spuštění procesu k jeho odmítnutí. 
 HubSpot vrací status 409, který označuje vytváření duplicitního kontaktu. 
-Jestliže budete chtít proces pouštět vícekrát je nutné kontakty v HubSpotu promazat před spuštěním. 
-Pokud tak neučiníte uvidíte mezi logy chybu: <strong>Contact "telly.hoeger@billy.biz" already exist</strong>.
+Jestliže chceme proces pouštět víckrát, je nutné kontakty v HubSpotu promazat před spuštěním. 
+Pokud tak neučiníme, uvidíme mezi logy chybu: <strong>Contact "telly.hoeger@billy.biz" already exist</strong>.
 ```
 
-Gratulujeme, nyní už umíte používat v procesu batch splitter, což je velice užitečný nástroj při procesech, které nesynchronizují data realtime. V následujícím manuálu si ukážeme, [jak nastavit plánované spouštění procesu a jak používat stránkování při získávání dat](/docs/cs/tutorials/scheduled-process).
+Gratulujeme, nyní už umíte používat v procesu Batch splitter, což je velice užitečný nástroj při procesech, které nesynchronizují data v reálném čase. V následujícím manuálu si ukážeme, [jak nastavit plánované spouštění procesu a jak používat stránkování při získávání dat](/docs/cs/tutorials/scheduled-process).

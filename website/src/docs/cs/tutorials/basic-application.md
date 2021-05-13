@@ -2,20 +2,21 @@
 layout: main.hbs
 collection: documentation
 name: Jak vytvořit aplikaci s basic autentizací
-parent: Tutorials
+parent: Tutoriály
 level: 2
 index: 20
 
 lunr: true
-tags: basic application
+tags: basic application aplikace
+lang: cs
 ---
 
 
 V minulém návodu jsme se naučili vytvořit jednoduchý konektor pro volání bez autorizace. Konektory bez autorizace nebo s Basic autorizací nevyžadují závislost na aplikaci. Tento návod nám ukáže, jak vytvořit vlastní aplikaci, která může zajistit autorizaci a nastavení HTTP hlaviček pro sadu konektorů. Zároveň zprostředkuje formulář pro vložení autorizačního tokenu a dalších uživatelských nastavení. Pro tento návod se připojíme ke cloudové službě Sandgrid.
 
-## Co budete potřebovat?
-- Pro vytvoření nového konektoru předpokládáme, že máte nainstalované PIPES na svém localhostu. Pokud ne, podívejte se na článek [Instalace a spuštění PIPES](/docs/cs/installation).
-- Připravenou službu s implementovaným balíčkem SDK, registrovanou v PIPES pro přímou integraci. Pokud službu ještě nemáte, podívejte se na kapitolu [Jak nastavit vlastní službu s využitím SDK pro přímou integraci s PIPES](/docs/cs/tutorials/sdk-settings).
+## Co budeme potřebovat?
+- Nainstalované PIPES na svém localhostu pro vytvoření nového konektoru. Instalaci můžete provést pomocí návodu [Instalace a spuštění PIPES](/docs/cs/installation).
+- Připravenou službu s implementovaným balíčkem SDK, registrovanou v PIPES pro přímou integraci. Pokud službu ještě nemáte, podívejte se na kapitolu [Jak použít vlastní službu s využitím SDK pro přímou integraci s PIPES](/docs/cs/tutorials/sdk-settings/).
 
 
 ## Vytvoření aplikace s Basic autorizací
@@ -36,7 +37,7 @@ final class SendGridApplication extends BasicApplicationAbstract
 
 ### Application Key
 
-Aplikaci je potřeba definovat tzv. klíč. S tímto klíčem je aplikace zaregistrovaná v Dependency containeru.
+Aplikaci je potřeba definovat tzv. klíč. S tímto klíčem je aplikace zaregistrovaná v Dependency kontejneru.
 
 ``` PHP 2
 
@@ -126,7 +127,7 @@ public function isAuthorized(ApplicationInstall $applicationInstall): bool
 }
 ```
 
-Posledním krokem je registrace aplikace jako service.
+Posledním krokem je registrace aplikace jako služby.
 
 ``` YAML 7
 
@@ -166,7 +167,7 @@ final class SendGridSendEmailConnector extends ConnectorAbstract
 }
 ```
 
-Connector, stejně jako aplikace, vyžaduje definovat Id service. K tomu slouží metoda `getId`.
+Konektor, stejně jako aplikace, vyžaduje definovat Id služby. K tomu slouží metoda `getId`.
 
 ``` PHP 9
 
@@ -309,7 +310,7 @@ service:
 Pro detailní popis třídy konektoru doporučujeme prostudovat předchozí návod [Jak vytvořit konektor pro volání REST API](/docs/cs/tutorials/basic-connector).
 
 ## Použití v procesu
-Přihlásíme se do uživatelského prostředí PIPES. Pokud jsme postupovali správně, v Appstore PIPES nyní uvidíme naší novou aplikaci. Tu je nutné nejprve nainstalovat.
+Přihlásíme se do uživatelského prostředí PIPES. Pokud jsme postupovali správně, v Appstore PIPES nyní uvidíme naši novou aplikaci. Tu je nutné nejprve nainstalovat.
 
 ![](/uploads/scr_sendmail/1_select_app.png "Appstore s novou aplikací")
 
@@ -327,11 +328,11 @@ Vybereme připravený script konektoru.
 
 ![](/uploads/scr_sendmail/4_sendmail_topology_bpmn_name.png "Script konektoru")
 
-Tím je proces hotový. Můžeme ho tedy publikovat a vyzkoušet, zda naše nová aplikace opravdu odešle e-mail pomocí služby Sandgrid. Přepneme se do záložky s metrikami procesu a v bloku start eventu stiskneme tlačítko "Spustit". Do otevřeného pole zadáme následující data ve formátu JSON. Pro otestování samozřejmě zadejte vlastní e-mailovou adresu.
+Tím je proces hotový. Můžeme ho tedy publikovat a vyzkoušet, zda naše nová aplikace opravdu odešle e-mail pomocí služby Sandgrid. Přepneme se do záložky s metrikami procesu a v bloku start eventu stiskneme tlačítko "Spustit". Do otevřeného pole zadáme následující data ve formátu JSON. Pro otestování zadáme vlastní e-mailovou adresu.
 
 ![](/uploads/scr_sendmail/5_run_node_script.png "Spuštění procesu")
 
-A to je vše. Výsledek samozřejmě zkontrolujte v e-mailové schránce.
+A to je vše. Výsledek zkontrolujeme v e-mailové schránce.
 
 
 

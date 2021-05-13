@@ -8,5 +8,6 @@ index: 10
 
 lunr: true
 tags: process detail
+lang: cs
 ---
 

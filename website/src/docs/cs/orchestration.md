@@ -2,193 +2,62 @@
 layout: main.hbs
 collection: documentation
 name: Orchestrace
-level: 1
+parent: Getting started
+level: 2
 index: 3
-
+ 
 lunr: true
-tags: orchestration
+tags: orchestration orchestrace
+lang: cs
 ---
-
-## Vytvoření procesu a konfigurace
-TODO
-
+ 
+Orchestrační vrstva PIPES umožňuje modelování a provoz datových toků s důrazem na výkon a bezpečnost dat, resp. vytváří a řídí integrační procesy nad aplikační vrstvou infrastruktury. Každý proces přitom znamená sekvenci akcí, které jsou mezi sebou propojeny frontami.
+ 
+![](/uploads/src_architecture/layers.png)
+ 
+## Manažer procesů
+Grafické uživatelské rozhraní [PIPES Admin](/docs/cs/admin) slouží jako manažer procesů. Umožňuje procesy vytvářet, spravovat a sledovat jejich provoz. Přináší komplexní pohled na datové toky infrastruktury, zobrazuje logy a metriky běžících procesů. 
+![](/uploads/scr_orchestration/1_manager.png)
+Kompletní přehled uživatelského rozhraní naleznete v článku [PIPES Admin](/docs/cs/admin).
+ 
+ 
 ## Modelování procesu
-TODO
-
-## Integrace služeb procesu
-TODO
-
-## Plánování
-TODO
-
-## Metriky procesu
-Metriky pomáhají identifikovat slabá místa procesu z hlediska výkonu. probíhá sbírání následujících metrik:
-- Queue Depth - délka fronty zpráv v RabbitMq (delší znamená více věcí na zpracování)
-- Waiting Time - čas, než se zpráva začala zpracovávat (menší je lepší)
-- Process Time - čas, který zabralo zpracování dané zprávy
-- CPU Time - procesorový čas, který zabralo zpracování zprávy
-- Request Time - čas, který zabralo dotazování na externí služby
-
-Všechny metriky až na poslední zmíněnou Request Time jsou sbírány automaticky a není nutné je nějak zapínat či nastavovat. Request Time metriku je potřeba ručně nastavit viz následující příklad v PHP.
-
-``` PHP
-// Vytvoření žádosti o stažení obsahu webové stránky https://example.com
-$requestDto = new RequestDto(CurlManager::METHOD_GET, new Uri('https://example.com'));
-// Zapnutí request time metriky, která zobrazuje čas nutný pro vykonání požadavku
-$requestDto->setDebugInfo($dto);
-```
-
-## Logování
-Uživatel má možnost logovat informace do ELK stacku nebo MongoDB dle nastavení PIPES Frameworku. Samotné logování může být prováděno ve více úrovních a ty vyšší z nich jsou pak zobrazovány i v uživatelském rozhraní PIPES Frameworku. Pro zobrazení všech podrobných logů je nutné využít dalších nástrojů pro vizualizaci dat, například Kibany v případě ELK stacku.
-
-Využití služeb logování v PHP:
-
-Typickým využím logování (samozřejmě kromě logování chybových stavů) je logování pro potřeby vývoje, kdy se můžeme snadno podívat například jaká data nám vrací externí služba, či jaká data nebo hlavičky poslal předchozí uzel topologie. Viz následující příklad, kdy si zalogujeme hlavičky poslané předchozím uzlem topologie, abychom je mohli vidět.
-
-``` PHP
-namespace Demo\CustomNode;
-
-use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
-use Hanaboso\Utils\String\Json;
-use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
-
-/**
- * Class LoggerCustomNode
- *
- * @package Demo\CustomNode
- */
-final class LoggerCustomNode extends CustomNodeAbstract implements LoggerAwareInterface
-{
-
-	/**
-	* @var LoggerInterface
-	*/
-	private LoggerInterface $logger;
-
-	/**
-	* LoggerCustomNode constructor.
-	*/
-	public function __construct()
-	{
-			$this->logger = new NullLogger();
-	}
-
-	/**
-	* @param LoggerInterface $logger
-	*/
-	public function setLogger(LoggerInterface $logger): void
-	{
-			$this->logger = $logger;
-	}
-
-	/**
-	* @param ProcessDto $dto
-	*
-	* @return ProcessDto
-	*/
-	public function process(ProcessDto $dto): ProcessDto
-	{
-			// Zaloguje hlavičky požadavku do ELK stacku nebo MongoDB dle nastavení a objeví se v Pipes UI
-			$this->logger->error(Json::encode($dto->getHeaders()));
-
-			// ...
-
-			return $dto;
-	}
-
-}
-```
-
-
+Modelování procesu probíhá v [grafickém editoru](/docs/cs/admin/process-editor). Zápis procesu vychází z notace pro modelování byznys procesů BPMN 2.0 a je s ní kompatibilní. Topologii procesu je možné připravit i v jiném nástroji s podporou BPMN 2.0 a následně ji do grafického editoru PIPES importovat.
+ 
+![](/uploads/scr_orchestration/2_editor.png)
+ 
+V grafickém editoru vytváříme topologii procesu, jeho jednotlivým akcím následně přiřadíme výkonný kód. Ten může být obsažen ve službě, kterou jsme vytvořili a připojili k orchestrační vrstvě metodou přímé integrace. Může se jednat i o konektor na službu, se kterou chceme komunikovat prostřednictvím API, což bude případ většiny služeb typu SaaS. O způsobech integrací se dočtete v kapitole [Integrace](/docs/cs/integration).
+ 
+### Doporučené odkazy pro téma modelování procesů:
+- [Editor procesu](/docs/cs/admin/process-editor)
+- [Jak nastavit vlastní službu s využitím SDK pro přímou integraci s PIPES](/docs/cs/tutorials/sdk-settings)
+- [Budujeme první proces](/docs/cs/tutorials/first-process)
+ 
+ 
+## Provoz a verzování procesu
+Po vymodelování procesu jej můžeme publikovat, čímž vytvoříme samostatný Docker kontejner s řídicí službou. Každý proces má tedy vlastní řídicí službu, nezávislou na službách ostatních.
+ 
+![](/uploads/src_architecture/management_services.png)
+ 
+Při úpravách běžícího procesu se automaticky vytváří nová verze, která je publikována ve stavu **disable**. Při současném přepnutí více verzí procesu do stavu **enable** jsou nové zprávy automaticky směrovány pouze do nejnovější verze. Mezi verzemi lze tímto způsobem libovolně přepínat, aniž by se ztrácely nebo duplikovaly zprávy, které do nich směřují.
+ 
+## Metriky
+PIPES zaznamenávají metriky všech instancí procesu, velikosti front před každou akcí procesu, dobu trvání zpracování instance procesu v každé akci, CPU time, a délku odezvy požadavku na integrovanou službu. Nasbírané metriky pak mohou sloužit k nalezení úzkého hrdla a následné optimalizaci procesu.
+ 
+![](/uploads/scr_orchestration/3_metrics.png)
+ 
+## Logy
+Konfigurací PIPES lze volit mezi logováním do ELK stack nebo MongoDb. Je možné ukládat logy více úrovní. Vyšší úrovně logů se používají převážně pro informace s byznysovou hodnotou a jsou zobrazovány v PIPES Admin. Pro zobrazení všech podrobných logů je nutné využít dalších nástrojů pro vizualizaci dat, například Kibany v případě použití ELK stack.
+ 
+![](/uploads/scr_orchestration/5_logs.png)
+ 
+Více informací o možnostech logování v [dokumentaci](/docs/cs/documentation/logs).
+ 
 ## Notifikace
-Uživatel má možnost si v aplikaci zapnout notifikace na různé druhy událostí. Tyto události jsou reprezentovány výčtovým typem NotificationEventEnum, který je možné přetížit a přidat další události. O samotné zpracování notifikací se stará tzv. Status Service, do které přichází vyhodnocení každého procesu a kde je možné na toto vyhodnocení reagovat například odesláním notifikace.
-
-Notifikace jsou konfigurovatelné pomocí následujícího proměnného prostředí:
-- RABBITMQ_DSN - Connection string pro připojení k RabbitMq serveru
-- METRICS_SERVICE - Výběr úložiště metrik (InfluxDb, MongoDb)
-- METRICS_HOST - Hostitel InfluxDb nebo MongoDb databáze
-- METRICS_PORT - Port InfluxDb nebo MongoDb databáze
-- REDIS_DSN - Connection string pro připojení k Redis databázi
-- CRON_DSN - Connection string pro připojení CRON API
-- FTP_API_DSN - Connection string pro připojení k FTP API
-- MAILER_API_DSN - Connection string pro připojení k Mailer API
-- MAPPER_API_DSN - Connection string pro připojení k Mapper API
-- MONOLITH_API_DSN - Connection string pro připojení k Monolith API
-- MULTI_PROBE_DSN - Connection string pro připojení k MultiProbe API
-- STARTING_POINT_DSN - Connection string pro připojení k StartingPoint API
-- TOPOLOGY_API_DSN - Connection string pro připojení k Topology API
-- XML_PARSER_API_DSN - Connection string pro připojení k XMl Parser API
-
-- METRICS_DSN - Connection string pro připojení k InfluxDb nebo MongoDb serveru (v budoucnu nahradí všechny výše zmíněné METRICS proměnné)
-
-Využití služeb StatusService v PHP:
-Typickým využitím notifikací je možnost upozornit uživatele, že při zpracování procesu došlo k nějaké chybě. Více v přiloženém PHP kódu status service, jejíž úkolem je vyhodnotit výstupy všech uzlů procesu a v případě jejich chyb odeslat uživatelům notifikace (pokud je mají povoleny).
-
-``` PHP
-namespace Demo;
-
-use Exception;
-use Hanaboso\CommonsBundle\Enum\NotificationEventEnum;
-use Hanaboso\NotificationSender\Model\Notification\NotificationManager;
-use Hanaboso\Utils\String\Json;
-use PhpAmqpLib\Message\AMQPMessage;
-use RabbitMqBundle\Connection\Connection;
-use RabbitMqBundle\Consumer\CallbackInterface;
-use RabbitMqBundle\Utils\Message;
-
-/**
- * Class StatusServiceCallback
- *
- * @package Demo
- */
-final class StatusServiceCallback implements CallbackInterface
-{
-
-	/**
-	* @var NotificationManager
-	*/
-	private NotificationManager $manager;
-
-	/**
-	* StatusServiceCallback constructor.
-	*
-	* @param NotificationManager $manager
-	*/
-	public function __construct(NotificationManager $manager)
-	{
-			$this->manager = $manager;
-	}
-
-	/**
-	* @param AMQPMessage $message
-	* @param Connection  $connection
-	* @param int     	$channelId
-	*
-	* @throws Exception
-	*/
-	public function processMessage(AMQPMessage $message, Connection $connection, int $channelId): void
-	{
-			// Získání obsahu RabbitMq zprávy
-			$data = Json::decode(Message::getBody($message));
-
-			// Pro každý uzel topologie vyhodnotí stav zpracování daného uzlu
-			foreach ($data['messages'] ?? [] as $innerMessage) {
-				// Výsledek zpracování daného uzlu
-				$results = [$innerMessage['resultCode'] ?? 0, $innerMessage['originalResultCode'] ?? 0];
-
-				// Pokud daný uzel skončil chybovým stavem 1006, tak odešleme notifikaci
-				if (in_array(1_006, $results, TRUE)) {
-					// Ve zprávě se nachází jeho kompletní obsah včetně hlaviček, který je možné použít pro složitější logiku
-					$this->manager->send(NotificationEventEnum::DATA_ERROR, $innerMessage);
-				}
-		}
-
-			// Potvrzení zpracování RabbitMq zprávy
-			Message::ack($message, $connection, $channelId);
-	}
-
-}
-```
+PIPES umožňují nastavení notifikací na nejrůznější druhy událostí. Notifikace odesílá **Status Service**, která po ukončení každého procesu obdrží zprávu s jeho vyhodnocením. Příjemce jednotlivých notifikací lze konfigurovat v **PIPES Admin** rozhraní. Notifikace lze odesílat na požadovanou URL nebo e-mailové adresy.
+ 
+![](/uploads/scr_orchestration/4_notification.png)
+ 
+### Doporučené odkazy:
+- [Dokumentace k notifikacím](/docs/cs/documentation/notifications)
+- [Jak nastavit zasílání notifikací](/docs/cs/tutorials/notifications)

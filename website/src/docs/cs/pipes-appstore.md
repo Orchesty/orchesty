@@ -2,37 +2,41 @@
 layout: main.hbs
 collection: documentation
 name: PIPES Appstore
-level: 1 
+parent: Getting started
+level: 2
 index: 5
+
+lunr: true
+tags: appstore obchod app store
 lang: cs
 ---
 
-Připravili jsme pro vás často používané aplikace a konektory. Tuto knihovnu lze jednoduše zaintegrovat do vaší aplikace.
 
-## Instalace předpřipravených aplikací a konektorů
+Pipes disponují knihovnou připravených aplikací a konektorů, které můžeme využívat ve svých procesech. Tuto sadu lze libovolně rozšiřovat a budovat tak i vlastní kolekce nových prvků. Seznam připravených aplikací najdete níže na této stránce.
 
-Rozšíření AppStoru je k dispozici jako veřejný [balíček](https://packagist.org/packages/hanaboso/pipes-connectors). Pro instalaci doporučujeme použít nástroj [Composer](https://getcomposer.org/).
+## Instalace Applinthu
+Applinth je distribuován jako veřejný balíček, resp. **Symfony bundle**. Lze ho instalovat v rámci každé služby, která implementuje **PHP-SDK** PIPES. Po instalaci jsou aplikace připravené k autorizaci v rozharní [PIPES Admin](/docs/cs/admin) a jejich konektory máme k dispozici v [Editoru procesů](/docs/cs/process-editor).
 
-Spuštěním přikazu `composer require hanaboso/pipes-connectors` se balíček stáhne a uloží do vašeho vendoru.
+Ukázku instalace a použití PIPES Appstore najdete v návodu [Jak využít konektory z kolekce PIPES Appstore](/docs/cs/tutorials/appstore).
 
-Nyní stačí zaregistrovat Symfony bundle. Do souboru `Bundles.php` přidejte následující řádek:
 
-``` PHP 1
+## Seznam připravených aplikací:
+- Airtable
+- Amazon - S3, Redshift
+- Bigcommerce
+- GoogleDrive
+- Hubspot
+- Mailchimp
+- Nutshell
+- Pipedrive
+- Quickbooks
+- Salesforce
+- SendGrind
+- Shipstation
+- Shopify
+- Shoptet
+- Wisepop
+- Zendesk
+- Zoho
 
-// ./config/Bundles.php
 
-Hanaboso\HbPFConnectors\HbPFConnectorsBundle::class => ['all' => TRUE]
-```
-
-Posledním krokem je zaregistrování aplikací a connectorů jako Symfony service.
-
-``` YAML 2
-
-# ./config/services.yaml
-
-node_services_dirs:
-    - '%kernel.project_dir%/vendor/hanaboso/pipes-connectors/src/Resources/config'
-
-applications:
-    - '%kernel.project_dir%/vendor/hanaboso/pipes-connectors/src/Resources/config'
-```

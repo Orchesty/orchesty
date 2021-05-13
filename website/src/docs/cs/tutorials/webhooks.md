@@ -2,19 +2,22 @@
 layout: main.hbs
 collection: documentation
 name: Jak integrovat službu s využitím webhooks
-parent: Tutorials
+parent: Tutoriály
 level: 2
 index: 70
 
 lunr: true
-tags: webhooks
+tags: webhooks webhooky
+lang: cs
 ---
 
 V tomto návodu si ukážeme, jak rozšířit aplikaci tak, aby umožnila práci s webhooky. Jako základ nám poslouží aplikace HubSpot. Pokud aplikaci nemáte podívejte se nejdříve na tutoriál [Jak vytvořit aplikaci s autorizací OAuth 2](/docs/cs/tutorials/oauth2-application).
 
 ## Co je to Webhook?
 
-TODO
+V v terminologii vývoje webových aplikací je Webhook změna nebo rozšíření chování webové aplikace pomocí vlastních zpětných volání (callbacků). Registrací Webhooku je myšleno vytvoření požadavku na systém reagovat na konkrétní událost. Typicky se jedná o události změny stavů entit daného systému.
+Webhook se obvykle registruje se dvěma parametry: Eventem a URL. Event je ona událost, na kterou chceme reagovat (npř. vytvoření uživatele, update objednávky, ...). URL je cesta, kam má daný systém zavolat, když taková akce nastane. 
+Pokud tato akce nastane, systé vyvolá tzv. Hook a odešle data na zadanou adresu. Formát dat je převážně JSON a požadavek se odesílá pomocí http POST metody.
 
 ## Implementace WebhookApplicationInterface
 
@@ -33,19 +36,19 @@ final class HubSpotApplication extends OAuth2ApplicationAbstract implements Webh
 }
 ```
 
-Nyní musíme v třídě aplikace doimplementovat chybějící metody definované přidaným rozhraním.
+Nyní musíme ve třídě aplikace doimplementovat chybějící metody definované přidaným rozhraním.
 
 ### Definice Webhooků
 
-Metoda ``getWebhookSubscriptions`` definuje, které Webhooky bude aplikace využívat. Pro naší ukázku chceme, aby HubSpot posílal Webhooky na vytvoření nebo odstranění kontaktů.
+Metoda ``getWebhookSubscriptions`` definuje, které Webhooky bude aplikace využívat. Pro naši ukázku chceme, aby HubSpot posílal Webhooky na vytvoření nebo odstranění kontaktů.
  
 ``` PHP 2
 
 public function getWebhookSubscriptions(): array
 {
     return [
-        new WebhookSubscription('Create Contact', 'starting-point', '', ['name' => 'contact.creation']),
-        new WebhookSubscription('Delete Contact', 'starting-point', '', ['name' => 'contact.deletion']),
+        new WebhookSubscription('Create Contact', 'Webhook', '', ['name' => 'contact.creation']),
+        new WebhookSubscription('Delete Contact', 'Webhook', '', ['name' => 'contact.deletion']),
     ];
 }
 ```
@@ -62,13 +65,14 @@ public function getWebhookSubscribeRequestDto(
     string $url
 ): RequestDto
 {
-    $url  = sprintf(
+    $hubspotUrl = sprintf(
         '%s/webhooks/v1/%s/subscriptions',
         self::BASE_URL,
         $applicationInstall->getSettings()[ApplicationAbstract::FORM][self::APP_ID]
     );
-    $body = Json::encode(
+    $body       = Json::encode(
         [
+            'webhookUrl'          => $url,
             'subscriptionDetails' => [
                 'subscriptionType' => $subscription->getParameters()['name'],
                 'propertyName'     => 'email',
@@ -77,7 +81,7 @@ public function getWebhookSubscribeRequestDto(
         ]
     );
 
-    return $this->getRequestDto($applicationInstall, CurlManager::METHOD_POST, $url, $body);
+    return $this->getRequestDto($applicationInstall, CurlManager::METHOD_POST, $hubspotUrl, $body);
 }
 ```
 
@@ -89,7 +93,7 @@ Po dokončení registrace Webhooku je potřeba ještě uložit ID Webohooku, tak
 
 public function processWebhookSubscribeResponse(ResponseDto $dto, ApplicationInstall $install): string
 {
-    return (string) Json::decode($dto->getBody())['id'];
+     return $dto->getJsonBody()['id'];
 }
 ```
 
@@ -136,13 +140,13 @@ public function getApplicationType(): string
 
 ## AppStore
 
-Přejděme nyní do PIPES Admin na záložku [AppStore](http://127.0.0.10/ui/app_store). Přejdeme na detail aplikace **HubSpot**. Nyní vidíme, že ve formuláři přibyly naše dva Webhooky definované metodou ``getWebhookSubscriptions``.
+Přejděme nyní do PIPES Admin na záložku [AppStore](http://127.0.0.10/ui/app_store), detail aplikace **HubSpot**. Nyní vidíme, že ve formuláři přibyly naše dva Webhooky definované metodou ``getWebhookSubscriptions``.
 
 ![](/uploads/scr_webhook/1_webhook_app.png "HubSpot application - Webhooks")
 
 ## Webhook konektor
 
-Příchozí Webhook je potřeba zpracovat. K tomu bude sloužit konektor, který využívá namísto metody ``processAction`` metodu ``processEvent``. Konektor pak bude vypadat následovně:
+Příchozí Webhook je potřeba zpracovat. K tomu bude sloužit konektor, který využívá místo metody ``processAction`` metodu ``processEvent``. Konektor pak bude vypadat následovně:
 
 ``` PHP 8
 
@@ -167,7 +171,7 @@ final class HubSpotContactCreatedConnector extends ConnectorAbstract
 }
 ```
 
-A nezapomene konektor zaregistrovat.
+A nezapomeneme konektor zaregistrovat.
 
 ``` YAML 9
 
@@ -181,7 +185,7 @@ service:
 
 ## Testování
 
-Abychom mohli otestovat tuto funkčnost je nutné vytvořit topologii. Topologii pojmenujeme třeba **hubspot-contact-created** Topologie bude vypadat následovně:
+Abychom mohli otestovat tuto funkčnost, je nutné vytvořit topologii. Topologii pojmenujeme třeba **hubspot-contact-created** Topologie bude vypadat následovně:
 ![](/uploads/scr_webhook/2_webhook_topology.png "Webhook - topologie")
 
 Nyní přiřadíme kódy k jednotlivým uzlům.
@@ -190,5 +194,13 @@ Nyní přiřadíme kódy k jednotlivým uzlům.
 Topologii uložíme, publikujeme a enablujeme. Poté se přesuneme zpět do Appstoru na detail HubSpot aplikace.
 Pro zaregistrování Webhooků nám stačí už jen vyplnit jméno topologie, kterou chceme volat, když HubSpot odešle požadavek.
 
-Zadáme **hubspot-contact-created** jako jméno topologie a potvrdíme.
-TODO
+Zadáme **hubspot-contact-created** jako jméno topologie a potvrdíme. Výsledek vypadá následovně:
+
+![](/uploads/scr_webhook/4_webhook_subscribed.png "Webhook - subscribed")
+
+Pokud vytvoříme nový kontakt v Hubspotu (ať už pomocí naší topologie nebo ručně přes webové rozhraní) HubSpot odešle požadavek s daty. Tato data pak nalezneme v záložce [Human Tasks v Pipes Admin](http://127.0.0.10/ui/human_tasks).
+
+![](/uploads/scr_webhook/5_webhook_data.png "Webhook - příchozí data")
+
+
+Gratulujeme, právě jste se naučili, jak implementovat Webhooky ve vaší aplikaci.
