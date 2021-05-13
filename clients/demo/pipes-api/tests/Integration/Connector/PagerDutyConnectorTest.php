@@ -44,12 +44,14 @@ final class PagerDutyConnectorTest extends KernelTestCaseAbstract
     public function testProcessAction(): void
     {
         $data = Json::decode(
-            $this->prepareService(static fn() => new ResponseDto(
-                200,
-                '',
-                File::getContent(__DIR__ . '/data/pagerDuty.json'),
-                []
-            ))->processAction(new ProcessDto())->getData()
+            $this->prepareService(
+                static fn() => new ResponseDto(
+                    200,
+                    '',
+                    File::getContent(__DIR__ . '/data/pagerDuty.json'),
+                    [],
+                ),
+            )->processAction(new ProcessDto())->getData(),
         );
 
         self::assertEquals(40, $data['Radek Jirsa']['hours']);
@@ -67,12 +69,14 @@ final class PagerDutyConnectorTest extends KernelTestCaseAbstract
     public function testProcessHourAction(): void
     {
         $data = Json::decode(
-            $this->prepareService(static fn() => new ResponseDto(
-                200,
-                '',
-                File::getContent(__DIR__ . '/data/pagerDutyHours.json'),
-                []
-            ))->processAction(new ProcessDto())->getData()
+            $this->prepareService(
+                static fn() => new ResponseDto(
+                    200,
+                    '',
+                    File::getContent(__DIR__ . '/data/pagerDutyHours.json'),
+                    [],
+                ),
+            )->processAction(new ProcessDto())->getData(),
         );
 
         self::assertEquals(64, $data['Radek Jirsa']['hours']);

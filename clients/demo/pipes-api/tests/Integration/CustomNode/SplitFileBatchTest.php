@@ -31,22 +31,22 @@ final class SplitFileBatchTest extends KernelTestCaseAbstract
             $dto,
             static function (): void {
                 self::assertTrue(TRUE);
-            }
+            },
         )->then(
             static function (): void {
                 self::assertTrue(TRUE);
-            }
+            },
         )->wait();
 
         $customNode->processBatch(
             (new ProcessDto())->setData('{"data":{"bids":"something","asks":"something"}}'),
             static function (): void {
                 self::assertTrue(TRUE);
-            }
+            },
         )->then(
             static function (): void {
                 self::assertTrue(TRUE);
-            }
+            },
         )->wait();
     }
 

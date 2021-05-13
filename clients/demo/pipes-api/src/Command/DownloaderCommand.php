@@ -35,11 +35,6 @@ final class DownloaderCommand extends Command
     protected static $defaultName = 'downloader:run';
 
     /**
-     * @var CurlManager
-     */
-    private CurlManager $manager;
-
-    /**
      * @var TimerInterface
      */
     private TimerInterface $heartbeat;
@@ -60,11 +55,10 @@ final class DownloaderCommand extends Command
      * @param string      $name
      * @param CurlManager $manager
      */
-    public function __construct(string $name, CurlManager $manager)
+    public function __construct(string $name, private CurlManager $manager)
     {
         parent::__construct($name);
 
-        $this->manager   = $manager;
         $this->loop      = Factory::create();
         $this->connector = new Connector($this->loop);
     }
@@ -103,7 +97,7 @@ final class DownloaderCommand extends Command
                         5,
                         static function () use ($ws): void {
                             $ws->send(Json::encode(['event' => 'pusher:ping', 'data' => []]));
-                        }
+                        },
                     );
 
                     $ws->on(
@@ -135,8 +129,8 @@ final class DownloaderCommand extends Command
                                             Json::encode(
                                                 [
                                                     'event' => 'pusher:subscribe', 'data' => ['channel' => $channel],
-                                                ]
-                                            )
+                                                ],
+                                            ),
                                         );
                                     }
 
@@ -155,19 +149,19 @@ final class DownloaderCommand extends Command
                                             sprintf(
                                                 'Received event: %s for channel %s.',
                                                 $data['event'],
-                                                $data['channel']
-                                            )
+                                                $data['channel'],
+                                            ),
                                         );
                                         $this->sendData($json, $output, 'stock-exchange');
                                         $this->sendData($json, $output, 'demo-topology');
                                         $this->sendData($json, $output, 'shipping-process');
                                     } else {
                                         $output->writeln(
-                                            sprintf('Received unknown event: %s', Json::encode($data))
+                                            sprintf('Received unknown event: %s', Json::encode($data)),
                                         );
                                     }
                             }
-                        }
+                        },
                     );
 
                     $ws->on(
@@ -179,9 +173,9 @@ final class DownloaderCommand extends Command
                                 1,
                                 function () use ($ws, $loop, $output): void {
                                     $this->reconnect($ws, $loop, $output);
-                                }
+                                },
                             );
-                        }
+                        },
                     );
 
                     $ws->on(
@@ -193,17 +187,17 @@ final class DownloaderCommand extends Command
                                 1,
                                 function () use ($ws, $loop, $output): void {
                                     $this->reconnect($ws, $loop, $output);
-                                }
+                                },
                             );
-                        }
+                        },
                     );
-                }
+                },
             );
 
         $promise->otherwise(
             static function (Throwable $e) use ($output): void {
                 $output->writeln(sprintf('Connection error: %s', $e->getMessage()));
-            }
+            },
         );
     }
 
@@ -235,7 +229,7 @@ final class DownloaderCommand extends Command
             [
                 'Accept'       => 'application/json',
                 'Content-Type' => 'application/json',
-            ]
+            ],
         ))->setBody($data);
 
         $this->manager->sendAsync($request)->then(
@@ -247,14 +241,14 @@ final class DownloaderCommand extends Command
                         sprintf(
                             'Request Error with code %s: %s',
                             $response->getStatusCode(),
-                            $response->getReasonPhrase()
-                        )
+                            $response->getReasonPhrase(),
+                        ),
                     );
                 }
             },
             static function (Exception $e) use ($output): void {
                 $output->writeln(sprintf('Request Error: %s', $e->getMessage()));
-            }
+            },
         );
     }
 

@@ -28,11 +28,11 @@ final class BatchCustomNodeTest extends KernelTestCaseAbstract
             new ProcessDto(),
             static function (): void {
                 self::assertTrue(TRUE);
-            }
+            },
         )->then(
             static function (): void {
                 self::assertTrue(TRUE);
-            }
+            },
         )->wait();
     }
 

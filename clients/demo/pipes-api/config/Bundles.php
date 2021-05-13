@@ -16,7 +16,6 @@ use Symfony\Bundle\DebugBundle\DebugBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\MonologBundle\MonologBundle;
 use Symfony\Bundle\SecurityBundle\SecurityBundle;
-use Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle;
 
 return [
     DebugBundle::class           => ['dev' => TRUE, 'test' => TRUE],
@@ -24,7 +23,6 @@ return [
     FrameworkBundle::class       => ['all' => TRUE],
     MonologBundle::class         => ['all' => TRUE],
     SecurityBundle::class        => ['all' => TRUE],
-    SwiftmailerBundle::class     => ['all' => TRUE],
 
     EmailServiceBundle::class        => ['all' => TRUE],
     HbPFApplicationBundle::class     => ['all' => TRUE],

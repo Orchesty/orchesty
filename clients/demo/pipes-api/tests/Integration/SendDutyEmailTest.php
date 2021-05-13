@@ -29,7 +29,7 @@ final class SendDutyEmailTest extends KernelTestCaseAbstract
     public function testSend(): void
     {
         $transport = $this->createPartialMock(TransportInterface::class, ['send', 'setLogger']);
-        $transport->method('send')->willReturn(1);
+        $transport->method('send');
 
         $pagerDuty = self::$container->get('hbpf.connector.pager-duty');
         $result    = new SendDutyEmail(new Mailer($transport), $pagerDuty);

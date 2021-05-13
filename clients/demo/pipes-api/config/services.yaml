@@ -148,7 +148,7 @@ services:
     mailer:
         class: EmailServiceBundle\Mailer\Mailer
         arguments:
-            - '@EmailServiceBundle\Transport\Impl\SwiftMailerTransport'
+            - '@EmailServiceBundle\Transport\Impl\SymfonyMailerTransport'
 
     hbpf.custom_node.hub-spot.create-multiple-contact-mapper:
         class: Demo\CustomNode\HubSpotCreateMultipleContactsMapper

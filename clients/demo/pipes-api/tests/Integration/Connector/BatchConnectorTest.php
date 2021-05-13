@@ -42,14 +42,14 @@ final class BatchConnectorTest extends KernelTestCaseAbstract
             new ProcessDto(),
             static function (): void {
                 self::assertTrue(TRUE);
-            }
+            },
         )->then(
             static function (): void {
                 self::assertTrue(TRUE);
             },
             static function (Throwable $throwable): void {
                 self::fail(sprintf('%s%s%s', $throwable->getMessage(), PHP_EOL, $throwable->getTraceAsString()));
-            }
+            },
         )->wait();
     }
 

@@ -18,18 +18,12 @@ final class IdnesConnector extends CustomNodeAbstract
 {
 
     /**
-     * @var CurlManager
-     */
-    private CurlManager $curlManager;
-
-    /**
      * IdnesConnector constructor.
      *
      * @param CurlManager $curlManager
      */
-    public function __construct(CurlManager $curlManager)
+    public function __construct(private CurlManager $curlManager)
     {
-        $this->curlManager = $curlManager;
     }
 
     /**

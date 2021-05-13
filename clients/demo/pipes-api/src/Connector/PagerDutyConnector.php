@@ -30,18 +30,12 @@ final class PagerDutyConnector extends ConnectorAbstract
     use ProcessEventNotSupportedTrait;
 
     /**
-     * @var CurlManagerInterface
-     */
-    private CurlManagerInterface $curlManager;
-
-    /**
      * PagerDutyConnector constructor.
      *
      * @param CurlManagerInterface $curlManager
      */
-    public function __construct(CurlManagerInterface $curlManager)
+    public function __construct(private CurlManagerInterface $curlManager)
     {
-        $this->curlManager = $curlManager;
     }
 
     /**
@@ -71,8 +65,8 @@ final class PagerDutyConnector extends ConnectorAbstract
                 [
                     'Accept'        => 'application/vnd.pagerduty+json;version=2',
                     'Authorization' => 'Token token=pu51uTEKrZcUrS5a9ev4',
-                ]
-            )
+                ],
+            ),
         );
         $requestDto->setDebugInfo($dto);
 
@@ -191,7 +185,7 @@ final class PagerDutyConnector extends ConnectorAbstract
                 'https://api.pagerduty.com/schedules/PUUDPGA?time_zone=CET&since=%s&until=%s',
                 $since,
                 $till,
-            )
+            ),
         );
     }
 
