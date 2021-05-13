@@ -9,6 +9,8 @@ import (
 	"syscall"
 	"time"
 
+	"gopkg.in/mgo.v2"
+
 	"limiter/pkg/env"
 	"limiter/pkg/limiter"
 	"limiter/pkg/logger"
@@ -26,6 +28,12 @@ func main() {
 
 	prepareLogger(env.GetEnv("LOG_LEVEL", "info"))
 	store := prepareStorage()
+	err := createIndexes(store, storage.GetIndexes())
+	if err != nil {
+		logger.GetLogger().Error(fmt.Sprintf("failed to create indexes [%v]", err), nil)
+		//os.Exit(1)
+	}
+
 	guard := prepareGuard(store)
 	consumer, publisher, err := prepareRabbit()
 	if err != nil {
@@ -50,6 +58,16 @@ func main() {
 	gracefulShutdown(tcpServer, consumer, publisher, serverFault)
 }
 
+func createIndexes(store storage.Storage, indexes []mgo.Index) error {
+	for _, index := range indexes {
+		if err := store.CreateIndex(index); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func prepareStorage() storage.Storage {
 	db := storage.NewMongo(
 		env.GetEnv("MONGO_HOST", "mongodb"),
@@ -63,10 +81,17 @@ func prepareStorage() storage.Storage {
 
 func prepareRabbit() (rabbitmq.Consumer, rabbitmq.Publisher, error) {
 	inputQueue := env.GetEnv("RABBITMQ_INPUT_QUEUE", "pipes.limiter")
+	pc := env.GetEnv("RABBITMQ_INPUT_QUEUE_PREFETCH_COUNT", "500")
 	rabbitPort, err := strconv.Atoi(env.GetEnv("RABBITMQ_PORT", "5672"))
 	if err != nil {
 		return nil, nil, fmt.Errorf("can't get RABBITMQ_PORT [%v]", err)
 	}
+
+	prefetchCount, err := strconv.Atoi(pc)
+	if err != nil {
+		return nil, nil, fmt.Errorf("can't set PREFETCH_COUNT [%v]", err)
+	}
+
 	conn := rabbitmq.NewConnection(
 		env.GetEnv("RABBITMQ_HOST", "rabbitmq"),
 		rabbitPort,
@@ -80,7 +105,7 @@ func prepareRabbit() (rabbitmq.Consumer, rabbitmq.Publisher, error) {
 	conn.Connect()
 	conn.Setup()
 
-	consumer := rabbitmq.NewConsumer(conn, inputQueue, logger.GetLogger())
+	consumer := rabbitmq.NewConsumer(conn, inputQueue, logger.GetLogger(), prefetchCount)
 	publisher := rabbitmq.NewPublisher(conn, "", logger.GetLogger())
 
 	return consumer, publisher, nil

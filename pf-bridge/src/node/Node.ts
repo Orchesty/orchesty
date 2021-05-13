@@ -133,13 +133,15 @@ class Node implements IStoppable {
             logger.debug(`BeforeWorker: Node handleJobMessage`);
             msgIn.getMeasurement().markWorkerStart();
             const msgsOut = await this.worker.processData(msgIn);
-            msgsOut.forEach((msgOut: JobMessage) => {
-
+            const publishJobs = msgsOut.map((msgOut: JobMessage) => {
                 msgOut.getMeasurement().markWorkerEnd();
-                this.drain.forward(msgOut);
+                const publish = this.drain.forward(msgOut);
                 msgOut.getMeasurement().markFinished();
                 this.sendBridgeMetrics(msgOut);
+
+                return publish;
             });
+            await Promise.all(publishJobs);
             logger.debug(`AfterWorker: Node handleJobMessage`);
         } catch (err) {
             logger.error(`Node process message failed.`, logger.ctxFromMsg(msgIn, err));
@@ -159,7 +161,7 @@ class Node implements IStoppable {
             msgIn.getMeasurement().markWorkerStart();
             const msgOut = await this.worker.processService(msgIn);
             msgOut.getMeasurement().markWorkerEnd();
-            this.drain.forward(msgOut);
+            await this.drain.forward(msgOut);
             msgOut.getMeasurement().markFinished();
             logger.debug(`AfterWorker: Node handleServiceMessage`);
         } catch (err) {

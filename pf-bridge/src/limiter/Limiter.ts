@@ -1,4 +1,4 @@
-import { v4 as uuid4 } from 'uuid';
+import {v4 as uuid4} from 'uuid';
 import logger from "../logger/Logger";
 import Headers from "../message/Headers";
 import JobMessage from "../message/JobMessage";
@@ -48,6 +48,12 @@ export default class Limiter implements ILimiter {
         const time = msg.getHeaders().getPFHeader(Headers.LIMIT_TIME);
         const value = msg.getHeaders().getPFHeader(Headers.LIMIT_VALUE);
 
+        if (msg.getHeaders().hasPFHeader(Headers.LIMITER_KEY)) {
+            const limiterKey = msg.getHeaders().getPFHeader(Headers.LIMITER_KEY);
+
+            return `${LIMIT_CHECK_PREFIX};${reqId};${limiterKey}`
+        }
+
         return `${LIMIT_CHECK_PREFIX};${reqId};${key};${time};${value}`;
     }
 
@@ -87,9 +93,11 @@ export default class Limiter implements ILimiter {
      */
     public async canBeProcessed(msg: JobMessage): Promise<boolean> {
         // If limit headers are missing, allow processing it directly because limiter could not decide without them
-        if (!msg.getHeaders().hasPFHeader(Headers.LIMIT_KEY) ||
-            !msg.getHeaders().hasPFHeader(Headers.LIMIT_TIME) ||
-            !msg.getHeaders().hasPFHeader(Headers.LIMIT_VALUE)
+        if (
+            !(
+                (msg.getHeaders().hasPFHeader(Headers.LIMIT_KEY) && msg.getHeaders().hasPFHeader(Headers.LIMIT_TIME) && msg.getHeaders().hasPFHeader(Headers.LIMIT_VALUE))
+                || msg.getHeaders().hasPFHeader(Headers.LIMITER_KEY)
+            )
         ) {
             return true;
         }
@@ -102,6 +110,7 @@ export default class Limiter implements ILimiter {
         }
 
         try {
+            return false;
             const content = Limiter.createCheckLimitRequest(msg);
             const resp = await this.tcpClient.send(content);
             const result = resp.split(";");
@@ -111,7 +120,7 @@ export default class Limiter implements ILimiter {
             logger.error("TcpLimiter can be processed error:", {error: e});
             // We do not know the limiter result allow processing
 
-            return true;
+            return false;
         }
     }
 

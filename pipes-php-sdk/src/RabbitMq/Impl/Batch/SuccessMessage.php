@@ -2,6 +2,8 @@
 
 namespace Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch;
 
+use DateTime;
+use Hanaboso\Utils\Date\DateTimeUtils;
 use Hanaboso\Utils\System\PipesHeaders;
 use InvalidArgumentException;
 
@@ -115,6 +117,46 @@ final class SuccessMessage
         if ($this->hasHeader($key)) {
             unset($this->headers[$key]);
         }
+
+        return $this;
+    }
+
+    /**
+     * @param string        $key
+     * @param int           $time
+     * @param int           $value
+     * @param DateTime|null $lastUpdate
+     *
+     * @return $this
+     */
+    public function setLimiter(string $key, int $time, int $value, ?DateTime $lastUpdate = NULL): SuccessMessage
+    {
+        $this->addHeader(PipesHeaders::createKey(PipesHeaders::LIMIT_KEY), $key);
+        $this->addHeader(PipesHeaders::createKey(PipesHeaders::LIMIT_TIME), (string) $time);
+        $this->addHeader(PipesHeaders::createKey(PipesHeaders::LIMIT_VALUE), (string) $value);
+
+        if ($lastUpdate) {
+            $this->addHeader(
+                PipesHeaders::createKey(PipesHeaders::LIMIT_LAST_UPDATE),
+                (string) $lastUpdate->getTimestamp(),
+            );
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function removeLimiter(): SuccessMessage
+    {
+        $this->addHeader(PipesHeaders::createKey(PipesHeaders::LIMIT_KEY), 'nolimit|all');
+        $this->addHeader(PipesHeaders::createKey(PipesHeaders::LIMIT_TIME), '1');
+        $this->addHeader(PipesHeaders::createKey(PipesHeaders::LIMIT_VALUE), '9999999');
+        $this->addHeader(
+            PipesHeaders::createKey(PipesHeaders::LIMIT_LAST_UPDATE),
+            (string) DateTimeUtils::getUtcDateTime()->getTimestamp(),
+        );
 
         return $this;
     }

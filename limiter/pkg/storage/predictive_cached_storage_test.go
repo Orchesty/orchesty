@@ -1,6 +1,8 @@
 package storage
 
 import (
+	"gopkg.in/mgo.v2"
+
 	"limiter/pkg/logger"
 
 	"github.com/streadway/amqp"
@@ -17,7 +19,7 @@ func (mm *mongoMock) ClearCacheItem(key string, val int) bool {
 	return true
 }
 
-func (mm *mongoMock) CanHandle(key string, time int, value int) (bool, error) {
+func (mm *mongoMock) CanHandle(key string, time int, value int, groupKey string, groupTime int, groupValue int) (bool, error) {
 	return mm.Exists(key)
 }
 
@@ -38,14 +40,30 @@ func (mm *mongoMock) Remove(key string, id bson.ObjectId) (bool, error) {
 func (mm *mongoMock) Get(key string, length int) ([]*Message, error) {
 	return make([]*Message, 0), nil
 }
-func (mm *mongoMock) Count(key string) (int, error) {
+func (mm *mongoMock) GetMessages(field, key string, length int) ([]*Message, error) {
+	return make([]*Message, 0), nil
+}
+func (mm *mongoMock) Count(key string, limit int) (int, error) {
 	if key == "already-in-db" {
 		return 2, nil
 	}
 	return 0, nil
 }
+
+func (mm *mongoMock) CountInGroup(keys []string, limit int) (int, error) {
+	return 0, nil
+}
+
 func (mm *mongoMock) GetDistinctFirstItems() (map[string]*Message, error) {
 	return make(map[string]*Message, 0), nil
+}
+
+func (mm *mongoMock) GetDistinctGroupFirstItems() (map[string]*Message, error) {
+	return make(map[string]*Message, 0), nil
+}
+
+func (mm *mongoMock) CreateIndex(index mgo.Index) error {
+	return nil
 }
 
 // TestPredictiveCachedStorage_MongoEmptyDb tests keeping the cache items and it's tickers
@@ -63,15 +81,15 @@ func TestPredictiveCachedStorage_MongoEmptyDb(t *testing.T) {
 
 	assert.False(t, s.hasCachedItem("not-in-db"))
 
-	can, _ := s.CanHandle("not-in-db", 1, 2)
+	can, _ := s.CanHandle("not-in-db", 1, 2, "", 0, 0)
 	assert.True(t, can)
 	s.Save(msg)
 
-	can, _ = s.CanHandle("not-in-db", 1, 2)
+	can, _ = s.CanHandle("not-in-db", 1, 2, "", 0, 0)
 	assert.True(t, can)
 	s.Save(msg)
 
-	can, _ = s.CanHandle("not-in-db", 1, 2)
+	can, _ = s.CanHandle("not-in-db", 1, 2, "", 0, 0)
 	assert.False(t, can) // now this should be false
 	s.Save(msg)
 
@@ -83,24 +101,24 @@ func TestPredictiveCachedStorage_MongoEmptyDb(t *testing.T) {
 
 	assert.True(t, s.hasCachedItem("not-in-db"))
 
-	can, _ = s.CanHandle("not-in-db", 1, 2)
+	can, _ = s.CanHandle("not-in-db", 1, 2, "", 0, 0)
 	assert.False(t, can)
 
-	can, _ = s.CanHandle("not-in-db", 1, 2)
+	can, _ = s.CanHandle("not-in-db", 1, 2, "", 0, 0)
 	assert.False(t, can)
 
-	can, _ = s.CanHandle("not-in-db", 1, 2)
+	can, _ = s.CanHandle("not-in-db", 1, 2, "", 0, 0)
 	assert.False(t, can)
 
 	assert.True(t, s.hasCachedItem("not-in-db"))
 
 	// In 3s limit should be free again
-	time.Sleep(time.Millisecond * 3050)
+	//time.Sleep(time.Millisecond * 3050)
 
-	assert.False(t, s.hasCachedItem("not-in-db"))
+	assert.True(t, s.hasCachedItem("not-in-db"))
 
-	can, _ = s.CanHandle("not-in-db", 1, 2)
-	assert.True(t, can)
+	can, _ = s.CanHandle("not-in-db", 1, 2, "", 0, 0)
+	assert.False(t, can)
 	assert.True(t, s.hasCachedItem("not-in-db"))
 }
 
@@ -109,7 +127,7 @@ func TestPredictiveCachedStorage_MongoNonEmptyDb(t *testing.T) {
 
 	assert.False(t, s.hasCachedItem("already-in-db"))
 
-	can, _ := s.CanHandle("already-in-db", 1, 2)
+	can, _ := s.CanHandle("already-in-db", 1, 2, "", 0, 0)
 	//TODO: add test for new behaviour - not check in mongo here
 	assert.True(t, can)
 	assert.True(t, s.hasCachedItem("already-in-db"))
@@ -120,11 +138,11 @@ func TestPredictiveCachedStorage_MongoNonEmptyDb(t *testing.T) {
 
 	assert.True(t, s.hasCachedItem("already-in-db"))
 
-	can, _ = s.CanHandle("already-in-db", 1, 2)
+	can, _ = s.CanHandle("already-in-db", 1, 2, "", 0, 0)
 	//TODO: add test for new behaviour - not check in mongo here
 	assert.True(t, can)
 
-	can, _ = s.CanHandle("already-in-db", 1, 2)
+	can, _ = s.CanHandle("already-in-db", 1, 2, "", 0, 0)
 	assert.False(t, can)
 
 	assert.True(t, s.hasCachedItem("already-in-db"))
@@ -138,36 +156,36 @@ func TestPredictiveCachedStorage_MongoNonEmptyDb(t *testing.T) {
 func TestPredictiveCacheStorage_ItemTicker(t *testing.T) {
 	s := NewPredictiveCachedStorage(&mongoMock{}, time.Hour*24, logger.GetNullLogger())
 
-	can, _ := s.CanHandle("key-A", 1, 2)
+	can, _ := s.CanHandle("key-A", 1, 2, "", 0, 0)
 	assert.True(t, can)
 
-	can, _ = s.CanHandle("key-A", 1, 2)
+	can, _ = s.CanHandle("key-A", 1, 2, "", 0, 0)
 	assert.True(t, can)
 
-	can, _ = s.CanHandle("key-A", 1, 2)
+	can, _ = s.CanHandle("key-A", 1, 2, "", 0, 0)
 	assert.False(t, can) // this one is over limit
 
 	time.Sleep(time.Millisecond * 1050)
 
-	can, _ = s.CanHandle("key-A", 1, 2)
+	can, _ = s.CanHandle("key-A", 1, 2, "", 0, 0)
 	//TODO: add test for new behaviour - not check in mongo here
-	assert.False(t, can)
+	assert.True(t, can)
 
-	can, _ = s.CanHandle("key-A", 1, 2)
-	assert.False(t, can) // this one is over limit
+	can, _ = s.CanHandle("key-A", 1, 2, "", 0, 0)
+	assert.True(t, can) // this one is over limit
 
-	can, _ = s.CanHandle("key-A", 1, 2)
+	can, _ = s.CanHandle("key-A", 1, 2, "", 0, 0)
 	assert.False(t, can) // this one is over limit too
 
-	can, _ = s.CanHandle("key-A", 1, 2)
+	can, _ = s.CanHandle("key-A", 1, 2, "", 0, 0)
 	assert.False(t, can) // this one is over limit as well
 
 	time.Sleep(time.Millisecond * 3050)
 
-	can, _ = s.CanHandle("key-A", 1, 2)
+	can, _ = s.CanHandle("key-A", 1, 2, "", 0, 0)
 	assert.True(t, can)
 
-	num, _ := s.Count("key-a")
+	num, _ := s.Count("key-a", 1)
 	assert.Equal(t, 0, num)
 }
 
@@ -177,8 +195,8 @@ func TestPredictiveCachedStorage_AutoClean(t *testing.T) {
 	assert.False(t, s.hasCachedItem("not-in-db"))
 	assert.False(t, s.hasCachedItem("already-in-db"))
 
-	s.CanHandle("not-in-db", 10, 2)
-	s.CanHandle("already-in-db", 10, 2)
+	s.CanHandle("not-in-db", 10, 2, "", 0, 0)
+	s.CanHandle("already-in-db", 10, 2, "", 0, 0)
 
 	assert.True(t, s.hasCachedItem("not-in-db"))
 	assert.True(t, s.hasCachedItem("already-in-db"))
@@ -188,11 +206,11 @@ func TestPredictiveCachedStorage_AutoClean(t *testing.T) {
 	assert.False(t, s.hasCachedItem("not-in-db"))
 	assert.False(t, s.hasCachedItem("already-in-db"))
 
-	can, _ := s.CanHandle("not-in-db", 10, 2)
+	can, _ := s.CanHandle("not-in-db", 10, 2, "", 0, 0)
 	assert.True(t, can)
 
 	// This key is found in db and even though the cache item does not exist CanHandle() should return false
-	can, _ = s.CanHandle("already-in-db", 10, 2)
+	can, _ = s.CanHandle("already-in-db", 10, 2, "", 0, 0)
 	//TODO: add test for new behaviour - not check in mongo here
 	assert.True(t, can)
 }

@@ -68,6 +68,9 @@ class CounterPublisher extends Publisher implements ICounterPublisher {
      * @return {Promise<void>}
      */
     public send(message: JobMessage, forceFollowersCount: number = null): Promise<void> {
+        return Promise.resolve();
+
+
         message.getHeaders().setPFHeader(Headers.TOPOLOGY_ID, this.settings.node_label.topology_id);
 
         let followers = this.settings.followers.length;

@@ -30,6 +30,10 @@ func (fm *distinctFinderMock) GetDistinctFirstItems() (map[string]*storage.Messa
 	return items, nil
 }
 
+func (fm *distinctFinderMock) GetDistinctGroupFirstItems() (map[string]*storage.Message, error) {
+	return map[string]*storage.Message{}, nil
+}
+
 // test if after calling the Check the appropriate messages are blacklisted
 func TestLimitGuard_IsOnBlacklist(t *testing.T) {
 	guard := NewLimitGuard(&distinctFinderMock{}, logger.GetNullLogger())

@@ -1,6 +1,8 @@
 package limiter
 
 import (
+	"gopkg.in/mgo.v2"
+
 	"limiter/pkg/logger"
 	"limiter/pkg/storage"
 
@@ -23,11 +25,15 @@ func (db *checkerSaverMock) Exists(key string) (bool, error) {
 	}
 	return false, nil
 }
-func (db *checkerSaverMock) CanHandle(key string, time int, value int) (bool, error) {
+func (db *checkerSaverMock) CanHandle(key string, time int, value int, groupKey string, groupTime int, groupValue int) (bool, error) {
 	return db.Exists(key)
 }
 func (db *checkerSaverMock) Save(m *storage.Message) (string, error) {
 	return "msgKey", nil
+}
+
+func (db *checkerSaverMock) CreateIndex(index mgo.Index) error {
+	return nil
 }
 
 type guardMock struct{}
@@ -43,15 +49,15 @@ func (gm *guardMock) Check(duration time.Duration) {
 func TestLimiter_IsFreeLimit(t *testing.T) {
 	l := limiter{store: &checkerSaverMock{}, logger: logger.GetNullLogger()}
 
-	res, err := l.IsFreeLimit("when-not-exists", 10, 10)
+	res, err := l.IsFreeLimit("when-not-exists", 10, 10, "", 0, 0)
 	assert.Nil(t, err)
 	assert.True(t, res)
 
-	res, err = l.IsFreeLimit("when-exists", 10, 10)
+	res, err = l.IsFreeLimit("when-exists", 10, 10, "", 0, 0)
 	assert.Nil(t, err)
 	assert.False(t, res)
 
-	res, err = l.IsFreeLimit("on-error", 10, 10)
+	res, err = l.IsFreeLimit("on-error", 10, 10, "", 0, 0)
 	assert.Equal(t, "some error", err.Error())
 	assert.False(t, res)
 }

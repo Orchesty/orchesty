@@ -12,7 +12,7 @@ import (
 
 // Limiter represents the whole limiter service
 type Limiter interface {
-	IsFreeLimit(key string, time int, value int) (bool, error)
+	IsFreeLimit(key string, time int, value int, groupKey string, groupTime int, groupValue int) (bool, error)
 	Start()
 	Stop()
 }
@@ -57,8 +57,8 @@ func (l *limiter) Stop() {
 }
 
 // isFreeLimit returns boolean whether message can be processed or not considering system limits
-func (l *limiter) IsFreeLimit(key string, time int, value int) (bool, error) {
-	can, err := l.store.CanHandle(key, time, value)
+func (l *limiter) IsFreeLimit(key string, time int, value int, groupKey string, groupTime int, groupValue int) (bool, error) {
+	can, err := l.store.CanHandle(key, time, value, groupKey, groupTime, groupValue)
 	if err != nil {
 		return false, err
 	}

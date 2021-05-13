@@ -9,6 +9,7 @@ import IPartialForwarder from "../drain/IPartialForwarder";
 import AAmqpWorker, {IAmqpWorkerSettings, IWaiting} from "./AAmqpWorker";
 import {IPublisher} from "amqplib-plus/dist/IPublisher";
 import {persistentMessages, repeaterOptions} from "../../config";
+import RedisStorage from "../../counter/storage/RedisStorage";
 
 /**
  * This Non-blocking worker forwards all incoming response messages immediately using partialForwarder when received
@@ -20,6 +21,7 @@ class AmqpNonBlockingWorker extends AAmqpWorker {
      *
      * @param {Connection} connection
      * @param {IAmqpWorkerSettings} settings
+     * @param {RedisStorage} redisStorage
      * @param {IPartialForwarder} partialForwarder
      * @param {ICounterPublisher} counterPublisher
      * @param {IPublisher} nonStandardPublisher
@@ -27,11 +29,12 @@ class AmqpNonBlockingWorker extends AAmqpWorker {
     constructor(
         protected connection: Connection,
         protected settings: IAmqpWorkerSettings,
+        redisStorage: RedisStorage,
         private partialForwarder: IPartialForwarder,
         private counterPublisher: ICounterPublisher,
         private nonStandardPublisher: IPublisher,
     ) {
-        super(connection, settings);
+        super(connection, settings, redisStorage);
     }
 
     /**

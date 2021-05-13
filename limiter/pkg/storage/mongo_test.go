@@ -43,7 +43,7 @@ func runTestCommandsInSeries(t *testing.T, endTestCh chan bool) {
 	m.Connect()
 	m.session.DB("test").C("messages_test").DropCollection()
 
-	count, err := m.Count("abcd123")
+	count, err := m.Count("abcd123", 1)
 	assert.Nil(t, err)
 	assert.Equal(t, 0, count)
 
@@ -91,11 +91,11 @@ func runTestCommandsInSeries(t *testing.T, endTestCh chan bool) {
 	assert.Nil(t, err)
 	assert.Equal(t, "abcd123", k, "Save should allow saving multiple messages with same key")
 
-	count, err = m.Count("abcd123")
+	count, err = m.Count("abcd123", 2)
 	assert.Nil(t, err)
 	assert.Equal(t, 2, count)
 
-	count, err = m.Count("efgh456")
+	count, err = m.Count("efgh456", 1)
 	assert.Nil(t, err)
 	assert.Equal(t, 1, count)
 
