@@ -3,9 +3,12 @@ package model
 import (
 	"fmt"
 	"net"
+	"os"
+	"strings"
 )
 
 const (
+	passPrefix = "APP_PASS_"
 	//RabbitDsn      = "RABBITMQ_DSN"
 
 	// RabbitMqHost RabbitMqHost
@@ -164,6 +167,20 @@ func (e *Environment) GetEnvironment() (map[string]string, error) {
 	environment[MetricsService] = "influx"
 	if service := e.MetricsService; service != "" {
 		environment[MetricsService] = service
+	}
+
+	for _, env := range os.Environ() {
+		if !strings.HasPrefix(env, passPrefix) {
+			continue
+		}
+
+		vals := strings.Split(env, "=")
+		if len(vals) != 2 {
+			continue
+		}
+
+		trimmedKey := strings.Replace(vals[0], passPrefix, "", 1)
+		environment[trimmedKey] = vals[1]
 	}
 
 	return environment, nil
