@@ -3,9 +3,10 @@
 namespace Hanaboso\NotificationSender\Model\Notification\Sender;
 
 use Hanaboso\NotificationSender\Model\Notification\Dto\EmailDto;
-use Swift_Mailer;
-use Swift_Message;
-use Swift_SmtpTransport;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Mailer\Mailer;
+use Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport;
+use Symfony\Component\Mime\Email;
 
 /**
  * Class EmailSender
@@ -18,23 +19,29 @@ final class EmailSender
     /**
      * @param EmailDto $dto
      * @param mixed[]  $settings
+     *
+     * @throws TransportExceptionInterface
      */
-    public function send(EmailDto $dto, array $settings): void
+    public function sendEmail(EmailDto $dto, array $settings): void
     {
-        $mailer = new Swift_Mailer(
-            (new Swift_SmtpTransport(
-                $settings[EmailDto::HOST],
-                $settings[EmailDto::PORT],
-                $settings[EmailDto::ENCRYPTION] === 'null' ? NULL : $settings[EmailDto::ENCRYPTION],
-            ))->setUsername($settings[EmailDto::USERNAME])->setPassword($settings[EmailDto::PASSWORD])
+        $transport = new EsmtpTransport(
+            $settings[EmailDto::HOST],
+            intval($settings[EmailDto::PORT]),
+            $settings[EmailDto::ENCRYPTION] === 'ssl' ? TRUE : NULL,
         );
+        $transport->setUsername($settings[EmailDto::USERNAME]);
+        $transport->setPassword($settings[EmailDto::PASSWORD]);
+
+        $mailer = new Mailer($transport);
 
         foreach ($settings[EmailDto::EMAILS] as $email) {
-            $mailer->send(
-                (new Swift_Message($dto->getSubject(), $dto->getBody()))
-                    ->setFrom($settings[EmailDto::EMAIL])
-                    ->setTo($email)
-            );
+            $mail = (new Email())
+                ->from($settings[EmailDto::EMAIL])
+                ->to($email)
+                ->subject($dto->getSubject())
+                ->text($dto->getBody());
+
+            $mailer->send($mail);
         }
     }
 

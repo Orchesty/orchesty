@@ -8,12 +8,10 @@ use Hanaboso\RestBundle\RestBundle;
 use RabbitMqBundle\RabbitMqBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\MonologBundle\MonologBundle;
-use Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle;
 
 return [
     FrameworkBundle::class       => ['all' => TRUE],
     MonologBundle::class         => ['all' => TRUE],
-    SwiftmailerBundle::class     => ['all' => TRUE],
     DoctrineMongoDBBundle::class => ['all' => TRUE],
 
     HbPFCommonsBundle::class        => ['all' => TRUE],

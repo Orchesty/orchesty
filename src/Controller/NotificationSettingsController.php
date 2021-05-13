@@ -25,19 +25,13 @@ final class NotificationSettingsController
     use ControllerTrait;
 
     /**
-     * @var NotificationSettingsHandler
-     */
-    private NotificationSettingsHandler $handler;
-
-    /**
      * NotificationSettingsController constructor.
      *
      * @param NotificationSettingsHandler $handler
      */
-    public function __construct(NotificationSettingsHandler $handler)
+    public function __construct(private NotificationSettingsHandler $handler)
     {
-        $this->handler = $handler;
-        $this->logger  = new NullLogger();
+        $this->logger = new NullLogger();
     }
 
     /**

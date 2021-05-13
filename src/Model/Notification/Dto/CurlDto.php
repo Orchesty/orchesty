@@ -17,25 +17,13 @@ final class CurlDto
     public const HEADERS = 'headers';
 
     /**
-     * @var mixed[]
-     */
-    private array $body;
-
-    /**
-     * @var mixed[]
-     */
-    private array $headers;
-
-    /**
      * CurlDto constructor.
      *
      * @param mixed[] $body
      * @param mixed[] $headers
      */
-    public function __construct(array $body, array $headers)
+    public function __construct(private array $body, private array $headers)
     {
-        $this->body    = $body;
-        $this->headers = $headers;
     }
 
     /**

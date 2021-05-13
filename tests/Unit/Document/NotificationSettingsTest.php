@@ -55,7 +55,7 @@ final class NotificationSettingsTest extends KernelTestCaseAbstract
                 NotificationSettings::STATUS         => TRUE,
                 NotificationSettings::STATUS_MESSAGE => NULL,
             ],
-            $settings
+            $settings,
         );
     }
 

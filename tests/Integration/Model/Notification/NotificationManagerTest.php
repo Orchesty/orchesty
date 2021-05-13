@@ -62,8 +62,8 @@ final class NotificationManagerTest extends DatabaseTestCaseAbstract
                         CurlDto::METHOD  => 'POST',
                         CurlDto::URL     => 'https://example.com',
                         CurlDto::HEADERS => [],
-                    ]
-                )
+                    ],
+                ),
         );
 
         $this->pfd(
@@ -79,8 +79,8 @@ final class NotificationManagerTest extends DatabaseTestCaseAbstract
                         EmailDto::ENCRYPTION => 'null',
                         EmailDto::EMAILS     => ['one@example.com', 'two@example.com'],
                         EmailDto::EMAIL      => 'email@example.com',
-                    ]
-                )
+                    ],
+                ),
         );
 
         $this->pfd(
@@ -95,15 +95,15 @@ final class NotificationManagerTest extends DatabaseTestCaseAbstract
                         RabbitDto::PASSWORD => 'guest',
                         RabbitDto::VHOST    => '/',
                         RabbitDto::QUEUE    => 'queue',
-                    ]
-                )
+                    ],
+                ),
         );
 
         $this->pfd(
             (new NotificationSettings())
                 ->setClass(NullUnknownHandler::class)
                 ->setEvents(self::EVENTS)
-                ->setSettings([])
+                ->setSettings([]),
         );
 
         $this->manager->send(NotificationEventEnum::ACCESS_EXPIRATION, []);

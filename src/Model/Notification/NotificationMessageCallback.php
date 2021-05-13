@@ -23,18 +23,12 @@ final class NotificationMessageCallback implements CallbackInterface
     private const PIPE = 'pipes';
 
     /**
-     * @var NotificationManager
-     */
-    private NotificationManager $manager;
-
-    /**
      * NotificationMessageCallback constructor.
      *
      * @param NotificationManager $manager
      */
-    public function __construct(NotificationManager $manager)
+    public function __construct(private NotificationManager $manager)
     {
-        $this->manager = $manager;
     }
 
     /**
@@ -53,9 +47,9 @@ final class NotificationMessageCallback implements CallbackInterface
         if (!$event) {
             throw new NotificationException(
                 sprintf(
-                    "Notification event not found: RabbitMQ message missing required property 'notification_type'!"
+                    "Notification event not found: RabbitMQ message missing required property 'notification_type'!",
                 ),
-                NotificationException::NOTIFICATION_EVENT_NOT_FOUND
+                NotificationException::NOTIFICATION_EVENT_NOT_FOUND,
             );
         }
 

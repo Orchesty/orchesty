@@ -7,10 +7,9 @@ services:
     mailer:
         class: EmailServiceBundle\Mailer\Mailer
         arguments:
-            - '@EmailServiceBundle\Transport\Impl\SwiftMailerTransport'
+            - '@EmailServiceBundle\Transport\Impl\SymfonyMailerTransport'
 
-swiftmailer:
-    url: '%env(string:SMTP_DSN)%'
-    spool: { type: memory }
-    disable_delivery: false
-    logging: true
+    Symfony\Component\Mailer\Mailer:
+        class: Symfony\Component\Mailer\Mailer
+        arguments:
+            - '@mailer.transports'

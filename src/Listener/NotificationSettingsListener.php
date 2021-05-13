@@ -17,18 +17,12 @@ final class NotificationSettingsListener
 {
 
     /**
-     * @var CryptManager
-     */
-    private CryptManager $cryptManager;
-
-    /**
      * NotificationSettingsListener constructor.
      *
      * @param CryptManager $cryptManager
      */
-    public function __construct(CryptManager $cryptManager)
+    public function __construct(private CryptManager $cryptManager)
     {
-        $this->cryptManager = $cryptManager;
     }
 
     /**
@@ -43,7 +37,7 @@ final class NotificationSettingsListener
         if ($document instanceof NotificationSettings) {
             $document->setSettings(
                 !empty($document->getEncryptedSettings()) ?
-                    $this->cryptManager->decrypt($document->getEncryptedSettings()) : []
+                    $this->cryptManager->decrypt($document->getEncryptedSettings()) : [],
             );
         }
     }

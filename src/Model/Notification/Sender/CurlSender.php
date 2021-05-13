@@ -17,18 +17,12 @@ final class CurlSender
 {
 
     /**
-     * @var CurlManagerInterface
-     */
-    private CurlManagerInterface $manager;
-
-    /**
      * CurlSender constructor.
      *
      * @param CurlManagerInterface $manager
      */
-    public function __construct(CurlManagerInterface $manager)
+    public function __construct(private CurlManagerInterface $manager)
     {
-        $this->manager = $manager;
     }
 
     /**
@@ -42,8 +36,8 @@ final class CurlSender
         $this->manager->send(
             (new RequestDto(
                 $settings[CurlDto::METHOD],
-                new Uri($settings[CurlDto::URL])
-            ))->setBody($dto->getJsonBody())->setHeaders(array_merge($settings[CurlDto::HEADERS], $dto->getHeaders()))
+                new Uri($settings[CurlDto::URL]),
+            ))->setBody($dto->getJsonBody())->setHeaders(array_merge($settings[CurlDto::HEADERS], $dto->getHeaders())),
         );
     }
 

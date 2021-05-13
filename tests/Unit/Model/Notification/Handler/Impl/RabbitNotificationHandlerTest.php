@@ -53,7 +53,7 @@ final class RabbitNotificationHandlerTest extends KernelTestCaseAbstract
                 RabbitDto::PASSWORD,
                 RabbitDto::QUEUE,
             ],
-            $this->handler->getRequiredSettings()
+            $this->handler->getRequiredSettings(),
         );
     }
 

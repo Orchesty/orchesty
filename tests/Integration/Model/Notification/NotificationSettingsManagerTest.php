@@ -57,14 +57,14 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
             (new NotificationSettings())
                 ->setClass(EmailNotificationHandler::class)
                 ->setEvents(self::EVENTS)
-                ->setSettings([EmailDto::EMAILS => ['one@example.com', 'two@example.com']])
+                ->setSettings([EmailDto::EMAILS => ['one@example.com', 'two@example.com']]),
         );
 
         $this->pfd(
             (new NotificationSettings())
                 ->setClass('Unknown')
                 ->setEvents(self::EVENTS)
-                ->setSettings([EmailDto::EMAILS => ['one@example.com', 'two@example.com']])
+                ->setSettings([EmailDto::EMAILS => ['one@example.com', 'two@example.com']]),
         );
         $this->dm->clear();
 
@@ -156,7 +156,7 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
                     NotificationSettings::STATUS_MESSAGE => NULL,
                 ],
             ],
-            $handlers
+            $handlers,
         );
 
         self::assertCount(7, $this->dm->getRepository(NotificationSettings::class)->findAll());
@@ -197,7 +197,7 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
                 NotificationSettings::STATUS         => TRUE,
                 NotificationSettings::STATUS_MESSAGE => NULL,
             ],
-            $settings
+            $settings,
         );
     }
 
@@ -261,7 +261,7 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
                     CurlDto::HEADERS => 'headers',
                     'Unknown'        => 'unknown',
                 ],
-            ]
+            ],
         );
 
         self::assertEquals(
@@ -281,7 +281,7 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
                 NotificationSettings::STATUS         => TRUE,
                 NotificationSettings::STATUS_MESSAGE => NULL,
             ],
-            $settings
+            $settings,
         );
     }
 
@@ -292,8 +292,8 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
      */
     public function testSaveEmailSettings(): void
     {
-        $sender = self::createPartialMock(EmailSender::class, ['send']);
-        $sender->method('send');
+        $sender = self::createPartialMock(EmailSender::class, ['sendEmail']);
+        $sender->method('sendEmail');
         $this->setProperty($this->manager, 'emailSender', $sender);
 
         $settings = (new NotificationSettings())->setClass(EmailNotificationHandler::class);
@@ -314,7 +314,7 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
                     EmailDto::EMAIL      => 'email@example.com',
                     'Unknown'            => 'unknown',
                 ],
-            ]
+            ],
         );
 
         self::assertEquals(
@@ -338,7 +338,7 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
                 NotificationSettings::STATUS         => TRUE,
                 NotificationSettings::STATUS_MESSAGE => NULL,
             ],
-            $settings
+            $settings,
         );
     }
 
@@ -370,7 +370,7 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
                     RabbitDto::QUEUE    => 'queue',
                     'Unknown'           => 'unknown',
                 ],
-            ]
+            ],
         );
 
         self::assertEquals(
@@ -393,7 +393,7 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
                 NotificationSettings::STATUS         => TRUE,
                 NotificationSettings::STATUS_MESSAGE => NULL,
             ],
-            $settings
+            $settings,
         );
     }
 
@@ -453,7 +453,7 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
                     CurlDto::HEADERS => 'headers',
                     'Unknown'        => 'unknown',
                 ],
-            ]
+            ],
         );
 
         self::assertEquals(
@@ -473,7 +473,7 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
                 NotificationSettings::STATUS         => FALSE,
                 NotificationSettings::STATUS_MESSAGE => 'Method method is not a valid curl method',
             ],
-            $settings
+            $settings,
         );
     }
 
@@ -490,19 +490,19 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
         self::expectException(NotificationException::class);
         self::expectExceptionCode(NotificationException::NOTIFICATION_SENDER_NOT_FOUND);
         self::expectExceptionMessage(
-            sprintf("Notification sender for notification handler '%s' not found!", get_class($handler))
+            sprintf("Notification sender for notification handler '%s' not found!", $handler::class),
         );
 
         $handlers = new RewindableGenerator(
             static function () use ($handler): Generator {
                 yield $handler;
             },
-            1
+            1,
         );
 
         $this->setProperty($this->manager, 'handlers', $handlers);
 
-        $settings = (new NotificationSettings())->setClass(get_class($handler));
+        $settings = (new NotificationSettings())->setClass($handler::class);
         $this->pfd($settings);
         $this->dm->clear();
 
@@ -514,7 +514,7 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
                     CurlDto::METHOD  => 'method',
                     CurlDto::HEADERS => 'headers',
                 ],
-            ]
+            ],
         );
     }
 

@@ -20,25 +20,13 @@ final class RabbitDto
     public const PASSWORD = 'password';
 
     /**
-     * @var mixed[]
-     */
-    private array $body;
-
-    /**
-     * @var mixed[]
-     */
-    private array $headers;
-
-    /**
      * RabbitDto constructor.
      *
      * @param mixed[] $body
      * @param mixed[] $headers
      */
-    public function __construct(array $body, array $headers)
+    public function __construct(private array $body, private array $headers)
     {
-        $this->body    = $body;
-        $this->headers = $headers;
     }
 
     /**

@@ -28,7 +28,7 @@ final class RabbitSender
             $settings[RabbitDto::PORT],
             $settings[RabbitDto::USERNAME],
             $settings[RabbitDto::PASSWORD],
-            $settings[RabbitDto::VHOST]
+            $settings[RabbitDto::VHOST],
         );
 
         $client->reconnect();
@@ -38,7 +38,7 @@ final class RabbitSender
         $channel->basic_publish(
             Message::create($dto->getJsonBody(), $dto->getHeaders()),
             '',
-            $settings[RabbitDto::QUEUE]
+            $settings[RabbitDto::QUEUE],
         );
 
         $channel->close();
