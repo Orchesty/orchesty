@@ -31,7 +31,7 @@ final class NotificationSettingsControllerTest extends ControllerTestCaseAbstrac
     {
         $this->assertResponse(
             __DIR__ . '/data/NotificationSettingsControllerTest/listSettingsRequest.json',
-            ['id' => '123456789', 'created' => '2010-10-10 10:10:10', 'updated' => '2010-10-10 10:10:10']
+            ['id' => '123456789', 'created' => '2010-10-10 10:10:10', 'updated' => '2010-10-10 10:10:10'],
         );
     }
 
@@ -61,7 +61,7 @@ final class NotificationSettingsControllerTest extends ControllerTestCaseAbstrac
         $this->assertResponse(
             __DIR__ . '/data/NotificationSettingsControllerTest/getSettingsRequest.json',
             ['id' => '123456789', 'created' => '2010-10-10 10:10:10', 'updated' => '2010-10-10 10:10:10'],
-            [':id' => $this->getSettingsId()]
+            [':id' => $this->getSettingsId()],
         );
     }
 
@@ -102,7 +102,7 @@ final class NotificationSettingsControllerTest extends ControllerTestCaseAbstrac
         $this->assertResponse(
             __DIR__ . '/data/NotificationSettingsControllerTest/saveSettingsRequest.json',
             ['id' => '123456789', 'created' => '2010-10-10 10:10:10', 'updated' => '2010-10-10 10:10:10'],
-            [':id' => $this->getSettingsId()]
+            [':id' => $this->getSettingsId()],
         );
     }
 
@@ -130,7 +130,7 @@ final class NotificationSettingsControllerTest extends ControllerTestCaseAbstrac
         $this->assertResponse(
             __DIR__ . '/data/NotificationSettingsControllerTest/saveSettingsNotFoundRequiredRequest.json',
             [],
-            [':id' => $this->getSettingsId()]
+            [':id' => $this->getSettingsId()],
         );
     }
 

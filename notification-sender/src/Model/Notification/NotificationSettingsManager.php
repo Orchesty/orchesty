@@ -33,34 +33,9 @@ final class NotificationSettingsManager
     private const TEST_MESSAGE = [EmailHandlerAbstract::SUBJECT => 'Pipes Framework: Notification settings test message'];
 
     /**
-     * @var DocumentManager
-     */
-    private DocumentManager $dm;
-
-    /**
-     * @var RewindableGenerator|CurlHandlerAbstract[]|EmailHandlerAbstract[]|RabbitHandlerAbstract[]
-     */
-    private RewindableGenerator $handlers;
-
-    /**
      * @var ObjectRepository<NotificationSettings>&NotificationSettingsRepository
      */
     private NotificationSettingsRepository $repository;
-
-    /**
-     * @var CurlSender
-     */
-    private CurlSender $curlSender;
-
-    /**
-     * @var EmailSender
-     */
-    private EmailSender $emailSender;
-
-    /**
-     * @var RabbitSender
-     */
-    private RabbitSender $rabbitSender;
 
     /**
      * NotificationSettingsManager constructor.
@@ -72,19 +47,14 @@ final class NotificationSettingsManager
      * @param RabbitSender               $rabbitSender
      */
     public function __construct(
-        DocumentManager $dm,
-        RewindableGenerator $handlers,
-        CurlSender $curlSender,
-        EmailSender $emailSender,
-        RabbitSender $rabbitSender
+        private DocumentManager $dm,
+        private RewindableGenerator $handlers,
+        private CurlSender $curlSender,
+        private EmailSender $emailSender,
+        private RabbitSender $rabbitSender,
     )
     {
-        $this->dm           = $dm;
-        $this->handlers     = $handlers;
-        $this->repository   = $dm->getRepository(NotificationSettings::class);
-        $this->curlSender   = $curlSender;
-        $this->emailSender  = $emailSender;
-        $this->rabbitSender = $rabbitSender;
+        $this->repository = $dm->getRepository(NotificationSettings::class);
     }
 
     /**
@@ -103,7 +73,7 @@ final class NotificationSettingsManager
         }
 
         foreach ($this->handlers as $handler) {
-            $class   = get_class($handler);
+            $class   = $handler::class;
             $setting = $settings[$class] ?? NULL;
 
             if (!$setting) {
@@ -161,7 +131,7 @@ final class NotificationSettingsManager
                 if (!isset($data[NotificationSettings::SETTINGS][$required])) {
                     throw new NotificationException(
                         sprintf("Required settings '%s' for type '%s' is missing!", $required, $handler->getType()),
-                        NotificationException::NOTIFICATION_PARAMETER_NOT_FOUND
+                        NotificationException::NOTIFICATION_PARAMETER_NOT_FOUND,
                     );
                 }
             }
@@ -197,7 +167,7 @@ final class NotificationSettingsManager
         if (!$settings) {
             throw new NotificationException(
                 sprintf("NotificationSettings with key '%s' not found!", $id),
-                NotificationException::NOTIFICATION_SETTINGS_NOT_FOUND
+                NotificationException::NOTIFICATION_SETTINGS_NOT_FOUND,
             );
         }
 
@@ -210,17 +180,17 @@ final class NotificationSettingsManager
      * @return CurlHandlerAbstract|EmailHandlerAbstract|RabbitHandlerAbstract
      * @throws NotificationException
      */
-    private function getHandlerByClass(string $class)
+    private function getHandlerByClass(string $class): CurlHandlerAbstract|EmailHandlerAbstract|RabbitHandlerAbstract
     {
         foreach ($this->handlers as $handler) {
-            if (get_class($handler) === $class) {
+            if ($handler::class === $class) {
                 return $handler;
             }
         }
 
         throw new NotificationException(
             sprintf("Notification handler '%s' not found!", $class),
-            NotificationException::NOTIFICATION_HANDLER_NOT_FOUND
+            NotificationException::NOTIFICATION_HANDLER_NOT_FOUND,
         );
     }
 
@@ -246,7 +216,7 @@ final class NotificationSettingsManager
                     /** @var EmailDto $dto */
                     $dto = $handler->process(self::TEST_MESSAGE);
 
-                    $this->emailSender->send($dto, $settings);
+                    $this->emailSender->sendEmail($dto, $settings);
 
                     break;
                 case NotificationSenderEnum::RABBIT:
@@ -258,8 +228,8 @@ final class NotificationSettingsManager
                     break;
                 default:
                     throw new NotificationException(
-                        sprintf("Notification sender for notification handler '%s' not found!", get_class($handler)),
-                        NotificationException::NOTIFICATION_SENDER_NOT_FOUND
+                        sprintf("Notification sender for notification handler '%s' not found!", $handler::class),
+                        NotificationException::NOTIFICATION_SENDER_NOT_FOUND,
                     );
             }
 
