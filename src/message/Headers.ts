@@ -55,9 +55,13 @@ class Headers {
     // limiter related headers
     //
     // limit headers
+    // DEPRECATED
     public static readonly LIMIT_KEY = "limit-key";
     public static readonly LIMIT_TIME = "limit-time";
     public static readonly LIMIT_VALUE = "limit-value";
+    // end of DEPRECATED
+
+    public static readonly LIMITER_KEY = "limiter-key";
     public static readonly LIMIT_RETURN_EXCHANGE = "limit-return-exchange";
     public static readonly LIMIT_RETURN_ROUTING_KEY = "limit-return-routing-key";
     public static readonly LIMIT_MESSAGE_FROM_LIMITER = "limit-message-from-limiter";
@@ -219,6 +223,13 @@ class Headers {
      */
     public getRaw(): any {
         return JSON.parse(JSON.stringify(this.headers));
+    }
+
+    /**
+     * @return string
+     */
+    public toString(): string {
+        return JSON.stringify(this.headers);
     }
 
     /**

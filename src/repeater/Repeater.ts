@@ -12,6 +12,7 @@ export interface IRepeaterSettings {
     input: {
         queue: {
             name: string;
+            prefetch: number;
             options: any;
         };
     };
@@ -36,8 +37,8 @@ class Repeater implements IStoppable {
         private amqpCon: Connection,
         private storage: IMessageStorage,
     ) {
-        this.consumer = this.createConsumer();
         this.publisher = this.createPublisher();
+        this.consumer = this.createConsumer();
     }
 
     /**
@@ -129,6 +130,7 @@ class Repeater implements IStoppable {
         const prepareFn: createChannelCallback = (ch: Channel) => {
             return new Promise(async (resolve) => {
                 await ch.assertQueue(this.settings.input.queue.name, this.settings.input.queue.options);
+                await ch.prefetch(this.settings.input.queue.prefetch);
                 logger.info("Repeater consumer ready.", { node_name: "repeater" });
                 resolve();
             });

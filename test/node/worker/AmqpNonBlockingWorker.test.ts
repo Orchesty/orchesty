@@ -32,6 +32,10 @@ describe("AmqpNonBlockingWorker", () => {
                 options: {},
             },
         };
+        const redis: any = {
+            isProcessed() {return false},
+            setProcessed() {return},
+        };
         const forwarder: IPartialForwarder = {
             forwardPart: async () => { assert.fail("This should be never called."); },
         };
@@ -42,7 +46,7 @@ describe("AmqpNonBlockingWorker", () => {
             sendToQueue: ():  Promise<void> => { assert.fail("This should be never called."); },
             publish: ():  Promise<void> => { assert.fail("This should be never called."); },
         };
-        const rpcWorker = new AmqpNonBlockingWorker(conn, settings, forwarder, counterPublisher, assertionPublisher);
+        const rpcWorker = new AmqpNonBlockingWorker(conn, settings, redis, forwarder, counterPublisher, assertionPublisher);
 
         const headers = new Headers();
         headers.setPFHeader(Headers.RESULT_CODE, `${ResultCode.UNKNOWN_ERROR}`);
@@ -75,6 +79,10 @@ describe("AmqpNonBlockingWorker", () => {
                 options: {},
             },
         };
+        const redis: any = {
+            isProcessed() {return false},
+            setProcessed() {return},
+        };
         const partialForwarder: IPartialForwarder = {
             forwardPart: () => Promise.resolve(),
         };
@@ -85,7 +93,7 @@ describe("AmqpNonBlockingWorker", () => {
             sendToQueue: ():  Promise<void> => { assert.fail("This should be never called."); },
             publish: ():  Promise<void> => { assert.fail("This should be never called."); },
         };
-        const rpcWorker = new AmqpNonBlockingWorker(conn, settings, partialForwarder, counterPublisher, assertionPublisher);
+        const rpcWorker = new AmqpNonBlockingWorker(conn, settings, redis, partialForwarder, counterPublisher, assertionPublisher);
 
         const publisher = new Publisher(conn, (ch: Channel) =>  Promise.resolve() );
         const externalWorkerMock = new SimpleConsumer(
@@ -135,6 +143,10 @@ describe("AmqpNonBlockingWorker", () => {
                 options: {},
             },
         };
+        const redis: any = {
+            isProcessed() {return false},
+            setProcessed() {return},
+        };
         const partialForwarder: IPartialForwarder = {
             forwardPart: (jm: JobMessage) => {
                 forwarded.push(jm);
@@ -148,7 +160,7 @@ describe("AmqpNonBlockingWorker", () => {
             sendToQueue: ():  Promise<void> => { assert.fail("This should be never called."); },
             publish: ():  Promise<void> => { assert.fail("This should be never called."); },
         };
-        const rpcWorker = new AmqpNonBlockingWorker(conn, settings, partialForwarder, counterPublisher, assertionPublisher);
+        const rpcWorker = new AmqpNonBlockingWorker(conn, settings, redis, partialForwarder, counterPublisher, assertionPublisher);
         const publisher = new Publisher(conn, (ch: Channel) =>  Promise.resolve() );
         const externalWorkerMock = new SimpleConsumer(
             conn,

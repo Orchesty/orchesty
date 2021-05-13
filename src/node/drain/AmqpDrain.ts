@@ -82,15 +82,15 @@ class AmqpDrain implements IDrain, IPartialForwarder {
      *
      * @param {JobMessage} message
      */
-    public forward(message: JobMessage): void {
+    public async forward(message: JobMessage): Promise<void> {
         message.getHeaders().setHeader(Headers.PF_HEADERS_PREFIX + Headers.PUBLISHED_TIMESTAMP, Date.now().toString());
         if (message.getType() === MessageType.PROCESS) {
-            this.forwardProcessMessage(message);
+            await this.forwardProcessMessage(message);
             return;
         }
 
         if (message.getType() === MessageType.SERVICE) {
-            this.forwardServiceMessage(message);
+            await this.forwardServiceMessage(message);
             return;
         }
 
@@ -113,19 +113,19 @@ class AmqpDrain implements IDrain, IPartialForwarder {
      * @param {JobMessage} message
      * @return {Promise<void>}
      */
-    private forwardProcessMessage(message: JobMessage): Promise<void> {
+    private async forwardProcessMessage(message: JobMessage): Promise<void> {
         if (message.getResultGroup() === ResultCodeGroup.NON_STANDARD) {
-            this.forwardNonStandard(message);
+            await this.forwardNonStandard(message);
             return;
         }
 
         if (message.getResult().code === ResultCode.SUCCESS) {
-            this.forwardSuccessMessage(message);
+            await this.forwardSuccessMessage(message);
             return;
         }
 
         // On any error
-        this.forwardToCounterOnly(message);
+        await this.forwardToCounterOnly(message);
     }
 
     /**
@@ -133,21 +133,21 @@ class AmqpDrain implements IDrain, IPartialForwarder {
      *
      * @param {JobMessage} message
      */
-    private forwardNonStandard(message: JobMessage): void {
+    private async forwardNonStandard(message: JobMessage): Promise<void> {
         let msg = '';
         switch (message.getResult().code) {
 
             // Handle non-standard result codes
             case ResultCode.REPEAT:
-                this.forwardRepeat(message);
+                await this.forwardRepeat(message);
                 break;
 
             case ResultCode.FORWARD_TO_TARGET_QUEUE:
-                this.forwardToTargetQueue(message);
+                await this.forwardToTargetQueue(message);
                 break;
 
             case ResultCode.DO_NOT_CONTINUE:
-                this.forwardToCounterOnly(message, 0);
+                await this.forwardToCounterOnly(message, 0);
                 break;
 
             case ResultCode.STOP_AND_FAILED:
@@ -160,7 +160,7 @@ class AmqpDrain implements IDrain, IPartialForwarder {
                     code: ResultCode.STOP_AND_FAILED,
                     message: msg,
                 });
-                this.forwardToCounterOnly(message, 0);
+                await this.forwardToCounterOnly(message, 0);
                 break;
 
             case ResultCode.SPLITTER_BATCH_END:
@@ -178,7 +178,7 @@ class AmqpDrain implements IDrain, IPartialForwarder {
                     code: ResultCode.INVALID_NON_STANDARD_CODE,
                     message: msg,
                 });
-                this.forward(message);
+                await this.forward(message);
         }
     }
 
@@ -186,7 +186,7 @@ class AmqpDrain implements IDrain, IPartialForwarder {
      *
      * @param {JobMessage} message
      */
-    private forwardRepeat(message: JobMessage): void {
+    private async forwardRepeat(message: JobMessage): Promise<void> {
         const headers = message.getHeaders();
 
         if (!headers.hasPFHeader(Headers.REPEAT_HOPS) ||
@@ -196,7 +196,7 @@ class AmqpDrain implements IDrain, IPartialForwarder {
                 code: ResultCode.REPEAT_INVALID_HOPS,
                 message: "Forward Repeat Error. Missing or invalid repeat hops headers.}",
             });
-            return this.forward(message);
+            return await this.forward(message);
         }
 
         const actualHops = parseInt(headers.getPFHeader(Headers.REPEAT_HOPS), 10);
@@ -207,7 +207,7 @@ class AmqpDrain implements IDrain, IPartialForwarder {
                 code: ResultCode.REPEAT_MAX_HOPS_REACHED,
                 message: `Forward Repeat Error. Max repeat hops "${maxHops}" reached.`,
             });
-            return this.forward(message);
+            return await this.forward(message);
         }
 
         if (!headers.hasPFHeader(Headers.REPEAT_INTERVAL)) {
@@ -215,18 +215,18 @@ class AmqpDrain implements IDrain, IPartialForwarder {
                 code: ResultCode.REPEAT_INVALID_INTERVAL,
                 message: `Forward Repeat Error. Missing "${Headers.REPEAT_INTERVAL}" header.`,
             });
-            return this.forward(message);
+            return await this.forward(message);
         }
 
         const interval = parseInt(headers.getPFHeader(Headers.REPEAT_INTERVAL), 10);
         if (interval < MAX_REPEAT_IMMEDIATELY_LIMIT) {
             // Repeat immediately by sending to node's input queue
             message.getHeaders().setPFHeader(Headers.FORCE_TARGET_QUEUE, this.settings.faucet.queue.name);
-            return this.forwardToTargetQueue(message);
+            return await this.forwardToTargetQueue(message);
         }
 
         // Send to repeater microservice
-        return this.forwardToRepeater(message);
+        return await this.forwardToRepeater(message);
     }
 
     /**
@@ -234,7 +234,7 @@ class AmqpDrain implements IDrain, IPartialForwarder {
      *
      * @param {JobMessage} message
      */
-    private forwardToRepeater(message: JobMessage): void {
+    private async forwardToRepeater(message: JobMessage): Promise<void> {
         const repeaterQ: string = this.settings.repeater.queue.name;
 
         if (!repeaterQ) {
@@ -242,7 +242,7 @@ class AmqpDrain implements IDrain, IPartialForwarder {
                 code: ResultCode.REPEAT_INVALID_QUEUE,
                 message: "Forward to Repeater error. Invalid repeater queue name",
             });
-            return this.forward(message);
+            return await this.forward(message);
         }
 
         // Set the queue name where to repeat the message and send it to repeater
@@ -257,19 +257,27 @@ class AmqpDrain implements IDrain, IPartialForwarder {
      *
      * @param {JobMessage} message
      */
-    private forwardToTargetQueue(message: JobMessage): void {
-        const q: string = message.getHeaders().getPFHeader(Headers.FORCE_TARGET_QUEUE);
+    private async forwardToTargetQueue(message: JobMessage): Promise<void> {
+        let q: string = message.getHeaders().getPFHeader(Headers.FORCE_TARGET_QUEUE);
 
         if (!q) {
             message.setResult({
                 code: ResultCode.INVALID_NON_STANDARD_TARGET_QUEUE,
                 message: `Forward to target queue error. Missing or invalid target_queue header '${q}'`,
             });
-            return this.forward(message);
+            return await this.forward(message);
         }
 
-        this.nonStandardPublisher.sendToQueue(q, message.getBody(), {
-            headers: message.getHeaders().getRaw(),
+        // For some unknown reason, force-target-queue contains wrong topology_id (which is taken from header pf-topology-id)
+        const topology_id = this.settings.node_label.topology_id;
+        const parts = q.split('.')
+        parts[1] = topology_id
+        q = parts.join('.')
+        const headers = message.getHeaders();
+        headers.removePFHeader(Headers.FORCE_TARGET_QUEUE)
+
+        await this.nonStandardPublisher.sendToQueue(q, message.getBody(), {
+            headers: headers.getRaw(),
             persistent: this.settings.persistent,
         });
     }

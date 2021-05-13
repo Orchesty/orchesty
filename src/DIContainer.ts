@@ -60,6 +60,8 @@ class DIContainer extends Container {
             this.set("counter.storage", () => new RedisStorage(redisStorageOptions));
         }
 
+        this.set("redis.storage", () => new RedisStorage(redisStorageOptions));
+
         this.set("counter.mongoProgressStorage", () => new MongoProgressStorage(
             counterOptions.saveProgress,
             counterOptions.progressDsn,
@@ -201,6 +203,7 @@ class DIContainer extends Container {
                 return new AmqpNonBlockingWorker(
                     this.get("amqp.connection"),
                     settings,
+                    this.get("redis.storage")(),
                     fwd,
                     this.get("counter.publisher")(cps),
                     p

@@ -45,9 +45,9 @@ class Logger implements ILogger {
      * @param {string} severity
      * @param {string} message
      * @param {ILogContext} context
-     * @return {string}
+     * @return {ILoggerFormat}
      */
-    private static format(severity: string, message: string, context?: ILogContext): string {
+    private static format(severity: string, message: string, context?: ILogContext): ILoggerFormat {
         const line: ILoggerFormat = {
             timestamp: Date.now(),
             hostname: os.hostname(),
@@ -100,10 +100,10 @@ class Logger implements ILogger {
         }
 
         if (context.data) {
-            line.data = context.data;
+            line.data = context.data.slice(0, 100_000);
         }
 
-        return JSON.stringify(line);
+        return line;
     }
 
     private udp: Sender;
@@ -179,8 +179,8 @@ class Logger implements ILogger {
     public log(severity: string, message: string, context?: ILogContext): void {
         const data = Logger.format(severity, message, context);
 
-        winston.log(severity, data);
-        this.udp.send(data)
+        winston.log(severity,'', data);
+        this.udp.send(JSON.stringify(data))
             .catch(() => {
                 // unhandled promise rejection caught
             });

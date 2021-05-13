@@ -1,8 +1,6 @@
-import * as redis from "redis";
-import {RedisClient} from "redis";
-import logger from "../../logger/Logger";
 import {ICounterProcessInfo} from "../CounterProcess";
 import ICounterStorage from "./ICounterStorage";
+import RedisPool from "node-redis-connection-pool/dist/src/RedisConnectionPool";
 
 export interface IRedisStorageSettings {
     host: string;
@@ -13,7 +11,7 @@ export interface IRedisStorageSettings {
 
 export default class RedisStorage implements ICounterStorage {
 
-    private client: RedisClient;
+    private client: RedisPool;
 
     /**
      *
@@ -25,34 +23,33 @@ export default class RedisStorage implements ICounterStorage {
             delete opts.password;
         }
 
-        this.client = redis.createClient(opts);
-
-        this.client.on("error", (err) => {
-            logger.error("RedisStorage Error.", {node_id: "redis_storage", error: err});
+        this.client = new RedisPool({
+            name: '',
+            poolOptions: {
+                max: 10,
+            },
+            logger: null,
+            redisOptions: opts,
         });
+    }
 
-        this.client.on("warning", (msg) => {
-            logger.warn(`RedisStorage warning: ${msg}`, {node_id: "redis_storage"});
-        });
+    /**
+     *
+     * @param {string} hash
+     * @return {boolean}
+     */
+    public async isProcessed(hash: string): Promise<boolean> {
+        const result = await this.client.sendCommand('exists', [hash]);
 
-        this.client.on("ready", () => {
-            logger.info("RedisStorage connection ready.", {node_id: "redis_storage"});
-        });
+        return !!result;
+    }
 
-        this.client.on("connect", () => {
-            logger.info("RedisStorage connected to redis.", {node_id: "redis_storage"});
-        });
-
-        this.client.on("reconnecting", (i) => {
-            logger.info(
-                `RedisStorage reconnecting. Delay: ${i.delay}, Attempt #${i.attempt}`,
-                {node_id: "redis_storage"},
-            );
-        });
-
-        this.client.on("end", () => {
-            logger.info("RedisStorage connection ended.", {node_id: "redis_storage"});
-        });
+    /**
+     *
+     * @param {string} hash
+     */
+    public async setProcessed(hash: string) {
+        await this.client.sendCommand('set', [hash, '1', 'EX', 600]);
     }
 
     /**
@@ -61,21 +58,10 @@ export default class RedisStorage implements ICounterStorage {
      * @param {string} processId
      * @return {Promise<boolean>}
      */
-    public has(topology: string, processId: string): Promise<boolean> {
-        return new Promise((resolve) => {
-            this.client.hexists(topology, processId, (err, isThere) => {
-                if (err) {
-                    logger.error("Error calling has on counter process info in redis storage.", {error: err});
-                    return resolve(false);
-                }
+    public async has(topology: string, processId: string): Promise<boolean> {
+        const result = await this.client.sendCommand('hexists', [topology, processId]);
 
-                if (isThere) {
-                    return resolve(true);
-                }
-
-                resolve(false);
-            });
-        });
+        return !!result;
     }
 
     /**
@@ -83,21 +69,10 @@ export default class RedisStorage implements ICounterStorage {
      * @param {string} topology
      * @return {Promise<boolean>}
      */
-    public hasSome(topology: string): Promise<boolean> {
-        return new Promise((resolve) => {
-            this.client.hlen(topology, (err, count) => {
-                if (err) {
-                    logger.error("Error calling hasSome on counter process info in redis storage.", {error: err});
-                    return resolve(false);
-                }
+    public async hasSome(topology: string): Promise<boolean> {
+        const result = await this.client.sendCommand('hlen', [topology]);
 
-                if (count > 0) {
-                    return resolve(true);
-                }
-
-                resolve(false);
-            });
-        });
+        return result > 0;
     }
 
     /**
@@ -106,23 +81,8 @@ export default class RedisStorage implements ICounterStorage {
      * @param {string} processId
      * @return {Promise<ICounterProcessInfo | null>}
      */
-    public get(topology: string, processId: string): Promise<ICounterProcessInfo | null> {
-        return new Promise((resolve) => {
-            this.client.hget(topology, processId, (err, value) => {
-                if (err) {
-                    logger.error("Cannot get counter process info from redis storage.", {error: err});
-                    return resolve(null);
-                }
-
-                try {
-                    const process = JSON.parse(value);
-                    resolve(process);
-                } catch (err) {
-                    logger.error("Cannot parse counter process info from redis storage.", {error: err});
-                    return resolve(null);
-                }
-            });
-        });
+    public async get(topology: string, processId: string): Promise<ICounterProcessInfo | null> {
+        return await this.client.sendCommand('hget', [topology, processId]);
     }
 
     /**
@@ -131,18 +91,11 @@ export default class RedisStorage implements ICounterStorage {
      * @param {ICounterProcessInfo} info
      * @return {Promise<boolean>}
      */
-    public add(topology: string, info: ICounterProcessInfo): Promise<boolean> {
-        return new Promise((resolve) => {
-            const value = JSON.stringify(info);
-            this.client.hset(topology, info.process_id, value, (err) => {
-                if (err) {
-                    logger.error("Cannot add counter process info to redis storage.", {error: err});
-                    return resolve(false);
-                }
+    public async add(topology: string, info: ICounterProcessInfo): Promise<boolean> {
+        const value = JSON.stringify(info);
+        await this.client.sendCommand('hset', [info.process_id, value]);
 
-                resolve(true);
-            });
-        });
+        return true;
     }
 
     /**
@@ -151,17 +104,10 @@ export default class RedisStorage implements ICounterStorage {
      * @param {string} processId
      * @return {Promise<boolean>}
      */
-    public remove(topology: string, processId: string): Promise<boolean> {
-        return new Promise((resolve) => {
-            this.client.hdel(topology, processId, (err) => {
-                if (err) {
-                    logger.error("Cannot de;ete counter process info from redis storage.", {error: err});
-                    return resolve(false);
-                }
+    public async remove(topology: string, processId: string): Promise<boolean> {
+        await this.client.sendCommand('hdel', [topology, processId]);
 
-                resolve(true);
-            });
-        });
+        return true;
     }
 
     /**
@@ -170,8 +116,6 @@ export default class RedisStorage implements ICounterStorage {
      * @return {Promise<void>}
      */
     public stop(): Promise<void> {
-        return new Promise((resolve) => {
-            this.client.quit(() => { resolve(); });
-        });
+        return null
     }
 }

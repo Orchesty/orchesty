@@ -24,6 +24,7 @@ export const amqpConnectionOptions: IConnectionOptions = {
     port: parseInt(process.env.RABBITMQ_PORT, 10) || 5672,
     vhost: process.env.RABBITMQ_VHOST || "/",
     heartbeat: parseInt(process.env.RABBITMQ_HEARTBEAT, 10) || 60,
+    connectionString: `amqp://${process.env.RABBITMQ_USER}:${process.env.RABBITMQ_PASS}@${process.env.RABBITMQ_HOST}:${parseInt(process.env.RABBITMQ_PORT, 10)}/${process.env.RABBITMQ_VHOST}?frame-max=8192&frameMax=8192`,
 };
 
 export const amqpFaucetOptions = {
@@ -48,6 +49,7 @@ export const repeaterOptions: IRepeaterSettings = {
     input: {
         queue: {
             name: process.env.REPEATER_INPUT_QUEUE || "pipes.repeater",
+            prefetch: 50,
             options: {
                 durable: persistentQueues,
             },
@@ -101,5 +103,5 @@ export const counterOptions = {
     saveProgress: !(process.env.PROGRESS_SAVE === "false") || false,
     progressDsn: process.env.PROGRESS_DSN || "mongodb://mongo:27017/progress",
     progressCollection: process.env.PROGRESS_COLLECTION || "Progress",
-    progressExpireAfter: parseInt(process.env.PROGRESS_EXPIRE_AFTER) || 60*60*24*30,
+    progressExpireAfter: parseInt(process.env.PROGRESS_EXPIRE_AFTER) || 60 * 60 * 24 * 30,
 };

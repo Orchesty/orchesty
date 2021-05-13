@@ -14,7 +14,7 @@ const conn = new Connection(amqpConnectionOptions);
 describe("Repeater", () => {
     it("should consume message and publish it after repeat interval #integration", (done) => {
         const settings: IRepeaterSettings = {
-            input: { queue: { name: "repeater_a", options: { durable: persistentQueues } } },
+            input: { queue: { name: "repeater_a", prefetch: 50, options: { durable: persistentQueues } } },
             check_timeout: 1000,
         };
         const outputQueue = "repeater_a_output";
