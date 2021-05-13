@@ -9,7 +9,7 @@ version: '2.4'
 services:
     ## BEGIN DEV
     php-sdk:
-        image: hanabosocom/php-dev:php-7.4-alpine
+        image: hanabosocom/php-dev:php-8.0-alpine
         user: ${DEV_UID}:${DEV_GID}
         environment:
             PHP_WEBROOT: /var/www/pipes/clients/demo/pipes-api/public
@@ -49,7 +49,7 @@ services:
 
     ## BEGIN DEV
     batch-connector:
-        image: hanabosocom/php-dev:php-7.4-alpine
+        image: hanabosocom/php-dev:php-8.0-alpine
         user: ${DEV_UID}:${DEV_GID}
         environment:
             COMPOSER_HOME: ${HOME}/dev/.composer
@@ -86,7 +86,7 @@ services:
 
     ## BEGIN DEV
     long-running-node:
-        image: hanabosocom/php-dev:php-7.4-alpine
+        image: hanabosocom/php-dev:php-8.0-alpine
         user: ${DEV_UID}:${DEV_GID}
         command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit_mq:consumer:long-running-node'
         working_dir: /var/www/pipes/clients/demo/pipes-api
@@ -123,7 +123,7 @@ services:
 
     ## BEGIN DEV
     status-service:
-        image: hanabosocom/php-dev:php-7.4-alpine
+        image: hanabosocom/php-dev:php-8.0-alpine
         user: ${DEV_UID}:${DEV_GID}
         environment:
             COMPOSER_HOME: ${HOME}/dev/.composer
@@ -369,7 +369,7 @@ services:
     # PHP Services monolith
     ## BEGIN DEV
     backend:
-        image: hanabosocom/php-dev:php-7.4-alpine
+        image: hanabosocom/php-dev:php-8.0-alpine
         user: ${DEV_UID}:${DEV_GID}
         ports:
             - ${DEV_IP}:80:80

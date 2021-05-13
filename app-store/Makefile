@@ -3,7 +3,6 @@
 DC=docker-compose
 DE=docker-compose exec -T app
 IMAGE=dkr.hanaboso.net/pipes/application
-BASE=hanabosocom/php-dev:php-7.4-alpine
 
 ALIAS?=alias
 Darwin:
