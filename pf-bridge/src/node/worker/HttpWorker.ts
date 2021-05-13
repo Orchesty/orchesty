@@ -37,7 +37,7 @@ class HttpWorker extends AWorker {
         super();
 
         this.timeout = DEFAULT_HTTP_TIMEOUT;
-        this.agent = new http.Agent({ keepAlive: true, maxSockets: Infinity });
+        this.agent = new http.Agent({ keepAlive: false, maxSockets: Infinity });
     }
 
     /**
@@ -288,7 +288,7 @@ class HttpWorker extends AWorker {
         const context = logger.ctxFromMsg(msg);
         context.data = JSON.stringify({request: { body: req.body }, response});
         logger.error(
-            `Worker[type='http'] received response with statusCode="${statusCode}" body="${req.body}"`,
+            `Worker[type='http'] received response with statusCode="${statusCode}" body="${req.body.slice(0, 100_000)}"`,
             context,
         );
         msg.setResult(

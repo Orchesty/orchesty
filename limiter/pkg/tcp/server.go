@@ -28,12 +28,19 @@ const (
 	limitCheckResponseBusy = "nok"
 )
 
+// RequestGroup holder for group limit
+type RequestGroup struct {
+	Key   string
+	Time  int
+	Value int
+}
 type request struct {
 	name  string
 	id    string
 	key   string
 	time  int
 	value int
+	group *RequestGroup
 }
 
 func populateRequest(conn net.Conn) (request, error) {
@@ -56,22 +63,41 @@ func populateRequest(conn net.Conn) (request, error) {
 	}
 
 	// matches check limit request message
-	if len(data) == 5 {
+	if len(data) == 5 || len(data) == 8 {
 		req.name = data[0]
 		req.id = data[1]
 		req.key = data[2]
 
 		timeParam, err := strconv.Atoi(data[3])
 		if err != nil {
-			return req, fmt.Errorf("invalid time param " + err.Error())
+			return req, fmt.Errorf("invalid Interval param " + err.Error())
 		}
 		req.time = timeParam
 
 		valueParam, err := strconv.Atoi(data[4])
 		if err != nil {
-			return req, fmt.Errorf("invalid value param " + err.Error())
+			return req, fmt.Errorf("invalid Count param " + err.Error())
 		}
 		req.value = valueParam
+
+		if len(data) == 5 {
+			return req, nil
+		}
+
+		timeGroupParam, err := strconv.Atoi(data[6])
+		if err != nil {
+			return req, fmt.Errorf("invalid group Interval param " + err.Error())
+		}
+
+		valueGroupParam, err := strconv.Atoi(data[7])
+		if err != nil {
+			return req, fmt.Errorf("invalid group Count param " + err.Error())
+		}
+		req.group = &RequestGroup{
+			Key:   data[5],
+			Time:  timeGroupParam,
+			Value: valueGroupParam,
+		}
 
 		return req, nil
 	}
@@ -201,8 +227,15 @@ func (*Server) handleHealthCheckRequest(req request) string {
 func (srv *Server) handleLimitCheckRequest(req request) string {
 	// send to elastic
 	srv.logger.Metrics(req.key, "", nil)
-
-	isFree, err := srv.lim.IsFreeLimit(req.key, req.time, req.value)
+	groupKey := ""
+	groupTime := 0
+	groupValue := 0
+	if req.group != nil {
+		groupKey = req.group.Key
+		groupTime = req.group.Time
+		groupValue = req.group.Value
+	}
+	isFree, err := srv.lim.IsFreeLimit(req.key, req.time, req.value, groupKey, groupTime, groupValue)
 	if err != nil {
 		srv.logger.Error(fmt.Sprintf("failed check free limit => %v", err), nil)
 		return "Error evaluating limit: " + err.Error()

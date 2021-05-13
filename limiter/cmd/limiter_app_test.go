@@ -75,7 +75,7 @@ func simulateTraffic(t *testing.T, stopTest chan bool) {
 		clientCheckCall(t, publisher, "B", timB, valB, !isOverLimitB)
 	}
 
-	consumer := rabbitmq.NewConsumer(conn, outputQueue, logger.GetNullLogger())
+	consumer := rabbitmq.NewConsumer(conn, outputQueue, logger.GetNullLogger(), 500)
 	var rcvdMsgs [5]amqp.Delivery
 	rcvdCount := 0
 	expectedCount := 5

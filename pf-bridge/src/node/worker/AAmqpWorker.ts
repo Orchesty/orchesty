@@ -9,6 +9,8 @@ import {ResultCode} from "../../message/ResultCode";
 import {INodeLabel} from "../../topology/Configurator";
 import AWorker from "./AWorker";
 import {SimpleConsumer} from "../../consumer/SimpleConsumer";
+import * as crypto from "crypto";
+import RedisStorage from "../../counter/storage/RedisStorage";
 
 export interface IAmqpWorkerSettings {
     node_label: INodeLabel;
@@ -47,10 +49,12 @@ abstract class AAmqpWorker extends AWorker {
      *
      * @param {Connection} connection
      * @param {IAmqpWorkerSettings} settings
+     * @param {RedisStorage} redisStorage
      */
     protected constructor(
         protected connection: Connection,
         protected settings: IAmqpWorkerSettings,
+        protected redisStorage: RedisStorage
     ) {
         super();
 
@@ -133,6 +137,13 @@ abstract class AAmqpWorker extends AWorker {
             });
         }
 
+        const headerHash = crypto.createHash("sha256").update(headersToSend.toString()).digest("hex");
+        if(await this.redisStorage.isProcessed(headerHash)){
+            this.onDuplicateMessage(msg);
+
+            return [msg];
+        }
+
         try {
             await this.publisher.sendToQueue(
                 this.settings.publish_queue.name,
@@ -148,6 +159,8 @@ abstract class AAmqpWorker extends AWorker {
                 `Worker[type='amqprpc'] sent request to "${this.settings.publish_queue.name}" queue.`,
                 logger.ctxFromMsg(msg),
             );
+
+            await this.redisStorage.setProcessed(headerHash);
         } catch (err) {
             logger.error(
                 `Worker[type='amqprpc'] sending request to "${this.settings.publish_queue.name}" failed`,
@@ -258,9 +271,15 @@ abstract class AAmqpWorker extends AWorker {
      * Handler for received result message decides what to do with it.
      *
      * @param {AmqpMessage} msg
+     * @param {number} retry
      */
-    private processRpcResultMessage(msg: AmqpMessage): void {
+    private processRpcResultMessage(msg: AmqpMessage, retry: number = 0): void {
         const corrId = msg.properties.correlationId;
+
+        if (!this.waiting.has(corrId) && retry < 3) {
+            setTimeout(() => this.processRpcResultMessage(msg, ++retry), 1000)
+            return;
+        }
 
         if (!this.waiting.has(corrId)) {
             logger.error(
@@ -275,14 +294,12 @@ abstract class AAmqpWorker extends AWorker {
             case AAmqpWorker.BATCH_ITEM_TYPE:
                 this.onBatchItem(corrId, msg);
                 break;
+            case AAmqpWorker.TEST_TYPE:
             case AAmqpWorker.BATCH_END_TYPE:
                 this.onBatchEnd(corrId, msg);
                 break;
             case AAmqpWorker.BATCH_REPEAT_TYPE:
                 this.onRepeatBatch(corrId, msg);
-                break;
-            case AAmqpWorker.TEST_TYPE:
-                this.onBatchEnd(corrId, msg);
                 break;
             default:
                 logger.error(

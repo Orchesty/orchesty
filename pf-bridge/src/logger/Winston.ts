@@ -13,7 +13,7 @@ switch (process.env.NODE_ENV) {
 }
 
 const consoleT = new winston.transports.Console({
-    format: winston.format.simple(),
+    format: winston.format.splat(),
 });
 
 const winstonLogger = winston.createLogger({

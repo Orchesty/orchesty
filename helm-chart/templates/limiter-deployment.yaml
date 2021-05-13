@@ -64,6 +64,8 @@ spec:
               value: "5120"
             - name: LOG_LEVEL
               value: "info"
+            - name: RABBITMQ_INPUT_QUEUE_PREFETCH_COUNT
+              value: "500"
           resources:
             requests:
               memory: 128Mi

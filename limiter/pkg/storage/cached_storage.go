@@ -3,6 +3,7 @@ package storage
 import (
 	"sync"
 
+	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -23,8 +24,13 @@ func (cs *CachedStorage) Get(key string, length int) ([]*Message, error) {
 	return cs.db.Get(key, length)
 }
 
+// GetMessages  get saved messages
+func (cs *CachedStorage) GetMessages(field, key string, length int) ([]*Message, error) {
+	return cs.db.GetMessages(field, key, length)
+}
+
 // Count returns the number of items in storage by key
-func (cs *CachedStorage) Count(key string) (int, error) {
+func (cs *CachedStorage) Count(key string, limit int) (int, error) {
 	cs.m.Lock()
 	defer cs.m.Unlock()
 
@@ -33,7 +39,7 @@ func (cs *CachedStorage) Count(key string) (int, error) {
 		return cs.cache[key], nil
 	}
 
-	num, err := cs.db.Count(key)
+	num, err := cs.db.Count(key, limit)
 	if err != nil {
 		return 0, err
 	}
@@ -44,14 +50,24 @@ func (cs *CachedStorage) Count(key string) (int, error) {
 	return num, nil
 }
 
+// CountInGroup get group count
+func (cs *CachedStorage) CountInGroup(keys []string, limit int) (int, error) {
+	return cs.db.CountInGroup(keys, limit)
+}
+
 // GetDistinctFirstItems returns distinct messages
 func (cs *CachedStorage) GetDistinctFirstItems() (map[string]*Message, error) {
 	return cs.db.GetDistinctFirstItems()
 }
 
+// GetDistinctGroupFirstItems return available group items
+func (cs *CachedStorage) GetDistinctGroupFirstItems() (map[string]*Message, error) {
+	return cs.db.GetDistinctGroupFirstItems()
+}
+
 // Exists returns whether key exists in storage
 func (cs *CachedStorage) Exists(key string) (bool, error) {
-	num, err := cs.Count(key)
+	num, err := cs.Count(key, 1)
 	if err != nil {
 		return false, err
 	}
@@ -118,4 +134,9 @@ func (cs *CachedStorage) getCount(key string) int {
 	}
 
 	return val
+}
+
+// CreateIndex - create mongo indexes
+func (cs *CachedStorage) CreateIndex(index mgo.Index) error {
+	return cs.db.CreateIndex(index)
 }

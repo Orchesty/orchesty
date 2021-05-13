@@ -7,7 +7,12 @@ import (
 
 	"github.com/streadway/amqp"
 	"gopkg.in/mgo.v2/bson"
+
+	"limiter/pkg/model"
 )
+
+// LimiterLimitRow header defines the key for getting limit
+const LimiterLimitRow = "pf-limiter-key"
 
 // LimitKeyHeader header defines the key by which the requests are limited
 const LimitKeyHeader = "pf-limit-key"
@@ -42,28 +47,64 @@ type Message struct {
 	LimitValue       int
 	ReturnExchange   string
 	ReturnRoutingKey string
+	GroupKey         string
+	GroupTime        int
+	GroupValue       int
 	Message          amqp.Publishing
 }
 
 // NewMessage creates storage Message struct by converting amqp Delivery to Publishing message and adding limit info
 func NewMessage(delivery *amqp.Delivery) (*Message, error) {
+	groupKey := ""
+	groupTime := 0
+	groupValue := 0
+	limitKey := ""
+	limitTime := 0
+	limitValue := 0
 
-	key, ok := delivery.Headers[LimitKeyHeader]
-	if !ok {
-		return nil, fmt.Errorf("missing header %s", LimitKeyHeader)
-	}
+	limitRow, ok := delivery.Headers[LimiterLimitRow]
+	if ok {
+		row, err := model.ParseLimiterRow(limitRow.(string))
+		if err != nil {
+			return nil, fmt.Errorf("bad format in %s", LimiterLimitRow)
+		}
+		limitKey = row.Base.Key
+		limitTime = row.Base.Interval
+		limitValue = row.Base.Count
 
-	limitTime, ok := delivery.Headers[LimitTimeHeader]
-	if !ok {
-		return nil, fmt.Errorf("missing header %s", LimitTimeHeader)
-	}
-	lt, _ := strconv.Atoi(limitTime.(string))
+		if row.Group != nil {
+			groupKey = row.Group.Key
+			groupTime = row.Group.Interval
+			groupValue = row.Group.Count
+		}
 
-	limitValue, ok := delivery.Headers[LimitValueHeader]
-	if !ok {
-		return nil, fmt.Errorf("missing header %s", LimitValueHeader)
+	} else {
+		key, ok := delivery.Headers[LimitKeyHeader]
+		if !ok {
+			return nil, fmt.Errorf("missing header %s", LimitKeyHeader)
+		}
+		limitKey = key.(string)
+
+		lt, ok := delivery.Headers[LimitTimeHeader]
+		if !ok {
+			return nil, fmt.Errorf("missing header %s", LimitTimeHeader)
+		}
+		l, err := strconv.Atoi(lt.(string))
+		if err != nil {
+			return nil, fmt.Errorf("failed limitTime value %s => %v", lt, err)
+		}
+		limitTime = l
+
+		lv, ok := delivery.Headers[LimitValueHeader]
+		if !ok {
+			return nil, fmt.Errorf("missing header %s", LimitValueHeader)
+		}
+		v, err := strconv.Atoi(lv.(string))
+		if err != nil {
+			return nil, fmt.Errorf("failed limitValue value %s => %v", lv, err)
+		}
+		limitValue = v
 	}
-	lv, _ := strconv.Atoi(limitValue.(string))
 
 	exchange, ok := delivery.Headers[ReturnExchangeHeader]
 	if !ok || exchange == "" {
@@ -87,5 +128,5 @@ func NewMessage(delivery *amqp.Delivery) (*Message, error) {
 		Type:        delivery.Type,
 	}
 
-	return &Message{"", time.Now(), key.(string), lt, lv, exchange.(string), routingKey.(string), innerMsg}, nil
+	return &Message{"", time.Now(), limitKey, limitTime, limitValue, exchange.(string), routingKey.(string), groupKey, groupTime, groupValue, innerMsg}, nil
 }
