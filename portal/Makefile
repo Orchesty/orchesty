@@ -1,9 +1,6 @@
-.PHONY: docker-up-force docker-down-clean test
-
 DC=docker-compose
 DE=docker-compose exec -T app
-IMAGE=dkr.hanaboso.net/pipes/portal
-BASE=hanabosocom/php-dev:php-7.4-alpine
+IMAGE=dkr.hanaboso.net/pipes/pipes/portal
 
 SLS_ENV?=
 
@@ -23,7 +20,6 @@ Linux:
 		.env.dist > .env; \
 
 build: .env
-	docker pull $(IMAGE):dev
 	docker-compose -f docker-compose.yml run --rm --no-deps app  composer install --ignore-platform-reqs
 	docker build -t $(IMAGE):master .
 	docker push $(IMAGE):master
