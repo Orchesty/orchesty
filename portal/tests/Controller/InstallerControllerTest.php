@@ -37,7 +37,7 @@ final class InstallerControllerTest extends ControllerTestCaseAbstract
                 'logs'     => Installer::LOGSTASH,
                 'metrics'  => Installer::INFLUXDB,
                 'database' => FALSE,
-            ]
+            ],
         );
 
         $response2 = $this->sendPost(
@@ -46,7 +46,7 @@ final class InstallerControllerTest extends ControllerTestCaseAbstract
                 'logs'     => Installer::ELASTICSEARCH,
                 'metrics'  => Installer::MONGO,
                 'database' => TRUE,
-            ]
+            ],
         );
 
         self::assertEquals(200, $response1->getStatus());
@@ -61,7 +61,7 @@ final class InstallerControllerTest extends ControllerTestCaseAbstract
                 'logs'     => 'xx',
                 'metrics'  => 'yy',
                 'database' => TRUE,
-            ]
+            ],
         );
 
         self::assertEquals(500, $response3->getStatus());

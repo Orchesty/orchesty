@@ -26,7 +26,7 @@ final class PortalControllerTest extends ControllerTestCaseAbstract
                 'version' => '1.0.0',
                 'status'  => 'OK',
             ],
-            $response->getContent()
+            $response->getContent(),
         );
     }
 

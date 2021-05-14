@@ -155,7 +155,7 @@ final class Installer
     public function convertToCamel(string $str, string $delim): string
     {
         $explodedStr      = explode($delim, $str);
-        $explodedStrCamel = array_map('ucwords', (array) $explodedStr);
+        $explodedStrCamel = array_map('ucwords', $explodedStr);
 
         return implode('', $explodedStrCamel);
     }
@@ -192,7 +192,7 @@ final class Installer
             $this->getVersion(),
             $this->getComponent('services', $dto),
             $this->getComponent('volumes', $dto),
-            $this->getNetwork()
+            $this->getNetwork(),
         );
 
         $installer[1] =

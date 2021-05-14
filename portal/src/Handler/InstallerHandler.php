@@ -15,18 +15,12 @@ final class InstallerHandler
 {
 
     /**
-     * @var Installer
-     */
-    private Installer $installer;
-
-    /**
      * InstallerHandler constructor.
      *
      * @param Installer $installer
      */
-    public function __construct(Installer $installer)
+    public function __construct(private Installer $installer)
     {
-        $this->installer = $installer;
     }
 
     /**

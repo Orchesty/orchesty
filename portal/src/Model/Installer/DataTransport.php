@@ -23,11 +23,6 @@ final class DataTransport
     private string $metric;
 
     /**
-     * @var bool
-     */
-    private bool $database;
-
-    /**
      * DataTransport constructor.
      *
      * @param string $log
@@ -39,10 +34,9 @@ final class DataTransport
     public function __construct(
         string $log = Installer::ELASTICSEARCH,
         string $metric = Installer::INFLUXDB,
-        bool $database = TRUE
+        private bool $database = TRUE,
     )
     {
-
         if ($log === Installer::ELASTICSEARCH || $log === Installer::LOGSTASH) {
             $this->log = $log;
         } else {
@@ -53,7 +47,6 @@ final class DataTransport
         } else {
             throw new InstallerException('Insert correct value to metric', InstallerException::INVALID_INPUT);
         }
-        $this->database = $database;
     }
 
     /**

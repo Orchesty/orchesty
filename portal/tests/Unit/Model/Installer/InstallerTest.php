@@ -51,7 +51,7 @@ final class InstallerTest extends KernelTestCaseAbstract
             $dto->getLog(),
             $dto->getMetric(),
             $dto->getDatabase(),
-            $secondaryArray
+            $secondaryArray,
         );
 
         $array          = $this->installer->createArray($dto);
@@ -65,7 +65,7 @@ final class InstallerTest extends KernelTestCaseAbstract
             self::assertArrayHasKey(
                 $value,
                 $installerArray['services'],
-                sprintf('%s is missing in secondary keys', $value)
+                sprintf('%s is missing in secondary keys', $value),
             );
         }
 
@@ -79,8 +79,8 @@ final class InstallerTest extends KernelTestCaseAbstract
             sprintf(
                 'The amount of prime keys (%d) is different from the required amount (%d)',
                 count($installerArray),
-                count($primaryArray)
-            )
+                count($primaryArray),
+            ),
         );
 
         self::assertEquals(
@@ -89,8 +89,8 @@ final class InstallerTest extends KernelTestCaseAbstract
             sprintf(
                 'The amount of secondary keys (%d) is different from the required amount (%d)',
                 count($installerArray['services']),
-                count($secondaryArray)
-            )
+                count($secondaryArray),
+            ),
         );
     }
 
