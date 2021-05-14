@@ -108,8 +108,11 @@ class Logger implements ILogger {
 
     private udp: Sender;
 
+    private readonly isDebug: boolean;
+
     constructor() {
         this.udp = new Sender(loggerOptions.server, loggerOptions.port);
+        this.isDebug = process.env.NODE_ENV === "test" || process.env.NODE_ENV === "dev";
     }
 
     /**
@@ -118,7 +121,9 @@ class Logger implements ILogger {
      * @param {ILogContext} context
      */
     public debug(message: string, context?: ILogContext): void {
-        this.log("debug", message, context ? context : {});
+        if (this.isDebug) {
+            this.log("debug", message, context ? context : {});
+        }
     }
 
     /**
