@@ -1,0 +1,18 @@
+{
+  "DateOfMaturity": "2021-05-05",
+  "DateOfReceiving": "2021-05-05",
+  "Description": "sample string 5",
+  "DocumentSerialNumber": 1,
+  "IsIncomeTax": true,
+  "Items": [
+    {
+      "Amount": 1,
+      "Name": "sample string 2",
+      "PriceType": 0,
+      "UnitPrice": 4,
+      "VatRateType": 0
+    }
+  ],
+  "PartnerId": 10799872,
+  "PaymentOptionId": 12
+}

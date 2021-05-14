@@ -1,0 +1,24 @@
+services:
+  _defaults:
+    public: '%public.services%'
+
+  hbpf.application.i-doklad:
+    class: Hanaboso\HbPFConnectors\Model\Application\Impl\IDoklad\IDokladApplication
+    arguments:
+      - '@hbpf.providers.oauth2_provider'
+
+  hbpf.connector.i-doklad.new-invoice-recieved:
+    class: Hanaboso\HbPFConnectors\Model\Application\Impl\IDoklad\Connector\IDokladNewInvoiceRecievedConnector
+    arguments:
+      - '@doctrine_mongodb.odm.default_document_manager'
+      - '@hbpf.transport.curl_manager'
+    calls:
+      - ['setApplication', ['@hbpf.application.i-doklad']]
+
+  hbpf.connector.i-doklad.create-new-contact:
+    class: Hanaboso\HbPFConnectors\Model\Application\Impl\IDoklad\Connector\IDokladCreateNewContactConnector
+    arguments:
+      - '@doctrine_mongodb.odm.default_document_manager'
+      - '@hbpf.transport.curl_manager'
+    calls:
+      - ['setApplication', ['@hbpf.application.i-doklad']]
