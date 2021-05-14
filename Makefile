@@ -1,5 +1,3 @@
-.PHONY: docker-up-force docker-down-clean test
-
 DC=docker-compose
 DE=docker-compose exec -T app
 IMAGE=dkr.hanaboso.net/pipes/notification-sender
