@@ -58,7 +58,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
         array $parameters = [],
         array $headers = [],
         string $content = '',
-        array $files = []
+        array $files = [],
     ): ControllerResponse
     {
         $this->client->request('POST', $url, $parameters, $files, $headers, $content);
@@ -79,7 +79,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
         string $url,
         array $parameters = [],
         array $headers = [],
-        array $files = []
+        array $files = [],
     ): ControllerResponse
     {
         $this->client->request('PUT', $url, $parameters, $files, $headers);
@@ -132,7 +132,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     {
         try {
             return new ControllerResponse($response->getStatusCode(), Json::decode((string) $response->getContent()));
-        } catch (Throwable $e) {
+        } catch (Throwable) {
             return new ControllerResponse($response->getStatusCode(), [$response->getContent()]);
         }
     }

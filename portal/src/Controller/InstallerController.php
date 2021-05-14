@@ -22,19 +22,13 @@ final class InstallerController
     use ControllerTrait;
 
     /**
-     * @var InstallerHandler
-     */
-    private InstallerHandler $installerHandler;
-
-    /**
      * InstallerController constructor.
      *
      * @param InstallerHandler $installerHandler
      */
-    public function __construct(InstallerHandler $installerHandler)
+    public function __construct(private InstallerHandler $installerHandler)
     {
-        $this->installerHandler = $installerHandler;
-        $this->logger           = new NullLogger();
+        $this->logger = new NullLogger();
     }
 
     /**
@@ -52,7 +46,7 @@ final class InstallerController
 
             $disposition = $response->headers->makeDisposition(
                 ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-                'docker-compose.yml'
+                'docker-compose.yml',
             );
 
             $response->headers->set('Content-Disposition', $disposition);

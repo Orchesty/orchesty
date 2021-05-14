@@ -4,15 +4,15 @@
     "version": "1.2.3",
     "license": "proprietary",
     "require": {
-        "php": "^7.4",
+        "php": "^8.0",
         "ext-json": "*",
-        "bref/bref": "^1.0",
-        "doctrine/annotations": "^1.11",
-        "hanaboso/commons-bundle": "^2.2",
-        "hanaboso/rest-bundle": "^1.0",
-        "symfony/framework-bundle": "^5.2",
-        "symfony/monolog-bundle": "^v3.6",
-        "symfony/yaml": "^5.2"
+        "bref/bref": "^1.2",
+        "doctrine/annotations": "^1.13",
+        "hanaboso/commons-bundle": "^2.3",
+        "hanaboso/rest-bundle": "^1.1",
+        "symfony/framework-bundle": "^v5.2",
+        "symfony/monolog-bundle": "^v3.7",
+        "symfony/yaml": "^v5.2"
     },
     "replace": {
         "ralouphie/getallheaders": "*",
@@ -24,10 +24,12 @@
         "symfony/polyfill-intl-normalizer": "*",
         "symfony/polyfill-mbstring": "*",
         "symfony/polyfill-php72": "*",
-        "symfony/polyfill-php73": "*"
+        "symfony/polyfill-php73": "*",
+        "symfony/polyfill-php74": "*",
+        "symfony/polyfill-php80": "*"
     },
     "require-dev": {
-        "hanaboso/php-check-utils": "^1.1"
+        "hanaboso/php-check-utils": "^1.2"
     },
     "autoload": {
         "psr-4": {

@@ -28,7 +28,7 @@ final class PortalController
                 'name'    => 'portal',
                 'version' => '1.0.0',
                 'status'  => 'OK',
-            ]
+            ],
         );
     }
 

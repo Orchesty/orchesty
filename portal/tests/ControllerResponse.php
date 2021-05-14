@@ -11,25 +11,13 @@ final class ControllerResponse
 {
 
     /**
-     * @var int
-     */
-    private int $status;
-
-    /**
-     * @var mixed[]
-     */
-    private array $content;
-
-    /**
      * ControllerResponse constructor.
      *
      * @param int     $status
      * @param mixed[] $content
      */
-    public function __construct(int $status, array $content)
+    public function __construct(private int $status, private array $content)
     {
-        $this->status  = $status;
-        $this->content = $content;
     }
 
     /**

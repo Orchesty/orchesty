@@ -6,7 +6,7 @@ parameters:
         container_xml_path: %rootDir%/../../../var/cache/test/Hanaboso_Portal_KernelTestDebugContainer.xml
     ignoreErrors:
         - '#Variable (property access|method call) on#'
-        - '#Variable method call on \$this(Hanaboso\Portal\Model\Installer\Installer).#'
+        - '#Variable method call on \$this(Hanaboso\\Portal\\Model\\Installer\\Installer).#'
     ergebnis:
         classesAllowedToBeExtended:
             - Hanaboso\Portal\DependencyInjection\PortalExtension
