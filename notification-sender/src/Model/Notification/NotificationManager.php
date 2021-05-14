@@ -32,31 +32,6 @@ final class NotificationManager implements LoggerAwareInterface
     private const PIPE = 'pipes';
 
     /**
-     * @var DocumentManager
-     */
-    private DocumentManager $dm;
-
-    /**
-     * @var RewindableGenerator|CurlHandlerAbstract[]|EmailHandlerAbstract[]|RabbitHandlerAbstract[]
-     */
-    private RewindableGenerator $handlers;
-
-    /**
-     * @var CurlSender
-     */
-    private CurlSender $curlSender;
-
-    /**
-     * @var EmailSender
-     */
-    private EmailSender $emailSender;
-
-    /**
-     * @var RabbitSender
-     */
-    private RabbitSender $rabbitSender;
-
-    /**
      * @var LoggerInterface
      */
     private $logger;
@@ -71,19 +46,14 @@ final class NotificationManager implements LoggerAwareInterface
      * @param RabbitSender               $rabbitSender
      */
     public function __construct(
-        DocumentManager $dm,
-        RewindableGenerator $handlers,
-        CurlSender $curlSender,
-        EmailSender $emailSender,
-        RabbitSender $rabbitSender
+        private DocumentManager $dm,
+        private RewindableGenerator $handlers,
+        private CurlSender $curlSender,
+        private EmailSender $emailSender,
+        private RabbitSender $rabbitSender,
     )
     {
-        $this->dm           = $dm;
-        $this->handlers     = $handlers;
-        $this->curlSender   = $curlSender;
-        $this->emailSender  = $emailSender;
-        $this->rabbitSender = $rabbitSender;
-        $this->logger       = new NullLogger();
+        $this->logger = new NullLogger();
     }
 
     /**
@@ -105,7 +75,7 @@ final class NotificationManager implements LoggerAwareInterface
         $this->dm->clear();
 
         foreach ($this->handlers as $handler) {
-            $class = get_class($handler);
+            $class = $handler::class;
             /** @var string $parentClass */
             $parentClass = get_parent_class($handler);
 
@@ -114,7 +84,7 @@ final class NotificationManager implements LoggerAwareInterface
                 [
                     NotificationSettings::EVENTS     => $event,
                     NotificationSettings::CLASS_NAME => $class,
-                ]
+                ],
             );
 
             if ($settings) {
@@ -122,8 +92,8 @@ final class NotificationManager implements LoggerAwareInterface
                     sprintf(
                         'sending notification from sender manager: [settings=%s] [parentClass=%s]',
                         Json::encode($settings->toArray($event, $class)),
-                        $parentClass
-                    )
+                        $parentClass,
+                    ),
                 );
             } else {
                 $this->logger->debug(sprintf('No settings found: [parentClass=%s]', $parentClass));
@@ -143,7 +113,7 @@ final class NotificationManager implements LoggerAwareInterface
                             /** @var EmailDto $dto */
                             $dto = $handler->process($data);
 
-                            $this->emailSender->send($dto, $settings->getSettings());
+                            $this->emailSender->sendEmail($dto, $settings->getSettings());
 
                             break;
                         case RabbitHandlerAbstract::class:
@@ -156,7 +126,7 @@ final class NotificationManager implements LoggerAwareInterface
                         default:
                             throw new NotificationException(
                                 sprintf("Notification sender for notification handler '%s' not found!", $class),
-                                NotificationException::NOTIFICATION_SENDER_NOT_FOUND
+                                NotificationException::NOTIFICATION_SENDER_NOT_FOUND,
                             );
                     }
                 } catch (Throwable $t) {

@@ -16,18 +16,12 @@ final class NotificationSettingsHandler
 {
 
     /**
-     * @var NotificationSettingsManager
-     */
-    private NotificationSettingsManager $manager;
-
-    /**
      * NotificationSettingsHandler constructor.
      *
      * @param NotificationSettingsManager $manager
      */
-    public function __construct(NotificationSettingsManager $manager)
+    public function __construct(private NotificationSettingsManager $manager)
     {
-        $this->manager = $manager;
     }
 
     /**

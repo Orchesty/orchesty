@@ -22,25 +22,13 @@ final class StatusController
     use ControllerTrait;
 
     /**
-     * @var DocumentManager
-     */
-    private DocumentManager $dm;
-
-    /**
-     * @var ConnectionManager
-     */
-    private ConnectionManager $manager;
-
-    /**
      * StatusController constructor.
      *
      * @param DocumentManager   $dm
      * @param ConnectionManager $manager
      */
-    public function __construct(DocumentManager $dm, ConnectionManager $manager)
+    public function __construct(private DocumentManager $dm, private ConnectionManager $manager)
     {
-        $this->dm      = $dm;
-        $this->manager = $manager;
     }
 
     /**
@@ -54,13 +42,13 @@ final class StatusController
         try {
             $this->dm->getClient()->listDatabases();
             $database = TRUE;
-        } catch (Throwable $t) {
+        } catch (Throwable) {
             $database = FALSE;
         }
 
         try {
             $rabbitMq = $this->manager->getConnection()->getClient()->isConnected();
-        } catch (Throwable $t) {
+        } catch (Throwable) {
             $rabbitMq = FALSE;
         }
 
