@@ -1,0 +1,42 @@
+{
+  "AccountNumber": "sample string 1",
+  "BankId": 1,
+  "CurrencyId": 2,
+  "DateOfIssue": "2021-05-05",
+  "DateOfMaturity": "2021-05-05",
+  "DateOfPayment": "2021-05-05",
+  "DateOfReceiving": "2021-05-05",
+  "DateOfTaxing": "2021-05-05",
+  "DateOfVatApplication": "2021-05-05",
+  "Description": "sample string 5",
+  "DocumentSerialNumber": 6,
+  "ExchangeRate": 1,
+  "ExchangeRateAmount": 1,
+  "Iban": "sample string 7",
+  "IsIncomeTax": true,
+  "Items": [
+    {
+      "Amount": 1,
+      "CustomVatRate": 1,
+      "Name": "sample string 2",
+      "PriceListItemId": 1,
+      "PriceType": 0,
+      "Unit": "sample string 3",
+      "UnitPrice": 4,
+      "VatRateType": 0,
+      "VatCodeId": 1
+    }
+  ],
+  "Note": "sample string 9",
+  "OrderNumber": "sample string 10",
+  "PartnerId": 11,
+  "PaymentOptionId": 12,
+  "ReceivedDocumentNumber": "sample string 13",
+  "Swift": "sample 1",
+  "Tags": [
+    1
+  ],
+  "VariableSymbol": "sample 2",
+  "VatOnPayStatus": 0,
+  "VatReverseChargeCodeId": 1
+}

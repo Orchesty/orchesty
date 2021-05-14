@@ -1,50 +1,47 @@
 <?php declare(strict_types=1);
 
-namespace HbPFConnectorsTests\Integration\Model\Application\Impl\GoogleDrive\Connector;
+namespace HbPFConnectorsTests\Integration\Model\Application\Impl\IDoklad\Connector;
 
 use Exception;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
-use Hanaboso\HbPFConnectors\Model\Application\Impl\GoogleDrive\Connector\GoogleDriveUploadFileConnector;
-use Hanaboso\HbPFConnectors\Model\Application\Impl\GoogleDrive\GoogleDriveApplication;
+use Hanaboso\HbPFConnectors\Model\Application\Impl\IDoklad\Connector\IDokladCreateNewContactConnector;
+use Hanaboso\HbPFConnectors\Model\Application\Impl\IDoklad\IDokladApplication;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
-use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
 
 /**
- * Class GoogleDriveUploadFileConnectorTest
+ * Class IDokladCreateNewContactConnectorTest
  *
- * @package HbPFConnectorsTests\Integration\Model\Application\Impl\GoogleDrive\Connector
+ * @package HbPFConnectorsTests\Integration\Model\Application\Impl\IDoklad\Connector
  */
-final class GoogleDriveUploadFileConnectorTest extends DatabaseTestCaseAbstract
+final class IDokladCreateNewContactConnectorTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @var GoogleDriveApplication
+     * @var IDokladApplication
      */
-    private GoogleDriveApplication $app;
+    private IDokladApplication $app;
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\GoogleDrive\Connector\GoogleDriveUploadFileConnector::getId
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\GoogleDrive\Connector\GoogleDriveUploadFileConnector::__construct
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\IDoklad\Connector\IDokladCreateNewContactConnector::getId
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\IDoklad\Connector\IDokladCreateNewContactConnector::__construct
      *
      * @throws Exception
      */
-    public function testGetId(): void
+    public function testGetKey(): void
     {
         self::assertEquals(
-            'google-drive.upload-file',
+            'i-doklad.create-new-contact',
             $this->createConnector(DataProvider::createResponseDto())->getId(),
         );
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\GoogleDrive\Connector\GoogleDriveUploadFileConnector::processEvent
-     *
-     * @throws Exception
+     * @throws ConnectorException
      */
     public function testProcessEvent(): void
     {
@@ -54,8 +51,7 @@ final class GoogleDriveUploadFileConnectorTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\GoogleDrive\Connector\GoogleDriveUploadFileConnector::processAction
-     *
+     * @throws ConnectorException
      * @throws Exception
      */
     public function testProcessAction(): void
@@ -63,28 +59,24 @@ final class GoogleDriveUploadFileConnectorTest extends DatabaseTestCaseAbstract
         $this->pfd(DataProvider::getOauth2AppInstall($this->app->getKey()));
         $this->dm->clear();
 
+        $dataFromFile = (string) file_get_contents(__DIR__ . '/newContact.json');
+
         $dto = DataProvider::getProcessDto(
             $this->app->getKey(),
             'user',
-            Json::encode(['name' => 'John Doe', 'email' => 'noreply@johndoe.com', 'phone' => '555-555']),
+            $dataFromFile,
         );
 
         $res = $this->createConnector(
-            DataProvider::createResponseDto(
-                '{"kind": "drive#file","id": "169PQAadbK5TMmuCcZd5aFzZa1sblBymt","name": "my.txt","mimeType": "text/plain"}',
-            ),
+            DataProvider::createResponseDto($dataFromFile),
         )
             ->setApplication($this->app)
             ->processAction($dto);
-        self::assertEquals(
-            '{"kind": "drive#file","id": "169PQAadbK5TMmuCcZd5aFzZa1sblBymt","name": "my.txt","mimeType": "text/plain"}',
-            $res->getData(),
-        );
+        self::assertEquals($dataFromFile, $res->getData());
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\GoogleDrive\Connector\GoogleDriveUploadFileConnector::processAction
-     *
+     * @throws ConnectorException
      * @throws Exception
      */
     public function testProcessActionRequestException(): void
@@ -92,12 +84,12 @@ final class GoogleDriveUploadFileConnectorTest extends DatabaseTestCaseAbstract
         $this->pfd(DataProvider::getOauth2AppInstall($this->app->getKey()));
         $this->dm->clear();
 
+        $dataFromFile = (string) file_get_contents(__DIR__ . '/newContact.json');
+
         $dto = DataProvider::getProcessDto(
             $this->app->getKey(),
             'user',
-            Json::encode(['name' => 'John Doe',
-                          'email' => 'noreply@johndoe.com',
-                          'phone' => '555-555']),
+            $dataFromFile,
         );
 
         self::expectException(OnRepeatException::class);
@@ -105,6 +97,35 @@ final class GoogleDriveUploadFileConnectorTest extends DatabaseTestCaseAbstract
             ->createConnector(DataProvider::createResponseDto(), new CurlException())
             ->setApplication($this->app)
             ->processAction($dto);
+    }
+
+    /**
+     * @throws ConnectorException
+     * @throws Exception
+     */
+    public function testProcessActionRequestLogicException(): void
+    {
+        $this->pfd(DataProvider::getOauth2AppInstall($this->app->getKey()));
+        $this->dm->clear();
+
+        $dto = DataProvider::getProcessDto(
+            $this->app->getKey(),
+            'user',
+            '{
+            "BankId": 1
+            }',
+        );
+
+        $this->createConnector(
+            DataProvider::createResponseDto(
+                '{
+            "BankId": 1
+            }',
+            ),
+        )
+            ->setApplication($this->app)
+            ->processAction($dto);
+        self::assertEquals('1003', $dto->getHeaders()['pf-result-code']);
     }
 
     /**
@@ -118,16 +139,16 @@ final class GoogleDriveUploadFileConnectorTest extends DatabaseTestCaseAbstract
     {
         parent::setUp();
 
-        $this->app = new GoogleDriveApplication(self::$container->get('hbpf.providers.oauth2_provider'));
+        $this->app = new IDokladApplication(self::$container->get('hbpf.providers.oauth2_provider'));
     }
 
     /**
      * @param ResponseDto    $dto
      * @param Exception|null $exception
      *
-     * @return GoogleDriveUploadFileConnector
+     * @return IDokladCreateNewContactConnector
      */
-    private function createConnector(ResponseDto $dto, ?Exception $exception = NULL): GoogleDriveUploadFileConnector
+    private function createConnector(ResponseDto $dto, ?Exception $exception = NULL): IDokladCreateNewContactConnector
     {
         $sender = self::createMock(CurlManager::class);
 
@@ -137,7 +158,7 @@ final class GoogleDriveUploadFileConnectorTest extends DatabaseTestCaseAbstract
             $sender->method('send')->willReturn($dto);
         }
 
-        return new GoogleDriveUploadFileConnector($this->dm, $sender);
+        return new IDokladCreateNewContactConnector($this->dm, $sender);
     }
 
 }

@@ -70,10 +70,10 @@ phpcontroller:
 	$(DE) vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --colors tests/Controller
 
 phpcoverage:
-	$(DE) php vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --coverage-html var/coverage --whitelist src tests
+	$(DE) php vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --coverage-html var/coverage --whitelist src --exclude-group live tests
 
 phpcoverage-ci:
-	$(DE) ./vendor/hanaboso/php-check-utils/bin/coverage.sh
+	$(DE) ./vendor/hanaboso/php-check-utils/bin/coverage.sh -e live
 
 test: docker-up-force composer-install fasttest
 
