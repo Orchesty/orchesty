@@ -88,7 +88,7 @@ class Repeater implements IStoppable {
                         correlation_id: msg.properties.headers.correlation_id,
                         process_id: msg.properties.headers.process_id,
                     };
-                    logger.info("Message repeated.", ctx);
+                    logger.debug("Message repeated.", ctx);
                 });
             });
 
