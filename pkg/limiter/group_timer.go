@@ -35,11 +35,11 @@ func (mt *messageTimer) addGroupTicker(groupKey string, groupInterval, groupLimi
 					continue
 				}
 
-				mt.logger.Info(fmt.Sprintf("Remove ticker '%s' due empty customers", groupKey), nil)
+				mt.logger.Debug(fmt.Sprintf("Remove ticker '%s' due empty customers", groupKey), nil)
 				item.Ticker.Stop()
 				mt.groups.Delete(groupKey)
 				mt.groups.GroupsTimers.Delete(groupKey)
-				mt.logger.Info(fmt.Sprintf("Removed group ticker for key '%s'", groupKey), nil)
+				mt.logger.Debug(fmt.Sprintf("Removed group ticker for key '%s'", groupKey), nil)
 				return
 			}
 		}
