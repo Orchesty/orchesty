@@ -205,7 +205,7 @@ func (mt *messageTimer) startHandleNewTimers() {
 				Count:  0,
 			})
 
-			mt.logger.Info(fmt.Sprintf("Add ticker for key %s", m.LimitKey), nil)
+			mt.logger.Debug(fmt.Sprintf("Add ticker for key %s", m.LimitKey), nil)
 			mt.addTicker(m.LimitKey, m.LimitTime, m.LimitValue, rg)
 		}
 	}
