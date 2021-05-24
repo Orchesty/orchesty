@@ -4,16 +4,20 @@ var sample = 5s
 var retention = '5s'
 
 var connectorData = stream
-   |from()
+    |from()
        .database('pipes')
        .retentionPolicy('default')
        .measurement('connectors')
-   |barrier()
+    |barrier()
        .period(sample)
-   |window()
+    |window()
        .period(sample)
        .every(sample)
-   |groupBy('node_id', 'application_id', 'user_id', 'correlation_id')
+    |groupBy('node_id', 'application_id', 'user_id', 'correlation_id')
+    |default()
+        .field('sent_request_total_duration', 0)
+        .field('user_id', 0)
+        .field('application_id', 0)
 
 // Monolith data
 var reqAvg = connectorData
