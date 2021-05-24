@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesPhpSdk\Application\Manager;
 
-use Doctrine\Common\Annotations\CachedReader;
+use Doctrine\Common\Annotations\PsrCachedReader;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\Persistence\ObjectRepository;
@@ -39,12 +39,12 @@ class ApplicationManager
      *
      * @param DocumentManager   $dm
      * @param ApplicationLoader $loader
-     * @param CachedReader      $reader
+     * @param PsrCachedReader   $reader
      */
     public function __construct(
         protected DocumentManager $dm,
         protected ApplicationLoader $loader,
-        private CachedReader $reader,
+        private PsrCachedReader $reader,
     )
     {
         $this->repository = $this->dm->getRepository(ApplicationInstall::class);

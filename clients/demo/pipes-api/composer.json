@@ -5,6 +5,7 @@
     "require": {
         "php": "^8.0",
         "ext-json": "*",
+        "azuyalabs/yasumi": "^2.4",
         "hanaboso/app-store": "^1.6",
         "hanaboso/commons-bundle": "^2.3",
         "hanaboso/email-service-bundle": "^1.2",
@@ -12,7 +13,6 @@
         "hanaboso/pipes-php-sdk": "^1.6",
         "hanaboso/rabbit-mq-bundle": "^1.5",
         "hanaboso/rest-bundle": "^1.1",
-        "kucharovic/czech-holidays": "^1.0",
         "ratchet/pawl": "^0.3",
         "symfony/security-bundle": "^5.2"
     },

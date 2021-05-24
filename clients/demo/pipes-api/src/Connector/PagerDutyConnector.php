@@ -16,8 +16,9 @@ use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessEventNotSupportedTrait;
 use Hanaboso\Utils\Date\DateTimeUtils;
 use Hanaboso\Utils\Exception\DateTimeException;
 use Hanaboso\Utils\String\Json;
-use JK\Utils\CzechHolidays;
 use JsonException;
+use ReflectionException;
+use Yasumi\Yasumi;
 
 /**
  * Class PagerDutyConnector
@@ -138,13 +139,15 @@ final class PagerDutyConnector extends ConnectorAbstract
      * @param string $date
      *
      * @return bool
+     * @throws ReflectionException
      */
     private function isWeekendOrHoliday(string $date): bool
     {
         /** @var DateTimeInterface $day */
-        $day = DateTimeImmutable::createFromFormat('Y-m-d', substr($date, 0, 10));
+        $day      = DateTimeImmutable::createFromFormat('Y-m-d', substr($date, 0, 10));
+        $holidays = Yasumi::create('CzechRepublic', (int) $day->format('Y'), 'cs');
 
-        return date('N', (int) strtotime($date)) >= 6 || CzechHolidays::isHoliday($day);
+        return date('N', (int) strtotime($date)) >= 6 || $holidays->isHoliday($day);
     }
 
     /**

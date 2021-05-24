@@ -2,7 +2,7 @@
 
 namespace Hanaboso\HbPFAppStore\Model;
 
-use Doctrine\Common\Annotations\CachedReader;
+use Doctrine\Common\Annotations\PsrCachedReader;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
@@ -28,13 +28,13 @@ final class ApplicationManager extends SdkApplicationManager
      *
      * @param DocumentManager   $dm
      * @param ApplicationLoader $loader
-     * @param CachedReader      $reader
+     * @param PsrCachedReader   $reader
      * @param WebhookManager    $webhook
      */
     public function __construct(
         DocumentManager $dm,
         ApplicationLoader $loader,
-        CachedReader $reader,
+        PsrCachedReader $reader,
         private WebhookManager $webhook,
     )
     {

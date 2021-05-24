@@ -5,3 +5,4 @@ go/pkg
 
 clients/topology
 .DS_Store
+node_modules

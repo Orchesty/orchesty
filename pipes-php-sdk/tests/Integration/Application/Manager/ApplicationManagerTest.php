@@ -3,8 +3,7 @@
 namespace PipesPhpSdkTests\Integration\Application\Manager;
 
 use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Annotations\CachedReader;
-use Doctrine\Common\Cache\ApcuCache;
+use Doctrine\Common\Annotations\PsrCachedReader;
 use Exception;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
@@ -16,6 +15,7 @@ use Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use PipesPhpSdkTests\DatabaseTestCaseAbstract;
 use PipesPhpSdkTests\Integration\Application\TestOAuth2NullApplication;
+use Symfony\Component\Cache\Adapter\ApcuAdapter;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -152,7 +152,7 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
         $app->expects(self::any())->method('setAuthorizationToken')->willReturnSelf();
         $loader = self::createPartialMock(ApplicationLoader::class, ['getApplication']);
         $loader->expects(self::any())->method('getApplication')->willReturn($app);
-        $reader  = new CachedReader(new AnnotationReader(), new ApcuCache());
+        $reader  = new PsrCachedReader(new AnnotationReader(), new ApcuAdapter());
         $manager = new ApplicationManager($this->dm, $loader, $reader);
 
         self::assertEquals(
