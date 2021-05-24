@@ -1,0 +1,19 @@
+{
+    "custom_id": "1234",
+    "subject_id": "123",
+    "number": "2012-0001",
+    "currency": "CZK",
+    "payment_method": "cash",
+    "due": 10,
+    "issued_on": "2012-03-30",
+    "taxable_fulfillment_due": "2012-03-30",
+    "lines": [
+        {
+            "name": "Hard work",
+            "quantity": "1.0",
+            "unit_name": "h",
+            "unit_price": "4",
+            "vat_rate": "21"
+        }
+    ]
+}
