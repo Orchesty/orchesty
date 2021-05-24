@@ -54,7 +54,7 @@ func (mt *messageTimer) addTicker(key string, duration int, count int, groupData
 		return
 	}
 
-	mt.logger.Info(fmt.Sprintf("Added ticker for key '%s'", key), nil)
+	mt.logger.Debug(fmt.Sprintf("Added ticker for key '%s'", key), nil)
 	go func() {
 		for t := range item.Ticker.C {
 			mt.logger.Debug(fmt.Sprintf("Tick for key: '%s' at: %s", key, t), nil)
@@ -85,7 +85,7 @@ func (mt *messageTimer) addTicker(key string, duration int, count int, groupData
 			if hasNext == false {
 				item.Ticker.Stop()
 				mt.customers.Delete(key)
-				mt.logger.Info(fmt.Sprintf("Removed ticker for key '%s'", key), nil)
+				mt.logger.Debug(fmt.Sprintf("Removed ticker for key '%s'", key), nil)
 				return
 			}
 		}
