@@ -26,7 +26,7 @@ func (mt *messageTimer) addGroupTicker(groupKey string, groupInterval, groupLimi
 			case t := <-item.Ticker.C:
 				mt.logger.Debug(fmt.Sprintf("Tick for group key: '%s' at: %s", groupKey, t), nil)
 				mt.groups.GroupsTimers.Store(groupKey, time.Now().UTC())
-				mt.logger.Info(fmt.Sprintf("Added group ticker for key '%s'", groupKey), nil)
+				mt.logger.Debug(fmt.Sprintf("Added group ticker for key '%s'", groupKey), nil)
 
 				mt.groups.HandleActiveGroupCustomers(groupKey, time.Now().UTC())
 				exists, err := mt.getSavedGroupMessages(groupKey, groupLimit*2)
