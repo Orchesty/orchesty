@@ -1,0 +1,20 @@
+{
+    "custom_id": null,
+    "subject_id": "12124332",
+    "number": "2012-0003",
+    "currency": "CZK",
+    "payment_method": "cash",
+    "due": 10,
+    "issued_on": "2012-03-30",
+    "taxable_fulfillment_due": "2012-03-30",
+    "bank_account_id": 7,
+    "lines": [
+        {
+            "name": "Hard work",
+            "quantity": "1.0",
+            "unit_name": "h",
+            "unit_price": "4",
+            "vat_rate": "21"
+        }
+    ]
+}

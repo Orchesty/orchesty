@@ -60,6 +60,7 @@ final class HbPFConnectorsExtension extends Extension implements PrependExtensio
         $loader->load('zendesk.yaml');
         $loader->load('zoho.yaml');
         $loader->load('idoklad.yaml');
+        $loader->load('fakturoid.yaml');
     }
 
 }

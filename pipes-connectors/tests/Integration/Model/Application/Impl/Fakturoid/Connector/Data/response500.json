@@ -1,0 +1,6 @@
+{
+    "error": {
+        "type": "INVALID_REQUEST_MISSING_FIELDS",
+        "message": "Could not find field \"fields\" in the request body"
+    }
+}
