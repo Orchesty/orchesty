@@ -1,11 +1,5 @@
 FROM hanabosocom/php-base:php-8.0-alpine
 
-RUN apk add --no-cache freetype libpng libjpeg-turbo freetype-dev libpng-dev libjpeg-turbo-dev && \
-  docker-php-ext-configure gd --with-freetype --with-jpeg && \
-  NPROC=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || 1) && \
-  docker-php-ext-install -j${NPROC} gd && \
-  apk del --no-cache freetype-dev libpng-dev libjpeg-turbo-dev
-
 COPY . .
 RUN cd pf-bundles && \
     sed -i -e 's/"symlink": true/"symlink": false/g' composer.json && \
@@ -19,12 +13,6 @@ RUN cd pf-bundles && \
     bin/console cache:warmup
 
 FROM hanabosocom/php-base:php-8.0-alpine
-
-RUN apk add --no-cache freetype libpng libjpeg-turbo freetype-dev libpng-dev libjpeg-turbo-dev && \
-  docker-php-ext-configure gd --with-freetype --with-jpeg && \
-  NPROC=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || 1) && \
-  docker-php-ext-install -j${NPROC} gd && \
-  apk del --no-cache freetype-dev libpng-dev libjpeg-turbo-dev
 
 ENV APP_DEBUG=0 APP_ENV=prod PHP_FPM_MAX_CHILDREN=10 PHP_FPM_MAX_REQUESTS=500
 COPY pf-bundles/php-local.ini /usr/local/etc/php/conf.d/zz_local.ini
