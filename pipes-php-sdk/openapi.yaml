@@ -10,6 +10,45 @@ servers:
         description: Docker Localhost
 
 paths:
+    /applications:
+        get:
+            tags: [ Applications ]
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+    /applications/{key}:
+        get:
+            tags: [ Applications ]
+            parameters:
+                -   $ref: '#/components/parameters/Key'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+    /applications/{key}/sync/list:
+        get:
+            tags: [ Applications ]
+            parameters:
+                -   $ref: '#/components/parameters/Key'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+    /applications/{key}/sync/{method}:
+        get:
+            tags: [ Applications ]
+            parameters:
+                -   $ref: '#/components/parameters/Key'
+                -   $ref: '#/components/parameters/Method'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+        post:
+            tags: [ Applications ]
+            parameters:
+                -   $ref: '#/components/parameters/Key'
+                -   $ref: '#/components/parameters/Method'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
     /applications/{key}/users/{user}/authorize:
         get:
             tags: [ Applications ]
@@ -176,6 +215,15 @@ paths:
                     $ref: '#/components/responses/500'
 
     /longRunning/{id}/process:
+        get:
+            tags: [ Long Running Nodes ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+                500:
+                    $ref: '#/components/responses/500'
         post:
             tags: [ Long Running Nodes ]
             parameters:
@@ -545,5 +593,13 @@ components:
             in: query
             required: true
             example: state
+            schema:
+                type: string
+
+        Method:
+            name: method
+            in: path
+            required: true
+            example: method
             schema:
                 type: string
