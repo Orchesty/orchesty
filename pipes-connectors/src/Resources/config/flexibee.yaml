@@ -1,0 +1,25 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf.application.flexibee:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\FlexiBee\FlexiBeeApplication
+        arguments:
+            - '@hbpf.transport.curl_manager'
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.connector.flexibee.get-contacts-array:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\FlexiBee\Connector\FlexiBeeGetContactsArrayConnector
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+        calls:
+            - [ 'setApplication', [ '@hbpf.application.flexibee' ] ]
+
+    hbpf.connector.flexibee.create-new-contact:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\FlexiBee\Connector\FlexiBeeCreateNewContactConnector
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+        calls:
+            - [ 'setApplication', [ '@hbpf.application.flexibee' ] ]
