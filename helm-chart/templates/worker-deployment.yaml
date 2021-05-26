@@ -8,7 +8,7 @@ metadata:
 {{ include "pipes.labels" . | indent 4 }}
 {{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 4 }}
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
 {{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 6 }}
@@ -33,12 +33,8 @@ spec:
               {{- $def | toYaml | nindent 14}}
 {{- end }}
           resources:
-            requests:
-              memory: 512Mi
-              cpu: 25m
-            limits:
-              memory: 1Gi
-              cpu: "2"
+{{ toYaml .Values.global.worker.resources | indent 12 }}
+
 {{- with .Values.global.worker.hostPathMounts }}
 {{- if .}}
           volumeMounts:
@@ -54,4 +50,13 @@ spec:
             path: {{ .src }}
 {{- end }}
 {{- end }}
+{{- end }}
+
+{{- with .Values.global.worker.nodeSelector | default .Values.global.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with .Values.global.worker.tolerations | default .Values.global.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
 {{- end }}

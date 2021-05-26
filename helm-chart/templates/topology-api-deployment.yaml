@@ -43,21 +43,25 @@ spec:
             - name: MONGO_DSN
               value: "$(__MONGODB_DSN)&connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500"
             - name: WORKER_DEFAULT_LIMIT_MEMORY
-              value: "512Mi"
+              value: "{{ .Values.global.topologyApi.topologiesResources.defaultLimitMemory }}"
             - name: WORKER_DEFAULT_LIMIT_CPU
-              value: "1"
+              value: "{{ .Values.global.topologyApi.topologiesResources.defaultLimitCpu }}"
             - name: WORKER_DEFAULT_REQUEST_MEMORY
-              value: "128Mi"
+              value: "{{ .Values.global.topologyApi.topologiesResources.defaultRequestMemory }}"
             - name: WORKER_DEFAULT_REQUEST_CPU
-              value: "100m"
+              value: "{{ .Values.global.topologyApi.topologiesResources.defaultRequestCpu }}"
 {{- range $name, $def := .Values.global.topologyApi.topologiesExtraEnv }}
             - name: APP_PASS_{{ $name }}
               {{- $def | toYaml | nindent 14}}
 {{- end }}
           resources:
-            requests:
-              memory: 128Mi
-              cpu: 10m
-            limits:
-              memory: 256Mi
-              cpu: "1"
+{{ toYaml .Values.global.topologyApi.resources | indent 12 }}
+
+{{- with .Values.global.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with .Values.global.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+{{- end }}

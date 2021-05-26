@@ -30,6 +30,10 @@ global:
     telegraf: pipes-telegraf:master
     logstash-fluentd-google: no-default-image-yet
 
+  # Default global node selector
+  nodeSelector: {}
+  tolerations: []
+
   monitoring:
     useInfluxDB: true
     logStorage: elasticsearch
@@ -50,33 +54,206 @@ global:
 
   backend:
     checkInfinityLoop: true
+    # values for backward compat, will be reset
+    resources:
+      requests:
+        memory: 512Mi
+        cpu: 25m
+      limits:
+        memory: 1Gi
+        cpu: "2"
+
+  batchConnector:
+    replicaCount: 1
+    nodeSelector: {}
+    tolerations: []
+    # values for backward compat, will be reset
+    resources:
+      requests:
+        memory: 128Mi
+        cpu: 25m
+      limits:
+        memory: 1Gi
+        cpu: "2"
+
+  cronApi:
+    # values for backward compat, will be reset
+    resources:
+      requests:
+        memory: 32Mi
+        cpu: 10m
+      limits:
+        memory: 128Mi
+        cpu: "1"
 
   frontend:
     serviceAnnotations: {}
+    # values for backward compat, will be reset
+    resources:
+      requests:
+        memory: 64Mi
+        cpu: 25m
+      limits:
+        memory: 128Mi
+        cpu: "2"
+
+  kapacitor:
+    # values for backward compat, will be reset
+    resources:
+      requests:
+        memory: 64Mi
+        cpu: 50m
+      limits:
+        memory: 128Mi
+        cpu: "2"
+
+  limiter:
+    # values for backward compat, will be reset
+    resources:
+      requests:
+        memory: 128Mi
+        cpu: 25m
+      limits:
+        memory: 512Mi
+        cpu: "2"
+
+  logstash:
+    # values for backward compat, will be reset
+    resources:
+      requests:
+        memory: 1Gi
+        cpu: 50m
+      limits:
+        memory: 1Gi
+        cpu: "2"
 
   longRunningNode:
     enabled: true
+    # values for backward compat, will be reset
+    resources:
+      requests:
+        memory: 128Mi
+        cpu: 10m
+      limits:
+        memory: 1Gi
+        cpu: "2"
 
   multiCounter:
     progressSave: true
+    # values for backward compat, will be reset
+    resources:
+      requests:
+        memory: 64Mi
+        cpu: 10m
+      limits:
+        memory: 128Mi
+        cpu: "2"
+
+  multiProbe:
+    # values for backward compat, will be reset
+    resources:
+      requests:
+        memory: 64Mi
+        cpu: 10m
+      limits:
+        memory: 128Mi
+        cpu: "2"
+
+  notificationSender:
+    # values for backward compat, will be reset
+    apiResources:
+      requests:
+        memory: 128Mi
+        cpu: "25m"
+      limits:
+        memory: 512Mi
+        cpu: "1"
+    consumerResources:
+      requests:
+        memory: 128Mi
+        cpu: "25m"
+      limits:
+        memory: 512Mi
+        cpu: "1"
 
   phpSdk:
     extraEnv: {}
 #     FOO:
 #       value: bar
 
+  repeater:
+    # values for backward compat, will be reset
+    resources:
+      requests:
+        memory: 128Mi
+        cpu: 25m
+      limits:
+        memory: 128Mi
+        cpu: "2"
+
   startingPoint:
     serviceAnnotations: {}
+    # values for backward compat, will be reset
+    resources:
+      requests:
+        memory: 64Mi
+        cpu: 10m
+      limits:
+        memory: 128Mi
+        cpu: "2"
+
+  status:
+    # values for backward compat, will be reset
+    resources:
+      requests:
+        memory: 128Mi
+        cpu: 25m
+      limits:
+        memory: 128Gi
+        cpu: "2"
+
+  telegraf:
+    # values for backward compat, will be reset
+    resources:
+      requests:
+        memory: 64Mi
+        cpu: 50m
+      limits:
+        memory: 128Mi
+        cpu: "2"
 
   topologyApi:
     manageServiceAccount: true
     manageRBAC: true
+    # values for backward compat, will be reset
+    resources:
+      requests:
+        memory: 128Mi
+        cpu: 10m
+      limits:
+        memory: 256Mi
+        cpu: "1"
+    topologiesResources:
+      defaultRequestCpu: 100m
+      defaultRequestMemory: 128Mi
+      defaultLimitCpu: 1000m
+      defaultLimitMemory: 512Mi
     topologiesExtraEnv: {}
 #     FOO:
 #       value: bar
 
   worker:
     hostPathMounts: []
+    nodeSelector: {}
+    tolerations: []
+    # values for backward compat, will be reset
+    resources:
+      requests:
+        memory: 4Gi
+        cpu: "1"
+      limits:
+        memory: 4Gi
+        cpu: "4"
 
 
 nameOverride: ""

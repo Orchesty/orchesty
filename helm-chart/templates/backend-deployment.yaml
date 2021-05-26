@@ -30,9 +30,13 @@ spec:
             - name: CHECK_INFINITY_LOOP
               value: "{{ .Values.global.backend.checkInfinityLoop }}"
           resources:
-            requests:
-              memory: 512Mi
-              cpu: 25m
-            limits:
-              memory: 1Gi
-              cpu: "2"
+{{ toYaml .Values.global.backend.resources | indent 12 }}
+
+{{- with .Values.global.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with .Values.global.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+{{- end }}

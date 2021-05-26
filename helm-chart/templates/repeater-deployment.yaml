@@ -66,9 +66,13 @@ spec:
             - name: REPEATER_CHECK_TIMEOUT
               value: "5000"
           resources:
-            requests:
-              memory: 128Mi
-              cpu: 25m
-            limits:
-              memory: 128Mi
-              cpu: "2"
+{{ toYaml .Values.global.repeater.resources | indent 12 }}
+
+{{- with .Values.global.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with .Values.global.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+{{- end }}

@@ -79,9 +79,14 @@ spec:
             - name: METRICS_SERVICE
               value: {{ if .Values.global.monitoring.useInfluxDB }}influx{{ else }}mongo{{ end }}
           resources:
-            requests:
-              memory: 64Mi
-              cpu: 10m
-            limits:
-              memory: 128Mi
-              cpu: "2"
+{{ toYaml .Values.global.multiCounter.resources | indent 12 }}
+
+
+{{- with .Values.global.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with .Values.global.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+{{- end }}

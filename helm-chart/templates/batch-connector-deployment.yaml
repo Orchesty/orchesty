@@ -8,7 +8,7 @@ metadata:
 {{ include "pipes.labels" . | indent 4 }}
 {{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 4 }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.global.batchConnector.replicaCount }}
   strategy:
     type: Recreate
   selector:
@@ -33,9 +33,13 @@ spec:
               {{- $def | toYaml | nindent 14}}
 {{- end }}
           resources:
-            requests:
-              memory: 128Mi
-              cpu: 25m
-            limits:
-              memory: 1Gi
-              cpu: "2"
+{{ toYaml .Values.global.batchConnector.resources | indent 12 }}
+
+{{- with .Values.global.batchConnector.nodeSelector | default .Values.global.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with .Values.global.batchConnector.tolerations | default .Values.global.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+{{- end }}

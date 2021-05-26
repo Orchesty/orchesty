@@ -45,6 +45,8 @@ spec:
                 configMapKeyRef:
                   key: rabbitmq_password
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: RABBITMQ_INPUT_QUEUE_PREFETCH_COUNT
+              value: "500"
             - name: MONGO_HOST
               valueFrom:
                 configMapKeyRef:
@@ -64,12 +66,14 @@ spec:
               value: "5120"
             - name: LOG_LEVEL
               value: "info"
-            - name: RABBITMQ_INPUT_QUEUE_PREFETCH_COUNT
-              value: "500"
           resources:
-            requests:
-              memory: 128Mi
-              cpu: 25m
-            limits:
-              memory: 512Mi
-              cpu: "2"
+{{ toYaml .Values.global.limiter.resources | indent 12 }}
+
+{{- with .Values.global.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with .Values.global.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+{{- end }}

@@ -54,12 +54,7 @@ spec:
               subPath: logstash.conf
               mountPath: /usr/share/logstash/pipeline/logstash.conf
           resources:
-            requests:
-              memory: 1Gi
-              cpu: 50m
-            limits:
-              memory: 1Gi
-              cpu: "2"
+{{ toYaml .Values.global.logstash.resources | indent 12 }}
 {{ if eq .Values.global.monitoring.logStorage "google" }}
         - name: fluentd
           image: {{ include "pipes.imageFullname" (dict "image" "logstash-fluentd-google" "root" .) }}
@@ -76,3 +71,12 @@ spec:
         - name: config-volume
           configMap:
             name: {{ include "pipes.fullname" (dict "suffix" $componentName "root" .) }}
+
+{{- with .Values.global.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with .Values.global.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+{{- end }}

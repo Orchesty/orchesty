@@ -32,9 +32,13 @@ spec:
             - name: STARTING_POINT_URL
               value: "{{ .Values.global.starting_point_url }}"
           resources:
-            requests:
-              memory: 64Mi  
-              cpu: 25m
-            limits:
-              memory: 128Mi
-              cpu: "2"
+{{ toYaml .Values.global.frontend.resources | indent 12 }}
+
+{{- with .Values.global.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with .Values.global.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+{{- end }}
