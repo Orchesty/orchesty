@@ -157,6 +157,59 @@ paths:
                 500:
                     $ref: '#/components/responses/500'
 
+    /api/applications/{key}/sync/list:
+        get:
+            tags: [ Applications ]
+            parameters:
+                -   $ref: '#/components/parameters/Key'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+                404:
+                    $ref: '#/components/responses/404'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/applications/{key}/sync/{method}:
+        get:
+            tags: [ Applications ]
+            parameters:
+                -   $ref: '#/components/parameters/Key'
+                -   $ref: '#/components/parameters/Method'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+                404:
+                    $ref: '#/components/responses/404'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/applications/statistics/application/{key}:
+        get:
+            tags: [ Applications ]
+            parameters:
+                -   $ref: '#/components/parameters/Key'
+            responses:
+                200:
+                    $ref: '#/components/responses/Application'
+                404:
+                    $ref: '#/components/responses/404'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/applications/statistics/user/{user}:
+        get:
+            tags: [ Applications ]
+            parameters:
+                -   $ref: '#/components/parameters/User'
+            responses:
+                200:
+                    $ref: '#/components/responses/Users'
+                404:
+                    $ref: '#/components/responses/404'
+                500:
+                    $ref: '#/components/responses/500'
+
     /api/categories:
         get:
             tags: [ Categories ]
@@ -178,6 +231,20 @@ paths:
 
     /api/categories/{id}:
         put:
+            tags: [ Categories ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            requestBody:
+                $ref: '#/components/requestBodies/Category'
+            responses:
+                200:
+                    $ref: '#/components/responses/Category'
+                404:
+                    $ref: '#/components/responses/404'
+                500:
+                    $ref: '#/components/responses/500'
+
+        patch:
             tags: [ Categories ]
             parameters:
                 -   $ref: '#/components/parameters/Id'
@@ -235,6 +302,15 @@ paths:
 
     /api/longRunning/{id}/process:
         post:
+            tags: [ Long Running Nodes ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+                500:
+                    $ref: '#/components/responses/500'
+        get:
             tags: [ Long Running Nodes ]
             parameters:
                 -   $ref: '#/components/parameters/Id'
@@ -348,16 +424,7 @@ paths:
                 500:
                     $ref: '#/components/responses/500'
 
-    /api/topologies/{id}/nodes:
-        get:
-            tags: [ Nodes ]
-            parameters:
-                -   $ref: '#/components/parameters/Id'
-            responses:
-                200:
-                    $ref: '#/components/responses/Nodes'
-                500:
-                    $ref: '#/components/responses/500'
+
 
     /api/nodes/{id}:
         get:
@@ -401,6 +468,15 @@ paths:
             responses:
                 200:
                     $ref: '#/components/responses/NodesImplementationsNames'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/notification_settings:
+        get:
+            tags: [ Notification Settings ]
+            responses:
+                200:
+                    $ref: '#/components/responses/Events'
                 500:
                     $ref: '#/components/responses/500'
 
@@ -611,6 +687,28 @@ paths:
             responses:
                 200:
                     $ref: '#/components/responses/TopologyTest'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/topologies/{id}/nodes:
+        get:
+            tags: [ Topologies ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            responses:
+                200:
+                    $ref: '#/components/responses/Nodes'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/progress/topology/{topologyId}:
+        get:
+            tags: [ Progress ]
+            parameters:
+                - $ref: '#/components/parameters/Id'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
                 500:
                     $ref: '#/components/responses/500'
 
@@ -2073,5 +2171,13 @@ components:
             in: path
             required: true
             example: token
+            schema:
+                type: string
+
+        Method:
+            name: method
+            in: path
+            required: true
+            example: method
             schema:
                 type: string
