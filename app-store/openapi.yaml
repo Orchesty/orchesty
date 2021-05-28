@@ -10,27 +10,6 @@ servers:
         description: Docker Localhost
 
 paths:
-    /applications:
-        get:
-            tags: [ Applications ]
-            responses:
-                200:
-                    $ref: '#/components/responses/Applications'
-                500:
-                    $ref: '#/components/responses/500'
-
-    /applications/{key}:
-        get:
-            tags: [ Applications ]
-            parameters:
-                -   $ref: '#/components/parameters/Key'
-            responses:
-                200:
-                    $ref: '#/components/responses/Application'
-                404:
-                    $ref: '#/components/responses/404'
-                500:
-                    $ref: '#/components/responses/500'
 
     /applications/users/{user}:
         get:
