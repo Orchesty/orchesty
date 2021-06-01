@@ -5,6 +5,7 @@ namespace PipesPhpSdkTests\Integration\Parser;
 use Exception;
 use Hanaboso\PipesPhpSdk\Parser\TableParser;
 use Hanaboso\PipesPhpSdk\Parser\TableParserInterface;
+use PhpOffice\PhpSpreadsheet\Cell\Cell;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
@@ -96,11 +97,13 @@ final class TableParserTest extends DatabaseTestCaseAbstract
     {
         $parser    = new TableParser();
         $worksheet = self::createPartialMock(Worksheet::class, ['getCellByColumnAndRow']);
-        $worksheet->expects(self::any())->method('getCellByColumnAndRow')->willReturn(NULL);
+        $worksheet
+            ->expects(self::any())->method('getCellByColumnAndRow')
+            ->willReturn(new Cell('1', '2', $worksheet));
 
         $value = $this->invokeMethod($parser, 'getTrimmedCellValue', [$worksheet, 500, 500]);
 
-        self::assertNull($value);
+        self::assertEquals('1', $value);
     }
 
     /**

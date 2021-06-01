@@ -1,7 +1,7 @@
 {
     "name": "hanaboso/portal",
     "description": "Pipes portal",
-    "version": "1.3.0",
+    "version": "1.3.1",
     "license": "proprietary",
     "require": {
         "php": "^8.0",
@@ -10,9 +10,9 @@
         "doctrine/annotations": "^1.13",
         "hanaboso/commons-bundle": "^2.3",
         "hanaboso/rest-bundle": "^1.1",
-        "symfony/framework-bundle": "^v5.2",
+        "symfony/framework-bundle": "^v5.3",
         "symfony/monolog-bundle": "^v3.7",
-        "symfony/yaml": "^v5.2"
+        "symfony/yaml": "^v5.3"
     },
     "replace": {
         "ralouphie/getallheaders": "*",

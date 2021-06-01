@@ -14,7 +14,7 @@
         "hanaboso/rabbit-mq-bundle": "^1.5",
         "hanaboso/rest-bundle": "^1.1",
         "ratchet/pawl": "^0.3",
-        "symfony/security-bundle": "^5.2"
+        "symfony/security-bundle": "^5.3"
     },
     "replace": {
         "ralouphie/getallheaders": "*",
@@ -32,8 +32,8 @@
     },
     "require-dev": {
         "hanaboso/php-check-utils": "^1.2",
-        "symfony/debug-bundle": "^5.2",
-        "symfony/serializer": "^5.2"
+        "symfony/debug-bundle": "^5.3",
+        "symfony/serializer": "^5.3"
     },
     "autoload": {
         "psr-4": {

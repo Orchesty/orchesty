@@ -1,18 +1,18 @@
 {
     "name": "hanaboso/app-store",
     "description": "App store for PipesFramework",
-    "version": "1.6.0",
+    "version": "1.6.1",
     "license": "GPL-3.0-or-later",
     "require": {
         "php": "^8.0",
         "hanaboso/pipes-php-sdk": "^1.6"
     },
     "require-dev": {
-        "hanaboso/php-check-utils": "^1.1",
-        "hanaboso/rest-bundle": "^1.0",
-        "symfony/debug-bundle": "^v5.2",
-        "symfony/security-bundle": "^v5.2",
-        "symfony/serializer": "^v5.2"
+        "hanaboso/php-check-utils": "^1.2",
+        "hanaboso/rest-bundle": "^1.1",
+        "symfony/debug-bundle": "^v5.3",
+        "symfony/security-bundle": "^v5.3",
+        "symfony/serializer": "^v5.3"
     },
     "autoload": {
         "psr-4": {

@@ -1,7 +1,7 @@
 {
     "name": "hanaboso/pipes-connectors",
     "description": "Connectors for PipesFramework",
-    "version": "1.6.0",
+    "version": "1.6.1",
     "license": "GPL-3.0-or-later",
     "require": {
         "php": "^8.0",
@@ -15,9 +15,9 @@
     "require-dev": {
         "aws/aws-sdk-php-symfony": "^2.2",
         "hanaboso/php-check-utils": "^1.2",
-        "symfony/debug-bundle": "^v5.2",
-        "symfony/security-bundle": "^v5.2",
-        "symfony/serializer": "^v5.2"
+        "symfony/debug-bundle": "^v5.3",
+        "symfony/security-bundle": "^v5.3",
+        "symfony/serializer": "^v5.3"
     },
     "suggest": {
         "aws/aws-sdk-php-symfony": "Install me, if you need to use Model\\Application\\Impl\\AmazonApps."

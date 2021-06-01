@@ -123,8 +123,9 @@ final class ApplicationController
     public function authorizeApplicationAction(Request $request, string $key, string $user): Response
     {
         try {
-            $redirectUrl = $request->query->get('redirect_url');
-            if (!$redirectUrl) {
+            /** @var string $redirectUrl */
+            $redirectUrl = $request->query->get('redirect_url', '');
+            if (empty($redirectUrl)) {
                 throw new InvalidArgumentException('Missing "redirect_url" query parameter.');
             }
 

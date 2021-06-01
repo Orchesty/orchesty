@@ -132,17 +132,14 @@ final class TableParser implements TableParserInterface
      * @param int       $column
      * @param int       $row
      *
-     * @return string|null
+     * @return string
      * @throws Exception
      */
-    private function getTrimmedCellValue(Worksheet $worksheet, int $column, int $row): ?string
+    private function getTrimmedCellValue(Worksheet $worksheet, int $column, int $row): string
     {
         $cell = $worksheet->getCellByColumnAndRow($column, $row);
-        if ($cell) {
-            return Strings::trim($cell->getCalculatedValue());
-        }
 
-        return NULL;
+        return Strings::trim($cell->getCalculatedValue());
     }
 
     /**
@@ -156,9 +153,7 @@ final class TableParser implements TableParserInterface
     private function setCellValue(Worksheet $worksheet, int $column, int $row, string $value): void
     {
         $cell = $worksheet->getCellByColumnAndRow($column, $row);
-        if ($cell) {
-            $cell->setValue($value);
-        }
+        $cell->setValue($value);
     }
 
 }
