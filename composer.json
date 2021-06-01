@@ -1,7 +1,7 @@
 {
     "name": "hanaboso/pipes-framework",
     "description": "PipesFramework for Symfony",
-    "version": "1.6.0",
+    "version": "1.6.1",
     "license": "GPL-3.0-or-later",
     "require": {
         "php": "^8.0",
@@ -21,8 +21,8 @@
         "hanaboso/user-bundle": "^1.4",
         "influxdb/influxdb-php": "^1.15",
         "ruflin/elastica": "^7.1",
-        "symfony/security-bundle": "^v5.2",
-        "symfony/serializer": "^v5.2"
+        "symfony/security-bundle": "^v5.3",
+        "symfony/serializer": "^v5.3"
     },
     "replace": {
         "ralouphie/getallheaders": "*",
