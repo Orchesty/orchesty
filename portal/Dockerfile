@@ -4,6 +4,7 @@ ENV APP_ENV=prod
 ENV APP_DEBUG=0
 ENV PHP_FPM_MAX_REQUESTS 500
 ENV PHP_FPM_MAX_CHILDREN 1
+ENV APP_SECRET changeMe
 
 COPY . /var/www
 COPY php-local.ini /usr/local/etc/php/conf.d/zz_local.ini

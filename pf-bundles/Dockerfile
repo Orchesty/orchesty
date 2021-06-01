@@ -10,6 +10,7 @@ RUN cd pf-bundles && \
     METRICS_HOST=kapacitor METRICS_PORT=9100 METRICS_SERVICE=influx ELASTIC_HOST=elasticsearch ELASTIC_INDEX=index \
     CRON_DSN=cron-api:8080 MONOLITH_API_DSN=php-sdk MULTI_PROBE_DSN=multi-probe:8007 \
     TOPOLOGY_API_DSN=topology-api:8080 WORKER_DEFAULT_PORT=8008 STARTING_POINT_DSN=starting-point:8080 \
+    FRONTEND_DSN=frontend BACKEND_DSN=backend ELASTICSEARCH_DSN=elastic \
     bin/console cache:warmup
 
 FROM hanabosocom/php-base:php-8.0-alpine
