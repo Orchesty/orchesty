@@ -101,10 +101,10 @@ global:
     # values for backward compat, will be reset
     resources:
       requests:
-        memory: 64Mi
+        memory: 128Mi
         cpu: 50m
       limits:
-        memory: 128Mi
+        memory: 256Mi
         cpu: "2"
 
   limiter:
