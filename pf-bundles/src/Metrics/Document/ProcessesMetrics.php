@@ -11,6 +11,8 @@ use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
  * @package Hanaboso\PipesFramework\Metrics\Document
  *
  * @ODM\Document(collection="pipes_counter")
+ * @ODM\Index(name="node_idIndex", keys={"tags.node_id"="text"})
+ * @ODM\Index(name="createdIndex", keys={"created"="desc"})
  */
 class ProcessesMetrics
 {

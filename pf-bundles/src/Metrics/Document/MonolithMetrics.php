@@ -11,6 +11,8 @@ use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
  * @package Hanaboso\PipesFramework\Metrics\Document
  *
  * @ODM\Document(collection="monolith")
+ * @ODM\Index(name="SearchIndex", keys={"tags.node_id"="text","tags.topology_id"="text"}),
+ * @ODM\Index(name="createdIndex", keys={"created"="desc"})
  */
 class MonolithMetrics
 {

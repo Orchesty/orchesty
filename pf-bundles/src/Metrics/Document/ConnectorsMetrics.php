@@ -11,6 +11,8 @@ use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
  * @package Hanaboso\PipesFramework\Metrics\Document
  *
  * @ODM\Document(collection="connectors")
+ * @ODM\Index(name="SearchIndex", keys={"tags.node_id"="text","tags.topology_id"="text","tags.application_id"="text","tags.user_id"="text","tags.correlation_id"="text"}),
+ * @ODM\Index(name="createdIndex", keys={"created"="desc"})
  */
 class ConnectorsMetrics
 {

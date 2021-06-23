@@ -11,6 +11,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  * @package Hanaboso\PipesFramework\Metrics\Document
  *
  * @ODM\EmbeddedDocument()
+ * @ODM\Index(name="createdIndex", keys={"created"="desc"})
  */
 class BridgesMetricsFields
 {
