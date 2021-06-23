@@ -55,7 +55,7 @@ services:
             MONGO_COLLECTION: cron
 
     notification-sender-api:
-        image: dkr.hanaboso.net/pipes/notification-sender:master
+        image: dkr.hanaboso.net/pipes/pipes/notification-sender:master
         working_dir: /var/www
         environment:
             MONGO_HOST: mongo

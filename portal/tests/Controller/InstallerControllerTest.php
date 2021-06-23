@@ -206,7 +206,7 @@ services:
                         METRICS_PORT: 27017
                         METRICS_SERVICE: mongo
         notification-sender-api:
-                image: \'dkr.hanaboso.net/pipes/notification-sender:master\'
+                image: \'dkr.hanaboso.net/pipes/pipes/notification-sender:master\'
                 environment:
                         RABBIT_HOST: rabbitmq
                         RABBIT_PORT: 5672
@@ -214,7 +214,7 @@ services:
                         RABBIT_PASS: guest
                         MONGO_HOST: mongo
         notification-sender-consumer:
-                image: \'dkr.hanaboso.net/pipes/notification-sender:master\'
+                image: \'dkr.hanaboso.net/pipes/pipes/notification-sender:master\'
                 environment:
                         RABBIT_HOST: rabbitmq
                         RABBIT_PORT: 5672
@@ -421,7 +421,7 @@ services:
                         METRICS_PORT: 9100
                         METRICS_SERVICE: influx
         notification-sender-api:
-                image: 'dkr.hanaboso.net/pipes/notification-sender:master'
+                image: 'dkr.hanaboso.net/pipes/pipes/notification-sender:master'
                 environment:
                         RABBIT_HOST: rabbitmq
                         RABBIT_PORT: 5672
@@ -429,7 +429,7 @@ services:
                         RABBIT_PASS: guest
                         MONGO_HOST: mongo
         notification-sender-consumer:
-                image: 'dkr.hanaboso.net/pipes/notification-sender:master'
+                image: 'dkr.hanaboso.net/pipes/pipes/notification-sender:master'
                 environment:
                         RABBIT_HOST: rabbitmq
                         RABBIT_PORT: 5672
