@@ -1,6 +1,6 @@
 DC=docker-compose
 DE=docker-compose exec -T app
-IMAGE=dkr.hanaboso.net/pipes/notification-sender
+IMAGE=dkr.hanaboso.net/pipes/pipes/notification-sender
 PUBLIC_IMAGE=hanaboso/pipes-notification-sender
 
 ALIAS?=alias
