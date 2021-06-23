@@ -11,6 +11,8 @@ use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
  * @package Hanaboso\PipesFramework\Metrics\Document
  *
  * @ODM\Document(collection="rabbitmq")
+ * @ODM\Index(name="queueIndex", keys={"tags.queue"="text"})
+ * @ODM\Index(name="createdIndex", keys={"created"="desc"})
  */
 class RabbitMetrics
 {
