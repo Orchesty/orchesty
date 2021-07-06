@@ -1,7 +1,6 @@
 package rabbitmq
 
 import (
-	"github.com/hanaboso/pipes/bridge/pkg/config"
 	"github.com/streadway/amqp"
 	"os"
 	"testing"
@@ -28,7 +27,7 @@ var tClient *testingClient
 
 func setupTestData() {
 	tClient = &testingClient{}
-	go tClient.handleReconnect(tClient, config.RabbitMQ.DSN)
+	go tClient.handleReconnect(tClient, "amqp://rabbitmq")
 }
 
 func teardown() {

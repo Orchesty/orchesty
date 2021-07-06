@@ -4,6 +4,7 @@ import (
 	"github.com/hanaboso/pipes/bridge/pkg/enum"
 	"github.com/hanaboso/pipes/bridge/pkg/model"
 	"github.com/hanaboso/pipes/bridge/pkg/rabbitmq"
+	"github.com/rs/zerolog/log"
 )
 
 type parser interface {
@@ -20,7 +21,7 @@ func NewTopologySvc(rabbitMQ *rabbitmq.RabbitMQ) TopologySvc {
 	return TopologySvc{
 		rabbitMQ: rabbitMQ,
 		// TODO decide what parser to use
-		parser: jsonParserV1{},
+		parser: jsonParserV2{},
 	}
 }
 
@@ -30,9 +31,9 @@ func (t TopologySvc) Parse(path string) (model.Topology, error) {
 	if err != nil {
 		return model.Topology{}, err
 	}
-
-	// Setup rabbitmq on one arbitrary address
-	t.rabbitMQ.Setup(topology.Shards[0].RabbitMQDSN, topology.Shards)
+	log.Debug().Str(enum.LogHeader_TopologyId, topology.ID).
+		Interface(enum.LogHeader_Data, model.LogData{"shards": len(topology.Shards)}).
+		Msg("successfully parsed topology")
 
 	rabbitMQShards := make(map[string][]model.NodeShard)
 	for _, shard := range topology.Shards {
@@ -44,11 +45,16 @@ func (t TopologySvc) Parse(path string) (model.Topology, error) {
 		}
 	}
 
-	for DSN, shards := range rabbitMQShards {
+	someDsn := ""
+	for dsn, shards := range rabbitMQShards {
 		// Setup on different addresses is just convenient. It is not necessary - all shards can be setup on one address.
-		t.rabbitMQ.Setup(DSN, shards)
+		t.rabbitMQ.Setup(dsn, shards)
 		t.rabbitMQ.ConnectSubscribers(shards)
+		// Here the setup on different addresses will spread load
+		t.rabbitMQ.ConnectPublishers(shards)
+		someDsn = dsn
 	}
+	t.rabbitMQ.SetupLimitRepeat(someDsn)
 
 	return topology, nil
 }

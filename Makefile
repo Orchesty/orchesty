@@ -1,5 +1,10 @@
+TAG?=dev
+IMAGE=dkr.hanaboso.net/pipes/pipes/bridge
+PUBLIC_IMAGE=hanaboso/bridge
+
 DC=docker-compose
 DE=docker-compose exec -T app
+DR=docker-compose exec -T rabbitmq
 
 ALIAS?=alias
 Darwin:
@@ -17,8 +22,10 @@ Linux:
 		.env.dist >> .env; \
 
 build:
-	docker build -t ${IMAGE}:${TAG} --pull .
+	docker build -t ${IMAGE}:${TAG} .
 	docker push ${IMAGE}:${TAG}
+	docker tag ${IMAGE}:${TAG} $(PUBLIC_IMAGE):$(TAG)
+	docker push $(PUBLIC_IMAGE):$(TAG)
 
 docker-up-force: .env .lo0-up
 	$(DC) pull
@@ -32,9 +39,9 @@ docker-compose.ci.yml:
 	sed -r 's/^(\s+ports:)$$/#\1/g; s/^(\s+- \$$\{DEV_IP\}.*)$$/#\1/g; s/^(\s+- \$$\{GOPATH\}.*)$$/#\1/g' docker-compose.yml > docker-compose.ci.yml
 
 init-dev: docker-up-force
+	$(DR) rabbitmq-plugins enable rabbitmq_consistent_hash_exchange
 
 lint:
-	$(DE) goimports -local db-api -w --format-only .
 	$(DE) go fmt ./...
 	excludes='';\
 	for file in $$(ls -R $$(find . -type f ) | grep test.go); do\
@@ -44,7 +51,7 @@ lint:
 
 fasttest: lint
 	$(DE) mkdir var || true
-	$(DE) go test -p 1 --failfast -cover -coverpkg=./... -coverprofile var/coverage.out ./...
+	$(DE) go test -p 8 --failfast -cover -coverpkg=./... -coverprofile var/coverage.out ./...
 	$(DE) go tool cover -html=var/coverage.out -o var/coverage.html
 
 test: init-dev fasttest docker-down-clean

@@ -3,6 +3,7 @@ package rabbitmq
 import (
 	"context"
 	"github.com/hanaboso/pipes/bridge/pkg/enum"
+	"github.com/hanaboso/pipes/bridge/pkg/utils/timex"
 	"sync"
 	"time"
 
@@ -49,7 +50,8 @@ func (p *publisher) handleReconnect(conn *amqp.Connection, wg *sync.WaitGroup) {
 
 		p.channel = ch
 		p.lastDeliveryTag = 0
-		p.notifyConfirm = p.channel.NotifyPublish(make(chan amqp.Confirmation))
+		// TODO viz comment in src code -> this should be big enough... in case of dead-lock, try 999
+		p.notifyConfirm = p.channel.NotifyPublish(make(chan amqp.Confirmation, 99))
 
 		if err := <-p.channel.NotifyClose(make(chan *amqp.Error)); err != nil {
 			log.Error().Object(enum.LogHeader_Data, p).Msgf("closing channel: %v", err)
@@ -117,15 +119,23 @@ func (p *publishers) close() {
 }
 
 // Publish will send message and waits for confirmation one by one.
-func (p *publisher) Publish(pm *model.ProcessMessage) error {
+func (p *publisher) Publish(pm amqp.Publishing) error {
 	if p.channel == nil {
 		return ErrChannelClosed
 	}
+	/*
+		TODO tady to padá po restartu rabbita -> channel není null, ale je closed... po několika chybách se to časem vzpamatuje -> vytváří to však zbytečně duplicitní zpracovávání
+		TODO buď počkat, až vše nastartuje -> aktuální ohejbák AwaitStartup() je použit při startu bridge
+		TODO nebo čekat na úrovní workera např.?
+
+			{"level":"error","service":"bridge","trace":[{"function":"bridge.(*node).process","file":"/app/pkg/bridge/worker.go:77"},{"function":"bridge.","file":"/app/pkg/bridge/worker.go:58"}],"message":"Exception (504) Reason: \"channel/connection is not open\"","nodeId":"node1","topologyId":"topo","timestamp":1625649064}
+	*/
 
 	p.mu.Lock()
 	defer p.mu.Unlock()
 
-	if err := p.channel.Publish(p.exchange, p.routingKey, false, false, pm.IntoAmqp()); err != nil {
+	pm.Headers[model.Prefix(enum.Header_PublishedTimestamp)] = timex.UnixMs()
+	if err := p.channel.Publish(p.exchange, p.routingKey, false, false, pm); err != nil {
 		return err
 	}
 

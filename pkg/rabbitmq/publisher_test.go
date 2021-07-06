@@ -1,7 +1,6 @@
 package rabbitmq
 
 import (
-	"github.com/hanaboso/pipes/bridge/pkg/config"
 	"testing"
 	"time"
 
@@ -12,7 +11,7 @@ import (
 
 func TestPublishers_StartPublisher(t *testing.T) {
 	shards := []model.NodeShard{{
-		RabbitMQDSN: config.RabbitMQ.DSN,
+		RabbitMQDSN: "amqp://rabbitmq",
 		Index:       1,
 		Node: &model.Node{
 			ID:       "publish",
@@ -21,7 +20,7 @@ func TestPublishers_StartPublisher(t *testing.T) {
 	}}
 
 	rabbit := NewRabbitMQ()
-	rabbit.Setup(config.RabbitMQ.DSN, shards)
+	rabbit.Setup("amqp://rabbitmq", shards)
 	rabbit.ConnectPublishers(shards)
 
 	pub := rabbit.publishers[0].publishers[0]
@@ -33,7 +32,7 @@ func TestPublishers_StartPublisher(t *testing.T) {
 		Body:    []byte("{}"),
 	}
 
-	require.Nil(t, pub.Publish(&pm))
+	require.Nil(t, pub.Publish(pm.IntoAmqp()))
 
 	msgs, err := tClient.ch.Consume(queue(shards[0]), "", true, false, false, false, nil)
 	require.Nil(t, err)

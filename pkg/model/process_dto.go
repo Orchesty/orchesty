@@ -1,35 +1,57 @@
 package model
 
 import (
-	"errors"
 	"fmt"
 	"github.com/hanaboso/pipes/bridge/pkg/enum"
-	"github.com/hanaboso/pipes/bridge/pkg/utils/stringx"
 	"github.com/rs/zerolog"
 	"github.com/streadway/amqp"
+	"io/ioutil"
+	"net/http"
 	"strconv"
+	"strings"
 )
 
-const headerPrefix = "pf"
+const HeaderPrefix = "pf-"
 
-type ProcessDto struct {
-	body    string
-	headers map[string]string
-	ack     func() error
-	nack    func() error
+type ProcessMessage struct {
+	Body       []byte
+	bodyBackup []byte // Used for cases like repeat or cursor when original unchanged body is required
+	Headers    map[string]interface{}
+	Exchange   string
+	RoutingKey string
+	Ack        func() error
+	Nack       func() error
+	// Helpers
+	KeepRepeatHeaders bool
+	// Metrics informations
+	Published      int64
+	ProcessStarted int64
+	Status         enum.MessageStatus
 }
 
-func (dto ProcessDto) GetHeader(header string) (string, error) {
-	value, ok := dto.headers[prefix(header)]
+func (pm ProcessMessage) GetBody() []byte {
+	return pm.Body
+}
+
+func (pm ProcessMessage) GetOriginalBody() []byte {
+	if len(pm.bodyBackup) > 0 {
+		return pm.bodyBackup
+	}
+
+	return pm.Body
+}
+
+func (pm ProcessMessage) GetHeader(header string) (string, error) {
+	value, ok := pm.Headers[Prefix(header)]
 	if !ok {
 		return "", fmt.Errorf("requested header [%s] does not exist", header)
 	}
 
-	return value, nil
+	return fmt.Sprint(value), nil
 }
 
-func (dto ProcessDto) GetHeaderOrDefault(header, defaultValue string) string {
-	value, err := dto.GetHeader(header)
+func (pm ProcessMessage) GetHeaderOrDefault(header, defaultValue string) string {
+	value, err := pm.GetHeader(header)
 	if err != nil {
 		return defaultValue
 	}
@@ -37,8 +59,8 @@ func (dto ProcessDto) GetHeaderOrDefault(header, defaultValue string) string {
 	return value
 }
 
-func (dto ProcessDto) GetIntHeader(header string) (int, error) {
-	value, err := dto.GetHeader(header)
+func (pm ProcessMessage) GetIntHeader(header string) (int, error) {
+	value, err := pm.GetHeader(header)
 	if err != nil {
 		return 0, err
 	}
@@ -51,8 +73,8 @@ func (dto ProcessDto) GetIntHeader(header string) (int, error) {
 	return ivalue, nil
 }
 
-func (dto ProcessDto) GetIntHeaderOrDefault(header string, defaultValue int) int {
-	value, err := dto.GetIntHeader(header)
+func (pm ProcessMessage) GetIntHeaderOrDefault(header string, defaultValue int) int {
+	value, err := pm.GetIntHeader(header)
 	if err != nil {
 		return defaultValue
 	}
@@ -60,98 +82,132 @@ func (dto ProcessDto) GetIntHeaderOrDefault(header string, defaultValue int) int
 	return value
 }
 
-func (dto *ProcessDto) SetHeader(key, value string) *ProcessDto {
-	if dto.headers == nil {
-		dto.headers = make(map[string]string)
+func (pm *ProcessMessage) DeleteHeader(header string) *ProcessMessage {
+	delete(pm.Headers, Prefix(header))
+
+	return pm
+}
+
+func (pm *ProcessMessage) ClearHeaders() {
+	pm.DeleteHeader(enum.Header_ForceTargetQueue)
+	pm.DeleteHeader(enum.Header_ResultCode)
+	pm.DeleteHeader(enum.Header_ResultMessage)
+	if !pm.KeepRepeatHeaders { // TODO zkontrolovat čištění a rozdělit případně zvlášť
+		pm.DeleteHeader(enum.Header_RepeatHops)
+		pm.DeleteHeader(enum.Header_RepeatInterval)
+		pm.DeleteHeader(enum.Header_RepeatQueue)
+		pm.DeleteHeader(enum.Header_RepeatMaxHops)
+		pm.DeleteHeader(enum.Header_LimitReturnExchange)
+		pm.DeleteHeader(enum.Header_LimitMessageFromLimiter)
+		pm.DeleteHeader(enum.Header_LimitReturnRoutingKey)
+	}
+}
+
+func (pm *ProcessMessage) SetHeader(key, value string) *ProcessMessage {
+	if pm.Headers == nil {
+		pm.Headers = make(map[string]interface{})
 	}
 
-	dto.headers[prefix(key)] = value
+	pm.Headers[Prefix(key)] = value
 
-	return dto
+	return pm
 }
 
-func (dto *ProcessDto) Ack() error {
-	return dto.ack()
-}
+func (pm *ProcessMessage) IntoAmqp() amqp.Publishing {
+	pm.ClearHeaders()
 
-func (dto *ProcessDto) Nack() error {
-	return dto.nack()
-}
-
-func (dto *ProcessDto) IntoAmqp() amqp.Publishing {
 	return amqp.Publishing{
 		ContentType: "text/plain",
-		Headers:     stringx.IntoInterfaceMap(dto.headers),
-		Body:        []byte(dto.body),
+		Headers:     pm.Headers,
+		Body:        pm.Body,
 	}
+}
+
+func (pm *ProcessMessage) IntoOriginalAmqp() amqp.Publishing {
+	return amqp.Publishing{
+		ContentType: "text/plain",
+		Headers:     pm.Headers,
+		Body:        pm.GetOriginalBody(),
+	}
+}
+
+func (pm *ProcessMessage) FromHttpResponse(response *http.Response) *ProcessMessage {
+	responseBody, _ := ioutil.ReadAll(response.Body)
+	pm.bodyBackup = pm.Body
+	pm.Body = responseBody
+	pm.KeepRepeatHeaders = false
+	pm.Headers = make(map[string]interface{})
+	for key, values := range response.Header {
+		if len(values) > 0 {
+			key = strings.ToLower(key)
+			if strings.HasPrefix(key, HeaderPrefix) {
+				pm.Headers[key] = values[0]
+			}
+		}
+	}
+
+	return pm
+}
+
+func (pm *ProcessMessage) Copy() *ProcessMessage {
+	copied := make(map[string]interface{}, len(pm.Headers))
+	for i, j := range pm.Headers {
+		copied[i] = j
+	}
+
+	return &ProcessMessage{
+		Body:    pm.Body,
+		Headers: copied,
+		Ack:     func() error { return nil },
+		Nack:    func() error { return nil },
+	}
+}
+
+func (pm *ProcessMessage) CopyWithBody(body []byte) *ProcessMessage {
+	copied := make(map[string]interface{}, len(pm.Headers))
+	for i, j := range pm.Headers {
+		copied[i] = j
+	}
+
+	return &ProcessMessage{
+		Body:    body,
+		Headers: copied,
+		Ack:     func() error { return nil },
+		Nack:    func() error { return nil },
+	}
+}
+
+func (pm *ProcessMessage) Ok() ProcessResult {
+	return OkResult(pm)
+}
+
+// StopAndOk - stop process and sends Ok with no followers to counter
+func (pm *ProcessMessage) Stop() ProcessResult {
+	return StopResult(pm)
+}
+
+// UserTask - counter doesn't receive message
+func (pm *ProcessMessage) Pending() ProcessResult {
+	return PendingResult(pm)
+}
+
+// Forces Nack and redelivery -> does not count repeater, counter, ...
+func (pm *ProcessMessage) Error(err error) ProcessResult {
+	return ErrorResult(pm, err)
+}
+
+func (pm *ProcessMessage) Trash(err error) ProcessResult {
+	return TrashResult(pm, err)
 }
 
 // Adds node data -> best to use as .EmbedObject(dto)
-func (dto ProcessDto) MarshalZerologObject(e *zerolog.Event) {
-	// TODO Review again after https://hanaboso.atlassian.net/wiki/spaces/PIP/pages/2804875265/Node#Headers
-	e.Str("correlationId", dto.GetHeaderOrDefault(string(enum.Header_CorrelationId), ""))
-	e.Str("processId", dto.GetHeaderOrDefault(string(enum.Header_ProcessId), ""))
-	e.Str("topologyId", dto.GetHeaderOrDefault(string(enum.Header_TopologyId), ""))
-	// TODO make sure that node-id is updated in time (right after consumer sends the message) so it's not previous node-id
-	e.Str("nodeId", dto.GetHeaderOrDefault(string(enum.Header_NodeId), ""))
+func (pm ProcessMessage) MarshalZerologObject(e *zerolog.Event) {
+	e.Str(enum.LogHeader_CorrelationId, pm.GetHeaderOrDefault(enum.Header_CorrelationId, ""))
+	e.Str(enum.LogHeader_ProcessId, pm.GetHeaderOrDefault(enum.Header_ProcessId, ""))
+	e.Str(enum.LogHeader_TopologyId, pm.GetHeaderOrDefault(enum.Header_TopologyId, ""))
+	e.Str(enum.LogHeader_NodeId, pm.GetHeaderOrDefault(enum.Header_NodeId, ""))
 }
 
-func prefix(header string) string {
-	return fmt.Sprintf("%s-%s", headerPrefix, header)
-}
-
-type DtoBuilder struct {
-	body    string
-	headers map[string]string
-	ack     func() error
-	nack    func() error
-}
-
-func (b *DtoBuilder) Body(body string) *DtoBuilder {
-	b.body = body
-
-	return b
-}
-
-func (b *DtoBuilder) Header(key, value string) *DtoBuilder {
-	b.initHeaders()
-	b.headers[key] = value
-
-	return b
-}
-
-func (b *DtoBuilder) Ack(ack func() error) *DtoBuilder {
-	b.ack = ack
-
-	return b
-}
-
-func (b *DtoBuilder) Nack(nack func() error) *DtoBuilder {
-	b.nack = nack
-
-	return b
-}
-
-func (b *DtoBuilder) Build() (ProcessDto, error) {
-	if b.ack == nil {
-		return ProcessDto{}, errors.New("message requires ack function")
-	}
-	if b.nack == nil {
-		return ProcessDto{}, errors.New("message requires nack function")
-	}
-	b.initHeaders()
-	// TODO validate required headers ? ... correlationId is generated by starting point? ... processId, ...
-
-	return ProcessDto{
-		body:    b.body,
-		headers: b.headers,
-		ack:     b.ack,
-		nack:    b.nack,
-	}, nil
-}
-
-func (b *DtoBuilder) initHeaders() {
-	if b.headers == nil {
-		b.headers = make(map[string]string)
-	}
+func Prefix(header string) string {
+	return fmt.Sprintf("%s%s", HeaderPrefix, header)
 }

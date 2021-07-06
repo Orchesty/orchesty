@@ -1,35 +1,42 @@
 package enum
 
-type Header string
-
 const (
-	Header_CorrelationId Header = "correlation-id"
-	Header_ProcessId     Header = "process-id"
-	// TODO Force which nodes should receive message (currently supports 1, should be an array)
-	Header_ForceTargetQueue Header = "force-target-queue"
-	Header_NodeId           Header = "node-id"
-	Header_NodeName         Header = "node-name"
-	Header_ResultCode       Header = "result-code"
-	Header_ResultMessage    Header = "result-message"
-	Header_TopologyId       Header = "topology-id"
-	Header_TopologyName     Header = "topology-name"
-	// List of following nodes
-	Header_WorkerFollowers Header = "worker-followers"
+	Header_CorrelationId   = "correlation-id"
+	Header_ProcessId       = "process-id"
+	Header_ParentProcessId = "parent-id"
+	Header_PreviousNodeId  = "previous-node-id"
+	// TODO deprecated totok by mělo být vyřešeno novým gateway workerem
+	Header_ForceTargetQueue = "force-target-queue"
+	Header_NodeId           = "node-id"
+	Header_ResultCode       = "result-code"
+	Header_ResultMessage    = "result-message"
+	Header_TopologyId       = "topology-id"
+	// TODO deprecated totok by mělo být vyřešeno novým gateway workerem
+	Header_WorkerFollowers = "worker-followers"
 
 	// Target queue from repeater
-	Header_RepeatQueue Header = "repeat-queue"
+	Header_RepeatQueue = "repeat-queue"
 	// Repeat delay
-	Header_RepeatInterval Header = "repeat-queue"
+	Header_RepeatInterval = "repeat-interval"
 	// Max retries
-	Header_RepeatMaxHops Header = ""
+	Header_RepeatMaxHops = "repeat-max-hops"
 	// Current retry
-	Header_RepeatHops Header = ""
+	Header_RepeatHops = "repeat-hops"
 
 	// Format: key;group;time;amount;key2;group2;time;amount
-	Header_LimitKey Header = "limiter-key"
+	Header_LimitKey = "limiter-key"
 	// Routing headers for limiter service
-	Header_LimitReturnExchange   Header = "limit-return-exchange"
-	Header_LimitReturnRoutingKey Header = "limit-return-routing-key"
+	Header_LimitReturnExchange   = "limit-return-exchange"
+	Header_LimitReturnRoutingKey = "limit-return-routing-key"
 	// Message came from limiter (bool)
-	Header_LimitMessageFromLimiter Header = "limit-message-from-limiter"
+	Header_LimitMessageFromLimiter = "limit-message-from-limiter"
+
+	// enum.UserTask (pending, failed) marker for counter & if message came from db
+	Header_UserTaskState = "user-task-state"
+
+	// Publish time for metrics
+	Header_PublishedTimestamp = "published-timestamp"
+
+	// Batch
+	Header_Cursor = "cursor"
 )

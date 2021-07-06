@@ -2,14 +2,19 @@ package cmd
 
 import (
 	"context"
-	"github.com/hanaboso/pipes/bridge/pkg/service"
-	"github.com/rs/zerolog"
+	"github.com/hanaboso/pipes/bridge/pkg/bridge"
+	"github.com/hanaboso/pipes/bridge/pkg/config"
+	"github.com/hanaboso/pipes/bridge/pkg/mongo"
+	"github.com/hanaboso/pipes/bridge/pkg/rabbitmq"
+	"github.com/hanaboso/pipes/bridge/pkg/router"
+	"github.com/hanaboso/pipes/bridge/pkg/topology"
+	"github.com/hanaboso/pipes/bridge/pkg/worker"
+	"github.com/rs/zerolog/log"
+	"github.com/spf13/cobra"
+	"net/http"
 	"os"
 	"os/signal"
-	"sync"
 	"syscall"
-
-	"github.com/spf13/cobra"
 )
 
 func init() {
@@ -22,33 +27,49 @@ var startCmd = &cobra.Command{
 	Long: `
 		APP_DEBUG - enable debug log
 		TOPOLOGY_JSON - path to the topology config
+		RABBITMQ_DSN - rabbitmq dsn
 	`,
 	Run: startBridge,
 }
 
 func startBridge(_ *cobra.Command, _ []string) {
-	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
-
+	log.Info().Msg("Starting...")
 	// Construct services
+	mongodb := mongo.NewMongoDb()
+	worker.InitializeWorkers(mongodb)
 
-	// TODO call topology.json parser here and pass max timeout to bridge
-
-	br := service.Bridge{} // TODO Doplnit fieldy
-
-	// Start services
+	rabbit := rabbitmq.NewRabbitMQ()
+	topoSvc := topology.NewTopologySvc(rabbit)
+	topo, err := topoSvc.Parse(config.App.TopologyJSON)
+	if err != nil {
+		log.Fatal().Err(err).Send()
+	}
 
 	ctx, cancel := context.WithCancel(context.Background())
-	wg := sync.WaitGroup{}
+	marker := make(chan struct{}, 1)
+	marker <- struct{}{}
 
-	wg.Add(1)
-	go br.StartWaiting(&wg, ctx)
+	br := bridge.NewBridge(rabbit, mongodb, topo)
+	server := &http.Server{Addr: ":8000", Handler: router.Router(router.Container{
+		Topology:  topo,
+		AppCancel: cancel,
+		RabbitMq:  rabbit,
+		CloseApp:  marker,
+	})}
 
-	// Wait for signals
+	go func() {
+		// Wait for signals
+		signals := make(chan os.Signal, 1)
+		signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM)
 
-	signals := make(chan os.Signal, 1)
-	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM)
+		_ = <-signals
+		go server.Shutdown(context.Background())
+		cancel()
+	}()
 
-	_ = <-signals
-	cancel()
-	wg.Wait()
+	go server.ListenAndServe()
+	log.Info().Msg("Listening on port [:8000]")
+	br.Run(ctx)
+
+	<-marker
 }

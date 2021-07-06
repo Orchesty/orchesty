@@ -2,6 +2,8 @@ package rabbitmq
 
 import (
 	"fmt"
+	"github.com/hanaboso/pipes/bridge/pkg/utils/timex"
+	"strings"
 	"sync"
 	"time"
 
@@ -15,12 +17,15 @@ import (
 
 type subscriber struct {
 	queue    string
+	exchange string
 	channel  *amqp.Channel
 	delivery chan<- *model.ProcessMessage
+	prefetch int
 }
 
 type subscribers struct {
 	client
+	address     string
 	subscribers []*subscriber
 	wg          *sync.WaitGroup
 }
@@ -43,8 +48,13 @@ func (s *subscriber) handleReconnect(conn *amqp.Connection, wg *sync.WaitGroup) 
 		s.channel = ch
 		notifyClose := s.channel.NotifyClose(make(chan *amqp.Error))
 
+		prefetch := 50
+		if s.prefetch > 0 {
+			prefetch = s.prefetch
+		}
+
 		// TODO: BR2-6
-		if err := s.channel.Qos(1, 0, false); err != nil {
+		if err := s.channel.Qos(prefetch, 0, false); err != nil {
 			log.Error().Object(enum.LogHeader_Data, s).Msgf("setting qos: %v", err)
 			continue
 		}
@@ -113,13 +123,16 @@ func newSubscribers(shards []model.NodeShard) *subscribers {
 			log.Fatal().Msgf("mismatch of shard addresses [want=%s, got=%s]", addr, shard.RabbitMQDSN)
 		}
 		ss[i] = &subscriber{
+			exchange: exchange(shard),
 			queue:    queue(shard),
 			delivery: shard.Node.Messages,
+			prefetch: shard.Node.Settings.Bridge.Prefetch,
 		}
 		addr = shard.RabbitMQDSN
 	}
 
 	subs := &subscribers{
+		address:     addr,
 		subscribers: ss,
 		wg:          &sync.WaitGroup{},
 	}
@@ -158,29 +171,39 @@ func (s *subscribers) close() {
 }
 
 func (s *subscriber) parseMessage(msg amqp.Delivery, wg *sync.WaitGroup) *model.ProcessMessage {
+	// TODO v nějakém případě nedošlo k Ack ani Nack a zpráva ostala viset -> stalo se po restartu rabbita, ale nedaří se mi to úspěšně nasimulovat
 	ackFn := func() error {
 		defer wg.Done()
-		if err := msg.Ack(false); err != nil {
-			return err
-		}
-		log.Info().EmbedObject(s).Msg("Ack")
-		return nil
+
+		return msg.Ack(false)
 	}
 
 	nackFn := func() error {
 		defer wg.Done()
-		if err := msg.Nack(false, true); err != nil {
-			return err
+
+		return msg.Nack(false, true)
+	}
+
+	stampHeader := model.Prefix(enum.Header_PublishedTimestamp)
+	published, _ := msg.Headers[stampHeader].(int64)
+	pfHeaders := map[string]interface{}{}
+	for key, value := range msg.Headers {
+		lowerKey := strings.ToLower(key)
+		if strings.HasPrefix(lowerKey, model.HeaderPrefix) && lowerKey != stampHeader {
+			pfHeaders[lowerKey] = value
 		}
-		log.Info().EmbedObject(s).Msg("Nack")
-		return nil
 	}
 
 	return &model.ProcessMessage{
-		Body:    msg.Body,
-		Headers: msg.Headers,
-		Ack:     ackFn,
-		Nack:    nackFn,
+		Body:           msg.Body,
+		Headers:        pfHeaders,
+		Ack:            ackFn,
+		Nack:           nackFn,
+		Published:      published,
+		ProcessStarted: timex.UnixMs(),
+		Status:         enum.MessageStatus_Received,
+		Exchange:       msg.Exchange,
+		RoutingKey:     msg.RoutingKey,
 	}
 }
 

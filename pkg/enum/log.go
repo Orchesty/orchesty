@@ -32,4 +32,5 @@ const (
 	LogHeader_Trace         = "trace"
 	LogHeader_Timestamp     = "timestamp"
 	LogHeader_Message       = "message"
+	LogHeader_IsForUi       = "isForUi"
 )

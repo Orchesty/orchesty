@@ -3,15 +3,13 @@ package rabbitmq
 import (
 	"testing"
 
-	"github.com/hanaboso/pipes/bridge/pkg/config"
-
 	"github.com/hanaboso/pipes/bridge/pkg/model"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestSetup_Setup(t *testing.T) {
 	shard := model.NodeShard{
-		RabbitMQDSN: config.RabbitMQ.DSN,
+		RabbitMQDSN: "amqp://rabbitmq",
 		Index:       1,
 		Node: &model.Node{
 			ID: "setup",

@@ -3,8 +3,6 @@ package rabbitmq
 import (
 	"testing"
 
-	"github.com/hanaboso/pipes/bridge/pkg/config"
-
 	"github.com/hanaboso/pipes/bridge/pkg/model"
 	"github.com/streadway/amqp"
 	"github.com/stretchr/testify/assert"
@@ -17,13 +15,13 @@ func TestSubscribers_Subscribe(t *testing.T) {
 		Messages: make(chan *model.ProcessMessage, 5),
 	}
 	shards := []model.NodeShard{{
-		RabbitMQDSN: config.RabbitMQ.DSN,
+		RabbitMQDSN: "amqp://rabbitmq",
 		Index:       1,
 		Node:        &node,
 	}}
 
 	rabbit := NewRabbitMQ()
-	rabbit.Setup(config.RabbitMQ.DSN, shards)
+	rabbit.Setup("amqp://rabbitmq", shards)
 	rabbit.ConnectSubscribers(shards)
 
 	body := "{\"some\":\"message\"}"
@@ -36,7 +34,7 @@ func TestSubscribers_Subscribe(t *testing.T) {
 	require.Nil(t, err)
 
 	msg := <-node.Messages
-	assert.Equal(t, body, msg.GetBody())
+	assert.Equal(t, []byte(body), msg.GetBody())
 	_ = msg.Ack()
 
 	rabbit.CloseSubscribers()

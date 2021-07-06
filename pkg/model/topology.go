@@ -1,14 +1,16 @@
 package model
 
 import (
-	"github.com/hanaboso/pipes/bridge/pkg/enum"
 	"time"
+
+	"github.com/hanaboso/pipes/bridge/pkg/enum"
 
 	"github.com/rs/zerolog"
 )
 
 type Topology struct {
 	ID      string
+	Name    string
 	Nodes   []Node
 	Shards  []NodeShard
 	Timeout time.Duration
@@ -21,6 +23,17 @@ type TopologyV1 struct {
 	TopologyId   string   `json:"topology_id"`
 	TopologyName string   `json:"topology_name"`
 	Nodes        []NodeV1 `json:"nodes"`
+}
+
+type TopologyV2 struct {
+	Id       string   `json:"id"`
+	Name     string   `json:"name"`
+	Nodes    []NodeV2 `json:"nodes"`
+	RabbitMq []TopologyV2RabbitMq
+}
+
+type TopologyV2RabbitMq struct {
+	Dsn string `json:"dsn"`
 }
 
 // Adds topologyId -> best to use as .EmbedObject(t)

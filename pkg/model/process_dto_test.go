@@ -1,8 +1,9 @@
 package model
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestProcessDto_GetHeader(t *testing.T) {
@@ -54,33 +55,8 @@ func TestProcessDto_SetHeader(t *testing.T) {
 	assert.Equal(t, "a", value)
 }
 
-func TestDtoBuilder_Build(t *testing.T) {
-	builder := DtoBuilder{}
-	dto, err := builder.Build()
-	assert.NotNil(t, err)
-
-	builder.Ack(func() error { return nil })
-	dto, err = builder.Build()
-	assert.NotNil(t, err)
-
-	builder.Nack(func() error { return nil })
-	dto, err = builder.Build()
-	assert.Nil(t, err)
-	assert.Equal(t, "", dto.body)
-
-	builder.Body("{}")
-	dto, err = builder.Build()
-	assert.Nil(t, err)
-	assert.Equal(t, "{}", dto.body)
-
-	builder.Header("h", "h")
-	dto, err = builder.Build()
-	assert.Nil(t, err)
-	assert.Equal(t, "h", dto.headers["h"])
-}
-
-func prepareDto() ProcessDto {
-	dto := ProcessDto{}
+func prepareDto() ProcessMessage {
+	dto := ProcessMessage{}
 	dto.SetHeader("string", "string")
 	dto.SetHeader("int", "666")
 

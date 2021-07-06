@@ -1,8 +1,11 @@
 package rabbitmq
 
 import (
+	"context"
 	"github.com/hanaboso/pipes/bridge/pkg/model"
 	"github.com/rs/zerolog/log"
+	"github.com/streadway/amqp"
+	"time"
 )
 
 type setupSvc struct {
@@ -25,14 +28,9 @@ func (s *setupSvc) connect() {
 	for _, shard := range s.shards {
 		queue := queue(shard)
 		exchange := exchange(shard)
-		// TODO declare hash exchange, review params
-		if err = ch.ExchangeDeclare(exchange, "x-consistent-hash", true, false, false, false, nil); err != nil {
-			log.Fatal().Err(err).Send()
-		}
-		if _, err = ch.QueueDeclare(queue, true, false, false, false, nil); err != nil {
-			log.Fatal().Err(err).Send()
-		}
-		// TODO multiple routing keys
+
+		declareExchange(ch, exchange)
+		declareQueue(ch, queue)
 		if err = ch.QueueBind(queue, routingKey(shard), exchange, false, nil); err != nil {
 			log.Fatal().Err(err).Send()
 		}
@@ -40,5 +38,27 @@ func (s *setupSvc) connect() {
 	// Gracefully close connection after setup to not to reconnect
 	if err := s.connection.Close(); err != nil {
 		log.Debug().Err(err).Send()
+	}
+}
+
+func declareExchange(channel *amqp.Channel, exchange string) {
+	// Because go lib is bullshit and has not error or timeout on missing plugin -> only hangs up
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	go func() {
+		<-ctx.Done()
+		if err := ctx.Err(); err == context.DeadlineExceeded {
+			log.Fatal().Err(err).Send()
+		}
+	}()
+
+	if err := channel.ExchangeDeclare(exchange, "x-consistent-hash", true, false, false, false, nil); err != nil {
+		log.Fatal().Err(err).Send()
+	}
+	cancel()
+}
+
+func declareQueue(channel *amqp.Channel, queueName string) {
+	if _, err := channel.QueueDeclare(queueName, true, false, false, false, nil); err != nil {
+		log.Fatal().Err(err).Send()
 	}
 }
