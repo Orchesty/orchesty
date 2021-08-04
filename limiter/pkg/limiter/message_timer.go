@@ -46,6 +46,7 @@ func (mt *messageTimer) Init() {
 	mt.loadExistingGroupTimers()
 	mt.loadExistingTimers()
 	go mt.startHandleNewTimers()
+	go mt.startTimersGuard()
 }
 
 func (mt *messageTimer) addTicker(key string, duration int, count int, groupData *model.RequestGroup) {
@@ -217,5 +218,42 @@ func (mt *messageTimer) deleteMessage(m *storage.Message) {
 
 	if err != nil {
 		mt.logger.Error(fmt.Sprintf("Message timer cannot delete message from storage. Error: %s", err), logger.Context{"error": err})
+	}
+}
+
+func (mt *messageTimer) startTimersGuard() {
+	tick := time.NewTicker(time.Minute)
+
+	mt.logger.Info("START GUARD", nil)
+
+	for range tick.C {
+		items, err := mt.storage.GetDistinctFirstItems()
+		mt.logger.Info("GET DISTINCT", nil)
+		if err != nil {
+			mt.logger.Error(fmt.Sprintf("Init error: %v", err.Error()), nil)
+		}
+
+		for _, i := range items {
+			mt.logger.Info(fmt.Sprintf("ITEMS %s", i.LimitKey), nil)
+			_, ok, _ := mt.customers.Get(i.LimitKey)
+			if !ok {
+				var rg *model.RequestGroup
+				if i.GroupKey != "" {
+					rg = &model.RequestGroup{
+						Key:      i.GroupKey,
+						Interval: i.GroupTime,
+						Count:    i.GroupValue,
+					}
+				}
+
+				mt.customers.Save(i.LimitKey, model.CacheItem{
+					Ticker: time.NewTicker(time.Second * time.Duration(i.LimitTime)),
+					Max:    i.LimitValue,
+					Count:  0,
+				})
+
+				mt.addTicker(i.LimitKey, i.LimitTime, i.LimitValue, rg)
+			}
+		}
 	}
 }
