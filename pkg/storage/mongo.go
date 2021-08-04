@@ -194,7 +194,9 @@ func (s *Mongo) GetDistinctFirstItems() (map[string]*Message, error) {
 		if err != nil {
 			return items, err
 		}
-
+		if len(item) == 0 {
+			continue
+		}
 		items[key] = item[0]
 	}
 
@@ -218,7 +220,9 @@ func (s *Mongo) GetDistinctGroupFirstItems() (map[string]*Message, error) {
 		if err != nil {
 			return items, err
 		}
-
+		if len(item) == 0 {
+			continue
+		}
 		items[key] = item[0]
 	}
 

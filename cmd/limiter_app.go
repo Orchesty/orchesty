@@ -131,7 +131,7 @@ func prepareLogger(severityLevel string) {
 }
 
 func prepareGuard(storage storage.Storage) limiter.Guard {
-	tooOld := time.Hour * 24
+	tooOld := time.Hour * 36
 	guard := limiter.NewLimitGuard(storage, logger.GetLogger())
 
 	// check immediately
