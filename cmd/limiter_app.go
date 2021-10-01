@@ -81,7 +81,7 @@ func prepareStorage() storage.Storage {
 
 func prepareRabbit() (rabbitmq.Consumer, rabbitmq.Publisher, error) {
 	inputQueue := env.GetEnv("RABBITMQ_INPUT_QUEUE", "pipes.limiter")
-	pc := env.GetEnv("RABBITMQ_INPUT_QUEUE_PREFETCH_COUNT", "500")
+	pc := env.GetEnv("RABBITMQ_INPUT_QUEUE_PREFETCH_COUNT", "100")
 	rabbitPort, err := strconv.Atoi(env.GetEnv("RABBITMQ_PORT", "5672"))
 	if err != nil {
 		return nil, nil, fmt.Errorf("can't get RABBITMQ_PORT [%v]", err)

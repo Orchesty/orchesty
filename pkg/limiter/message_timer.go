@@ -2,6 +2,7 @@ package limiter
 
 import (
 	"fmt"
+	"limiter/pkg/utils/intx"
 	"time"
 
 	"limiter/pkg/logger"
@@ -94,30 +95,40 @@ func (mt *messageTimer) addTicker(key string, duration int, count int, groupData
 }
 
 func (mt *messageTimer) release(key string, count int) bool {
-	msgs, err := mt.storage.Get(key, count)
-
-	if err != nil {
-		mt.logger.Error(fmt.Sprintf("Release could not get messages from storage. Error: %s", err), logger.Context{"error": err})
-		return true
-	}
-
-	for _, m := range msgs {
-		mt.publisher.SetRoutingKey(m.ReturnRoutingKey)
-		mt.publisher.SetExchange(m.ReturnExchange)
-		mt.publisher.Publish(m.Message)
-		mt.deleteMessage(m)
-	}
-
+	toRelease := count
 	exists := false
-	if msgs == nil {
-		mt.storage.ClearCacheItem(key, 0)
-	} else {
-		//todo: proc kdyz je v mongu nic stale se kouka na kes
-		exists, err = mt.storage.Exists(key)
+
+	for toRelease > 0 {
+		currentCount := intx.Min(toRelease, 50)
+		toRelease -= currentCount
+		msgs, err := mt.storage.Get(key, currentCount)
 
 		if err != nil {
-			mt.logger.Error(fmt.Sprintf("Release could not check if some messages exist for key %s Error: %s", key, err), logger.Context{"error": err})
+			mt.logger.Error(fmt.Sprintf("Release could not get messages from storage. Error: %s", err), logger.Context{"error": err})
 			return true
+		}
+
+		for _, m := range msgs {
+			mt.publisher.SetRoutingKey(m.ReturnRoutingKey)
+			mt.publisher.SetExchange(m.ReturnExchange)
+			mt.publisher.Publish(m.Message)
+			mt.deleteMessage(m)
+		}
+
+		if toRelease > 0 {
+			continue
+		}
+
+		if msgs == nil {
+			mt.storage.ClearCacheItem(key, 0)
+		} else {
+			//todo: proc kdyz je v mongu nic stale se kouka na kes
+			exists, err = mt.storage.Exists(key)
+
+			if err != nil {
+				mt.logger.Error(fmt.Sprintf("Release could not check if some messages exist for key %s Error: %s", key, err), logger.Context{"error": err})
+				return true
+			}
 		}
 	}
 
