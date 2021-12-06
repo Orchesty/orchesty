@@ -38,7 +38,7 @@ global:
     useInfluxDB: true
     logStorage: elasticsearch
 
-    # Used unly when logStorage is "google"
+    # Used only when logStorage is "google"
     # You must also add iam policy binding to that account:
     # gcloud iam service-accounts add-iam-policy-binding \
     #   --role roles/iam.workloadIdentityUser \
@@ -101,7 +101,7 @@ global:
     # values for backward compat, will be reset
     resources:
       requests:
-        memory: 128Mi
+        memory: 196Mi
         cpu: 50m
       limits:
         memory: 256Mi
