@@ -1,0 +1,156 @@
+# NOTE: cpu limit of 1001m means "this should have been unlimited but the defaults don't allow it"
+
+mongodb:
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: 1001m
+      memory: 1024Mi
+
+rabbitmq:
+  resources:
+    requests:
+      cpu: 500m
+      memory: 512Mi
+    limits:
+      cpu: 1001m
+      memory: 1024Mi
+
+global:
+  backend:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 96Mi
+      limits:
+        cpu: 1001m
+        memory: 144Mi
+
+  cronApi:
+    resources:
+      requests:
+        cpu: 10m
+        memory: 32Mi
+      limits:
+        cpu: 1001m
+        memory: 64Mi
+
+  frontend:
+    resources:
+      requests:
+        cpu: 25m
+        memory: 16Mi
+      limits:
+        cpu: 1001m
+        memory: 64Mi
+
+  limiter:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 1001m
+        memory: 128Mi
+
+  logstash:
+    resources:
+      requests:
+        cpu: 200m
+        memory: 768Mi
+      limits:
+        cpu: 1001m
+        memory: 1152Mi
+
+  multiCounter:
+    resources:
+      requests:
+        cpu: 20m
+        memory: 64Mi
+      limits:
+        cpu: 1001m
+        memory: 96Mi
+
+  notificationSender:
+    apiResources:
+      requests:
+        cpu: 20m
+        memory: 64Mi
+      limits:
+        cpu: 1001m
+        memory: 96Mi
+    consumerResources:
+      requests:
+        cpu: 20m
+        memory: 32Mi
+      limits:
+        cpu: 1001m
+        memory: 64Mi
+
+  repeater:
+    resources:
+      requests:
+        cpu: 20m
+        memory: 64Mi
+      limits:
+        cpu: 1001m
+        memory: 96Mi
+
+  # more cpu than needed requested because it's accessible from wild internet
+  # cpu is limited to not starve the other resources for the same reason
+  startingPoint:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 64Mi
+      limits:
+        cpu: 1000m
+        memory: 128Mi
+
+  status:
+    resources:
+      requests:
+        cpu: 20m
+        memory: 32Mi
+      limits:
+        cpu: 1001m
+        memory: 64Gi
+
+  telegraf:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 32Mi
+      limits:
+        cpu: 1001m
+        memory: 64Mi
+
+  topologyApi:
+    resources:
+      requests:
+        cpu: 20m
+        memory: 64Mi
+      limits:
+        cpu: 1001m
+        memory: 128Mi
+
+  # To make worker CPU consumption predictable, make it 1repl. == 1CPU reserved,
+  # allow it to use a bit more to fill the unused CPU time
+  #worker:
+  #  resources:
+  #    requests:
+  #      cpu: 1000m
+  #      memory: 256Mi
+  #    limits:
+  #      cpu: 1500m
+  #      memory: 512Mi
+  worker:
+    resources:
+      requests:
+        cpu: 250m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi

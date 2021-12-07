@@ -1,0 +1,45 @@
+---
+
+global:
+  backend_url: https://api-pipes-demo.stage.hanaboso.net
+  frontend_url: https://pipes-demo.stage.hanaboso.net
+  starting_point_url: https://sp-pipes-demo-sp.stage.hanaboso.net
+
+  alpha_go_bridge: true
+  
+  imageOverrides:
+    bridge: hanaboso/bridge:dev
+    counter: hanaboso/counter:dev
+    repeater: hanaboso/pipes-pf-bridge:dev
+    alpha_nodejssdk: hanaboso/not-ready-yet
+    frontend: hanaboso/pipes-app-ui:dev
+    backend: hanaboso/pipes-pf-bundle:dev
+    topology-api: hanaboso/pipes-topology-api-v2:dev
+    starting-point: hanaboso/pipes-starting-point:dev
+    logstash: hanaboso/pipes-logstash-mongo:dev
+
+  phpSdk:
+    extraEnv: {}
+
+  alpha_nodejsSdk:
+    extraEnv: {}
+    
+  monitoring:
+    useInfluxDB: false
+    logStorage: mongodb
+
+  multiCounter:
+    progressSave: true
+
+  longRunningNode:
+    enabled: false
+
+mongodb:
+  pvcName: pipes-mongodb
+  nodeSelector:
+    kubernetes.io/hostname: "node2"
+
+rabbitmq:
+  pvcName: pipes-rabbitmq
+  nodeSelector:
+    kubernetes.io/hostname: "node2"
