@@ -22,7 +22,7 @@ spec:
 {{ include "pipes.imagePullSecrets" . | indent 6 }}
       containers:
         - name: repeater
-          image: {{ include "pipes.imageFullname" (dict "image" "bridge" "root" .) }}
+          image: {{ include "pipes.imageFullname" (dict "image" "repeater" "root" .) }}
           imagePullPolicy: Always
           args: ["./dist/src/bin/pipes.js", "start", "repeater"]
           env:

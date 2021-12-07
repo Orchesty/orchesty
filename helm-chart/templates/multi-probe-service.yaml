@@ -1,5 +1,6 @@
----
 {{- $componentName := "multi-probe" -}}
+---
+{{- if not .Values.global.alpha_go_bridge }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -14,3 +15,5 @@ spec:
     - protocol: TCP
       port: 8007
       targetPort: http
+
+{{- end }}
