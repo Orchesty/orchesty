@@ -33,6 +33,11 @@ spec:
             - name: {{ $name }}
               {{- $def | toYaml | nindent 14}}
 {{- end }}
+            - name: CRYPT_SECRET
+              valueFrom:
+                configMapKeyRef:
+                  key: worker_crypt_secret
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
           resources:
 {{ toYaml .Values.global.worker.resources | indent 12 }}
 
