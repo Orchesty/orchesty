@@ -3,6 +3,8 @@ global:
   backend_url: https://backend.pipes.example.com
   starting_point_url: http://starting-point.pipes.example.com
 
+  alpha_go_bridge: false # also needs image overrides when enabled
+
   imageRegistry:
     enablePullSecret: false
     server: docker.io
@@ -18,7 +20,11 @@ global:
     backend: pipes-pf-bundle:master
     frontend: pipes-frontend:master
     cron-api: pipes-cron:master
+
     bridge: pipes-pf-bridge:master
+    counter: pipes-pf-bridge:master
+    repeater: pipes-pf-bridge:master
+
     limiter: limiter:master
     multi-probe: pipes-multi-probe:master
     notification-sender: pipes-notification-sender:master
@@ -38,7 +44,7 @@ global:
     useInfluxDB: true
     logStorage: elasticsearch
 
-    # Used only when logStorage is "google"
+    # Used unly when logStorage is "google"
     # You must also add iam policy binding to that account:
     # gcloud iam service-accounts add-iam-policy-binding \
     #   --role roles/iam.workloadIdentityUser \
@@ -101,7 +107,7 @@ global:
     # values for backward compat, will be reset
     resources:
       requests:
-        memory: 196Mi
+        memory: 128Mi
         cpu: 50m
       limits:
         memory: 256Mi

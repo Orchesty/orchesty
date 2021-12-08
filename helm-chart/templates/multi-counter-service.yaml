@@ -1,3 +1,4 @@
+# TODO: check if this service was even needed. It's not with Go brdige
 ---
 {{- $componentName := "multi-counter" -}}
 apiVersion: v1

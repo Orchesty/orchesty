@@ -31,13 +31,23 @@ spec:
                 configMapKeyRef:
                   key: mongodb_dsn
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: __MONGODB_AUTH_AND_HOSTS
+              valueFrom:
+                configMapKeyRef:
+                  key: mongodb_auth_and_hosts
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: __METRICS_DB
+              valueFrom:
+                configMapKeyRef:
+                  key: metrics_db
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
             - name: MONGO_DSN
               value: "$(__MONGODB_DSN)&connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500"
             - name: METRICS_DSN
             {{- if .Values.global.monitoring.useInfluxDB }}
               value: influxdb://kapacitor:9100
             {{- else }}
-              value: "$(__MONGODB_DSN)&connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500"
+              value: "mongodb://$(__MONGODB_AUTH_AND_HOSTS)/$(__METRICS_DB)?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500"
             {{- end }}
             - name: RABBIT_COUNTER_QUEUE_DURABLE
               value: "true"

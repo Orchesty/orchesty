@@ -1,0 +1,6 @@
+dependencies:
+- name: pipes
+  repository: file://../../../helm-chart
+  version: 1.0.0
+digest: sha256:18817086862c8904b2804e546969798646629c2aa1385fc176b822c8c6721b11
+generated: "2021-12-07T09:20:08.890760539+01:00"

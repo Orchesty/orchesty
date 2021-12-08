@@ -1,0 +1,20 @@
+image:
+  repository: rabbitmq
+  pullPolicy: IfNotPresent
+  #tag: override-appVersion
+
+pvcName: provide-pvc-name
+
+resources: {}
+
+nameOverride: ""
+
+fullnameOverride: ""
+
+podAnnotations: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

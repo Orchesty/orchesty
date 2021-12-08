@@ -1,0 +1,63 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "rabbitmq.fullname" . }}
+  labels:
+    {{- include "rabbitmq.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "rabbitmq.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+    {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        {{- include "rabbitmq.selectorLabels" . | nindent 8 }}
+    spec:
+      hostname: rabbitmq
+      priorityClassName: system-cluster-critical # todo: define our own priority classes
+      containers:
+        - name: rabbitmq
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default (printf "%s-%s" .Chart.AppVersion "management-alpine") }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: amqp
+              containerPort: 5672
+              protocol: TCP
+            - name: management
+              containerPort: 15672
+              protocol: TCP
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/rabbitmq
+            - name: config-volume
+              subPath: enabled_plugins
+              mountPath: /etc/rabbitmq/enabled_plugins
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ .Values.pvcName }}
+        - name: config-volume
+          configMap:
+            name: {{ include "rabbitmq.fullname" . }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

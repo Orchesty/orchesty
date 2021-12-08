@@ -7,10 +7,10 @@
   value: notification-sender-api
 - name: MONOLITH_API_DSN
   value: worker
-- name: X_AUTH_KEY
+- name: __MONGODB_AUTH_AND_HOSTS
   valueFrom:
     configMapKeyRef:
-      key: backend_x_auth_key
+      key: mongodb_auth_and_hosts
       name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
 - name: MONGODB_DSN
   valueFrom:
@@ -40,10 +40,7 @@
 {{- if .Values.global.monitoring.useInfluxDB }}
   value: kapacitor
 {{- else }}
-  valueFrom:
-    configMapKeyRef:
-      key: mongodb_auth_and_hosts
-      name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+  value: "$(__MONGODB_AUTH_AND_HOSTS)"
 {{- end }}
 - name: METRICS_PORT
   value: "{{ if .Values.global.monitoring.useInfluxDB }}9100{{ else }}27017{{ end }}"
@@ -61,16 +58,13 @@
 - name: METRICS_DB
   valueFrom:
     configMapKeyRef:
-      key: mongodb_database
+      key: metrics_db
       name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
 - name: METRICS_DSN
 {{- if .Values.global.monitoring.useInfluxDB }}
   value: influxdb://kapacitor:9100
 {{- else }}
-  valueFrom:
-    configMapKeyRef:
-      key: mongodb_dsn
-      name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+  value: mongodb://$(__MONGODB_AUTH_AND_HOSTS)/$(METRICS_DB)?readPreference=secondaryPreferred
 {{- end }}
 #####
 
@@ -90,10 +84,19 @@
   value: "{{ .Values.global.starting_point_url }}"
 - name: TOPOLOGY_API_DSN
   value: topology-api:8080
+
+{{- if not .Values.global.imageOverrides.bridge }}
 - name: DOCKER_REGISTRY
   value: {{ .Values.global.imageRegistry.server }}/{{ .Values.global.imageRegistry.path }}
 - name: DOCKER_PF_BRIDGE_IMAGE
   value: {{ .Values.global.images.bridge }}
+{{- else }}
+- name: DOCKER_REGISTRY
+  value: ""
+- name: DOCKER_PF_BRIDGE_IMAGE
+  value: {{ .Values.global.imageOverrides.bridge }}
+{{- end }}
+
 - name: XML_PARSER_API_DSN
   value: xml-parser-api
 - name: CRON_DSN

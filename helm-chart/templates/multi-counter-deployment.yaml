@@ -1,5 +1,6 @@
----
 {{- $componentName := "multi-counter" -}}
+---
+{{- if not .Values.global.alpha_go_bridge }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -23,7 +24,7 @@ spec:
       containers:
         - name: multi-counter
           args: ["./dist/src/bin/pipes.js", "start", "multi_counter"]
-          image: {{ include "pipes.imageFullname" (dict "image" "bridge" "root" .) }}
+          image: {{ include "pipes.imageFullname" (dict "image" "counter" "root" .) }}
           imagePullPolicy: Always
           ports:
             - name: http
@@ -78,6 +79,11 @@ spec:
               value: "{{ if .Values.global.monitoring.useInfluxDB }}9100{{ else }}27017{{ end }}"
             - name: METRICS_SERVICE
               value: {{ if .Values.global.monitoring.useInfluxDB }}influx{{ else }}mongo{{ end }}
+            - name: METRICS_DB_NOT_CONFIGURABLE # todo: unhardcode, now hardcoded to "metrics"
+              valueFrom:
+                configMapKeyRef:
+                  key: metrics_db
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
           resources:
 {{ toYaml .Values.global.multiCounter.resources | indent 12 }}
 
@@ -89,4 +95,6 @@ spec:
 {{- with .Values.global.tolerations }}
       tolerations:
 {{ toYaml . | indent 8 }}
+{{- end }}
+
 {{- end }}

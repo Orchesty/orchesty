@@ -1,5 +1,6 @@
+{{- $componentName := "multi-counter" -}}
 ---
-{{- $componentName := "telegraf" -}}
+{{- if .Values.global.alpha_go_bridge }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -21,10 +22,25 @@ spec:
     spec:
 {{ include "pipes.imagePullSecrets" . | indent 6 }}
       containers:
-        - name: telegraf
-          image: {{ include "pipes.imageFullname" (dict "image" $componentName "root" .) }}
+        - name: multi-counter
+          args: ["/bin/counter", "start"]
+          image: {{ include "pipes.imageFullname" (dict "image" "counter" "root" .) }}
           imagePullPolicy: Always
+          ports:
+            # just to satisfy the Service, not used
+            - name: http
+              containerPort: 8005
           env:
+            - name: RABBITMQ_DSN
+              valueFrom:
+                configMapKeyRef:
+                  key: rabbitmq_dsn
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: MONGODB_DSN
+              valueFrom:
+                configMapKeyRef:
+                  key: mongodb_dsn
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
             {{- if .Values.global.monitoring.useInfluxDB }}
             - name: METRICS_DSN
               value: influxdb://kapacitor:9100
@@ -40,32 +56,11 @@ spec:
                   key: metrics_db
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
             - name: METRICS_DSN
-              value: "mongodb://$(__MONGODB_AUTH_AND_HOSTS)/$(__METRICS_DB)?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500"
+              value: "mongodb://$(__MONGODB_AUTH_AND_HOSTS)/$(__METRICS_DB)"
             {{- end }}
-            - name: __RABBITMQ_HOST
-              valueFrom:
-                configMapKeyRef:
-                  key: rabbitmq_host
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: RABBIT_HOST
-              value: "http://$(__RABBITMQ_HOST):15672/"
-            - name: RABBIT_VHOST  # probably not supported yet
-              valueFrom:
-                configMapKeyRef:
-                  key: rabbitmq_vhost
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: RABBIT_USERNAME
-              valueFrom:
-                configMapKeyRef:
-                  key: rabbitmq_user
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: RABBIT_PASSWORD
-              valueFrom:
-                configMapKeyRef:
-                  key: rabbitmq_password
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
           resources:
-{{ toYaml .Values.global.telegraf.resources | indent 12 }}
+{{ toYaml .Values.global.multiCounter.resources | indent 12 }}
+
 
 {{- with .Values.global.nodeSelector }}
       nodeSelector:
@@ -75,3 +70,5 @@ spec:
       tolerations:
 {{ toYaml . | indent 8 }}
 {{- end }}
+
+{{- end}}

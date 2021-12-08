@@ -1,0 +1,87 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pipes-influxdb
+spec:
+  storageClassName: ""
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 1Gi
+  hostPath:
+    type: Directory
+    path: /srv/pipes-demo2/influxdb
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pipes-mongodb
+spec:
+  storageClassName: ""
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 1Gi
+  hostPath:
+    type: Directory
+    path: /srv/pipes-demo2/mongodb
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pipes-rabbitmq
+spec:
+  storageClassName: ""
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 1Gi
+  hostPath:
+    type: Directory
+    path: /srv/pipes-demo2/rabbitmq
+
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pipes-influxdb
+spec:
+  storageClassName: ""
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  volumeName: pipes-influxdb
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pipes-mongodb
+spec:
+  storageClassName: ""
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  volumeName: pipes-mongodb
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pipes-rabbitmq
+spec:
+  storageClassName: ""
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  volumeName: pipes-rabbitmq
