@@ -1,8 +1,8 @@
 BASE_IMAGE=dkr.hanaboso.net/pipes/pipes/nodejs-build
 PUBLIC_BASE_IMAGE=hanabosocom/nodejs-build
 
-IMAGE=dkr.hanaboso.net/pipes/pipes/app-ui
-PUBLIC_IMAGE=hanaboso/pipes-app-ui
+IMAGE?=dkr.hanaboso.net/pipes/pipes/app-ui
+PUBLIC_IMAGE?=hanaboso/pipes-app-ui
 
 init:
 	docker-compose up -d --force-recreate

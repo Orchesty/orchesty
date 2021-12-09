@@ -1,0 +1,19 @@
+.base-app-ui: 
+  variables:
+    DIR: app-ui
+    IMAGE: ${REGISTRY}/orchesty-app-ui
+  
+  rules:
+    - if: '$FORCE_PIPELINE =~ /ALL/ || $FORCE_PIPELINE =~ /app-ui/'
+    - if: '$CI_COMMIT_BEFORE_SHA == $_BANNED_RUN_ALL_SHA'
+      when: never
+    - changes:
+      - ${DIR}/**/*
+
+
+app-ui:build:
+  stage: build
+  needs: []
+  extends:
+    - .base-kaniko-build
+    - .base-app-ui

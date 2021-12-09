@@ -1,9 +1,6 @@
 ### Build step
 FROM node:16-slim as builder
 
-RUN apt-get update && apt-get upgrade -y
-RUN apt-get autoclean -y && apt-get autoremove -y
-
 # Pre-cache packages
 WORKDIR /precache
 COPY package.json ./
@@ -12,9 +9,6 @@ RUN yarn install
 
 ### Build step
 FROM node:16-slim as pre-cache
-
-RUN apt-get update && apt-get upgrade -y
-RUN apt-get autoclean -y && apt-get autoremove -y
 
 # Build
 WORKDIR /build
