@@ -1,0 +1,27 @@
+.base-starting-point:
+  variables:
+    DIR: starting-point
+    IMAGE: ${REGISTRY}/orchesty-starting-point
+  rules:
+    - if: '$FORCE_PIPELINE =~ /ALL/ || $FORCE_PIPELINE =~ /starting-point/'
+    - if: '$CI_COMMIT_BEFORE_SHA == $_BANNED_RUN_ALL_SHA'
+      when: never
+    - changes:
+      - ${DIR}/**/*
+
+
+starting-point:build:
+  stage: build
+  needs: []
+  extends:
+    - .base-kaniko-build
+    - .base-starting-point
+
+
+starting-point:test:
+  stage: test
+  needs: []
+
+  extends:
+    - .base-go-test
+    - .base-starting-point
