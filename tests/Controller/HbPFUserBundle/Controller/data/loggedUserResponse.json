@@ -1,0 +1,10 @@
+{
+    "http": 200,
+    "body": {
+        "user": {
+            "id": "619614a1379b5b1d6c512df2",
+            "email": "test@example.com"
+        },
+        "token": "jwt"
+    }
+}

@@ -30,7 +30,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
      */
     public function testListApplicationsAction(): void
     {
-        $this->assertResponse(__DIR__ . '/data/ApplicationController/listApplicationsRequest.json');
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/ApplicationController/listApplicationsRequest.json');
     }
 
     /**
@@ -40,7 +40,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetApplicationAction(): void
     {
-        $this->assertResponse(__DIR__ . '/data/ApplicationController/getApplicationRequest.json');
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/ApplicationController/getApplicationRequest.json');
     }
 
     /**
@@ -52,7 +52,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     {
         $this->createApplication();
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/ApplicationController/getUsersApplicationRequest.json',
             [
                 'id'      => '123456789',
@@ -149,6 +150,27 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::saveApplicationPasswordAction
+     *
+     * @throws Exception
+     */
+    public function testSaveApplicationPasswordActionInvalid(): void
+    {
+        for ($i = 0; $i < 4; $i++) {
+            $this->createApplication();
+        }
+
+        $this->assertResponse(
+            __DIR__ . '/data/ApplicationController/saveApplicationPasswordInvalidRequest.json',
+            [
+                'id'      => '123456789',
+                'created' => '2010-10-10 10:10:10',
+                'updated' => '2010-10-10 10:10:10',
+            ],
+        );
+    }
+
+    /**
      * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::authorizeApplicationAction
      *
      * @throws Exception
@@ -156,7 +178,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     public function testAuthorizeApplicationAction(): void
     {
         $sdk = new Sdk();
-        $sdk->setKey('ip')->setValue('name');
+        $sdk->setUrl('ip')->setName('name');
         $this->dm->persist($sdk);
         $this->dm->flush();
         $this->dm->clear();
@@ -172,7 +194,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
             self::createMock(RedirectInterface::class),
         );
 
-        self::$container->set('hbpp.service.locator', $loader);
+        self::getContainer()->set('hbpp.service.locator', $loader);
 
         $this->createApplication();
 
@@ -188,11 +210,11 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     {
         $loader = new ServiceLocator(
             $this->dm,
-            self::$container->get('hbpf.transport.curl_manager'),
+            self::getContainer()->get('hbpf.transport.curl_manager'),
             self::createMock(RedirectInterface::class),
         );
 
-        self::$container->set('hbpp.service.locator', $loader);
+        self::getContainer()->set('hbpp.service.locator', $loader);
 
         $this->createApplication();
 
@@ -211,7 +233,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         $dto  = new ResponseDto(200, '', Json::encode(['redirectUrl' => 'redirect/url']), []);
         $curl = self::createMock(CurlManager::class);
         $curl->method('send')->willReturn($dto);
-        self::$container->set('hbpf.transport.curl_manager', $curl);
+        self::getContainer()->set('hbpf.transport.curl_manager', $curl);
 
         $this->assertResponse(
             __DIR__ . '/data/ApplicationController/setAuthorizationTokenRequest.json',
@@ -239,9 +261,10 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         $dto  = new ResponseDto(200, '', Json::encode(['redirectUrl' => 'redirect/url']), []);
         $curl = self::createMock(CurlManager::class);
         $curl->method('send')->willReturn($dto);
-        self::$container->set('hbpf.transport.curl_manager', $curl);
+        self::getContainer()->set('hbpf.transport.curl_manager', $curl);
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/ApplicationController/setAuthorizationTokenQueryRequest.json',
             [],
             [],
@@ -262,7 +285,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
      */
     public function testApplicationStatisticsAction(): void
     {
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/ApplicationController/applicationStatisticsRequest.json',
             [],
             [':key' => 'superApp'],
@@ -276,7 +300,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
      */
     public function testUserStatisticsAction(): void
     {
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/ApplicationController/userStatisticsRequest.json',
             [],
             [':user' => '123-456-789'],
@@ -312,7 +337,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         $this->pfd($application);
 
         $sdk = new Sdk();
-        $sdk->setKey('php-sdk')->setValue('php-sdk');
+        $sdk->setUrl('php-sdk')->setName('php-sdk');
         $this->pfd($sdk);
     }
 

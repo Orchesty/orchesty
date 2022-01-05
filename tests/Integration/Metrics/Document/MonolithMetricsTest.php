@@ -6,6 +6,7 @@ use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Exception;
 use Hanaboso\PipesFramework\Metrics\Document\MonolithMetrics;
 use Hanaboso\Utils\Date\DateTimeUtils;
+use MongoDB\BSON\UTCDateTime;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -34,12 +35,12 @@ final class MonolithMetricsTest extends DatabaseTestCaseAbstract
                     'fields' => [
                         'fpm_cpu_kernel_time' => '1.111',
                         'fpm_cpu_user_time'   => '2.222',
-                        'created'             => DateTimeUtils::getUtcDateTime('1.1.2020')->getTimestamp(),
+                        'created'             => new UTCDateTime(DateTimeUtils::getUtcDateTime('1.1.2020')),
                     ],
                     'tags'   => [
-                        'nodeId'     => '1',
-                        'topologyId' => '2',
-                        'queue'      => '12',
+                        'node_id'     => '1',
+                        'topology_id' => '2',
+                        'queue'       => '12',
                     ],
                 ],
             )

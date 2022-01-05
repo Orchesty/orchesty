@@ -17,7 +17,7 @@ monolog:
             level: info
             formatter: logstash_formatter
             max_files: 10
-            channels: ['!php', '!request']
+            channels: ['!php', '!request', '!security']
 
 services:
     _defaults:

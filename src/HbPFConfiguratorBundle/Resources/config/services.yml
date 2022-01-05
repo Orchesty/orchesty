@@ -26,7 +26,6 @@ services:
             - '@hbpf.topology.configurator'
             - '%topology_generator_configs%'
 
-
     hbpf.install.topology.manager:
         class: Hanaboso\PipesFramework\TopologyInstaller\InstallManager
         arguments:

@@ -10,6 +10,7 @@ use Elastica\Request;
 use Elastica\Response;
 use Exception;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
+use Hanaboso\MongoDataGrid\GridFilterAbstract;
 use Hanaboso\MongoDataGrid\GridRequestDto;
 use Hanaboso\PipesFramework\Logs\ElasticLogs;
 use Hanaboso\PipesFramework\Logs\StartingPointsFilter;
@@ -42,35 +43,60 @@ final class ElasticLogsTest extends DatabaseTestCaseAbstract
     {
         $this->prepareData();
 
-        $logs = self::$container->get('hbpf.elastic.logs');
+        $logs = self::getContainer()->get('hbpf.elastic.logs');
         $logs->setIndex('');
         $result = $logs->getData(
             new GridRequestDto(
                 [
-                    'filter' => '{"severity":"ERROR"}',
+                    'filter' => [
+                        [
+                            [
+                                GridFilterAbstract::COLUMN   => 'severity',
+                                GridFilterAbstract::OPERATOR => GridFilterAbstract::EQ,
+                                GridFilterAbstract::VALUE    => 'ERROR',
+                            ],
+                        ],
+                    ],
                 ],
             ),
         );
 
         self::assertEquals(
             [
-                'limit'  => 10,
-                'offset' => 0,
-                'count'  => 1,
-                'total'  => 1,
-                'items'  => [
+                'items'  =>
                     [
-                        'id'             => $result['items'][0]['id'],
-                        'severity'       => 'ERROR',
-                        'message'        => 'Message 5',
-                        'type'           => 'starting_point',
-                        'correlation_id' => 'Correlation ID 5',
-                        'topology_id'    => 'Topology ID 5',
-                        'topology_name'  => 'Topology Name 5',
-                        'node_id'        => $result['items'][0]['node_id'],
-                        'node_name'      => 'Node',
-                        'timestamp'      => $result['items'][0]['timestamp'],
+                        [
+                            'id'             => $result['items'][0]['id'],
+                            'severity'       => 'ERROR',
+                            'message'        => 'Message 5',
+                            'type'           => 'starting_point',
+                            'correlation_id' => 'Correlation ID 5',
+                            'topology_id'    => 'Topology ID 5',
+                            'topology_name'  => 'Topology Name 5',
+                            'node_id'        => $result['items'][0]['node_id'],
+                            'node_name'      => 'Node',
+                            'timestamp'      => $result['items'][0]['timestamp'],
+                        ],
                     ],
+                'filter' =>
+                    [
+                        [
+                            [
+                                'column'   => 'severity',
+                                'operator' => 'EQ',
+                                'value'    => 'ERROR',
+                            ],
+                        ],
+                    ],
+                'sorter' => [],
+                'search' => NULL,
+                'paging' => [
+                    'page'         => 1,
+                    'itemsPerPage' => 10,
+                    'total'        => 1,
+                    'nextPage'     => 1,
+                    'lastPage'     => 1,
+                    'previousPage' => 1,
                 ],
             ],
             $result,
@@ -95,7 +121,21 @@ final class ElasticLogsTest extends DatabaseTestCaseAbstract
         $elLogs->setIndex('');
         $this->setProperty($elLogs, 'client', $client);
         self::expectException(ResponseException::class);
-        $elLogs->getData(new GridRequestDto(['filter' => '{"severity":"ERROR"}']));
+        $elLogs->getData(
+            new GridRequestDto(
+                [
+                    'filter' => [
+                        [
+                            [
+                                GridFilterAbstract::COLUMN   => 'severity',
+                                GridFilterAbstract::OPERATOR => GridFilterAbstract::EQ,
+                                GridFilterAbstract::VALUE    => 'ERROR',
+                            ],
+                        ],
+                    ],
+                ],
+            ),
+        );
     }
 
     /**
@@ -105,7 +145,7 @@ final class ElasticLogsTest extends DatabaseTestCaseAbstract
      */
     public function testGetDataErr2(): void
     {
-        $logs = self::$container->get('hbpf.elastic.logs');
+        $logs = self::getContainer()->get('hbpf.elastic.logs');
         $logs->setIndex('');
         $client = self::createPartialMock(Client::class, ['request']);
         $client->expects(self::any())->method('request')->willThrowException(
@@ -117,7 +157,21 @@ final class ElasticLogsTest extends DatabaseTestCaseAbstract
         $this->setProperty($logs, 'client', $client);
 
         self::expectException(ResponseException::class);
-        $logs->getData(new GridRequestDto(['filter' => '{"severity":"ERROR"}']));
+        $logs->getData(
+            new GridRequestDto(
+                [
+                    'filter' => [
+                        [
+                            [
+                                GridFilterAbstract::COLUMN   => 'severity',
+                                GridFilterAbstract::OPERATOR => GridFilterAbstract::EQ,
+                                GridFilterAbstract::VALUE    => 'ERROR',
+                            ],
+                        ],
+                    ],
+                ],
+            ),
+        );
     }
 
     /**
@@ -140,12 +194,24 @@ final class ElasticLogsTest extends DatabaseTestCaseAbstract
      */
     public function testGetFilterAndSorter(): void
     {
-        $logs = self::$container->get('hbpf.elastic.logs');
+        $logs = self::getContainer()->get('hbpf.elastic.logs');
         $logs->setIndex('');
         $result = $this->invokeMethod(
             $logs,
             'getFilterAndSorter',
-            [new GridRequestDto(['filter' => '{"_MODIFIER_SEARCH":"search"}', 'orderby' => 'topology_id'])],
+            [
+                new GridRequestDto(
+                    [
+                        'search' => 'search',
+                        'sorter' => [
+                            [
+                                GridFilterAbstract::COLUMN    => 'topology_id',
+                                GridFilterAbstract::DIRECTION => GridFilterAbstract::ASCENDING,
+                            ],
+                        ],
+                    ],
+                ),
+            ],
         );
 
         self::assertEquals(2, count($result));
@@ -158,7 +224,7 @@ final class ElasticLogsTest extends DatabaseTestCaseAbstract
      */
     public function testProcessStartingPoints(): void
     {
-        $logs = self::$container->get('hbpf.elastic.logs');
+        $logs = self::getContainer()->get('hbpf.elastic.logs');
         $logs->setIndex('');
         $dto = new GridRequestDto([]);
 
@@ -173,7 +239,7 @@ final class ElasticLogsTest extends DatabaseTestCaseAbstract
      */
     public function testProcessStartingPointsErr(): void
     {
-        $logs = self::$container->get('hbpf.elastic.logs');
+        $logs = self::getContainer()->get('hbpf.elastic.logs');
         $logs->setIndex('');
         $dto = new GridRequestDto([]);
 
@@ -188,7 +254,7 @@ final class ElasticLogsTest extends DatabaseTestCaseAbstract
      */
     public function testGetNodeName(): void
     {
-        $logs = self::$container->get('hbpf.elastic.logs');
+        $logs = self::getContainer()->get('hbpf.elastic.logs');
         $logs->setIndex('');
 
         $result = $this->invokeMethod($logs, 'getNodeName', ['1']);
@@ -200,7 +266,7 @@ final class ElasticLogsTest extends DatabaseTestCaseAbstract
      */
     private function prepareData(): void
     {
-        $client = self::$container->get('elastica.client');
+        $client = self::getContainer()->get('elastica.client');
         $index  = $client->getIndex('logstash');
         $index->create([], TRUE);
 

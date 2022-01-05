@@ -4,6 +4,7 @@ namespace Hanaboso\PipesFramework\HbPFLogsBundle\Controller;
 
 use Hanaboso\MongoDataGrid\GridRequestDto;
 use Hanaboso\PipesFramework\HbPFLogsBundle\Handler\LogsHandler;
+use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\Traits\ControllerTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -38,7 +39,11 @@ final class LogsController
      */
     public function getDataForTableAction(Request $request): Response
     {
-        return new JsonResponse($this->logsHandler->getData(new GridRequestDto($request->headers->all())));
+        return new JsonResponse(
+            $this->logsHandler->getData(
+                new GridRequestDto(Json::decode($request->query->get('filter', '{}'))),
+            ),
+        );
     }
 
 }

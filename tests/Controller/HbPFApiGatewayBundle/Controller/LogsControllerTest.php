@@ -30,7 +30,11 @@ final class LogsControllerTest extends ControllerTestCaseAbstract
         $this->setProperty($logs, 'pipes', $pipes);
         $this->pfd($logs);
 
-        $this->assertResponse(__DIR__ . '/data/LogsController/topologyMetricsRequest.json', ['id' => '123456789']);
+        $this->assertResponseLogged(
+            $this->jwt,
+            __DIR__ . '/data/LogsController/topologyMetricsRequest.json',
+            ['id' => '123456789'],
+        );
     }
 
 }

@@ -1,0 +1,4 @@
+rabbit_mq:
+    publishers:
+        pipes-user-task:
+            routing_key: ""

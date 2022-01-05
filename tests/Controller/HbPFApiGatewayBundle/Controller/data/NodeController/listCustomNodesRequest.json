@@ -1,5 +1,7 @@
 {
     "http": "GET /api/nodes/custom_node/list_nodes",
     "body": [],
-    "headers": []
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
 }

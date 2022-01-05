@@ -27,6 +27,8 @@ use Throwable;
 final class ServiceLocator implements LoggerAwareInterface
 {
 
+    public const USER_TASK_LIST = ['user-task'];
+
     /**
      * @var ObjectRepository<Sdk>&SdkRepository
      */
@@ -75,7 +77,22 @@ final class ServiceLocator implements LoggerAwareInterface
      */
     public function getApps(): array
     {
-        return $this->doRequest('applications', CurlManager::METHOD_GET, [], TRUE);
+        $res = $this->doRequest('applications', CurlManager::METHOD_GET, [], TRUE);
+
+        $res['paging'] = [
+            'page'         => 1,
+            'itemsPerPage' => 50,
+            'total'        => count($res['items'] ?? []),
+            'nextPage'     => 2,
+            'lastPage'     => 2,
+            'previousPage' => 1,
+        ];
+        $res['filter'] = [];
+        $res['sorter'] = [];
+
+        $res['items'] ??= [];
+
+        return $res;
     }
 
     /**
@@ -99,6 +116,17 @@ final class ServiceLocator implements LoggerAwareInterface
         if (empty($res) || !isset($res['items'])) {
             $res['items'] = [];
         }
+
+        $res['sorter'] = [];
+        $res['filter'] = [];
+        $res['paging'] = [
+            'page'         => 1,
+            'itemsPerPage' => 50,
+            'total'        => count($res['items']),
+            'nextPage'     => 2,
+            'lastPage'     => 2,
+            'previousPage' => 1,
+        ];
 
         return $res;
     }
@@ -253,19 +281,20 @@ final class ServiceLocator implements LoggerAwareInterface
         $n = [];
         foreach ($this->getSdks() as $sdk) {
             try {
-                $ip   = $sdk->getKey();
-                $name = $sdk->getValue();
+                $ip   = $sdk->getUrl();
+                $name = $sdk->getName();
                 $con  = new RequestDto(CurlManager::METHOD_GET, new Uri(sprintf('%s/connector/list', $ip)));
-                $cst  = new RequestDto(CurlManager::METHOD_GET, new Uri(sprintf('%s/custom_node/list', $ip)));
-                $usr  = new RequestDto(CurlManager::METHOD_GET, new Uri(sprintf('%s/longRunning/list', $ip)));
+                $cst  = new RequestDto(CurlManager::METHOD_GET, new Uri(sprintf('%s/custom-node/list', $ip)));
+                $btch = new RequestDto(CurlManager::METHOD_GET, new Uri(sprintf('%s/batch/list', $ip)));
 
                 $n[$name][NodeImplementationEnum::CONNECTOR] = $this->curlManager->send($con)->getJsonBody();
                 $n[$name][NodeImplementationEnum::CUSTOM]    = $this->curlManager->send($cst)->getJsonBody();
-                $n[$name][NodeImplementationEnum::USER]      = $this->curlManager->send($usr)->getJsonBody();
+                $n[$name][NodeImplementationEnum::BATCH]     = $this->curlManager->send($btch)->getJsonBody();
             } catch (Throwable $t) {
                 $this->logger->error($t->getMessage(), ['Exception' => $t, 'Sdk' => $sdk]);
             }
         }
+        $n['backend'][NodeImplementationEnum::USER] = self::USER_TASK_LIST;
 
         return $n;
     }
@@ -330,7 +359,7 @@ final class ServiceLocator implements LoggerAwareInterface
         $out = [];
         foreach ($this->getSdks() as $sdk) {
             try {
-                $ip = $sdk->getKey();
+                $ip = $sdk->getUrl();
 
                 $dto = new RequestDto($method, new Uri(sprintf('%s/%s', $ip, $url)), $headers);
                 if (!empty($body)) {
@@ -346,6 +375,10 @@ final class ServiceLocator implements LoggerAwareInterface
                     } else {
                         $out = array_merge($out, $res->getJsonBody());
                     }
+                } else if ($res->getStatusCode() === 404) {
+                    throw new LogicException(sprintf('Route not found. Message: %s', $res->getBody()));
+                } else {
+                    throw new LogicException(sprintf('Unknown error. Message: %s', $res->getBody()));
                 }
             } catch (Throwable $t) {
                 $this->logger->error($t->getMessage(), ['Exception' => $t, 'Sdk' => $sdk]);

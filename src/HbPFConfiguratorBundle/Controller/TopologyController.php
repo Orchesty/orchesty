@@ -57,6 +57,23 @@ final class TopologyController
     }
 
     /**
+     * @Route("/topologies/{id}/run", methods={"POST", "OPTIONS"})
+     *
+     * @param Request $request
+     * @param string  $id
+     *
+     * @return Response
+     */
+    public function runTopologiesAction(Request $request, string $id): Response
+    {
+        try {
+            return $this->getResponse($this->topologyHandler->runTopology($id, $request->request->all()));
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
+        }
+    }
+
+    /**
      * @Route("/topologies/cron", methods={"GET", "OPTIONS"})
      *
      * @return Response
@@ -97,6 +114,14 @@ final class TopologyController
     {
         try {
             return $this->getResponse($this->topologyHandler->createTopology($request->request->all()));
+        } catch (TopologyException $e) {
+            return match ($e->getCode()) {
+                TopologyException::TOPOLOGY_NODE_NAME_NOT_FOUND, TopologyException::TOPOLOGY_NODE_TYPE_NOT_FOUND => $this->getErrorResponse(
+                    $e,
+                    404,
+                ),
+                default => $this->getErrorResponse($e, 400),
+            };
         } catch (Throwable $e) {
             return $this->getErrorResponse($e);
         }

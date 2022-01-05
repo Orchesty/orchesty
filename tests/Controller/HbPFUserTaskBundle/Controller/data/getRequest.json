@@ -1,0 +1,7 @@
+{
+    "http": "GET /user-task/507f191e810c19729de860ea",
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    },
+    "body": {}
+}

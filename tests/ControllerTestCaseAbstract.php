@@ -7,11 +7,10 @@ use Hanaboso\PhpCheckUtils\PhpUnit\Traits\ControllerTestTrait;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\CustomAssertTrait;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\DatabaseTestTrait;
 use Hanaboso\UserBundle\Document\User;
-use Hanaboso\UserBundle\Model\Token;
 use Hanaboso\Utils\String\Json;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Security\Core\Encoder\NativePasswordEncoder;
+use UserBundleTests\JwtUserTrait;
 
 /**
  * Class ControllerTestCaseAbstract
@@ -24,25 +23,18 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     use ControllerTestTrait;
     use DatabaseTestTrait;
     use CustomAssertTrait;
+    use JwtUserTrait;
+    use LoginJwtTestTrait;
 
     /**
-     * @var NativePasswordEncoder
+     * @var User
      */
-    protected NativePasswordEncoder $encoder;
+    protected User $user;
 
     /**
-     * ControllerTestCaseAbstract constructor.
-     *
-     * @param null    $name
-     * @param mixed[] $data
-     * @param string  $dataName
+     * @var string
      */
-    public function __construct($name = NULL, array $data = [], $dataName = '')
-    {
-        parent::__construct($name, $data, $dataName);
-
-        $this->encoder = new NativePasswordEncoder(3);
-    }
+    protected string $jwt = '';
 
     /**
      * @throws Exception
@@ -52,42 +44,27 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
         parent::setUp();
 
         $this->startClient();
-        $this->dm = self::$container->get('doctrine_mongodb.odm.default_document_manager');
+        $this->dm = self::getContainer()->get('doctrine_mongodb.odm.default_document_manager');
         $this->clearMongo();
 
         // Login
-        $this->loginUser('test@example.com', 'password');
-    }
-
-    /**
-     * @param string $username
-     * @param string $password
-     *
-     * @return User
-     * @throws Exception
-     */
-    protected function loginUser(string $username, string $password): User
-    {
-        $user = new User();
-        $user
-            ->setEmail($username)
-            ->setPassword($this->encoder->encodePassword($password, ''));
-
-        $this->pfd($user);
-        $this->setClientCookies($user, $user->getPassword(), Token::class);
-
-        return $user;
+        [$this->user, $this->jwt] = $this->loginUser('test@example.com', 'password');
     }
 
     /**
      * @param string $url
+     * @param bool   $withLogin
      *
      * @return object
      * @throws Exception
      */
-    protected function sendGet(string $url): object
+    protected function sendGet(string $url, bool $withLogin = FALSE): object
     {
-        $this->client->request('GET', $url);
+        if ($withLogin) {
+            $this->client->request('GET', $url, server: [self::$AUTHORIZATION => $this->jwt]);
+        } else {
+            $this->client->request('GET', $url);
+        }
         $response = $this->client->getResponse();
 
         return $this->returnResponse($response);
@@ -108,7 +85,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
             $url,
             $parameters,
             [],
-            [],
+            [self::$AUTHORIZATION => $this->jwt],
             $content ? Json::encode($content) : '',
         );
 
@@ -132,7 +109,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
             $url,
             $parameters,
             [],
-            [],
+            [self::$AUTHORIZATION => $this->jwt],
             $content ? Json::encode($content) : '',
         );
 
@@ -149,7 +126,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
      */
     protected function sendDelete(string $url): object
     {
-        $this->client->request('DELETE', $url);
+        $this->client->request('DELETE', $url, server: [self::$AUTHORIZATION => $this->jwt]);
         $response = $this->client->getResponse();
 
         return $this->returnResponse($response);

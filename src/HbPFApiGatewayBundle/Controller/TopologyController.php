@@ -61,6 +61,22 @@ final class TopologyController extends AbstractController
     }
 
     /**
+     * @Route("/topologies/{id}/run", defaults={}, requirements={"id": "\w+"}, methods={"POST", "OPTIONS"})
+     *
+     * @param Request $request
+     * @param string  $id
+     *
+     * @return Response
+     */
+    public function runTopologiesAction(Request $request, string $id): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::runTopologiesAction',
+            ['request' => $request, 'id' => $id],
+        );
+    }
+
+    /**
      * @Route("/topologies", methods={"POST", "OPTIONS"})
      *
      * @return Response

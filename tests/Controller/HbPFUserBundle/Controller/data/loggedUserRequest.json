@@ -1,0 +1,7 @@
+{
+    "http": "GET /api/user/check_logged",
+    "body": [],
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
+}

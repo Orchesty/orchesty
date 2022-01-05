@@ -16,7 +16,6 @@ use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\Utils\Date\DateTimeUtils;
 use Hanaboso\Utils\Exception\DateTimeException;
-use Hanaboso\Utils\System\NodeGeneratorUtils;
 use LogicException;
 
 /**
@@ -63,11 +62,11 @@ final class MongoMetricsManager extends MetricsManagerAbstract
      */
     public function getNodeMetrics(Node $node, Topology $topology, array $params): array
     {
+        $topology;
         [$dateFrom, $dateTo] = $this->parseDateRange($params);
 
         $where = [
-            self::NODE  => $node->getId(),
-            self::QUEUE => NodeGeneratorUtils::generateQueueName($topology->getId(), $node->getId(), $node->getName()),
+            self::NODE => $node->getId(),
         ];
 
         $queue   = $this->rabbitNodeMetrics($where, $dateFrom, $dateTo);
@@ -114,6 +113,29 @@ final class MongoMetricsManager extends MetricsManagerAbstract
     }
 
     /**
+     * @param mixed[] $params
+     *
+     * @return mixed[]
+     * @throws DateTimeException
+     */
+    public function getTopologiesProcessTimeMetrics(array $params): array
+    {
+        [$dateFrom, $dateTo] = $this->parseDateRange($params);
+
+        [$process, $error] = $this->counterProcessMetrics([], $dateFrom, $dateTo);
+
+        return $this->generateOutput(
+            new MetricsDto(),
+            new MetricsDto(),
+            new MetricsDto(),
+            new MetricsDto(),
+            new MetricsDto(),
+            $error,
+            $process,
+        );
+    }
+
+    /**
      * @param Topology $topology
      * @param mixed[]  $params
      *
@@ -122,7 +144,7 @@ final class MongoMetricsManager extends MetricsManagerAbstract
      */
     public function getTopologyRequestCountMetrics(Topology $topology, array $params): array
     {
-        $params['from'] ??= 'now - 1h';
+        $params['from'] ??= 'now - 1 hours';
         $params['to']   ??= 'now';
 
         [$dateFrom, $dateTo] = $this->parseDateRange($params);
@@ -325,15 +347,17 @@ final class MongoMetricsManager extends MetricsManagerAbstract
     {
         $qb = $this->metricsDm->createAggregationBuilder(ProcessesMetrics::class);
         $this->addConditions($qb, $dateFrom, $dateTo, $where, ProcessesMetrics::class);
-        $res = $qb->group()->field('id')->ifNull(NULL, '')
-            ->field('process_time_sum')->sum('$fields.counter_process_duration')
+        $res = $qb
+            ->match()->field('parent')->equals(NULL)
+            ->group()->field('id')->ifNull(NULL, '')
+            ->field('process_time_sum')->sum('$fields.duration')
             ->field('process_time_count')->sum(1)
-            ->field('process_time_max')->max('$fields.counter_process_duration')
-            ->field('process_time_min')->min('$fields.counter_process_duration')
+            ->field('process_time_max')->max('$fields.duration')
+            ->field('process_time_min')->min('$fields.duration')
             ->field('total_count')->sum(1)
             ->field('request_error_sum')->sum(
                 $qb->expr()->cond(
-                    $qb->expr()->eq('$fields.counter_process_result', FALSE),
+                    $qb->expr()->eq('$fields.result', FALSE),
                     1,
                     0,
                 ),
@@ -380,20 +404,20 @@ final class MongoMetricsManager extends MetricsManagerAbstract
         $qb = $this->metricsDm->createAggregationBuilder(BridgesMetrics::class);
         $this->addConditions($qb, $dateFrom, $dateTo, $where, BridgesMetrics::class);
         $res = $qb->group()->field('id')->ifNull(NULL, '')
-            ->field('top_processed_sum')->sum('$fields.bridge_job_total_duration')
+            ->field('top_processed_sum')->sum('$fields.total_duration')
             ->field('top_processed_count')->sum(1)
-            ->field('top_processed_max')->max('$fields.bridge_job_total_duration')
-            ->field('top_processed_min')->min('$fields.bridge_job_total_duration')
-            ->field('wait_sum')->sum('$fields.bridge_job_waiting_duration')
+            ->field('top_processed_max')->max('$fields.total_duration')
+            ->field('top_processed_min')->min('$fields.total_duration')
+            ->field('wait_sum')->sum('$fields.waiting_duration')
             ->field('wait_count')->sum(1)
-            ->field('wait_max')->max('$fields.bridge_job_waiting_duration')
+            ->field('wait_max')->max('$fields.waiting_duration')
             ->field('wait_min')->min(
-                $qb->expr()->ifNull('$fields.bridge_job_waiting_duration', 0),
+                $qb->expr()->ifNull('$fields.waiting_duration', 0),
             )
             ->field('total_count')->sum(1)
             ->field('request_error_sum')->sum(
                 $qb->expr()->cond(
-                    $qb->expr()->eq('$fields.bridge_job_result_success', FALSE),
+                    $qb->expr()->eq('$fields.result_success', FALSE),
                     1,
                     0,
                 ),
@@ -451,18 +475,23 @@ final class MongoMetricsManager extends MetricsManagerAbstract
         $this->addConditions($qb, $dateFrom, $dateTo, $where, ProcessesMetrics::class);
         $ret = RetentionFactory::getRetentionInSeconds($dateTimeFrom, $dateTimeTo);
 
-        $res = $qb
+        $resMs = $qb
             ->group()->field('id')
-            ->subtract('$fields.created', $qb->expr()->mod('$fields.created', $ret))
+            ->subtract(
+                $qb->expr()->subtract('$fields.created', DateTimeUtils::getUtcDateTimeFromTimeStamp()),
+                $qb->expr()->mod(
+                    $qb->expr()->subtract('$fields.created', DateTimeUtils::getUtcDateTimeFromTimeStamp()),
+                    $ret * 1_000,
+                ),
+            )
             ->field('count')->sum(1)
             ->execute()
             ->toArray();
 
-        /** @var mixed[] $res */
-        $res = array_combine(
-            array_column($res, '_id'),
-            array_column($res, 'count'),
-        );
+        $res = [];
+        foreach ($resMs as $row) {
+            $res[$row['_id'] / 1_000] = $row['count'];
+        }
 
         $from  = $dateTimeFrom->getTimestamp();
         $from -= $from % $ret;
@@ -492,10 +521,10 @@ final class MongoMetricsManager extends MetricsManagerAbstract
             ->addAnd(
                 $qb->matchExpr()
                     ->field('fields.created')
-                    ->gte(DateTimeUtils::getUtcDateTime($dateFrom)->getTimestamp()),
+                    ->gte(DateTimeUtils::getUtcDateTime($dateFrom)),
                 $qb->matchExpr()
                     ->field('fields.created')
-                    ->lt(DateTimeUtils::getUtcDateTime($dateTo)->getTimestamp()),
+                    ->lt(DateTimeUtils::getUtcDateTime($dateTo)),
             );
 
         $tags = $this->allowedTags($document);

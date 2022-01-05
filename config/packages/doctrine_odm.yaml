@@ -51,11 +51,6 @@ doctrine_mongodb:
                     is_bundle: false
                     dir: "%kernel.project_dir%/src/../vendor/hanaboso/commons-bundle/src/FileStorage/Driver/Impl/Mongo"
                     prefix: Hanaboso\CommonsBundle\FileStorage\Driver\Impl\Mongo
-                LongRunningNodeDocument:
-                    type: annotation
-                    is_bundle: false
-                    dir: "%kernel.project_dir%/src/../vendor/hanaboso/pipes-php-sdk/src/LongRunningNode/Document"
-                    prefix: Hanaboso\PipesPhpSdk\LongRunningNode\Document
                 LogsDocument:
                     type: annotation
                     is_bundle: false
@@ -76,6 +71,11 @@ doctrine_mongodb:
                     is_bundle: false
                     dir: "%kernel.project_dir%/src/User/Document"
                     prefix: Hanaboso\PipesFramework\User\Document
+                UserTask:
+                    type: annotation
+                    is_bundle: false
+                    dir: "%kernel.project_dir%/src/UserTask/Document"
+                    prefix: Hanaboso\PipesFramework\UserTask\Document
         metrics:
             connection: metrics
             database: metrics

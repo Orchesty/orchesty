@@ -12,7 +12,6 @@ use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\Utils\Date\DateTimeUtils;
 use Hanaboso\Utils\Exception\DateTimeException;
-use Hanaboso\Utils\System\NodeGeneratorUtils;
 use Throwable;
 
 /**
@@ -58,6 +57,7 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
      */
     public function getNodeMetrics(Node $node, Topology $topology, array $params): array
     {
+        $topology;
         $dateFrom = $params['from'] ?? NULL;
         $dateTo   = $params['to'] ?? NULL;
         $from     = sprintf(
@@ -121,7 +121,6 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
 
         $where = [
             self::NODE  => $node->getId(),
-            self::QUEUE => NodeGeneratorUtils::generateQueueName($topology->getId(), $node->getId(), $node->getName()),
         ];
 
         return $this->runQuery($select, $from, $where, NULL, $dateFrom, $dateTo);
@@ -140,22 +139,27 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
         $dateFrom = $params['from'] ?? NULL;
         $dateTo   = $params['to'] ?? NULL;
         $from     = $this->counterTable;
-
-        $select  = self::getFunctionForSelect([self::AVG_TIME => self::PROCESS_TIME_COUNT], self::COUNT);
-        $select  = self::addStringSeparator($select);
-        $select .= self::getFunctionForSelect([self::AVG_TIME => self::PROCESS_TIME_SUM], self::SUM);
-        $select  = self::addStringSeparator($select);
-        $select .= self::getFunctionForSelect([self::MIN_TIME => self::PROCESS_TIME_MIN], self::MIN);
-        $select  = self::addStringSeparator($select);
-        $select .= self::getFunctionForSelect([self::MAX_TIME => self::PROCESS_TIME_MAX], self::MAX);
-        $select  = self::addStringSeparator($select);
-        $select .= self::getFunctionForSelect([self::TOTAL_COUNT => self::NODE_TOTAL_SUM], self::SUM);
-        $select  = self::addStringSeparator($select);
-        $select .= self::getFunctionForSelect([self::FAILED_COUNT => self::NODE_ERROR_SUM], self::SUM);
-
-        $where = [self::TOPOLOGY => $topology->getId()];
+        $select   = $this->createTopologiesSelect();
+        $where    = [self::TOPOLOGY => $topology->getId()];
 
         return $this->runQuery($select, $from, $where, NULL, $dateFrom, $dateTo);
+    }
+
+    /**
+     * @param mixed[] $params
+     *
+     * @return mixed[]
+     * @throws DateTimeException
+     * @throws MetricsException
+     */
+    public function getTopologiesProcessTimeMetrics(array $params): array
+    {
+        $dateFrom = $params['from'] ?? NULL;
+        $dateTo   = $params['to'] ?? NULL;
+        $from     = $this->counterTable;
+        $select   = $this->createTopologiesSelect();
+
+        return $this->runQuery($select, $from, [], NULL, $dateFrom, $dateTo);
     }
 
     /**
@@ -170,7 +174,7 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
     {
         $data = $this->getTopologyMetrics($topology, $params);
 
-        $dateFrom = $params['from'] ?? 'now -1h';
+        $dateFrom = $params['from'] ?? 'now - 1 hours';
         $dateTo   = $params['to'] ?? 'now';
         $groupBy  = sprintf(
             'TIME(%s)',
@@ -339,6 +343,27 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
     }
 
     /**
+     * @return string
+     */
+    private function createTopologiesSelect(): string
+    {
+        $select  = self::getFunctionForSelect([self::AVG_TIME => self::PROCESS_TIME_COUNT], self::COUNT);
+        $select  = self::addStringSeparator($select);
+        $select .= self::getFunctionForSelect([self::AVG_TIME => self::PROCESS_TIME_SUM], self::SUM);
+        $select  = self::addStringSeparator($select);
+        $select .= self::getFunctionForSelect([self::MIN_TIME => self::PROCESS_TIME_MIN], self::MIN);
+        $select  = self::addStringSeparator($select);
+        $select .= self::getFunctionForSelect([self::MAX_TIME => self::PROCESS_TIME_MAX], self::MAX);
+        $select  = self::addStringSeparator($select);
+        $select .= self::getFunctionForSelect([self::TOTAL_COUNT => self::NODE_TOTAL_SUM], self::SUM);
+        $select  = self::addStringSeparator($select);
+        // phpcs:ignore
+        $select .= self::getFunctionForSelect([self::FAILED_COUNT => self::NODE_ERROR_SUM], self::SUM);
+
+        return $select;
+    }
+
+    /**
      * @param mixed[] $serie
      *
      * @return mixed[]
@@ -467,6 +492,10 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
                 $value = sprintf('%s = \'%s\'', $key, $value);
             },
         );
+
+        if (empty($data)) {
+            return [];
+        }
 
         return [implode(' or ', $data)];
     }

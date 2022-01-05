@@ -7,16 +7,16 @@ parameters:
 	symfony:
 		container_xml_path: %rootDir%/../../../var/cache/test/Hanaboso_PipesFramework_KernelTestDebugContainer.xml
 	ignoreErrors:
-		- '#Service \"snc_redis\.default\" is private\.#'
+		- '#Service .* is private#'
 		-
-		    message: '#Calling json_encode\(\)#'
-		    path: ../src/Configurator/Model/TopologyConfigFactory.php
+			message: '#Calling json_encode\(\)#'
+			path: ../src/Configurator/Model/TopologyConfigFactory.php
 		-
-		    message: '#Access to an undefined property#'
-		    path: ../tests/*
+			message: '#Access to an undefined property#'
+			path: ../tests/*
 		-
-		    message: '#PHPDoc tag @var for variable .+ contains unresolvable type#'
-		    path: ../tests/*
+			message: '#PHPDoc tag @var for variable .+ contains unresolvable type#'
+			path: ../tests/*
 	ergebnis:
 		classesAllowedToBeExtended:
 			- Hanaboso\AclBundle\Enum\ResourceEnum
@@ -28,7 +28,6 @@ parameters:
 			- Hanaboso\PipesFramework\User\Filter\UserDocumentFilter
 			- Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract
 			- Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract
-			- Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeAbstract
 			- Hanaboso\Utils\Enum\EnumAbstract
 			- Hanaboso\Utils\Exception\PipesFrameworkExceptionAbstract
 			- PipesFrameworkTests\ControllerTestCaseAbstract
@@ -54,4 +53,6 @@ parameters:
 			- Hanaboso\PipesFramework\Metrics\Document\RabbitMetrics
 			- Hanaboso\PipesFramework\Metrics\Document\RabbitMetricsFields
 			- Hanaboso\PipesFramework\Metrics\Document\Tags
+			- Hanaboso\PipesFramework\UserTask\Document\UserTask
+			- Hanaboso\PipesFramework\UserTask\Document\UserTaskMessage
 			- Hanaboso\PipesFramework\User\Document\UserSettings

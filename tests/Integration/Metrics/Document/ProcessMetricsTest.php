@@ -32,14 +32,14 @@ final class ProcessMetricsTest extends DatabaseTestCaseAbstract
             ->setNewObj(
                 [
                     'fields' => [
-                        'counter_process_result'   => TRUE,
-                        'counter_process_duration' => 10,
-                        'created'                  => DateTimeUtils::getUtcDateTime('1.1.2020')->getTimestamp(),
+                        'result'   => TRUE,
+                        'duration' => 10,
+                        'created'  => DateTimeUtils::getUtcDateTime('1.1.2020')->getTimestamp(),
                     ],
                     'tags'   => [
-                        'nodeId'     => '1',
-                        'topologyId' => '2',
-                        'queue'      => '12',
+                        'node_id'     => '1',
+                        'topology_id' => '2',
+                        'queue'       => '12',
                     ],
                 ],
             )

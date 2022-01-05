@@ -21,6 +21,7 @@ final class StartingPointsFilter extends GridFilterAbstract
     {
         return [
             'correlation_id' => Logs::PIPES_CORRELATION_ID,
+            'topology_id' => Logs::PIPES_TOPOLOGY_ID,
         ];
     }
 

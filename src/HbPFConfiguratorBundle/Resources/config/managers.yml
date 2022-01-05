@@ -8,6 +8,8 @@ services:
             - '@hbpf.database_manager_locator'
             - '@hbpf.cron.manager'
             - '%checkInfiniteLoop%'
+            - '@hbpf.transport.curl_manager'
+            - '%starting_point_host%'
 
     hbpf.configurator.manager.node:
         class: Hanaboso\PipesFramework\Configurator\Model\NodeManager
@@ -27,4 +29,11 @@ services:
     hbpf.configurator.manager.topology_progress:
         class: Hanaboso\PipesFramework\Configurator\Model\ProgressManager
         arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.configurator.manager.dashboard:
+        class: Hanaboso\PipesFramework\Configurator\Model\DashboardManager
+        arguments:
+            - '@Hanaboso\PipesFramework\Logs\LogsInterface'
+            - '@hbpf.metrics.manager_loader'
             - '@doctrine_mongodb.odm.default_document_manager'

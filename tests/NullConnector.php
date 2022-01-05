@@ -26,16 +26,6 @@ final class NullConnector extends ConnectorAbstract
      *
      * @return ProcessDto
      */
-    public function processEvent(ProcessDto $dto): ProcessDto
-    {
-        return $dto->setData('{"key":"value"}');
-    }
-
-    /**
-     * @param ProcessDto $dto
-     *
-     * @return ProcessDto
-     */
     public function processAction(ProcessDto $dto): ProcessDto
     {
         return $dto->setData('{"key":"value"}');

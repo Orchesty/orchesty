@@ -11,6 +11,7 @@ use Hanaboso\PipesFramework\TopologyInstaller\CategoryParser;
 use Hanaboso\PipesFramework\TopologyInstaller\InstallManager;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
+use Hanaboso\Utils\File\File;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 use Predis\Client;
 use Predis\Connection\Parameters;
@@ -134,15 +135,15 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
         $requestHandler->method('deleteTopology')->willReturn(new ResponseDto(200, '', '', []));
 
         /** @var string $redisDsn */
-        $redisDsn        = self::$container->getParameter('redis_dsn');
+        $redisDsn        = self::getContainer()->getParameter('redis_dsn');
         $this->redis     = new Client(Parameters::create($redisDsn));
-        $topologyManager = self::$container->get('hbpf.configurator.manager.topology');
+        $topologyManager = self::getContainer()->get('hbpf.configurator.manager.topology');
         $dir             = sprintf('%s/data', __DIR__);
-        $categoryManager = self::$container->get('hbpf.configurator.manager.category');
+        $categoryManager = self::getContainer()->get('hbpf.configurator.manager.category');
         $categoryParser  = new CategoryParser($this->dm, $categoryManager);
         $categoryParser->addRoot('systems', $dir);
 
-        $xmlDecoder = self::$container->get('rest.decoder.xml');
+        $xmlDecoder = self::getContainer()->get('rest.decoder.xml');
         $redisCache = new RedisCache($redisDsn);
 
         return new InstallManager(
@@ -162,7 +163,7 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
      */
     private function createTopologies(): void
     {
-        $xmlDecoder = self::$container->get('rest.decoder.xml');
+        $xmlDecoder = self::getContainer()->get('rest.decoder.xml');
         $topology   = new Topology();
         $topology
             ->setName('file')
@@ -220,7 +221,7 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
      */
     private function load(string $name, bool $change): string
     {
-        $content = (string) file_get_contents(sprintf('%s/data/%s', __DIR__, $name));
+        $content = File::getContent(sprintf('%s/data/%s', __DIR__, $name));
 
         if (!$change) {
             return $content;

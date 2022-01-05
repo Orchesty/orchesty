@@ -2,30 +2,34 @@
 
 namespace Hanaboso\PipesFramework\ApiGateway\Listener;
 
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\CommonsBundle\Crypt\Exceptions\CryptException;
 use Hanaboso\CommonsBundle\Exception\FileStorageException;
 use Hanaboso\CommonsBundle\Transport\Ftp\Exception\FtpException;
 use Hanaboso\CommonsBundle\Transport\Soap\SoapException;
+use Hanaboso\PipesFramework\ApiGateway\Exception\LicenseException;
 use Hanaboso\PipesFramework\Notification\Exception\NotificationException;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\CustomNode\Exception\CustomNodeException;
-use Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Exception\JoinerException;
-use Hanaboso\PipesPhpSdk\HbPFMapperBundle\Exception\MapperException;
 use Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandlerException;
-use Hanaboso\PipesPhpSdk\LongRunningNode\Exception\LongRunningNodeException;
 use Hanaboso\PipesPhpSdk\Parser\Exception\TableParserException;
+use Hanaboso\UserBundle\Model\Security\SecurityManagerException;
+use Hanaboso\UserBundle\Model\User\UserManagerException;
 use Hanaboso\Utils\Exception\EnumException;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\Exception\PipesFrameworkExceptionAbstract;
+use Hanaboso\Utils\System\ControllerUtils;
 use Hanaboso\Utils\System\PipesHeaders;
 use Hanaboso\Utils\Traits\ControllerTrait;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Throwable;
 
 /**
  * Class ControllerExceptionListener
@@ -49,14 +53,16 @@ final class ControllerExceptionListener implements EventSubscriberInterface, Log
         EnumException::class,
         FileStorageException::class,
         FtpException::class,
-        JoinerException::class,
-        LongRunningNodeException::class,
-        MapperException::class,
+        LicenseException::class,
+        MongoDBException::class,
         NotificationException::class,
         PipesFrameworkException::class,
+        PipesFrameworkException::class,
+        SecurityManagerException::class,
         SoapException::class,
         TableParserException::class,
         TableParserHandlerException::class,
+        UserManagerException::class,
     ];
 
     /**
@@ -76,17 +82,18 @@ final class ControllerExceptionListener implements EventSubscriberInterface, Log
     {
         $e = $event->getThrowable();
 
-        if (!$e instanceof PipesFrameworkExceptionAbstract) {
-            return;
-        }
-
         $this->logger->error('Controller exception.', ['exception' => $e]);
-
+        if (!$e instanceof PipesFrameworkExceptionAbstract) {
+            if (!in_array($e::class, $this->exceptionClasses, TRUE)) {
+                return;
+            }
+        }
         if (!in_array($e::class, $this->exceptionClasses, TRUE)) {
             return;
         }
 
-        $response = $this->getErrorResponse($e, 200);
+        $response = $this->getResponseByError($e);
+
         $response->headers->add(PipesHeaders::clear($event->getRequest()->headers->all()));
 
         if (in_array($e::class, [ConnectorException::class], TRUE)) {
@@ -125,6 +132,22 @@ final class ControllerExceptionListener implements EventSubscriberInterface, Log
         return [
             KernelEvents::EXCEPTION => 'onKernelException',
         ];
+    }
+
+    /**
+     * @param Throwable $e
+     *
+     * @return Response
+     */
+    private function getResponseByError(Throwable $e): Response {
+        return match ($e::class) {
+            LicenseException::class => $this->getErrorResponse($e, 401, ControllerUtils::UNAUTHORIZED),
+            SecurityManagerException::class => $this->getErrorResponse($e, 400),
+            PipesFrameworkException::class,
+            MongoDBException::class,
+            UserManagerException::class => $this->getErrorResponse($e),
+            default => $this->getErrorResponse($e, 200),
+        };
     }
 
 }

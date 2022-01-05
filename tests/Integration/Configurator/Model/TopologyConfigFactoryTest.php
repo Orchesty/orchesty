@@ -6,6 +6,7 @@ use Exception;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
+use Hanaboso\PipesFramework\Configurator\Document\Sdk;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyConfigException;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory;
@@ -30,10 +31,8 @@ final class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::getEnvParameters
      * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::loopNodes
      * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::assembleNode
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::getNextNode
      * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::getWorkers
      * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::getWorkerByType
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::getPublishQueue
      * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::getFaucet
      *
      * @throws Exception
@@ -45,12 +44,17 @@ final class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
         $node1 = (new Node())->setTopology('123')->setType(TypeEnum::WEBHOOK)->setName('example1');
         $node2 = (new Node())->setTopology('123')->setName('example2')->setSystemConfigs($settings)
             ->setType(TypeEnum::CONNECTOR);
-        $node3 = (new Node())->setTopology('123')->setName('example3')->setType(TypeEnum::BATCH_CONNECTOR);
+        $node3 = (new Node())->setTopology('123')->setName('example3')->setType(TypeEnum::BATCH);
         $node4 = (new Node())->setTopology('123')->setName('example4')->setType(TypeEnum::CONNECTOR);
         $node5 = (new Node())->setTopology('123')->setName('example5')->setType(TypeEnum::USER);
 
         $this->pfd($node1);
         $this->pfd($node2);
+
+        $sdk = (new Sdk())->setName('name')->setHeaders(['key'=> 'value'])->setUrl('someSdkHost');
+        $this->pfd($sdk);
+        $sdk2 = (new Sdk())->setName('name2')->setHeaders(['key'=> 'value'])->setUrl('127.0.0.2');
+        $this->pfd($sdk2);
 
         $embedNode = new EmbedNode();
         $embedNode->setName('embedNode2');
@@ -67,7 +71,7 @@ final class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
         $nodeRepository = $this->dm->getRepository(Node::class);
         $nodes          = $nodeRepository->getNodesByTopology('123');
 
-        $configFactory = self::$container->get('hbpf.topology.configurator');
+        $configFactory = self::getContainer()->get('hbpf.topology.configurator');
         $result        = $configFactory->create($nodes);
         $arr           = Json::decode($result);
 
@@ -85,19 +89,19 @@ final class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
      */
     public function testGetWorkers(): void
     {
-        $configFactory = self::$container->get('hbpf.topology.configurator');
-        $node          = (new Node())->setTopology('123')->setType(TypeEnum::RESEQUENCER)->setName('example1');
+        $configFactory = self::getContainer()->get('hbpf.topology.configurator');
+        $node          = (new Node())->setTopology('123')->setType(TypeEnum::CONNECTOR)->setName('example1');
 
         $result = $this->invokeMethod($configFactory, 'getWorkerByType', [$node]);
-        self::assertEquals('worker.resequencer', $result);
+        self::assertEquals('worker.http', $result);
 
-        $node->setType(TypeEnum::SPLITTER);
+        $node->setType(TypeEnum::BATCH);
         $result = $this->invokeMethod($configFactory, 'getWorkerByType', [$node]);
-        self::assertEquals('splitter.json', $result);
+        self::assertEquals('worker.batch', $result);
 
-        $node->setType(TypeEnum::XML_PARSER);
+        $node->setType(TypeEnum::USER);
         $result = $this->invokeMethod($configFactory, 'getWorkerByType', [$node]);
-        self::assertEquals('worker.http_xml_parser', $result);
+        self::assertEquals('worker.user', $result);
     }
 
     /**
@@ -107,10 +111,10 @@ final class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
      */
     public function testGetPaths(): void
     {
-        $configFactory = self::$container->get('hbpf.topology.configurator');
+        $configFactory = self::getContainer()->get('hbpf.topology.configurator');
         $node          = (new Node())->setTopology('123')->setType(TypeEnum::XML_PARSER)->setName('example1');
 
-        $result = $this->invokeMethod($configFactory, 'getPaths', [$node, TRUE]);
+        $result = $this->invokeMethod($configFactory, 'getPaths', [$node]);
         self::assertEquals(
             [
                 'process_path' => '/xml_parser',
@@ -119,57 +123,8 @@ final class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
             $result,
         );
 
-        $node->setType(TypeEnum::TABLE_PARSER);
-        $result = $this->invokeMethod($configFactory, 'getPaths', [$node, TRUE]);
-        self::assertEquals(
-            [
-                'process_path' => '/parser/json/to/example1/',
-                'status_path'  => '/parser/json/to/example1/test',
-            ],
-            $result,
-        );
-
-        $node->setType(TypeEnum::FTP);
-        $result = $this->invokeMethod($configFactory, 'getPaths', [$node, TRUE]);
-        self::assertEquals(
-            [
-                'process_path' => '/connector/ftp/action',
-                'status_path'  => '/connector/ftp/action/test',
-            ],
-            $result,
-        );
-
-        $node->setType(TypeEnum::EMAIL);
-        $result = $this->invokeMethod($configFactory, 'getPaths', [$node, TRUE]);
-        self::assertEquals(
-            [
-                'process_path' => '/mailer/email',
-                'status_path'  => '/mailer/email/test',
-            ],
-            $result,
-        );
-
-        $node->setType(TypeEnum::MAPPER);
-        $result = $this->invokeMethod($configFactory, 'getPaths', [$node, TRUE]);
-        self::assertEquals(
-            [
-                'process_path' => '/mapper/example1/process',
-                'status_path'  => '/mapper/example1/test',
-            ],
-            $result,
-        );
-
         $node->setType(TypeEnum::CONNECTOR);
-        $result = $this->invokeMethod($configFactory, 'getPaths', [$node, TRUE]);
-        self::assertEquals(
-            [
-                'process_path' => '/connector/example1/webhook',
-                'status_path'  => '/connector/example1/webhook/test',
-            ],
-            $result,
-        );
-
-        $result = $this->invokeMethod($configFactory, 'getPaths', [$node, FALSE]);
+        $result = $this->invokeMethod($configFactory, 'getPaths', [$node]);
         self::assertEquals(
             [
                 'process_path' => '/connector/example1/action',
@@ -178,39 +133,9 @@ final class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
             $result,
         );
 
-        $node->setType(TypeEnum::SIGNAL);
-        $result = $this->invokeMethod($configFactory, 'getPaths', [$node, TRUE]);
-        self::assertEquals(
-            [
-                'process_path' => '/custom_node/signal/process',
-                'status_path'  => '/custom_node/signal/process/test',
-            ],
-            $result,
-        );
-
-        $node->setType(TypeEnum::USER);
-        $result = $this->invokeMethod($configFactory, 'getPaths', [$node, TRUE]);
-        self::assertEquals(
-            [
-                'process_path' => '/longRunning/example1/process',
-                'status_path'  => '/longRunning/example1/process/test',
-            ],
-            $result,
-        );
-
-        $node->setType(TypeEnum::API);
-        $result = $this->invokeMethod($configFactory, 'getPaths', [$node, TRUE]);
-        self::assertEquals(
-            [
-                'process_path' => '/connector/api/action',
-                'status_path'  => '/connector/api/action/test',
-            ],
-            $result,
-        );
-
         $node->setType(TypeEnum::GATEWAY);
         self::expectException(TopologyConfigException::class);
-        $this->invokeMethod($configFactory, 'getPaths', [$node, TRUE]);
+        $this->invokeMethod($configFactory, 'getPaths', [$node]);
     }
 
     /**
@@ -220,26 +145,16 @@ final class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
      */
     public function testGetHost(): void
     {
-        $configFactory = self::$container->get('hbpf.topology.configurator');
+        $configFactory = self::getContainer()->get('hbpf.topology.configurator');
 
-        $result = $this->invokeMethod($configFactory, 'getHost', [TypeEnum::XML_PARSER, NULL]);
-        self::assertEquals('xml-parser-api', $result);
-
-        $result = $this->invokeMethod($configFactory, 'getHost', [TypeEnum::FTP, NULL]);
-        self::assertEquals('ftp-api', $result);
-
-        $result = $this->invokeMethod($configFactory, 'getHost', [TypeEnum::EMAIL, NULL]);
-        self::assertEquals('mailer-api', $result);
-
-        $result = $this->invokeMethod($configFactory, 'getHost', [TypeEnum::MAPPER, NULL]);
-        self::assertEquals('mapper-api', $result);
-
-        $result = $this->invokeMethod($configFactory, 'getHost', [TypeEnum::SIGNAL, NULL]);
+        $result = $this->invokeMethod($configFactory, 'getHost', [TypeEnum::CONNECTOR, NULL]);
         self::assertEquals('127.0.0.2', $result);
 
-        $dto    = new SystemConfigDto('host');
-        $result = $this->invokeMethod($configFactory, 'getHost', [TypeEnum::SIGNAL, $dto]);
-        self::assertEquals('host', $result);
+        $result = $this->invokeMethod($configFactory, 'getHost', [TypeEnum::BATCH, NULL]);
+        self::assertEquals('127.0.0.2', $result);
+
+        $result = $this->invokeMethod($configFactory, 'getHost', [TypeEnum::USER, NULL]);
+        self::assertEquals('', $result);
 
         self::expectException(TopologyConfigException::class);
         $this->invokeMethod($configFactory, 'getHost', ['something', new SystemConfigDto()]);
@@ -252,26 +167,13 @@ final class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
      */
     public function testGetPort(): void
     {
-        $configFactory = self::$container->get('hbpf.topology.configurator');
+        $configFactory = self::getContainer()->get('hbpf.topology.configurator');
 
-        $result = $this->invokeMethod($configFactory, 'getPort', [TypeEnum::FTP]);
+        $result = $this->invokeMethod($configFactory, 'getPort', [TypeEnum::CONNECTOR]);
         self::assertEquals(80, $result);
 
         self::expectException(TopologyConfigException::class);
         $this->invokeMethod($configFactory, 'getPort', ['something']);
-    }
-
-    /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::getNextNode
-     *
-     * @throws Exception
-     */
-    public function testGetNextNode(): void
-    {
-        $configFactory = self::$container->get('hbpf.topology.configurator');
-
-        $result = $this->invokeMethod($configFactory, 'getNextNode', [new Node()]);
-        self::assertNull($result);
     }
 
     /**
@@ -283,9 +185,9 @@ final class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
     {
         $sender = self::createPartialMock(CurlManager::class, ['send']);
         $sender->expects(self::any())->method('send')->willThrowException(new CurlException());
-        self::$container->set('hbpf.transport.curl_manager', $sender);
+        self::getContainer()->set('hbpf.transport.curl_manager', $sender);
 
-        $manager = self::$container->get('hbpf.configurator.manager.topology');
+        $manager = self::getContainer()->get('hbpf.configurator.manager.topology');
 
         $topology = new Topology();
         $this->pfd($topology);

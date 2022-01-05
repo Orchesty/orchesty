@@ -36,7 +36,22 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
         $dto = new ResponseDto(200, '', Json::encode(['items' => [['key' => 'null']]]), []);
 
         $res = $this->createLocator($dto)->getApps();
-        self::assertEquals(['items' => [['key' => 'null']]], $res);
+        self::assertEquals(
+            [
+                'items'  => [['key' => 'null']],
+                'paging' => [
+                    'page'         => 1,
+                    'itemsPerPage' => 50,
+                    'total'        => 1,
+                    'nextPage'     => 2,
+                    'lastPage'     => 2,
+                    'previousPage' => 1,
+                ],
+                'filter' => [],
+                'sorter' => [],
+            ],
+            $res,
+        );
     }
 
     /**
@@ -66,7 +81,22 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
         $dto = new ResponseDto(200, '', Json::encode(['items' => [['key' => 'null']]]), []);
 
         $res = $this->createLocator($dto)->getUserApps('user');
-        self::assertEquals(['items' => [['key' => 'null']]], $res);
+        self::assertEquals(
+            [
+                'items'  => [['key' => 'null']],
+                'filter' => [],
+                'sorter' => [],
+                'paging' => [
+                    'page'         => 1,
+                    'itemsPerPage' => 50,
+                    'total'        => 1,
+                    'nextPage'     => 2,
+                    'lastPage'     => 2,
+                    'previousPage' => 1,
+                ],
+            ],
+            $res,
+        );
     }
 
     /**
@@ -81,7 +111,22 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
         $dto = new ResponseDto(200, '', Json::encode([]), []);
 
         $res = $this->createLocator($dto)->getUserApps('user');
-        self::assertEquals(['items' => []], $res);
+        self::assertEquals(
+            [
+                'items'  => [],
+                'sorter' => [],
+                'filter' => [],
+                'paging' => [
+                    'page'         => 1,
+                    'itemsPerPage' => 50,
+                    'total'        => 0,
+                    'nextPage'     => 2,
+                    'lastPage'     => 2,
+                    'previousPage' => 1,
+                ],
+            ],
+            $res,
+        );
     }
 
     /**
@@ -248,10 +293,13 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
         $res = $this->createLocator($dto)->getNodes();
         self::assertEquals(
             [
-                'name' => [
+                'name'    => [
                     'connector' => ['key' => 'null'],
                     'custom'    => ['key' => 'null'],
-                    'user'      => ['key' => 'null'],
+                    'batch'     => ['key' => 'null'],
+                ],
+                'backend' => [
+                    'user' => ['user-task'],
                 ],
             ],
             $res,
@@ -269,7 +317,14 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
         $dto = new ResponseDto(200, '', Json::encode(['key' => 'null']), []);
 
         $res = $this->createLocator($dto, TRUE)->getNodes();
-        self::assertEquals([], $res);
+        self::assertEquals(
+            [
+                'backend' => [
+                    'user' => ['user-task'],
+                ],
+            ],
+            $res,
+        );
     }
 
     /**
@@ -344,7 +399,7 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
     private function createLocator(ResponseDto $dto, bool $exception = FALSE): ServiceLocator
     {
         $sdk = new Sdk();
-        $sdk->setValue('name')->setKey('host');
+        $sdk->setName('name')->setUrl('host');
         $this->dm->persist($sdk);
         $this->dm->flush();
         $this->dm->clear();

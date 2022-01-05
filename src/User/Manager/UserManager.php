@@ -4,6 +4,7 @@ namespace Hanaboso\PipesFramework\User\Manager;
 
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
+use Hanaboso\MongoDataGrid\GridHandlerTrait;
 use Hanaboso\MongoDataGrid\GridRequestDto;
 use Hanaboso\PipesFramework\User\Filter\UserDocumentFilter;
 
@@ -14,6 +15,8 @@ use Hanaboso\PipesFramework\User\Filter\UserDocumentFilter;
  */
 final class UserManager
 {
+
+    use GridHandlerTrait;
 
     /**
      * UserManager constructor.
@@ -33,14 +36,7 @@ final class UserManager
      */
     public function getArrayOfUsers(GridRequestDto $dto): array
     {
-        $data = $this->userFilter->getData($dto)->toArray();
-
-        return [
-            'total' => $dto->getTotal(),
-            'page'  => $dto->getPage(),
-            'count' => count($data),
-            'items' => $data,
-        ];
+        return $this->getGridResponse($dto, $this->userFilter->getData($dto)->toArray());
     }
 
 }

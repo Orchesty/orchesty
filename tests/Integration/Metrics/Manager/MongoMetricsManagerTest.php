@@ -10,9 +10,11 @@ use Hanaboso\Utils\Date\DateTimeUtils;
 use Hanaboso\Utils\Exception\DateTimeException;
 use Hanaboso\Utils\System\NodeGeneratorUtils;
 use LogicException;
+use MongoDB\BSON\UTCDateTime;
 use MongoDB\Client;
 use Monolog\Logger;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
+use PipesFrameworkTests\DataProvider;
 
 /**
  * Class MongoMetricsManagerTest
@@ -527,6 +529,27 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getTopologiesProcessTimeMetrics
+     * @throws DateTimeException
+     * @throws Exception
+     */
+    public function testGetTopologiesProcessTimeMetrics(): void
+    {
+        $topo = $this->createTopo();
+        $node = $this->createNode($topo);
+        $this->setFakeData($topo, $node);
+
+        $manager = $this->getManager();
+        $result  = $manager->getTopologiesProcessTimeMetrics(
+            [
+                'from' => '-10 day',
+                'to'   => '+10 day',
+            ],
+        );
+        self::assertEquals(DataProvider::topologiesProcessTimeMetrics(), $result['process']);
+    }
+
+    /**
      * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getUserMetrics
      * @throws DateTimeException
      * @throws Exception
@@ -601,7 +624,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
      */
     private function getManager(): MongoMetricsManager
     {
-        return self::$container->get('hbpf.metrics.manager.mongo_metrics');
+        return self::getContainer()->get('hbpf.metrics.manager.mongo_metrics');
     }
 
     /**
@@ -617,15 +640,15 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
         $this->setMinimalFakeData($topology, $node);
 
         /** @var string $counterTable */
-        $counterTable = self::$container->getParameter('mongodb.counter_table');
+        $counterTable = self::getContainer()->getParameter('mongodb.counter_table');
         /** @var string $monolithTable */
-        $monolithTable = self::$container->getParameter('mongodb.monolith_table');
+        $monolithTable = self::getContainer()->getParameter('mongodb.monolith_table');
         /** @var string $nodeTable */
-        $nodeTable = self::$container->getParameter('mongodb.node_table');
+        $nodeTable = self::getContainer()->getParameter('mongodb.node_table');
         /** @var string $connectorTable */
-        $connectorTable = self::$container->getParameter('mongodb.connector_table');
+        $connectorTable = self::getContainer()->getParameter('mongodb.connector_table');
         /** @var string $rabbitTable */
-        $rabbitTable = self::$container->getParameter('mongodb.rabbit_table');
+        $rabbitTable = self::getContainer()->getParameter('mongodb.rabbit_table');
 
         $processes = $client->selectCollection('metrics', $counterTable);
         $monolith  = $client->selectCollection('metrics', $monolithTable);
@@ -639,10 +662,9 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
                 MongoMetricsManager::NODE     => $node->getId(),
             ],
             'fields' => [
-                'bridge_job_result_success' => FALSE,
-                'bridge_job_total_duration' => 4,
-                'created'                   => DateTimeUtils::getUtcDateTime('-1 days')
-                    ->getTimestamp(),
+                'result_success' => FALSE,
+                'total_duration' => 4,
+                'created'        => new UTCDateTime(DateTimeUtils::getUtcDateTime('-1 days')),
             ],
         ];
         $bridge->insertOne($doc);
@@ -657,7 +679,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
             ],
             'fields' => [
                 'messages' => 5,
-                'created'  => DateTimeUtils::getUtcDateTime('-1 days')->getTimestamp(),
+                'created'  => new UTCDateTime(DateTimeUtils::getUtcDateTime('-1 days')),
             ],
         ];
         $rabbitmq->insertOne($doc);
@@ -672,8 +694,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
             ],
             'fields' => [
                 'sent_request_total_duration' => 15,
-                'created'                     => DateTimeUtils::getUtcDateTime('-1 days')
-                    ->getTimestamp(),
+                'created'                     => new UTCDateTime(DateTimeUtils::getUtcDateTime('-1 days')),
             ],
         ];
         $connector->insertOne($doc);
@@ -685,7 +706,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
             ],
             'fields' => [
                 'fpm_cpu_kernel_time' => 5,
-                'created'             => DateTimeUtils::getUtcDateTime('-1 days')->getTimestamp(),
+                'created'             => new UTCDateTime(DateTimeUtils::getUtcDateTime('-1 days')),
             ],
         ];
         $monolith->insertOne($doc);
@@ -696,10 +717,10 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
                 MongoMetricsManager::NODE     => $node->getId(),
             ],
             'fields' => [
-                'bridge_job_result_success'   => TRUE,
-                'bridge_job_waiting_duration' => 5,
-                'bridge_job_total_duration'   => 10,
-                'created'                     => DateTimeUtils::getUtcDateTime('+5 days')->getTimestamp(),
+                'result_success'   => TRUE,
+                'waiting_duration' => 5,
+                'total_duration'   => 10,
+                'created'          => new UTCDateTime(DateTimeUtils::getUtcDateTime('+5 days')),
             ],
         ];
         $bridge->insertOne($doc);
@@ -710,10 +731,9 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
                 MongoMetricsManager::NODE     => $node->getId(),
             ],
             'fields' => [
-                'bridge_job_result_success' => FALSE,
-                'bridge_job_total_duration' => 4,
-                'created'                   => DateTimeUtils::getUtcDateTime('-51 days')
-                    ->getTimestamp(),
+                'result_success' => FALSE,
+                'total_duration' => 4,
+                'created'        => new UTCDateTime(DateTimeUtils::getUtcDateTime('-51 days')),
             ],
         ];
         $bridge->insertOne($doc);
@@ -728,7 +748,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
             ],
             'fields' => [
                 'messages' => 3,
-                'created'  => DateTimeUtils::getUtcDateTime('+5 days')->getTimestamp(),
+                'created'  => new UTCDateTime(DateTimeUtils::getUtcDateTime('+5 days')),
             ],
         ];
         $rabbitmq->insertOne($doc);
@@ -743,7 +763,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
             ],
             'fields' => [
                 'messages' => 5,
-                'created'  => DateTimeUtils::getUtcDateTime('-6 days')->getTimestamp(),
+                'created'  => new UTCDateTime(DateTimeUtils::getUtcDateTime('-6 days')),
             ],
         ];
         $rabbitmq->insertOne($doc);
@@ -758,7 +778,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
             ],
             'fields' => [
                 'sent_request_total_duration' => 5,
-                'created'                     => DateTimeUtils::getUtcDateTime('+5 days')->getTimestamp(),
+                'created'                     => new UTCDateTime(DateTimeUtils::getUtcDateTime('+5 days')),
             ],
         ];
         $connector->insertOne($doc);
@@ -773,8 +793,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
             ],
             'fields' => [
                 'sent_request_total_duration' => 15,
-                'created'                     => DateTimeUtils::getUtcDateTime('-5 days')
-                    ->getTimestamp(),
+                'created'                     => new UTCDateTime(DateTimeUtils::getUtcDateTime('-5 days')),
             ],
         ];
         $connector->insertOne($doc);
@@ -786,7 +805,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
             ],
             'fields' => [
                 'fpm_cpu_kernel_time' => 15,
-                'created'             => DateTimeUtils::getUtcDateTime('+5 days')->getTimestamp(),
+                'created'             => new UTCDateTime(DateTimeUtils::getUtcDateTime('+5 days')),
             ],
         ];
         $monolith->insertOne($doc);
@@ -798,7 +817,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
             ],
             'fields' => [
                 'fpm_cpu_kernel_time' => 5,
-                'created'             => DateTimeUtils::getUtcDateTime('-5 days')->getTimestamp(),
+                'created'             => new UTCDateTime(DateTimeUtils::getUtcDateTime('-5 days')),
             ],
         ];
         $monolith->insertOne($doc);
@@ -809,9 +828,9 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
                 MongoMetricsManager::NODE     => $node->getId(),
             ],
             'fields' => [
-                'counter_process_duration' => 2,
-                'counter_process_result'   => FALSE,
-                'created'                  => DateTimeUtils::getUtcDateTime($dateOffset)->getTimestamp(),
+                'duration' => 2,
+                'result'   => FALSE,
+                'created'  => new UTCDateTime(DateTimeUtils::getUtcDateTime($dateOffset)),
             ],
         ];
         $processes->insertOne($doc);
@@ -822,9 +841,9 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
                 MongoMetricsManager::NODE     => $node->getId(),
             ],
             'fields' => [
-                'counter_process_duration' => 2,
-                'counter_process_result'   => FALSE,
-                'created'                  => DateTimeUtils::getUtcDateTime('+55 days')->getTimestamp(),
+                'duration' => 2,
+                'result'   => FALSE,
+                'created'  => new UTCDateTime(DateTimeUtils::getUtcDateTime('+55 days')),
             ],
         ];
         $processes->insertOne($doc);
@@ -841,15 +860,15 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
         $client = $this->getClient();
 
         /** @var string $counterTable */
-        $counterTable = self::$container->getParameter('mongodb.counter_table');
+        $counterTable = self::getContainer()->getParameter('mongodb.counter_table');
         /** @var string $monolithTable */
-        $monolithTable = self::$container->getParameter('mongodb.monolith_table');
+        $monolithTable = self::getContainer()->getParameter('mongodb.monolith_table');
         /** @var string $nodeTable */
-        $nodeTable = self::$container->getParameter('mongodb.node_table');
+        $nodeTable = self::getContainer()->getParameter('mongodb.node_table');
         /** @var string $connectorTable */
-        $connectorTable = self::$container->getParameter('mongodb.connector_table');
+        $connectorTable = self::getContainer()->getParameter('mongodb.connector_table');
         /** @var string $rabbitTable */
-        $rabbitTable = self::$container->getParameter('mongodb.rabbit_table');
+        $rabbitTable = self::getContainer()->getParameter('mongodb.rabbit_table');
 
         $processes = $client->selectCollection('metrics', $counterTable);
         $monolith  = $client->selectCollection('metrics', $monolithTable);
@@ -864,7 +883,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
             ],
             'fields' => [
                 'fpm_cpu_kernel_time' => 15,
-                'created'             => DateTimeUtils::getUtcDateTime()->getTimestamp(),
+                'created'             => new UTCDateTime(DateTimeUtils::getUtcDateTime()),
             ],
         ];
         $monolith->insertOne($doc);
@@ -875,10 +894,10 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
                 MongoMetricsManager::NODE     => $node->getId(),
             ],
             'fields' => [
-                'bridge_job_result_success'   => TRUE,
-                'bridge_job_waiting_duration' => 5,
-                'bridge_job_total_duration'   => 10,
-                'created'                     => DateTimeUtils::getUtcDateTime()->getTimestamp(),
+                'result_success'   => TRUE,
+                'waiting_duration' => 5,
+                'total_duration'   => 10,
+                'created'          => new UTCDateTime(DateTimeUtils::getUtcDateTime()),
             ],
         ];
         $bridge->insertOne($doc);
@@ -893,7 +912,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
             ],
             'fields' => [
                 'messages' => 3,
-                'created'  => DateTimeUtils::getUtcDateTime()->getTimestamp(),
+                'created'  => new UTCDateTime(DateTimeUtils::getUtcDateTime()),
             ],
         ];
         $rabbitmq->insertOne($doc);
@@ -905,7 +924,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
             ],
             'fields' => [
                 'sent_request_total_duration' => 5,
-                'created'                     => DateTimeUtils::getUtcDateTime()->getTimestamp(),
+                'created'                     => new UTCDateTime(DateTimeUtils::getUtcDateTime()),
             ],
         ];
         $connector->insertOne($doc);
@@ -916,9 +935,9 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
                 MongoMetricsManager::NODE     => $node->getId(),
             ],
             'fields' => [
-                'counter_process_duration' => 2,
-                'counter_process_result'   => TRUE,
-                'created'                  => DateTimeUtils::getUtcDateTime()->getTimestamp(),
+                'duration' => 2,
+                'result'   => TRUE,
+                'created'  => new UTCDateTime(DateTimeUtils::getUtcDateTime()),
             ],
         ];
         $processes->insertOne($doc);
@@ -929,7 +948,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
      */
     private function getClient(): Client
     {
-        return self::$container->get('doctrine_mongodb.odm.metrics_document_manager')
+        return self::getContainer()->get('doctrine_mongodb.odm.metrics_document_manager')
             ->getClient();
     }
 
@@ -941,15 +960,15 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
         $client = $this->getClient();
 
         /** @var string $counterTable */
-        $counterTable = self::$container->getParameter('mongodb.counter_table');
+        $counterTable = self::getContainer()->getParameter('mongodb.counter_table');
         /** @var string $monolithTable */
-        $monolithTable = self::$container->getParameter('mongodb.monolith_table');
+        $monolithTable = self::getContainer()->getParameter('mongodb.monolith_table');
         /** @var string $nodeTable */
-        $nodeTable = self::$container->getParameter('mongodb.node_table');
+        $nodeTable = self::getContainer()->getParameter('mongodb.node_table');
         /** @var string $connectorTable */
-        $connectorTable = self::$container->getParameter('mongodb.connector_table');
+        $connectorTable = self::getContainer()->getParameter('mongodb.connector_table');
         /** @var string $rabbitTable */
-        $rabbitTable = self::$container->getParameter('mongodb.rabbit_table');
+        $rabbitTable = self::getContainer()->getParameter('mongodb.rabbit_table');
 
         $client->selectDatabase('metrics')->createCollection($counterTable);
         $client->selectDatabase('metrics')->createCollection($monolithTable);

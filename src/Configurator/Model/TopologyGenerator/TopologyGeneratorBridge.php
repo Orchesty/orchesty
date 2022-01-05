@@ -5,6 +5,7 @@ namespace Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Exception;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
@@ -27,13 +28,12 @@ use JsonException;
 final class TopologyGeneratorBridge
 {
 
-    public const MULTI_PROBE    = 'multi-probe';
     public const TOPOLOGY_API   = 'topology-api';
     public const STARTING_POINT = 'starting-point';
 
     protected const BASE_TOPOLOGY_URL      = 'http://%s/v1/api/topologies/%s';
+    protected const GET_TOPOLOGY_HOST_URL  = 'http://%s/v1/api/topologies/%s/host';
     protected const GENERATOR_TOPOLOGY_URL = 'http://%s/v1/api/topologies/%s';
-    protected const MULTI_PROBE_URL        = 'http://%s/topology/status?topologyId=%s';
     protected const STARTING_POINT_URL     = '%s/topologies/%s/invalidate-cache';
 
     private const HEADERS = ['Content-Type' => 'application/json'];
@@ -109,6 +109,12 @@ final class TopologyGeneratorBridge
      */
     public function stopTopology(string $topologyId): ResponseDto
     {
+        try {
+            $this->callTopologyBridge($topologyId, CurlManager::METHOD_DELETE, 'clear');
+        } catch (Exception) {
+            // Ignore and continue to shut bridge down
+        }
+
         $uri = sprintf(self::BASE_TOPOLOGY_URL, $this->configs[self::TOPOLOGY_API], $topologyId);
         $dto = new RequestDto(CurlManager::METHOD_PUT, new Uri($uri));
         $dto->setBody(Json::encode(['action' => 'stop']))->setHeaders(self::HEADERS);
@@ -149,21 +155,10 @@ final class TopologyGeneratorBridge
      *
      * @return mixed[]
      * @throws CurlException
-     * @throws JsonException
      */
     public function runTest(string $topologyId): array
     {
-        $uri         = sprintf(self::MULTI_PROBE_URL, $this->configs[self::MULTI_PROBE], $topologyId);
-        $requestDto  = new RequestDto(CurlManager::METHOD_GET, new Uri($uri));
-        $responseDto = $this->curlManager->send($requestDto);
-
-        if ($responseDto->getStatusCode() === 200) {
-            return Json::decode($responseDto->getBody());
-        } else {
-            throw new CurlException(
-                sprintf('Request error: %s, %s', $responseDto->getReasonPhrase(), $responseDto->getBody()),
-            );
-        }
+        return $this->callTopologyBridge($topologyId, CurlManager::METHOD_GET, 'status');
     }
 
     /**
@@ -184,6 +179,41 @@ final class TopologyGeneratorBridge
         } else {
             throw new CurlException(sprintf('Request error: %s', $responseDto->getReasonPhrase()));
         }
+    }
+
+    /**
+     * ------------------------------- HELPERS -------------------------------
+     */
+
+    /**
+     * @param string $topologyId
+     * @param string $method
+     * @param string $uriPath
+     *
+     * @return mixed[]
+     * @throws CurlException
+     */
+    private function callTopologyBridge(string $topologyId, string $method, string $uriPath): array
+    {
+        $uri         = sprintf(self::GET_TOPOLOGY_HOST_URL, $this->configs[self::TOPOLOGY_API], $topologyId);
+        $requestDto  = new RequestDto(CurlManager::METHOD_GET, new Uri($uri));
+        $responseDto = $this->curlManager->send($requestDto);
+
+        if ($responseDto->getStatusCode() === 200) {
+            $res        = Json::decode($responseDto->getBody());
+            $host       = $res['host'] ?? '';
+            $requestDto = new RequestDto($method, new Uri(sprintf('%s/%s', $host, $uriPath)));
+
+            $responseDto = $this->curlManager->send($requestDto);
+
+            if ($responseDto->getStatusCode() === 200) {
+                return Json::decode($responseDto->getBody());
+            }
+        }
+
+        throw new CurlException(
+            sprintf('Request error: %s, %s', $responseDto->getReasonPhrase(), $responseDto->getBody()),
+        );
     }
 
 }

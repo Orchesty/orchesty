@@ -28,7 +28,7 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
      */
     public function testGetCronTopologies(): void
     {
-        $handler = self::$container->get('hbpf.configurator.handler.topology');
+        $handler = self::getContainer()->get('hbpf.configurator.handler.topology');
         $result  = $handler->getCronTopologies();
 
         self::assertArrayHasKey('items', $result);
@@ -48,7 +48,7 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
         $generator->expects(self::any())->method('generateTopology')->willReturn(new ResponseDto(200, '', '{}', []));
         $generator->expects(self::any())->method('runTopology')->willReturn(new ResponseDto(200, '', '{}', []));
 
-        $dml     = self::$container->get('hbpf.database_manager_locator');
+        $dml     = self::getContainer()->get('hbpf.database_manager_locator');
         $handler = new TopologyHandler($dml, $manager, $generator);
         $result  = $handler->publishTopology($topology->getId());
 
@@ -66,7 +66,7 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
         $manager   = $this->mockManager($topology);
         $generator = $this->mockGenerator(new ResponseDto(400, '', '{}', []));
 
-        $dml     = self::$container->get('hbpf.database_manager_locator');
+        $dml     = self::getContainer()->get('hbpf.database_manager_locator');
         $handler = new TopologyHandler($dml, $manager, $generator);
         $result  = $handler->publishTopology($topology->getId());
 
@@ -84,7 +84,7 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
         $manager   = $this->mockManager($topology);
         $generator = $this->mockGenerator(new MappingException());
 
-        $dml     = self::$container->get('hbpf.database_manager_locator');
+        $dml     = self::getContainer()->get('hbpf.database_manager_locator');
         $handler = new TopologyHandler($dml, $manager, $generator);
         $result  = $handler->publishTopology($topology->getId());
 
@@ -100,10 +100,10 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
     {
         $topology = $this->createTopology();
 
-        $handler = self::$container->get('hbpf.configurator.handler.topology');
+        $handler = self::getContainer()->get('hbpf.configurator.handler.topology');
         $result  = $handler->cloneTopology($topology->getId());
 
-        self::assertEquals(9, count($result));
+        self::assertEquals(10, count($result));
     }
 
     /**
@@ -117,7 +117,7 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
 
         $manager   = $this->mockManager($topology);
         $generator = $this->mockGenerator(new ResponseDto(200, '', '{}', []));
-        $dml       = self::$container->get('hbpf.database_manager_locator');
+        $dml       = self::getContainer()->get('hbpf.database_manager_locator');
         $handler   = new TopologyHandler($dml, $manager, $generator);
 
         $result = $handler->deleteTopology($topology->getId());
@@ -136,7 +136,7 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
 
         $manager   = $this->mockManager($topology);
         $generator = $this->mockGenerator(new ResponseDto(200, '', '{"docker_info": {"info": 1}}', []));
-        $dml       = self::$container->get('hbpf.database_manager_locator');
+        $dml       = self::getContainer()->get('hbpf.database_manager_locator');
         $handler   = new TopologyHandler($dml, $manager, $generator);
 
         $result = $handler->runTest($topology->getId());
@@ -155,7 +155,7 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
 
         $manager   = $this->mockManager($topology);
         $generator = $this->mockGenerator(new ResponseDto(200, '', '', []));
-        $dml       = self::$container->get('hbpf.database_manager_locator');
+        $dml       = self::getContainer()->get('hbpf.database_manager_locator');
         $handler   = new TopologyHandler($dml, $manager, $generator);
 
         $result = $handler->runTest($topology->getId());

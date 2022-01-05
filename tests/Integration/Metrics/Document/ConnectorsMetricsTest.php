@@ -35,9 +35,9 @@ final class ConnectorsMetricsTest extends DatabaseTestCaseAbstract
                         'created'                     => DateTimeUtils::getUtcDateTime('1.1.2020')->getTimestamp(),
                     ],
                     'tags'   => [
-                        'nodeId'     => '1',
-                        'topologyId' => '2',
-                        'queue'      => '12',
+                        'node_id'     => '1',
+                        'topology_id' => '2',
+                        'queue'       => '12',
                     ],
                 ],
             )

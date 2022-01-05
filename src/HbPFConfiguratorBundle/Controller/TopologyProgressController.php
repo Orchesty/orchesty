@@ -3,8 +3,10 @@
 namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller;
 
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyProgressHandler;
+use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\Traits\ControllerTrait;
 use Psr\Log\NullLogger;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -31,13 +33,16 @@ final class TopologyProgressController
     /**
      * @Route("/progress/topology/{topologyId}", methods={"GET", "OPTIONS"})
      *
-     * @param string $topologyId
+     * @param Request $request
+     * @param string  $topologyId
      *
      * @return Response
      */
-    public function getProgressTopologyAction(string $topologyId): Response
+    public function getProgressTopologyAction(Request $request, string $topologyId): Response
     {
-        $data = $this->handler->getProgress($topologyId);
+        $data  = $this->handler->getProgress($topologyId);
+        $query = Json::decode($request->query->get('filter', '{}'));
+        $data  = array_merge($data, $query);
 
         return $this->getResponse($data);
     }

@@ -2,6 +2,7 @@
 
 namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler;
 
+use Hanaboso\MongoDataGrid\GridFilterAbstract;
 use Hanaboso\PipesFramework\Configurator\Model\ProgressManager;
 
 /**
@@ -24,11 +25,30 @@ final class TopologyProgressHandler
     /**
      * @param string $topologyId
      *
-     * @return array<mixed>
+     * @return mixed[]
      */
     public function getProgress(string $topologyId): array
     {
-        return ['items' => $this->manager->getProgress($topologyId)];
+        $progresses = $this->manager->getProgress($topologyId);
+
+        return [
+            'filter' => [],
+            'sorter' => [
+                [
+                    GridFilterAbstract::COLUMN    => 'id',
+                    GridFilterAbstract::DIRECTION => GridFilterAbstract::DESCENDING,
+                ],
+            ],
+            'items'  => $progresses,
+            'paging' => [
+                'page'         => 1,
+                'itemsPerPage' => 20,
+                'total'        => count($progresses),
+                'nextPage'     => 1,
+                'lastPage'     => 1,
+                'previousPage' => 1,
+            ],
+        ];
     }
 
 }

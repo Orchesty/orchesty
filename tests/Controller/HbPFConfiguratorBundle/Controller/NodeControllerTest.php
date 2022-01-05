@@ -35,10 +35,11 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
         $node = (new Node())->setTopology($topology->getId());
         $this->pfd($node);
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/Node/getNodesRequest.json',
             [
-                '_id'         => '5e329eb233609f28e8613114',
+                '_id' => '5e329eb233609f28e8613114',
                 'topology_id' => '5e329eb233609f28e8613113',
             ],
             [':id' => $topology->getId()],
@@ -59,7 +60,8 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
         $node->setTopology('1');
         $this->pfd($node);
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/Node/getNodeRequest.json',
             ['_id' => '5e329f9b5ef3694da71d42b3'],
             [':id' => $node->getId()],
@@ -75,7 +77,7 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetNodeNotFound(): void
     {
-        $this->assertResponse(__DIR__ . '/data/Node/getNodeNotFoundRequest.json');
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/Node/getNodeNotFoundRequest.json');
     }
 
     /**
@@ -91,7 +93,12 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
         $node = new Node();
         $this->pfd($node);
 
-        $this->assertResponse(__DIR__ . '/data/Node/getNodeErrRequest.json', [], [':id' => $node->getId()]);
+        $this->assertResponseLogged(
+            $this->jwt,
+            __DIR__ . '/data/Node/getNodeErrRequest.json',
+            [],
+            [':id' => $node->getId()],
+        );
     }
 
     /**
@@ -106,7 +113,8 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
         $node = new Node();
         $this->pfd($node);
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/Node/updateNodeRequest.json',
             ['_id' => '5e32a3bf1280c6296f258c83'],
             [':id' => $node->getId()],
@@ -123,7 +131,8 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
         $node = new Node();
         $this->pfd($node);
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/Node/updateNodeErrRequest.json',
             ['_id' => '5e32a3bf1280c6296f258c83'],
             [':id' => $node->getId()],
@@ -138,14 +147,18 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
         $type = 'connector';
         $this->prepareNodeMock();
 
-        $response = $this->sendGet(sprintf('/api/nodes/%s/list_nodes', $type));
+        $response = $this->sendGet(sprintf('/api/nodes/%s/list_nodes', $type), TRUE);
         $content  = $response->content;
 
         self::assertEquals(200, $response->status);
         self::assertEquals(['null'], (array) $content);
 
         $type = 'config';
-        $this->client->request('GET', sprintf('/api/nodes/%s/list_nodes', $type));
+        $this->client->request(
+            'GET',
+            sprintf('/api/nodes/%s/list_nodes', $type),
+            server: [self::$AUTHORIZATION => $this->jwt],
+        );
         $response = $this->client->getResponse();
 
         self::assertEquals(404, $response->getStatusCode());

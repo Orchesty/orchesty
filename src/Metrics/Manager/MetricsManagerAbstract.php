@@ -142,6 +142,13 @@ abstract class MetricsManagerAbstract implements LoggerAwareInterface
     abstract public function getTopologyProcessTimeMetrics(Topology $topology, array $params): array;
 
     /**
+     * @param mixed[] $params
+     *
+     * @return mixed[]
+     */
+    abstract public function getTopologiesProcessTimeMetrics(array $params): array;
+
+    /**
      * @param Topology $topology
      * @param mixed[]  $params
      *

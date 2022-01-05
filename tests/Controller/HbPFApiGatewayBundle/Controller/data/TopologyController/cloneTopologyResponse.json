@@ -9,6 +9,7 @@
         "visibility": "draft",
         "version": 2,
         "category": null,
-        "enabled": false
+        "enabled": false,
+        "cronSettings": []
     }
 }

@@ -1,5 +1,0 @@
-{
-    "http": "POST /api/connector/null/webhook",
-    "body": [],
-    "headers": []
-}

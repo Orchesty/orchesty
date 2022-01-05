@@ -2,8 +2,16 @@
 
 namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\MongoDBException;
+use Doctrine\Persistence\ObjectRepository;
 use Exception;
+use Hanaboso\PipesFramework\ApiGateway\Exception\LicenseException;
 use Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator;
+use Hanaboso\PipesFramework\Utils\JWTParser;
+use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
+use Hanaboso\Utils\Traits\ControllerTrait;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -19,13 +27,24 @@ use Symfony\Component\Routing\Annotation\Route;
 final class ApplicationController extends AbstractController
 {
 
+    use ControllerTrait;
+
+    private const APPLICATIONS = 'applications';
+
+    /**
+     * @var ObjectRepository<ApplicationInstall>&ApplicationInstallRepository
+     */
+    protected $repository;
+
     /**
      * ApplicationController constructor.
      *
-     * @param ServiceLocator $locator
+     * @param ServiceLocator  $locator
+     * @param DocumentManager $dm
      */
-    public function __construct(private ServiceLocator $locator)
+    public function __construct(private ServiceLocator $locator, private DocumentManager $dm)
     {
+        $this->repository = $this->dm->getRepository(ApplicationInstall::class);
     }
 
     /**
@@ -35,6 +54,8 @@ final class ApplicationController extends AbstractController
      */
     public function listOfApplicationsAction(): Response
     {
+        $this->verifyLicense();
+
         //TODO: refactor after ServiceLocatorMS will be done
         return new JsonResponse($this->locator->getApps());
     }
@@ -48,6 +69,8 @@ final class ApplicationController extends AbstractController
      */
     public function getApplicationAction(string $key): Response
     {
+        $this->verifyLicense();
+
         //TODO: refactor after ServiceLocatorMS will be done
         return new JsonResponse($this->locator->getApp($key));
     }
@@ -61,6 +84,8 @@ final class ApplicationController extends AbstractController
      */
     public function getUsersApplicationAction(string $user): Response
     {
+        $this->verifyLicense();
+
         //TODO: refactor after ServiceLocatorMS will be done
         return new JsonResponse($this->locator->getUserApps($user));
     }
@@ -75,6 +100,8 @@ final class ApplicationController extends AbstractController
      */
     public function getApplicationDetailAction(string $key, string $user): Response
     {
+        $this->verifyLicense();
+
         //TODO: refactor after ServiceLocatorMS will be done
         return new JsonResponse($this->locator->getAppDetail($key, $user));
     }
@@ -89,6 +116,12 @@ final class ApplicationController extends AbstractController
      */
     public function installApplicationAction(string $key, string $user): Response
     {
+        try {
+            $this->verifyLicense();
+        } catch (LicenseException $e) {
+            return $this->getErrorResponse($e, 400);
+        }
+
         //TODO: refactor after ServiceLocatorMS will be done
         return new JsonResponse($this->locator->installApp($key, $user));
     }
@@ -104,6 +137,8 @@ final class ApplicationController extends AbstractController
      */
     public function updateApplicationSettingsAction(Request $request, string $key, string $user): Response
     {
+        $this->verifyLicense();
+
         //TODO: refactor after ServiceLocatorMS will be done
         return new JsonResponse($this->locator->updateApp($key, $user, $request->request->all()));
     }
@@ -118,6 +153,8 @@ final class ApplicationController extends AbstractController
      */
     public function uninstallApplicationAction(string $key, string $user): Response
     {
+        $this->verifyLicense();
+
         //TODO: refactor after ServiceLocatorMS will be done
         return new JsonResponse($this->locator->uninstallApp($key, $user));
     }
@@ -133,6 +170,8 @@ final class ApplicationController extends AbstractController
      */
     public function saveApplicationPasswordAction(Request $request, string $key, string $user): Response
     {
+        $this->verifyLicense();
+
         //TODO: refactor after ServiceLocatorMS will be done
         return new JsonResponse($this->locator->updateAppPassword($key, $user, $request->request->all()));
     }
@@ -148,6 +187,8 @@ final class ApplicationController extends AbstractController
      */
     public function authorizeApplicationAction(Request $request, string $key, string $user): Response
     {
+        $this->verifyLicense();
+
         try {
             //TODO: refactor after ServiceLocatorMS will be done
             $this->locator->authorize($key, $user, (string) $request->query->get('redirect_url'));
@@ -167,6 +208,8 @@ final class ApplicationController extends AbstractController
      */
     public function getSynchronousActionsAction(string $key): Response
     {
+        $this->verifyLicense();
+
         //TODO: refactor after ServiceLocatorMS will be done
         return new JsonResponse($this->locator->listSyncActions($key));
     }
@@ -182,6 +225,8 @@ final class ApplicationController extends AbstractController
      */
     public function runSynchronousActionsAction(Request $request, string $key, string $method): Response
     {
+        $this->verifyLicense();
+
         //TODO: refactor after ServiceLocatorMS will be done
         return new JsonResponse($this->locator->runSyncActions($request, $key, $method));
     }
@@ -197,6 +242,8 @@ final class ApplicationController extends AbstractController
      */
     public function setAuthorizationTokenAction(Request $request, string $key, string $user): Response
     {
+        $this->verifyLicense();
+
         //TODO: refactor after ServiceLocatorMS will be done
         $url = $this->locator->authorizationToken($key, $user, $request->query->all());
 
@@ -212,6 +259,8 @@ final class ApplicationController extends AbstractController
      */
     public function setAuthorizationTokenQueryAction(Request $request): Response
     {
+        $this->verifyLicense();
+
         //TODO: refactor after ServiceLocatorMS will be done
         $url = $this->locator->authorizationQueryToken($request->query->all());
 
@@ -248,6 +297,21 @@ final class ApplicationController extends AbstractController
             'Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::userMetricsAction',
             ['request' => $request, 'user' => $user],
         );
+    }
+
+    /**
+     * @throws LicenseException
+     * @throws MongoDBException
+     */
+    private function verifyLicense(): void
+    {
+        $apps = $this->repository->getInstalledApplicationsCount();
+        if (JWTParser::verifyAndReturn()[self::APPLICATIONS] < $apps) {
+            throw new LicenseException(
+                'Your license is not valid or application limit is exceeded',
+                LicenseException::LICENSE_NOT_VALID_OR_APPS_EXCEED,
+            );
+        }
     }
 
 }

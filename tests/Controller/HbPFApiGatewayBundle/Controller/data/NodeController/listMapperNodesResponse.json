@@ -1,8 +1,0 @@
-{
-    "http": 200,
-    "body": [
-        "handler.mapper",
-        "loader.mapper",
-        "null"
-    ]
-}

@@ -27,7 +27,7 @@ use Throwable;
 final class CronManager
 {
 
-    private const CURL_COMMAND = "echo \"[CRON] [$(date +'%%Y-%%m-%%dT%%TZ')] Requesting %s: $(curl -H 'Accept: application/json' -H 'Content-Type: application/json' -X POST -d '{%s}' -s %s)\" >> /proc/1/fd/1";
+    private const CURL_COMMAND = "echo \"[CRON] [$(date +'%%Y-%%m-%%dT%%TZ')] Requesting %s: $(curl -H 'Accept: application/json' -H 'Content-Type: application/json' -X POST -d '{%s}' %s)\" &> /proc/1/fd/1";
 
     private const GET    = '%s/crons';
     private const CREATE = '%s/crons';

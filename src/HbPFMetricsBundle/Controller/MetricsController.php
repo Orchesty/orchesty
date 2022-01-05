@@ -2,7 +2,9 @@
 
 namespace Hanaboso\PipesFramework\HbPFMetricsBundle\Controller;
 
+use Hanaboso\MongoDataGrid\GridRequestDto;
 use Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler;
+use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\Traits\ControllerTrait;
 use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\Request;
@@ -76,8 +78,10 @@ final class MetricsController
     public function topologyRequestsCountMetricsAction(Request $request, string $topology): Response
     {
         try {
+            $dto = new GridRequestDto(Json::decode($request->query->get('filter', '{}')));
+
             return $this->getResponse(
-                $this->metricsHandler->getRequestsCountMetrics($topology, $request->query->all()),
+                $this->metricsHandler->getRequestsCountMetrics($topology, $dto),
             );
         } catch (Throwable $e) {
             return $this->getErrorResponse($e, 400);

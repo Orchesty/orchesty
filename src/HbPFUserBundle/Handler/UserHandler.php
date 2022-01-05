@@ -59,7 +59,7 @@ final class UserHandler
      */
     public function getUserDetail(string $id): array
     {
-        return $this->getUserData($this->getUser($id));
+        return $this->getUserData($this->getUser($id), '');
     }
 
     /**
@@ -99,8 +99,9 @@ final class UserHandler
     public function login(array $data): array
     {
         ControllerUtils::checkParameters(['email', 'password'], $data);
+        [$user, $jwt] = $this->userManager->login($data);
 
-        return $this->getUserData($this->userManager->login($data));
+        return $this->getUserData($user, $jwt);
     }
 
     /**
@@ -109,17 +110,18 @@ final class UserHandler
 
     /**
      * @param UserInterface $user
+     * @param string        $jwt
      *
      * @return mixed[]
      */
-    private function getUserData(UserInterface $user): array
+    private function getUserData(UserInterface $user, string $jwt): array
     {
         $settings = $this->getSettings($user->getId());
         if ($settings) {
             $settings = $settings->getSettings();
         }
 
-        return array_merge($user->toArray(), [self::SETTINGS => $settings ?? []]);
+        return array_merge($user->toArray(), [self::SETTINGS => $settings ?? []], ['token' => $jwt]);
     }
 
     /**

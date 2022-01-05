@@ -6,6 +6,7 @@ use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Exception;
 use Hanaboso\PipesFramework\Metrics\Document\BridgesMetrics;
 use Hanaboso\Utils\Date\DateTimeUtils;
+use MongoDB\BSON\UTCDateTime;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -36,15 +37,15 @@ final class BridgeMetricsTest extends DatabaseTestCaseAbstract
             ->setNewObj(
                 [
                     'fields' => [
-                        'bridge_job_result_success'   => TRUE,
-                        'bridge_job_waiting_duration' => 10,
-                        'bridge_job_total_duration'   => 20,
-                        'created'                     => DateTimeUtils::getUtcDateTime('1.1.2020')->getTimestamp(),
+                        'result_success'   => TRUE,
+                        'waiting_duration' => 10,
+                        'total_duration'   => 20,
+                        'created'          => new UTCDateTime(DateTimeUtils::getUtcDateTime('1.1.2020')),
                     ],
                     'tags'   => [
-                        'nodeId'     => '1',
-                        'topologyId' => '2',
-                        'queue'      => '12',
+                        'node_id'     => '1',
+                        'topology_id' => '2',
+                        'queue'       => '12',
                     ],
                 ],
             )
