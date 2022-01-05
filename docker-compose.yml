@@ -17,7 +17,6 @@ services:
             - ${DEV_IP}:80:8080
         command: /bin/sh -c '
             su-exec root chmod u+s /usr/bin/crontab &&
-            su-exec root chmod 777 /etc/crontabs/root &&
             su-exec root crond -l 0 -L /var/log/cron.log &&
             go run cmd/cron.go'
 

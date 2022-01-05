@@ -2,7 +2,6 @@ package service
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os/exec"
 	"strings"
 	"time"
@@ -66,11 +65,7 @@ func (c *cron) write() {
 
 	c.logContext().Info("Updating %d CRONs...", len(crons))
 
-	if err := ioutil.WriteFile("/etc/crontabs/root", []byte(strings.Join(content, "\n")), 0777); err != nil {
-		c.logContext().Error(err)
-	}
-
-	if _, err := exec.Command("crontab", "/etc/crontabs/root").Output(); err != nil {
+	if _, err := exec.Command("sh", "-c", fmt.Sprintf("echo \"%s\" | crontab -", strings.Join(content, "\n"))).Output(); err != nil {
 		c.logContext().Error(err)
 	}
 }
