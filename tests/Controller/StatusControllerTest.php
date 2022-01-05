@@ -58,7 +58,7 @@ final class StatusControllerTest extends ControllerTestCaseAbstract
     {
         parent::setUp();
 
-        $this->controller = self::$container->get('Hanaboso\NotificationSender\Controller\StatusController');
+        $this->controller = self::getContainer()->get('Hanaboso\NotificationSender\Controller\StatusController');
     }
 
 }

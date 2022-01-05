@@ -9,7 +9,7 @@
         "class": "NotificationSenderTests\\Integration\\Model\\Notification\\Handler\\Impl\\NullEmailHandler",
         "events": [],
         "settings": [],
-        "status": true,
+        "status": false,
         "status_message": null
     }
 }
