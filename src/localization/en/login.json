@@ -1,0 +1,22 @@
+{
+  "login": {
+    "form": {
+      "email": {
+        "name": "email",
+        "label": "Email"
+      },
+      "password": {
+        "name": "password",
+        "label": "Password"
+      },
+      "rememberMe": {
+        "name": "remember me?",
+        "label": "remember me?"
+      },
+      "submit": {
+        "label": "Login"
+      }
+    },
+    "forgot_link": "Forgot password"
+  }
+}
