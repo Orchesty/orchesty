@@ -19,7 +19,6 @@ var topologyEnabledNodeSuccess = "topologyEnabledNodeSuccess"
 var topologyDeletedNodeSuccess = "topologyDeletedNodeSuccess"
 var topologySuccessNodeEnabled = "topologySuccessNodeEnabled"
 var topologySuccessNodeDeleted = "topologySuccessNodeDeleted"
-var topologySuccessNodeSuccessHumanTaskSuccess = "topologySuccessNodeSuccessHumanTaskSuccess"
 var topologySuccessWebhookSuccess = "topologySuccessWebhookSuccess"
 
 func TestMongo(t *testing.T) {
@@ -28,51 +27,45 @@ func TestMongo(t *testing.T) {
 	data := prepareData(Mongo.(*MongoDefault).connection.Database)
 	assert.True(t, Mongo.IsConnected())
 
-	topology := Mongo.FindTopologyByID(data[topologySuccessNodeSuccess][0], data[topologySuccessNodeSuccess][1], "", true)
-	assert.Equal(t, data[topologySuccessNodeSuccess][0], topology.ID.Hex())
-	assert.Equal(t, topologyCollection, topology.Name)
-	assert.Equal(t, data[topologySuccessNodeSuccess][1], topology.Node.ID.Hex())
-	assert.Equal(t, nodeCollection, topology.Node.Name)
-
-	topology = Mongo.FindTopologyByID(data[topologyVisibilityNodeSuccess][0], data[topologyVisibilityNodeSuccess][1], "", false)
+	topology := Mongo.FindTopologyByID(data[topologyVisibilityNodeSuccess][0], data[topologyVisibilityNodeSuccess][1])
 	assert.Nil(t, topology)
 
-	topology = Mongo.FindTopologyByID(data[topologyEnabledNodeSuccess][0], data[topologyEnabledNodeSuccess][1], "", false)
+	topology = Mongo.FindTopologyByID(data[topologyEnabledNodeSuccess][0], data[topologyEnabledNodeSuccess][1])
 	assert.Nil(t, topology)
 
-	topology = Mongo.FindTopologyByID(data[topologyDeletedNodeSuccess][0], data[topologyDeletedNodeSuccess][1], "", false)
+	topology = Mongo.FindTopologyByID(data[topologyDeletedNodeSuccess][0], data[topologyDeletedNodeSuccess][1])
 	assert.Nil(t, topology)
 
-	topology = Mongo.FindTopologyByID(data[topologySuccessNodeEnabled][0], data[topologySuccessNodeEnabled][1], "", false)
+	topology = Mongo.FindTopologyByID(data[topologySuccessNodeEnabled][0], data[topologySuccessNodeEnabled][1])
 	assert.Nil(t, topology)
 
-	topology = Mongo.FindTopologyByID(data[topologySuccessNodeDeleted][0], data[topologySuccessNodeDeleted][1], "", false)
+	topology = Mongo.FindTopologyByID(data[topologySuccessNodeDeleted][0], data[topologySuccessNodeDeleted][1])
 	assert.Nil(t, topology)
 
-	topology = Mongo.FindTopologyByID("Unknown", data[topologySuccessNodeDeleted][1], "", false)
+	topology = Mongo.FindTopologyByID("Unknown", data[topologySuccessNodeDeleted][1])
 	assert.Nil(t, topology)
 
-	topology = Mongo.FindTopologyByID(data[topologySuccessNodeSuccess][0], "Unknown", "", false)
+	topology = Mongo.FindTopologyByID(data[topologySuccessNodeSuccess][0], "Unknown")
 	assert.Equal(t, data[topologySuccessNodeSuccess][0], topology.ID.Hex())
 	assert.Equal(t, topologyCollection, topology.Name)
 	assert.Nil(t, topology.Node)
 
-	topology = Mongo.FindTopologyByID("4cb174e20000000000000000", data[topologySuccessNodeSuccess][1], "", false)
+	topology = Mongo.FindTopologyByID("4cb174e20000000000000000", data[topologySuccessNodeSuccess][1])
 	assert.Nil(t, topology)
 
-	topology = Mongo.FindTopologyByID(data[topologySuccessNodeSuccess][0], "4cb174e20000000000000000", "", false)
+	topology = Mongo.FindTopologyByID(data[topologySuccessNodeSuccess][0], "4cb174e20000000000000000")
 	assert.Equal(t, data[topologySuccessNodeSuccess][0], topology.ID.Hex())
 	assert.Equal(t, topologyCollection, topology.Name)
 	assert.Nil(t, topology.Node)
 
-	topology = Mongo.FindTopologyByName(topologyCollection, nodeCollection, "", false)
+	topology = Mongo.FindTopologyByName(topologyCollection, nodeCollection)
 	assert.NotNil(t, topology)
 	assert.Equal(t, int32(8), topology.Version)
 
-	topology = Mongo.FindTopologyByName("Unknown", nodeCollection, "", false)
+	topology = Mongo.FindTopologyByName("Unknown", nodeCollection)
 	assert.Nil(t, topology)
 
-	topology = Mongo.FindTopologyByName(topologyCollection, "Unknown", "", false)
+	topology = Mongo.FindTopologyByName(topologyCollection, "Unknown")
 	assert.Nil(t, topology)
 
 	topology, webhook := Mongo.FindTopologyByApplication(topologyCollection, nodeCollection, "Token")
@@ -91,20 +84,12 @@ func TestMongo(t *testing.T) {
 	assert.Nil(t, topology)
 	assert.Nil(t, webhook)
 
-	topology = Mongo.FindTopologyByID(data[topologySuccessNodeSuccessHumanTaskSuccess][0], data[topologySuccessNodeSuccessHumanTaskSuccess][1], data[topologySuccessNodeSuccessHumanTaskSuccess][2], true)
-	assert.Equal(t, data[topologySuccessNodeSuccessHumanTaskSuccess][0], topology.ID.Hex())
-	assert.Equal(t, topologyCollection, topology.Name)
-	assert.Equal(t, nodeCollection, topology.Node.Name)
-	assert.Equal(t, "processID", topology.Node.HumanTask.ProcessID)
-
-	assert.NotNil(t, Mongo.FindTopologyByName(topologyCollection, nodeCollection, data[topologySuccessNodeSuccessHumanTaskSuccess][2], true))
-	assert.Nil(t, Mongo.FindTopologyByName(topologyCollection, nodeCollection, "Unknown", true))
+	assert.NotNil(t, Mongo.FindTopologyByName(topologyCollection, nodeCollection))
 }
 
 func prepareData(mongo *mongo.Database) map[string][]string {
 	_ = mongo.Collection(config.Config.MongoDB.NodeColl).Drop(nil)
 	_ = mongo.Collection(config.Config.MongoDB.TopologyColl).Drop(nil)
-	_ = mongo.Collection(config.Config.MongoDB.HumanTaskColl).Drop(nil)
 	_ = mongo.Collection(config.Config.MongoDB.WebhookColl).Drop(nil)
 	result := make(map[string][]string)
 
@@ -235,13 +220,6 @@ func prepareData(mongo *mongo.Database) map[string][]string {
 		"deleted":  false,
 	})
 	nodeID := innerResult.InsertedID.(primitive.ObjectID).Hex()
-	innerResult, _ = mongo.Collection(config.Config.MongoDB.HumanTaskColl).InsertOne(nil, bson.M{
-		"topologyId": topologyID,
-		"nodeId":     nodeID,
-		"processId":  "processID",
-	})
-
-	result[topologySuccessNodeSuccessHumanTaskSuccess] = []string{topologyID, nodeID, innerResult.InsertedID.(primitive.ObjectID).Hex()}
 
 	innerResult, _ = mongo.Collection(config.Config.MongoDB.WebhookColl).InsertOne(nil, bson.M{
 		"user":        "User",

@@ -17,7 +17,7 @@ import (
 
 // Rabbit represents rabbit
 type Rabbit interface {
-	SndMessage(r *http.Request, topology storage.Topology, init map[string]float64, isHuman bool, isStop bool)
+	SndMessage(r *http.Request, topology storage.Topology, init map[string]float64)
 	DisconnectRabbit()
 	ClearChannels()
 	IsMetricsConnected() bool
@@ -36,20 +36,8 @@ type RabbitDefault struct {
 
 // CounterBody interprets body
 type CounterBody struct {
-	Result ResultBody `json:"result"`
-	Route  RouteBody  `json:"route"`
-}
-
-// ResultBody interprets result
-type ResultBody struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
-}
-
-// RouteBody interprets route
-type RouteBody struct {
-	Following  int `json:"following"`
-	Multiplier int `json:"multiplier"`
+	Following int  `json:"following"`
+	Success   bool `json:"success"`
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -66,24 +54,18 @@ func ConnectToRabbit() {
 func (r *RabbitDefault) SndMessage(
 	request *http.Request,
 	topology storage.Topology,
-	init map[string]float64,
-	isHuman bool,
-	isStop bool) {
-
+	init map[string]float64) {
 	// Create ProcessMessage headers
-	h, c, d, t := r.builder.BldHeaders(topology, request.Header, isHuman, isStop)
+	h, c, d, t := r.builder.BldHeaders(topology, request.Header)
 
-	// Create Queue & Message
-	q := rabbitmq.GetProcessQueue(topology)
 	m := amqp.Publishing{Body: utils.GetBodyFromStream(request), Headers: h, ContentType: c, DeliveryMode: d, Timestamp: t}
 	corrID := m.Headers[utils.CorrelationID]
+	processId := m.Headers[utils.ProcessID]
 
 	// Init Counter
-	r.initCounterProcess(request.Header, topology, corrID.(string), isHuman)
+	r.initCounterProcess(request.Header, topology, corrID.(string), processId.(string))
 
-	// Declare Queue & Publish Message
-	r.connection.Declare(q)
-	r.publisher.Publish(m, q.Name)
+	r.publisher.Publish(m, topology.Node.Exchange(), "1")
 
 	// Send Metrics
 	if err := r.metrics.Send(config.Config.Metrics.Measurement, utils.GetTags(topology, corrID.(string)), utils.GetFields(init)); err != nil {
@@ -107,12 +89,12 @@ func (r *RabbitDefault) IsMetricsConnected() bool {
 	return r.metrics.IsConnected()
 }
 
-func (r *RabbitDefault) initCounterProcess(httpHeaders http.Header, topology storage.Topology, corrID string, isHuman bool) {
+func (r *RabbitDefault) initCounterProcess(httpHeaders http.Header, topology storage.Topology, corrID, processId string) {
 	// Create ProcessMessage body
 	body, err := json.Marshal(
 		CounterBody{
-			Result: ResultBody{0, "Starting point started process"},
-			Route:  RouteBody{1, 1},
+			Success:   true,
+			Following: 1,
 		})
 
 	if err != nil {
@@ -122,17 +104,11 @@ func (r *RabbitDefault) initCounterProcess(httpHeaders http.Header, topology sto
 	// Create ProcessMessage headers
 	h, c, d, t := r.builder.BldCounterHeaders(topology, httpHeaders)
 	h[utils.CorrelationID] = corrID
-
-	if isHuman {
-		h[utils.NodeID] = topology.Node.ID.Hex()
-		h[utils.NodeName] = topology.Node.Name
-		h[utils.ProcessID] = topology.Node.HumanTask.ProcessID
-		h[utils.CorrelationID] = topology.Node.HumanTask.CorrelationID
-	}
+	h[utils.ProcessID] = processId
 
 	// Create & Publish Message
 	msg := amqp.Publishing{Body: body, Headers: h, ContentType: c, DeliveryMode: d, Timestamp: t}
-	r.publisher.Publish(msg, config.Config.RabbitMQ.CounterQueueName)
+	r.publisher.Publish(msg, "", config.Config.RabbitMQ.CounterQueueName)
 }
 
 // NewRabbit construct

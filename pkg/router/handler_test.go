@@ -21,15 +21,6 @@ var topologyObject = storage.Topology{
 	Node: &storage.Node{
 		ID:   customObjectID,
 		Name: node,
-		HumanTask: &storage.HumanTask{
-			ID:            customObjectID,
-			ParentProcess: "parentProcess",
-			ParentID:      "parentID",
-			SequenceID:    "sequenceID",
-			ContentType:   "contentType",
-			ProcessID:     "processID",
-			CorrelationID: "correlationID",
-		},
 	},
 }
 var topologyNoNodeObject = storage.Topology{
@@ -78,10 +69,6 @@ type MongoNoMock struct {
 	*storage.MongoDefault
 }
 
-type MongoNoMockHumanTask struct {
-	*storage.MongoDefault
-}
-
 func mockCache(t int) {
 	service.RabbitMq = &RabbitMock{}
 
@@ -98,13 +85,10 @@ func mockCache(t int) {
 		service.Cache = &CacheNoMock{}
 		storage.Mongo = &MongoNoMock{}
 		break
-	case 4:
-		storage.Mongo = &MongoNoMockHumanTask{}
-		break
 	}
 }
 
-func (r *RabbitMock) SndMessage(request *http.Request, topology storage.Topology, init map[string]float64, isHuman bool, isStop bool) {
+func (r *RabbitMock) SndMessage(request *http.Request, topology storage.Topology, init map[string]float64) {
 	return
 }
 
@@ -112,11 +96,11 @@ func (c *CacheMock) InvalidateCache(topologyName string) int {
 	return 0
 }
 
-func (c *CacheMock) FindTopologyByID(topologyID, nodeID, humanTaskID string, isHumanTask bool) *storage.Topology {
+func (c *CacheMock) FindTopologyByID(topologyID, nodeID string) *storage.Topology {
 	return &topologyObject
 }
 
-func (c *CacheMock) FindTopologyByName(topologyName, nodeName, humanTaskID string, isHumanTask bool) *storage.Topology {
+func (c *CacheMock) FindTopologyByName(topologyName, nodeName string) *storage.Topology {
 	return &topologyObject
 }
 
@@ -124,11 +108,11 @@ func (c *CacheMock) FindTopologyByApplication(topologyName, nodeName, token stri
 	return &topologyObject, &webhookObject
 }
 
-func (c *MongoMock) FindTopologyByID(topologyID, nodeID, humanTaskID string, isHumanTask bool) *storage.Topology {
+func (c *MongoMock) FindTopologyByID(topologyID, nodeID string) *storage.Topology {
 	return &topologyObject
 }
 
-func (c *MongoMock) FindTopologyByName(topologyName, nodeName, humanTaskID string, isHumanTask bool) *storage.Topology {
+func (c *MongoMock) FindTopologyByName(topologyName, nodeName string) *storage.Topology {
 	return &topologyObject
 }
 
@@ -157,14 +141,6 @@ func TestHandleRunByID(t *testing.T) {
 
 	r, _ := http.NewRequest("POST", "/topologies/a/nodes/b/run", bytes.NewReader([]byte("[]")))
 	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
-
-	mockCache(1)
-	r, _ = http.NewRequest("POST", "/human-tasks/topologies/a/nodes/b/run", bytes.NewReader([]byte("[]")))
-	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
-
-	mockCache(1)
-	r, _ = http.NewRequest("POST", "/human-tasks/topologies/a/nodes/b/stop", bytes.NewReader([]byte("[]")))
-	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
 }
 
 func TestHandleRunByIDUser(t *testing.T) {
@@ -186,14 +162,6 @@ func TestHandleRunByName(t *testing.T) {
 	mockCache(1)
 
 	r, _ := http.NewRequest("POST", "/topologies/a/nodes/b/run-by-name", bytes.NewReader([]byte("[]")))
-	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
-
-	mockCache(1)
-	r, _ = http.NewRequest("POST", "/human-tasks/topologies/a/nodes/b/run-by-name", bytes.NewReader([]byte("[]")))
-	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
-
-	mockCache(1)
-	r, _ = http.NewRequest("POST", "/human-tasks/topologies/a/nodes/b/stop-by-name", bytes.NewReader([]byte("[]")))
 	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
 }
 
@@ -240,11 +208,11 @@ func TestHandleInvalidateCache(t *testing.T) {
 
 // Test case: Find topology but not found Node
 
-func (c *CacheMockTopology) FindTopologyByID(topologyID, nodeID, humanTaskID string, isHumanTask bool) *storage.Topology {
+func (c *CacheMockTopology) FindTopologyByID(topologyID, nodeID string) *storage.Topology {
 	return &topologyNoNodeObject
 }
 
-func (c *CacheMockTopology) FindTopologyByName(topologyName, nodeName, humanTaskID string, isHumanTask bool) *storage.Topology {
+func (c *CacheMockTopology) FindTopologyByName(topologyName, nodeName string) *storage.Topology {
 	return nil
 }
 
@@ -252,11 +220,11 @@ func (c *CacheMockTopology) FindTopologyByApplication(topologyName, nodeName, to
 	return nil, nil
 }
 
-func (c *MongoMockTopology) FindTopologyByID(topologyID, nodeID, humanTaskID string, isHumanTask bool) *storage.Topology {
+func (c *MongoMockTopology) FindTopologyByID(topologyID, nodeID string) *storage.Topology {
 	return &topologyNoNodeObject
 }
 
-func (c *MongoMockTopology) FindTopologyByName(topologyName, nodeName, humanTaskID string, isHumanTask bool) *storage.Topology {
+func (c *MongoMockTopology) FindTopologyByName(topologyName, nodeName string) *storage.Topology {
 	return nil
 }
 
@@ -287,19 +255,19 @@ func TestHandleRunByApplicationNodeNotFound(t *testing.T) {
 
 // Test case: Not find topology and not found Node
 
-func (c *CacheNoMock) FindTopologyByID(topologyID, nodeID, humanTaskID string, isHumanTask bool) *storage.Topology {
+func (c *CacheNoMock) FindTopologyByID(topologyID, nodeID string) *storage.Topology {
 	return nil
 }
 
-func (c *CacheNoMock) FindTopologyByName(topologyName, nodeName, humanTaskID string, isHumanTask bool) *storage.Topology {
+func (c *CacheNoMock) FindTopologyByName(topologyName, nodeName string) *storage.Topology {
 	return nil
 }
 
-func (c *MongoNoMock) FindTopologyByID(topologyID, nodeID, humanTaskID string, isHumanTask bool) *storage.Topology {
+func (c *MongoNoMock) FindTopologyByID(topologyID, nodeID string) *storage.Topology {
 	return nil
 }
 
-func (c *MongoNoMock) FindTopologyByName(topologyName, nodeName, humanTaskID string, isHumanTask bool) *storage.Topology {
+func (c *MongoNoMock) FindTopologyByName(topologyName, nodeName string) *storage.Topology {
 	return nil
 }
 
@@ -324,29 +292,4 @@ func TestHandleRunByApplicationInvalidInput(t *testing.T) {
 	assertResponse(t, r, 400, `{"message":"Content is not valid!"}`)
 }
 
-// Test case: Find topology and node but not human task
-
-func (c *MongoNoMockHumanTask) FindTopologyByID(topologyID, nodeID, humanTaskID string, isHumanTask bool) *storage.Topology {
-	topology := topologyObject
-	topology.Node.HumanTask = nil
-
-	return &topology
-}
-
-func (c *MongoNoMockHumanTask) FindTopologyByName(topologyName, nodeName, humanTaskID string, isHumanTask bool) *storage.Topology {
-	return nil
-}
-
-func TestHandleRunByIDHumanTaskNotFound(t *testing.T) {
-	mockCache(4)
-
-	r, _ := http.NewRequest("POST", "/human-tasks/topologies/a/nodes/b/token/c/run", bytes.NewReader([]byte("[]")))
-	assertResponse(t, r, 404, `{"message":"Human task with token 'c' not found!"}`)
-}
-
-func TestHandleRunByNameHumanTaskNotFound(t *testing.T) {
-	mockCache(4)
-
-	r, _ := http.NewRequest("POST", "/human-tasks/topologies/a/nodes/b/token/c/run-by-name", bytes.NewReader([]byte("[]")))
-	assertResponse(t, r, 404, `{"message":"Topology with name 'a', node with name 'b' and human task with token 'c' not found!"}`)
-}
+// Test case: Find topology and node
