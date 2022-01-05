@@ -1,9 +1,9 @@
 import { ADMIN_USERS } from './types'
 import { API } from '@/api'
 import { callApi, dispatchRoot, withNamespace } from '../../utils'
-import { DATA_GRIDS } from '../../grid/grids'
-import { GRID } from '../../grid/store/types'
-import { addSuccessMessage } from '@/services/flashMessages'
+import { DATA_GRIDS } from '@/services/enums/dataGridEnums'
+import { GRID } from '../grid/types'
+import { addSuccessMessage } from '@/services/utils/flashMessages'
 
 export default {
   [ADMIN_USERS.ACTIONS.CREATE_USER_REQUEST]: async ({ dispatch }, payload) => {

@@ -27,11 +27,11 @@
 </template>
 
 <script>
-import { events, EVENTS } from '../../../../events'
+import { events, EVENTS } from '../../../../services/utils/events'
 import { mapActions, mapGetters } from 'vuex'
 import { TOPOLOGIES } from '@/store/modules/topologies/types'
-import { ROUTES } from '@/router/routes'
-import download from '@/services/download'
+import { ROUTES } from '@/services/enums/routerEnums'
+import download from '@/services/utils/download'
 import { REQUESTS_STATE } from '@/store/modules/api/types'
 import { API } from '@/api'
 

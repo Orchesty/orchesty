@@ -1,15 +1,15 @@
 <template>
-  <page-layout :title="$t('navigation.users')">
-    <users-grid-handler />
-  </page-layout>
+  <content-basic :title="$t('navigation.users')">
+    <users-grid />
+  </content-basic>
 </template>
 
 <script>
-import PageLayout from '../../components/layout/PageLayout'
-import UsersGridHandler from '../../components/app/users/grid/UsersGridHandler'
+import UsersGrid from '../../components/app/users/grid/UsersGrid'
+import ContentBasic from '@/components/layout/content/ContentBasic'
 
 export default {
   name: 'UsersPage',
-  components: { PageLayout, UsersGridHandler },
+  components: { ContentBasic, UsersGrid },
 }
 </script>

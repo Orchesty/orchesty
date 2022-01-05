@@ -33,12 +33,12 @@
 </template>
 
 <script>
-import { events, EVENTS } from '../../../../events'
+import { events, EVENTS } from '../../../../services/utils/events'
 import { mapActions } from 'vuex'
 import { TOPOLOGIES } from '@/store/modules/topologies/types'
-import { ROUTES } from '@/router/routes'
-import download from '@/services/download'
-import { TOPOLOGY_ENUMS } from '@/enums/topologyEnums'
+import { ROUTES } from '@/services/enums/routerEnums'
+import download from '@/services/utils/download'
+import { TOPOLOGY_ENUMS } from '@/services/enums/topologyEnums'
 
 export default {
   name: 'TopologyTreeViewMenu',

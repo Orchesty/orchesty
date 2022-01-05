@@ -26,7 +26,7 @@
             v-if="isVisible('correlation_id')"
             v-bind="attrs"
             :style="expanded ? 'border-bottom: none' : ''"
-            :class="items.item.correlation_id ? 'pl-9' : ''"
+            :class="items.item.correlation_id ? 'pr-9' : ''"
             class="py-0 text-center truncate td-relative-container"
             v-on="on"
           >
@@ -54,8 +54,8 @@
 </template>
 
 <script>
-import { internationalFormat } from '@/filters'
-import { DATA_GRIDS } from '@/store/grid/grids'
+import { internationalFormat } from '@/services/utils/dateFilters'
+import { DATA_GRIDS } from '@/services/enums/dataGridEnums'
 import DataGrid from '@/components/commons/table/DataGrid'
 import { REQUESTS_STATE } from '@/store/modules/api/types'
 import { API } from '@/api'

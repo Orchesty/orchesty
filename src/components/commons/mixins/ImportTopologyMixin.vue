@@ -1,9 +1,9 @@
 <script>
 import { mapActions } from 'vuex'
 import { TOPOLOGIES } from '@/store/modules/topologies/types'
-import { ROUTES } from '@/router/routes'
+import { ROUTES } from '@/services/enums/routerEnums'
 import { IMPLEMENTATIONS } from '@/store/modules/implementations/types'
-import { EVENTS, events } from '@/events'
+import { EVENTS, events } from '@/services/utils/events'
 import FlashMessageMixin from '@/components/commons/mixins/FlashMessageMixin'
 
 export default {

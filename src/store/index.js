@@ -10,12 +10,13 @@ import topologies from './modules/topologies'
 import trash from './modules/trash'
 import { STORE } from './types'
 import { resetModules } from './utils'
-import { DATA_GRIDS } from './grid/grids'
-import createGrid from './grid/store'
-import { callGraphQL } from '../services/graphql'
-import { callApi } from '../services/fetch'
+import { DATA_GRIDS } from '@/services/enums/dataGridEnums'
+import createGrid from './modules/grid'
+import { callGraphQL } from '../services/utils/graphql'
+import { callApi } from '../services/utils/apiFetch'
 import implementations from './modules/implementations'
 import appStore from './modules/appStore'
+import { DIRECTION } from '@/services/enums/gridEnums'
 
 Vue.use(Vuex)
 
@@ -59,6 +60,12 @@ export const createStore = (router) => {
         },
       }),
       [DATA_GRIDS.STATISTICS]: createGrid(DATA_GRIDS.STATISTICS, {
+        sorter: [
+          {
+            column: 'id',
+            direction: DIRECTION.DESCENDING,
+          },
+        ],
         paging: {
           page: 1,
           itemsPerPage: 50,
@@ -97,6 +104,23 @@ export const createStore = (router) => {
         },
       }),
       [DATA_GRIDS.LOGS]: createGrid(DATA_GRIDS.LOGS, {
+        paging: {
+          page: 1,
+          itemsPerPage: 10,
+        },
+      }),
+      [DATA_GRIDS.NODE_LOGS]: createGrid(DATA_GRIDS.LOGS, {
+        filter: [
+          [{ column: 'topology_id', operator: 'EQUAL', value: [''], default: true }],
+          [
+            {
+              column: 'node_id',
+              operator: 'EQUAL',
+              value: [''],
+              default: true,
+            },
+          ],
+        ],
         paging: {
           page: 1,
           itemsPerPage: 10,

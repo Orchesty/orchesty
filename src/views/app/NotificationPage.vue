@@ -1,15 +1,15 @@
 <template>
-  <page-layout :title="$t('navigation.notifications')">
-    <notification-settings-handler />
-  </page-layout>
+  <content-basic :title="$t('navigation.notifications')">
+    <notification-settings />
+  </content-basic>
 </template>
 
 <script>
-import PageLayout from '../../components/layout/PageLayout'
-import NotificationSettingsHandler from '../../components/app/notifications/grid/NotificationSettingsHandler'
+import NotificationSettings from '../../components/app/notifications/grid/NotificationSettings'
+import ContentBasic from '@/components/layout/content/ContentBasic'
 
 export default {
   name: 'NotificationPage',
-  components: { NotificationSettingsHandler, PageLayout },
+  components: { ContentBasic, NotificationSettings },
 }
 </script>

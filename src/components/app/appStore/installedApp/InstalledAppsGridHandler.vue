@@ -63,13 +63,13 @@
 
 <script>
 import DataGrid from '../../../commons/table/DataGrid'
-import { DATA_GRIDS } from '../../../../store/grid/grids'
+import { DATA_GRIDS } from '@/services/enums/dataGridEnums'
 import { mapActions, mapGetters, mapState } from 'vuex'
 import { REQUESTS_STATE } from '../../../../store/modules/api/types'
 import { API } from '../../../../api'
 import AppItem from '../itemApp/AppItem'
 import { AUTH } from '../../../../store/modules/auth/types'
-import { ROUTES } from '../../../../router/routes'
+import { ROUTES } from '../../../../services/enums/routerEnums'
 import AppItemButton from '@/components/app/appStore/buttonApp/AppItemButton'
 import { APP_STORE } from '@/store/modules/appStore/types'
 

@@ -33,7 +33,7 @@
 
 <script>
 import FormMixin from '../../../commons/mixins/FormMixin'
-import { TOPOLOGY_ENUMS } from '@/enums/topologyEnums'
+import { TOPOLOGY_ENUMS } from '@/services/enums/topologyEnums'
 
 export default {
   name: 'CreateTopologyForm',

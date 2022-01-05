@@ -109,7 +109,7 @@
 </template>
 
 <script>
-import { internationalFormat } from '../../../../filters'
+import { internationalFormat } from '@/services/utils/dateFilters'
 import { mapActions, mapState } from 'vuex'
 import UserTaskActionsModal from '@/components/app/userTasks/modal/UserTaskActionsModal'
 import { USER_TASKS } from '@/store/modules/userTasks/types'

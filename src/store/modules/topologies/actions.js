@@ -1,7 +1,7 @@
 import { TOPOLOGIES } from './types'
 import { callApi } from '../../utils'
 import { API } from '../../../api'
-import { addSuccessMessage } from '@/services/flashMessages'
+import { addSuccessMessage } from '@/services/utils/flashMessages'
 
 export default {
   [TOPOLOGIES.ACTIONS.TOPOLOGY.CREATE]: async ({ dispatch }, payload) => {

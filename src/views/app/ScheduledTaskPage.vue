@@ -1,15 +1,15 @@
 <template>
-  <page-layout :title="$t('navigation.scheduledTask')">
-    <scheduled-task-grid-handler />
-  </page-layout>
+  <content-basic :title="$t('navigation.scheduledTask')">
+    <scheduled-task-grid />
+  </content-basic>
 </template>
 
 <script>
-import PageLayout from '../../components/layout/PageLayout'
-import ScheduledTaskGridHandler from '../../components/app/scheduledTask/grid/ScheduledTaskGridHandler'
+import ContentBasic from '../../components/layout/content/ContentBasic'
+import ScheduledTaskGrid from '../../components/app/scheduledTask/grid/ScheduledTaskGrid'
 
 export default {
   name: 'ScheduledTaskPage',
-  components: { ScheduledTaskGridHandler, PageLayout },
+  components: { ScheduledTaskGrid, ContentBasic },
 }
 </script>

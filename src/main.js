@@ -2,7 +2,7 @@ import 'core-js/stable'
 import 'regenerator-runtime/runtime'
 import Vue from 'vue'
 import App from './App.vue'
-import router, { beforeEach } from './router'
+import router, { beforeEach } from './services/router'
 import { createStore } from './store'
 import { i18n } from './localization'
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
@@ -25,6 +25,6 @@ new Vue({
   router,
   store,
   i18n,
-  vuetify: vuetify,
+  vuetify,
   render: (h) => h(App),
 }).$mount('#app')

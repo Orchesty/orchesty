@@ -1,9 +1,9 @@
 import { USER_TASKS } from './types'
 import { callApi, dispatchRoot, withNamespace } from '../../utils'
 import { API } from '../../../api'
-import { GRID } from '../../grid/store/types'
-import { DATA_GRIDS } from '../../grid/grids'
-import { addSuccessMessage } from '../../../services/flashMessages'
+import { GRID } from '../grid/types'
+import { DATA_GRIDS } from '@/services/enums/dataGridEnums'
+import { addSuccessMessage } from '../../../services/utils/flashMessages'
 
 export default {
   [USER_TASKS.ACTIONS.USER_TASK_ACCEPT]: async ({ dispatch }, payload) => {

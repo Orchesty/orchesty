@@ -96,7 +96,7 @@
 </template>
 
 <script>
-import { toLocalDate } from '../../../../filters'
+import { toLocalDate } from '../../../../services/utils/dateFilters'
 
 export default {
   name: 'TrashInformation',

@@ -35,7 +35,7 @@ import CustomContextPadProvider from './bpnmConfig/customModules/CustomContextPa
 import CustomElementFactory from './bpnmConfig/customModules/CustomElementFactory'
 import CustomRenderer from './bpnmConfig/customModules/CustomRenderer'
 import CustomPalette from './bpnmConfig/customModules/CustomPalette'
-import download from '@/services/download'
+import download from '@/services/utils/download'
 import { mapActions, mapGetters, mapState } from 'vuex'
 import { TOPOLOGIES } from '@/store/modules/topologies/types'
 import { AUTH } from '@/store/modules/auth/types'
@@ -360,7 +360,7 @@ export default {
       this.$emit('initialScheme', initialScheme)
     } catch (err) {
       console.log(err.message, err.warnings)
-      this.showFlashMessage(true, err.response.data.message)
+      this.showFlashMessage(true, err)
     } finally {
       let labels = document.querySelectorAll('.djs-label')
       labels.forEach((label) => {

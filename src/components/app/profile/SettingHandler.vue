@@ -33,7 +33,7 @@ import BasicCard from '../../commons/card/BasicCard'
 import { ADMIN_USERS } from '@/store/modules/adminUsers/types'
 import { mapActions, mapState } from 'vuex'
 import { AUTH } from '@/store/modules/auth/types'
-import { LOCAL_STORAGE } from '@/enums'
+import { LOCAL_STORAGE } from '@/services/enums/localStorageEnums'
 
 export default {
   name: 'SettingHandler',

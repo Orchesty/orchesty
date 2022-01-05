@@ -107,13 +107,13 @@ import { IMPLEMENTATIONS } from '@/store/modules/implementations/types'
 import { fitIntoScreen } from './helper'
 import { REQUESTS_STATE } from '@/store/modules/api/types'
 import { API } from '@/api'
-import { OPERATOR } from '@/store/grid'
-import { DATA_GRIDS } from '@/store/grid/grids'
+import { DIRECTION, OPERATOR } from '@/services/enums/gridEnums'
+import { DATA_GRIDS } from '@/services/enums/dataGridEnums'
 import { USER_TASKS } from '@/store/modules/userTasks/types'
 import BpmnNodeGrid from '@/components/app/bpmn/components/BpmnNodeGrid'
 import QuickGridFilter from '@/components/commons/table/filter/QuickGridFilter'
 import ProgressBarLinear from '@/components/commons/progressIndicators/ProgressBarLinear'
-import { DATE_FILTERS } from '@/services/filters'
+import { QUICK_FILTERS } from '@/services/utils/quickFilters'
 
 export default {
   name: 'BpmnIOViewer',
@@ -148,7 +148,7 @@ export default {
               {
                 column: 'timestamp',
                 operator: OPERATOR.BETWEEN,
-                value: DATE_FILTERS.LAST_5_MINS(),
+                value: QUICK_FILTERS.LAST_5_MINS(),
               },
             ],
           ],
@@ -160,7 +160,7 @@ export default {
               {
                 column: 'timestamp',
                 operator: OPERATOR.BETWEEN,
-                value: DATE_FILTERS.LAST_30_MINS(),
+                value: QUICK_FILTERS.LAST_30_MINS(),
               },
             ],
           ],
@@ -172,7 +172,7 @@ export default {
               {
                 column: 'timestamp',
                 operator: OPERATOR.BETWEEN,
-                value: DATE_FILTERS.LAST_HOUR(),
+                value: QUICK_FILTERS.LAST_HOUR(),
               },
             ],
           ],
@@ -184,7 +184,7 @@ export default {
               {
                 column: 'timestamp',
                 operator: OPERATOR.BETWEEN,
-                value: DATE_FILTERS.LAST_6_HOURS(),
+                value: QUICK_FILTERS.LAST_6_HOURS(),
               },
             ],
           ],
@@ -196,7 +196,7 @@ export default {
               {
                 column: 'timestamp',
                 operator: OPERATOR.BETWEEN,
-                value: DATE_FILTERS.LAST_24_HOURS(),
+                value: QUICK_FILTERS.LAST_24_HOURS(),
               },
             ],
           ],
@@ -417,7 +417,12 @@ export default {
         id: id,
         settings: {
           filter: filter,
-          sorter: null,
+          sorter: [
+            {
+              column: 'id',
+              direction: DIRECTION.DESCENDING,
+            },
+          ],
           paging: { itemsPerPage: 50, page: 1 },
           search: '',
         },
@@ -426,7 +431,12 @@ export default {
     async fetchUserTasks() {
       await this[USER_TASKS.ACTIONS.USER_TASK_FETCH_TASKS]({
         filter: [[{ column: 'topologyId', operator: OPERATOR.EQUAL, value: this.topology._id }]],
-        sorter: null,
+        sorter: [
+          {
+            column: 'id',
+            direction: DIRECTION.DESCENDING,
+          },
+        ],
         paging: { itemsPerPage: 50, page: 1 },
         params: { id: this.topology._id },
         search: '',

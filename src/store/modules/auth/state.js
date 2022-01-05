@@ -1,4 +1,4 @@
-import { LOCAL_STORAGE } from '../../../enums'
+import { LOCAL_STORAGE } from '../../../services/enums/localStorageEnums'
 
 export default () => ({
   token: localStorage.getItem(LOCAL_STORAGE.USER_TOKEN) || null,

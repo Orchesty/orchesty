@@ -22,7 +22,7 @@
 
 <script>
 import DataGrid from '../../../commons/table/DataGrid'
-import { DATA_GRIDS } from '../../../../store/grid/grids'
+import { DATA_GRIDS } from '@/services/enums/dataGridEnums'
 import { mapGetters, mapState } from 'vuex'
 import { REQUESTS_STATE } from '../../../../store/modules/api/types'
 import { API } from '../../../../api'

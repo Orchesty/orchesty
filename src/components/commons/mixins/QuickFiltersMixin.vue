@@ -1,6 +1,6 @@
 <script>
-import { OPERATOR } from '@/store/grid'
-import { DATE_FILTERS } from '@/services/filters'
+import { OPERATOR } from '@/services/enums/gridEnums'
+import { QUICK_FILTERS } from '@/services/utils/quickFilters'
 
 export default {
   name: 'QuickFiltersMixin',
@@ -14,7 +14,8 @@ export default {
               {
                 column: val,
                 operator: OPERATOR.BETWEEN,
-                value: DATE_FILTERS.LAST_5_MINS(),
+                value: QUICK_FILTERS.LAST_5_MINS(),
+                isQuickFilter: true,
               },
             ],
           ],
@@ -26,7 +27,8 @@ export default {
               {
                 column: val,
                 operator: OPERATOR.BETWEEN,
-                value: DATE_FILTERS.LAST_30_MINS(),
+                value: QUICK_FILTERS.LAST_30_MINS(),
+                isQuickFilter: true,
               },
             ],
           ],
@@ -38,7 +40,8 @@ export default {
               {
                 column: val,
                 operator: OPERATOR.BETWEEN,
-                value: DATE_FILTERS.LAST_HOUR(),
+                value: QUICK_FILTERS.LAST_HOUR(),
+                isQuickFilter: true,
               },
             ],
           ],
@@ -50,7 +53,8 @@ export default {
               {
                 column: val,
                 operator: OPERATOR.BETWEEN,
-                value: DATE_FILTERS.LAST_6_HOURS(),
+                value: QUICK_FILTERS.LAST_6_HOURS(),
+                isQuickFilter: true,
               },
             ],
           ],
@@ -62,7 +66,8 @@ export default {
               {
                 column: val,
                 operator: OPERATOR.BETWEEN,
-                value: DATE_FILTERS.LAST_24_HOURS(),
+                value: QUICK_FILTERS.LAST_24_HOURS(),
+                isQuickFilter: true,
               },
             ],
           ],

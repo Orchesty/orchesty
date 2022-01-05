@@ -13,8 +13,12 @@ import ConnectorRepeaterHops from './parts/ConnectorRepeaterHops'
 import ConnectorRepeaterInterval from './parts/ConnectorRepeaterInterval'
 import PrefetchProps from './parts/PrefetchProps.js'
 import UserTaskWaitResolve from '@/components/app/bpmn/bpnmConfig/PropertiesPanel/parts/UserTaskWaitResolve'
+import { is } from 'bpmn-js/lib/util/ModelUtil'
 
 function createGeneralTabGroups(element, bpmnFactory, elementRegistry, translate) {
+  if (is(element, 'bpmn:SequenceFlow')) {
+    return
+  }
   const generalGroup = {
     id: 'node',
     label: translate('Node'),

@@ -20,7 +20,7 @@
 
 <script>
 import { ValidationProvider } from 'vee-validate'
-import { toLocalDate } from '../../../../../filters'
+import { toLocalDate } from '../../../../../services/utils/dateFilters'
 
 export default {
   name: 'DatePicker',

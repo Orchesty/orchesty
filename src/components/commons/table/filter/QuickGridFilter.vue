@@ -14,16 +14,13 @@
       </v-btn>
       <slot name="advancedFilter" />
       <slot name="buttonLeft" />
-      <slot name="buttonRight" />
+      <slot name="buttonRight" :on-clear-button="onClear" />
     </v-col>
   </v-row>
 </template>
 
 <script>
-import { FILTER } from '../../../../store/grid'
-import { mapActions, mapState } from 'vuex'
-import { ADMIN_USERS } from '@/store/modules/adminUsers/types'
-import { AUTH } from '@/store/modules/auth/types'
+import { FILTER } from '@/services/enums/gridEnums'
 
 export default {
   name: 'QuickGridFilter',
@@ -44,11 +41,6 @@ export default {
       type: Function,
       required: true,
     },
-    defaultSetting: {
-      type: Object,
-      required: false,
-      default: () => ({}),
-    },
   },
   data() {
     return {
@@ -57,32 +49,29 @@ export default {
   },
   watch: {
     filterMeta(meta) {
-      // reset filter if not QUICK_FILTER
       if (!meta || meta.type !== FILTER.QUICK_FILTER) {
         this.items = this.createItems(this.quickFilters, meta.index)
       }
     },
+    quickFilters(quickFilters) {
+      this.items = this.createItems(quickFilters, undefined)
+    },
   },
   created() {
-    if (this.quickFilters.length && this.isQuickFilter(this.filterMeta) && this.quickFilters[this.filterMeta.index]) {
+    if (this.quickFilters.length && this.quickFilters[this.filterMeta.index]) {
       this.onChange(this.quickFilters[this.filterMeta.index].filter, {
         type: FILTER.QUICK_FILTER,
         index: this.filterMeta.index,
       })
     }
   },
-  computed: {
-    ...mapState(AUTH.NAMESPACE, ['user']),
-  },
   methods: {
-    ...mapActions(ADMIN_USERS.NAMESPACE, [ADMIN_USERS.ACTIONS.GET_USER_REQUEST]),
+    onClear() {
+      this.items = this.createItems(this.quickFilters, undefined)
+    },
     onChangeFilter(index, filter) {
       this.items = this.createItems(this.items, index)
-
       let withDefault = filter.filter
-      if (this.defaultSetting && this.defaultSetting.permanentFilter === true && this.defaultSetting.filter) {
-        withDefault = [...filter.filter, ...this.defaultSetting.filter]
-      }
 
       this.onChange(withDefault, { type: FILTER.QUICK_FILTER, index })
     },
@@ -96,9 +85,6 @@ export default {
 
         return item
       })
-    },
-    isQuickFilter(meta) {
-      return meta.type && (meta.type === FILTER.QUICK_FILTER || meta.type === undefined)
     },
   },
 }

@@ -6,7 +6,6 @@
         :filter="filter"
         :filter-meta="filterMeta"
         :on-change="onChangeFilter"
-        :default-setting="defaultSetting"
       >
         <template v-if="!disableAdvancedFilter" slot="advancedFilter">
           <v-btn icon color="primary" @click="filterToggle">
@@ -20,15 +19,14 @@
             <v-icon> mdi-reload </v-icon>
           </v-btn>
         </template>
-        <template slot="buttonRight">
-          <v-btn text class="ml-auto" @click="clear">
+        <template #buttonRight="{ onClearButton }">
+          <v-btn text class="ml-auto" @click="clear(onClearButton)">
             {{ $t('dataGrid.clear') }}
           </v-btn>
         </template>
         <template #headers>
           <slot name="headers"></slot>
         </template>
-        <hide-header v-if="!disableHideHeaders" :headers="headers" :on-columns-change="onColumnsChangeInternal" />
       </quick-grid-filter>
 
       <simple-grid-filter
@@ -51,16 +49,14 @@
 <script>
 import QuickGridFilter from './QuickGridFilter'
 import SimpleGridFilter from './SimpleGridFilter'
-import { FILTER, OPERATOR } from '../../../../store/grid'
-import HideHeader from '@/components/commons/table/HideHeader'
-import { GRID } from '@/store/grid/store/types'
+import { FILTER, OPERATOR } from '@/services/enums/gridEnums'
+import { GRID } from '@/store/modules/grid/types'
 import { mapActions } from 'vuex'
-import { DATA_GRIDS } from '@/store/grid/grids'
-import { withNamespace } from '@/store/utils'
+import { DATA_GRIDS } from '@/services/enums/dataGridEnums'
 
 export default {
   name: 'DataGridFilter',
-  components: { HideHeader, QuickGridFilter, SimpleGridFilter },
+  components: { QuickGridFilter, SimpleGridFilter },
   props: {
     quickFilters: {
       type: Array,
@@ -82,10 +78,6 @@ export default {
       type: Function,
       required: true,
     },
-    onSave: {
-      type: Function,
-      required: true,
-    },
     headers: {
       type: Array,
       required: true,
@@ -97,15 +89,6 @@ export default {
     disableAdvancedFilter: {
       type: Boolean,
       default: false,
-    },
-    defaultSetting: {
-      type: Object,
-      required: false,
-      default: () => ({}),
-    },
-    onColumnsChangeInternal: {
-      type: Function,
-      required: true,
     },
     disableHideHeaders: {
       type: Boolean,
@@ -170,10 +153,10 @@ export default {
       if (meta.type === FILTER.QUICK_FILTER) this.sendFilter()
     },
     save() {
-      // this.onSave()
       this.$refs.simpleGridFilter.save()
     },
-    clear() {
+    clear(onClearButton) {
+      onClearButton()
       if (this.filter.length === 0) {
         this.key++
       }
@@ -184,9 +167,7 @@ export default {
       this.onClear()
     },
     async reload() {
-      await this.$store.dispatch(withNamespace(this.params.namespace, GRID.ACTIONS.GRID_FILTER), {
-        ...this.params,
-      })
+      await this.$parent.$parent.refresh()
     },
     async sendFilter() {
       if (this.fullTextSearch) {

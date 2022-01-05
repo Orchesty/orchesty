@@ -1,21 +1,40 @@
 <template>
-  <side-page-layout :title="$t('navigation.topologies')">
-    <template #sidebar>
-      <side-bar-handler />
-    </template>
-    <template #default>
-      <topology-handler />
-    </template>
-  </side-page-layout>
+  <content-tabs is-topology :tabs="tabs" />
 </template>
 
 <script>
-import SidePageLayout from '../../components/layout/SidePageLayout'
-import SideBarHandler from '../../components/layout/SideBarHandler'
-import TopologyHandler from '../../components/app/topology/landingComponent/TopologyHandler'
+import ContentTabs from '@/components/layout/content/ContentTabs'
+import { ROUTES } from '@/services/enums/routerEnums'
 
 export default {
+  components: { ContentTabs },
   name: 'TopologyPage',
-  components: { TopologyHandler, SideBarHandler, SidePageLayout },
+  data() {
+    return {
+      topologyData: null,
+      tabs: [
+        {
+          name: 'topologies.detail.tabs.editor',
+          route: ROUTES.TOPOLOGY.VIEWER,
+        },
+        {
+          name: 'topologies.detail.tabs.overview',
+          route: ROUTES.TOPOLOGY.OVERVIEW,
+        },
+        {
+          name: 'topologies.detail.tabs.statistic',
+          route: ROUTES.TOPOLOGY.STATISTIC,
+        },
+        {
+          name: 'topologies.detail.tabs.userTask',
+          route: ROUTES.TOPOLOGY.USER_TASK,
+        },
+        {
+          name: 'topologies.detail.tabs.logs',
+          route: ROUTES.TOPOLOGY.LOGS,
+        },
+      ],
+    }
+  },
 }
 </script>

@@ -1,4 +1,4 @@
-import { clearFilter, getValue, removeFilter, upsertFilter } from '../../../../src/store/grid/filters'
+import { clearFilter, getValue, removeFilter, upsertFilter } from '@/services/utils/gridFilters'
 
 test('Filters::upsertFilter - default', () => {
   const filters = []

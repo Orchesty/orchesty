@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import { ROUTES } from '@/router/routes'
+import { ROUTES } from '@/services/enums/routerEnums'
 import { mapActions, mapGetters, mapState } from 'vuex'
 import { TOPOLOGIES } from '@/store/modules/topologies/types'
 import Doughnut from '@/components/commons/charts/Doughnut'

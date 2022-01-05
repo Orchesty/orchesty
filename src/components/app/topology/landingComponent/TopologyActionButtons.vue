@@ -24,7 +24,7 @@
         <v-btn
           v-bind="attrs"
           class="ml-1 my-1 my-lg-0"
-          :to="{ name: ROUTES.EDITOR_PAGE }"
+          :to="{ name: ROUTES.EDITOR }"
           :disabled="isSending"
           icon
           v-on="on"
@@ -113,16 +113,16 @@
 </template>
 
 <script>
-import { TOPOLOGY_ENUMS } from '@/enums/topologyEnums'
+import { TOPOLOGY_ENUMS } from '@/services/enums/topologyEnums'
 import { mapActions, mapGetters, mapState } from 'vuex'
 import { REQUESTS_STATE } from '@/store/modules/api/types'
 import { API } from '@/api'
 import { TOPOLOGIES } from '@/store/modules/topologies/types'
-import { ROUTES } from '@/router/routes'
+import { ROUTES } from '@/services/enums/routerEnums'
 import axios from 'axios'
 import { config } from '@/config'
 import { AUTH } from '@/store/modules/auth/types'
-import { events, EVENTS } from '@/events'
+import { events, EVENTS } from '@/services/utils/events'
 import TopologyDetailMenu from '@/components/app/topology/menu/TopologyDetailMenu'
 import Tooltip from '@/components/commons/tooltip/Tooltip'
 
@@ -190,7 +190,7 @@ export default {
     },
     async test() {
       if (this.$route.name !== TOPOLOGY_ENUMS.BPMN_VIEWER) {
-        await this.$router.push({ name: ROUTES.TOPOLOGIES.EDITOR })
+        await this.$router.push({ name: ROUTES.TOPOLOGY.VIEWER })
       }
       await this[TOPOLOGIES.ACTIONS.TOPOLOGY.TEST]({ topologyID: this.topology._id })
     },

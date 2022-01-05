@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { events, EVENTS } from '../../../../events'
+import { events, EVENTS } from '../../../../services/utils/events'
 import ModalTemplate from '../../../commons/modal/ModalTemplate'
 import { TOPOLOGIES } from '../../../../store/modules/topologies/types'
 import { mapActions, mapGetters } from 'vuex'
@@ -33,7 +33,7 @@ import { REQUESTS_STATE } from '../../../../store/modules/api/types'
 import { API } from '../../../../api'
 import TopologyForm from '../form/TopologyForm'
 import SendingButton from '@/components/commons/button/SendingButton'
-import { ROUTES } from '@/router/routes'
+import { ROUTES } from '@/services/enums/routerEnums'
 
 export default {
   name: 'ModalCreateTopology',
@@ -59,7 +59,7 @@ export default {
         if (res) {
           this.isOpen = false
           await this[TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES]()
-          await this.$router.push({ name: ROUTES.TOPOLOGIES.EDITOR, params: { id: res._id } })
+          await this.$router.push({ name: ROUTES.TOPOLOGY.VIEWER, params: { id: res._id } })
         }
       })
     },

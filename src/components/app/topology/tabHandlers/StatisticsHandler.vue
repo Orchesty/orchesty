@@ -32,9 +32,9 @@
 </template>
 
 <script>
-import { DATA_GRIDS } from '@/store/grid/grids'
+import { DATA_GRIDS } from '@/services/enums/dataGridEnums'
 import BarChart from '@/components/commons/charts/BarChart'
-import { mapActions, mapGetters, mapState } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 import { TOPOLOGIES } from '@/store/modules/topologies/types'
 import DataGrid from '@/components/commons/table/DataGrid'
 import { REQUESTS_STATE } from '@/store/modules/api/types'
@@ -181,7 +181,6 @@ export default {
     },
   },
   methods: {
-    ...mapActions(TOPOLOGIES.NAMESPACE, [TOPOLOGIES.ACTIONS.DATA.GET_STATISTICS, TOPOLOGIES.ACTIONS.TOPOLOGY.NODES]),
     initNodes() {
       if (!this.items[0] || !this.nodeNames || !this.topology) {
         return

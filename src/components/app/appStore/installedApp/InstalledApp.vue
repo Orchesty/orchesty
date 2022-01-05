@@ -161,7 +161,7 @@ import { mapActions, mapGetters, mapState } from 'vuex'
 import { APP_STORE } from '@/store/modules/appStore/types'
 import { AUTH } from '@/store/modules/auth/types'
 import { TOPOLOGIES } from '@/store/modules/topologies/types'
-import { ROUTES } from '@/router/routes'
+import { ROUTES } from '@/services/enums/routerEnums'
 import { REQUESTS_STATE } from '@/store/modules/api/types'
 import { config } from '@/config'
 
@@ -234,8 +234,8 @@ export default {
       }
       window.open(authUrl, '_blank').focus()
     },
-    goBack() {
-      this.$router.go(-1)
+    async goBack() {
+      await this.$router.push({ name: ROUTES.APP_STORE.INSTALLED_APPS })
     },
 
     getWebhookStatusButton(name) {

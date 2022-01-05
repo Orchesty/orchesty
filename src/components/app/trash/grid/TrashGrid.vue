@@ -63,18 +63,18 @@
 </template>
 
 <script>
-import { DATA_GRIDS } from '@/store/grid/grids'
+import { DATA_GRIDS } from '@/services/enums/dataGridEnums'
 import DataGrid from '@/components/commons/table/DataGrid'
 import { mapActions, mapGetters, mapState } from 'vuex'
 import { REQUESTS_STATE } from '@/store/modules/api/types'
 import { API } from '@/api'
-import { internationalFormat } from '@/filters'
+import { internationalFormat } from '@/services/utils/dateFilters'
 import UserTaskInformation from '@/components/app/userTasks/grid/UserTaskInformation'
-import { OPERATOR } from '@/store/grid'
+import { OPERATOR } from '@/services/enums/gridEnums'
 import { TOPOLOGIES } from '@/store/modules/topologies/types'
 import UserTaskActionsModal from '@/components/app/userTasks/modal/UserTaskActionsModal'
 import { TRASH } from '@/store/modules/trash/types'
-import { ROUTES } from '@/router/routes'
+import { ROUTES } from '@/services/enums/routerEnums'
 import QuickFiltersMixin from '@/components/commons/mixins/QuickFiltersMixin'
 export default {
   name: 'TrashGrid',

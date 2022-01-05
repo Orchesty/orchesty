@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import { events, EVENTS } from '../../../../events'
+import { events, EVENTS } from '../../../../services/utils/events'
 import ImportTopologyMixin from '@/components/commons/mixins/ImportTopologyMixin'
 export default {
   name: 'FolderMenu',

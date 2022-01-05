@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import { NOTIFICATION_TYPES } from '../../../../enums'
+import { NOTIFICATION_TYPES } from '@/services/enums/notificationsEnums'
 import { mapActions, mapGetters } from 'vuex'
 import { REQUESTS_STATE } from '../../../../store/modules/api/types'
 import { API } from '../../../../api'

@@ -24,10 +24,11 @@
             <td
               v-if="isVisible('correlation_id')"
               v-bind="attrs"
-              :class="items.item.correlationId ? 'pl-9' : ''"
+              :class="items.item.correlationId ? 'pr-9' : ''"
               class="py-0 text-center truncate td-relative-container"
               v-on="on"
             >
+              {{ items.item.correlationId ? items.item.correlationId : 'system log - no id' }}
               <v-btn
                 v-if="items.item.correlationId"
                 class="button-absolute"
@@ -36,7 +37,6 @@
               >
                 <v-icon> mdi-content-copy </v-icon>
               </v-btn>
-              {{ items.item.correlationId ? items.item.correlationId : 'system log - no id' }}
             </td>
           </template>
           <template #tooltip>
@@ -62,14 +62,14 @@
 </template>
 
 <script>
-import { internationalFormat } from '@/filters'
-import { DATA_GRIDS } from '@/store/grid/grids'
+import { internationalFormat } from '@/services/utils/dateFilters'
+import { DATA_GRIDS } from '@/services/enums/dataGridEnums'
 import DataGrid from '@/components/commons/table/DataGrid'
 import { REQUESTS_STATE } from '@/store/modules/api/types'
 import { API } from '@/api'
 import { mapActions, mapGetters, mapState } from 'vuex'
 import { TOPOLOGIES } from '@/store/modules/topologies/types'
-import { GRID } from '@/store/grid/store/types'
+import { GRID } from '@/store/modules/grid/types'
 import prettyMilliseconds from 'pretty-ms'
 import Tooltip from '@/components/commons/tooltip/Tooltip'
 import FlashMessageMixin from '@/components/commons/mixins/FlashMessageMixin'
@@ -173,9 +173,9 @@ export default {
     internationalFormat,
   },
   watch: {
-    topology(val) {
+    async topology(val) {
       this.topologyID = val._id
-      this.$refs.grid.gridInit({ id: val._id })
+      await this.$refs.grid.fetchGridWithParams({ id: val._id })
     },
   },
   mounted() {

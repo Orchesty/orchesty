@@ -47,7 +47,7 @@ import { NOTIFICATIONS } from '../../../../store/modules/notifications/types'
 import { mapActions, mapGetters, mapState } from 'vuex'
 import { REQUESTS_STATE } from '../../../../store/modules/api/types'
 import { API } from '../../../../api'
-import { DATA_GRIDS } from '../../../../store/grid/grids'
+import { DATA_GRIDS } from '@/services/enums/dataGridEnums'
 import Tooltip from '@/components/commons/tooltip/Tooltip'
 
 export default {

@@ -55,7 +55,7 @@ import { API } from '../../../../api'
 import ModalTemplate from '@/components/commons/modal/ModalTemplate'
 import { TOPOLOGIES } from '@/store/modules/topologies/types'
 import SendingButton from '@/components/commons/button/SendingButton'
-import { EVENTS, events } from '@/events'
+import { EVENTS, events } from '@/services/utils/events'
 
 export default {
   name: 'ModalRunTopology',
@@ -72,7 +72,7 @@ export default {
   computed: {
     ...mapGetters(REQUESTS_STATE.NAMESPACE, [REQUESTS_STATE.GETTERS.GET_STATE]),
     state() {
-      return this[REQUESTS_STATE.GETTERS.GET_STATE]([API.implementation.delete.id, API.implementation.getList.id])
+      return this[REQUESTS_STATE.GETTERS.GET_STATE]([API.topology.run.id])
     },
     updateSelect() {
       return this.selected.map((index) => {
@@ -114,7 +114,11 @@ export default {
       this.setStartingPoints()
       this.loadRunSettings()
       this.isOpen = true
+      console.log('MOUNTED')
     })
+  },
+  beforeDestroy() {
+    events.remove(EVENTS.MODAL.TOPOLOGY.RUN)
   },
   methods: {
     ...mapActions(TOPOLOGIES.NAMESPACE, [TOPOLOGIES.ACTIONS.TOPOLOGY.RUN, TOPOLOGIES.ACTIONS.TOPOLOGY.RETURN_NODES]),

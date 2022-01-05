@@ -22,7 +22,7 @@
 import { mapState } from 'vuex'
 import { AUTH } from '@/store/modules/auth/types'
 import jwtDecode from 'jwt-decode'
-import { internationalFormatTimestamp } from '@/filters'
+import { internationalFormatTimestamp } from '@/services/utils/dateFilters'
 
 export default {
   name: 'License',

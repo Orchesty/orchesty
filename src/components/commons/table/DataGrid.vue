@@ -12,16 +12,13 @@
       v-if="!disableFilter"
       :params="{ namespace: namespace, params: requestParams, paging: paging, filter: filter }"
       :quick-filters="quickFilters"
-      :on-filter="onFilterInternal"
-      :on-clear="onClearInternal"
-      :on-save="onSaveInternal"
+      :on-filter="fetchGridWithFilter"
+      :on-clear="fetchGridWithInitials"
       :headers="headers"
       :filter="filter"
       :filter-meta="filterMeta"
       :disable-advanced-filter="disabledAdvancedFilter"
-      :default-setting="defaultSetting"
       :disable-hide-headers="disableHideHeaders"
-      :on-columns-change-internal="onColumnsChangeInternal"
       :show-full-text-search="showFullTextSearch"
       :simple-filter="simpleFilter"
     />
@@ -39,7 +36,6 @@
             :headers="visibleHeaders"
             :items="items"
             :options.sync="options"
-            :server-items-length="totalItems"
             :loading="isLoading"
             :footer-props="{
               'items-per-page-options': rowItemsPerPage,
@@ -91,7 +87,6 @@
               :show-expand="showExpand"
               :single-expand="singleExpand"
               :search="searchText"
-              :height="height"
             >
               <template #top>
                 <slot name="top" />
@@ -162,8 +157,8 @@
 </template>
 
 <script>
-import { DIRECTION } from '../../../store/grid'
-import { GRID } from '../../../store/grid/store/types'
+import { DIRECTION } from '@/services/enums/gridEnums'
+import { GRID } from '../../../store/modules/grid/types'
 import { withNamespace } from '../../../store/utils'
 import DataGridFilter from './filter/DataGridFilter'
 import ProgressBarLinear from '@/components/commons/progressIndicators/ProgressBarLinear'
@@ -197,10 +192,6 @@ export default {
       default: false,
     },
     showFullTextSearch: {
-      type: Boolean,
-      default: false,
-    },
-    disableSearch: {
       type: Boolean,
       default: false,
     },
@@ -273,23 +264,6 @@ export default {
       type: Boolean,
       default: false,
     },
-    stats: {
-      type: Boolean,
-      default: false,
-    },
-    initialSearch: {
-      type: String,
-      required: false,
-      default: () => '',
-    },
-    height: {
-      type: String,
-      default: () => 'auto',
-    },
-    fillHeight: {
-      type: Boolean,
-      default: false,
-    },
     placeholder: {
       type: Boolean,
       default: false,
@@ -311,15 +285,12 @@ export default {
       selected: [],
       searchText: '',
       options: {},
-      dialog: false,
       rowItemsPerPage: [10, 20, 50, 100],
       visibleHeaders: [],
-      searchTimeout: null,
     }
   },
   created() {
     this.visibleHeaders = this.getVisibleHeaders(this.headers)
-    // default value from store
     this.options = {
       sortBy: this.sorter ? [this.sorter[0].column] : [],
       sortDesc: this.sorter ? [this.sorter[0].direction === DIRECTION.DESCENDING] : [],
@@ -327,9 +298,7 @@ export default {
       itemsPerPage: this.paging ? this.paging.itemsPerPage : 10,
     }
     this.searchText = this.search || ''
-    if (this.initialSearch) {
-      this.searchText = this.initialSearch
-    }
+
     window.addEventListener('resize', this.resizeHandler)
   },
   destroyed() {
@@ -354,12 +323,6 @@ export default {
     filterMeta() {
       return this.$store.state[this.namespace].filterMeta
     },
-    defaultSetting() {
-      return this.$store.state[this.namespace].default
-    },
-    headersMeta() {
-      return this.$store.state[this.namespace].headersMeta
-    },
     totalItems() {
       return this.paging.total
     },
@@ -377,6 +340,111 @@ export default {
       return colspan
     },
   },
+  methods: {
+    // FETCHING DATA
+    async refresh() {
+      await this.$store.dispatch(withNamespace(this.namespace, GRID.ACTIONS.FETCH_WITH_DATA), {
+        namespace: this.namespace,
+        params: this.requestParams,
+        paging: this.paging,
+        sorter: this.sorter,
+        filter: this.filter,
+        filterMeta: this.filterMeta,
+        search: this.search,
+      })
+    },
+    async fetchGridWithPaging(args) {
+      await this.$store.dispatch(withNamespace(this.namespace, GRID.ACTIONS.FETCH_WITH_DATA), {
+        namespace: this.namespace,
+        params: this.requestParams,
+        paging: args.paging,
+        sorter: args.sorter,
+        filter: this.filter,
+        filterMeta: this.filterMeta,
+        search: this.search,
+      })
+    },
+    async fetchGridWithParams(params) {
+      await this.$store.dispatch(withNamespace(this.namespace, GRID.ACTIONS.FETCH_WITH_DATA), {
+        namespace: this.namespace,
+        filter: this.filter,
+        filterMeta: this.filterMeta,
+        params,
+        paging: this.paging,
+        sorter: this.sorter,
+        search: this.search,
+      })
+    },
+    async fetchGridWithInitials() {
+      await this.$store.dispatch(withNamespace(this.namespace, GRID.ACTIONS.FETCH_WITH_INITIAL_STATE), {
+        namespace: this.namespace,
+        params: this.requestParams,
+      })
+    },
+    async fetchGridWithFilter(filter, filterMeta, search) {
+      // @TODO ALTER ACCORDING TO THE FILTERS USED
+      if (this.permanentFilter) {
+        if (!filter) {
+          filter = []
+        }
+        filter = filter.concat(this.permanentFilter)
+        if (search?.timeMargin) {
+          filter = filter.concat([search.timeMargin])
+        }
+      }
+      let fullTextSearch = null
+      if (search?.fullTextSearch) {
+        fullTextSearch = search.fullTextSearch
+      }
+
+      if (this.searchText) {
+        fullTextSearch = this.searchText
+      }
+      // @TODO END
+
+      await this.$store.dispatch(withNamespace(this.namespace, GRID.ACTIONS.FETCH_WITH_DATA), {
+        namespace: this.namespace,
+        filter,
+        filterMeta,
+        search: fullTextSearch,
+        params: this.requestParams,
+        paging: this.paging,
+        sorter: this.sorter,
+      })
+      // this.$emit('reset')
+    },
+    visibleHeadersTruncate(headers) {
+      if (!headers) {
+        return
+      }
+      return headers.map((header) => {
+        header.class = 'truncate'
+        return header
+      })
+    },
+    resizeHandler() {
+      this.dataHeight = window.innerHeight - 350
+    },
+    onRowClicked(props) {
+      // this.selected = [props.item]
+      if (this.showActiveRow) {
+        this.activeIndex = props.index
+        this.activeIndexId = props.item.id
+      }
+      this.expandClick ? props.expand(!props.isExpanded) : null
+      this.returnRowProps ? this.$emit('row-props', props) : null
+    },
+    getVisibleHeaders(headers) {
+      return headers.filter((item) => item.visible === true || item.alwaysVisible === true)
+    },
+    isItemVisible(name) {
+      const index = this.visibleHeaders.findIndex((item) => item.value === name)
+      return index !== -1
+    },
+    clearSelected() {
+      this.selected = []
+    },
+  },
   watch: {
     options: {
       handler() {
@@ -385,7 +453,6 @@ export default {
           page: page,
           itemsPerPage: itemsPerPage,
         }
-
         let sorter = null
         if (sortBy.length > 0 && sortDesc.length > 0) {
           sorter = [
@@ -395,8 +462,7 @@ export default {
             },
           ]
         }
-
-        this.onPagingInternal({ paging, sorter })
+        this.fetchGridWithPaging({ paging, sorter })
       },
       deep: true,
     },
@@ -415,132 +481,13 @@ export default {
     // },
     //DEFAULT SELECTION OF THE FIRST ITEM
   },
-  methods: {
-    visibleHeadersTruncate(headers) {
-      if (!headers) {
-        return
-      }
-      return headers.map((header) => {
-        header.class = 'truncate'
-        return header
-      })
-    },
-    resizeHandler() {
-      this.dataHeight = window.innerHeight - 350
-    },
-    async reload() {
-      await this.$store.dispatch(withNamespace(this.namespace, GRID.ACTIONS.GRID_FILTER), {
-        namespace: this.namespace,
-        params: this.requestParams,
-        paging: this.paging,
-        filter: this.filter,
-      })
-    },
-    onPagingInternal(args) {
-      this.$store.dispatch(withNamespace(this.namespace, GRID.ACTIONS.GRID_CHANGE_PAGING), {
-        namespace: this.namespace,
-        params: this.requestParams,
-        ...args,
-      })
-    },
-    onSearchInternal(val) {
-      this.$store.dispatch(withNamespace(this.namespace, GRID.ACTIONS.GRID_SEARCH), {
-        // filter: this.filter,
-        // filterMeta: this.filterMeta,
-        namespace: this.namespace,
-        params: this.requestParams,
-        search: val,
-      })
-    },
-    async onFilterInternal(filter, filterMeta, search, native) {
-      if (this.permanentFilter) {
-        if (!filter) {
-          filter = []
-        }
-        filter = filter.concat(this.permanentFilter)
-        if (search?.timeMargin) {
-          filter = filter.concat([search.timeMargin])
-        }
-      }
-      if (native) {
-        native = JSON.parse(native)
-      }
-      let fullTextSearch = null
-      if (search?.fullTextSearch) {
-        fullTextSearch = search.fullTextSearch
-      }
-
-      await this.$store.dispatch(withNamespace(this.namespace, GRID.ACTIONS.GRID_FILTER), {
-        namespace: this.namespace,
-        filter,
-        filterMeta,
-        native,
-        search: fullTextSearch,
-        params: this.requestParams,
-      })
-      this.$emit('reset')
-    },
-    async onClearInternal() {
-      await this.$store.dispatch(withNamespace(this.namespace, GRID.ACTIONS.GRID_FILTER_RESET), {
-        namespace: this.namespace,
-        params: this.requestParams,
-      })
-    },
-    gridInit(params) {
-      this.$store.dispatch(withNamespace(this.namespace, GRID.ACTIONS.GRID_FETCH), {
-        namespace: this.namespace,
-        filter: this.permanentFilter,
-        params,
-      })
-    },
-    onSaveInternal() {
-      this.$store.dispatch(withNamespace(this.namespace, GRID.ACTIONS.GRID_STATE_SAVE), {
-        namespace: this.namespace,
-      })
-    },
-    onRowClicked(props) {
-      // this.selected = [props.item]
-      if (this.showActiveRow) {
-        this.activeIndex = props.index
-        this.activeIndexId = props.item.id
-      }
-      this.expandClick ? props.expand(!props.isExpanded) : null
-      this.returnRowProps ? this.$emit('row-props', props) : null
-    },
-    onColumnsChangeInternal(headers) {
-      this.visibleHeaders = this.getVisibleHeaders(headers)
-      this.$store.dispatch(withNamespace(this.namespace, GRID.ACTIONS.GRID_HEADERS_SAVE), headers)
-    },
-    getVisibleHeaders(headers) {
-      // restore headers
-      this.headersMeta.forEach((column) => {
-        let header = this.headers.find((header) => header.value === column.value)
-
-        if (header && header.alwaysVisible !== true) {
-          header.visible = column.visible
-        }
-      })
-
-      return headers.filter((item) => item.visible === true || item.alwaysVisible === true)
-    },
-    isItemVisible(name) {
-      const index = this.visibleHeaders.findIndex((item) => item.value === name)
-
-      if (index !== -1) {
-        return true
-      }
-
-      return false
-    },
-    clearSelected() {
-      this.selected = []
-    },
+  async beforeDestroy() {
+    await this.$store.dispatch(withNamespace(this.namespace, GRID.ACTIONS.RESET))
   },
 }
 </script>
 
 <style lang="sass">
-@import "~vuetify/src/styles/styles"
 .primary-row > td:not(:first-child)
   text-align: center
 .selected-row

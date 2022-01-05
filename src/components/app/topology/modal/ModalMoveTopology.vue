@@ -2,7 +2,7 @@
   <modal-template v-model="isOpen" :title="$t('topologies.modals.move.title')">
     <template #default>
       <v-col cols="12">
-        <select-folder-input v-model="selectedCategoryId" :topologies="topologies" :topology="topology" />
+        <topology-move-tree-view v-model="selectedCategoryId" :topologies="topologies" :topology="topology" />
       </v-col>
     </template>
     <template #sendingButton>
@@ -19,18 +19,18 @@
 </template>
 
 <script>
-import { events, EVENTS } from '../../../../events'
+import { events, EVENTS } from '../../../../services/utils/events'
 import ModalTemplate from '../../../commons/modal/ModalTemplate'
-import { TOPOLOGIES } from '../../../../store/modules/topologies/types'
+import { TOPOLOGIES } from '@/store/modules/topologies/types'
 import { mapActions, mapGetters } from 'vuex'
-import { REQUESTS_STATE } from '../../../../store/modules/api/types'
+import { REQUESTS_STATE } from '@/store/modules/api/types'
 import SendingButton from '../../../commons/button/SendingButton'
-import { API } from '../../../../api'
-import SelectFolderInput from '../treeview/SelectFolderInput'
+import { API } from '@/api'
+import TopologyMoveTreeView from '../treeview/TopologyMoveTreeView'
 
 export default {
   name: 'ModalMoveTopology',
-  components: { ModalTemplate, SendingButton, SelectFolderInput },
+  components: { ModalTemplate, SendingButton, TopologyMoveTreeView },
   data: () => ({
     isOpen: false,
     topologies: [],

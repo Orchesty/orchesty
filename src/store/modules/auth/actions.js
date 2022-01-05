@@ -1,11 +1,11 @@
 import { AUTH } from './types'
 import { API } from '@/api'
 import { callApi } from '../../utils'
-import router from '../../../router'
-import { ROUTES } from '@/router/routes'
-import { addSuccessMessage } from '@/services/flashMessages'
+import router from '../../../services/router'
+import { ROUTES } from '@/services/enums/routerEnums'
+import { addSuccessMessage } from '@/services/utils/flashMessages'
 import { ERROR_TYPE } from '../api/types'
-import { logout } from '@/services/utils'
+import { logout } from '@/services/utils/utils'
 
 export default {
   [AUTH.ACTIONS.LOGIN_REQUEST]: async ({ commit, dispatch }, payload) => {
@@ -20,9 +20,9 @@ export default {
       })
 
       commit(AUTH.MUTATIONS.LOGIN_RESPONSE, data)
-      await router.push({ name: ROUTES.TOPOLOGIES.DEFAULT })
+      await router.push({ name: ROUTES.DASHBOARD })
     } catch {
-      logout(commit, dispatch)
+      await logout(commit, dispatch)
     }
   },
   [AUTH.ACTIONS.CHECK_LOGGED_REQUEST]: async ({ dispatch, commit }) => {
@@ -35,7 +35,7 @@ export default {
       commit(AUTH.MUTATIONS.CHECK_LOGGED_RESPONSE, data)
       return true
     } catch {
-      logout(commit, dispatch)
+      await logout(commit, dispatch)
 
       return false
     }
@@ -47,7 +47,7 @@ export default {
         throwError: true,
       })
     } finally {
-      logout(commit, dispatch)
+      await logout(commit, dispatch)
     }
   },
   [AUTH.ACTIONS.FORGOT_PASSWORD_REQUEST]: async ({ dispatch }, payload) => {

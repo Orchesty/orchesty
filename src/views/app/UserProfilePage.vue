@@ -1,9 +1,6 @@
 <template>
-  <page-layout :title="$t('navigation.profile')">
+  <content-basic :title="$t('navigation.profile')">
     <v-row>
-      <v-col v-if="false" cols="12" md="6">
-        <setting-handler />
-      </v-col>
       <v-col cols="12" md="6">
         <change-password-form />
       </v-col>
@@ -11,22 +8,20 @@
         <license />
       </v-col>
     </v-row>
-  </page-layout>
+  </content-basic>
 </template>
 
 <script>
-import PageLayout from '../../components/layout/PageLayout'
-import SettingHandler from '../../components/app/profile/SettingHandler'
 import ChangePasswordForm from '@/components/app/profile/form/ChangePasswordForm'
 import License from '@/components/app/profile/License'
+import ContentBasic from '@/components/layout/content/ContentBasic'
 
 export default {
   name: 'UserProfilePage',
   components: {
+    ContentBasic,
     License,
     ChangePasswordForm,
-    SettingHandler,
-    PageLayout,
   },
 }
 </script>

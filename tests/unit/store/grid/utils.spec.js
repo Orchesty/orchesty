@@ -1,13 +1,12 @@
 import {
-  DIRECTION,
-  OPERATOR,
   prepareGridData,
   prepareGridHeaderStateForSave,
   prepareGridStateForSave,
   prepareSorter,
-} from '../../../../src/store/grid'
-import { createDefaultGridState } from '../../../../src/store/grid/store/state'
-import { FILTER } from '../../../../src/store/grid/utils'
+} from '@/services/utils/gridUtils'
+import { DIRECTION, OPERATOR } from '@/services/enums/gridEnums'
+import { createDefaultGridState } from '@/store/modules/grid/state'
+import { FILTER } from '@/services/utils/gridUtils'
 
 // PREPARE SORTER
 test('Grid::prepareSorter - null', () => {

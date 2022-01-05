@@ -46,7 +46,7 @@
 import { mapActions, mapState } from 'vuex'
 import { APP_STORE } from '@/store/modules/appStore/types'
 import { AUTH } from '@/store/modules/auth/types'
-import { ROUTES } from '@/router/routes'
+import { ROUTES } from '@/services/enums/routerEnums'
 
 export default {
   name: 'AppStoreItemDetail',
@@ -61,8 +61,9 @@ export default {
         await this.$router.push({ name: ROUTES.APP_STORE.INSTALLED_APP, params: { key: this.$route.params.key } })
       }
     },
-    goBack() {
-      this.$router.go(-1)
+
+    async goBack() {
+      await this.$router.push({ name: ROUTES.APP_STORE.AVAILABLE_APPS })
     },
 
     hasLogo(app) {

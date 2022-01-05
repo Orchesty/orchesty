@@ -1,4 +1,4 @@
-import { LOCAL_STORAGE } from '@/enums'
+import { LOCAL_STORAGE } from '@/services/enums/localStorageEnums'
 
 export default () => ({
   user: null,

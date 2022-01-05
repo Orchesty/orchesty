@@ -1,9 +1,9 @@
 import { APP_STORE } from './types'
 import { callApi, dispatchRoot, withNamespace } from '../../utils'
 import { API } from '../../../api'
-import { addSuccessMessage } from '@/services/flashMessages'
-import { DATA_GRIDS } from '@/store/grid/grids'
-import { GRID } from '@/store/grid/store/types'
+import { addSuccessMessage } from '@/services/utils/flashMessages'
+import { DATA_GRIDS } from '@/services/enums/dataGridEnums'
+import { GRID } from '@/store/modules/grid/types'
 
 export default {
   [APP_STORE.ACTIONS.GET_INSTALLED_APP]: async ({ commit, dispatch }, payload) => {

@@ -20,7 +20,9 @@
             <span>{{ item.message }}</span>
           </td>
           <td class="text-center">
-            <span :class="`subtitle-2 font-weight-bold ${setColor(item.level)}--text`">{{ item.level }}</span>
+            <span :class="`subtitle-2 font-weight-bold ${setColor(item.level)}--text`" class="text-uppercase">{{
+              item.level
+            }}</span>
           </td>
         </tr>
       </template>
@@ -36,8 +38,8 @@
 </template>
 
 <script>
-import { ROUTES } from '@/router/routes'
-import { internationalFormat } from '@/filters'
+import { ROUTES } from '@/services/enums/routerEnums'
+import { internationalFormat } from '@/services/utils/dateFilters'
 
 export default {
   name: 'ErrorLogs',

@@ -1,14 +1,14 @@
 <template>
-  <page-layout :title="$t('navigation.userTask')">
-    <user-task-grid-handler />
-  </page-layout>
+  <content-basic :title="$t('navigation.userTask')">
+    <user-task-grid />
+  </content-basic>
 </template>
 
 <script>
-import PageLayout from '@/components/layout/PageLayout'
-import UserTaskGridHandler from '@/components/app/userTasks/grid/UserTaskGridHandler'
+import ContentBasic from '@/components/layout/content/ContentBasic'
+import userTaskGrid from '@/components/app/userTasks/grid/UserTaskGrid'
 export default {
   name: 'UserTasksPage',
-  components: { PageLayout, UserTaskGridHandler },
+  components: { ContentBasic, userTaskGrid },
 }
 </script>

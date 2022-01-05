@@ -4,13 +4,14 @@
       ref="bpmnNodeGrid"
       :headers="headers"
       :is-loading="logState.isSending"
-      :namespace="DATA_GRIDS.TOPOLOGY_LOGS"
+      :namespace="DATA_GRIDS.NODE_LOGS"
       expand-click
       :title="$t('topologies.logs.title')"
       :show-expand="nodeStatus"
       :placeholder="!nodeStatus"
       disable-filter
       disable-search
+      :request-params="{ nodeID: node._id, topologyID: $route.params.id }"
       disabled-advanced-filter
       height="300"
     >
@@ -57,14 +58,14 @@
               v-if="isVisible('correlation_id')"
               v-bind="attrs"
               :style="expanded ? 'border-bottom: none' : ''"
-              :class="items.item.correlation_id ? 'pl-9' : ''"
+              :class="items.item.correlation_id ? 'pr-9' : ''"
               class="py-0 text-center truncate td-relative-container"
               v-on="on"
             >
+              {{ items.item.correlation_id ? items.item.correlation_id : 'system log - no id' }}
               <v-btn v-if="items.item.correlation_id" class="button-absolute" icon @click.stop="copyToClipboard">
                 <v-icon> mdi-content-copy </v-icon>
               </v-btn>
-              {{ items.item.correlation_id ? items.item.correlation_id : 'system log - no id' }}
             </td>
           </template>
           <template #tooltip>
@@ -81,7 +82,7 @@
           </span>
         </td>
         <td v-if="isVisible('severity')" :style="expanded ? 'border-bottom: none' : ''" class="py-0 text-center">
-          <span class="font-weight-bold">{{ items.item.severity }}</span>
+          <span class="font-weight-bold text-uppercase">{{ items.item.severity }}</span>
         </td>
       </template>
       <template #footer>
@@ -101,12 +102,12 @@
 
 <script>
 import DataGrid from '@/components/commons/table/DataGrid'
-import { ROUTES } from '@/router/routes'
+import { ROUTES } from '@/services/enums/routerEnums'
 import { mapGetters } from 'vuex'
 import { REQUESTS_STATE } from '@/store/modules/api/types'
 import { API } from '@/api'
-import { DATA_GRIDS } from '@/store/grid/grids'
-import { internationalFormat } from '@/filters'
+import { DATA_GRIDS } from '@/services/enums/dataGridEnums'
+import { internationalFormat } from '@/services/utils/dateFilters'
 import Tooltip from '@/components/commons/tooltip/Tooltip'
 import FlashMessageMixin from '@/components/commons/mixins/FlashMessageMixin'
 
@@ -194,45 +195,42 @@ export default {
       this.showFlashMessage(false, 'ID copied!')
     },
     async redirectToLogs() {
-      await this.$router.push({ name: ROUTES.TOPOLOGIES.LOGS, params: { id: this.$route.params.id } })
+      await this.$router.push({ name: ROUTES.TOPOLOGY.LOGS, params: { id: this.$route.params.id } })
     },
-    async fetchData(filter, node) {
-      let mergedFilter = [[{ column: 'topology_id', operator: 'EQUAL', value: [this.$route.params.id], default: true }]]
-      filter.forEach((filter) => {
-        filter[0].column = 'timestamp'
-        mergedFilter.push(filter)
-      })
-      mergedFilter.push([
-        {
-          column: 'node_id',
-          operator: 'EQUAL',
-          value: [node ? node._id : ''],
-          default: true,
-        },
-      ])
-      await this.$refs.bpmnNodeGrid.onFilterInternal(mergedFilter)
-    },
+    // async fetchData(filter, node) {
+    //   let mergedFilter = [[{ column: 'topology_id', operator: 'EQUAL', value: [this.$route.params.id], default: true }]]
+    //   filter.forEach((filter) => {
+    //     filter[0].column = 'timestamp'
+    //     mergedFilter.push(filter)
+    //   })
+    //   mergedFilter.push([
+    //     {
+    //       column: 'node_id',
+    //       operator: 'EQUAL',
+    //       value: [node._id],
+    //       default: true,
+    //     },
+    //   ])
+    //   await this.$refs.bpmnNodeGrid.fetchGridWithParams(mergedFilter)
+    // },
   },
   watch: {
-    filter: {
-      deep: true,
-      async handler(filter) {
-        await this.fetchData(filter, this.node)
-      },
-    },
+    // filter: {
+    //   deep: true,
+    //   async handler() {
+    //     await this.$refs.bpmnNodeGrid.fetchGridWithParams(mergedFilter)
+    //   },
+    // },
     node: {
       deep: true,
-      async handler(node) {
-        await this.fetchData(this.filter, node)
+      async handler() {
+        await this.$refs.bpmnNodeGrid.fetchGridWithParams({ nodeID: this.node._id, topologyID: this.$route.params.id })
       },
     },
   },
-  async mounted() {
-    await this.fetchData(this.filter, this.node)
-  },
-  beforeDestroy() {
-    this.$refs.bpmnNodeGrid.gridInit({ topologyID: this.$route.params.id })
-  },
+  // async mounted() {
+  //   await this.fetchData(this.filter, this.node)
+  // },
 }
 </script>
 

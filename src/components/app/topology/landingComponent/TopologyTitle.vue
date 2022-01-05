@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import { TOPOLOGY_ENUMS } from '@/enums/topologyEnums'
+import { TOPOLOGY_ENUMS } from '@/services/enums/topologyEnums'
 
 export default {
   name: 'TopologyTitle',

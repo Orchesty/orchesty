@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import { events, EVENTS } from '../../../../events'
+import { events, EVENTS } from '../../../../services/utils/events'
 import ModalTemplate from '../../../commons/modal/ModalTemplate'
 import { mapActions, mapGetters } from 'vuex'
 import { TOPOLOGIES } from '../../../../store/modules/topologies/types'

@@ -1,15 +1,15 @@
 <template>
-  <page-tabs-layout :title="$t('navigation.appStore')" :tabs="tabs" />
+  <content-tabs :title="$t('navigation.appStore')" :tabs="tabs" />
 </template>
 
 <script>
-import PageTabsLayout from '@/components/layout/PageTabsLayout'
-import { ROUTES } from '@/router/routes'
+import ContentTabs from '@/components/layout/content/ContentTabs'
+import { ROUTES } from '@/services/enums/routerEnums'
 
 export default {
   name: 'AppStorePage',
   components: {
-    PageTabsLayout,
+    ContentTabs,
   },
   data() {
     return {

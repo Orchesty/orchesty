@@ -91,7 +91,7 @@
 </template>
 
 <script>
-import { ROUTES } from '@/router/routes'
+import { ROUTES } from '@/services/enums/routerEnums'
 import FormMixin from '../../../commons/mixins/FormMixin'
 import SendingButton from '@/components/commons/button/SendingButton'
 import { AUTH } from '@/store/modules/auth/types'

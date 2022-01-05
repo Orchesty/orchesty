@@ -50,7 +50,7 @@ export default {
       this.$refs.grid.sendFilter()
     },
     async reload() {
-      await this.$refs.grid.$refs.grid.reload()
+      await this.$refs.grid.$refs.grid.refresh()
     },
   },
 }

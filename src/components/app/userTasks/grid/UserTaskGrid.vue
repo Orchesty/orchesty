@@ -67,12 +67,12 @@
 </template>
 
 <script>
-import { DATA_GRIDS } from '@/store/grid/grids'
+import { DATA_GRIDS } from '@/services/enums/dataGridEnums'
 import DataGrid from '@/components/commons/table/DataGrid'
 import { mapActions, mapGetters, mapState } from 'vuex'
 import { REQUESTS_STATE } from '@/store/modules/api/types'
 import { API } from '@/api'
-import { internationalFormat } from '@/filters'
+import { internationalFormat } from '@/services/utils/dateFilters'
 import UserTaskInformation from '@/components/app/userTasks/grid/UserTaskInformation'
 import { TOPOLOGIES } from '@/store/modules/topologies/types'
 import { USER_TASKS } from '@/store/modules/userTasks/types'
@@ -158,7 +158,7 @@ export default {
     },
     async updateInfo(item) {
       this.item = item.item
-      await this.$router.push({ path: `/topologies/${this.$route.params.id}/userTask/${item.item.id}` })
+      await this.$router.push({ path: `/topology/${this.$route.params.id}/userTask/${item.item.id}` })
     },
     onSelect(items) {
       this.selected = items

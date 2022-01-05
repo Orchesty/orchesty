@@ -1,14 +1,14 @@
 <template>
-  <page-layout :title="$t('navigation.trash')">
+  <content-basic :title="$t('navigation.trash')">
     <trash-handler />
-  </page-layout>
+  </content-basic>
 </template>
 
 <script>
-import PageLayout from '@/components/layout/PageLayout'
+import ContentBasic from '@/components/layout/content/ContentBasic'
 import TrashHandler from '@/components/app/trash/grid/TrashHandler'
 export default {
   name: 'TrashPage',
-  components: { TrashHandler, PageLayout },
+  components: { TrashHandler, ContentBasic },
 }
 </script>

@@ -30,23 +30,20 @@
           />
         </v-toolbar-items>
       </v-toolbar>
-      <content-layout :is-sending="isSending">
-        <slot></slot>
-        <v-col cols="12" class="text-end">
-          <slot name="sendingButton"> </slot>
-        </v-col>
-      </content-layout>
+      <slot></slot>
+      <v-col cols="12" class="text-end">
+        <slot name="sendingButton"> </slot>
+      </v-col>
     </v-card>
   </v-dialog>
 </template>
 
 <script>
 import SendingButton from '../button/SendingButton'
-import ContentLayout from '@/components/layout/ContentLayout'
 
 export default {
   name: 'ModalTemplate',
-  components: { ContentLayout, SendingButton },
+  components: { SendingButton },
   data: () => ({
     isOpen: false,
   }),

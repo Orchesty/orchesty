@@ -1,15 +1,15 @@
 <template>
-  <page-layout :title="$t('navigation.implementations')">
-    <implementation-grid-handler />
-  </page-layout>
+  <content-basic :title="$t('navigation.implementations')">
+    <implementation-grid />
+  </content-basic>
 </template>
 
 <script>
-import PageLayout from '@/components/layout/PageLayout'
-import ImplementationGridHandler from '@/components/app/implementations/grid/ImplementationGridHandler'
+import ContentBasic from '@/components/layout/content/ContentBasic'
+import ImplementationGrid from '@/components/app/implementations/grid/ImplementationGrid'
 
 export default {
   name: 'ImplementationPage',
-  components: { ImplementationGridHandler, PageLayout },
+  components: { ContentBasic, ImplementationGrid },
 }
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <page-layout v-if="topology" :title="`${topology.name} v.${topology.version}`">
+  <content-basic v-if="topology" :title="`${topology.name} v.${topology.version}`">
     <bpmn-editor ref="editor" @isSending="isSending" @initialScheme="setInitialScheme" />
     <unsaved-editor-modal ref="dialog" :is-sending="state.isSending" :get-saving-result="getSavingResult" />
     <template slot="nav-buttons">
@@ -11,12 +11,12 @@
         :is-sending="state.isSending"
       />
     </template>
-  </page-layout>
+  </content-basic>
 </template>
 
 <script>
-import { ROUTES } from '@/router/routes'
-import PageLayout from '../../components/layout/PageLayout'
+import { ROUTES } from '@/services/enums/routerEnums'
+import ContentBasic from '../../components/layout/content/ContentBasic'
 import BpmnEditor from '@/components/app/bpmn/BpmnEditor'
 import { mapGetters, mapState } from 'vuex'
 import { TOPOLOGIES } from '@/store/modules/topologies/types'
@@ -24,12 +24,11 @@ import { REQUESTS_STATE } from '@/store/modules/api/types'
 import { API } from '@/api'
 import UnsavedEditorModal from '@/components/app/bpmn/modals/UnsavedEditorModal'
 import ActionButtons from '@/components/app/bpmn/components/ActionButtons'
-import router from '@/router'
-import { Topology } from '@/router/routes/childrenRoutes/topology'
+import router from '@/services/router'
 
 export default {
   name: 'EditorPage',
-  components: { ActionButtons, UnsavedEditorModal, BpmnEditor, PageLayout },
+  components: { ActionButtons, UnsavedEditorModal, BpmnEditor, ContentBasic },
   data() {
     return {
       ROUTES,
@@ -62,7 +61,7 @@ export default {
     async saveDiagram() {
       const isNewTopology = await this.$refs.editor.saveDiagram()
       if (isNewTopology) {
-        await router.push({ name: Topology.EDITOR, params: { id: isNewTopology } })
+        await router.push({ name: ROUTES.TOPOLOGY.EDITOR, params: { id: isNewTopology } })
       }
     },
     async routeBack() {

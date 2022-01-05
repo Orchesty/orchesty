@@ -126,7 +126,8 @@
 </template>
 
 <script>
-import { FILTER, FILTER_TYPE, OPERATOR, clearFilter, upsertFilter } from '../../../../store/grid'
+import { FILTER, FILTER_TYPE, OPERATOR } from '@/services/enums/gridEnums'
+import { clearFilter, upsertFilter } from '@/services/utils/gridFilters'
 import TextInput from './inputs/TextInput'
 import NumberInput from './inputs/NumberInput'
 import SelectBoxInput from './inputs/SelectBoxInput'

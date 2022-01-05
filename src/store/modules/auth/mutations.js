@@ -1,9 +1,9 @@
 import { AUTH } from './types'
-import { LOCAL_STORAGE } from '../../../enums'
+import { LOCAL_STORAGE } from '../../../services/enums/localStorageEnums'
 import createState from './state'
 import { resetState } from '../../utils'
 import { ability } from '../../../config'
-import { ACL } from '../../../enums/acl'
+import { ACL } from '../../../services/enums/aclEnums'
 
 const userSettingsFallback = {
   language: 'en',
