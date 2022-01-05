@@ -38,7 +38,6 @@ wait-for-server-start:
 
 lint:
 	$(DE) gofmt -w .
-	$(DE) golint ./...
 
 fast-test: lint
 	$(DE) mkdir var || true

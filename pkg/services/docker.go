@@ -44,7 +44,6 @@ func (d dockerClient) RunStop(topologyID string, db StorageSvc, dockerCli Docker
 }
 
 func (d dockerClient) Generate(ts *TopologyService) error {
-
 	dstFile := GetDstDir(ts.generatorConfig.Path, ts.Topology.GetSaveDir())
 	err := ts.GenerateTopology()
 	if err != nil {

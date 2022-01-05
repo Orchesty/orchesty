@@ -143,9 +143,8 @@ func getTestNodeConfig() *model.NodeConfig {
 		},
 		Environment: model.Environment{
 			DockerRegistry:      "dkr.hanaboso.net/pipes/pipes",
-			DockerPfBridgeImage: "pf-bridge:dev",
+			DockerPfBridgeImage: "hanaboso/bridge:dev",
 			RabbitMqDsn:         "rabbitmq:1000",
-			MultiProbeHost:      "multi-probe:8007",
 			MetricsHost:         "kapacitor",
 			MetricsPort:         "9100",
 			MetricsService:      "influx",

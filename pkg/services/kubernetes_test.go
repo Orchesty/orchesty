@@ -484,7 +484,6 @@ func TestClient_Generate(t *testing.T) {
 			DockerRegistry:      "testregistry",
 			DockerPfBridgeImage: "testimages",
 			RabbitMqHost:        "",
-			MultiProbeHost:      "probe:440",
 			MetricsHost:         "",
 			MetricsPort:         "",
 			MetricsService:      "",
@@ -522,7 +521,7 @@ func TestClient_Generate(t *testing.T) {
 	}
 	require.NotNil(t, d, "Deployment cannot be nil")
 
-	s, err := testClient.serviceClient.Get(ctx, fmt.Sprintf("mb-%s", topologyID), v1.GetOptions{})
+	s, err := testClient.serviceClient.Get(ctx, fmt.Sprintf("topology-%s", topologyID), v1.GetOptions{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -551,7 +550,6 @@ func TestClient_GenerateMulti(t *testing.T) {
 			DockerRegistry:      "testregistry",
 			DockerPfBridgeImage: "testimages",
 			RabbitMqHost:        "",
-			MultiProbeHost:      "probe:440",
 			MetricsHost:         "",
 			MetricsPort:         "",
 			MetricsService:      "",
@@ -589,7 +587,7 @@ func TestClient_GenerateMulti(t *testing.T) {
 	}
 	require.NotNil(t, d, "Deployment cannot be nil")
 
-	s, err := testClient.serviceClient.Get(ctx, fmt.Sprintf("mb-%s", topologyID), v1.GetOptions{})
+	s, err := testClient.serviceClient.Get(ctx, fmt.Sprintf("topology-%s", topologyID), v1.GetOptions{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -624,7 +622,6 @@ func TestClient_DeleteAllFails(t *testing.T) {
 			DockerRegistry:      "testregistry",
 			DockerPfBridgeImage: "testimages",
 			RabbitMqHost:        "",
-			MultiProbeHost:      "",
 			MetricsHost:         "",
 			MetricsPort:         "",
 			MetricsService:      "",
@@ -802,9 +799,8 @@ func TestClient_GenerateFails(t *testing.T) {
 		NodeConfig: getNodeConfigs(),
 		Environment: model.Environment{
 			DockerRegistry:      "dkr.hanaboso.net/pipes/pipes",
-			DockerPfBridgeImage: "pf-bridge:dev",
+			DockerPfBridgeImage: "hanaboso/bridge:dev",
 			RabbitMqHost:        "test:99",
-			MultiProbeHost:      "test:3098",
 			MetricsHost:         "",
 			MetricsPort:         "",
 			MetricsService:      "",

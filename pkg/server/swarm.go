@@ -64,6 +64,12 @@ func (m *Swarm) GenerateAction(c *ContextWrapper) {
 	c.OK(gin.H{"message": fmt.Sprintf("ID: %s", id)})
 }
 
+func (m *Swarm) GetHostAction(c *ContextWrapper) {
+	id := c.Param("topologyId")
+
+	c.OK(gin.H{"host": fmt.Sprintf("topology-%s", id)})
+}
+
 // RunStopAction RunStopAction
 func (m *Swarm) RunStopAction(c *ContextWrapper) {
 	var body body

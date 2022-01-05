@@ -41,6 +41,7 @@ func (m *mux) version1() {
 	{
 		v1.GET("/status", Wrap(func(c *ContextWrapper) { c.OK("ok") }, m.Sc))
 		v1.POST("/api/topologies/:topologyId", Wrap(handler.GenerateAction, m.Sc))
+		v1.GET("/api/topologies/:topologyId/host", Wrap(handler.GetHostAction, m.Sc))
 		v1.PUT("/api/topologies/:topologyId", Wrap(handler.RunStopAction, m.Sc))
 		v1.DELETE("/api/topologies/:topologyId", Wrap(handler.DeleteAction, m.Sc))
 		v1.GET("/api/topologies/:topologyId", Wrap(handler.InfoAction, m.Sc))

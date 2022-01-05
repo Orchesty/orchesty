@@ -6,9 +6,6 @@ import (
 	"topology-generator/pkg/config"
 )
 
-func setupTestDockerSvc() {
-}
-
 func TestGetSwarmCreateConfigCmd(t *testing.T) {
 	cmd, params := getSwarmCreateConfigCmd(getMockTopology(), config.GeneratorConfig{
 		Path:              "/tmp",

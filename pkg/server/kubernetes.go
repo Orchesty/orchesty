@@ -35,7 +35,13 @@ func (k *Kubernetes) GenerateAction(c *ContextWrapper) {
 	}
 
 	c.OK(gin.H{"message": fmt.Sprintf("ID: %s", id)})
+}
 
+func (m *Kubernetes) GetHostAction(c *ContextWrapper) {
+	id := c.Param("topologyId")
+	// TODO něako udělat check zda container běží
+
+	c.OK(gin.H{"host": fmt.Sprintf("topology-%s", id)})
 }
 
 // RunStopAction RunStopAction

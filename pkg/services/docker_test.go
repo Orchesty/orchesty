@@ -47,9 +47,8 @@ func TestDockerClient_MultiNodeDockerCompose(t *testing.T) {
 		NodeConfig: getNodeConfigs(),
 		Environment: model.Environment{
 			DockerRegistry:      "dkr.hanaboso.net/pipes/pipes",
-			DockerPfBridgeImage: "pf-bridge:dev",
+			DockerPfBridgeImage: "hanaboso/bridge:dev",
 			RabbitMqHost:        "localhost:56",
-			MultiProbeHost:      "probe:40",
 			MetricsHost:         "metrics:963",
 			MetricsPort:         "",
 			MetricsService:      "",
@@ -131,9 +130,8 @@ func TestDockerClient_DockerCompose(t *testing.T) {
 		NodeConfig: getNodeConfigs(),
 		Environment: model.Environment{
 			DockerRegistry:      "dkr.hanaboso.net/pipes/pipes",
-			DockerPfBridgeImage: "pf-bridge:dev",
+			DockerPfBridgeImage: "hanaboso/bridge:dev",
 			RabbitMqHost:        "test:99",
-			MultiProbeHost:      "test:3098",
 			MetricsHost:         "",
 			MetricsPort:         "",
 			MetricsService:      "",
@@ -217,9 +215,8 @@ func TestDockerClient_Swarm(t *testing.T) {
 		NodeConfig: getNodeConfigs(),
 		Environment: model.Environment{
 			DockerRegistry:      "dkr.hanaboso.net/pipes/pipes",
-			DockerPfBridgeImage: "pf-bridge:dev",
+			DockerPfBridgeImage: "hanaboso/bridge:dev",
 			RabbitMqHost:        "test:99",
-			MultiProbeHost:      "test:3098",
 			MetricsHost:         "",
 			MetricsPort:         "",
 			MetricsService:      "",
@@ -422,9 +419,8 @@ func TestDockerClient_GenerateFails(t *testing.T) {
 		NodeConfig: getNodeConfigs(),
 		Environment: model.Environment{
 			DockerRegistry:      "dkr.hanaboso.net/pipes/pipes",
-			DockerPfBridgeImage: "pf-bridge:dev",
+			DockerPfBridgeImage: "hanaboso/bridge:dev",
 			RabbitMqHost:        "test:99",
-			MultiProbeHost:      "test:3098",
 			MetricsHost:         "",
 			MetricsPort:         "",
 			MetricsService:      "",
@@ -448,24 +444,6 @@ func TestDockerClient_GenerateFails(t *testing.T) {
 		err = testDocker.Generate(ts)
 		require.NotNil(t, err)
 		require.Equal(t, "error generating topology. Reason: error creating topology json. Reason: missing nodes", err.Error())
-	})
-
-	t.Run("Check that generate fails on getDockerServices", func(t *testing.T) {
-		nodeConfig.Environment.MultiProbeHost = "noporthost"
-		ts, err := NewTopologyService(nodeConfig, configGenerator, testDb{
-			mockGetTopology: func(id string) (topology *model.Topology, err error) {
-				return getMockTopology(), nil
-			},
-			mockGetTopologyNodes: func(id string) (nodes []model.Node, err error) {
-				return getTestNodes(), nil
-			},
-		}, topologyID)
-		if err != nil {
-			t.Fatal(err)
-		}
-		err = testDocker.Generate(ts)
-		require.NotNil(t, err)
-		require.Equal(t, "writing docker-compose[topology_id=5dc0474e4e9acc00282bb942] failed. Reason: Error splitting MultiProbeHost. Reason: address noporthost: missing port in address", err.Error())
 	})
 
 }
