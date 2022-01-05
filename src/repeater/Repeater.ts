@@ -154,7 +154,7 @@ class Repeater implements IStoppable {
                 return;
             }
 
-            const timeout = parseInt(headers.getPFHeader(Headers.REPEAT_INTERVAL), 10);
+            const timeout = parseInt(headers.getPFHeader(Headers.REPEAT_INTERVAL), 10) * 1000;
 
             return this.storage.save(msg, timeout);
         };

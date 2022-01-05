@@ -154,7 +154,7 @@ class MongoMessageStorage implements IMessageStorage {
         try {
             const mongo: Db = await this.db;
 
-            return mongo.collection(COLLECTION_NAME).find(query).limit(1000).toArray();
+            return mongo.collection(COLLECTION_NAME).find(query).limit(500).toArray();
         } catch (e) {
             logger.error(
                 `Error finding mongo document. Query: ${JSON.stringify(query)}`,
