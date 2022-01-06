@@ -29,7 +29,7 @@
     "circular-dependency-plugin": "^5.2.2",
     "core-js": "^3.16.0",
     "cron-parser": "^4.1.0",
-    "diagram-js": "^7.3.0",
+    "diagram-js": "^8.0.0",
     "jwt-decode": "^3.1.2",
     "moment": "^2.29.1",
     "pretty-ms": "^7.0.1",
