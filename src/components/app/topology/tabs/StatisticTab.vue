@@ -43,7 +43,7 @@ import QuickFiltersMixin from '@/components/commons/mixins/QuickFiltersMixin'
 
 export default {
   mixins: [QuickFiltersMixin],
-  name: 'StatisticHandler',
+  name: 'StatisticTab',
   components: {
     DataGrid,
     BarChart,

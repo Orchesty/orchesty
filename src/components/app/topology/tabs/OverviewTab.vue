@@ -76,7 +76,7 @@ import FlashMessageMixin from '@/components/commons/mixins/FlashMessageMixin'
 import QuickFiltersMixin from '@/components/commons/mixins/QuickFiltersMixin'
 
 export default {
-  name: 'ViewerTab',
+  name: 'OverviewTab',
   components: { Tooltip, DataGrid },
   mixins: [FlashMessageMixin, QuickFiltersMixin],
   computed: {

@@ -116,16 +116,9 @@ import ProgressBarLinear from '@/components/commons/progressIndicators/ProgressB
 import QuickFiltersMixin from '@/components/commons/mixins/QuickFiltersMixin'
 
 export default {
-  name: 'Viewer',
+  name: 'ViewerTab',
   components: { ProgressBarLinear, QuickGridFilter, BpmnNodeGrid },
   mixins: [QuickFiltersMixin],
-  props: {
-    topology: {
-      type: Object,
-      required: true,
-      default: () => {},
-    },
-  },
   data() {
     return {
       DATA_GRIDS,
@@ -144,7 +137,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(TOPOLOGIES.NAMESPACE, ['statistics', 'nodeNames']),
+    ...mapState(TOPOLOGIES.NAMESPACE, ['statistics', 'nodeNames', 'topology']),
     ...mapState(USER_TASKS.NAMESPACE, ['userTasks']),
     ...mapGetters(REQUESTS_STATE.NAMESPACE, [REQUESTS_STATE.GETTERS.GET_STATE]),
     state() {

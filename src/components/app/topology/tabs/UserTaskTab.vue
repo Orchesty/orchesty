@@ -79,7 +79,7 @@ import { USER_TASKS } from '@/store/modules/userTasks/types'
 import UserTaskActionsModal from '@/components/app/userTasks/modal/UserTaskActionsModal'
 import QuickFiltersMixin from '@/components/commons/mixins/QuickFiltersMixin'
 export default {
-  name: 'UserTask',
+  name: 'UserTaskTab',
   components: { UserTaskActionsModal, UserTaskInformation, DataGrid },
   mixins: [QuickFiltersMixin],
   data() {

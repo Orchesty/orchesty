@@ -64,7 +64,7 @@ import Tooltip from '@/components/commons/tooltip/Tooltip'
 import FlashMessageMixin from '@/components/commons/mixins/FlashMessageMixin'
 import QuickFiltersMixin from '@/components/commons/mixins/QuickFiltersMixin'
 export default {
-  name: 'LogsGridHandler',
+  name: 'LogsTab',
   components: { Tooltip, DataGrid },
   mixins: [FlashMessageMixin, QuickFiltersMixin],
   computed: {
