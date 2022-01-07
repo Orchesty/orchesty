@@ -61,7 +61,7 @@ export default {
     async saveDiagram() {
       const isNewTopology = await this.$refs.editor.saveDiagram()
       if (isNewTopology) {
-        await router.push({ name: ROUTES.TOPOLOGY.EDITOR, params: { id: isNewTopology } })
+        await router.push({ name: ROUTES.TOPOLOGY.VIEWER, params: { id: isNewTopology } })
       }
     },
     async routeBack() {

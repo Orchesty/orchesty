@@ -70,6 +70,7 @@
           <v-card v-else elevation="0" outlined>
             <v-data-table
               v-model="selected"
+              :height="height"
               :headers="visibleHeadersTruncate(visibleHeaders)"
               :items="items"
               :options.sync="options"
@@ -167,6 +168,10 @@ export default {
   name: 'DataGrid',
   components: { ProgressBarLinear, DataGridFilter },
   props: {
+    height: {
+      type: String,
+      default: 'auto',
+    },
     title: {
       type: String,
       default: '',

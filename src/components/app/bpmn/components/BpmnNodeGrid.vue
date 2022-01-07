@@ -2,6 +2,7 @@
   <v-col cols="12">
     <data-grid
       ref="bpmnNodeGrid"
+      :height="'300'"
       :headers="headers"
       :is-loading="logState.isSending"
       :namespace="DATA_GRIDS.NODE_LOGS"
@@ -13,7 +14,6 @@
       disable-search
       :request-params="{ nodeID: node._id, topologyID: $route.params.id }"
       disabled-advanced-filter
-      height="300"
     >
       <template #top>
         <v-container fluid>
