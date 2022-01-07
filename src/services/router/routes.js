@@ -3,7 +3,7 @@ import { ROUTES, SECURITY } from '@/services/enums/routerEnums'
 import { TOPOLOGY, APP_STORE } from '@/services/enums/routerEnums'
 import UserTaskTab from '@/components/app/topology/tabs/UserTaskTab'
 import OverviewTab from '@/components/app/topology/tabs/OverviewTab'
-import BpmnChart from '@/components/app/topology/tabs/BpmnChart'
+import BpmnChart from '@/components/app/topology/tabs/ViewerTab'
 import StatisticTab from '@/components/app/topology/tabs/StatisticTab'
 import LogsTab from '@/components/app/topology/tabs/LogsTab'
 import AvailableAppsGridHandler from '@/components/app/appStore/availableApp/AvailableAppsGridHandler'
@@ -88,12 +88,6 @@ export default [
         name: ROUTES.NOTIFICATION,
         component: () => import('../../views/app/NotificationPage'),
         meta: { title: 'Notifications' },
-      },
-      {
-        path: 'user-tasks',
-        name: ROUTES.USER_TASK,
-        component: () => import('../../views/app/UserTaskPage'),
-        meta: { title: 'User Tasks' },
       },
       {
         path: 'scheduled-tasks',
