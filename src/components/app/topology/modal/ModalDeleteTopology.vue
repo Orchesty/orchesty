@@ -36,6 +36,7 @@ import { TOPOLOGIES } from '../../../../store/modules/topologies/types'
 import { REQUESTS_STATE } from '../../../../store/modules/api/types'
 import { API } from '../../../../api'
 import SendingButton from '@/components/commons/button/SendingButton'
+import { ROUTES } from '@/services/enums/routerEnums'
 
 export default {
   name: 'ModalDeleteTopology',
@@ -62,6 +63,9 @@ export default {
       }).then((res) => {
         if (res) {
           this.isOpen = false
+          if (this.topology.id === this.$route.params.id) {
+            this.$router.push({ name: ROUTES.DASHBOARD })
+          }
         }
       })
     },

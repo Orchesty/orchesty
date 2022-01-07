@@ -53,12 +53,14 @@ export default {
       TOPOLOGIES.ACTIONS.TOPOLOGY.CREATE,
       TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES,
       TOPOLOGIES.ACTIONS.TOPOLOGY.SAVE_DIAGRAM,
+      TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID,
     ]),
     async submit(form) {
       await this[TOPOLOGIES.ACTIONS.TOPOLOGY.CREATE](form).then(async (res) => {
         if (res) {
           this.isOpen = false
           await this[TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES]()
+          await this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID]({ id: res._id })
           await this.$router.push({ name: ROUTES.TOPOLOGY.VIEWER, params: { id: res._id } })
         }
       })

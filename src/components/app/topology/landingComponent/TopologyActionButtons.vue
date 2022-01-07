@@ -177,7 +177,6 @@ export default {
       TOPOLOGIES.ACTIONS.TOPOLOGY.ENABLE,
       TOPOLOGIES.ACTIONS.TOPOLOGY.DISABLE,
       TOPOLOGIES.ACTIONS.TOPOLOGY.PUBLISH,
-      TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES,
     ]),
     async publish() {
       await this[TOPOLOGIES.ACTIONS.TOPOLOGY.PUBLISH]({ topologyID: this.topology._id })
@@ -225,9 +224,6 @@ export default {
         this.user.user.id
       )
     },
-  },
-  async created() {
-    await this[TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES]()
   },
   watch: {
     nodeNames() {

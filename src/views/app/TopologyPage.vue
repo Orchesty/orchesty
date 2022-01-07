@@ -1,17 +1,23 @@
 <template>
-  <content-tabs is-topology :tabs="tabs" />
+  <content-tabs v-if="topology" is-topology :tabs="tabs" />
+  <topology-no-selection v-else />
 </template>
 
 <script>
 import ContentTabs from '@/components/layout/content/ContentTabs'
 import { ROUTES } from '@/services/enums/routerEnums'
+import { mapState } from 'vuex'
+import { TOPOLOGIES } from '@/store/modules/topologies/types'
+import TopologyNoSelection from '@/components/app/topology/landingComponent/TopologyNoSelection'
 
 export default {
-  components: { ContentTabs },
+  components: { TopologyNoSelection, ContentTabs },
   name: 'TopologyPage',
+  computed: {
+    ...mapState(TOPOLOGIES.NAMESPACE, ['topology']),
+  },
   data() {
     return {
-      topologyData: null,
       tabs: [
         {
           name: 'topologies.detail.tabs.editor',

@@ -230,6 +230,7 @@ export default {
     })
       .then(() => {
         dispatch(TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES)
+        commit(TOPOLOGIES.MUTATIONS.RESET)
         return true
       })
       .catch(() => false)

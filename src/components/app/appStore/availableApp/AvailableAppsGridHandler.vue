@@ -52,11 +52,11 @@ import { DATA_GRIDS } from '@/services/enums/dataGridEnums'
 import { mapActions, mapGetters, mapState } from 'vuex'
 import { REQUESTS_STATE } from '@/store/modules/api/types'
 import { API } from '@/api'
-import AppItem from '../itemApp/AppItem'
+import AppItem from '../item/AppItem'
 import { APP_STORE } from '@/store/modules/appStore/types'
 import { AUTH } from '@/store/modules/auth/types'
 import { ROUTES } from '@/services/enums/routerEnums'
-import AppItemButton from '@/components/app/appStore/buttonApp/AppItemButton'
+import AppItemButton from '@/components/app/appStore/button/AppItemButton'
 
 export default {
   name: 'AvailableAppsGridHandler',

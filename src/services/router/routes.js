@@ -40,6 +40,7 @@ export default [
       },
       {
         path: 'topology',
+        name: ROUTES.TOPOLOGY.DEFAULT,
         component: () => import('../../views/app/TopologyPage'),
         children: [
           {

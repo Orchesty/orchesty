@@ -60,7 +60,7 @@ import { API } from '@/api'
 import ProgressBarCircular from '../../../commons/progressIndicators/ProgressBarCircular'
 import FolderMenu from '../../folder/menu/FolderMenu'
 import { TOPOLOGY_ENUMS } from '@/services/enums/topologyEnums'
-import { ROUTES } from '@/services/enums/routerEnums'
+import { ROUTES, TOPOLOGY } from '@/services/enums/routerEnums'
 import TopologyTreeViewMenu from '@/components/app/topology/menu/TopologyTreeViewMenu'
 import Tooltip from '@/components/commons/tooltip/Tooltip'
 
@@ -74,6 +74,7 @@ export default {
       TOPOLOGY_TREE,
       opened: JSON.parse(localStorage.getItem('treeView')) || [],
       active: [],
+      lastOpened: {},
     }
   },
   computed: {
@@ -89,14 +90,17 @@ export default {
       TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES,
       TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID,
     ]),
-    async onActive(values) {
-      if (!values.length) {
-        await this.$router.push({ name: ROUTES.TOPOLOGY.OVERVIEW })
+    async onActive(activeItems) {
+      if (!activeItems[0]) {
+        return
+      } else {
+        this.lastOpened = activeItems[0]
+      }
+      if (this.$route.params.id === activeItems[0].id) {
         return
       }
-      if (values[0].type === TOPOLOGY_TREE.FOLDER) return
-      if (this.$route.params.id === values[0].id) return
-      await this.$router.push({ name: ROUTES.TOPOLOGY.VIEWER, params: { id: values[0].id } })
+      await this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID]({ id: activeItems[0].id })
+      await this.$router.push({ name: TOPOLOGY.VIEWER, params: { id: activeItems[0].id } })
     },
     topologyTooltip(item) {
       if (item.type === 'CATEGORY') {
@@ -121,8 +125,18 @@ export default {
     }
   },
   watch: {
-    $route(val) {
-      this.active = [{ id: val.params.id }]
+    $route(route) {
+      if (!route.matched.some((route) => route.name === ROUTES.TOPOLOGY.DEFAULT)) {
+        this.lastOpened = null
+        this.active = []
+      }
+    },
+    active(old) {
+      if (old.length === 0) {
+        if (this.lastOpened?._id) {
+          this.active = [this.lastOpened]
+        }
+      }
     },
     opened(treeView) {
       localStorage.setItem('treeView', JSON.stringify(treeView ? treeView : []))
