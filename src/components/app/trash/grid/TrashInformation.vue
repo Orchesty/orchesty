@@ -26,7 +26,7 @@
     <v-col cols="12" class="d-flex flex-column">
       <v-row class="flex-grow-0 flex-shrink-1">
         <v-col cols="12" md="3">
-          <h5 v-bind="attrs" v-on="on">Node</h5>
+          <h3>Node</h3>
           <div class="body-2 text-uppercase">{{ $t('topologies.userTask.information.nodeName') }}</div>
           <div class="body-2 truncate_header">{{ item ? item.id : '' }}</div>
         </v-col>
@@ -96,7 +96,7 @@
 </template>
 
 <script>
-import { toLocalDate } from '../../../../services/utils/dateFilters'
+import { toLocalDate } from '@/services/utils/dateFilters'
 
 export default {
   name: 'TrashInformation',

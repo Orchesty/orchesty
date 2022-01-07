@@ -160,7 +160,7 @@ export default {
   methods: {
     ...mapActions(TRASH.NAMESPACE, [TRASH.ACTIONS.TRASH_ACCEPT_LIST, TRASH.ACTIONS.TRASH_REJECT_LIST]),
     sendFilter() {
-      this.$refs.grid.onFilterInternal(this.filterGrid, null, this.native)
+      this.$refs.grid.fetchGridWithFilter(this.filterGrid, null, this.native)
     },
     async acceptAll() {
       return await this[TRASH.ACTIONS.TRASH_ACCEPT_LIST]({ ids: this.selected.map((item) => item.id) })

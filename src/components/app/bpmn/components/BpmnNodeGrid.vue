@@ -197,30 +197,8 @@ export default {
     async redirectToLogs() {
       await this.$router.push({ name: ROUTES.TOPOLOGY.LOGS, params: { id: this.$route.params.id } })
     },
-    // async fetchData(filter, node) {
-    //   let mergedFilter = [[{ column: 'topology_id', operator: 'EQUAL', value: [this.$route.params.id], default: true }]]
-    //   filter.forEach((filter) => {
-    //     filter[0].column = 'timestamp'
-    //     mergedFilter.push(filter)
-    //   })
-    //   mergedFilter.push([
-    //     {
-    //       column: 'node_id',
-    //       operator: 'EQUAL',
-    //       value: [node._id],
-    //       default: true,
-    //     },
-    //   ])
-    //   await this.$refs.bpmnNodeGrid.fetchGridWithParams(mergedFilter)
-    // },
   },
   watch: {
-    // filter: {
-    //   deep: true,
-    //   async handler() {
-    //     await this.$refs.bpmnNodeGrid.fetchGridWithParams(mergedFilter)
-    //   },
-    // },
     node: {
       deep: true,
       async handler() {
@@ -228,9 +206,6 @@ export default {
       },
     },
   },
-  // async mounted() {
-  //   await this.fetchData(this.filter, this.node)
-  // },
 }
 </script>
 
