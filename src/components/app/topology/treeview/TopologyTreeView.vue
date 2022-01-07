@@ -60,7 +60,7 @@ import { API } from '@/api'
 import ProgressBarCircular from '../../../commons/progressIndicators/ProgressBarCircular'
 import FolderMenu from '../../folder/menu/FolderMenu'
 import { TOPOLOGY_ENUMS } from '@/services/enums/topologyEnums'
-import { ROUTES, TOPOLOGY } from '@/services/enums/routerEnums'
+import { ROUTES } from '@/services/enums/routerEnums'
 import TopologyTreeViewMenu from '@/components/app/topology/menu/TopologyTreeViewMenu'
 import Tooltip from '@/components/commons/tooltip/Tooltip'
 
@@ -90,18 +90,6 @@ export default {
       TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES,
       TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID,
     ]),
-    async onActive(activeItems) {
-      if (!activeItems[0]) {
-        return
-      } else {
-        this.lastOpened = activeItems[0]
-      }
-      if (this.$route.params.id === activeItems[0].id) {
-        return
-      }
-      await this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID]({ id: activeItems[0].id })
-      await this.$router.push({ name: TOPOLOGY.VIEWER, params: { id: activeItems[0].id } })
-    },
     topologyTooltip(item) {
       if (item.type === 'CATEGORY') {
         return `${item.name}`
@@ -117,22 +105,33 @@ export default {
     topologyTitleVersion(item) {
       return TOPOLOGY_TREE.TOPOLOGY === item.type ? `v.${item.version}` : ''
     },
-  },
-  async created() {
-    await this[TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES]()
-    if (this.$route.params.id) {
-      this.active = [{ id: this.$route.params.id }]
-    }
+    async onActive(activeItems) {
+      if (!activeItems[0]) {
+        return
+      } else {
+        this.lastOpened = activeItems[0]
+      }
+      if (this.$route.params.id === activeItems[0].id) {
+        return
+      }
+      await this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID]({ id: activeItems[0].id })
+      await this.$router.push({ name: ROUTES.TOPOLOGY.VIEWER, params: { id: activeItems[0].id } })
+    },
   },
   watch: {
     $route(route) {
       if (!route.matched.some((route) => route.name === ROUTES.TOPOLOGY.DEFAULT)) {
         this.lastOpened = null
         this.active = []
+      } else {
+        if (route.params.isNewTopology) {
+          this.lastOpened = []
+          this.active = [{ id: route.params.id }]
+        }
       }
     },
-    active(old) {
-      if (old.length === 0) {
+    active(activeItem) {
+      if (activeItem.length === 0) {
         if (this.lastOpened?._id) {
           this.active = [this.lastOpened]
         }
@@ -141,6 +140,12 @@ export default {
     opened(treeView) {
       localStorage.setItem('treeView', JSON.stringify(treeView ? treeView : []))
     },
+  },
+  async created() {
+    await this[TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES]()
+    if (this.$route.params.id) {
+      this.active = [{ id: this.$route.params.id }]
+    }
   },
 }
 </script>

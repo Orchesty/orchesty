@@ -61,7 +61,7 @@ export default {
           this.isOpen = false
           await this[TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES]()
           await this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID]({ id: res._id })
-          await this.$router.push({ name: ROUTES.TOPOLOGY.VIEWER, params: { id: res._id } })
+          await this.$router.push({ name: ROUTES.TOPOLOGY.VIEWER, params: { id: res._id, isNewTopology: true } })
         }
       })
     },
