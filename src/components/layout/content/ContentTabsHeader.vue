@@ -75,7 +75,10 @@ export default {
       return this[REQUESTS_STATE.GETTERS.GET_STATE]([API.topology.get.id]).isSending
     },
     isCrone() {
-      return this.topology?.type === TOPOLOGY_ENUMS.CRON
+      if (this.$route.matched.some((route) => route.name === ROUTES.TOPOLOGY.DEFAULT)) {
+        return this.topology?.type === TOPOLOGY_ENUMS.CRON
+      }
+      return false
     },
     isApp() {
       return this.$route.name === ROUTES.APP_STORE.INSTALLED_APP || this.$route.name === ROUTES.APP_STORE.DETAIL_APP

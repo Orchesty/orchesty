@@ -4200,9 +4200,9 @@ diagram-js@^7.6.3:
     tiny-svg "^2.2.2"
 
 diagram-js@^8.0.0:
-  version "8.0.0"
-  resolved "https://registry.yarnpkg.com/diagram-js/-/diagram-js-8.0.0.tgz#3834c75c4e0cb002a68f2fd1c6c8b1ae31ee9ed0"
-  integrity sha512-Xbz8NfLru9c/Se9324D6DEMj5QVxr4ym8YbrN39AE87JCH2MfUjuUktbTeOXjn949fJ/8Odvz++XxeXyZEb7ag==
+  version "8.0.1"
+  resolved "https://registry.yarnpkg.com/diagram-js/-/diagram-js-8.0.1.tgz#c202184fb029459a81b84535d7b5c30e96126e66"
+  integrity sha512-kpPi0o3IP1agOBePU9Yl2g7CWSfcgLUUs8cafQMDw14jbbpnPeKjDP5WE5K+q5wxGkx0QSHHu95z94ZoDv3zLQ==
   dependencies:
     css.escape "^1.5.1"
     didi "^5.2.1"
