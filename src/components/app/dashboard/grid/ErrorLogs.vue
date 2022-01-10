@@ -60,7 +60,7 @@ export default {
   methods: {
     async logRedirect(item) {
       if (item.topologyId !== 'System') {
-        await this.$router.push({ name: ROUTES.TOPOLOGIES.LOGS, params: { id: item.topologyId } })
+        await this.$router.push({ name: ROUTES.TOPOLOGY.LOGS, params: { id: item.topologyId } })
       } else {
         await this.$router.push({ name: ROUTES.LOGS, params: { item: item } })
       }

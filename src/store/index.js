@@ -54,6 +54,12 @@ export const createStore = (router) => {
         },
       }),
       [DATA_GRIDS.OVERVIEW]: createGrid(DATA_GRIDS.OVERVIEW, {
+        sorter: [
+          {
+            column: 'started',
+            direction: DIRECTION.DESCENDING,
+          },
+        ],
         paging: {
           page: 1,
           itemsPerPage: 50,
@@ -84,6 +90,12 @@ export const createStore = (router) => {
         },
       }),
       [DATA_GRIDS.TRASH]: createGrid(DATA_GRIDS.TRASH, {
+        sorter: [
+          {
+            column: 'updated',
+            direction: DIRECTION.DESCENDING,
+          },
+        ],
         filter: [[{ column: 'type', operator: 'EQ', value: ['trash'], default: true }]],
         paging: {
           page: 1,
@@ -97,6 +109,12 @@ export const createStore = (router) => {
         },
       }),
       [DATA_GRIDS.TOPOLOGY_LOGS]: createGrid(DATA_GRIDS.TOPOLOGY_LOGS, {
+        sorter: [
+          {
+            column: 'timestamp',
+            direction: DIRECTION.DESCENDING,
+          },
+        ],
         filter: [[{ column: 'topology_id', operator: 'EQUAL', value: [''], default: true }]],
         paging: {
           page: 1,
@@ -104,6 +122,12 @@ export const createStore = (router) => {
         },
       }),
       [DATA_GRIDS.LOGS]: createGrid(DATA_GRIDS.LOGS, {
+        sorter: [
+          {
+            column: 'timestamp',
+            direction: DIRECTION.DESCENDING,
+          },
+        ],
         paging: {
           page: 1,
           itemsPerPage: 10,
@@ -145,6 +169,12 @@ export const createStore = (router) => {
         },
       }),
       [DATA_GRIDS.USER_TASK]: createGrid(DATA_GRIDS.USER_TASK, {
+        sorter: [
+          {
+            column: 'updated',
+            direction: DIRECTION.DESCENDING,
+          },
+        ],
         filter: [
           [{ column: 'type', operator: 'EQ', value: ['userTask'], default: true }],
           [{ column: 'topologyId', operator: 'EQ', value: [''], default: true }],

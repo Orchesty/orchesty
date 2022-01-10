@@ -1,6 +1,5 @@
 <template>
   <data-grid
-    simple-filter
     :headers="headers"
     :is-loading="state.isSending"
     :namespace="DATA_GRIDS.TOPOLOGY_LOGS"
@@ -10,6 +9,7 @@
     show-expand
     disable-search
     show-full-text-search
+    disabled-advanced-filter
     :permanent-filter="[[{ column: 'topology_id', operator: 'EQUAL', value: [''], default: true }]]"
     :request-params="{ topologyID: $route.params.id }"
   >

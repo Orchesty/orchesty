@@ -1,7 +1,7 @@
 <template>
   <modal-template
     v-model="isOpen"
-    :max-width="type === 'update' ? 800 : 500"
+    :width="type === 'update' ? 800 : 500"
     :title="$t(`userTask.modal.${type}.title`)"
     :on-confirm="confirm"
     :on-close="type !== 'update' ? () => $emit('reset') : undefined"
@@ -11,10 +11,12 @@
         {{ type !== 'update' ? $t(`userTask.modal.${type}.body`, [bodyMessage]) : null }}
       </v-col>
       <v-col v-if="type === 'update'" cols="12">
-        <v-textarea v-model="headers" no-resize :label="$t('userTask.modal.update.headers')" />
+        <v-jsoneditor v-model="headerObject" :options="options" :plus="false" height="300px" @error="onError" />
+        <!--        <v-textarea v-model="headers" no-resize :label="$t('userTask.modal.update.headers')" />-->
       </v-col>
       <v-col v-if="type === 'update'" cols="12">
-        <v-textarea v-model="body" no-resize :label="$t('userTask.modal.update.body')" />
+        <v-jsoneditor v-model="bodyObject" :options="options" :plus="false" height="300px" @error="onError" />
+        <!--        <v-textarea v-model="body" no-resize :label="$t('userTask.modal.update.body')" />-->
       </v-col>
     </template>
     <template #sendingButton>
@@ -48,14 +50,20 @@ import { REQUESTS_STATE } from '@/store/modules/api/types'
 import { API } from '@/api'
 import ModalTemplate from '@/components/commons/modal/ModalTemplate'
 import SendingButton from '@/components/commons/button/SendingButton'
+import VJsoneditor from 'v-jsoneditor'
+
 export default {
   name: 'UserTaskActionsModal',
-  components: { SendingButton, ModalTemplate },
+  components: { SendingButton, ModalTemplate, VJsoneditor },
   data() {
     return {
       isOpen: false,
       headers: [],
       body: '',
+      options: {
+        mode: 'tree',
+        mainMenuBar: false,
+      },
     }
   },
   props: {
@@ -104,15 +112,31 @@ export default {
     bodyMessage() {
       return this.selected.length
     },
+    headerObject: {
+      get() {
+        return JSON.parse(this.headers)
+      },
+      set(headers) {
+        this.headers = JSON.stringify(headers)
+      },
+    },
+    bodyObject: {
+      get() {
+        return JSON.parse(this.body)
+      },
+      set(body) {
+        this.body = JSON.stringify(body)
+      },
+    },
   },
   watch: {
     data: {
       immediate: true,
       handler(data) {
         if (data && data.headers) {
-          this.headers = JSON.stringify(data.headers, null, 2)
+          this.headers = JSON.stringify(data.headers)
           if (data.body) {
-            this.body = data.body
+            this.body = JSON.stringify(data.body)
           }
         }
       },
@@ -122,7 +146,7 @@ export default {
   methods: {
     async confirm() {
       if (this.type === 'update') {
-        await this.method({ headers: JSON.parse(this.headers), body: this.body }).then((res) => {
+        await this.method({ headers: JSON.parse(this.headers), body: JSON.parse(this.body) }).then((res) => {
           if (res) {
             this.isOpen = false
           }
@@ -134,6 +158,9 @@ export default {
           }
         })
       }
+    },
+    onError() {
+      console.log('error')
     },
   },
 }

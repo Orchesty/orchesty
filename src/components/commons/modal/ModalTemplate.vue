@@ -1,11 +1,5 @@
 <template>
-  <v-dialog
-    v-model="isOpen"
-    width="600"
-    content-class="modal-template"
-    :max-width="maxWidth"
-    @keydown.enter="onConfirm"
-  >
+  <v-dialog v-model="isOpen" :width="width" content-class="modal-template" @keydown.enter="onConfirm">
     <template #activator="{ on }">
       <slot name="button" v-on="on" />
     </template>
@@ -104,7 +98,7 @@ export default {
       type: Boolean,
       default: () => true,
     },
-    maxWidth: {
+    width: {
       type: Number,
       default: () => 500,
     },

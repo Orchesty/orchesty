@@ -13,7 +13,7 @@
         {{ $t(item.name) }}
       </v-btn>
       <slot name="advancedFilter" />
-      <slot name="buttonLeft" />
+      <slot name="buttonLeft" :on-clear-button="onClear" />
       <slot name="buttonRight" :on-clear-button="onClear" />
     </v-col>
   </v-row>

@@ -14,14 +14,12 @@
             </v-badge>
           </v-btn>
         </template>
-        <template slot="buttonLeft">
+        <template #buttonLeft="{ onClearButton }">
           <v-btn color="primary" icon @click="reload">
             <v-icon> mdi-reload </v-icon>
           </v-btn>
-        </template>
-        <template #buttonRight="{ onClearButton }">
-          <v-btn text class="ml-auto" @click="clear(onClearButton)">
-            {{ $t('dataGrid.clear') }}
+          <v-btn color="primary" icon @click="clear(onClearButton)">
+            <v-icon> mdi-close </v-icon>
           </v-btn>
         </template>
         <template #headers>
