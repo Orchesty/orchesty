@@ -20,7 +20,7 @@
       <!--          <v-icon small class="ml-3" color="error"> mdi-circle </v-icon>-->
       <!--        </v-col>-->
       <!--      </v-row>-->
-      <v-row class="px-2 mt-4">
+      <v-row>
         <template v-for="item in data">
           <app-item
             :key="item.name"

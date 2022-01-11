@@ -22,7 +22,7 @@
           </v-tab>
         </v-tabs>
       </v-col>
-      <v-col v-if="isCrone" cols="12" lg="3" class="d-flex body-2">
+      <v-col v-if="isCrone" cols="12" lg="3" class="d-flex justify-end body-2">
         <span class="mr-5 font-weight-medium">{{ $t('pages.nextRun') }}: </span>
         <span> {{ nextRun(topology.cronSettings) }} </span>
       </v-col>

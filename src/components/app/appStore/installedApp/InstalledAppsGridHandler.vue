@@ -12,7 +12,7 @@
     :extended-iterator="true"
   >
     <template #default>
-      <v-row class="mt-3">
+      <v-row>
         <v-col class="d-flex">
           <h5>{{ $t('appStore.unauthorized') }}</h5>
         </v-col>
