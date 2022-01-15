@@ -39,7 +39,7 @@
 import { ROUTES } from '../../../../services/enums/routerEnums'
 import FormMixin from '../../../commons/mixins/FormMixin'
 import FullLogo from '../../../commons/logo/FullLogo'
-import SendingButton from '@/components/commons/button/SendingButton'
+import SendingButton from '@/components/commons/button/AppButton'
 
 export default {
   name: 'ForgotPasswordForm',

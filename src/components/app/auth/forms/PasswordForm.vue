@@ -55,7 +55,7 @@
 import { ROUTES } from '@/services/enums/routerEnums'
 import FormMixin from '../../../commons/mixins/FormMixin'
 import Logo from '@/components/commons/logo/Logo'
-import SendingButton from '@/components/commons/button/SendingButton'
+import SendingButton from '@/components/commons/button/AppButton'
 
 export default {
   name: 'PasswordForm',

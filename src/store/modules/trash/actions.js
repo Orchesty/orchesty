@@ -15,7 +15,7 @@ export default {
         },
       })
 
-      dispatchRoot(dispatch, withNamespace(DATA_GRIDS.TRASH, GRID.ACTIONS.GRID_FETCH), {
+      dispatchRoot(dispatch, withNamespace(DATA_GRIDS.TRASH, GRID.ACTIONS.FETCH_WITH_INITIAL_STATE), {
         namespace: DATA_GRIDS.TRASH,
       })
 
@@ -35,7 +35,7 @@ export default {
         },
       })
 
-      dispatchRoot(dispatch, withNamespace(DATA_GRIDS.TRASH, GRID.ACTIONS.GRID_FETCH), {
+      dispatchRoot(dispatch, withNamespace(DATA_GRIDS.TRASH, GRID.ACTIONS.FETCH_WITH_INITIAL_STATE), {
         namespace: DATA_GRIDS.TRASH,
       })
 
@@ -69,7 +69,7 @@ export default {
         },
       })
 
-      dispatchRoot(dispatch, withNamespace(DATA_GRIDS.TRASH, GRID.ACTIONS.GRID_FETCH), {
+      dispatchRoot(dispatch, withNamespace(DATA_GRIDS.TRASH, GRID.ACTIONS.FETCH_WITH_INITIAL_STATE), {
         namespace: DATA_GRIDS.TRASH,
       })
 
@@ -89,7 +89,7 @@ export default {
         },
       })
 
-      dispatchRoot(dispatch, withNamespace(DATA_GRIDS.TRASH, GRID.ACTIONS.GRID_FETCH), {
+      dispatchRoot(dispatch, withNamespace(DATA_GRIDS.TRASH, GRID.ACTIONS.FETCH_WITH_INITIAL_STATE), {
         namespace: DATA_GRIDS.TRASH,
       })
 

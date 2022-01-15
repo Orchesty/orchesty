@@ -26,17 +26,13 @@
       <user-task-information :item="item" @reset="reset" />
     </template>
     <template #default="{ items, isVisible }">
-      <td
-        v-if="isVisible('nodeName')"
-        class="py-3 px-0 pointer text-start caption text-uppercase"
-        @click="$refs.grid.onRowClicked(items)"
-      >
-        <span class="truncate-custom user-task-node-name">
+      <td v-if="isVisible('nodeName')" class="py-3 px-0 pointer text-start" @click="$refs.grid.onRowClicked(items)">
+        <span>
           {{ items.item.nodeName }}
         </span>
       </td>
       <td v-if="isVisible('updated')" class="pointer" @click="$refs.grid.onRowClicked(items)">
-        <span class="caption">{{ items.item.updated | internationalFormat }}</span>
+        <span>{{ items.item.updated | internationalFormat }}</span>
       </td>
     </template>
     <template #groupActionButtons="contentEnabled">

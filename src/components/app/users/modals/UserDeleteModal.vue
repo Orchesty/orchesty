@@ -36,7 +36,7 @@ import { ADMIN_USERS } from '../../../../store/modules/adminUsers/types'
 import { mapActions, mapGetters } from 'vuex'
 import { REQUESTS_STATE } from '../../../../store/modules/api/types'
 import { API } from '../../../../api'
-import SendingButton from '@/components/commons/button/SendingButton'
+import SendingButton from '@/components/commons/button/AppButton'
 import ModalTemplate from '@/components/commons/modal/ModalTemplate'
 
 export default {

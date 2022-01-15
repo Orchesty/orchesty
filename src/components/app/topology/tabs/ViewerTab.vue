@@ -12,10 +12,8 @@
             <v-btn color="primary" icon @click="reload">
               <v-icon> mdi-reload </v-icon>
             </v-btn>
-          </template>
-          <template slot="buttonRight">
-            <v-btn text class="ml-auto" @click="onFilterClear">
-              {{ $t('dataGrid.clear') }}
+            <v-btn color="primary" icon @click="onFilterClear">
+              <v-icon> mdi-close </v-icon>
             </v-btn>
           </template>
         </quick-grid-filter>

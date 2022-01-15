@@ -1,9 +1,9 @@
 <template>
-  <v-container fluid fill-height class="pa-0">
-    <v-row class="sidebar-height-100">
+  <v-container fluid fill-height>
+    <v-row style="height: 100vh">
       <v-col
-        class="pa-0 side-page-column"
-        :class="{ 'ma-0': !show }"
+        class="side-page-column"
+        :class="{ 'ma-0': !show, 'pa-0': !show }"
         :lg="toggleColumns(true, false)"
         :cols="toggleColumns(true, true)"
       >
@@ -12,11 +12,11 @@
           <v-icon v-else>mdi-chevron-right</v-icon>
         </v-btn>
 
-        <v-sheet v-if="show" class="sidebar-height-100">
+        <v-sheet v-if="show" class="sticky-wrapper">
           <slot name="sidebar" />
         </v-sheet>
       </v-col>
-      <v-col class="py-0" :lg="toggleColumns(false, false)" :cols="toggleColumns(false, true)">
+      <v-col :lg="toggleColumns(false, false)" :cols="toggleColumns(false, true)">
         <slot />
       </v-col>
     </v-row>
@@ -99,9 +99,17 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.sticky-wrapper {
+  position: sticky;
+  top: 12px;
+  height: calc(100vh - 24px);
+  border-radius: 0.75em;
+}
 .sidebar-height-100 {
+  border-radius: 0.75em;
   height: 100%;
 }
+
 .sidebar-button {
   position: fixed;
   top: 65px;

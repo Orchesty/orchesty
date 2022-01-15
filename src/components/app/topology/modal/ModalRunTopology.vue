@@ -54,7 +54,7 @@ import { REQUESTS_STATE } from '../../../../store/modules/api/types'
 import { API } from '../../../../api'
 import ModalTemplate from '@/components/commons/modal/ModalTemplate'
 import { TOPOLOGIES } from '@/store/modules/topologies/types'
-import SendingButton from '@/components/commons/button/SendingButton'
+import SendingButton from '@/components/commons/button/AppButton'
 import { EVENTS, events } from '@/services/utils/events'
 
 export default {

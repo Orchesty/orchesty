@@ -28,7 +28,7 @@ import { REQUESTS_STATE } from '../../../../store/modules/api/types'
 import { API } from '../../../../api'
 import { IMPLEMENTATIONS } from '../../../../store/modules/implementations/types'
 import ModalTemplate from '@/components/commons/modal/ModalTemplate'
-import SendingButton from '@/components/commons/button/SendingButton'
+import SendingButton from '@/components/commons/button/AppButton'
 
 export default {
   name: 'ImplementationDeleteModal',

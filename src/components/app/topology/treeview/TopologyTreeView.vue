@@ -25,7 +25,7 @@
       <template slot="label" slot-scope="{ item }">
         <tooltip>
           <template #activator="{ on, attrs }">
-            <div class="d-flex subtitle-2" v-bind="attrs" v-on="on">
+            <div class="d-flex" v-bind="attrs" v-on="on">
               <span class="truncate topology-tree-view-name">{{ item.name }}</span>
               &nbsp;
               <span>{{ topologyTitleVersion(item) }}</span>
@@ -46,7 +46,7 @@
       </template>
     </v-treeview>
     <div v-else class="text-center">
-      <span class="body-1"> {{ $t('topologies.sidebar.noTopologiesFound') }} </span>
+      <span> {{ $t('topologies.sidebar.noTopologiesFound') }} </span>
     </div>
   </div>
 </template>
@@ -156,7 +156,7 @@ export default {
   display: block;
 }
 .topology-tree-view-overflow {
-  max-height: 85vh;
+  height: calc(100vh - 100px);
   overflow-y: auto;
 }
 </style>

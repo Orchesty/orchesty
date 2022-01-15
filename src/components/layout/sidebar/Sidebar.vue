@@ -1,12 +1,10 @@
 <template>
-  <v-container fluid class="sticky-wrapper">
-    <v-row>
-      <v-col cols="12" class="pr-0 mt-5 pl-12">
-        <h4>{{ $t('topologies.sidebar.title') }}</h4>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col cols="12" class="pr-0">
+  <v-container fluid>
+    <v-row class="pt-0">
+      <v-col cols="12" class="px-0">
+        <div class="d-flex">
+          <h1 class="mx-auto title">{{ $t('topologies.sidebar.title') }}</h1>
+        </div>
         <topology-tree-view />
       </v-col>
     </v-row>
@@ -23,9 +21,4 @@ export default {
   },
 }
 </script>
-<style lang="scss">
-.sticky-wrapper {
-  position: sticky;
-  top: 0;
-}
-</style>
+<style lang="scss"></style>

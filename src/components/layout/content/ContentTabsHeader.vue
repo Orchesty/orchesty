@@ -1,15 +1,15 @@
 <template>
-  <v-container fluid class="pb-0">
+  <v-container fluid class="py-0">
     <v-row v-if="isTopology && topology" dense>
       <topology-title :topology="topology" />
       <topology-action-buttons :topology="topology" />
     </v-row>
 
-    <v-row v-else>
+    <v-row v-else dense>
       <v-col cols="12">
-        <h3 class="font-weight-bold">
+        <h1 class="headline font-weight-bold">
           {{ title }}
-        </h3>
+        </h1>
       </v-col>
     </v-row>
 
@@ -22,8 +22,8 @@
           </v-tab>
         </v-tabs>
       </v-col>
-      <v-col v-if="isCrone" cols="12" lg="3" class="d-flex justify-end body-2">
-        <span class="mr-5 font-weight-medium">{{ $t('pages.nextRun') }}: </span>
+      <v-col v-if="isCrone" cols="12" lg="3" class="d-flex justify-end">
+        <span class="mr-5">{{ $t('pages.nextRun') }}: </span>
         <span> {{ nextRun(topology.cronSettings) }} </span>
       </v-col>
     </v-row>

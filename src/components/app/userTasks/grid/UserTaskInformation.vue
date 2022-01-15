@@ -1,42 +1,66 @@
 <template>
   <v-row>
     <v-col v-if="item && (userTask || trash)" cols="12" class="d-flex flex-column">
-      <v-row class="flex-grow-0 flex-shrink-1">
-        <v-col v-if="isTrash" cols="6" class="truncate_header">
-          <h5 class="subtitle-2 font-weight-bold">Topology</h5>
-          <span class="body-2 text-uppercase truncate">{{ trashTaskSwitcher('topologyName') }}</span>
-          <div class="body-2">{{ trashTaskSwitcher('topologyId') }}</div>
+      <v-row class="flex-grow-0 flex-shrink-1 subtitle-1" dense>
+        <v-col v-if="isTrash" cols="6">
+          <div>
+            <span>Topology: </span> <span class="font-weight-bold">{{ trashTaskSwitcher('topologyName') }}</span>
+          </div>
+          <div>
+            <div>
+              <span>ID: </span><span class="font-weight-bold">{{ trashTaskSwitcher('topologyId') }}</span>
+            </div>
+          </div>
         </v-col>
-        <v-col :cols="isTrash ? 6 : 12" class="truncate_header">
-          <h5 class="subtitle-2 font-weight-bold">Node</h5>
-          <span class="body-2 text-uppercase">
-            {{ trashTaskSwitcher('nodeName') }}
-          </span>
-          <div class="body-2">{{ trashTaskSwitcher('nodeId') }}</div>
+        <v-col :cols="isTrash ? 6 : 12">
+          <div>
+            <span>Node: </span> <span class="font-weight-bold"> {{ trashTaskSwitcher('nodeName') }}</span>
+          </div>
+          <div>
+            <span>ID: </span> <span class="font-weight-bold">{{ trashTaskSwitcher('nodeId') }}</span>
+          </div>
         </v-col>
         <v-col cols="auto">
-          <v-row>
+          <v-row dense>
             <v-col cols="auto">
-              <h5 class="subtitle-2 font-weight-bold">{{ $t('topologies.userTask.information.created') }}</h5>
-              <span class="body-2">{{
-                userTask || isTrash ? $options.filters.internationalFormat(trashTaskSwitcher('created')) : ''
-              }}</span>
+              <div>
+                <span class="font-weight-bold">
+                  {{ $t('topologies.userTask.information.created') }}
+                </span>
+              </div>
+              <div>
+                <span>{{
+                  userTask || isTrash ? $options.filters.internationalFormat(trashTaskSwitcher('created')) : ''
+                }}</span>
+              </div>
             </v-col>
+            <v-divider vertical class="mx-2" />
             <v-col cols="auto">
-              <h5 class="subtitle-2 font-weight-bold">{{ $t('topologies.userTask.information.updated') }}</h5>
-              <span class="body-2">{{
-                userTask || isTrash ? $options.filters.internationalFormat(trashTaskSwitcher('updated')) : ''
-              }}</span>
+              <div>
+                <span class="font-weight-bold">{{ $t('topologies.userTask.information.updated') }}</span>
+              </div>
+              <div>
+                <span>{{
+                  userTask || isTrash ? $options.filters.internationalFormat(trashTaskSwitcher('updated')) : ''
+                }}</span>
+              </div>
             </v-col>
+            <v-divider vertical class="mx-2" />
             <v-col cols="auto">
-              <h5 class="subtitle-2 font-weight-bold">{{ $t('topologies.userTask.information.correlationId') }}</h5>
-              <span class="body-2">{{ trashTaskSwitcher('correlationId') }}</span>
+              <div>
+                <span class="font-weight-bold">
+                  {{ $t('topologies.userTask.information.correlationId') }}
+                </span>
+              </div>
+              <div>
+                <span>{{ trashTaskSwitcher('correlationId') }}</span>
+              </div>
             </v-col>
           </v-row>
         </v-col>
       </v-row>
-      <v-row class="flex-grow-0 flex-shrink-1">
-        <v-col class="py-0">
+      <v-row class="flex-grow-0 flex-shrink-1" dense>
+        <v-col>
           <user-task-actions-modal
             color="primary"
             :selected="selected"
@@ -62,15 +86,15 @@
           />
         </v-col>
       </v-row>
-      <v-row>
+      <v-row dense>
         <v-col>
           <v-expansion-panels v-model="panel" flat multiple>
             <v-expansion-panel class="mb-2">
               <v-card outlined>
                 <v-expansion-panel-header>
-                  <h4>
+                  <span>
                     {{ $t('topologies.userTask.information.headers') }}
-                  </h4>
+                  </span>
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
                   <vue-json-pretty :path="'res'" :data="trashTaskSwitcherMessage('headers')" />
@@ -80,9 +104,9 @@
             <v-expansion-panel class="mb-2">
               <v-card outlined>
                 <v-expansion-panel-header>
-                  <h4>
+                  <span>
                     {{ $t('topologies.userTask.information.body') }}
-                  </h4>
+                  </span>
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
                   <vue-json-pretty :path="'res'" :data="trashTaskSwitcherMessage('body')" />
@@ -92,9 +116,9 @@
             <v-expansion-panel>
               <v-card outlined>
                 <v-expansion-panel-header>
-                  <h4>
+                  <span>
                     {{ $t('topologies.userTask.information.auditLog') }}
-                  </h4>
+                  </span>
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
                   <vue-json-pretty :path="'res'" :data="trashTaskSwitcher('auditLogs')" />
@@ -264,11 +288,5 @@ export default {
 }
 .mr-spaced:not(:last-child) {
   margin-right: 10px;
-}
-.truncate_header {
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  max-width: 100%;
 }
 </style>

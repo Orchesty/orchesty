@@ -12,34 +12,30 @@
       </v-col>
       <v-col v-if="type === 'update'" cols="12">
         <v-jsoneditor v-model="headerObject" :options="options" :plus="false" height="300px" @error="onError" />
-        <!--        <v-textarea v-model="headers" no-resize :label="$t('userTask.modal.update.headers')" />-->
       </v-col>
       <v-col v-if="type === 'update'" cols="12">
         <v-jsoneditor v-model="bodyObject" :options="options" :plus="false" height="300px" @error="onError" />
-        <!--        <v-textarea v-model="body" no-resize :label="$t('userTask.modal.update.body')" />-->
       </v-col>
     </template>
     <template #sendingButton>
-      <sending-button
+      <app-button
         :sending-title="$t('button.sending.creating')"
         :is-sending="state.isSending"
         :button-title="$t(`topologies.userTask.buttons.${type}`)"
         :on-click="confirm"
-        :flat="false"
       />
     </template>
     <template #button>
-      <v-btn
-        :text="text"
-        :disabled="disabled"
+      <app-button
+        :sending-title="$t('button.sending.creating')"
+        :is-sending="state.isSending"
+        :button-title="$t(`topologies.userTask.buttons.${type}`)"
+        :on-click="() => (isOpen = !isOpen)"
         :color="color"
-        class="fixed-width"
-        :class="buttonClass"
-        min-width="110"
-        @click="isOpen = !isOpen"
-      >
-        <span>{{ $t(`topologies.userTask.buttons.${type}`) }}</span>
-      </v-btn>
+        :custom-class="buttonClass"
+        :flat="text"
+        :disabled="disabled"
+      />
     </template>
   </modal-template>
 </template>
@@ -49,12 +45,12 @@ import { mapGetters } from 'vuex'
 import { REQUESTS_STATE } from '@/store/modules/api/types'
 import { API } from '@/api'
 import ModalTemplate from '@/components/commons/modal/ModalTemplate'
-import SendingButton from '@/components/commons/button/SendingButton'
+import AppButton from '@/components/commons/button/AppButton'
 import VJsoneditor from 'v-jsoneditor'
 
 export default {
   name: 'UserTaskActionsModal',
-  components: { SendingButton, ModalTemplate, VJsoneditor },
+  components: { AppButton, ModalTemplate, VJsoneditor },
   data() {
     return {
       isOpen: false,

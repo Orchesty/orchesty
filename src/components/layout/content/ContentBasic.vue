@@ -1,12 +1,12 @@
 <template>
   <v-sheet class="page-wrapper">
-    <v-container class="pb-0" fluid>
+    <v-container fluid>
       <v-row dense>
         <v-col>
-          <v-container fluid>
+          <v-container fluid class="py-0">
             <v-row dense>
               <v-col>
-                <h3>{{ title }}</h3>
+                <h1 class="headline font-weight-bold">{{ title }}</h1>
               </v-col>
             </v-row>
           </v-container>

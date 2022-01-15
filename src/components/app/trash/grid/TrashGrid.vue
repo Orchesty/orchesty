@@ -27,12 +27,12 @@
         class="py-3 px-0 pointer text-start truncate"
         @click="$refs.grid.onRowClicked(items)"
       >
-        <span class="caption text-uppercase">{{ items.item.topologyName }}</span>
+        <span>{{ items.item.topologyName }}</span>
         <br />
-        <span class="caption text-uppercase">{{ items.item.nodeName }}</span>
+        <span>{{ items.item.nodeName }}</span>
       </td>
       <td v-if="isVisible('updated')" class="pointer text-center" @click="$refs.grid.onRowClicked(items)">
-        <span class="caption">{{ items.item.updated | internationalFormat }}</span>
+        <span>{{ items.item.updated | internationalFormat }}</span>
       </td>
     </template>
     <template #groupActionButtons="contentEnabled">
@@ -94,6 +94,7 @@ export default {
           align: 'left',
           sortable: true,
           visible: true,
+          class: 'pl-0',
           width: '50%',
         },
         {

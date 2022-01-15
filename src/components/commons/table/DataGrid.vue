@@ -423,8 +423,14 @@ export default {
         return
       }
       return headers.map((header) => {
-        header.class = 'truncate'
-        return header
+        let truncatedHeader = { ...header }
+
+        if (truncatedHeader.class) {
+          truncatedHeader.class = `${header.class} truncate`
+        } else {
+          truncatedHeader.class = 'truncate'
+        }
+        return truncatedHeader
       })
     },
     resizeHandler() {

@@ -53,7 +53,7 @@ import AmqpForm from '../form/AmqpForm'
 import EmailSender from '../form/EmailSender'
 import { NOTIFICATIONS } from '../../../../store/modules/notifications/types'
 import ModalTemplate from '@/components/commons/modal/ModalTemplate'
-import SendingButton from '@/components/commons/button/SendingButton'
+import SendingButton from '@/components/commons/button/AppButton'
 export default {
   name: 'NotificationUpdateModal',
   components: { SendingButton, ModalTemplate, EmailSender, AmqpForm, CurlForm },

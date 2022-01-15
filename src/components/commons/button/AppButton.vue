@@ -13,11 +13,12 @@ export default {
   props: {
     isSending: {
       type: Boolean,
-      required: true,
+      required: false,
     },
     sendingTitle: {
       type: String,
-      required: true,
+      required: false,
+      default: () => '',
     },
     buttonTitle: {
       type: String,
@@ -35,7 +36,7 @@ export default {
     },
     flat: {
       type: Boolean,
-      default: true,
+      default: false,
     },
     customClass: {
       type: String,

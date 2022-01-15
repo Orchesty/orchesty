@@ -23,9 +23,7 @@
                 </v-row>
                 <v-row>
                   <v-col>
-                    <v-btn class="ml-3" color="primary" max-width="150">
-                      <span @click="install">{{ $t('appStore.app.install') }}</span>
-                    </v-btn>
+                    <app-button color="primary" :button-title="$t('appStore.app.install')" :on-click="install" />
                   </v-col>
                 </v-row>
                 <v-row>
@@ -47,9 +45,11 @@ import { mapActions, mapState } from 'vuex'
 import { APP_STORE } from '@/store/modules/appStore/types'
 import { AUTH } from '@/store/modules/auth/types'
 import { ROUTES } from '@/services/enums/routerEnums'
+import AppButton from '@/components/commons/button/AppButton'
 
 export default {
   name: 'AppStoreItemDetail',
+  components: { AppButton },
   methods: {
     ...mapActions(APP_STORE.NAMESPACE, [APP_STORE.ACTIONS.INSTALL_APP_REQUEST, APP_STORE.ACTIONS.GET_AVAILABLE_APP]),
     async install() {

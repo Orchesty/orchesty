@@ -91,7 +91,6 @@ export default {
 }
 .custom-truncate-description {
   @extend .custom-truncate;
-  height: 3.1em;
   -webkit-line-clamp: 2;
 }
 .custom-truncate-title {

@@ -49,7 +49,7 @@ import ModalTemplate from '../../../commons/modal/ModalTemplate'
 import { mapActions, mapGetters, mapState } from 'vuex'
 import { REQUESTS_STATE } from '@/store/modules/api/types'
 import { API } from '@/api'
-import SendingButton from '@/components/commons/button/SendingButton'
+import SendingButton from '@/components/commons/button/AppButton'
 import { IMPLEMENTATIONS } from '@/store/modules/implementations/types'
 import ImportTopologyMixin from '@/components/commons/mixins/ImportTopologyMixin'
 

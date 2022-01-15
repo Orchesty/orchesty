@@ -32,7 +32,7 @@ import { mapActions, mapGetters } from 'vuex'
 import { REQUESTS_STATE } from '../../../../store/modules/api/types'
 import { API } from '../../../../api'
 import FolderForm from '../form/FolderForm'
-import SendingButton from '@/components/commons/button/SendingButton'
+import SendingButton from '@/components/commons/button/AppButton'
 
 export default {
   name: 'ModalEditFolder',

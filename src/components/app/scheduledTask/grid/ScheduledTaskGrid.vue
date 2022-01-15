@@ -22,6 +22,7 @@
       <td
         v-if="isVisible('status')"
         :class="isEnabled(items.item) ? 'task-active' : 'task-disabled'"
+        class="font-weight-bold text-uppercase"
         :title="isEnabled(items.item)"
       >
         <span v-if="isEnabled(items.item)"> active </span>

@@ -24,7 +24,7 @@
 
 <script>
 import ModalTemplate from '@/components/commons/modal/ModalTemplate'
-import SendingButton from '@/components/commons/button/SendingButton'
+import SendingButton from '@/components/commons/button/AppButton'
 import { TOPOLOGIES } from '@/store/modules/topologies/types'
 import { ROUTES } from '@/services/enums/routerEnums'
 import { mapActions } from 'vuex'

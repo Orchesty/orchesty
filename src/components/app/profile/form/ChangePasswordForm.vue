@@ -4,7 +4,7 @@
       <v-container>
         <v-row>
           <v-col cols="12">
-            <h3 class="title font-weight-normal">{{ $t('profile.changePassword.title') }}</h3>
+            <h3 class="title font-weight-bold">{{ $t('profile.changePassword.title') }}</h3>
           </v-col>
         </v-row>
         <v-row dense>
@@ -93,7 +93,7 @@
 <script>
 import { ROUTES } from '@/services/enums/routerEnums'
 import FormMixin from '../../../commons/mixins/FormMixin'
-import SendingButton from '@/components/commons/button/SendingButton'
+import SendingButton from '@/components/commons/button/AppButton'
 import { AUTH } from '@/store/modules/auth/types'
 import { mapActions, mapGetters } from 'vuex'
 import { REQUESTS_STATE } from '@/store/modules/api/types'

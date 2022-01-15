@@ -24,7 +24,7 @@ import ModalTemplate from '../../../commons/modal/ModalTemplate'
 import { TOPOLOGIES } from '@/store/modules/topologies/types'
 import { mapActions, mapGetters } from 'vuex'
 import { REQUESTS_STATE } from '@/store/modules/api/types'
-import SendingButton from '../../../commons/button/SendingButton'
+import SendingButton from '../../../commons/button/AppButton'
 import { API } from '@/api'
 import TopologyMoveTreeView from '../treeview/TopologyMoveTreeView'
 

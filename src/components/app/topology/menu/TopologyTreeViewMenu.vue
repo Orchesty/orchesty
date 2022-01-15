@@ -63,7 +63,7 @@ export default {
     },
     async clone() {
       const response = await this[TOPOLOGIES.ACTIONS.TOPOLOGY.CLONE](this.topology.id)
-      await this.$router.push({ name: ROUTES.TOPOLOGIES.EDITOR, params: { id: response._id } })
+      await this.$router.push({ name: ROUTES.TOPOLOGY.VIEWER, params: { id: response._id } })
     },
     async exportXML() {
       let diagram = await this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_DIAGRAM]({ topologyID: this.topology.id })

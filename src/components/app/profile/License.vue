@@ -3,15 +3,15 @@
     <v-container>
       <v-row>
         <v-col cols="12" class="mb-2">
-          <h3 class="title font-weight-normal">{{ $t('profile.license.title') }}</h3>
+          <h3 class="title font-weight-bold">{{ $t('profile.license.title') }}</h3>
         </v-col>
       </v-row>
       <v-row v-for="(value, key) in licenseData" :key="key" dense>
         <v-col v-if="licenseEnums[key]" cols="12" class="mb-1">
-          <span class="subtitle-2">
-            {{ licenseEnums[key] }}:
-            {{ licenseEnums[key].endsWith('date') ? $options.filters.internationalFormatTimestamp(value) : value }}
-          </span>
+          <span> {{ licenseEnums[key] }}: </span>
+          <span class="font-weight-bold">{{
+            licenseEnums[key].endsWith('date') ? $options.filters.internationalFormatTimestamp(value) : value
+          }}</span>
         </v-col>
       </v-row>
     </v-container>

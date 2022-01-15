@@ -59,7 +59,7 @@
 <script>
 import { ROUTES } from '../../../../services/enums/routerEnums'
 import FormMixin from '@/components/commons/mixins/FormMixin'
-import SendingButton from '@/components/commons/button/SendingButton'
+import SendingButton from '@/components/commons/button/AppButton'
 import { mapGetters } from 'vuex'
 import { REQUESTS_STATE } from '@/store/modules/api/types'
 import { API } from '@/api'

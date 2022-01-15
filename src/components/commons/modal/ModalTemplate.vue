@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import SendingButton from '../button/SendingButton'
+import SendingButton from '../button/AppButton'
 
 export default {
   name: 'ModalTemplate',

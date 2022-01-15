@@ -2,7 +2,6 @@
   <v-btn
     class="app-item-redirect"
     :to="to"
-    rounded
     :disabled="disabled"
     :color="white ? 'white' : red ? `error` : `primary`"
     small

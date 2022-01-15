@@ -188,6 +188,7 @@ export default {
       let keys = Object.keys(this.items[0])
       let nodeKeys = keys.filter((node) => Object.prototype.hasOwnProperty.call(this.items[0][node], 'queue_depth'))
       this.nodes = nodeKeys.map((node) => ({ data: { ...this.items[0][node] }, name: node }))
+      console.log('reset')
     },
     chartDataByKey(key, values) {
       let keyedData = []
