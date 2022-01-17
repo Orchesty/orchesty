@@ -100,6 +100,26 @@ export default {
       return false
     }
   },
+  [APP_STORE.ACTIONS.APP_SET_PASSWORD]: async ({ dispatch }, payload) => {
+    try {
+      await callApi(dispatch, {
+        requestData: { ...API.appStore.setPasswordApp },
+        params: {
+          key: payload.key,
+          userId: payload.userId,
+          data: payload.data,
+        },
+      })
+
+      addSuccessMessage(dispatch, API.admin.delete.id, 'flashMessages.appStore.passwordChanged')
+
+      return true
+    } catch {
+      addSuccessMessage(dispatch, API.admin.delete.id, 'flashMessages.appStore.passwordChanged')
+
+      return false
+    }
+  },
   [APP_STORE.ACTIONS.SUBSCRIBE_WEBHOOK]: async ({ dispatch }, payload) => {
     try {
       await callApi(dispatch, {

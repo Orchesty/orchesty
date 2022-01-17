@@ -58,4 +58,12 @@ export default {
       data,
     }),
   },
+  setPasswordApp: {
+    id: 'APP_SET_PASSWORD',
+    request: ({ key, userId, data }) => ({
+      url: `/applications/${key}/users/${userId}/password`,
+      method: 'PUT',
+      data,
+    }),
+  },
 }

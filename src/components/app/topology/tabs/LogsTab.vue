@@ -14,7 +14,7 @@
     :request-params="{ topologyID: $route.params.id }"
   >
     <template #expand="{ items }">
-      <span class="body-2">{{ items.item.message }}</span>
+      <span>{{ items.item.message }}</span>
     </template>
     <template #default="{ items, isVisible, expanded }">
       <td v-if="isVisible('timestamp')" :style="expanded ? 'border-bottom: none' : ''" class="py-0 text-start">

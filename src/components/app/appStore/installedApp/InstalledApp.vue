@@ -68,9 +68,9 @@
                       :error-messages="errors[0]"
                     />
                   </validation-provider>
-                  <!--                  <validation-provider v-if="item.type === 'password'">-->
-                  <!--                    <v-btn>Set password</v-btn>-->
-                  <!--                  </validation-provider>-->
+                  <validation-provider v-if="item.type === 'password'">
+                    <app-item-password-modal :app-key="app.key" :input="item" />
+                  </validation-provider>
                   <validation-provider v-if="item.type === 'selectbox'" :name="item.key" slim>
                     <v-select
                       v-model="form.appSettings[item.key]"
@@ -164,9 +164,11 @@ import { TOPOLOGIES } from '@/store/modules/topologies/types'
 import { ROUTES } from '@/services/enums/routerEnums'
 import { REQUESTS_STATE } from '@/store/modules/api/types'
 import { config } from '@/config'
+import AppItemPasswordModal from '@/components/app/appStore/modal/AppItemPasswordModal'
 
 export default {
   name: 'InstalledApp',
+  components: { AppItemPasswordModal },
   data() {
     return {
       form: {

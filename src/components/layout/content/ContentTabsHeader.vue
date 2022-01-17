@@ -135,6 +135,7 @@ export default {
   text-transform: none;
   letter-spacing: 0;
   padding: 0;
+  font-size: 0.95em;
 }
 .tabs-span {
   color: var(--v-text-base) !important;

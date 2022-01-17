@@ -1,7 +1,7 @@
 <template>
   <v-row>
     <v-col v-if="item && (userTask || trash)" cols="12" class="d-flex flex-column">
-      <v-row class="flex-grow-0 flex-shrink-1 subtitle-1" dense>
+      <v-row class="flex-grow-0 flex-shrink-1" dense>
         <v-col v-if="isTrash" cols="6">
           <div>
             <span>Topology: </span> <span class="font-weight-bold">{{ trashTaskSwitcher('topologyName') }}</span>
