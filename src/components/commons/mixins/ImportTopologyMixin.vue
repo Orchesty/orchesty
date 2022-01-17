@@ -23,7 +23,7 @@ export default {
         if (res) {
           await this[TOPOLOGIES.ACTIONS.TOPOLOGY.SAVE_DIAGRAM]({ id: res._id, xml: xml })
           this.isOpen = false
-          await this.$router.push({ name: ROUTES.TOPOLOGIES.EDITOR, params: { id: res._id } })
+          await this.$router.push({ name: ROUTES.TOPOLOGY.VIEWER, params: { id: res._id } })
         }
       })
     },
