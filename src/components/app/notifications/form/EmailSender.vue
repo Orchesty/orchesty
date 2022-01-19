@@ -32,7 +32,7 @@
     >
       <app-input
         v-model="form.password"
-        type="password"
+        input-type="password"
         :label="$t('emailSender.form.password.label')"
         :error-messages="errors"
       />
@@ -150,6 +150,9 @@ export default {
         this.form = this.initForm()
       },
     },
+  },
+  mounted() {
+    this.$refs.form.reset()
   },
 }
 </script>

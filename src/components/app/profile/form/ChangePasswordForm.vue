@@ -24,7 +24,7 @@
                       v-model="form.current"
                       dense
                       :label="$t('profile.changePassword.form.current-password.label')"
-                      type="password"
+                      input-type="password"
                       outlined
                       :error-messages="errors"
                     />
@@ -46,7 +46,7 @@
                       dense
                       outlined
                       :label="$t('profile.changePassword.form.password.label')"
-                      type="password"
+                      input-type="password"
                       :error-messages="errors"
                     />
                   </validation-provider>
@@ -64,7 +64,7 @@
                       v-model="form.confirm"
                       dense
                       :label="$t('profile.changePassword.form.confirm.label')"
-                      type="password"
+                      input-type="password"
                       outlined
                       :error-messages="errors"
                     />
@@ -166,6 +166,9 @@ export default {
       this.form = this.initForm()
       this.$refs.form.reset()
     },
+  },
+  mounted() {
+    this.$refs.form.reset()
   },
 }
 </script>

@@ -85,5 +85,8 @@ export default {
     },
     deep: true,
   },
+  mounted() {
+    this.$refs.form.reset()
+  },
 }
 </script>

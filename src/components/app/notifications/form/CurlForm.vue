@@ -90,6 +90,9 @@ export default {
       },
     },
   },
+  mounted() {
+    this.$refs.form.reset()
+  },
 }
 </script>
 

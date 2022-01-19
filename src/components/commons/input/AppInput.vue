@@ -73,7 +73,6 @@ export default {
     value: {
       immediate: true,
       handler(value) {
-        console.log(value)
         this.input = value
       },
     },

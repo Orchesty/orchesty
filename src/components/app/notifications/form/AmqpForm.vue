@@ -40,7 +40,7 @@
     >
       <app-input
         v-model="form.password"
-        type="password"
+        input-type="password"
         :label="$t('amqpSender.form.password.label')"
         :error-messages="errors"
       />
@@ -118,6 +118,9 @@ export default {
         this.form = this.initForm(this.service.settings)
       },
     },
+  },
+  mounted() {
+    this.$refs.form.reset()
   },
 }
 </script>

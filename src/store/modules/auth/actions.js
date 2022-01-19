@@ -3,7 +3,7 @@ import { API } from '@/api'
 import { callApi } from '../../utils'
 import router from '../../../services/router'
 import { ROUTES } from '@/services/enums/routerEnums'
-import { addSuccessMessage } from '@/services/utils/flashMessages'
+import { addErrorMessage, addSuccessMessage } from '@/services/utils/flashMessages'
 import { ERROR_TYPE } from '../api/types'
 import { logout } from '@/services/utils/utils'
 
@@ -21,8 +21,9 @@ export default {
 
       commit(AUTH.MUTATIONS.LOGIN_RESPONSE, data)
       await router.push({ name: ROUTES.DASHBOARD })
-    } catch {
-      await logout(commit, dispatch)
+      addSuccessMessage(dispatch, API.auth.forgotPassword.id, 'Welcome back!')
+    } catch (e) {
+      addErrorMessage(dispatch, API.auth.forgotPassword.id, e)
     }
   },
   [AUTH.ACTIONS.CHECK_LOGGED_REQUEST]: async ({ dispatch, commit }) => {

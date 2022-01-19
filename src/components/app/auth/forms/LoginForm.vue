@@ -29,7 +29,7 @@
                 v-model="form.password"
                 prepend-icon="lock"
                 :label="$t('login.form.password.label')"
-                type="password"
+                input-type="password"
                 :error-messages="errors"
               />
             </validation-provider>
@@ -115,6 +115,9 @@ export default {
 
       this.onSubmit(this.form)
     },
+  },
+  mounted() {
+    this.$refs.loginForm.reset()
   },
 }
 </script>

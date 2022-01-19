@@ -75,7 +75,9 @@ const call = ({ requestData, params = null, throwError = false, store }, sender)
         if (err.response) {
           // logout
           if (err.response.status && err.response.status === 401) {
-            logout(store.commit, store.dispatch)
+            logout(store.commit, store.dispatch).then(() => {
+              reject(err.response.data.message)
+            })
 
             return
           }

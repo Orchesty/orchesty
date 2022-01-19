@@ -1,6 +1,6 @@
 <template>
   <v-col xl="2" lg="3" md="6" sm="6" cols="12">
-    <v-card class="py-5" rounded="lg" elevation="2">
+    <v-card class="py-5" rounded="lg" elevation="2" min-height="205">
       <div class="mx-4">
         <v-row>
           <v-col cols="6" sm="5">

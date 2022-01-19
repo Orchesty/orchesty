@@ -24,7 +24,7 @@
                 v-model="password"
                 dense
                 :label="$t('profile.changePassword.form.current-password.label')"
-                type="password"
+                input-type="password"
                 outlined
                 :error-messages="errors"
               />

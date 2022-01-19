@@ -19,7 +19,7 @@
             v-model="form.password"
             prepend-icon="lock"
             :label="$t('setNewPassword.form.restorePassword.label')"
-            type="password"
+            input-type="password"
             :error-messages="errors"
           />
         </validation-provider>
@@ -33,7 +33,7 @@
             v-model="form.confirm"
             prepend-icon="lock"
             :label="$t('setNewPassword.form.confirm.label')"
-            type="password"
+            input-type="password"
             :error-messages="errors"
           />
         </validation-provider>

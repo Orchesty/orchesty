@@ -1,19 +1,25 @@
 <template>
   <modal-template v-model="isOpen" :on-confirm="() => submit()" :title="$t('folders.modals.delete.title')">
     <template #default>
-      <v-col cols="12">
-        {{ $t('folders.modals.delete.body', [data ? data.name : '']) }}
-      </v-col>
+      <v-row>
+        <v-col cols="12">
+          {{ $t('folders.modals.delete.body', [data ? data.name : '']) }}
+        </v-col>
+      </v-row>
     </template>
     <template #sendingButton>
-      <app-button
-        :sending-title="$t('button.sending.deleting')"
-        :is-sending="state.isSending"
-        :flat="false"
-        :button-title="$t('button.delete')"
-        :on-click="() => submit()"
-        :color="'primary'"
-      />
+      <v-row>
+        <v-col cols="12">
+          <app-button
+            :sending-title="$t('button.sending.deleting')"
+            :is-sending="state.isSending"
+            :flat="false"
+            :button-title="$t('button.delete')"
+            :on-click="() => submit()"
+            :color="'primary'"
+          />
+        </v-col>
+      </v-row>
     </template>
   </modal-template>
 </template>
