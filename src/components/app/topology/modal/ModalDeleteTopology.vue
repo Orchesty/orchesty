@@ -66,6 +66,7 @@ export default {
     async submit() {
       await this[TOPOLOGIES.ACTIONS.TOPOLOGY.DELETE]({
         topologyId: this.topology.id,
+        name: this.topology.name,
       }).then((res) => {
         if (res) {
           this.isOpen = false

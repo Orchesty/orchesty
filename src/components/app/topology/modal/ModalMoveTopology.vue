@@ -55,6 +55,7 @@ export default {
       this[TOPOLOGIES.ACTIONS.TOPOLOGY.MOVE]({
         categoryId: this.selectedCategoryId,
         topologyId: this.topology.id,
+        name: this.topology.name,
       }).then((res) => {
         if (res) {
           this.isOpen = false

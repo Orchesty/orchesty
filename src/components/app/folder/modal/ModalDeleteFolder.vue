@@ -51,6 +51,7 @@ export default {
     async submit() {
       await this[TOPOLOGIES.ACTIONS.FOLDER.DELETE]({
         id: this.data.id,
+        name: this.data.name,
       }).then((res) => {
         if (res) {
           this.isOpen = false

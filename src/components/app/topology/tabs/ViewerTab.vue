@@ -250,6 +250,9 @@ export default {
       fitIntoScreen(this.viewer, this.diagram)
     },
     async initBpmn(topology) {
+      if (!document.querySelector('#canvas')) {
+        return
+      }
       this.canvasReset()
       this.viewer = new Modeler({
         additionalModules: [

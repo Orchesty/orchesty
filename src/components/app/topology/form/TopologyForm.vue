@@ -8,7 +8,7 @@
     >
       <app-input
         v-model="form.name"
-        :disabled="callbackData.visibility === PAGE_TABS_ENUMS.PUBLIC"
+        :disabled="callbackData ? callbackData.visibility === PAGE_TABS_ENUMS.PUBLIC : false"
         :label="$t('topologies.create.form.name.label')"
         type="text"
         :error-messages="errors"

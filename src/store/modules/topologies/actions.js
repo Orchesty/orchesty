@@ -14,6 +14,7 @@ export default {
     })
       .then((res) => {
         dispatch(TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES)
+        addSuccessMessage(dispatch, API.topology.enable.id, `Topology ${res.name} created!`)
         return res
       })
       .catch(() => false)
@@ -26,7 +27,7 @@ export default {
       },
       throwError: true,
     }).then((response) => {
-      addSuccessMessage(dispatch, API.topology.enable.id, `Topology ${response.name} saved successfully`)
+      addSuccessMessage(dispatch, API.topology.enable.id, `Topology ${response.name} saved!`)
       dispatch(TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES)
       return response
     })
@@ -212,6 +213,7 @@ export default {
     })
       .then(() => {
         dispatch(TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES)
+        addSuccessMessage(dispatch, API.topology.enable.id, `Topology ${payload.name} moved!`)
         return true
       })
       .catch(() => false)
@@ -231,6 +233,7 @@ export default {
       .then(() => {
         dispatch(TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES)
         commit(TOPOLOGIES.MUTATIONS.RESET)
+        addSuccessMessage(dispatch, API.topology.enable.id, `Topology ${payload.name} deleted!`)
         return true
       })
       .catch(() => false)
@@ -245,6 +248,7 @@ export default {
     })
       .then(() => {
         dispatch(TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES)
+        addSuccessMessage(dispatch, API.topology.enable.id, `Topology ${payload.data.name} edited!`)
         return true
       })
       .catch(() => false)
@@ -256,7 +260,8 @@ export default {
         ...payload,
       },
     })
-      .then(() => {
+      .then((res) => {
+        addSuccessMessage(dispatch, API.topology.enable.id, `Folder ${res.name} created!`)
         dispatch(TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES)
         return true
       })
@@ -272,6 +277,7 @@ export default {
     })
       .then(() => {
         dispatch(TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES)
+        addSuccessMessage(dispatch, API.topology.enable.id, `Folder ${payload.name} deleted!`)
         return true
       })
       .catch(() => false)
@@ -286,6 +292,7 @@ export default {
     })
       .then(() => {
         dispatch(TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES)
+        addSuccessMessage(dispatch, API.topology.enable.id, `Folder renamed to ${payload.name}!`)
         return true
       })
       .catch(() => false)
