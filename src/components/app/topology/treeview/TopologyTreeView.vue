@@ -114,6 +114,9 @@ export default {
       if (this.$route.params.id === activeItems[0].id) {
         return
       }
+      if (activeItems[0].type === TOPOLOGY_TREE.FOLDER) {
+        return
+      }
       await this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID]({ id: activeItems[0].id })
       await this.$router.push({ name: ROUTES.TOPOLOGY.VIEWER, params: { id: activeItems[0].id } })
     },
