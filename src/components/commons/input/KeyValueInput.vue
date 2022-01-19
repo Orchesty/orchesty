@@ -8,7 +8,7 @@
           :rules="fields.input.validations"
           slim
         >
-          <v-text-field v-model="header.key" :label="$t('form.keyValue.key.label')" :error-messages="errors" />
+          <app-input v-model="header.key" :label="$t('form.keyValue.key.label')" :error-messages="errors" />
         </validation-provider>
       </v-col>
       <v-col cols="5">
@@ -18,10 +18,10 @@
           :rules="fields.input.validations"
           slim
         >
-          <v-text-field v-model="header.value" :label="$t('form.keyValue.value.label')" :error-messages="errors" />
+          <app-input v-model="header.value" :label="$t('form.keyValue.value.label')" :error-messages="errors" />
         </validation-provider>
       </v-col>
-      <v-col cols="auto" class="d-flex">
+      <v-col cols="auto">
         <v-btn color="red" class="ma-auto" dark small fab @click="removeLine(index)">
           <v-icon>mdi-trash-can</v-icon>
         </v-btn>
@@ -41,8 +41,10 @@
 </template>
 
 <script>
+import AppInput from '@/components/commons/input/AppInput'
 export default {
   name: 'KeyValueInput',
+  components: { AppInput },
   props: {
     keyLabel: {
       type: String,

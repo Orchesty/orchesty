@@ -4,26 +4,31 @@
     :width="type === 'update' ? 800 : 500"
     :title="$t(`userTask.modal.${type}.title`)"
     :on-confirm="confirm"
-    :on-close="type !== 'update' ? () => $emit('reset') : undefined"
   >
     <template #default>
-      <v-col cols="12">
-        {{ type !== 'update' ? $t(`userTask.modal.${type}.body`, [bodyMessage]) : null }}
-      </v-col>
-      <v-col v-if="type === 'update'" cols="12">
-        <v-jsoneditor v-model="headerObject" :options="options" :plus="false" height="300px" @error="onError" />
-      </v-col>
-      <v-col v-if="type === 'update'" cols="12">
-        <v-jsoneditor v-model="bodyObject" :options="options" :plus="false" height="300px" @error="onError" />
-      </v-col>
+      <v-row dense>
+        <v-col cols="12">
+          {{ type !== 'update' ? $t(`userTask.modal.${type}.body`, [bodyMessage]) : null }}
+        </v-col>
+        <v-col v-if="type === 'update'" cols="12">
+          <v-jsoneditor v-model="headerObject" :options="options" :plus="false" height="300px" @error="onError" />
+        </v-col>
+        <v-col v-if="type === 'update'" cols="12">
+          <v-jsoneditor v-model="bodyObject" :options="options" :plus="false" height="300px" @error="onError" />
+        </v-col>
+      </v-row>
     </template>
     <template #sendingButton>
-      <app-button
-        :sending-title="$t('button.sending.creating')"
-        :is-sending="state.isSending"
-        :button-title="$t(`topologies.userTask.buttons.${type}`)"
-        :on-click="confirm"
-      />
+      <v-row dense>
+        <v-col cols="12" class="d-flex justify-end">
+          <app-button
+            :sending-title="$t('button.sending.creating')"
+            :is-sending="state.isSending"
+            :button-title="$t(`topologies.userTask.buttons.${type}`)"
+            :on-click="confirm"
+          />
+        </v-col>
+      </v-row>
     </template>
     <template #button>
       <app-button
@@ -144,12 +149,14 @@ export default {
       if (this.type === 'update') {
         await this.method({ headers: JSON.parse(this.headers), body: JSON.parse(this.body) }).then((res) => {
           if (res) {
+            this.$emit('reset')
             this.isOpen = false
           }
         })
       } else {
         await this.method().then((res) => {
           if (res) {
+            this.$emit('reset')
             this.isOpen = false
           }
         })

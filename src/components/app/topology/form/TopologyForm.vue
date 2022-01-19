@@ -6,13 +6,12 @@
       :rules="fields.name.validations"
       slim
     >
-      <v-text-field
+      <app-input
         v-model="form.name"
-        :disabled="data.visibility === PAGE_TABS_ENUMS.PUBLIC || data.version > 1"
+        :disabled="callbackData.visibility === PAGE_TABS_ENUMS.PUBLIC"
         :label="$t('topologies.create.form.name.label')"
         type="text"
-        :error-messages="errors[0]"
-        autofocus
+        :error-messages="errors"
       />
     </validation-provider>
     <validation-provider
@@ -21,11 +20,11 @@
       :rules="fields.description.validations"
       slim
     >
-      <v-text-field
+      <app-input
         v-model="form.description"
         :label="$t('topologies.create.form.description.label')"
         type="text"
-        :error-messages="errors[0]"
+        :error-messages="errors"
       />
     </validation-provider>
   </ValidationObserver>
@@ -34,15 +33,19 @@
 <script>
 import FormMixin from '../../../commons/mixins/FormMixin'
 import { TOPOLOGY_ENUMS } from '@/services/enums/topologyEnums'
+import AppInput from '@/components/commons/input/AppInput'
 
 export default {
-  name: 'CreateTopologyForm',
+  name: 'TopologyForm',
+  components: { AppInput },
   mixins: [FormMixin],
   data() {
     return {
       PAGE_TABS_ENUMS: TOPOLOGY_ENUMS,
       form: {
-        ...this.init(),
+        name: '',
+        description: '',
+        folder: '',
       },
       fields: {
         name: {
@@ -59,7 +62,7 @@ export default {
     }
   },
   props: {
-    data: {
+    callbackData: {
       type: Object,
       default: () => {},
     },
@@ -70,32 +73,24 @@ export default {
       if (!isValid) {
         return
       }
-      if (this.data && this.data.visibility === TOPOLOGY_ENUMS.PUBLIC) {
+      if (this.callbackData && this.callbackData.visibility === TOPOLOGY_ENUMS.PUBLIC) {
         this.onSubmit({ descr: this.form.description, folder: this.form.folder })
       } else {
         this.onSubmit(this.form)
       }
     },
-    init(data) {
-      if (!data) data = {}
-      return {
-        name: data.name || null,
-        description: data.description || null,
-        folder: data.category || null,
-      }
-    },
-    reset() {
-      this.form = this.init()
-    },
   },
   watch: {
-    data: {
+    callbackData: {
+      deep: true,
       immediate: true,
-      handler(val) {
-        this.form = this.init(val)
+      handler(callbackdata) {
+        if (!callbackdata) return
+        this.form.name = callbackdata.name
+        this.form.description = callbackdata.description
+        this.form.folder = callbackdata.folder
       },
     },
-    deep: true,
   },
 }
 </script>

@@ -9,13 +9,17 @@
     <template v-if="implementationsFile && implementationsProject" #default>
       <v-row>
         <v-col cols="12">
-          <v-text-field v-model="altName" placeholder="alter the topology name | left blank if not desired to" />
+          <app-input
+            v-model="altName"
+            label="alter the topology name | left blank if not desired to"
+            placeholder="alter the topology name | left blank if not desired to"
+          />
         </v-col>
       </v-row>
       <v-row>
         <template v-for="file in implementationsFile">
           <v-col :key="file.name + Math.random()" cols="4" class="d-flex">
-            <v-text-field label="diagram sdk value" :value="file.name" disabled />
+            <app-input label="diagram sdk value" :value="file.name" disabled />
           </v-col>
           <v-col :key="file.name + Math.random()" cols="8">
             <v-select
@@ -31,7 +35,7 @@
       </v-row>
     </template>
     <template #sendingButton>
-      <sending-button
+      <app-button
         :sending-title="$t('button.sending.importing')"
         :is-sending="state.isSending"
         :flat="false"
@@ -49,13 +53,14 @@ import ModalTemplate from '../../../commons/modal/ModalTemplate'
 import { mapActions, mapGetters, mapState } from 'vuex'
 import { REQUESTS_STATE } from '@/store/modules/api/types'
 import { API } from '@/api'
-import SendingButton from '@/components/commons/button/AppButton'
 import { IMPLEMENTATIONS } from '@/store/modules/implementations/types'
 import ImportTopologyMixin from '@/components/commons/mixins/ImportTopologyMixin'
+import AppButton from '@/components/commons/button/AppButton'
+import AppInput from '@/components/commons/input/AppInput'
 
 export default {
   name: 'ModalImportTopology',
-  components: { SendingButton, ModalTemplate },
+  components: { AppInput, AppButton, ModalTemplate },
   mixins: [ImportTopologyMixin],
   data: () => ({
     altName: '',

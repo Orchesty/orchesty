@@ -11,28 +11,34 @@
       />
     </template>
     <template #default>
-      <v-col cols="12">
-        <ValidationObserver ref="form" tag="form" slim @submit.prevent="submit">
-          <validation-provider
-            v-slot="{ errors }"
-            :name="$t('profile.changePassword.form.current-password.name')"
-            :rules="'required'"
-            slim
-          >
-            <v-text-field
-              v-model="password"
-              dense
-              :label="$t('profile.changePassword.form.current-password.label')"
-              type="password"
-              outlined
-              :error-messages="errors[0]"
-            />
-          </validation-provider>
-        </ValidationObserver>
-      </v-col>
+      <v-row dense>
+        <v-col cols="12">
+          <ValidationObserver ref="form" tag="form" slim @submit.prevent="submit">
+            <validation-provider
+              v-slot="{ errors }"
+              :name="$t('profile.changePassword.form.current-password.name')"
+              :rules="'required'"
+              slim
+            >
+              <app-input
+                v-model="password"
+                dense
+                :label="$t('profile.changePassword.form.current-password.label')"
+                type="password"
+                outlined
+                :error-messages="errors"
+              />
+            </validation-provider>
+          </ValidationObserver>
+        </v-col>
+      </v-row>
     </template>
     <template #sendingButton>
-      <app-button :button-title="$t('button.create')" :on-click="() => submit()" :flat="false" />
+      <v-row dense>
+        <v-col cols="12" class="d-flex justify-end">
+          <app-button :button-title="$t('button.create')" :on-click="() => submit()" :flat="false" />
+        </v-col>
+      </v-row>
     </template>
   </modal-template>
 </template>
@@ -43,9 +49,10 @@ import AppButton from '@/components/commons/button/AppButton'
 import { mapActions, mapState } from 'vuex'
 import { APP_STORE } from '@/store/modules/appStore/types'
 import { AUTH } from '@/store/modules/auth/types'
+import AppInput from '@/components/commons/input/AppInput'
 export default {
   name: 'AppItemPasswordModal',
-  components: { AppButton, ModalTemplate },
+  components: { AppInput, AppButton, ModalTemplate },
   props: {
     input: {
       type: Object,

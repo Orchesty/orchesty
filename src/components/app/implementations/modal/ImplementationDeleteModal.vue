@@ -1,18 +1,24 @@
 <template>
   <modal-template v-model="isOpen" :title="$t('implementation.delete.title')" :on-confirm="submit">
     <template #default>
-      <v-col cols="12">
-        {{ $t('implementation.delete.body') }}
-      </v-col>
+      <v-row dense>
+        <v-col cols="12">
+          {{ $t('implementation.delete.body') }}
+        </v-col>
+      </v-row>
     </template>
     <template #sendingButton>
-      <sending-button
-        :sending-title="$t('button.sending.deleting')"
-        :is-sending="state.isSending"
-        :button-title="$t('button.delete')"
-        :on-click="submit"
-        :flat="false"
-      />
+      <v-row dense>
+        <v-col cols="12" class="d-flex justify-end">
+          <app-button
+            :sending-title="$t('button.sending.deleting')"
+            :is-sending="state.isSending"
+            :button-title="$t('button.delete')"
+            :on-click="submit"
+            :flat="false"
+          />
+        </v-col>
+      </v-row>
     </template>
     <template #button>
       <v-btn class="ma-0" color="primary" icon @click="isOpen = !isOpen">
@@ -28,11 +34,11 @@ import { REQUESTS_STATE } from '../../../../store/modules/api/types'
 import { API } from '../../../../api'
 import { IMPLEMENTATIONS } from '../../../../store/modules/implementations/types'
 import ModalTemplate from '@/components/commons/modal/ModalTemplate'
-import SendingButton from '@/components/commons/button/AppButton'
+import AppButton from '@/components/commons/button/AppButton'
 
 export default {
   name: 'ImplementationDeleteModal',
-  components: { SendingButton, ModalTemplate },
+  components: { AppButton, ModalTemplate },
   data() {
     return {
       isOpen: false,

@@ -15,12 +15,12 @@
           :vid="fields.password.id"
           slim
         >
-          <v-text-field
+          <app-input
             v-model="form.password"
             prepend-icon="lock"
             :label="$t('setNewPassword.form.restorePassword.label')"
             type="password"
-            :error-messages="errors[0]"
+            :error-messages="errors"
           />
         </validation-provider>
         <validation-provider
@@ -29,16 +29,16 @@
           :rules="fields.confirm.validations"
           slim
         >
-          <v-text-field
+          <app-input
             v-model="form.confirm"
             prepend-icon="lock"
             :label="$t('setNewPassword.form.confirm.label')"
             type="password"
-            :error-messages="errors[0]"
+            :error-messages="errors"
           />
         </validation-provider>
         <div class="text-right">
-          <sending-button
+          <app-button
             :is-sending="isSending"
             :button-title="$t('button.change')"
             :sending-title="$t('button.sending.saving')"
@@ -55,11 +55,12 @@
 import { ROUTES } from '@/services/enums/routerEnums'
 import FormMixin from '../../../commons/mixins/FormMixin'
 import Logo from '@/components/commons/logo/Logo'
-import SendingButton from '@/components/commons/button/AppButton'
+import AppButton from '@/components/commons/button/AppButton'
+import AppInput from '@/components/commons/input/AppInput'
 
 export default {
   name: 'PasswordForm',
-  components: { SendingButton, Logo },
+  components: { AppInput, AppButton, Logo },
   mixins: [FormMixin],
   props: {
     email: {

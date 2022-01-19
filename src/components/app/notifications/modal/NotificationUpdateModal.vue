@@ -10,35 +10,41 @@
       </v-btn>
     </template>
     <template #default>
-      <v-col cols="12">
-        <curl-form
-          v-if="service.type === NOTIFICATION_TYPES.CURL"
-          ref="form"
-          :on-submit="onSubmit"
-          :service="service"
-        />
-        <amqp-form
-          v-else-if="service.type === NOTIFICATION_TYPES.AMQP"
-          ref="form"
-          :on-submit="onSubmit"
-          :service="service"
-        />
-        <email-sender
-          v-else-if="service.type === NOTIFICATION_TYPES.EMAIL"
-          ref="form"
-          :on-submit="onSubmit"
-          :service="service"
-        />
-      </v-col>
+      <v-row dense>
+        <v-col cols="12">
+          <curl-form
+            v-if="service.type === NOTIFICATION_TYPES.CURL"
+            ref="form"
+            :on-submit="onSubmit"
+            :service="service"
+          />
+          <amqp-form
+            v-else-if="service.type === NOTIFICATION_TYPES.AMQP"
+            ref="form"
+            :on-submit="onSubmit"
+            :service="service"
+          />
+          <email-sender
+            v-else-if="service.type === NOTIFICATION_TYPES.EMAIL"
+            ref="form"
+            :on-submit="onSubmit"
+            :service="service"
+          />
+        </v-col>
+      </v-row>
     </template>
     <template #sendingButton>
-      <sending-button
-        :sending-title="$t('button.sending.editing')"
-        :is-sending="state.isSending"
-        :button-title="$t('button.edit')"
-        :on-click="() => $refs.form.submit()"
-        :flat="false"
-      />
+      <v-row dense>
+        <v-col cols="12" class="d-flex justify-end">
+          <app-button
+            :sending-title="$t('button.sending.editing')"
+            :is-sending="state.isSending"
+            :button-title="$t('button.edit')"
+            :on-click="() => $refs.form.submit()"
+            :flat="false"
+          />
+        </v-col>
+      </v-row>
     </template>
   </modal-template>
 </template>
@@ -53,10 +59,10 @@ import AmqpForm from '../form/AmqpForm'
 import EmailSender from '../form/EmailSender'
 import { NOTIFICATIONS } from '../../../../store/modules/notifications/types'
 import ModalTemplate from '@/components/commons/modal/ModalTemplate'
-import SendingButton from '@/components/commons/button/AppButton'
+import AppButton from '@/components/commons/button/AppButton'
 export default {
   name: 'NotificationUpdateModal',
-  components: { SendingButton, ModalTemplate, EmailSender, AmqpForm, CurlForm },
+  components: { AppButton, ModalTemplate, EmailSender, AmqpForm, CurlForm },
   data() {
     return {
       isOpen: false,

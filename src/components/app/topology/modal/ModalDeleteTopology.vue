@@ -1,29 +1,35 @@
 <template>
   <modal-template v-model="isOpen" :title="$t('topologies.modals.delete.title')" :on-confirm="() => submit()">
     <template #default>
-      <v-col cols="12">
-        {{ $t('topologies.modals.delete.body', [topology ? `${topology.name} v.${topology.version}` : '']) }}
-        <template v-if="topology && topology.enabled">{{ $t('topologies.modals.delete.enabledWarning') }}</template>
-      </v-col>
+      <v-row dense>
+        <v-col cols="12">
+          {{ $t('topologies.modals.delete.body', [topology ? `${topology.name} v.${topology.version}` : '']) }}
+          <template v-if="topology && topology.enabled">{{ $t('topologies.modals.delete.enabledWarning') }}</template>
+        </v-col>
+      </v-row>
     </template>
     <template #sendingButton>
-      <sending-button
-        v-if="topology && topology.enabled"
-        :sending-title="$t('button.sending.disabling')"
-        :is-sending="state.isSending"
-        :button-title="$t('button.disable')"
-        :on-click="disable"
-        :flat="false"
-        class="mr-3"
-      />
-      <sending-button
-        :sending-title="$t('button.sending.deleting')"
-        :is-sending="state.isSending"
-        :button-title="$t('button.delete')"
-        :on-click="submit"
-        :flat="false"
-        :color="topology && topology.enabled ? 'error' : 'primary'"
-      />
+      <v-row dense>
+        <v-col cols="12" class="d-flex justify-end">
+          <app-button
+            v-if="topology && topology.enabled"
+            :sending-title="$t('button.sending.disabling')"
+            :is-sending="state.isSending"
+            :button-title="$t('button.disable')"
+            :on-click="disable"
+            :flat="false"
+            class="mr-3"
+          />
+          <app-button
+            :sending-title="$t('button.sending.deleting')"
+            :is-sending="state.isSending"
+            :button-title="$t('button.delete')"
+            :on-click="submit"
+            :flat="false"
+            :color="topology && topology.enabled ? 'error' : 'primary'"
+          />
+        </v-col>
+      </v-row>
     </template>
   </modal-template>
 </template>
@@ -35,12 +41,12 @@ import { mapActions, mapGetters } from 'vuex'
 import { TOPOLOGIES } from '../../../../store/modules/topologies/types'
 import { REQUESTS_STATE } from '../../../../store/modules/api/types'
 import { API } from '../../../../api'
-import SendingButton from '@/components/commons/button/AppButton'
 import { ROUTES } from '@/services/enums/routerEnums'
+import AppButton from '@/components/commons/button/AppButton'
 
 export default {
   name: 'ModalDeleteTopology',
-  components: { SendingButton, ModalTemplate },
+  components: { AppButton, ModalTemplate },
   data: () => ({
     isOpen: false,
     topology: null,

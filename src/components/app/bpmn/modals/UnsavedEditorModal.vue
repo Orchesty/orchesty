@@ -1,7 +1,7 @@
 <template>
   <modal-template v-model="isOpen" title="You have unsaved changes!">
     <v-col cols="12">
-      <sending-button
+      <app-button
         :sending-title="$t('button.sending.creating')"
         :is-sending="isSending"
         :flat="false"
@@ -10,7 +10,7 @@
         :color="'primary'"
         class="mr-4"
       />
-      <sending-button
+      <app-button
         :sending-title="$t('button.sending.creating')"
         :is-sending="isSending"
         :flat="false"
@@ -24,13 +24,13 @@
 
 <script>
 import ModalTemplate from '@/components/commons/modal/ModalTemplate'
-import SendingButton from '@/components/commons/button/AppButton'
 import { TOPOLOGIES } from '@/store/modules/topologies/types'
 import { ROUTES } from '@/services/enums/routerEnums'
 import { mapActions } from 'vuex'
+import AppButton from '@/components/commons/button/AppButton'
 export default {
   name: 'UnsavedEditorModal',
-  components: { SendingButton, ModalTemplate },
+  components: { AppButton, ModalTemplate },
   props: {
     isSending: {
       type: Boolean,
@@ -53,7 +53,7 @@ export default {
       this.isOpen = false
       if (isClone) {
         await this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID](isClone)
-        await this.$router.push({ name: ROUTES.EDITOR_PAGE })
+        await this.$router.push({ name: ROUTES.EDITOR })
       } else {
         this.$router.go(-1)
       }

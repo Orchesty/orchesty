@@ -2,23 +2,29 @@
   <modal-template
     v-model="isOpen"
     :title="$t('folders.modals.create.title')"
-    :on-cancel="() => $refs.form.reset()"
+    :on-close="onClose"
     :on-confirm="() => $refs.form.submit()"
   >
     <template #default>
-      <v-col cols="12">
-        <folder-form ref="form" :data="data" :on-submit="submit" />
-      </v-col>
+      <v-row dense>
+        <v-col cols="12">
+          <folder-form ref="form" :callback-data="callbackData" :on-submit="submit" />
+        </v-col>
+      </v-row>
     </template>
     <template #sendingButton>
-      <sending-button
-        :sending-title="$t('button.sending.creating')"
-        :is-sending="state.isSending"
-        :flat="false"
-        :button-title="$t('button.create')"
-        :on-click="() => $refs.form.submit()"
-        :color="'primary'"
-      />
+      <v-row dense>
+        <v-col cols="12" class="d-flex justify-end">
+          <app-button
+            :sending-title="$t('button.sending.creating')"
+            :is-sending="state.isSending"
+            :flat="false"
+            :button-title="$t('button.create')"
+            :on-click="() => $refs.form.submit()"
+            :color="'primary'"
+          />
+        </v-col>
+      </v-row>
     </template>
   </modal-template>
 </template>
@@ -31,13 +37,14 @@ import { mapActions, mapGetters } from 'vuex'
 import { REQUESTS_STATE } from '../../../../store/modules/api/types'
 import { API } from '../../../../api'
 import FolderForm from '../form/FolderForm'
-import SendingButton from '@/components/commons/button/AppButton'
+import AppButton from '@/components/commons/button/AppButton'
 
 export default {
   name: 'ModalCreateFolder',
-  components: { SendingButton, FolderForm, ModalTemplate },
+  components: { AppButton, FolderForm, ModalTemplate },
   data: () => ({
     isOpen: false,
+    callbackData: null,
     data: null,
   }),
   computed: {
@@ -56,13 +63,17 @@ export default {
         }
       })
     },
+    onClose() {
+      this.callbackData = null
+      this.folderId = null
+    },
   },
   created() {
     events.listen(EVENTS.MODAL.FOLDER.CREATE, ({ topology }) => {
       this.isOpen = true
       if (!topology) topology = {}
       if (topology.id) topology = { parent: topology.id }
-      this.data = topology
+      this.callbackData = topology
     })
   },
 }

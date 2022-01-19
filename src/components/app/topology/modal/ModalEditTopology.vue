@@ -2,24 +2,29 @@
   <modal-template
     v-model="isOpen"
     :title="$t('topologies.modals.edit.title')"
-    :on-cancel="() => $refs.form.reset()"
-    :on-close="() => $refs.form.reset()"
+    :on-close="() => onClose"
     :on-confirm="() => $refs.form.submit()"
   >
     <template #default>
-      <v-col cols="12">
-        <topology-form ref="form" :data="data" :sending-btn="false" :on-submit="submit" />
-      </v-col>
+      <v-row dense>
+        <v-col cols="12">
+          <topology-form ref="form" :callback-data="callbackData" :sending-btn="false" :on-submit="submit" />
+        </v-col>
+      </v-row>
     </template>
     <template #sendingButton>
-      <sending-button
-        :sending-title="$t('button.sending.editing')"
-        :is-sending="state.isSending"
-        :flat="false"
-        :button-title="$t('button.edit')"
-        :on-click="() => $refs.form.submit()"
-        :color="'primary'"
-      />
+      <v-row dense>
+        <v-col cols="12" class="d-flex justify-end">
+          <app-button
+            :sending-title="$t('button.sending.editing')"
+            :is-sending="state.isSending"
+            :flat="false"
+            :button-title="$t('button.edit')"
+            :on-click="() => $refs.form.submit()"
+            :color="'primary'"
+          />
+        </v-col>
+      </v-row>
     </template>
   </modal-template>
 </template>
@@ -32,14 +37,14 @@ import { mapActions, mapGetters } from 'vuex'
 import { REQUESTS_STATE } from '../../../../store/modules/api/types'
 import { API } from '../../../../api'
 import TopologyForm from '../form/TopologyForm'
-import SendingButton from '@/components/commons/button/AppButton'
+import AppButton from '@/components/commons/button/AppButton'
 
 export default {
   name: 'ModalEditTopology',
-  components: { SendingButton, ModalTemplate, TopologyForm },
+  components: { AppButton, ModalTemplate, TopologyForm },
   data: () => ({
     isOpen: false,
-    data: null,
+    callbackData: null,
     topologyId: null,
   }),
   computed: {
@@ -58,12 +63,16 @@ export default {
         }
       })
     },
+    onClose() {
+      this.callbackData = null
+      this.folderId = null
+    },
   },
   created() {
     events.listen(EVENTS.MODAL.TOPOLOGY.EDIT, ({ topology }) => {
       this.isOpen = true
       if (!topology) topology = {}
-      this.data = topology
+      this.callbackData = topology
       this.topologyId = topology.id
     })
   },

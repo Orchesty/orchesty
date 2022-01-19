@@ -1,7 +1,7 @@
 <template>
   <ValidationObserver ref="form" tag="form" :disabled="readonly" @submit.prevent="submit">
     <validation-provider v-slot="{ errors }" :name="$t('users.form.email.name')" :rules="fields.email.validations" slim>
-      <v-text-field
+      <app-input
         v-model="form.email"
         prepend-icon="email"
         :label="$t('users.form.email.label')"
@@ -15,9 +15,11 @@
 
 <script>
 import FormMixin from '../../../commons/mixins/FormMixin'
+import AppInput from '@/components/commons/input/AppInput'
 
 export default {
   name: 'UserForm',
+  components: { AppInput },
   mixins: [FormMixin],
   props: {
     user: {

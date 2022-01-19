@@ -3,21 +3,20 @@
     <v-row>
       <v-col cols="12" lg="6" class="d-flex">
         <v-card-text class="my-auto mx-5">
-          <ValidationObserver ref="loginForm" tag="form" @submit.prevent="submit">
+          <ValidationObserver ref="loginForm" tag="form" @submit.prevent="submit" @keydown.enter="submit">
             <validation-provider
               v-slot="{ errors }"
               :name="$t('login.form.email.name')"
               :rules="fields.email.validations"
               slim
             >
-              <v-text-field
+              <app-input
                 v-model="form.email"
                 prepend-icon="person"
                 :label="$t('login.form.email.label')"
                 type="text"
                 :name="fields.email.id"
-                :error-messages="errors[0]"
-                autofocus
+                :error-messages="errors"
               />
             </validation-provider>
             <validation-provider
@@ -26,19 +25,19 @@
               :rules="fields.password.validations"
               slim
             >
-              <v-text-field
+              <app-input
                 v-model="form.password"
                 prepend-icon="lock"
                 :label="$t('login.form.password.label')"
                 type="password"
-                :error-messages="errors[0]"
+                :error-messages="errors"
               />
             </validation-provider>
             <router-link :to="{ name: ROUTES.FORGOT_PASSWORD }">
               <span class="ml-8"> {{ $t('login.forgot_link') }} </span>
             </router-link>
             <div class="text-right">
-              <sending-button
+              <app-button
                 :is-sending="isSending"
                 :button-title="$t('login.form.submit.label')"
                 :sending-title="$t('button.sending.login')"
@@ -59,14 +58,15 @@
 <script>
 import { ROUTES } from '../../../../services/enums/routerEnums'
 import FormMixin from '@/components/commons/mixins/FormMixin'
-import SendingButton from '@/components/commons/button/AppButton'
 import { mapGetters } from 'vuex'
 import { REQUESTS_STATE } from '@/store/modules/api/types'
 import { API } from '@/api'
+import AppButton from '@/components/commons/button/AppButton'
+import AppInput from '@/components/commons/input/AppInput'
 
 export default {
   name: 'LoginForm',
-  components: { SendingButton },
+  components: { AppInput, AppButton },
   computed: {
     ...mapGetters(REQUESTS_STATE.NAMESPACE, [REQUESTS_STATE.GETTERS.GET_STATE]),
     state() {

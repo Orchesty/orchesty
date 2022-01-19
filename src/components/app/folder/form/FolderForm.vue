@@ -6,13 +6,11 @@
       :rules="fields.name.validations"
       slim
     >
-      <v-text-field
+      <app-input
         v-model="form.name"
         :label="$t('folders.createFolder.form.name.label')"
         type="text"
-        :name="fields.name.id"
-        :error-messages="errors[0]"
-        autofocus
+        :error-messages="errors"
       />
     </validation-provider>
   </ValidationObserver>
@@ -20,14 +18,17 @@
 
 <script>
 import FormMixin from '../../../commons/mixins/FormMixin'
+import AppInput from '@/components/commons/input/AppInput'
 
 export default {
-  name: 'CreateFolderForm',
+  name: 'FolderForm',
+  components: { AppInput },
   mixins: [FormMixin],
   data() {
     return {
       form: {
-        ...this.init(),
+        name: '',
+        parent: '',
       },
       fields: {
         name: {
@@ -40,7 +41,7 @@ export default {
     }
   },
   props: {
-    data: {
+    callbackData: {
       type: Object,
       default: () => {},
     },
@@ -53,25 +54,17 @@ export default {
       }
       this.onSubmit(this.form)
     },
-    init(data) {
-      if (!data) data = {}
-      return {
-        name: data.name || null,
-        parent: data.parent || null,
-      }
-    },
-    reset() {
-      this.form = this.init()
-    },
   },
   watch: {
-    data: {
+    callbackData: {
+      deep: true,
       immediate: true,
-      handler(val) {
-        this.form = this.init(val)
+      handler(callbackdata) {
+        if (!callbackdata) return
+        this.form.name = callbackdata.name
+        this.form.parent = callbackdata.parent
       },
     },
-    deep: true,
   },
 }
 </script>

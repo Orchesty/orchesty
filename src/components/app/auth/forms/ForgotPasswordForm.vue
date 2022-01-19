@@ -11,18 +11,17 @@
           :rules="fields.email.validations"
           slim
         >
-          <v-text-field
+          <app-input
             v-model="form.email"
             prepend-icon="person"
             :label="$t('forgotPassword.form.email.label')"
             type="text"
             :name="fields.email.id"
-            :error-messages="errors[0]"
-            autofocus
+            :error-messages="errors"
           />
         </validation-provider>
         <div class="text-right">
-          <sending-button
+          <app-button
             :is-sending="isSending"
             :button-title="$t('button.send')"
             :sending-title="$t('button.sending.sending')"
@@ -39,11 +38,12 @@
 import { ROUTES } from '../../../../services/enums/routerEnums'
 import FormMixin from '../../../commons/mixins/FormMixin'
 import FullLogo from '../../../commons/logo/FullLogo'
-import SendingButton from '@/components/commons/button/AppButton'
+import AppButton from '@/components/commons/button/AppButton'
+import AppInput from '@/components/commons/input/AppInput'
 
 export default {
   name: 'ForgotPasswordForm',
-  components: { SendingButton, FullLogo },
+  components: { AppInput, AppButton, FullLogo },
   mixins: [FormMixin],
   data() {
     return {

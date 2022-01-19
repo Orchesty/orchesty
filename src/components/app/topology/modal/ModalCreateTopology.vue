@@ -2,24 +2,29 @@
   <modal-template
     v-model="isOpen"
     :title="$t('topologies.modals.create.title')"
-    :on-close="() => $refs.form.reset()"
-    :on-cancel="() => $refs.form.reset()"
+    :on-close="onClose"
     :on-confirm="() => $refs.form.submit()"
   >
     <template #default>
-      <v-col cols="12">
-        <topology-form ref="form" :data="data" :on-submit="submit" />
-      </v-col>
+      <v-row dense>
+        <v-col cols="12">
+          <topology-form ref="form" :callback-data="callbackData" :on-submit="submit" />
+        </v-col>
+      </v-row>
     </template>
     <template #sendingButton>
-      <sending-button
-        :sending-title="$t('button.sending.creating')"
-        :is-sending="state.isSending"
-        :flat="false"
-        :button-title="$t('button.create')"
-        :on-click="() => $refs.form.submit()"
-        :color="'primary'"
-      />
+      <v-row dense>
+        <v-col cols="12" class="d-flex justify-end">
+          <app-button
+            :sending-title="$t('button.sending.creating')"
+            :is-sending="state.isSending"
+            :flat="false"
+            :button-title="$t('button.create')"
+            :on-click="() => $refs.form.submit()"
+            :color="'primary'"
+          />
+        </v-col>
+      </v-row>
     </template>
   </modal-template>
 </template>
@@ -32,15 +37,15 @@ import { mapActions, mapGetters } from 'vuex'
 import { REQUESTS_STATE } from '../../../../store/modules/api/types'
 import { API } from '../../../../api'
 import TopologyForm from '../form/TopologyForm'
-import SendingButton from '@/components/commons/button/AppButton'
 import { ROUTES } from '@/services/enums/routerEnums'
+import AppButton from '@/components/commons/button/AppButton'
 
 export default {
   name: 'ModalCreateTopology',
-  components: { SendingButton, ModalTemplate, TopologyForm },
+  components: { AppButton, ModalTemplate, TopologyForm },
   data: () => ({
     isOpen: false,
-    data: null,
+    callbackData: null,
   }),
   computed: {
     ...mapGetters(REQUESTS_STATE.NAMESPACE, [REQUESTS_STATE.GETTERS.GET_STATE]),
@@ -65,13 +70,17 @@ export default {
         }
       })
     },
+    onClose() {
+      this.callbackData = null
+      this.folderId = null
+    },
   },
   created() {
     events.listen(EVENTS.MODAL.TOPOLOGY.CREATE, ({ topology }) => {
       this.isOpen = true
       if (!topology) topology = {}
       if (topology.type === 'CATEGORY') topology = { category: topology.id }
-      this.data = topology
+      this.callbackData = topology
     })
   },
 }

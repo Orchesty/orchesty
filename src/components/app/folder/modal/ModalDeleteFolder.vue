@@ -6,7 +6,7 @@
       </v-col>
     </template>
     <template #sendingButton>
-      <sending-button
+      <app-button
         :sending-title="$t('button.sending.deleting')"
         :is-sending="state.isSending"
         :flat="false"
@@ -25,11 +25,11 @@ import { mapActions, mapGetters } from 'vuex'
 import { TOPOLOGIES } from '../../../../store/modules/topologies/types'
 import { REQUESTS_STATE } from '../../../../store/modules/api/types'
 import { API } from '../../../../api'
-import SendingButton from '@/components/commons/button/AppButton'
+import AppButton from '@/components/commons/button/AppButton'
 
 export default {
   name: 'ModalDeleteFolder',
-  components: { SendingButton, ModalTemplate },
+  components: { AppButton, ModalTemplate },
   data: () => ({
     isOpen: false,
     data: null,

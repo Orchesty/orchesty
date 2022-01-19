@@ -8,18 +8,24 @@
       :on-close="() => $refs.form.resetForm()"
     >
       <template #default>
-        <v-col cols="12">
-          <implementations-form ref="form" :on-submit="submit" />
-        </v-col>
+        <v-row dense>
+          <v-col cols="12">
+            <implementations-form ref="form" :on-submit="submit" />
+          </v-col>
+        </v-row>
       </template>
       <template #sendingButton>
-        <sending-button
-          :sending-title="$t('button.sending.creating')"
-          :is-sending="state.isSending"
-          :button-title="$t('button.create')"
-          :on-click="() => $refs.form.submit()"
-          :flat="false"
-        />
+        <v-row dense>
+          <v-col cols="12" class="d-flex justify-end">
+            <app-button
+              :sending-title="$t('button.sending.creating')"
+              :is-sending="state.isSending"
+              :button-title="$t('button.create')"
+              :on-click="() => $refs.form.submit()"
+              :flat="false"
+            />
+          </v-col>
+        </v-row>
       </template>
       <template #button>
         <v-btn color="primary" @click="isOpen = !isOpen">
@@ -37,7 +43,7 @@ import { mapActions, mapGetters } from 'vuex'
 import { REQUESTS_STATE } from '../../../../store/modules/api/types'
 import { API } from '../../../../api'
 import ModalTemplate from '@/components/commons/modal/ModalTemplate'
-import SendingButton from '@/components/commons/button/AppButton'
+import AppButton from '@/components/commons/button/AppButton'
 
 export default {
   name: 'ImplementationCreateModal',
@@ -46,7 +52,7 @@ export default {
       isOpen: false,
     }
   },
-  components: { SendingButton, ModalTemplate, ImplementationsForm },
+  components: { AppButton, ModalTemplate, ImplementationsForm },
   computed: {
     ...mapGetters(REQUESTS_STATE.NAMESPACE, [REQUESTS_STATE.GETTERS.GET_STATE]),
     state() {

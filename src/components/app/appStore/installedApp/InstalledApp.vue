@@ -58,14 +58,14 @@
                     :name="item.key"
                     :rules="item.required ? 'required' : ''"
                   >
-                    <v-text-field
+                    <app-input
                       v-model="form.appSettings[item.key]"
                       dense
                       outlined
                       :readonly="item.readonly"
                       :disabled="item.disabled"
                       :label="item.label"
-                      :error-messages="errors[0]"
+                      :error-messages="errors"
                     />
                   </validation-provider>
                   <validation-provider v-if="item.type === 'password'">
@@ -120,7 +120,7 @@
                 <validation-observer :key="item.name" :ref="item.name" slim @submit.prevent="saveWebhook(item.name)">
                   <v-row>
                     <v-col cols="12" lg="5">
-                      <v-text-field dense outlined readonly label="Webhook Name" :value="item.name" />
+                      <app-input dense outlined readonly label="Webhook Name" :value="item.name" />
                     </v-col>
                     <v-col cols="12" lg="5">
                       <validation-provider v-slot="{ errors }" :name="item.name" rules="required">
@@ -165,10 +165,11 @@ import { ROUTES } from '@/services/enums/routerEnums'
 import { REQUESTS_STATE } from '@/store/modules/api/types'
 import { config } from '@/config'
 import AppItemPasswordModal from '@/components/app/appStore/modal/AppItemPasswordModal'
+import AppInput from '@/components/commons/input/AppInput'
 
 export default {
   name: 'InstalledApp',
-  components: { AppItemPasswordModal },
+  components: { AppInput, AppItemPasswordModal },
   data() {
     return {
       form: {

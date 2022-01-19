@@ -2,24 +2,29 @@
   <modal-template
     v-model="isOpen"
     :title="$t('folders.modals.edit.title')"
-    :on-cancel="() => $refs.form.reset()"
-    :on-close="() => $refs.form.reset()"
+    :on-close="onClose"
     :on-confirm="() => $refs.form.submit()"
   >
     <template #default>
-      <v-col cols="12">
-        <folder-form ref="form" :data="data" :sending-btn="false" :on-submit="submit" />
-      </v-col>
+      <v-row dense>
+        <v-col cols="12">
+          <folder-form ref="form" :callback-data="callbackData" :on-submit="submit" />
+        </v-col>
+      </v-row>
     </template>
     <template #sendingButton>
-      <sending-button
-        :sending-title="$t('button.sending.editing')"
-        :is-sending="state.isSending"
-        :flat="false"
-        :button-title="$t('button.edit')"
-        :on-click="() => $refs.form.submit()"
-        :color="'primary'"
-      />
+      <v-row dense>
+        <v-col cols="12" class="d-flex justify-end">
+          <app-button
+            :sending-title="$t('button.sending.editing')"
+            :is-sending="state.isSending"
+            :flat="false"
+            :button-title="$t('button.edit')"
+            :on-click="() => $refs.form.submit()"
+            :color="'primary'"
+          />
+        </v-col>
+      </v-row>
     </template>
   </modal-template>
 </template>
@@ -32,14 +37,14 @@ import { mapActions, mapGetters } from 'vuex'
 import { REQUESTS_STATE } from '../../../../store/modules/api/types'
 import { API } from '../../../../api'
 import FolderForm from '../form/FolderForm'
-import SendingButton from '@/components/commons/button/AppButton'
+import AppButton from '@/components/commons/button/AppButton'
 
 export default {
   name: 'ModalEditFolder',
-  components: { SendingButton, FolderForm, ModalTemplate },
+  components: { AppButton, FolderForm, ModalTemplate },
   data: () => ({
     isOpen: false,
-    data: null,
+    callbackData: null,
     folderId: null,
   }),
   computed: {
@@ -58,12 +63,16 @@ export default {
         }
       })
     },
+    onClose() {
+      this.callbackData = null
+      this.folderId = null
+    },
   },
   created() {
     events.listen(EVENTS.MODAL.FOLDER.EDIT, ({ topology }) => {
       this.isOpen = true
       if (!topology) topology = {}
-      this.data = topology
+      this.callbackData = topology
       this.folderId = topology.id
     })
   },

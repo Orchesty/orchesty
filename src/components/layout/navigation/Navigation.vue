@@ -2,7 +2,7 @@
   <v-navigation-drawer app clipped hide-overlay permanent mini-variant class="overflow-y-hidden">
     <v-list>
       <v-list-item class="px-2" @click="redirectToDashboard">
-        <v-list-item-content>
+        <v-list-item-content class="safari-fix">
           <img src="@/assets/svg/logo.svg" alt="HANABOSO, s.r.o." />
         </v-list-item-content>
       </v-list-item>
@@ -74,5 +74,11 @@ export default {
 <style lang="scss" scoped>
 .v-list-item {
   height: 64px;
+}
+.safari-fix {
+  max-height: 100%;
+  img {
+    width: 100%;
+  }
 }
 </style>

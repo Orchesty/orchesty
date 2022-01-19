@@ -6,7 +6,7 @@
       :rules="fields.url.validations"
       slim
     >
-      <v-text-field v-model="form.url" :label="$t('curlSender.form.url.label')" :error-messages="errors[0]" />
+      <app-input v-model="form.url" :label="$t('curlSender.form.url.label')" :error-messages="errors" />
     </validation-provider>
     <validation-provider
       v-slot="{ errors }"
@@ -16,6 +16,8 @@
     >
       <v-select
         v-model="form.method"
+        outlined
+        dense
         :items="restMethods"
         :label="$t('curlSender.form.method.label')"
         :error-messages="errors[0]"
@@ -28,10 +30,11 @@
 <script>
 import FormMixin from '@/components/commons/mixins/FormMixin'
 import KeyValueInput from '../../../commons/input/KeyValueInput'
+import AppInput from '@/components/commons/input/AppInput'
 
 export default {
   name: 'CurlForm',
-  components: { KeyValueInput },
+  components: { AppInput, KeyValueInput },
   mixins: [FormMixin],
   props: {
     service: {

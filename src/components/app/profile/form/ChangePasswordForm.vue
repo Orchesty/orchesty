@@ -19,14 +19,14 @@
                     :rules="fields.current.validations"
                     slim
                   >
-                    <v-text-field
+                    <app-input
                       :ref="fields.current.id"
                       v-model="form.current"
                       dense
                       :label="$t('profile.changePassword.form.current-password.label')"
                       type="password"
                       outlined
-                      :error-messages="errors[0]"
+                      :error-messages="errors"
                     />
                   </validation-provider>
                 </v-col>
@@ -40,14 +40,14 @@
                     :rules="fields.password.validations"
                     slim
                   >
-                    <v-text-field
+                    <app-input
                       :ref="fields.password.id"
                       v-model="form.password"
                       dense
                       outlined
                       :label="$t('profile.changePassword.form.password.label')"
                       type="password"
-                      :error-messages="errors[0]"
+                      :error-messages="errors"
                     />
                   </validation-provider>
                 </v-col>
@@ -60,20 +60,20 @@
                     :rules="fields.confirm.validations"
                     slim
                   >
-                    <v-text-field
+                    <app-input
                       v-model="form.confirm"
                       dense
                       :label="$t('profile.changePassword.form.confirm.label')"
                       type="password"
                       outlined
-                      :error-messages="errors[0]"
+                      :error-messages="errors"
                     />
                   </validation-provider>
                 </v-col>
               </v-row>
               <v-row dense>
                 <v-col cols="12" class="text-center">
-                  <sending-button
+                  <app-button
                     :is-sending="isSending"
                     :button-title="$t('button.save')"
                     :sending-title="$t('button.sending.saving')"
@@ -93,15 +93,16 @@
 <script>
 import { ROUTES } from '@/services/enums/routerEnums'
 import FormMixin from '../../../commons/mixins/FormMixin'
-import SendingButton from '@/components/commons/button/AppButton'
 import { AUTH } from '@/store/modules/auth/types'
 import { mapActions, mapGetters } from 'vuex'
 import { REQUESTS_STATE } from '@/store/modules/api/types'
 import { API } from '@/api'
+import AppButton from '@/components/commons/button/AppButton'
+import AppInput from '@/components/commons/input/AppInput'
 
 export default {
   name: 'ChangePasswordForm',
-  components: { SendingButton },
+  components: { AppInput, AppButton },
   mixins: [FormMixin],
   data() {
     return {

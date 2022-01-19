@@ -14,7 +14,7 @@
         <div class="flex-grow-1"></div>
         <v-toolbar-items>
           <slot name="toolbar-buttons"></slot>
-          <sending-button
+          <app-button
             v-if="confirmBtnText"
             :button-title="confirmBtnText"
             :sending-title="sendingTitle"
@@ -24,20 +24,20 @@
           />
         </v-toolbar-items>
       </v-toolbar>
-      <slot></slot>
-      <v-col cols="12" class="text-end">
+      <v-container>
+        <slot></slot>
         <slot name="sendingButton"> </slot>
-      </v-col>
+      </v-container>
     </v-card>
   </v-dialog>
 </template>
 
 <script>
-import SendingButton from '../button/AppButton'
+import AppButton from '@/components/commons/button/AppButton'
 
 export default {
   name: 'ModalTemplate',
-  components: { SendingButton },
+  components: { AppButton },
   data: () => ({
     isOpen: false,
   }),

@@ -1,49 +1,55 @@
 <template>
   <modal-template v-model="isOpen" :title="$t('topologies.run.title')" :on-confirm="submit" :on-close="reset">
     <template #default>
-      <v-col cols="12">
-        <v-row dense>
-          <v-col cols="12">
-            <div>
-              Topology: <span class="font-weight-medium">{{ topologyName }}</span>
-            </div>
-            <div>{{ $t('topologies.run.selectStartingPoint') }}</div>
-          </v-col>
-        </v-row>
+      <v-row dense>
+        <v-col cols="12">
+          <v-row dense>
+            <v-col cols="12">
+              <div>
+                Topology: <span class="font-weight-medium">{{ topologyName }}</span>
+              </div>
+              <div>{{ $t('topologies.run.selectStartingPoint') }}</div>
+            </v-col>
+          </v-row>
 
-        <v-row dense>
-          <v-col cols="12">
-            <v-list dense>
-              <v-list-item-group v-model="selected" multiple>
-                <v-list-item v-for="item in startingPoints" :key="item._id" dense>
-                  <template #default="{ active }">
-                    <v-list-item-action>
-                      <v-checkbox :input-value="active" color="primary" />
-                    </v-list-item-action>
-                    <v-list-item-title v-text="item.name" />
-                  </template>
-                </v-list-item>
-              </v-list-item-group>
-            </v-list>
-          </v-col>
-        </v-row>
+          <v-row dense>
+            <v-col cols="12">
+              <v-list dense>
+                <v-list-item-group v-model="selected" multiple>
+                  <v-list-item v-for="item in startingPoints" :key="item._id" dense>
+                    <template #default="{ active }">
+                      <v-list-item-action>
+                        <v-checkbox :input-value="active" color="primary" />
+                      </v-list-item-action>
+                      <v-list-item-title v-text="item.name" />
+                    </template>
+                  </v-list-item>
+                </v-list-item-group>
+              </v-list>
+            </v-col>
+          </v-row>
 
-        <v-row dense>
-          <v-col cols="12">
-            <div class="pb-1">{{ $t('topologies.run.bodyParameters') }}</div>
-            <v-textarea v-model="body" placeholder="{ 'FORMAT': 'JSON' }" />
-          </v-col>
-        </v-row>
-      </v-col>
+          <v-row dense>
+            <v-col cols="12">
+              <div class="pb-1">{{ $t('topologies.run.bodyParameters') }}</div>
+              <v-textarea v-model="body" outlined dense placeholder="{ 'FORMAT': 'JSON' }" />
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
     </template>
     <template #sendingButton>
-      <sending-button
-        :sending-title="$t('button.sending.run')"
-        :is-sending="state.isSending"
-        :button-title="$t('button.run')"
-        :on-click="submit"
-        :flat="false"
-      />
+      <v-row dense>
+        <v-col cols="12" class="d-flex justify-end">
+          <app-button
+            :sending-title="$t('button.sending.run')"
+            :is-sending="state.isSending"
+            :button-title="$t('button.run')"
+            :on-click="submit"
+            :flat="false"
+          />
+        </v-col>
+      </v-row>
     </template>
   </modal-template>
 </template>
@@ -54,12 +60,12 @@ import { REQUESTS_STATE } from '../../../../store/modules/api/types'
 import { API } from '../../../../api'
 import ModalTemplate from '@/components/commons/modal/ModalTemplate'
 import { TOPOLOGIES } from '@/store/modules/topologies/types'
-import SendingButton from '@/components/commons/button/AppButton'
 import { EVENTS, events } from '@/services/utils/events'
+import AppButton from '@/components/commons/button/AppButton'
 
 export default {
   name: 'ModalRunTopology',
-  components: { SendingButton, ModalTemplate },
+  components: { AppButton, ModalTemplate },
   data() {
     return {
       isOpen: false,

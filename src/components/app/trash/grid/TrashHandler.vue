@@ -2,13 +2,13 @@
   <v-container class="px-0" fluid>
     <v-row>
       <v-col cols="3">
-        <v-text-field v-model="topologyName" hide-details dense outlined clearable label="Topology" />
+        <app-input v-model="topologyName" hide-details dense outlined clearable label="Topology" />
       </v-col>
       <v-col cols="3">
-        <v-text-field v-model="nodeName" hide-details dense outlined clearable label="Node" />
+        <app-input v-model="nodeName" hide-details dense outlined clearable label="Node" />
       </v-col>
       <v-col cols="3">
-        <v-text-field
+        <app-input
           v-model="native"
           hide-details
           dense
@@ -35,9 +35,10 @@
 
 <script>
 import TrashGrid from '@/components/app/trash/grid/TrashGrid'
+import AppInput from '@/components/commons/input/AppInput'
 export default {
   name: 'TrashHandler',
-  components: { TrashGrid },
+  components: { AppInput, TrashGrid },
   data() {
     return {
       topologyName: '',

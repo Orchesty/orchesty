@@ -6,7 +6,7 @@
       :rules="fields.text.validations"
       slim
     >
-      <v-text-field v-model="form.host" :label="$t('amqpSender.form.host.label')" :error-messages="errors[0]" />
+      <app-input v-model="form.host" :label="$t('amqpSender.form.host.label')" :error-messages="errors" />
     </validation-provider>
     <validation-provider
       v-slot="{ errors }"
@@ -14,7 +14,7 @@
       :rules="fields.port.validations"
       slim
     >
-      <v-text-field v-model="form.port" :label="$t('amqpSender.form.port.label')" :error-messages="errors[0]" />
+      <app-input v-model="form.port" :label="$t('amqpSender.form.port.label')" :error-messages="errors" />
     </validation-provider>
     <validation-provider
       v-slot="{ errors }"
@@ -22,7 +22,7 @@
       :rules="fields.text.validations"
       slim
     >
-      <v-text-field v-model="form.vhost" :label="$t('amqpSender.form.vhost.label')" :error-messages="errors[0]" />
+      <app-input v-model="form.vhost" :label="$t('amqpSender.form.vhost.label')" :error-messages="errors" />
     </validation-provider>
     <validation-provider
       v-slot="{ errors }"
@@ -30,7 +30,7 @@
       :rules="fields.text.validations"
       slim
     >
-      <v-text-field v-model="form.user" :label="$t('amqpSender.form.username.label')" :error-messages="errors[0]" />
+      <app-input v-model="form.user" :label="$t('amqpSender.form.username.label')" :error-messages="errors" />
     </validation-provider>
     <validation-provider
       v-slot="{ errors }"
@@ -38,11 +38,11 @@
       :rules="fields.text.validations"
       slim
     >
-      <v-text-field
+      <app-input
         v-model="form.password"
         type="password"
         :label="$t('amqpSender.form.password.label')"
-        :error-messages="errors[0]"
+        :error-messages="errors"
       />
     </validation-provider>
     <validation-provider
@@ -51,16 +51,18 @@
       :rules="fields.text.validations"
       slim
     >
-      <v-text-field v-model="form.queue" :label="$t('amqpSender.form.queue.label')" :error-messages="errors[0]" />
+      <app-input v-model="form.queue" :label="$t('amqpSender.form.queue.label')" :error-messages="errors" />
     </validation-provider>
   </validation-observer>
 </template>
 
 <script>
 import FormMixin from '@/components/commons/mixins/FormMixin'
+import AppInput from '@/components/commons/input/AppInput'
 
 export default {
   name: 'AmqpForm',
+  components: { AppInput },
   mixins: [FormMixin],
   props: {
     service: {

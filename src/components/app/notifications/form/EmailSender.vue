@@ -6,7 +6,7 @@
       :rules="fields.text.validations"
       slim
     >
-      <v-text-field v-model="form.host" :label="$t('emailSender.form.host.label')" :error-messages="errors[0]" />
+      <app-input v-model="form.host" :label="$t('emailSender.form.host.label')" :error-messages="errors" />
     </validation-provider>
     <validation-provider
       v-slot="{ errors }"
@@ -14,7 +14,7 @@
       :rules="fields.port.validations"
       slim
     >
-      <v-text-field v-model="form.port" :label="$t('emailSender.form.port.label')" :error-messages="errors[0]" />
+      <app-input v-model="form.port" :label="$t('emailSender.form.port.label')" :error-messages="errors" />
     </validation-provider>
     <validation-provider
       v-slot="{ errors }"
@@ -22,11 +22,7 @@
       :rules="fields.text.validations"
       slim
     >
-      <v-text-field
-        v-model="form.username"
-        :label="$t('emailSender.form.username.label')"
-        :error-messages="errors[0]"
-      />
+      <app-input v-model="form.username" :label="$t('emailSender.form.username.label')" :error-messages="errors" />
     </validation-provider>
     <validation-provider
       v-slot="{ errors }"
@@ -34,11 +30,11 @@
       :rules="fields.text.validations"
       slim
     >
-      <v-text-field
+      <app-input
         v-model="form.password"
         type="password"
         :label="$t('emailSender.form.password.label')"
-        :error-messages="errors[0]"
+        :error-messages="errors"
       />
     </validation-provider>
     <validation-provider
@@ -49,6 +45,8 @@
     >
       <v-select
         v-model="form.encryption"
+        outlined
+        dense
         :items="encryption"
         :label="$t('emailSender.form.encryption.label')"
         :error-messages="errors[0]"
@@ -60,7 +58,7 @@
       :rules="fields.emails.validations"
       slim
     >
-      <v-text-field v-model="form.email" :label="$t('emailSender.form.sender.label')" :error-messages="errors[0]" />
+      <app-input v-model="form.email" :label="$t('emailSender.form.sender.label')" :error-messages="errors" />
     </validation-provider>
     <validation-provider
       v-slot="{ errors }"
@@ -70,6 +68,8 @@
     >
       <v-combobox
         v-model="form.emails"
+        outlined
+        dense
         :label="$t('emailSender.form.receiver.label')"
         :error-messages="errors[0]"
         multiple
@@ -82,9 +82,11 @@
 
 <script>
 import FormMixin from '@/components/commons/mixins/FormMixin'
+import AppInput from '@/components/commons/input/AppInput'
 
 export default {
   name: 'EmailSender',
+  components: { AppInput },
   mixins: [FormMixin],
   props: {
     service: {

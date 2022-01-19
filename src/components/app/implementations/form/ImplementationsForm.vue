@@ -6,7 +6,7 @@
       :rules="fields.site.validations"
       slim
     >
-      <v-text-field v-model="form.site" :label="$t('implementation.form.url.label')" :error-messages="errors[0]" />
+      <app-input v-model="form.site" :label="$t('implementation.form.url.label')" :error-messages="errors" />
     </validation-provider>
     <validation-provider
       v-slot="{ errors }"
@@ -14,16 +14,18 @@
       :rules="fields.name.validations"
       slim
     >
-      <v-text-field v-model="form.name" :label="$t('implementation.form.name.label')" :error-messages="errors[0]" />
+      <app-input v-model="form.name" :label="$t('implementation.form.name.label')" :error-messages="errors" />
     </validation-provider>
   </validation-observer>
 </template>
 
 <script>
 import FormMixin from '../../../commons/mixins/FormMixin'
+import AppInput from '@/components/commons/input/AppInput'
 
 export default {
   name: 'ImplementationsForm',
+  components: { AppInput },
   mixins: [FormMixin],
   props: {
     implementation: {

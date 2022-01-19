@@ -1,19 +1,25 @@
 <template>
   <modal-template v-model="isOpen" :title="$t('topologies.modals.move.title')">
     <template #default>
-      <v-col cols="12">
-        <topology-move-tree-view v-model="selectedCategoryId" :topologies="topologies" :topology="topology" />
-      </v-col>
+      <v-row dense>
+        <v-col cols="12">
+          <topology-move-tree-view v-model="selectedCategoryId" :topologies="topologies" :topology="topology" />
+        </v-col>
+      </v-row>
     </template>
     <template #sendingButton>
-      <sending-button
-        :sending-title="$t('button.sending.moving')"
-        :is-sending="state.isSending"
-        :button-title="$t('button.move')"
-        :on-click="submit"
-        :flat="false"
-        class="mt-1"
-      />
+      <v-row dense>
+        <v-col cols="12" class="d-flex justify-end">
+          <app-button
+            :sending-title="$t('button.sending.moving')"
+            :is-sending="state.isSending"
+            :button-title="$t('button.move')"
+            :on-click="submit"
+            :flat="false"
+            class="mt-1"
+          />
+        </v-col>
+      </v-row>
     </template>
   </modal-template>
 </template>
@@ -24,13 +30,13 @@ import ModalTemplate from '../../../commons/modal/ModalTemplate'
 import { TOPOLOGIES } from '@/store/modules/topologies/types'
 import { mapActions, mapGetters } from 'vuex'
 import { REQUESTS_STATE } from '@/store/modules/api/types'
-import SendingButton from '../../../commons/button/AppButton'
 import { API } from '@/api'
 import TopologyMoveTreeView from '../treeview/TopologyMoveTreeView'
+import AppButton from '@/components/commons/button/AppButton'
 
 export default {
   name: 'ModalMoveTopology',
-  components: { ModalTemplate, SendingButton, TopologyMoveTreeView },
+  components: { AppButton, ModalTemplate, TopologyMoveTreeView },
   data: () => ({
     isOpen: false,
     topologies: [],
