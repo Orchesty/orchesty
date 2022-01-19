@@ -22,12 +22,13 @@ final class SdkRepository extends DocumentRepository
      * @return mixed[]
      * @throws TopologyException
      */
-    public function findByHost(string $host): array {
+    public function findByHost(string $host): array
+    {
         return $this->findOneBy(['url' => $host])?->getHeaders() ??
-           throw new TopologyException(
-               sprintf('Selected host "%s" was not found.', $host),
-               TopologyException::SDK_HEADERS_NOT_FOUND
-           );
+            throw new TopologyException(
+                sprintf('Selected host "%s" was not found.', $host),
+                TopologyException::SDK_HEADERS_NOT_FOUND,
+            );
     }
 
 }
