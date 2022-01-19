@@ -28,6 +28,7 @@ type TopologyBridgeWorkerSettingsJSON struct {
 	ProcessPath    string                                `json:"process_path,omitempty"`
 	StatusPath     string                                `json:"status_path,omitempty"`
 	Method         string                                `json:"method,omitempty"`
+	Headers        map[string]interface{}                `json:"headers"`
 	Port           int                                   `json:"port,omitempty"`
 	Secure         bool                                  `json:"secure,omitempty" default:"true"`
 	Opts           []string                              `json:"opts,omitempty"`
@@ -78,10 +79,11 @@ type NodeJsonFollower struct {
 }
 
 type NodeSettingsJson struct {
-	Url        string `json:"url,omitempty"`
-	ActionPath string `json:"actionPath,omitempty"`
-	TestPath   string `json:"testPath,omitempty"`
-	Method     string `json:"method,omitempty"`
+	Url        string                 `json:"url,omitempty"`
+	ActionPath string                 `json:"actionPath,omitempty"`
+	TestPath   string                 `json:"testPath,omitempty"`
+	Method     string                 `json:"method,omitempty"`
+	Headers    map[string]interface{} `json:"headers"`
 	// Bridge
 	Timeout        int `json:"timeout,omitempty"`
 	RabbitPrefetch int `json:"rabbitPrefetch,omitempty"`

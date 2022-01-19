@@ -129,6 +129,7 @@ func (p *NodeConfig) GetTopologyJson(t *Topology, nodes []Node) (TopologyJson, e
 				Url:        fmt.Sprintf("http://%s:%d", worker.Settings.Host, worker.Settings.Port),
 				ActionPath: worker.Settings.ProcessPath,
 				TestPath:   worker.Settings.StatusPath,
+				Headers:    worker.Settings.Headers,
 				Method:     worker.Settings.Method,
 				// Bridge
 				Timeout:        worker.Settings.Timeout,
@@ -140,7 +141,7 @@ func (p *NodeConfig) GetTopologyJson(t *Topology, nodes []Node) (TopologyJson, e
 				// UserTask
 				UserTask: worker.Settings.UserTask,
 				// Limiter
-				LimiterValue: worker.Settings.LimiterValue,
+				LimiterValue:    worker.Settings.LimiterValue,
 				LimiterInterval: worker.Settings.LimiterInterval,
 			},
 		}

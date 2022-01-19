@@ -54,7 +54,7 @@ func getBridgesEmptyNodes(t *testing.T) {
 }
 
 func getBridges(t *testing.T) {
-	topologyJSON := []byte(`{"id":"5cc0474e4e9acc00282bb942","name":"test","nodes":[{"id":"5cc047dd4e9acc002a200c12","name":"start","worker":"worker.null","settings":{"url":"http://:0","actionPath":"","testPath":"","method":"","timeout":0},"followers":[{"id":"5cc047dd4e9acc002a200c14","name":"Xml_parser"}]},{"id":"5cc047dd4e9acc002a200c13","name":"Webhook","worker":"worker.http","settings":{"url":"http://monolith-api:80","actionPath":"/connector/Webhook/webhook","testPath":"/connector/Webhook/webhook/test","method":"POST","timeout":0},"followers":[]},{"id":"5cc047dd4e9acc002a200c14","name":"Xml_parser","worker":"worker.http_xml_parser","settings":{"url":"http://xml-parser-api:80","actionPath":"/Xml_parser","testPath":"/Xml_parser/test","method":"POST","timeout":0},"followers":[{"id":"5cc047dd4e9acc002a200c13","name":"Webhook"}]}],"rabbitMq":[{"dsn":"amqp://rabbitmq:20/%2F"}]}`)
+	topologyJSON := []byte(`{"id":"5cc0474e4e9acc00282bb942","name":"test","nodes":[{"id":"5cc047dd4e9acc002a200c12","name":"start","worker":"worker.null","settings":{"url":"http://:0","actionPath":"","testPath":"","method":"","timeout":0},"followers":[{"id":"5cc047dd4e9acc002a200c14","name":"Xml_parser"}]},{"id":"5cc047dd4e9acc002a200c13","name":"Webhook","worker":"worker.http","settings":{"url":"http://monolith-api:80","actionPath":"/connector/Webhook/webhook","testPath":"/connector/Webhook/webhook/test","method":"POST","headers":{"customHeader":"customTail"},"timeout":0},"followers":[]},{"id":"5cc047dd4e9acc002a200c14","name":"Xml_parser","worker":"worker.http_xml_parser","settings":{"url":"http://xml-parser-api:80","actionPath":"/Xml_parser","testPath":"/Xml_parser/test","method":"POST", "headers":{"customHeader":"customTail"},"timeout":0},"followers":[{"id":"5cc047dd4e9acc002a200c13","name":"Webhook"}]}],"rabbitMq":[{"dsn":"amqp://rabbitmq:20/%2F"}]}`)
 
 	topology := getTestTopology()
 	nodes := getTestNodes()
@@ -94,10 +94,13 @@ func getNodeConfigs() map[string]NodeUserParams {
 			Worker: TopologyBridgeWorkerJSON{
 				Type: "worker.http",
 				Settings: TopologyBridgeWorkerSettingsJSON{
-					Host:         "monolith-api",
-					ProcessPath:  "/connector/Webhook/webhook",
-					StatusPath:   "/connector/Webhook/webhook/test",
-					Method:       "POST",
+					Host:        "monolith-api",
+					ProcessPath: "/connector/Webhook/webhook",
+					StatusPath:  "/connector/Webhook/webhook/test",
+					Method:      "POST",
+					Headers: map[string]interface{}{
+						"customHeader": "customTail",
+					},
 					Port:         80,
 					Secure:       false,
 					PublishQueue: TopologyBridgeWorkerSettingsQueueJSON{},
@@ -108,10 +111,13 @@ func getNodeConfigs() map[string]NodeUserParams {
 			Worker: TopologyBridgeWorkerJSON{
 				Type: "worker.http_xml_parser",
 				Settings: TopologyBridgeWorkerSettingsJSON{
-					Host:         "xml-parser-api",
-					ProcessPath:  "/Xml_parser",
-					StatusPath:   "/Xml_parser/test",
-					Method:       "POST",
+					Host:        "xml-parser-api",
+					ProcessPath: "/Xml_parser",
+					StatusPath:  "/Xml_parser/test",
+					Method:      "POST",
+					Headers: map[string]interface{}{
+						"customHeader": "customTail",
+					},
 					Port:         80,
 					PublishQueue: TopologyBridgeWorkerSettingsQueueJSON{},
 				},
