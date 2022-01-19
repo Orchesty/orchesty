@@ -24,7 +24,10 @@ final class SdkRepository extends DocumentRepository
      */
     public function findByHost(string $host): array {
         return $this->findOneBy(['url' => $host])?->getHeaders() ??
-           throw new TopologyException('Sdk headers not found', TopologyException::SDK_HEADERS_NOT_FOUND);
+           throw new TopologyException(
+               sprintf('Selected host "%s" was not found.', $host),
+               TopologyException::SDK_HEADERS_NOT_FOUND
+           );
     }
 
 }
