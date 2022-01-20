@@ -16,9 +16,14 @@
             <v-col cols="12">
               <v-list dense>
                 <v-list-item-group v-model="selected" multiple>
-                  <v-list-item v-for="item in startingPoints" :key="item._id" dense>
+                  <v-list-item
+                    v-for="item in startingPoints"
+                    :key="item._id"
+                    dense
+                    class="d-flex justify-space-between align-center"
+                  >
                     <template #default="{ active }">
-                      <v-list-item-action>
+                      <v-list-item-action class="mr-2">
                         <v-checkbox :input-value="active" color="primary" />
                       </v-list-item-action>
                       <v-list-item-title v-text="item.name" />
