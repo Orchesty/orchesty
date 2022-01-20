@@ -9,7 +9,7 @@
     </template>
     <template #sendingButton>
       <v-row>
-        <v-col cols="12">
+        <v-col cols="12" class="d-flex justify-end">
           <app-button
             :sending-title="$t('button.sending.deleting')"
             :is-sending="state.isSending"
