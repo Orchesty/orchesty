@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid class="py-0">
+  <div>
     <v-row v-if="isTopology && topology" dense>
       <topology-title :topology="topology" />
       <topology-action-buttons :topology="topology" />
@@ -27,7 +27,7 @@
         <span class="font-weight-bold"> {{ nextRun(topology.cronSettings) }} </span>
       </v-col>
     </v-row>
-  </v-container>
+  </div>
 </template>
 
 <script>

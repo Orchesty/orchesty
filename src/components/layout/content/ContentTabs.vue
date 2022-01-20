@@ -9,9 +9,7 @@
 
       <v-row>
         <v-col cols="12" class="pt-0">
-          <v-container fluid class="pt-0">
-            <router-view />
-          </v-container>
+          <router-view />
         </v-col>
       </v-row>
     </v-container>

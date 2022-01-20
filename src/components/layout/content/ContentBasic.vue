@@ -2,26 +2,16 @@
   <v-sheet class="page-wrapper">
     <v-container fluid>
       <v-row dense>
-        <v-col>
-          <v-container fluid class="py-0">
-            <v-row dense>
-              <v-col>
-                <h1 class="headline font-weight-bold">{{ title }}</h1>
-              </v-col>
-              <v-col class="text-right">
-                <slot name="nav-buttons"> </slot>
-              </v-col>
-            </v-row>
-          </v-container>
+        <v-col style="z-index: 1">
+          <h1 class="headline font-weight-bold">{{ title }}</h1>
+        </v-col>
+        <v-col class="text-right">
+          <slot name="nav-buttons"> </slot>
         </v-col>
       </v-row>
-    </v-container>
-    <v-container class="pt-0" fluid>
       <v-row dense>
         <v-col cols="12">
-          <v-container class="pt-0" fluid>
-            <slot></slot>
-          </v-container>
+          <slot></slot>
         </v-col>
       </v-row>
     </v-container>
