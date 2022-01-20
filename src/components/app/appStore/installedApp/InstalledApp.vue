@@ -43,7 +43,7 @@
       <v-col cols="3">
         <v-card v-if="app" elevation="0">
           <v-container>
-            <validation-observer ref="applicationForm" slim @submit.prevent="saveSettings">
+            <validation-observer ref="applicationForm" tag="form" slim @submit.prevent="saveSettings">
               <v-row>
                 <v-col>
                   <h3>{{ $t('appStore.detail.application') }}</h3>
@@ -313,6 +313,7 @@ export default {
     await this[TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES]()
     await this[APP_STORE.ACTIONS.GET_INSTALLED_APP]({ key: this.$route.params.key, userId: this.user.user.id })
     this.initAuthState()
+    this.$refs.applicationForm.reset()
   },
 }
 </script>

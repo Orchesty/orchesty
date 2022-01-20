@@ -8,11 +8,11 @@
               <v-col>
                 <h1 class="headline font-weight-bold">{{ title }}</h1>
               </v-col>
+              <v-col class="text-right">
+                <slot name="nav-buttons"> </slot>
+              </v-col>
             </v-row>
           </v-container>
-        </v-col>
-        <v-col class="text-right">
-          <slot name="nav-buttons"> </slot>
         </v-col>
       </v-row>
     </v-container>

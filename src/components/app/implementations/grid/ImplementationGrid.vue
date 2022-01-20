@@ -4,13 +4,9 @@
     :is-loading="state.isSending"
     :namespace="DATA_GRIDS.IMPLEMENTATIONS_LIST"
     disable-filter
-    disable-toolbar
     disable-search
     disable-pagination
   >
-    <template slot="toolbar">
-      <implementation-create-modal />
-    </template>
     <template #default="{ items, isVisible }">
       <td v-if="isVisible('name')">{{ items.item.name }}</td>
       <td v-if="isVisible('url')">{{ items.item.url }}</td>
@@ -28,12 +24,11 @@ import DataGrid from '../../../commons/table/DataGrid'
 import { REQUESTS_STATE } from '../../../../store/modules/api/types'
 import { API } from '../../../../api'
 import { mapGetters } from 'vuex'
-import ImplementationCreateModal from '@/components/app/implementations/modal/ImplementationCreateModal'
 import ImplementationUpdateModal from '@/components/app/implementations/modal/ImplementationUpdateModal'
 import ImplementationDeleteModal from '@/components/app/implementations/modal/ImplementationDeleteModal'
 export default {
   name: 'ImplementationGrid',
-  components: { ImplementationDeleteModal, ImplementationUpdateModal, ImplementationCreateModal, DataGrid },
+  components: { ImplementationDeleteModal, ImplementationUpdateModal, DataGrid },
   computed: {
     ...mapGetters(REQUESTS_STATE.NAMESPACE, [REQUESTS_STATE.GETTERS.GET_STATE]),
     state() {
