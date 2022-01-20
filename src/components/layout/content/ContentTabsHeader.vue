@@ -24,7 +24,7 @@
       </v-col>
       <v-col v-if="isCrone" cols="12" lg="3" class="d-flex justify-end">
         <span class="mr-5">{{ $t('pages.nextRun') }}: </span>
-        <span> {{ nextRun(topology.cronSettings) }} </span>
+        <span class="font-weight-bold"> {{ nextRun(topology.cronSettings) }} </span>
       </v-col>
     </v-row>
   </v-container>

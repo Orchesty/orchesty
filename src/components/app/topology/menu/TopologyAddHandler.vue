@@ -8,14 +8,23 @@
 
     <v-list dense>
       <v-list-item @click="events.emit(EVENTS.MODAL.TOPOLOGY.CREATE, {})">
-        <v-list-item-title>{{ $t(`topologies.menu.create`) }}</v-list-item-title>
+        <v-list-item-title class="d-flex justify-space-between align-center">
+          <span class="mr-2">{{ $t(`topologies.menu.create`) }}</span>
+          <v-icon dense>account_tree</v-icon>
+        </v-list-item-title>
       </v-list-item>
       <v-list-item @click="events.emit(EVENTS.MODAL.FOLDER.CREATE, {})">
-        <v-list-item-title>{{ $t(`folders.menu.create`) }}</v-list-item-title>
+        <v-list-item-title class="d-flex justify-space-between align-center">
+          <span class="mr-2">{{ $t(`folders.menu.create`) }}</span>
+          <v-icon dense>mdi-folder-plus</v-icon>
+        </v-list-item-title>
       </v-list-item>
       <v-list-item link @click="$refs.import.click()">
         <input id="import" ref="import" type="file" hidden @change="fetchDiagram" @click="$event.target.value = null" />
-        <v-list-item-title>{{ $t(`topologies.menu.import`) }}</v-list-item-title>
+        <v-list-item-title class="d-flex justify-space-between align-center">
+          <span class="mr-2">{{ $t(`topologies.menu.import`) }}</span>
+          <v-icon dense>mdi-import</v-icon>
+        </v-list-item-title>
       </v-list-item>
     </v-list>
   </v-menu>

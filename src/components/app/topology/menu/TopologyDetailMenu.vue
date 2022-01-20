@@ -8,19 +8,34 @@
 
     <v-list dense>
       <v-list-item @click="events.emit(EVENTS.MODAL.TOPOLOGY.EDIT, { topology })">
-        <v-list-item-title> {{ $t(`topologies.menu.edit`) }}</v-list-item-title>
+        <v-list-item-title class="d-flex justify-space-between align-center">
+          <span class="mr-2">{{ $t(`topologies.menu.edit`) }} </span>
+          <v-icon dense>mdi-pencil-outline</v-icon>
+        </v-list-item-title>
       </v-list-item>
       <v-list-item @click="events.emit(EVENTS.MODAL.TOPOLOGY.MOVE, { topologies, topology })">
-        <v-list-item-title>{{ $t(`topologies.menu.move`) }}</v-list-item-title>
+        <v-list-item-title class="d-flex justify-space-between align-center">
+          <span class="mr-2">{{ $t(`topologies.menu.move`) }}</span>
+          <v-icon dense>mdi-arrow-bottom-right-thick</v-icon>
+        </v-list-item-title>
       </v-list-item>
       <v-list-item @click="events.emit(EVENTS.MODAL.TOPOLOGY.DELETE, { topology })">
-        <v-list-item-title>{{ $t(`topologies.menu.delete`) }}</v-list-item-title>
+        <v-list-item-title class="d-flex justify-space-between align-center">
+          <span class="mr-2">{{ $t(`topologies.menu.delete`) }}</span>
+          <v-icon dense>mdi-delete</v-icon>
+        </v-list-item-title>
       </v-list-item>
       <v-list-item @click="clone">
-        <v-list-item-title>{{ $t(`topologies.menu.clone`) }}</v-list-item-title>
+        <v-list-item-title class="d-flex justify-space-between align-center">
+          <span class="mr-2">{{ $t(`topologies.menu.clone`) }}</span>
+          <v-icon dense>mdi-content-copy</v-icon>
+        </v-list-item-title>
       </v-list-item>
       <v-list-item @click="exportXML">
-        <v-list-item-title>{{ $t(`topologies.menu.export`) }}</v-list-item-title>
+        <v-list-item-title class="d-flex justify-space-between align-center">
+          <span class="mr-2">{{ $t(`topologies.menu.export`) }}</span>
+          <v-icon dense>mdi-export-variant</v-icon>
+        </v-list-item-title>
       </v-list-item>
     </v-list>
   </v-menu>
