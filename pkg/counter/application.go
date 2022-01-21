@@ -156,6 +156,7 @@ func (c *MultiCounter) sendMetrics(process *model.Process) {
 			"duration":   timex.MsDiff(process.Created, *process.Finished),
 			"ok_count":   process.Ok,
 			"fail_count": process.Nok,
+			"created":    time.Now(),
 		},
 	)
 	if err != nil {
