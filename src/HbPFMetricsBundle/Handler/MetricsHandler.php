@@ -61,6 +61,18 @@ final class MetricsHandler
     }
 
     /**
+     * @param GridRequestDtoInterface $dto
+     *
+     * @return mixed[]
+     */
+    public function getConsumerMetrics(GridRequestDtoInterface $dto): array
+    {
+        $params = $this->parseDateRangeFromFilter($dto);
+
+        return $this->loader->getManager()->getConsumerMetrics($params);
+    }
+
+    /**
      * @param string                  $topologyId
      * @param GridRequestDtoInterface $dto
      *
@@ -69,22 +81,8 @@ final class MetricsHandler
      */
     public function getRequestsCountMetrics(string $topologyId, GridRequestDtoInterface $dto): array
     {
-        $params = []; // from / to
-        foreach ($dto->getFilter() as $and) {
-            foreach ($and as $or) {
-                $column = $or[GridFilterAbstract::COLUMN] ?? '';
-                if ($column == 'timestamp') {
-                    $params = [
-                        'from' => $or[GridFilterAbstract::VALUE][0] ?? NULL,
-                        'to'   => $or[GridFilterAbstract::VALUE][1] ?? NULL,
-                    ];
-
-                    break;
-                }
-            }
-        }
-
-        $items = $this->loader->getManager()->getTopologyRequestCountMetrics(
+        $params = $this->parseDateRangeFromFilter($dto);
+        $items  = $this->loader->getManager()->getTopologyRequestCountMetrics(
             $this->getTopologyById($topologyId),
             $params,
         );
@@ -155,6 +153,31 @@ final class MetricsHandler
         }
 
         return $node;
+    }
+
+    /**
+     * @param GridRequestDtoInterface $dto
+     *
+     * @return mixed[]
+     */
+    private function parseDateRangeFromFilter(GridRequestDtoInterface $dto): array
+    {
+        $params = []; // from / to
+        foreach ($dto->getFilter() as $and) {
+            foreach ($and as $or) {
+                $column = $or[GridFilterAbstract::COLUMN] ?? '';
+                if ($column == 'timestamp') {
+                    $params = [
+                        'from' => $or[GridFilterAbstract::VALUE][0] ?? NULL,
+                        'to'   => $or[GridFilterAbstract::VALUE][1] ?? NULL,
+                    ];
+
+                    break;
+                }
+            }
+        }
+
+        return $params;
     }
 
 }

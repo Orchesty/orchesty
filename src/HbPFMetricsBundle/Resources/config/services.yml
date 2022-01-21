@@ -31,6 +31,7 @@ services:
             - "%influx.rabbit_table%"
             - "%influx.counter_table%"
             - "%influx.connector_table%"
+            - "%influx.rabbit_consumer_table%"
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
 
@@ -45,6 +46,7 @@ services:
             - "%mongodb.connector_table%"
             - '@doctrine_mongodb.odm.metrics_document_manager'
             - '%metrics_rabbit_interval%'
+            - '%mongodb.rabbit_consumer_table%'
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
 

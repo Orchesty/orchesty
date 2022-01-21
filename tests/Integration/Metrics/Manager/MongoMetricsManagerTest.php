@@ -550,6 +550,31 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getConsumerMetrics
+     * @throws DateTimeException
+     * @throws Exception
+     */
+    public function testConsumerMetrics(): void
+    {
+        $topo = $this->createTopo();
+        $node = $this->createNode($topo);
+        $this->setFakeData($topo, $node);
+
+        $manager = $this->getManager();
+        $result  = $manager->getConsumerMetrics([]);
+        self::assertEquals(
+            [
+                [
+                    'queue'     => 'pipes.limiter',
+                    'consumers' => 0,
+                    'created'   => $result[0]['created'],
+                ],
+            ],
+            $result,
+        );
+    }
+
+    /**
      * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getUserMetrics
      * @throws DateTimeException
      * @throws Exception
@@ -649,12 +674,15 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
         $connectorTable = self::getContainer()->getParameter('mongodb.connector_table');
         /** @var string $rabbitTable */
         $rabbitTable = self::getContainer()->getParameter('mongodb.rabbit_table');
+        /** @var string $rabbitConsumerTable */
+        $rabbitConsumerTable = self::getContainer()->getParameter('mongodb.rabbit_consumer_table');
 
-        $processes = $client->selectCollection('metrics', $counterTable);
-        $monolith  = $client->selectCollection('metrics', $monolithTable);
-        $bridge    = $client->selectCollection('metrics', $nodeTable);
-        $connector = $client->selectCollection('metrics', $connectorTable);
-        $rabbitmq  = $client->selectCollection('metrics', $rabbitTable);
+        $processes        = $client->selectCollection('metrics', $counterTable);
+        $monolith         = $client->selectCollection('metrics', $monolithTable);
+        $bridge           = $client->selectCollection('metrics', $nodeTable);
+        $connector        = $client->selectCollection('metrics', $connectorTable);
+        $rabbitmq         = $client->selectCollection('metrics', $rabbitTable);
+        $rabbitmqConsumer = $client->selectCollection('metrics', $rabbitConsumerTable);
 
         $doc = [
             'tags'   => [
@@ -847,6 +875,17 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
             ],
         ];
         $processes->insertOne($doc);
+
+        $doc = [
+            'tags'   => [
+                'queue'     => 'pipes.limiter',
+                'consumers' => 0,
+            ],
+            'fields' => [
+                'created' => new UTCDateTime(DateTimeUtils::getUtcDateTime()),
+            ],
+        ];
+        $rabbitmqConsumer->insertOne($doc);
     }
 
     /**

@@ -6,26 +6,26 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
 
 /**
- * Class ProcessesMetrics
+ * Class RabbitConsumerMetrics
  *
  * @package Hanaboso\PipesFramework\Metrics\Document
  *
- * @ODM\Document(collection="pipes_counter")
- * @ODM\Index(name="node_idIndex", keys={"tags.node_id"="text"})
+ * @ODM\Document(collection="rabbitmq_consumer")
+ * @ODM\Index(name="queueIndex", keys={"tags.queue"="text"})
  * @ODM\Index(name="createdIndex", keys={"fields.created"="desc"})
  * @ODM\Index(name="expireIndex", keys={"fields.created"=1}, options={"expireAfterSeconds"=2628000})
  */
-class ProcessesMetrics
+class RabbitConsumerMetrics
 {
 
     use IdTrait;
 
     /**
-     * @var ProcessesMetricsFields
+     * @var RabbitConsumerFields
      *
-     * @ODM\EmbedOne(targetDocument="Hanaboso\PipesFramework\Metrics\Document\ProcessesMetricsFields")
+     * @ODM\EmbedOne(targetDocument="Hanaboso\PipesFramework\Metrics\Document\RabbitConsumerFields")
      */
-    private ProcessesMetricsFields $fields;
+    private RabbitConsumerFields $fields;
 
     /**
      * @var Tags
@@ -35,9 +35,9 @@ class ProcessesMetrics
     private Tags $tags;
 
     /**
-     * @return ProcessesMetricsFields
+     * @return RabbitConsumerFields
      */
-    public function getFields(): ProcessesMetricsFields
+    public function getFields(): RabbitConsumerFields
     {
         return $this->fields;
     }

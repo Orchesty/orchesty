@@ -14,3 +14,4 @@ parameters:
     influx.monolith_table: monolith
     influx.rabbit_table: rabbitmq
     influx.counter_table: processes
+    influx.rabbit_consumer_table: rabbitmq_consumer

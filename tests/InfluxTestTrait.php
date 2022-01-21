@@ -32,14 +32,16 @@ trait InfluxTestTrait
 
         $client = $this->getClient()->createClient();
         $client->selectDB('test')->drop();
+        $client->query('', 'CREATE DATABASE test');
         $client->selectDB('test')->create(new RetentionPolicy('5s', '1h', 1, TRUE));
+        $client->selectDB('test')->create(new RetentionPolicy('1m', '1h', 1, TRUE));
         $client->selectDB('test')->create(new RetentionPolicy('30m', '1h', 1, TRUE));
         $client->selectDB('test')->create(new RetentionPolicy('4h', '4h', 1, TRUE));
-        $client->query('', 'CREATE DATABASE test');
     }
 
     /**
      * @return Topology
+     * @throws Exception
      */
     private function createTopology(): Topology
     {
@@ -55,6 +57,7 @@ trait InfluxTestTrait
      * @param Topology $topology
      *
      * @return Node
+     * @throws Exception
      */
     private function createNode(Topology $topology): Node
     {
@@ -100,6 +103,8 @@ trait InfluxTestTrait
         $rabbitTable = self::getContainer()->getParameter('influx.rabbit_table');
         /** @var string $counterTable */
         $counterTable = self::getContainer()->getParameter('influx.counter_table');
+        /** @var string $consTable */
+        $consTable = self::getContainer()->getParameter('influx.rabbit_consumer_table');
 
         return new InfluxMetricsManager(
             $this->getClient(),
@@ -109,6 +114,7 @@ trait InfluxTestTrait
             $rabbitTable,
             $counterTable,
             $connTable,
+            $consTable,
         );
     }
 

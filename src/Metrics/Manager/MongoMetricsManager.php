@@ -8,6 +8,7 @@ use Hanaboso\PipesFramework\Metrics\Document\BridgesMetrics;
 use Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetrics;
 use Hanaboso\PipesFramework\Metrics\Document\MonolithMetrics;
 use Hanaboso\PipesFramework\Metrics\Document\ProcessesMetrics;
+use Hanaboso\PipesFramework\Metrics\Document\RabbitConsumerMetrics;
 use Hanaboso\PipesFramework\Metrics\Document\RabbitMetrics;
 use Hanaboso\PipesFramework\Metrics\Document\Tags;
 use Hanaboso\PipesFramework\Metrics\Dto\MetricsDto;
@@ -37,6 +38,7 @@ final class MongoMetricsManager extends MetricsManagerAbstract
      * @param string          $connectorTable
      * @param DocumentManager $metricsDm
      * @param int             $rabbitInterval
+     * @param string          $consumerTable
      */
     public function __construct(
         DocumentManager $dm,
@@ -47,9 +49,10 @@ final class MongoMetricsManager extends MetricsManagerAbstract
         string $connectorTable,
         private DocumentManager $metricsDm,
         private int $rabbitInterval,
+        string $consumerTable,
     )
     {
-        parent::__construct($dm, $nodeTable, $fpmTable, $rabbitTable, $counterTable, $connectorTable);
+        parent::__construct($dm, $nodeTable, $fpmTable, $rabbitTable, $counterTable, $connectorTable, $consumerTable);
     }
 
     /**
@@ -158,6 +161,20 @@ final class MongoMetricsManager extends MetricsManagerAbstract
     }
 
     /**
+     * @param mixed[] $params
+     *
+     * @return mixed[]
+     * @throws DateTimeException
+     */
+    public function getConsumerMetrics(array $params): array
+    {
+        $from = $params['from'] ?? 'now - 1 hours';
+        $to   = $params['to'] ?? 'now';
+
+        return $this->rabbitConsumerMetrics($from, $to);
+    }
+
+    /**
      * @param mixed[]     $params
      * @param string|null $key
      *
@@ -213,6 +230,19 @@ final class MongoMetricsManager extends MetricsManagerAbstract
             ->toArray();
 
         return ['user' => count($result)];
+    }
+
+    /**
+     * @param mixed[] $params
+     *
+     * @return mixed[]
+     */
+    public function getContainerMetrics(array $params): array
+    {
+        // TODO
+        $params;
+
+        return [];
     }
 
     /**
@@ -504,6 +534,37 @@ final class MongoMetricsManager extends MetricsManagerAbstract
         }
 
         return $sorted;
+    }
+
+    /**
+     * @param string $dateFrom
+     * @param string $dateTo
+     *
+     * @return mixed[]
+     * @throws DateTimeException
+     */
+    private function rabbitConsumerMetrics(string $dateFrom, string $dateTo): array
+    {
+        $qb = $this->metricsDm->createAggregationBuilder(RabbitConsumerMetrics::class);
+        $this->addConditions($qb, $dateFrom, $dateTo, [], RabbitConsumerMetrics::class);
+        $res = $qb
+            ->execute()
+            ->toArray();
+
+        if (!$res) {
+            $res = [];
+        }
+
+        return array_map(
+            static fn(array $item): array => [
+                'queue'     => $item['tags']['queue'] ?? '',
+                'consumers' => $item['tags']['consumers'] ?? 0,
+                'created'   => $item['fields']['created'] ? $item['fields']['created']->toDateTime()->format(
+                    DateTimeUtils::DATE_TIME_UTC,
+                ) : NULL,
+            ],
+            $res,
+        );
     }
 
     /**

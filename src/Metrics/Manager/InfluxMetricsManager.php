@@ -32,6 +32,7 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
      * @param string          $rabbitTable
      * @param string          $counterTable
      * @param string          $connectorTable
+     * @param string          $consumerTable
      */
     public function __construct(
         private ClientInterface $client,
@@ -41,9 +42,10 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
         string $rabbitTable,
         string $counterTable,
         string $connectorTable,
+        string $consumerTable,
     )
     {
-        parent::__construct($dm, $nodeTable, $fpmTable, $rabbitTable, $counterTable, $connectorTable);
+        parent::__construct($dm, $nodeTable, $fpmTable, $rabbitTable, $counterTable, $connectorTable, $consumerTable);
     }
 
     /**
@@ -120,7 +122,7 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
         );
 
         $where = [
-            self::NODE  => $node->getId(),
+            self::NODE => $node->getId(),
         ];
 
         return $this->runQuery($select, $from, $where, NULL, $dateFrom, $dateTo);
@@ -284,6 +286,51 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
     }
 
     /**
+     * @param mixed[] $params
+     *
+     * @return mixed[]
+     * @throws DateTimeException
+     * @throws MetricsException
+     */
+    public function getConsumerMetrics(array $params): array
+    {
+        $dateFrom = $params['from'] ?? '-1 hours';
+        $dateTo   = $params['to'] ?? 'now';
+        $from     = $this->consumerTable;
+
+        $res    = $this->runQuery('*', $from, [], NULL, $dateFrom, $dateTo, FALSE, TRUE);
+        $parsed = [];
+        foreach ($res[0]['values'] as $item) {
+            $createdIndex   = array_search('created', $res[0]['columns'], TRUE);
+            $queueIndex     = array_search('queue', $res[0]['columns'], TRUE);
+            $consumersIndex = array_search('consumers', $res[0]['columns'], TRUE);
+
+            $parsed[] = [
+                'created'   => DateTimeUtils::getUtcDateTimeFromTimeStamp($item[$createdIndex] ?? 0)->format(
+                    DateTimeUtils::DATE_TIME_UTC,
+                ),
+                'consumers' => (int) ($item[$consumersIndex] ?? 0),
+                'queue'     => $item[$queueIndex] ?? '',
+            ];
+        }
+
+        return $parsed;
+    }
+
+    /**
+     * @param mixed[] $params
+     *
+     * @return mixed[]
+     */
+    public function getContainerMetrics(array $params): array
+    {
+        // TODO
+        $params;
+
+        return [];
+    }
+
+    /**
      * -------------------------------------------- HELPERS ---------------------------------------------
      */
 
@@ -295,6 +342,7 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
      * @param string|null $dateFrom
      * @param string|null $dateTo
      * @param bool        $forGraph
+     * @param bool        $raw
      *
      * @return mixed[]
      * @throws MetricsException
@@ -308,6 +356,7 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
         ?string $dateFrom = NULL,
         ?string $dateTo = NULL,
         bool $forGraph = FALSE,
+        bool $raw = FALSE,
     ): array
     {
         $qb = $this->client->getQueryBuilder()
@@ -337,6 +386,10 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
 
         if ($forGraph) {
             return $this->processGraphResult($series);
+        }
+
+        if ($raw) {
+            return $series;
         }
 
         return $this->processResultSet($this->getPoints($series));

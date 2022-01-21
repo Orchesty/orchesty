@@ -23,8 +23,8 @@
         "influxdb/influxdb-php": "^1.15",
         "lcobucci/jwt": "^4.1",
         "ruflin/elastica": "^7.1",
-        "symfony/security-bundle": "^v5.3",
-        "symfony/serializer": "^v5.3"
+        "symfony/security-bundle": "^v6.0",
+        "symfony/serializer": "^v6.0"
     },
     "require-dev": {
         "hanaboso/php-check-utils": "^1.3",

@@ -14,8 +14,8 @@ use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
  * @ODM\Document()
  * @ODM\Index(name="SearchIndex", keys={"message"="text", "pipes.correlation_id"="text", "pipes.topology_id"="text", "pipes.topology_name"="text", "pipes.node_id"="text", "pipes.node_name"="text"}),
  * @ODM\Index(name="SeverityIndex", keys={"pipes.severity"="hashed"}),
- * @ODM\Index(name="LogsTimestampIndex", keys={"timestamp"="desc"})
- * @ODM\Index(name="expireIndex", keys={"timestamp"=1}, options={"expireAfterSeconds"=2628000})
+ * @ODM\Index(name="LogsTimestampIndex", keys={"ts"="desc"})
+ * @ODM\Index(name="expireIndex", keys={"ts"=1}, options={"expireAfterSeconds"=2628000})
  */
 class Logs
 {
@@ -40,7 +40,7 @@ class Logs
     /**
      * @var DateTime
      *
-     * @ODM\Field(type="date", name="@timestamp")
+     * @ODM\Field(type="date", name="ts")
      */
     private DateTime $timestamp;
 

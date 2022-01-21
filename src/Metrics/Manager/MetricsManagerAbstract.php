@@ -134,6 +134,20 @@ abstract class MetricsManagerAbstract implements LoggerAwareInterface
     abstract public function getNodeMetrics(Node $node, Topology $topology, array $params): array;
 
     /**
+     * @param mixed[] $params
+     *
+     * @return mixed[]
+     */
+    abstract public function getContainerMetrics(array $params): array;
+
+    /**
+     * @param mixed[] $params
+     *
+     * @return mixed[]
+     */
+    abstract public function getConsumerMetrics(array $params): array;
+
+    /**
      * @param Topology $topology
      * @param mixed[]  $params
      *
@@ -181,6 +195,7 @@ abstract class MetricsManagerAbstract implements LoggerAwareInterface
      * @param string          $rabbitTable
      * @param string          $counterTable
      * @param string          $connectorTable
+     * @param string          $consumerTable
      */
     public function __construct(
         DocumentManager $dm,
@@ -189,6 +204,7 @@ abstract class MetricsManagerAbstract implements LoggerAwareInterface
         protected string $rabbitTable,
         protected string $counterTable,
         protected string $connectorTable,
+        protected string $consumerTable,
     )
     {
         $this->nodeRepository = $dm->getRepository(Node::class);

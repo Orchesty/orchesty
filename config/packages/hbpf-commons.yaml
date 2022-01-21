@@ -13,6 +13,7 @@ parameters:
     mongodb.connector_table: connectors
     mongodb.node_table: pipes_node
     mongodb.rabbit_table: rabbitmq
+    mongodb.rabbit_consumer_table: rabbitmq_consumer
     mongodb.counter_table: pipes_counter
 
 

@@ -38,7 +38,6 @@ services:
             - METRICS_PORT=8089
             - JWT_KEY=test1234
 
-
     starting-point:
         image: dkr.hanaboso.net/pipes/pipes/starting-point:master
         environment:

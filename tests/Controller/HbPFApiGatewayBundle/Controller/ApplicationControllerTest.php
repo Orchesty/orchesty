@@ -72,7 +72,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     {
         $this->createApplication();
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/ApplicationController/getApplicationDetailRequest.json',
             [
                 'id'      => '123456789',
@@ -89,7 +90,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
      */
     public function testInstallApplicationAction(): void
     {
-        $this->assertResponse(__DIR__ . '/data/ApplicationController/installApplicationRequest.json');
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/ApplicationController/installApplicationRequest.json');
     }
 
     /**
@@ -101,7 +102,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     {
         $this->createApplication();
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/ApplicationController/updateApplicationSettingsRequest.json',
             [
                 'id'      => '123456789',
@@ -120,7 +122,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     {
         $this->createApplication();
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/ApplicationController/uninstallApplicationRequest.json',
             [
                 'id'      => '123456789',
@@ -139,7 +142,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     {
         $this->createApplication();
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/ApplicationController/saveApplicationPasswordRequest.json',
             [
                 'id'      => '123456789',
@@ -160,7 +164,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
             $this->createApplication();
         }
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/ApplicationController/saveApplicationPasswordInvalidRequest.json',
             [
                 'id'      => '123456789',
@@ -198,7 +203,10 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
 
         $this->createApplication();
 
-        $this->assertResponse(__DIR__ . '/data/ApplicationController/authorizeApplicationRequest.json');
+        $this->assertResponseLogged(
+            $this->jwt,
+            __DIR__ . '/data/ApplicationController/authorizeApplicationRequest.json',
+        );
     }
 
     /**
@@ -218,7 +226,10 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
 
         $this->createApplication();
 
-        $this->assertResponse(__DIR__ . '/data/ApplicationController/authorizeApplicationExRequest.json');
+        $this->assertResponseLogged(
+            $this->jwt,
+            __DIR__ . '/data/ApplicationController/authorizeApplicationExRequest.json',
+        );
     }
 
     /**
@@ -235,7 +246,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         $curl->method('send')->willReturn($dto);
         self::getContainer()->set('hbpf.transport.curl_manager', $curl);
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/ApplicationController/setAuthorizationTokenRequest.json',
             [],
             [],

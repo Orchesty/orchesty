@@ -1,6 +1,6 @@
 security:
     enable_authenticator_manager: true
-    encoders:
+    password_hashers:
         Hanaboso\UserBundle\Document\User:
             algorithm: auto
             cost: 12
@@ -27,9 +27,8 @@ security:
             pattern: ^/api/applications/.*/(sync|users)/.*
             stateless: true
             provider: api_provider
-            guard:
-                authenticators:
-                    - hbpf.authenticator.api_key
+            custom_authenticator:
+                - Hanaboso\PipesFramework\ApiGateway\Authenticator\ApiKey\ApiKeyAuthenticator
         secured_area:
             pattern: ^/
             security: true
@@ -45,4 +44,3 @@ security:
                 path: /api/user/logout
                 target: /
                 invalidate_session: true
-                success_handler: hbpf.user.handler.user

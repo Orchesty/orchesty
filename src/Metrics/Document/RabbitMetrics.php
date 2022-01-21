@@ -12,8 +12,8 @@ use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
  *
  * @ODM\Document(collection="rabbitmq")
  * @ODM\Index(name="queueIndex", keys={"tags.queue"="text"})
- * @ODM\Index(name="createdIndex", keys={"created"="desc"})
- * @ODM\Index(name="expireIndex", keys={"timestamp"=1}, options={"expireAfterSeconds"=2628000})
+ * @ODM\Index(name="createdIndex", keys={"fields.created"="desc"})
+ * @ODM\Index(name="expireIndex", keys={"fields.created"=1}, options={"expireAfterSeconds"=2628000})
  */
 class RabbitMetrics
 {

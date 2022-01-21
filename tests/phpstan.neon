@@ -33,7 +33,7 @@ parameters:
 			- PipesFrameworkTests\ControllerTestCaseAbstract
 			- PipesFrameworkTests\DatabaseTestCaseAbstract
 			- PipesFrameworkTests\KernelTestCaseAbstract
-			- Symfony\Component\Security\Guard\AbstractGuardAuthenticator
+			- Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator
 
 		classesNotRequiredToBeAbstractOrFinal:
 			- Hanaboso\PipesFramework\Configurator\Document\NodeProgress
@@ -52,6 +52,8 @@ parameters:
 			- Hanaboso\PipesFramework\Metrics\Document\ProcessesMetricsFields
 			- Hanaboso\PipesFramework\Metrics\Document\RabbitMetrics
 			- Hanaboso\PipesFramework\Metrics\Document\RabbitMetricsFields
+			- Hanaboso\PipesFramework\Metrics\Document\RabbitConsumerFields
+			- Hanaboso\PipesFramework\Metrics\Document\RabbitConsumerMetrics
 			- Hanaboso\PipesFramework\Metrics\Document\Tags
 			- Hanaboso\PipesFramework\UserTask\Document\UserTask
 			- Hanaboso\PipesFramework\UserTask\Document\UserTaskMessage

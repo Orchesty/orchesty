@@ -33,6 +33,24 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\MetricsController::consumerMetricsAction
+     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::consumerMetricsAction
+     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler::getConsumerMetrics
+     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler::parseDateRangeFromFilter
+     *
+     * @throws Exception
+     */
+    public function testConsumerMetricsAction(): void
+    {
+        $this->assertResponseLogged(
+            $this->jwt,
+            __DIR__ . '/data/MetricsController/consumerMetricsRequest.json',
+            [],
+            [],
+        );
+    }
+
+    /**
      * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\MetricsController::nodeMetricsAction
      *
      * @throws Exception

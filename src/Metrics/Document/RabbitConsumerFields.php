@@ -6,30 +6,21 @@ use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
- * Class ProcessesMetricsFields
+ * Class RabbitConsumerFields
  *
  * @package Hanaboso\PipesFramework\Metrics\Document
  *
  * @ODM\EmbeddedDocument()
  */
-class ProcessesMetricsFields
+class RabbitConsumerFields
 {
-
-    // TODO unused metrics: fail_count, ok_count
-
-    /**
-     * @var bool
-     *
-     * @ODM\Field(type="bool", name="result")
-     */
-    private bool $success;
 
     /**
      * @var int
      *
-     * @ODM\Field(type="int", name="duration")
+     * @ODM\Field(type="int", name="consumers")
      */
-    private int $duration;
+    private int $consumers;
 
     /**
      * @var DateTime
@@ -39,19 +30,11 @@ class ProcessesMetricsFields
     private DateTime $created;
 
     /**
-     * @return bool
-     */
-    public function isSuccess(): bool
-    {
-        return $this->success;
-    }
-
-    /**
      * @return int
      */
-    public function getDuration(): int
+    public function getConsumers(): int
     {
-        return $this->duration;
+        return $this->consumers;
     }
 
     /**

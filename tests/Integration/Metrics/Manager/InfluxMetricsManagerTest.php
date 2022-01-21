@@ -7,9 +7,11 @@ use Hanaboso\PipesFramework\Metrics\Exception\MetricsException;
 use Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
+use Hanaboso\Utils\Date\DateTimeUtils;
 use Hanaboso\Utils\System\NodeGeneratorUtils;
 use InfluxDB\Database;
 use InfluxDB\Point;
+use MongoDB\BSON\UTCDateTime;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 use PipesFrameworkTests\InfluxTestTrait;
 
@@ -222,6 +224,37 @@ final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
         );
 
         self::assertCount(0, $result['application']);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager::getConsumerMetrics
+     * @throws Exception
+     */
+    public function testGetConsumerMetrics(): void
+    {
+        $topo = $this->createTopology();
+        $node = $this->createNode($topo);
+
+        $this->setFakeData($topo, $node, 'nutshell');
+
+        $manager = $this->getManager();
+        $result  = $manager->getConsumerMetrics(
+            [
+                'from' => '-10 day',
+                'to'   => '+10 day',
+            ],
+        );
+
+        self::assertEquals(
+            [
+                [
+                    'queue'     => 'pipes.limiter',
+                    'consumers' => 0,
+                    'created'   => $result[0]['created'],
+                ],
+            ],
+            $result,
+        );
     }
 
     /**
@@ -590,6 +623,23 @@ final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
             ),
         ];
         $database->writePoints($points, Database::PRECISION_NANOSECONDS);
+
+        usleep(10);
+        $points = [
+            new Point(
+                'rabbitmq_consumer',
+                NULL,
+                [
+                    'queue'     => 'pipes.limiter',
+                    'consumers' => 0,
+                ],
+                [
+                    'created' => new UTCDateTime(DateTimeUtils::getUtcDateTime()),
+                ],
+            ),
+        ];
+        $database->writePoints($points, Database::PRECISION_NANOSECONDS);
+        usleep(10);
     }
 
 }

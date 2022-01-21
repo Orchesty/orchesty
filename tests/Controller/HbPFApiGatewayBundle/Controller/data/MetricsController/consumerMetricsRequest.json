@@ -1,5 +1,5 @@
 {
-    "http": "GET /api/applications/null/users/user",
+    "http": "GET /api/metrics/consumers",
     "body": [],
     "headers": {
         "HTTP_Authorization": "jwt"

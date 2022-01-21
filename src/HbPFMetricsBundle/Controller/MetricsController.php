@@ -68,6 +68,24 @@ final class MetricsController
     }
 
     /**
+     * @Route("/metrics/consumers", methods={"GET", "OPTIONS"})
+     *
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function consumerMetricsAction(Request $request): Response
+    {
+        try {
+            $dto = new GridRequestDto(Json::decode($request->query->get('filter', '{}')));
+
+            return $this->getResponse($this->metricsHandler->getConsumerMetrics($dto));
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e, 400);
+        }
+    }
+
+    /**
      * @Route("/metrics/topology/{topology}/requests", methods={"GET", "OPTIONS"})
      *
      * @param Request $request
