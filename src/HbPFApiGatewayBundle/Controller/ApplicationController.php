@@ -300,6 +300,9 @@ final class ApplicationController extends AbstractController
     }
 
     /**
+     * @param bool $lastInstall
+     *
+     * @return void
      * @throws LicenseException
      * @throws MongoDBException
      */
