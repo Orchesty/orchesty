@@ -8,6 +8,7 @@
     :title="$t('topologies.logs.title')"
     show-expand
     disable-search
+    simple-filter
     show-full-text-search
     disabled-advanced-filter
   >
