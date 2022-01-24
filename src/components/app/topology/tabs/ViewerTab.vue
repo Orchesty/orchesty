@@ -394,7 +394,7 @@ export default {
         if (node.type === 'start' || node.type === 'cron' || node.type === 'webhook') {
           let svg = document.querySelectorAll(`g[data-element-id='${node.schema_id}'] .djs-visual > *:not(text)`)
           svg.forEach((svg) => {
-            !node.enabled ? (svg.style.fill = 'rgba(255,40,44,0.53)') : (svg.style.fill = 'rgba(40,255,44,0.53)')
+            !node.enabled ? (svg.style.fill = '#D11818') : (svg.style.fill = '#66C600')
           })
         }
       })
@@ -407,7 +407,7 @@ export default {
               let svg = document.querySelectorAll(`g[data-element-id='${node.schema_id}'] .djs-visual > *:not(text)`)
               if (test.status !== 'ok') {
                 svg.forEach((svg) => {
-                  this.showTest ? (svg.style.fill = 'rgba(255,40,44,0.53)') : (svg.style.fill = '#ffffff')
+                  this.showTest ? (svg.style.fill = '#D11818') : (svg.style.fill = '#ffffff')
                 })
               }
             }
