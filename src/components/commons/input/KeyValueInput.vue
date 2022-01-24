@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-row v-for="(header, index) in headers" :key="index" justify="space-between">
+    <v-row v-for="(header, index) in headers" :key="index" dense justify="space-between">
       <v-col cols="5">
         <validation-provider
           v-slot="{ errors }"

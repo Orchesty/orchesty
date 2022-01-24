@@ -16,16 +16,18 @@
     >
       <app-input v-model="form.name" :label="$t('implementation.form.name.label')" :error-messages="errors" />
     </validation-provider>
+    <key-value-input v-model="form.headers" :headers-prop="form.headers" />
   </validation-observer>
 </template>
 
 <script>
 import FormMixin from '../../../commons/mixins/FormMixin'
 import AppInput from '@/components/commons/input/AppInput'
+import KeyValueInput from '@/components/commons/input/KeyValueInput'
 
 export default {
   name: 'ImplementationsForm',
-  components: { AppInput },
+  components: { KeyValueInput, AppInput },
   mixins: [FormMixin],
   props: {
     implementation: {
@@ -65,12 +67,14 @@ export default {
     initForm(value) {
       if (!value) value = {}
       return {
+        headers: value.headers || [],
         name: value.name || null,
         site: value.url || null,
       }
     },
     resetForm() {
       this.form = {
+        headers: [],
         name: null,
         url: null,
       }

@@ -22,22 +22,24 @@ export default {
   },
   create: {
     id: 'IMPLEMENTATION_CREATE',
-    request: ({ name, site }) => ({
+    request: ({ name, site, headers }) => ({
       url: `/sdks`,
       method: 'POST',
       data: {
         name: name,
         url: site,
+        headers: headers,
       },
     }),
   },
   update: {
     id: 'IMPLEMENTATION_UPDATE',
-    request: ({ name, site, id }) => ({
+    request: ({ name, site, id, headers }) => ({
       url: `/sdks/${id}`,
       method: 'PUT',
       data: {
         name: name,
+        headers: headers,
         url: site,
         id: id,
       },
