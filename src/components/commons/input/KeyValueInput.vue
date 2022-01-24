@@ -27,7 +27,7 @@
         </v-btn>
       </v-col>
     </v-row>
-    <v-row>
+    <v-row dense>
       <v-col cols="auto">
         <v-btn class="mt-1" color="primary" small fab :disabled="headerAddAbility" @click="addLine">
           <v-icon>mdi-plus</v-icon>
