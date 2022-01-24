@@ -13,5 +13,8 @@ export const EVENT_TYPES = {
       EDIT: 'MODAL_FOLDER_EDIT',
       DELETE: 'MODAL_FOLDER_DELETE',
     },
+    NODE: {
+      UPDATE: 'MODAL_NODE_UPDATE',
+    },
   },
 }

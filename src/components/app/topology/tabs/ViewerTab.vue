@@ -112,6 +112,7 @@ import BpmnNodeGrid from '@/components/app/bpmn/components/BpmnNodeGrid'
 import QuickGridFilter from '@/components/commons/table/filter/QuickGridFilter'
 import ProgressBarLinear from '@/components/commons/progressIndicators/ProgressBarLinear'
 import QuickFiltersMixin from '@/components/commons/mixins/QuickFiltersMixin'
+import { EVENTS, events } from '@/services/utils/events'
 
 export default {
   name: 'ViewerTab',
@@ -184,6 +185,24 @@ export default {
         })
       })
     },
+    kokosListeners() {
+      document.querySelectorAll('.kokos, .kokos2').forEach((badgeError) => {
+        badgeError.addEventListener('click', function () {
+          window.dispatchEvent(new CustomEvent('enableStartingPoint', { detail: badgeError }))
+        })
+        console.log(badgeError)
+      })
+    },
+    enableStartingPoint(e) {
+      let sladsfj = this.nodeNames.filter((nodeName) => {
+        if (e?.detail?.dataset?.index) {
+          return nodeName._id === e.detail.dataset.index
+        } else {
+          return false
+        }
+      })[0]
+      events.emit(EVENTS.MODAL.NODE.UPDATE, sladsfj)
+    },
     visibilitySwitcher(condition, className) {
       document
         .querySelectorAll(className)
@@ -205,6 +224,7 @@ export default {
     showTestResults(topology) {
       if (topology.test) {
         this.nodeNames.forEach((node) => {
+          console.log(node)
           topology.test.forEach((test) => {
             if (test.id === node._id) {
               let svg = document.querySelectorAll(`g[data-element-id='${node.schema_id}'] .djs-visual > *:not(text)`)
@@ -324,6 +344,27 @@ export default {
             html: `<div onclick="window.dispatchEvent(new CustomEvent('queueDepthCheckbox'))"><span class="badge badge-queue" title="Queue depth">${queueDepth}</span></div>`,
           })
         }
+
+        if (
+          element.businessObject.pipesType === 'start' ||
+          element.businessObject.pipesType === 'cron' ||
+          element.businessObject.pipesType === 'webhook'
+        ) {
+          const node = Object.values(this.nodeNames).filter((n) => {
+            return n.schema_id === element.businessObject.id
+          })[0]
+          window.orchestyIndex = node._id
+          this.overlays.add(element, {
+            position: {
+              top: 0,
+              left: 0,
+            },
+            html: `<div title="${node.enabled ? 'enabled' : 'disabled'}" class="${
+              node.enabled ? 'kokos' : 'kokos2'
+            }" data-index="${window.orchestyIndex}" style="height: ${element.height}px;
+              width: ${element.width}px"></div>`,
+          })
+        }
       })
 
       this.viewer.get('eventBus').on('element.dblclick', 1500, function (event) {
@@ -339,9 +380,20 @@ export default {
         this.showTestResults(topology)
         this.hookEventListeners()
         this.toggleOverlays()
+        this.kokosListeners()
         let labels = document.querySelectorAll('.djs-label')
         labels.forEach((label) => {
           this.centerNodeName(label)
+        })
+        this.nodeNames.forEach((node) => {
+          if (node.type === 'start' || node.type === 'cron' || node.type === 'webhook') {
+            let svg = document.querySelectorAll(`g[data-element-id='${node.schema_id}'] .djs-visual > *:not(text)`)
+            console.log(svg)
+
+            svg.forEach((svg) => {
+              !node.enabled ? (svg.style.fill = 'rgba(255,40,44,0.53)') : (svg.style.fill = 'rgba(40,255,44,0.53)')
+            })
+          }
         })
       }
     },
@@ -406,6 +458,7 @@ export default {
     window.addEventListener('errorCheckbox', this.toggleOverlays)
     window.addEventListener('userTasksCheckbox', this.toggleOverlays)
     window.addEventListener('queueDepthCheckbox', this.toggleOverlays)
+    window.addEventListener('enableStartingPoint', this.enableStartingPoint)
   },
   mounted() {
     this.init('timestamp')
@@ -415,6 +468,7 @@ export default {
     window.removeEventListener('errorCheckbox', this.toggleOverlays)
     window.removeEventListener('userTasksCheckbox', this.toggleOverlays)
     window.removeEventListener('queueDepthCheckbox', this.toggleOverlays)
+    window.removeEventListener('enableStartingPoint', this.enableStartingPoint)
   },
 }
 </script>
@@ -491,5 +545,15 @@ export default {
   color: #339cb4;
   width: 40px;
   text-align: start;
+}
+.kokos {
+  cursor: pointer;
+  //content: url('../../../../assets/svg/play-circle-outline.svg');
+  transform: scale(0.7);
+}
+.kokos2 {
+  cursor: pointer;
+  //content: url('../../../../assets/svg/close-circle-outline.svg');
+  transform: scale(0.7);
 }
 </style>

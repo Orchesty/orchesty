@@ -31,6 +31,9 @@ export const TOPOLOGIES = {
       DELETE: 'DELETE_FOLDER',
       EDIT: 'EDIT_FOLDER',
     },
+    NODE: {
+      UPDATE: 'NODE_UPDATE_STATUS',
+    },
   },
   MUTATIONS: {
     DATA: {

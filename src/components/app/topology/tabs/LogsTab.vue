@@ -9,6 +9,7 @@
     show-expand
     disable-search
     show-full-text-search
+    simple-filter
     disabled-advanced-filter
     :permanent-filter="[[{ column: 'topology_id', operator: 'EQUAL', value: [''], default: true }]]"
     :request-params="{ topologyID: $route.params.id }"

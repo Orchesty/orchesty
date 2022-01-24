@@ -282,8 +282,8 @@ export default {
       })
       .catch(() => false)
   },
-  [TOPOLOGIES.ACTIONS.FOLDER.EDIT]: ({ dispatch }, payload) => {
-    return callApi(dispatch, {
+  [TOPOLOGIES.ACTIONS.FOLDER.EDIT]: async ({ dispatch }, payload) => {
+    return await callApi(dispatch, {
       requestData: { ...API.folder.edit },
       params: {
         ...payload,
@@ -293,6 +293,23 @@ export default {
       .then(() => {
         dispatch(TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES)
         addSuccessMessage(dispatch, API.topology.enable.id, `Folder renamed to ${payload.name}!`)
+        return true
+      })
+      .catch(() => false)
+  },
+
+  [TOPOLOGIES.ACTIONS.NODE.UPDATE]: async ({ dispatch }, payload) => {
+    return await callApi(dispatch, {
+      requestData: { ...API.topology.updateNode },
+      params: {
+        ...payload,
+      },
+      throwError: true,
+    })
+      .then(() => {
+        console.log(payload)
+        dispatch(TOPOLOGIES.ACTIONS.TOPOLOGY.NODES, { id: payload.topologyId })
+        dispatch(TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID, { id: payload.topologyId })
         return true
       })
       .catch(() => false)

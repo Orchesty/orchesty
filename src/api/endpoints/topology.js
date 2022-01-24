@@ -32,6 +32,16 @@ export default {
       method: 'GET',
     }),
   },
+  updateNode: {
+    id: 'UPDATE_NODE',
+    request: ({ nodeId, enabled }) => ({
+      url: `/nodes/${nodeId}`,
+      method: 'PATCH',
+      data: {
+        enabled,
+      },
+    }),
+  },
   getNodes: {
     id: 'TOPOLOGY_NODE_LIST',
     request: () => ({
